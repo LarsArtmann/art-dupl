@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"crypto/sha1"
-
+	"crypto/sha256"
+	
 	"github.com/golangci/dupl/suffixtree"
 )
 
@@ -74,15 +74,27 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
 	indexes := getUnitsIndexes(firstSeq, threshold)
 
-	// TODO: is this really working?
-	indexCnt := len(indexes)
-	if indexCnt > 0 {
-		lasti := indexes[indexCnt-1]
+	// Validate that syntax units have consistent ownership across all positions
+	// This ensures we're matching complete syntactic structures with identical tree shapes
+	if len(indexes) > 0 && len(m.Ps) > 1 {
+		lasti := indexes[len(indexes)-1]
 		firstn := firstSeq[lasti]
+		
+		// Check each occurrence of the pattern
 		for i := 1; i < len(m.Ps); i++ {
-			n := data[int(m.Ps[i])+lasti]
+			// Ensure we don't go out of bounds
+			pos := int(m.Ps[i]) + lasti
+			if pos >= len(data) {
+				// Position out of bounds, remove this index
+				indexes = indexes[:len(indexes)-1]
+				break
+			}
+			
+			n := data[pos]
 			if firstn.Owns != n.Owns {
-				indexes = indexes[:indexCnt-1]
+				// Different ownership structure means different tree shapes
+				// Remove the problematic index to ensure only complete matches
+				indexes = indexes[:len(indexes)-1]
 				break
 			}
 		}
@@ -183,7 +195,7 @@ func spansMultipleFiles(indexes []int, nodes []*Node) bool {
 }
 
 func hashSeq(nodes []*Node) string {
-	h := sha1.New()
+	h := sha256.New()
 	bytes := make([]byte, len(nodes))
 	for i, node := range nodes {
 		bytes[i] = byte(node.Type)
