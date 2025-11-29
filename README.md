@@ -12,7 +12,7 @@ tokens are completely different).
 ## Installation
 
 ```bash
-go get -u github.com/golangci/dupl
+go install github.com/golangci/dupl@latest
 ```
 
 ## Usage

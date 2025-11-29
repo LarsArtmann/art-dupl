@@ -42,7 +42,8 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 	if *html && *plumbing {
-		log.Fatal("you can have either plumbing or HTML output")
+		fmt.Fprintf(os.Stderr, "error: you can have either plumbing or HTML output\n")
+		os.Exit(1)
 	}
 	if flag.NArg() > 0 {
 		paths = flag.Args()
@@ -81,7 +82,8 @@ func main() {
 	}
 	p := newPrinter(os.Stdout, os.ReadFile)
 	if err := printDupls(p, duplChan); err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -107,7 +109,8 @@ func crawlPaths(paths []string) chan string {
 		for _, path := range paths {
 			info, err := os.Lstat(path)
 			if err != nil {
-				log.Fatal(err)
+				fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
+				os.Exit(1)
 			}
 			if !info.IsDir() {
 				fchan <- path
@@ -124,7 +127,8 @@ func crawlPaths(paths []string) chan string {
 				return nil
 			})
 			if err != nil {
-				log.Fatal(err)
+				fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
+				os.Exit(1)
 			}
 		}
 		close(fchan)

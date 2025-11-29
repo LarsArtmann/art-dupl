@@ -44,7 +44,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node) error {
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			panic("zero length dup")
+			return fmt.Errorf("internal error: zero length duplicate found")
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]
