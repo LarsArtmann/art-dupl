@@ -44,7 +44,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			panic("zero length dup")
+			return nil, fmt.Errorf("internal error: zero length duplicate found")
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]

@@ -11,6 +11,7 @@ import (
 
 	"github.com/golangci/dupl/printer"
 	"github.com/golangci/dupl/syntax"
+	"github.com/golangci/dupl/util"
 )
 
 const defaultThreshold = 15
@@ -106,7 +107,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match) error {
 		return err
 	}
 	for _, k := range keys {
-		uniq := unique(groups[k])
+		uniq := util.Unique(groups[k])
 		if len(uniq) > 1 {
 			if err := p.PrintClones(uniq); err != nil {
 				return err
@@ -114,25 +115,6 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match) error {
 		}
 	}
 	return p.PrintFooter()
-}
-
-func unique(group [][]*syntax.Node) [][]*syntax.Node {
-	fileMap := make(map[string]map[int]struct{})
-
-	var newGroup [][]*syntax.Node
-	for _, seq := range group {
-		node := seq[0]
-		file, ok := fileMap[node.Filename]
-		if !ok {
-			file = make(map[int]struct{})
-			fileMap[node.Filename] = file
-		}
-		if _, ok := file[node.Pos]; !ok {
-			file[node.Pos] = struct{}{}
-			newGroup = append(newGroup, seq)
-		}
-	}
-	return newGroup
 }
 
 func usage() {

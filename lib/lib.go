@@ -8,6 +8,7 @@ import (
 	"github.com/golangci/dupl/job"
 	"github.com/golangci/dupl/printer"
 	"github.com/golangci/dupl/syntax"
+	"github.com/golangci/dupl/util"
 )
 
 func Run(files []string, threshold int) ([]printer.Issue, error) {
@@ -55,7 +56,7 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 
 	var issues []printer.Issue
 	for _, k := range keys {
-		uniq := unique(groups[k])
+		uniq := util.Unique(groups[k])
 		if len(uniq) > 1 {
 			i, err := p.MakeIssues(uniq)
 			if err != nil {

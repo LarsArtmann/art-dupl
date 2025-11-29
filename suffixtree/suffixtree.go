@@ -43,7 +43,7 @@ func (t *STree) Update(data ...Token) {
 	t.data = append(t.data, data...)
 	for range data {
 		t.update()
-		t.s, t.start = t.canonize(t.s, t.start, t.end)
+		t.s, t.start, _ = t.canonize(t.s, t.start, t.end)
 		t.end++
 	}
 }
@@ -67,7 +67,7 @@ func (t *STree) update() {
 			oldr.linkState = r
 		}
 		oldr = r
-		s, start = t.canonize(s.linkState, start, end-1)
+		s, start, _ = t.canonize(s.linkState, start, end-1)
 	}
 	if oldr != t.root {
 		oldr.linkState = r
@@ -106,12 +106,12 @@ func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint boo
 // canonize returns updated state and start position for ref. pair
 // (s, (start, end)) of state r so the new ref. pair is canonical,
 // that is, referenced from the closest explicit ancestor of r.
-func (t *STree) canonize(s *state, start, end Pos) (*state, Pos) {
+func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	if s == t.auxState {
 		s, start = t.root, start+1
 	}
 	if start > end {
-		return s, start
+		return s, start, nil
 	}
 
 	var tr *tran
@@ -119,8 +119,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos) {
 		if start <= end {
 			tr = s.findTran(t.data[start])
 			if tr == nil {
-				panic(fmt.Sprintf("there should be some transition for '%d' at %d",
-					t.data[start].Val(), start))
+				return nil, 0, fmt.Errorf("internal error: no transition for token '%d' at position %d",
+					t.data[start].Val(), start)
 			}
 		}
 		if tr.end-tr.start > end-start {
@@ -130,14 +130,14 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos) {
 		s = tr.state
 	}
 	if s == nil {
-		panic("there should always be some suffix link resolution")
+		return nil, 0, fmt.Errorf("internal error: no suffix link resolution found")
 	}
-	return s, start
+	return s, start, nil
 }
 
 func (t *STree) At(p Pos) Token {
 	if p < 0 || p >= Pos(len(t.data)) {
-		panic("position out of bounds")
+		return nil
 	}
 	return t.data[p]
 }

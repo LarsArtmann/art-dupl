@@ -149,7 +149,12 @@ func TestCanonize(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		s, start := tree.canonize(tc.origin.s, tc.origin.start, tc.origin.end)
+		s, start, err := tree.canonize(tc.origin.s, tc.origin.start, tc.origin.end)
+		if err != nil {
+			t.Errorf("canonize failed for origin (%d, (%d, %d)): %v", 
+				find(tc.origin.s), tc.origin.start, tc.origin.end, err)
+			continue
+		}
 		if s != tc.expected.s || start != tc.expected.start {
 			t.Errorf("for origin ref. pair (%d, (%d, %d)) got (%d, %d), want (%d, %d)",
 				find(tc.origin.s), tc.origin.start, tc.origin.end,
