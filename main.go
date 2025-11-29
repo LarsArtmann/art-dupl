@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
-	"github.com/golangci/dupl/job"
 	"github.com/golangci/dupl/printer"
 	"github.com/golangci/dupl/syntax"
 )
@@ -39,52 +37,7 @@ func init() {
 }
 
 func main() {
-	flag.Usage = usage
-	flag.Parse()
-	if *html && *plumbing {
-		fmt.Fprintf(os.Stderr, "error: you can have either plumbing or HTML output\n")
-		os.Exit(1)
-	}
-	if flag.NArg() > 0 {
-		paths = flag.Args()
-	}
-
-	if *verbose {
-		log.Println("Building suffix tree")
-	}
-	schan := job.Parse(filesFeed())
-	t, data, done := job.BuildTree(schan)
-	<-done
-
-	// finish stream
-	t.Update(&syntax.Node{Type: -1})
-
-	if *verbose {
-		log.Println("Searching for clones")
-	}
-	mchan := t.FindDuplOver(*threshold)
-	duplChan := make(chan syntax.Match)
-	go func() {
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, *threshold)
-			if len(match.Frags) > 0 {
-				duplChan <- match
-			}
-		}
-		close(duplChan)
-	}()
-
-	newPrinter := printer.NewText
-	if *html {
-		newPrinter = printer.NewHTML
-	} else if *plumbing {
-		newPrinter = printer.NewPlumbing
-	}
-	p := newPrinter(os.Stdout, os.ReadFile)
-	if err := printDupls(p, duplChan); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+	os.Exit(Run())
 }
 
 func filesFeed() chan string {
@@ -109,8 +62,9 @@ func crawlPaths(paths []string) chan string {
 		for _, path := range paths {
 			info, err := os.Lstat(path)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
-				os.Exit(1)
+				fmt.Fprintf(cli.Stderr(), "error: cannot stat %s: %v\n", path, err)
+				cli.Exit(1)
+				return
 			}
 			if !info.IsDir() {
 				fchan <- path
@@ -127,8 +81,9 @@ func crawlPaths(paths []string) chan string {
 				return nil
 			})
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
-				os.Exit(1)
+				fmt.Fprintf(cli.Stderr(), "error: cannot walk %s: %v\n", path, err)
+				cli.Exit(1)
+				return
 			}
 		}
 		close(fchan)
