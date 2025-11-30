@@ -25,6 +25,7 @@ var (
 
 	html     = flag.Bool("html", false, "")
 	plumbing = flag.Bool("plumbing", false, "")
+	json     = flag.Bool("json", false, "")
 )
 
 const (
@@ -114,6 +115,12 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match) error {
 			}
 		}
 	}
+	
+	// Handle JSON output special case
+	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		return jsonPrinter.OutputJSON(*threshold)
+	}
+	
 	return p.PrintFooter()
 }
 

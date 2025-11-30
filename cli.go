@@ -49,6 +49,16 @@ func Run() int {
 		cli.Exit(1)
 		return 1
 	}
+	if *html && *json {
+		fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n")
+		cli.Exit(1)
+		return 1
+	}
+	if *plumbing && *json {
+		fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n")
+		cli.Exit(1)
+		return 1
+	}
 	if flag.NArg() > 0 {
 		paths = flag.Args()
 	}
@@ -83,6 +93,8 @@ func Run() int {
 		newPrinter = printer.NewHTML
 	} else if *plumbing {
 		newPrinter = printer.NewPlumbing
+	} else if *json {
+		newPrinter = printer.NewJSON
 	}
 	p := newPrinter(cli.Stdout(), os.ReadFile)
 	if err := printDupls(p, duplChan); err != nil {
