@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"strings"
+
+	"github.com/golangci/dupl/errors"
 )
 
 const infinity = math.MaxInt32
@@ -119,8 +121,9 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 		if start <= end {
 			tr = s.findTran(t.data[start])
 			if tr == nil {
-				return nil, 0, fmt.Errorf("internal error: no transition for token '%d' at position %d",
-					t.data[start].Val(), start)
+				return nil, 0, errors.NewInternalError(
+					fmt.Sprintf("no transition for token '%d' at position %d",
+						t.data[start].Val(), start), nil)
 			}
 		}
 		if tr.end-tr.start > end-start {
@@ -130,7 +133,7 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 		s = tr.state
 	}
 	if s == nil {
-		return nil, 0, fmt.Errorf("internal error: no suffix link resolution found")
+		return nil, 0, errors.NewInternalError("no suffix link resolution found", nil)
 	}
 	return s, start, nil
 }

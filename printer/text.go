@@ -5,6 +5,7 @@ import (
 	"io"
 	"sort"
 
+	"github.com/golangci/dupl/errors"
 	"github.com/golangci/dupl/syntax"
 )
 
@@ -44,7 +45,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return nil, fmt.Errorf("internal error: zero length duplicate found")
+			return nil, errors.NewInternalError("zero length duplicate found", nil)
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]

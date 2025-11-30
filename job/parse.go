@@ -3,6 +3,7 @@ package job
 import (
 	"log"
 
+	"github.com/golangci/dupl/errors"
 	"github.com/golangci/dupl/syntax"
 	"github.com/golangci/dupl/syntax/golang"
 )
@@ -15,7 +16,7 @@ func Parse(fchan chan string) chan []*syntax.Node {
 		for file := range fchan {
 			ast, err := golang.Parse(file)
 			if err != nil {
-				log.Println(err)
+				log.Printf("%v: %v", errors.NewParseError(file, 0, "failed to parse file", err))
 				continue
 			}
 			achan <- ast
