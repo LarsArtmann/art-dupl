@@ -1,2 +1,11 @@
 .idea/
-/dupl
+dupl
+dist/
+cover.out
+*.test
+*.prof
+*.out
+*.log
+.env
+.DS_Store
+*~
