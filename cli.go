@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/golangci/dupl/config"
 	"github.com/golangci/dupl/job"
 	"github.com/golangci/dupl/printer"
 	"github.com/golangci/dupl/syntax"
@@ -44,24 +45,79 @@ var cli CLIInterface = &RealCLI{}
 func Run() int {
 	flag.Usage = usage
 	flag.Parse()
-	if *html && *plumbing {
+	
+	// Load configuration from file if specified
+	var fileConfig *config.Config
+	var err error
+	if *configFile != "" {
+		fileConfig, err = config.LoadConfig(*configFile)
+		if err != nil {
+			fmt.Fprintf(cli.Stderr(), "error loading config: %v\n", err)
+			cli.Exit(1)
+			return 1
+		}
+	}
+	
+	// Create CLI config from command line arguments
+	cliConfig := &config.Config{}
+	if *vendor {
+		cliConfig.IncludeVendor = *vendor
+	}
+	if *verbose {
+		cliConfig.Verbose = *verbose
+	}
+	if *threshold != defaultThreshold {
+		cliConfig.Threshold = *threshold
+	}
+	if *files {
+		cliConfig.FilesFromStdin = *files
+	}
+	
+	if *html {
+		cliConfig.OutputFormat = "html"
+	} else if *plumbing {
+		cliConfig.OutputFormat = "plumbing"
+	} else if *json {
+		cliConfig.OutputFormat = "json"
+	}
+	
+	if flag.NArg() > 0 {
+		cliConfig.Paths = flag.Args()
+	}
+	
+	// Merge file and CLI configurations
+	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
+	
+	// Validate merged configuration
+	if err = config.ValidateConfig(mergedConfig); err != nil {
+		fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err)
+		cli.Exit(1)
+		return 1
+	}
+	
+	// Validate output format conflicts
+	if mergedConfig.OutputFormat == "html" && *plumbing {
 		fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n")
 		cli.Exit(1)
 		return 1
 	}
-	if *html && *json {
+	if mergedConfig.OutputFormat == "html" && *json {
 		fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n")
 		cli.Exit(1)
 		return 1
 	}
-	if *plumbing && *json {
+	if mergedConfig.OutputFormat == "plumbing" && *json {
 		fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n")
 		cli.Exit(1)
 		return 1
 	}
-	if flag.NArg() > 0 {
-		paths = flag.Args()
-	}
+	
+	// Update global variables with merged config (for compatibility with existing code)
+	paths = mergedConfig.Paths
+	vendor = &mergedConfig.IncludeVendor
+	verbose = &mergedConfig.Verbose
+	threshold = &mergedConfig.Threshold
+	files = &mergedConfig.FilesFromStdin
 
 	if *verbose {
 		log.Println("Building suffix tree")
@@ -88,15 +144,33 @@ func Run() int {
 		close(duplChan)
 	}()
 
-	newPrinter := printer.NewText
-	if *html {
+	// Select printer based on output format
+	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+	switch mergedConfig.OutputFormat {
+	case "html":
 		newPrinter = printer.NewHTML
-	} else if *plumbing {
+	case "plumbing":
 		newPrinter = printer.NewPlumbing
-	} else if *json {
+	case "json":
 		newPrinter = printer.NewJSON
+	default:
+		newPrinter = printer.NewText
 	}
-	p := newPrinter(cli.Stdout(), os.ReadFile)
+	
+	// Handle output file if specified
+	var outputWriter io.Writer = cli.Stdout()
+	if mergedConfig.OutputFile != "" {
+		file, err := os.Create(mergedConfig.OutputFile)
+		if err != nil {
+			fmt.Fprintf(cli.Stderr(), "error creating output file: %v\n", err)
+			cli.Exit(1)
+			return 1
+		}
+		defer file.Close()
+		outputWriter = file
+	}
+	
+	p := newPrinter(outputWriter, os.ReadFile)
 	if err := printDupls(p, duplChan); err != nil {
 		fmt.Fprintf(cli.Stderr(), "error: %v\n", err)
 		cli.Exit(1)

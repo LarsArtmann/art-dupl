@@ -22,6 +22,7 @@ var (
 	verbose   = flag.Bool("verbose", false, "")
 	threshold = flag.Int("threshold", defaultThreshold, "")
 	files     = flag.Bool("files", false, "")
+	configFile = flag.String("config", "", "configuration file path")
 
 	html     = flag.Bool("html", false, "")
 	plumbing = flag.Bool("plumbing", false, "")

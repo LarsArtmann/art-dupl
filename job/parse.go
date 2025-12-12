@@ -15,7 +15,7 @@ func Parse(fchan chan string) chan []*syntax.Node {
 		for file := range fchan {
 			ast, err := golang.Parse(file)
 			if err != nil {
-				log.Printf("%v: %v", errors.NewParseError(file, 0, "failed to parse file", err))
+				log.Printf("%v", errors.NewParseError(file, 0, "failed to parse file", err))
 				continue
 			}
 			achan <- ast
