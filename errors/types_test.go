@@ -7,21 +7,21 @@ import (
 
 func TestDuplError(t *testing.T) {
 	cause := errors.New("cause error")
-	
+
 	// Test error creation
 	err := NewParseError("test.go", 42, "test message", cause)
-	
+
 	// Test error message
 	expected := "parse error at test.go:42: test message"
 	if err.Error() != expected {
 		t.Errorf("Expected '%s', got '%s'", expected, err.Error())
 	}
-	
+
 	// Test unwrap
 	if err.Unwrap() != cause {
 		t.Error("Unwrap should return cause error")
 	}
-	
+
 	// Test fields
 	if err.Type != ParseError {
 		t.Errorf("Expected ParseError type, got %s", err.Type)
@@ -59,7 +59,7 @@ func TestErrorTypes(t *testing.T) {
 			return NewInternalError("", nil)
 		}, InternalError},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.errFunc()
@@ -73,7 +73,7 @@ func TestErrorTypes(t *testing.T) {
 func TestIs(t *testing.T) {
 	parseErr := NewParseError("", 0, "", nil)
 	configErr := NewConfigError("", nil)
-	
+
 	// Test positive cases
 	if !Is(parseErr, ParseError) {
 		t.Error("Should identify ParseError")
@@ -81,7 +81,7 @@ func TestIs(t *testing.T) {
 	if !Is(configErr, ConfigError) {
 		t.Error("Should identify ConfigError")
 	}
-	
+
 	// Test negative cases
 	if Is(parseErr, ConfigError) {
 		t.Error("Should not match ConfigError")
@@ -89,7 +89,7 @@ func TestIs(t *testing.T) {
 	if Is(configErr, ParseError) {
 		t.Error("Should not match ParseError")
 	}
-	
+
 	// Test with standard error
 	standardErr := errors.New("standard error")
 	if Is(standardErr, ParseError) {

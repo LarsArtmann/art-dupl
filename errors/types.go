@@ -10,11 +10,11 @@ import (
 type ErrorType string
 
 const (
-	ParseError     ErrorType = "parse"
-	ConfigError    ErrorType = "config"
-	IOError        ErrorType = "io"
+	ParseError      ErrorType = "parse"
+	ConfigError     ErrorType = "config"
+	IOError         ErrorType = "io"
 	ValidationError ErrorType = "validation"
-	InternalError  ErrorType = "internal"
+	InternalError   ErrorType = "internal"
 )
 
 // DuplError is the main error type with rich context
@@ -63,7 +63,7 @@ func NewConfigError(msg string, cause error) *DuplError {
 }
 
 // NewIOError creates a new I/O error
-func NewIOError(file string, msg string, cause error) *DuplError {
+func NewIOError(file, msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    IOError,
 		Message: msg,

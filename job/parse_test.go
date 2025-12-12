@@ -7,13 +7,13 @@ import (
 
 func TestParse(t *testing.T) {
 	goFile := setupTestFiles(t)
-	
+
 	fchan := make(chan string, 2)
 	fchan <- goFile
 	close(fchan)
-	
+
 	schan := Parse(fchan)
-	
+
 	select {
 	case seq := <-schan:
 		if len(seq) == 0 {
@@ -28,9 +28,9 @@ func TestParseErrorHandling(t *testing.T) {
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent_file.go"
 	close(fchan)
-	
+
 	schan := Parse(fchan)
-	
+
 	select {
 	case seq := <-schan:
 		// Should receive something (even if empty) for non-existent file
@@ -42,15 +42,15 @@ func TestParseErrorHandling(t *testing.T) {
 
 func TestParseMultipleFiles(t *testing.T) {
 	files := setupMultipleTestFiles(t)
-	
+
 	fchan := make(chan string, 3)
 	for _, file := range files {
 		fchan <- file
 	}
 	close(fchan)
-	
+
 	schan := Parse(fchan)
-	
+
 	// Should receive sequences for both files
 	count := 0
 	for count < 2 {

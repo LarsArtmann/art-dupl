@@ -2,7 +2,7 @@ package syntax
 
 import (
 	"crypto/sha256"
-	
+
 	"github.com/golangci/dupl/suffixtree"
 )
 
@@ -79,7 +79,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(indexes) > 0 && len(m.Ps) > 1 {
 		lasti := indexes[len(indexes)-1]
 		firstn := firstSeq[lasti]
-		
+
 		// Check each occurrence of the pattern
 		for i := 1; i < len(m.Ps); i++ {
 			// Ensure we don't go out of bounds
@@ -89,7 +89,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 				indexes = indexes[:len(indexes)-1]
 				break
 			}
-			
+
 			n := data[pos]
 			if firstn.Owns != n.Owns {
 				// Different ownership structure means different tree shapes

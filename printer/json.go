@@ -12,12 +12,12 @@ import (
 
 // JSONOutput represents the structured JSON output
 type JSONOutput struct {
-	Version       string        `json:"version"`
-	Timestamp     time.Time     `json:"timestamp"`
-	Threshold     int           `json:"threshold"`
-	FilesAnalyzed int           `json:"files_analyzed"`
-	CloneGroups   []CloneGroup  `json:"clone_groups"`
-	Summary       Summary       `json:"summary"`
+	Version       string       `json:"version"`
+	Timestamp     time.Time    `json:"timestamp"`
+	Threshold     int          `json:"threshold"`
+	FilesAnalyzed int          `json:"files_analyzed"`
+	CloneGroups   []CloneGroup `json:"clone_groups"`
+	Summary       Summary      `json:"summary"`
 }
 
 // CloneGroup represents a group of duplicate code fragments
@@ -43,18 +43,18 @@ type Summary struct {
 }
 
 type JSONPrinter struct {
-	iota        int
-	w            io.Writer
+	iota int
+	w    io.Writer
 	ReadFile
-	threshold    int
-	filesCount   int
-	totalClones  int
-	cloneGroups  []CloneGroup
+	threshold   int
+	filesCount  int
+	totalClones int
+	cloneGroups []CloneGroup
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
 	return &JSONPrinter{
-		w:       w,
+		w:        w,
 		ReadFile: fread,
 	}
 }
@@ -69,7 +69,7 @@ func (p *JSONPrinter) PrintHeader() error {
 
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 	p.iota++
-	
+
 	clones := make([]JSONClone, len(dups))
 	for i, dup := range dups {
 		cnt := len(dup)
@@ -87,7 +87,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
 		start := findLineBeg(file, nstart.Pos)
 		content := append(toWhitespace(file[start:nstart.Pos]), file[nstart.Pos:nend.End]...)
-		clones[i] = Clone{
+		clones[i] = JSONClone{
 			Filename:  nstart.Filename,
 			LineStart: lineStart,
 			LineEnd:   0, // Will be calculated later
@@ -110,7 +110,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 
 	// Calculate hash (simplified - should use same algorithm as core)
 	hash := fmt.Sprintf("hash%d", p.iota)
-	
+
 	// Calculate size (token count approximation)
 	size := 0
 	for _, clone := range clones {

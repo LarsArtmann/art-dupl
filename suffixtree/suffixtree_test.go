@@ -136,7 +136,7 @@ func TestCanonize(t *testing.T) {
 		return -1
 	}
 
-	var testCases = []struct {
+	testCases := []struct {
 		origin, expected refPair
 	}{
 		{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}},
@@ -151,7 +151,7 @@ func TestCanonize(t *testing.T) {
 	for _, tc := range testCases {
 		s, start, err := tree.canonize(tc.origin.s, tc.origin.start, tc.origin.end)
 		if err != nil {
-			t.Errorf("canonize failed for origin (%d, (%d, %d)): %v", 
+			t.Errorf("canonize failed for origin (%d, (%d, %d)): %v",
 				find(tc.origin.s), tc.origin.start, tc.origin.end, err)
 			continue
 		}

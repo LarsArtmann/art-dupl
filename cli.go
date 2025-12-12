@@ -23,18 +23,18 @@ type CLIInterface interface {
 // RealCLI is the production implementation of CLIInterface
 type RealCLI struct{}
 
-func (r *RealCLI) Exit(code int) { os.Exit(code) }
+func (r *RealCLI) Exit(code int)     { os.Exit(code) }
 func (r *RealCLI) Stderr() io.Writer { return os.Stderr }
 func (r *RealCLI) Stdout() io.Writer { return os.Stdout }
 
 // TestCLI is the test implementation of CLIInterface
 type TestCLI struct {
-	ExitCode int
+	ExitCode  int
 	StderrBuf strings.Builder
 	StdoutBuf strings.Builder
 }
 
-func (t *TestCLI) Exit(code int) { t.ExitCode = code }
+func (t *TestCLI) Exit(code int)     { t.ExitCode = code }
 func (t *TestCLI) Stderr() io.Writer { return &t.StderrBuf }
 func (t *TestCLI) Stdout() io.Writer { return &t.StdoutBuf }
 

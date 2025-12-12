@@ -9,7 +9,6 @@ import (
 )
 
 func Parse(fchan chan string) chan []*syntax.Node {
-
 	// parse AST
 	achan := make(chan *syntax.Node)
 	go func() {
