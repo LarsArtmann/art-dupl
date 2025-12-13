@@ -3,7 +3,7 @@ package util
 import (
 	"testing"
 
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 func TestUnique(t *testing.T) {

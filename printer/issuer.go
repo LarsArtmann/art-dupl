@@ -5,7 +5,7 @@ package printer
 import (
 	"sort"
 
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 type Clone clone

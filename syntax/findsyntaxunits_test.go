@@ -3,7 +3,7 @@ package syntax
 import (
 	"testing"
 
-	"github.com/golangci/dupl/suffixtree"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
 func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {

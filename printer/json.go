@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // JSONOutput represents the structured JSON output
@@ -46,7 +46,6 @@ type JSONPrinter struct {
 	iota int
 	w    io.Writer
 	ReadFile
-	threshold   int
 	filesCount  int
 	totalClones int
 	cloneGroups []CloneGroup

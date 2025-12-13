@@ -5,8 +5,8 @@ import (
 	"io"
 	"sort"
 
-	"github.com/golangci/dupl/errors"
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 type text struct {
@@ -23,14 +23,18 @@ func (p *text) PrintHeader() error { return nil }
 
 func (p *text) PrintClones(dups [][]*syntax.Node) error {
 	p.cnt++
-	fmt.Fprintf(p.w, "found %d clones:\n", len(dups))
+	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(dups)); err != nil {
+		return err
+	}
 	clones, err := prepareClonesInfo(p.ReadFile, dups)
 	if err != nil {
 		return err
 	}
 	sort.Sort(byNameAndLine(clones))
 	for _, cl := range clones {
-		fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd)
+		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+			return err
+		}
 	}
 	return nil
 }

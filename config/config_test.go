@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,7 +8,7 @@ import (
 
 func TestDefaultConfig(t *testing.T) {
 	config := DefaultConfig()
-	
+
 	if config.Threshold != 15 {
 		t.Errorf("Expected default threshold 15, got %d", config.Threshold)
 	}
@@ -26,12 +25,16 @@ func TestDefaultConfig(t *testing.T) {
 
 func TestLoadConfig(t *testing.T) {
 	// Create temporary config file
-	tmpDir, err := ioutil.TempDir("", "dupl-test")
+	tmpDir, err := os.MkdirTemp("", "dupl-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
-	
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("Failed to remove temp dir: %v", err)
+		}
+	}()
+
 	configFile := filepath.Join(tmpDir, "test-config.json")
 	configContent := `{
 		"threshold": 50,
@@ -42,17 +45,17 @@ func TestLoadConfig(t *testing.T) {
 		"ignoreFiles": ["*_test.go", "mock_*.go"],
 		"maxChildrenSerial": 20000
 	}`
-	
-	err = ioutil.WriteFile(configFile, []byte(configContent), 0644)
+
+	err = os.WriteFile(configFile, []byte(configContent), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config file: %v", err)
 	}
-	
+
 	config, err := LoadConfig(configFile)
 	if err != nil {
 		t.Fatalf("Failed to load config: %v", err)
 	}
-	
+
 	if config.Threshold != 50 {
 		t.Errorf("Expected threshold 50, got %d", config.Threshold)
 	}
@@ -85,37 +88,41 @@ func TestLoadConfigNotFound(t *testing.T) {
 
 func TestSaveConfig(t *testing.T) {
 	// Create temporary directory
-	tmpDir, err := ioutil.TempDir("", "dupl-test")
+	tmpDir, err := os.MkdirTemp("", "dupl-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
-	
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("Failed to remove temp dir: %v", err)
+		}
+	}()
+
 	configFile := filepath.Join(tmpDir, "saved-config.json")
 	config := &Config{
-		Threshold:    100,
+		Threshold:     100,
 		IncludeVendor: true,
 		OutputFormat:  "html",
 		Verbose:       true,
-		Paths:        []string{"./test"},
+		Paths:         []string{"./test"},
 	}
-	
+
 	err = SaveConfig(config, configFile)
 	if err != nil {
 		t.Fatalf("Failed to save config: %v", err)
 	}
-	
+
 	// Verify file exists
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		t.Error("Config file was not created")
 	}
-	
+
 	// Load and verify content
 	loaded, err := LoadConfig(configFile)
 	if err != nil {
 		t.Fatalf("Failed to load saved config: %v", err)
 	}
-	
+
 	if loaded.Threshold != config.Threshold {
 		t.Errorf("Saved threshold %d, got %d", config.Threshold, loaded.Threshold)
 	}
@@ -136,7 +143,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Valid config",
 			config: &Config{
-				Threshold:        15,
+				Threshold:         15,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 10000,
 			},
@@ -145,7 +152,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Invalid threshold - too low",
 			config: &Config{
-				Threshold:        0,
+				Threshold:         0,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 10000,
 			},
@@ -154,7 +161,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Invalid threshold - too high",
 			config: &Config{
-				Threshold:        1001,
+				Threshold:         1001,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 10000,
 			},
@@ -163,7 +170,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Invalid output format",
 			config: &Config{
-				Threshold:        15,
+				Threshold:         15,
 				OutputFormat:      "xml",
 				MaxChildrenSerial: 10000,
 			},
@@ -172,7 +179,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Invalid maxChildrenSerial - too low",
 			config: &Config{
-				Threshold:        15,
+				Threshold:         15,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 999,
 			},
@@ -181,14 +188,14 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "Invalid maxChildrenSerial - too high",
 			config: &Config{
-				Threshold:        15,
+				Threshold:         15,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 100001,
 			},
 			isValid: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateConfig(tt.config)
@@ -205,23 +212,23 @@ func TestValidateConfig(t *testing.T) {
 func TestMergeConfigs(t *testing.T) {
 	fileConfig := &Config{
 		Threshold:    50,
-		OutputFormat:  "json",
-		Verbose:       true,
+		OutputFormat: "json",
+		Verbose:      true,
 		Paths:        []string{"./src"},
-		IgnoreFiles:   []string{"*_test.go"},
+		IgnoreFiles:  []string{"*_test.go"},
 	}
-	
+
 	cliConfig := &Config{
-		Threshold:    25,  // Override
-		IncludeVendor: true, // New value
+		Threshold:     25,     // Override
+		IncludeVendor: true,   // New value
 		OutputFormat:  "html", // Override
 		// Verbose: not set, should keep file config value
-		Paths:        []string{"./cmd"}, // Override
+		Paths: []string{"./cmd"}, // Override
 		// IgnoreFiles: not set, should keep file config value
 	}
-	
+
 	merged := MergeConfigs(fileConfig, cliConfig)
-	
+
 	if merged.Threshold != 25 {
 		t.Errorf("Expected merged threshold 25, got %d", merged.Threshold)
 	}
@@ -244,13 +251,13 @@ func TestMergeConfigs(t *testing.T) {
 
 func TestMergeConfigsNilFileConfig(t *testing.T) {
 	cliConfig := &Config{
-		Threshold:    30,
+		Threshold:     30,
 		OutputFormat:  "json",
 		IncludeVendor: true,
 	}
-	
+
 	merged := MergeConfigs(nil, cliConfig)
-	
+
 	// Should get defaults overridden by CLI config
 	if merged.Threshold != 30 {
 		t.Errorf("Expected merged threshold 30, got %d", merged.Threshold)
@@ -270,12 +277,12 @@ func TestMergeConfigsNilFileConfig(t *testing.T) {
 func TestMergeConfigsNilCLIConfig(t *testing.T) {
 	fileConfig := &Config{
 		Threshold:    40,
-		OutputFormat:  "html",
-		Verbose:       true,
+		OutputFormat: "html",
+		Verbose:      true,
 	}
-	
+
 	merged := MergeConfigs(fileConfig, nil)
-	
+
 	// Should get file config values
 	if merged.Threshold != 40 {
 		t.Errorf("Expected merged threshold 40, got %d", merged.Threshold)

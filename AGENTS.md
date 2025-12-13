@@ -187,13 +187,13 @@ find . -name '*_test.go' | ./dupl -files
 ## Module Structure
 
 ### Import Paths
-All imports use the module path: `github.com/golangci/dupl`
+All imports use the module path: `github.com/LarsArtmann/art-dupl`
 ```go
 import (
-    "github.com/golangci/dupl/suffixtree"
-    "github.com/golangci/dupl/syntax"
-    "github.com/golangci/dupl/job"
-    "github.com/golangci/dupl/printer"
+    "github.com/LarsArtmann/art-dupl/suffixtree"
+    "github.com/LarsArtmann/art-dupl/syntax"
+    "github.com/LarsArtmann/art-dupl/job"
+    "github.com/LarsArtmann/art-dupl/printer"
 )
 ```
 

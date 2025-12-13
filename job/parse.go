@@ -3,9 +3,9 @@ package job
 import (
 	"log"
 
-	"github.com/golangci/dupl/errors"
-	"github.com/golangci/dupl/syntax"
-	"github.com/golangci/dupl/syntax/golang"
+	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 func Parse(fchan chan string) chan []*syntax.Node {

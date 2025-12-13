@@ -225,10 +225,10 @@
 ### ✅ Working Installation Methods
 ```bash
 # Standard Installation (WORKING)
-go install github.com/golangci/dupl@latest
+go install github.com/LarsArtmann/art-dupl@latest
 
 # Source Installation (WORKING)
-git clone https://github.com/golangci/dupl.git
+git clone https://github.com/LarsArtmann/art-dupl.git
 cd dupl
 make build
 sudo mv dupl /usr/local/bin/

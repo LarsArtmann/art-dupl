@@ -3,7 +3,7 @@ package syntax
 import (
 	"crypto/sha256"
 
-	"github.com/golangci/dupl/suffixtree"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
 // To avoid "goroutine stack exceeds" with gigantic slices (Composite Literals).

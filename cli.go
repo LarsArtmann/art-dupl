@@ -8,10 +8,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/golangci/dupl/config"
-	"github.com/golangci/dupl/job"
-	"github.com/golangci/dupl/printer"
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // CLIInterface defines the interface for CLI operations
@@ -45,19 +45,23 @@ var cli CLIInterface = &RealCLI{}
 func Run() int {
 	flag.Usage = usage
 	flag.Parse()
-	
+
 	// Load configuration from file if specified
 	var fileConfig *config.Config
 	var err error
 	if *configFile != "" {
 		fileConfig, err = config.LoadConfig(*configFile)
 		if err != nil {
-			fmt.Fprintf(cli.Stderr(), "error loading config: %v\n", err)
+			if _, err := fmt.Fprintf(cli.Stderr(), "error loading config: %v\n", err); err != nil {
+				// If we can't even write to stderr, just exit
+				cli.Exit(1)
+				return 1
+			}
 			cli.Exit(1)
 			return 1
 		}
 	}
-	
+
 	// Create CLI config from command line arguments
 	cliConfig := &config.Config{}
 	if *vendor {
@@ -72,7 +76,7 @@ func Run() int {
 	if *files {
 		cliConfig.FilesFromStdin = *files
 	}
-	
+
 	if *html {
 		cliConfig.OutputFormat = "html"
 	} else if *plumbing {
@@ -80,38 +84,50 @@ func Run() int {
 	} else if *json {
 		cliConfig.OutputFormat = "json"
 	}
-	
+
 	if flag.NArg() > 0 {
 		cliConfig.Paths = flag.Args()
 	}
-	
+
 	// Merge file and CLI configurations
 	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
-	
+
 	// Validate merged configuration
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err)
+		if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
+			cli.Exit(1)
+			return 1
+		}
 		cli.Exit(1)
 		return 1
 	}
-	
+
 	// Validate output format conflicts
 	if mergedConfig.OutputFormat == "html" && *plumbing {
-		fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n")
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n"); err != nil {
+			cli.Exit(1)
+			return 1
+		}
 		cli.Exit(1)
 		return 1
 	}
 	if mergedConfig.OutputFormat == "html" && *json {
-		fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n")
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n"); err != nil {
+			cli.Exit(1)
+			return 1
+		}
 		cli.Exit(1)
 		return 1
 	}
 	if mergedConfig.OutputFormat == "plumbing" && *json {
-		fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n")
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n"); err != nil {
+			cli.Exit(1)
+			return 1
+		}
 		cli.Exit(1)
 		return 1
 	}
-	
+
 	// Update global variables with merged config (for compatibility with existing code)
 	paths = mergedConfig.Paths
 	vendor = &mergedConfig.IncludeVendor
@@ -156,23 +172,34 @@ func Run() int {
 	default:
 		newPrinter = printer.NewText
 	}
-	
+
 	// Handle output file if specified
-	var outputWriter io.Writer = cli.Stdout()
+	outputWriter := cli.Stdout()
 	if mergedConfig.OutputFile != "" {
 		file, err := os.Create(mergedConfig.OutputFile)
 		if err != nil {
-			fmt.Fprintf(cli.Stderr(), "error creating output file: %v\n", err)
+			if _, err := fmt.Fprintf(cli.Stderr(), "error creating output file: %v\n", err); err != nil {
+				cli.Exit(1)
+				return 1
+			}
 			cli.Exit(1)
 			return 1
 		}
-		defer file.Close()
+		defer func() {
+			if closeErr := file.Close(); closeErr != nil {
+				_, _ = fmt.Fprintf(cli.Stderr(), "warning: failed to close file: %v\n", closeErr)
+			}
+		}()
 		outputWriter = file
 	}
-	
+
 	p := newPrinter(outputWriter, os.ReadFile)
 	if err := printDupls(p, duplChan); err != nil {
-		fmt.Fprintf(cli.Stderr(), "error: %v\n", err)
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
+			// If we can't even write to stderr, just exit
+			cli.Exit(1)
+			return 1
+		}
 		cli.Exit(1)
 		return 1
 	}

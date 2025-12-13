@@ -5,7 +5,7 @@ import (
 	"io"
 	"sort"
 
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 type plumbing struct {
@@ -27,8 +27,10 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node) error {
 	sort.Sort(byNameAndLine(clones))
 	for i, cl := range clones {
 		nextCl := clones[(i+1)%len(clones)]
-		fmt.Fprintf(p.w, "%s:%d-%d: duplicate of %s:%d-%d\n", cl.filename, cl.lineStart, cl.lineEnd,
-			nextCl.filename, nextCl.lineStart, nextCl.lineEnd)
+		if _, err := fmt.Fprintf(p.w, "%s:%d-%d: duplicate of %s:%d-%d\n", cl.filename, cl.lineStart, cl.lineEnd,
+			nextCl.filename, nextCl.lineStart, nextCl.lineEnd); err != nil {
+			return err
+		}
 	}
 	return nil
 }

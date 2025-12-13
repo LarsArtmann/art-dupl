@@ -1,0 +1,170 @@
+<svg width="1000" height="520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chart-title chart-subtitle"><defs><style><![CDATA[
+		.project-name { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 16.0px; 
+			font-weight: 500; 
+			fill: #4269d0; 
+			letter-spacing: -0.005em;
+			line-height: 1.2;
+		}
+		.chart-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 18.0px; 
+			font-weight: 600; 
+			fill: #111827; 
+			letter-spacing: -0.02em;
+			line-height: 1.1;
+		}
+		.chart-subtitle { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 14.0px; 
+			font-weight: 400; 
+			fill: #6b7280;
+			letter-spacing: -0.005em;
+			line-height: 1.3;
+		}
+		.axis-label { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 11.0px; 
+			font-weight: 400; 
+			fill: #9ca3af;
+			letter-spacing: 0em;
+		}
+		.axis-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 12.0px; 
+			font-weight: 500; 
+			fill: #4b5563;
+			letter-spacing: -0.005em;
+		}
+		.legend-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 12.0px; 
+			font-weight: 600; 
+			fill: #374151;
+			letter-spacing: -0.01em;
+		}
+		.legend-text { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 11.0px; 
+			font-weight: 400; 
+			fill: #4b5563;
+			letter-spacing: 0em;
+		}
+		.legend-count { 
+			font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', monospace; 
+			font-size: 10.0px; 
+			font-weight: 500; 
+			fill: #6b7280;
+			letter-spacing: 0.05em;
+		}
+		.meta-text { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 10.0px; 
+			font-weight: 400;
+			fill: #9ca3af;
+			letter-spacing: 0em;
+		}
+		.grid-line { 
+			stroke: #f1f5f9; 
+			stroke-width: 0.5; 
+			opacity: 1;
+		}
+		.grid-line-major { 
+			stroke: #e2e8f0; 
+			stroke-width: 0.75; 
+			opacity: 1;
+		}
+		.chart-area { 
+			fill: #ffffff;
+		}
+		.chart-border { 
+			stroke: none;
+			fill: none;
+		}
+		.trend-line { 
+			fill: none; 
+			stroke-width: 2; 
+			stroke-linecap: round; 
+			stroke-linejoin: round; 
+			opacity: 0.9;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+		}
+		.trend-line:hover { 
+			stroke-width: 3;
+			opacity: 1;
+			filter: drop-shadow(0 0 4px rgba(0,0,0,0.1));
+		}
+		.trend-line:focus { 
+			outline: 2px solid #4269d0;
+			outline-offset: 2px;
+			stroke-width: 3;
+		}
+		.data-point { 
+			fill: #ffffff;
+			stroke-width: 2;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+		}
+		.data-point:hover { 
+			r: 6;
+			stroke: #ffffff;
+			stroke-width: 3;
+			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+		}
+		.data-point:focus { 
+			outline: 2px solid #4269d0;
+			outline-offset: 2px;
+			r: 6;
+		}
+		.data-point:active {
+			transform: scale(0.95);
+		}
+		.legend-background { 
+			fill: #fafafa; 
+			stroke: #e4e4e7; 
+			stroke-width: 0.5; 
+			rx: 6;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-background:hover {
+			stroke: #d1d5db;
+			fill: #ffffff;
+		}
+		.legend-item { 
+			cursor: pointer;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover {
+			opacity: 1;
+			transform: translateX(2px);
+		}
+		.legend-item:focus {
+			outline: 2px solid #4269d0;
+			outline-offset: 1px;
+			border-radius: 4px;
+		}
+		.legend-color-indicator { 
+			rx: 1;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover .legend-color-indicator {
+			rx: 2;
+			transform: scale(1.1);
+			filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1));
+		}
+		.legend-text {
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover .legend-text {
+			fill: #111827;
+			font-weight: 500;
+		}
+		@media (prefers-reduced-motion: reduce) {
+			* {
+				transition: none !important;
+				animation: none !important;
+			}
+		}
+	]]></style></defs><rect width="1000" height="520" fill="#ffffff"/><text id="chart-title" x="500" y="28" class="project-name" text-anchor="middle">art-dupl</text><text x="500" y="48" class="chart-title" text-anchor="middle">Language Trends</text><text id="chart-subtitle" x="500" y="65" class="chart-subtitle" text-anchor="middle">Lines of code over time</text><rect x="80" y="90" width="680" height="330" class="chart-area"/><line x1="80" y1="90" x2="760" y2="90" class="grid-line-major"/><line x1="80" y1="156" x2="760" y2="156" class="grid-line"/><line x1="80" y1="222" x2="760" y2="222" class="grid-line"/><line x1="80" y1="288" x2="760" y2="288" class="grid-line"/><line x1="80" y1="354" x2="760" y2="354" class="grid-line"/><line x1="80" y1="420" x2="760" y2="420" class="grid-line-major"/><circle cx="80.0" cy="420.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 0 lines (Feb 27, 2015)"><title>Go: 0 lines (Feb 27, 2015)</title></circle><circle cx="150.0" cy="376.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 454 lines (Mar 10, 2015)"><title>Go: 454 lines (Mar 10, 2015)</title></circle><circle cx="160.0" cy="339.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 841 lines (Mar 12, 2015)"><title>Go: 841 lines (Mar 12, 2015)</title></circle><circle cx="170.0" cy="337.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 863 lines (Mar 13, 2015)"><title>Go: 863 lines (Mar 13, 2015)</title></circle><circle cx="180.0" cy="324.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 995 lines (Mar 13, 2015)"><title>Go: 995 lines (Mar 13, 2015)</title></circle><circle cx="190.0" cy="320.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.0K lines (Mar 13, 2015)"><title>Go: 1.0K lines (Mar 13, 2015)</title></circle><circle cx="200.0" cy="318.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.1K lines (Mar 16, 2015)"><title>Go: 1.1K lines (Mar 16, 2015)</title></circle><circle cx="210.0" cy="316.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.1K lines (Mar 17, 2015)"><title>Go: 1.1K lines (Mar 17, 2015)</title></circle><circle cx="220.0" cy="315.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.1K lines (Mar 24, 2015)"><title>Go: 1.1K lines (Mar 24, 2015)</title></circle><circle cx="230.0" cy="314.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.1K lines (Mar 24, 2015)"><title>Go: 1.1K lines (Mar 24, 2015)</title></circle><circle cx="240.0" cy="308.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.2K lines (Mar 25, 2015)"><title>Go: 1.2K lines (Mar 25, 2015)</title></circle><circle cx="250.0" cy="294.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.3K lines (Apr 1, 2015)"><title>Go: 1.3K lines (Apr 1, 2015)</title></circle><circle cx="260.0" cy="292.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.3K lines (Apr 1, 2015)"><title>Go: 1.3K lines (Apr 1, 2015)</title></circle><circle cx="270.0" cy="277.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 7, 2015)"><title>Go: 1.5K lines (Apr 7, 2015)</title></circle><circle cx="280.0" cy="277.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 7, 2015)"><title>Go: 1.5K lines (Apr 7, 2015)</title></circle><circle cx="290.0" cy="276.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 9, 2015)"><title>Go: 1.5K lines (Apr 9, 2015)</title></circle><circle cx="300.0" cy="276.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 14, 2015)"><title>Go: 1.5K lines (Apr 14, 2015)</title></circle><circle cx="310.0" cy="274.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 14, 2015)"><title>Go: 1.5K lines (Apr 14, 2015)</title></circle><circle cx="320.0" cy="271.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.5K lines (Apr 14, 2015)"><title>Go: 1.5K lines (Apr 14, 2015)</title></circle><circle cx="330.0" cy="269.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Apr 15, 2015)"><title>Go: 1.6K lines (Apr 15, 2015)</title></circle><circle cx="340.0" cy="269.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Apr 27, 2015)"><title>Go: 1.6K lines (Apr 27, 2015)</title></circle><circle cx="350.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 1, 2015)"><title>Go: 1.6K lines (May 1, 2015)</title></circle><circle cx="360.0" cy="265.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 5, 2015)"><title>Go: 1.6K lines (May 5, 2015)</title></circle><circle cx="370.0" cy="265.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 5, 2015)"><title>Go: 1.6K lines (May 5, 2015)</title></circle><circle cx="380.0" cy="264.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 5, 2015)"><title>Go: 1.6K lines (May 5, 2015)</title></circle><circle cx="390.0" cy="263.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 6, 2015)"><title>Go: 1.6K lines (May 6, 2015)</title></circle><circle cx="400.0" cy="261.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (May 6, 2015)"><title>Go: 1.6K lines (May 6, 2015)</title></circle><circle cx="410.0" cy="256.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (May 8, 2015)"><title>Go: 1.7K lines (May 8, 2015)</title></circle><circle cx="420.0" cy="256.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (May 13, 2015)"><title>Go: 1.7K lines (May 13, 2015)</title></circle><circle cx="430.0" cy="256.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (May 20, 2015)"><title>Go: 1.7K lines (May 20, 2015)</title></circle><circle cx="440.0" cy="256.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (May 20, 2015)"><title>Go: 1.7K lines (May 20, 2015)</title></circle><circle cx="450.0" cy="256.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (May 24, 2015)"><title>Go: 1.7K lines (May 24, 2015)</title></circle><circle cx="460.0" cy="253.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (Jun 8, 2015)"><title>Go: 1.7K lines (Jun 8, 2015)</title></circle><circle cx="470.0" cy="253.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (Jun 11, 2015)"><title>Go: 1.7K lines (Jun 11, 2015)</title></circle><circle cx="480.0" cy="248.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.8K lines (Sep 29, 2015)"><title>Go: 1.8K lines (Sep 29, 2015)</title></circle><circle cx="490.0" cy="248.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.8K lines (Nov 18, 2015)"><title>Go: 1.8K lines (Nov 18, 2015)</title></circle><circle cx="500.0" cy="248.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.8K lines (Jan 20, 2016)"><title>Go: 1.8K lines (Jan 20, 2016)</title></circle><circle cx="510.0" cy="247.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.8K lines (Jan 22, 2016)"><title>Go: 1.8K lines (Jan 22, 2016)</title></circle><circle cx="520.0" cy="247.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.8K lines (Jan 25, 2016)"><title>Go: 1.8K lines (Jan 25, 2016)</title></circle><circle cx="530.0" cy="268.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Apr 8, 2016)"><title>Go: 1.6K lines (Apr 8, 2016)</title></circle><circle cx="540.0" cy="268.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Apr 8, 2016)"><title>Go: 1.6K lines (Apr 8, 2016)</title></circle><circle cx="550.0" cy="267.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Sep 20, 2016)"><title>Go: 1.6K lines (Sep 20, 2016)</title></circle><circle cx="560.0" cy="267.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Oct 22, 2016)"><title>Go: 1.6K lines (Oct 22, 2016)</title></circle><circle cx="570.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Feb 27, 2017)"><title>Go: 1.6K lines (Feb 27, 2017)</title></circle><circle cx="580.0" cy="267.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Nov 16, 2017)"><title>Go: 1.6K lines (Nov 16, 2017)</title></circle><circle cx="590.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Nov 19, 2017)"><title>Go: 1.6K lines (Nov 19, 2017)</title></circle><circle cx="600.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Nov 19, 2017)"><title>Go: 1.6K lines (Nov 19, 2017)</title></circle><circle cx="610.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Nov 19, 2017)"><title>Go: 1.6K lines (Nov 19, 2017)</title></circle><circle cx="620.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Oct 11, 2018)"><title>Go: 1.6K lines (Oct 11, 2018)</title></circle><circle cx="630.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Dec 12, 2020)"><title>Go: 1.6K lines (Dec 12, 2020)</title></circle><circle cx="640.0" cy="266.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.6K lines (Dec 17, 2020)"><title>Go: 1.6K lines (Dec 17, 2020)</title></circle><circle cx="650.0" cy="255.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (Mar 20, 2024)"><title>Go: 1.7K lines (Mar 20, 2024)</title></circle><circle cx="660.0" cy="255.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (Mar 4, 2025)"><title>Go: 1.7K lines (Mar 4, 2025)</title></circle><circle cx="670.0" cy="251.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.7K lines (Nov 28, 2025)"><title>Go: 1.7K lines (Nov 28, 2025)</title></circle><circle cx="680.0" cy="239.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.9K lines (Nov 28, 2025)"><title>Go: 1.9K lines (Nov 28, 2025)</title></circle><circle cx="690.0" cy="238.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 1.9K lines (Nov 29, 2025)"><title>Go: 1.9K lines (Nov 29, 2025)</title></circle><circle cx="700.0" cy="203.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 2.2K lines (Nov 29, 2025)"><title>Go: 2.2K lines (Nov 29, 2025)</title></circle><circle cx="710.0" cy="174.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 2.5K lines (Nov 30, 2025)"><title>Go: 2.5K lines (Nov 30, 2025)</title></circle><circle cx="720.0" cy="103.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 3.3K lines (Dec 12, 2025)"><title>Go: 3.3K lines (Dec 12, 2025)</title></circle><circle cx="730.0" cy="103.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 3.3K lines (Dec 12, 2025)"><title>Go: 3.3K lines (Dec 12, 2025)</title></circle><circle cx="740.0" cy="103.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 3.3K lines (Dec 12, 2025)"><title>Go: 3.3K lines (Dec 12, 2025)</title></circle><circle cx="750.0" cy="103.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 3.3K lines (Dec 13, 2025)"><title>Go: 3.3K lines (Dec 13, 2025)</title></circle><circle cx="760.0" cy="103.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="Go: 3.3K lines (Dec 13, 2025)"><title>Go: 3.3K lines (Dec 13, 2025)</title></circle><path d="M 80.00 420.00 L 90.00 391.00 L 100.00 392.00 L 110.00 389.00 L 120.00 389.00 L 130.00 389.00 L 140.00 389.00 L 150.00 376.00 L 160.00 339.00 L 170.00 337.00 L 180.00 324.00 L 190.00 320.00 L 200.00 318.00 L 210.00 316.00 L 220.00 315.00 L 230.00 314.00 L 240.00 308.00 L 250.00 294.00 L 260.00 292.00 L 270.00 277.00 L 280.00 277.00 L 290.00 276.00 L 300.00 276.00 L 310.00 274.00 L 320.00 271.00 L 330.00 269.00 L 340.00 269.00 L 350.00 266.00 L 360.00 265.00 L 370.00 265.00 L 380.00 264.00 L 390.00 263.00 L 400.00 261.00 L 410.00 256.00 L 420.00 256.00 L 430.00 256.00 L 440.00 256.00 L 450.00 256.00 L 460.00 253.00 L 470.00 253.00 L 480.00 248.00 L 490.00 248.00 L 500.00 248.00 L 510.00 247.00 L 520.00 247.00 L 530.00 268.00 L 540.00 268.00 L 550.00 267.00 L 560.00 267.00 L 570.00 266.00 L 580.00 267.00 L 590.00 266.00 L 600.00 266.00 L 610.00 266.00 L 620.00 266.00 L 630.00 266.00 L 640.00 266.00 L 650.00 255.00 L 660.00 255.00 L 670.00 251.00 L 680.00 239.00 L 690.00 238.00 L 700.00 203.00 L 710.00 174.00 L 720.00 103.00 L 730.00 103.00 L 740.00 103.00 L 750.00 103.00 L 760.00 103.00" stroke="#4269d0" class="trend-line" tabindex="0" role="img" aria-label="Go trend line"><title>Go: 105.9K lines (optimized from 69 to 69 points)</title></path><circle cx="80.0" cy="420.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 0 lines (Feb 27, 2015)"><title>HTML: 0 lines (Feb 27, 2015)</title></circle><circle cx="440.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (May 20, 2015)"><title>HTML: 1.2K lines (May 20, 2015)</title></circle><circle cx="450.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (May 24, 2015)"><title>HTML: 1.2K lines (May 24, 2015)</title></circle><circle cx="460.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Jun 8, 2015)"><title>HTML: 1.2K lines (Jun 8, 2015)</title></circle><circle cx="470.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Jun 11, 2015)"><title>HTML: 1.2K lines (Jun 11, 2015)</title></circle><circle cx="480.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Sep 29, 2015)"><title>HTML: 1.2K lines (Sep 29, 2015)</title></circle><circle cx="490.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 18, 2015)"><title>HTML: 1.2K lines (Nov 18, 2015)</title></circle><circle cx="500.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Jan 20, 2016)"><title>HTML: 1.2K lines (Jan 20, 2016)</title></circle><circle cx="510.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Jan 22, 2016)"><title>HTML: 1.2K lines (Jan 22, 2016)</title></circle><circle cx="520.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Jan 25, 2016)"><title>HTML: 1.2K lines (Jan 25, 2016)</title></circle><circle cx="530.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Apr 8, 2016)"><title>HTML: 1.2K lines (Apr 8, 2016)</title></circle><circle cx="540.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Apr 8, 2016)"><title>HTML: 1.2K lines (Apr 8, 2016)</title></circle><circle cx="550.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Sep 20, 2016)"><title>HTML: 1.2K lines (Sep 20, 2016)</title></circle><circle cx="560.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Oct 22, 2016)"><title>HTML: 1.2K lines (Oct 22, 2016)</title></circle><circle cx="570.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Feb 27, 2017)"><title>HTML: 1.2K lines (Feb 27, 2017)</title></circle><circle cx="580.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 16, 2017)"><title>HTML: 1.2K lines (Nov 16, 2017)</title></circle><circle cx="590.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 19, 2017)"><title>HTML: 1.2K lines (Nov 19, 2017)</title></circle><circle cx="600.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 19, 2017)"><title>HTML: 1.2K lines (Nov 19, 2017)</title></circle><circle cx="610.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 19, 2017)"><title>HTML: 1.2K lines (Nov 19, 2017)</title></circle><circle cx="620.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Oct 11, 2018)"><title>HTML: 1.2K lines (Oct 11, 2018)</title></circle><circle cx="630.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 12, 2020)"><title>HTML: 1.2K lines (Dec 12, 2020)</title></circle><circle cx="640.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 17, 2020)"><title>HTML: 1.2K lines (Dec 17, 2020)</title></circle><circle cx="650.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Mar 20, 2024)"><title>HTML: 1.2K lines (Mar 20, 2024)</title></circle><circle cx="660.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Mar 4, 2025)"><title>HTML: 1.2K lines (Mar 4, 2025)</title></circle><circle cx="670.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 28, 2025)"><title>HTML: 1.2K lines (Nov 28, 2025)</title></circle><circle cx="680.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 28, 2025)"><title>HTML: 1.2K lines (Nov 28, 2025)</title></circle><circle cx="690.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 29, 2025)"><title>HTML: 1.2K lines (Nov 29, 2025)</title></circle><circle cx="700.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 29, 2025)"><title>HTML: 1.2K lines (Nov 29, 2025)</title></circle><circle cx="710.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Nov 30, 2025)"><title>HTML: 1.2K lines (Nov 30, 2025)</title></circle><circle cx="720.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 12, 2025)"><title>HTML: 1.2K lines (Dec 12, 2025)</title></circle><circle cx="730.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 12, 2025)"><title>HTML: 1.2K lines (Dec 12, 2025)</title></circle><circle cx="740.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 12, 2025)"><title>HTML: 1.2K lines (Dec 12, 2025)</title></circle><circle cx="750.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 13, 2025)"><title>HTML: 1.2K lines (Dec 13, 2025)</title></circle><circle cx="760.0" cy="308.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="HTML: 1.2K lines (Dec 13, 2025)"><title>HTML: 1.2K lines (Dec 13, 2025)</title></circle><path d="M 80.00 420.00 L 90.00 420.00 L 100.00 420.00 L 110.00 420.00 L 120.00 420.00 L 130.00 420.00 L 140.00 420.00 L 150.00 420.00 L 160.00 420.00 L 170.00 420.00 L 180.00 420.00 L 190.00 420.00 L 200.00 420.00 L 210.00 420.00 L 220.00 420.00 L 230.00 420.00 L 240.00 420.00 L 250.00 420.00 L 260.00 420.00 L 270.00 420.00 L 280.00 420.00 L 290.00 420.00 L 300.00 420.00 L 310.00 420.00 L 320.00 420.00 L 330.00 420.00 L 340.00 420.00 L 350.00 420.00 L 360.00 420.00 L 370.00 420.00 L 380.00 420.00 L 390.00 420.00 L 400.00 420.00 L 410.00 420.00 L 420.00 420.00 L 430.00 420.00 L 440.00 308.00 L 450.00 308.00 L 460.00 308.00 L 470.00 308.00 L 480.00 308.00 L 490.00 308.00 L 500.00 308.00 L 510.00 308.00 L 520.00 308.00 L 530.00 308.00 L 540.00 308.00 L 550.00 308.00 L 560.00 308.00 L 570.00 308.00 L 580.00 308.00 L 590.00 308.00 L 600.00 308.00 L 610.00 308.00 L 620.00 308.00 L 630.00 308.00 L 640.00 308.00 L 650.00 308.00 L 660.00 308.00 L 670.00 308.00 L 680.00 308.00 L 690.00 308.00 L 700.00 308.00 L 710.00 308.00 L 720.00 308.00 L 730.00 308.00 L 740.00 308.00 L 750.00 308.00 L 760.00 308.00" stroke="#3ca951" class="trend-line" tabindex="0" role="img" aria-label="HTML trend line"><title>HTML: 38.2K lines (optimized from 69 to 69 points)</title></path><circle cx="80.0" cy="420.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 2 lines (Feb 27, 2015)"><title>Markdown: 2 lines (Feb 27, 2015)</title></circle><circle cx="680.0" cy="382.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 395 lines (Nov 28, 2025)"><title>Markdown: 395 lines (Nov 28, 2025)</title></circle><circle cx="690.0" cy="347.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 760 lines (Nov 29, 2025)"><title>Markdown: 760 lines (Nov 29, 2025)</title></circle><circle cx="700.0" cy="347.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 760 lines (Nov 29, 2025)"><title>Markdown: 760 lines (Nov 29, 2025)</title></circle><circle cx="710.0" cy="333.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 906 lines (Nov 30, 2025)"><title>Markdown: 906 lines (Nov 30, 2025)</title></circle><circle cx="720.0" cy="295.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 1.3K lines (Dec 12, 2025)"><title>Markdown: 1.3K lines (Dec 12, 2025)</title></circle><circle cx="730.0" cy="274.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 1.5K lines (Dec 12, 2025)"><title>Markdown: 1.5K lines (Dec 12, 2025)</title></circle><circle cx="740.0" cy="244.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 1.8K lines (Dec 12, 2025)"><title>Markdown: 1.8K lines (Dec 12, 2025)</title></circle><circle cx="750.0" cy="196.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 2.3K lines (Dec 13, 2025)"><title>Markdown: 2.3K lines (Dec 13, 2025)</title></circle><circle cx="760.0" cy="196.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 2.3K lines (Dec 13, 2025)"><title>Markdown: 2.3K lines (Dec 13, 2025)</title></circle><path d="M 80.00 420.00 L 90.00 420.00 L 100.00 420.00 L 110.00 420.00 L 120.00 420.00 L 130.00 420.00 L 140.00 420.00 L 150.00 420.00 L 160.00 420.00 L 170.00 420.00 L 180.00 420.00 L 190.00 420.00 L 200.00 420.00 L 210.00 420.00 L 220.00 420.00 L 230.00 420.00 L 240.00 420.00 L 250.00 420.00 L 260.00 420.00 L 270.00 420.00 L 280.00 420.00 L 290.00 420.00 L 300.00 420.00 L 310.00 420.00 L 320.00 420.00 L 330.00 420.00 L 340.00 420.00 L 350.00 420.00 L 360.00 420.00 L 370.00 420.00 L 380.00 420.00 L 390.00 420.00 L 400.00 420.00 L 410.00 420.00 L 420.00 420.00 L 430.00 420.00 L 440.00 419.00 L 450.00 419.00 L 460.00 419.00 L 470.00 418.00 L 480.00 416.00 L 490.00 416.00 L 500.00 416.00 L 510.00 416.00 L 520.00 416.00 L 530.00 416.00 L 540.00 416.00 L 550.00 416.00 L 560.00 416.00 L 570.00 416.00 L 580.00 416.00 L 590.00 416.00 L 600.00 416.00 L 610.00 416.00 L 620.00 416.00 L 630.00 416.00 L 640.00 416.00 L 650.00 416.00 L 660.00 416.00 L 670.00 399.00 L 680.00 382.00 L 690.00 347.00 L 700.00 347.00 L 710.00 333.00 L 720.00 295.00 L 730.00 274.00 L 740.00 244.00 L 750.00 196.00 L 760.00 196.00" stroke="#3ca951" class="trend-line" tabindex="0" role="img" aria-label="Markdown trend line"><title>Markdown: 13.4K lines (optimized from 69 to 69 points)</title></path><text x="65" y="420" class="axis-label" text-anchor="end" dominant-baseline="middle">0</text><text x="65" y="338" class="axis-label" text-anchor="end" dominant-baseline="middle">850</text><text x="65" y="255" class="axis-label" text-anchor="end" dominant-baseline="middle">1.7K</text><text x="65" y="173" class="axis-label" text-anchor="end" dominant-baseline="middle">2.5K</text><text x="65" y="90" class="axis-label" text-anchor="end" dominant-baseline="middle">3.4K</text><text x="80" y="440" class="axis-label" text-anchor="middle">Feb 15</text><text x="250" y="440" class="axis-label" text-anchor="middle">Apr 15</text><text x="420" y="440" class="axis-label" text-anchor="middle">May 15</text><text x="590" y="440" class="axis-label" text-anchor="middle">Nov 17</text><text x="760" y="440" class="axis-label" text-anchor="middle">Dec 25</text><text x="20" y="255" class="axis-title" text-anchor="middle" transform="rotate(-90 20 255)">Lines</text><rect x="758" y="88" width="180" height="94" class="legend-background"/><text x="770" y="116" class="legend-title">Languages</text><g class="legend-item" tabindex="0" role="button" aria-label="Go: 105.9K lines"><circle cx="775" cy="132" r="5" fill="#4269d0" class="legend-color-indicator"/><text x="788" y="132" class="legend-text" dominant-baseline="middle">Go</text><text x="940" y="132" class="legend-count" dominant-baseline="middle" text-anchor="end">105.9K</text><title>Go: 105.9K lines</title></g><g class="legend-item" tabindex="0" role="button" aria-label="HTML: 38.2K lines"><circle cx="775" cy="150" r="5" fill="#3ca951" class="legend-color-indicator"/><text x="788" y="150" class="legend-text" dominant-baseline="middle">HTML</text><text x="940" y="150" class="legend-count" dominant-baseline="middle" text-anchor="end">38.2K</text><title>HTML: 38.2K lines</title></g><g class="legend-item" tabindex="0" role="button" aria-label="Markdown: 13.4K lines"><circle cx="775" cy="168" r="5" fill="#3ca951" class="legend-color-indicator"/><text x="788" y="168" class="legend-text" dominant-baseline="middle">Markdown</text><text x="940" y="168" class="legend-count" dominant-baseline="middle" text-anchor="end">13.4K</text><title>Markdown: 13.4K lines</title></g><text x="60" y="505" class="meta-text">Feb 15 to Dec 25 • 69 commits • 6.8K total lines • 9 contributors: Michal Bohuslávek, Lars Artmann, Fernandez Ludovic +6 more</text></svg>

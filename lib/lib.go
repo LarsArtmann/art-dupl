@@ -5,10 +5,10 @@ import (
 	"os"
 	"sort"
 
-	"github.com/golangci/dupl/job"
-	"github.com/golangci/dupl/printer"
-	"github.com/golangci/dupl/syntax"
-	"github.com/golangci/dupl/util"
+	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/util"
 )
 
 func Run(files []string, threshold int) ([]printer.Issue, error) {
@@ -67,23 +67,4 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 	}
 
 	return issues, nil
-}
-
-func unique(group [][]*syntax.Node) [][]*syntax.Node {
-	fileMap := make(map[string]map[int]struct{})
-
-	var newGroup [][]*syntax.Node
-	for _, seq := range group {
-		node := seq[0]
-		file, ok := fileMap[node.Filename]
-		if !ok {
-			file = make(map[int]struct{})
-			fileMap[node.Filename] = file
-		}
-		if _, ok := file[node.Pos]; !ok {
-			file[node.Pos] = struct{}{}
-			newGroup = append(newGroup, seq)
-		}
-	}
-	return newGroup
 }

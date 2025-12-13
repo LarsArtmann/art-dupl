@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/golangci/dupl/syntax"
+import "github.com/LarsArtmann/art-dupl/syntax"
 
 type ReadFile func(filename string) ([]byte, error)
 

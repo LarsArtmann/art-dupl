@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/golangci/dupl/errors"
+	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 const infinity = math.MaxInt32

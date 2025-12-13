@@ -1,7 +1,7 @@
 // Package util provides shared utility functions for dupl
 package util
 
-import "github.com/golangci/dupl/syntax"
+import "github.com/LarsArtmann/art-dupl/syntax"
 
 // Unique removes duplicate entries from a group of syntax nodes based on file and position
 func Unique(group [][]*syntax.Node) [][]*syntax.Node {

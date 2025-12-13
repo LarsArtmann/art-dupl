@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golangci/dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 func TestBuildTree(t *testing.T) {

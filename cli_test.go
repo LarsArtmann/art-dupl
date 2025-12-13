@@ -34,8 +34,12 @@ func TestTestCLI(t *testing.T) {
 	}
 
 	// Test writer functionality
-	testCLI.Stderr().Write([]byte("stderr"))
-	testCLI.Stdout().Write([]byte("stdout"))
+	if _, err := testCLI.Stderr().Write([]byte("stderr")); err != nil {
+		t.Fatalf("Failed to write to stderr: %v", err)
+	}
+	if _, err := testCLI.Stdout().Write([]byte("stdout")); err != nil {
+		t.Fatalf("Failed to write to stdout: %v", err)
+	}
 
 	if testCLI.StderrBuf.String() != "stderr" {
 		t.Errorf("Expected stderr buffer content 'stderr', got '%s'", testCLI.StderrBuf.String())

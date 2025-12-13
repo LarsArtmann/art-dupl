@@ -9,19 +9,19 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/golangci/dupl/printer"
-	"github.com/golangci/dupl/syntax"
-	"github.com/golangci/dupl/util"
+	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/util"
 )
 
 const defaultThreshold = 15
 
 var (
-	paths     = []string{"."}
-	vendor    = flag.Bool("vendor", false, "")
-	verbose   = flag.Bool("verbose", false, "")
-	threshold = flag.Int("threshold", defaultThreshold, "")
-	files     = flag.Bool("files", false, "")
+	paths      = []string{"."}
+	vendor     = flag.Bool("vendor", false, "")
+	verbose    = flag.Bool("verbose", false, "")
+	threshold  = flag.Int("threshold", defaultThreshold, "")
+	files      = flag.Bool("files", false, "")
 	configFile = flag.String("config", "", "configuration file path")
 
 	html     = flag.Bool("html", false, "")
@@ -65,7 +65,10 @@ func crawlPaths(paths []string) chan string {
 		for _, path := range paths {
 			info, err := os.Lstat(path)
 			if err != nil {
-				fmt.Fprintf(cli.Stderr(), "error: cannot stat %s: %v\n", path, err)
+				if _, err := fmt.Fprintf(cli.Stderr(), "error: cannot stat %s: %v\n", path, err); err != nil {
+				cli.Exit(1)
+				return
+			}
 				cli.Exit(1)
 				return
 			}
@@ -84,7 +87,10 @@ func crawlPaths(paths []string) chan string {
 				return nil
 			})
 			if err != nil {
-				fmt.Fprintf(cli.Stderr(), "error: cannot walk %s: %v\n", path, err)
+				if _, err := fmt.Fprintf(cli.Stderr(), "error: cannot walk %s: %v\n", path, err); err != nil {
+				cli.Exit(1)
+				return
+			}
 				cli.Exit(1)
 				return
 			}
