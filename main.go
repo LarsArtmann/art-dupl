@@ -18,15 +18,18 @@ const defaultThreshold = 15
 
 var (
 	paths      = []string{"."}
-	vendor     = flag.Bool("vendor", false, "")
-	verbose    = flag.Bool("verbose", false, "")
-	threshold  = flag.Int("threshold", defaultThreshold, "")
-	files      = flag.Bool("files", false, "")
-	configFile = flag.String("config", "", "configuration file path")
+	vendor     = flag.Bool("vendor", false, "include vendor directory in analysis")
+	verbose    = flag.Bool("verbose", false, "enable verbose logging")
+	threshold  = flag.Int("threshold", defaultThreshold, "minimum token sequence size as clone")
+	files      = flag.Bool("files", false, "read file names from stdin (one per line)")
+	configFile = flag.String("config", "", "path to configuration file (JSON format)")
 
-	html     = flag.Bool("html", false, "")
-	plumbing = flag.Bool("plumbing", false, "")
-	json     = flag.Bool("json", false, "")
+	html     = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
+	plumbing = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
+	json     = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
+	
+	// TODO: Add outputFile flag when help is updated
+	// outputFile = flag.String("output", "", "write output to file instead of stdout")
 )
 
 const (
@@ -37,6 +40,7 @@ const (
 func init() {
 	flag.BoolVar(verbose, "v", false, "alias for -verbose")
 	flag.IntVar(threshold, "t", defaultThreshold, "alias for -threshold")
+	// TODO: Add alias for -config when needed
 }
 
 func main() {
@@ -135,34 +139,72 @@ func usage() {
 	fmt.Fprintln(os.Stderr, `Usage: dupl [flags] [paths]
 
 Paths:
-  If the given path is a file, dupl will use it regardless of
-  the file extension. If it is a directory, it will recursively
+  If given path is a file, dupl will use it regardless of
+  file extension. If it is a directory, it will recursively
   search for *.go files in that directory.
 
   If no path is given, dupl will recursively search for *.go
   files in the current directory.
 
 Flags:
+  -config string
+    	path to configuration file (JSON format)
   -files
-    	read file names from stdin one at each line
+    	read file names from stdin, one per line
   -html
-    	output the results as HTML, including duplicate code fragments
+    	output results as HTML with syntax-highlighted code fragments
+  -json
+    	output structured JSON format with metadata and statistics
   -plumbing
-    	plumbing (easy-to-parse) output for consumption by scripts or tools
-  -t, -threshold size
-    	minimum token sequence size as a clone (default 15)
+    	output machine-readable plumbing format for script integration
+  -t, -threshold int
+    	minimum token sequence size to consider as clone (default 15)
   -vendor
-    	check files in vendor directory
+    	include vendor directory in analysis
   -v, -verbose
-    	explain what is being done
+    	enable verbose logging to show processing progress
+
+Output Formats:
+  text     - Human-readable clone listing (default)
+  html      - HTML report with syntax-highlighted code
+  json      - Structured JSON data for automation/CI
+  plumbing  - Machine-readable format for scripts
+
+Configuration File:
+  Create a JSON file with settings:
+  {
+    "threshold": 30,
+    "outputFormat": "json",
+    "paths": ["./src", "./lib"],
+    "includeVendor": false,
+    "verbose": true
+  }
+  Use with: dupl -config config.json
 
 Examples:
+  # Basic analysis with default threshold
+  dupl
+
+  # Higher threshold for larger clones only
   dupl -t 100
-    	Search clones in the current directory of size at least
-    	100 tokens.
-  dupl $(find app/ -name '*_test.go')
-    	Search for clones in tests in the app directory.
-  find app/ -name '*_test.go' |dupl -files
-    	The same as above.`)
+
+  # JSON output for CI/CD integration
+  dupl -json -t 20
+
+  # HTML report file
+  dupl -html > report.html
+
+  # Use configuration file
+  dupl -config dupl.json ./src
+
+  # Analyze test files only
+  find . -name '*_test.go' | dupl -files
+
+  # CI/CD: Fail if too many duplicates
+  TOTAL_CLONES=$(dupl -json . | jq '.summary.total_clones')
+  if [ "$TOTAL_CLONES" -gt 100 ]; then
+    echo "Too many code duplicates: $TOTAL_CLONES"
+    exit 1
+  fi`)
 	os.Exit(2)
 }
