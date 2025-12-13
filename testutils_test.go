@@ -8,6 +8,7 @@ import (
 
 // Create test files for job package testing
 // NOTE: Currently unused but kept for future test development
+//
 //nolint:unused
 func setupTestFiles(t *testing.T) string {
 	tmpDir := t.TempDir()
@@ -36,6 +37,7 @@ func helper() {
 
 // Test helpers for job package tests
 // NOTE: Currently unused but kept for future test development
+//
 //nolint:unused
 func setupMultipleTestFiles(t *testing.T) []string {
 	tmpDir := t.TempDir()

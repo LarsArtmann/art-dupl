@@ -66,9 +66,9 @@ func crawlPaths(paths []string) chan string {
 			info, err := os.Lstat(path)
 			if err != nil {
 				if _, err := fmt.Fprintf(cli.Stderr(), "error: cannot stat %s: %v\n", path, err); err != nil {
-				cli.Exit(1)
-				return
-			}
+					cli.Exit(1)
+					return
+				}
 				cli.Exit(1)
 				return
 			}
@@ -88,9 +88,9 @@ func crawlPaths(paths []string) chan string {
 			})
 			if err != nil {
 				if _, err := fmt.Fprintf(cli.Stderr(), "error: cannot walk %s: %v\n", path, err); err != nil {
-				cli.Exit(1)
-				return
-			}
+					cli.Exit(1)
+					return
+				}
 				cli.Exit(1)
 				return
 			}
