@@ -78,11 +78,11 @@ func Run() int {
 	}
 
 	if *html {
-		cliConfig.OutputFormat = "html"
+		cliConfig.OutputFormat = config.OutputFormatHTML
 	} else if *plumbing {
-		cliConfig.OutputFormat = "plumbing"
+		cliConfig.OutputFormat = config.OutputFormatPlumbing
 	} else if *json {
-		cliConfig.OutputFormat = "json"
+		cliConfig.OutputFormat = config.OutputFormatJSON
 	}
 
 	if flag.NArg() > 0 {
@@ -163,11 +163,11 @@ func Run() int {
 	// Select printer based on output format
 	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 	switch mergedConfig.OutputFormat {
-	case "html":
+	case config.OutputFormatHTML:
 		newPrinter = printer.NewHTML
-	case "plumbing":
+	case config.OutputFormatPlumbing:
 		newPrinter = printer.NewPlumbing
-	case "json":
+	case config.OutputFormatJSON:
 		newPrinter = printer.NewJSON
 	default:
 		newPrinter = printer.NewText
