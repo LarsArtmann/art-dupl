@@ -239,7 +239,7 @@ func Run() int {
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan); err != nil {
+	if err := printDupls(p, duplChan, *sortBy); err != nil {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
 			// If we can't even write to stderr, just exit
 			cli.Exit(1)
@@ -415,7 +415,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string) 
 
 	// Handle JSON output special case
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(*threshold, *sortBy)
+		return jsonPrinter.OutputJSON(*threshold, sortBy)
 	}
 
 	return p.PrintFooter()

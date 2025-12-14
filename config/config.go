@@ -37,6 +37,9 @@ type Config struct {
 
 	// OutputFile specifies the output file (if not stdout)
 	OutputFile string `json:"outputFile,omitempty"`
+
+	// SortBy specifies sorting criteria for clone groups
+	SortBy SortCriteria `json:"sortBy,omitempty"`
 }
 
 // DefaultConfig returns a default configuration
@@ -45,12 +48,13 @@ func DefaultConfig() *Config {
 		Threshold:         15,
 		IncludeVendor:     false,
 		FilesFromStdin:    false,
-		OutputFormat:      "text",
+		OutputFormat:      OutputFormatText,
 		Verbose:           false,
 		Paths:             []string{"."},
 		IgnoreFiles:       []string{},
 		MaxChildrenSerial: 10000,
 		OutputFile:        "",
+		SortBy:           SortBySize,
 	}
 }
 
