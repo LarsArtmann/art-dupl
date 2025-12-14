@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,11 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
-	"github.com/charmbracelet/fang"
-	"github.com/spf13/cobra"
 )
-
-const defaultThreshold = 15
 
 const (
 	vendorDirPrefix = "vendor" + string(filepath.Separator)

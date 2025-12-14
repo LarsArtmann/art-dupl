@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -59,9 +61,18 @@ func NewJSON(w io.Writer, fread ReadFile) Printer {
 	}
 }
 
+// countLinesInFragment counts actual lines in a fragment by counting newline characters
+func countLinesInFragment(fragment string) int {
+	if fragment == "" {
+		return 1 // At least one line even for empty content
+	}
+	return strings.Count(fragment, "\n") + 1
+}
+
 func (p *JSONPrinter) PrintHeader() error {
 	p.iota = 0
-	p.filesCount = 0
+	// Don't reset filesCount - it's set once and should persist
+	// p.filesCount = 0
 	p.totalClones = 0
 	p.cloneGroups = []CloneGroup{}
 	return nil
@@ -75,6 +86,8 @@ func (p *JSONPrinter) SetHash(hash string) {
 // SetFilesCount sets the total number of files analyzed
 func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
+	// Debug: uncomment to see file count
+	fmt.Fprintf(os.Stderr, "DEBUG: JSONPrinter.SetFilesCount(%d), p.filesCount=%d\n", count, p.filesCount)
 }
 
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
@@ -112,19 +125,20 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 		return clones[i].Filename < clones[j].Filename
 	})
 
-	// Calculate line ends
+	// Calculate line ends - count actual lines, not characters
 	for i := range clones {
-		lines := len(clones[i].Fragment)
+		lines := countLinesInFragment(clones[i].Fragment)
 		clones[i].LineEnd = clones[i].LineStart + lines - 1
 	}
 
 	// Calculate hash (use actual hash instead of counter)
 	hash := p.currentHash
 
-	// Calculate size (token count approximation)
+	// Calculate size (use actual token count)
 	size := 0
-	for _, clone := range clones {
-		size += len(clone.Fragment)
+	for _, dup := range dups {
+		// Each dup is a sequence of []*Node, where each node is a token
+		size += len(dup)
 	}
 
 	cloneGroup := CloneGroup{
@@ -147,6 +161,9 @@ func (*JSONPrinter) PrintFooter() error {
 
 // OutputJSON generates the complete JSON output
 func (p *JSONPrinter) OutputJSON(threshold int) error {
+	// Debug: check filesCount before generating output
+	fmt.Fprintf(os.Stderr, "DEBUG: OutputJSON called, p.filesCount=%d\n", p.filesCount)
+	
 	output := JSONOutput{
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),

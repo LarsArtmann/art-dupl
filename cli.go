@@ -41,6 +41,23 @@ func (t *TestCLI) Stdout() io.Writer { return &t.StdoutBuf }
 
 var cli CLIInterface = &RealCLI{}
 
+// Command line flags
+var (
+	configFile = flag.String("config", "", "path to configuration file (JSON format)")
+	vendor     = flag.Bool("vendor", false, "include vendor directory in analysis")
+	verbose    = flag.Bool("v", false, "enable verbose logging to show processing progress")
+	verboseLong = flag.Bool("verbose", false, "enable verbose logging to show processing progress")
+	threshold  = flag.Int("t", 15, "minimum token sequence size to consider as clone")
+	thresholdLong = flag.Int("threshold", 15, "minimum token sequence size to consider as clone")
+	files      = flag.Bool("files", false, "read file names from stdin, one per line")
+	html       = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
+	json       = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
+	plumbing   = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
+	paths      []string
+)
+
+const defaultThreshold = 15
+
 // Run is the main application logic
 func Run() int {
 	flag.Usage = usage
@@ -64,14 +81,24 @@ func Run() int {
 
 	// Create CLI config from command line arguments
 	cliConfig := &config.Config{}
+	
+	// Handle verbose flag (either -v or -verbose)
+	verboseFlag := *verbose || *verboseLong
+	if verboseFlag {
+		cliConfig.Verbose = verboseFlag
+	}
+	
+	// Handle threshold flag (either -t or -threshold)
+	thresholdFlag := *threshold
+	if thresholdFlag != defaultThreshold || *thresholdLong != defaultThreshold {
+		if *thresholdLong != defaultThreshold {
+			thresholdFlag = *thresholdLong
+		}
+		cliConfig.Threshold = thresholdFlag
+	}
+	
 	if *vendor {
 		cliConfig.IncludeVendor = *vendor
-	}
-	if *verbose {
-		cliConfig.Verbose = *verbose
-	}
-	if *threshold != defaultThreshold {
-		cliConfig.Threshold = *threshold
 	}
 	if *files {
 		cliConfig.FilesFromStdin = *files
@@ -131,8 +158,8 @@ func Run() int {
 	// Update global variables with merged config (for compatibility with existing code)
 	paths = mergedConfig.Paths
 	vendor = &mergedConfig.IncludeVendor
-	verbose = &mergedConfig.Verbose
-	threshold = &mergedConfig.Threshold
+	verbose = &verboseFlag
+	threshold = &thresholdFlag
 	files = &mergedConfig.FilesFromStdin
 
 	if *verbose {
@@ -144,6 +171,9 @@ func Run() int {
 
 	// Get file count
 	filesCount := <-filesCountChan
+	
+	// Debug: uncomment to see file count
+	fmt.Fprintf(cli.Stderr(), "DEBUG: filesCount received: %d\n", filesCount)
 
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
@@ -200,6 +230,8 @@ func Run() int {
 	
 	// Set filesCount for JSONPrinter
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		// Debug: uncomment to see file count setting
+		fmt.Fprintf(cli.Stderr(), "DEBUG: Setting JSONPrinter filesCount to %d\n", filesCount)
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 	

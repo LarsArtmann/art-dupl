@@ -1,6 +1,7 @@
 package job
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/LarsArtmann/art-dupl/errors"
@@ -24,6 +25,7 @@ func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
 			achan <- ast
 		}
 		countChan <- fileCount
+		fmt.Printf("DEBUG: Sent fileCount %d to countChan\n", fileCount) // Debug
 		close(achan)
 	}()
 
