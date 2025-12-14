@@ -115,14 +115,7 @@ func ValidateConfig(config *Config) error {
 		return errors.NewValidationError("maxChildrenSerial seems too large (max 100000)", nil)
 	}
 
-	validFormats := map[string]bool{
-		"text":     true,
-		"html":     true,
-		"json":     true,
-		"plumbing": true,
-	}
-
-	if !validFormats[config.OutputFormat] {
+	if !config.OutputFormat.IsValid() {
 		return errors.NewValidationError(fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", config.OutputFormat), nil)
 	}
 
