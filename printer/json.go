@@ -87,6 +87,29 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
+// sortCloneGroups sorts clone groups based on specified criteria
+func sortCloneGroups(groups []CloneGroup, sortBy string) {
+	switch sortBy {
+	case "size":
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].Size > groups[j].Size
+		})
+	case "occurrence":
+		sort.Slice(groups, func(i, j int) bool {
+			return len(groups[i].Files) > len(groups[j].Files)
+		})
+	case "hash":
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].Hash < groups[j].Hash
+		})
+	default:
+		// Default to size sorting for highest impact
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].Size > groups[j].Size
+		})
+	}
+}
+
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 	p.iota++
 
@@ -157,7 +180,10 @@ func (*JSONPrinter) PrintFooter() error {
 }
 
 // OutputJSON generates the complete JSON output
-func (p *JSONPrinter) OutputJSON(threshold int) error {
+func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
+	// Sort clone groups before generating JSON
+	sortCloneGroups(p.cloneGroups, sortBy)
+	
 	output := JSONOutput{
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),

@@ -53,6 +53,7 @@ var (
 	html          = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
 	json          = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
 	plumbing      = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
+	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash")
 	paths         []string
 )
 

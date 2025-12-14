@@ -108,7 +108,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match) error {
 
 	// Handle JSON output special case
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(*threshold)
+		return jsonPrinter.OutputJSON(*threshold, *sortBy)
 	}
 
 	return p.PrintFooter()
