@@ -65,6 +65,6 @@ func (p *plumbing) OutputPlumbing(threshold int, sortBy string) error {
 	// The actual sorting is handled in PrintClones method
 	
 	// For now, just indicate the sorting criteria used
-	fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy)
+	_, _ = fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy)
 	return nil
 }

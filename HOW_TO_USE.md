@@ -227,30 +227,48 @@ internal/handlers/user.go:89-117
 
 ```json
 {
-  "summary": {
-    "total_clones": 15,
-    "files_analyzed": 42,
-    "threshold": 30
-  },
-  "clones": [
+  "version": "1.0",
+  "timestamp": "2025-12-14T09:19:06.351297Z",
+  "threshold": 15,
+  "files_analyzed": 2,
+  "clone_groups": [
     {
-      "hash": "abc123...",
-      "instances": [
+      "hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
+      "size": 4,
+      "files": [
         {
-          "file": "internal/handlers/auth.go",
-          "start": 45,
-          "end": 73,
-          "lines": 29
+          "filename": "./cli.go",
+          "line_start": 80,
+          "line_end": 88,
+          "fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
         }
       ]
     }
-  ]
+  ],
+  "summary": {
+    "total_clone_groups": 8,
+    "total_clones": 19,
+    "complexity_score": 2.11
+  }
 }
 ```
 
-- `hash` - Unique identifier for this clone set
-- `instances` - All occurrences of this clone
-- `lines` - Number of lines in each instance
+- `version` - Output format version
+- `timestamp` - When analysis was performed
+- `threshold` - Threshold used for analysis
+- `files_analyzed` - Number of files processed
+- `clone_groups` - Array of clone groups
+- `hash` - Unique identifier for this clone group
+- `size` - Number of files in this clone group
+- `files` - Array of files with this clone pattern
+- `filename` - Path to file containing clone
+- `line_start` - Starting line number of clone
+- `line_end` - Ending line number of clone
+- `fragment` - Code fragment (truncated for display)
+- `summary` - Analysis summary statistics
+- `total_clone_groups` - Total number of clone groups found
+- `total_clones` - Total number of individual clones
+- `complexity_score` - Duplication complexity metric
 
 ### Understanding HTML Report
 
