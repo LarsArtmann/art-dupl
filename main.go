@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"flag"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,36 +12,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/charmbracelet/fang"
+	"github.com/spf13/cobra"
 )
 
 const defaultThreshold = 15
-
-var (
-	paths      = []string{"."}
-	vendor     = flag.Bool("vendor", false, "include vendor directory in analysis")
-	verbose    = flag.Bool("verbose", false, "enable verbose logging")
-	threshold  = flag.Int("threshold", defaultThreshold, "minimum token sequence size as clone")
-	files      = flag.Bool("files", false, "read file names from stdin (one per line)")
-	configFile = flag.String("config", "", "path to configuration file (JSON format)")
-
-	html     = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
-	plumbing = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
-	json     = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
-
-	// TODO: Add outputFile flag when help is updated
-	// outputFile = flag.String("output", "", "write output to file instead of stdout")
-)
 
 const (
 	vendorDirPrefix = "vendor" + string(filepath.Separator)
 	vendorDirInPath = string(filepath.Separator) + vendorDirPrefix
 )
-
-func init() {
-	flag.BoolVar(verbose, "v", false, "alias for -verbose")
-	flag.IntVar(threshold, "t", defaultThreshold, "alias for -threshold")
-	// TODO: Add alias for -config when needed
-}
 
 func main() {
 	os.Exit(Run())

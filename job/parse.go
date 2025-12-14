@@ -8,11 +8,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-func Parse(fchan chan string) chan []*syntax.Node {
+func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
 	// parse AST
 	achan := make(chan *syntax.Node)
+	countChan := make(chan int, 1)
 	go func() {
+		fileCount := 0
 		for file := range fchan {
+			fileCount++
 			ast, err := golang.Parse(file)
 			if err != nil {
 				log.Printf("%v", errors.NewParseError(file, 0, "failed to parse file", err))
@@ -20,6 +23,7 @@ func Parse(fchan chan string) chan []*syntax.Node {
 			}
 			achan <- ast
 		}
+		countChan <- fileCount
 		close(achan)
 	}()
 
@@ -32,5 +36,5 @@ func Parse(fchan chan string) chan []*syntax.Node {
 		}
 		close(schan)
 	}()
-	return schan
+	return schan, countChan
 }

@@ -138,9 +138,12 @@ func Run() int {
 	if *verbose {
 		log.Println("Building suffix tree")
 	}
-	schan := job.Parse(filesFeed())
+	schan, filesCountChan := job.Parse(filesFeed())
 	t, data, done := job.BuildTree(schan)
 	<-done
+
+	// Get file count
+	filesCount := <-filesCountChan
 
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
@@ -194,6 +197,12 @@ func Run() int {
 	}
 
 	p := newPrinter(outputWriter, os.ReadFile)
+	
+	// Set filesCount for JSONPrinter
+	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		jsonPrinter.SetFilesCount(filesCount)
+	}
+	
 	if err := printDupls(p, duplChan); err != nil {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
 			// If we can't even write to stderr, just exit

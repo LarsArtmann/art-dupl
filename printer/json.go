@@ -43,8 +43,8 @@ type Summary struct {
 }
 
 type JSONPrinter struct {
-	iota       int
-	w          io.Writer
+	iota int
+	w    io.Writer
 	ReadFile
 	filesCount  int
 	totalClones int
@@ -70,6 +70,11 @@ func (p *JSONPrinter) PrintHeader() error {
 // SetHash sets the current hash for the clone group being processed
 func (p *JSONPrinter) SetHash(hash string) {
 	p.currentHash = hash
+}
+
+// SetFilesCount sets the total number of files analyzed
+func (p *JSONPrinter) SetFilesCount(count int) {
+	p.filesCount = count
 }
 
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
