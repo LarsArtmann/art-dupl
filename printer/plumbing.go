@@ -36,3 +36,11 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node) error {
 }
 
 func (p *plumbing) PrintFooter() error { return nil }
+
+// OutputPlumbing generates plumbing output with sorting
+func (p *plumbing) OutputPlumbing(threshold int, sortBy string) error {
+	// For plumbing, sorting will be implemented in next iteration
+	// Currently prints in original order
+	fmt.Fprintln(p.w, "# Plumbing sorting to be implemented")
+	return nil
+}

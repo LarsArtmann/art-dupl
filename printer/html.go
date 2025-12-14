@@ -7,18 +7,21 @@ import (
 	"io"
 	"regexp"
 	"sort"
+	"sync"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 type htmlprinter struct {
-	iota int
-	w    io.Writer
+	iota     int
+	w        io.Writer
+	dupMutex sync.Mutex
+	dupls    [][][]*syntax.Node
 	ReadFile
 }
 
 func NewHTML(w io.Writer, fread ReadFile) Printer {
-	return &htmlprinter{w: w, ReadFile: fread}
+	return &htmlprinter{w: w, ReadFile: fread, dupls: make([][][]*syntax.Node, 0)}
 }
 
 func (p *htmlprinter) PrintHeader() error {
@@ -38,6 +41,12 @@ func (p *htmlprinter) PrintHeader() error {
 
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node) error {
 	p.iota++
+	
+	// Store clones for later output with sorting
+	p.dupMutex.Lock()
+	p.dupls = append(p.dupls, dups)
+	p.dupMutex.Unlock()
+	
 	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(dups)); err != nil {
 		return err
 	}
@@ -123,4 +132,32 @@ Loop:
 		}
 	}
 	return block
+}
+
+// OutputHTML generates HTML output with sorting
+func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
+	// Store clones for sorting
+	var allDups [][]*syntax.Node
+	p.dupMutex.Lock()
+	for i := 0; i < len(p.dupls); i++ {
+		allDups = append(allDups, p.dupls[i])
+	}
+	p.dupMutex.Unlock()
+	
+	// Sort clones by size (largest first)
+	sort.Slice(allDups, func(i, j int) bool {
+		return len(allDups[i]) > len(allDups[j])
+	})
+	
+	// Clear previous output
+	p.iota = 0
+	
+	// Print sorted clones
+	for _, dup := range allDups {
+		if err := p.PrintClones([][]*syntax.Node{dup}); err != nil {
+			return err
+		}
+	}
+	
+	return nil
 }
