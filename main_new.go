@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	vendorDirPrefix = "vendor" + string(filepath.Separator)
-	vendorDirInPath = string(filepath.Separator) + vendorDirPrefix
+	vendorDirPrefix  = "vendor" + string(filepath.Separator)
+	vendorDirInPath  = string(filepath.Separator) + vendorDirPrefix
 	defaultThreshold = 15
 )
 
@@ -41,12 +41,12 @@ func (r *RealCLI) Stdout() io.Writer { return os.Stdout }
 
 // Global variables for compatibility with existing code
 var (
-	paths    []string
-	vendor   *bool
-	verbose  *bool
+	paths     []string
+	vendor    *bool
+	verbose   *bool
 	threshold *int
-	files    *bool
-	sortBy   *string
+	files     *bool
+	sortBy    *string
 )
 
 func main() {
@@ -66,7 +66,7 @@ func createRootCommand() *cobra.Command {
 		vendorFlag    bool
 		verboseFlag   bool
 		verboseLong   bool
-		thresholdFlag  int
+		thresholdFlag int
 		thresholdLong int
 		filesFlag     bool
 		html          bool

@@ -41,12 +41,12 @@ func (p *htmlprinter) PrintHeader() error {
 
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node) error {
 	p.iota++
-	
+
 	// Store clones for later output with sorting
 	p.dupMutex.Lock()
 	p.dupls = append(p.dupls, dups)
 	p.dupMutex.Unlock()
-	
+
 	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(dups)); err != nil {
 		return err
 	}
@@ -143,21 +143,21 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
 		allDups = append(allDups, p.dupls[i])
 	}
 	p.dupMutex.Unlock()
-	
+
 	// Sort clones by size (largest first)
 	sort.Slice(allDups, func(i, j int) bool {
 		return len(allDups[i]) > len(allDups[j])
 	})
-	
+
 	// Clear previous output
 	p.iota = 0
-	
+
 	// Print sorted clones
 	for _, dup := range allDups {
 		if err := p.PrintClones([][]*syntax.Node{dup}); err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }

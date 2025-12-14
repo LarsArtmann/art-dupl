@@ -10,18 +10,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
 	"github.com/charmbracelet/fang"
-	"github.com/spf13/cobra"
 )
 
 const (
-	vendorDirPrefix = "vendor" + string(filepath.Separator)
-	vendorDirInPath = string(filepath.Separator) + vendorDirPrefix
+	vendorDirPrefix  = "vendor" + string(filepath.Separator)
+	vendorDirInPath  = string(filepath.Separator) + vendorDirPrefix
 	defaultThreshold = 15
 )
 
@@ -41,12 +38,12 @@ func (r *RealCLI) Stdout() io.Writer { return os.Stdout }
 
 // Global variables for compatibility with existing code
 var (
-	paths    []string
-	vendor   *bool
-	verbose  *bool
+	paths     []string
+	vendor    *bool
+	verbose   *bool
 	threshold *int
-	files    *bool
-	sortBy   *string
+	files     *bool
+	sortBy    *string
 )
 
 func main() {

@@ -10,9 +10,9 @@ import (
 )
 
 type text struct {
-	cnt        int
-	w          io.Writer
-	totalSize  int
+	cnt         int
+	w           io.Writer
+	totalSize   int
 	cloneGroups [][]clone
 	ReadFile
 }
@@ -32,7 +32,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Store clones with size for sorting
 	groupCloneSize := 0
 	for _, cl := range clones {
@@ -41,7 +41,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node) error {
 	}
 	p.cloneGroups = append(p.cloneGroups, clones)
 	p.totalSize += groupCloneSize
-	
+
 	sort.Sort(byNameAndLine(clones))
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
@@ -61,7 +61,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Apply sorting based on criteria
 	switch sortBy {
 	case "size", "":
@@ -96,7 +96,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 			return len(dups[i]) > len(dups[j])
 		})
 	}
-	
+
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 			return err
@@ -154,22 +154,22 @@ func blockLines(file []byte, from, to int) (int, int) {
 func (p *text) OutputText(threshold int, sortBy string) error {
 	// Collect all clones for sorting
 	var allClones []clone
-	
+
 	// Generate all clone data and sort
 	for i := 0; i < len(p.cloneGroups); i++ {
 		allClones = append(allClones, p.cloneGroups[i]...)
 	}
-	
+
 	// Sort clones by size (largest first)
 	sort.Slice(allClones, func(i, j int) bool {
 		return allClones[i].size > allClones[j].size
 	})
-	
+
 	// Print header
 	if err := p.PrintHeader(); err != nil {
 		return err
 	}
-	
+
 	// Print sorted clones
 	for _, cl := range allClones {
 		if len(cl.fragment) > 0 {
@@ -182,6 +182,6 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 			}
 		}
 	}
-	
+
 	return p.PrintFooter()
 }

@@ -183,7 +183,7 @@ func (*JSONPrinter) PrintFooter() error {
 func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 	// Sort clone groups before generating JSON
 	sortCloneGroups(p.cloneGroups, sortBy)
-	
+
 	output := JSONOutput{
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),
