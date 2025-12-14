@@ -2,24 +2,61 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/charmbracelet/fang"
+	"github.com/spf13/cobra"
 )
 
 const (
 	vendorDirPrefix = "vendor" + string(filepath.Separator)
 	vendorDirInPath = string(filepath.Separator) + vendorDirPrefix
+	defaultThreshold = 15
+)
+
+// CLIInterface defines interface for CLI operations
+type CLIInterface interface {
+	Exit(code int)
+	Stderr() io.Writer
+	Stdout() io.Writer
+}
+
+// RealCLI is the production implementation of CLIInterface
+type RealCLI struct{}
+
+func (r *RealCLI) Exit(code int)     { os.Exit(code) }
+func (r *RealCLI) Stderr() io.Writer { return os.Stderr }
+func (r *RealCLI) Stdout() io.Writer { return os.Stdout }
+
+// Global variables for compatibility with existing code
+var (
+	paths    []string
+	vendor   *bool
+	verbose  *bool
+	threshold *int
+	files    *bool
+	sortBy   *string
 )
 
 func main() {
-	os.Exit(Run())
+	// Create root command
+	rootCmd := createRootCommand()
+
+	// Execute with fang for enhanced CLI experience
+	if err := fang.Execute(context.Background(), rootCmd); err != nil {
+		os.Exit(1)
+	}
 }
 
 func filesFeed() chan string {
