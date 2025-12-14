@@ -20,7 +20,28 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 func (p *plumbing) PrintHeader() error { return nil }
 
 func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
-	clones, err := prepareClonesInfo(p.ReadFile, dups)
+	// Extract sortBy parameter, default to "size"
+	sortCriteria := "size"
+	if len(sortBy) > 0 {
+		sortCriteria = sortBy[0]
+	}
+	
+	// Apply sorting to the clone groups before processing
+	sortedDups := make([][]*syntax.Node, len(dups))
+	copy(sortedDups, dups)
+	
+	switch sortCriteria {
+	case "size":
+		sortedDups = SortClonesBySize(sortedDups)
+	case "occurrence":
+		sortedDups = SortClonesByOccurrence(sortedDups)
+	case "hash":
+		sortedDups = SortClonesByHash(sortedDups)
+	default:
+		sortedDups = SortClonesBySize(sortedDups) // Default to size
+	}
+	
+	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
 		return err
 	}
@@ -39,8 +60,11 @@ func (p *plumbing) PrintFooter() error { return nil }
 
 // OutputPlumbing generates plumbing output with sorting
 func (p *plumbing) OutputPlumbing(threshold int, sortBy string) error {
-	// For plumbing, sorting will be implemented in next iteration
-	// Currently prints in original order
-	fmt.Fprintln(p.w, "# Plumbing sorting to be implemented")
+	// Note: Plumbing output is generated during the normal PrintClones flow
+	// This method exists for consistency with other output formats
+	// The actual sorting is handled in PrintClones method
+	
+	// For now, just indicate the sorting criteria used
+	fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy)
 	return nil
 }

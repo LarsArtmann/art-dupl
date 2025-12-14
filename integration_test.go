@@ -119,7 +119,7 @@ func TestOutputFormatSelection(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.outputFormat, func(t *testing.T) {
 			cfg := &config.Config{
-				OutputFormat:      tt.outputFormat,
+				OutputFormat:      config.OutputFormat(tt.outputFormat),
 				Threshold:         15,
 				MaxChildrenSerial: 10000,
 			}

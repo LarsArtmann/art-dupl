@@ -42,17 +42,38 @@ func (p *htmlprinter) PrintHeader() error {
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.iota++
 
+	// Extract sortBy parameter, default to "size"
+	sortCriteria := "size"
+	if len(sortBy) > 0 {
+		sortCriteria = sortBy[0]
+	}
+	
+	// Apply sorting to the clone groups before processing
+	sortedDups := make([][]*syntax.Node, len(dups))
+	copy(sortedDups, dups)
+	
+	switch sortCriteria {
+	case "size":
+		sortedDups = SortClonesBySize(sortedDups)
+	case "occurrence":
+		sortedDups = SortClonesByOccurrence(sortedDups)
+	case "hash":
+		sortedDups = SortClonesByHash(sortedDups)
+	default:
+		sortedDups = SortClonesBySize(sortedDups) // Default to size
+	}
+
 	// Store clones for later output with sorting
 	p.dupMutex.Lock()
-	p.dupls = append(p.dupls, dups)
+	p.dupls = append(p.dupls, sortedDups)
 	p.dupMutex.Unlock()
 
-	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(dups)); err != nil {
+	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(sortedDups)); err != nil {
 		return err
 	}
 
-	clones := make([]clone, len(dups))
-	for i, dup := range dups {
+	clones := make([]clone, len(sortedDups))
+	for i, dup := range sortedDups {
 		cnt := len(dup)
 		if cnt == 0 {
 			return fmt.Errorf("internal error: zero length duplicate found")
@@ -147,17 +168,24 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
 	}
 	p.dupMutex.Unlock()
 
-	// Sort clones by size (largest first)
-	sort.Slice(allDups, func(i, j int) bool {
-		return len(allDups[i]) > len(allDups[j])
-	})
+	// Apply sorting based on the specified criteria
+	switch sortBy {
+	case "size":
+		allDups = SortClonesBySize(allDups)
+	case "occurrence":
+		allDups = SortClonesByOccurrence(allDups)
+	case "hash":
+		allDups = SortClonesByHash(allDups)
+	default:
+		allDups = SortClonesBySize(allDups) // Default to size
+	}
 
 	// Clear previous output
 	p.iota = 0
 
 	// Print sorted clones
 	for _, dup := range allDups {
-		if err := p.PrintClones([][]*syntax.Node{dup}); err != nil {
+		if err := p.PrintClones([][]*syntax.Node{dup}, sortBy); err != nil {
 			return err
 		}
 	}

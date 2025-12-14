@@ -19,7 +19,7 @@ func Run(files []string, threshold int) ([]printer.Issue, error) {
 		}
 		close(fchan)
 	}()
-	schan := job.Parse(fchan)
+	schan, _ := job.Parse(fchan)
 	t, data, done := job.BuildTree(schan)
 	<-done
 
