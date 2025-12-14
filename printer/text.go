@@ -25,17 +25,17 @@ func (p *text) PrintHeader() error { return nil }
 
 func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.cnt++
-	
+
 	// Extract sortBy parameter, default to "size"
 	sortCriteria := "size"
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
-	
+
 	// Apply sorting to the clone groups before processing
 	sortedDups := make([][]*syntax.Node, len(dups))
 	copy(sortedDups, dups)
-	
+
 	switch sortCriteria {
 	case "size":
 		sortedDups = SortClonesBySize(sortedDups)
@@ -46,7 +46,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	default:
 		sortedDups = SortClonesBySize(sortedDups) // Default to size
 	}
-	
+
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
-	
+
 	switch sortBy {
 	case "size":
 		// Sort by total token size of each clone group

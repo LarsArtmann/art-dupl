@@ -47,11 +47,11 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
-	
+
 	// Apply sorting to the clone groups before processing
 	sortedDups := make([][]*syntax.Node, len(dups))
 	copy(sortedDups, dups)
-	
+
 	switch sortCriteria {
 	case "size":
 		sortedDups = SortClonesBySize(sortedDups)

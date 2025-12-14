@@ -25,11 +25,11 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
-	
+
 	// Apply sorting to the clone groups before processing
 	sortedDups := make([][]*syntax.Node, len(dups))
 	copy(sortedDups, dups)
-	
+
 	switch sortCriteria {
 	case "size":
 		sortedDups = SortClonesBySize(sortedDups)
@@ -40,7 +40,7 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	default:
 		sortedDups = SortClonesBySize(sortedDups) // Default to size
 	}
-	
+
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (p *plumbing) OutputPlumbing(threshold int, sortBy string) error {
 	// Note: Plumbing output is generated during the normal PrintClones flow
 	// This method exists for consistency with other output formats
 	// The actual sorting is handled in PrintClones method
-	
+
 	// For now, just indicate the sorting criteria used
 	_, _ = fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy)
 	return nil

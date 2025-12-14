@@ -54,7 +54,7 @@ func DefaultConfig() *Config {
 		IgnoreFiles:       []string{},
 		MaxChildrenSerial: 10000,
 		OutputFile:        "",
-		SortBy:           SortBySize,
+		SortBy:            SortBySize,
 	}
 }
 
