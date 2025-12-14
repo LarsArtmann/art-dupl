@@ -10,13 +10,15 @@ import (
 )
 
 type text struct {
-	cnt int
-	w   io.Writer
+	cnt        int
+	w          io.Writer
+	totalSize  int
+	cloneGroups [][]clone
 	ReadFile
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
-	return &text{w: w, ReadFile: fread}
+	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
 }
 
 func (p *text) PrintHeader() error { return nil }
@@ -30,6 +32,16 @@ func (p *text) PrintClones(dups [][]*syntax.Node) error {
 	if err != nil {
 		return err
 	}
+	
+	// Store clones with size for sorting
+	groupCloneSize := 0
+	for _, cl := range clones {
+		cl.size = len(cl.fragment) // Size is the length of the fragment
+		groupCloneSize += cl.size
+	}
+	p.cloneGroups = append(p.cloneGroups, clones)
+	p.totalSize += groupCloneSize
+	
 	sort.Sort(byNameAndLine(clones))
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
@@ -84,22 +96,38 @@ func blockLines(file []byte, from, to int) (int, int) {
 	return lineStart, lineEnd
 }
 
-type clone struct {
-	filename  string
-	lineStart int
-	lineEnd   int
-	fragment  []byte
-}
-
-type byNameAndLine []clone
-
-func (c byNameAndLine) Len() int { return len(c) }
-
-func (c byNameAndLine) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
-
-func (c byNameAndLine) Less(i, j int) bool {
-	if c[i].filename == c[j].filename {
-		return c[i].lineStart < c[j].lineStart
+// OutputText generates text output with sorting
+func (p *text) OutputText(threshold int, sortBy string) error {
+	// Collect all clones for sorting
+	var allClones []clone
+	
+	// Generate all clone data and sort
+	for i := 0; i < len(p.cloneGroups); i++ {
+		allClones = append(allClones, p.cloneGroups[i]...)
 	}
-	return c[i].filename < c[j].filename
+	
+	// Sort clones by size (largest first)
+	sort.Slice(allClones, func(i, j int) bool {
+		return allClones[i].size > allClones[j].size
+	})
+	
+	// Print header
+	if err := p.PrintHeader(); err != nil {
+		return err
+	}
+	
+	// Print sorted clones
+	for _, cl := range allClones {
+		if len(cl.fragment) > 0 {
+			if _, err := fmt.Fprintf(p.w, "%s\n%s:%d-%d\n\n", cl.fragment, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+				return err
+			}
+		} else {
+			if _, err := fmt.Fprintf(p.w, "%s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+				return err
+			}
+		}
+	}
+	
+	return p.PrintFooter()
 }
