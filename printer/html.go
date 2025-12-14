@@ -39,7 +39,7 @@ func (p *htmlprinter) PrintHeader() error {
 	return err
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node) error {
+func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.iota++
 
 	// Store clones for later output with sorting
@@ -136,11 +136,14 @@ Loop:
 
 // OutputHTML generates HTML output with sorting
 func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
-	// Store clones for sorting
+	// Store clones for sorting - flatten the 3D structure to 2D
 	var allDups [][]*syntax.Node
 	p.dupMutex.Lock()
 	for i := 0; i < len(p.dupls); i++ {
-		allDups = append(allDups, p.dupls[i])
+		// p.dupls[i] is [][]*syntax.Node, add each clone group to allDups
+		for j := 0; j < len(p.dupls[i]); j++ {
+			allDups = append(allDups, p.dupls[i][j])
+		}
 	}
 	p.dupMutex.Unlock()
 

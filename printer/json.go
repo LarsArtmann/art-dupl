@@ -110,7 +110,7 @@ func sortCloneGroups(groups []CloneGroup, sortBy string) {
 	}
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
+func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.iota++
 
 	clones := make([]JSONClone, len(dups))

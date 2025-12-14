@@ -19,7 +19,7 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 
 func (p *plumbing) PrintHeader() error { return nil }
 
-func (p *plumbing) PrintClones(dups [][]*syntax.Node) error {
+func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	clones, err := prepareClonesInfo(p.ReadFile, dups)
 	if err != nil {
 		return err

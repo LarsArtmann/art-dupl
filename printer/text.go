@@ -23,7 +23,7 @@ func NewText(w io.Writer, fread ReadFile) Printer {
 
 func (p *text) PrintHeader() error { return nil }
 
-func (p *text) PrintClones(dups [][]*syntax.Node) error {
+func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.cnt++
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(dups)); err != nil {
 		return err
