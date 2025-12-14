@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"crypto/sha256"
+	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
@@ -201,5 +202,5 @@ func hashSeq(nodes []*Node) string {
 		bytes[i] = byte(node.Type)
 	}
 	h.Write(bytes)
-	return string(h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
