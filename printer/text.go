@@ -39,6 +39,56 @@ func (p *text) PrintClones(dups [][]*syntax.Node) error {
 	return nil
 }
 
+// PrintClonesSorted prints clones with specified sorting criteria
+func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
+	p.cnt++
+	if _, err := fmt.Fprintf(p.w, "found %d clones (sorted by %s):\n", len(dups), sortBy); err != nil {
+		return err
+	}
+	clones, err := prepareClonesInfo(p.ReadFile, dups)
+	if err != nil {
+		return err
+	}
+	
+	// Apply sorting based on criteria
+	switch sortBy {
+	case "size", "":
+		sort.Slice(clones, func(i, j int) bool {
+			return len(dups[i]) > len(dups[j]) // Sort by token count
+		})
+	case "occurrence":
+		// For text output, occurrence is same as size (each dup in different file)
+		sort.Slice(clones, func(i, j int) bool {
+			return len(dups[i]) > len(dups[j])
+		})
+	case "hash":
+		sort.Slice(clones, func(i, j int) bool {
+			if len(dups[i]) == 0 && len(dups[j]) == 0 {
+				return false
+			}
+			if len(dups[i]) == 0 {
+				return true
+			}
+			if len(dups[j]) == 0 {
+				return false
+			}
+			return dups[i][0].String() < dups[j][0].String()
+		})
+	default:
+		// Default to size sorting
+		sort.Slice(clones, func(i, j int) bool {
+			return len(dups[i]) > len(dups[j])
+		})
+	}
+	
+	for _, cl := range clones {
+		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (p *text) PrintFooter() error {
 	_, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt)
 	return err
