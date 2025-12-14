@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
-// Config represents the dupl configuration
+// Config represents the dupl configuration with strong typing
 type Config struct {
 	// Threshold sets the minimum token sequence size to consider as duplicate
 	Threshold int `json:"threshold,omitempty"`
@@ -20,8 +20,8 @@ type Config struct {
 	// FilesFromStdin reads file paths from stdin when true
 	FilesFromStdin bool `json:"filesFromStdin,omitempty"`
 
-	// OutputFormat sets the output format (text, html, json, plumbing)
-	OutputFormat string `json:"outputFormat,omitempty"`
+	// OutputFormat sets the output format with type safety
+	OutputFormat OutputFormat `json:"outputFormat,omitempty"`
 
 	// Verbose enables verbose output
 	Verbose bool `json:"verbose,omitempty"`

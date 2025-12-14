@@ -1,0 +1,63 @@
+package config
+
+import (
+	"fmt"
+)
+
+// OutputFormat represents the supported output formats with type safety
+type OutputFormat string
+
+const (
+	OutputFormatText     OutputFormat = "text"
+	OutputFormatHTML     OutputFormat = "html"
+	OutputFormatJSON     OutputFormat = "json"
+	OutputFormatPlumbing OutputFormat = "plumbing"
+)
+
+// String implements fmt.Stringer for OutputFormat
+func (of OutputFormat) String() string {
+	return string(of)
+}
+
+// IsValid checks if the output format is supported
+func (of OutputFormat) IsValid() bool {
+	switch of {
+	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatPlumbing:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for OutputFormat
+func (of OutputFormat) MarshalJSON() ([]byte, error) {
+	if !of.IsValid() {
+		return nil, fmt.Errorf("invalid output format: %s", of)
+	}
+	return []byte(fmt.Sprintf(`"%s"`, of)), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler for OutputFormat
+func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
+		str = str[1 : len(str)-1]
+	}
+
+	candidate := OutputFormat(str)
+	if !candidate.IsValid() {
+		return fmt.Errorf("invalid output format: %s", str)
+	}
+	*of = candidate
+	return nil
+}
+
+// AllOutputFormats returns list of all supported output formats
+func AllOutputFormats() []OutputFormat {
+	return []OutputFormat{
+		OutputFormatText,
+		OutputFormatHTML,
+		OutputFormatJSON,
+		OutputFormatPlumbing,
+	}
+}

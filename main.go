@@ -27,7 +27,7 @@ var (
 	html     = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
 	plumbing = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
 	json     = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
-	
+
 	// TODO: Add outputFile flag when help is updated
 	// outputFile = flag.String("output", "", "write output to file instead of stdout")
 )
