@@ -72,7 +72,11 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 			if len(dups[j]) == 0 {
 				return false
 			}
-			return dups[i][0].String() < dups[j][0].String()
+			// Use Filename for deterministic sorting
+			if dups[i][0].Filename == dups[j][0].Filename {
+				return dups[i][0].Pos < dups[j][0].Pos
+			}
+			return dups[i][0].Filename < dups[j][0].Filename
 		})
 	default:
 		// Default to size sorting
