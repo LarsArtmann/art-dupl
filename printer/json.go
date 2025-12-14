@@ -43,12 +43,13 @@ type Summary struct {
 }
 
 type JSONPrinter struct {
-	iota int
-	w    io.Writer
+	iota       int
+	w          io.Writer
 	ReadFile
 	filesCount  int
 	totalClones int
 	cloneGroups []CloneGroup
+	currentHash string // Hash for the current clone group
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
@@ -64,6 +65,11 @@ func (p *JSONPrinter) PrintHeader() error {
 	p.totalClones = 0
 	p.cloneGroups = []CloneGroup{}
 	return nil
+}
+
+// SetHash sets the current hash for the clone group being processed
+func (p *JSONPrinter) SetHash(hash string) {
+	p.currentHash = hash
 }
 
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
@@ -107,8 +113,8 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
 		clones[i].LineEnd = clones[i].LineStart + lines - 1
 	}
 
-	// Calculate hash (simplified - should use same algorithm as core)
-	hash := fmt.Sprintf("hash%d", p.iota)
+	// Calculate hash (use actual hash instead of counter)
+	hash := p.currentHash
 
 	// Calculate size (token count approximation)
 	size := 0

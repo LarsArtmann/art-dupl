@@ -121,6 +121,10 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match) error {
 	for _, k := range keys {
 		uniq := util.Unique(groups[k])
 		if len(uniq) > 1 {
+			// Set hash for JSONPrinter if applicable
+			if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+				jsonPrinter.SetHash(k)
+			}
 			if err := p.PrintClones(uniq); err != nil {
 				return err
 			}
