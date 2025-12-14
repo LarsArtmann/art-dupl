@@ -171,9 +171,6 @@ func Run() int {
 
 	// Get file count
 	filesCount := <-filesCountChan
-	
-	// Debug: uncomment to see file count
-	fmt.Fprintf(cli.Stderr(), "DEBUG: filesCount received: %d\n", filesCount)
 
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
@@ -230,8 +227,6 @@ func Run() int {
 	
 	// Set filesCount for JSONPrinter
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		// Debug: uncomment to see file count setting
-		fmt.Fprintf(cli.Stderr(), "DEBUG: Setting JSONPrinter filesCount to %d\n", filesCount)
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 	

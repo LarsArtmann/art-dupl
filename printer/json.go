@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"sort"
 	"strings"
 	"time"
@@ -86,8 +85,6 @@ func (p *JSONPrinter) SetHash(hash string) {
 // SetFilesCount sets the total number of files analyzed
 func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
-	// Debug: uncomment to see file count
-	fmt.Fprintf(os.Stderr, "DEBUG: JSONPrinter.SetFilesCount(%d), p.filesCount=%d\n", count, p.filesCount)
 }
 
 func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node) error {
@@ -161,9 +158,6 @@ func (*JSONPrinter) PrintFooter() error {
 
 // OutputJSON generates the complete JSON output
 func (p *JSONPrinter) OutputJSON(threshold int) error {
-	// Debug: check filesCount before generating output
-	fmt.Fprintf(os.Stderr, "DEBUG: OutputJSON called, p.filesCount=%d\n", p.filesCount)
-	
 	output := JSONOutput{
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),
