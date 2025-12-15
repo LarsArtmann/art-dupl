@@ -51,7 +51,7 @@ func anotherLargeFunction() {
 	mediumClone := createMockCloneGroup(t, "medium.go", 30, 50, 5)                // Medium size, 5 tokens
 	largeClone := createMockCloneGroup(t, "large.go", 60, 90, 8)                  // Large size, 8 tokens
 	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 130, 8) // Same size as largeClone, 8 tokens
-	
+
 	// Create clones with multiple occurrences to test total-tokens
 	multiOccurrenceClone := createMultipleCloneGroup(t, "multi.go", 200, 220, 3, 5) // 3 tokens, 5 occurrences = 15 total tokens
 
@@ -269,15 +269,15 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// where each element is one clone occurrence in a file
 		// So to test different total token counts, we need to simulate
 		// the scenario where the function is called with different groups
-		
+
 		// In real usage, the function receives a group of clones
 		// where each inner slice is a separate occurrence
 		// For testing, we'll simulate sorting multiple groups separately
-		
-		group1 := createMockCloneGroup(t, "small.go", 10, 20, 2) // 2 tokens
-		group2 := createMockCloneGroup(t, "medium.go", 30, 50, 5) // 5 tokens  
-		group3 := createMockCloneGroup(t, "large.go", 60, 90, 8) // 8 tokens
-		
+
+		group1 := createMockCloneGroup(t, "small.go", 10, 20, 2)  // 2 tokens
+		group2 := createMockCloneGroup(t, "medium.go", 30, 50, 5) // 5 tokens
+		group3 := createMockCloneGroup(t, "large.go", 60, 90, 8)  // 8 tokens
+
 		clones := [][]*syntax.Node{group1, group2, group3}
 		sorted := SortClonesByTotalTokens(clones)
 

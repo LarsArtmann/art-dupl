@@ -23,7 +23,7 @@ func TestCLIConfig(t *testing.T) {
 		Plumbing:      flag.Bool("test_plumbing", false, "test plumbing flag"),
 		SortBy:        flag.String("test_sort", "size", "test sort flag"),
 	}
-	
+
 	g.Expect(config).NotTo(gomega.BeNil())
 	g.Expect(*config.Threshold).To(gomega.Equal(15))
 	g.Expect(*config.Verbose).To(gomega.BeFalse())
@@ -36,18 +36,18 @@ func TestCLIConfigHelpers(t *testing.T) {
 	config := &CLIConfig{
 		Threshold:     new(int),
 		ThresholdLong: new(int),
-		Verbose:      new(bool),
-		VerboseLong:  new(bool),
+		Verbose:       new(bool),
+		VerboseLong:   new(bool),
 		HTML:          new(bool),
 		JSONFlag:      new(bool),
 		Plumbing:      new(bool),
 	}
-	
+
 	*config.Threshold = 20
 	*config.ThresholdLong = 30
 	g.Expect(config.GetThreshold()).To(gomega.Equal(30)) // Should prefer long form
 
-	*config.ThresholdLong = 15 // Reset to default
+	*config.ThresholdLong = 15                           // Reset to default
 	g.Expect(config.GetThreshold()).To(gomega.Equal(20)) // Should use short form
 
 	// Test IsVerbose

@@ -13,11 +13,11 @@ func TestRuntimeConfig_ToConfig(t *testing.T) {
 
 	// Test ToConfig conversion
 	runtime := &RuntimeConfig{
-		Threshold:     25,
-		Vendor:        true,
+		Threshold:      25,
+		Vendor:         true,
 		FilesFromStdin: true,
-		Verbose:       true,
-		Paths:         []string{"./src", "./lib"},
+		Verbose:        true,
+		Paths:          []string{"./src", "./lib"},
 	}
 
 	cfg := runtime.ToConfig()
