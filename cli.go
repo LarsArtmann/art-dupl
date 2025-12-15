@@ -274,6 +274,8 @@ Flags:
     	output structured JSON format with metadata and statistics
   -plumbing
     	output machine-readable plumbing format for script integration
+  -sort string
+    	sort clone groups by: size, occurrence, hash (default "size")
   -t, -threshold int
     	minimum token sequence size to consider as clone (default 15)
   -vendor
@@ -305,11 +307,19 @@ Examples:
   # Higher threshold for larger clones only
   dupl -t 100
 
-  # JSON output for CI/CD integration
-  dupl -json -t 20
+  # Sort by different criteria
+  dupl -sort size .          # Largest clones first (default)
+  dupl -sort occurrence .     # Most widespread clones first
+  dupl -sort hash .          # Alphabetical order
 
-  # HTML report file
-  dupl -html > report.html
+  # JSON output with sorting
+  dupl -json -sort size . | jq '.clone_groups[0]'
+
+  # HTML report file with occurrence sorting
+  dupl -html -sort occurrence . > report.html
+
+  # Plumbing output for CI/CD with hash sorting
+  dupl -plumbing -sort hash . > duplicates.txt
 
   # Use configuration file
   dupl -config dupl.json ./src
