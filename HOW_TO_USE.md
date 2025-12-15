@@ -1,6 +1,6 @@
-# How to Use dupl - A Practical Guide
+# How to Use art-dupl - A Practical Guide
 
-This guide provides practical examples and workflows for using **dupl** effectively in real-world scenarios.
+This guide provides practical examples and workflows for using **art-dupl** effectively in real-world scenarios.
 
 ## Table of Contents
 
@@ -28,10 +28,10 @@ make build
 
 ```bash
 # Analyze current directory
-./dupl
+./art-dupl
 
 # See what's happening
-./dupl -v
+./art-dupl -v
 ```
 
 ## Basic Workflows
@@ -42,10 +42,10 @@ For meaningful refactoring opportunities, focus on larger code blocks:
 
 ```bash
 # Find only substantial duplicates (50+ tokens)
-./dupl -t 50
+./art-dupl -t 50
 
 # Even larger for architectural issues
-./dupl -t 100
+./art-dupl -t 100
 ```
 
 ### 2. Creating Reports
@@ -53,7 +53,7 @@ For meaningful refactoring opportunities, focus on larger code blocks:
 #### HTML Report for Review
 ```bash
 # Generate comprehensive HTML report
-./dupl -html -t 30 > dupl_report.html
+./art-dupl -html -t 30 > dupl_report.html
 
 # Open in browser
 open dupl_report.html  # macOS
@@ -63,10 +63,10 @@ xdg-open dupl_report.html  # Linux
 #### JSON for Automation
 ```bash
 # JSON output with statistics
-./dupl -json -t 20 > dupl_report.json
+./art-dupl -json -t 20 > dupl_report.json
 
 # Pretty-print JSON
-./dupl -json -t 20 | jq '.' > dupl_report_pretty.json
+./art-dupl -json -t 20 | jq '.' > dupl_report_pretty.json
 ```
 
 ### 3. Analyzing Specific Code
@@ -74,19 +74,19 @@ xdg-open dupl_report.html  # Linux
 #### Target Directories
 ```bash
 # Analyze only source code (exclude tests)
-./dupl ./cmd ./internal -t 30
+./art-dupl ./cmd ./internal -t 30
 
 # Analyze specific package
-./dupl ./internal/handlers -t 25
+./art-dupl ./internal/handlers -t 25
 ```
 
 #### Target File Types
 ```bash
 # Analyze test files only
-find . -name '*_test.go' | ./dupl -files -t 20
+find . -name '*_test.go' | ./art-dupl -files -t 20
 
 # Analyze generated files separately
-find . -name '*_gen.go' | ./dupl -files -t 50
+find . -name '*_gen.go' | ./art-dupl -files -t 50
 ```
 
 ## CI/CD Integration
@@ -98,7 +98,7 @@ name: Code Duplication Check
 on: [push, pull_request]
 
 jobs:
-  dupl-check:
+  art-dupl-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -106,12 +106,12 @@ jobs:
         with:
           go-version: '1.21'
       
-      - name: Install dupl
+      - name: Install art-dupl
         run: go install github.com/LarsArtmann/art-dupl@latest
       
-      - name: Run dupl analysis
+      - name: Run art-dupl analysis
         run: |
-          dupl -json -t 30 > dupl_report.json
+          art-dupl -json -t 30 > dupl_report.json
           TOTAL_CLONES=$(jq '.summary.total_clones' dupl_report.json)
           echo "Found $TOTAL_CLONES code clones"
           
