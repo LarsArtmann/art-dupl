@@ -10,7 +10,20 @@ import (
 func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 	// Sort by token count (largest first)
 	sort.Slice(dups, func(i, j int) bool {
-		return len(dups[i]) > len(dups[j])
+		// Handle empty groups
+		if len(dups[i]) == 0 && len(dups[j]) == 0 {
+			return false
+		}
+		if len(dups[i]) == 0 {
+			return true
+		}
+		if len(dups[j]) == 0 {
+			return false
+		}
+		// Calculate size of first occurrence (end position - start position)
+		sizeI := dups[i][len(dups[i])-1].End - dups[i][0].Pos
+		sizeJ := dups[j][len(dups[j])-1].End - dups[j][0].Pos
+		return sizeI > sizeJ
 	})
 	return dups
 }

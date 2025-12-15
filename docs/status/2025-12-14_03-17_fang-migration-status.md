@@ -76,7 +76,7 @@ func main() {
 ```go
 func main() {
     rootCmd := &cobra.Command{
-        Use:   "dupl",
+        Use:   "art-dupl",
         Short: "Find code clones",
         RunE:  runCmd,
     }

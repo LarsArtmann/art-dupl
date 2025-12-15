@@ -327,19 +327,19 @@ The HTML report provides:
 #### Too Many False Positives
 ```bash
 # Increase threshold
-./dupl -t 40
+./art-dupl -t 40
 
 # Or ignore certain patterns
-./dupl -config dupl.json  # with ignoreFiles patterns
+./art-dupl -config dupl.json  # with ignoreFiles patterns
 ```
 
 #### Performance Issues
 ```bash
 # Use verbose to see progress
-./dupl -v
+./art-dupl -v
 
 # Limit scope
-./dupl ./specific/package -t 30
+./art-dupl ./specific/package -t 30
 ```
 
 #### Memory Issues with Large Files
@@ -354,7 +354,7 @@ The HTML report provides:
 
 ```bash
 # See all options
-./dupl -h
+./art-dupl -h
 
 # Check configuration
 cat dupl.json | jq '.'
@@ -366,23 +366,23 @@ cat dupl.json | jq '.'
 
 ```bash
 # Top 10 files with most clones
-./dupl -json | jq -r '.clones[] | .instances[] | "\(.file)"' | sort | uniq -c | sort -nr | head -10
+./art-dupl -json | jq -r '.clones[] | .instances[] | "\(.file)"' | sort | uniq -c | sort -nr | head -10
 
 # Average clone size
-./dupl -json | jq '[.clones[] | .instances[0].lines] | add / length'
+./art-dupl -json | jq '[.clones[] | .instances[0].lines] | add / length'
 
 # Clones by package
-./dupl -json | jq -r '.clones[] | .instances[0].file | split("/")[0:2] | join("/")' | sort | uniq -c
+./art-dupl -json | jq -r '.clones[] | .instances[0].file | split("/")[0:2] | join("/")' | sort | uniq -c
 ```
 
 ### with grep for Context
 
 ```bash
 # Find clones containing specific patterns
-./dupl -t 20 | grep -B1 -A1 "func.*Error"
+./art-dupl -t 20 | grep -B1 -A1 "func.*Error"
 
 # Check if clones involve specific packages
-./dupl -t 20 | grep -B1 -A1 "database/sql"
+./art-dupl -t 20 | grep -B1 -A1 "database/sql"
 ```
 
-This guide should help you effectively integrate dupl into your development workflow. Remember that the goal is maintainable code, not zero duplication—some duplication may be acceptable for clarity or performance reasons.
+This guide should help you effectively integrate art-dupl into your development workflow. Remember that the goal is maintainable code, not zero duplication—some duplication may be acceptable for clarity or performance reasons.
