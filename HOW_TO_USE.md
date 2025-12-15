@@ -129,12 +129,12 @@ jobs:
 # .git/hooks/pre-commit
 
 echo "Running duplication check..."
-dupl -json -t 25 > /tmp/dupl_check.json
+art-dupl -json -t 25 > /tmp/dupl_check.json
 CLONES=$(jq '.summary.total_clones' /tmp/dupl_check.json)
 
 if [ "$CLONES" -gt 10 ]; then
   echo "⚠️  Found $CLONES code clones. Consider refactoring before committing."
-  echo "Run 'dupl -html -t 25 > report.html' to see details."
+  echo "Run 'art-dupl -html -t 25 > report.html' to see details."
   exit 1
 fi
 ```
@@ -159,17 +159,17 @@ Create `dupl.json` for team consistency:
 
 ```bash
 # Use configuration
-./dupl -config dupl.json
+./art-dupl -config dupl.json
 
 # Override specific settings
-./dupl -config dupl.json -t 50 -html
+./art-dupl -config dupl.json -t 50 -html
 ```
 
 ### 2. Progressive Refactoring Workflow
 
 ```bash
 # Step 1: Get baseline
-./dupl -json -t 15 > baseline.json
+./art-dupl -json -t 15 > baseline.json
 echo "Baseline: $(jq '.summary.total_clones' baseline.json) clones"
 
 # Step 2: Focus on largest duplicates first
