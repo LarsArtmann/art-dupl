@@ -119,3 +119,20 @@ func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 	})
 	return dups
 }
+
+// sortCloneGroupsBySize sorts [][]clone groups by token count (largest first)
+func sortCloneGroupsBySize(clones [][]clone) {
+	sort.Slice(clones, func(i, j int) bool {
+		// Calculate total size for group i
+		sizeI := 0
+		for _, cl := range clones[i] {
+			sizeI += len(cl.fragment)
+		}
+		// Calculate total size for group j
+		sizeJ := 0
+		for _, cl := range clones[j] {
+			sizeJ += len(cl.fragment)
+		}
+		return sizeI > sizeJ
+	})
+}

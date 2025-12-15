@@ -12,11 +12,18 @@ import (
 
 // TestBasicHashDetectionShouldFindExactDuplicates tests that identical code sequences are detected
 func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) {
-	// GIVEN: Two files with identical function implementations
-	nodes := []*syntax.Node{
-		createTestNode("file1.go", 1, 10, 100), // Function implementation
-		createTestNode("file2.go", 20, 29, 100), // Identical implementation
+	// GIVEN: Two files with identical function implementations (at least threshold length)
+	nodes := []*syntax.Node{}
+	// File 1: sequence of 5 identical node types
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file1.go", i, i+1, 100+i))
 	}
+	// File 2: identical sequence 
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file2.go", i+10, i+11, 100+i))
+	}
+	
+	t.Logf("Input nodes: %d total", len(nodes))
 	
 	// WHEN: Running hash detection with threshold 5
 	detector := NewHashDetector(5)

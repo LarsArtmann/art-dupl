@@ -8,37 +8,90 @@
 		padding: 1ex;
 	}
 </style>
-<h1>#1 found 3 clones</h1>
+<h1>#1 found 2 clones</h1>
+<h2>config/config_test.go:254</h2>
+<pre>func TestMergeConfigsNilFileConfig(t *testing.T) {
+	cliConfig := &amp;Config{
+		Threshold:     30,
+		OutputFormat:  &#34;json&#34;,
+		IncludeVendor: true,
+	}
+
+	expectedValues := map[string]any{
+		&#34;threshold&#34;:     30,
+		&#34;outputFormat&#34;:  &#34;json&#34;,
+		&#34;includeVendor&#34;: true,
+		&#34;verbose&#34;:       false,
+	}
+
+	TestMergeConfigsWithNil(t, cliConfig, true, expectedValues)
+}</pre>
+<h2>config/config_test.go:271</h2>
+<pre>func TestMergeConfigsNilCLIConfig(t *testing.T) {
+	fileConfig := &amp;Config{
+		Threshold:    40,
+		OutputFormat: &#34;html&#34;,
+		Verbose:      true,
+	}
+
+	expectedValues := map[string]any{
+		&#34;threshold&#34;:     40,
+		&#34;outputFormat&#34;:  &#34;html&#34;,
+		&#34;verbose&#34;:       true,
+		&#34;includeVendor&#34;: false,
+	}
+
+	TestMergeConfigsWithNil(t, fileConfig, false, expectedValues)
+}</pre>
+<h1>#2 found 2 clones</h1>
+<h2>printer/sorting_integration_test.go:164</h2>
+<pre>                                                                                                                             {
+	// Create nodes that represent tokens in a clone
+	nodes := make([]*syntax.Node, numTokens)
+
+	for i := range numTokens {
+		nodes[i] = &amp;syntax.Node{
+			Type:     golang.FuncDecl,
+			Filename: filename,
+			Pos:      startPos + (i * 2),
+			End:      startPos + (i * 2) + 1,
+		}
+	}
+
+	return nodes
+}</pre>
+<h2>printer/sorting_integration_test.go:181</h2>
+<pre>                                                                                                         {
+	// Create nodes that represent the tokens in a clone
+	nodes := make([]*syntax.Node, numTokens)
+
+	for i := range numTokens {
+		nodes[i] = &amp;syntax.Node{
+			Type:     golang.FuncDecl,
+			Filename: filename,
+			Pos:      startPos + (i * 2),
+			End:      startPos + (i * 2) + 1,
+		}
+	}
+
+	return nodes
+}</pre>
+<h1>#3 found 3 clones</h1>
 <h2>config/detectionmethod.go:44</h2>
 <pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	candidate, err := UnmarshalEnumJSON(data, func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
+	return NewEnumUnmarshaler(func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
 		return d.IsValid()
-	}, &#34;detection method&#34;)
-	if err != nil {
-		return err
-	}
-	*dm = candidate
-	return nil
+	}, &#34;detection method&#34;).UnmarshalJSON(data, dm)
 }</pre>
 <h2>config/outputformat.go:41</h2>
 <pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	candidate, err := UnmarshalEnumJSON(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+	return NewEnumUnmarshaler(func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
 		return o.IsValid()
-	}, &#34;output format&#34;)
-	if err != nil {
-		return err
-	}
-	*of = candidate
-	return nil
+	}, &#34;output format&#34;).UnmarshalJSON(data, of)
 }</pre>
-<h2>config/outputformat.go:86</h2>
+<h2>config/outputformat.go:81</h2>
 <pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	candidate, err := UnmarshalEnumJSON(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+	return NewEnumUnmarshaler(func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
 		return s.IsValid()
-	}, &#34;sort criteria&#34;)
-	if err != nil {
-		return err
-	}
-	*sc = candidate
-	return nil
+	}, &#34;sort criteria&#34;).UnmarshalJSON(data, sc)
 }</pre>
