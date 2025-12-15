@@ -712,9 +712,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 		}
 
 		// Run the analysis once per method and generate all formats
-		fmt.Fprintf(cli.Stderr(), "DEBUG: About to call runAnalysisForAllFormats for %s\n", method)
 		if err := runAnalysisForAllFormats(config, outputDir, outputFormats, method, verbose); err != nil {
-			fmt.Fprintf(cli.Stderr(), "DEBUG: Error in runAnalysisForAllFormats: %v\n", err)
 			return fmt.Errorf("error running %s analysis: %v", method, err)
 		}
 	}
@@ -733,19 +731,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 }, method config.DetectionMethod, verbose bool,
 ) error {
-	fmt.Fprintf(cli.Stderr(), "DEBUG: runAnalysisForAllFormats entered for method %s\n", method)
-
 	if verbose {
 		log.Println("Building suffix tree")
 	}
 
-	fmt.Fprintf(cli.Stderr(), "DEBUG: About to call job.Parse(filesFeed())\n")
+	// Start the parsing pipeline
 	schan, filesCountChan := job.Parse(filesFeed())
-	fmt.Fprintf(cli.Stderr(), "DEBUG: About to call job.BuildTree(schan)\n")
+	// Build the suffix tree
 	t, data, done := job.BuildTree(schan)
-	fmt.Fprintf(cli.Stderr(), "DEBUG: About to wait for done\n")
+	// Wait for processing to complete
 	<-done
-	fmt.Fprintf(cli.Stderr(), "DEBUG: Build tree completed\n")
+	// Tree building completed
 
 	// Get file count
 	filesCount := <-filesCountChan
@@ -758,17 +754,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	}
 
 	// Get matches based on detection method
-	fmt.Fprintf(cli.Stderr(), "DEBUG: Selecting detection method for %s\n", method)
+	// Run detection based on method
 	var duplChan chan syntax.Match
 	if method == config.DetectionMethodHash {
-		fmt.Fprintf(cli.Stderr(), "DEBUG: Using hash detection method\n")
+		// Use hash detection method
 		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
 		duplChan = make(chan syntax.Match)
-		fmt.Fprintf(cli.Stderr(), "DEBUG: About to call multiDetector.FindDuplOver(%d)\n", cfg.Threshold)
+		// Find duplicates
 		go func() {
 			defer close(duplChan)
 			matches := multiDetector.FindDuplOver(cfg.Threshold)
-			fmt.Fprintf(cli.Stderr(), "DEBUG: FindDuplOver returned\n")
+			// Detection completed
 			for match := range matches {
 				duplChan <- match
 			}
@@ -789,17 +785,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	}
 
 	// Generate all output formats
-	fmt.Fprintf(cli.Stderr(), "DEBUG: About to generate output formats for %s\n", method)
+	// Generate output for each format
 	for _, fmtInfo := range formats {
-		fmt.Fprintf(cli.Stderr(), "DEBUG: Generating format %s for method %s\n", fmtInfo.name, method)
+		// Generate output for this format
 		filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
-		fmt.Fprintf(cli.Stderr(), "DEBUG: Creating file %s\n", filename)
+		// Create output file
 		file, err := os.Create(filename)
 		if err != nil {
 			return fmt.Errorf("failed to create %s file: %v", filename, err)
 		}
 		defer file.Close()
-		fmt.Fprintf(cli.Stderr(), "DEBUG: File %s created successfully\n", filename)
+		// File created successfully
 
 		p := fmtInfo.newPrinter(file, os.ReadFile)
 
