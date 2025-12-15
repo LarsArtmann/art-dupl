@@ -34,7 +34,7 @@
 | **Size Sorting** | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first) |
 | **Occurrence Sorting** | FULLY_FUNCTIONAL | Sort clone groups by number of files (most widespread first) |
 | **Hash Sorting** | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical) |
-| **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort by total token count across all files |
+| **Total Tokens Sorting** | PARTIALLY_FUNCTIONAL | Implementation exists but not exposed in config (SortClonesByTotalTokens function exists but not in AllSortCriteria) |
 
 ## 🔧 Configuration Features
 
@@ -52,10 +52,11 @@
 | Feature | Status | Description |
 |---------|---------|-------------|
 | **Styled Help Output** | FULLY_FUNCTIONAL | Rich, themed help text with examples |
-| **Auto-Completion** | FULLY_FUNCTIONAL | Tab completion for bash, zsh, and fish shells |
+| **Auto-Completion** | FULLY_FUNCTIONAL | Tab completion for bash, zsh, fish, and powershell shells |
 | **Man Page Generation** | FULLY_FUNCTIONAL | Generate manual pages for documentation |
 | **Version Information** | FULLY_FUNCTIONAL | Detailed version, commit, and build information |
 | **Error Handling** | FULLY_FUNCTIONAL | Context-aware error messages with suggestions |
+| **Completion Descriptions** | FULLY_FUNCTIONAL | Option to disable completion descriptions with --no-descriptions |
 
 ## 🔍 Advanced Features
 
@@ -144,6 +145,12 @@ art-dupl -detection-methods "hash,art-dupl"
 
 # Analyze test files only
 find . -name '*_test.go' | art-dupl -files
+
+# Generate completions with no descriptions
+art-dupl completion bash --no-descriptions
+
+# Powershell completion
+art-dupl completion powershell
 ```
 
 ## 🏗️ Architecture Components
