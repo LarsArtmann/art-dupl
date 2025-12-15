@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"testing"
 
@@ -84,12 +85,14 @@ func anotherLargeFunction() {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Test JSON Printer sorting
+			// Prepare clone data for all tests
+			clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
+			
+			// Test JSON Printer sorting (special case with different verification logic)
 			t.Run("JSONPrinter", func(t *testing.T) {
 				var buf bytes.Buffer
 				printer := NewJSON(&buf, mockReadFile(testContent))
 
-				clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
 				err := printer.PrintClones(clones, tc.sortBy)
 				if err != nil {
 					t.Fatalf("JSONPrinter.PrintClones failed: %v", err)
@@ -113,76 +116,47 @@ func anotherLargeFunction() {
 				}
 			})
 
-			// Test Text Printer sorting
-			t.Run("TextPrinter", func(t *testing.T) {
-				var buf bytes.Buffer
-				printer := NewText(&buf, mockReadFile(testContent))
+			// Test standard printers with common verification logic
+			standardPrinters := []struct {
+				name      string
+				constructor func(io.Writer, ReadFile) Printer
+			}{
+				{"TextPrinter", NewText},
+				{"HTMLPrinter", NewHTML},
+				{"PlumbingPrinter", NewPlumbing},
+			}
 
-				clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-				err := printer.PrintClones(clones, tc.sortBy)
-				if err != nil {
-					t.Fatalf("TextPrinter.PrintClones failed: %v", err)
-				}
-
-				// Verify sorting by checking the order of files in output
-				output := buf.String()
-				// Simple check: the first expected file should appear before the last expected file
-				firstIndex := strings.Index(output, tc.expectedOrder[0])
-				lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-				if firstIndex == -1 || lastIndex == -1 {
-					t.Errorf("Expected files not found in output. First: %s, Last: %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				} else if firstIndex > lastIndex {
-					t.Errorf("Sorting failed: %s should appear before %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				}
-			})
-
-			// Test HTML Printer sorting
-			t.Run("HTMLPrinter", func(t *testing.T) {
-				var buf bytes.Buffer
-				printer := NewHTML(&buf, mockReadFile(testContent))
-
-				clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-				err := printer.PrintClones(clones, tc.sortBy)
-				if err != nil {
-					t.Fatalf("HTMLPrinter.PrintClones failed: %v", err)
-				}
-
-				// Verify sorting
-				output := buf.String()
-				firstIndex := strings.Index(output, tc.expectedOrder[0])
-				lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-				if firstIndex == -1 || lastIndex == -1 {
-					t.Errorf("Expected files not found in output. First: %s, Last: %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				} else if firstIndex > lastIndex {
-					t.Errorf("HTML sorting failed: %s should appear before %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				}
-			})
-
-			// Test Plumbing Printer sorting
-			t.Run("PlumbingPrinter", func(t *testing.T) {
-				var buf bytes.Buffer
-				printer := NewPlumbing(&buf, mockReadFile(testContent))
-
-				clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-				err := printer.PrintClones(clones, tc.sortBy)
-				if err != nil {
-					t.Fatalf("PlumbingPrinter.PrintClones failed: %v", err)
-				}
-
-				// Verify sorting
-				output := buf.String()
-				firstIndex := strings.Index(output, tc.expectedOrder[0])
-				lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-				if firstIndex == -1 || lastIndex == -1 {
-					t.Errorf("Expected files not found in output. First: %s, Last: %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				} else if firstIndex > lastIndex {
-					t.Errorf("Plumbing sorting failed: %s should appear before %s", tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-				}
-			})
+			for _, sp := range standardPrinters {
+				t.Run(sp.name, func(t *testing.T) {
+					testPrinterSorting(t, sp.constructor, testContent, clones, tc.sortBy, tc.expectedOrder, sp.name)
+				})
+			}
 		})
+	}
+}
+
+// testPrinterSorting tests a printer's sorting functionality with standard verification logic
+func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer, 
+	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string) {
+	
+	var buf bytes.Buffer
+	printer := constructor(&buf, mockReadFile(testContent))
+
+	err := printer.PrintClones(clones, sortBy)
+	if err != nil {
+		t.Fatalf("%s.PrintClones failed: %v", printerName, err)
+	}
+
+	// Verify sorting by checking the order of files in output
+	output := buf.String()
+	// Simple check: the first expected file should appear before the last expected file
+	firstIndex := strings.Index(output, expectedOrder[0])
+	lastIndex := strings.Index(output, expectedOrder[len(expectedOrder)-1])
+
+	if firstIndex == -1 || lastIndex == -1 {
+		t.Errorf("Expected files not found in output. First: %s, Last: %s", expectedOrder[0], expectedOrder[len(expectedOrder)-1])
+	} else if firstIndex > lastIndex {
+		t.Errorf("%s sorting failed: %s should appear before %s", printerName, expectedOrder[0], expectedOrder[len(expectedOrder)-1])
 	}
 }
 
