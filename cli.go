@@ -681,6 +681,8 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 // runAllMode generates all output formats for all detection methods
 func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []string) error {
+	fmt.Fprintf(cli.Stderr(), "DEBUG: runAllMode called with outputDir=%q, threshold=%d\n", outputDir, threshold)
+	
 	// Create output directory
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create output directory: %v", err)
@@ -702,6 +704,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 
 	// Run analysis for each detection method
 	for _, method := range detectionMethods {
+		fmt.Fprintf(cli.Stderr(), "DEBUG: Processing method: %s\n", method)
 		if verbose {
 			fmt.Fprintf(cli.Stderr(), "Running %s detection method...\n", method)
 		}
@@ -716,7 +719,9 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 		}
 
 		// Run the analysis once per method and generate all formats
+		fmt.Fprintf(cli.Stderr(), "DEBUG: About to call runAnalysisForAllFormats for %s\n", method)
 		if err := runAnalysisForAllFormats(config, outputDir, outputFormats, method, verbose); err != nil {
+			fmt.Fprintf(cli.Stderr(), "DEBUG: Error in runAnalysisForAllFormats: %v\n", err)
 			return fmt.Errorf("error running %s analysis: %v", method, err)
 		}
 	}
@@ -735,6 +740,8 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 }, method config.DetectionMethod, verbose bool,
 ) error {
+	fmt.Fprintf(cli.Stderr(), "DEBUG: runAnalysisForAllFormats entered for method %s\n", method)
+	
 	if verbose {
 		log.Println("Building suffix tree")
 	}
