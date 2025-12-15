@@ -44,6 +44,9 @@ func (r *RuntimeConfig) ToConfig() *config.Config {
 		cfg.OutputFormat = config.OutputFormatPlumbing
 	} else if r.JSON {
 		cfg.OutputFormat = config.OutputFormatJSON
+	} else {
+		// Default to text format when no output format is specified
+		cfg.OutputFormat = config.OutputFormatText
 	}
 
 	return cfg
