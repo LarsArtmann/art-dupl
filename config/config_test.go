@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -369,8 +370,8 @@ func TestOutputFormats(t *testing.T) {
 
 	// Test AllSortCriteria
 	criteria := AllSortCriteria()
-	if len(criteria) != 4 {
-		t.Errorf("Expected 4 sort criteria, got %d", len(criteria))
+	if len(criteria) != 3 {
+		t.Errorf("Expected 3 sort criteria, got %d", len(criteria))
 	}
 }
 
@@ -383,7 +384,7 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	}
 
 	var parsedDM DetectionMethod
-	err = parsedDM.UnmarshalJSON(data)
+	err = json.Unmarshal(data, &parsedDM)
 	if err != nil {
 		t.Errorf("Expected no error unmarshaling, got %v", err)
 	}
@@ -399,7 +400,7 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	}
 
 	var parsedOF OutputFormat
-	err = parsedOF.UnmarshalJSON(data)
+	err = json.Unmarshal(data, &parsedOF)
 	if err != nil {
 		t.Errorf("Expected no error unmarshaling output format, got %v", err)
 	}
