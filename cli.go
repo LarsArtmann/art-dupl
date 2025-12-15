@@ -467,9 +467,6 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	allFlag, _ := cmd.Flags().GetBool("all")
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 
-	// Debug output for flag parsing
-	// fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%t, outputDir=%q\n", allFlag, outputDir)
-
 	// Load configuration from file if specified
 	var fileConfig *config.Config
 	var err error
