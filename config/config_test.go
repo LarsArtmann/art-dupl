@@ -146,6 +146,7 @@ func TestValidateConfig(t *testing.T) {
 				Threshold:         15,
 				OutputFormat:      "text",
 				MaxChildrenSerial: 10000,
+				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 			},
 			isValid: true,
 		},
