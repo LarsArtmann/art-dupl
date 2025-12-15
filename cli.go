@@ -746,9 +746,13 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		log.Println("Building suffix tree")
 	}
 
+	fmt.Fprintf(cli.Stderr(), "DEBUG: About to call job.Parse(filesFeed())\n")
 	schan, filesCountChan := job.Parse(filesFeed())
+	fmt.Fprintf(cli.Stderr(), "DEBUG: About to call job.BuildTree(schan)\n")
 	t, data, done := job.BuildTree(schan)
+	fmt.Fprintf(cli.Stderr(), "DEBUG: About to wait for done\n")
 	<-done
+	fmt.Fprintf(cli.Stderr(), "DEBUG: Build tree completed\n")
 
 	// Get file count
 	filesCount := <-filesCountChan
@@ -761,13 +765,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	}
 
 	// Get matches based on detection method
+	fmt.Fprintf(cli.Stderr(), "DEBUG: Selecting detection method for %s\n", method)
 	var duplChan chan syntax.Match
 	if method == config.DetectionMethodHash {
+		fmt.Fprintf(cli.Stderr(), "DEBUG: Using hash detection method\n")
 		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
 		duplChan = make(chan syntax.Match)
+		fmt.Fprintf(cli.Stderr(), "DEBUG: About to call multiDetector.FindDuplOver(%d)\n", cfg.Threshold)
 		go func() {
 			defer close(duplChan)
 			matches := multiDetector.FindDuplOver(cfg.Threshold)
+			fmt.Fprintf(cli.Stderr(), "DEBUG: FindDuplOver returned\n")
 			for match := range matches {
 				duplChan <- match
 			}
@@ -788,13 +796,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	}
 
 	// Generate all output formats
+	fmt.Fprintf(cli.Stderr(), "DEBUG: About to generate output formats for %s\n", method)
 	for _, fmtInfo := range formats {
+		fmt.Fprintf(cli.Stderr(), "DEBUG: Generating format %s for method %s\n", fmtInfo.name, method)
 		filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
+		fmt.Fprintf(cli.Stderr(), "DEBUG: Creating file %s\n", filename)
 		file, err := os.Create(filename)
 		if err != nil {
 			return fmt.Errorf("failed to create %s file: %v", filename, err)
 		}
 		defer file.Close()
+		fmt.Fprintf(cli.Stderr(), "DEBUG: File %s created successfully\n", filename)
 
 		p := fmtInfo.newPrinter(file, os.ReadFile)
 

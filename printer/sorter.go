@@ -66,14 +66,14 @@ func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 		totalTokensI := 0
 		for _, dup := range dups[i] {
 			if dup != nil {
-				totalTokensI += len(dup.Children)
+				totalTokensI++ // Count each node as a token
 			}
 		}
 		// Calculate total tokens for group j
 		totalTokensJ := 0
 		for _, dup := range dups[j] {
 			if dup != nil {
-				totalTokensJ += len(dup.Children)
+				totalTokensJ++ // Count each node as a token
 			}
 		}
 		return totalTokensI > totalTokensJ
