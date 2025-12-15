@@ -59,6 +59,8 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		sortedDups = SortClonesByOccurrence(sortedDups)
 	case "hash":
 		sortedDups = SortClonesByHash(sortedDups)
+	case "total-tokens":
+		sortedDups = SortClonesByTotalTokens(sortedDups)
 	default:
 		sortedDups = SortClonesBySize(sortedDups) // Default to size
 	}

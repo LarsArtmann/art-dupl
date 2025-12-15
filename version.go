@@ -23,6 +23,16 @@ func GetVersion() string {
 	return version
 }
 
+// GetCommit returns the commit hash
+func GetCommit() string {
+	return Commit
+}
+
+// GetBuildDate returns the build date
+func GetBuildDate() string {
+	return Date
+}
+
 // PrintVersion prints version information
 func PrintVersion() {
 	fmt.Printf("art-dupl version %s\n", GetVersion())

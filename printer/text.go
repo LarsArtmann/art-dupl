@@ -43,6 +43,8 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 		sortedDups = SortClonesByOccurrence(sortedDups)
 	case "hash":
 		sortedDups = SortClonesByHash(sortedDups)
+	case "total-tokens":
+		sortedDups = SortClonesByTotalTokens(sortedDups)
 	default:
 		sortedDups = SortClonesBySize(sortedDups) // Default to size
 	}
@@ -216,6 +218,21 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 				return sortedCloneGroups[i][0].lineStart < sortedCloneGroups[j][0].lineStart
 			}
 			return sortedCloneGroups[i][0].filename < sortedCloneGroups[j][0].filename
+		})
+	case "total-tokens":
+		// Sort by total tokens across all files in each clone group
+		sort.Slice(sortedCloneGroups, func(i, j int) bool {
+			// Calculate total tokens for group i
+			totalTokensI := 0
+			for _, cl := range sortedCloneGroups[i] {
+				totalTokensI += cl.size
+			}
+			// Calculate total tokens for group j
+			totalTokensJ := 0
+			for _, cl := range sortedCloneGroups[j] {
+				totalTokensJ += cl.size
+			}
+			return totalTokensI > totalTokensJ
 		})
 	default:
 		// Default to size sorting

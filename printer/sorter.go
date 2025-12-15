@@ -58,3 +58,25 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 	})
 	return dups
 }
+
+// SortClonesByTotalTokens sorts clone groups by total token count across all files (largest first)
+func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
+	sort.Slice(dups, func(i, j int) bool {
+		// Calculate total tokens for group i
+		totalTokensI := 0
+		for _, dup := range dups[i] {
+			if dup != nil {
+				totalTokensI += len(dup.Children)
+			}
+		}
+		// Calculate total tokens for group j
+		totalTokensJ := 0
+		for _, dup := range dups[j] {
+			if dup != nil {
+				totalTokensJ += len(dup.Children)
+			}
+		}
+		return totalTokensI > totalTokensJ
+	})
+	return dups
+}

@@ -463,6 +463,11 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sortBy, _ := cmd.Flags().GetString("sort")
 	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
+	allFlag, _ := cmd.Flags().GetString("all")
+	outputDir, _ := cmd.Flags().GetString("output-dir")
+
+	// Debug output for flag parsing
+	// fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%q, outputDir=%q\n", allFlag, outputDir)
 
 	// Load configuration from file if specified
 	var fileConfig *config.Config
@@ -524,6 +529,34 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		cliConfig.DetectionMethods = methods
+	}
+
+	// Handle "all" flag - this overrides other output formats
+	if allFlag != "" {
+		// Set the output directory - if allFlag is not empty, use outputDir (which defaults to reports/art-dupl)
+		// The --all flag value may be empty (when used as --all without value) or contain a path
+		if allFlag != "true" && allFlag != "" {
+			// --all was used with a specific path
+			outputDir = allFlag
+		}
+		// Otherwise outputDir already contains the default or --output-dir value
+		
+		// "all" mode enables all detection methods and formats
+		cliConfig.DetectionMethods = config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash}
+		
+		// We need to merge configs first to get the complete configuration
+		mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
+		
+		// Validate merged configuration
+		if err = config.ValidateConfig(mergedConfig); err != nil {
+			if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
+				return err
+			}
+			return err
+		}
+		
+		// Run the all-mode handler
+		return runAllMode(outputDir, mergedConfig.Threshold, vendor, verboseFlag, args)
 	}
 
 	// Merge file and CLI configurations
@@ -650,5 +683,159 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		}
 		return err
 	}
+	return nil
+}
+
+// runAllMode generates all output formats for all detection methods
+func runAllMode(outputDir string, threshold int, vendor bool, verbose bool, paths []string) error {
+	// Create output directory
+	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+		return fmt.Errorf("failed to create output directory: %v", err)
+	}
+
+	// Define detection methods and output formats
+	detectionMethods := []config.DetectionMethod{config.DetectionMethodArtDupl, config.DetectionMethodHash}
+	outputFormats := []struct {
+		name   string
+		format config.OutputFormat
+		ext    string
+		newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+	}{
+		{"text", config.OutputFormatText, ".txt", printer.NewText},
+		{"html", config.OutputFormatHTML, ".html", printer.NewHTML},
+		{"json", config.OutputFormatJSON, ".json", printer.NewJSON},
+		{"plumbing", config.OutputFormatPlumbing, ".plumbing", printer.NewPlumbing},
+	}
+
+	// Run analysis for each detection method
+	for _, method := range detectionMethods {
+		if verbose {
+			fmt.Fprintf(cli.Stderr(), "Running %s detection method...\n", method)
+		}
+
+		// Configure the analysis with this detection method
+		config := &config.Config{
+			Threshold:      threshold,
+			IncludeVendor:  vendor,
+			Verbose:        verbose,
+			Paths:          paths,
+			DetectionMethods: config.DetectionMethods{method},
+		}
+
+		// Run the analysis once per method and generate all formats
+		if err := runAnalysisForAllFormats(config, outputDir, outputFormats, method, verbose); err != nil {
+			return fmt.Errorf("error running %s analysis: %v", method, err)
+		}
+	}
+
+	if verbose {
+		fmt.Fprintf(cli.Stderr(), "All reports generated in: %s\n", outputDir)
+	}
+	return nil
+}
+
+// runAnalysisForAllFormats runs analysis once and generates all output formats
+func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []struct {
+	name   string
+	format config.OutputFormat
+	ext    string
+	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+}, method config.DetectionMethod, verbose bool) error {
+	if verbose {
+		log.Println("Building suffix tree")
+	}
+	
+	schan, filesCountChan := job.Parse(filesFeed())
+	t, data, done := job.BuildTree(schan)
+	<-done
+
+	// Get file count
+	filesCount := <-filesCountChan
+
+	// finish stream
+	t.Update(&syntax.Node{Type: -1})
+
+	if verbose {
+		log.Println("Searching for clones")
+	}
+
+	// Get matches based on detection method
+	var duplChan chan syntax.Match
+	if method == config.DetectionMethodHash {
+		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(cfg.Threshold)
+			for match := range matches {
+				duplChan <- match
+			}
+		}()
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(cfg.Threshold)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+	}
+
+	// Generate all output formats
+	for _, fmtInfo := range formats {
+		filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
+		file, err := os.Create(filename)
+		if err != nil {
+			return fmt.Errorf("failed to create %s file: %v", filename, err)
+		}
+		defer file.Close()
+
+		p := fmtInfo.newPrinter(file, os.ReadFile)
+
+		// Set filesCount for JSONPrinter
+		if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+			jsonPrinter.SetFilesCount(filesCount)
+		}
+
+		// We need to recreate the channel for each format since it gets consumed
+		var duplChanCopy chan syntax.Match
+		if method == config.DetectionMethodHash {
+			multiDetector := detection.NewMultiDetector(cfg, data, t, false) // don't log again
+			duplChanCopy = make(chan syntax.Match)
+			go func() {
+				defer close(duplChanCopy)
+				matches := multiDetector.FindDuplOver(cfg.Threshold)
+				for match := range matches {
+					duplChanCopy <- match
+				}
+			}()
+		} else {
+			mchan := t.FindDuplOver(cfg.Threshold)
+			duplChanCopy = make(chan syntax.Match)
+			go func() {
+				defer close(duplChanCopy)
+				for m := range mchan {
+					match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+					if len(match.Frags) > 0 {
+						duplChanCopy <- match
+					}
+				}
+			}()
+		}
+
+		if err := printDupls(p, duplChanCopy, "size"); err != nil {
+			return fmt.Errorf("error writing %s format: %v", fmtInfo.name, err)
+		}
+
+		if verbose {
+			fmt.Fprintf(cli.Stderr(), "Generated %s report: %s\n", fmtInfo.name, filename)
+		}
+	}
+
 	return nil
 }

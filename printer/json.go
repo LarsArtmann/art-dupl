@@ -102,6 +102,10 @@ func sortCloneGroups(groups []CloneGroup, sortBy string) {
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Hash < groups[j].Hash
 		})
+	case "total-tokens":
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].Size > groups[j].Size
+		})
 	default:
 		// Default to size sorting for highest impact
 		sort.Slice(groups, func(i, j int) bool {
