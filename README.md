@@ -35,6 +35,9 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 source <(./art-dupl completion bash)
 # Enable shell completions (zsh) 
 source <(./art-dupl completion zsh)
+
+# Generate man page
+./art-dupl man > art-dupl.1
 ```
 
 ## Key Features
