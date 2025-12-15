@@ -327,70 +327,52 @@ Examples:
 	os.Exit(2)
 }
 
+// createHashDuplChannel creates a channel for hash-based duplicate detection
+func createHashDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+	multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
+	duplChan := make(chan syntax.Match)
+	// Find duplicates
+	go func() {
+		defer close(duplChan)
+		matches := multiDetector.FindDuplOver(cfg.Threshold)
+		// Detection completed
+		for match := range matches {
+			duplChan <- match
+		}
+	}()
+	return duplChan
+}
+
+// createArtDuplChannel creates a channel for art-dupl (suffix tree) based duplicate detection
+func createArtDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree) chan syntax.Match {
+	mchan := t.FindDuplOver(cfg.Threshold)
+	duplChan := make(chan syntax.Match)
+	go func() {
+		defer close(duplChan)
+		for m := range mchan {
+			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+			if len(match.Frags) > 0 {
+				duplChan <- match
+			}
+		}
+	}()
+	return duplChan
+}
+
 // createDuplChannel creates a channel for duplicate detection based on the method
 func createDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	if cfg.DetectionMethods.Contains(config.DetectionMethodHash) {
-		// Use hash detection method
-		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
-		duplChan := make(chan syntax.Match)
-		// Find duplicates
-		go func() {
-			defer close(duplChan)
-			matches := multiDetector.FindDuplOver(cfg.Threshold)
-			// Detection completed
-			for match := range matches {
-				duplChan <- match
-			}
-		}()
-		return duplChan
-	} else {
-		// Use existing art-dupl logic
-		mchan := t.FindDuplOver(cfg.Threshold)
-		duplChan := make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			for m := range mchan {
-				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-				if len(match.Frags) > 0 {
-					duplChan <- match
-				}
-			}
-		}()
-		return duplChan
+		return createHashDuplChannel(cfg, data, t, verbose)
 	}
+	return createArtDuplChannel(cfg, data, t)
 }
 
 // createDuplChannelForMethod creates a channel for duplicate detection based on a single method
 func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	if method == config.DetectionMethodHash {
-		// Use hash detection method
-		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
-		duplChan := make(chan syntax.Match)
-		// Find duplicates
-		go func() {
-			defer close(duplChan)
-			matches := multiDetector.FindDuplOver(cfg.Threshold)
-			// Detection completed
-			for match := range matches {
-				duplChan <- match
-			}
-		}()
-		return duplChan
-	} else {
-		// Use existing art-dupl logic
-		mchan := t.FindDuplOver(cfg.Threshold)
-		duplChan := make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			for m := range mchan {
-				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-				if len(match.Frags) > 0 {
-					duplChan <- match
-				}
-			}
-		}()
-		return duplChan
+		return createHashDuplChannel(cfg, data, t, verbose)
 	}
+	return createArtDuplChannel(cfg, data, t)
 }
 
 // executeAnalysis runs the core duplicate analysis logic

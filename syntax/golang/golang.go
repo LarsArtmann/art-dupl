@@ -79,6 +79,18 @@ type transformer struct {
 	filename string
 }
 
+// addWithNilCheck adds a child to o if not nil and valid
+func (t *transformer) addWithNilCheck(o *syntax.Node, node ast.Node) {
+	if node != nil {
+		defer func() {
+			if r := recover(); r != nil {
+				// Invalid node found, skip it
+			}
+		}()
+		o.AddChildren(t.trans(node))
+	}
+}
+
 // trans transforms given golang AST to uniform tree structure.
 func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 	o = syntax.NewNode()
@@ -207,26 +219,16 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.ForStmt:
 		o.Type = ForStmt
-		if n.Init != nil {
-			o.AddChildren(t.trans(n.Init))
-		}
-		if n.Cond != nil {
-			o.AddChildren(t.trans(n.Cond))
-		}
-		if n.Post != nil {
-			o.AddChildren(t.trans(n.Post))
-		}
+		t.addWithNilCheck(o, n.Init)
+		t.addWithNilCheck(o, n.Cond)
+		t.addWithNilCheck(o, n.Post)
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.FuncDecl:
 		o.Type = FuncDecl
-		if n.Recv != nil {
-			o.AddChildren(t.trans(n.Recv))
-		}
+		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
-		if n.Body != nil {
-			o.AddChildren(t.trans(n.Body))
-		}
+		t.addWithNilCheck(o, n.Body)
 
 	case *ast.FuncLit:
 		o.Type = FuncLit
@@ -254,13 +256,10 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.IfStmt:
 		o.Type = IfStmt
-		if n.Init != nil {
-			o.AddChildren(t.trans(n.Init))
-		}
-		o.AddChildren(t.trans(n.Cond), t.trans(n.Body))
-		if n.Else != nil {
-			o.AddChildren(t.trans(n.Else))
-		}
+		t.addWithNilCheck(o, n.Init)
+		t.addWithNilCheck(o, n.Cond)
+		t.addWithNilCheck(o, n.Body)
+		t.addWithNilCheck(o, n.Else)
 
 	case *ast.IncDecStmt:
 		o.Type = IncDecStmt

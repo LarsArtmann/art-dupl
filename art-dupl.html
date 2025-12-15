@@ -238,3 +238,91 @@
 	}
 	return sizeI &gt; sizeJ
 })</pre>
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<title>Duplicates</title>
+<style>
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+</style>
+<h1>#1 found 3 clones</h1>
+<h2>config/detectionmethod.go:44</h2>
+<pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
+		return d.IsValid()
+	}, &#34;invalid detection method: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*dm = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:41</h2>
+<pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+		return o.IsValid()
+	}, &#34;invalid output format: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*of = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:86</h2>
+<pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+		return s.IsValid()
+	}, &#34;invalid sort criteria: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*sc = candidate
+	return nil
+}</pre>
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<title>Duplicates</title>
+<style>
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+</style>
+<h1>#1 found 3 clones</h1>
+<h2>config/detectionmethod.go:44</h2>
+<pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
+		return d.IsValid()
+	}, &#34;invalid detection method: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*dm = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:41</h2>
+<pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+		return o.IsValid()
+	}, &#34;invalid output format: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*of = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:86</h2>
+<pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+		return s.IsValid()
+	}, &#34;invalid sort criteria: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*sc = candidate
+	return nil
+}</pre>
