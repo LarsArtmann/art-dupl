@@ -354,6 +354,72 @@ Examples:
 	os.Exit(2)
 }
 
+// executeAnalysis runs the core duplicate analysis logic
+func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.Match, int, error) {
+	if mergedConfig.Verbose {
+		log.Println("Building suffix tree")
+	}
+	schan, filesCountChan := job.Parse(filesFeedFromPaths(paths))
+	t, data, done := job.BuildTree(schan)
+	<-done
+
+	// Get file count
+	filesCount := <-filesCountChan
+
+	// finish stream
+	t.Update(&syntax.Node{Type: -1})
+
+	if mergedConfig.Verbose {
+		log.Println("Searching for clones")
+	}
+
+	// Use multi-detector if hash detection is enabled
+	var duplChan chan syntax.Match
+	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
+		multiDetector := detection.NewMultiDetector(mergedConfig, data, t, mergedConfig.Verbose)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(mergedConfig.Threshold)
+			for match := range matches {
+				duplChan <- match
+			}
+		}()
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(mergedConfig.Threshold)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, mergedConfig.Threshold)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+	}
+
+	return duplChan, filesCount, nil
+}
+
+// filesFeedFromPaths creates a channel of file paths to process from given paths
+func filesFeedFromPaths(paths []string) chan string {
+	if *files {
+		fchan := make(chan string)
+		go func() {
+			s := bufio.NewScanner(os.Stdin)
+			for s.Scan() {
+				f := s.Text()
+				fchan <- strings.TrimPrefix(f, "./")
+			}
+			close(fchan)
+		}()
+		return fchan
+	}
+	return crawlPaths(paths)
+}
+
 // filesFeed creates a channel of file paths to process
 func filesFeed() chan string {
 	if *files {
@@ -585,48 +651,13 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	// Note: vendor, verbose, threshold, files global variables are not used in this function
 	// as we now use the local variables instead
 
-	if verboseFlag {
-		log.Println("Building suffix tree")
-	}
-	schan, filesCountChan := job.Parse(filesFeed())
-	t, data, done := job.BuildTree(schan)
-	<-done
-
-	// Get file count
-	filesCount := <-filesCountChan
-
-	// finish stream
-	t.Update(&syntax.Node{Type: -1})
-
-	if verboseFlag {
-		log.Println("Searching for clones")
-	}
-
-	// Use multi-detector if hash detection is enabled
-	var duplChan chan syntax.Match
-	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
-		multiDetector := detection.NewMultiDetector(mergedConfig, data, t, verboseFlag)
-		duplChan = make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			matches := multiDetector.FindDuplOver(thresholdFlag)
-			for match := range matches {
-				duplChan <- match
-			}
-		}()
-	} else {
-		// Use existing art-dupl logic
-		mchan := t.FindDuplOver(thresholdFlag)
-		duplChan = make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			for m := range mchan {
-				match := syntax.FindSyntaxUnits(*data, m, thresholdFlag)
-				if len(match.Frags) > 0 {
-					duplChan <- match
-				}
-			}
-		}()
+	// Execute analysis using common helper
+	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
+	if err != nil {
+		if _, err := fmt.Fprintf(cli.Stderr(), "analysis error: %v\n", err); err != nil {
+			return err
+		}
+		return err
 	}
 
 	// Select printer based on output format
