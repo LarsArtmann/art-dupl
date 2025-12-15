@@ -14,17 +14,19 @@
 ### 🎯 OBJECTIVES (100% Complete)
 
 1. **Add CLI sorting flag** (5 minutes)
-2. **Implement sorting logic** (20 minutes) 
+2. **Implement sorting logic** (20 minutes)
 3. **Integration and testing** (5 minutes)
 
 ### 🏗️ TECHNICAL APPROACH
 
 #### **📊 EXISTING DATA WE CAN SORT:**
+
 - `size`: Token count (already available)
 - `len(files)`: Number of occurrences (already available)
 - `hash`: For stable sorting (already available)
 
 #### **🎯 SORTING CRITERIA:**
+
 1. **`size`** (default): Largest clones first (implicit severity)
 2. **`occurrence`**: Most widespread clones first
 3. **`hash`**: Alphabetical by hash (deterministic)
@@ -34,13 +36,16 @@
 ---
 
 ### ✅ TASK 1: Add CLI Flag (5 minutes)
+
 **File**: `cli.go`
-**Changes**: 
+**Changes**:
+
 - Add `sortBy` flag to command line options
 - Default to "size" for highest impact
 - Support: "size", "occurrence", "hash"
 
 **Implementation**:
+
 ```go
 sortBy = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash")
 ```
@@ -50,13 +55,16 @@ sortBy = flag.String("sort", "size", "sort clone groups by: size, occurrence, ha
 ---
 
 ### ✅ TASK 2: Add Sorting Logic (20 minutes)
+
 **File**: `printer/json.go`
 **Changes**:
+
 - Add `sortCloneGroups()` function
 - Implement three sorting criteria
 - Use existing fields only
 
 **Implementation**:
+
 ```go
 func sortCloneGroups(groups []CloneGroup, sortBy string) {
     switch sortBy {
@@ -85,13 +93,16 @@ func sortCloneGroups(groups []CloneGroup, sortBy string) {
 ---
 
 ### ✅ TASK 3: Integration (5 minutes)
-**File**: `printer/json.go` 
+
+**File**: `printer/json.go`
 **Changes**:
+
 - Modify `OutputJSON()` signature to accept sortBy parameter
 - Call sorting function before JSON generation
 - Update `main.go` to pass sortBy parameter
 
 **Implementation**:
+
 ```go
 // In OutputJSON()
 func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
@@ -109,17 +120,19 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 ### 🎯 USER EXPERIENCE
 
 #### **BEFORE (Current)**:
+
 ```bash
 ./dupl -json ./src
 # Output: Random order of clone groups
 ```
 
 #### **AFTER (Enhanced)**:
+
 ```bash
 # Default: Largest clones first (high impact)
 ./dupl -json ./src
 
-# Most widespread clones first  
+# Most widespread clones first
 ./dupl -json -sort occurrence ./src
 
 # Alphabetical order (for comparison)
@@ -172,6 +185,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 ## 🎯 SUCCESS CRITERIA
 
 ### ✅ FUNCTIONALITY
+
 - [ ] CLI flag `-sort` accepts valid inputs
 - [ ] Sorting by size works (largest first)
 - [ ] Sorting by occurrence works (most files first)
@@ -180,12 +194,14 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 - [ ] Invalid inputs default to size
 
 ### ✅ INTEGRATION
+
 - [ ] `main.go` passes sortBy parameter correctly
 - [ ] `OutputJSON()` accepts sortBy parameter
 - [ ] JSON output is properly sorted
 - [ ] Backward compatibility maintained
 
 ### ✅ USER EXPERIENCE
+
 - [ ] Help text updated with new option
 - [ ] Clear error messages for invalid inputs
 - [ ] Sorting makes immediate sense to users
@@ -193,28 +209,31 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 ## ⏱️ TIME ALLOCATION
 
-| Task | Time | Status |
-|------|------|---------|
-| Add CLI flag | 5 min | ⏳ Pending |
-| Implement sorting logic | 20 min | ⏳ Pending |
-| Integration and testing | 5 min | ⏳ Pending |
-| **TOTAL** | **30 min** | **⏳ READY TO START** |
+| Task                    | Time       | Status                |
+| ----------------------- | ---------- | --------------------- |
+| Add CLI flag            | 5 min      | ⏳ Pending            |
+| Implement sorting logic | 20 min     | ⏳ Pending            |
+| Integration and testing | 5 min      | ⏳ Pending            |
+| **TOTAL**               | **30 min** | **⏳ READY TO START** |
 
 ## 🚀 EXECUTION STRATEGY
 
 ### **PHASE 1: Implementation (30 minutes)**
+
 1. Add CLI flag
-2. Implement sorting functions  
+2. Implement sorting functions
 3. Integrate with OutputJSON
 4. Update main.go parameter passing
 
 ### **PHASE 2: Testing (10 minutes)**
+
 1. Test all sorting criteria
 2. Verify default behavior
 3. Check error handling
 4. Performance validation
 
 ### **PHASE 3: Verification (5 minutes)**
+
 1. Run end-to-end tests
 2. Validate JSON output format
 3. Confirm backward compatibility
@@ -223,12 +242,14 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 ## 🎯 EXPECTED IMPACT
 
 ### **🚀 IMMEDIATE VALUE**
+
 - **Prioritized Development**: Fix biggest clones first
 - **Clear Ranking**: Understand what matters most
 - **Better Planning**: Resource allocation based on impact
 - **Zero Learning Curve**: Just add `-sort` flag
 
-### **📈 LONG-TERM BENEFITS** 
+### **📈 LONG-TERM BENEFITS**
+
 - **Foundation**: Easy to extend with more criteria
 - **User Adoption**: Simple, useful feature
 - **Competitive Advantage**: Better than basic duplication reporting
@@ -237,18 +258,21 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 ## 📝 NOTES & ASSUMPTIONS
 
 ### **🔧 TECHNICAL ASSUMPTIONS**
+
 - Existing `CloneGroup` structure has `Size` and `Files` fields
 - `main.go` can access CLI flag values
 - JSON output format will remain unchanged
 - Sorting will be in-memory (acceptable for typical usage)
 
 ### **📊 SCOPE ASSUMPTIONS**
+
 - Only sorting, no filtering or additional analysis
 - No new JSON fields or metadata
 - No configuration file support for this feature
 - No performance optimizations beyond basic sorting
 
 ### **🎯 SUCCESS METRICS**
+
 - Implementation time: ≤ 30 minutes
 - Test coverage: 100% of sorting criteria
 - Backward compatibility: 100% maintained
@@ -269,6 +293,6 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 ---
 
-*Planning Complete: 2025-12-14 06:19 CET*  
-*Implementation Status: 🚀 READY TO START*  
-*Execution Mode: 💪 FULL SPEED AHEAD*
+_Planning Complete: 2025-12-14 06:19 CET_  
+_Implementation Status: 🚀 READY TO START_  
+_Execution Mode: 💪 FULL SPEED AHEAD_

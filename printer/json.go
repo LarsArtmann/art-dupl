@@ -134,7 +134,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
 		start := findLineBeg(file, nstart.Pos)
 		var content []byte
-		
+
 		// Ensure all indices are within file bounds
 		fileLen := len(file)
 		if start > fileLen {
@@ -148,7 +148,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		if endPos > fileLen {
 			endPos = fileLen
 		}
-		
+
 		// Only extract content if we have valid bounds
 		if startPos < endPos {
 			if start < startPos {

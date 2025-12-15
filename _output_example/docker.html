@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<meta charset="utf-8"/>
+<!doctype html>
+<meta charset="utf-8" />
 <title>Duplicates</title>
 <style>
-	pre {
-		background-color: #FFD;
-		border: 1px solid #E2E2E2;
-		padding: 1ex;
-	}
+  pre {
+  	background-color: #FFD;
+  	border: 1px solid #E2E2E2;
+  	padding: 1ex;
+  }
 </style>
 <h1>#1 found 2 clones</h1>
 <h2>vendor/src/code.google.com/p/go.net/ipv6/multicast_test.go:131</h2>
-<pre>for i, toggle := range []bool{true, false, true} {
+<pre>
+for i, toggle := range []bool{true, false, true} {
 	wb, err := (&icmpMessage{
 		Type: ipv6.ICMPTypeEchoRequest, Code: 0,
 		Body: &icmpEcho{
@@ -39,9 +40,11 @@
 			t.Fatalf("got type=%v, code=%v; expected type=%v, code=%v", m.Type, m.Code, ipv6.ICMPTypeEchoReply, 0)
 		}
 	}
-}</pre>
+}</pre
+>
 <h2>vendor/src/code.google.com/p/go.net/ipv6/unicast_test.go:173</h2>
-<pre>for i, toggle := range []bool{true, false, true} {
+<pre>
+for i, toggle := range []bool{true, false, true} {
 	wb, err := (&icmpMessage{
 		Type: ipv6.ICMPTypeEchoRequest, Code: 0,
 		Body: &icmpEcho{
@@ -70,10 +73,12 @@
 			t.Fatalf("got type=%v, code=%v; expected type=%v, code=%v", m.Type, m.Code, ipv6.ICMPTypeEchoReply, 0)
 		}
 	}
-}</pre>
+}</pre
+>
 <h1>#2 found 2 clones</h1>
 <h2>vendor/src/code.google.com/p/go.net/websocket/hybi_test.go:33</h2>
-<pre>func TestHybiClientHandshake(t *testing.T) {
+<pre>
+func TestHybiClientHandshake(t *testing.T) {
 	b := bytes.NewBuffer([]byte{})
 	bw := bufio.NewWriter(b)
 	br := bufio.NewReader(strings.NewReader(`HTTP/1.1 101 Switching Protocols
@@ -133,9 +138,11 @@ Sec-WebSocket-Protocol: chat
 			t.Errorf(fmt.Sprintf("%s expected %q but got %q", k, v, req.Header.Get(k)))
 		}
 	}
-}</pre>
+}</pre
+>
 <h2>vendor/src/code.google.com/p/go.net/websocket/hybi_test.go:160</h2>
-<pre>func TestHybiClientHandshakeHybi08(t *testing.T) {
+<pre>
+func TestHybiClientHandshakeHybi08(t *testing.T) {
 	b := bytes.NewBuffer([]byte{})
 	bw := bufio.NewWriter(b)
 	br := bufio.NewReader(strings.NewReader(`HTTP/1.1 101 Switching Protocols
@@ -195,10 +202,12 @@ Sec-WebSocket-Protocol: chat
 			t.Errorf(fmt.Sprintf("%s expected %q but got %q", k, v, req.Header.Get(k)))
 		}
 	}
-}</pre>
+}</pre
+>
 <h1>#3 found 2 clones</h1>
 <h2>vendor/src/code.google.com/p/go.net/ipv4/gen.go:122</h2>
-<pre>func (icp *icmpv4Parameters) escape() []canonICMPv4ParamRecord {
+<pre>
+func (icp *icmpv4Parameters) escape() []canonICMPv4ParamRecord {
 	id := -1
 	for i, r := range icp.Registries {
 		if strings.Contains(r.Title, "Type") || strings.Contains(r.Title, "type") {
@@ -240,9 +249,11 @@ Sec-WebSocket-Protocol: chat
 		prs[i].Value, _ = strconv.Atoi(pr.Value)
 	}
 	return prs
-}</pre>
+}</pre
+>
 <h2>vendor/src/code.google.com/p/go.net/ipv6/gen.go:122</h2>
-<pre>func (icp *icmpv6Parameters) escape() []canonICMPv6ParamRecord {
+<pre>
+func (icp *icmpv6Parameters) escape() []canonICMPv6ParamRecord {
 	id := -1
 	for i, r := range icp.Registries {
 		if strings.Contains(r.Title, "Type") || strings.Contains(r.Title, "type") {
@@ -284,10 +295,12 @@ Sec-WebSocket-Protocol: chat
 		prs[i].Value, _ = strconv.Atoi(pr.Value)
 	}
 	return prs
-}</pre>
+}</pre
+>
 <h1>#4 found 2 clones</h1>
 <h2>pkg/term/termios_darwin.go:1</h2>
-<pre>package term
+<pre>
+package term
 
 import (
 	"syscall"
@@ -351,9 +364,11 @@ func MakeRaw(fd uintptr) (*State, error) {
 	}
 
 	return &oldState, nil
-}</pre>
+}</pre
+>
 <h2>pkg/term/termios_freebsd.go:1</h2>
-<pre>package term
+<pre>
+package term
 
 import (
 	"syscall"
@@ -417,10 +432,12 @@ func MakeRaw(fd uintptr) (*State, error) {
 	}
 
 	return &oldState, nil
-}</pre>
+}</pre
+>
 <h1>#5 found 2 clones</h1>
 <h2>vendor/src/code.google.com/p/go.net/ipv4/gentest.go:12</h2>
-<pre>package main
+<pre>
+package main
 
 import (
 	"bytes"
@@ -604,9 +621,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		trs[i].Value = int(n)
 	}
 	return trs
-}</pre>
+}</pre
+>
 <h2>vendor/src/code.google.com/p/go.net/ipv6/gentest.go:12</h2>
-<pre>package main
+<pre>
+package main
 
 import (
 	"bytes"
@@ -790,10 +809,12 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		trs[i].Value = int(n)
 	}
 	return trs
-}</pre>
+}</pre
+>
 <h1>#6 found 2 clones</h1>
 <h2>pkg/jsonlog/jsonlog_marshalling.go:114</h2>
-<pre>                                                         {
+<pre>
+                                                         {
 	const hex = "0123456789abcdef"
 
 	buf.WriteByte('"')
@@ -854,9 +875,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		buf.WriteString(s[start:])
 	}
 	buf.WriteByte('"')
-}</pre>
+}</pre
+>
 <h2>pkg/jsonlog/jsonlogbytes.go:54</h2>
-<pre>                                                                {
+<pre>
+                                                                {
 	const hex = "0123456789abcdef"
 
 	buf.WriteByte('"')
@@ -917,10 +940,12 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		buf.Write(s[start:])
 	}
 	buf.WriteByte('"')
-}</pre>
+}</pre
+>
 <h1>#7 found 3 clones</h1>
 <h2>daemon/container_unit_test.go:8</h2>
-<pre>func TestParseNetworkOptsPrivateOnly(t *testing.T) {
+<pre>
+func TestParseNetworkOptsPrivateOnly(t *testing.T) {
 	ports, bindings, err := nat.ParsePortSpecs([]string{"192.168.1.100::80"})
 	if err != nil {
 		t.Fatal(err)
@@ -960,9 +985,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 			t.Fail()
 		}
 	}
-}</pre>
+}</pre
+>
 <h2>daemon/container_unit_test.go:50</h2>
-<pre>func TestParseNetworkOptsPublic(t *testing.T) {
+<pre>
+func TestParseNetworkOptsPublic(t *testing.T) {
 	ports, bindings, err := nat.ParsePortSpecs([]string{"192.168.1.100:8080:80"})
 	if err != nil {
 		t.Fatal(err)
@@ -1002,9 +1029,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 			t.Fail()
 		}
 	}
-}</pre>
+}</pre
+>
 <h2>daemon/container_unit_test.go:127</h2>
-<pre>func TestParseNetworkOptsUdp(t *testing.T) {
+<pre>
+func TestParseNetworkOptsUdp(t *testing.T) {
 	ports, bindings, err := nat.ParsePortSpecs([]string{"192.168.1.100::6000/udp"})
 	if err != nil {
 		t.Fatal(err)
@@ -1044,10 +1073,12 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 			t.Fail()
 		}
 	}
-}</pre>
+}</pre
+>
 <h1>#8 found 2 clones</h1>
 <h2>vendor/src/github.com/docker/libnetwork/portmapper/mapper_test.go:39</h2>
-<pre>func TestMapTCPPorts(t *testing.T) {
+<pre>
+func TestMapTCPPorts(t *testing.T) {
 	defer netutils.SetupTestNetNS(t)()
 	pm := New()
 	dstIP1 := net.ParseIP("192.168.0.1")
@@ -1092,9 +1123,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 	if pm.Unmap(dstAddr2) == nil {
 		t.Fatalf("Port already released, but no error reported")
 	}
-}</pre>
+}</pre
+>
 <h2>vendor/src/github.com/docker/libnetwork/portmapper/mapper_test.go:119</h2>
-<pre>func TestMapUDPPorts(t *testing.T) {
+<pre>
+func TestMapUDPPorts(t *testing.T) {
 	defer netutils.SetupTestNetNS(t)()
 	pm := New()
 	dstIP1 := net.ParseIP("192.168.0.1")
@@ -1139,10 +1172,12 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 	if pm.Unmap(dstAddr2) == nil {
 		t.Fatalf("Port already released, but no error reported")
 	}
-}</pre>
+}</pre
+>
 <h1>#9 found 2 clones</h1>
 <h2>integration-cli/docker_cli_create_test.go:104</h2>
-<pre>func (s *DockerSuite) TestCreateWithPortRange(c *check.C) {
+<pre>
+func (s *DockerSuite) TestCreateWithPortRange(c *check.C) {
 
 	runCmd := exec.Command(dockerBinary, "create", "-p", "3300-3303:3300-3303/tcp", "busybox", "echo")
 	out, _, _, err := runCommandWithStdoutStderr(runCmd)
@@ -1187,9 +1222,11 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		}
 	}
 
-}</pre>
+}</pre
+>
 <h2>integration-cli/docker_cli_create_test.go:151</h2>
-<pre>func (s *DockerSuite) TestCreateWithiLargePortRange(c *check.C) {
+<pre>
+func (s *DockerSuite) TestCreateWithiLargePortRange(c *check.C) {
 
 	runCmd := exec.Command(dockerBinary, "create", "-p", "1-65535:1-65535/tcp", "busybox", "echo")
 	out, _, _, err := runCommandWithStdoutStderr(runCmd)
@@ -1234,4 +1271,5 @@ func (ttb *tosTCByte) escape() []canonTOSTCByteRecord {
 		}
 	}
 
-}</pre>
+}</pre
+>

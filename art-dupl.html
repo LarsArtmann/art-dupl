@@ -9,239 +9,117 @@
 	}
 </style>
 <h1>#1 found 2 clones</h1>
-<h2>job/helpers_test.go:1</h2>
-<pre>package job
+<h2>printer/sorting_integration_test.go:204</h2>
+<pre>t.Run(&#34;SortClonesBySize&#34;, func(t *testing.T) {
+	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
+	sorted := SortClonesBySize(clones)
 
-import (
-	&#34;os&#34;
-	&#34;path/filepath&#34;
-	&#34;testing&#34;
-)
+	if len(sorted[0]) &lt; len(sorted[1]) || len(sorted[1]) &lt; len(sorted[2]) {
+		t.Errorf(&#34;Size sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
+			len(sorted[0]), len(sorted[1]), len(sorted[2]))
+	}
+})</pre>
+<h2>printer/sorting_integration_test.go:215</h2>
+<pre>t.Run(&#34;SortClonesByOccurrence&#34;, func(t *testing.T) {
+	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
+	sorted := SortClonesByOccurrence(clones)
 
-// Create test files for job package testing
-func setupTestFiles(t *testing.T) string {
-	tmpDir := t.TempDir()
-
-	// Create a simple Go file
-	goFile := filepath.Join(tmpDir, &#34;test.go&#34;)
-	content := []byte(`package main
-
-import &#34;fmt&#34;
-
-func main() {
-	fmt.Println(&#34;hello&#34;)
-}
-
-func helper() {
-	fmt.Println(&#34;helper&#34;)
-}`)
-
-	err := os.WriteFile(goFile, content, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test Go file: %v&#34;, err)
+	if len(sorted[0]) &lt; len(sorted[1]) || len(sorted[1]) &lt; len(sorted[2]) {
+		t.Errorf(&#34;Occurrence sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
+			len(sorted[0]), len(sorted[1]), len(sorted[2]))
+	}
+})</pre>
+<h1>#2 found 3 clones</h1>
+<h2>config/detectionmethod.go:44</h2>
+<pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
 	}
 
-	return goFile
-}
-
-// Test helpers for job package tests
-func setupMultipleTestFiles(t *testing.T) []string {
-	tmpDir := t.TempDir()
-
-	files := make([]string, 2)
-
-	// First file
-	file1 := filepath.Join(tmpDir, &#34;file1.go&#34;)
-	content1 := []byte(`package main
-
-func function1() {
-	println(&#34;test1&#34;)
-}`)
-	err := os.WriteFile(file1, content1, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test file 1: %v&#34;, err)
+	candidate := DetectionMethod(str)
+	if !candidate.IsValid() {
+		return fmt.Errorf(&#34;invalid detection method: %s&#34;, str)
 	}
-	files[0] = file1
-
-	// Second file
-	file2 := filepath.Join(tmpDir, &#34;file2.go&#34;)
-	content2 := []byte(`package main
-
-func function1() {
-	println(&#34;test2&#34;)
-}`)
-	err = os.WriteFile(file2, content2, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test file 2: %v&#34;, err)
-	}
-	files[1] = file2
-
-	return files
+	*dm = candidate
+	return nil
 }</pre>
-<h2>testutils_test.go:1</h2>
-<pre>package main
-
-import (
-	&#34;os&#34;
-	&#34;path/filepath&#34;
-	&#34;testing&#34;
-)
-
-// Create test files for job package testing
-// NOTE: Currently unused but kept for future test development
-//
-//nolint:unused
-func setupTestFiles(t *testing.T) string {
-	tmpDir := t.TempDir()
-
-	// Create a simple Go file
-	goFile := filepath.Join(tmpDir, &#34;test.go&#34;)
-	content := []byte(`package main
-
-import &#34;fmt&#34;
-
-func main() {
-	fmt.Println(&#34;hello&#34;)
-}
-
-func helper() {
-	fmt.Println(&#34;helper&#34;)
-}`)
-
-	err := os.WriteFile(goFile, content, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test Go file: %v&#34;, err)
+<h2>config/outputformat.go:41</h2>
+<pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
 	}
 
-	return goFile
-}
-
-// Test helpers for job package tests
-// NOTE: Currently unused but kept for future test development
-//
-//nolint:unused
-func setupMultipleTestFiles(t *testing.T) []string {
-	tmpDir := t.TempDir()
-
-	files := make([]string, 2)
-
-	// First file
-	file1 := filepath.Join(tmpDir, &#34;file1.go&#34;)
-	content1 := []byte(`package main
-
-func function1() {
-	println(&#34;test1&#34;)
-}`)
-	err := os.WriteFile(file1, content1, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test file 1: %v&#34;, err)
+	candidate := OutputFormat(str)
+	if !candidate.IsValid() {
+		return fmt.Errorf(&#34;invalid output format: %s&#34;, str)
 	}
-	files[0] = file1
-
-	// Second file
-	file2 := filepath.Join(tmpDir, &#34;file2.go&#34;)
-	content2 := []byte(`package main
-
-func function1() {
-	println(&#34;test2&#34;)
-}`)
-	err = os.WriteFile(file2, content2, 0o644)
-	if err != nil {
-		t.Fatalf(&#34;Failed to create test file 2: %v&#34;, err)
-	}
-	files[1] = file2
-
-	return files
+	*of = candidate
+	return nil
 }</pre>
-<h1>#2 found 2 clones</h1>
-<h2>cli.go:753</h2>
-<pre>if method == config.DetectionMethodHash {
-	// Use hash detection method
-	multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
-	duplChan = make(chan syntax.Match)
-	// Find duplicates
-	go func() {
-		defer close(duplChan)
-		matches := multiDetector.FindDuplOver(cfg.Threshold)
-		// Detection completed
-		for match := range matches {
-			duplChan &lt;- match
-		}
-	}()
-} else {
-	// Use existing art-dupl logic
-	mchan := t.FindDuplOver(cfg.Threshold)
-	duplChan = make(chan syntax.Match)
-	go func() {
-		defer close(duplChan)
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-			if len(match.Frags) &gt; 0 {
-				duplChan &lt;- match
-			}
-		}
-	}()
-}</pre>
-<h2>cli.go:803</h2>
-<pre>if method == config.DetectionMethodHash {
-	multiDetector := detection.NewMultiDetector(cfg, data, t, false) // don&#39;t log again
-	duplChanCopy = make(chan syntax.Match)
-	go func() {
-		defer close(duplChanCopy)
-		matches := multiDetector.FindDuplOver(cfg.Threshold)
-		for match := range matches {
-			duplChanCopy &lt;- match
-		}
-	}()
-} else {
-	mchan := t.FindDuplOver(cfg.Threshold)
-	duplChanCopy = make(chan syntax.Match)
-	go func() {
-		defer close(duplChanCopy)
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-			if len(match.Frags) &gt; 0 {
-				duplChanCopy &lt;- match
-			}
-		}
-	}()
+<h2>config/outputformat.go:89</h2>
+<pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
+	}
+
+	candidate := SortCriteria(str)
+	if !candidate.IsValid() {
+		return fmt.Errorf(&#34;invalid sort criteria: %s&#34;, str)
+	}
+	*sc = candidate
+	return nil
 }</pre>
 <h1>#3 found 2 clones</h1>
-<h2>printer/sorter.go:10</h2>
-<pre>                                                {
-	sort.Slice(dups, func(i, j int) bool {
-		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
-			return false
-		}
-		if len(dups[i]) == 0 {
-			return true
-		}
-		if len(dups[j]) == 0 {
-			return false
-		}
-		// Use Filename for deterministic sorting
-		if dups[i][0].Filename == dups[j][0].Filename {
-			return dups[i][0].Pos &lt; dups[j][0].Pos
-		}
-		return dups[i][0].Filename &lt; dups[j][0].Filename
-	})
+<h2>config/config_test.go:254</h2>
+<pre>func TestMergeConfigsNilFileConfig(t *testing.T) {
+	cliConfig := &amp;Config{
+		Threshold:     30,
+		OutputFormat:  &#34;json&#34;,
+		IncludeVendor: true,
+	}
+
+	merged := MergeConfigs(nil, cliConfig)
+
+	// Should get defaults overridden by CLI config
+	if merged.Threshold != 30 {
+		t.Errorf(&#34;Expected merged threshold 30, got %d&#34;, merged.Threshold)
+	}
+	if merged.OutputFormat != &#34;json&#34; {
+		t.Errorf(&#34;Expected merged OutputFormat json, got %s&#34;, merged.OutputFormat)
+	}
+	if merged.IncludeVendor != true {
+		t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+	}
+	// Should get default values for unset fields
+	if merged.Verbose != false {
+		t.Errorf(&#34;Expected merged Verbose false, got %v&#34;, merged.Verbose)
+	}
 }</pre>
-<h2>printer/sorter.go:30</h2>
-<pre>                                            {
-	sort.Slice(clones, func(i, j int) bool {
-		if len(clones[i]) == 0 &amp;&amp; len(clones[j]) == 0 {
-			return false
-		}
-		if len(clones[i]) == 0 {
-			return true
-		}
-		if len(clones[j]) == 0 {
-			return false
-		}
-		// Compare by first filename in each group
-		if clones[i][0].filename == clones[j][0].filename {
-			return clones[i][0].lineStart &lt; clones[j][0].lineStart
-		}
-		return clones[i][0].filename &lt; clones[j][0].filename
-	})
+<h2>config/config_test.go:279</h2>
+<pre>func TestMergeConfigsNilCLIConfig(t *testing.T) {
+	fileConfig := &amp;Config{
+		Threshold:    40,
+		OutputFormat: &#34;html&#34;,
+		Verbose:      true,
+	}
+
+	merged := MergeConfigs(fileConfig, nil)
+
+	// Should get file config values
+	if merged.Threshold != 40 {
+		t.Errorf(&#34;Expected merged threshold 40, got %d&#34;, merged.Threshold)
+	}
+	if merged.OutputFormat != &#34;html&#34; {
+		t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+	}
+	if merged.Verbose != true {
+		t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
+	}
+	// Should get default values for unset fields
+	if merged.IncludeVendor != false {
+		t.Errorf(&#34;Expected merged IncludeVendor false, got %v&#34;, merged.IncludeVendor)
+	}
 }</pre>

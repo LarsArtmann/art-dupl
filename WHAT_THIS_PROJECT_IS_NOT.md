@@ -16,9 +16,11 @@ This document clarifies what dupl is NOT designed for, helping you understand wh
 ## dupl is NOT a Semantic Code Analyzer
 
 ### What it Does
+
 dupl finds structural duplicates based on Abstract Syntax Trees (ASTs). It identifies code blocks that have similar structures, ignoring literal values.
 
 ### What it Does NOT Do
+
 - **It does NOT detect functionally equivalent code** that looks different
 - **It does NOT understand business logic or intent**
 - **It does NOT identify design pattern duplication**
@@ -40,7 +42,9 @@ func sumValues(x, y int) int {
 ```
 
 ### When You Need Semantic Analysis
+
 Use tools like:
+
 - Static analysis tools for semantic issues
 - Manual code review for logical similarity
 - Specialized refactoring tools for architectural patterns
@@ -48,9 +52,11 @@ Use tools like:
 ## dupl is NOT a Refactoring Tool
 
 ### What it Does
+
 dupl identifies code that should potentially be refactored by showing you where duplicates exist.
 
 ### What it Does NOT Do
+
 - **It does NOT automatically refactor code**
 - **It does NOT suggest specific refactoring approaches**
 - **It does NOT perform safe code transformations**
@@ -85,7 +91,9 @@ func (a *Admin) ValidateEmail() error {
 ```
 
 ### For Automatic Refactoring
+
 Use IDE features or tools like:
+
 - GoLand's refactoring tools
 - `gorename` for safe renaming
 - Manual extraction with careful testing
@@ -93,9 +101,11 @@ Use IDE features or tools like:
 ## dupl is NOT a Code Quality Silver Bullet
 
 ### What it Measures
+
 dupl measures one specific aspect of code quality: structural duplication.
 
 ### What it Does NOT Measure
+
 - **Code readability** or maintainability
 - **Algorithmic efficiency** or performance
 - **Security vulnerabilities** or unsafe patterns
@@ -131,7 +141,9 @@ func (h metricsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 ```
 
 ### For Comprehensive Quality Assessment
+
 Combine dupl with:
+
 - `go vet` for suspicious constructs
 - `golint` for style issues
 - `gosec` for security
@@ -141,9 +153,11 @@ Combine dupl with:
 ## dupl is NOT a Plagiarism Detector
 
 ### What it Does
+
 dupl finds structural duplicates within a single codebase.
 
 ### What it Does NOT Do
+
 - **It does NOT detect plagiarism across different projects**
 - **It does NOT handle variable renaming systematically**
 - **It does NOT track code provenance or attribution**
@@ -167,7 +181,9 @@ func calculateBMI(mass, stature float64) float64 {
 ```
 
 ### For Academic Plagiarism Detection
+
 Use specialized tools:
+
 - MOSS (Measure of Software Similarity)
 - JPlag
 - Academic plagiarism detection systems
@@ -175,9 +191,11 @@ Use specialized tools:
 ## dupl is NOT a Cross-Language Tool
 
 ### What it Handles
+
 dupl is designed specifically for Go source code.
 
 ### What it Does NOT Handle
+
 - **Other programming languages** (Java, Python, JavaScript, etc.)
 - **Multi-language project analysis**
 - **Cross-language similarity detection**
@@ -186,6 +204,7 @@ dupl is designed specifically for Go source code.
 ### Example: No Cross-Language Analysis
 
 If you have:
+
 ```java
 // Java code
 public boolean isValid(String email) {
@@ -209,7 +228,9 @@ func isValid(email string) bool {
 dupl will only analyze the Go code and cannot compare it with the Java implementation.
 
 ### For Multi-Language Projects
+
 Use language-specific tools:
+
 - PMD CPD for Java, C++, JavaScript
 - jscpd for 150+ formats
 - Separate analysis per language
@@ -217,9 +238,11 @@ Use language-specific tools:
 ## dupl is NOT a Runtime Performance Analyzer
 
 ### What it Analyzes
+
 dupl analyzes static code structure for duplication patterns.
 
 ### What it Does NOT Analyze
+
 - **Execution time** or algorithmic complexity
 - **Memory usage** patterns
 - **I/O operations** or database queries
@@ -245,7 +268,9 @@ func findDuplicates(slice []int) []int {
 ```
 
 ### For Performance Analysis
+
 Use profiling tools:
+
 - `pprof` for CPU and memory profiling
 - Benchmark tests
 - Tracing tools
@@ -254,9 +279,11 @@ Use profiling tools:
 ## dupl is NOT a Documentation Generator
 
 ### What it Provides
+
 dupl provides reports about code duplication.
 
 ### What it Does NOT Generate
+
 - **API documentation** from code comments
 - **Architecture diagrams** showing system structure
 - **Code explanations** or tutorials
@@ -278,7 +305,9 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request) {
 ```
 
 ### For Documentation
+
 Use dedicated tools:
+
 - `godoc` for Go documentation
 - Diagram generators for architecture
 - Manual documentation for complex logic
@@ -286,14 +315,18 @@ Use dedicated tools:
 ## dupl is NOT a Universal Solution
 
 ### What dupl Solves Well
+
 dupl excels at finding structural code duplication in Go codebases, particularly:
+
 - Copy-pasted code blocks
 - Similar function implementations
 - Repeated patterns across files
 - Opportunities for extraction and refactoring
 
 ### What dupl Doesn't Solve
+
 dupl is not a substitute for:
+
 - **Good software design principles**
 - **Code reviews and team communication**
 - **Architectural planning**
@@ -343,6 +376,7 @@ func (c *APIConfig) Validate() error {
 ## When to Use Alternative Approaches
 
 ### Use dupl when:
+
 - You want to find copy-paste code duplication
 - You need to identify refactoring opportunities
 - You want to measure code duplication metrics
@@ -350,6 +384,7 @@ func (c *APIConfig) Validate() error {
 - You need automated duplication detection in CI/CD
 
 ### Consider alternatives when:
+
 - You need semantic similarity analysis
 - You're working with multiple languages
 - You need automatic refactoring
@@ -360,20 +395,21 @@ func (c *APIConfig) Validate() error {
 
 dupl works best as part of a larger toolkit:
 
-| Need | dupl | Complementary Tool |
-|------|------|-------------------|
-| Code style | ❌ | golint, gofmt |
-| Security | ❌ | gosec, go vet |
-| Performance | ❌ | pprof, benchmarks |
-| Testing | ❌ | go test, coverage |
-| Documentation | ❌ | godoc |
-| Refactoring | Partial | IDE tools, gorename |
+| Need          | dupl    | Complementary Tool  |
+| ------------- | ------- | ------------------- |
+| Code style    | ❌      | golint, gofmt       |
+| Security      | ❌      | gosec, go vet       |
+| Performance   | ❌      | pprof, benchmarks   |
+| Testing       | ❌      | go test, coverage   |
+| Documentation | ❌      | godoc               |
+| Refactoring   | Partial | IDE tools, gorename |
 
 ## Conclusion
 
 dupl is a specialized tool that does one thing well: finding structural code duplication in Go codebases. Understanding its limitations helps you use it effectively and know when to reach for other tools or approaches.
 
 Remember:
+
 - **dupl finds duplication, not intent**
 - **dupl identifies symptoms, not solutions**
 - **dupl measures structure, not quality**

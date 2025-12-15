@@ -9,6 +9,7 @@ go install github.com/LarsArtmann/art-dupl@latest
 ```
 
 Or build from source:
+
 ```bash
 git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make build
 ```
@@ -33,7 +34,7 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 
 # Enable shell completions (bash)
 source <(./art-dupl completion bash)
-# Enable shell completions (zsh) 
+# Enable shell completions (zsh)
 source <(./art-dupl completion zsh)
 
 # Generate man page
@@ -52,6 +53,7 @@ source <(./art-dupl completion zsh)
 ## Configuration
 
 Create `dupl.json`:
+
 ```json
 {
   "threshold": 30,
@@ -61,6 +63,7 @@ Create `dupl.json`:
 ```
 
 Use with:
+
 ```bash
 ./dupl -config dupl.json
 ```
@@ -81,6 +84,7 @@ Use with:
 ## Examples
 
 ### CI/CD Integration
+
 ```bash
 # Fail build if too many duplicates
 TOTAL_CLONES=$(dupl -json . | jq '.summary.total_clones')
@@ -91,6 +95,7 @@ fi
 ```
 
 ### Analysis
+
 ```bash
 # Find test file duplicates
 find . -name '*_test.go' | dupl -files

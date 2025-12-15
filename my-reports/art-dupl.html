@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<meta charset="utf-8"/>
+<!doctype html>
+<meta charset="utf-8" />
 <title>Duplicates</title>
 <style>
-	pre {
-		background-color: #FFD;
-		border: 1px solid #E2E2E2;
-		padding: 1ex;
-	}
+  pre {
+  	background-color: #FFD;
+  	border: 1px solid #E2E2E2;
+  	padding: 1ex;
+  }
 </style>
 <h1>#1 found 2 clones</h1>
 <h2>config/config_test.go:60</h2>
-<pre>if config.Threshold != 50 {
+<pre>
+if config.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
 }
 if config.IncludeVendor != true {
@@ -21,9 +22,11 @@ if config.OutputFormat != &#34;json&#34; {
 }
 if config.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:234</h2>
-<pre>if merged.Threshold != 25 {
+<pre>
+if merged.Threshold != 25 {
 	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
 }
 if merged.IncludeVendor != true {
@@ -34,10 +37,12 @@ if merged.OutputFormat != &#34;html&#34; {
 }
 if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h1>#2 found 3 clones</h1>
 <h2>integration_test.go:65</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Valid config&#34;,
 	config: &amp;config.Config{
 		Threshold:         15,
@@ -45,9 +50,11 @@ if merged.Verbose != true {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: true,
-}</pre>
+}</pre
+>
 <h2>integration_test.go:74</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold&#34;,
 	config: &amp;config.Config{
 		Threshold:         0,
@@ -55,9 +62,11 @@ if merged.Verbose != true {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>integration_test.go:83</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid output format&#34;,
 	config: &amp;config.Config{
 		Threshold:         15,
@@ -65,10 +74,12 @@ if merged.Verbose != true {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#3 found 2 clones</h1>
 <h2>syntax/golang/golang.go:221</h2>
-<pre>case *ast.FuncDecl:
+<pre>
+case *ast.FuncDecl:
 	o.Type = FuncDecl
 	if n.Recv != nil {
 		o.AddChildren(t.trans(n.Recv))
@@ -76,9 +87,11 @@ if merged.Verbose != true {
 	o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 	if n.Body != nil {
 		o.AddChildren(t.trans(n.Body))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:255</h2>
-<pre>case *ast.IfStmt:
+<pre>
+case *ast.IfStmt:
 	o.Type = IfStmt
 	if n.Init != nil {
 		o.AddChildren(t.trans(n.Init))
@@ -86,64 +99,80 @@ if merged.Verbose != true {
 	o.AddChildren(t.trans(n.Cond), t.trans(n.Body))
 	if n.Else != nil {
 		o.AddChildren(t.trans(n.Else))
-	}</pre>
+	}</pre
+>
 <h1>#4 found 2 clones</h1>
 <h2>syntax/golang/golang.go:261</h2>
-<pre>	if n.Else != nil {
+<pre>
+	if n.Else != nil {
 		o.AddChildren(t.trans(n.Else))
 	}
 
 case *ast.IncDecStmt:
 	o.Type = IncDecStmt
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:330</h2>
-<pre>	if n.Max != nil {
+<pre>
+	if n.Max != nil {
 		o.AddChildren(t.trans(n.Max))
 	}
 
 case *ast.StarExpr:
 	o.Type = StarExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h1>#5 found 3 clones</h1>
 <h2>cli.go:558</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; plumbing {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; plumbing {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
 		return err
 	}
 	return fmt.Errorf(&#34;conflicting output formats&#34;)
-}</pre>
+}</pre
+>
 <h2>cli.go:564</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; json {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; json {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
 		return err
 	}
 	return fmt.Errorf(&#34;conflicting output formats&#34;)
-}</pre>
+}</pre
+>
 <h2>cli.go:570</h2>
-<pre>if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; json {
+<pre>
+if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; json {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
 		return err
 	}
 	return fmt.Errorf(&#34;conflicting output formats&#34;)
-}</pre>
+}</pre
+>
 <h1>#6 found 2 clones</h1>
 <h2>config/config_test.go:127</h2>
-<pre>if loaded.Threshold != config.Threshold {
+<pre>
+if loaded.Threshold != config.Threshold {
 	t.Errorf(&#34;Saved threshold %d, got %d&#34;, config.Threshold, loaded.Threshold)
 }
 if loaded.IncludeVendor != config.IncludeVendor {
 	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:130</h2>
-<pre>if loaded.IncludeVendor != config.IncludeVendor {
+<pre>
+if loaded.IncludeVendor != config.IncludeVendor {
 	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
 }
 if loaded.OutputFormat != config.OutputFormat {
 	t.Errorf(&#34;Saved OutputFormat %s, got %s&#34;, config.OutputFormat, loaded.OutputFormat)
-}</pre>
+}</pre
+>
 <h1>#7 found 2 clones</h1>
 <h2>config/config_test.go:154</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too low&#34;,
 	config: &amp;Config{
 		Threshold:         0,
@@ -178,9 +207,11 @@ if loaded.OutputFormat != config.OutputFormat {
 		MaxChildrenSerial: 999,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:163</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too high&#34;,
 	config: &amp;Config{
 		Threshold:         1001,
@@ -215,10 +246,12 @@ if loaded.OutputFormat != config.OutputFormat {
 		MaxChildrenSerial: 100001,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#8 found 2 clones</h1>
 <h2>cli.go:157</h2>
-<pre>var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+<pre>
+var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 switch mergedConfig.OutputFormat {
 case config.OutputFormatHTML:
 	newPrinter = printer.NewHTML
@@ -228,9 +261,11 @@ case config.OutputFormatJSON:
 	newPrinter = printer.NewJSON
 default:
 	newPrinter = printer.NewText
-}</pre>
+}</pre
+>
 <h2>cli.go:592</h2>
-<pre>var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+<pre>
+var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 switch mergedConfig.OutputFormat {
 case config.OutputFormatHTML:
 	newPrinter = printer.NewHTML
@@ -240,119 +275,167 @@ case config.OutputFormatJSON:
 	newPrinter = printer.NewJSON
 default:
 	newPrinter = printer.NewText
-}</pre>
+}</pre
+>
 <h1>#9 found 6 clones</h1>
 <h2>syntax/findsyntaxunits_test.go:15</h2>
-<pre>for i := range nodes {
+<pre>
+for i := range nodes {
 	nodes[i] = &amp;Node{Type: i, Owns: 0}
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:52</h2>
-<pre>for i := range nodes1 {
+<pre>
+for i := range nodes1 {
 	nodes1[i] = &amp;Node{Type: i, Owns: 0}
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:60</h2>
-<pre>for i := range nodes2 {
+<pre>
+for i := range nodes2 {
 	nodes2[i] = &amp;Node{Type: i, Owns: 0}
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:95</h2>
-<pre>for i := range data {
+<pre>
+for i := range data {
 	data[i] = &amp;Node{Type: i, Owns: 1}
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:111</h2>
-<pre>for i := range data {
+<pre>
+for i := range data {
 	data[i] = &amp;Node{Type: i, Owns: 0}
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:130</h2>
-<pre>for i := range data {
+<pre>
+for i := range data {
 	data[i] = &amp;Node{Type: i, Owns: 0}
-}</pre>
+}</pre
+>
 <h1>#10 found 4 clones</h1>
 <h2>syntax/golang/golang.go:114</h2>
-<pre>case *ast.BlockStmt:
+<pre>
+case *ast.BlockStmt:
 	o.Type = BlockStmt
 	for _, stmt := range n.List {
 		o.AddChildren(t.trans(stmt))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:192</h2>
-<pre>case *ast.FieldList:
+<pre>
+case *ast.FieldList:
 	o.Type = FieldList
 	for _, field := range n.List {
 		o.AddChildren(t.trans(field))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:242</h2>
-<pre>case *ast.GenDecl:
+<pre>
+case *ast.GenDecl:
 	o.Type = GenDecl
 	for _, spec := range n.Specs {
 		o.AddChildren(t.trans(spec))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:303</h2>
-<pre>case *ast.ReturnStmt:
+<pre>
+case *ast.ReturnStmt:
 	o.Type = ReturnStmt
 	for _, e := range n.Results {
 		o.AddChildren(t.trans(e))
-	}</pre>
+	}</pre
+>
 <h1>#11 found 3 clones</h1>
 <h2>printer/json.go:93</h2>
-<pre>case &#34;size&#34;:
+<pre>
+case &#34;size&#34;:
 	sort.Slice(groups, func(i, j int) bool {
 		return groups[i].Size &gt; groups[j].Size
-	})</pre>
+	})</pre
+>
 <h2>printer/json.go:101</h2>
-<pre>case &#34;hash&#34;:
+<pre>
+case &#34;hash&#34;:
 	sort.Slice(groups, func(i, j int) bool {
 		return groups[i].Hash &lt; groups[j].Hash
-	})</pre>
+	})</pre
+>
 <h2>printer/json.go:105</h2>
-<pre>case &#34;total-tokens&#34;:
+<pre>
+case &#34;total-tokens&#34;:
 	sort.Slice(groups, func(i, j int) bool {
 		return groups[i].Size &gt; groups[j].Size
-	})</pre>
+	})</pre
+>
 <h1>#12 found 4 clones</h1>
 <h2>bdd/bdd_test.go:504</h2>
-<pre>err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;UserService&#34;)), 0o644)</pre>
+<pre>
+err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;UserService&#34;)), 0o644)</pre
+>
 <h2>bdd/bdd_test.go:506</h2>
-<pre>err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;OrderService&#34;)), 0o644)</pre>
+<pre>
+err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;OrderService&#34;)), 0o644)</pre
+>
 <h2>bdd_test.go:479</h2>
-<pre>err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;UserService&#34;)), 0o644)</pre>
+<pre>
+err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;UserService&#34;)), 0o644)</pre
+>
 <h2>bdd_test.go:481</h2>
-<pre>err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;OrderService&#34;)), 0o644)</pre>
+<pre>
+err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;OrderService&#34;)), 0o644)</pre
+>
 <h1>#13 found 2 clones</h1>
 <h2>syntax/findsyntaxunits_test.go:93</h2>
-<pre>setup: func() []*Node {
+<pre>
+setup: func() []*Node {
 	data := make([]*Node, 5)
 	for i := range data {
 		data[i] = &amp;Node{Type: i, Owns: 1}
 	}
 	return data
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:128</h2>
-<pre>setup: func() []*Node {
+<pre>
+setup: func() []*Node {
 	data := make([]*Node, 5)
 	for i := range data {
 		data[i] = &amp;Node{Type: i, Owns: 0}
 	}
 	return data
-}</pre>
+}</pre
+>
 <h1>#14 found 4 clones</h1>
 <h2>job/buildtree_test.go:29</h2>
-<pre>case &lt;-time.After(5 * time.Second):
+<pre>
+case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree timed out&#34;)
-	return</pre>
+	return</pre
+>
 <h2>job/buildtree_test.go:56</h2>
-<pre>case &lt;-time.After(5 * time.Second):
+<pre>
+case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree with empty input should not time out&#34;)
-	return</pre>
+	return</pre
+>
 <h2>job/buildtree_test.go:94</h2>
-<pre>case &lt;-time.After(5 * time.Second):
+<pre>
+case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree with multiple sequences timed out&#34;)
-	return</pre>
+	return</pre
+>
 <h2>job/parse_test.go:63</h2>
-<pre>case &lt;-time.After(5 * time.Second):
+<pre>
+case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;Parse timed out waiting for multiple files&#34;)
-	return</pre>
+	return</pre
+>
 <h1>#15 found 2 clones</h1>
 <h2>config/outputformat.go:10</h2>
-<pre>const (
+<pre>
+const (
 	OutputFormatText     OutputFormat = &#34;text&#34;
 	OutputFormatHTML     OutputFormat = &#34;html&#34;
 	OutputFormatJSON     OutputFormat = &#34;json&#34;
@@ -395,9 +478,11 @@ func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 	}
 	*of = candidate
 	return nil
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:58</h2>
-<pre>const (
+<pre>
+const (
 	SortBySize        SortCriteria = &#34;size&#34;
 	SortByOccurrence  SortCriteria = &#34;occurrence&#34;
 	SortByHash        SortCriteria = &#34;hash&#34;
@@ -440,94 +525,121 @@ func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	}
 	*sc = candidate
 	return nil
-}</pre>
+}</pre
+>
 <h1>#16 found 2 clones</h1>
 <h2>printer/sorting_integration_test.go:258</h2>
-<pre>for i, clone := range sorted {
+<pre>
+for i, clone := range sorted {
 	if clone[0].Filename != expectedOrder[i] {
 		t.Errorf(&#34;Hash sorting failed at index %d. Expected: %s, Got: %s&#34;,
 			i, expectedOrder[i], clone[0].Filename)
 	}
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:287</h2>
-<pre>for i, clone := range sorted {
+<pre>
+for i, clone := range sorted {
 	if clone[0].Filename != expectedOrder[i] {
 		t.Errorf(&#34;Total-tokens sorting failed at index %d. Expected: %s, Got: %s&#34;,
 			i, expectedOrder[i], clone[0].Filename)
 	}
-}</pre>
+}</pre
+>
 <h1>#17 found 2 clones</h1>
 <h2>printer/json_test.go:65</h2>
-<pre>if len(jsonPrinter.cloneGroups) != 1 {
+<pre>
+if len(jsonPrinter.cloneGroups) != 1 {
 	t.Errorf(&#34;Expected 1 clone group, got %d&#34;, len(jsonPrinter.cloneGroups))
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:140</h2>
-<pre>if len(output.CloneGroups) != 0 {
+<pre>
+if len(output.CloneGroups) != 0 {
 	t.Errorf(&#34;Expected 0 clone groups, got %d&#34;, len(output.CloneGroups))
-}</pre>
+}</pre
+>
 <h1>#18 found 2 clones</h1>
 <h2>printer/json_test.go:156</h2>
-<pre>nodes[0] = &amp;syntax.Node{
+<pre>
+nodes[0] = &amp;syntax.Node{
 	Type:     golang.FuncDecl,
 	Filename: &#34;test.go&#34;,
 	Pos:      10,
 	End:      30,
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:163</h2>
-<pre>nodes[1] = &amp;syntax.Node{
+<pre>
+nodes[1] = &amp;syntax.Node{
 	Type:     golang.FuncDecl,
 	Filename: &#34;test.go&#34;,
 	Pos:      40,
 	End:      60,
-}</pre>
+}</pre
+>
 <h1>#19 found 4 clones</h1>
 <h2>config/config_test.go:16</h2>
-<pre>if config.IncludeVendor != false {
+<pre>
+if config.IncludeVendor != false {
 	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
 }
 if config.OutputFormat != &#34;text&#34; {
 	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:63</h2>
-<pre>if config.IncludeVendor != true {
+<pre>
+if config.IncludeVendor != true {
 	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
 }
 if config.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:237</h2>
-<pre>if merged.IncludeVendor != true {
+<pre>
+if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
 }
 if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:26</h2>
-<pre>if err.Type != ParseError {
+<pre>
+if err.Type != ParseError {
 	t.Errorf(&#34;Expected ParseError type, got %s&#34;, err.Type)
 }
 if err.File != &#34;test.go&#34; {
 	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
-}</pre>
+}</pre
+>
 <h1>#20 found 3 clones</h1>
 <h2>printer/sorting_integration_test.go:63</h2>
-<pre>{
+<pre>
+{
 	name:          &#34;Sort by size descending&#34;,
 	sortBy:        &#34;size&#34;,
 	expectedOrder: []string{&#34;large.go&#34;, &#34;another_large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;},
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:68</h2>
-<pre>{
+<pre>
+{
 	name:          &#34;Sort by occurrence (file count)&#34;,
 	sortBy:        &#34;occurrence&#34;,
 	expectedOrder: []string{&#34;large.go&#34;, &#34;another_large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;}, // All have same occurrence, should fallback to size
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:73</h2>
-<pre>{
+<pre>
+{
 	name:          &#34;Sort by hash (filename order)&#34;,
 	sortBy:        &#34;hash&#34;,
 	expectedOrder: []string{&#34;another_large.go&#34;, &#34;large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;},
-}</pre>
+}</pre
+>
 <h1>#21 found 2 clones</h1>
 <h2>cli/cli_test.go:48</h2>
 <pre>g.Expect(config.GetThreshold()).To(gomega.Equal(30))</pre>
@@ -535,47 +647,58 @@ if err.File != &#34;test.go&#34; {
 <pre>g.Expect(config.GetThreshold()).To(gomega.Equal(20))</pre>
 <h1>#22 found 3 clones</h1>
 <h2>syntax/golang/golang.go:265</h2>
-<pre>case *ast.IncDecStmt:
+<pre>
+case *ast.IncDecStmt:
 	o.Type = IncDecStmt
 	o.AddChildren(t.trans(n.X))
 
 case *ast.IndexExpr:
 	o.Type = IndexExpr
-	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre
+>
 <h2>syntax/golang/golang.go:273</h2>
-<pre>case *ast.InterfaceType:
+<pre>
+case *ast.InterfaceType:
 	o.Type = InterfaceType
 	o.AddChildren(t.trans(n.Methods))
 
 case *ast.KeyValueExpr:
 	o.Type = KeyValueExpr
-	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:309</h2>
-<pre>case *ast.SelectStmt:
+<pre>
+case *ast.SelectStmt:
 	o.Type = SelectStmt
 	o.AddChildren(t.trans(n.Body))
 
 case *ast.SelectorExpr:
 	o.Type = SelectorExpr
-	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre
+>
 <h1>#23 found 2 clones</h1>
 <h2>cli.go:535</h2>
-<pre>if err = config.ValidateConfig(mergedConfig); err != nil {
+<pre>
+if err = config.ValidateConfig(mergedConfig); err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:550</h2>
-<pre>if err = config.ValidateConfig(mergedConfig); err != nil {
+<pre>
+if err = config.ValidateConfig(mergedConfig); err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h1>#24 found 2 clones</h1>
 <h2>syntax/golang/golang.go:210</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
 }
 if n.Cond != nil {
@@ -583,9 +706,11 @@ if n.Cond != nil {
 }
 if n.Post != nil {
 	o.AddChildren(t.trans(n.Post))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:324</h2>
-<pre>if n.Low != nil {
+<pre>
+if n.Low != nil {
 	o.AddChildren(t.trans(n.Low))
 }
 if n.High != nil {
@@ -593,27 +718,33 @@ if n.High != nil {
 }
 if n.Max != nil {
 	o.AddChildren(t.trans(n.Max))
-}</pre>
+}</pre
+>
 <h1>#25 found 2 clones</h1>
 <h2>printer/html.go:111</h2>
-<pre>if startPos &lt; endPos {
+<pre>
+if startPos &lt; endPos {
 	if start &lt; startPos {
 		content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
 	} else {
 		content = file[startPos:endPos]
 	}
-}</pre>
+}</pre
+>
 <h2>printer/json.go:153</h2>
-<pre>if startPos &lt; endPos {
+<pre>
+if startPos &lt; endPos {
 	if start &lt; startPos {
 		content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
 	} else {
 		content = file[startPos:endPos]
 	}
-}</pre>
+}</pre
+>
 <h1>#26 found 3 clones</h1>
 <h2>config/detectionmethod.go:36</h2>
-<pre>func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
+<pre>
+func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 	if !dm.IsValid() {
 		return nil, fmt.Errorf(&#34;invalid detection method: %s&#34;, dm)
 	}
@@ -633,9 +764,11 @@ func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
 	}
 	*dm = candidate
 	return nil
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:33</h2>
-<pre>func (of OutputFormat) MarshalJSON() ([]byte, error) {
+<pre>
+func (of OutputFormat) MarshalJSON() ([]byte, error) {
 	if !of.IsValid() {
 		return nil, fmt.Errorf(&#34;invalid output format: %s&#34;, of)
 	}
@@ -655,9 +788,11 @@ func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 	}
 	*of = candidate
 	return nil
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:81</h2>
-<pre>func (sc SortCriteria) MarshalJSON() ([]byte, error) {
+<pre>
+func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 	if !sc.IsValid() {
 		return nil, fmt.Errorf(&#34;invalid sort criteria: %s&#34;, sc)
 	}
@@ -677,51 +812,65 @@ func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	}
 	*sc = candidate
 	return nil
-}</pre>
+}</pre
+>
 <h1>#27 found 2 clones</h1>
 <h2>config/outputformat.go:104</h2>
-<pre>func AllOutputFormats() []OutputFormat {
+<pre>
+func AllOutputFormats() []OutputFormat {
 	return []OutputFormat{
 		OutputFormatText,
 		OutputFormatHTML,
 		OutputFormatJSON,
 		OutputFormatPlumbing,
 	}
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:114</h2>
-<pre>func AllSortCriteria() []SortCriteria {
+<pre>
+func AllSortCriteria() []SortCriteria {
 	return []SortCriteria{
 		SortBySize,
 		SortByOccurrence,
 		SortByHash,
 		SortByTotalTokens,
 	}
-}</pre>
+}</pre
+>
 <h1>#28 found 2 clones</h1>
 <h2>syntax/findsyntaxunits_test.go:119</h2>
-<pre>match: suffixtree.Match{
+<pre>
+match: suffixtree.Match{
 	Ps:  []suffixtree.Pos{0},
 	Len: 8,
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:135</h2>
-<pre>match: suffixtree.Match{
+<pre>
+match: suffixtree.Match{
 	Ps:  []suffixtree.Pos{0},
 	Len: 2,
-}</pre>
+}</pre
+>
 <h1>#29 found 2 clones</h1>
 <h2>syntax/findsyntaxunits_test.go:33</h2>
-<pre>match := suffixtree.Match{
+<pre>
+match := suffixtree.Match{
 	Ps:  []suffixtree.Pos{0, 10},
 	Len: 5,
-}</pre>
+}</pre
+>
 <h2>syntax/findsyntaxunits_test.go:69</h2>
-<pre>match := suffixtree.Match{
+<pre>
+match := suffixtree.Match{
 	Ps:  []suffixtree.Pos{0, 10},
 	Len: 8,
-}</pre>
+}</pre
+>
 <h1>#30 found 3 clones</h1>
 <h2>cli.go:81</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
 		// If we can&#39;t even write to stderr, just exit
 		cli.Exit(1)
@@ -729,77 +878,102 @@ func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:147</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:173</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h1>#31 found 2 clones</h1>
 <h2>bdd/bdd_test.go:597</h2>
-<pre>Expect(len(strings.Split(outputStr, &#34;\n&#34;))).To(BeNumerically(&#34;&gt;&#34;, numFiles))</pre>
+<pre>
+Expect(len(strings.Split(outputStr, &#34;\n&#34;))).To(BeNumerically(&#34;&gt;&#34;, numFiles))</pre
+>
 <h2>bdd_test.go:560</h2>
-<pre>Expect(len(strings.Split(output, &#34;\n&#34;))).To(BeNumerically(&#34;&gt;&#34;, numFiles))</pre>
+<pre>
+Expect(len(strings.Split(output, &#34;\n&#34;))).To(BeNumerically(&#34;&gt;&#34;, numFiles))</pre
+>
 <h1>#32 found 4 clones</h1>
 <h2>syntax/golang/golang.go:223</h2>
-<pre>if n.Recv != nil {
+<pre>
+if n.Recv != nil {
 	o.AddChildren(t.trans(n.Recv))
 }
-o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre
+>
 <h2>syntax/golang/golang.go:257</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
 }
-o.AddChildren(t.trans(n.Cond), t.trans(n.Body))</pre>
+o.AddChildren(t.trans(n.Cond), t.trans(n.Body))</pre
+>
 <h2>syntax/golang/golang.go:298</h2>
-<pre>if n.Value != nil {
+<pre>
+if n.Value != nil {
 	o.AddChildren(t.trans(n.Value))
 }
-o.AddChildren(t.trans(n.X), t.trans(n.Body))</pre>
+o.AddChildren(t.trans(n.X), t.trans(n.Body))</pre
+>
 <h2>syntax/golang/golang.go:365</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
 }
-o.AddChildren(t.trans(n.Assign), t.trans(n.Body))</pre>
+o.AddChildren(t.trans(n.Assign), t.trans(n.Body))</pre
+>
 <h1>#33 found 3 clones</h1>
 <h2>cli.go:44</h2>
 <pre>func (t *TestCLI) Exit(code int)     { t.ExitCode = code }</pre>
 <h2>printer/json.go:81</h2>
-<pre>func (p *JSONPrinter) SetHash(hash string) {
+<pre>
+func (p *JSONPrinter) SetHash(hash string) {
 	p.currentHash = hash
-}</pre>
+}</pre
+>
 <h2>printer/json.go:86</h2>
-<pre>func (p *JSONPrinter) SetFilesCount(count int) {
+<pre>
+func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
-}</pre>
+}</pre
+>
 <h1>#34 found 2 clones</h1>
 <h2>config/config_test.go:204</h2>
-<pre>if tt.isValid &amp;&amp; err != nil {
+<pre>
+if tt.isValid &amp;&amp; err != nil {
 	t.Errorf(&#34;Expected valid config, got error: %v&#34;, err)
 }
 if !tt.isValid &amp;&amp; err == nil {
 	t.Error(&#34;Expected invalid config, but got no error&#34;)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:97</h2>
-<pre>if tt.isValid &amp;&amp; err != nil {
+<pre>
+if tt.isValid &amp;&amp; err != nil {
 	t.Errorf(&#34;Expected valid config, got error: %v&#34;, err)
 }
 if !tt.isValid &amp;&amp; err == nil {
 	t.Error(&#34;Expected invalid config, but got no error&#34;)
-}</pre>
+}</pre
+>
 <h1>#35 found 2 clones</h1>
 <h2>cli.go:34</h2>
 <pre>func (r *RealCLI) Stderr() io.Writer { return os.Stderr }</pre>
@@ -807,7 +981,8 @@ if !tt.isValid &amp;&amp; err == nil {
 <pre>func (r *RealCLI) Stdout() io.Writer { return os.Stdout }</pre>
 <h1>#36 found 3 clones</h1>
 <h2>config/config_test.go:264</h2>
-<pre>if merged.Threshold != 30 {
+<pre>
+if merged.Threshold != 30 {
 	t.Errorf(&#34;Expected merged threshold 30, got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;json&#34; {
@@ -819,9 +994,11 @@ if merged.IncludeVendor != true {
 // Should get default values for unset fields
 if merged.Verbose != false {
 	t.Errorf(&#34;Expected merged Verbose false, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:289</h2>
-<pre>if merged.Threshold != 40 {
+<pre>
+if merged.Threshold != 40 {
 	t.Errorf(&#34;Expected merged threshold 40, got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;html&#34; {
@@ -833,9 +1010,11 @@ if merged.Verbose != true {
 // Should get default values for unset fields
 if merged.IncludeVendor != false {
 	t.Errorf(&#34;Expected merged IncludeVendor false, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:31</h2>
-<pre>if merged.Threshold != 50 {
+<pre>
+if merged.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50 (CLI override), got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;html&#34; {
@@ -848,67 +1027,85 @@ if merged.IncludeVendor != true {
 // Test file config values preserved
 if merged.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true (from file), got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h1>#37 found 8 clones</h1>
 <h2>config/config_test.go:13</h2>
-<pre>if config.Threshold != 15 {
+<pre>
+if config.Threshold != 15 {
 	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
 }
 if config.IncludeVendor != false {
 	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:60</h2>
-<pre>if config.Threshold != 50 {
+<pre>
+if config.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
 }
 if config.IncludeVendor != true {
 	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:66</h2>
-<pre>if config.OutputFormat != &#34;json&#34; {
+<pre>
+if config.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
 }
 if config.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:234</h2>
-<pre>if merged.Threshold != 25 {
+<pre>
+if merged.Threshold != 25 {
 	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
 }
 if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:240</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
 }
 if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:267</h2>
-<pre>if merged.OutputFormat != &#34;json&#34; {
+<pre>
+if merged.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat json, got %s&#34;, merged.OutputFormat)
 }
 if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:292</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
 }
 if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:34</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
 }
 if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected IncludeVendor true (CLI override), got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h1>#38 found 4 clones</h1>
 <h2>printer/html.go:55</h2>
-<pre>switch sortCriteria {
+<pre>
+switch sortCriteria {
 case &#34;size&#34;:
 	sortedDups = SortClonesBySize(sortedDups)
 case &#34;occurrence&#34;:
@@ -919,9 +1116,11 @@ case &#34;total-tokens&#34;:
 	sortedDups = SortClonesByTotalTokens(sortedDups)
 default:
 	sortedDups = SortClonesBySize(sortedDups) // Default to size
-}</pre>
+}</pre
+>
 <h2>printer/html.go:199</h2>
-<pre>switch sortBy {
+<pre>
+switch sortBy {
 case &#34;size&#34;:
 	allDups = SortClonesBySize(allDups)
 case &#34;occurrence&#34;:
@@ -932,9 +1131,11 @@ case &#34;total-tokens&#34;:
 	allDups = SortClonesByTotalTokens(allDups)
 default:
 	allDups = SortClonesBySize(allDups) // Default to size
-}</pre>
+}</pre
+>
 <h2>printer/plumbing.go:33</h2>
-<pre>switch sortCriteria {
+<pre>
+switch sortCriteria {
 case &#34;size&#34;:
 	sortedDups = SortClonesBySize(sortedDups)
 case &#34;occurrence&#34;:
@@ -945,9 +1146,11 @@ case &#34;total-tokens&#34;:
 	sortedDups = SortClonesByTotalTokens(sortedDups)
 default:
 	sortedDups = SortClonesBySize(sortedDups) // Default to size
-}</pre>
+}</pre
+>
 <h2>printer/text.go:39</h2>
-<pre>switch sortCriteria {
+<pre>
+switch sortCriteria {
 case &#34;size&#34;:
 	sortedDups = SortClonesBySize(sortedDups)
 case &#34;occurrence&#34;:
@@ -958,25 +1161,31 @@ case &#34;total-tokens&#34;:
 	sortedDups = SortClonesByTotalTokens(sortedDups)
 default:
 	sortedDups = SortClonesBySize(sortedDups) // Default to size
-}</pre>
+}</pre
+>
 <h1>#39 found 2 clones</h1>
 <h2>cli.go:646</h2>
-<pre>                 []struct {
+<pre>
+                 []struct {
 	name       string
 	format     config.OutputFormat
 	ext        string
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
-}</pre>
+}</pre
+>
 <h2>cli.go:686</h2>
-<pre>                                                                            []struct {
+<pre>
+                                                                            []struct {
 	name       string
 	format     config.OutputFormat
 	ext        string
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
-}</pre>
+}</pre
+>
 <h1>#40 found 2 clones</h1>
 <h2>printer/sorting_integration_test.go:230</h2>
-<pre>t.Run(&#34;SortClonesBySize&#34;, func(t *testing.T) {
+<pre>
+t.Run(&#34;SortClonesBySize&#34;, func(t *testing.T) {
 	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
 	sorted := SortClonesBySize(clones)
 
@@ -984,9 +1193,11 @@ default:
 		t.Errorf(&#34;Size sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
 			len(sorted[0]), len(sorted[1]), len(sorted[2]))
 	}
-})</pre>
+})</pre
+>
 <h2>printer/sorting_integration_test.go:241</h2>
-<pre>t.Run(&#34;SortClonesByOccurrence&#34;, func(t *testing.T) {
+<pre>
+t.Run(&#34;SortClonesByOccurrence&#34;, func(t *testing.T) {
 	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
 	sorted := SortClonesByOccurrence(clones)
 
@@ -994,10 +1205,12 @@ default:
 		t.Errorf(&#34;Occurrence sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
 			len(sorted[0]), len(sorted[1]), len(sorted[2]))
 	}
-})</pre>
+})</pre
+>
 <h1>#41 found 5 clones</h1>
 <h2>cli.go:81</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
 		// If we can&#39;t even write to stderr, just exit
 		cli.Exit(1)
@@ -1005,36 +1218,44 @@ default:
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:103</h2>
-<pre>                                                         {
+<pre>
+                                                         {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:147</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:173</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:196</h2>
-<pre>                                                                   {
+<pre>
+                                                                   {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: %v\n&#34;, err); err != nil {
 		// If we can&#39;t even write to stderr, just exit
 		cli.Exit(1)
@@ -1042,78 +1263,105 @@ default:
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h1>#42 found 6 clones</h1>
 <h2>printer/sorting_integration_test.go:133</h2>
-<pre>                                       {
+<pre>
+                                       {
 	t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:135</h2>
-<pre>                                 {
+<pre>
+                                 {
 	t.Errorf(&#34;Sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:156</h2>
-<pre>                                       {
+<pre>
+                                       {
 	t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:158</h2>
-<pre>                                 {
+<pre>
+                                 {
 	t.Errorf(&#34;HTML sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:179</h2>
-<pre>                                       {
+<pre>
+                                       {
 	t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:181</h2>
-<pre>                                 {
+<pre>
+                                 {
 	t.Errorf(&#34;Plumbing sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-}</pre>
+}</pre
+>
 <h1>#43 found 3 clones</h1>
 <h2>printer/sorter.go:12</h2>
-<pre>if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
+<pre>
+if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
 	return false
-}</pre>
+}</pre
+>
 <h2>printer/sorter.go:32</h2>
-<pre>if len(clones[i]) == 0 &amp;&amp; len(clones[j]) == 0 {
+<pre>
+if len(clones[i]) == 0 &amp;&amp; len(clones[j]) == 0 {
 	return false
-}</pre>
+}</pre
+>
 <h2>printer/sorter.go:54</h2>
-<pre>if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
+<pre>
+if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
 	return false
-}</pre>
+}</pre
+>
 <h1>#44 found 4 clones</h1>
 <h2>syntax/golang/golang.go:138</h2>
-<pre>	for _, stmt := range n.Body {
+<pre>
+	for _, stmt := range n.Body {
 		o.AddChildren(t.trans(stmt))
 	}
 
 case *ast.ChanType:
 	o.Type = ChanType
-	o.AddChildren(t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:160</h2>
-<pre>	for _, e := range n.Elts {
+<pre>
+	for _, e := range n.Elts {
 		o.AddChildren(t.trans(e))
 	}
 
 case *ast.DeclStmt:
 	o.Type = DeclStmt
-	o.AddChildren(t.trans(n.Decl))</pre>
+	o.AddChildren(t.trans(n.Decl))</pre
+>
 <h2>syntax/golang/golang.go:244</h2>
-<pre>	for _, spec := range n.Specs {
+<pre>
+	for _, spec := range n.Specs {
 		o.AddChildren(t.trans(spec))
 	}
 
 case *ast.GoStmt:
 	o.Type = GoStmt
-	o.AddChildren(t.trans(n.Call))</pre>
+	o.AddChildren(t.trans(n.Call))</pre
+>
 <h2>syntax/golang/golang.go:305</h2>
-<pre>	for _, e := range n.Results {
+<pre>
+	for _, e := range n.Results {
 		o.AddChildren(t.trans(e))
 	}
 
 case *ast.SelectStmt:
 	o.Type = SelectStmt
-	o.AddChildren(t.trans(n.Body))</pre>
+	o.AddChildren(t.trans(n.Body))</pre
+>
 <h1>#45 found 4 clones</h1>
 <h2>printer/sorter.go:23</h2>
 <pre>return dups[i][0].Pos &lt; dups[j][0].Pos</pre>
@@ -1125,100 +1373,147 @@ case *ast.SelectStmt:
 <pre>return clones[i][0].filename &lt; clones[j][0].filename</pre>
 <h1>#46 found 23 clones</h1>
 <h2>cli_test.go:32</h2>
-<pre>if testCLI.ExitCode != 42 {
+<pre>
+if testCLI.ExitCode != 42 {
 	t.Errorf(&#34;Expected exit code 42, got %d&#34;, testCLI.ExitCode)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:13</h2>
-<pre>if config.Threshold != 15 {
+<pre>
+if config.Threshold != 15 {
 	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:19</h2>
-<pre>if config.OutputFormat != &#34;text&#34; {
+<pre>
+if config.OutputFormat != &#34;text&#34; {
 	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:60</h2>
-<pre>if config.Threshold != 50 {
+<pre>
+if config.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:66</h2>
-<pre>if config.OutputFormat != &#34;json&#34; {
+<pre>
+if config.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:78</h2>
-<pre>if config.MaxChildrenSerial != 20000 {
+<pre>
+if config.MaxChildrenSerial != 20000 {
 	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, config.MaxChildrenSerial)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:234</h2>
-<pre>if merged.Threshold != 25 {
+<pre>
+if merged.Threshold != 25 {
 	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:240</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:264</h2>
-<pre>if merged.Threshold != 30 {
+<pre>
+if merged.Threshold != 30 {
 	t.Errorf(&#34;Expected merged threshold 30, got %d&#34;, merged.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:267</h2>
-<pre>if merged.OutputFormat != &#34;json&#34; {
+<pre>
+if merged.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat json, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:289</h2>
-<pre>if merged.Threshold != 40 {
+<pre>
+if merged.Threshold != 40 {
 	t.Errorf(&#34;Expected merged threshold 40, got %d&#34;, merged.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:292</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:29</h2>
-<pre>if err.File != &#34;test.go&#34; {
+<pre>
+if err.File != &#34;test.go&#34; {
 	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:32</h2>
-<pre>if err.Line != 42 {
+<pre>
+if err.Line != 42 {
 	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:35</h2>
-<pre>if err.Message != &#34;test message&#34; {
+<pre>
+if err.Message != &#34;test message&#34; {
 	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:31</h2>
-<pre>if merged.Threshold != 50 {
+<pre>
+if merged.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50 (CLI override), got %d&#34;, merged.Threshold)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:34</h2>
-<pre>if merged.OutputFormat != &#34;html&#34; {
+<pre>
+if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:51</h2>
-<pre>if merged.MaxChildrenSerial != 20000 {
+<pre>
+if merged.MaxChildrenSerial != 20000 {
 	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, merged.MaxChildrenSerial)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:54</h2>
-<pre>if merged.OutputFile != &#34;output.json&#34; {
+<pre>
+if merged.OutputFile != &#34;output.json&#34; {
 	t.Errorf(&#34;Expected OutputFile output.json, got %s&#34;, merged.OutputFile)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:23</h2>
-<pre>if jsonPrinter.iota != 0 {
+<pre>
+if jsonPrinter.iota != 0 {
 	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:26</h2>
-<pre>if jsonPrinter.filesCount != 0 {
+<pre>
+if jsonPrinter.filesCount != 0 {
 	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:29</h2>
-<pre>if jsonPrinter.totalClones != 0 {
+<pre>
+if jsonPrinter.totalClones != 0 {
 	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:62</h2>
-<pre>if jsonPrinter.iota != 1 {
+<pre>
+if jsonPrinter.iota != 1 {
 	t.Errorf(&#34;Expected iota to be 1, got %d&#34;, jsonPrinter.iota)
-}</pre>
+}</pre
+>
 <h1>#47 found 3 clones</h1>
 <h2>config/config_test.go:13</h2>
-<pre>if config.Threshold != 15 {
+<pre>
+if config.Threshold != 15 {
 	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
 }
 if config.IncludeVendor != false {
@@ -1226,9 +1521,11 @@ if config.IncludeVendor != false {
 }
 if config.OutputFormat != &#34;text&#34; {
 	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:60</h2>
-<pre>if config.Threshold != 50 {
+<pre>
+if config.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
 }
 if config.IncludeVendor != true {
@@ -1236,9 +1533,11 @@ if config.IncludeVendor != true {
 }
 if config.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:234</h2>
-<pre>if merged.Threshold != 25 {
+<pre>
+if merged.Threshold != 25 {
 	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
 }
 if merged.IncludeVendor != true {
@@ -1246,59 +1545,76 @@ if merged.IncludeVendor != true {
 }
 if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h1>#48 found 6 clones</h1>
 <h2>syntax/golang/golang.go:210</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
 }
 if n.Cond != nil {
 	o.AddChildren(t.trans(n.Cond))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:213</h2>
-<pre>if n.Cond != nil {
+<pre>
+if n.Cond != nil {
 	o.AddChildren(t.trans(n.Cond))
 }
 if n.Post != nil {
 	o.AddChildren(t.trans(n.Post))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:295</h2>
-<pre>if n.Key != nil {
+<pre>
+if n.Key != nil {
 	o.AddChildren(t.trans(n.Key))
 }
 if n.Value != nil {
 	o.AddChildren(t.trans(n.Value))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:324</h2>
-<pre>if n.Low != nil {
+<pre>
+if n.Low != nil {
 	o.AddChildren(t.trans(n.Low))
 }
 if n.High != nil {
 	o.AddChildren(t.trans(n.High))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:327</h2>
-<pre>if n.High != nil {
+<pre>
+if n.High != nil {
 	o.AddChildren(t.trans(n.High))
 }
 if n.Max != nil {
 	o.AddChildren(t.trans(n.Max))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:344</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
 }
 if n.Tag != nil {
 	o.AddChildren(t.trans(n.Tag))
-}</pre>
+}</pre
+>
 <h1>#49 found 2 clones</h1>
 <h2>job/buildtree_test.go:67</h2>
-<pre>if len(*data) != 0 {
+<pre>
+if len(*data) != 0 {
 	t.Errorf(&#34;Expected empty data, got %d nodes&#34;, len(*data))
-}</pre>
+}</pre
+>
 <h2>job/buildtree_test.go:100</h2>
-<pre>if len(*data) != 4 {
+<pre>
+if len(*data) != 4 {
 	t.Errorf(&#34;Expected 4 nodes total, got %d&#34;, len(*data))
-}</pre>
+}</pre
+>
 <h1>#50 found 7 clones</h1>
 <h2>config/config_test.go:22</h2>
 <pre>	   len(config.Paths) != 1 || config.Paths[0] != &#34;.&#34;</pre>
@@ -1316,58 +1632,84 @@ if n.Tag != nil {
 <pre>	   len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34;</pre>
 <h1>#51 found 4 clones</h1>
 <h2>printer/json.go:94</h2>
-<pre>sort.Slice(groups, func(i, j int) bool {
+<pre>
+sort.Slice(groups, func(i, j int) bool {
 	return groups[i].Size &gt; groups[j].Size
-})</pre>
+})</pre
+>
 <h2>printer/json.go:102</h2>
-<pre>sort.Slice(groups, func(i, j int) bool {
+<pre>
+sort.Slice(groups, func(i, j int) bool {
 	return groups[i].Hash &lt; groups[j].Hash
-})</pre>
+})</pre
+>
 <h2>printer/json.go:106</h2>
-<pre>sort.Slice(groups, func(i, j int) bool {
+<pre>
+sort.Slice(groups, func(i, j int) bool {
 	return groups[i].Size &gt; groups[j].Size
-})</pre>
+})</pre
+>
 <h2>printer/json.go:111</h2>
-<pre>sort.Slice(groups, func(i, j int) bool {
+<pre>
+sort.Slice(groups, func(i, j int) bool {
 	return groups[i].Size &gt; groups[j].Size
-})</pre>
+})</pre
+>
 <h1>#52 found 9 clones</h1>
 <h2>syntax/golang/golang.go:110</h2>
-<pre>case *ast.BinaryExpr:
+<pre>
+case *ast.BinaryExpr:
 	o.Type = BinaryExpr
-	o.AddChildren(t.trans(n.X), t.trans(n.Y))</pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Y))</pre
+>
 <h2>syntax/golang/golang.go:231</h2>
-<pre>case *ast.FuncLit:
+<pre>
+case *ast.FuncLit:
 	o.Type = FuncLit
-	o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre>
+	o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre
+>
 <h2>syntax/golang/golang.go:269</h2>
-<pre>case *ast.IndexExpr:
+<pre>
+case *ast.IndexExpr:
 	o.Type = IndexExpr
-	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre
+>
 <h2>syntax/golang/golang.go:277</h2>
-<pre>case *ast.KeyValueExpr:
+<pre>
+case *ast.KeyValueExpr:
 	o.Type = KeyValueExpr
-	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:281</h2>
-<pre>case *ast.LabeledStmt:
+<pre>
+case *ast.LabeledStmt:
 	o.Type = LabeledStmt
-	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre>
+	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre
+>
 <h2>syntax/golang/golang.go:285</h2>
-<pre>case *ast.MapType:
+<pre>
+case *ast.MapType:
 	o.Type = MapType
-	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:313</h2>
-<pre>case *ast.SelectorExpr:
+<pre>
+case *ast.SelectorExpr:
 	o.Type = SelectorExpr
-	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre
+>
 <h2>syntax/golang/golang.go:317</h2>
-<pre>case *ast.SendStmt:
+<pre>
+case *ast.SendStmt:
 	o.Type = SendStmt
-	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:359</h2>
-<pre>case *ast.TypeSpec:
+<pre>
+case *ast.TypeSpec:
 	o.Type = TypeSpec
-	o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+	o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre
+>
 <h1>#53 found 2 clones</h1>
 <h2>cli.go:449</h2>
 <pre>func runCobraCommand(cmd *cobra.Command, args []string) error</pre>
@@ -1375,118 +1717,174 @@ if n.Tag != nil {
 <pre>func runCmd(cmd *cobra.Command, args []string) error</pre>
 <h1>#54 found 23 clones</h1>
 <h2>syntax/golang/golang.go:92</h2>
-<pre>if n.Len != nil {
+<pre>
+if n.Len != nil {
 	o.AddChildren(t.trans(n.Len))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:122</h2>
-<pre>if n.Label != nil {
+<pre>
+if n.Label != nil {
 	o.AddChildren(t.trans(n.Label))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:148</h2>
-<pre>if n.Comm != nil {
+<pre>
+if n.Comm != nil {
 	o.AddChildren(t.trans(n.Comm))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:157</h2>
-<pre>if n.Type != nil {
+<pre>
+if n.Type != nil {
 	o.AddChildren(t.trans(n.Type))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:174</h2>
-<pre>if n.Elt != nil {
+<pre>
+if n.Elt != nil {
 	o.AddChildren(t.trans(n.Elt))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:210</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:213</h2>
-<pre>if n.Cond != nil {
+<pre>
+if n.Cond != nil {
 	o.AddChildren(t.trans(n.Cond))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:216</h2>
-<pre>if n.Post != nil {
+<pre>
+if n.Post != nil {
 	o.AddChildren(t.trans(n.Post))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:223</h2>
-<pre>if n.Recv != nil {
+<pre>
+if n.Recv != nil {
 	o.AddChildren(t.trans(n.Recv))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:227</h2>
-<pre>if n.Body != nil {
+<pre>
+if n.Body != nil {
 	o.AddChildren(t.trans(n.Body))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:238</h2>
-<pre>if n.Results != nil {
+<pre>
+if n.Results != nil {
 	o.AddChildren(t.trans(n.Results))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:257</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:261</h2>
-<pre>if n.Else != nil {
+<pre>
+if n.Else != nil {
 	o.AddChildren(t.trans(n.Else))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:295</h2>
-<pre>if n.Key != nil {
+<pre>
+if n.Key != nil {
 	o.AddChildren(t.trans(n.Key))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:298</h2>
-<pre>if n.Value != nil {
+<pre>
+if n.Value != nil {
 	o.AddChildren(t.trans(n.Value))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:324</h2>
-<pre>if n.Low != nil {
+<pre>
+if n.Low != nil {
 	o.AddChildren(t.trans(n.Low))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:327</h2>
-<pre>if n.High != nil {
+<pre>
+if n.High != nil {
 	o.AddChildren(t.trans(n.High))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:330</h2>
-<pre>if n.Max != nil {
+<pre>
+if n.Max != nil {
 	o.AddChildren(t.trans(n.Max))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:344</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:347</h2>
-<pre>if n.Tag != nil {
+<pre>
+if n.Tag != nil {
 	o.AddChildren(t.trans(n.Tag))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:355</h2>
-<pre>if n.Type != nil {
+<pre>
+if n.Type != nil {
 	o.AddChildren(t.trans(n.Type))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:365</h2>
-<pre>if n.Init != nil {
+<pre>
+if n.Init != nil {
 	o.AddChildren(t.trans(n.Init))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:379</h2>
-<pre>if n.Type != nil {
+<pre>
+if n.Type != nil {
 	o.AddChildren(t.trans(n.Type))
-}</pre>
+}</pre
+>
 <h1>#55 found 5 clones</h1>
 <h2>config/config_test.go:22</h2>
-<pre>if len(config.Paths) != 1 || config.Paths[0] != &#34;.&#34; {
+<pre>
+if len(config.Paths) != 1 || config.Paths[0] != &#34;.&#34; {
 	t.Errorf(&#34;Expected default paths [\&#34;.\&#34;], got %v&#34;, config.Paths)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:246</h2>
-<pre>if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
+<pre>
+if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
 	t.Errorf(&#34;Expected merged paths [\&#34;./cmd\&#34;], got %v&#34;, merged.Paths)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:249</h2>
-<pre>if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+<pre>
+if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
 	t.Errorf(&#34;Expected merged ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:45</h2>
-<pre>if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
+<pre>
+if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
 	t.Errorf(&#34;Expected paths [\&#34;./test\&#34;], got %v&#34;, merged.Paths)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:48</h2>
-<pre>if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+<pre>
+if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
 	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
-}</pre>
+}</pre
+>
 <h1>#56 found 4 clones</h1>
 <h2>cli.go:157</h2>
 <pre>	               func(io.Writer, printer.ReadFile) printer.Printer</pre>
@@ -1498,73 +1896,106 @@ if n.Tag != nil {
 <pre>	           func(io.Writer, printer.ReadFile) printer.Printer</pre>
 <h1>#57 found 14 clones</h1>
 <h2>syntax/golang/golang.go:99</h2>
-<pre>for _, e := range n.Rhs {
+<pre>
+for _, e := range n.Rhs {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:103</h2>
-<pre>for _, e := range n.Lhs {
+<pre>
+for _, e := range n.Lhs {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:116</h2>
-<pre>for _, stmt := range n.List {
+<pre>
+for _, stmt := range n.List {
 	o.AddChildren(t.trans(stmt))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:129</h2>
-<pre>for _, arg := range n.Args {
+<pre>
+for _, arg := range n.Args {
 	o.AddChildren(t.trans(arg))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:135</h2>
-<pre>for _, e := range n.List {
+<pre>
+for _, e := range n.List {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:138</h2>
-<pre>for _, stmt := range n.Body {
+<pre>
+for _, stmt := range n.Body {
 	o.AddChildren(t.trans(stmt))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:151</h2>
-<pre>for _, stmt := range n.Body {
+<pre>
+for _, stmt := range n.Body {
 	o.AddChildren(t.trans(stmt))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:160</h2>
-<pre>for _, e := range n.Elts {
+<pre>
+for _, e := range n.Elts {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:187</h2>
-<pre>for _, name := range n.Names {
+<pre>
+for _, name := range n.Names {
 	o.AddChildren(t.trans(name))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:194</h2>
-<pre>for _, field := range n.List {
+<pre>
+for _, field := range n.List {
 	o.AddChildren(t.trans(field))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:244</h2>
-<pre>for _, spec := range n.Specs {
+<pre>
+for _, spec := range n.Specs {
 	o.AddChildren(t.trans(spec))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:305</h2>
-<pre>for _, e := range n.Results {
+<pre>
+for _, e := range n.Results {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:376</h2>
-<pre>for _, name := range n.Names {
+<pre>
+for _, name := range n.Names {
 	o.AddChildren(t.trans(name))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:382</h2>
-<pre>for _, val := range n.Values {
+<pre>
+for _, val := range n.Values {
 	o.AddChildren(t.trans(val))
-}</pre>
+}</pre
+>
 <h1>#58 found 2 clones</h1>
 <h2>config/config_test.go:72</h2>
-<pre>if len(config.Paths) != 2 || config.Paths[0] != &#34;./src&#34; || config.Paths[1] != &#34;./lib&#34; {
+<pre>
+if len(config.Paths) != 2 || config.Paths[0] != &#34;./src&#34; || config.Paths[1] != &#34;./lib&#34; {
 	t.Errorf(&#34;Expected paths [\&#34;./src\&#34;, \&#34;./lib\&#34;], got %v&#34;, config.Paths)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:75</h2>
-<pre>if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != &#34;*_test.go&#34; || config.IgnoreFiles[1] != &#34;mock_*.go&#34; {
+<pre>
+if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != &#34;*_test.go&#34; || config.IgnoreFiles[1] != &#34;mock_*.go&#34; {
 	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;, \&#34;mock_*.go\&#34;], got %v&#34;, config.IgnoreFiles)
-}</pre>
+}</pre
+>
 <h1>#59 found 2 clones</h1>
 <h2>printer/text.go:172</h2>
-<pre>case &#34;size&#34;:
+<pre>
+case &#34;size&#34;:
 	// Sort by total token size of each clone group
 	sort.Slice(sortedCloneGroups, func(i, j int) bool {
 		// Calculate total size for group i
@@ -1578,9 +2009,11 @@ if n.Tag != nil {
 			sizeJ += cl.size
 		}
 		return sizeI &gt; sizeJ
-	})</pre>
+	})</pre
+>
 <h2>printer/text.go:195</h2>
-<pre>case &#34;total-tokens&#34;:
+<pre>
+case &#34;total-tokens&#34;:
 	// Sort by total tokens across all files in each clone group
 	sort.Slice(sortedCloneGroups, func(i, j int) bool {
 		// Calculate total tokens for group i
@@ -1594,10 +2027,12 @@ if n.Tag != nil {
 			totalTokensJ += cl.size
 		}
 		return totalTokensI &gt; totalTokensJ
-	})</pre>
+	})</pre
+>
 <h1>#60 found 3 clones</h1>
 <h2>cli.go:318</h2>
-<pre>	go func() {
+<pre>
+	go func() {
 		defer close(duplChan)
 		matches := multiDetector.FindDuplOver(mergedConfig.Threshold)
 		for match := range matches {
@@ -1617,9 +2052,11 @@ if n.Tag != nil {
 			}
 		}
 	}()
-}</pre>
+}</pre
+>
 <h2>cli.go:723</h2>
-<pre>	go func() {
+<pre>
+	go func() {
 		defer close(duplChan)
 		matches := multiDetector.FindDuplOver(cfg.Threshold)
 		// Detection completed
@@ -1640,9 +2077,11 @@ if n.Tag != nil {
 			}
 		}
 	}()
-}</pre>
+}</pre
+>
 <h2>cli.go:771</h2>
-<pre>	go func() {
+<pre>
+	go func() {
 		defer close(duplChanCopy)
 		matches := multiDetector.FindDuplOver(cfg.Threshold)
 		for match := range matches {
@@ -1661,7 +2100,8 @@ if n.Tag != nil {
 			}
 		}
 	}()
-}</pre>
+}</pre
+>
 <h1>#61 found 13 clones</h1>
 <h2>syntax/golang/golang.go:112</h2>
 <pre>o.AddChildren(t.trans(n.X), t.trans(n.Y))</pre>
@@ -1691,48 +2131,61 @@ if n.Tag != nil {
 <pre>o.AddChildren(t.trans(n.Assign), t.trans(n.Body))</pre>
 <h1>#62 found 2 clones</h1>
 <h2>cli_test.go:37</h2>
-<pre>if _, err := testCLI.Stderr().Write([]byte(&#34;stderr&#34;)); err != nil {
+<pre>
+if _, err := testCLI.Stderr().Write([]byte(&#34;stderr&#34;)); err != nil {
 	t.Fatalf(&#34;Failed to write to stderr: %v&#34;, err)
-}</pre>
+}</pre
+>
 <h2>cli_test.go:40</h2>
-<pre>if _, err := testCLI.Stdout().Write([]byte(&#34;stdout&#34;)); err != nil {
+<pre>
+if _, err := testCLI.Stdout().Write([]byte(&#34;stdout&#34;)); err != nil {
 	t.Fatalf(&#34;Failed to write to stdout: %v&#34;, err)
-}</pre>
+}</pre
+>
 <h1>#63 found 2 clones</h1>
 <h2>cli.go:65</h2>
-<pre>const (
+<pre>
+const (
 	defaultThreshold = 15
 	vendorDirPrefix  = &#34;vendor&#34; + string(filepath.Separator)
 	vendorDirInPath  = string(filepath.Separator) + vendorDirPrefix
-)</pre>
+)</pre
+>
 <h2>cli/config.go:80</h2>
-<pre>const (
+<pre>
+const (
 	DefaultThreshold = 15
 	VendorDirPrefix  = &#34;vendor&#34; + string(filepath.Separator)
 	VendorDirInPath  = string(filepath.Separator) + VendorDirPrefix
-)</pre>
+)</pre
+>
 <h1>#64 found 2 clones</h1>
 <h2>cli.go:376</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: cannot stat %s: %v\n&#34;, path, err); err != nil {
 		cli.Exit(1)
 		return
 	}
 	cli.Exit(1)
 	return
-}</pre>
+}</pre
+>
 <h2>cli.go:398</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: cannot walk %s: %v\n&#34;, path, err); err != nil {
 		cli.Exit(1)
 		return
 	}
 	cli.Exit(1)
 	return
-}</pre>
+}</pre
+>
 <h1>#65 found 5 clones</h1>
 <h2>config/config_test.go:154</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too low&#34;,
 	config: &amp;Config{
 		Threshold:         0,
@@ -1740,9 +2193,11 @@ if n.Tag != nil {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:163</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too high&#34;,
 	config: &amp;Config{
 		Threshold:         1001,
@@ -1750,9 +2205,11 @@ if n.Tag != nil {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:172</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid output format&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -1760,9 +2217,11 @@ if n.Tag != nil {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:181</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid maxChildrenSerial - too low&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -1770,9 +2229,11 @@ if n.Tag != nil {
 		MaxChildrenSerial: 999,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:190</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid maxChildrenSerial - too high&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -1780,110 +2241,143 @@ if n.Tag != nil {
 		MaxChildrenSerial: 100001,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#66 found 2 clones</h1>
 <h2>syntax/golang/golang.go:120</h2>
-<pre>case *ast.BranchStmt:
+<pre>
+case *ast.BranchStmt:
 	o.Type = BranchStmt
 	if n.Label != nil {
 		o.AddChildren(t.trans(n.Label))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:172</h2>
-<pre>case *ast.Ellipsis:
+<pre>
+case *ast.Ellipsis:
 	o.Type = Ellipsis
 	if n.Elt != nil {
 		o.AddChildren(t.trans(n.Elt))
-	}</pre>
+	}</pre
+>
 <h1>#67 found 2 clones</h1>
 <h2>printer/issuer.go:13</h2>
-<pre>func (c Clone) Filename() string {
+<pre>
+func (c Clone) Filename() string {
 	return c.filename
 }
 
 func (c Clone) LineStart() int {
 	return c.lineStart
-}</pre>
+}</pre
+>
 <h2>printer/issuer.go:17</h2>
-<pre>func (c Clone) LineStart() int {
+<pre>
+func (c Clone) LineStart() int {
 	return c.lineStart
 }
 
 func (c Clone) LineEnd() int {
 	return c.lineEnd
-}</pre>
+}</pre
+>
 <h1>#68 found 2 clones</h1>
 <h2>cli_test.go:44</h2>
-<pre>if testCLI.StderrBuf.String() != &#34;stderr&#34; {
+<pre>
+if testCLI.StderrBuf.String() != &#34;stderr&#34; {
 	t.Errorf(&#34;Expected stderr buffer content &#39;stderr&#39;, got &#39;%s&#39;&#34;, testCLI.StderrBuf.String())
-}</pre>
+}</pre
+>
 <h2>cli_test.go:48</h2>
-<pre>if testCLI.StdoutBuf.String() != &#34;stdout&#34; {
+<pre>
+if testCLI.StdoutBuf.String() != &#34;stdout&#34; {
 	t.Errorf(&#34;Expected stdout buffer content &#39;stdout&#39;, got &#39;%s&#39;&#34;, testCLI.StdoutBuf.String())
-}</pre>
+}</pre
+>
 <h1>#69 found 2 clones</h1>
 <h2>job/parse_test.go:22</h2>
-<pre>case &lt;-time.After(5 * time.Second):
-	t.Error(&#34;Parse timed out - possible deadlock&#34;)</pre>
+<pre>
+case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;Parse timed out - possible deadlock&#34;)</pre
+>
 <h2>job/parse_test.go:38</h2>
-<pre>case &lt;-time.After(5 * time.Second):
-	t.Error(&#34;Parse should handle errors gracefully, not block&#34;)</pre>
+<pre>
+case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;Parse should handle errors gracefully, not block&#34;)</pre
+>
 <h1>#70 found 8 clones</h1>
 <h2>config/config_test.go:264</h2>
-<pre>if merged.Threshold != 30 {
+<pre>
+if merged.Threshold != 30 {
 	t.Errorf(&#34;Expected merged threshold 30, got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;json&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat json, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:289</h2>
-<pre>if merged.Threshold != 40 {
+<pre>
+if merged.Threshold != 40 {
 	t.Errorf(&#34;Expected merged threshold 40, got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:29</h2>
-<pre>if err.File != &#34;test.go&#34; {
+<pre>
+if err.File != &#34;test.go&#34; {
 	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
 }
 if err.Line != 42 {
 	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:32</h2>
-<pre>if err.Line != 42 {
+<pre>
+if err.Line != 42 {
 	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
 }
 if err.Message != &#34;test message&#34; {
 	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:31</h2>
-<pre>if merged.Threshold != 50 {
+<pre>
+if merged.Threshold != 50 {
 	t.Errorf(&#34;Expected threshold 50 (CLI override), got %d&#34;, merged.Threshold)
 }
 if merged.OutputFormat != &#34;html&#34; {
 	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:51</h2>
-<pre>if merged.MaxChildrenSerial != 20000 {
+<pre>
+if merged.MaxChildrenSerial != 20000 {
 	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, merged.MaxChildrenSerial)
 }
 if merged.OutputFile != &#34;output.json&#34; {
 	t.Errorf(&#34;Expected OutputFile output.json, got %s&#34;, merged.OutputFile)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:23</h2>
-<pre>if jsonPrinter.iota != 0 {
+<pre>
+if jsonPrinter.iota != 0 {
 	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
 }
 if jsonPrinter.filesCount != 0 {
 	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:26</h2>
-<pre>if jsonPrinter.filesCount != 0 {
+<pre>
+if jsonPrinter.filesCount != 0 {
 	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
 }
 if jsonPrinter.totalClones != 0 {
 	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
-}</pre>
+}</pre
+>
 <h1>#71 found 2 clones</h1>
 <h2>bdd/bdd_test.go:593</h2>
 <pre>Expect(duration).To(BeNumerically(&#34;&lt;&#34;, 5*time.Second))</pre>
@@ -1891,7 +2385,8 @@ if jsonPrinter.totalClones != 0 {
 <pre>Expect(duration).To(BeNumerically(&#34;&lt;&#34;, 5*time.Second))</pre>
 <h1>#72 found 2 clones</h1>
 <h2>syntax/golang/golang.go:242</h2>
-<pre>case *ast.GenDecl:
+<pre>
+case *ast.GenDecl:
 	o.Type = GenDecl
 	for _, spec := range n.Specs {
 		o.AddChildren(t.trans(spec))
@@ -1899,9 +2394,11 @@ if jsonPrinter.totalClones != 0 {
 
 case *ast.GoStmt:
 	o.Type = GoStmt
-	o.AddChildren(t.trans(n.Call))</pre>
+	o.AddChildren(t.trans(n.Call))</pre
+>
 <h2>syntax/golang/golang.go:303</h2>
-<pre>case *ast.ReturnStmt:
+<pre>
+case *ast.ReturnStmt:
 	o.Type = ReturnStmt
 	for _, e := range n.Results {
 		o.AddChildren(t.trans(e))
@@ -1909,87 +2406,113 @@ case *ast.GoStmt:
 
 case *ast.SelectStmt:
 	o.Type = SelectStmt
-	o.AddChildren(t.trans(n.Body))</pre>
+	o.AddChildren(t.trans(n.Body))</pre
+>
 <h1>#73 found 4 clones</h1>
 <h2>config/detectionmethod.go:37</h2>
-<pre>if !dm.IsValid() {
+<pre>
+if !dm.IsValid() {
 	return nil, fmt.Errorf(&#34;invalid detection method: %s&#34;, dm)
-}</pre>
+}</pre
+>
 <h2>config/detectionmethod.go:92</h2>
-<pre>if !method.IsValid() {
+<pre>
+if !method.IsValid() {
 	return nil, fmt.Errorf(&#34;invalid detection method: %s&#34;, part)
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:34</h2>
-<pre>if !of.IsValid() {
+<pre>
+if !of.IsValid() {
 	return nil, fmt.Errorf(&#34;invalid output format: %s&#34;, of)
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:82</h2>
-<pre>if !sc.IsValid() {
+<pre>
+if !sc.IsValid() {
 	return nil, fmt.Errorf(&#34;invalid sort criteria: %s&#34;, sc)
-}</pre>
+}</pre
+>
 <h1>#74 found 3 clones</h1>
 <h2>printer/text.go:70</h2>
-<pre>                          {
+<pre>
+                          {
 	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 		return err
 	}
-}</pre>
+}</pre
+>
 <h2>printer/text.go:112</h2>
-<pre>                          {
+<pre>
+                          {
 	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 		return err
 	}
-}</pre>
+}</pre
+>
 <h2>printer/text.go:237</h2>
-<pre>       {
+<pre>
+       {
 	if _, err := fmt.Fprintf(p.w, &#34;%s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 		return err
 	}
-}</pre>
+}</pre
+>
 <h1>#75 found 3 clones</h1>
 <h2>cli.go:113</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:121</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:129</h2>
-<pre>if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
+<pre>
+if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
 		cli.Exit(1)
 		return 1
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h1>#76 found 2 clones</h1>
 <h2>config/config_test.go:33</h2>
-<pre>defer func() {
+<pre>
+defer func() {
 	if err := os.RemoveAll(tmpDir); err != nil {
 		t.Logf(&#34;Failed to remove temp dir: %v&#34;, err)
 	}
-}()</pre>
+}()</pre
+>
 <h2>config/config_test.go:96</h2>
-<pre>defer func() {
+<pre>
+defer func() {
 	if err := os.RemoveAll(tmpDir); err != nil {
 		t.Logf(&#34;Failed to remove temp dir: %v&#34;, err)
 	}
-}()</pre>
+}()</pre
+>
 <h1>#77 found 2 clones</h1>
 <h2>printer/sorting_integration_test.go:190</h2>
-<pre>                                                                                                                             {
+<pre>
+                                                                                                                             {
 	// Create nodes that represent tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
 
@@ -2003,9 +2526,11 @@ case *ast.SelectStmt:
 	}
 
 	return nodes
-}</pre>
+}</pre
+>
 <h2>printer/sorting_integration_test.go:207</h2>
-<pre>                                                                                                         {
+<pre>
+                                                                                                         {
 	// Create nodes that represent the tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
 
@@ -2019,7 +2544,8 @@ case *ast.SelectStmt:
 	}
 
 	return nodes
-}</pre>
+}</pre
+>
 <h1>#78 found 3 clones</h1>
 <h2>printer/plumbing.go:20</h2>
 <pre>func (p *plumbing) PrintHeader() error { return nil }</pre>
@@ -2029,7 +2555,8 @@ case *ast.SelectStmt:
 <pre>func (p *text) PrintHeader() error { return nil }</pre>
 <h1>#79 found 3 clones</h1>
 <h2>config/config_test.go:154</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too low&#34;,
 	config: &amp;Config{
 		Threshold:         0,
@@ -2055,9 +2582,11 @@ case *ast.SelectStmt:
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:163</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too high&#34;,
 	config: &amp;Config{
 		Threshold:         1001,
@@ -2083,9 +2612,11 @@ case *ast.SelectStmt:
 		MaxChildrenSerial: 999,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:172</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid output format&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -2111,21 +2642,27 @@ case *ast.SelectStmt:
 		MaxChildrenSerial: 100001,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#80 found 2 clones</h1>
 <h2>bdd/bdd_test.go:29</h2>
-<pre>func TestBDD(t *testing.T) {
+<pre>
+func TestBDD(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, &#34;art-dupl BDD Suite&#34;)
-}</pre>
+}</pre
+>
 <h2>bdd_test.go:36</h2>
-<pre>func TestBDD(t *testing.T) {
+<pre>
+func TestBDD(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, &#34;art-dupl BDD Suite&#34;)
-}</pre>
+}</pre
+>
 <h1>#81 found 3 clones</h1>
 <h2>printer/text.go:174</h2>
-<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+<pre>
+sort.Slice(sortedCloneGroups, func(i, j int) bool {
 	// Calculate total size for group i
 	sizeI := 0
 	for _, cl := range sortedCloneGroups[i] {
@@ -2137,9 +2674,11 @@ case *ast.SelectStmt:
 		sizeJ += cl.size
 	}
 	return sizeI &gt; sizeJ
-})</pre>
+})</pre
+>
 <h2>printer/text.go:197</h2>
-<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+<pre>
+sort.Slice(sortedCloneGroups, func(i, j int) bool {
 	// Calculate total tokens for group i
 	totalTokensI := 0
 	for _, cl := range sortedCloneGroups[i] {
@@ -2151,9 +2690,11 @@ case *ast.SelectStmt:
 		totalTokensJ += cl.size
 	}
 	return totalTokensI &gt; totalTokensJ
-})</pre>
+})</pre
+>
 <h2>printer/text.go:212</h2>
-<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+<pre>
+sort.Slice(sortedCloneGroups, func(i, j int) bool {
 	sizeI := 0
 	for _, cl := range sortedCloneGroups[i] {
 		sizeI += cl.size
@@ -2163,7 +2704,8 @@ case *ast.SelectStmt:
 		sizeJ += cl.size
 	}
 	return sizeI &gt; sizeJ
-})</pre>
+})</pre
+>
 <h1>#82 found 4 clones</h1>
 <h2>cli/runtime_test.go:26</h2>
 <pre>g.Expect(cfg.IncludeVendor).To(gomega.BeTrue())</pre>
@@ -2175,77 +2717,100 @@ case *ast.SelectStmt:
 <pre>g.Expect(cfg.OutputWriter).NotTo(gomega.BeNil())</pre>
 <h1>#83 found 6 clones</h1>
 <h2>config/detectionmethod.go:21</h2>
-<pre>func (dm DetectionMethod) String() string {
+<pre>
+func (dm DetectionMethod) String() string {
 	return string(dm)
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:18</h2>
-<pre>func (of OutputFormat) String() string {
+<pre>
+func (of OutputFormat) String() string {
 	return string(of)
-}</pre>
+}</pre
+>
 <h2>config/outputformat.go:66</h2>
-<pre>func (sc SortCriteria) String() string {
+<pre>
+func (sc SortCriteria) String() string {
 	return string(sc)
-}</pre>
+}</pre
+>
 <h2>printer/common.go:13</h2>
 <pre>func (c byNameAndLine) Len() int { return len(c) }</pre>
 <h2>suffixtree/dupl_test.go:33</h2>
-<pre>func (p ByPos) Len() int {
+<pre>
+func (p ByPos) Len() int {
 	return len(p)
-}</pre>
+}</pre
+>
 <h2>suffixtree/suffixtree_test.go:7</h2>
-<pre>func (c char) Val() int {
+<pre>
+func (c char) Val() int {
 	return int(c)
-}</pre>
+}</pre
+>
 <h1>#84 found 2 clones</h1>
 <h2>syntax/golang/golang.go:227</h2>
-<pre>	if n.Body != nil {
+<pre>
+	if n.Body != nil {
 		o.AddChildren(t.trans(n.Body))
 	}
 
 case *ast.FuncLit:
 	o.Type = FuncLit
-	o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre>
+	o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre
+>
 <h2>syntax/golang/golang.go:355</h2>
-<pre>	if n.Type != nil {
+<pre>
+	if n.Type != nil {
 		o.AddChildren(t.trans(n.Type))
 	}
 
 case *ast.TypeSpec:
 	o.Type = TypeSpec
-	o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+	o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre
+>
 <h1>#85 found 2 clones</h1>
 <h2>printer/common.go:17</h2>
-<pre>                                           {
+<pre>
+                                           {
 	if c[i].filename == c[j].filename {
 		return c[i].lineStart &lt; c[j].lineStart
 	}
 	return c[i].filename &lt; c[j].filename
-}</pre>
+}</pre
+>
 <h2>printer/json.go:168</h2>
-<pre>                                       {
+<pre>
+                                       {
 	if clones[i].Filename == clones[j].Filename {
 		return clones[i].LineStart &lt; clones[j].LineStart
 	}
 	return clones[i].Filename &lt; clones[j].Filename
-}</pre>
+}</pre
+>
 <h1>#86 found 2 clones</h1>
 <h2>printer/html_test.go:15</h2>
-<pre>for _, tc := range testCases {
+<pre>
+for _, tc := range testCases {
 	actual := toWhitespace([]byte(tc.in))
 	if tc.expect != string(actual) {
 		t.Errorf(&#34;got &#39;%s&#39;, want &#39;%s&#39;&#34;, actual, tc.expect)
 	}
-}</pre>
+}</pre
+>
 <h2>printer/html_test.go:33</h2>
-<pre>for _, tc := range testCases {
+<pre>
+for _, tc := range testCases {
 	actual := deindent([]byte(tc.in))
 	if tc.expect != string(actual) {
 		t.Errorf(&#34;got &#39;%s&#39;, want &#39;%s&#39;&#34;, actual, tc.expect)
 	}
-}</pre>
+}</pre
+>
 <h1>#87 found 2 clones</h1>
 <h2>errors/types_test.go:29</h2>
-<pre>if err.File != &#34;test.go&#34; {
+<pre>
+if err.File != &#34;test.go&#34; {
 	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
 }
 if err.Line != 42 {
@@ -2253,9 +2818,11 @@ if err.Line != 42 {
 }
 if err.Message != &#34;test message&#34; {
 	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:23</h2>
-<pre>if jsonPrinter.iota != 0 {
+<pre>
+if jsonPrinter.iota != 0 {
 	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
 }
 if jsonPrinter.filesCount != 0 {
@@ -2263,7 +2830,8 @@ if jsonPrinter.filesCount != 0 {
 }
 if jsonPrinter.totalClones != 0 {
 	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
-}</pre>
+}</pre
+>
 <h1>#88 found 2 clones</h1>
 <h2>cli/runtime.go:68</h2>
 <pre>func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }</pre>
@@ -2271,7 +2839,8 @@ if jsonPrinter.totalClones != 0 {
 <pre>func (c *cliStderr) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }</pre>
 <h1>#89 found 2 clones</h1>
 <h2>syntax/golang/golang.go:273</h2>
-<pre>case *ast.InterfaceType:
+<pre>
+case *ast.InterfaceType:
 	o.Type = InterfaceType
 	o.AddChildren(t.trans(n.Methods))
 
@@ -2281,9 +2850,11 @@ case *ast.KeyValueExpr:
 
 case *ast.LabeledStmt:
 	o.Type = LabeledStmt
-	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre>
+	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre
+>
 <h2>syntax/golang/golang.go:309</h2>
-<pre>case *ast.SelectStmt:
+<pre>
+case *ast.SelectStmt:
 	o.Type = SelectStmt
 	o.AddChildren(t.trans(n.Body))
 
@@ -2293,68 +2864,84 @@ case *ast.SelectorExpr:
 
 case *ast.SendStmt:
 	o.Type = SendStmt
-	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre
+>
 <h1>#90 found 2 clones</h1>
 <h2>bdd/bdd_test.go:571</h2>
-<pre>for i := range numFiles {
+<pre>
+for i := range numFiles {
 	filename := filepath.Join(tempDir, fmt.Sprintf(&#34;file%d.go&#34;, i))
 	err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
 	Expect(err).NotTo(HaveOccurred())
-}</pre>
+}</pre
+>
 <h2>bdd_test.go:539</h2>
-<pre>for i := range numFiles {
+<pre>
+for i := range numFiles {
 	filename := filepath.Join(tempDir, fmt.Sprintf(&#34;file%d.go&#34;, i))
 	err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
 	Expect(err).NotTo(HaveOccurred())
-}</pre>
+}</pre
+>
 <h1>#91 found 3 clones</h1>
 <h2>errors/types.go:56</h2>
-<pre>func NewConfigError(msg string, cause error) *DuplError {
+<pre>
+func NewConfigError(msg string, cause error) *DuplError {
 	return &amp;DuplError{
 		Type:    ConfigError,
 		Message: msg,
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
-}</pre>
+}</pre
+>
 <h2>errors/types.go:77</h2>
-<pre>func NewValidationError(msg string, cause error) *DuplError {
+<pre>
+func NewValidationError(msg string, cause error) *DuplError {
 	return &amp;DuplError{
 		Type:    ValidationError,
 		Message: msg,
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
-}</pre>
+}</pre
+>
 <h2>errors/types.go:87</h2>
-<pre>func NewInternalError(msg string, cause error) *DuplError {
+<pre>
+func NewInternalError(msg string, cause error) *DuplError {
 	return &amp;DuplError{
 		Type:    InternalError,
 		Message: msg,
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
-}</pre>
+}</pre
+>
 <h1>#92 found 2 clones</h1>
 <h2>syntax/golang/golang.go:164</h2>
-<pre>case *ast.DeclStmt:
+<pre>
+case *ast.DeclStmt:
 	o.Type = DeclStmt
 	o.AddChildren(t.trans(n.Decl))
 
 case *ast.DeferStmt:
 	o.Type = DeferStmt
-	o.AddChildren(t.trans(n.Call))</pre>
+	o.AddChildren(t.trans(n.Call))</pre
+>
 <h2>syntax/golang/golang.go:334</h2>
-<pre>case *ast.StarExpr:
+<pre>
+case *ast.StarExpr:
 	o.Type = StarExpr
 	o.AddChildren(t.trans(n.X))
 
 case *ast.StructType:
 	o.Type = StructType
-	o.AddChildren(t.trans(n.Fields))</pre>
+	o.AddChildren(t.trans(n.Fields))</pre
+>
 <h1>#93 found 2 clones</h1>
 <h2>config/config_test.go:243</h2>
-<pre>if merged.Verbose != true {
+<pre>
+if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
 }
 if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
@@ -2362,9 +2949,11 @@ if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
 }
 if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
 	t.Errorf(&#34;Expected merged ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:42</h2>
-<pre>if merged.Verbose != true {
+<pre>
+if merged.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true (from file), got %v&#34;, merged.Verbose)
 }
 if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
@@ -2372,53 +2961,70 @@ if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
 }
 if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
 	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
-}</pre>
+}</pre
+>
 <h1>#94 found 4 clones</h1>
 <h2>cli.go:471</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:517</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;detection methods error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:584</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:608</h2>
-<pre>if err != nil {
+<pre>
+if err != nil {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h1>#95 found 4 clones</h1>
 <h2>cli.go:192</h2>
-<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+<pre>
+if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 	jsonPrinter.SetFilesCount(filesCount)
-}</pre>
+}</pre
+>
 <h2>cli.go:431</h2>
-<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+<pre>
+if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 	jsonPrinter.SetHash(k)
-}</pre>
+}</pre
+>
 <h2>cli.go:625</h2>
-<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+<pre>
+if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 	jsonPrinter.SetFilesCount(filesCount)
-}</pre>
+}</pre
+>
 <h2>cli.go:762</h2>
-<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+<pre>
+if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 	jsonPrinter.SetFilesCount(filesCount)
-}</pre>
+}</pre
+>
 <h1>#96 found 2 clones</h1>
 <h2>cli/cli_test.go:55</h2>
 <pre>g.Expect(config.IsVerbose()).To(gomega.BeTrue())</pre>
@@ -2436,79 +3042,107 @@ if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; 
 <pre>func (t *TestCLI) Stdout() io.Writer { return &amp;t.StdoutBuf }</pre>
 <h1>#99 found 4 clones</h1>
 <h2>config/config_test.go:127</h2>
-<pre>if loaded.Threshold != config.Threshold {
+<pre>
+if loaded.Threshold != config.Threshold {
 	t.Errorf(&#34;Saved threshold %d, got %d&#34;, config.Threshold, loaded.Threshold)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:130</h2>
-<pre>if loaded.IncludeVendor != config.IncludeVendor {
+<pre>
+if loaded.IncludeVendor != config.IncludeVendor {
 	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:133</h2>
-<pre>if loaded.OutputFormat != config.OutputFormat {
+<pre>
+if loaded.OutputFormat != config.OutputFormat {
 	t.Errorf(&#34;Saved OutputFormat %s, got %s&#34;, config.OutputFormat, loaded.OutputFormat)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:66</h2>
-<pre>if err.Type != tc.expected {
+<pre>
+if err.Type != tc.expected {
 	t.Errorf(&#34;Expected %s, got %s&#34;, tc.expected, err.Type)
-}</pre>
+}</pre
+>
 <h1>#100 found 2 clones</h1>
 <h2>suffixtree/suffixtree_test.go:142</h2>
-<pre>{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}},
+<pre>
+{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}},
 {refPair{s[0], 0, 2}, refPair{s[0], 0, 0}},
 {refPair{s[0], 0, 3}, refPair{s[1], 4, 0}},
 {refPair{s[0], 0, 8}, refPair{s[2], 7, 0}},
-{refPair{s[0], 0, 6}, refPair{s[2], 7, 0}}</pre>
+{refPair{s[0], 0, 6}, refPair{s[2], 7, 0}}</pre
+>
 <h2>suffixtree/suffixtree_test.go:143</h2>
-<pre>{refPair{s[0], 0, 2}, refPair{s[0], 0, 0}},
+<pre>
+{refPair{s[0], 0, 2}, refPair{s[0], 0, 0}},
 {refPair{s[0], 0, 3}, refPair{s[1], 4, 0}},
 {refPair{s[0], 0, 8}, refPair{s[2], 7, 0}},
 {refPair{s[0], 0, 6}, refPair{s[2], 7, 0}},
-{refPair{s[0], 0, 100}, refPair{s[2], 7, 0}}</pre>
+{refPair{s[0], 0, 100}, refPair{s[2], 7, 0}}</pre
+>
 <h1>#101 found 3 clones</h1>
 <h2>errors/types_test.go:49</h2>
-<pre>{&#34;ConfigError&#34;, func() *DuplError {
+<pre>
+{&#34;ConfigError&#34;, func() *DuplError {
 	return NewConfigError(&#34;&#34;, nil)
-}, ConfigError}</pre>
+}, ConfigError}</pre
+>
 <h2>errors/types_test.go:55</h2>
-<pre>{&#34;ValidationError&#34;, func() *DuplError {
+<pre>
+{&#34;ValidationError&#34;, func() *DuplError {
 	return NewValidationError(&#34;&#34;, nil)
-}, ValidationError}</pre>
+}, ValidationError}</pre
+>
 <h2>errors/types_test.go:58</h2>
-<pre>{&#34;InternalError&#34;, func() *DuplError {
+<pre>
+{&#34;InternalError&#34;, func() *DuplError {
 	return NewInternalError(&#34;&#34;, nil)
-}, InternalError}</pre>
+}, InternalError}</pre
+>
 <h1>#102 found 2 clones</h1>
 <h2>syntax/golang/golang.go:146</h2>
-<pre>case *ast.CommClause:
+<pre>
+case *ast.CommClause:
 	o.Type = CommClause
 	if n.Comm != nil {
 		o.AddChildren(t.trans(n.Comm))
 	}
 	for _, stmt := range n.Body {
 		o.AddChildren(t.trans(stmt))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:155</h2>
-<pre>case *ast.CompositeLit:
+<pre>
+case *ast.CompositeLit:
 	o.Type = CompositeLit
 	if n.Type != nil {
 		o.AddChildren(t.trans(n.Type))
 	}
 	for _, e := range n.Elts {
 		o.AddChildren(t.trans(e))
-	}</pre>
+	}</pre
+>
 <h1>#103 found 3 clones</h1>
 <h2>printer/issuer.go:13</h2>
-<pre>func (c Clone) Filename() string {
+<pre>
+func (c Clone) Filename() string {
 	return c.filename
-}</pre>
+}</pre
+>
 <h2>printer/issuer.go:17</h2>
-<pre>func (c Clone) LineStart() int {
+<pre>
+func (c Clone) LineStart() int {
 	return c.lineStart
-}</pre>
+}</pre
+>
 <h2>printer/issuer.go:21</h2>
-<pre>func (c Clone) LineEnd() int {
+<pre>
+func (c Clone) LineEnd() int {
 	return c.lineEnd
-}</pre>
+}</pre
+>
 <h1>#104 found 6 clones</h1>
 <h2>suffixtree/suffixtree_test.go:142</h2>
 <pre>{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}}</pre>
@@ -2524,36 +3158,51 @@ if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; 
 <pre>{refPair{s[0], 0, 100}, refPair{s[2], 7, 0}}</pre>
 <h1>#105 found 7 clones</h1>
 <h2>config/config_test.go:321</h2>
-<pre>if len(methods) != 2 {
+<pre>
+if len(methods) != 2 {
 	t.Errorf(&#34;Expected 2 methods, got %d&#34;, len(methods))
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:330</h2>
-<pre>if len(parsed) != 2 {
+<pre>
+if len(parsed) != 2 {
 	t.Errorf(&#34;Expected 2 methods, got %d&#34;, len(parsed))
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:367</h2>
-<pre>if len(formats) != 4 {
+<pre>
+if len(formats) != 4 {
 	t.Errorf(&#34;Expected 4 formats, got %d&#34;, len(formats))
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:373</h2>
-<pre>if len(criteria) != 4 {
+<pre>
+if len(criteria) != 4 {
 	t.Errorf(&#34;Expected 4 sort criteria, got %d&#34;, len(criteria))
-}</pre>
+}</pre
+>
 <h2>util/unique_test.go:28</h2>
-<pre>if len(result) != 3 {
+<pre>
+if len(result) != 3 {
 	t.Errorf(&#34;Expected 3 unique sequences, got %d&#34;, len(result))
-}</pre>
+}</pre
+>
 <h2>util/unique_test.go:51</h2>
-<pre>if len(result) != 0 {
+<pre>
+if len(result) != 0 {
 	t.Errorf(&#34;Expected empty result for empty input, got %d&#34;, len(result))
-}</pre>
+}</pre
+>
 <h2>util/unique_test.go:64</h2>
-<pre>if len(result) != 1 {
+<pre>
+if len(result) != 1 {
 	t.Errorf(&#34;Expected 1 result for single input, got %d&#34;, len(result))
-}</pre>
+}</pre
+>
 <h1>#106 found 2 clones</h1>
 <h2>cli.go:113</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
 		cli.Exit(1)
 		return 1
@@ -2568,9 +3217,11 @@ if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h2>cli.go:121</h2>
-<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+<pre>
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
 		cli.Exit(1)
 		return 1
@@ -2585,7 +3236,8 @@ if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
 	}
 	cli.Exit(1)
 	return 1
-}</pre>
+}</pre
+>
 <h1>#107 found 6 clones</h1>
 <h2>printer/sorter.go:22</h2>
 <pre>		   dups[i][0].Filename == dups[j][0].Filename</pre>
@@ -2612,48 +3264,59 @@ if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
 <pre>func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error</pre>
 <h1>#109 found 3 clones</h1>
 <h2>job/buildtree_test.go:26</h2>
-<pre>select {
+<pre>
+select {
 case &lt;-done:
 	// Success
 case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree timed out&#34;)
 	return
-}</pre>
+}</pre
+>
 <h2>job/buildtree_test.go:53</h2>
-<pre>select {
+<pre>
+select {
 case &lt;-done:
 	// Should complete successfully
 case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree with empty input should not time out&#34;)
 	return
-}</pre>
+}</pre
+>
 <h2>job/buildtree_test.go:91</h2>
-<pre>select {
+<pre>
+select {
 case &lt;-done:
 	// Success
 case &lt;-time.After(5 * time.Second):
 	t.Error(&#34;BuildTree with multiple sequences timed out&#34;)
 	return
-}</pre>
+}</pre
+>
 <h1>#110 found 2 clones</h1>
 <h2>detection/multidetector.go:39</h2>
-<pre>for match := range suffixMatches {
+<pre>
+for match := range suffixMatches {
 	syntaxMatch := syntax.FindSyntaxUnits(*md.data, match, threshold)
 	if len(syntaxMatch.Frags) &gt; 0 {
 		resultChan &lt;- syntaxMatch
 	}
-}</pre>
+}</pre
+>
 <h2>detection/multidetector.go:73</h2>
-<pre>for match := range artDuplMatches {
+<pre>
+for match := range artDuplMatches {
 	// Convert suffix tree matches to syntax matches
 	syntaxMatch := syntax.FindSyntaxUnits(*md.data, match, threshold)
 	if len(syntaxMatch.Frags) &gt; 0 {
 		resultChan &lt;- syntaxMatch
 	}
-}</pre>
+}</pre
+>
 <h1>#111 found 3 clones</h1>
 <h2>printer/sorting_integration_test.go:117</h2>
-<pre>t.Run(&#34;TextPrinter&#34;, func(t *testing.T) {
+<pre>
+t.Run(&#34;TextPrinter&#34;, func(t *testing.T) {
 	var buf bytes.Buffer
 	printer := NewText(&amp;buf, mockReadFile(testContent))
 
@@ -2674,9 +3337,11 @@ case &lt;-time.After(5 * time.Second):
 	} else if firstIndex &gt; lastIndex {
 		t.Errorf(&#34;Sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
 	}
-})</pre>
+})</pre
+>
 <h2>printer/sorting_integration_test.go:141</h2>
-<pre>t.Run(&#34;HTMLPrinter&#34;, func(t *testing.T) {
+<pre>
+t.Run(&#34;HTMLPrinter&#34;, func(t *testing.T) {
 	var buf bytes.Buffer
 	printer := NewHTML(&amp;buf, mockReadFile(testContent))
 
@@ -2696,9 +3361,11 @@ case &lt;-time.After(5 * time.Second):
 	} else if firstIndex &gt; lastIndex {
 		t.Errorf(&#34;HTML sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
 	}
-})</pre>
+})</pre
+>
 <h2>printer/sorting_integration_test.go:164</h2>
-<pre>t.Run(&#34;PlumbingPrinter&#34;, func(t *testing.T) {
+<pre>
+t.Run(&#34;PlumbingPrinter&#34;, func(t *testing.T) {
 	var buf bytes.Buffer
 	printer := NewPlumbing(&amp;buf, mockReadFile(testContent))
 
@@ -2718,163 +3385,231 @@ case &lt;-time.After(5 * time.Second):
 	} else if firstIndex &gt; lastIndex {
 		t.Errorf(&#34;Plumbing sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
 	}
-})</pre>
+})</pre
+>
 <h1>#112 found 3 clones</h1>
 <h2>syntax/golang/golang.go:271</h2>
-<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Index))
+<pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))
 
 case *ast.InterfaceType:
 	o.Type = InterfaceType
-	o.AddChildren(t.trans(n.Methods))</pre>
+	o.AddChildren(t.trans(n.Methods))</pre
+>
 <h2>syntax/golang/golang.go:287</h2>
-<pre>	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+<pre>
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
 
 case *ast.ParenExpr:
 	o.Type = ParenExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:368</h2>
-<pre>	o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
+<pre>
+	o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
 
 case *ast.UnaryExpr:
 	o.Type = UnaryExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h1>#113 found 2 clones</h1>
 <h2>syntax/golang/golang.go:269</h2>
-<pre>case *ast.IndexExpr:
+<pre>
+case *ast.IndexExpr:
 	o.Type = IndexExpr
 	o.AddChildren(t.trans(n.X), t.trans(n.Index))
 
 case *ast.InterfaceType:
 	o.Type = InterfaceType
-	o.AddChildren(t.trans(n.Methods))</pre>
+	o.AddChildren(t.trans(n.Methods))</pre
+>
 <h2>syntax/golang/golang.go:285</h2>
-<pre>case *ast.MapType:
+<pre>
+case *ast.MapType:
 	o.Type = MapType
 	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
 
 case *ast.ParenExpr:
 	o.Type = ParenExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h1>#114 found 2 clones</h1>
 <h2>detection/multidetector.go:13</h2>
-<pre>                          {
+<pre>
+                          {
 	config  *config.Config
 	data    *[]*syntax.Node
 	tree    *suffixtree.STree
 	verbose bool
-}</pre>
+}</pre
+>
 <h2>detection/multidetector.go:21</h2>
-<pre>                     (cfg *config.Config, data *[]*syntax.Node, tree *suffixtree.STree, verbose bool)</pre>
+<pre>
+                     (cfg *config.Config, data *[]*syntax.Node, tree *suffixtree.STree, verbose bool)</pre
+>
 <h1>#115 found 2 clones</h1>
 <h2>cli/runtime_test.go:25</h2>
-<pre>g.Expect(cfg.Threshold).To(gomega.Equal(25))
+<pre>
+g.Expect(cfg.Threshold).To(gomega.Equal(25))
 g.Expect(cfg.IncludeVendor).To(gomega.BeTrue())
-g.Expect(cfg.FilesFromStdin).To(gomega.BeTrue())</pre>
+g.Expect(cfg.FilesFromStdin).To(gomega.BeTrue())</pre
+>
 <h2>cli/runtime_test.go:63</h2>
-<pre>g.Expect(cfg.SortBy).To(gomega.Equal(&#34;size&#34;))
+<pre>
+g.Expect(cfg.SortBy).To(gomega.Equal(&#34;size&#34;))
 g.Expect(cfg.OutputWriter).NotTo(gomega.BeNil())
-g.Expect(cfg.ErrorWriter).NotTo(gomega.BeNil())</pre>
+g.Expect(cfg.ErrorWriter).NotTo(gomega.BeNil())</pre
+>
 <h1>#116 found 12 clones</h1>
 <h2>config/config_test.go:16</h2>
-<pre>if config.IncludeVendor != false {
+<pre>
+if config.IncludeVendor != false {
 	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:63</h2>
-<pre>if config.IncludeVendor != true {
+<pre>
+if config.IncludeVendor != true {
 	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:69</h2>
-<pre>if config.Verbose != true {
+<pre>
+if config.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:237</h2>
-<pre>if merged.IncludeVendor != true {
+<pre>
+if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:243</h2>
-<pre>if merged.Verbose != true {
+<pre>
+if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:270</h2>
-<pre>if merged.IncludeVendor != true {
+<pre>
+if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:274</h2>
-<pre>if merged.Verbose != false {
+<pre>
+if merged.Verbose != false {
 	t.Errorf(&#34;Expected merged Verbose false, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:295</h2>
-<pre>if merged.Verbose != true {
+<pre>
+if merged.Verbose != true {
 	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:299</h2>
-<pre>if merged.IncludeVendor != false {
+<pre>
+if merged.IncludeVendor != false {
 	t.Errorf(&#34;Expected merged IncludeVendor false, got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>errors/types_test.go:26</h2>
-<pre>if err.Type != ParseError {
+<pre>
+if err.Type != ParseError {
 	t.Errorf(&#34;Expected ParseError type, got %s&#34;, err.Type)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:37</h2>
-<pre>if merged.IncludeVendor != true {
+<pre>
+if merged.IncludeVendor != true {
 	t.Errorf(&#34;Expected IncludeVendor true (CLI override), got %v&#34;, merged.IncludeVendor)
-}</pre>
+}</pre
+>
 <h2>integration_test.go:42</h2>
-<pre>if merged.Verbose != true {
+<pre>
+if merged.Verbose != true {
 	t.Errorf(&#34;Expected Verbose true (from file), got %v&#34;, merged.Verbose)
-}</pre>
+}</pre
+>
 <h1>#117 found 12 clones</h1>
 <h2>syntax/golang/golang.go:142</h2>
-<pre>case *ast.ChanType:
+<pre>
+case *ast.ChanType:
 	o.Type = ChanType
-	o.AddChildren(t.trans(n.Value))</pre>
+	o.AddChildren(t.trans(n.Value))</pre
+>
 <h2>syntax/golang/golang.go:164</h2>
-<pre>case *ast.DeclStmt:
+<pre>
+case *ast.DeclStmt:
 	o.Type = DeclStmt
-	o.AddChildren(t.trans(n.Decl))</pre>
+	o.AddChildren(t.trans(n.Decl))</pre
+>
 <h2>syntax/golang/golang.go:168</h2>
-<pre>case *ast.DeferStmt:
+<pre>
+case *ast.DeferStmt:
 	o.Type = DeferStmt
-	o.AddChildren(t.trans(n.Call))</pre>
+	o.AddChildren(t.trans(n.Call))</pre
+>
 <h2>syntax/golang/golang.go:181</h2>
-<pre>case *ast.ExprStmt:
+<pre>
+case *ast.ExprStmt:
 	o.Type = ExprStmt
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:248</h2>
-<pre>case *ast.GoStmt:
+<pre>
+case *ast.GoStmt:
 	o.Type = GoStmt
-	o.AddChildren(t.trans(n.Call))</pre>
+	o.AddChildren(t.trans(n.Call))</pre
+>
 <h2>syntax/golang/golang.go:265</h2>
-<pre>case *ast.IncDecStmt:
+<pre>
+case *ast.IncDecStmt:
 	o.Type = IncDecStmt
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:273</h2>
-<pre>case *ast.InterfaceType:
+<pre>
+case *ast.InterfaceType:
 	o.Type = InterfaceType
-	o.AddChildren(t.trans(n.Methods))</pre>
+	o.AddChildren(t.trans(n.Methods))</pre
+>
 <h2>syntax/golang/golang.go:289</h2>
-<pre>case *ast.ParenExpr:
+<pre>
+case *ast.ParenExpr:
 	o.Type = ParenExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:309</h2>
-<pre>case *ast.SelectStmt:
+<pre>
+case *ast.SelectStmt:
 	o.Type = SelectStmt
-	o.AddChildren(t.trans(n.Body))</pre>
+	o.AddChildren(t.trans(n.Body))</pre
+>
 <h2>syntax/golang/golang.go:334</h2>
-<pre>case *ast.StarExpr:
+<pre>
+case *ast.StarExpr:
 	o.Type = StarExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h2>syntax/golang/golang.go:338</h2>
-<pre>case *ast.StructType:
+<pre>
+case *ast.StructType:
 	o.Type = StructType
-	o.AddChildren(t.trans(n.Fields))</pre>
+	o.AddChildren(t.trans(n.Fields))</pre
+>
 <h2>syntax/golang/golang.go:370</h2>
-<pre>case *ast.UnaryExpr:
+<pre>
+case *ast.UnaryExpr:
 	o.Type = UnaryExpr
-	o.AddChildren(t.trans(n.X))</pre>
+	o.AddChildren(t.trans(n.X))</pre
+>
 <h1>#118 found 2 clones</h1>
 <h2>job/helpers_test.go:1</h2>
-<pre>package job
+<pre>
+package job
 
 import (
 	&#34;os&#34;
@@ -2941,9 +3676,11 @@ func function1() {
 	files[1] = file2
 
 	return files
-}</pre>
+}</pre
+>
 <h2>testutils_test.go:1</h2>
-<pre>package main
+<pre>
+package main
 
 import (
 	&#34;os&#34;
@@ -3016,7 +3753,8 @@ func function1() {
 	files[1] = file2
 
 	return files
-}</pre>
+}</pre
+>
 <h1>#119 found 2 clones</h1>
 <h2>printer/sorter.go:64</h2>
 <pre>sizeI := dups[i][len(dups[i])-1].End - dups[i][0].Pos</pre>
@@ -3024,22 +3762,27 @@ func function1() {
 <pre>sizeJ := dups[j][len(dups[j])-1].End - dups[j][0].Pos</pre>
 <h1>#120 found 2 clones</h1>
 <h2>syntax/golang/golang.go:235</h2>
-<pre>case *ast.FuncType:
+<pre>
+case *ast.FuncType:
 	o.Type = FuncType
 	o.AddChildren(t.trans(n.Params))
 	if n.Results != nil {
 		o.AddChildren(t.trans(n.Results))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:352</h2>
-<pre>case *ast.TypeAssertExpr:
+<pre>
+case *ast.TypeAssertExpr:
 	o.Type = TypeAssertExpr
 	o.AddChildren(t.trans(n.X))
 	if n.Type != nil {
 		o.AddChildren(t.trans(n.Type))
-	}</pre>
+	}</pre
+>
 <h1>#121 found 2 clones</h1>
 <h2>syntax/golang/golang.go:97</h2>
-<pre>case *ast.AssignStmt:
+<pre>
+case *ast.AssignStmt:
 	o.Type = AssignStmt
 	for _, e := range n.Rhs {
 		o.AddChildren(t.trans(e))
@@ -3047,45 +3790,57 @@ func function1() {
 
 	for _, e := range n.Lhs {
 		o.AddChildren(t.trans(e))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:133</h2>
-<pre>case *ast.CaseClause:
+<pre>
+case *ast.CaseClause:
 	o.Type = CaseClause
 	for _, e := range n.List {
 		o.AddChildren(t.trans(e))
 	}
 	for _, stmt := range n.Body {
 		o.AddChildren(t.trans(stmt))
-	}</pre>
+	}</pre
+>
 <h1>#122 found 2 clones</h1>
 <h2>syntax/golang/golang.go:112</h2>
-<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Y))
+<pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Y))
 
 case *ast.BlockStmt:
 	o.Type = BlockStmt
 	for _, stmt := range n.List {
 		o.AddChildren(t.trans(stmt))
-	}</pre>
+	}</pre
+>
 <h2>syntax/golang/golang.go:301</h2>
-<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Body))
+<pre>
+	o.AddChildren(t.trans(n.X), t.trans(n.Body))
 
 case *ast.ReturnStmt:
 	o.Type = ReturnStmt
 	for _, e := range n.Results {
 		o.AddChildren(t.trans(e))
-	}</pre>
+	}</pre
+>
 <h1>#123 found 2 clones</h1>
 <h2>cli.go:415</h2>
-<pre>for dupl := range duplChan {
+<pre>
+for dupl := range duplChan {
 	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
-}</pre>
+}</pre
+>
 <h2>lib/lib.go:46</h2>
-<pre>for dupl := range duplChan {
+<pre>
+for dupl := range duplChan {
 	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
-}</pre>
+}</pre
+>
 <h1>#124 found 2 clones</h1>
 <h2>cli.go:718</h2>
-<pre>if method == config.DetectionMethodHash {
+<pre>
+if method == config.DetectionMethodHash {
 	// Use hash detection method
 	multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
 	duplChan = make(chan syntax.Match)
@@ -3111,9 +3866,11 @@ case *ast.ReturnStmt:
 			}
 		}
 	}()
-}</pre>
+}</pre
+>
 <h2>cli.go:768</h2>
-<pre>if method == config.DetectionMethodHash {
+<pre>
+if method == config.DetectionMethodHash {
 	multiDetector := detection.NewMultiDetector(cfg, data, t, false) // don&#39;t log again
 	duplChanCopy = make(chan syntax.Match)
 	go func() {
@@ -3135,20 +3892,25 @@ case *ast.ReturnStmt:
 			}
 		}
 	}()
-}</pre>
+}</pre
+>
 <h1>#125 found 2 clones</h1>
 <h2>bdd_test.go:568</h2>
-<pre>cmd := &amp;cobra.Command{
+<pre>
+cmd := &amp;cobra.Command{
 	Use:   &#34;art-dupl&#34;,
 	Short: &#34;Find code clones&#34;,
 	RunE:  runCmd,
-}</pre>
+}</pre
+>
 <h2>integration_test.go:22</h2>
-<pre>cliConfig := &amp;config.Config{
+<pre>
+cliConfig := &amp;config.Config{
 	Threshold:     50,     // Should override file config
 	OutputFormat:  &#34;html&#34;, // Should override file config
 	IncludeVendor: true,   // Should override file config
-}</pre>
+}</pre
+>
 <h1>#126 found 3 clones</h1>
 <h2>cli/runtime_test.go:25</h2>
 <pre>g.Expect(cfg.Threshold).To(gomega.Equal(25))</pre>
@@ -3158,29 +3920,36 @@ case *ast.ReturnStmt:
 <pre>g.Expect(cfg.SortBy).To(gomega.Equal(&#34;size&#34;))</pre>
 <h1>#127 found 3 clones</h1>
 <h2>syntax/golang/golang.go:148</h2>
-<pre>if n.Comm != nil {
+<pre>
+if n.Comm != nil {
 	o.AddChildren(t.trans(n.Comm))
 }
 for _, stmt := range n.Body {
 	o.AddChildren(t.trans(stmt))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:157</h2>
-<pre>if n.Type != nil {
+<pre>
+if n.Type != nil {
 	o.AddChildren(t.trans(n.Type))
 }
 for _, e := range n.Elts {
 	o.AddChildren(t.trans(e))
-}</pre>
+}</pre
+>
 <h2>syntax/golang/golang.go:379</h2>
-<pre>if n.Type != nil {
+<pre>
+if n.Type != nil {
 	o.AddChildren(t.trans(n.Type))
 }
 for _, val := range n.Values {
 	o.AddChildren(t.trans(val))
-}</pre>
+}</pre
+>
 <h1>#128 found 4 clones</h1>
 <h2>config/config_test.go:154</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too low&#34;,
 	config: &amp;Config{
 		Threshold:         0,
@@ -3197,9 +3966,11 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:163</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold - too high&#34;,
 	config: &amp;Config{
 		Threshold:         1001,
@@ -3216,9 +3987,11 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:172</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid output format&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -3235,9 +4008,11 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 999,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:181</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid maxChildrenSerial - too low&#34;,
 	config: &amp;Config{
 		Threshold:         15,
@@ -3254,10 +4029,12 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 100001,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#129 found 2 clones</h1>
 <h2>printer/sorter.go:10</h2>
-<pre>                                                {
+<pre>
+                                                {
 	sort.Slice(dups, func(i, j int) bool {
 		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
 			return false
@@ -3274,9 +4051,11 @@ for _, val := range n.Values {
 		}
 		return dups[i][0].Filename &lt; dups[j][0].Filename
 	})
-}</pre>
+}</pre
+>
 <h2>printer/sorter.go:30</h2>
-<pre>                                            {
+<pre>
+                                            {
 	sort.Slice(clones, func(i, j int) bool {
 		if len(clones[i]) == 0 &amp;&amp; len(clones[j]) == 0 {
 			return false
@@ -3293,7 +4072,8 @@ for _, val := range n.Values {
 		}
 		return clones[i][0].filename &lt; clones[j][0].filename
 	})
-}</pre>
+}</pre
+>
 <h1>#130 found 2 clones</h1>
 <h2>suffixtree/suffixtree_test.go:85</h2>
 <pre>				                             actual.tree.data[atran.start:atran.ActEnd()+1]</pre>
@@ -3312,123 +4092,165 @@ for _, val := range n.Values {
 <pre>func Unique(group [][]*syntax.Node) [][]*syntax.Node</pre>
 <h1>#132 found 2 clones</h1>
 <h2>printer/json_test.go:143</h2>
-<pre>if output.Summary.TotalCloneGroups != 0 {
+<pre>
+if output.Summary.TotalCloneGroups != 0 {
 	t.Errorf(&#34;Expected 0 total clone groups, got %d&#34;, output.Summary.TotalCloneGroups)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:146</h2>
-<pre>if output.Summary.TotalClones != 0 {
+<pre>
+if output.Summary.TotalClones != 0 {
 	t.Errorf(&#34;Expected 0 total clones, got %d&#34;, output.Summary.TotalClones)
-}</pre>
+}</pre
+>
 <h1>#133 found 6 clones</h1>
 <h2>config/config.go:157</h2>
-<pre>if len(fileConfig.Paths) &gt; 0 {
+<pre>
+if len(fileConfig.Paths) &gt; 0 {
 	result.Paths = fileConfig.Paths
-}</pre>
+}</pre
+>
 <h2>config/config.go:160</h2>
-<pre>if len(fileConfig.IgnoreFiles) &gt; 0 {
+<pre>
+if len(fileConfig.IgnoreFiles) &gt; 0 {
 	result.IgnoreFiles = fileConfig.IgnoreFiles
-}</pre>
+}</pre
+>
 <h2>config/config.go:169</h2>
-<pre>if len(fileConfig.DetectionMethods) &gt; 0 {
+<pre>
+if len(fileConfig.DetectionMethods) &gt; 0 {
 	result.DetectionMethods = fileConfig.DetectionMethods
-}</pre>
+}</pre
+>
 <h2>config/config.go:194</h2>
-<pre>if len(cliConfig.Paths) &gt; 0 {
+<pre>
+if len(cliConfig.Paths) &gt; 0 {
 	result.Paths = cliConfig.Paths
-}</pre>
+}</pre
+>
 <h2>config/config.go:197</h2>
-<pre>if len(cliConfig.IgnoreFiles) &gt; 0 {
+<pre>
+if len(cliConfig.IgnoreFiles) &gt; 0 {
 	result.IgnoreFiles = cliConfig.IgnoreFiles
-}</pre>
+}</pre
+>
 <h2>config/config.go:206</h2>
-<pre>if len(cliConfig.DetectionMethods) &gt; 0 {
+<pre>
+if len(cliConfig.DetectionMethods) &gt; 0 {
 	result.DetectionMethods = cliConfig.DetectionMethods
-}</pre>
+}</pre
+>
 <h1>#134 found 2 clones</h1>
 <h2>errors/types.go:39</h2>
-<pre>func (e *DuplError) Unwrap() error {
+<pre>
+func (e *DuplError) Unwrap() error {
 	return e.Cause
-}</pre>
+}</pre
+>
 <h2>syntax/syntax.go:39</h2>
-<pre>func (n *Node) Val() int {
+<pre>
+func (n *Node) Val() int {
 	return n.Type
-}</pre>
+}</pre
+>
 <h1>#135 found 2 clones</h1>
 <h2>suffixtree/suffixtree_test.go:204</h2>
-<pre>if tr == nil {
+<pre>
+if tr == nil {
 	t.Error(&#34;should have a b-transition&#34;)
 } else if tr.state != rets {
 	t.Errorf(&#34;got state %p, want %p&#34;, tr.state, rets)
-}</pre>
+}</pre
+>
 <h2>suffixtree/suffixtree_test.go:210</h2>
-<pre>if tr2 == nil {
+<pre>
+if tr2 == nil {
 	t.Error(&#34;should have an a-transition&#34;)
 } else if tr2.state != s2 {
 	t.Errorf(&#34;got state %p, want %p&#34;, tr2.state, s2)
-}</pre>
+}</pre
+>
 <h1>#136 found 2 clones</h1>
 <h2>printer/text.go:70</h2>
-<pre>for _, cl := range clones {
+<pre>
+for _, cl := range clones {
 	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 		return err
 	}
-}</pre>
+}</pre
+>
 <h2>printer/text.go:112</h2>
-<pre>for _, cl := range clones {
+<pre>
+for _, cl := range clones {
 	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
 		return err
 	}
-}</pre>
+}</pre
+>
 <h1>#137 found 7 clones</h1>
 <h2>cli.go:471</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:517</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;detection methods error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:535</h2>
-<pre>                                                         {
+<pre>
+                                                         {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:550</h2>
-<pre>                                                         {
+<pre>
+                                                         {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:584</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:608</h2>
-<pre>              {
+<pre>
+              {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h2>cli.go:629</h2>
-<pre>                                                                      {
+<pre>
+                                                                      {
 	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: %v\n&#34;, err); err != nil {
 		return err
 	}
 	return err
-}</pre>
+}</pre
+>
 <h1>#138 found 4 clones</h1>
 <h2>cli/runtime_test.go:38</h2>
 <pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatHTML))</pre>
@@ -3440,7 +4262,8 @@ for _, val := range n.Values {
 <pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatText))</pre>
 <h1>#139 found 2 clones</h1>
 <h2>integration_test.go:65</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Valid config&#34;,
 	config: &amp;config.Config{
 		Threshold:         15,
@@ -3457,9 +4280,11 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h2>integration_test.go:74</h2>
-<pre>{
+<pre>
+{
 	name: &#34;Invalid threshold&#34;,
 	config: &amp;config.Config{
 		Threshold:         0,
@@ -3476,74 +4301,102 @@ for _, val := range n.Values {
 		MaxChildrenSerial: 10000,
 	},
 	isValid: false,
-}</pre>
+}</pre
+>
 <h1>#140 found 6 clones</h1>
 <h2>printer/sorter.go:74</h2>
-<pre>sort.Slice(dups, func(i, j int) bool {
+<pre>
+sort.Slice(dups, func(i, j int) bool {
 	return len(dups[i]) &gt; len(dups[j])
-})</pre>
+})</pre
+>
 <h2>printer/text.go:92</h2>
-<pre>sort.Slice(clones, func(i, j int) bool {
+<pre>
+sort.Slice(clones, func(i, j int) bool {
 	return len(dups[i]) &gt; len(dups[j]) // Sort by token count
-})</pre>
+})</pre
+>
 <h2>printer/text.go:97</h2>
-<pre>sort.Slice(clones, func(i, j int) bool {
+<pre>
+sort.Slice(clones, func(i, j int) bool {
 	return len(dups[i]) &gt; len(dups[j])
-})</pre>
+})</pre
+>
 <h2>printer/text.go:102</h2>
-<pre>sort.Slice(clones, func(i, j int) bool {
+<pre>
+sort.Slice(clones, func(i, j int) bool {
 	return len(dups[i]) &gt; len(dups[j])
-})</pre>
+})</pre
+>
 <h2>printer/text.go:107</h2>
-<pre>sort.Slice(clones, func(i, j int) bool {
+<pre>
+sort.Slice(clones, func(i, j int) bool {
 	return len(dups[i]) &gt; len(dups[j])
-})</pre>
+})</pre
+>
 <h2>printer/text.go:189</h2>
-<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+<pre>
+sort.Slice(sortedCloneGroups, func(i, j int) bool {
 	return len(sortedCloneGroups[i]) &gt; len(sortedCloneGroups[j])
-})</pre>
+})</pre
+>
 <h1>#141 found 2 clones</h1>
 <h2>printer/common.go:13</h2>
-<pre>func (c byNameAndLine) Len() int { return len(c) }
+<pre>
+func (c byNameAndLine) Len() int { return len(c) }
 
-func (c byNameAndLine) Swap(i, j int) { c[i], c[j] = c[j], c[i] }</pre>
+func (c byNameAndLine) Swap(i, j int) { c[i], c[j] = c[j], c[i] }</pre
+>
 <h2>suffixtree/dupl_test.go:33</h2>
-<pre>func (p ByPos) Len() int {
+<pre>
+func (p ByPos) Len() int {
 	return len(p)
 }
 
 func (p ByPos) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
-}</pre>
+}</pre
+>
 <h1>#142 found 2 clones</h1>
 <h2>printer/text.go:95</h2>
-<pre>case &#34;occurrence&#34;:
+<pre>
+case &#34;occurrence&#34;:
 	// For text output, occurrence is same as size (each dup in different file)
 	sort.Slice(clones, func(i, j int) bool {
 		return len(dups[i]) &gt; len(dups[j])
-	})</pre>
+	})</pre
+>
 <h2>printer/text.go:187</h2>
-<pre>case &#34;occurrence&#34;:
+<pre>
+case &#34;occurrence&#34;:
 	// Sort by number of files in each clone group
 	sort.Slice(sortedCloneGroups, func(i, j int) bool {
 		return len(sortedCloneGroups[i]) &gt; len(sortedCloneGroups[j])
-	})</pre>
+	})</pre
+>
 <h1>#143 found 3 clones</h1>
 <h2>printer/json_test.go:106</h2>
-<pre>if !strings.Contains(output, &#34;\&#34;version\&#34;:&#34;) {
+<pre>
+if !strings.Contains(output, &#34;\&#34;version\&#34;:&#34;) {
 	t.Error(&#34;JSON output missing version field&#34;)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:109</h2>
-<pre>if !strings.Contains(output, &#34;\&#34;clone_groups\&#34;:&#34;) {
+<pre>
+if !strings.Contains(output, &#34;\&#34;clone_groups\&#34;:&#34;) {
 	t.Error(&#34;JSON output missing clone_groups field&#34;)
-}</pre>
+}</pre
+>
 <h2>printer/json_test.go:112</h2>
-<pre>if !strings.Contains(output, &#34;test-hash&#34;) {
+<pre>
+if !strings.Contains(output, &#34;test-hash&#34;) {
 	t.Error(&#34;JSON output missing test hash&#34;)
-}</pre>
+}</pre
+>
 <h1>#144 found 2 clones</h1>
 <h2>config/config_test.go:254</h2>
-<pre>func TestMergeConfigsNilFileConfig(t *testing.T) {
+<pre>
+func TestMergeConfigsNilFileConfig(t *testing.T) {
 	cliConfig := &amp;Config{
 		Threshold:     30,
 		OutputFormat:  &#34;json&#34;,
@@ -3566,9 +4419,11 @@ func (p ByPos) Swap(i, j int) {
 	if merged.Verbose != false {
 		t.Errorf(&#34;Expected merged Verbose false, got %v&#34;, merged.Verbose)
 	}
-}</pre>
+}</pre
+>
 <h2>config/config_test.go:279</h2>
-<pre>func TestMergeConfigsNilCLIConfig(t *testing.T) {
+<pre>
+func TestMergeConfigsNilCLIConfig(t *testing.T) {
 	fileConfig := &amp;Config{
 		Threshold:    40,
 		OutputFormat: &#34;html&#34;,
@@ -3591,4 +4446,5 @@ func (p ByPos) Swap(i, j int) {
 	if merged.IncludeVendor != false {
 		t.Errorf(&#34;Expected merged IncludeVendor false, got %v&#34;, merged.IncludeVendor)
 	}
-}</pre>
+}</pre
+>

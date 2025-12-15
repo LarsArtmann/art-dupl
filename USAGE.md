@@ -25,12 +25,12 @@ dupl [flags] [paths...]
 
 ### Path Handling
 
-| Input Type | Behavior | Example |
-|------------|----------|---------|
-| No path | Recursively scan `.` (current directory) for `.go` files | `dupl` |
-| File path | Analyze specific file regardless of extension | `dupl main.go` |
-| Directory | Recursively search directory for `.go` files | `dupl ./src` |
-| Multiple paths | Analyze all specified paths | `dupl ./src ./lib` |
+| Input Type     | Behavior                                                 | Example            |
+| -------------- | -------------------------------------------------------- | ------------------ |
+| No path        | Recursively scan `.` (current directory) for `.go` files | `dupl`             |
+| File path      | Analyze specific file regardless of extension            | `dupl main.go`     |
+| Directory      | Recursively search directory for `.go` files             | `dupl ./src`       |
+| Multiple paths | Analyze all specified paths                              | `dupl ./src ./lib` |
 
 ### File Selection Rules
 
@@ -61,17 +61,17 @@ Configuration files use JSON format with the following structure:
 
 ### Configuration Fields
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `threshold` | integer | 15 | Minimum token sequence size to consider as clone |
-| `includeVendor` | boolean | false | Include vendor directory in analysis |
-| `filesFromStdin` | boolean | false | Read file paths from stdin (one per line) |
-| `outputFormat` | string | "text" | Output format: "text", "html", "json", "plumbing" |
-| `verbose` | boolean | false | Enable verbose logging |
-| `paths` | array[string] | ["."] | Paths to analyze |
-| `ignoreFiles` | array[string] | [] | File patterns to ignore |
-| `maxChildrenSerial` | integer | 10000 | Maximum children for large composite literals |
-| `outputFile` | string | "" | Output file path (empty = stdout) |
+| Field               | Type          | Default | Description                                       |
+| ------------------- | ------------- | ------- | ------------------------------------------------- |
+| `threshold`         | integer       | 15      | Minimum token sequence size to consider as clone  |
+| `includeVendor`     | boolean       | false   | Include vendor directory in analysis              |
+| `filesFromStdin`    | boolean       | false   | Read file paths from stdin (one per line)         |
+| `outputFormat`      | string        | "text"  | Output format: "text", "html", "json", "plumbing" |
+| `verbose`           | boolean       | false   | Enable verbose logging                            |
+| `paths`             | array[string] | ["."]   | Paths to analyze                                  |
+| `ignoreFiles`       | array[string] | []      | File patterns to ignore                           |
+| `maxChildrenSerial` | integer       | 10000   | Maximum children for large composite literals     |
+| `outputFile`        | string        | ""      | Output file path (empty = stdout)                 |
 
 ### Using Configuration Files
 
@@ -118,6 +118,7 @@ dupl -html -t 30 > report.html
 ```
 
 **Features**:
+
 - Syntax highlighting for Go code
 - Side-by-side clone comparison
 - Navigation between clone groups
@@ -134,6 +135,7 @@ dupl -json -t 20 > report.json
 ```
 
 **Output Structure**:
+
 ```json
 {
   "version": "1.0",
@@ -187,6 +189,7 @@ dupl -plumbing -t 15
 ```
 
 **Output format**:
+
 ```
 filename:start:line:end:line
 filename:start:line:end:line
@@ -198,47 +201,49 @@ filename:start:line:end:line
 
 ### Core Options
 
-| Option | Short | Type | Default | Description |
-|--------|-------|------|---------|-------------|
-| `-config` | | string | "" | Path to configuration file (JSON format) |
-| `-t` | `-threshold` | int | 15 | Minimum token sequence size to consider as clone |
-| `-vendor` | | flag | false | Include vendor directory in analysis |
+| Option    | Short        | Type   | Default | Description                                      |
+| --------- | ------------ | ------ | ------- | ------------------------------------------------ |
+| `-config` |              | string | ""      | Path to configuration file (JSON format)         |
+| `-t`      | `-threshold` | int    | 15      | Minimum token sequence size to consider as clone |
+| `-vendor` |              | flag   | false   | Include vendor directory in analysis             |
 
 ### Output Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `-html` | flag | false | Output HTML report with syntax-highlighted code |
-| `-json` | flag | false | Output structured JSON format with metadata |
-| `-plumbing` | flag | false | Output machine-readable plumbing format |
+| Option      | Type | Default | Description                                     |
+| ----------- | ---- | ------- | ----------------------------------------------- |
+| `-html`     | flag | false   | Output HTML report with syntax-highlighted code |
+| `-json`     | flag | false   | Output structured JSON format with metadata     |
+| `-plumbing` | flag | false   | Output machine-readable plumbing format         |
 
 ### Input Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `-files` | flag | false | Read file names from stdin, one per line |
-| `-v` | `-verbose` | flag | false | Enable verbose logging to show processing progress |
+| Option   | Type       | Default | Description                              |
+| -------- | ---------- | ------- | ---------------------------------------- | -------------------------------------------------- |
+| `-files` | flag       | false   | Read file names from stdin, one per line |
+| `-v`     | `-verbose` | flag    | false                                    | Enable verbose logging to show processing progress |
 
 ### Output Format Conflicts
 
 The following flags are mutually exclusive (can only use one at a time):
+
 - `-html`
-- `-json` 
+- `-json`
 - `-plumbing`
 
 Attempting to use multiple output formats will result in an error.
 
 ## Exit Codes
 
-| Exit Code | Meaning | Common Causes |
-|-----------|---------|----------------|
-| 0 | Success | Analysis completed successfully |
-| 1 | Error | Invalid arguments, file I/O errors, configuration errors |
-| 2 | Usage | Invalid command-line usage (shown when `-h` or invalid flags) |
+| Exit Code | Meaning | Common Causes                                                 |
+| --------- | ------- | ------------------------------------------------------------- |
+| 0         | Success | Analysis completed successfully                               |
+| 1         | Error   | Invalid arguments, file I/O errors, configuration errors      |
+| 2         | Usage   | Invalid command-line usage (shown when `-h` or invalid flags) |
 
 ### Error Handling
 
 dupl follows standard Unix conventions:
+
 - Exit code 0 for success
 - Non-zero exit codes for errors
 - Error messages written to stderr
@@ -309,7 +314,7 @@ dupl file1.go file2.go file3.go -t 15
 ```bash
 # Progressive analysis
 echo "=== All clones ===" && dupl -t 15
-echo "=== Medium clones ===" && dupl -t 50  
+echo "=== Medium clones ===" && dupl -t 50
 echo "=== Large clones ===" && dupl -t 100
 
 # Package-by-package analysis
@@ -402,19 +407,23 @@ dupl -config production.json
 ### Common Issues
 
 #### "No such file or directory"
+
 - Check file paths exist
 - Verify working directory
 - Use absolute paths if needed
 
 #### "Permission denied"
+
 - Check file read permissions
 - Ensure directory traversal permissions
 
 #### "config file not found"
+
 - Verify configuration file path
 - Check file exists and is readable
 
 #### Configuration Issues
+
 ```bash
 # Check if config file is being loaded
 dupl -config dupl.json -v 2>&1 | grep -i config
@@ -427,6 +436,7 @@ echo '{"threshold": 20}' | dupl -config /dev/stdin
 ```
 
 #### Performance Issues
+
 - Increase threshold to reduce processing
 - Limit analysis scope with specific paths
 - Monitor with verbose mode

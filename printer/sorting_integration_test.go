@@ -87,7 +87,7 @@ func anotherLargeFunction() {
 		t.Run(tc.name, func(t *testing.T) {
 			// Prepare clone data for all tests
 			clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-			
+
 			// Test JSON Printer sorting (special case with different verification logic)
 			t.Run("JSONPrinter", func(t *testing.T) {
 				var buf bytes.Buffer
@@ -118,7 +118,7 @@ func anotherLargeFunction() {
 
 			// Test standard printers with common verification logic
 			standardPrinters := []struct {
-				name      string
+				name        string
 				constructor func(io.Writer, ReadFile) Printer
 			}{
 				{"TextPrinter", NewText},
@@ -136,9 +136,9 @@ func anotherLargeFunction() {
 }
 
 // testPrinterSorting tests a printer's sorting functionality with standard verification logic
-func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer, 
-	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string) {
-	
+func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer,
+	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string,
+) {
 	var buf bytes.Buffer
 	printer := constructor(&buf, mockReadFile(testContent))
 

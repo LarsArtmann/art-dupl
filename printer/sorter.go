@@ -6,44 +6,58 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// sortNodesByFilename sorts []*syntax.Node groups by filename for deterministic output
-func sortNodesByFilename(dups [][]*syntax.Node) {
-	sort.Slice(dups, func(i, j int) bool {
-		if len(dups[i]) == 0 && len(dups[j]) == 0 {
+// sortByFilenameAndPosition is a generic helper that sorts slices by filename and position
+func sortByFilenameAndPosition[T any](slices [][]T, getFilename func([]T) string, getPosition func([]T) int) {
+	sort.Slice(slices, func(i, j int) bool {
+		if len(slices[i]) == 0 && len(slices[j]) == 0 {
 			return false
 		}
-		if len(dups[i]) == 0 {
+		if len(slices[i]) == 0 {
 			return true
 		}
-		if len(dups[j]) == 0 {
+		if len(slices[j]) == 0 {
 			return false
 		}
 		// Use Filename for deterministic sorting
-		if dups[i][0].Filename == dups[j][0].Filename {
-			return dups[i][0].Pos < dups[j][0].Pos
+		if getFilename(slices[i]) == getFilename(slices[j]) {
+			return getPosition(slices[i]) < getPosition(slices[j])
 		}
-		return dups[i][0].Filename < dups[j][0].Filename
+		return getFilename(slices[i]) < getFilename(slices[j])
 	})
+}
+
+// sortNodesByFilename sorts []*syntax.Node groups by filename for deterministic output
+func sortNodesByFilename(dups [][]*syntax.Node) {
+	sortByFilenameAndPosition(dups,
+		func(nodes []*syntax.Node) string {
+			if len(nodes) > 0 {
+				return nodes[0].Filename
+			}
+			return ""
+		},
+		func(nodes []*syntax.Node) int {
+			if len(nodes) > 0 {
+				return nodes[0].Pos
+			}
+			return 0
+		})
 }
 
 // sortClonesByFilename sorts []clone groups by filename for deterministic output
 func sortClonesByFilename(clones [][]clone) {
-	sort.Slice(clones, func(i, j int) bool {
-		if len(clones[i]) == 0 && len(clones[j]) == 0 {
-			return false
-		}
-		if len(clones[i]) == 0 {
-			return true
-		}
-		if len(clones[j]) == 0 {
-			return false
-		}
-		// Compare by first filename in each group
-		if clones[i][0].filename == clones[j][0].filename {
-			return clones[i][0].lineStart < clones[j][0].lineStart
-		}
-		return clones[i][0].filename < clones[j][0].filename
-	})
+	sortByFilenameAndPosition(clones,
+		func(cs []clone) string {
+			if len(cs) > 0 {
+				return cs[0].filename
+			}
+			return ""
+		},
+		func(cs []clone) int {
+			if len(cs) > 0 {
+				return cs[0].lineStart
+			}
+			return 0
+		})
 }
 
 // SortClonesBySize sorts clone groups by token count (largest first)

@@ -9,7 +9,6 @@ on:
       - fork
 
 jobs:
-
   main:
     name: Main Process
     runs-on: ubuntu-latest

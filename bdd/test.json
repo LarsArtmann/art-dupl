@@ -1,1 +1,1 @@
-{"threshold": 25, "outputFormat": "json", "paths": ["/tmp/test"], "verbose": true}
+{ "threshold": 25, "outputFormat": "json", "paths": ["/tmp/test"], "verbose": true }

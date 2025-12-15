@@ -51,6 +51,7 @@ For meaningful refactoring opportunities, focus on larger code blocks:
 ### 2. Creating Reports
 
 #### HTML Report for Review
+
 ```bash
 # Generate comprehensive HTML report
 ./art-dupl -html -t 30 > dupl_report.html
@@ -61,6 +62,7 @@ xdg-open dupl_report.html  # Linux
 ```
 
 #### JSON for Automation
+
 ```bash
 # JSON output with statistics
 ./art-dupl -json -t 20 > dupl_report.json
@@ -72,6 +74,7 @@ xdg-open dupl_report.html  # Linux
 ### 3. Analyzing Specific Code
 
 #### Target Directories
+
 ```bash
 # Analyze only source code (exclude tests)
 ./art-dupl ./cmd ./internal -t 30
@@ -81,6 +84,7 @@ xdg-open dupl_report.html  # Linux
 ```
 
 #### Target File Types
+
 ```bash
 # Analyze test files only
 find . -name '*_test.go' | ./art-dupl -files -t 20
@@ -105,16 +109,16 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.21'
-      
+
       - name: Install art-dupl
         run: go install github.com/LarsArtmann/art-dupl@latest
-      
+
       - name: Run art-dupl analysis
         run: |
           art-dupl -json -t 30 > dupl_report.json
           TOTAL_CLONES=$(jq '.summary.total_clones' dupl_report.json)
           echo "Found $TOTAL_CLONES code clones"
-          
+
           # Fail if too many duplicates
           if [ "$TOTAL_CLONES" -gt 50 ]; then
             echo "Too many code duplicates: $TOTAL_CLONES"
@@ -273,6 +277,7 @@ internal/handlers/user.go:89-117
 ### Understanding HTML Report
 
 The HTML report provides:
+
 - Syntax-highlighted code fragments
 - Side-by-side comparison
 - Easy navigation between clone sets
@@ -282,12 +287,12 @@ The HTML report provides:
 
 ### 1. Setting Thresholds
 
-| Project Size | Recommended Threshold | Rationale |
-|--------------|----------------------|-----------|
-| Small (<1000 lines) | 10-15 | Catch even small duplicates |
-| Medium (1K-10K lines) | 20-30 | Balance between noise and signal |
-| Large (>10K lines) | 30-50 | Focus on meaningful duplicates |
-| Codebases with boilerplate | 40+ | Avoid flagging template code |
+| Project Size               | Recommended Threshold | Rationale                        |
+| -------------------------- | --------------------- | -------------------------------- |
+| Small (<1000 lines)        | 10-15                 | Catch even small duplicates      |
+| Medium (1K-10K lines)      | 20-30                 | Balance between noise and signal |
+| Large (>10K lines)         | 30-50                 | Focus on meaningful duplicates   |
+| Codebases with boilerplate | 40+                   | Avoid flagging template code     |
 
 ### 2. Common Ignore Patterns
 
@@ -325,6 +330,7 @@ The HTML report provides:
 ### Common Issues
 
 #### Too Many False Positives
+
 ```bash
 # Increase threshold
 ./art-dupl -t 40
@@ -334,6 +340,7 @@ The HTML report provides:
 ```
 
 #### Performance Issues
+
 ```bash
 # Use verbose to see progress
 ./art-dupl -v
@@ -343,6 +350,7 @@ The HTML report provides:
 ```
 
 #### Memory Issues with Large Files
+
 ```bash
 # Adjust maxChildrenSerial in config
 {

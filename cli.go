@@ -15,6 +15,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
 	"github.com/spf13/cobra"
@@ -173,7 +174,7 @@ func Run() int {
 	// Update global variables with merged config (for compatibility with existing code)
 	paths = mergedConfig.Paths
 	vendor = &mergedConfig.IncludeVendor
-	// For verbose and threshold, use values from mergedConfig 
+	// For verbose and threshold, use values from mergedConfig
 	// (these will be used by code that expects global variables)
 	files = &mergedConfig.FilesFromStdin
 
@@ -326,6 +327,72 @@ Examples:
 	os.Exit(2)
 }
 
+// createDuplChannel creates a channel for duplicate detection based on the method
+func createDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+	if cfg.DetectionMethods.Contains(config.DetectionMethodHash) {
+		// Use hash detection method
+		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
+		duplChan := make(chan syntax.Match)
+		// Find duplicates
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(cfg.Threshold)
+			// Detection completed
+			for match := range matches {
+				duplChan <- match
+			}
+		}()
+		return duplChan
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(cfg.Threshold)
+		duplChan := make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+		return duplChan
+	}
+}
+
+// createDuplChannelForMethod creates a channel for duplicate detection based on a single method
+func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+	if method == config.DetectionMethodHash {
+		// Use hash detection method
+		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
+		duplChan := make(chan syntax.Match)
+		// Find duplicates
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(cfg.Threshold)
+			// Detection completed
+			for match := range matches {
+				duplChan <- match
+			}
+		}()
+		return duplChan
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(cfg.Threshold)
+		duplChan := make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+		return duplChan
+	}
+}
+
 // executeAnalysis runs the core duplicate analysis logic
 func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.Match, int, error) {
 	if mergedConfig.Verbose {
@@ -346,31 +413,7 @@ func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.M
 	}
 
 	// Use multi-detector if hash detection is enabled
-	var duplChan chan syntax.Match
-	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
-		multiDetector := detection.NewMultiDetector(mergedConfig, data, t, mergedConfig.Verbose)
-		duplChan = make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			matches := multiDetector.FindDuplOver(mergedConfig.Threshold)
-			for match := range matches {
-				duplChan <- match
-			}
-		}()
-	} else {
-		// Use existing art-dupl logic
-		mchan := t.FindDuplOver(mergedConfig.Threshold)
-		duplChan = make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			for m := range mchan {
-				match := syntax.FindSyntaxUnits(*data, m, mergedConfig.Threshold)
-				if len(match.Frags) > 0 {
-					duplChan <- match
-				}
-			}
-		}()
-	}
+	duplChan := createDuplChannel(mergedConfig, data, t, mergedConfig.Verbose)
 
 	return duplChan, filesCount, nil
 }
@@ -747,37 +790,6 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		log.Println("Searching for clones")
 	}
 
-	// Get matches based on detection method
-	// Run detection based on method
-	var duplChan chan syntax.Match
-	if method == config.DetectionMethodHash {
-		// Use hash detection method
-		multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
-		duplChan = make(chan syntax.Match)
-		// Find duplicates
-		go func() {
-			defer close(duplChan)
-			matches := multiDetector.FindDuplOver(cfg.Threshold)
-			// Detection completed
-			for match := range matches {
-				duplChan <- match
-			}
-		}()
-	} else {
-		// Use existing art-dupl logic
-		mchan := t.FindDuplOver(cfg.Threshold)
-		duplChan = make(chan syntax.Match)
-		go func() {
-			defer close(duplChan)
-			for m := range mchan {
-				match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-				if len(match.Frags) > 0 {
-					duplChan <- match
-				}
-			}
-		}()
-	}
-
 	// Generate all output formats
 	// Generate output for each format
 	for _, fmtInfo := range formats {
@@ -799,30 +811,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		}
 
 		// We need to recreate the channel for each format since it gets consumed
-		var duplChanCopy chan syntax.Match
-		if method == config.DetectionMethodHash {
-			multiDetector := detection.NewMultiDetector(cfg, data, t, false) // don't log again
-			duplChanCopy = make(chan syntax.Match)
-			go func() {
-				defer close(duplChanCopy)
-				matches := multiDetector.FindDuplOver(cfg.Threshold)
-				for match := range matches {
-					duplChanCopy <- match
-				}
-			}()
-		} else {
-			mchan := t.FindDuplOver(cfg.Threshold)
-			duplChanCopy = make(chan syntax.Match)
-			go func() {
-				defer close(duplChanCopy)
-				for m := range mchan {
-					match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
-					if len(match.Frags) > 0 {
-						duplChanCopy <- match
-					}
-				}
-			}()
-		}
+		duplChanCopy := createDuplChannelForMethod(method, cfg, data, t, false) // don't log again
 
 		if err := printDupls(p, duplChanCopy, "size", cfg.Threshold); err != nil {
 			return fmt.Errorf("error writing %s format: %v", fmtInfo.name, err)
