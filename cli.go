@@ -369,17 +369,18 @@ func createDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.S
 
 // createDuplChannelForMethod creates a channel for duplicate detection based on a single method
 func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
-	if method == config.DetectionMethodHash {
-		return createHashDuplChannel(cfg, data, t, verbose)
-	}
-	return createArtDuplChannel(cfg, data, t)
+	// Create a temporary config with the single detection method
+	tempConfig := *cfg
+	tempConfig.DetectionMethods = config.DetectionMethods{method}
+	return createDuplChannel(&tempConfig, data, t, verbose)
 }
 
-// executeAnalysis runs the core duplicate analysis logic
-func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.Match, int, error) {
-	if mergedConfig.Verbose {
+// buildSuffixTree builds a suffix tree from the provided paths and returns the tree, data, and file count
+func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+	if verbose {
 		log.Println("Building suffix tree")
 	}
+	
 	schan, filesCountChan := job.Parse(filesFeedFromPaths(paths))
 	t, data, done := job.BuildTree(schan)
 	<-done
@@ -390,8 +391,18 @@ func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.M
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
 
-	if mergedConfig.Verbose {
+	if verbose {
 		log.Println("Searching for clones")
+	}
+
+	return t, data, filesCount, nil
+}
+
+// executeAnalysis runs the core duplicate analysis logic
+func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.Match, int, error) {
+	t, data, filesCount, err := buildSuffixTree(paths, mergedConfig.Verbose)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	// Use multi-detector if hash detection is enabled
@@ -750,26 +761,9 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 }, method config.DetectionMethod, verbose bool,
 ) error {
-	if verbose {
-		log.Println("Building suffix tree")
-	}
-
-	// Start the parsing pipeline
-	schan, filesCountChan := job.Parse(filesFeedFromPaths(cfg.Paths))
-	// Build the suffix tree
-	t, data, done := job.BuildTree(schan)
-	// Wait for processing to complete
-	<-done
-	// Tree building completed
-
-	// Get file count
-	filesCount := <-filesCountChan
-
-	// finish stream
-	t.Update(&syntax.Node{Type: -1})
-
-	if verbose {
-		log.Println("Searching for clones")
+	t, data, filesCount, err := buildSuffixTree(cfg.Paths, verbose)
+	if err != nil {
+		return fmt.Errorf("failed to build suffix tree: %v", err)
 	}
 
 	// Generate all output formats

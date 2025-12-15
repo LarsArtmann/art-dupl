@@ -168,21 +168,10 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
-	// Helper function to calculate total size of a clone group
-	totalSize := func(group []clone) int {
-		size := 0
-		for _, cl := range group {
-			size += cl.size
-		}
-		return size
-	}
-
 	switch sortBy {
 	case "size":
 		// Sort by total token size of each clone group
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalSize(sortedCloneGroups[i]) > totalSize(sortedCloneGroups[j])
-		})
+		sortCloneGroupsBySize(sortedCloneGroups)
 	case "occurrence":
 		// Sort by number of files in each clone group
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
@@ -193,14 +182,10 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 		sortClonesByFilename(sortedCloneGroups)
 	case "total-tokens":
 		// Sort by total tokens across all files in each clone group
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalSize(sortedCloneGroups[i]) > totalSize(sortedCloneGroups[j])
-		})
+		sortCloneGroupsBySize(sortedCloneGroups)
 	default:
 		// Default to size sorting
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalSize(sortedCloneGroups[i]) > totalSize(sortedCloneGroups[j])
-		})
+		sortCloneGroupsBySize(sortedCloneGroups)
 	}
 
 	// Print header

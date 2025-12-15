@@ -101,9 +101,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 	switch n := node.(type) {
 	case *ast.ArrayType:
 		o.Type = ArrayType
-		if n.Len != nil {
-			o.AddChildren(t.trans(n.Len))
-		}
+		t.addWithNilCheck(o, n.Len)
 		o.AddChildren(t.trans(n.Elt))
 
 	case *ast.AssignStmt:
@@ -131,9 +129,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.BranchStmt:
 		o.Type = BranchStmt
-		if n.Label != nil {
-			o.AddChildren(t.trans(n.Label))
-		}
+		t.addWithNilCheck(o, n.Label)
 
 	case *ast.CallExpr:
 		o.Type = CallExpr
@@ -157,18 +153,14 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.CommClause:
 		o.Type = CommClause
-		if n.Comm != nil {
-			o.AddChildren(t.trans(n.Comm))
-		}
+		t.addWithNilCheck(o, n.Comm)
 		for _, stmt := range n.Body {
 			o.AddChildren(t.trans(stmt))
 		}
 
 	case *ast.CompositeLit:
 		o.Type = CompositeLit
-		if n.Type != nil {
-			o.AddChildren(t.trans(n.Type))
-		}
+		t.addWithNilCheck(o, n.Type)
 		for _, e := range n.Elts {
 			o.AddChildren(t.trans(e))
 		}
@@ -183,9 +175,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.Ellipsis:
 		o.Type = Ellipsis
-		if n.Elt != nil {
-			o.AddChildren(t.trans(n.Elt))
-		}
+		t.addWithNilCheck(o, n.Elt)
 
 	case *ast.EmptyStmt:
 		o.Type = EmptyStmt
@@ -237,9 +227,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 	case *ast.FuncType:
 		o.Type = FuncType
 		o.AddChildren(t.trans(n.Params))
-		if n.Results != nil {
-			o.AddChildren(t.trans(n.Results))
-		}
+		t.addWithNilCheck(o, n.Results)
 
 	case *ast.GenDecl:
 		o.Type = GenDecl
@@ -291,12 +279,8 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.RangeStmt:
 		o.Type = RangeStmt
-		if n.Key != nil {
-			o.AddChildren(t.trans(n.Key))
-		}
-		if n.Value != nil {
-			o.AddChildren(t.trans(n.Value))
-		}
+		t.addWithNilCheck(o, n.Key)
+		t.addWithNilCheck(o, n.Value)
 		o.AddChildren(t.trans(n.X), t.trans(n.Body))
 
 	case *ast.ReturnStmt:
@@ -320,15 +304,9 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 	case *ast.SliceExpr:
 		o.Type = SliceExpr
 		o.AddChildren(t.trans(n.X))
-		if n.Low != nil {
-			o.AddChildren(t.trans(n.Low))
-		}
-		if n.High != nil {
-			o.AddChildren(t.trans(n.High))
-		}
-		if n.Max != nil {
-			o.AddChildren(t.trans(n.Max))
-		}
+		t.addWithNilCheck(o, n.Low)
+		t.addWithNilCheck(o, n.High)
+		t.addWithNilCheck(o, n.Max)
 
 	case *ast.StarExpr:
 		o.Type = StarExpr
@@ -340,20 +318,14 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.SwitchStmt:
 		o.Type = SwitchStmt
-		if n.Init != nil {
-			o.AddChildren(t.trans(n.Init))
-		}
-		if n.Tag != nil {
-			o.AddChildren(t.trans(n.Tag))
-		}
+		t.addWithNilCheck(o, n.Init)
+		t.addWithNilCheck(o, n.Tag)
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.TypeAssertExpr:
 		o.Type = TypeAssertExpr
 		o.AddChildren(t.trans(n.X))
-		if n.Type != nil {
-			o.AddChildren(t.trans(n.Type))
-		}
+		t.addWithNilCheck(o, n.Type)
 
 	case *ast.TypeSpec:
 		o.Type = TypeSpec
@@ -361,9 +333,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	case *ast.TypeSwitchStmt:
 		o.Type = TypeSwitchStmt
-		if n.Init != nil {
-			o.AddChildren(t.trans(n.Init))
-		}
+		t.addWithNilCheck(o, n.Init)
 		o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
 
 	case *ast.UnaryExpr:
@@ -375,9 +345,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 		for _, name := range n.Names {
 			o.AddChildren(t.trans(name))
 		}
-		if n.Type != nil {
-			o.AddChildren(t.trans(n.Type))
-		}
+		t.addWithNilCheck(o, n.Type)
 		for _, val := range n.Values {
 			o.AddChildren(t.trans(val))
 		}
