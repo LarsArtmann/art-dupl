@@ -56,7 +56,7 @@ var (
 	thresholdLong = flag.Int("threshold", 15, "minimum token sequence size to consider as clone")
 	files         = flag.Bool("files", false, "read file names from stdin, one per line")
 	html          = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
-	json          = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
+	jsonFlag      = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
 	plumbing      = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
 	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash")
 	paths         []string
@@ -118,7 +118,7 @@ func Run() int {
 		cliConfig.OutputFormat = config.OutputFormatHTML
 	} else if *plumbing {
 		cliConfig.OutputFormat = config.OutputFormatPlumbing
-	} else if *json {
+	} else if *jsonFlag {
 		cliConfig.OutputFormat = config.OutputFormatJSON
 	}
 
@@ -148,7 +148,7 @@ func Run() int {
 		cli.Exit(1)
 		return 1
 	}
-	if mergedConfig.OutputFormat == "html" && *json {
+	if mergedConfig.OutputFormat == "html" && *jsonFlag {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n"); err != nil {
 			cli.Exit(1)
 			return 1
@@ -156,7 +156,7 @@ func Run() int {
 		cli.Exit(1)
 		return 1
 	}
-	if mergedConfig.OutputFormat == "plumbing" && *json {
+	if mergedConfig.OutputFormat == "plumbing" && *jsonFlag {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n"); err != nil {
 			cli.Exit(1)
 			return 1

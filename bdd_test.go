@@ -136,7 +136,7 @@ func uniqueFunction(ctx context.Context) error {
 
 	AfterEach(func() {
 		// Clean up temporary directory
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When analyzing code for duplicates", func() {
@@ -249,7 +249,7 @@ func b() {}`), 0644)
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When using configuration files", func() {
@@ -337,7 +337,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When analyzing specific directories", func() {
@@ -442,7 +442,7 @@ var _ = Describe("Integration Scenarios", func() {
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("CI/CD Pipeline Integration", func() {
@@ -476,9 +476,9 @@ func (s *Service) processInternal(data string) error {
 	return nil
 }`
 			
-			err := os.WriteFile(file1, []byte(strings.Replace(serviceCode, "Service", "UserService", -1)), 0644)
+			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(strings.Replace(serviceCode, "Service", "OrderService", -1)), 0644)
+			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Execute with JSON output

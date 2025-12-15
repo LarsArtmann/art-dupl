@@ -138,7 +138,7 @@ func uniqueFunction(ctx context.Context) error {
 
 	AfterEach(func() {
 		// Clean up temporary directory
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When analyzing code for duplicates", func() {
@@ -148,7 +148,7 @@ func uniqueFunction(ctx context.Context) error {
 			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run art-dupl on test directory with analyze subcommand
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "--threshold", "10")
@@ -175,7 +175,7 @@ func uniqueFunction(ctx context.Context) error {
 			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with high threshold
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "50")
@@ -198,7 +198,7 @@ func uniqueFunction(ctx context.Context) error {
 			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with JSON output
 			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "10")
@@ -227,7 +227,7 @@ func uniqueFunction(ctx context.Context) error {
 			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with HTML output
 			cmd = exec.Command("../bdd/art-dupl-test", "html", tempDir, "-threshold", "10")
@@ -265,7 +265,7 @@ func b() {}`), 0644)
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When using configuration files", func() {
@@ -286,7 +286,7 @@ func b() {}`), 0644)
 			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with config
 			cmd = exec.Command("../bdd/art-dupl-test", "-config", configFile)
@@ -318,7 +318,7 @@ func b() {}`), 0644)
 			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with config and override
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-config", configFile, "-threshold", "50")
@@ -355,7 +355,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("When analyzing specific directories", func() {
@@ -385,7 +385,7 @@ func processData(data string) error {
 			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Analyze only subDir1
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", subDir1, "-threshold", "10")
@@ -437,7 +437,7 @@ func unique() {
 			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Create stdin with only target files
 			stdin := fmt.Sprintf("%s\n%s\n", file1, file2)
@@ -467,7 +467,7 @@ var _ = Describe("Integration Scenarios", func() {
 	})
 
 	AfterEach(func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	})
 
 	Context("CI/CD Pipeline Integration", func() {
@@ -504,9 +504,9 @@ func (s *Service) processInternal(data string) error {
 	return nil
 }`
 			
-			err := os.WriteFile(file1, []byte(strings.Replace(serviceCode, "Service", "UserService", -1)), 0644)
+			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(strings.Replace(serviceCode, "Service", "OrderService", -1)), 0644)
+			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -514,7 +514,7 @@ func (s *Service) processInternal(data string) error {
 			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Execute with JSON output
 			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "15")
@@ -582,7 +582,7 @@ func processItem(data string, index int) error {
 			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("../bdd/art-dupl-test")
+			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Measure execution time
 			start := time.Now()

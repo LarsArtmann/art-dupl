@@ -19,19 +19,17 @@ while ignoring literal values using suffix tree algorithms.`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
 	}
 
-	// Add flags to root command (used by all subcommands)
-	rootCmd.PersistentFlags().StringP("config", "c", "", "path to configuration file (JSON format)")
-	rootCmd.PersistentFlags().BoolP("vendor", "", false, "include vendor directory in analysis")
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging to show processing progress")
-	rootCmd.PersistentFlags().IntP("threshold", "t", 15, "minimum token sequence size to consider as clone")
-	rootCmd.PersistentFlags().BoolP("files", "f", false, "read file names from stdin, one per line")
-	rootCmd.PersistentFlags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash")
-
-	// Add subcommands
-	rootCmd.AddCommand(newAnalyzeCommand())
-	rootCmd.AddCommand(newJSONCommand())
-	rootCmd.AddCommand(newHTMLCommand())
-	rootCmd.AddCommand(newPlumbingCommand())
+	// Add all flags to root command
+	rootCmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
+	rootCmd.Flags().BoolP("vendor", "", false, "include vendor directory in analysis")
+	rootCmd.Flags().BoolP("verbose", "v", false, "enable verbose logging to show processing progress")
+	rootCmd.Flags().Bool("verbose", false, "enable verbose logging to show processing progress") // Hidden alias for compatibility
+	rootCmd.Flags().IntP("threshold", "t", 15, "minimum token sequence size to consider as clone")
+	rootCmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
+	rootCmd.Flags().BoolP("html", "", false, "output results as HTML with syntax-highlighted code fragments")
+	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
+	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
+	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash")
 
 	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(GetVersion())); err != nil {
 		os.Exit(1)
@@ -62,7 +60,9 @@ func newJSONCommand() *cobra.Command {
 		Long:  "Analyze source files and output results in structured JSON format.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Force JSON output by setting the flag
-			cmd.Flags().Set("json", "true")
+			if err := cmd.Flags().Set("json", "true"); err != nil {
+				return err
+			}
 			return runCobraCommand(cmd, args)
 		},
 		Args: cobra.ArbitraryArgs,
@@ -77,7 +77,9 @@ func newHTMLCommand() *cobra.Command {
 		Long:  "Analyze source files and output results as HTML with syntax highlighting.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Force HTML output by setting the flag
-			cmd.Flags().Set("html", "true")
+			if err := cmd.Flags().Set("html", "true"); err != nil {
+				return err
+			}
 			return runCobraCommand(cmd, args)
 		},
 		Args: cobra.ArbitraryArgs,
@@ -92,7 +94,9 @@ func newPlumbingCommand() *cobra.Command {
 		Long:  "Analyze source files and output results in machine-readable plumbing format.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Force plumbing output by setting the flag
-			cmd.Flags().Set("plumbing", "true")
+			if err := cmd.Flags().Set("plumbing", "true"); err != nil {
+				return err
+			}
 			return runCobraCommand(cmd, args)
 		},
 		Args: cobra.ArbitraryArgs,
