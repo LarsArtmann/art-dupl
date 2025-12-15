@@ -153,7 +153,7 @@ Create `dupl.json` for team consistency:
   "includeVendor": false,
   "ignoreFiles": ["*_test.go", "*_mock.go", "*_gen.go"],
   "verbose": true,
-  "outputFile": "reports/dupl.json"
+  "outputFile": "reports/art-dupl.json"
 }
 ```
 
@@ -173,10 +173,10 @@ Create `dupl.json` for team consistency:
 echo "Baseline: $(jq '.summary.total_clones' baseline.json) clones"
 
 # Step 2: Focus on largest duplicates first
-./dupl -t 100 -html > large_clones.html
+./art-dupl -t 100 -html > large_clones.html
 
 # Step 3: After refactoring, measure improvement
-./dupl -json -t 15 > after_refactor.json
+./art-dupl -json -t 15 > after_refactor.json
 echo "After: $(jq '.summary.total_clones' after_refactor.json) clones"
 
 # Step 4: Compare
@@ -187,16 +187,16 @@ echo "Improvement: $(jq '.summary.total_clones' baseline.json) → $(jq '.summar
 
 ```bash
 #!/bin/bash
-# dupl_monitor.sh - Monthly technical debt report
+# art-dupl_monitor.sh - Monthly technical debt report
 
 DATE=$(date +%Y-%m)
 REPORT_DIR="reports/$DATE"
 mkdir -p "$REPORT_DIR"
 
 # Generate different views
-./dupl -json -t 15 > "$REPORT_DIR/all_clones.json"
-./dupl -json -t 50 > "$REPORT_DIR/large_clones.json"
-./dupl -html -t 30 > "$REPORT_DIR/detailed_report.html"
+./art-dupl -json -t 15 > "$REPORT_DIR/all_clones.json"
+./art-dupl -json -t 50 > "$REPORT_DIR/large_clones.json"
+./art-dupl -html -t 30 > "$REPORT_DIR/detailed_report.html"
 
 # Extract metrics
 ALL_CLONES=$(jq '.summary.total_clones' "$REPORT_DIR/all_clones.json")
@@ -311,11 +311,11 @@ The HTML report provides:
 2. **Analyze Impact**: Check if clones are in critical paths
 3. **Extract Functions**: Pull common code to shared functions
 4. **Create Utilities**: Build helper functions for common patterns
-5. **Measure Improvement**: Run dupl again to verify reduction
+5. **Measure Improvement**: Run art-dupl again to verify reduction
 
 ### 4. Team Guidelines
 
-- **Reviews**: Include dupl reports in code reviews
+- **Reviews**: Include art-dupl reports in code reviews
 - **Thresholds**: Set team-wide thresholds via config files
 - **Automation**: Integrate into CI/CD with clear failure criteria
 - **Documentation**: Document accepted patterns that may generate clones
