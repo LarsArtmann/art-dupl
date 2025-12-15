@@ -100,14 +100,10 @@ func Run() int {
 
 	// Handle threshold flag (either -t or -threshold)
 	thresholdFlag := *threshold
-	if thresholdFlag != defaultThreshold || *thresholdLong != defaultThreshold {
-		if *thresholdLong != defaultThreshold {
-			thresholdFlag = *thresholdLong
-		}
+	if *thresholdLong != defaultThreshold {
+		thresholdFlag = *thresholdLong
 	}
-	if thresholdFlag != defaultThreshold || *thresholdLong != defaultThreshold {
-		cliConfig.Threshold = thresholdFlag
-	}
+	cliConfig.Threshold = thresholdFlag
 
 	if *vendor {
 		cliConfig.IncludeVendor = *vendor
