@@ -9,70 +9,27 @@
 	}
 </style>
 <h1>#1 found 2 clones</h1>
-<h2>printer/sorting_integration_test.go:204</h2>
-<pre>t.Run(&#34;SortClonesBySize&#34;, func(t *testing.T) {
-	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
-	sorted := SortClonesBySize(clones)
-
-	if len(sorted[0]) &lt; len(sorted[1]) || len(sorted[1]) &lt; len(sorted[2]) {
-		t.Errorf(&#34;Size sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
-			len(sorted[0]), len(sorted[1]), len(sorted[2]))
+<h2>syntax/golang/golang.go:221</h2>
+<pre>case *ast.FuncDecl:
+	o.Type = FuncDecl
+	if n.Recv != nil {
+		o.AddChildren(t.trans(n.Recv))
 	}
-})</pre>
-<h2>printer/sorting_integration_test.go:215</h2>
-<pre>t.Run(&#34;SortClonesByOccurrence&#34;, func(t *testing.T) {
-	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
-	sorted := SortClonesByOccurrence(clones)
-
-	if len(sorted[0]) &lt; len(sorted[1]) || len(sorted[1]) &lt; len(sorted[2]) {
-		t.Errorf(&#34;Occurrence sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d&#34;,
-			len(sorted[0]), len(sorted[1]), len(sorted[2]))
+	o.AddChildren(t.trans(n.Name), t.trans(n.Type))
+	if n.Body != nil {
+		o.AddChildren(t.trans(n.Body))
+	}</pre>
+<h2>syntax/golang/golang.go:255</h2>
+<pre>case *ast.IfStmt:
+	o.Type = IfStmt
+	if n.Init != nil {
+		o.AddChildren(t.trans(n.Init))
 	}
-})</pre>
-<h1>#2 found 3 clones</h1>
-<h2>config/detectionmethod.go:44</h2>
-<pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := DetectionMethod(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf(&#34;invalid detection method: %s&#34;, str)
-	}
-	*dm = candidate
-	return nil
-}</pre>
-<h2>config/outputformat.go:41</h2>
-<pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := OutputFormat(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf(&#34;invalid output format: %s&#34;, str)
-	}
-	*of = candidate
-	return nil
-}</pre>
-<h2>config/outputformat.go:89</h2>
-<pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := SortCriteria(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf(&#34;invalid sort criteria: %s&#34;, str)
-	}
-	*sc = candidate
-	return nil
-}</pre>
-<h1>#3 found 2 clones</h1>
+	o.AddChildren(t.trans(n.Cond), t.trans(n.Body))
+	if n.Else != nil {
+		o.AddChildren(t.trans(n.Else))
+	}</pre>
+<h1>#2 found 2 clones</h1>
 <h2>config/config_test.go:254</h2>
 <pre>func TestMergeConfigsNilFileConfig(t *testing.T) {
 	cliConfig := &amp;Config{
@@ -81,24 +38,16 @@
 		IncludeVendor: true,
 	}
 
-	merged := MergeConfigs(nil, cliConfig)
+	expectedValues := map[string]any{
+		&#34;threshold&#34;:     30,
+		&#34;outputFormat&#34;:  &#34;json&#34;,
+		&#34;includeVendor&#34;: true,
+		&#34;verbose&#34;:       false,
+	}
 
-	// Should get defaults overridden by CLI config
-	if merged.Threshold != 30 {
-		t.Errorf(&#34;Expected merged threshold 30, got %d&#34;, merged.Threshold)
-	}
-	if merged.OutputFormat != &#34;json&#34; {
-		t.Errorf(&#34;Expected merged OutputFormat json, got %s&#34;, merged.OutputFormat)
-	}
-	if merged.IncludeVendor != true {
-		t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
-	}
-	// Should get default values for unset fields
-	if merged.Verbose != false {
-		t.Errorf(&#34;Expected merged Verbose false, got %v&#34;, merged.Verbose)
-	}
+	TestMergeConfigsWithNil(t, cliConfig, true, expectedValues)
 }</pre>
-<h2>config/config_test.go:279</h2>
+<h2>config/config_test.go:271</h2>
 <pre>func TestMergeConfigsNilCLIConfig(t *testing.T) {
 	fileConfig := &amp;Config{
 		Threshold:    40,
@@ -106,20 +55,186 @@
 		Verbose:      true,
 	}
 
-	merged := MergeConfigs(fileConfig, nil)
+	expectedValues := map[string]any{
+		&#34;threshold&#34;:     40,
+		&#34;outputFormat&#34;:  &#34;html&#34;,
+		&#34;verbose&#34;:       true,
+		&#34;includeVendor&#34;: false,
+	}
 
-	// Should get file config values
-	if merged.Threshold != 40 {
-		t.Errorf(&#34;Expected merged threshold 40, got %d&#34;, merged.Threshold)
-	}
-	if merged.OutputFormat != &#34;html&#34; {
-		t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
-	}
-	if merged.Verbose != true {
-		t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
-	}
-	// Should get default values for unset fields
-	if merged.IncludeVendor != false {
-		t.Errorf(&#34;Expected merged IncludeVendor false, got %v&#34;, merged.IncludeVendor)
-	}
+	TestMergeConfigsWithNil(t, fileConfig, false, expectedValues)
 }</pre>
+<h1>#3 found 2 clones</h1>
+<h2>printer/text.go:172</h2>
+<pre>case &#34;size&#34;:
+	// Sort by total token size of each clone group
+	sort.Slice(sortedCloneGroups, func(i, j int) bool {
+		// Calculate total size for group i
+		sizeI := 0
+		for _, cl := range sortedCloneGroups[i] {
+			sizeI += cl.size
+		}
+		// Calculate total size for group j
+		sizeJ := 0
+		for _, cl := range sortedCloneGroups[j] {
+			sizeJ += cl.size
+		}
+		return sizeI &gt; sizeJ
+	})</pre>
+<h2>printer/text.go:195</h2>
+<pre>case &#34;total-tokens&#34;:
+	// Sort by total tokens across all files in each clone group
+	sort.Slice(sortedCloneGroups, func(i, j int) bool {
+		// Calculate total tokens for group i
+		totalTokensI := 0
+		for _, cl := range sortedCloneGroups[i] {
+			totalTokensI += cl.size
+		}
+		// Calculate total tokens for group j
+		totalTokensJ := 0
+		for _, cl := range sortedCloneGroups[j] {
+			totalTokensJ += cl.size
+		}
+		return totalTokensI &gt; totalTokensJ
+	})</pre>
+<h1>#4 found 2 clones</h1>
+<h2>cli.go:346</h2>
+<pre>       {
+	// Use existing art-dupl logic
+	mchan := t.FindDuplOver(cfg.Threshold)
+	duplChan := make(chan syntax.Match)
+	go func() {
+		defer close(duplChan)
+		for m := range mchan {
+			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+			if len(match.Frags) &gt; 0 {
+				duplChan &lt;- match
+			}
+		}
+	}()
+	return duplChan
+}</pre>
+<h2>cli.go:379</h2>
+<pre>       {
+	// Use existing art-dupl logic
+	mchan := t.FindDuplOver(cfg.Threshold)
+	duplChan := make(chan syntax.Match)
+	go func() {
+		defer close(duplChan)
+		for m := range mchan {
+			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+			if len(match.Frags) &gt; 0 {
+				duplChan &lt;- match
+			}
+		}
+	}()
+	return duplChan
+}</pre>
+<h1>#5 found 3 clones</h1>
+<h2>config/detectionmethod.go:44</h2>
+<pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
+		return d.IsValid()
+	}, &#34;invalid detection method: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*dm = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:41</h2>
+<pre>func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+		return o.IsValid()
+	}, &#34;invalid output format: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*of = candidate
+	return nil
+}</pre>
+<h2>config/outputformat.go:86</h2>
+<pre>func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	candidate, err := UnmarshalStringToEnum(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+		return s.IsValid()
+	}, &#34;invalid sort criteria: %s&#34;)
+	if err != nil {
+		return err
+	}
+	*sc = candidate
+	return nil
+}</pre>
+<h1>#6 found 2 clones</h1>
+<h2>printer/sorting_integration_test.go:164</h2>
+<pre>                                                                                                                             {
+	// Create nodes that represent tokens in a clone
+	nodes := make([]*syntax.Node, numTokens)
+
+	for i := range numTokens {
+		nodes[i] = &amp;syntax.Node{
+			Type:     golang.FuncDecl,
+			Filename: filename,
+			Pos:      startPos + (i * 2),
+			End:      startPos + (i * 2) + 1,
+		}
+	}
+
+	return nodes
+}</pre>
+<h2>printer/sorting_integration_test.go:181</h2>
+<pre>                                                                                                         {
+	// Create nodes that represent the tokens in a clone
+	nodes := make([]*syntax.Node, numTokens)
+
+	for i := range numTokens {
+		nodes[i] = &amp;syntax.Node{
+			Type:     golang.FuncDecl,
+			Filename: filename,
+			Pos:      startPos + (i * 2),
+			End:      startPos + (i * 2) + 1,
+		}
+	}
+
+	return nodes
+}</pre>
+<h1>#7 found 3 clones</h1>
+<h2>printer/text.go:174</h2>
+<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+	// Calculate total size for group i
+	sizeI := 0
+	for _, cl := range sortedCloneGroups[i] {
+		sizeI += cl.size
+	}
+	// Calculate total size for group j
+	sizeJ := 0
+	for _, cl := range sortedCloneGroups[j] {
+		sizeJ += cl.size
+	}
+	return sizeI &gt; sizeJ
+})</pre>
+<h2>printer/text.go:197</h2>
+<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+	// Calculate total tokens for group i
+	totalTokensI := 0
+	for _, cl := range sortedCloneGroups[i] {
+		totalTokensI += cl.size
+	}
+	// Calculate total tokens for group j
+	totalTokensJ := 0
+	for _, cl := range sortedCloneGroups[j] {
+		totalTokensJ += cl.size
+	}
+	return totalTokensI &gt; totalTokensJ
+})</pre>
+<h2>printer/text.go:212</h2>
+<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+	sizeI := 0
+	for _, cl := range sortedCloneGroups[i] {
+		sizeI += cl.size
+	}
+	sizeJ := 0
+	for _, cl := range sortedCloneGroups[j] {
+		sizeJ += cl.size
+	}
+	return sizeI &gt; sizeJ
+})</pre>
