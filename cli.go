@@ -16,6 +16,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/spf13/cobra"
 )
 
 // CLIInterface defines the interface for CLI operations
@@ -253,14 +254,14 @@ func Run() int {
 
 // usage prints the usage information
 func usage() {
-	fmt.Fprintln(os.Stderr, `Usage: dupl [flags] [paths]
+	fmt.Fprintln(os.Stderr, `Usage: art-dupl [flags] [paths]
 
 Paths:
-  If given path is a file, dupl will use it regardless of
+  If given path is a file, art-dupl will use it regardless of
   file extension. If it is a directory, it will recursively
   search for *.go files in that directory.
 
-  If no path is given, dupl will recursively search for *.go
+  If no path is given, art-dupl will recursively search for *.go
   files in the current directory.
 
 Flags:
@@ -298,37 +299,37 @@ Configuration File:
     "includeVendor": false,
     "verbose": true
   }
-  Use with: dupl -config config.json
+  Use with: art-dupl -config config.json
 
 Examples:
   # Basic analysis with default threshold
-  dupl
+  art-dupl
 
   # Higher threshold for larger clones only
-  dupl -t 100
+  art-dupl -t 100
 
   # Sort by different criteria
-  dupl -sort size .          # Largest clones first (default)
-  dupl -sort occurrence .     # Most widespread clones first
-  dupl -sort hash .          # Alphabetical order
+  art-dupl -sort size .          # Largest clones first (default)
+  art-dupl -sort occurrence .     # Most widespread clones first
+  art-dupl -sort hash .          # Alphabetical order
 
   # JSON output with sorting
-  dupl -json -sort size . | jq '.clone_groups[0]'
+  art-dupl -json -sort size . | jq '.clone_groups[0]'
 
   # HTML report file with occurrence sorting
-  dupl -html -sort occurrence . > report.html
+  art-dupl -html -sort occurrence . > report.html
 
   # Plumbing output for CI/CD with hash sorting
-  dupl -plumbing -sort hash . > duplicates.txt
+  art-dupl -plumbing -sort hash . > duplicates.txt
 
   # Use configuration file
-  dupl -config dupl.json ./src
+  art-dupl -config dupl.json ./src
 
   # Analyze test files only
-  find . -name '*_test.go' | dupl -files
+  find . -name '*_test.go' | art-dupl -files
 
   # CI/CD: Fail if too many duplicates
-  TOTAL_CLONES=$(dupl -json . | jq '.summary.total_clones')
+  TOTAL_CLONES=$(art-dupl -json . | jq '.summary.total_clones')
   if [ "$TOTAL_CLONES" -gt 100 ]; then
     echo "Too many code duplicates: $TOTAL_CLONES"
     exit 1
@@ -429,4 +430,180 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string) 
 	}
 
 	return p.PrintFooter()
+}
+
+// runCobraCommand implements the command execution with Cobra flags
+func runCobraCommand(cmd *cobra.Command, args []string) error {
+	// Get flag values from Cobra command
+	configFile, _ := cmd.Flags().GetString("config")
+	vendor, _ := cmd.Flags().GetBool("vendor")
+	verboseShort, _ := cmd.Flags().GetBool("verbose") // -v flag
+	verboseLong, _ := cmd.Flags().GetBool("verbose") // --verbose flag (hidden)
+	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
+	thresholdLong, _ := cmd.Flags().GetInt("threshold") // --threshold flag (hidden)
+	files, _ := cmd.Flags().GetBool("files")
+	html, _ := cmd.Flags().GetBool("html")
+	json, _ := cmd.Flags().GetBool("json")
+	plumbing, _ := cmd.Flags().GetBool("plumbing")
+	sortBy, _ := cmd.Flags().GetString("sort")
+
+	// Load configuration from file if specified
+	var fileConfig *config.Config
+	var err error
+	if configFile != "" {
+		fileConfig, err = config.LoadConfig(configFile)
+		if err != nil {
+			if _, err := fmt.Fprintf(cli.Stderr(), "error loading config: %v\n", err); err != nil {
+				return err
+			}
+			return err
+		}
+	}
+
+	// Create CLI config from command line arguments
+	cliConfig := &config.Config{}
+
+	// Handle verbose flag (either -v or -verbose)
+	verboseFlag := verboseShort || verboseLong
+	if verboseFlag {
+		cliConfig.Verbose = verboseFlag
+	}
+
+	// Handle threshold flag (either -t or -threshold)
+	thresholdFlag := thresholdShort
+	if thresholdFlag != defaultThreshold || thresholdLong != defaultThreshold {
+		if thresholdLong != defaultThreshold {
+			thresholdFlag = thresholdLong
+		}
+		cliConfig.Threshold = thresholdFlag
+	}
+
+	if vendor {
+		cliConfig.IncludeVendor = vendor
+	}
+	if files {
+		cliConfig.FilesFromStdin = files
+	}
+
+	if html {
+		cliConfig.OutputFormat = config.OutputFormatHTML
+	} else if plumbing {
+		cliConfig.OutputFormat = config.OutputFormatPlumbing
+	} else if json {
+		cliConfig.OutputFormat = config.OutputFormatJSON
+	}
+
+	if len(args) > 0 {
+		cliConfig.Paths = args
+	}
+
+	// Merge file and CLI configurations
+	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
+
+	// Validate merged configuration
+	if err = config.ValidateConfig(mergedConfig); err != nil {
+		if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
+			return err
+		}
+		return err
+	}
+
+	// Validate output format conflicts
+	if mergedConfig.OutputFormat == "html" && plumbing {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+	if mergedConfig.OutputFormat == "html" && json {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+	if mergedConfig.OutputFormat == "plumbing" && json {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+
+	// Update global variables with merged config (for compatibility with existing code)
+	paths = mergedConfig.Paths
+	// Note: vendor, verbose, threshold, files global variables are not used in this function
+	// as we now use the local variables instead
+
+	if verboseFlag {
+		log.Println("Building suffix tree")
+	}
+	schan, filesCountChan := job.Parse(filesFeed())
+	t, data, done := job.BuildTree(schan)
+	<-done
+
+	// Get file count
+	filesCount := <-filesCountChan
+
+	// finish stream
+	t.Update(&syntax.Node{Type: -1})
+
+	if verboseFlag {
+		log.Println("Searching for clones")
+	}
+	mchan := t.FindDuplOver(thresholdFlag)
+	duplChan := make(chan syntax.Match)
+	go func() {
+		for m := range mchan {
+			match := syntax.FindSyntaxUnits(*data, m, thresholdFlag)
+			if len(match.Frags) > 0 {
+				duplChan <- match
+			}
+		}
+		close(duplChan)
+	}()
+
+	// Select printer based on output format
+	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+	switch mergedConfig.OutputFormat {
+	case config.OutputFormatHTML:
+		newPrinter = printer.NewHTML
+	case config.OutputFormatPlumbing:
+		newPrinter = printer.NewPlumbing
+	case config.OutputFormatJSON:
+		newPrinter = printer.NewJSON
+	default:
+		newPrinter = printer.NewText
+	}
+
+	// Handle output file if specified
+	outputWriter := cli.Stdout()
+	if mergedConfig.OutputFile != "" {
+		file, err := os.Create(mergedConfig.OutputFile)
+		if err != nil {
+			if _, err := fmt.Fprintf(cli.Stderr(), "error creating output file: %v\n", err); err != nil {
+				return err
+			}
+			return err
+		}
+		defer func() {
+			if closeErr := file.Close(); closeErr != nil {
+				_, _ = fmt.Fprintf(cli.Stderr(), "warning: failed to close file: %v\n", closeErr)
+			}
+		}()
+		outputWriter = file
+	}
+
+	p := newPrinter(outputWriter, os.ReadFile)
+
+	// Set filesCount for JSONPrinter
+	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		jsonPrinter.SetFilesCount(filesCount)
+	}
+
+	if err := printDupls(p, duplChan, sortBy); err != nil {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
+			return err
+		}
+		return err
+	}
+	return nil
 }
