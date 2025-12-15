@@ -64,13 +64,20 @@ func TestHashDetectionShouldIgnoreSmallSequences(t *testing.T) {
 // TestHashDetectionShouldFindMultipleDuplicates tests that multiple duplicate groups are found
 func TestHashDetectionShouldFindMultipleDuplicates(t *testing.T) {
 	// GIVEN: Multiple duplicate patterns across different files
-	nodes := []*syntax.Node{
-		// First duplicate group
-		createTestNode("file1.go", 1, 10, 100),
-		createTestNode("file2.go", 20, 29, 100),
-		// Second duplicate group
-		createTestNode("file3.go", 50, 60, 110),
-		createTestNode("file4.go", 70, 80, 110),
+	nodes := []*syntax.Node{}
+	// First duplicate group - 5 nodes with types 100-104
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file1.go", i, i+1, 100+i))
+	}
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file2.go", i+10, i+11, 100+i))
+	}
+	// Second duplicate group - 5 nodes with types 110-114
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file3.go", i+20, i+21, 110+i))
+	}
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file4.go", i+30, i+31, 110+i))
 	}
 	
 	// WHEN: Running hash detection with threshold 5
@@ -79,6 +86,7 @@ func TestHashDetectionShouldFindMultipleDuplicates(t *testing.T) {
 	
 	// THEN: Should find both duplicate groups
 	matches := collectMatches(matchesChan)
+	t.Logf("Found %d matches (expected 2)", len(matches))
 	if len(matches) != 2 {
 		t.Errorf("Expected 2 duplicate groups, got %d", len(matches))
 	}
@@ -110,9 +118,14 @@ func TestHashDetectionShouldHandleOverlappingSequences(t *testing.T) {
 // TestHashDetectionShouldMaintainCorrectBoundaries tests fragment boundary accuracy
 func TestHashDetectionShouldMaintainCorrectBoundaries(t *testing.T) {
 	// GIVEN: Known duplicate sequences with specific boundaries
-	nodes := []*syntax.Node{
-		createTestNodeWithPositions("file1.go", 10, 5, 15, 100), // Start at 10, length 5
-		createTestNodeWithPositions("file2.go", 25, 5, 30, 100), // Start at 25, length 5
+	nodes := []*syntax.Node{}
+	// First file: 5 nodes with types 100-104
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file1.go", i+10, i+11, 100+i))
+	}
+	// Second file: identical 5 nodes with types 100-104
+	for i := 0; i < 5; i++ {
+		nodes = append(nodes, createTestNode("file2.go", i+25, i+26, 100+i))
 	}
 	
 	// WHEN: Running hash detection with threshold 5
