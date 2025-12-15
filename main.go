@@ -10,24 +10,12 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "art-dupl [command] [flags] [paths...]",
+			Use:   "art-dupl [flags] [paths...]",
 		Short: "Find code clones",
 		Long: `art-dupl finds code clones in Go source files.
 
 It analyzes abstract syntax trees (ASTs) to find structural code clones
-while ignoring literal values using suffix tree algorithms.
-
-Available commands:
-  analyze    Default code analysis (default)
-  json       Output JSON format
-  html       Output HTML format
-  plumbing   Output plumbing format
-
-Examples:
-  art-dupl analyze ./src                    # Default analysis
-  art-dupl json -t 20 ./src              # JSON with threshold
-  art-dupl html --vendor ./src            # HTML with vendor included
-  art-dupl plumbing --sort occurrence ./src  # Plumbing sorted by occurrence`,
+while ignoring literal values using suffix tree algorithms.`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
 	}
 

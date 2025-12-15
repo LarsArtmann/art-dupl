@@ -143,16 +143,16 @@ func uniqueFunction(ctx context.Context) error {
 
 	Context("When analyzing code for duplicates", func() {
 		It("should find structural duplicates ignoring literal values", func() {
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
-			// Run art-dupl on test directory
-			cmd = exec.Command("art-dupl-test", "analyze", tempDir, "-threshold", "10")
-			cmd.Dir = "."
+			// Run art-dupl on test directory with analyze subcommand
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "--threshold", "10")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Print debug information if there's an error
@@ -170,16 +170,16 @@ func uniqueFunction(ctx context.Context) error {
 		})
 
 		It("should respect threshold settings to filter noise", func() {
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Run with high threshold
-			cmd = exec.Command("art-dupl-test", "analyze", tempDir, "-threshold", "50")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "50")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Verify
@@ -193,16 +193,16 @@ func uniqueFunction(ctx context.Context) error {
 
 	Context("When generating reports", func() {
 		It("should produce valid JSON output with statistics", func() {
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Run with JSON output
-			cmd = exec.Command("art-dupl-test", "json", tempDir, "-threshold", "10")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "10")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Verify
@@ -222,16 +222,16 @@ func uniqueFunction(ctx context.Context) error {
 		})
 
 		It("should produce HTML output with code fragments", func() {
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Run with HTML output
-			cmd = exec.Command("art-dupl-test", "html", tempDir, "-threshold", "10")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "html", tempDir, "-threshold", "10")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Verify
@@ -281,16 +281,16 @@ func b() {}`), 0644)
 			err := os.WriteFile(configFile, []byte(configContent), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Run with config
-			cmd = exec.Command("art-dupl-test", "analyze", "-config", configFile)
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "-config", configFile)
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Verify
@@ -313,16 +313,16 @@ func b() {}`), 0644)
 			err := os.WriteFile(configFile, []byte(configContent), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Run with config and override
-			cmd = exec.Command("art-dupl-test", "analyze", "-config", configFile, "-threshold", "50")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-config", configFile, "-threshold", "50")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			
 			// Verify - should use text output (not json from config)
@@ -380,16 +380,16 @@ func processData(data string) error {
 			err = os.WriteFile(file2, []byte(duplicateCode), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Analyze only subDir1
-			cmd = exec.Command("art-dupl-test", "analyze", subDir1, "-threshold", "10")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", subDir1, "-threshold", "10")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 
 			// Verify - should only mention files from subDir1
@@ -432,17 +432,17 @@ func unique() {
 			err = os.WriteFile(file3, []byte(uniqueCode), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Create stdin with only target files
 			stdin := fmt.Sprintf("%s\n%s\n", file1, file2)
-			cmd = exec.Command("art-dupl-test", "analyze", "-files", "-threshold", "10")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-files", "-threshold", "10")
+			cmd.Dir = ".."
 			cmd.Stdin = strings.NewReader(stdin)
 			output, err := cmd.CombinedOutput()
 
@@ -509,16 +509,16 @@ func (s *Service) processInternal(data string) error {
 			err = os.WriteFile(file2, []byte(strings.Replace(serviceCode, "Service", "OrderService", -1)), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Execute with JSON output
-			cmd = exec.Command("art-dupl-test", "json", tempDir, "-threshold", "15")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "15")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -577,17 +577,17 @@ func processItem(data string, index int) error {
 				Expect(err).NotTo(HaveOccurred())
 			}
 
-			// Build the art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "art-dupl-test", ".")
-			cmd.Dir = "."
+			// Build art-dupl binary
+			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
+			cmd.Dir = ".."
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
-			defer os.Remove("art-dupl-test")
+			defer os.Remove("../bdd/art-dupl-test")
 
 			// Measure execution time
 			start := time.Now()
-			cmd = exec.Command("art-dupl-test", "analyze", tempDir, "-threshold", "20")
-			cmd.Dir = "."
+			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "20")
+			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			duration := time.Since(start)
 

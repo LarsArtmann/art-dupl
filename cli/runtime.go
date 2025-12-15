@@ -2,6 +2,7 @@ package cli
 
 import (
 	"io"
+	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
 )
@@ -58,7 +59,7 @@ func DefaultRuntimeConfig() *RuntimeConfig {
 
 // Interface wrappers for io.Writer to avoid import cycles
 type cliStdout struct{}
-func (c *cliStdout) Write(p []byte) (n int, err error) { return io.Stdout.Write(p) }
+func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }
 
 type cliStderr struct{}
-func (c *cliStderr) Write(p []byte) (n int, err error) { return io.Stderr.Write(p) }
+func (c *cliStderr) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }
