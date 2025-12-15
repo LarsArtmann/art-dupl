@@ -143,7 +143,7 @@ func uniqueFunction(ctx context.Context) error {
 		It("should find structural duplicates ignoring literal values", func() {
 			// Setup
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-threshold", "10"}
+			args := []string{tempDir, "-t", "10"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -161,7 +161,7 @@ func uniqueFunction(ctx context.Context) error {
 		It("should respect threshold settings to filter noise", func() {
 			// Setup with high threshold
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-threshold", "50"}
+			args := []string{tempDir, "-t", "50"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -180,7 +180,7 @@ func uniqueFunction(ctx context.Context) error {
 		It("should produce valid JSON output with statistics", func() {
 			// Setup
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-json"}
+			args := []string{tempDir, "-j"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -205,7 +205,7 @@ func uniqueFunction(ctx context.Context) error {
 		It("should produce HTML output with code fragments", func() {
 			// Setup
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-html"}
+			args := []string{tempDir, "--html"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -295,7 +295,7 @@ func b() {}`), 0o644)
 
 			// Setup command with config and override
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{"-config", configFile, "-threshold", "50", "-text"}
+			args := []string{"-c", configFile, "-t", "50"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -362,7 +362,7 @@ func processData(data string) error {
 
 			// Analyze only subDir1
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{subDir1, "-threshold", "10"}
+			args := []string{subDir1, "-t", "10"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -409,7 +409,7 @@ func unique() {
 			// Create stdin with only target files
 			stdin := fmt.Sprintf("%s\n%s\n", file1, file2)
 			testCmd = createTestCommandWithStdin(outputBuf, errorBuf, strings.NewReader(stdin))
-			args := []string{"-files", "-threshold", "10"}
+			args := []string{"-f", "-t", "10"}
 			testCmd.SetArgs(args)
 
 			// Execute
@@ -483,7 +483,7 @@ func (s *Service) processInternal(data string) error {
 
 			// Execute with JSON output
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-json", "-threshold", "15"}
+			args := []string{tempDir, "-j", "-t", "15"}
 			testCmd.SetArgs(args)
 
 			err = testCmd.Execute()
@@ -545,7 +545,7 @@ func processItem(data string, index int) error {
 			// Measure execution time
 			start := time.Now()
 			testCmd = createTestCommand(outputBuf, errorBuf)
-			args := []string{tempDir, "-threshold", "20"}
+			args := []string{tempDir, "-t", "20"}
 			testCmd.SetArgs(args)
 
 			err := testCmd.Execute()
@@ -573,11 +573,11 @@ func createTestCommand(out, errOut io.Writer) *cobra.Command {
 
 	// Add flags
 	cmd.Flags().StringP("config", "c", "", "path to configuration file")
-	cmd.Flags().BoolP("vendor", "", false, "include vendor directory")
+	cmd.Flags().Bool("vendor", false, "include vendor directory")
 	cmd.Flags().BoolP("verbose", "v", false, "enable verbose logging")
 	cmd.Flags().IntP("threshold", "t", 15, "minimum token sequence size")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin")
-	cmd.Flags().BoolP("html", "", false, "output results as HTML")
+	cmd.Flags().Bool("html", false, "output results as HTML")
 	cmd.Flags().BoolP("json", "j", false, "output structured JSON format")
 	cmd.Flags().BoolP("plumbing", "p", false, "output plumbing format")
 	cmd.Flags().StringP("sort", "s", "size", "sort clone groups")

@@ -299,3 +299,129 @@ func TestMergeConfigsNilCLIConfig(t *testing.T) {
 		t.Errorf("Expected merged IncludeVendor false, got %v", merged.IncludeVendor)
 	}
 }
+
+func TestDetectionMethods(t *testing.T) {
+	// Test String method
+	dm := DetectionMethodHash
+	if dm.String() != "hash" {
+		t.Errorf("Expected 'hash', got %s", dm.String())
+	}
+
+	// Test IsValid
+	if !DetectionMethodHash.IsValid() {
+		t.Error("Expected hash to be valid")
+	}
+	if DetectionMethod("invalid").IsValid() {
+		t.Error("Expected invalid method to be invalid")
+	}
+
+	// Test AllDetectionMethods
+	methods := AllDetectionMethods()
+	if len(methods) != 2 {
+		t.Errorf("Expected 2 methods, got %d", len(methods))
+	}
+
+	// Test ParseDetectionMethods
+	parsed, err := ParseDetectionMethods("hash,art-dupl")
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	if len(parsed) != 2 {
+		t.Errorf("Expected 2 methods, got %d", len(parsed))
+	}
+
+	// Test empty string defaults
+	parsed, err = ParseDetectionMethods("")
+	if err != nil {
+		t.Errorf("Expected no error for empty string, got %v", err)
+	}
+	if len(parsed) != 1 || parsed[0] != DetectionMethodArtDupl {
+		t.Error("Expected default art-dupl method for empty string")
+	}
+
+	// Test Contains
+	dms := DetectionMethods{DetectionMethodHash, DetectionMethodArtDupl}
+	if !dms.Contains(DetectionMethodHash) {
+		t.Error("Expected Contains to find hash method")
+	}
+	if dms.Contains(DetectionMethod("invalid")) {
+		t.Error("Expected Contains to not find invalid method")
+	}
+
+	// Test IsDefault
+	defaultDms := DetectionMethods{DetectionMethodArtDupl}
+	if !defaultDms.IsDefault() {
+		t.Error("Expected IsDefault to return true for art-dupl only")
+	}
+
+	mixedDms := DetectionMethods{DetectionMethodHash, DetectionMethodArtDupl}
+	if mixedDms.IsDefault() {
+		t.Error("Expected IsDefault to return false for mixed methods")
+	}
+}
+
+func TestOutputFormats(t *testing.T) {
+	// Test AllOutputFormats
+	formats := AllOutputFormats()
+	if len(formats) != 4 {
+		t.Errorf("Expected 4 formats, got %d", len(formats))
+	}
+
+	// Test AllSortCriteria
+	criteria := AllSortCriteria()
+	if len(criteria) != 4 {
+		t.Errorf("Expected 4 sort criteria, got %d", len(criteria))
+	}
+
+	// Test ParseOutputFormats
+	parsed, err := ParseOutputFormats("json,html")
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	if len(parsed) != 2 {
+		t.Errorf("Expected 2 formats, got %d", len(parsed))
+	}
+
+	// Test empty string defaults
+	parsed, err = ParseOutputFormats("")
+	if err != nil {
+		t.Errorf("Expected no error for empty string, got %v", err)
+	}
+	if len(parsed) != 1 || parsed[0] != OutputFormatText {
+		t.Error("Expected default text format for empty string")
+	}
+}
+
+func TestJSONMarshalUnmarshal(t *testing.T) {
+	// Test DetectionMethod JSON marshal/unmarshal
+	dm := DetectionMethodHash
+	data, err := dm.MarshalJSON()
+	if err != nil {
+		t.Errorf("Expected no error marshaling, got %v", err)
+	}
+
+	var parsedDM DetectionMethod
+	err = parsedDM.UnmarshalJSON(data)
+	if err != nil {
+		t.Errorf("Expected no error unmarshaling, got %v", err)
+	}
+	if parsedDM != dm {
+		t.Error("Expected parsed detection method to match original")
+	}
+
+	// Test OutputFormat JSON marshal/unmarshal
+	of := OutputFormatJSON
+	data, err = of.MarshalJSON()
+	if err != nil {
+		t.Errorf("Expected no error marshaling output format, got %v", err)
+	}
+
+	var parsedOF OutputFormat
+	err = parsedOF.UnmarshalJSON(data)
+	if err != nil {
+		t.Errorf("Expected no error unmarshaling output format, got %v", err)
+	}
+	if parsedOF != of {
+		t.Error("Expected parsed output format to match original")
+	}
+}

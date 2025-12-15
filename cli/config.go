@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"flag"
@@ -26,7 +26,7 @@ type CLIConfig struct {
 // NewCLIConfig creates a new CLI configuration with default flags
 func NewCLIConfig() *CLIConfig {
 	return &CLIConfig{
-		ConfigFile:    flag.String("config", "", "path to configuration file (JSON format)"),
+		ConfigFile:    flag.String("cli_config", "", "path to configuration file (JSON format)"),
 		Vendor:        flag.Bool("vendor", false, "include vendor directory in analysis"),
 		Verbose:       flag.Bool("v", false, "enable verbose logging to show processing progress"),
 		VerboseLong:   flag.Bool("verbose", false, "enable verbose logging to show processing progress"),
