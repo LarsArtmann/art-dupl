@@ -98,14 +98,8 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		if start > fileLen {
 			start = fileLen
 		}
-		startPos := nstart.Pos
-		if startPos > fileLen {
-			startPos = fileLen
-		}
-		endPos := nend.End
-		if endPos > fileLen {
-			endPos = fileLen
-		}
+		startPos := min(nstart.Pos, fileLen)
+		endPos := min(nend.End, fileLen)
 
 		// Only extract content if we have valid bounds
 		if startPos < endPos {

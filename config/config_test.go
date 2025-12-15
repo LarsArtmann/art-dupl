@@ -258,22 +258,14 @@ func TestMergeConfigsNilFileConfig(t *testing.T) {
 		IncludeVendor: true,
 	}
 
-	merged := MergeConfigs(nil, cliConfig)
+	expectedValues := map[string]any{
+		"threshold":     30,
+		"outputFormat":  "json",
+		"includeVendor": true,
+		"verbose":       false,
+	}
 
-	// Should get defaults overridden by CLI config
-	if merged.Threshold != 30 {
-		t.Errorf("Expected merged threshold 30, got %d", merged.Threshold)
-	}
-	if merged.OutputFormat != "json" {
-		t.Errorf("Expected merged OutputFormat json, got %s", merged.OutputFormat)
-	}
-	if merged.IncludeVendor != true {
-		t.Errorf("Expected merged IncludeVendor true, got %v", merged.IncludeVendor)
-	}
-	// Should get default values for unset fields
-	if merged.Verbose != false {
-		t.Errorf("Expected merged Verbose false, got %v", merged.Verbose)
-	}
+	TestMergeConfigsWithNil(t, cliConfig, true, expectedValues)
 }
 
 func TestMergeConfigsNilCLIConfig(t *testing.T) {
@@ -283,22 +275,14 @@ func TestMergeConfigsNilCLIConfig(t *testing.T) {
 		Verbose:      true,
 	}
 
-	merged := MergeConfigs(fileConfig, nil)
+	expectedValues := map[string]any{
+		"threshold":     40,
+		"outputFormat":  "html",
+		"verbose":       true,
+		"includeVendor": false,
+	}
 
-	// Should get file config values
-	if merged.Threshold != 40 {
-		t.Errorf("Expected merged threshold 40, got %d", merged.Threshold)
-	}
-	if merged.OutputFormat != "html" {
-		t.Errorf("Expected merged OutputFormat html, got %s", merged.OutputFormat)
-	}
-	if merged.Verbose != true {
-		t.Errorf("Expected merged Verbose true, got %v", merged.Verbose)
-	}
-	// Should get default values for unset fields
-	if merged.IncludeVendor != false {
-		t.Errorf("Expected merged IncludeVendor false, got %v", merged.IncludeVendor)
-	}
+	TestMergeConfigsWithNil(t, fileConfig, false, expectedValues)
 }
 
 func TestDetectionMethods(t *testing.T) {

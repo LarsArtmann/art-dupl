@@ -39,14 +39,11 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for OutputFormat
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := OutputFormat(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf("invalid output format: %s", str)
+	candidate, err := UnmarshalStringToEnum(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+		return o.IsValid()
+	}, "invalid output format: %s")
+	if err != nil {
+		return err
 	}
 	*of = candidate
 	return nil
@@ -87,14 +84,11 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for SortCriteria
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := SortCriteria(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf("invalid sort criteria: %s", str)
+	candidate, err := UnmarshalStringToEnum(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+		return s.IsValid()
+	}, "invalid sort criteria: %s")
+	if err != nil {
+		return err
 	}
 	*sc = candidate
 	return nil

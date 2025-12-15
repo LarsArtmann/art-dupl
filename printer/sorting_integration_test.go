@@ -200,31 +200,20 @@ func TestCommonSortingUtilities(t *testing.T) {
 	mediumClone := createMockCloneGroup(t, "medium.go", 30, 50, 5)
 	largeClone := createMockCloneGroup(t, "large.go", 60, 90, 8)
 
+	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
+
 	// Test SortClonesBySize
 	t.Run("SortClonesBySize", func(t *testing.T) {
-		clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
-		sorted := SortClonesBySize(clones)
-
-		if len(sorted[0]) < len(sorted[1]) || len(sorted[1]) < len(sorted[2]) {
-			t.Errorf("Size sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d",
-				len(sorted[0]), len(sorted[1]), len(sorted[2]))
-		}
+		TestCloneSortingWithData(t, SortClonesBySize, "Size", clones)
 	})
 
 	// Test SortClonesByOccurrence (same as size for our test data)
 	t.Run("SortClonesByOccurrence", func(t *testing.T) {
-		clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
-		sorted := SortClonesByOccurrence(clones)
-
-		if len(sorted[0]) < len(sorted[1]) || len(sorted[1]) < len(sorted[2]) {
-			t.Errorf("Occurrence sorting failed. Expected: 8, 5, 2. Got: %d, %d, %d",
-				len(sorted[0]), len(sorted[1]), len(sorted[2]))
-		}
+		TestCloneSortingWithData(t, SortClonesByOccurrence, "Occurrence", clones)
 	})
 
 	// Test SortClonesByHash
 	t.Run("SortClonesByHash", func(t *testing.T) {
-		clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
 		sorted := SortClonesByHash(clones)
 
 		// Should be sorted alphabetically by filename

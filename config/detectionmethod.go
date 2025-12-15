@@ -42,14 +42,11 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for DetectionMethod
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
-	}
-
-	candidate := DetectionMethod(str)
-	if !candidate.IsValid() {
-		return fmt.Errorf("invalid detection method: %s", str)
+	candidate, err := UnmarshalStringToEnum(data, func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {
+		return d.IsValid()
+	}, "invalid detection method: %s")
+	if err != nil {
+		return err
 	}
 	*dm = candidate
 	return nil
