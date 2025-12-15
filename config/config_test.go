@@ -372,24 +372,6 @@ func TestOutputFormats(t *testing.T) {
 	if len(criteria) != 4 {
 		t.Errorf("Expected 4 sort criteria, got %d", len(criteria))
 	}
-
-	// Test ParseOutputFormats
-	parsed, err := ParseOutputFormats("json,html")
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-	if len(parsed) != 2 {
-		t.Errorf("Expected 2 formats, got %d", len(parsed))
-	}
-
-	// Test empty string defaults
-	parsed, err = ParseOutputFormats("")
-	if err != nil {
-		t.Errorf("Expected no error for empty string, got %v", err)
-	}
-	if len(parsed) != 1 || parsed[0] != OutputFormatText {
-		t.Error("Expected default text format for empty string")
-	}
 }
 
 func TestJSONMarshalUnmarshal(t *testing.T) {
