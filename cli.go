@@ -468,7 +468,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 
 	// Debug output for flag parsing
-	fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%t, outputDir=%q\n", allFlag, outputDir)
+	// fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%t, outputDir=%q\n", allFlag, outputDir)
 
 	// Load configuration from file if specified
 	var fileConfig *config.Config
@@ -533,15 +533,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	// Handle "all" flag - this overrides other output formats
-	if allFlag != "" {
-		// Set the output directory - if allFlag is not empty, use outputDir (which defaults to reports/art-dupl)
-		// The --all flag value may be empty (when used as --all without value) or contain a path
-		if allFlag != "true" && allFlag != "" {
-			// --all was used with a specific path
-			outputDir = allFlag
-		}
-		// Otherwise outputDir already contains the default or --output-dir value
-
+	if allFlag {
 		// "all" mode enables all detection methods and formats
 		cliConfig.DetectionMethods = config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash}
 
