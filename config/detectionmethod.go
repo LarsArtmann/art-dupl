@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ type DetectionMethod string
 const (
 	// DetectionMethodHash uses hash-based comparison for code clones
 	DetectionMethodHash DetectionMethod = "hash"
-	
+
 	// DetectionMethodArtDupl uses suffix tree-based detection (current method)
 	DetectionMethodArtDupl DetectionMethod = "art-dupl"
 )
@@ -36,7 +37,7 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 	if !dm.IsValid() {
 		return nil, fmt.Errorf("invalid detection method: %s", dm)
 	}
-	return []byte(fmt.Sprintf(`"%s"`, dm)), nil
+	return fmt.Appendf(nil, `"%s"`, dm), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for DetectionMethod
@@ -82,43 +83,32 @@ func ParseDetectionMethods(s string) (DetectionMethods, error) {
 	if s == "" {
 		return DetectionMethods{DetectionMethodArtDupl}, nil // default
 	}
-	
+
 	parts := strings.Split(s, ",")
 	methods := make(DetectionMethods, 0, len(parts))
-	
+
 	for _, part := range parts {
 		method := DetectionMethod(strings.TrimSpace(part))
 		if !method.IsValid() {
 			return nil, fmt.Errorf("invalid detection method: %s", part)
 		}
 		// Avoid duplicates
-		found := false
-		for _, existing := range methods {
-			if existing == method {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(methods, method)
 		if !found {
 			methods = append(methods, method)
 		}
 	}
-	
+
 	if len(methods) == 0 {
 		return DetectionMethods{DetectionMethodArtDupl}, nil
 	}
-	
+
 	return methods, nil
 }
 
 // Contains checks if the methods contain a specific method
 func (dms DetectionMethods) Contains(method DetectionMethod) bool {
-	for _, dm := range dms {
-		if dm == method {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(dms, method)
 }
 
 // IsDefault checks if only art-dupl method is selected

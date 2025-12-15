@@ -58,7 +58,7 @@ func DefaultConfig() *Config {
 		MaxChildrenSerial: 10000,
 		OutputFile:        "",
 		SortBy:            SortBySize,
-		DetectionMethods: DetectionMethods{DetectionMethodArtDupl},
+		DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 	}
 }
 

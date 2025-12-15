@@ -48,28 +48,28 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 
 	// Create combined channel
 	resultChan := make(chan syntax.Match)
-	
+
 	go func() {
 		defer close(resultChan)
-		
+
 		// Run hash detection if selected
 		if md.config.DetectionMethods.Contains(config.DetectionMethodHash) {
 			md.logVerbose("Running hash-based detection...")
 			hashDetector := hash.NewHashDetector(threshold)
 			hashMatches := hashDetector.FindDuplOver(*md.data, threshold)
-			
+
 			for match := range hashMatches {
 				if len(match.Frags) > 0 {
 					resultChan <- match
 				}
 			}
 		}
-		
+
 		// Run art-dupl detection if selected
 		if md.config.DetectionMethods.Contains(config.DetectionMethodArtDupl) {
 			md.logVerbose("Running suffix tree-based detection...")
 			artDuplMatches := md.tree.FindDuplOver(threshold)
-			
+
 			for match := range artDuplMatches {
 				// Convert suffix tree matches to syntax matches
 				syntaxMatch := syntax.FindSyntaxUnits(*md.data, match, threshold)
@@ -79,7 +79,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 			}
 		}
 	}()
-	
+
 	return resultChan
 }
 

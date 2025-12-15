@@ -58,7 +58,7 @@ var (
 	html          = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
 	jsonFlag      = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
 	plumbing      = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
-	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash")
+	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash, total-tokens")
 	paths         []string
 )
 
@@ -188,7 +188,7 @@ func Run() int {
 	if *verbose {
 		log.Println("Searching for clones")
 	}
-	
+
 	// Use multi-detector if hash detection is enabled
 	var duplChan chan syntax.Match
 	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
@@ -292,7 +292,7 @@ Flags:
   -plumbing
     	output machine-readable plumbing format for script integration
   -sort string
-    	sort clone groups by: size, occurrence, hash (default "size")
+    	sort clone groups by: size, occurrence, hash, total-tokens (default "size")
   -t, -threshold int
     	minimum token sequence size to consider as clone (default 15)
   -vendor
@@ -328,6 +328,7 @@ Examples:
   art-dupl -sort size .          # Largest clones first (default)
   art-dupl -sort occurrence .     # Most widespread clones first
   art-dupl -sort hash .          # Alphabetical order
+  art-dupl -sort total-tokens .  # Total tokens across all files
 
   # JSON output with sorting
   art-dupl -json -sort size . | jq '.clone_groups[0]'
@@ -453,21 +454,21 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	// Get flag values from Cobra command
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
-	verboseShort, _ := cmd.Flags().GetBool("verbose") // -v flag
-	verboseLong, _ := cmd.Flags().GetBool("verbose") // --verbose flag (hidden)
+	verboseShort, _ := cmd.Flags().GetBool("verbose")    // -v flag
+	verboseLong, _ := cmd.Flags().GetBool("verbose")     // --verbose flag (hidden)
 	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
-	thresholdLong, _ := cmd.Flags().GetInt("threshold") // --threshold flag (hidden)
+	thresholdLong, _ := cmd.Flags().GetInt("threshold")  // --threshold flag (hidden)
 	files, _ := cmd.Flags().GetBool("files")
 	html, _ := cmd.Flags().GetBool("html")
 	json, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sortBy, _ := cmd.Flags().GetString("sort")
 	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
-	allFlag, _ := cmd.Flags().GetString("all")
+	allFlag, _ := cmd.Flags().GetBool("all")
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 
 	// Debug output for flag parsing
-	// fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%q, outputDir=%q\n", allFlag, outputDir)
+	fmt.Fprintf(cli.Stderr(), "DEBUG: allFlag=%t, outputDir=%q\n", allFlag, outputDir)
 
 	// Load configuration from file if specified
 	var fileConfig *config.Config
@@ -540,13 +541,13 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			outputDir = allFlag
 		}
 		// Otherwise outputDir already contains the default or --output-dir value
-		
+
 		// "all" mode enables all detection methods and formats
 		cliConfig.DetectionMethods = config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash}
-		
+
 		// We need to merge configs first to get the complete configuration
 		mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
-		
+
 		// Validate merged configuration
 		if err = config.ValidateConfig(mergedConfig); err != nil {
 			if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
@@ -554,7 +555,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			}
 			return err
 		}
-		
+
 		// Run the all-mode handler
 		return runAllMode(outputDir, mergedConfig.Threshold, vendor, verboseFlag, args)
 	}
@@ -611,7 +612,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	if verboseFlag {
 		log.Println("Searching for clones")
 	}
-	
+
 	// Use multi-detector if hash detection is enabled
 	var duplChan chan syntax.Match
 	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
@@ -687,7 +688,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 }
 
 // runAllMode generates all output formats for all detection methods
-func runAllMode(outputDir string, threshold int, vendor bool, verbose bool, paths []string) error {
+func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []string) error {
 	// Create output directory
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create output directory: %v", err)
@@ -696,9 +697,9 @@ func runAllMode(outputDir string, threshold int, vendor bool, verbose bool, path
 	// Define detection methods and output formats
 	detectionMethods := []config.DetectionMethod{config.DetectionMethodArtDupl, config.DetectionMethodHash}
 	outputFormats := []struct {
-		name   string
-		format config.OutputFormat
-		ext    string
+		name       string
+		format     config.OutputFormat
+		ext        string
 		newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 	}{
 		{"text", config.OutputFormatText, ".txt", printer.NewText},
@@ -715,10 +716,10 @@ func runAllMode(outputDir string, threshold int, vendor bool, verbose bool, path
 
 		// Configure the analysis with this detection method
 		config := &config.Config{
-			Threshold:      threshold,
-			IncludeVendor:  vendor,
-			Verbose:        verbose,
-			Paths:          paths,
+			Threshold:        threshold,
+			IncludeVendor:    vendor,
+			Verbose:          verbose,
+			Paths:            paths,
 			DetectionMethods: config.DetectionMethods{method},
 		}
 
@@ -736,15 +737,16 @@ func runAllMode(outputDir string, threshold int, vendor bool, verbose bool, path
 
 // runAnalysisForAllFormats runs analysis once and generates all output formats
 func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []struct {
-	name   string
-	format config.OutputFormat
-	ext    string
+	name       string
+	format     config.OutputFormat
+	ext        string
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
-}, method config.DetectionMethod, verbose bool) error {
+}, method config.DetectionMethod, verbose bool,
+) error {
 	if verbose {
 		log.Println("Building suffix tree")
 	}
-	
+
 	schan, filesCountChan := job.Parse(filesFeed())
 	t, data, done := job.BuildTree(schan)
 	<-done

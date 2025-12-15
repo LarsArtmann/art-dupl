@@ -154,7 +154,7 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTo
 	// Create nodes that represent the tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
 
-	for i := 0; i < numTokens; i++ {
+	for i := range numTokens {
 		nodes[i] = &syntax.Node{
 			Type:     golang.FuncDecl,
 			Filename: filename,

@@ -178,6 +178,8 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
 		allDups = SortClonesByOccurrence(allDups)
 	case "hash":
 		allDups = SortClonesByHash(allDups)
+	case "total-tokens":
+		allDups = SortClonesByTotalTokens(allDups)
 	default:
 		allDups = SortClonesBySize(allDups) // Default to size
 	}

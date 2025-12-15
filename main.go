@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"time"
 
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
@@ -29,7 +28,7 @@ Examples:
   art-dupl --all ./src                     # Generate all formats for all detection methods
   art-dupl --all --output-dir ./my-reports ./src  # Custom output directory`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
-		RunE:  runCmd,
+		RunE: runCmd,
 	}
 
 	// Add all flags to root command with better descriptions
@@ -43,7 +42,7 @@ Examples:
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
 	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash (default: size)")
 	rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
-	rootCmd.Flags().StringP("all", "a", "", "generate all output formats for all detection methods (default: reports/art-dupl)")
+	rootCmd.Flags().BoolP("all", "a", false, "generate all output formats for all detection methods")
 	rootCmd.Flags().StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")
 
 	// Add hidden flags for advanced features
@@ -54,21 +53,21 @@ Examples:
 
 	// Enhanced error handler with context-aware suggestions
 	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
-		fmt.Fprintf(w, "\n%s %s\n\n", styles.ErrorHeader.Render("ERROR"), styles.Base.Render(err.Error()))
-		
+		fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err)
+
 		// Provide context-aware suggestions based on error type
 		switch {
 		case fmt.Sprint(err) == "flag: help requested":
-			fmt.Fprintf(w, "%s %s\n\n", styles.Description.Render("Use the examples below to get started:"), styles.Base.Render(""))
-			fmt.Fprintf(w, "%s %s\n", styles.Program.Render("  art-dupl"), styles.Description.Render("# Analyze current directory"))
-			fmt.Fprintf(w, "%s %s\n", styles.Program.Render("  art-dupl -t 50 ./src"), styles.Description.Render("# Higher threshold for larger clones"))
-			fmt.Fprintf(w, "%s %s\n", styles.Program.Render("  art-dupl --json -t 20 . | jq"), styles.Description.Render("# JSON output with post-processing"))
-			fmt.Fprintf(w, "%s %s\n", styles.Program.Render("  art-dupl --all --output-dir ./reports"), styles.Description.Render("# Generate all formats"))
+			fmt.Fprintf(w, "💡 Use examples below to get started:\n\n")
+			fmt.Fprintf(w, "  art-dupl                    # Analyze current directory\n")
+			fmt.Fprintf(w, "  art-dupl -t 50 ./src        # Higher threshold for larger clones\n")
+			fmt.Fprintf(w, "  art-dupl --json -t 20 . | jq # JSON output with post-processing\n")
+			fmt.Fprintf(w, "  art-dupl --all --output-dir ./reports # Generate all formats\n")
 		default:
-			fmt.Fprintf(w, "%s %s\n", styles.Title.Render("Quick Fix:"), styles.Base.Render("Check file paths and permissions"))
-			fmt.Fprintf(w, "%s %s --help\n", styles.Title.Render("Get Help:"), styles.Program.Render("art-dupl"))
+			fmt.Fprintf(w, "Quick Fix: Check file paths and permissions\n")
+			fmt.Fprintf(w, "Get Help: art-dupl --help\n")
 		}
-		fmt.Fprintf(w, "\n%s Visit %s for documentation\n", styles.Description.Render("📚"), styles.QuotedString.Render("https://github.com/LarsArtmann/art-dupl"))
+		fmt.Fprintf(w, "\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n")
 	}
 
 	// Enable fang features for better CLI experience

@@ -229,7 +229,7 @@ func BenchmarkConstruction(b *testing.B) {
 all work and no play makes jack a dull boy
 all work and no play makes jack a dull boy`)
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		t := New()
 		t.Update(stream...)
 	}

@@ -207,7 +207,7 @@ func uniqueFunction(ctx context.Context) error {
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 
-			var result map[string]interface{}
+			var result map[string]any
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -295,7 +295,7 @@ func b() {}`), 0o644)
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 
-			var result map[string]interface{}
+			var result map[string]any
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result["threshold"]).To(Equal(float64(25)))
@@ -520,13 +520,13 @@ func (s *Service) processInternal(data string) error {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response
-			var result map[string]interface{}
+			var result map[string]any
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify structure suitable for CI/CD
 			Expect(result).To(HaveKey("summary"))
-			summary := result["summary"].(map[string]interface{})
+			summary := result["summary"].(map[string]any)
 			Expect(summary).To(HaveKey("total_clones"))
 			Expect(summary).To(HaveKey("total_clone_groups"))
 			Expect(summary).To(HaveKey("complexity_score"))
@@ -568,7 +568,7 @@ func processItem(data string, index int) error {
 	return nil
 }`
 
-			for i := 0; i < numFiles; i++ {
+			for i := range numFiles {
 				filename := filepath.Join(tempDir, fmt.Sprintf("file%d.go", i))
 				err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
 				Expect(err).NotTo(HaveOccurred())

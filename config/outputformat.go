@@ -34,7 +34,7 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 	if !of.IsValid() {
 		return nil, fmt.Errorf("invalid output format: %s", of)
 	}
-	return []byte(fmt.Sprintf(`"%s"`, of)), nil
+	return fmt.Appendf(nil, `"%s"`, of), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for OutputFormat
@@ -81,7 +81,7 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 	if !sc.IsValid() {
 		return nil, fmt.Errorf("invalid sort criteria: %s", sc)
 	}
-	return []byte(fmt.Sprintf(`"%s"`, sc)), nil
+	return fmt.Appendf(nil, `"%s"`, sc), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for SortCriteria

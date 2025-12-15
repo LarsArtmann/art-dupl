@@ -29,10 +29,10 @@ type HashMatch struct {
 // FindDuplOver finds duplicates using hash-based comparison
 func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
-	
+
 	go func() {
 		defer close(resultChan)
-		
+
 		// Group nodes by file
 		fileNodes := make(map[string][]*syntax.Node)
 		for _, node := range data {
@@ -40,10 +40,10 @@ func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 				fileNodes[node.Filename] = append(fileNodes[node.Filename], node)
 			}
 		}
-		
+
 		// Generate hash groups for each file
 		hashGroups := make(map[string][]*syntax.Node)
-		
+
 		for _, nodes := range fileNodes {
 			hashes := h.generateHashesForNodes(nodes)
 			for hash, nodeList := range hashes {
@@ -54,7 +54,7 @@ func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 				hashGroups[hash] = append(hashGroups[hash], nodeList...)
 			}
 		}
-		
+
 		// Filter by threshold and emit matches
 		for hash, nodes := range hashGroups {
 			if len(nodes) >= 2 {
@@ -68,48 +68,45 @@ func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 							positions = append(positions, i)
 						}
 					}
-					
+
 					if len(positions) >= 2 {
 						// Convert to syntax.Match format
 						match := syntax.Match{
-							Hash: hash,
+							Hash:  hash,
 							Frags: make([][]*syntax.Node, len(positions)),
 						}
-						
+
 						for i, pos := range positions {
-							end := pos + seqLength
-							if end > len(nodes) {
-								end = len(nodes)
-							}
+							end := min(pos+seqLength, len(nodes))
 							match.Frags[i] = nodes[pos:end]
 						}
-						
+
 						resultChan <- match
 					}
 				}
 			}
 		}
 	}()
-	
+
 	return resultChan
 }
 
 // generateHashesForNodes generates sliding window hashes for nodes
 func (h *HashDetector) generateHashesForNodes(nodes []*syntax.Node) map[string][]*syntax.Node {
 	hashes := make(map[string][]*syntax.Node)
-	
+
 	// Generate sliding window hashes
 	windowSize := h.threshold
 	for i := 0; i <= len(nodes)-windowSize; i++ {
 		window := nodes[i : i+windowSize]
 		hash := h.computeHash(window)
-		
+
 		// Only keep if we have meaningful content
 		if h.isSignificantHash(hash) {
 			hashes[hash] = append(hashes[hash], nodes[i:i+windowSize]...)
 		}
 	}
-	
+
 	return hashes
 }
 
@@ -118,7 +115,7 @@ func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
 	if len(nodes) == 0 {
 		return 0
 	}
-	
+
 	// Simple heuristic: look for repeating patterns
 	// For now, just use the threshold as a minimum
 	return h.threshold
@@ -127,7 +124,7 @@ func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
 // computeHash computes SHA1 hash for a sequence of nodes
 func (h *HashDetector) computeHash(nodes []*syntax.Node) string {
 	var content strings.Builder
-	
+
 	for _, node := range nodes {
 		content.WriteString(fmt.Sprintf("%d:", node.Type))
 		if node.Filename != "" {
@@ -135,7 +132,7 @@ func (h *HashDetector) computeHash(nodes []*syntax.Node) string {
 		}
 		content.WriteString(";")
 	}
-	
+
 	hash := sha1.Sum([]byte(content.String()))
 	return fmt.Sprintf("%x", hash)
 }
