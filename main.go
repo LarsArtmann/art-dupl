@@ -17,6 +17,7 @@ func main() {
 It analyzes abstract syntax trees (ASTs) to find structural code clones
 while ignoring literal values using suffix tree algorithms.`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
+		RunE:  runCmd,
 	}
 
 	// Add all flags to root command
@@ -29,6 +30,12 @@ while ignoring literal values using suffix tree algorithms.`,
 	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
 	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash")
+
+	// Add subcommands
+	rootCmd.AddCommand(newAnalyzeCommand())
+	rootCmd.AddCommand(newJSONCommand())
+	rootCmd.AddCommand(newHTMLCommand())
+	rootCmd.AddCommand(newPlumbingCommand())
 
 	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(GetVersion())); err != nil {
 		os.Exit(1)

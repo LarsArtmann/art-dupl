@@ -40,11 +40,11 @@ func TestBDD(t *testing.T) {
 
 var _ = Describe("Basic User Workflows", func() {
 	var (
-		tempDir    string
-		testFiles  map[string]string
-		outputBuf  *bytes.Buffer
-		errorBuf   *bytes.Buffer
-		testCmd    *cobra.Command
+		tempDir   string
+		testFiles map[string]string
+		outputBuf *bytes.Buffer
+		errorBuf  *bytes.Buffer
+		testCmd   *cobra.Command
 	)
 
 	BeforeEach(func() {
@@ -125,7 +125,7 @@ func uniqueFunction(ctx context.Context) error {
 		// Write test files
 		for filename, content := range testFiles {
 			filePath := filepath.Join(tempDir, filename)
-			err := os.WriteFile(filePath, []byte(content), 0644)
+			err := os.WriteFile(filePath, []byte(content), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 		}
 
@@ -152,7 +152,7 @@ func uniqueFunction(ctx context.Context) error {
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			output := outputBuf.String()
-			
+
 			// Should find duplicates between the two similar functions
 			Expect(output).To(ContainSubstring("duplicate1.go"))
 			Expect(output).To(ContainSubstring("duplicate2.go"))
@@ -170,7 +170,7 @@ func uniqueFunction(ctx context.Context) error {
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			output := outputBuf.String()
-			
+
 			// With high threshold, should find fewer or no duplicates
 			Expect(output).ToNot(BeEmpty())
 		})
@@ -188,7 +188,7 @@ func uniqueFunction(ctx context.Context) error {
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
-			
+
 			var result map[string]interface{}
 			err = parseJSON(outputBuf.Bytes(), &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -214,7 +214,7 @@ func uniqueFunction(ctx context.Context) error {
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			output := outputBuf.String()
-			
+
 			// Should contain HTML structure
 			Expect(output).To(ContainSubstring("<html>"))
 			Expect(output).To(ContainSubstring("</html>"))
@@ -225,11 +225,11 @@ func uniqueFunction(ctx context.Context) error {
 
 var _ = Describe("Configuration Management", func() {
 	var (
-		tempDir     string
-		configFile  string
-		outputBuf   *bytes.Buffer
-		errorBuf    *bytes.Buffer
-		testCmd     *cobra.Command
+		tempDir    string
+		configFile string
+		outputBuf  *bytes.Buffer
+		errorBuf   *bytes.Buffer
+		testCmd    *cobra.Command
 	)
 
 	BeforeEach(func() {
@@ -244,7 +244,7 @@ var _ = Describe("Configuration Management", func() {
 		testFile := filepath.Join(tempDir, "test.go")
 		err = os.WriteFile(testFile, []byte(`package main
 func a() {}
-func b() {}`), 0644)
+func b() {}`), 0o644)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -262,7 +262,7 @@ func b() {}`), 0644)
 				"paths": ["%s"],
 				"verbose": true
 			}`, tempDir)
-			err := os.WriteFile(configFile, []byte(configContent), 0644)
+			err := os.WriteFile(configFile, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Setup command with config
@@ -275,7 +275,7 @@ func b() {}`), 0644)
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
-			
+
 			var result map[string]interface{}
 			err = parseJSON(outputBuf.Bytes(), &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -290,7 +290,7 @@ func b() {}`), 0644)
 				"outputFormat": "json",
 				"paths": ["%s"]
 			}`, tempDir)
-			err := os.WriteFile(configFile, []byte(configContent), 0644)
+			err := os.WriteFile(configFile, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Setup command with config and override
@@ -311,12 +311,12 @@ func b() {}`), 0644)
 
 var _ = Describe("File Targeting Scenarios", func() {
 	var (
-		tempDir    string
-		subDir1    string
-		subDir2    string
-		outputBuf  *bytes.Buffer
-		errorBuf   *bytes.Buffer
-		testCmd    *cobra.Command
+		tempDir   string
+		subDir1   string
+		subDir2   string
+		outputBuf *bytes.Buffer
+		errorBuf  *bytes.Buffer
+		testCmd   *cobra.Command
 	)
 
 	BeforeEach(func() {
@@ -327,9 +327,9 @@ var _ = Describe("File Targeting Scenarios", func() {
 		// Create subdirectories
 		subDir1 = filepath.Join(tempDir, "pkg1")
 		subDir2 = filepath.Join(tempDir, "pkg2")
-		err = os.MkdirAll(subDir1, 0755)
+		err = os.MkdirAll(subDir1, 0o755)
 		Expect(err).NotTo(HaveOccurred())
-		err = os.MkdirAll(subDir2, 0755)
+		err = os.MkdirAll(subDir2, 0o755)
 		Expect(err).NotTo(HaveOccurred())
 
 		outputBuf = &bytes.Buffer{}
@@ -345,7 +345,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 			// Create files in different directories
 			file1 := filepath.Join(subDir1, "file.go")
 			file2 := filepath.Join(subDir2, "file.go")
-			
+
 			duplicateCode := `package pkg
 
 func processData(data string) error {
@@ -354,10 +354,10 @@ func processData(data string) error {
 	}
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(duplicateCode), 0644)
+
+			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0644)
+			err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Analyze only subDir1
@@ -382,7 +382,7 @@ func processData(data string) error {
 			file1 := filepath.Join(tempDir, "target1.go")
 			file2 := filepath.Join(tempDir, "target2.go")
 			file3 := filepath.Join(tempDir, "ignore.go")
-			
+
 			duplicateCode := `package main
 
 func common() {
@@ -391,19 +391,19 @@ func common() {
 		fmt.Println(i)
 	}
 }`
-			
+
 			uniqueCode := `package main
 
 func unique() {
 	// This is unique
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(duplicateCode), 0644)
+
+			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0644)
+			err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file3, []byte(uniqueCode), 0644)
+			err = os.WriteFile(file3, []byte(uniqueCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create stdin with only target files
@@ -426,10 +426,10 @@ func unique() {
 
 var _ = Describe("Integration Scenarios", func() {
 	var (
-		tempDir     string
-		outputBuf   *bytes.Buffer
-		errorBuf    *bytes.Buffer
-		testCmd     *cobra.Command
+		tempDir   string
+		outputBuf *bytes.Buffer
+		errorBuf  *bytes.Buffer
+		testCmd   *cobra.Command
 	)
 
 	BeforeEach(func() {
@@ -450,7 +450,7 @@ var _ = Describe("Integration Scenarios", func() {
 			// Create files with duplicates
 			file1 := filepath.Join(tempDir, "service1.go")
 			file2 := filepath.Join(tempDir, "service2.go")
-			
+
 			serviceCode := `package service
 
 import "context"
@@ -475,10 +475,10 @@ func (s *Service) processInternal(data string) error {
 	// Processing logic
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0644)
+
+			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0644)
+			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Execute with JSON output
@@ -538,7 +538,7 @@ func processItem(data string, index int) error {
 
 			for i := 0; i < numFiles; i++ {
 				filename := filepath.Join(tempDir, fmt.Sprintf("file%d.go", i))
-				err := os.WriteFile(filename, []byte(duplicateCode), 0644)
+				err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
 				Expect(err).NotTo(HaveOccurred())
 			}
 
@@ -564,13 +564,13 @@ func processItem(data string, index int) error {
 
 // Helper functions for test setup
 
-func createTestCommand(out io.Writer, errOut io.Writer) *cobra.Command {
+func createTestCommand(out, errOut io.Writer) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "art-dupl",
 		Short: "Find code clones",
 		RunE:  runCmd,
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringP("config", "c", "", "path to configuration file")
 	cmd.Flags().BoolP("vendor", "", false, "include vendor directory")
@@ -583,11 +583,11 @@ func createTestCommand(out io.Writer, errOut io.Writer) *cobra.Command {
 	cmd.Flags().StringP("sort", "s", "size", "sort clone groups")
 	cmd.SetOut(out)
 	cmd.SetErr(errOut)
-	
+
 	return cmd
 }
 
-func createTestCommandWithStdin(out io.Writer, errOut io.Writer, stdin io.Reader) *cobra.Command {
+func createTestCommandWithStdin(out, errOut io.Writer, stdin io.Reader) *cobra.Command {
 	cmd := createTestCommand(out, errOut)
 	cmd.SetIn(stdin)
 	return cmd

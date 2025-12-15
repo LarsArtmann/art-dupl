@@ -33,8 +33,8 @@ func TestBDD(t *testing.T) {
 
 var _ = Describe("Basic User Workflows", func() {
 	var (
-		tempDir    string
-		testFiles  map[string]string
+		tempDir   string
+		testFiles map[string]string
 	)
 
 	BeforeEach(func() {
@@ -131,7 +131,7 @@ func uniqueFunction(ctx context.Context) error {
 		// Write test files
 		for filename, content := range testFiles {
 			filePath := filepath.Join(tempDir, filename)
-			err := os.WriteFile(filePath, []byte(content), 0644)
+			err := os.WriteFile(filePath, []byte(content), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 		}
 	})
@@ -154,16 +154,15 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}
-			
+
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
-			
+
 			// Should find duplicates between the two similar functions
 			Expect(outputStr).To(ContainSubstring("duplicate1.go"))
 			Expect(outputStr).To(ContainSubstring("duplicate2.go"))
@@ -181,11 +180,11 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "50")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
+
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
-			
+
 			// Should not be empty (might find some matches or might not, but should run)
 			Expect(len(outputStr)).To(BeNumerically(">", 0))
 		})
@@ -204,10 +203,10 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
+
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
-			
+
 			var result map[string]interface{}
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -233,11 +232,11 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", "html", tempDir, "-threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
+
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
-			
+
 			// Should contain HTML structure
 			Expect(outputStr).To(ContainSubstring("<html>"))
 			Expect(outputStr).To(ContainSubstring("</html>"))
@@ -247,8 +246,8 @@ func uniqueFunction(ctx context.Context) error {
 
 var _ = Describe("Configuration Management", func() {
 	var (
-		tempDir     string
-		configFile  string
+		tempDir    string
+		configFile string
 	)
 
 	BeforeEach(func() {
@@ -260,7 +259,7 @@ var _ = Describe("Configuration Management", func() {
 		testFile := filepath.Join(tempDir, "test.go")
 		err = os.WriteFile(testFile, []byte(`package main
 func a() {}
-func b() {}`), 0644)
+func b() {}`), 0o644)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -278,7 +277,7 @@ func b() {}`), 0644)
 				"paths": ["%s"],
 				"verbose": true
 			}`, tempDir)
-			err := os.WriteFile(configFile, []byte(configContent), 0644)
+			err := os.WriteFile(configFile, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -292,10 +291,10 @@ func b() {}`), 0644)
 			cmd = exec.Command("../bdd/art-dupl-test", "-config", configFile)
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
+
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
-			
+
 			var result map[string]interface{}
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -310,7 +309,7 @@ func b() {}`), 0644)
 				"outputFormat": "json",
 				"paths": ["%s"]
 			}`, tempDir)
-			err := os.WriteFile(configFile, []byte(configContent), 0644)
+			err := os.WriteFile(configFile, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -324,7 +323,7 @@ func b() {}`), 0644)
 			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-config", configFile, "-threshold", "50")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
+
 			// Verify - should use text output (not json from config)
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
@@ -335,9 +334,9 @@ func b() {}`), 0644)
 
 var _ = Describe("File Targeting Scenarios", func() {
 	var (
-		tempDir    string
-		subDir1    string
-		subDir2    string
+		tempDir string
+		subDir1 string
+		subDir2 string
 	)
 
 	BeforeEach(func() {
@@ -348,9 +347,9 @@ var _ = Describe("File Targeting Scenarios", func() {
 		// Create subdirectories
 		subDir1 = filepath.Join(tempDir, "pkg1")
 		subDir2 = filepath.Join(tempDir, "pkg2")
-		err = os.MkdirAll(subDir1, 0755)
+		err = os.MkdirAll(subDir1, 0o755)
 		Expect(err).NotTo(HaveOccurred())
-		err = os.MkdirAll(subDir2, 0755)
+		err = os.MkdirAll(subDir2, 0o755)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -363,7 +362,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 			// Create files in different directories
 			file1 := filepath.Join(subDir1, "file.go")
 			file2 := filepath.Join(subDir2, "file.go")
-			
+
 			duplicateCode := `package pkg
 
 import "fmt"
@@ -374,10 +373,10 @@ func processData(data string) error {
 	}
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(duplicateCode), 0644)
+
+			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0644)
+			err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -406,7 +405,7 @@ func processData(data string) error {
 			file1 := filepath.Join(tempDir, "target1.go")
 			file2 := filepath.Join(tempDir, "target2.go")
 			file3 := filepath.Join(tempDir, "ignore.go")
-			
+
 			duplicateCode := `package main
 
 import "fmt"
@@ -417,19 +416,19 @@ func common() {
 		fmt.Println(i)
 	}
 }`
-			
+
 			uniqueCode := `package main
 
 func unique() {
 	// This is unique
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(duplicateCode), 0644)
+
+			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0644)
+			err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file3, []byte(uniqueCode), 0644)
+			err = os.WriteFile(file3, []byte(uniqueCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -456,9 +455,7 @@ func unique() {
 })
 
 var _ = Describe("Integration Scenarios", func() {
-	var (
-		tempDir     string
-	)
+	var tempDir string
 
 	BeforeEach(func() {
 		var err error
@@ -475,7 +472,7 @@ var _ = Describe("Integration Scenarios", func() {
 			// Create files with duplicates
 			file1 := filepath.Join(tempDir, "service1.go")
 			file2 := filepath.Join(tempDir, "service2.go")
-			
+
 			serviceCode := `package service
 
 import (
@@ -503,10 +500,10 @@ func (s *Service) processInternal(data string) error {
 	// Processing logic
 	return nil
 }`
-			
-			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0644)
+
+			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0644)
+			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -573,7 +570,7 @@ func processItem(data string, index int) error {
 
 			for i := 0; i < numFiles; i++ {
 				filename := filepath.Join(tempDir, fmt.Sprintf("file%d.go", i))
-				err := os.WriteFile(filename, []byte(duplicateCode), 0644)
+				err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
 				Expect(err).NotTo(HaveOccurred())
 			}
 
