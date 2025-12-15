@@ -43,7 +43,35 @@
 
 	TestMergeConfigsWithNil(t, fileConfig, false, expectedValues)
 }</pre>
-<h1>#2 found 2 clones</h1>
+<h1>#2 found 3 clones</h1>
+<h2>cli.go:149</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:157</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:165</h2>
+<pre>if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#3 found 2 clones</h1>
 <h2>printer/sorting_integration_test.go:164</h2>
 <pre>                                                                                                                             {
 	// Create nodes that represent tokens in a clone
@@ -76,7 +104,62 @@
 
 	return nodes
 }</pre>
-<h1>#3 found 3 clones</h1>
+<h1>#4 found 2 clones</h1>
+<h2>cli.go:149</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:157</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}
+if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#5 found 2 clones</h1>
+<h2>syntax/golang/golang.go:107</h2>
+<pre>case *ast.AssignStmt:
+	o.Type = AssignStmt
+	for _, e := range n.Rhs {
+		o.AddChildren(t.trans(e))
+	}
+
+	for _, e := range n.Lhs {
+		o.AddChildren(t.trans(e))
+	}</pre>
+<h2>syntax/golang/golang.go:141</h2>
+<pre>case *ast.CaseClause:
+	o.Type = CaseClause
+	for _, e := range n.List {
+		o.AddChildren(t.trans(e))
+	}
+	for _, stmt := range n.Body {
+		o.AddChildren(t.trans(stmt))
+	}</pre>
+<h1>#6 found 3 clones</h1>
 <h2>config/detectionmethod.go:44</h2>
 <pre>func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
 	return NewEnumUnmarshaler(func(s string) DetectionMethod { return DetectionMethod(s) }, func(d DetectionMethod) bool {

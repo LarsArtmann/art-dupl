@@ -86,11 +86,12 @@ func TestConfigurationValidation(t *testing.T) {
 				Threshold:         15,
 				OutputFormat:      "xml",
 				MaxChildrenSerial: 10000,
+				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			},
 			isValid: false,
 		},
 	}
-
+	
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := config.ValidateConfig(tt.config)
@@ -122,6 +123,7 @@ func TestOutputFormatSelection(t *testing.T) {
 				OutputFormat:      config.OutputFormat(tt.outputFormat),
 				Threshold:         15,
 				MaxChildrenSerial: 10000,
+				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			}
 
 			// This would be tested in the main CLI logic

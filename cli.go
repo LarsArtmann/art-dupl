@@ -328,7 +328,8 @@ Examples:
 }
 
 // createHashDuplChannel creates a channel for hash-based duplicate detection
-func createHashDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+// createHashDuplChannel creates a channel for hash-based duplicate detection
+func createHashDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
 	duplChan := make(chan syntax.Match)
 	// Find duplicates
@@ -344,7 +345,8 @@ func createHashDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtr
 }
 
 // createArtDuplChannel creates a channel for art-dupl (suffix tree) based duplicate detection
-func createArtDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree) chan syntax.Match {
+// createArtDuplChannel creates a channel for art-dupl (suffix tree) based duplicate detection
+func createArtDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree.STree) chan syntax.Match {
 	mchan := t.FindDuplOver(cfg.Threshold)
 	duplChan := make(chan syntax.Match)
 	go func() {
@@ -362,21 +364,21 @@ func createArtDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtre
 // createDuplChannel creates a channel for duplicate detection based on the method
 func createDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	if cfg.DetectionMethods.Contains(config.DetectionMethodHash) {
-		return createHashDuplChannel(cfg, data, t, verbose)
+		return createHashDuplChannel(cfg, *data, t, verbose)
 	}
-	return createArtDuplChannel(cfg, data, t)
+	return createArtDuplChannel(cfg, *data, t)
 }
 
 // createDuplChannelForMethod creates a channel for duplicate detection based on a single method
-func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	// Create a temporary config with the single detection method
 	tempConfig := *cfg
 	tempConfig.DetectionMethods = config.DetectionMethods{method}
 	return createDuplChannel(&tempConfig, data, t, verbose)
 }
 
-// buildSuffixTree builds a suffix tree from the provided paths and returns the tree, data, and file count
-func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+// buildSuffixTree builds a suffix tree from provided paths and returns tree, data, and file count
+func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, *[]*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
 	}

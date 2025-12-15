@@ -42,3 +42,8 @@ func TestMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig b
 		}
 	}
 }
+
+// TestMergeConfigsScenario tests a merge config scenario with specific parameters
+func TestMergeConfigsScenario(t *testing.T, testName string, config *Config, isNilFileConfig bool, expectedValues map[string]any) {
+	TestMergeConfigsWithNil(t, config, isNilFileConfig, expectedValues)
+}
