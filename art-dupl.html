@@ -8,165 +8,7 @@
 		padding: 1ex;
 	}
 </style>
-<h1>#1 found 3 clones</h1>
-<h2>printer/sorter.go:43</h2>
-<pre>sort.Slice(dups, func(i, j int) bool {
-	if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
-		return false
-	}
-	if len(dups[i]) == 0 {
-		return true
-	}
-	if len(dups[j]) == 0 {
-		return false
-	}
-	// Use Filename for deterministic sorting
-	if dups[i][0].Filename == dups[j][0].Filename {
-		return dups[i][0].Pos &lt; dups[j][0].Pos
-	}
-	return dups[i][0].Filename &lt; dups[j][0].Filename
-})</pre>
-<h2>printer/text.go:101</h2>
-<pre>sort.Slice(clones, func(i, j int) bool {
-	if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
-		return false
-	}
-	if len(dups[i]) == 0 {
-		return true
-	}
-	if len(dups[j]) == 0 {
-		return false
-	}
-	// Use Filename for deterministic sorting
-	if dups[i][0].Filename == dups[j][0].Filename {
-		return dups[i][0].Pos &lt; dups[j][0].Pos
-	}
-	return dups[i][0].Filename &lt; dups[j][0].Filename
-})</pre>
-<h2>printer/text.go:206</h2>
-<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
-	if len(sortedCloneGroups[i]) == 0 &amp;&amp; len(sortedCloneGroups[j]) == 0 {
-		return false
-	}
-	if len(sortedCloneGroups[i]) == 0 {
-		return true
-	}
-	if len(sortedCloneGroups[j]) == 0 {
-		return false
-	}
-	// Compare by first filename in each group
-	if sortedCloneGroups[i][0].filename == sortedCloneGroups[j][0].filename {
-		return sortedCloneGroups[i][0].lineStart &lt; sortedCloneGroups[j][0].lineStart
-	}
-	return sortedCloneGroups[i][0].filename &lt; sortedCloneGroups[j][0].filename
-})</pre>
-<h1>#2 found 2 clones</h1>
-<h2>printer/text.go:100</h2>
-<pre>case &#34;hash&#34;:
-	sort.Slice(clones, func(i, j int) bool {
-		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
-			return false
-		}
-		if len(dups[i]) == 0 {
-			return true
-		}
-		if len(dups[j]) == 0 {
-			return false
-		}
-		// Use Filename for deterministic sorting
-		if dups[i][0].Filename == dups[j][0].Filename {
-			return dups[i][0].Pos &lt; dups[j][0].Pos
-		}
-		return dups[i][0].Filename &lt; dups[j][0].Filename
-	})</pre>
-<h2>printer/text.go:204</h2>
-<pre>case &#34;hash&#34;:
-	// Sort by filename for deterministic output
-	sort.Slice(sortedCloneGroups, func(i, j int) bool {
-		if len(sortedCloneGroups[i]) == 0 &amp;&amp; len(sortedCloneGroups[j]) == 0 {
-			return false
-		}
-		if len(sortedCloneGroups[i]) == 0 {
-			return true
-		}
-		if len(sortedCloneGroups[j]) == 0 {
-			return false
-		}
-		// Compare by first filename in each group
-		if sortedCloneGroups[i][0].filename == sortedCloneGroups[j][0].filename {
-			return sortedCloneGroups[i][0].lineStart &lt; sortedCloneGroups[j][0].lineStart
-		}
-		return sortedCloneGroups[i][0].filename &lt; sortedCloneGroups[j][0].filename
-	})</pre>
-<h1>#3 found 3 clones</h1>
-<h2>printer/sorting_integration_test.go:117</h2>
-<pre>t.Run(&#34;TextPrinter&#34;, func(t *testing.T) {
-	var buf bytes.Buffer
-	printer := NewText(&amp;buf, mockReadFile(testContent))
-
-	clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-	err := printer.PrintClones(clones, tc.sortBy)
-	if err != nil {
-		t.Fatalf(&#34;TextPrinter.PrintClones failed: %v&#34;, err)
-	}
-
-	// Verify sorting by checking the order of files in output
-	output := buf.String()
-	// Simple check: the first expected file should appear before the last expected file
-	firstIndex := strings.Index(output, tc.expectedOrder[0])
-	lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-	if firstIndex == -1 || lastIndex == -1 {
-		t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	} else if firstIndex &gt; lastIndex {
-		t.Errorf(&#34;Sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	}
-})</pre>
-<h2>printer/sorting_integration_test.go:141</h2>
-<pre>t.Run(&#34;HTMLPrinter&#34;, func(t *testing.T) {
-	var buf bytes.Buffer
-	printer := NewHTML(&amp;buf, mockReadFile(testContent))
-
-	clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-	err := printer.PrintClones(clones, tc.sortBy)
-	if err != nil {
-		t.Fatalf(&#34;HTMLPrinter.PrintClones failed: %v&#34;, err)
-	}
-
-	// Verify sorting
-	output := buf.String()
-	firstIndex := strings.Index(output, tc.expectedOrder[0])
-	lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-	if firstIndex == -1 || lastIndex == -1 {
-		t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	} else if firstIndex &gt; lastIndex {
-		t.Errorf(&#34;HTML sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	}
-})</pre>
-<h2>printer/sorting_integration_test.go:164</h2>
-<pre>t.Run(&#34;PlumbingPrinter&#34;, func(t *testing.T) {
-	var buf bytes.Buffer
-	printer := NewPlumbing(&amp;buf, mockReadFile(testContent))
-
-	clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
-	err := printer.PrintClones(clones, tc.sortBy)
-	if err != nil {
-		t.Fatalf(&#34;PlumbingPrinter.PrintClones failed: %v&#34;, err)
-	}
-
-	// Verify sorting
-	output := buf.String()
-	firstIndex := strings.Index(output, tc.expectedOrder[0])
-	lastIndex := strings.Index(output, tc.expectedOrder[len(tc.expectedOrder)-1])
-
-	if firstIndex == -1 || lastIndex == -1 {
-		t.Errorf(&#34;Expected files not found in output. First: %s, Last: %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	} else if firstIndex &gt; lastIndex {
-		t.Errorf(&#34;Plumbing sorting failed: %s should appear before %s&#34;, tc.expectedOrder[0], tc.expectedOrder[len(tc.expectedOrder)-1])
-	}
-})</pre>
-<h1>#4 found 2 clones</h1>
+<h1>#1 found 2 clones</h1>
 <h2>job/helpers_test.go:1</h2>
 <pre>package job
 
@@ -311,8 +153,8 @@ func function1() {
 
 	return files
 }</pre>
-<h1>#5 found 2 clones</h1>
-<h2>cli.go:748</h2>
+<h1>#2 found 2 clones</h1>
+<h2>cli.go:753</h2>
 <pre>if method == config.DetectionMethodHash {
 	// Use hash detection method
 	multiDetector := detection.NewMultiDetector(cfg, data, t, verbose)
@@ -340,7 +182,7 @@ func function1() {
 		}
 	}()
 }</pre>
-<h2>cli.go:798</h2>
+<h2>cli.go:803</h2>
 <pre>if method == config.DetectionMethodHash {
 	multiDetector := detection.NewMultiDetector(cfg, data, t, false) // don&#39;t log again
 	duplChanCopy = make(chan syntax.Match)
@@ -363,4 +205,43 @@ func function1() {
 			}
 		}
 	}()
+}</pre>
+<h1>#3 found 2 clones</h1>
+<h2>printer/sorter.go:10</h2>
+<pre>                                                {
+	sort.Slice(dups, func(i, j int) bool {
+		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
+			return false
+		}
+		if len(dups[i]) == 0 {
+			return true
+		}
+		if len(dups[j]) == 0 {
+			return false
+		}
+		// Use Filename for deterministic sorting
+		if dups[i][0].Filename == dups[j][0].Filename {
+			return dups[i][0].Pos &lt; dups[j][0].Pos
+		}
+		return dups[i][0].Filename &lt; dups[j][0].Filename
+	})
+}</pre>
+<h2>printer/sorter.go:30</h2>
+<pre>                                            {
+	sort.Slice(clones, func(i, j int) bool {
+		if len(clones[i]) == 0 &amp;&amp; len(clones[j]) == 0 {
+			return false
+		}
+		if len(clones[i]) == 0 {
+			return true
+		}
+		if len(clones[j]) == 0 {
+			return false
+		}
+		// Compare by first filename in each group
+		if clones[i][0].filename == clones[j][0].filename {
+			return clones[i][0].lineStart &lt; clones[j][0].lineStart
+		}
+		return clones[i][0].filename &lt; clones[j][0].filename
+	})
 }</pre>
