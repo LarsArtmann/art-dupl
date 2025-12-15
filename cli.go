@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -187,17 +188,33 @@ func Run() int {
 	if *verbose {
 		log.Println("Searching for clones")
 	}
-	mchan := t.FindDuplOver(*threshold)
-	duplChan := make(chan syntax.Match)
-	go func() {
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, *threshold)
-			if len(match.Frags) > 0 {
+	
+	// Use multi-detector if hash detection is enabled
+	var duplChan chan syntax.Match
+	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
+		multiDetector := detection.NewMultiDetector(mergedConfig, data, t, *verbose)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(*threshold)
+			for match := range matches {
 				duplChan <- match
 			}
-		}
-		close(duplChan)
-	}()
+		}()
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(*threshold)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, *threshold)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+	}
 
 	// Select printer based on output format
 	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
@@ -445,6 +462,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	json, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sortBy, _ := cmd.Flags().GetString("sort")
+	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
 
 	// Load configuration from file if specified
 	var fileConfig *config.Config
@@ -494,6 +512,18 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	if len(args) > 0 {
 		cliConfig.Paths = args
+	}
+
+	// Handle detection methods
+	if detectionMethods != "" {
+		methods, err := config.ParseDetectionMethods(detectionMethods)
+		if err != nil {
+			if _, err := fmt.Fprintf(cli.Stderr(), "detection methods error: %v\n", err); err != nil {
+				return err
+			}
+			return err
+		}
+		cliConfig.DetectionMethods = methods
 	}
 
 	// Merge file and CLI configurations
@@ -548,17 +578,33 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	if verboseFlag {
 		log.Println("Searching for clones")
 	}
-	mchan := t.FindDuplOver(thresholdFlag)
-	duplChan := make(chan syntax.Match)
-	go func() {
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, thresholdFlag)
-			if len(match.Frags) > 0 {
+	
+	// Use multi-detector if hash detection is enabled
+	var duplChan chan syntax.Match
+	if mergedConfig.DetectionMethods.Contains(config.DetectionMethodHash) {
+		multiDetector := detection.NewMultiDetector(mergedConfig, data, t, verboseFlag)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			matches := multiDetector.FindDuplOver(thresholdFlag)
+			for match := range matches {
 				duplChan <- match
 			}
-		}
-		close(duplChan)
-	}()
+		}()
+	} else {
+		// Use existing art-dupl logic
+		mchan := t.FindDuplOver(thresholdFlag)
+		duplChan = make(chan syntax.Match)
+		go func() {
+			defer close(duplChan)
+			for m := range mchan {
+				match := syntax.FindSyntaxUnits(*data, m, thresholdFlag)
+				if len(match.Frags) > 0 {
+					duplChan <- match
+				}
+			}
+		}()
+	}
 
 	// Select printer based on output format
 	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer

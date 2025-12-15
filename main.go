@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"os"
 
 	"github.com/charmbracelet/fang"
@@ -10,12 +12,19 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-			Use:   "art-dupl [flags] [paths...]",
+		Use:   "art-dupl [flags] [paths...]",
 		Short: "Find code clones",
 		Long: `art-dupl finds code clones in Go source files.
 
 It analyzes abstract syntax trees (ASTs) to find structural code clones
-while ignoring literal values using suffix tree algorithms.`,
+while ignoring literal values using suffix tree algorithms.
+
+Examples:
+  art-dupl ./src                          # Default analysis
+  art-dupl -t 20 ./src                    # Higher threshold
+  art-dupl --json -t 20 ./src             # JSON output with threshold
+  art-dupl --html --vendor ./src           # HTML with vendor included
+  art-dupl --plumbing --sort occurrence ./src # Plumbing sorted by occurrence`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
 		RunE:  runCmd,
 	}
@@ -30,14 +39,23 @@ while ignoring literal values using suffix tree algorithms.`,
 	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
 	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash")
+	rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods to use: hash, art-dupl, hash,art-dupl")
 
-	// Add subcommands
-	rootCmd.AddCommand(newAnalyzeCommand())
-	rootCmd.AddCommand(newJSONCommand())
-	rootCmd.AddCommand(newHTMLCommand())
-	rootCmd.AddCommand(newPlumbingCommand())
+	// Custom error handler for better user experience
+	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
+		fmt.Fprintf(w, "❌ Error: %v\n", err)
+		fmt.Fprintf(w, "💡 Run '%s --help' for usage information\n", rootCmd.Name())
+	}
 
-	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(GetVersion())); err != nil {
+	// Enable fang features for better CLI experience
+	options := []fang.Option{
+		fang.WithVersion(GetVersion()),
+		fang.WithTheme(fang.DefaultTheme(true)), // Auto-detect dark/light theme
+		fang.WithColorSchemeFunc(fang.AnsiColorScheme), // Better color support
+		fang.WithErrorHandler(errorHandler), // Better error messages
+	}
+
+	if err := fang.Execute(context.Background(), rootCmd, options...); err != nil {
 		os.Exit(1)
 	}
 }
@@ -45,66 +63,4 @@ while ignoring literal values using suffix tree algorithms.`,
 // runCmd implements the Cobra command execution
 func runCmd(cmd *cobra.Command, args []string) error {
 	return runCobraCommand(cmd, args)
-}
-
-// newAnalyzeCommand creates the analyze subcommand
-func newAnalyzeCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "analyze [flags] [paths...]",
-		Short: "Default code analysis",
-		Long:  "Analyze source files for code clones using default text output.",
-		RunE:  runCmd,
-		Args:  cobra.ArbitraryArgs,
-	}
-}
-
-// newJSONCommand creates the json subcommand
-func newJSONCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "json [flags] [paths...]",
-		Short: "Output JSON format",
-		Long:  "Analyze source files and output results in structured JSON format.",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// Force JSON output by setting the flag
-			if err := cmd.Flags().Set("json", "true"); err != nil {
-				return err
-			}
-			return runCobraCommand(cmd, args)
-		},
-		Args: cobra.ArbitraryArgs,
-	}
-}
-
-// newHTMLCommand creates the html subcommand
-func newHTMLCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "html [flags] [paths...]",
-		Short: "Output HTML format",
-		Long:  "Analyze source files and output results as HTML with syntax highlighting.",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// Force HTML output by setting the flag
-			if err := cmd.Flags().Set("html", "true"); err != nil {
-				return err
-			}
-			return runCobraCommand(cmd, args)
-		},
-		Args: cobra.ArbitraryArgs,
-	}
-}
-
-// newPlumbingCommand creates the plumbing subcommand
-func newPlumbingCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "plumbing [flags] [paths...]",
-		Short: "Output plumbing format",
-		Long:  "Analyze source files and output results in machine-readable plumbing format.",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// Force plumbing output by setting the flag
-			if err := cmd.Flags().Set("plumbing", "true"); err != nil {
-				return err
-			}
-			return runCobraCommand(cmd, args)
-		},
-		Args: cobra.ArbitraryArgs,
-	}
 }

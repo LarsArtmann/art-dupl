@@ -40,6 +40,9 @@ type Config struct {
 
 	// SortBy specifies sorting criteria for clone groups
 	SortBy SortCriteria `json:"sortBy,omitempty"`
+
+	// DetectionMethods specifies which detection methods to use
+	DetectionMethods DetectionMethods `json:"detectionMethods,omitempty"`
 }
 
 // DefaultConfig returns a default configuration
@@ -55,6 +58,7 @@ func DefaultConfig() *Config {
 		MaxChildrenSerial: 10000,
 		OutputFile:        "",
 		SortBy:            SortBySize,
+		DetectionMethods: DetectionMethods{DetectionMethodArtDupl},
 	}
 }
 
@@ -123,6 +127,17 @@ func ValidateConfig(config *Config) error {
 		return errors.NewValidationError(fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", config.OutputFormat), nil)
 	}
 
+	// Validate detection methods
+	if len(config.DetectionMethods) == 0 {
+		return errors.NewValidationError("at least one detection method must be specified", nil)
+	}
+
+	for _, method := range config.DetectionMethods {
+		if !method.IsValid() {
+			return errors.NewValidationError(fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl)", method), nil)
+		}
+	}
+
 	return nil
 }
 
@@ -152,6 +167,9 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 		}
 		if fileConfig.OutputFile != "" {
 			result.OutputFile = fileConfig.OutputFile
+		}
+		if len(fileConfig.DetectionMethods) > 0 {
+			result.DetectionMethods = fileConfig.DetectionMethods
 		}
 	}
 
@@ -183,6 +201,9 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 		}
 		if cliConfig.OutputFile != "" {
 			result.OutputFile = cliConfig.OutputFile
+		}
+		if len(cliConfig.DetectionMethods) > 0 {
+			result.DetectionMethods = cliConfig.DetectionMethods
 		}
 	}
 
