@@ -370,8 +370,8 @@ func TestOutputFormats(t *testing.T) {
 
 	// Test AllSortCriteria
 	criteria := AllSortCriteria()
-	if len(criteria) != 3 {
-		t.Errorf("Expected 3 sort criteria, got %d", len(criteria))
+	if len(criteria) != 4 {
+		t.Errorf("Expected 4 sort criteria, got %d", len(criteria))
 	}
 }
 

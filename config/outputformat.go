@@ -56,9 +56,10 @@ func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 type SortCriteria string
 
 const (
-	SortBySize       SortCriteria = "size"
-	SortByOccurrence SortCriteria = "occurrence"
-	SortByHash       SortCriteria = "hash"
+	SortBySize        SortCriteria = "size"
+	SortByOccurrence  SortCriteria = "occurrence"
+	SortByHash        SortCriteria = "hash"
+	SortByTotalTokens SortCriteria = "total-tokens"
 )
 
 // String implements fmt.Stringer for SortCriteria
@@ -69,7 +70,7 @@ func (sc SortCriteria) String() string {
 // IsValid checks if the sort criteria is supported
 func (sc SortCriteria) IsValid() bool {
 	switch sc {
-	case SortBySize, SortByOccurrence, SortByHash:
+	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
 		return true
 	default:
 		return false
@@ -115,5 +116,6 @@ func AllSortCriteria() []SortCriteria {
 		SortBySize,
 		SortByOccurrence,
 		SortByHash,
+		SortByTotalTokens,
 	}
 }
