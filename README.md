@@ -1,6 +1,6 @@
-# dupl
+# art-dupl
 
-**dupl** is a Go tool for finding code clones using suffix tree algorithms on serialized ASTs. It identifies structural duplicates while ignoring literal values.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms on serialized ASTs. It identifies structural duplicates while ignoring literal values.
 
 ## Installation
 
@@ -17,16 +17,24 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 
 ```bash
 # Basic usage
-./dupl
+./art-dupl
 
 # Higher threshold (larger clones only)
-./dupl -t 100
+./art-dupl -t 100
 
 # HTML report
-./dupl -html > report.html
+./art-dupl -html > report.html
 
 # JSON output (new in this fork)
-./dupl -json -t 20
+./art-dupl -json -t 20
+
+# Check version
+./art-dupl --version
+
+# Enable shell completions (bash)
+source <(./art-dupl completion bash)
+# Enable shell completions (zsh) 
+source <(./art-dupl completion zsh)
 ```
 
 ## Key Features
@@ -35,6 +43,8 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
 - **Multiple output formats**: text, HTML, JSON, plumbing
+- **Professional CLI** with auto-completion and version info
+- **Enhanced help** with styling and examples
 
 ## Configuration
 
