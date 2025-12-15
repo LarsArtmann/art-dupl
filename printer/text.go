@@ -98,21 +98,9 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 			return len(dups[i]) > len(dups[j])
 		})
 	case "hash":
+		sortNodesByFilename(dups)
 		sort.Slice(clones, func(i, j int) bool {
-			if len(dups[i]) == 0 && len(dups[j]) == 0 {
-				return false
-			}
-			if len(dups[i]) == 0 {
-				return true
-			}
-			if len(dups[j]) == 0 {
-				return false
-			}
-			// Use Filename for deterministic sorting
-			if dups[i][0].Filename == dups[j][0].Filename {
-				return dups[i][0].Pos < dups[j][0].Pos
-			}
-			return dups[i][0].Filename < dups[j][0].Filename
+			return len(dups[i]) > len(dups[j])
 		})
 	default:
 		// Default to size sorting
@@ -203,22 +191,7 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 		})
 	case "hash":
 		// Sort by filename for deterministic output
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			if len(sortedCloneGroups[i]) == 0 && len(sortedCloneGroups[j]) == 0 {
-				return false
-			}
-			if len(sortedCloneGroups[i]) == 0 {
-				return true
-			}
-			if len(sortedCloneGroups[j]) == 0 {
-				return false
-			}
-			// Compare by first filename in each group
-			if sortedCloneGroups[i][0].filename == sortedCloneGroups[j][0].filename {
-				return sortedCloneGroups[i][0].lineStart < sortedCloneGroups[j][0].lineStart
-			}
-			return sortedCloneGroups[i][0].filename < sortedCloneGroups[j][0].filename
-		})
+		sortClonesByFilename(sortedCloneGroups)
 	case "total-tokens":
 		// Sort by total tokens across all files in each clone group
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {

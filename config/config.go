@@ -147,9 +147,7 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 
 	// Start with file config
 	if fileConfig != nil {
-		if fileConfig.Threshold != 0 {
-			result.Threshold = fileConfig.Threshold
-		}
+		result.Threshold = fileConfig.Threshold
 		result.IncludeVendor = fileConfig.IncludeVendor
 		result.FilesFromStdin = fileConfig.FilesFromStdin
 		if fileConfig.OutputFormat != "" {
@@ -175,7 +173,9 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 
 	// Override with CLI config
 	if cliConfig != nil {
-		if cliConfig.Threshold != 0 {
+		// Note: Only set CLI values if they're different from defaults
+		// to allow file config values to take precedence
+		if cliConfig.Threshold != 15 {
 			result.Threshold = cliConfig.Threshold
 		}
 		if cliConfig.IncludeVendor {
@@ -184,6 +184,7 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 		if cliConfig.FilesFromStdin {
 			result.FilesFromStdin = cliConfig.FilesFromStdin
 		}
+		// Only override output format if CLI provided it
 		if cliConfig.OutputFormat != "" {
 			result.OutputFormat = cliConfig.OutputFormat
 		}

@@ -91,7 +91,30 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
 		cl := clone{filename: nstart.Filename, lineStart: lineStart}
 		start := findLineBeg(file, nstart.Pos)
-		content := append(toWhitespace(file[start:nstart.Pos]), file[nstart.Pos:nend.End]...)
+		var content []byte
+		
+		// Ensure all indices are within file bounds
+		fileLen := len(file)
+		if start > fileLen {
+			start = fileLen
+		}
+		startPos := nstart.Pos
+		if startPos > fileLen {
+			startPos = fileLen
+		}
+		endPos := nend.End
+		if endPos > fileLen {
+			endPos = fileLen
+		}
+		
+		// Only extract content if we have valid bounds
+		if startPos < endPos {
+			if start < startPos {
+				content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+			} else {
+				content = file[startPos:endPos]
+			}
+		}
 		cl.fragment = deindent(content)
 		clones[i] = cl
 	}
@@ -146,12 +169,14 @@ func deindent(block []byte) []byte {
 Loop:
 	for i := 0; i < len(block); i++ {
 		if block[i] == '\n' && i != len(block)-1 {
-			for j := 0; j < min; j++ {
+			for j := 0; j < min && i+j+1 < len(block); j++ {
 				if block[i+j+1] != '\t' {
 					continue Loop
 				}
 			}
-			block = append(block[:i+1], block[i+1+min:]...)
+			if i+min+1 <= len(block) {
+				block = append(block[:i+1], block[i+1+min:]...)
+			}
 		}
 	}
 	return block

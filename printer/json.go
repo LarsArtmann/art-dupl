@@ -133,7 +133,30 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 
 		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
 		start := findLineBeg(file, nstart.Pos)
-		content := append(toWhitespace(file[start:nstart.Pos]), file[nstart.Pos:nend.End]...)
+		var content []byte
+		
+		// Ensure all indices are within file bounds
+		fileLen := len(file)
+		if start > fileLen {
+			start = fileLen
+		}
+		startPos := nstart.Pos
+		if startPos > fileLen {
+			startPos = fileLen
+		}
+		endPos := nend.End
+		if endPos > fileLen {
+			endPos = fileLen
+		}
+		
+		// Only extract content if we have valid bounds
+		if startPos < endPos {
+			if start < startPos {
+				content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+			} else {
+				content = file[startPos:endPos]
+			}
+		}
 		clones[i] = JSONClone{
 			Filename:  nstart.Filename,
 			LineStart: lineStart,

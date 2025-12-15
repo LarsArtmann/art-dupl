@@ -92,10 +92,17 @@ func Run() int {
 	// Create CLI config from command line arguments
 	cliConfig := &config.Config{}
 
-	// Handle verbose flag (either -v or -verbose)
+	// Note: We don't set threshold/outputFormat from CLI here initially
+	// to allow config file values to take precedence
+	// CLI values will override only if explicitly provided
+
+	// Merge file and CLI configurations
+	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
+
+	// Now handle CLI overrides for explicitly set flags
 	verboseFlag := *verbose || *verboseLong
 	if verboseFlag {
-		cliConfig.Verbose = verboseFlag
+		mergedConfig.Verbose = verboseFlag
 	}
 
 	// Handle threshold flag (either -t or -threshold)
@@ -103,29 +110,29 @@ func Run() int {
 	if *thresholdLong != defaultThreshold {
 		thresholdFlag = *thresholdLong
 	}
-	cliConfig.Threshold = thresholdFlag
+	// Only override threshold if CLI flags were explicitly used
+	if thresholdFlag != defaultThreshold || *thresholdLong != defaultThreshold {
+		mergedConfig.Threshold = thresholdFlag
+	}
 
 	if *vendor {
-		cliConfig.IncludeVendor = *vendor
+		mergedConfig.IncludeVendor = *vendor
 	}
 	if *files {
-		cliConfig.FilesFromStdin = *files
+		mergedConfig.FilesFromStdin = *files
 	}
 
 	if *html {
-		cliConfig.OutputFormat = config.OutputFormatHTML
+		mergedConfig.OutputFormat = config.OutputFormatHTML
 	} else if *plumbing {
-		cliConfig.OutputFormat = config.OutputFormatPlumbing
+		mergedConfig.OutputFormat = config.OutputFormatPlumbing
 	} else if *jsonFlag {
-		cliConfig.OutputFormat = config.OutputFormatJSON
+		mergedConfig.OutputFormat = config.OutputFormatJSON
 	}
 
 	if flag.NArg() > 0 {
-		cliConfig.Paths = flag.Args()
+		mergedConfig.Paths = flag.Args()
 	}
-
-	// Merge file and CLI configurations
-	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
 
 	// Validate merged configuration
 	if err = config.ValidateConfig(mergedConfig); err != nil {
@@ -166,8 +173,8 @@ func Run() int {
 	// Update global variables with merged config (for compatibility with existing code)
 	paths = mergedConfig.Paths
 	vendor = &mergedConfig.IncludeVendor
-	verbose = &verboseFlag
-	threshold = &thresholdFlag
+	// For verbose and threshold, use values from mergedConfig 
+	// (these will be used by code that expects global variables)
 	files = &mergedConfig.FilesFromStdin
 
 	// Execute analysis using common helper
@@ -221,7 +228,7 @@ func Run() int {
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, *sortBy); err != nil {
+	if err := printDupls(p, duplChan, *sortBy, *threshold); err != nil {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
 			// If we can't even write to stderr, just exit
 			cli.Exit(1)
@@ -438,7 +445,7 @@ func crawlPaths(paths []string) chan string {
 }
 
 // printDupls prints duplicates using the specified printer
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string) error {
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error {
 	groups := make(map[string][][]*syntax.Node)
 	for dupl := range duplChan {
 		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
@@ -467,7 +474,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string) 
 
 	// Handle JSON output special case
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(*threshold, sortBy)
+		return jsonPrinter.OutputJSON(threshold, sortBy)
 	}
 
 	return p.PrintFooter()
@@ -515,12 +522,10 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	// Handle threshold flag (either -t or -threshold)
 	thresholdFlag := thresholdShort
-	if thresholdFlag != defaultThreshold || thresholdLong != defaultThreshold {
-		if thresholdLong != defaultThreshold {
-			thresholdFlag = thresholdLong
-		}
-		cliConfig.Threshold = thresholdFlag
+	if thresholdLong != defaultThreshold {
+		thresholdFlag = thresholdLong
 	}
+	cliConfig.Threshold = thresholdFlag
 
 	if vendor {
 		cliConfig.IncludeVendor = vendor
@@ -656,7 +661,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, sortBy); err != nil {
+	if err := printDupls(p, duplChan, sortBy, thresholdShort); err != nil {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
 			return err
 		}
@@ -725,7 +730,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	}
 
 	// Start the parsing pipeline
-	schan, filesCountChan := job.Parse(filesFeed())
+	schan, filesCountChan := job.Parse(filesFeedFromPaths(cfg.Paths))
 	// Build the suffix tree
 	t, data, done := job.BuildTree(schan)
 	// Wait for processing to complete
@@ -819,7 +824,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 			}()
 		}
 
-		if err := printDupls(p, duplChanCopy, "size"); err != nil {
+		if err := printDupls(p, duplChanCopy, "size", cfg.Threshold); err != nil {
 			return fmt.Errorf("error writing %s format: %v", fmtInfo.name, err)
 		}
 
