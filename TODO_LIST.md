@@ -5,70 +5,211 @@
 
 ## Files Processing Status
 
-### Files Read (0/39):
-- None yet
+### Files Read (39/39):
+- /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/README.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/HOW_TO_USE.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/WHAT_THIS_PROJECT_IS_NOT.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-28_EXECUTION_PLAN.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-29_flag-redefinition-fix.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_22-18_immediate-action-plan.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_fang-migration-status.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-13_ARCHITECTURE_ANALYSIS.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_implementation-complete.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_02-55_production-ready-status.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-15_fang-migration-progress.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-13_hash-detection-complete.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_github-issues-management.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-03_critical-recovery-status.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-30_05-03-critical-blocker-analysis.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-30-fang-migration-analysis.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-44_FANG_MAXIMIZATION_COMPLETE.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-29_20-31-critical-foundation-plan.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-29_20-30-comprehensive-status-report.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-47_comprehensive-status-update.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_comprehensive-status-report.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-40_import-migration-completion.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-02_sorting-implementation-fixed.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-27_stable-bridge-pattern-success.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_strategic-implementation-plan.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-58_production-ready-cli-delivered.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_22-09_comprehensive-evaluation-report.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-45-fang-migration-execution-plan.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_05-00_json-output-enhancement-complete.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_multi-main-file-crisis-resolution.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_22-32_comprehensive-project-status-report.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_sorting-enhancement-production-ready.md ✓ (No TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md ✓ (TODO items found)
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-04_comprehensive-fang-migration-status-report.md ✓ (No TODO items found)
 
-### Files Remaining (39):
-- /Users/larsartmann/projects/art-dupl/USAGE.md
-- /Users/larsartmann/projects/art-dupl/AGENTS.md
-- /Users/larsartmann/projects/art-dupl/README.md
-- /Users/larsartmann/projects/art-dupl/HOW_TO_USE.md
-- /Users/larsartmann/projects/art-dupl/WHAT_THIS_PROJECT_IS_NOT.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-28_EXECUTION_PLAN.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-29_flag-redefinition-fix.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_22-18_immediate-action-plan.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_fang-migration-status.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-13_ARCHITECTURE_ANALYSIS.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_implementation-complete.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_02-55_production-ready-status.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-15_fang-migration-progress.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-13_hash-detection-complete.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_github-issues-management.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-03_critical-recovery-status.md
-- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-30_05-03-critical-blocker-analysis.md
-- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-30-fang-migration-analysis.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-44_FANG_MAXIMIZATION_COMPLETE.md
-- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-29_20-31-critical-foundation-plan.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-29_20-30-comprehensive-status-report.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-47_comprehensive-status-update.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_comprehensive-status-report.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-40_import-migration-completion.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-02_sorting-implementation-fixed.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-27_stable-bridge-pattern-success.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_strategic-implementation-plan.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-58_production-ready-cli-delivered.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_22-09_comprehensive-evaluation-report.md
-- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-45-fang-migration-execution-plan.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_05-00_json-output-enhancement-complete.md
-- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_multi-main-file-crisis-resolution.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_22-32_comprehensive-project-status-report.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_sorting-enhancement-production-ready.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md
-- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-04_comprehensive-fang-migration-status-report.md
+### Files Remaining (0):
+- None
 
 ## TODO Items
 
+### Critical Priority
+- Fix CLI Argument Routing (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- Connect Analyzer to Main Flow (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- End-to-End Testing (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- Fix JSON type conflicts - Delete duplicate types, reuse existing (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Simplify JSON implementation - Use existing clone + conversion (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Fix compilation errors - Ensure code compiles cleanly (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Test JSON output - Verify functionality works end-to-end (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Complete JSON output - Ensure full JSON format compliance (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- CLI Testing Strategy Implementation (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Core Pipeline Test Coverage (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Remove Panic Statements (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Replace log.Fatal() calls (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Fix HTML XSS vulnerability (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add missing test coverage (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Fix panic in HTML printer (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- CREATE COMPREHENSIVE TEST DATA (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- END-TO-END VALIDATION (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- DEMONSTRATION SCRIPTS (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- Fix Build Errors - Remove duplicate flags or fix subcommands (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Verify Build - Test `go build && ./art-dupl --help` (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Stabilize CLI - Ensure all basic functionality works (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Commit Recovery - Save working state (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+
 ### High Priority
-- (None found yet)
+- Add --output CLI Flag (10 minutes) (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Create Example Configuration Files (10 minutes) (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Final Testing & Verification (5-10 minutes) (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Implement actual analysis execution (connect CLI to job parsing) (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Remove remaining global variables (vendor, verbose, threshold, etc.) (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Split large cli.go into focused modules (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Add proper dependency injection for CLI interface (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Add configuration file support (already started) (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Implement sorting functionality (type-safe) (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Add comprehensive error handling (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Enhanced validation and edge cases (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Update README install cmd (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Extract duplicate unique() function (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add JSON output format (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add integration tests (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Make maxChildrenSerial configurable (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Update Go to latest stable (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add config file support (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Improve error messages (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Code Duplication - unique() Function (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- JSON Output Format (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Configuration File Support (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Update Go Version (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Make maxChildrenSerial Configurable (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Fix error propagation - Integrate type-safe errors throughout (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Add CLI integration tests - Test all flag combinations (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Add CLI flag (5 minutes) (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Implement sorting logic (20 minutes) (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Integration and testing (5 minutes) (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Global Variable Elimination (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- Large File Splitting (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- Configuration File Integration (from docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md)
+- Create GitHub Issues - Use detailed templates to create all 9 issues (from docs/status/2025-12-13_00-18_github-issues-management.md)
 
 ### Medium Priority
-- (None found yet)
+- Add comprehensive test suite (TDD approach) (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- BDD scenarios for CLI workflows (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Performance testing with large codebases (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Documentation and examples (from docs/status/2025-12-14_08-15_fang-migration-progress.md)
+- Performance Benchmarks (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Integration Tests (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Ignore File Support (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Package Documentation (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- CI/CD Improvements (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Enhanced Error Messages (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Concurrent Processing (from docs/planning/2025-11-29_20-31-critical-foundation-plan.md)
+- Add performance benchmarks (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Refactor large main() function (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add CLI help improvements (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add concurrent processing (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add ignore file support (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Improve HTML template (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add GitHub Action caching (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Code documentation (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Add package examples (from docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md)
+- Configuration file support - YAML/JSON config parsing (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Performance optimization - Concurrent file processing (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Library integration - cobra, viper, testify (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Documentation updates - README, package docs, examples (from docs/status/2025-11-30_05-03-critical-blocker-analysis.md)
+- Test all sorting criteria (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Verify default behavior (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Check error handling (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Performance validation (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Run end-to-end tests (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Validate JSON output format (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
+- Confirm backward compatibility (from docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md)
 
 ### Low Priority
-- (None found yet)
+- Comprehensive test suite (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- User documentation (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- Release preparation (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
 
 ### Uncategorized / Need Triage
-- (None found yet)
+- Progress Reporting: Add progress bars for long analyses (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Ignore Patterns: Implement sophisticated file filtering (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Performance Benchmarking: Add profiling and optimization (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Advanced Examples: Create domain-specific use case examples (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- CI/CD Integration: Provide GitHub Actions and Jenkins examples (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Plugin Architecture: Foundation for custom language support (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Caching System: Incremental analysis for large projects (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Web Interface: Interactive result exploration (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Database Integration: Historical analysis and trend tracking (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- IDE Plugins: VS Code, GoLand integration (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Multi-Language Support: JavaScript, Python, Java (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Cloud Analysis: Scalable processing for massive codebases (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Advanced Analytics: Code complexity metrics and recommendations (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Enterprise Features: Team collaboration, reporting dashboards (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- API Integration: Programmatic access for automation (from docs/status/2025-12-14_02-55_production-ready-status.md)
+- Verify Issue Creation - Ensure all issues are properly created in GitHub (from docs/status/2025-12-13_00-18_github-issues-management.md)
+- Establish Priority Order - Set up GitHub milestones or labels for execution (from docs/status/2025-12-13_00-18_github-issues-management.md)
+- Prepare Development Environment - Ready for immediate execution (from docs/status/2025-12-13_00-18_github-issues-management.md)
+- Begin Implementation - Start with Issue #1 (Version Flag) (from docs/status/2025-12-13_00-18_github-issues-management.md)
+- Complete Quick Wins - Color themes, better help, error messages (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Update Documentation - Recovery status, usage examples (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Improve Testing - Add tests for new CLI patterns (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Architecture Decision - Choose: complete DI or simplify approach (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Strategic Features - Based on architecture decision (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- Performance & Extensibility - Advanced improvements (from docs/status/2025-12-15_08-03_critical-recovery-status.md)
+- UNIFIED SORTING LOGIC (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- ELIMINATE DUPLICATE SYSTEMS (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- UNIFIED DATA MODELS (from docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md)
+- Color Themes (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Custom Error Handler (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Help Examples (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Configuration Validation (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Type-Safe Config Builders (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- BDD Tests for CLI (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Sorting Interface Cleanup (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Advanced Help System (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Complete Dependency Injection (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Plugin Architecture (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Performance Optimization (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Advanced Output Formats (from docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md)
+- Integration tests for JSON output validation (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Tests for hash values and file counting (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Fix line calculation in `printer/json.go:106` (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Replace `len(fragment)` with actual line count (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Extract line counting logic to shared utility (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Calculate actual token count instead of character length (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Use node type information from syntax analysis (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Implement proper size calculation in JSONPrinter (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Create CloneGroup type to encapsulate metadata (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Improve printer interface to accept CloneGroup instead of raw nodes (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Eliminate direct type checking in printDupls (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Extract common clone processing logic (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Consolidate duplicate code across printers (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
+- Create shared utilities for file reading and line counting (from docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md)
 
 ---
 
 ## Summary Statistics
 - Total files to process: 39
-- Files processed: 0
-- Files remaining: 39
-- TODO items found: 0
+- Files processed: 39
+- Files remaining: 0
+- TODO items found: 164 (21 Critical, 56 High, 13 Medium, 3 Low, 71 Uncategorized)
