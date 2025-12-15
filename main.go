@@ -23,7 +23,6 @@ while ignoring literal values using suffix tree algorithms.`,
 	rootCmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
 	rootCmd.Flags().BoolP("vendor", "", false, "include vendor directory in analysis")
 	rootCmd.Flags().BoolP("verbose", "v", false, "enable verbose logging to show processing progress")
-	rootCmd.Flags().Bool("verbose", false, "enable verbose logging to show processing progress") // Hidden alias for compatibility
 	rootCmd.Flags().IntP("threshold", "t", 15, "minimum token sequence size to consider as clone")
 	rootCmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	rootCmd.Flags().BoolP("html", "", false, "output results as HTML with syntax-highlighted code fragments")
