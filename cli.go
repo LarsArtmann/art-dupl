@@ -46,8 +46,20 @@ func (t *TestCLI) Stdout() io.Writer { return &t.StdoutBuf }
 
 var cli CLIInterface = &RealCLI{}
 
-// paths holds the command line arguments after parsing
-var paths []string
+var (
+	configFile    = flag.String("config", "", "path to configuration file (JSON format)")
+	vendor        = flag.Bool("vendor", false, "include vendor directory in analysis")
+	verbose       = flag.Bool("v", false, "enable verbose logging to show processing progress")
+	verboseLong   = flag.Bool("verbose", false, "enable verbose logging to show processing progress")
+	threshold     = flag.Int("t", 15, "minimum token sequence size to consider as clone")
+	thresholdLong = flag.Int("threshold", 15, "minimum token sequence size to consider as clone")
+	files         = flag.Bool("files", false, "read file names from stdin, one per line")
+	html          = flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
+	jsonFlag      = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
+	plumbing      = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
+	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash")
+	paths         []string
+)
 
 const (
 	defaultThreshold = 15
