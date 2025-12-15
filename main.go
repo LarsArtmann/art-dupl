@@ -10,9 +10,9 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "dupl [flags] [paths...]",
+		Use:   "art-dupl [flags] [paths...]",
 		Short: "Find code clones",
-		Long: `dupl finds code clones in Go source files.
+		Long: `art-dupl finds code clones in Go source files.
 
 It analyzes abstract syntax trees (ASTs) to find structural code clones
 while ignoring literal values using suffix tree algorithms.`,
@@ -31,7 +31,7 @@ while ignoring literal values using suffix tree algorithms.`,
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
 	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash")
 
-	if err := fang.Execute(context.Background(), rootCmd); err != nil {
+	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(GetVersion())); err != nil {
 		os.Exit(1)
 	}
 }
