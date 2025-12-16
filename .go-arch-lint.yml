@@ -1,0 +1,348 @@
+# 🔥 ENTERPRISE-GRADE GO ARCHITECTURE ENFORCEMENT TEMPLATE
+# MAXIMUM STRICTNESS - Domain-Driven Design & Clean Architecture
+#
+# This configuration demonstrates strict architectural boundaries
+# Customize components and dependencies for your specific project structure
+#
+# Features:
+# - ✅ Domain isolation (zero infrastructure dependencies)
+# - ✅ Application layer mediates between domain and infrastructure
+# - ✅ Infrastructure abstractions via interfaces
+# - ✅ Clear dependency flow: Infrastructure → Application → Domain
+
+version: 3
+workdir: .
+
+# 🚨 VENDOR DEPENDENCY CONFIGURATION
+allow:
+  depOnAnyVendor: true # Allow vendor dependencies (set to false for stricter control)
+
+  # ARCHITECTURAL DECISION: Enable Deep Scanning (STABLE in v1.14.0)
+  #
+  # Deep scanning enables advanced AST analysis for method calls and dependency
+  # injection patterns. Verified stable operation with go-arch-lint v1.14.0
+  # providing comprehensive architectural violation detection capabilities.
+  #
+  # Enhanced Analysis Features:
+  # - AST-based method call analysis (detects NewRepository(db) patterns)
+  # - Dependency injection validation (ensures proper ownership)
+  # - Constructor pattern enforcement (validates DI frameworks)
+  # - Advanced architectural boundary verification
+  #
+  # ENABLED: Working correctly with v1.14.0
+  # Provides superior violation detection over basic import-level validation.
+  deepScan: true
+
+# 📦 ARCHITECTURAL COMPONENTS
+# Define your project's architectural layers and boundaries
+components:
+  # ========================================
+  # CENTRALIZED ERROR MANAGEMENT
+  # ========================================
+  # ALL projects (libs and apps) MUST use pkg/errors for ALL error definitions
+  # No exceptions - this enforces consistent error handling across the entire codebase
+  pkg-errors:
+    in: pkg/errors/**
+
+  # ========================================
+  # DOMAIN LAYER - Pure Business Logic
+  # ========================================
+  domain-entities:
+    in: internal/domain/entities/**
+
+  domain-values:
+    in: internal/domain/values/**
+  domain-repositories:
+    in: internal/domain/repositories/**
+  domain-services:
+    in: internal/domain/services/**
+
+  # ========================================
+  # CONFIGURATION & STARTUP
+  # ========================================
+  config:
+    in: internal/config/**
+  main:
+    in: cmd/**
+
+  # ========================================
+  # APPLICATION LAYER - HTTP Handlers
+  # ========================================
+  application-handlers:
+    in: internal/application/handlers/**
+
+  # ========================================
+  # INFRASTRUCTURE LAYER - SQLC Generated Code & External Systems
+  # ========================================
+  sqlc-generated:
+    in: internal/infrastructure/db/**
+  internalinfrastructure:
+    in: internal/infrastructure/**
+
+  # ========================================
+  # TEST HELPERS - Testing Utilities
+  # ========================================
+  test-helpers-base:
+    in: internal/testhelpers/base/**
+  test-helpers-domain-entities:
+    in: internal/testhelpers/domain/entities/**
+  test-helpers-domain-values:
+    in: internal/testhelpers/domain/values/**
+  test-helpers-domain-validation:
+    in: internal/testhelpers/domain/validation/**
+
+# 🔒 DEPENDENCY RULES - Enforce Clean Architecture
+deps:
+  # CENTRALIZED ERROR MANAGEMENT - Available to ALL components
+  pkg-errors:
+    anyVendorDeps: true
+    mayDependOn: []
+
+  domain-entities:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-values
+      - pkg-errors # MUST use centralized errors
+
+  domain-values:
+    anyVendorDeps: true
+    mayDependOn:
+      - pkg-errors # MUST use centralized errors
+
+  domain-repositories:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-entities
+      - domain-values
+      - pkg-errors # MUST use centralized errors
+
+  domain-services:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-entities
+      - domain-repositories
+      - domain-values
+      - pkg-errors # MUST use centralized errors
+
+  application-handlers:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-entities
+      - domain-services
+      - domain-repositories
+      - domain-values
+      - sqlc-generated # Use SQLC generated types for request/response
+      - pkg-errors # MUST use centralized errors
+
+  # SQLC GENERATED CODE - Type-safe database models and queries
+  sqlc-generated:
+    anyVendorDeps: true
+    mayDependOn:
+      - pkg-errors # MUST use centralized errors
+
+  # CONFIGURATION & STARTUP
+  config:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-values # Allow config to use domain value objects for validation
+      - pkg-errors # MUST use centralized errors
+
+  internalinfrastructure:
+    anyVendorDeps: true
+    mayDependOn:
+      - domain-entities
+      - domain-repositories
+      - domain-values
+      - sqlc-generated # Infrastructure implements and uses SQLC generated code
+      - pkg-errors # MUST use centralized errors
+
+  main:
+    anyProjectDeps: true
+
+  # TEST HELPERS - Allow broad dependencies for testing utilities
+  test-helpers-base:
+    anyProjectDeps: true
+    anyVendorDeps: true
+
+  test-helpers-domain-entities:
+    anyProjectDeps: true
+    anyVendorDeps: true
+
+  test-helpers-domain-values:
+    anyProjectDeps: true
+    anyVendorDeps: true
+
+  test-helpers-domain-validation:
+    anyProjectDeps: true
+    anyVendorDeps: true
+
+# 🌍 COMMON COMPONENTS - Available everywhere
+commonComponents:
+  - pkg-errors # CENTRALIZED ERROR MANAGEMENT - MANDATORY
+
+# 🚫 EXCLUSION PATTERNS (glob patterns)
+exclude:
+  # Generated and temporary files
+  - "**/*.pb.go"
+  - "**/*_generated.go"
+  - "**/*_gen.go"
+  - "**/*_templ.go"
+  - "**/mock_*.go"
+  - "internal/infrastructure/db/**" # SQLC generated code
+
+  # Test data files only (exclude test helpers from directory exclusion)
+  - "**/testdata/**"
+
+  # Build and vendor
+  - "**/vendor/**"
+  - "**/bin/**"
+  - "**/build/**"
+  - "**/dist/**"
+  - "**/node_modules/**"
+
+  # Plugins (separate Go plugin modules with independent arch-lint configs)
+  # Each plugin is a separate Go module with its own go.mod and .go-arch-lint.yml
+  # Plugins have independent architectural rules tailored to their specific purpose
+  # Examples: auth-plugin, logging-plugin, metrics-plugin, database-plugin
+  # Exclusion prevents parent project architecture from constraining plugin design
+  - "**/pkg/linter-plugins/**"
+  - "pkg/linter-plugins/**"
+
+  # Documentation and configuration
+  - "**/docs/**"
+  - "**/examples/**"
+  - "example/**"
+  - "**/*.md"
+  - "**/.git/**"
+  - "**/.github/**"
+
+  # IDE and editor files
+  - "**/.vscode/**"
+  - "**/.idea/**"
+  - "**/*.swp"
+  - "**/.DS_Store"
+
+# 🚫 EXCLUSION FILES (regex patterns)
+#
+# ARCHITECTURAL DECISION: Exclude Test Files from Import Validation
+#
+# Test files in Go commonly use the `package_test` naming convention and import
+# their corresponding implementation packages. This is the standard Go testing
+# pattern and should NOT be considered an architecture violation.
+#
+#
+# SMART BALANCE TESTING STRATEGY:
+#
+# This configuration implements a "Smart Balance" approach to testing:
+#
+# 1. BLACK-BOX TESTING (PREFERRED)
+#    Use package_name_test for external testing of public APIs
+#    Example: package services_test imports "myapp/services"
+#
+# 2. WHITE-BOX TESTING (ALLOWED)
+#    Same-package testing for internal implementation details
+#    Example: package services testing private functions
+#
+# 3. TEST HELPERS VALIDATION
+#    Test helper packages ARE validated for architecture compliance
+#    They must follow proper dependency rules despite being testing utilities
+#
+# 4. EXCLUSION RATIONALE
+#    - Test files don't affect production architecture
+#    - Self-imports in tests are standard Go practice, not design flaws
+#    - Architecture rules focus on production code dependencies
+#    - Tests verify behavior, not enforce architectural constraints
+#
+# Note: Integration tests and end-to-end tests have different import patterns
+# and are also excluded from architecture validation.
+#
+# CURRENT ISSUES TO ADDRESS:
+# - Mixed testing strategies: Some tests use package entities (white-box)
+#   while others use package entities_test (black-box)
+# - Standardize on black-box testing for consistency where possible
+excludeFiles:
+  - ".*_test\\.go$" # All test files (_test.go suffix)
+  - "integration_test\\.go$" # Integration test files
+  - ".*_integration_test\\.go$" # Integration test variations
+
+
+# 📋 ARCHITECTURE VALIDATION RULES & DECISIONS
+#
+# This configuration implements Clean Architecture with Domain-Driven Design:
+#
+# ARCHITECTURAL LAYERS (from inner to outer):
+# 1. DOMAIN LAYER (Core Business Logic)
+#    - entities/     : Core business entities with identity
+#    - values/       : Value objects (immutable, validated data)
+#    - repositories/ : Interfaces for data access (ports)
+#    - services/     : Domain services and business rules
+#    - errors/       : Domain-specific error types
+#    - shared/       : Common domain utilities
+#
+# 2. APPLICATION LAYER (Use Cases & Orchestration)
+#    - handlers/     : HTTP handlers (adapters)
+#    - middleware/   : Cross-cutting concerns
+#
+# 3. INFRASTRUCTURE LAYER (External Dependencies)
+#    - infrastructure/db/ : SQLC generated models, queries, and interfaces
+#    - infrastructure/ : External service implementations
+#
+# 4. CONFIGURATION & ENTRY POINTS
+#    - config/       : Application configuration
+#    - container/    : Dependency injection setup
+#    - cmd/          : Main application entry points
+#
+# 5. PRESENTATION LAYER
+#    - web/templates/ : Server-side templates (Templ)
+#    - web/static/   : Static assets (CSS, JS, images)
+#
+# DEPENDENCY RULES ENFORCED:
+# ✅ Domain entities can only depend on domain layer components
+# ✅ Application layer can orchestrate domain and use SQLC generated types
+# ✅ Infrastructure implements domain interfaces using SQLC generated code
+# ✅ SQLC generated code is treated as infrastructure/external dependency
+# ✅ No circular dependencies between components
+# ✅ Test files excluded from architecture validation
+#
+# This configuration enforces:
+#
+# 1. DOMAIN ISOLATION
+#    - Domain entities cannot import infrastructure
+#    - Domain shared cannot import anything from project
+#    - Business logic stays pure and testable
+#
+# 2. DEPENDENCY INVERSION
+#    - Domain layer defines repository interfaces
+#    - Infrastructure implements those interfaces using SQLC
+#    - SQLC generated code provides type-safe database access
+#    - Domain depends on abstractions, not concretions
+#
+# 3. CLEAN ARCHITECTURE FLOW
+#    - Infrastructure → Application → Domain
+#    - SQLC generated code flows from Infrastructure → Application
+#    - Each layer can only depend on inner layers
+#    - No circular dependencies allowed
+#
+# 4. SHARED KERNEL
+#    - Common types and utilities available everywhere
+#    - Keeps shared concepts consistent across layers
+#
+# 5. CENTRALIZED ERROR MANAGEMENT
+#    - ALL error definitions MUST be in pkg/errors/
+#    - Enforces consistent error handling across libs and apps
+#    - NO direct errors.New() or fmt.Errorf() outside pkg/errors
+#    - Only error checking (errors.Is, errors.As) allowed elsewhere
+#
+# ENFORCEMENT RULES FOR ERROR CENTRALIZATION:
+# ✅ pkg/errors/ is the ONLY place allowed to import "errors" and "fmt" for error creation
+# ✅ All other components MUST use pkg/errors predefined error types
+# ✅ Only error checking functions (Is, As, Unwrap) allowed outside pkg/errors
+# ❌ Direct error creation banned: errors.New(), fmt.Errorf()
+# ❌ No domain/errors/ - consolidate to pkg/errors for all projects
+#
+# To customize for your project:
+# 1. Update component paths to match your directory structure
+# 2. Add/remove components as needed
+# 3. Adjust dependency rules for your architecture
+# 4. Set depOnAnyVendor to false for stricter vendor control
+# 5. NEVER remove pkg-errors dependency - centralized errors are mandatory

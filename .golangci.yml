@@ -1,0 +1,1151 @@
+# 🔥 ENTERPRISE-GRADE GOLANGCI-LINT CONFIGURATION
+# 🚨 MAXIMUM STRICTNESS - ZERO TOLERANCE FOR CODE QUALITY VIOLATIONS
+#
+# This configuration enforces the highest standards of Go code quality
+# Designed for mission-critical production systems with zero defect tolerance
+
+version: "2"
+
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+  go: "1.25"
+  env:
+    - GODEBUG=gotypesalias=1
+
+# 🔥 LINTERS - Maximum enforcement (essential set)
+linters:
+  enable:
+    # 🚨 TYPE SAFETY ENFORCEMENT
+    - forbidigo # Custom forbidden patterns
+    - govet # Suspicious constructs
+    - staticcheck # Advanced static analysis
+    - asasalint # Pass []any as any in variadic funcs (type safety)
+
+    # 🛡️ ERROR HANDLING
+    - errcheck # Unchecked errors
+    - errorlint # Error wrapping
+    - nilerr # Nil error returns
+
+    # 🔒 SECURITY
+    - gosec # Security audit
+    - copyloopvar # Loop variable copies
+    - bidichk # Dangerous unicode character sequences (security)
+    - noctx # HTTP context validation
+    - contextcheck # Non-inherited context usage detection
+    - containedctx # Context.Context field in struct detection
+    - wrapcheck # Error wrapping enforcement
+    - nilnesserr # Advanced nil error checking
+
+    # 📊 CODE QUALITY
+    - bodyclose # HTTP body closure
+    - cyclop # Cyclomatic complexity
+    - durationcheck # Duration multiplication safety
+    - exhaustive # Switch statement completeness
+    - gochecksumtype # Exhaustiveness checks on Go sum types
+    - funlen # Function length
+    - gocognit # Cognitive complexity
+    - gocyclo # Cyclomatic complexity
+    - goconst # Magic string detection (repeated constants)
+    - gocritic # Opinionated checks
+    - gomoddirectives # go.mod validation
+    - goprintffuncname # Printf function naming
+    - ineffassign # Ineffective assignments
+    - misspell # Spelling errors
+    - nakedret # Naked returns
+    - nestif # Deep nesting prevention
+    - nolintlint # Nolint comment validation
+    - prealloc # Slice preallocation
+    - revive # Comprehensive checks
+    - rowserrcheck # SQL rows error handling
+    - sqlclosecheck # SQL resource closure
+    - tparallel # Test parallelism
+    - testpackage # Separate _test package enforcement
+    - thelper # Test helpers must use t.Helper()
+    - testifylint # Testify usage validation
+    - unconvert # Unnecessary conversions
+    - unparam # Unused parameters
+    - unused # Unused code
+    - whitespace # Trailing whitespace
+    - godot # Comment punctuation
+
+    # 🚀 MODERN GO FEATURES
+    - fatcontext # Nested context detection
+    - intrange # Modern range loop opportunities
+    - perfsprint # Performance-focused sprintf replacements
+    - sloglint # Standard slog usage validation
+    - spancheck # OpenTelemetry span validation
+    - usestdlibvars # Standard library constant usage
+
+    # 🏗️ ARCHITECTURE & BEST PRACTICES
+    - gochecknoinits # No init functions (anti-pattern)
+    - gochecknoglobals # No global variables
+    - lll # Line length limits
+    - godox # TODO/FIXME/HACK detection
+    - mnd # Magic number detection (modern replacement for gomnd)
+
+    # 💀 DEAD CODE DETECTION
+    - unused # Comprehensive unused code detection (replaces deadcode, varcheck, structcheck)
+
+    # 🔄 DEPENDENCY & MODERNIZATION
+    - gomodguard # Dependency management linter
+    # depguard        # Import blocklist/allowlist (complementary to gomodguard) - DISABLED FOR NOW
+    - dupl # Code duplication detection
+    - dupword # Duplicate word detection
+    - modernize # Modern Go features
+    - nosprintfhostport # Detect fmt.Sprintf misuse for host:port URLs
+
+    # 🏗️ ADDITIONAL ARCHITECTURE & STRUCTURE ENFORCEMENT
+    - canonicalheader # HTTP header canonicalization
+    - decorder # Declaration order and count validation
+    - embeddedstructfieldcheck # Embedded struct field positioning
+    - funcorder # Function/method ordering
+    - ginkgolinter # Ginkgo test framework enforcement
+    - godoclint # Documentation practice checks
+    - grouper # Declaration grouping enforcement
+    - iface # Interface pollution detection
+    - importas # Import alias enforcement
+    - inamedparam # Interface unnamed parameter detection
+    - interfacebloat # Interface method count limits
+    - ireturn # Interface return pattern enforcement
+    - loggercheck # Structured logging validation
+    - maintidx # Maintainability index
+    - makezero # Slice zero-length declaration validation
+    - mirror # Bytes/strings usage patterns
+    - nonamedreturns # Named returns enforcement
+    - promlinter # Prometheus metrics naming
+    - protogetter # Proto getter usage
+    - recvcheck # Receiver consistency
+    - tagalign # Struct tag alignment
+    - tagliatelle # Struct tag validation
+    - testableexamples # Example testability
+    - unqueryvet # SELECT * in SQL queries detection
+    - usetesting # Testing package usage
+    - varnamelen # Variable name length validation
+    - wastedassign # Wasted assignment detection
+    - zerologlint # Zerolog usage validation
+
+# 🔧 LINTER SETTINGS - Maximum strictness
+linters-settings:
+  # 🚨 TYPE SAFETY & STRUCTURED LOGGING - ZERO TOLERANCE
+  forbidigo:
+    forbid:
+      # Type safety violations
+      - pattern: 'interface\{\}'
+        msg: "🚨 BANNED: interface{} erases type safety. Use specific types or generics"
+      - pattern: '\bany\b'
+        msg: "🚨 BANNED: any erases type safety. Use specific types or generics"
+      - pattern: 'panic\('
+        msg: "🚨 BANNED: panic() crashes programs. Return errors instead"
+
+      # 🚫 ERROR CENTRALIZATION - Direct error creation outside pkg/errors
+      - pattern: 'errors\.New\('
+        msg: "🚨 BANNED: Direct error creation. Use pkg/errors predefined types instead"
+        # Allow in pkg/errors only
+      - pattern: 'fmt\.Errorf\('
+        msg: "🚨 BANNED: Direct error formatting. Use pkg/errors predefined types instead"
+        # Allow in pkg/errors only
+      - pattern: 'error\(\s*{'
+        msg: "🚨 BANNED: Anonymous error structs. Use pkg/errors Error type instead"
+        # Allow in pkg/errors only
+
+      # Basic print statement bans
+      - pattern: '^fmt\.Print.*$'
+        msg: "🚨 BANNED: Do not commit print statements. Use structured logging instead"
+      - pattern: "^print$|^println$"
+        msg: "🚨 BANNED: Do not commit print statements. Use structured logging instead"
+      - pattern: 'fmt\.Printf.*'
+        msg: "🚨 BANNED: Use structured logging instead of fmt.Printf. Prefer log.Info() with fields"
+
+      # 🚫 COMMON ANTI-PATTERNS
+      - pattern: 'log\.Fatal'
+        msg: "🚨 BANNED: log.Fatal calls os.Exit, which can't be recovered from. Return errors instead"
+      - pattern: 'log\.Panic'
+        msg: "🚨 BANNED: log.Panic is equivalent to panic(). Use structured error returns instead"
+
+    exclude-godoc-examples: false
+    analyze-types: true
+
+  # Cyclomatic complexity
+  cyclop:
+    max-complexity: 10
+    package-average: 5.0
+    skip-tests: false
+
+  gocyclo:
+    min-complexity: 10
+
+  # Cognitive complexity
+  gocognit:
+    min-complexity: 10
+
+  # Function length
+  funlen:
+    lines: 50
+    statements: 30
+    ignore-comments: false
+
+  # Error handling
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+    # 🆕 Function-specific exclusions (smart defaults)
+    exclude-functions:
+      # Resource cleanup - errors in defer contexts are typically non-critical
+      - (io.Closer).Close
+      - (*os.File).Close
+      - (net.Conn).Close
+      - (*net.TCPConn).Close
+      - (*net.UDPConn).Close
+      - (*sql.DB).Close
+      - (*sql.Rows).Close
+      - (*sql.Stmt).Close
+
+      # Formatting operations - rarely fail and errors are usually non-critical
+      - fmt.Fprint
+      - fmt.Fprintf
+      - fmt.Fprintln
+      - fmt.Print
+      - fmt.Printf
+      - fmt.Println
+
+      # Buffer operations - bytes.Buffer operations never fail
+      - (*bytes.Buffer).Write
+      - (*bytes.Buffer).WriteByte
+      - (*bytes.Buffer).WriteRune
+      - (*bytes.Buffer).WriteString
+
+      # String builder operations - strings.Builder operations never fail
+      - (*strings.Builder).Write
+      - (*strings.Builder).WriteByte
+      - (*strings.Builder).WriteRune
+      - (*strings.Builder).WriteString
+
+  errorlint:
+    errorf: true
+    errorf-multi: true
+    asserts: true
+    comparison: true
+
+  # Security
+  gosec:
+    severity: medium
+    confidence: medium
+    includes:
+      # Enable most important security rules
+      - G101 # Hard coded credentials
+      - G102 # Bind to all interfaces
+      - G103 # Audit the use of unsafe block
+      - G104 # Audit errors not checked
+      - G107 # Url provided to HTTP request as taint input
+      - G108 # Profiling endpoint automatically exposed
+      - G109 # Potential Integer overflow
+      - G110 # Potential DoS vulnerability via decompression bomb
+      - G111 # Potential directory traversal
+      - G112 # Potential slowloris attack
+      - G114 # Use of net/http serve function that has no support for setting timeouts
+      - G115 # Potential integer overflow when converting between integer types
+      - G201 # SQL query construction using format string
+      - G202 # SQL query construction using string concatenation
+      - G203 # Use of unescaped data in HTML templates
+      - G204 # Audit use of command execution
+      - G301 # Poor file permissions used when creating a directory
+      - G302 # Poor file permissions used with chmod
+      - G304 # File path provided as taint input
+      - G305 # File traversal when extracting zip/tar archive
+      - G306 # Poor file permissions used when writing to a new file
+      - G307 # Poor file permissions used when creating a file with os.Create
+      - G401 # Detect the usage of MD5 or SHA1
+      - G402 # Look for bad TLS connection settings
+      - G403 # Ensure minimum RSA key length of 2048 bits
+      - G404 # Insecure random number source (rand)
+      - G405 # Detect the usage of DES or RC4
+      - G406 # Detect the usage of MD4 or RIPEMD160
+      - G501 # Import blocklist: crypto/md5
+      - G502 # Import blocklist: crypto/des
+      - G503 # Import blocklist: crypto/rc4
+      - G504 # Import blocklist: net/http/cgi
+      - G505 # Import blocklist: crypto/sha1
+      - G506 # Import blocklist: golang.org/x/crypto/md4
+      - G507 # Import blocklist: golang.org/x/crypto/ripemd160
+      - G601 # Implicit memory aliasing of items from a range statement
+      - G602 # Slice access out of bounds
+    excludes:
+      - G106 # Allow ssh.InsecureIgnoreHostKey for development environments
+    config:
+      global:
+        nosec: false
+        show-ignored: false
+        audit: false
+      G101:
+        pattern: "(?i)passwd|pass|password|pwd|secret|token|pw|apiKey|bearer|cred"
+        ignore_entropy: false
+        entropy_threshold: "80.0"
+        per_char_threshold: "3.0"
+        truncate: "32"
+      G104:
+        fmt:
+          - Fscanf
+      G301: "0750"
+      G302: "0600"
+      G306: "0600"
+
+  # Static analysis
+  staticcheck:
+    checks: ["all"]
+
+  stylecheck:
+    checks: ["all"]
+
+  # Go vet with MAXIMUM analyzers enabled
+  govet:
+    # Enable ALL available analyzers for maximum coverage
+    enable-all: true
+    # Note: when using enable-all, specific enables are not needed
+
+  # Go critic
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks: []
+    settings:
+      # Check for suspicious append result assignments
+      appendAssign: {}
+
+      # Check for too many blank identifiers
+      dogsled:
+        max-blank-identifiers: 2
+
+      # Check for errors not checked in type assertions
+      errcheck:
+        check-blank: true
+        check-type-assertions: true
+
+      # Check for hex literals with mixed case
+      hexLiteral:
+        allowedUpperCaseDigits: 0
+
+      # Check for functions with too many parameters
+      paramTypeCombine:
+        maxParams: 5
+
+      # Check for performance issues with range expressions
+      rangeExprCopy:
+        sizeThreshold: 512
+        skipTestFuncs: false
+
+      # Check for performance issues with range values
+      rangeValCopy:
+        sizeThreshold: 128
+        skipTestFuncs: false
+
+      # Check for ruleguard rules
+      ruleguard:
+        failOn: "dsl,import"
+
+      # Check for unneeded imports
+      unimport: {}
+
+  # Unused code
+  unused: {}
+
+  unparam:
+    check-exported: true
+
+  # Revive rules
+  revive:
+    severity: error
+    enable-all-rules: true
+    rules:
+      # 📏 FILE LENGTH ENFORCEMENT
+      - name: file-length-limit
+        severity: error
+        arguments:
+          - max: 400
+
+  # Nesting complexity
+  nestif:
+    min-complexity: 4
+
+  # Exhaustiveness
+  exhaustive:
+    check:
+      - switch
+      - map
+    default-signifies-exhaustive: false
+    ignore-enum-members: "Example.+"
+    ignore-enum-types: "Example.+"
+    package-scope-only: false
+    explicit-exhaustive-switch: false
+    explicit-exhaustive-map: false
+    default-case-required: false
+
+  # Preallocation
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: false
+
+  # Error wrapping
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - .Wrap(
+      - .Wrapf(
+    ignoreSigRegexps:
+      - \.New.*Error\(
+    ignorePackageGlobs:
+      - encoding/*
+      - github.com/pkg/*
+
+  # Comment punctuation
+  godot:
+    scope: declarations
+    exclude: []
+    capital: false
+
+  # 🏗️ ARCHITECTURE ENFORCEMENT
+  gochecknoinits: {}
+
+  gochecknoglobals:
+    # Allow global variables only in main packages and tests
+    exclude-files:
+      - "main\\.go$"
+      - ".*_test\\.go$"
+
+  # Line length limits
+  lll:
+    line-length: 120
+    tab-width: 4
+
+  # 📝 TODO/FIXME/HACK detection (Enterprise-grade)
+  godox:
+    keywords:
+      # Standard markers
+      - TODO
+      - FIXME
+      - HACK
+      - BUG
+      - XXX
+
+      # Enterprise-specific markers
+      - SECURITY # Security-related todos
+      - PERFORMANCE # Performance optimizations needed
+      - DEBT # Technical debt markers
+      - REVIEW # Code review follow-ups
+      - REFACTOR # Refactoring needed
+      - TEST # Missing tests
+      - DEPRECATED # Deprecated code markers
+
+  # Magic number detection (modern replacement for gomnd)
+  mnd:
+    # Ignored numbers (common constants that don't need extraction)
+    ignored-numbers:
+      - "0"
+      - "1"
+      - "2"
+      - "10"
+      - "100"
+      - "1000"
+    # Ignored functions where numbers are acceptable
+    ignored-functions:
+      - "strconv.ParseInt"
+      - "strconv.ParseFloat"
+      - "time.Sleep"
+      - "time.Duration"
+
+  # Spelling errors
+  misspell:
+    locale: US
+    ignore-rules:
+      - someword
+    extra-words:
+      - typo: "iff"
+        correction: "if"
+      - typo: "cancelation"
+        correction: "cancellation"
+    mode: restricted
+
+  # 🚀 MODERN GO LINTER SETTINGS
+
+  # Nested context detection
+  fatcontext:
+    check-struct-pointers: true
+    ignore-len: 3
+
+  # Modern range loop opportunities
+  intrange:
+    skip-generated-code: true
+
+  # Performance sprintf replacements
+  perfsprint:
+    int-conversion: true
+    err-error: true
+    sprintf1: true
+    strconcat: true
+
+  # Standard slog usage validation
+  sloglint:
+    no-mixed-args: true
+    kv-only: false
+    attr-only: false
+    no-global: "all"
+    context: "all"
+    static-msg: true
+    msg-style: ""
+    no-raw-keys: true
+    key-naming-case: ""
+    forbidden-keys:
+      - time
+      - level
+      - msg
+      - source
+    args-on-sep-lines: false
+
+  # OpenTelemetry span validation
+  spancheck:
+    checks:
+      - end
+      - record-error
+      - set-status
+    ignore-check-signatures:
+      - "telemetry.Record"
+      - "telemetry.RecordError"
+    extra-start-span-signatures:
+      - "github.com/larsartmann/uniflow/telemetry.Start:opentelemetry"
+
+  # Standard library constant usage
+  usestdlibvars:
+    http-method: true
+    http-status-code: true
+    time-weekday: true
+    time-month: true
+    time-layout: true
+    crypto-hash: true
+    default-rpc-path: true
+
+  # Advanced nil error checking
+  nilnesserr:
+    check-len: true
+    check-cap: true
+
+  # 🔄 DEPENDENCY & MODERNIZATION SETTINGS
+
+  # Dependency management linter - CRITICAL SECURITY & ARCHITECTURE ENFORCEMENT
+  gomodguard:
+    allowed:
+      modules:
+        # Approved Go ecosystem
+        - golang.org/x/*
+        - google.golang.org/*
+        - go.opentelemetry.io/otel/*
+        - github.com/a-h/templ
+        - github.com/charmbracelet/*
+        - github.com/gin-gonic/gin
+        - github.com/spf13/viper
+        - github.com/sqlc-dev/sqlc
+        - github.com/samber/lo
+        - github.com/samber/do
+        - github.com/maypok86/otter/v2
+        - github.com/onsi/ginkgo/v2
+        - github.com/google/uuid
+        - github.com/klauspost/cpuid/v2
+        - github.com/cockroachdb/errors
+        - github.com/larsartmann/uniflow
+        - github.com/go-faster/yaml
+        - github.com/dominikbraun/graph
+        - github.com/hashicorp/raft
+        - github.com/failsafe-go/failsafe-go
+        - github.com/mennanov/limiters
+        - github.com/cenkalti/backoff/v4
+        - github.com/casbin/casbin
+        - github.com/govalues/money
+        - github.com/shopspring/decimal
+        - golang.org/x/text/message
+      domains:
+        - golang.org
+        - google.golang.org
+        - go.opentelemetry.io
+        - gopkg.in
+
+    blocked:
+      modules:
+        # 🚨 CRITICAL SECURITY BANS - CVEs & Vulnerabilities
+        - github.com/dgrijalva/jwt-go:
+            reason: "CRITICAL SECURITY: CVE-2020-26160 - deprecated jwt-go library with known vulnerabilities"
+            recommendations:
+              - github.com/golang-jwt/jwt/v5
+        - github.com/square/go-jose/v3:
+            reason: "CRITICAL SECURITY: Multiple CVEs in go-jose v3 and below - only v4+ has security fixes"
+            recommendations:
+              - github.com/go-jose/go-jose/v4
+        - crypto/md5:
+            reason: "CRITICAL SECURITY: MD5 is broken for cryptographic purposes due to collision attacks"
+            recommendations:
+              - crypto/sha256
+        - crypto/sha1:
+            reason: "CRITICAL SECURITY: SHA-1 is cryptographically broken with practical collision attacks"
+            recommendations:
+              - crypto/sha256
+        - math/rand:
+            reason: "CRITICAL SECURITY: Use crypto/rand for all cryptographic random number generation"
+            recommendations:
+              - crypto/rand
+
+        # 🚨 DEPRECATED/ARCHIVED BANS - Unmaintained libraries
+        - github.com/featurebasedb/featurebase:
+            reason: "CRITICAL: Repository archived February 2024 - unmaintained analytical database with data integrity risks"
+            recommendations:
+              - github.com/ClickHouse/clickhouse-go
+        - github.com/mitchellh/go-homedir:
+            reason: "CRITICAL: Repository archived July 2024 - unmaintained security risk. Use os.UserHomeDir() instead"
+            recommendations:
+              - os
+        - github.com/mitchellh/mapstructure:
+            reason: "CRITICAL: Repository archived July 2024 - unmaintained security risk. Use standard library JSON or modern alternatives"
+            recommendations:
+              - encoding/json
+        - github.com/russross/blackfriday:
+            reason: "CRITICAL: Last release Nov 2020 (5+ years old), 187 open issues, unmaintained. Major security and compatibility risk"
+            recommendations:
+              - github.com/gomarkdown/markdown
+        - github.com/blang/vfs:
+            reason: "CRITICAL: Inactive since 2018 - unmaintained library with security risks"
+            recommendations:
+              - io/fs
+        - github.com/siddontang/ledisdb:
+            reason: "CRITICAL: Project abandoned for 3+ years - no updates or security patches"
+            recommendations:
+              - github.com/go-redis/redis/v8
+        - github.com/gorgonia/gorgonia:
+            reason: "CRITICAL: Abandoned project - last update Aug 2024, 114 open issues, no GPU acceleration"
+            recommendations:
+              - github.com/klauspost/cpuid/v2
+
+        # 🚀 PERFORMANCE BANS - Superior alternatives available
+        - github.com/patrickmn/go-cache:
+            reason: "Otter v2 provides 11x better performance (141M vs 12M ops/s) with superior hit rates (99.5% vs 92%)"
+            recommendations:
+              - github.com/maypok86/otter/v2
+        - github.com/dgraph-io/ristretto/v2:
+            reason: "ristretto has critical hit rate issues (85% vs 99.5%) and poor performance despite its popularity"
+            recommendations:
+              - github.com/maypok86/otter/v2
+        - github.com/allegro/bigcache/v3:
+            reason: "Otter v2 offers 300x better performance (141M vs 441ns ops) with modern generics and superior eviction policies"
+            recommendations:
+              - github.com/maypok86/otter/v2
+        - github.com/coocood/freecache:
+            reason: "Otter v2 provides better performance, modern API, and proven production track record over freecache"
+            recommendations:
+              - github.com/maypok86/otter/v2
+        - github.com/hashicorp/golang-lru/v2:
+            reason: "Otter v2 provides advanced W-TinyLFU eviction vs simple LRU, with dramatically better performance and features"
+            recommendations:
+              - github.com/maypok86/otter/v2
+        - github.com/satori/go.uuid:
+            reason: "Poor performance - 497ns vs google/uuid 108ns (4.6x slower)"
+            recommendations:
+              - github.com/google/uuid
+        - github.com/golang/protobuf:
+            reason: "Use google.golang.org/protobuf instead"
+            recommendations:
+              - google.golang.org/protobuf
+
+        # 🏗️ ARCHITECTURAL BANS - Company standards & best practices
+        - github.com/onsi/gomega:
+            reason: "Use Ginkgo's built-in assertions instead of Gomega dependencies"
+            recommendations:
+              - github.com/onsi/ginkgo/v2
+        - github.com/cucumber/godog:
+            reason: "Prefer Ginkgo for BDD-style testing in Go"
+            recommendations:
+              - github.com/onsi/ginkgo/v2
+        - github.com/gorilla/mux:
+            reason: "Gin provides better performance, middleware ecosystem, and integrated HTTP features"
+            recommendations:
+              - github.com/gin-gonic/gin
+        - github.com/labstack/echo/v4:
+            reason: "Gin has better community adoption and middleware ecosystem"
+            recommendations:
+              - github.com/gin-gonic/gin
+        - github.com/kelseyhightower/envconfig:
+            reason: "Viper provides more comprehensive configuration management with multiple sources"
+            recommendations:
+              - github.com/spf13/viper
+        - gorm.io/gorm:
+            reason: "Use sqlc for type-safe SQL without ORM magic"
+            recommendations:
+              - github.com/sqlc-dev/sqlc
+        - github.com/oklog/run:
+            reason: "samber/do provides comprehensive dependency injection vs simple goroutine coordination"
+            recommendations:
+              - github.com/samber/do
+        - github.com/google/wire:
+            reason: "samber/do provides simpler dependency injection with better runtime flexibility"
+            recommendations:
+              - github.com/samber/do
+        - github.com/urfave/cli/v2:
+            reason: "fang provides better integration with cobra ecosystem and battery-included features"
+            recommendations:
+              - github.com/charmbracelet/fang
+        - github.com/pkg/errors:
+            reason: "Use cockroachdb/errors or our LarsArtmann/uniflow for better error handling"
+            recommendations:
+              - github.com/larsartmann/uniflow
+
+        # 🌐 OBSERVABILITY BANS - OpenTelemetry standardization
+        - github.com/prometheus/client_golang:
+            reason: "Use OpenTelemetry metrics exporter for unified observability instead of separate Prometheus client"
+            recommendations:
+              - go.opentelemetry.io/otel/exporters/prometheus
+        - github.com/uber/jaeger-client-go:
+            reason: "Use OpenTelemetry OTLP exporter for standardized tracing instead of Jaeger-specific client"
+            recommendations:
+              - go.opentelemetry.io/otel/exporters/otlp/otlptrace
+        - github.com/openzipkin/zipkin-go:
+            reason: "Use OpenTelemetry tracing exporters instead of Zipkin-specific implementations"
+            recommendations:
+              - go.opentelemetry.io/otel/exporters/zipkin
+        - github.com/opentracing/opentracing-go:
+            reason: "OpenTracing is deprecated - migrate to OpenTelemetry for CNCF standard observability"
+            recommendations:
+              - go.opentelemetry.io/otel
+        - github.com/sirupsen/logrus:
+            reason: "Use structured logging with OpenTelemetry or standard library logger"
+            recommendations:
+              - go.opentelemetry.io/otel
+        - github.com/rs/zerolog:
+            reason: "Use charmbracelet/fang for better CLI logging integration or OpenTelemetry for observability"
+            recommendations:
+              - github.com/charmbracelet/fang
+        - go.uber.org/zap:
+            reason: "Use charmbracelet/fang for better CLI logging integration or OpenTelemetry for observability"
+            recommendations:
+              - github.com/charmbracelet/fang
+
+    local-replace-directives: true
+
+  # Code duplication detection
+  dupl:
+    threshold: 150 # Higher threshold to reduce noise
+
+  # Duplicate word detection
+  dupword:
+    keywords:
+      - "TODO"
+      - "FIXME"
+      - "NOTE"
+      - "WARNING"
+    ignore:
+      - "0C0C" # Common hex value that might be detected
+    comments-only: true
+
+  # Magic string/number detection
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+    match-constant: true
+    numbers: true
+    min: 2
+    max: 1000
+    ignore-calls: false
+    ignore-string-values:
+      - "foo.+"
+    find-duplicates: true
+    eval-const-expressions: true
+
+  # Modern Go features linter
+  modernize:
+    disable:
+      - omitzero # Can make code less explicit
+      - simplify-range # Sometimes reduces readability
+
+  # 🆕 NEW ENTERPRISE LINTERS (v2.4.0)
+
+  # Import blocklist/allowlist (complementary to gomodguard)
+  depguard:
+    rules:
+      main:
+        # Allow mode for non-test files
+        list-mode: lax # More lenient matching
+        deny:
+          # Only block these critical security vulnerabilities
+          - pkg: "github.com/dgrijalva/jwt-go"
+            desc: "CRITICAL SECURITY: CVE-2020-26160 - deprecated jwt-go library with known vulnerabilities"
+      tests:
+        # Allow mode for test files
+        list-mode: lax
+        deny: []
+
+  # Declaration order and count validation
+  decorder:
+    dec-order:
+      - type
+      - const
+      - var
+      - func
+    ignore-underscore-vars: false
+    disable-dec-order-check: false
+    disable-init-func-first-check: false
+    disable-dec-num-check: false
+
+  # Embedded struct field positioning
+  embeddedstructfieldcheck:
+    empty-line: true
+    forbid-mutex: true
+
+  # Function/method ordering
+  funcorder:
+    constructor: true
+    struct-method: true
+    alphabetical: true
+
+  # Ginkgo test framework enforcement
+  ginkgolinter:
+    suppress-len-assertion: false
+    suppress-nil-assertion: false
+    suppress-err-assertion: false
+    forbid-focus-container: true
+    allow-havelen-zero: false
+    force-expect-to: true
+    validate-async-intervals: true
+    forbid-spec-pollution: true
+
+  # Documentation practice checks
+  godoclint:
+    default: all # Enable all documentation rules
+
+  # Declaration grouping enforcement
+  grouper:
+    const-require-single-const: true
+    const-require-grouping: true
+    import-require-single-import: true
+    import-require-grouping: true
+    type-require-single-type: true
+    type-require-grouping: true
+    var-require-single-var: true
+    var-require-grouping: true
+
+  # Interface pollution detection
+  iface:
+    enable:
+      - identical
+      - unused
+      - opaque
+      - unexported
+
+  # Import alias enforcement
+  importas:
+    no-unaliased: true
+    no-extra-aliases: true
+    alias:
+      # Standard aliases for commonly used packages
+      - pkg: github.com/onsi/ginkgo/v2
+        alias: ginkgo
+      - pkg: github.com/onsi/gomega
+        alias: gomega
+
+  # Interface unnamed parameter detection
+  inamedparam:
+    skip-single-param: false
+
+  # Interface method count limits
+  interfacebloat:
+    max: 10 # Limit interfaces to 10 methods max
+
+  # Interface return pattern enforcement (Accept Interfaces, Return Concrete Types)
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+
+  # Structured logging validation
+  loggercheck:
+    kitlog: false
+    klog: false
+    logr: false
+    slog: true
+    zap: false
+    require-string-key: true
+    no-printf-like: true
+
+  # Maintainability index
+  maintidx:
+    under: 50 # Flag functions with maintainability index below 50
+
+  # Slice zero-length declaration validation
+  makezero:
+    always: true
+
+  # Bytes/strings usage patterns
+  mirror:
+    # No specific settings available
+
+  # Named returns enforcement
+  nonamedreturns:
+    report-error-in-defer: true
+
+  # Prometheus metrics naming
+  promlinter:
+    strict: true
+    disabled-linters:
+      - Help
+      - MetricUnits
+      - Counter
+      - HistogramSummaryReserved
+      - MetricTypeInName
+      - ReservedChars
+      - CamelCase
+      - UnitAbbreviations
+
+  # Proto getter usage
+  protogetter:
+    skip-any-generated: true
+
+  # Receiver consistency
+  recvcheck:
+    disable-builtin: false
+
+  # Struct tag alignment
+  tagalign:
+    align: true
+    sort: true
+    order:
+      - json
+      - yaml
+      - yml
+      - toml
+      - mapstructure
+      - binding
+      - validate
+      - db
+      - gorm
+    strict: true
+
+  # Struct tag validation
+  tagliatelle:
+    case:
+      rules:
+        json: camel
+        yaml: camel
+        xml: camel
+        toml: camel
+        bson: camel
+        avro: snake
+        mapstructure: kebab
+        env: upperSnake
+        envconfig: upperSnake
+    use-field-name: true
+
+  # Example testability
+  testableexamples:
+    # No settings available
+
+  # SELECT * in SQL queries detection
+  unqueryvet:
+    check-sql-builders: true
+    allowed-patterns:
+      - "SELECT \\* FROM information_schema\\..*"
+      - "SELECT \\* FROM pg_catalog\\..*"
+      - "SELECT COUNT\\(\\*\\)"
+      - "SELECT MAX\\(\\*\\)"
+      - "SELECT MIN\\(\\*\\)"
+
+  # Testing package usage
+  usetesting:
+    os-create-temp: false
+    os-mkdir-temp: false
+    os-setenv: false
+    os-temp-dir: false
+    os-chdir: false
+    context-background: true
+    context-todo: true
+
+  # Variable name length validation
+  varnamelen:
+    max-distance: 5
+    min-name-length: 3
+    check-receiver: true
+    check-return: true
+    check-type-param: true
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+    ignore-names:
+      - err
+      - ok
+      - id
+      - ctx
+      - wg
+      - db
+    ignore-decls:
+      - c echo.Context
+      - t testing.T
+      - f *foo.Bar
+      - e error
+      - i int
+      - const C
+      - T any
+
+  # Wasted assignment detection
+  wastedassign:
+    # No settings available
+
+  # Zerolog usage validation
+  zerologlint:
+    # No settings available
+
+  # Unicode security - dangerous character sequences
+  bidichk:
+    left-to-right-embedding: true
+    right-to-left-embedding: true
+    pop-directional-formatting: true
+    left-to-right-override: true
+    right-to-left-override: true
+    left-to-right-isolate: true
+    right-to-left-isolate: true
+    first-strong-isolate: true
+    pop-directional-isolate: true
+
+  # Type safety - variadic function []any misuse
+  asasalint:
+    exclude:
+      - ".*\\.pb\\.go$" # Exclude protobuf generated files
+      - ".*_gen\\.go$" # Exclude generated files
+    use-builtin-exclusions: true # Enable builtin exclusions for fmt, log, etc.
+
+  # Sum type exhaustiveness (modern type pattern enforcement)
+  gochecksumtype:
+    exhaustive: true
+    default-signifies-exhaustive: false
+
+  # Context handling improvements
+  contextcheck:
+    check-all: true
+
+  containedctx:
+    check-all: true
+
+  # Testing quality enforcement
+  testpackage:
+    skip-regexp: ".*_internal_test\\.go$"
+
+  # Parallel testing
+  paralleltest:
+    ignore-missing: false
+    ignore-missing-subtests: true
+
+  thelper:
+    test:
+      first: true
+      name: true
+      begin: true
+    benchmark:
+      first: true
+      name: true
+      begin: true
+    tb:
+      first: true
+      name: true
+      begin: true
+
+  testifylint:
+    enable-all: true
+    bool-compare:
+      ignore-custom-types: true
+    expected-actual:
+      pattern: ^expected
+    formatter:
+      check-format-string: true
+      require-f-funcs: true
+      require-string-msg: true
+    go-require:
+      ignore-http-handlers: true
+    require-error:
+      fn-pattern: ^(Errorf?|NoErrorf?)$
+    suite-extra-assert-call:
+      mode: remove
+
+# 🚨 ISSUES CONFIGURATION
+# Note: Formatters (gofumpt, goimports) should be run separately via 'just fix'
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+  exclude-use-default: false
+  exclude-rules-use-default: false
+
+  # Common false positives preset
+  exclude-dir-use-default: false
+
+  exclude-rules:
+    # Allow panics only in main/cmd
+    - path: ^(main\.go|cmd/.+)$
+      linters:
+        - forbidigo
+      text: "panic"
+
+    # Allow longer functions in tests
+    - path: _test\.go
+      linters:
+        - funlen
+        - gocognit
+        - gocyclo
+        - cyclop
+
+    # 📏 File length exemptions for generated files
+    - path: ".*_gen\\.go$|.*\\.pb\\.go$|.*_templ\\.go$|.*\\.sql\\.go$|internal/db/.*\\.go$"
+      linters:
+        - revive
+      text: "file-length-limit"
+
+    # Allow longer test files for comprehensive test suites
+    - path: "_test\\.go$"
+      linters:
+        - revive
+      text: "file-length-limit"
+
+    # Allow higher code duplication in tests (common test patterns)
+    - path: _test\.go
+      linters:
+        - dupl
+
+    # Allow modernize suggestions in generated code
+    - path: ".*_gen\\.go$|.*\\.pb\\.go$|.*_templ\\.go$"
+      linters:
+        - modernize
+
+  exclude-dirs:
+    - vendor
+    - node_modules # Frontend dependencies
+    - testdata
+    - examples
+    - docs
+    - generated
+    - mocks
+    - .git
+    - .github
+
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*_generated\\.go$"
+    - ".*_gen\\.go$"
+    - "mock_.*\\.go$"
+
+# 📊 OUTPUT CONFIGURATION
+output:
+  print-issued-lines: true
+  print-linter-name: true
+  sort-results: true
