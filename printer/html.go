@@ -127,7 +127,13 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	return nil
 }
 
-func (*htmlprinter) PrintFooter() error { return nil }
+func (p *htmlprinter) PrintFooter() error {
+	_, err := fmt.Fprint(p.w, `
+</body>
+</html>
+`)
+	return err
+}
 
 func findLineBeg(file []byte, index int) int {
 	for i := index; i >= 0; i-- {

@@ -22,28 +22,10 @@ func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid 
 	return UnmarshalStringToEnum(data, enumType, isValid, fmt.Sprintf("invalid %s: %%s", typeName))
 }
 
-// EnumUnmarshaler is a generic type that provides UnmarshalJSON for enum types
-type EnumUnmarshaler[T ~string] struct {
-	enumType func(string) T
-	isValid  func(T) bool
-	typeName string
-}
-
-// NewEnumUnmarshaler creates a new EnumUnmarshaler for the given enum type
-func NewEnumUnmarshaler[T ~string](enumType func(string) T, isValid func(T) bool, typeName string) *EnumUnmarshaler[T] {
-	return &EnumUnmarshaler[T]{
-		enumType: enumType,
-		isValid:  isValid,
-		typeName: typeName,
+// MarshalEnumJSON is a generic helper for implementing MarshalJSON for enum types
+func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) ([]byte, error) {
+	if !isValid(value) {
+		return nil, fmt.Errorf("invalid %s: %s", typeName, value)
 	}
-}
-
-// UnmarshalJSON implements json.Unmarshaler for the enum type
-func (e *EnumUnmarshaler[T]) UnmarshalJSON(data []byte, ptr *T) error {
-	candidate, err := UnmarshalEnumJSON(data, e.enumType, e.isValid, e.typeName)
-	if err != nil {
-		return err
-	}
-	*ptr = candidate
-	return nil
+	return fmt.Appendf(nil, `"%s"`, value), nil
 }

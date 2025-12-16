@@ -90,11 +90,17 @@ func TestCLIIOWriters(t *testing.T) {
 	os.Stdout = w
 	defer func() {
 		os.Stdout = originalStdout
-		w.Close()
+		if err := w.Close(); err != nil {
+			t.Logf("Error closing pipe writer: %v", err)
+		}
 	}()
 
 	testData := []byte("test to stdout")
-	go stdout.Write(testData)
+	go func() {
+		if _, err := stdout.Write(testData); err != nil {
+			t.Logf("Error writing to stdout: %v", err)
+		}
+	}()
 
 	// Read what was written
 	buf := make([]byte, 100)

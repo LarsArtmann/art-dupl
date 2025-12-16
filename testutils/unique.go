@@ -2,7 +2,6 @@ package testutils
 
 import (
 	"math/rand"
-	"time"
 )
 
 // UniqueTestHelper provides unique function for test data generation
@@ -12,7 +11,7 @@ func UniqueTestHelper() string {
 
 // generateRandomSuffix generates a random suffix for uniqueness
 func generateRandomSuffix() string {
-	rand.Seed(time.Now().UnixNano())
+	// As of Go 1.20, rand is automatically seeded, no need to call Seed()
 	return string(rune('a' + rand.Intn(26)))
 }
 

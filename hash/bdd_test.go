@@ -242,17 +242,6 @@ func createTestNode(filename string, start, end, nodeType int) *syntax.Node {
 	}
 }
 
-func createTestNodeWithPositions(filename string, pos, length, end, nodeType int) *syntax.Node {
-	return &syntax.Node{
-		Type:     nodeType,
-		Filename: filename,
-		Pos:      pos,
-		End:      end,
-		Children: nil,
-		Owns:     0,
-	}
-}
-
 func createNodesFromSequence(filename string, startPos int, sequence []int) []*syntax.Node {
 	nodes := make([]*syntax.Node, len(sequence))
 	for i, nodeType := range sequence {

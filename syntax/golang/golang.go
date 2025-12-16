@@ -84,7 +84,10 @@ func (t *transformer) addWithNilCheck(o *syntax.Node, node ast.Node) {
 	if node != nil {
 		defer func() {
 			if r := recover(); r != nil {
-				// Invalid node found, skip it
+				// Intentionally ignore panics from invalid nodes
+				// This can happen with malformed AST nodes during transformation
+				// We use the recovered value to silence the linter
+				_ = r // Explicitly ignore the recovered value
 			}
 		}()
 		o.AddChildren(t.trans(node))

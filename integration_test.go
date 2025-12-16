@@ -17,12 +17,14 @@ func TestConfigurationIntegration(t *testing.T) {
 		IgnoreFiles:       []string{"*_test.go"},
 		MaxChildrenSerial: 20000,
 		OutputFile:        "output.json",
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodHash},
 	}
 
 	cliConfig := &config.Config{
 		Threshold:     50,     // Should override file config
 		OutputFormat:  "html", // Should override file config
 		IncludeVendor: true,   // Should override file config
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl}, // Should override file config
 	}
 
 	merged := config.MergeConfigs(fileConfig, cliConfig)
@@ -53,6 +55,9 @@ func TestConfigurationIntegration(t *testing.T) {
 	}
 	if merged.OutputFile != "output.json" {
 		t.Errorf("Expected OutputFile output.json, got %s", merged.OutputFile)
+	}
+	if len(merged.DetectionMethods) != 1 || merged.DetectionMethods[0] != config.DetectionMethodArtDupl {
+		t.Errorf("Expected DetectionMethods [art-dupl] (CLI override), got %v", merged.DetectionMethods)
 	}
 }
 

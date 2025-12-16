@@ -1,9 +1,5 @@
 package config
 
-import (
-	"fmt"
-)
-
 // OutputFormat represents the supported output formats with type safety
 type OutputFormat string
 
@@ -31,10 +27,9 @@ func (of OutputFormat) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler for OutputFormat
 func (of OutputFormat) MarshalJSON() ([]byte, error) {
-	if !of.IsValid() {
-		return nil, fmt.Errorf("invalid output format: %s", of)
-	}
-	return fmt.Appendf(nil, `"%s"`, of), nil
+	// Explicitly type isValid function
+	var isValid = func(o OutputFormat) bool { return o.IsValid() }
+	return MarshalEnumJSON(of, isValid, "output format")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for OutputFormat
@@ -76,10 +71,9 @@ func (sc SortCriteria) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler for SortCriteria
 func (sc SortCriteria) MarshalJSON() ([]byte, error) {
-	if !sc.IsValid() {
-		return nil, fmt.Errorf("invalid sort criteria: %s", sc)
-	}
-	return fmt.Appendf(nil, `"%s"`, sc), nil
+	// Explicitly type isValid function
+	var isValid = func(s SortCriteria) bool { return s.IsValid() }
+	return MarshalEnumJSON(sc, isValid, "sort criteria")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for SortCriteria

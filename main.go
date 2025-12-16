@@ -53,27 +53,54 @@ Examples:
 
 	// Enhanced error handler with context-aware suggestions
 	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
-		fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err)
+		if _, err := fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err); err != nil {
+			// Can't write the error, continue anyway
+			_ = err // Explicitly ignore error
+		}
 
 		// Provide context-aware suggestions based on error type
 		switch {
 		case fmt.Sprint(err) == "flag: help requested":
-			fmt.Fprintf(w, "💡 Use examples below to get started:\n\n")
-			fmt.Fprintf(w, "  art-dupl                    # Analyze current directory\n")
-			fmt.Fprintf(w, "  art-dupl -t 50 ./src        # Higher threshold for larger clones\n")
-			fmt.Fprintf(w, "  art-dupl --json -t 20 . | jq # JSON output with post-processing\n")
-			fmt.Fprintf(w, "  art-dupl --all --output-dir ./reports # Generate all formats\n")
+			if _, err := fmt.Fprintf(w, "💡 Use examples below to get started:\n\n"); err != nil {
+				// Can't write help, continue anyway
+				_ = err // Explicitly ignore error
+			}
+			if _, err := fmt.Fprintf(w, "  art-dupl                    # Analyze current directory\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
+			if _, err := fmt.Fprintf(w, "  art-dupl -t 50 ./src        # Higher threshold for larger clones\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
+			if _, err := fmt.Fprintf(w, "  art-dupl --json -t 20 . | jq # JSON output with post-processing\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
+			if _, err := fmt.Fprintf(w, "  art-dupl --all --output-dir ./reports # Generate all formats\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
 		default:
-			fmt.Fprintf(w, "Quick Fix: Check file paths and permissions\n")
-			fmt.Fprintf(w, "Get Help: art-dupl --help\n")
+			if _, err := fmt.Fprintf(w, "Quick Fix: Check file paths and permissions\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
+			if _, err := fmt.Fprintf(w, "Get Help: art-dupl --help\n"); err != nil {
+				// Can't write help examples
+				_ = err // Explicitly ignore error
+			}
 		}
-		fmt.Fprintf(w, "\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n")
+		if _, err := fmt.Fprintf(w, "\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n"); err != nil {
+			// Can't write final message
+			_ = err // Explicitly ignore error
+		}
 	}
 
 	// Enable fang features for better CLI experience
 	options := []fang.Option{
 		fang.WithVersion(GetVersion()),
-		fang.WithTheme(fang.DefaultTheme(true)), // Auto-detect dark/light theme
+		fang.WithColorSchemeFunc(fang.DefaultColorScheme), // Auto-detect dark/light theme
 		fang.WithErrorHandler(errorHandler),
 	}
 

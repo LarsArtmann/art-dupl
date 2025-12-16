@@ -60,7 +60,6 @@ var (
 	jsonFlag      = flag.Bool("json", false, "output structured JSON format with metadata and statistics")
 	plumbing      = flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration")
 	sortBy        = flag.String("sort", "size", "sort clone groups by: size, occurrence, hash, total-tokens")
-	paths         []string
 )
 
 const (
@@ -172,9 +171,9 @@ func Run() int {
 	}
 
 	// Update global variables with merged config (for compatibility with existing code)
-	paths = mergedConfig.Paths
 	vendor = &mergedConfig.IncludeVendor
-	// For verbose and threshold, use values from mergedConfig
+	threshold = &mergedConfig.Threshold  // Also update global threshold
+	// For verbose and files, use values from mergedConfig
 	// (these will be used by code that expects global variables)
 	files = &mergedConfig.FilesFromStdin
 
@@ -378,12 +377,12 @@ func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Confi
 }
 
 // buildSuffixTree builds a suffix tree from provided paths and returns tree, data, and file count
-func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+func buildSuffixTree(paths []string, verbose bool, filesFromStdin bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
 	}
 	
-	schan, filesCountChan := job.Parse(filesFeedFromPaths(paths))
+	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin))
 	t, data, done := job.BuildTree(schan)
 	<-done
 
@@ -402,7 +401,7 @@ func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, []*syntax
 
 // executeAnalysis runs the core duplicate analysis logic
 func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.Match, int, error) {
-	t, data, filesCount, err := buildSuffixTree(paths, mergedConfig.Verbose)
+	t, data, filesCount, err := buildSuffixTree(paths, mergedConfig.Verbose, mergedConfig.FilesFromStdin)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -411,11 +410,6 @@ func executeAnalysis(mergedConfig *config.Config, paths []string) (chan syntax.M
 	duplChan := createDuplChannel(mergedConfig, data, t, mergedConfig.Verbose)
 
 	return duplChan, filesCount, nil
-}
-
-// filesFeedFromPaths creates a channel of file paths to process from given paths
-func filesFeedFromPaths(paths []string) chan string {
-	return filesFeedWithOptions(paths, false)
 }
 
 // filesFeedWithOptions creates a channel of file paths with options
@@ -433,11 +427,6 @@ func filesFeedWithOptions(paths []string, fromStdin bool) chan string {
 		return fchan
 	}
 	return crawlPaths(paths)
-}
-
-// filesFeed creates a channel of file paths to process
-func filesFeed() chan string {
-	return filesFeedFromPaths(paths)
 }
 
 // crawlPaths walks paths and returns a channel of Go files
@@ -547,6 +536,11 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			}
 			return err
 		}
+		// Debug: Print loaded config
+		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Loaded file config: threshold=%d, outputFormat=%s\n", 
+			fileConfig.Threshold, fileConfig.OutputFormat); err != nil {
+			return err
+		}
 	}
 
 	// Create CLI config from command line arguments
@@ -623,6 +617,15 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	// Merge file and CLI configurations
 	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
+	
+	// Debug: Print merged config
+	// Debug output removed for production builds
+	if false {
+		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Merged config: threshold=%d, outputFormat=%s\n", 
+			mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
+			return err
+		}
+	}
 
 	// Validate merged configuration
 	if err = config.ValidateConfig(mergedConfig); err != nil {
@@ -653,7 +656,6 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	// Update global variables with merged config (for compatibility with existing code)
-	paths = mergedConfig.Paths
 	// Note: vendor, verbose, threshold, files global variables are not used in this function
 	// as we now use the local variables instead
 
@@ -736,7 +738,10 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 	// Run analysis for each detection method
 	for _, method := range detectionMethods {
 		if verbose {
-			fmt.Fprintf(cli.Stderr(), "Running %s detection method...\n", method)
+			if _, err := fmt.Fprintf(cli.Stderr(), "Running %s detection method...\n", method); err != nil {
+				// Continue even if verbose output fails
+				_ = err // Explicitly ignore the error
+			}
 		}
 
 		// Configure the analysis with this detection method
@@ -755,7 +760,10 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 	}
 
 	if verbose {
-		fmt.Fprintf(cli.Stderr(), "All reports generated in: %s\n", outputDir)
+		if _, err := fmt.Fprintf(cli.Stderr(), "All reports generated in: %s\n", outputDir); err != nil {
+			// Continue even if verbose output fails
+			_ = err // Explicitly ignore the error
+		}
 	}
 	return nil
 }
@@ -768,7 +776,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 }, method config.DetectionMethod, verbose bool,
 ) error {
-	t, data, filesCount, err := buildSuffixTree(cfg.Paths, verbose)
+	t, data, filesCount, err := buildSuffixTree(cfg.Paths, verbose, cfg.FilesFromStdin)
 	if err != nil {
 		return fmt.Errorf("failed to build suffix tree: %v", err)
 	}
@@ -783,7 +791,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		if err != nil {
 			return fmt.Errorf("failed to create %s file: %v", filename, err)
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				// Log error but don't fail the operation
+				if verbose {
+					if _, err := fmt.Fprintf(cli.Stderr(), "Error closing file: %v\n", err); err != nil {
+						// Can't write error to stderr
+						_ = err // Explicitly ignore error
+					}
+				}
+			}
+		}()
 		// File created successfully
 
 		p := fmtInfo.newPrinter(file, os.ReadFile)
@@ -801,7 +819,10 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		}
 
 		if verbose {
-			fmt.Fprintf(cli.Stderr(), "Generated %s report: %s\n", fmtInfo.name, filename)
+			if _, err := fmt.Fprintf(cli.Stderr(), "Generated %s report: %s\n", fmtInfo.name, filename); err != nil {
+				// Continue even if we can't write verbose output
+				_ = err // Explicitly ignore error
+			}
 		}
 	}
 
