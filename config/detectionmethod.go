@@ -15,6 +15,12 @@ const (
 
 	// DetectionMethodArtDupl uses suffix tree-based detection (current method)
 	DetectionMethodArtDupl DetectionMethod = "art-dupl"
+	
+	// DetectionMethodTodos finds TODO comments in code
+	DetectionMethodTodos DetectionMethod = "todos"
+	
+	// DetectionMethodLegacy finds legacy code patterns
+	DetectionMethodLegacy DetectionMethod = "legacy"
 )
 
 // String implements fmt.Stringer for DetectionMethod
@@ -25,7 +31,7 @@ func (dm DetectionMethod) String() string {
 // IsValid checks if the detection method is supported
 func (dm DetectionMethod) IsValid() bool {
 	switch dm {
-	case DetectionMethodHash, DetectionMethodArtDupl:
+	case DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy:
 		return true
 	default:
 		return false

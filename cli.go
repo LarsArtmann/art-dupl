@@ -501,7 +501,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 
 	// Handle JSON output special case
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(mergedConfig.Threshold, sortBy)
+		return jsonPrinter.OutputJSON(threshold, sortBy)
 	}
 
 	return p.PrintFooter()
@@ -512,10 +512,8 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	// Get flag values from Cobra command
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
-	verboseShort, _ := cmd.Flags().GetBool("verbose")    // -v flag
-	verboseLong, _ := cmd.Flags().GetBool("verbose")     // --verbose flag (hidden)
-	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
-	thresholdLong, _ := cmd.Flags().GetInt("threshold")  // --threshold flag (hidden)
+	verbose, _ := cmd.Flags().GetBool("verbose")    // -v flag
+	threshold, _ := cmd.Flags().GetInt("threshold") // -t flag
 	files, _ := cmd.Flags().GetBool("files")
 	html, _ := cmd.Flags().GetBool("html")
 	json, _ := cmd.Flags().GetBool("json")
@@ -543,24 +541,13 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	cliConfig := &config.Config{}
 
 	// Check if threshold flag was explicitly changed from default
-	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
-	thresholdLong, _ := cmd.Flags().GetInt("threshold")  // --threshold flag (hidden)
+	thresholdValue := threshold
 
-	// Debug: Check threshold values
-	if true {
-		fmt.Fprintf(cli.Stderr(), "DEBUG: thresholdShort=%d, thresholdLong=%d, defaultThreshold=%d\n",
-			thresholdShort, thresholdLong, defaultThreshold)
-	}
-
-	thresholdExplicitlySet := thresholdShort != defaultThreshold || thresholdLong != defaultThreshold
+	thresholdExplicitlySet := thresholdValue != defaultThreshold
 
 	// Handle threshold flag (only if explicitly set)
 	if thresholdExplicitlySet {
-		thresholdFlag := thresholdShort
-		if thresholdLong != defaultThreshold {
-			thresholdFlag = thresholdLong
-		}
-		cliConfig.Threshold = thresholdFlag
+		cliConfig.Threshold = thresholdValue
 	}
 	// Don't set CLI config.Threshold at all if not explicitly set
 	// This allows file config threshold to take precedence
@@ -613,20 +600,11 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		}
 
 		// Run the all-mode handler
-		return runAllMode(outputDir, mergedConfig.Threshold, vendor, verboseFlag, args)
+		return runAllMode(outputDir, mergedConfig.Threshold, vendor, verbose, args)
 	}
 
 	// Merge file and CLI configurations
 	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
-
-	// Debug: Print merged config
-	// Debug output removed for production builds
-	if false {
-		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Merged config: threshold=%d, outputFormat=%s\n",
-			mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
-			return err
-		}
-	}
 
 	// Validate merged configuration
 	if err = config.ValidateConfig(mergedConfig); err != nil {
