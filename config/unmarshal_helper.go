@@ -29,3 +29,40 @@ func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) 
 	}
 	return fmt.Appendf(nil, `"%s"`, value), nil
 }
+
+// EnumType defines the common interface for all enum-like types
+type EnumType[T ~string] interface {
+	~string
+	String() string
+	IsValid() bool
+}
+
+// NewEnumUnmarshalJSON creates an UnmarshalJSON function for any enum type
+func NewEnumUnmarshalJSON[T ~string](typeName string) func(*T, []byte) error {
+	return func(e *T, data []byte) error {
+		candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+			// Use the interface method to check validity
+			var enum T = t
+			return any(enum).(interface{ IsValid() bool }).IsValid()
+		}, typeName)
+		if err != nil {
+			return err
+		}
+		*e = candidate
+		return nil
+	}
+}
+
+// UnmarshalJSONForEnum is a generic function that can be used as UnmarshalJSON method
+func UnmarshalJSONForEnum[T ~string](e *T, data []byte, typeName string) error {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+		// Use the interface method to check validity
+		var enum T = t
+		return any(enum).(interface{ IsValid() bool }).IsValid()
+	}, typeName)
+	if err != nil {
+		return err
+	}
+	*e = candidate
+	return nil
+}

@@ -120,19 +120,31 @@ func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 	return dups
 }
 
-// sortCloneGroupsBySize sorts [][]clone groups by total token size (largest first)
-func sortCloneGroupsBySize(sortedCloneGroups [][]clone) {
-	sort.Slice(sortedCloneGroups, func(i, j int) bool {
-		// Calculate total size for group i
-		sizeI := 0
-		for _, cl := range sortedCloneGroups[i] {
-			sizeI += cl.size
-		}
-		// Calculate total size for group j
-		sizeJ := 0
-		for _, cl := range sortedCloneGroups[j] {
-			sizeJ += cl.size
-		}
-		return sizeI > sizeJ
-	})
+// SortCriteria represents different sorting strategies for clone groups
+type SortCriteria int
+
+const (
+	SortBySize SortCriteria = iota
+	SortByOccurrence
+	SortByHash
+	SortByTotalTokens
+)
+
+// SortCloneGroups generic function that sorts based on criteria
+func SortCloneGroups[T interface{ GetSize() int }](groups []T, criteria SortCriteria) {
+	switch criteria {
+	case SortBySize:
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].GetSize() > groups[j].GetSize()
+		})
+	case SortByOccurrence:
+		// This needs to be implemented per type for now
+	case SortByHash:
+		// This needs to be implemented per type for now
+	case SortByTotalTokens:
+		// This defaults to size for now
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].GetSize() > groups[j].GetSize()
+		})
+	}
 }

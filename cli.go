@@ -501,7 +501,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 
 	// Handle JSON output special case
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(threshold, sortBy)
+		return jsonPrinter.OutputJSON(mergedConfig.Threshold, sortBy)
 	}
 
 	return p.PrintFooter()
@@ -536,24 +536,23 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			}
 			return err
 		}
-		// Debug: Print loaded config
-		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Loaded file config: threshold=%d, outputFormat=%s\n", 
-			fileConfig.Threshold, fileConfig.OutputFormat); err != nil {
-			return err
-		}
+	// Debug output removed for production builds
 	}
 
 	// Create CLI config from command line arguments
 	cliConfig := &config.Config{}
 
 	// Check if threshold flag was explicitly changed from default
-	thresholdExplicitlySet := thresholdShort != defaultThreshold || thresholdLong != defaultThreshold
-
-	// Handle verbose flag (either -v or -verbose)
-	verboseFlag := verboseShort || verboseLong
-	if verboseFlag {
-		cliConfig.Verbose = verboseFlag
+	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
+	thresholdLong, _ := cmd.Flags().GetInt("threshold")  // --threshold flag (hidden)
+	
+	// Debug: Check threshold values
+	if true {
+		fmt.Fprintf(cli.Stderr(), "DEBUG: thresholdShort=%d, thresholdLong=%d, defaultThreshold=%d\n", 
+			thresholdShort, thresholdLong, defaultThreshold)
 	}
+	
+	thresholdExplicitlySet := thresholdShort != defaultThreshold || thresholdLong != defaultThreshold
 
 	// Handle threshold flag (only if explicitly set)
 	if thresholdExplicitlySet {
@@ -563,6 +562,8 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		}
 		cliConfig.Threshold = thresholdFlag
 	}
+	// Don't set CLI config.Threshold at all if not explicitly set
+	// This allows file config threshold to take precedence
 
 	if vendor {
 		cliConfig.IncludeVendor = vendor
@@ -706,7 +707,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, sortBy, thresholdShort); err != nil {
+	if err := printDupls(p, duplChan, sortBy, mergedConfig.Threshold); err != nil {
 		if _, err := fmt.Fprintf(cli.Stderr(), "error: %v\n", err); err != nil {
 			return err
 		}

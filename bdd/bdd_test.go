@@ -296,13 +296,14 @@ func hello() {
 }`), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Use absolute path to avoid working directory issues
-			configContent := fmt.Sprintf(`{
+			// Create testdata directory with relative path in config
+			// The testdata directory will be created relative to the test binary location
+			configContent := `{
 				"threshold": 25,
 				"outputFormat": "json",
-				"paths": ["%s"],
+				"paths": ["./testdata"],
 				"verbose": true
-			}`, testDir)
+			}`
 			err = os.WriteFile(configFile, []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -313,9 +314,9 @@ func hello() {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Run with config
+			// Run with config - set working directory to temp dir so ./testdata is found
 			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile)
-			cmd.Dir = ".."
+			cmd.Dir = tempDir // Set working directory to where testdata exists
 			output, err := cmd.CombinedOutput()
 
 			// Debug: Print output if error occurs
@@ -365,7 +366,7 @@ func hello() {
 
 			// Run with config and threshold override
 			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile, "--threshold", "50")
-			cmd.Dir = ".."
+			cmd.Dir = tempDir // Set working directory to where testdata exists
 			output, err := cmd.CombinedOutput()
 
 			// Debug: Print output if error occurs
