@@ -7,6 +7,19 @@ import (
 	"testing"
 )
 
+// createTempDir creates a temporary directory for testing and returns a cleanup function
+func createTempDir(t *testing.T) (string, func()) {
+	tmpDir, err := os.MkdirTemp("", "dupl-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	return tmpDir, func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("Failed to remove temp dir: %v", err)
+		}
+	}
+}
+
 func TestDefaultConfig(t *testing.T) {
 	config := DefaultConfig()
 
@@ -25,16 +38,8 @@ func TestDefaultConfig(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	// Create temporary config file
-	tmpDir, err := os.MkdirTemp("", "dupl-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer func() {
-		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Logf("Failed to remove temp dir: %v", err)
-		}
-	}()
+	tmpDir, cleanup := createTempDir(t)
+	defer cleanup()
 
 	configFile := filepath.Join(tmpDir, "test-config.json")
 	configContent := `{
@@ -47,7 +52,7 @@ func TestLoadConfig(t *testing.T) {
 		"maxChildrenSerial": 20000
 	}`
 
-	err = os.WriteFile(configFile, []byte(configContent), 0o644)
+	err := os.WriteFile(configFile, []byte(configContent), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config file: %v", err)
 	}
@@ -88,16 +93,8 @@ func TestLoadConfigNotFound(t *testing.T) {
 }
 
 func TestSaveConfig(t *testing.T) {
-	// Create temporary directory
-	tmpDir, err := os.MkdirTemp("", "dupl-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer func() {
-		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Logf("Failed to remove temp dir: %v", err)
-		}
-	}()
+	tmpDir, cleanup := createTempDir(t)
+	defer cleanup()
 
 	configFile := filepath.Join(tmpDir, "saved-config.json")
 	config := &Config{
@@ -108,7 +105,7 @@ func TestSaveConfig(t *testing.T) {
 		Paths:         []string{"./test"},
 	}
 
-	err = SaveConfig(config, configFile)
+	err := SaveConfig(config, configFile)
 	if err != nil {
 		t.Fatalf("Failed to save config: %v", err)
 	}
@@ -251,38 +248,50 @@ func TestMergeConfigs(t *testing.T) {
 	}
 }
 
-func TestMergeConfigsNilFileConfig(t *testing.T) {
-	cliConfig := &Config{
-		Threshold:     30,
-		OutputFormat:  "json",
-		IncludeVendor: true,
+func TestMergeConfigsWithNil(t *testing.T) {
+	testCases := []struct {
+		name          string
+		config        *Config
+		isNilFileConfig bool
+		expectedValues map[string]any
+	}{
+		{
+			name: "NilFileConfig",
+			config: &Config{
+				Threshold:     30,
+				OutputFormat:  "json",
+				IncludeVendor: true,
+			},
+			isNilFileConfig: true,
+			expectedValues: map[string]any{
+				"threshold":     30,
+				"outputFormat":  "json",
+				"includeVendor": true,
+				"verbose":       false,
+			},
+		},
+		{
+			name: "NilCLIConfig",
+			config: &Config{
+				Threshold:    40,
+				OutputFormat: "html",
+				Verbose:      true,
+			},
+			isNilFileConfig: false,
+			expectedValues: map[string]any{
+				"threshold":     40,
+				"outputFormat":  "html",
+				"verbose":       true,
+				"includeVendor": false,
+			},
+		},
 	}
 
-	expectedValues := map[string]any{
-		"threshold":     30,
-		"outputFormat":  "json",
-		"includeVendor": true,
-		"verbose":       false,
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			AssertMergeConfigsWithNil(t, tc.config, tc.isNilFileConfig, tc.expectedValues)
+		})
 	}
-
-	TestMergeConfigsWithNil(t, cliConfig, true, expectedValues)
-}
-
-func TestMergeConfigsNilCLIConfig(t *testing.T) {
-	fileConfig := &Config{
-		Threshold:    40,
-		OutputFormat: "html",
-		Verbose:      true,
-	}
-
-	expectedValues := map[string]any{
-		"threshold":     40,
-		"outputFormat":  "html",
-		"verbose":       true,
-		"includeVendor": false,
-	}
-
-	TestMergeConfigsWithNil(t, fileConfig, false, expectedValues)
 }
 
 func TestDetectionMethods(t *testing.T) {

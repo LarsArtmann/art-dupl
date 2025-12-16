@@ -188,7 +188,7 @@ func (h *HashDetector) groupHashesByValue(hashes []WindowHash) map[uint64][]Wind
 	return groups
 }
 
-// validateHashGroups validates hash groups and converts to syntax.Match
+// validateHashGroups validates hash groups and converts to syntax.Match with improved logic
 func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, threshold int, fileNodes map[string][]*syntax.Node) []syntax.Match {
 	var matches []syntax.Match
 	
@@ -198,8 +198,30 @@ func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, th
 			continue
 		}
 		
-		// Create fragments from the group
-		fragments := h.createFragments(group, fileNodes)
+		// Group by file to avoid multiple fragments from same file
+		fileGroups := make(map[string]WindowHash)
+		for _, wh := range group {
+			// Only keep first occurrence per file
+			if _, exists := fileGroups[wh.File]; !exists {
+				fileGroups[wh.File] = wh
+			}
+		}
+		
+		// Create fragments from unique file entries
+		var fragments [][]*syntax.Node
+		for file, wh := range fileGroups {
+			nodes, exists := fileNodes[file]
+			if !exists || wh.Pos+wh.Length > len(nodes) {
+				continue
+			}
+			
+			// Extract fragment at the correct position
+			fragment := make([]*syntax.Node, wh.Length)
+			copy(fragment, nodes[wh.Pos:wh.Pos+wh.Length])
+			fragments = append(fragments, fragment)
+		}
+		
+		// Only create match if we have at least 2 different files
 		if len(fragments) >= 2 {
 			match := syntax.Match{
 				Hash:  fmt.Sprintf("%x", hash),
@@ -222,24 +244,4 @@ func (h *HashDetector) hasMultipleFiles(group []WindowHash) bool {
 		}
 	}
 	return false
-}
-
-// createFragments creates node fragments from hash groups
-func (h *HashDetector) createFragments(group []WindowHash, fileNodes map[string][]*syntax.Node) [][]*syntax.Node {
-	var fragments [][]*syntax.Node
-	
-	for _, wh := range group {
-		// Get the specific file's nodes
-		nodes, exists := fileNodes[wh.File]
-		if !exists || wh.Pos+wh.Length > len(nodes) {
-			continue
-		}
-		
-		// Extract fragment at the correct position
-		fragment := make([]*syntax.Node, wh.Length)
-		copy(fragment, nodes[wh.Pos:wh.Pos+wh.Length])
-		fragments = append(fragments, fragment)
-	}
-	
-	return fragments
 }

@@ -150,8 +150,8 @@ func uniqueFunction(ctx context.Context) error {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Run art-dupl on test directory with analyze subcommand
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "--threshold", "10")
+			// Run art-dupl on test directory
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
@@ -177,9 +177,14 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with high threshold
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "50")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "50")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
+			
+			// Print debug information if there's an error
+			if err != nil {
+				fmt.Printf("Command failed with output: %s\n", string(output))
+			}
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
@@ -200,9 +205,14 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with JSON output
-			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--json", "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
+			
+			// Print debug information if there's an error
+			if err != nil {
+				fmt.Printf("Command failed with output: %s\n", string(output))
+			}
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
@@ -229,7 +239,7 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with HTML output
-			cmd = exec.Command("../bdd/art-dupl-test", "html", tempDir, "-threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--html", "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 
@@ -237,9 +247,10 @@ func uniqueFunction(ctx context.Context) error {
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
-			// Should contain HTML structure
-			Expect(outputStr).To(ContainSubstring("<html>"))
-			Expect(outputStr).To(ContainSubstring("</html>"))
+			// Should contain HTML structure (actual HTML printer output)
+			Expect(outputStr).To(ContainSubstring("<!DOCTYPE html>"))
+			Expect(outputStr).To(ContainSubstring("<title>Duplicates</title>"))
+			Expect(outputStr).To(ContainSubstring("</style>"))
 		})
 	})
 })
@@ -288,7 +299,7 @@ func b() {}`), 0o644)
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with config
-			cmd = exec.Command("../bdd/art-dupl-test", "-config", configFile)
+			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile)
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 
@@ -320,7 +331,7 @@ func b() {}`), 0o644)
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with config and override
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-config", configFile, "-threshold", "50")
+			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile, "--threshold", "50")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 
@@ -387,9 +398,14 @@ func processData(data string) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Analyze only subDir1
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", subDir1, "-threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", subDir1, "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
+			
+			// Print debug information if there's an error
+			if err != nil {
+				fmt.Printf("Command failed with output: %s\n", string(output))
+			}
 
 			// Verify - should only mention files from subDir1
 			Expect(err).ToNot(HaveOccurred())
@@ -440,7 +456,7 @@ func unique() {
 
 			// Create stdin with only target files
 			stdin := fmt.Sprintf("%s\n%s\n", file1, file2)
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", "-files", "-threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", "--files", "--threshold", "10")
 			cmd.Dir = ".."
 			cmd.Stdin = strings.NewReader(stdin)
 			output, err := cmd.CombinedOutput()
@@ -514,7 +530,7 @@ func (s *Service) processInternal(data string) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Execute with JSON output
-			cmd = exec.Command("../bdd/art-dupl-test", "json", tempDir, "-threshold", "15")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--json", "--threshold", "15")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
@@ -583,7 +599,7 @@ func processItem(data string, index int) error {
 
 			// Measure execution time
 			start := time.Now()
-			cmd = exec.Command("../bdd/art-dupl-test", "analyze", tempDir, "-threshold", "20")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "20")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			duration := time.Since(start)

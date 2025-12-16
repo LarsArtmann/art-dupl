@@ -39,9 +39,14 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for OutputFormat
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	return NewEnumUnmarshaler(func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) OutputFormat { return OutputFormat(s) }, func(o OutputFormat) bool {
 		return o.IsValid()
-	}, "output format").UnmarshalJSON(data, of)
+	}, "output format")
+	if err != nil {
+		return err
+	}
+	*of = candidate
+	return nil
 }
 
 // SortCriteria represents supported sorting criteria with type safety
@@ -79,9 +84,14 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for SortCriteria
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	return NewEnumUnmarshaler(func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) SortCriteria { return SortCriteria(s) }, func(s SortCriteria) bool {
 		return s.IsValid()
-	}, "sort criteria").UnmarshalJSON(data, sc)
+	}, "sort criteria")
+	if err != nil {
+		return err
+	}
+	*sc = candidate
+	return nil
 }
 
 // AllOutputFormats returns list of all supported output formats

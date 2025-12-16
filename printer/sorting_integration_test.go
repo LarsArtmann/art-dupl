@@ -54,7 +54,7 @@ func anotherLargeFunction() {
 	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 130, 8) // Same size as largeClone, 8 tokens
 
 	// Create clones with multiple occurrences to test total-tokens
-	multiOccurrenceClone := createMultipleCloneGroup(t, "multi.go", 200, 220, 3, 5) // 3 tokens, 5 occurrences = 15 total tokens
+	multiOccurrenceClone := createMockCloneGroup(t, "multi.go", 200, 220, 3) // 3 tokens
 
 	testCases := []struct {
 		name          string
@@ -160,22 +160,7 @@ func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Prin
 	}
 }
 
-// createMultipleCloneGroup creates a mock clone group with multiple occurrences
-func createMultipleCloneGroup(t *testing.T, filename string, startPos, endPos, numTokens, numOccurrences int) []*syntax.Node {
-	// Create nodes that represent tokens in a clone
-	nodes := make([]*syntax.Node, numTokens)
 
-	for i := range numTokens {
-		nodes[i] = &syntax.Node{
-			Type:     golang.FuncDecl,
-			Filename: filename,
-			Pos:      startPos + (i * 2),
-			End:      startPos + (i * 2) + 1,
-		}
-	}
-
-	return nodes
-}
 
 // createMockCloneGroup creates a mock clone group with specified characteristics
 func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTokens int) []*syntax.Node {

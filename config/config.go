@@ -173,9 +173,9 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 
 	// Override with CLI config
 	if cliConfig != nil {
-		// Note: Only set CLI values if they're different from defaults
+		// Note: Only set CLI values if they're non-zero or booleans set to true
 		// to allow file config values to take precedence
-		if cliConfig.Threshold != 15 {
+		if cliConfig.Threshold != 0 {
 			result.Threshold = cliConfig.Threshold
 		}
 		if cliConfig.IncludeVendor {

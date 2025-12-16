@@ -26,6 +26,8 @@ func NewHTML(w io.Writer, fread ReadFile) Printer {
 
 func (p *htmlprinter) PrintHeader() error {
 	_, err := fmt.Fprint(p.w, `<!DOCTYPE html>
+<html>
+<head>
 <meta charset="utf-8"/>
 <title>Duplicates</title>
 <style>
@@ -35,6 +37,8 @@ func (p *htmlprinter) PrintHeader() error {
 		padding: 1ex;
 	}
 </style>
+</head>
+<body>
 `)
 	return err
 }

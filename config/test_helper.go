@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-// TestMergeConfigsWithNil is a helper function for testing merge configs with nil parameters
-func TestMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig bool, expectedValues map[string]any) {
+// AssertMergeConfigsWithNil is a helper function for testing merge configs with nil parameters
+func AssertMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig bool, expectedValues map[string]any) {
 	var merged *Config
 	var testName string
 
@@ -41,9 +41,4 @@ func TestMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig b
 			t.Errorf("%s: Expected merged IncludeVendor %v, got %v", testName, includeVendor, merged.IncludeVendor)
 		}
 	}
-}
-
-// TestMergeConfigsScenario tests a merge config scenario with specific parameters
-func TestMergeConfigsScenario(t *testing.T, testName string, config *Config, isNilFileConfig bool, expectedValues map[string]any) {
-	TestMergeConfigsWithNil(t, config, isNilFileConfig, expectedValues)
 }

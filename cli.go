@@ -352,7 +352,7 @@ func createArtDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree
 	go func() {
 		defer close(duplChan)
 		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, cfg.Threshold)
+			match := syntax.FindSyntaxUnits(data, m, cfg.Threshold)
 			if len(match.Frags) > 0 {
 				duplChan <- match
 			}
@@ -362,11 +362,11 @@ func createArtDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree
 }
 
 // createDuplChannel creates a channel for duplicate detection based on the method
-func createDuplChannel(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
+func createDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match {
 	if cfg.DetectionMethods.Contains(config.DetectionMethodHash) {
-		return createHashDuplChannel(cfg, *data, t, verbose)
+		return createHashDuplChannel(cfg, data, t, verbose)
 	}
-	return createArtDuplChannel(cfg, *data, t)
+	return createArtDuplChannel(cfg, data, t)
 }
 
 // createDuplChannelForMethod creates a channel for duplicate detection based on a single method
@@ -378,7 +378,7 @@ func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Confi
 }
 
 // buildSuffixTree builds a suffix tree from provided paths and returns tree, data, and file count
-func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, *[]*syntax.Node, int, error) {
+func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
 	}
@@ -397,7 +397,7 @@ func buildSuffixTree(paths []string, verbose bool) (*suffixtree.STree, *[]*synta
 		log.Println("Searching for clones")
 	}
 
-	return t, data, filesCount, nil
+	return t, *data, filesCount, nil
 }
 
 // executeAnalysis runs the core duplicate analysis logic
@@ -552,18 +552,23 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	// Create CLI config from command line arguments
 	cliConfig := &config.Config{}
 
+	// Check if threshold flag was explicitly changed from default
+	thresholdExplicitlySet := thresholdShort != defaultThreshold || thresholdLong != defaultThreshold
+
 	// Handle verbose flag (either -v or -verbose)
 	verboseFlag := verboseShort || verboseLong
 	if verboseFlag {
 		cliConfig.Verbose = verboseFlag
 	}
 
-	// Handle threshold flag (either -t or -threshold)
-	thresholdFlag := thresholdShort
-	if thresholdLong != defaultThreshold {
-		thresholdFlag = thresholdLong
+	// Handle threshold flag (only if explicitly set)
+	if thresholdExplicitlySet {
+		thresholdFlag := thresholdShort
+		if thresholdLong != defaultThreshold {
+			thresholdFlag = thresholdLong
+		}
+		cliConfig.Threshold = thresholdFlag
 	}
-	cliConfig.Threshold = thresholdFlag
 
 	if vendor {
 		cliConfig.IncludeVendor = vendor
