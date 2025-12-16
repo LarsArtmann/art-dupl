@@ -250,10 +250,10 @@ func TestMergeConfigs(t *testing.T) {
 
 func TestMergeConfigsWithNil(t *testing.T) {
 	testCases := []struct {
-		name          string
-		config        *Config
+		name            string
+		config          *Config
 		isNilFileConfig bool
-		expectedValues map[string]any
+		expectedValues  map[string]any
 	}{
 		{
 			name: "NilFileConfig",

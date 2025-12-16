@@ -180,7 +180,6 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "50")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
@@ -208,7 +207,6 @@ func uniqueFunction(ctx context.Context) error {
 			cmd = exec.Command("../bdd/art-dupl-test", "--json", "--threshold", "10", ".")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
@@ -287,7 +285,7 @@ func b() {}`), 0o644)
 			testDir := filepath.Join(tempDir, "testdata")
 			err := os.Mkdir(testDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
-			
+
 			testFile := filepath.Join(testDir, "sample.go")
 			err = os.WriteFile(testFile, []byte(`package main
 
@@ -318,7 +316,6 @@ func hello() {
 			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile)
 			cmd.Dir = tempDir // Set working directory to where testdata exists
 			output, err := cmd.CombinedOutput()
-
 			// Debug: Print output if error occurs
 			if err != nil {
 				fmt.Printf("Config test failed with output:\n%s\n", string(output))
@@ -348,7 +345,7 @@ func hello() {
 			testDir := filepath.Join(tempDir, "testdata")
 			err = os.Mkdir(testDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
-			
+
 			testFile := filepath.Join(testDir, "sample.go")
 			err = os.WriteFile(testFile, []byte(`package main
 
@@ -368,7 +365,6 @@ func hello() {
 			cmd = exec.Command("../bdd/art-dupl-test", "--config", configFile, "--threshold", "50")
 			cmd.Dir = tempDir // Set working directory to where testdata exists
 			output, err := cmd.CombinedOutput()
-
 			// Debug: Print output if error occurs
 			if err != nil {
 				fmt.Printf("Override test failed with output:\n%s\n", string(output))
@@ -445,7 +441,6 @@ func processData(data string) error {
 			cmd = exec.Command("../bdd/art-dupl-test", subDir1, "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
-			
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))

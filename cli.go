@@ -172,7 +172,7 @@ func Run() int {
 
 	// Update global variables with merged config (for compatibility with existing code)
 	vendor = &mergedConfig.IncludeVendor
-	threshold = &mergedConfig.Threshold  // Also update global threshold
+	threshold = &mergedConfig.Threshold // Also update global threshold
 	// For verbose and files, use values from mergedConfig
 	// (these will be used by code that expects global variables)
 	files = &mergedConfig.FilesFromStdin
@@ -377,11 +377,11 @@ func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Confi
 }
 
 // buildSuffixTree builds a suffix tree from provided paths and returns tree, data, and file count
-func buildSuffixTree(paths []string, verbose bool, filesFromStdin bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+func buildSuffixTree(paths []string, verbose, filesFromStdin bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
 	}
-	
+
 	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin))
 	t, data, done := job.BuildTree(schan)
 	<-done
@@ -536,7 +536,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 			}
 			return err
 		}
-	// Debug output removed for production builds
+		// Debug output removed for production builds
 	}
 
 	// Create CLI config from command line arguments
@@ -545,13 +545,13 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	// Check if threshold flag was explicitly changed from default
 	thresholdShort, _ := cmd.Flags().GetInt("threshold") // -t flag
 	thresholdLong, _ := cmd.Flags().GetInt("threshold")  // --threshold flag (hidden)
-	
+
 	// Debug: Check threshold values
 	if true {
-		fmt.Fprintf(cli.Stderr(), "DEBUG: thresholdShort=%d, thresholdLong=%d, defaultThreshold=%d\n", 
+		fmt.Fprintf(cli.Stderr(), "DEBUG: thresholdShort=%d, thresholdLong=%d, defaultThreshold=%d\n",
 			thresholdShort, thresholdLong, defaultThreshold)
 	}
-	
+
 	thresholdExplicitlySet := thresholdShort != defaultThreshold || thresholdLong != defaultThreshold
 
 	// Handle threshold flag (only if explicitly set)
@@ -618,11 +618,11 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	// Merge file and CLI configurations
 	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
-	
+
 	// Debug: Print merged config
 	// Debug output removed for production builds
 	if false {
-		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Merged config: threshold=%d, outputFormat=%s\n", 
+		if _, err := fmt.Fprintf(cli.Stderr(), "DEBUG: Merged config: threshold=%d, outputFormat=%s\n",
 			mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
 			return err
 		}

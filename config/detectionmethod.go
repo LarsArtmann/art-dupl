@@ -35,7 +35,7 @@ func (dm DetectionMethod) IsValid() bool {
 // MarshalJSON implements json.Marshaler for DetectionMethod
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 	// Explicitly type the isValid function
-	var isValid = func(d DetectionMethod) bool { return d.IsValid() }
+	isValid := func(d DetectionMethod) bool { return d.IsValid() }
 	return MarshalEnumJSON(dm, isValid, "detection method")
 }
 

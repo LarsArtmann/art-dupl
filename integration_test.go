@@ -21,9 +21,9 @@ func TestConfigurationIntegration(t *testing.T) {
 	}
 
 	cliConfig := &config.Config{
-		Threshold:     50,     // Should override file config
-		OutputFormat:  "html", // Should override file config
-		IncludeVendor: true,   // Should override file config
+		Threshold:        50,                                                     // Should override file config
+		OutputFormat:     "html",                                                 // Should override file config
+		IncludeVendor:    true,                                                   // Should override file config
 		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl}, // Should override file config
 	}
 
@@ -98,7 +98,7 @@ func TestConfigurationValidation(t *testing.T) {
 			isValid: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := config.ValidateConfig(tt.config)

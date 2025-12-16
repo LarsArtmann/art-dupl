@@ -28,7 +28,7 @@ func (of OutputFormat) IsValid() bool {
 // MarshalJSON implements json.Marshaler for OutputFormat
 func (of OutputFormat) MarshalJSON() ([]byte, error) {
 	// Explicitly type isValid function
-	var isValid = func(o OutputFormat) bool { return o.IsValid() }
+	isValid := func(o OutputFormat) bool { return o.IsValid() }
 	return MarshalEnumJSON(of, isValid, "output format")
 }
 
@@ -65,7 +65,7 @@ func (sc SortCriteria) IsValid() bool {
 // MarshalJSON implements json.Marshaler for SortCriteria
 func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 	// Explicitly type isValid function
-	var isValid = func(s SortCriteria) bool { return s.IsValid() }
+	isValid := func(s SortCriteria) bool { return s.IsValid() }
 	return MarshalEnumJSON(sc, isValid, "sort criteria")
 }
 

@@ -2,6 +2,7 @@ package hash
 
 import (
 	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -15,26 +16,26 @@ func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) {
 	// GIVEN: Two files with identical function implementations (at least threshold length)
 	nodes := []*syntax.Node{}
 	// File 1: sequence of 5 identical node types
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file1.go", i, i+1, 100+i))
 	}
-	// File 2: identical sequence 
-	for i := 0; i < 5; i++ {
+	// File 2: identical sequence
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file2.go", i+10, i+11, 100+i))
 	}
-	
+
 	t.Logf("Input nodes: %d total", len(nodes))
-	
+
 	// WHEN: Running hash detection with threshold 5
 	detector := NewHashDetector(5)
 	matchesChan := detector.FindDuplOver(nodes, 5)
-	
+
 	// THEN: Should detect the duplicate
 	matches := collectMatches(matchesChan)
 	if len(matches) != 1 {
 		t.Errorf("Expected 1 match, got %d", len(matches))
 	}
-	
+
 	// AND: The match should contain both files
 	match := matches[0]
 	if len(match.Frags) != 2 {
@@ -46,14 +47,14 @@ func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) {
 func TestHashDetectionShouldIgnoreSmallSequences(t *testing.T) {
 	// GIVEN: Two files with small similar sequences (below threshold)
 	nodes := []*syntax.Node{
-		createTestNode("file1.go", 1, 3, 50), // 3 nodes
+		createTestNode("file1.go", 1, 3, 50),   // 3 nodes
 		createTestNode("file2.go", 10, 12, 50), // 3 nodes, identical
 	}
-	
+
 	// WHEN: Running hash detection with threshold 10
 	detector := NewHashDetector(10)
 	matchesChan := detector.FindDuplOver(nodes, 10)
-	
+
 	// THEN: Should not detect duplicates (below threshold)
 	matches := collectMatches(matchesChan)
 	if len(matches) != 0 {
@@ -66,24 +67,24 @@ func TestHashDetectionShouldFindMultipleDuplicates(t *testing.T) {
 	// GIVEN: Multiple duplicate patterns across different files
 	nodes := []*syntax.Node{}
 	// First duplicate group - 5 nodes with types 100-104
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file1.go", i, i+1, 100+i))
 	}
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file2.go", i+10, i+11, 100+i))
 	}
 	// Second duplicate group - 5 nodes with types 110-114
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file3.go", i+20, i+21, 110+i))
 	}
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file4.go", i+30, i+31, 110+i))
 	}
-	
+
 	// WHEN: Running hash detection with threshold 5
 	detector := NewHashDetector(5)
 	matchesChan := detector.FindDuplOver(nodes, 5)
-	
+
 	// THEN: Should find both duplicate groups
 	matches := collectMatches(matchesChan)
 	t.Logf("Found %d matches (expected 2)", len(matches))
@@ -99,11 +100,11 @@ func TestHashDetectionShouldHandleOverlappingSequences(t *testing.T) {
 		createTestNode("file1.go", 1, 20, 200), // Long sequence
 		createTestNode("file2.go", 1, 20, 200), // Identical long sequence
 	}
-	
+
 	// WHEN: Running hash detection
 	detector := NewHashDetector(8)
 	matchesChan := detector.FindDuplOver(nodes, 8)
-	
+
 	// THEN: Should not report overlapping fragments from the same file
 	matches := collectMatches(matchesChan)
 	for _, match := range matches {
@@ -120,24 +121,24 @@ func TestHashDetectionShouldMaintainCorrectBoundaries(t *testing.T) {
 	// GIVEN: Known duplicate sequences with specific boundaries
 	nodes := []*syntax.Node{}
 	// First file: 5 nodes with types 100-104
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file1.go", i+10, i+11, 100+i))
 	}
 	// Second file: identical 5 nodes with types 100-104
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nodes = append(nodes, createTestNode("file2.go", i+25, i+26, 100+i))
 	}
-	
+
 	// WHEN: Running hash detection with threshold 5
 	detector := NewHashDetector(5)
 	matchesChan := detector.FindDuplOver(nodes, 5)
-	
+
 	// THEN: Should maintain exact boundaries
 	matches := collectMatches(matchesChan)
 	if len(matches) != 1 {
 		t.Fatalf("Expected 1 match, got %d", len(matches))
 	}
-	
+
 	match := matches[0]
 	for _, frag := range match.Frags {
 		if len(frag) != 5 {
@@ -154,12 +155,12 @@ func TestHashDetectionShouldBeDeterministic(t *testing.T) {
 		createTestNode("file2.go", 20, 29, 100),
 		createTestNode("file3.go", 40, 49, 100),
 	}
-	
+
 	// WHEN: Running hash detection twice
 	detector := NewHashDetector(5)
 	matches1 := collectMatches(detector.FindDuplOver(nodes, 5))
 	matches2 := collectMatches(detector.FindDuplOver(nodes, 5))
-	
+
 	// THEN: Results should be identical
 	if len(matches1) != len(matches2) {
 		t.Errorf("Inconsistent results: %d vs %d matches", len(matches1), len(matches2))
@@ -170,20 +171,20 @@ func TestHashDetectionShouldBeDeterministic(t *testing.T) {
 func TestHashDetectionShouldHandleLargeCodebases(t *testing.T) {
 	// GIVEN: Large dataset (simulating big codebase)
 	nodes := make([]*syntax.Node, 0, 1000)
-	for i := 0; i < 200; i++ {
+	for i := range 200 {
 		// Add duplicate patterns
 		nodes = append(nodes, createTestNode("large_file1.go", i*10, i*10+9, 50))
 		nodes = append(nodes, createTestNode("large_file2.go", i*10, i*10+9, 50))
 	}
-	
+
 	// WHEN: Running hash detection
 	detector := NewHashDetector(5)
 	matchesChan := detector.FindDuplOver(nodes, 5)
-	
+
 	// THEN: Should complete without excessive memory usage or timeouts
 	matches := collectMatches(matchesChan)
 	t.Logf("Found %d matches in large dataset", len(matches))
-	
+
 	// Should find many duplicates but not overwhelm
 	if len(matches) == 0 {
 		t.Error("Expected to find matches in large dataset")
@@ -196,18 +197,18 @@ func TestHashDetectionShouldProduceConsistentHashes(t *testing.T) {
 	sequence := []int{100, 101, 102, 103, 104, 105}
 	nodes1 := createNodesFromSequence("file1.go", 0, sequence)
 	nodes2 := createNodesFromSequence("file2.go", 0, sequence)
-	
+
 	// WHEN: Computing hashes for identical sequences
 	allNodes := append(nodes1, nodes2...)
 	detector := NewHashDetector(6)
 	matchesChan := detector.FindDuplOver(allNodes, 6)
 	matches := collectMatches(matchesChan)
-	
+
 	// THEN: Should produce matching hashes
 	if len(matches) != 1 {
 		t.Errorf("Expected 1 match for identical sequences, got %d", len(matches))
 	}
-	
+
 	if len(matches) > 0 && matches[0].Hash == "" {
 		t.Error("Expected non-empty hash for match")
 	}
@@ -217,11 +218,11 @@ func TestHashDetectionShouldProduceConsistentHashes(t *testing.T) {
 func TestHashDetectionShouldHandleEmptyInput(t *testing.T) {
 	// GIVEN: Empty input
 	var nodes []*syntax.Node
-	
+
 	// WHEN: Running hash detection
 	detector := NewHashDetector(5)
 	matchesChan := detector.FindDuplOver(nodes, 5)
-	
+
 	// THEN: Should handle gracefully without panics
 	matches := collectMatches(matchesChan)
 	if len(matches) != 0 {
@@ -264,7 +265,7 @@ func collectMatches(matchesChan <-chan syntax.Match) []syntax.Match {
 			fmt.Printf("Recovered from panic in collectMatches: %v\n", r)
 		}
 	}()
-	
+
 	var matches []syntax.Match
 	for match := range matchesChan {
 		matches = append(matches, match)
@@ -297,10 +298,5 @@ func hasDuplicateFiles(files []string) bool {
 }
 
 func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, item)
 }

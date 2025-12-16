@@ -9,27 +9,27 @@ import (
 
 // RollingHash implements a Rabin-Karp style rolling hash for node sequences
 type RollingHash struct {
-	base     uint64
-	mod      uint64
-	window   []uint64
-	hash     uint64
-	power    uint64
+	base   uint64
+	mod    uint64
+	window []uint64
+	hash   uint64
+	power  uint64
 }
 
 // NewRollingHash creates a new rolling hash with specified window size
 func NewRollingHash(windowSize int) *RollingHash {
 	rh := &RollingHash{
-		base:     257, // Prime base
-		mod:      math.MaxUint64, // Use full uint64 range to avoid expensive modulo
-		window:   make([]uint64, windowSize),
-		power:    1,
+		base:   257,            // Prime base
+		mod:    math.MaxUint64, // Use full uint64 range to avoid expensive modulo
+		window: make([]uint64, windowSize),
+		power:  1,
 	}
-	
+
 	// Pre-compute base^(windowSize-1) for efficient removal
 	for i := 0; i < windowSize-1; i++ {
 		rh.power *= rh.base
 	}
-	
+
 	return rh
 }
 
@@ -51,14 +51,14 @@ func (rh *RollingHash) Roll(newValue uint64) uint64 {
 	// Remove oldest value: hash = hash - oldest * base^(windowSize-1)
 	oldest := rh.window[0]
 	rh.hash -= oldest * rh.power
-	
+
 	// Shift left by base position and add new value
 	rh.hash = rh.hash*rh.base + newValue
-	
+
 	// Update window (circular buffer)
 	copy(rh.window[:], rh.window[1:])
 	rh.window[len(rh.window)-1] = newValue
-	
+
 	return rh.hash
 }
 
@@ -69,10 +69,10 @@ func (rh *RollingHash) HashValue() uint64 {
 
 // WindowHash represents a hash value at a specific position
 type WindowHash struct {
-	Hash    uint64
-	Pos     int    // Position in file's node sequence
-	File    string // Source file
-	Length  int    // Window length
+	Hash   uint64
+	Pos    int    // Position in file's node sequence
+	File   string // Source file
+	Length int    // Window length
 }
 
 // HashDetector implements efficient hash-based code clone detection
@@ -96,7 +96,7 @@ func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 
 		// Group nodes by file for proper processing
 		fileNodes := h.groupNodesByFile(data)
-		
+
 		// Generate rolling hashes for each file
 		allHashes := make([]WindowHash, 0)
 		for filename, nodes := range fileNodes {
@@ -106,7 +106,7 @@ func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 
 		// Find hash collisions (potential duplicates)
 		hashGroups := h.groupHashesByValue(allHashes)
-		
+
 		// Validate and convert to syntax.Match
 		matches := h.validateHashGroups(hashGroups, threshold, fileNodes)
 		for _, match := range matches {
@@ -135,47 +135,47 @@ func (h *HashDetector) generateRollingHashes(nodes []*syntax.Node, filename stri
 	}
 
 	hashes := make([]WindowHash, 0)
-	
+
 	// Create rolling hasher
 	roller := NewRollingHash(threshold)
-	
+
 	// Initialize with first window
 	if len(nodes) >= threshold {
 		var firstValues []uint64
-		for i := 0; i < threshold; i++ {
+		for i := range threshold {
 			firstValues = append(firstValues, uint64(nodes[i].Type))
 		}
-		
+
 		// Initialize hash
 		roller.hash = 0
 		for _, val := range firstValues {
 			roller.hash = roller.hash*roller.base + val
 		}
-		
+
 		// Fill window
 		roller.window = make([]uint64, threshold)
 		copy(roller.window, firstValues)
-		
+
 		// Record first hash
 		hashes = append(hashes, WindowHash{
 			Hash:   roller.HashValue(),
-			Pos:     0,
-			File:    filename,
-			Length:  threshold,
+			Pos:    0,
+			File:   filename,
+			Length: threshold,
 		})
-		
+
 		// Roll through remaining positions
 		for i := threshold; i < len(nodes); i++ {
 			newHash := roller.Roll(uint64(nodes[i].Type))
 			hashes = append(hashes, WindowHash{
 				Hash:   newHash,
-				Pos:     i - threshold + 1,
-				File:    filename,
-				Length:  threshold,
+				Pos:    i - threshold + 1,
+				File:   filename,
+				Length: threshold,
 			})
 		}
 	}
-	
+
 	return hashes
 }
 
@@ -191,13 +191,13 @@ func (h *HashDetector) groupHashesByValue(hashes []WindowHash) map[uint64][]Wind
 // validateHashGroups validates hash groups and converts to syntax.Match with improved logic
 func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, threshold int, fileNodes map[string][]*syntax.Node) []syntax.Match {
 	var matches []syntax.Match
-	
+
 	for hash, group := range hashGroups {
 		// Need at least 2 different files for a valid clone
 		if len(group) < 2 || !h.hasMultipleFiles(group) {
 			continue
 		}
-		
+
 		// Group by file to avoid multiple fragments from same file
 		fileGroups := make(map[string]WindowHash)
 		for _, wh := range group {
@@ -206,7 +206,7 @@ func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, th
 				fileGroups[wh.File] = wh
 			}
 		}
-		
+
 		// Create fragments from unique file entries
 		var fragments [][]*syntax.Node
 		for file, wh := range fileGroups {
@@ -214,13 +214,13 @@ func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, th
 			if !exists || wh.Pos+wh.Length > len(nodes) {
 				continue
 			}
-			
+
 			// Extract fragment at the correct position
 			fragment := make([]*syntax.Node, wh.Length)
 			copy(fragment, nodes[wh.Pos:wh.Pos+wh.Length])
 			fragments = append(fragments, fragment)
 		}
-		
+
 		// Only create match if we have at least 2 different files
 		if len(fragments) >= 2 {
 			match := syntax.Match{
@@ -230,7 +230,7 @@ func (h *HashDetector) validateHashGroups(hashGroups map[uint64][]WindowHash, th
 			matches = append(matches, match)
 		}
 	}
-	
+
 	return matches
 }
 
