@@ -134,7 +134,7 @@ func ValidateConfig(config *Config) error {
 
 	for _, method := range config.DetectionMethods {
 		if !method.IsValid() {
-			return errors.NewValidationError(fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl)", method), nil)
+			return errors.NewValidationError(fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", method), nil)
 		}
 	}
 

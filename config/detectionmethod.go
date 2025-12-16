@@ -55,6 +55,8 @@ func AllDetectionMethods() []DetectionMethod {
 	return []DetectionMethod{
 		DetectionMethodHash,
 		DetectionMethodArtDupl,
+		DetectionMethodTodos,
+		DetectionMethodLegacy,
 	}
 }
 
@@ -85,7 +87,7 @@ func ParseDetectionMethods(s string) (DetectionMethods, error) {
 	for _, part := range parts {
 		method := DetectionMethod(strings.TrimSpace(part))
 		if !method.IsValid() {
-			return nil, fmt.Errorf("invalid detection method: %s", part)
+			return nil, fmt.Errorf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", part)
 		}
 		// Avoid duplicates
 		found := slices.Contains(methods, method)
