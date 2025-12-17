@@ -203,10 +203,10 @@ func uniqueFunction(ctx context.Context) error {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Run with JSON output on current directory
+			// Run with JSON output on current directory - separate stdout from stderr to avoid JSON corruption
 			cmd = exec.Command("../bdd/art-dupl-test", "--json", "--threshold", "10", ".")
 			cmd.Dir = ".."
-			output, err := cmd.CombinedOutput()
+			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
@@ -575,10 +575,10 @@ func (s *Service) processInternal(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Execute with JSON output
+			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
 			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--json", "--threshold", "15")
 			cmd.Dir = ".."
-			output, err := cmd.CombinedOutput()
+			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response

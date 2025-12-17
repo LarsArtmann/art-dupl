@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -68,6 +69,54 @@ const (
 	vendorDirPrefix  = "vendor" + string(filepath.Separator)
 	vendorDirInPath  = string(filepath.Separator) + vendorDirPrefix
 )
+
+// createPrinter returns the appropriate printer function based on the output format
+func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.ReadFile) printer.Printer {
+	switch outputFormat {
+	case config.OutputFormatHTML:
+		return printer.NewHTML
+	case config.OutputFormatPlumbing:
+		return printer.NewPlumbing
+	case config.OutputFormatJSON:
+		return printer.NewJSON
+	default:
+		return printer.NewText
+	}
+}
+
+// handleConfigError handles configuration validation errors consistently
+func handleConfigError(err error) error {
+	if err != nil {
+		if _, writeErr := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); writeErr != nil {
+			return writeErr
+		}
+		return err
+	}
+	return nil
+}
+
+// validateOutputFormatConflicts checks for conflicting output format combinations
+func validateOutputFormatConflicts(outputFormat config.OutputFormat, htmlFlag, jsonFlag, plumbingFlag bool) error {
+	if outputFormat == config.OutputFormatHTML && plumbingFlag {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+	if outputFormat == config.OutputFormatHTML && jsonFlag {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+	if outputFormat == config.OutputFormatPlumbing && jsonFlag {
+		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n"); err != nil {
+			return err
+		}
+		return fmt.Errorf("conflicting output formats")
+	}
+	return nil
+}
 
 // Run is the main application logic
 func Run() int {
@@ -190,17 +239,7 @@ func Run() int {
 	}
 
 	// Select printer based on output format
-	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
-	switch mergedConfig.OutputFormat {
-	case config.OutputFormatHTML:
-		newPrinter = printer.NewHTML
-	case config.OutputFormatPlumbing:
-		newPrinter = printer.NewPlumbing
-	case config.OutputFormatJSON:
-		newPrinter = printer.NewJSON
-	default:
-		newPrinter = printer.NewText
-	}
+	newPrinter := createPrinter(mergedConfig.OutputFormat)
 
 	// Handle output file if specified
 	outputWriter := cli.Stdout()
@@ -603,10 +642,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
 
 		// Validate merged configuration
-		if err = config.ValidateConfig(mergedConfig); err != nil {
-			if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
-				return err
-			}
+		if err = handleConfigError(config.ValidateConfig(mergedConfig)); err != nil {
 			return err
 		}
 
@@ -618,31 +654,13 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, cliConfig)
 
 	// Validate merged configuration
-	if err = config.ValidateConfig(mergedConfig); err != nil {
-		if _, err := fmt.Fprintf(cli.Stderr(), "configuration error: %v\n", err); err != nil {
-			return err
-		}
+	if err = handleConfigError(config.ValidateConfig(mergedConfig)); err != nil {
 		return err
 	}
 
 	// Validate output format conflicts
-	if mergedConfig.OutputFormat == "html" && plumbing {
-		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or HTML output\n"); err != nil {
-			return err
-		}
-		return fmt.Errorf("conflicting output formats")
-	}
-	if mergedConfig.OutputFormat == "html" && json {
-		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either HTML or JSON output\n"); err != nil {
-			return err
-		}
-		return fmt.Errorf("conflicting output formats")
-	}
-	if mergedConfig.OutputFormat == "plumbing" && json {
-		if _, err := fmt.Fprintf(cli.Stderr(), "error: you can have either plumbing or JSON output\n"); err != nil {
-			return err
-		}
-		return fmt.Errorf("conflicting output formats")
+	if err = validateOutputFormatConflicts(mergedConfig.OutputFormat, html, json, plumbing); err != nil {
+		return err
 	}
 
 	// Update global variables with merged config (for compatibility with existing code)
@@ -659,17 +677,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	// Select printer based on output format
-	var newPrinter func(io.Writer, printer.ReadFile) printer.Printer
-	switch mergedConfig.OutputFormat {
-	case config.OutputFormatHTML:
-		newPrinter = printer.NewHTML
-	case config.OutputFormatPlumbing:
-		newPrinter = printer.NewPlumbing
-	case config.OutputFormatJSON:
-		newPrinter = printer.NewJSON
-	default:
-		newPrinter = printer.NewText
-	}
+	newPrinter := createPrinter(mergedConfig.OutputFormat)
 
 	// Handle output file if specified
 	outputWriter := cli.Stdout()
@@ -812,7 +820,34 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 	if _, err := fmt.Fprintf(cli.Stderr(), "📁 All reports generated in: %s\n", outputDir); err != nil {
 		_ = err
 	}
-	
+
+	// Show a summary of clones found for each method to stdout
+	// Count clones from the text files we already generated
+	for _, method := range detectionMethods {
+		// Read the text file to count clones
+		filename := filepath.Join(outputDir, fmt.Sprintf("%s.txt", method))
+		if data, err := os.ReadFile(filename); err == nil {
+			// Count occurrences of "found X clones:" in the file
+			content := string(data)
+			lines := strings.Split(content, "\n")
+			totalClones := 0
+			for _, line := range lines {
+				if strings.HasPrefix(line, "found ") && strings.Contains(line, " clones:") {
+					// Extract number from "found X clones:"
+					parts := strings.Fields(line)
+					if len(parts) >= 2 {
+						if count, err := strconv.Atoi(parts[1]); err == nil {
+							totalClones += count
+						}
+					}
+				}
+			}
+			if _, err := fmt.Fprintf(cli.Stdout(), "found %d clones (%s method)\n", totalClones, method); err != nil {
+				_ = err
+			}
+		}
+	}
+
 	// List all generated files
 	if _, err := fmt.Fprintf(cli.Stderr(), "📋 Generated files:\n"); err != nil {
 		_ = err
@@ -825,7 +860,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 			}
 		}
 	}
-	
+
 	if _, err := fmt.Fprintf(cli.Stderr(), "\n✨ Done! Use the reports above to review code duplication findings.\n"); err != nil {
 		_ = err
 	}
@@ -840,7 +875,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 
 // AnalysisStats holds statistics from a single analysis run
 type AnalysisStats struct {
-	FilesCount int
+	FilesCount  int
 	ClonesCount int
 }
 
@@ -869,14 +904,14 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	for _, fmtInfo := range formats {
 		// Generate output for this format
 		filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
-		
+
 		if !verbose {
 			// Show format generation progress
 			if _, err := fmt.Fprintf(cli.Stderr(), "    📝 Generating %s format...", fmtInfo.name); err != nil {
 				_ = err
 			}
 		}
-		
+
 		// Create output file
 		file, err := os.Create(filename)
 		if err != nil {

@@ -13,16 +13,2148 @@
 </head>
 <body>
 <h1>#1 found 2 clones</h1>
-<h2>examples/examples_test_api.go:26</h2>
-<pre>fmt.Printf(&#34;  From: %s:%d-%d\n&#34;, issue.From.Filename(), issue.From.LineStart(), issue.From.LineEnd())</pre>
-<h2>examples/examples_test_api.go:27</h2>
-<pre>fmt.Printf(&#34;  To:   %s:%d-%d\n&#34;, issue.To.Filename(), issue.To.LineStart(), issue.To.LineEnd())</pre>
-<h1>#2 found 2 clones</h1>
+<h2>config/config_test.go:65</h2>
+<pre>if config.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
+}
+if config.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
+}
+if config.OutputFormat != &#34;json&#34; {
+	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
+}
+if config.Verbose != true {
+	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
+}</pre>
+<h2>config/config_test.go:231</h2>
+<pre>if merged.Threshold != 25 {
+	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
+}
+if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+}
+if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+}
+if merged.Verbose != true {
+	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
+}</pre>
+<h1>#2 found 3 clones</h1>
+<h2>config/test_helper.go:21</h2>
+<pre>if threshold, ok := expectedValues[&#34;threshold&#34;].(int); ok {
+	if merged.Threshold != threshold {
+		t.Errorf(&#34;%s: Expected merged threshold %d, got %d&#34;, testName, threshold, merged.Threshold)
+	}
+}</pre>
+<h2>config/test_helper.go:33</h2>
+<pre>if verbose, ok := expectedValues[&#34;verbose&#34;].(bool); ok {
+	if merged.Verbose != verbose {
+		t.Errorf(&#34;%s: Expected merged Verbose %v, got %v&#34;, testName, verbose, merged.Verbose)
+	}
+}</pre>
+<h2>config/test_helper.go:39</h2>
+<pre>if includeVendor, ok := expectedValues[&#34;includeVendor&#34;].(bool); ok {
+	if merged.IncludeVendor != includeVendor {
+		t.Errorf(&#34;%s: Expected merged IncludeVendor %v, got %v&#34;, testName, includeVendor, merged.IncludeVendor)
+	}
+}</pre>
+<h1>#3 found 2 clones</h1>
+<h2>config/config_test.go:124</h2>
+<pre>if loaded.Threshold != config.Threshold {
+	t.Errorf(&#34;Saved threshold %d, got %d&#34;, config.Threshold, loaded.Threshold)
+}
+if loaded.IncludeVendor != config.IncludeVendor {
+	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:127</h2>
+<pre>if loaded.IncludeVendor != config.IncludeVendor {
+	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
+}
+if loaded.OutputFormat != config.OutputFormat {
+	t.Errorf(&#34;Saved OutputFormat %s, got %s&#34;, config.OutputFormat, loaded.OutputFormat)
+}</pre>
+<h1>#4 found 2 clones</h1>
+<h2>detection/working_test.go:49</h2>
+<pre>func TestTodoDetector_Working(t *testing.T) {
+	detector := NewTodoDetector()
+	
+	if detector == nil {
+		t.Error(&#34;TODO detector should not be nil&#34;)
+	}
+	
+	if detector.patterns == nil {
+		t.Error(&#34;Patterns should not be nil&#34;)
+	}
+}</pre>
+<h2>detection/working_test.go:62</h2>
+<pre>func TestLegacyDetector_Working(t *testing.T) {
+	detector := NewLegacyDetector()
+	
+	if detector == nil {
+		t.Error(&#34;Legacy detector should not be nil&#34;)
+	}
+	
+	if detector.patterns == nil {
+		t.Error(&#34;Patterns should not be nil&#34;)
+	}
+}</pre>
+<h1>#5 found 2 clones</h1>
+<h2>config/config_test.go:151</h2>
+<pre>{
+	name: &#34;Invalid threshold - too low&#34;,
+	config: &amp;Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:160</h2>
+<pre>{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too high&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 100001,
+	},
+	isValid: false,
+}</pre>
+<h1>#6 found 6 clones</h1>
+<h2>syntax/findsyntaxunits_test.go:15</h2>
+<pre>for i := range nodes {
+	nodes[i] = &amp;Node{Type: i, Owns: 0}
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:52</h2>
+<pre>for i := range nodes1 {
+	nodes1[i] = &amp;Node{Type: i, Owns: 0}
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:60</h2>
+<pre>for i := range nodes2 {
+	nodes2[i] = &amp;Node{Type: i, Owns: 0}
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:95</h2>
+<pre>for i := range data {
+	data[i] = &amp;Node{Type: i, Owns: 1}
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:111</h2>
+<pre>for i := range data {
+	data[i] = &amp;Node{Type: i, Owns: 0}
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:130</h2>
+<pre>for i := range data {
+	data[i] = &amp;Node{Type: i, Owns: 0}
+}</pre>
+<h1>#7 found 3 clones</h1>
+<h2>detection/todos.go:69</h2>
+<pre>for _, node := range data {
+	nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+}</pre>
+<h2>detection/todos.go:177</h2>
+<pre>for _, node := range data {
+	nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+}</pre>
+<h2>hash/file_detector.go:109</h2>
+<pre>for _, fileHash := range fileHashes {
+	hashGroups[fileHash.Hash] = append(hashGroups[fileHash.Hash], fileHash)
+}</pre>
+<h1>#8 found 4 clones</h1>
+<h2>syntax/golang/golang.go:127</h2>
+<pre>case *ast.BlockStmt:
+	o.Type = BlockStmt
+	for _, stmt := range n.List {
+		o.AddChildren(t.trans(stmt))
+	}</pre>
+<h2>syntax/golang/golang.go:197</h2>
+<pre>case *ast.FieldList:
+	o.Type = FieldList
+	for _, field := range n.List {
+		o.AddChildren(t.trans(field))
+	}</pre>
+<h2>syntax/golang/golang.go:235</h2>
+<pre>case *ast.GenDecl:
+	o.Type = GenDecl
+	for _, spec := range n.Specs {
+		o.AddChildren(t.trans(spec))
+	}</pre>
+<h2>syntax/golang/golang.go:289</h2>
+<pre>case *ast.ReturnStmt:
+	o.Type = ReturnStmt
+	for _, e := range n.Results {
+		o.AddChildren(t.trans(e))
+	}</pre>
+<h1>#9 found 2 clones</h1>
+<h2>bdd/bdd_test.go:566</h2>
+<pre>err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;UserService&#34;)), 0o644)</pre>
+<h2>bdd/bdd_test.go:568</h2>
+<pre>err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, &#34;Service&#34;, &#34;OrderService&#34;)), 0o644)</pre>
+<h1>#10 found 2 clones</h1>
+<h2>syntax/findsyntaxunits_test.go:93</h2>
+<pre>setup: func() []*Node {
+	data := make([]*Node, 5)
+	for i := range data {
+		data[i] = &amp;Node{Type: i, Owns: 1}
+	}
+	return data
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:128</h2>
+<pre>setup: func() []*Node {
+	data := make([]*Node, 5)
+	for i := range data {
+		data[i] = &amp;Node{Type: i, Owns: 0}
+	}
+	return data
+}</pre>
+<h1>#11 found 4 clones</h1>
+<h2>job/buildtree_test.go:29</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree timed out&#34;)
+	return</pre>
+<h2>job/buildtree_test.go:56</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree with empty input should not time out&#34;)
+	return</pre>
+<h2>job/buildtree_test.go:94</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree with multiple sequences timed out&#34;)
+	return</pre>
+<h2>job/parse_test.go:63</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;Parse timed out waiting for multiple files&#34;)
+	return</pre>
+<h1>#12 found 2 clones</h1>
+<h2>testutils/unique_test_clean.go:10</h2>
+<pre>func TestUniqueTestHelper_Clean(t *testing.T) {
+	// Generate multiple unique strings
+	for i := 0; i &lt; 10; i++ {
+		str := UniqueTestHelper()
+		
+		// Check that it starts with &#34;unique_&#34;
+		if !strings.HasPrefix(str, &#34;unique_&#34;) {
+			t.Errorf(&#34;String should start with &#39;unique_&#39;, got &#39;%s&#39;&#34;, str)
+		}
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:42</h2>
+<pre>func TestUniqueFunction_Clean(t *testing.T) {
+	// Generate multiple unique functions
+	for i := 0; i &lt; 5; i++ {
+		fn := UniqueFunction()
+		
+		// Check that it has proper structure
+		if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+			t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+		}
+	}
+}</pre>
+<h1>#13 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:84</h2>
+<pre>func (d *detector) FindClonesStream(ctx context.Context, files []string) (&lt;-chan *CloneGroup, error)</pre>
+<h2>pkg/artdupl/types.go:28</h2>
+<pre>	                (ctx context.Context, files []string) (&lt;-chan *CloneGroup, error)</pre>
+<h1>#14 found 2 clones</h1>
+<h2>printer/sorting_integration_test.go:204</h2>
+<pre>for i, clone := range sorted {
+	if clone[0].Filename != expectedOrder[i] {
+		t.Errorf(&#34;Hash sorting failed at index %d. Expected: %s, Got: %s&#34;,
+			i, expectedOrder[i], clone[0].Filename)
+	}
+}</pre>
+<h2>printer/sorting_integration_test.go:233</h2>
+<pre>for i, clone := range sorted {
+	if clone[0].Filename != expectedOrder[i] {
+		t.Errorf(&#34;Total-tokens sorting failed at index %d. Expected: %s, Got: %s&#34;,
+			i, expectedOrder[i], clone[0].Filename)
+	}
+}</pre>
+<h1>#15 found 2 clones</h1>
+<h2>testutils/unique_basic_test.go:35</h2>
+<pre>                                            {
+	fn := UniqueFunction()
+	
+	// Check that it has proper structure
+	if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+		t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+	}
+}
+
+// TestUniqueness_Basic tests basic uniqueness
+func TestUniqueness_Basic(t *testing.T) {
+	// Generate strings and check they&#39;re unique
+	uniqueSet := make(map[string]bool)
+	
+	for i := 0; i &lt; 10; i++ {
+		str := UniqueTestHelper()
+		
+		if uniqueSet[str] {
+			t.Errorf(&#34;Duplicate found: %s&#34;, str)
+		}
+		uniqueSet[str] = true
+	}
+	
+	// Should have all unique strings
+	if len(uniqueSet) != 10 {
+		t.Errorf(&#34;Expected 10 unique strings, got %d&#34;, len(uniqueSet))
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:44</h2>
+<pre>	                       {
+		fn := UniqueFunction()
+		
+		// Check that it has proper structure
+		if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+			t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+		}
+	}
+}
+
+// TestUniqueness_Clean tests basic uniqueness
+func TestUniqueness_Clean(t *testing.T) {
+	// Generate strings and check they&#39;re unique
+	uniqueSet := make(map[string]bool)
+	
+	for i := 0; i &lt; 50; i++ {
+		str := UniqueTestHelper()
+		
+		if uniqueSet[str] {
+			t.Errorf(&#34;Duplicate found: %s&#34;, str)
+		}
+		uniqueSet[str] = true
+	}
+	
+	// Should have all unique strings
+	if len(uniqueSet) != 50 {
+		t.Errorf(&#34;Expected 50 unique strings, got %d&#34;, len(uniqueSet))
+	}
+}</pre>
+<h1>#16 found 3 clones</h1>
+<h2>hash/bdd_test.go:41</h2>
+<pre>if len(match.Frags) != 2 {
+	t.Errorf(&#34;Expected 2 fragments, got %d&#34;, len(match.Frags))
+}</pre>
+<h2>printer/json_test.go:65</h2>
+<pre>if len(jsonPrinter.cloneGroups) != 1 {
+	t.Errorf(&#34;Expected 1 clone group, got %d&#34;, len(jsonPrinter.cloneGroups))
+}</pre>
+<h2>printer/json_test.go:140</h2>
+<pre>if len(output.CloneGroups) != 0 {
+	t.Errorf(&#34;Expected 0 clone groups, got %d&#34;, len(output.CloneGroups))
+}</pre>
+<h1>#17 found 2 clones</h1>
+<h2>printer/json_test.go:156</h2>
+<pre>nodes[0] = &amp;syntax.Node{
+	Type:     golang.FuncDecl,
+	Filename: &#34;test.go&#34;,
+	Pos:      10,
+	End:      30,
+}</pre>
+<h2>printer/json_test.go:163</h2>
+<pre>nodes[1] = &amp;syntax.Node{
+	Type:     golang.FuncDecl,
+	Filename: &#34;test.go&#34;,
+	Pos:      40,
+	End:      60,
+}</pre>
+<h1>#18 found 4 clones</h1>
+<h2>config/config_test.go:29</h2>
+<pre>if config.IncludeVendor != false {
+	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
+}
+if config.OutputFormat != &#34;text&#34; {
+	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:68</h2>
+<pre>if config.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
+}
+if config.OutputFormat != &#34;json&#34; {
+	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:234</h2>
+<pre>if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+}
+if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+}</pre>
+<h2>errors/types_test.go:26</h2>
+<pre>if err.Type != ParseError {
+	t.Errorf(&#34;Expected ParseError type, got %s&#34;, err.Type)
+}
+if err.File != &#34;test.go&#34; {
+	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
+}</pre>
+<h1>#19 found 2 clones</h1>
+<h2>cli.go:857</h2>
+<pre>filename := filepath.Join(outputDir, fmt.Sprintf(&#34;%s%s&#34;, method, fmtInfo.ext))</pre>
+<h2>cli.go:906</h2>
+<pre>filename := filepath.Join(outputDir, fmt.Sprintf(&#34;%s%s&#34;, method, fmtInfo.ext))</pre>
+<h1>#20 found 3 clones</h1>
+<h2>printer/sorting_integration_test.go:64</h2>
+<pre>{
+	name:          &#34;Sort by size descending&#34;,
+	sortBy:        &#34;size&#34;,
+	expectedOrder: []string{&#34;large.go&#34;, &#34;another_large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;},
+}</pre>
+<h2>printer/sorting_integration_test.go:69</h2>
+<pre>{
+	name:          &#34;Sort by occurrence (file count)&#34;,
+	sortBy:        &#34;occurrence&#34;,
+	expectedOrder: []string{&#34;large.go&#34;, &#34;another_large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;}, // All have same occurrence, should fallback to size
+}</pre>
+<h2>printer/sorting_integration_test.go:74</h2>
+<pre>{
+	name:          &#34;Sort by hash (filename order)&#34;,
+	sortBy:        &#34;hash&#34;,
+	expectedOrder: []string{&#34;another_large.go&#34;, &#34;large.go&#34;, &#34;medium.go&#34;, &#34;small.go&#34;},
+}</pre>
+<h1>#21 found 2 clones</h1>
+<h2>cli/cli_test.go:48</h2>
+<pre>g.Expect(config.GetThreshold()).To(gomega.Equal(30))</pre>
+<h2>cli/cli_test.go:51</h2>
+<pre>g.Expect(config.GetThreshold()).To(gomega.Equal(20))</pre>
+<h1>#22 found 4 clones</h1>
+<h2>printer/sorter.go:116</h2>
+<pre>case SortBySize:
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].GetSize() &gt; items[j].GetSize()
+	})</pre>
+<h2>printer/sorter.go:120</h2>
+<pre>case SortByOccurrence:
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].GetOccurrence() &gt; items[j].GetOccurrence()
+	})</pre>
+<h2>printer/sorter.go:124</h2>
+<pre>case SortByHash:
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].GetHash() &lt; items[j].GetHash()
+	})</pre>
+<h2>printer/sorter.go:128</h2>
+<pre>case SortByTotalTokens:
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].GetTotalTokens() &gt; items[j].GetTotalTokens()
+	})</pre>
+<h1>#23 found 3 clones</h1>
+<h2>syntax/golang/golang.go:255</h2>
+<pre>case *ast.IncDecStmt:
+	o.Type = IncDecStmt
+	o.AddChildren(t.trans(n.X))
+
+case *ast.IndexExpr:
+	o.Type = IndexExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre>
+<h2>syntax/golang/golang.go:263</h2>
+<pre>case *ast.InterfaceType:
+	o.Type = InterfaceType
+	o.AddChildren(t.trans(n.Methods))
+
+case *ast.KeyValueExpr:
+	o.Type = KeyValueExpr
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:295</h2>
+<pre>case *ast.SelectStmt:
+	o.Type = SelectStmt
+	o.AddChildren(t.trans(n.Body))
+
+case *ast.SelectorExpr:
+	o.Type = SelectorExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre>
+<h1>#24 found 6 clones</h1>
+<h2>hash/bdd_test.go:23</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+10, i+11, 100+i))
+}</pre>
+<h2>hash/bdd_test.go:73</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+10, i+11, 100+i))
+}</pre>
+<h2>hash/bdd_test.go:77</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file3.go&#34;, i+20, i+21, 110+i))
+}</pre>
+<h2>hash/bdd_test.go:80</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file4.go&#34;, i+30, i+31, 110+i))
+}</pre>
+<h2>hash/bdd_test.go:124</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file1.go&#34;, i+10, i+11, 100+i))
+}</pre>
+<h2>hash/bdd_test.go:128</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+25, i+26, 100+i))
+}</pre>
+<h1>#25 found 2 clones</h1>
+<h2>printer/html.go:109</h2>
+<pre>if startPos &lt; endPos {
+	if start &lt; startPos {
+		content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+	} else {
+		content = file[startPos:endPos]
+	}
+}</pre>
+<h2>printer/json.go:120</h2>
+<pre>if startPos &lt; endPos {
+	if start &lt; startPos {
+		content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+	} else {
+		content = file[startPos:endPos]
+	}
+}</pre>
+<h1>#26 found 3 clones</h1>
+<h2>config/detectionmethod.go:54</h2>
+<pre>func AllDetectionMethods() []DetectionMethod {
+	return []DetectionMethod{
+		DetectionMethodHash,
+		DetectionMethodArtDupl,
+		DetectionMethodTodos,
+		DetectionMethodLegacy,
+	}
+}</pre>
+<h2>config/outputformat.go:78</h2>
+<pre>func AllOutputFormats() []OutputFormat {
+	return []OutputFormat{
+		OutputFormatText,
+		OutputFormatHTML,
+		OutputFormatJSON,
+		OutputFormatPlumbing,
+	}
+}</pre>
+<h2>config/outputformat.go:88</h2>
+<pre>func AllSortCriteria() []SortCriteria {
+	return []SortCriteria{
+		SortBySize,
+		SortByOccurrence,
+		SortByHash,
+		SortByTotalTokens,
+	}
+}</pre>
+<h1>#27 found 2 clones</h1>
+<h2>syntax/findsyntaxunits_test.go:119</h2>
+<pre>match: suffixtree.Match{
+	Ps:  []suffixtree.Pos{0},
+	Len: 8,
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:135</h2>
+<pre>match: suffixtree.Match{
+	Ps:  []suffixtree.Pos{0},
+	Len: 2,
+}</pre>
+<h1>#28 found 8 clones</h1>
+<h2>main.go:64</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;💡 Use examples below to get started:\n\n&#34;); err != nil {
+	// Can&#39;t write help, continue anyway
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:68</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;  art-dupl                    # Analyze current directory\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:72</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;  art-dupl -t 50 ./src        # Higher threshold for larger clones\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:76</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;  art-dupl --json -t 20 . | jq # JSON output with post-processing\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:80</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;  art-dupl --all --output-dir ./reports # Generate all formats\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:85</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;Quick Fix: Check file paths and permissions\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:89</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;Get Help: art-dupl --help\n&#34;); err != nil {
+	// Can&#39;t write help examples
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>main.go:94</h2>
+<pre>if _, err := fmt.Fprintf(w, &#34;\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n&#34;); err != nil {
+	// Can&#39;t write final message
+	_ = err // Explicitly ignore error
+}</pre>
+<h1>#29 found 2 clones</h1>
+<h2>syntax/findsyntaxunits_test.go:33</h2>
+<pre>match := suffixtree.Match{
+	Ps:  []suffixtree.Pos{0, 10},
+	Len: 5,
+}</pre>
+<h2>syntax/findsyntaxunits_test.go:69</h2>
+<pre>match := suffixtree.Match{
+	Ps:  []suffixtree.Pos{0, 10},
+	Len: 8,
+}</pre>
+<h1>#30 found 3 clones</h1>
+<h2>cli.go:131</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
+		// If we can&#39;t even write to stderr, just exit
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:232</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:248</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#31 found 2 clones</h1>
+<h2>config/unmarshal_helper.go:6</h2>
+<pre>func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, errorMsg string) (T, error)</pre>
+<h2>config/unmarshal_helper.go:21</h2>
+<pre>func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, typeName string) (T, error)</pre>
+<h1>#32 found 3 clones</h1>
+<h2>cli.go:781</h2>
+<pre>if verbose {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;    Debug: Running %s detection method...\n&#34;, method); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:868</h2>
+<pre>if verbose {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;\nDebug: All reports generated in: %s\n&#34;, outputDir); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:923</h2>
+<pre>if verbose {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;Error closing file: %v\n&#34;, err); err != nil {
+		// Can&#39;t write error to stderr
+		_ = err // Explicitly ignore error
+	}
+}</pre>
+<h1>#33 found 2 clones</h1>
 <h2>examples/examples_sdk_demo.go:60</h2>
 <pre>fmt.Printf(&#34;  First group: %s with %d clones\n&#34;, group.Hash[:8]+&#34;...&#34;, len(group.Clones))</pre>
 <h2>examples/examples_sdk_demo.go:121</h2>
 <pre>fmt.Printf(&#34;  Group %s: %d clones\n&#34;, group.Hash[:8]+&#34;...&#34;, len(group.Clones))</pre>
-<h1>#3 found 4 clones</h1>
+<h1>#34 found 3 clones</h1>
+<h2>cli.go:47</h2>
+<pre>func (t *TestCLI) Exit(code int)     { t.ExitCode = code }</pre>
+<h2>printer/json.go:81</h2>
+<pre>func (p *JSONPrinter) SetHash(hash string) {
+	p.currentHash = hash
+}</pre>
+<h2>printer/json.go:86</h2>
+<pre>func (p *JSONPrinter) SetFilesCount(count int) {
+	p.filesCount = count
+}</pre>
+<h1>#35 found 3 clones</h1>
+<h2>cli.go:100</h2>
+<pre>if outputFormat == config.OutputFormatHTML &amp;&amp; plumbingFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
+		return err
+	}
+	return fmt.Errorf(&#34;conflicting output formats&#34;)
+}</pre>
+<h2>cli.go:106</h2>
+<pre>if outputFormat == config.OutputFormatHTML &amp;&amp; jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		return err
+	}
+	return fmt.Errorf(&#34;conflicting output formats&#34;)
+}</pre>
+<h2>cli.go:112</h2>
+<pre>if outputFormat == config.OutputFormatPlumbing &amp;&amp; jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
+		return err
+	}
+	return fmt.Errorf(&#34;conflicting output formats&#34;)
+}</pre>
+<h1>#36 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:243</h2>
+<pre>group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])</pre>
+<h2>pkg/artdupl/detector.go:287</h2>
+<pre>group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])</pre>
+<h1>#37 found 2 clones</h1>
+<h2>config/config_test.go:201</h2>
+<pre>if tt.isValid &amp;&amp; err != nil {
+	t.Errorf(&#34;Expected valid config, got error: %v&#34;, err)
+}
+if !tt.isValid &amp;&amp; err == nil {
+	t.Error(&#34;Expected invalid config, but got no error&#34;)
+}</pre>
+<h2>integration_test.go:105</h2>
+<pre>if tt.isValid &amp;&amp; err != nil {
+	t.Errorf(&#34;Expected valid config, got error: %v&#34;, err)
+}
+if !tt.isValid &amp;&amp; err == nil {
+	t.Error(&#34;Expected invalid config, but got no error&#34;)
+}</pre>
+<h1>#38 found 2 clones</h1>
+<h2>config/config_test.go:258</h2>
+<pre>{
+	name: &#34;NilFileConfig&#34;,
+	config: &amp;Config{
+		Threshold:     30,
+		OutputFormat:  &#34;json&#34;,
+		IncludeVendor: true,
+	},
+	isNilFileConfig: true,
+	expectedValues: map[string]any{
+		&#34;threshold&#34;:     30,
+		&#34;outputFormat&#34;:  &#34;json&#34;,
+		&#34;includeVendor&#34;: true,
+		&#34;verbose&#34;:       false,
+	},
+}</pre>
+<h2>config/config_test.go:273</h2>
+<pre>{
+	name: &#34;NilCLIConfig&#34;,
+	config: &amp;Config{
+		Threshold:    40,
+		OutputFormat: &#34;html&#34;,
+		Verbose:      true,
+	},
+	isNilFileConfig: false,
+	expectedValues: map[string]any{
+		&#34;threshold&#34;:     40,
+		&#34;outputFormat&#34;:  &#34;html&#34;,
+		&#34;verbose&#34;:       true,
+		&#34;includeVendor&#34;: false,
+	},
+}</pre>
+<h1>#39 found 7 clones</h1>
+<h2>cli.go:425</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;    📖 Parsing files and building analysis tree...&#34;); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:444</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34; ✅\n&#34;); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:722</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;🚀 Starting comprehensive code duplication analysis...\n\n&#34;); err != nil {
+	// Continue even if we can&#39;t write to stderr
+	_ = err // Explicitly ignore error
+}</pre>
+<h2>cli.go:729</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📂 Analyzing current directory\n&#34;); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:852</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📋 Generated files:\n&#34;); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:864</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;\n✨ Done! Use the reports above to review code duplication findings.\n&#34;); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:954</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34; ✅\n&#34;); err != nil {
+	_ = err
+}</pre>
+<h1>#40 found 2 clones</h1>
+<h2>cli.go:37</h2>
+<pre>func (r *RealCLI) Stderr() io.Writer { return os.Stderr }</pre>
+<h2>cli.go:38</h2>
+<pre>func (r *RealCLI) Stdout() io.Writer { return os.Stdout }</pre>
+<h1>#41 found 3 clones</h1>
+<h2>integration_test.go:70</h2>
+<pre>{
+	name: &#34;Valid config&#34;,
+	config: &amp;config.Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: true,
+}</pre>
+<h2>integration_test.go:80</h2>
+<pre>{
+	name: &#34;Invalid threshold&#34;,
+	config: &amp;config.Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: false,
+}</pre>
+<h2>integration_test.go:90</h2>
+<pre>{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;config.Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: false,
+}</pre>
+<h1>#42 found 4 clones</h1>
+<h2>cli.go:423</h2>
+<pre>       {
+	// Show basic progress even without verbose
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;    📖 Parsing files and building analysis tree...&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:442</h2>
+<pre>       {
+	// Show completion
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34; ✅\n&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:728</h2>
+<pre>                   {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;📂 Analyzing current directory\n&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:952</h2>
+<pre>       {
+	// Show completion for non-verbose mode
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34; ✅\n&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h1>#43 found 4 clones</h1>
+<h2>printer/sorter.go:252</h2>
+<pre>		   len(cloneGroups[i]) == 0 &amp;&amp; len(cloneGroups[j]) == 0</pre>
+<h2>printer/sorter.go:262</h2>
+<pre>		   len(cloneGroups[i]) &gt; 0 &amp;&amp; len(cloneGroups[j]) &gt; 0</pre>
+<h2>printer/sorter.go:274</h2>
+<pre>		   len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0</pre>
+<h2>printer/sorter.go:284</h2>
+<pre>		   len(dups[i]) &gt; 0 &amp;&amp; len(dups[j]) &gt; 0</pre>
+<h1>#44 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:130</h2>
+<pre>select {
+case &lt;-ctx.Done():
+	return ctx.Err()
+default:
+}</pre>
+<h2>pkg/artdupl/detector.go:272</h2>
+<pre>select {
+case &lt;-ctx.Done():
+	return ctx.Err()
+default:
+}</pre>
+<h1>#45 found 6 clones</h1>
+<h2>config/config_test.go:26</h2>
+<pre>if config.Threshold != 15 {
+	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
+}
+if config.IncludeVendor != false {
+	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:65</h2>
+<pre>if config.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
+}
+if config.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:71</h2>
+<pre>if config.OutputFormat != &#34;json&#34; {
+	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
+}
+if config.Verbose != true {
+	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
+}</pre>
+<h2>config/config_test.go:231</h2>
+<pre>if merged.Threshold != 25 {
+	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
+}
+if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:237</h2>
+<pre>if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+}
+if merged.Verbose != true {
+	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
+}</pre>
+<h2>integration_test.go:36</h2>
+<pre>if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
+}
+if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true (CLI override), got %v&#34;, merged.IncludeVendor)
+}</pre>
+<h1>#46 found 4 clones</h1>
+<h2>printer/html.go:59</h2>
+<pre>switch sortCriteria {
+case &#34;size&#34;:
+	sortedDups = SortClonesBySize(sortedDups)
+case &#34;occurrence&#34;:
+	sortedDups = SortClonesByOccurrence(sortedDups)
+case &#34;hash&#34;:
+	sortedDups = SortClonesByHash(sortedDups)
+case &#34;total-tokens&#34;:
+	sortedDups = SortClonesByTotalTokens(sortedDups)
+default:
+	sortedDups = SortClonesBySize(sortedDups) // Default to size
+}</pre>
+<h2>printer/html.go:203</h2>
+<pre>switch sortBy {
+case &#34;size&#34;:
+	allDups = SortClonesBySize(allDups)
+case &#34;occurrence&#34;:
+	allDups = SortClonesByOccurrence(allDups)
+case &#34;hash&#34;:
+	allDups = SortClonesByHash(allDups)
+case &#34;total-tokens&#34;:
+	allDups = SortClonesByTotalTokens(allDups)
+default:
+	allDups = SortClonesBySize(allDups) // Default to size
+}</pre>
+<h2>printer/plumbing.go:33</h2>
+<pre>switch sortCriteria {
+case &#34;size&#34;:
+	sortedDups = SortClonesBySize(sortedDups)
+case &#34;occurrence&#34;:
+	sortedDups = SortClonesByOccurrence(sortedDups)
+case &#34;hash&#34;:
+	sortedDups = SortClonesByHash(sortedDups)
+case &#34;total-tokens&#34;:
+	sortedDups = SortClonesByTotalTokens(sortedDups)
+default:
+	sortedDups = SortClonesBySize(sortedDups) // Default to size
+}</pre>
+<h2>printer/text.go:39</h2>
+<pre>switch sortCriteria {
+case &#34;size&#34;:
+	sortedDups = SortClonesBySize(sortedDups)
+case &#34;occurrence&#34;:
+	sortedDups = SortClonesByOccurrence(sortedDups)
+case &#34;hash&#34;:
+	sortedDups = SortClonesByHash(sortedDups)
+case &#34;total-tokens&#34;:
+	sortedDups = SortClonesByTotalTokens(sortedDups)
+default:
+	sortedDups = SortClonesBySize(sortedDups) // Default to size
+}</pre>
+<h1>#47 found 2 clones</h1>
+<h2>cli.go:754</h2>
+<pre>                 []struct {
+	name       string
+	format     config.OutputFormat
+	ext        string
+	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+}</pre>
+<h2>cli.go:883</h2>
+<pre>                                                                            []struct {
+	name       string
+	format     config.OutputFormat
+	ext        string
+	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
+}</pre>
+<h1>#48 found 2 clones</h1>
+<h2>printer/sorter.go:249</h2>
+<pre>                                                 {
+	// Sort by filename for deterministic output
+	sort.Slice(cloneGroups, func(i, j int) bool {
+		if len(cloneGroups[i]) == 0 &amp;&amp; len(cloneGroups[j]) == 0 {
+			return false
+		}
+		if len(cloneGroups[i]) == 0 {
+			return true
+		}
+		if len(cloneGroups[j]) == 0 {
+			return false
+		}
+		// Compare by filename of first clone in each group
+		if len(cloneGroups[i]) &gt; 0 &amp;&amp; len(cloneGroups[j]) &gt; 0 {
+			if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
+				return cloneGroups[i][0].lineStart &lt; cloneGroups[j][0].lineStart
+			}
+			return cloneGroups[i][0].filename &lt; cloneGroups[j][0].filename
+		}
+		return false
+	})
+}</pre>
+<h2>printer/sorter.go:272</h2>
+<pre>                                                {
+	sort.Slice(dups, func(i, j int) bool {
+		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
+			return false
+		}
+		if len(dups[i]) == 0 {
+			return true
+		}
+		if len(dups[j]) == 0 {
+			return false
+		}
+		// Use Filename for deterministic sorting
+		if len(dups[i]) &gt; 0 &amp;&amp; len(dups[j]) &gt; 0 {
+			if dups[i][0].Filename == dups[j][0].Filename {
+				return dups[i][0].Pos &lt; dups[j][0].Pos
+			}
+			return dups[i][0].Filename &lt; dups[j][0].Filename
+		}
+		return false
+	})
+}</pre>
+<h1>#49 found 2 clones</h1>
+<h2>cli.go:645</h2>
+<pre>if err = handleConfigError(config.ValidateConfig(mergedConfig)); err != nil {
+	return err
+}</pre>
+<h2>cli.go:657</h2>
+<pre>if err = handleConfigError(config.ValidateConfig(mergedConfig)); err != nil {
+	return err
+}</pre>
+<h1>#50 found 5 clones</h1>
+<h2>cli.go:131</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
+		// If we can&#39;t even write to stderr, just exit
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:188</h2>
+<pre>                                                         {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:232</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:248</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:271</h2>
+<pre>                                                                   {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: %v\n&#34;, err); err != nil {
+		// If we can&#39;t even write to stderr, just exit
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#51 found 2 clones</h1>
+<h2>detection/todos.go:91</h2>
+<pre>func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) []TodoIssue</pre>
+<h2>detection/todos.go:198</h2>
+<pre>func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node) []LegacyIssue</pre>
+<h1>#52 found 4 clones</h1>
+<h2>cli.go:371</h2>
+<pre>                          (cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool)</pre>
+<h2>cli.go:404</h2>
+<pre>                      (cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool)</pre>
+<h2>detection/multidetector.go:13</h2>
+<pre>                          {
+	config  *config.Config
+	data    []*syntax.Node
+	tree    *suffixtree.STree
+	verbose bool
+}</pre>
+<h2>detection/multidetector.go:21</h2>
+<pre>                     (cfg *config.Config, data []*syntax.Node, tree *suffixtree.STree, verbose bool)</pre>
+<h1>#53 found 4 clones</h1>
+<h2>syntax/golang/golang.go:149</h2>
+<pre>	for _, stmt := range n.Body {
+		o.AddChildren(t.trans(stmt))
+	}
+
+case *ast.ChanType:
+	o.Type = ChanType
+	o.AddChildren(t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:167</h2>
+<pre>	for _, e := range n.Elts {
+		o.AddChildren(t.trans(e))
+	}
+
+case *ast.DeclStmt:
+	o.Type = DeclStmt
+	o.AddChildren(t.trans(n.Decl))</pre>
+<h2>syntax/golang/golang.go:237</h2>
+<pre>	for _, spec := range n.Specs {
+		o.AddChildren(t.trans(spec))
+	}
+
+case *ast.GoStmt:
+	o.Type = GoStmt
+	o.AddChildren(t.trans(n.Call))</pre>
+<h2>syntax/golang/golang.go:291</h2>
+<pre>	for _, e := range n.Results {
+		o.AddChildren(t.trans(e))
+	}
+
+case *ast.SelectStmt:
+	o.Type = SelectStmt
+	o.AddChildren(t.trans(n.Body))</pre>
+<h1>#54 found 2 clones</h1>
+<h2>testutils/unique_basic_test.go:9</h2>
+<pre>func TestUniqueTestHelper_Basic(t *testing.T) {
+	str := UniqueTestHelper()
+	
+	// Check that it starts with &#34;unique_&#34;
+	if !strings.HasPrefix(str, &#34;unique_&#34;) {
+		t.Errorf(&#34;String should start with &#39;unique_&#39;, got &#39;%s&#39;&#34;, str)
+	}
+}</pre>
+<h2>testutils/unique_basic_test.go:35</h2>
+<pre>func TestUniqueFunction_Basic(t *testing.T) {
+	fn := UniqueFunction()
+	
+	// Check that it has proper structure
+	if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+		t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+	}
+}</pre>
+<h1>#55 found 4 clones</h1>
+<h2>printer/sorter.go:264</h2>
+<pre>return cloneGroups[i][0].lineStart &lt; cloneGroups[j][0].lineStart</pre>
+<h2>printer/sorter.go:266</h2>
+<pre>return cloneGroups[i][0].filename &lt; cloneGroups[j][0].filename</pre>
+<h2>printer/sorter.go:286</h2>
+<pre>return dups[i][0].Pos &lt; dups[j][0].Pos</pre>
+<h2>printer/sorter.go:288</h2>
+<pre>return dups[i][0].Filename &lt; dups[j][0].Filename</pre>
+<h1>#56 found 19 clones</h1>
+<h2>cli_test.go:32</h2>
+<pre>if testCLI.ExitCode != 42 {
+	t.Errorf(&#34;Expected exit code 42, got %d&#34;, testCLI.ExitCode)
+}</pre>
+<h2>config/config_test.go:26</h2>
+<pre>if config.Threshold != 15 {
+	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
+}</pre>
+<h2>config/config_test.go:32</h2>
+<pre>if config.OutputFormat != &#34;text&#34; {
+	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:65</h2>
+<pre>if config.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
+}</pre>
+<h2>config/config_test.go:71</h2>
+<pre>if config.OutputFormat != &#34;json&#34; {
+	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:83</h2>
+<pre>if config.MaxChildrenSerial != 20000 {
+	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, config.MaxChildrenSerial)
+}</pre>
+<h2>config/config_test.go:231</h2>
+<pre>if merged.Threshold != 25 {
+	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
+}</pre>
+<h2>config/config_test.go:237</h2>
+<pre>if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+}</pre>
+<h2>errors/types_test.go:29</h2>
+<pre>if err.File != &#34;test.go&#34; {
+	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
+}</pre>
+<h2>errors/types_test.go:32</h2>
+<pre>if err.Line != 42 {
+	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
+}</pre>
+<h2>errors/types_test.go:35</h2>
+<pre>if err.Message != &#34;test message&#34; {
+	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
+}</pre>
+<h2>integration_test.go:33</h2>
+<pre>if merged.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50 (CLI override), got %d&#34;, merged.Threshold)
+}</pre>
+<h2>integration_test.go:36</h2>
+<pre>if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
+}</pre>
+<h2>integration_test.go:53</h2>
+<pre>if merged.MaxChildrenSerial != 20000 {
+	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, merged.MaxChildrenSerial)
+}</pre>
+<h2>integration_test.go:56</h2>
+<pre>if merged.OutputFile != &#34;output.json&#34; {
+	t.Errorf(&#34;Expected OutputFile output.json, got %s&#34;, merged.OutputFile)
+}</pre>
+<h2>printer/json_test.go:23</h2>
+<pre>if jsonPrinter.iota != 0 {
+	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
+}</pre>
+<h2>printer/json_test.go:26</h2>
+<pre>if jsonPrinter.filesCount != 0 {
+	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
+}</pre>
+<h2>printer/json_test.go:29</h2>
+<pre>if jsonPrinter.totalClones != 0 {
+	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
+}</pre>
+<h2>printer/json_test.go:62</h2>
+<pre>if jsonPrinter.iota != 1 {
+	t.Errorf(&#34;Expected iota to be 1, got %d&#34;, jsonPrinter.iota)
+}</pre>
+<h1>#57 found 3 clones</h1>
+<h2>config/config_test.go:26</h2>
+<pre>if config.Threshold != 15 {
+	t.Errorf(&#34;Expected default threshold 15, got %d&#34;, config.Threshold)
+}
+if config.IncludeVendor != false {
+	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
+}
+if config.OutputFormat != &#34;text&#34; {
+	t.Errorf(&#34;Expected default OutputFormat text, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:65</h2>
+<pre>if config.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50, got %d&#34;, config.Threshold)
+}
+if config.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
+}
+if config.OutputFormat != &#34;json&#34; {
+	t.Errorf(&#34;Expected OutputFormat json, got %s&#34;, config.OutputFormat)
+}</pre>
+<h2>config/config_test.go:231</h2>
+<pre>if merged.Threshold != 25 {
+	t.Errorf(&#34;Expected merged threshold 25, got %d&#34;, merged.Threshold)
+}
+if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+}
+if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected merged OutputFormat html, got %s&#34;, merged.OutputFormat)
+}</pre>
+<h1>#58 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:301</h2>
+<pre>func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) &lt;-chan syntax.Match {
+	// Build suffix tree
+	tree := d.buildSuffixTree(data)
+	suffixMatches := tree.FindDuplOver(threshold)
+
+	// Convert suffix tree matches to syntax matches
+	syntaxMatches := make(chan syntax.Match)
+	go func() {
+		defer close(syntaxMatches)
+
+		for match := range suffixMatches {
+			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
+			if len(syntaxMatch.Frags) &gt; 0 {
+				syntaxMatches &lt;- syntaxMatch
+			}
+		}
+	}()
+
+	return syntaxMatches
+}</pre>
+<h2>pkg/artdupl/detector.go:323</h2>
+<pre>func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) &lt;-chan syntax.Match {
+	// Build a suffix tree for the hash detection method as well
+	tree := d.buildSuffixTree(data)
+	suffixMatches := tree.FindDuplOver(threshold)
+
+	// Convert suffix tree matches to syntax matches
+	syntaxMatches := make(chan syntax.Match)
+	go func() {
+		defer close(syntaxMatches)
+
+		for match := range suffixMatches {
+			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
+			if len(syntaxMatch.Frags) &gt; 0 {
+				syntaxMatches &lt;- syntaxMatch
+			}
+		}
+	}()
+
+	return syntaxMatches
+}</pre>
+<h1>#59 found 2 clones</h1>
+<h2>job/buildtree_test.go:67</h2>
+<pre>if len(*data) != 0 {
+	t.Errorf(&#34;Expected empty data, got %d nodes&#34;, len(*data))
+}</pre>
+<h2>job/buildtree_test.go:100</h2>
+<pre>if len(*data) != 4 {
+	t.Errorf(&#34;Expected 4 nodes total, got %d&#34;, len(*data))
+}</pre>
+<h1>#60 found 7 clones</h1>
+<h2>config/config_test.go:35</h2>
+<pre>	   len(config.Paths) != 1 || config.Paths[0] != &#34;.&#34;</pre>
+<h2>config/config_test.go:77</h2>
+<pre>	   len(config.Paths) != 2 || config.Paths[0] != &#34;./src&#34;</pre>
+<h2>config/config_test.go:80</h2>
+<pre>	   len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != &#34;*_test.go&#34;</pre>
+<h2>config/config_test.go:243</h2>
+<pre>	   len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34;</pre>
+<h2>config/config_test.go:246</h2>
+<pre>	   len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34;</pre>
+<h2>integration_test.go:47</h2>
+<pre>	   len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34;</pre>
+<h2>integration_test.go:50</h2>
+<pre>	   len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34;</pre>
+<h1>#61 found 9 clones</h1>
+<h2>syntax/golang/golang.go:123</h2>
+<pre>case *ast.BinaryExpr:
+	o.Type = BinaryExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Y))</pre>
+<h2>syntax/golang/golang.go:226</h2>
+<pre>case *ast.FuncLit:
+	o.Type = FuncLit
+	o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre>
+<h2>syntax/golang/golang.go:259</h2>
+<pre>case *ast.IndexExpr:
+	o.Type = IndexExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre>
+<h2>syntax/golang/golang.go:267</h2>
+<pre>case *ast.KeyValueExpr:
+	o.Type = KeyValueExpr
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:271</h2>
+<pre>case *ast.LabeledStmt:
+	o.Type = LabeledStmt
+	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre>
+<h2>syntax/golang/golang.go:275</h2>
+<pre>case *ast.MapType:
+	o.Type = MapType
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:299</h2>
+<pre>case *ast.SelectorExpr:
+	o.Type = SelectorExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre>
+<h2>syntax/golang/golang.go:303</h2>
+<pre>case *ast.SendStmt:
+	o.Type = SendStmt
+	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:333</h2>
+<pre>case *ast.TypeSpec:
+	o.Type = TypeSpec
+	o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+<h1>#62 found 2 clones</h1>
+<h2>pkg/artdupl/basic_test.go:64</h2>
+<pre>{
+	name: &#34;threshold too low&#34;,
+	opts: &amp;Options{
+		Threshold: 0,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+	},
+	wantErr: true,
+}</pre>
+<h2>pkg/artdupl/basic_test.go:72</h2>
+<pre>{
+	name: &#34;threshold too high&#34;,
+	opts: &amp;Options{
+		Threshold: 1001,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+	},
+	wantErr: true,
+}</pre>
+<h1>#63 found 2 clones</h1>
+<h2>cli.go:561</h2>
+<pre>func runCobraCommand(cmd *cobra.Command, args []string) error</pre>
+<h2>main.go:113</h2>
+<pre>func runCmd(cmd *cobra.Command, args []string) error</pre>
+<h1>#64 found 5 clones</h1>
+<h2>config/config_test.go:35</h2>
+<pre>if len(config.Paths) != 1 || config.Paths[0] != &#34;.&#34; {
+	t.Errorf(&#34;Expected default paths [\&#34;.\&#34;], got %v&#34;, config.Paths)
+}</pre>
+<h2>config/config_test.go:243</h2>
+<pre>if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
+	t.Errorf(&#34;Expected merged paths [\&#34;./cmd\&#34;], got %v&#34;, merged.Paths)
+}</pre>
+<h2>config/config_test.go:246</h2>
+<pre>if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+	t.Errorf(&#34;Expected merged ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
+}</pre>
+<h2>integration_test.go:47</h2>
+<pre>if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
+	t.Errorf(&#34;Expected paths [\&#34;./test\&#34;], got %v&#34;, merged.Paths)
+}</pre>
+<h2>integration_test.go:50</h2>
+<pre>if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
+}</pre>
+<h1>#65 found 4 clones</h1>
+<h2>cli.go:527</h2>
+<pre>                           {
+	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
+}</pre>
+<h2>lib/lib.go:46</h2>
+<pre>                           {
+	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
+}</pre>
+<h2>pkg/artdupl/detector.go:234</h2>
+<pre>                        {
+	groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+}</pre>
+<h2>pkg/artdupl/detector.go:278</h2>
+<pre>                        {
+	groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+}</pre>
+<h1>#66 found 3 clones</h1>
+<h2>cli.go:74</h2>
+<pre>                                                     func(io.Writer, printer.ReadFile) printer.Printer</pre>
+<h2>cli.go:758</h2>
+<pre>		           func(io.Writer, printer.ReadFile) printer.Printer</pre>
+<h2>cli.go:887</h2>
+<pre>	           func(io.Writer, printer.ReadFile) printer.Printer</pre>
+<h1>#67 found 14 clones</h1>
+<h2>syntax/golang/golang.go:112</h2>
+<pre>for _, e := range n.Rhs {
+	o.AddChildren(t.trans(e))
+}</pre>
+<h2>syntax/golang/golang.go:116</h2>
+<pre>for _, e := range n.Lhs {
+	o.AddChildren(t.trans(e))
+}</pre>
+<h2>syntax/golang/golang.go:129</h2>
+<pre>for _, stmt := range n.List {
+	o.AddChildren(t.trans(stmt))
+}</pre>
+<h2>syntax/golang/golang.go:140</h2>
+<pre>for _, arg := range n.Args {
+	o.AddChildren(t.trans(arg))
+}</pre>
+<h2>syntax/golang/golang.go:146</h2>
+<pre>for _, e := range n.List {
+	o.AddChildren(t.trans(e))
+}</pre>
+<h2>syntax/golang/golang.go:149</h2>
+<pre>for _, stmt := range n.Body {
+	o.AddChildren(t.trans(stmt))
+}</pre>
+<h2>syntax/golang/golang.go:160</h2>
+<pre>for _, stmt := range n.Body {
+	o.AddChildren(t.trans(stmt))
+}</pre>
+<h2>syntax/golang/golang.go:167</h2>
+<pre>for _, e := range n.Elts {
+	o.AddChildren(t.trans(e))
+}</pre>
+<h2>syntax/golang/golang.go:192</h2>
+<pre>for _, name := range n.Names {
+	o.AddChildren(t.trans(name))
+}</pre>
+<h2>syntax/golang/golang.go:199</h2>
+<pre>for _, field := range n.List {
+	o.AddChildren(t.trans(field))
+}</pre>
+<h2>syntax/golang/golang.go:237</h2>
+<pre>for _, spec := range n.Specs {
+	o.AddChildren(t.trans(spec))
+}</pre>
+<h2>syntax/golang/golang.go:291</h2>
+<pre>for _, e := range n.Results {
+	o.AddChildren(t.trans(e))
+}</pre>
+<h2>syntax/golang/golang.go:348</h2>
+<pre>for _, name := range n.Names {
+	o.AddChildren(t.trans(name))
+}</pre>
+<h2>syntax/golang/golang.go:352</h2>
+<pre>for _, val := range n.Values {
+	o.AddChildren(t.trans(val))
+}</pre>
+<h1>#68 found 2 clones</h1>
+<h2>config/config_test.go:77</h2>
+<pre>if len(config.Paths) != 2 || config.Paths[0] != &#34;./src&#34; || config.Paths[1] != &#34;./lib&#34; {
+	t.Errorf(&#34;Expected paths [\&#34;./src\&#34;, \&#34;./lib\&#34;], got %v&#34;, config.Paths)
+}</pre>
+<h2>config/config_test.go:80</h2>
+<pre>if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != &#34;*_test.go&#34; || config.IgnoreFiles[1] != &#34;mock_*.go&#34; {
+	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;, \&#34;mock_*.go\&#34;], got %v&#34;, config.IgnoreFiles)
+}</pre>
+<h1>#69 found 3 clones</h1>
+<h2>examples/examples_test.go:289</h2>
+<pre>func (l *testLogger) Debug(msg string, args ...any)  {}
+func (l *testLogger) Info(msg string, args ...any)   {}
+func (l *testLogger) Warn(msg string, args ...any)   {}
+func (l *testLogger) Error(msg string, args ...any)  {}</pre>
+<h2>pkg/artdupl/basic_test.go:211</h2>
+<pre>func (l *testLoggerBasic) Debug(msg string, args ...any)  {}
+func (l *testLoggerBasic) Info(msg string, args ...any)   {}
+func (l *testLoggerBasic) Warn(msg string, args ...any)   {}
+func (l *testLoggerBasic) Error(msg string, args ...any)  {}</pre>
+<h2>pkg/artdupl/types.go:151</h2>
+<pre>func (l *defaultLogger) Debug(msg string, args ...any) {}
+func (l *defaultLogger) Info(msg string, args ...any)  {}
+func (l *defaultLogger) Warn(msg string, args ...any)  {}
+func (l *defaultLogger) Error(msg string, args ...any) {}</pre>
+<h1>#70 found 2 clones</h1>
+<h2>cli.go:421</h2>
+<pre>if verbose {
+	log.Println(&#34;Building suffix tree&#34;)
+} else {
+	// Show basic progress even without verbose
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;    📖 Parsing files and building analysis tree...&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:440</h2>
+<pre>if verbose {
+	log.Println(&#34;Searching for clones&#34;)
+} else {
+	// Show completion
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34; ✅\n&#34;); err != nil {
+		_ = err
+	}
+}</pre>
+<h1>#71 found 12 clones</h1>
+<h2>syntax/golang/golang.go:125</h2>
+<pre>o.AddChildren(t.trans(n.X), t.trans(n.Y))</pre>
+<h2>syntax/golang/golang.go:223</h2>
+<pre>o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+<h2>syntax/golang/golang.go:228</h2>
+<pre>o.AddChildren(t.trans(n.Type), t.trans(n.Body))</pre>
+<h2>syntax/golang/golang.go:261</h2>
+<pre>o.AddChildren(t.trans(n.X), t.trans(n.Index))</pre>
+<h2>syntax/golang/golang.go:269</h2>
+<pre>o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:273</h2>
+<pre>o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre>
+<h2>syntax/golang/golang.go:277</h2>
+<pre>o.AddChildren(t.trans(n.Key), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:287</h2>
+<pre>o.AddChildren(t.trans(n.X), t.trans(n.Body))</pre>
+<h2>syntax/golang/golang.go:301</h2>
+<pre>o.AddChildren(t.trans(n.X), t.trans(n.Sel))</pre>
+<h2>syntax/golang/golang.go:305</h2>
+<pre>o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:335</h2>
+<pre>o.AddChildren(t.trans(n.Name), t.trans(n.Type))</pre>
+<h2>syntax/golang/golang.go:340</h2>
+<pre>o.AddChildren(t.trans(n.Assign), t.trans(n.Body))</pre>
+<h1>#72 found 2 clones</h1>
+<h2>cli_test.go:37</h2>
+<pre>if _, err := testCLI.Stderr().Write([]byte(&#34;stderr&#34;)); err != nil {
+	t.Fatalf(&#34;Failed to write to stderr: %v&#34;, err)
+}</pre>
+<h2>cli_test.go:40</h2>
+<pre>if _, err := testCLI.Stdout().Write([]byte(&#34;stdout&#34;)); err != nil {
+	t.Fatalf(&#34;Failed to write to stdout: %v&#34;, err)
+}</pre>
+<h1>#73 found 2 clones</h1>
+<h2>cli.go:67</h2>
+<pre>const (
+	defaultThreshold = 15
+	vendorDirPrefix  = &#34;vendor&#34; + string(filepath.Separator)
+	vendorDirInPath  = string(filepath.Separator) + vendorDirPrefix
+)</pre>
+<h2>cli/config.go:80</h2>
+<pre>const (
+	DefaultThreshold = 15
+	VendorDirPrefix  = &#34;vendor&#34; + string(filepath.Separator)
+	VendorDirInPath  = string(filepath.Separator) + VendorDirPrefix
+)</pre>
+<h1>#74 found 2 clones</h1>
+<h2>cli.go:488</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: cannot stat %s: %v\n&#34;, path, err); err != nil {
+		cli.Exit(1)
+		return
+	}
+	cli.Exit(1)
+	return
+}</pre>
+<h2>cli.go:510</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: cannot walk %s: %v\n&#34;, path, err); err != nil {
+		cli.Exit(1)
+		return
+	}
+	cli.Exit(1)
+	return
+}</pre>
+<h1>#75 found 5 clones</h1>
+<h2>config/config_test.go:151</h2>
+<pre>{
+	name: &#34;Invalid threshold - too low&#34;,
+	config: &amp;Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:160</h2>
+<pre>{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:169</h2>
+<pre>{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:178</h2>
+<pre>{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:187</h2>
+<pre>{
+	name: &#34;Invalid maxChildrenSerial - too high&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 100001,
+	},
+	isValid: false,
+}</pre>
+<h1>#76 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:59</h2>
+<pre>func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error)</pre>
+<h2>pkg/artdupl/types.go:25</h2>
+<pre>	          (ctx context.Context, files []string) (*Result, error)</pre>
+<h1>#77 found 9 clones</h1>
+<h2>cli.go:733</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📂 Analyzing paths: %v\n&#34;, paths); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:738</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📋 Output directory: %s\n&#34;, outputDir); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:741</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;⚡ Threshold: %d tokens\n&#34;, threshold); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:744</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;🔧 Include vendor: %t\n\n&#34;, vendor); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:782</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;    Debug: Running %s detection method...\n&#34;, method); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:820</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📁 All reports generated in: %s\n&#34;, outputDir); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:858</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;   📄 %s\n&#34;, filename); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:869</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;\nDebug: All reports generated in: %s\n&#34;, outputDir); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:924</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;Error closing file: %v\n&#34;, err); err != nil {
+	// Can&#39;t write error to stderr
+	_ = err // Explicitly ignore error
+}</pre>
+<h1>#78 found 2 clones</h1>
+<h2>printer/issuer.go:13</h2>
+<pre>func (c Clone) Filename() string {
+	return c.filename
+}
+
+func (c Clone) LineStart() int {
+	return c.lineStart
+}</pre>
+<h2>printer/issuer.go:17</h2>
+<pre>func (c Clone) LineStart() int {
+	return c.lineStart
+}
+
+func (c Clone) LineEnd() int {
+	return c.lineEnd
+}</pre>
+<h1>#79 found 2 clones</h1>
+<h2>cli_test.go:44</h2>
+<pre>if testCLI.StderrBuf.String() != &#34;stderr&#34; {
+	t.Errorf(&#34;Expected stderr buffer content &#39;stderr&#39;, got &#39;%s&#39;&#34;, testCLI.StderrBuf.String())
+}</pre>
+<h2>cli_test.go:48</h2>
+<pre>if testCLI.StdoutBuf.String() != &#34;stdout&#34; {
+	t.Errorf(&#34;Expected stdout buffer content &#39;stdout&#39;, got &#39;%s&#39;&#34;, testCLI.StdoutBuf.String())
+}</pre>
+<h1>#80 found 2 clones</h1>
+<h2>job/parse_test.go:22</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;Parse timed out - possible deadlock&#34;)</pre>
+<h2>job/parse_test.go:38</h2>
+<pre>case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;Parse should handle errors gracefully, not block&#34;)</pre>
+<h1>#81 found 6 clones</h1>
+<h2>errors/types_test.go:29</h2>
+<pre>if err.File != &#34;test.go&#34; {
+	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
+}
+if err.Line != 42 {
+	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
+}</pre>
+<h2>errors/types_test.go:32</h2>
+<pre>if err.Line != 42 {
+	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
+}
+if err.Message != &#34;test message&#34; {
+	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
+}</pre>
+<h2>integration_test.go:33</h2>
+<pre>if merged.Threshold != 50 {
+	t.Errorf(&#34;Expected threshold 50 (CLI override), got %d&#34;, merged.Threshold)
+}
+if merged.OutputFormat != &#34;html&#34; {
+	t.Errorf(&#34;Expected outputFormat html (CLI override), got %s&#34;, merged.OutputFormat)
+}</pre>
+<h2>integration_test.go:53</h2>
+<pre>if merged.MaxChildrenSerial != 20000 {
+	t.Errorf(&#34;Expected MaxChildrenSerial 20000, got %d&#34;, merged.MaxChildrenSerial)
+}
+if merged.OutputFile != &#34;output.json&#34; {
+	t.Errorf(&#34;Expected OutputFile output.json, got %s&#34;, merged.OutputFile)
+}</pre>
+<h2>printer/json_test.go:23</h2>
+<pre>if jsonPrinter.iota != 0 {
+	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
+}
+if jsonPrinter.filesCount != 0 {
+	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
+}</pre>
+<h2>printer/json_test.go:26</h2>
+<pre>if jsonPrinter.filesCount != 0 {
+	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
+}
+if jsonPrinter.totalClones != 0 {
+	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
+}</pre>
+<h1>#82 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:63</h2>
+<pre>if err := d.validateInputs(ctx, files); err != nil {
+	return nil, err
+}</pre>
+<h2>pkg/artdupl/detector.go:88</h2>
+<pre>if err := d.validateInputs(ctx, files); err != nil {
+	return nil, err
+}</pre>
+<h1>#83 found 2 clones</h1>
+<h2>syntax/golang/golang.go:235</h2>
+<pre>case *ast.GenDecl:
+	o.Type = GenDecl
+	for _, spec := range n.Specs {
+		o.AddChildren(t.trans(spec))
+	}
+
+case *ast.GoStmt:
+	o.Type = GoStmt
+	o.AddChildren(t.trans(n.Call))</pre>
+<h2>syntax/golang/golang.go:289</h2>
+<pre>case *ast.ReturnStmt:
+	o.Type = ReturnStmt
+	for _, e := range n.Results {
+		o.AddChildren(t.trans(e))
+	}
+
+case *ast.SelectStmt:
+	o.Type = SelectStmt
+	o.AddChildren(t.trans(n.Body))</pre>
+<h1>#84 found 3 clones</h1>
+<h2>printer/text.go:70</h2>
+<pre>                          {
+	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		return err
+	}
+}</pre>
+<h2>printer/text.go:112</h2>
+<pre>                          {
+	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		return err
+	}
+}</pre>
+<h2>printer/text.go:203</h2>
+<pre>       {
+	if _, err := fmt.Fprintf(p.w, &#34;%s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		return err
+	}
+}</pre>
+<h1>#85 found 3 clones</h1>
+<h2>cli.go:198</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:206</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:214</h2>
+<pre>if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#86 found 2 clones</h1>
+<h2>examples/examples_test.go:191</h2>
+<pre>if progress.Percentage &lt; 0 || progress.Percentage &gt; 100 {
+	t.Errorf(&#34;Progress percentage should be between 0-100, got %f&#34;, progress.Percentage)
+}</pre>
+<h2>pkg/artdupl/basic_test.go:33</h2>
+<pre>if opts.Threshold &lt;= 0 || opts.Threshold &gt; 1000 {
+	t.Errorf(&#34;Default threshold should be reasonable, got %d&#34;, opts.Threshold)
+}</pre>
+<h1>#87 found 2 clones</h1>
+<h2>syntax/golang/golang.go:157</h2>
+<pre>case *ast.CommClause:
+	o.Type = CommClause
+	t.addWithNilCheck(o, n.Comm)
+	for _, stmt := range n.Body {
+		o.AddChildren(t.trans(stmt))
+	}</pre>
+<h2>syntax/golang/golang.go:164</h2>
+<pre>case *ast.CompositeLit:
+	o.Type = CompositeLit
+	t.addWithNilCheck(o, n.Type)
+	for _, e := range n.Elts {
+		o.AddChildren(t.trans(e))
+	}</pre>
+<h1>#88 found 4 clones</h1>
+<h2>examples/examples_test.go:23</h2>
+<pre>if len(opts.DetectionMethods) == 0 {
+	t.Error(&#34;Should have detection methods&#34;)
+}</pre>
+<h2>examples/examples_test.go:110</h2>
+<pre>if len(cloneGroup.Clones) == 0 {
+	t.Error(&#34;Clone group should have clones&#34;)
+}</pre>
+<h2>examples/examples_test.go:157</h2>
+<pre>if len(summary.MethodsUsed) == 0 {
+	t.Error(&#34;Methods used should not be empty&#34;)
+}</pre>
+<h2>pkg/artdupl/basic_test.go:156</h2>
+<pre>if len(group.Clones) == 0 {
+	t.Error(&#34;Clone group should have at least one clone&#34;)
+}</pre>
+<h1>#89 found 4 clones</h1>
+<h2>pkg/artdupl/detector.go:118</h2>
+<pre>func (d *detector) Close() error {
+	// No persistent resources to clean up currently
+	return nil
+}</pre>
+<h2>printer/plumbing.go:20</h2>
+<pre>func (p *plumbing) PrintHeader() error { return nil }</pre>
+<h2>printer/plumbing.go:61</h2>
+<pre>func (p *plumbing) PrintFooter() error { return nil }</pre>
+<h2>printer/text.go:24</h2>
+<pre>func (p *text) PrintHeader() error { return nil }</pre>
+<h1>#90 found 3 clones</h1>
+<h2>config/config_test.go:151</h2>
+<pre>{
+	name: &#34;Invalid threshold - too low&#34;,
+	config: &amp;Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:160</h2>
+<pre>{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:169</h2>
+<pre>{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too high&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 100001,
+	},
+	isValid: false,
+}</pre>
+<h1>#91 found 4 clones</h1>
+<h2>cli/runtime_test.go:26</h2>
+<pre>g.Expect(cfg.IncludeVendor).To(gomega.BeTrue())</pre>
+<h2>cli/runtime_test.go:27</h2>
+<pre>g.Expect(cfg.FilesFromStdin).To(gomega.BeTrue())</pre>
+<h2>cli/runtime_test.go:28</h2>
+<pre>g.Expect(cfg.Verbose).To(gomega.BeTrue())</pre>
+<h2>cli/runtime_test.go:64</h2>
+<pre>g.Expect(cfg.OutputWriter).NotTo(gomega.BeNil())</pre>
+<h1>#92 found 6 clones</h1>
+<h2>config/detectionmethod.go:27</h2>
+<pre>func (dm DetectionMethod) String() string {
+	return string(dm)
+}</pre>
+<h2>config/outputformat.go:14</h2>
+<pre>func (of OutputFormat) String() string {
+	return string(of)
+}</pre>
+<h2>config/outputformat.go:51</h2>
+<pre>func (sc SortCriteria) String() string {
+	return string(sc)
+}</pre>
+<h2>printer/common.go:13</h2>
+<pre>func (c byNameAndLine) Len() int { return len(c) }</pre>
+<h2>suffixtree/dupl_test.go:33</h2>
+<pre>func (p ByPos) Len() int {
+	return len(p)
+}</pre>
+<h2>suffixtree/suffixtree_test.go:7</h2>
+<pre>func (c char) Val() int {
+	return int(c)
+}</pre>
+<h1>#93 found 3 clones</h1>
+<h2>printer/sorter.go:35</h2>
+<pre>func (c CloneSortable) GetTotalTokens() int { return len(c.fragment) }</pre>
+<h2>printer/sorter.go:50</h2>
+<pre>func (c CloneGroupSortableArray) GetOccurrence() int {
+	return len(c.clones)
+}</pre>
+<h2>printer/sorter.go:81</h2>
+<pre>func (n NodeGroupSortable) GetOccurrence() int {
+	return len(n.Nodes)
+}</pre>
+<h1>#94 found 2 clones</h1>
+<h2>printer/common.go:17</h2>
+<pre>                                           {
+	if c[i].filename == c[j].filename {
+		return c[i].lineStart &lt; c[j].lineStart
+	}
+	return c[i].filename &lt; c[j].filename
+}</pre>
+<h2>printer/json.go:135</h2>
+<pre>                                       {
+	if clones[i].Filename == clones[j].Filename {
+		return clones[i].LineStart &lt; clones[j].LineStart
+	}
+	return clones[i].Filename &lt; clones[j].Filename
+}</pre>
+<h1>#95 found 3 clones</h1>
+<h2>printer/sorter.go:22</h2>
+<pre>func (c CloneGroupSortable) GetSize() int        { return c.CloneGroup.Size }</pre>
+<h2>printer/sorter.go:24</h2>
+<pre>func (c CloneGroupSortable) GetHash() string     { return c.CloneGroup.Hash }</pre>
+<h2>printer/sorter.go:25</h2>
+<pre>func (c CloneGroupSortable) GetTotalTokens() int { return c.CloneGroup.Size }</pre>
+<h1>#96 found 2 clones</h1>
+<h2>printer/html_test.go:15</h2>
+<pre>for _, tc := range testCases {
+	actual := toWhitespace([]byte(tc.in))
+	if tc.expect != string(actual) {
+		t.Errorf(&#34;got &#39;%s&#39;, want &#39;%s&#39;&#34;, actual, tc.expect)
+	}
+}</pre>
+<h2>printer/html_test.go:33</h2>
+<pre>for _, tc := range testCases {
+	actual := deindent([]byte(tc.in))
+	if tc.expect != string(actual) {
+		t.Errorf(&#34;got &#39;%s&#39;, want &#39;%s&#39;&#34;, actual, tc.expect)
+	}
+}</pre>
+<h1>#97 found 2 clones</h1>
+<h2>errors/types_test.go:29</h2>
+<pre>if err.File != &#34;test.go&#34; {
+	t.Errorf(&#34;Expected &#39;test.go&#39;, got &#39;%s&#39;&#34;, err.File)
+}
+if err.Line != 42 {
+	t.Errorf(&#34;Expected 42, got %d&#34;, err.Line)
+}
+if err.Message != &#34;test message&#34; {
+	t.Errorf(&#34;Expected &#39;test message&#39;, got &#39;%s&#39;&#34;, err.Message)
+}</pre>
+<h2>printer/json_test.go:23</h2>
+<pre>if jsonPrinter.iota != 0 {
+	t.Errorf(&#34;Expected iota to be 0, got %d&#34;, jsonPrinter.iota)
+}
+if jsonPrinter.filesCount != 0 {
+	t.Errorf(&#34;Expected filesCount to be 0, got %d&#34;, jsonPrinter.filesCount)
+}
+if jsonPrinter.totalClones != 0 {
+	t.Errorf(&#34;Expected totalClones to be 0, got %d&#34;, jsonPrinter.totalClones)
+}</pre>
+<h1>#98 found 2 clones</h1>
+<h2>printer/sorter.go:42</h2>
+<pre>func (c CloneGroupSortableArray) GetSize() int {
+	total := 0
+	for _, cl := range c.clones {
+		total += len(cl.fragment)
+	}
+	return total
+}</pre>
+<h2>printer/sorter.go:61</h2>
+<pre>func (c CloneGroupSortableArray) GetTotalTokens() int {
+	total := 0
+	for _, cl := range c.clones {
+		total += len(cl.fragment)
+	}
+	return total
+}</pre>
+<h1>#99 found 4 clones</h1>
 <h2>examples/examples_sdk_demo.go:211</h2>
 <pre>func (l *verboseLogger) Debug(msg string, args ...any) {
 	fmt.Printf(&#34;[DEBUG] %s\n&#34;, fmt.Sprintf(msg, args...))
@@ -38,6 +2170,1502 @@
 <h2>examples/examples_sdk_demo.go:223</h2>
 <pre>func (l *verboseLogger) Error(msg string, args ...any) {
 	fmt.Printf(&#34;[ERROR] %s\n&#34;, fmt.Sprintf(msg, args...))
+}</pre>
+<h1>#100 found 2 clones</h1>
+<h2>cli/runtime.go:68</h2>
+<pre>func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }</pre>
+<h2>cli/runtime.go:72</h2>
+<pre>func (c *cliStderr) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }</pre>
+<h1>#101 found 2 clones</h1>
+<h2>integration_test.go:70</h2>
+<pre>{
+	name: &#34;Valid config&#34;,
+	config: &amp;config.Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: true,
+},
+{
+	name: &#34;Invalid threshold&#34;,
+	config: &amp;config.Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: false,
+}</pre>
+<h2>integration_test.go:80</h2>
+<pre>{
+	name: &#34;Invalid threshold&#34;,
+	config: &amp;config.Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;config.Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+		DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+	},
+	isValid: false,
+}</pre>
+<h1>#102 found 2 clones</h1>
+<h2>syntax/golang/golang.go:263</h2>
+<pre>case *ast.InterfaceType:
+	o.Type = InterfaceType
+	o.AddChildren(t.trans(n.Methods))
+
+case *ast.KeyValueExpr:
+	o.Type = KeyValueExpr
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+
+case *ast.LabeledStmt:
+	o.Type = LabeledStmt
+	o.AddChildren(t.trans(n.Label), t.trans(n.Stmt))</pre>
+<h2>syntax/golang/golang.go:295</h2>
+<pre>case *ast.SelectStmt:
+	o.Type = SelectStmt
+	o.AddChildren(t.trans(n.Body))
+
+case *ast.SelectorExpr:
+	o.Type = SelectorExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Sel))
+
+case *ast.SendStmt:
+	o.Type = SendStmt
+	o.AddChildren(t.trans(n.Chan), t.trans(n.Value))</pre>
+<h1>#103 found 3 clones</h1>
+<h2>errors/types.go:56</h2>
+<pre>func NewConfigError(msg string, cause error) *DuplError {
+	return &amp;DuplError{
+		Type:    ConfigError,
+		Message: msg,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
+}</pre>
+<h2>errors/types.go:77</h2>
+<pre>func NewValidationError(msg string, cause error) *DuplError {
+	return &amp;DuplError{
+		Type:    ValidationError,
+		Message: msg,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
+}</pre>
+<h2>errors/types.go:87</h2>
+<pre>func NewInternalError(msg string, cause error) *DuplError {
+	return &amp;DuplError{
+		Type:    InternalError,
+		Message: msg,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
+}</pre>
+<h1>#104 found 2 clones</h1>
+<h2>cli.go:817</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stderr(), &#34;📊 Overall statistics: %d files analyzed, %d total clone groups found\n&#34;, totalFilesAnalyzed, totalClonesFound); err != nil {
+	_ = err
+}</pre>
+<h2>cli.go:845</h2>
+<pre>if _, err := fmt.Fprintf(cli.Stdout(), &#34;found %d clones (%s method)\n&#34;, totalClones, method); err != nil {
+	_ = err
+}</pre>
+<h1>#105 found 2 clones</h1>
+<h2>hash/detector.go:20</h2>
+<pre>func (h *HashDetector) FindDuplOver(data []*syntax.Node, threshold int) &lt;-chan syntax.Match</pre>
+<h2>hash/file_detector.go:32</h2>
+<pre>func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) &lt;-chan syntax.Match</pre>
+<h1>#106 found 2 clones</h1>
+<h2>syntax/golang/golang.go:171</h2>
+<pre>case *ast.DeclStmt:
+	o.Type = DeclStmt
+	o.AddChildren(t.trans(n.Decl))
+
+case *ast.DeferStmt:
+	o.Type = DeferStmt
+	o.AddChildren(t.trans(n.Call))</pre>
+<h2>syntax/golang/golang.go:314</h2>
+<pre>case *ast.StarExpr:
+	o.Type = StarExpr
+	o.AddChildren(t.trans(n.X))
+
+case *ast.StructType:
+	o.Type = StructType
+	o.AddChildren(t.trans(n.Fields))</pre>
+<h1>#107 found 2 clones</h1>
+<h2>config/config_test.go:240</h2>
+<pre>if merged.Verbose != true {
+	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
+}
+if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./cmd&#34; {
+	t.Errorf(&#34;Expected merged paths [\&#34;./cmd\&#34;], got %v&#34;, merged.Paths)
+}
+if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+	t.Errorf(&#34;Expected merged ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
+}</pre>
+<h2>integration_test.go:44</h2>
+<pre>if merged.Verbose != true {
+	t.Errorf(&#34;Expected Verbose true (from file), got %v&#34;, merged.Verbose)
+}
+if len(merged.Paths) != 1 || merged.Paths[0] != &#34;./test&#34; {
+	t.Errorf(&#34;Expected paths [\&#34;./test\&#34;], got %v&#34;, merged.Paths)
+}
+if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != &#34;*_test.go&#34; {
+	t.Errorf(&#34;Expected ignoreFiles [\&#34;*_test.go\&#34;], got %v&#34;, merged.IgnoreFiles)
+}</pre>
+<h1>#108 found 5 clones</h1>
+<h2>cli.go:89</h2>
+<pre>if err != nil {
+	if _, writeErr := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); writeErr != nil {
+		return writeErr
+	}
+	return err
+}</pre>
+<h2>cli.go:581</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:627</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;detection methods error: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:672</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:686</h2>
+<pre>if err != nil {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h1>#109 found 2 clones</h1>
+<h2>hash/bdd_test.go:49</h2>
+<pre>nodes := []*syntax.Node{
+	createTestNode(&#34;file1.go&#34;, 1, 3, 50),   // 3 nodes
+	createTestNode(&#34;file2.go&#34;, 10, 12, 50), // 3 nodes, identical
+}</pre>
+<h2>hash/bdd_test.go:99</h2>
+<pre>nodes := []*syntax.Node{
+	createTestNode(&#34;file1.go&#34;, 1, 20, 200), // Long sequence
+	createTestNode(&#34;file2.go&#34;, 1, 20, 200), // Identical long sequence
+}</pre>
+<h1>#110 found 4 clones</h1>
+<h2>cli.go:267</h2>
+<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+	jsonPrinter.SetFilesCount(filesCount)
+}</pre>
+<h2>cli.go:543</h2>
+<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+	jsonPrinter.SetHash(k)
+}</pre>
+<h2>cli.go:703</h2>
+<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+	jsonPrinter.SetFilesCount(filesCount)
+}</pre>
+<h2>cli.go:936</h2>
+<pre>if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+	jsonPrinter.SetFilesCount(filesCount)
+}</pre>
+<h1>#111 found 2 clones</h1>
+<h2>cli.go:371</h2>
+<pre>func createHashDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match</pre>
+<h2>cli.go:404</h2>
+<pre>func createDuplChannel(cfg *config.Config, data []*syntax.Node, t *suffixtree.STree, verbose bool) chan syntax.Match</pre>
+<h1>#112 found 2 clones</h1>
+<h2>hash/bdd_test.go:19</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file1.go&#34;, i, i+1, 100+i))
+}
+// File 2: identical sequence
+for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+10, i+11, 100+i))
+}</pre>
+<h2>hash/bdd_test.go:70</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file1.go&#34;, i, i+1, 100+i))
+}
+for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+10, i+11, 100+i))
+}</pre>
+<h1>#113 found 3 clones</h1>
+<h2>config/detectionmethod.go:12</h2>
+<pre>const (
+	// DetectionMethodHash uses hash-based comparison for code clones
+	DetectionMethodHash DetectionMethod = &#34;hash&#34;
+
+	// DetectionMethodArtDupl uses suffix tree-based detection (current method)
+	DetectionMethodArtDupl DetectionMethod = &#34;art-dupl&#34;
+
+	// DetectionMethodTodos finds TODO comments in code
+	DetectionMethodTodos DetectionMethod = &#34;todos&#34;
+
+	// DetectionMethodLegacy finds legacy code patterns
+	DetectionMethodLegacy DetectionMethod = &#34;legacy&#34;
+)
+
+// String implements fmt.Stringer for DetectionMethod
+func (dm DetectionMethod) String() string {
+	return string(dm)
+}
+
+// IsValid checks if the detection method is supported
+func (dm DetectionMethod) IsValid() bool {
+	switch dm {
+	case DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for DetectionMethod
+func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
+	// Explicitly type the isValid function
+	isValid := func(d DetectionMethod) bool { return d.IsValid() }
+	return MarshalEnumJSON(dm, isValid, &#34;detection method&#34;)
+}
+
+// UnmarshalJSON implements json.Unmarshaler for DetectionMethod
+func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	return UnmarshalJSONForEnum(dm, data, &#34;detection method&#34;)
+}</pre>
+<h2>config/outputformat.go:6</h2>
+<pre>const (
+	OutputFormatText     OutputFormat = &#34;text&#34;
+	OutputFormatHTML     OutputFormat = &#34;html&#34;
+	OutputFormatJSON     OutputFormat = &#34;json&#34;
+	OutputFormatPlumbing OutputFormat = &#34;plumbing&#34;
+)
+
+// String implements fmt.Stringer for OutputFormat
+func (of OutputFormat) String() string {
+	return string(of)
+}
+
+// IsValid checks if the output format is supported
+func (of OutputFormat) IsValid() bool {
+	switch of {
+	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatPlumbing:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for OutputFormat
+func (of OutputFormat) MarshalJSON() ([]byte, error) {
+	// Explicitly type isValid function
+	isValid := func(o OutputFormat) bool { return o.IsValid() }
+	return MarshalEnumJSON(of, isValid, &#34;output format&#34;)
+}
+
+// UnmarshalJSON implements json.Unmarshaler for OutputFormat
+func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	return UnmarshalJSONForEnum(of, data, &#34;output format&#34;)
+}</pre>
+<h2>config/outputformat.go:43</h2>
+<pre>const (
+	SortBySize        SortCriteria = &#34;size&#34;
+	SortByOccurrence  SortCriteria = &#34;occurrence&#34;
+	SortByHash        SortCriteria = &#34;hash&#34;
+	SortByTotalTokens SortCriteria = &#34;total-tokens&#34;
+)
+
+// String implements fmt.Stringer for SortCriteria
+func (sc SortCriteria) String() string {
+	return string(sc)
+}
+
+// IsValid checks if the sort criteria is supported
+func (sc SortCriteria) IsValid() bool {
+	switch sc {
+	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for SortCriteria
+func (sc SortCriteria) MarshalJSON() ([]byte, error) {
+	// Explicitly type isValid function
+	isValid := func(s SortCriteria) bool { return s.IsValid() }
+	return MarshalEnumJSON(sc, isValid, &#34;sort criteria&#34;)
+}
+
+// UnmarshalJSON implements json.Unmarshaler for SortCriteria
+func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	return UnmarshalJSONForEnum(sc, data, &#34;sort criteria&#34;)
+}</pre>
+<h1>#114 found 2 clones</h1>
+<h2>syntax/golang/golang.go:133</h2>
+<pre>case *ast.BranchStmt:
+	o.Type = BranchStmt
+	t.addWithNilCheck(o, n.Label)</pre>
+<h2>syntax/golang/golang.go:179</h2>
+<pre>case *ast.Ellipsis:
+	o.Type = Ellipsis
+	t.addWithNilCheck(o, n.Elt)</pre>
+<h1>#115 found 2 clones</h1>
+<h2>cli/cli_test.go:55</h2>
+<pre>g.Expect(config.IsVerbose()).To(gomega.BeTrue())</pre>
+<h2>cli/cli_test.go:59</h2>
+<pre>g.Expect(config.IsVerbose()).To(gomega.BeTrue())</pre>
+<h1>#116 found 2 clones</h1>
+<h2>cli/runtime_test.go:79</h2>
+<pre>g.Expect(n).To(gomega.Equal(len(data)))</pre>
+<h2>cli/runtime_test.go:85</h2>
+<pre>g.Expect(n).To(gomega.Equal(len(data)))</pre>
+<h1>#117 found 2 clones</h1>
+<h2>pkg/artdupl/basic_test.go:132</h2>
+<pre>if !errors.Is(wrappedErr, ErrInvalidThreshold) {
+	t.Error(&#34;Wrapped error should be recognizable with errors.Is&#34;)
+}</pre>
+<h2>pkg/artdupl/basic_test.go:139</h2>
+<pre>if !errors.Is(doubleWrapped, ErrInvalidThreshold) {
+	t.Error(&#34;Double wrapped error should be recognizable&#34;)
+}</pre>
+<h1>#118 found 2 clones</h1>
+<h2>hash/bdd_test.go:263</h2>
+<pre>defer func() {
+	if r := recover(); r != nil {
+		fmt.Printf(&#34;Recovered from panic in collectMatches: %v\n&#34;, r)
+	}
+}()</pre>
+<h2>syntax/golang/clean_test.go:43</h2>
+<pre>defer func() {
+	if r := recover(); r != nil {
+		t.Errorf(&#34;addWithNilCheck panicked: %v&#34;, r)
+	}
+}()</pre>
+<h1>#119 found 2 clones</h1>
+<h2>cli.go:48</h2>
+<pre>func (t *TestCLI) Stderr() io.Writer { return &amp;t.StderrBuf }</pre>
+<h2>cli.go:49</h2>
+<pre>func (t *TestCLI) Stdout() io.Writer { return &amp;t.StdoutBuf }</pre>
+<h1>#120 found 4 clones</h1>
+<h2>config/config_test.go:124</h2>
+<pre>if loaded.Threshold != config.Threshold {
+	t.Errorf(&#34;Saved threshold %d, got %d&#34;, config.Threshold, loaded.Threshold)
+}</pre>
+<h2>config/config_test.go:127</h2>
+<pre>if loaded.IncludeVendor != config.IncludeVendor {
+	t.Errorf(&#34;Saved IncludeVendor %v, got %v&#34;, config.IncludeVendor, loaded.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:130</h2>
+<pre>if loaded.OutputFormat != config.OutputFormat {
+	t.Errorf(&#34;Saved OutputFormat %s, got %s&#34;, config.OutputFormat, loaded.OutputFormat)
+}</pre>
+<h2>errors/types_test.go:66</h2>
+<pre>if err.Type != tc.expected {
+	t.Errorf(&#34;Expected %s, got %s&#34;, tc.expected, err.Type)
+}</pre>
+<h1>#121 found 2 clones</h1>
+<h2>suffixtree/suffixtree_test.go:142</h2>
+<pre>{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}},
+{refPair{s[0], 0, 2}, refPair{s[0], 0, 0}},
+{refPair{s[0], 0, 3}, refPair{s[1], 4, 0}},
+{refPair{s[0], 0, 8}, refPair{s[2], 7, 0}},
+{refPair{s[0], 0, 6}, refPair{s[2], 7, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:143</h2>
+<pre>{refPair{s[0], 0, 2}, refPair{s[0], 0, 0}},
+{refPair{s[0], 0, 3}, refPair{s[1], 4, 0}},
+{refPair{s[0], 0, 8}, refPair{s[2], 7, 0}},
+{refPair{s[0], 0, 6}, refPair{s[2], 7, 0}},
+{refPair{s[0], 0, 100}, refPair{s[2], 7, 0}}</pre>
+<h1>#122 found 3 clones</h1>
+<h2>errors/types_test.go:49</h2>
+<pre>{&#34;ConfigError&#34;, func() *DuplError {
+	return NewConfigError(&#34;&#34;, nil)
+}, ConfigError}</pre>
+<h2>errors/types_test.go:55</h2>
+<pre>{&#34;ValidationError&#34;, func() *DuplError {
+	return NewValidationError(&#34;&#34;, nil)
+}, ValidationError}</pre>
+<h2>errors/types_test.go:58</h2>
+<pre>{&#34;InternalError&#34;, func() *DuplError {
+	return NewInternalError(&#34;&#34;, nil)
+}, InternalError}</pre>
+<h1>#123 found 5 clones</h1>
+<h2>printer/issuer.go:13</h2>
+<pre>func (c Clone) Filename() string {
+	return c.filename
+}</pre>
+<h2>printer/issuer.go:17</h2>
+<pre>func (c Clone) LineStart() int {
+	return c.lineStart
+}</pre>
+<h2>printer/issuer.go:21</h2>
+<pre>func (c Clone) LineEnd() int {
+	return c.lineEnd
+}</pre>
+<h2>printer/sorter.go:32</h2>
+<pre>func (c CloneSortable) GetSize() int        { return c.size }</pre>
+<h2>printer/sorter.go:34</h2>
+<pre>func (c CloneSortable) GetHash() string     { return c.filename }</pre>
+<h1>#124 found 6 clones</h1>
+<h2>suffixtree/suffixtree_test.go:142</h2>
+<pre>{refPair{s[0], 0, 0}, refPair{s[0], 0, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:143</h2>
+<pre>{refPair{s[0], 0, 2}, refPair{s[0], 0, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:144</h2>
+<pre>{refPair{s[0], 0, 3}, refPair{s[1], 4, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:145</h2>
+<pre>{refPair{s[0], 0, 8}, refPair{s[2], 7, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:146</h2>
+<pre>{refPair{s[0], 0, 6}, refPair{s[2], 7, 0}}</pre>
+<h2>suffixtree/suffixtree_test.go:147</h2>
+<pre>{refPair{s[0], 0, 100}, refPair{s[2], 7, 0}}</pre>
+<h1>#125 found 2 clones</h1>
+<h2>testutils/unique_basic_test.go:19</h2>
+<pre>                                                  {
+	suffix := generateRandomSuffix()
+	
+	// Should be single letter
+	if len(suffix) != 1 {
+		t.Errorf(&#34;Suffix should be single character, got &#39;%s&#39; (len %d)&#34;, suffix, len(suffix))
+	}
+	
+	// Should be lowercase letter a-z
+	char := suffix[0]
+	if char &lt; &#39;a&#39; || char &gt; &#39;z&#39; {
+		t.Errorf(&#34;Suffix should be lowercase letter a-z, got &#39;%c&#39;&#34;, char)
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:25</h2>
+<pre>                         {
+	suffix := generateRandomSuffix()
+	
+	// Should be single letter
+	if len(suffix) != 1 {
+		t.Errorf(&#34;Suffix should be single character, got &#39;%s&#39; (len %d)&#34;, suffix, len(suffix))
+	}
+	
+	// Should be lowercase letter a-z
+	char := suffix[0]
+	if char &lt; &#39;a&#39; || char &gt; &#39;z&#39; {
+		t.Errorf(&#34;Suffix should be lowercase letter a-z, got &#39;%c&#39;&#34;, char)
+	}
+}</pre>
+<h1>#126 found 16 clones</h1>
+<h2>config/config_test.go:314</h2>
+<pre>if len(methods) != 4 {
+	t.Errorf(&#34;Expected 4 methods, got %d&#34;, len(methods))
+}</pre>
+<h2>config/config_test.go:323</h2>
+<pre>if len(parsed) != 2 {
+	t.Errorf(&#34;Expected 2 methods, got %d&#34;, len(parsed))
+}</pre>
+<h2>config/config_test.go:360</h2>
+<pre>if len(formats) != 4 {
+	t.Errorf(&#34;Expected 4 formats, got %d&#34;, len(formats))
+}</pre>
+<h2>config/config_test.go:366</h2>
+<pre>if len(criteria) != 4 {
+	t.Errorf(&#34;Expected 4 sort criteria, got %d&#34;, len(criteria))
+}</pre>
+<h2>hash/bdd_test.go:35</h2>
+<pre>if len(matches) != 1 {
+	t.Errorf(&#34;Expected 1 match, got %d&#34;, len(matches))
+}</pre>
+<h2>hash/bdd_test.go:60</h2>
+<pre>if len(matches) != 0 {
+	t.Errorf(&#34;Expected 0 matches (below threshold), got %d&#34;, len(matches))
+}</pre>
+<h2>hash/bdd_test.go:91</h2>
+<pre>if len(matches) != 2 {
+	t.Errorf(&#34;Expected 2 duplicate groups, got %d&#34;, len(matches))
+}</pre>
+<h2>hash/bdd_test.go:138</h2>
+<pre>if len(matches) != 1 {
+	t.Fatalf(&#34;Expected 1 match, got %d&#34;, len(matches))
+}</pre>
+<h2>hash/bdd_test.go:144</h2>
+<pre>if len(frag) != 5 {
+	t.Errorf(&#34;Expected fragment length 5, got %d&#34;, len(frag))
+}</pre>
+<h2>hash/bdd_test.go:208</h2>
+<pre>if len(matches) != 1 {
+	t.Errorf(&#34;Expected 1 match for identical sequences, got %d&#34;, len(matches))
+}</pre>
+<h2>hash/bdd_test.go:228</h2>
+<pre>if len(matches) != 0 {
+	t.Errorf(&#34;Expected 0 matches for empty input, got %d&#34;, len(matches))
+}</pre>
+<h2>testutils/unique_basic_test.go:59</h2>
+<pre>if len(uniqueSet) != 10 {
+	t.Errorf(&#34;Expected 10 unique strings, got %d&#34;, len(uniqueSet))
+}</pre>
+<h2>testutils/unique_test_clean.go:69</h2>
+<pre>if len(uniqueSet) != 50 {
+	t.Errorf(&#34;Expected 50 unique strings, got %d&#34;, len(uniqueSet))
+}</pre>
+<h2>util/unique_test.go:28</h2>
+<pre>if len(result) != 3 {
+	t.Errorf(&#34;Expected 3 unique sequences, got %d&#34;, len(result))
+}</pre>
+<h2>util/unique_test.go:51</h2>
+<pre>if len(result) != 0 {
+	t.Errorf(&#34;Expected empty result for empty input, got %d&#34;, len(result))
+}</pre>
+<h2>util/unique_test.go:64</h2>
+<pre>if len(result) != 1 {
+	t.Errorf(&#34;Expected 1 result for single input, got %d&#34;, len(result))
+}</pre>
+<h1>#127 found 2 clones</h1>
+<h2>cli.go:198</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *plumbing {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or HTML output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}
+if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h2>cli.go:206</h2>
+<pre>if mergedConfig.OutputFormat == &#34;html&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either HTML or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}
+if mergedConfig.OutputFormat == &#34;plumbing&#34; &amp;&amp; *jsonFlag {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: you can have either plumbing or JSON output\n&#34;); err != nil {
+		cli.Exit(1)
+		return 1
+	}
+	cli.Exit(1)
+	return 1
+}</pre>
+<h1>#128 found 6 clones</h1>
+<h2>printer/sorter.go:263</h2>
+<pre>			   cloneGroups[i][0].filename == cloneGroups[j][0].filename</pre>
+<h2>printer/sorter.go:264</h2>
+<pre>				       cloneGroups[i][0].lineStart &lt; cloneGroups[j][0].lineStart</pre>
+<h2>printer/sorter.go:266</h2>
+<pre>			       cloneGroups[i][0].filename &lt; cloneGroups[j][0].filename</pre>
+<h2>printer/sorter.go:285</h2>
+<pre>			   dups[i][0].Filename == dups[j][0].Filename</pre>
+<h2>printer/sorter.go:286</h2>
+<pre>				       dups[i][0].Pos &lt; dups[j][0].Pos</pre>
+<h2>printer/sorter.go:288</h2>
+<pre>			       dups[i][0].Filename &lt; dups[j][0].Filename</pre>
+<h1>#129 found 5 clones</h1>
+<h2>printer/html.go:46</h2>
+<pre>func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error</pre>
+<h2>printer/json.go:90</h2>
+<pre>func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error</pre>
+<h2>printer/plumbing.go:22</h2>
+<pre>func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error</pre>
+<h2>printer/printer.go:9</h2>
+<pre>	           (dups [][]*syntax.Node, sortBy ...string) error</pre>
+<h2>printer/text.go:26</h2>
+<pre>func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error</pre>
+<h1>#130 found 4 clones</h1>
+<h2>testutils/unique_basic_test.go:9</h2>
+<pre>                                              {
+	str := UniqueTestHelper()
+	
+	// Check that it starts with &#34;unique_&#34;
+	if !strings.HasPrefix(str, &#34;unique_&#34;) {
+		t.Errorf(&#34;String should start with &#39;unique_&#39;, got &#39;%s&#39;&#34;, str)
+	}
+}</pre>
+<h2>testutils/unique_basic_test.go:35</h2>
+<pre>                                            {
+	fn := UniqueFunction()
+	
+	// Check that it has proper structure
+	if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+		t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:12</h2>
+<pre>                        {
+	str := UniqueTestHelper()
+	
+	// Check that it starts with &#34;unique_&#34;
+	if !strings.HasPrefix(str, &#34;unique_&#34;) {
+		t.Errorf(&#34;String should start with &#39;unique_&#39;, got &#39;%s&#39;&#34;, str)
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:44</h2>
+<pre>                       {
+	fn := UniqueFunction()
+	
+	// Check that it has proper structure
+	if !strings.HasPrefix(fn, &#34;func unique&#34;) {
+		t.Errorf(&#34;Function should start with &#39;func unique&#39;, got &#39;%.20s...&#39;&#34;, fn)
+	}
+}</pre>
+<h1>#131 found 3 clones</h1>
+<h2>job/buildtree_test.go:26</h2>
+<pre>select {
+case &lt;-done:
+	// Success
+case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree timed out&#34;)
+	return
+}</pre>
+<h2>job/buildtree_test.go:53</h2>
+<pre>select {
+case &lt;-done:
+	// Should complete successfully
+case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree with empty input should not time out&#34;)
+	return
+}</pre>
+<h2>job/buildtree_test.go:91</h2>
+<pre>select {
+case &lt;-done:
+	// Success
+case &lt;-time.After(5 * time.Second):
+	t.Error(&#34;BuildTree with multiple sequences timed out&#34;)
+	return
+}</pre>
+<h1>#132 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:70</h2>
+<pre>fmt.Printf(&#34;  [%s] %.1f%% - %s\n&#34;, progress.Stage, progress.Percentage, progress.Message)</pre>
+<h2>version.go:39</h2>
+<pre>fmt.Printf(&#34;Built with %s %s/%s\n&#34;, runtime.Compiler, runtime.GOOS, runtime.GOARCH)</pre>
+<h1>#133 found 3 clones</h1>
+<h2>syntax/golang/golang.go:261</h2>
+<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Index))
+
+case *ast.InterfaceType:
+	o.Type = InterfaceType
+	o.AddChildren(t.trans(n.Methods))</pre>
+<h2>syntax/golang/golang.go:277</h2>
+<pre>	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+
+case *ast.ParenExpr:
+	o.Type = ParenExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h2>syntax/golang/golang.go:340</h2>
+<pre>	o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
+
+case *ast.UnaryExpr:
+	o.Type = UnaryExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h1>#134 found 2 clones</h1>
+<h2>syntax/golang/golang.go:259</h2>
+<pre>case *ast.IndexExpr:
+	o.Type = IndexExpr
+	o.AddChildren(t.trans(n.X), t.trans(n.Index))
+
+case *ast.InterfaceType:
+	o.Type = InterfaceType
+	o.AddChildren(t.trans(n.Methods))</pre>
+<h2>syntax/golang/golang.go:275</h2>
+<pre>case *ast.MapType:
+	o.Type = MapType
+	o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+
+case *ast.ParenExpr:
+	o.Type = ParenExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h1>#135 found 2 clones</h1>
+<h2>detection/todos.go:238</h2>
+<pre>{
+	Type:     &#34;old_pattern&#34;,
+	Message:  &#34;Old code pattern that should be refactored&#34;,
+	Severity: &#34;low&#34;,
+	Patterns: []string{
+		`for.*range.*len\(.*\).*{.*\[\].*=.*append\(.*,.*\)`, // range append pattern
+		`if.*err.*!=.*nil.*{.*return.*err}`,                  // error checking pattern (could be improved)
+	},
+}</pre>
+<h2>detection/todos.go:247</h2>
+<pre>{
+	Type:     &#34;deprecated_import&#34;,
+	Message:  &#34;Use of deprecated import path&#34;,
+	Severity: &#34;high&#34;,
+	Imports: []string{
+		&#34;golang.org/x/net/context&#34;, // Use context package instead
+		&#34;gopkg.in/yaml.v1&#34;,         // Use v2 or v3
+	},
+}</pre>
+<h1>#136 found 2 clones</h1>
+<h2>cli/runtime_test.go:25</h2>
+<pre>g.Expect(cfg.Threshold).To(gomega.Equal(25))
+g.Expect(cfg.IncludeVendor).To(gomega.BeTrue())
+g.Expect(cfg.FilesFromStdin).To(gomega.BeTrue())</pre>
+<h2>cli/runtime_test.go:63</h2>
+<pre>g.Expect(cfg.SortBy).To(gomega.Equal(&#34;size&#34;))
+g.Expect(cfg.OutputWriter).NotTo(gomega.BeNil())
+g.Expect(cfg.ErrorWriter).NotTo(gomega.BeNil())</pre>
+<h1>#137 found 8 clones</h1>
+<h2>config/config_test.go:29</h2>
+<pre>if config.IncludeVendor != false {
+	t.Errorf(&#34;Expected default IncludeVendor false, got %v&#34;, config.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:68</h2>
+<pre>if config.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true, got %v&#34;, config.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:74</h2>
+<pre>if config.Verbose != true {
+	t.Errorf(&#34;Expected Verbose true, got %v&#34;, config.Verbose)
+}</pre>
+<h2>config/config_test.go:234</h2>
+<pre>if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected merged IncludeVendor true, got %v&#34;, merged.IncludeVendor)
+}</pre>
+<h2>config/config_test.go:240</h2>
+<pre>if merged.Verbose != true {
+	t.Errorf(&#34;Expected merged Verbose true, got %v&#34;, merged.Verbose)
+}</pre>
+<h2>errors/types_test.go:26</h2>
+<pre>if err.Type != ParseError {
+	t.Errorf(&#34;Expected ParseError type, got %s&#34;, err.Type)
+}</pre>
+<h2>integration_test.go:39</h2>
+<pre>if merged.IncludeVendor != true {
+	t.Errorf(&#34;Expected IncludeVendor true (CLI override), got %v&#34;, merged.IncludeVendor)
+}</pre>
+<h2>integration_test.go:44</h2>
+<pre>if merged.Verbose != true {
+	t.Errorf(&#34;Expected Verbose true (from file), got %v&#34;, merged.Verbose)
+}</pre>
+<h1>#138 found 12 clones</h1>
+<h2>syntax/golang/golang.go:153</h2>
+<pre>case *ast.ChanType:
+	o.Type = ChanType
+	o.AddChildren(t.trans(n.Value))</pre>
+<h2>syntax/golang/golang.go:171</h2>
+<pre>case *ast.DeclStmt:
+	o.Type = DeclStmt
+	o.AddChildren(t.trans(n.Decl))</pre>
+<h2>syntax/golang/golang.go:175</h2>
+<pre>case *ast.DeferStmt:
+	o.Type = DeferStmt
+	o.AddChildren(t.trans(n.Call))</pre>
+<h2>syntax/golang/golang.go:186</h2>
+<pre>case *ast.ExprStmt:
+	o.Type = ExprStmt
+	o.AddChildren(t.trans(n.X))</pre>
+<h2>syntax/golang/golang.go:241</h2>
+<pre>case *ast.GoStmt:
+	o.Type = GoStmt
+	o.AddChildren(t.trans(n.Call))</pre>
+<h2>syntax/golang/golang.go:255</h2>
+<pre>case *ast.IncDecStmt:
+	o.Type = IncDecStmt
+	o.AddChildren(t.trans(n.X))</pre>
+<h2>syntax/golang/golang.go:263</h2>
+<pre>case *ast.InterfaceType:
+	o.Type = InterfaceType
+	o.AddChildren(t.trans(n.Methods))</pre>
+<h2>syntax/golang/golang.go:279</h2>
+<pre>case *ast.ParenExpr:
+	o.Type = ParenExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h2>syntax/golang/golang.go:295</h2>
+<pre>case *ast.SelectStmt:
+	o.Type = SelectStmt
+	o.AddChildren(t.trans(n.Body))</pre>
+<h2>syntax/golang/golang.go:314</h2>
+<pre>case *ast.StarExpr:
+	o.Type = StarExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h2>syntax/golang/golang.go:318</h2>
+<pre>case *ast.StructType:
+	o.Type = StructType
+	o.AddChildren(t.trans(n.Fields))</pre>
+<h2>syntax/golang/golang.go:342</h2>
+<pre>case *ast.UnaryExpr:
+	o.Type = UnaryExpr
+	o.AddChildren(t.trans(n.X))</pre>
+<h1>#139 found 2 clones</h1>
+<h2>printer/sorting_integration_test.go:189</h2>
+<pre>t.Run(&#34;SortClonesBySize&#34;, func(t *testing.T) {
+	TestCloneSortingWithData(t, SortClonesBySize, &#34;Size&#34;, clones)
+})</pre>
+<h2>printer/sorting_integration_test.go:194</h2>
+<pre>t.Run(&#34;SortClonesByOccurrence&#34;, func(t *testing.T) {
+	TestCloneSortingWithData(t, SortClonesByOccurrence, &#34;Occurrence&#34;, clones)
+})</pre>
+<h1>#140 found 4 clones</h1>
+<h2>printer/sorter.go:170</h2>
+<pre>func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
+	sortables := make([]Sortable, len(dups))
+	for i, nodes := range dups {
+		sortables[i] = NodeGroupSortable{Nodes: nodes}
+	}
+	SortByCriteria(sortables, SortBySize)
+
+	// Convert back to [][]*syntax.Node array
+	result := make([][]*syntax.Node, len(dups))
+	for i, sortable := range sortables {
+		result[i] = sortable.(NodeGroupSortable).Nodes
+	}
+	return result
+}</pre>
+<h2>printer/sorter.go:186</h2>
+<pre>func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node {
+	sortables := make([]Sortable, len(dups))
+	for i, nodes := range dups {
+		sortables[i] = NodeGroupSortable{Nodes: nodes}
+	}
+	SortByCriteria(sortables, SortByOccurrence)
+
+	// Convert back to [][]*syntax.Node array
+	result := make([][]*syntax.Node, len(dups))
+	for i, sortable := range sortables {
+		result[i] = sortable.(NodeGroupSortable).Nodes
+	}
+	return result
+}</pre>
+<h2>printer/sorter.go:202</h2>
+<pre>func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
+	sortables := make([]Sortable, len(dups))
+	for i, nodes := range dups {
+		sortables[i] = NodeGroupSortable{Nodes: nodes}
+	}
+	SortByCriteria(sortables, SortByHash)
+
+	// Convert back to [][]*syntax.Node array
+	result := make([][]*syntax.Node, len(dups))
+	for i, sortable := range sortables {
+		result[i] = sortable.(NodeGroupSortable).Nodes
+	}
+	return result
+}</pre>
+<h2>printer/sorter.go:218</h2>
+<pre>func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
+	sortables := make([]Sortable, len(dups))
+	for i, nodes := range dups {
+		sortables[i] = NodeGroupSortable{Nodes: nodes}
+	}
+	SortByCriteria(sortables, SortByTotalTokens)
+
+	// Convert back to [][]*syntax.Node array
+	result := make([][]*syntax.Node, len(dups))
+	for i, sortable := range sortables {
+		result[i] = sortable.(NodeGroupSortable).Nodes
+	}
+	return result
+}</pre>
+<h1>#141 found 2 clones</h1>
+<h2>syntax/golang/golang.go:230</h2>
+<pre>case *ast.FuncType:
+	o.Type = FuncType
+	o.AddChildren(t.trans(n.Params))
+	t.addWithNilCheck(o, n.Results)</pre>
+<h2>syntax/golang/golang.go:328</h2>
+<pre>case *ast.TypeAssertExpr:
+	o.Type = TypeAssertExpr
+	o.AddChildren(t.trans(n.X))
+	t.addWithNilCheck(o, n.Type)</pre>
+<h1>#142 found 2 clones</h1>
+<h2>config/unmarshal_helper.go:42</h2>
+<pre>                                     {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+		// Use the interface method to check validity
+		var enum T = t
+		return any(enum).(interface{ IsValid() bool }).IsValid()
+	}, typeName)
+	if err != nil {
+		return err
+	}
+	*e = candidate
+	return nil
+}</pre>
+<h2>config/unmarshal_helper.go:57</h2>
+<pre>                                                                               {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+		// Use the interface method to check validity
+		var enum T = t
+		return any(enum).(interface{ IsValid() bool }).IsValid()
+	}, typeName)
+	if err != nil {
+		return err
+	}
+	*e = candidate
+	return nil
+}</pre>
+<h1>#143 found 2 clones</h1>
+<h2>syntax/golang/golang.go:110</h2>
+<pre>case *ast.AssignStmt:
+	o.Type = AssignStmt
+	for _, e := range n.Rhs {
+		o.AddChildren(t.trans(e))
+	}
+
+	for _, e := range n.Lhs {
+		o.AddChildren(t.trans(e))
+	}</pre>
+<h2>syntax/golang/golang.go:144</h2>
+<pre>case *ast.CaseClause:
+	o.Type = CaseClause
+	for _, e := range n.List {
+		o.AddChildren(t.trans(e))
+	}
+	for _, stmt := range n.Body {
+		o.AddChildren(t.trans(stmt))
+	}</pre>
+<h1>#144 found 2 clones</h1>
+<h2>syntax/golang/golang.go:125</h2>
+<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Y))
+
+case *ast.BlockStmt:
+	o.Type = BlockStmt
+	for _, stmt := range n.List {
+		o.AddChildren(t.trans(stmt))
+	}</pre>
+<h2>syntax/golang/golang.go:287</h2>
+<pre>	o.AddChildren(t.trans(n.X), t.trans(n.Body))
+
+case *ast.ReturnStmt:
+	o.Type = ReturnStmt
+	for _, e := range n.Results {
+		o.AddChildren(t.trans(e))
+	}</pre>
+<h1>#145 found 4 clones</h1>
+<h2>cli.go:732</h2>
+<pre>       {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;📂 Analyzing paths: %v\n&#34;, paths); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:781</h2>
+<pre>           {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;    Debug: Running %s detection method...\n&#34;, method); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:868</h2>
+<pre>           {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;\nDebug: All reports generated in: %s\n&#34;, outputDir); err != nil {
+		_ = err
+	}
+}</pre>
+<h2>cli.go:923</h2>
+<pre>           {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;Error closing file: %v\n&#34;, err); err != nil {
+		// Can&#39;t write error to stderr
+		_ = err // Explicitly ignore error
+	}
+}</pre>
+<h1>#146 found 2 clones</h1>
+<h2>cli.go:527</h2>
+<pre>for dupl := range duplChan {
+	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
+}</pre>
+<h2>lib/lib.go:46</h2>
+<pre>for dupl := range duplChan {
+	groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
+}</pre>
+<h1>#147 found 2 clones</h1>
+<h2>detection/multidetector.go:39</h2>
+<pre>for match := range suffixMatches {
+	syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
+	if len(syntaxMatch.Frags) &gt; 0 {
+		resultChan &lt;- syntaxMatch
+	}
+}</pre>
+<h2>detection/multidetector.go:73</h2>
+<pre>for match := range artDuplMatches {
+	// Convert suffix tree matches to syntax matches
+	syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
+	if len(syntaxMatch.Frags) &gt; 0 {
+		resultChan &lt;- syntaxMatch
+	}
+}</pre>
+<h1>#148 found 3 clones</h1>
+<h2>cli/runtime_test.go:25</h2>
+<pre>g.Expect(cfg.Threshold).To(gomega.Equal(25))</pre>
+<h2>cli/runtime_test.go:62</h2>
+<pre>g.Expect(cfg.Threshold).To(gomega.Equal(15))</pre>
+<h2>cli/runtime_test.go:63</h2>
+<pre>g.Expect(cfg.SortBy).To(gomega.Equal(&#34;size&#34;))</pre>
+<h1>#149 found 4 clones</h1>
+<h2>config/config_test.go:151</h2>
+<pre>{
+	name: &#34;Invalid threshold - too low&#34;,
+	config: &amp;Config{
+		Threshold:         0,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:160</h2>
+<pre>{
+	name: &#34;Invalid threshold - too high&#34;,
+	config: &amp;Config{
+		Threshold:         1001,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:169</h2>
+<pre>{
+	name: &#34;Invalid output format&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;xml&#34;,
+		MaxChildrenSerial: 10000,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+}</pre>
+<h2>config/config_test.go:178</h2>
+<pre>{
+	name: &#34;Invalid maxChildrenSerial - too low&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 999,
+	},
+	isValid: false,
+},
+{
+	name: &#34;Invalid maxChildrenSerial - too high&#34;,
+	config: &amp;Config{
+		Threshold:         15,
+		OutputFormat:      &#34;text&#34;,
+		MaxChildrenSerial: 100001,
+	},
+	isValid: false,
+}</pre>
+<h1>#150 found 3 clones</h1>
+<h2>hash/bdd_test.go:73</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+10, i+11, 100+i))
+}
+// Second duplicate group - 5 nodes with types 110-114
+for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file3.go&#34;, i+20, i+21, 110+i))
+}</pre>
+<h2>hash/bdd_test.go:77</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file3.go&#34;, i+20, i+21, 110+i))
+}
+for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file4.go&#34;, i+30, i+31, 110+i))
+}</pre>
+<h2>hash/bdd_test.go:124</h2>
+<pre>for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file1.go&#34;, i+10, i+11, 100+i))
+}
+// Second file: identical 5 nodes with types 100-104
+for i := range 5 {
+	nodes = append(nodes, createTestNode(&#34;file2.go&#34;, i+25, i+26, 100+i))
+}</pre>
+<h1>#151 found 2 clones</h1>
+<h2>hash/bdd_test.go:176</h2>
+<pre>nodes = append(nodes, createTestNode(&#34;large_file1.go&#34;, i*10, i*10+9, 50))</pre>
+<h2>hash/bdd_test.go:177</h2>
+<pre>nodes = append(nodes, createTestNode(&#34;large_file2.go&#34;, i*10, i*10+9, 50))</pre>
+<h1>#152 found 2 clones</h1>
+<h2>suffixtree/suffixtree_test.go:85</h2>
+<pre>				                             actual.tree.data[atran.start:atran.ActEnd()+1]</pre>
+<h2>suffixtree/suffixtree_test.go:86</h2>
+<pre>				                             expected.tree.data[etran.start:etran.ActEnd()+1]</pre>
+<h1>#153 found 5 clones</h1>
+<h2>printer/sorter.go:170</h2>
+<pre>func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node</pre>
+<h2>printer/sorter.go:186</h2>
+<pre>func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node</pre>
+<h2>printer/sorter.go:202</h2>
+<pre>func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node</pre>
+<h2>printer/sorter.go:218</h2>
+<pre>func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node</pre>
+<h2>util/unique.go:7</h2>
+<pre>func Unique(group [][]*syntax.Node) [][]*syntax.Node</pre>
+<h1>#154 found 2 clones</h1>
+<h2>printer/json_test.go:143</h2>
+<pre>if output.Summary.TotalCloneGroups != 0 {
+	t.Errorf(&#34;Expected 0 total clone groups, got %d&#34;, output.Summary.TotalCloneGroups)
+}</pre>
+<h2>printer/json_test.go:146</h2>
+<pre>if output.Summary.TotalClones != 0 {
+	t.Errorf(&#34;Expected 0 total clones, got %d&#34;, output.Summary.TotalClones)
+}</pre>
+<h1>#155 found 6 clones</h1>
+<h2>config/config.go:157</h2>
+<pre>if len(fileConfig.Paths) &gt; 0 {
+	result.Paths = fileConfig.Paths
+}</pre>
+<h2>config/config.go:160</h2>
+<pre>if len(fileConfig.IgnoreFiles) &gt; 0 {
+	result.IgnoreFiles = fileConfig.IgnoreFiles
+}</pre>
+<h2>config/config.go:169</h2>
+<pre>if len(fileConfig.DetectionMethods) &gt; 0 {
+	result.DetectionMethods = fileConfig.DetectionMethods
+}</pre>
+<h2>config/config.go:194</h2>
+<pre>if len(cliConfig.Paths) &gt; 0 {
+	result.Paths = cliConfig.Paths
+}</pre>
+<h2>config/config.go:197</h2>
+<pre>if len(cliConfig.IgnoreFiles) &gt; 0 {
+	result.IgnoreFiles = cliConfig.IgnoreFiles
+}</pre>
+<h2>config/config.go:206</h2>
+<pre>if len(cliConfig.DetectionMethods) &gt; 0 {
+	result.DetectionMethods = cliConfig.DetectionMethods
+}</pre>
+<h1>#156 found 2 clones</h1>
+<h2>errors/types.go:39</h2>
+<pre>func (e *DuplError) Unwrap() error {
+	return e.Cause
+}</pre>
+<h2>syntax/syntax.go:39</h2>
+<pre>func (n *Node) Val() int {
+	return n.Type
+}</pre>
+<h1>#157 found 2 clones</h1>
+<h2>suffixtree/suffixtree_test.go:204</h2>
+<pre>if tr == nil {
+	t.Error(&#34;should have a b-transition&#34;)
+} else if tr.state != rets {
+	t.Errorf(&#34;got state %p, want %p&#34;, tr.state, rets)
+}</pre>
+<h2>suffixtree/suffixtree_test.go:210</h2>
+<pre>if tr2 == nil {
+	t.Error(&#34;should have an a-transition&#34;)
+} else if tr2.state != s2 {
+	t.Errorf(&#34;got state %p, want %p&#34;, tr2.state, s2)
+}</pre>
+<h1>#158 found 2 clones</h1>
+<h2>printer/text.go:70</h2>
+<pre>for _, cl := range clones {
+	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		return err
+	}
+}</pre>
+<h2>printer/text.go:112</h2>
+<pre>for _, cl := range clones {
+	if _, err := fmt.Fprintf(p.w, &#34;  %s:%d,%d\n&#34;, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		return err
+	}
+}</pre>
+<h1>#159 found 2 clones</h1>
+<h2>printer/html.go:27</h2>
+<pre>func (p *htmlprinter) PrintHeader() error {
+	_, err := fmt.Fprint(p.w, `&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&#34;utf-8&#34;/&gt;
+&lt;title&gt;Duplicates&lt;/title&gt;
+&lt;style&gt;
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+`)
+	return err
+}</pre>
+<h2>printer/html.go:130</h2>
+<pre>func (p *htmlprinter) PrintFooter() error {
+	_, err := fmt.Fprint(p.w, `
+&lt;/body&gt;
+&lt;/html&gt;
+`)
+	return err
+}</pre>
+<h1>#160 found 6 clones</h1>
+<h2>cli.go:89</h2>
+<pre>              {
+	if _, writeErr := fmt.Fprintf(cli.Stderr(), &#34;configuration error: %v\n&#34;, err); writeErr != nil {
+		return writeErr
+	}
+	return err
+}</pre>
+<h2>cli.go:581</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error loading config: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:627</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;detection methods error: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:672</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;analysis error: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:686</h2>
+<pre>              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error creating output file: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h2>cli.go:707</h2>
+<pre>                                                                              {
+	if _, err := fmt.Fprintf(cli.Stderr(), &#34;error: %v\n&#34;, err); err != nil {
+		return err
+	}
+	return err
+}</pre>
+<h1>#161 found 5 clones</h1>
+<h2>printer/sorter.go:117</h2>
+<pre>sort.Slice(items, func(i, j int) bool {
+	return items[i].GetSize() &gt; items[j].GetSize()
+})</pre>
+<h2>printer/sorter.go:121</h2>
+<pre>sort.Slice(items, func(i, j int) bool {
+	return items[i].GetOccurrence() &gt; items[j].GetOccurrence()
+})</pre>
+<h2>printer/sorter.go:125</h2>
+<pre>sort.Slice(items, func(i, j int) bool {
+	return items[i].GetHash() &lt; items[j].GetHash()
+})</pre>
+<h2>printer/sorter.go:129</h2>
+<pre>sort.Slice(items, func(i, j int) bool {
+	return items[i].GetTotalTokens() &gt; items[j].GetTotalTokens()
+})</pre>
+<h2>printer/sorter.go:134</h2>
+<pre>sort.Slice(items, func(i, j int) bool {
+	return items[i].GetSize() &gt; items[j].GetSize()
+})</pre>
+<h1>#162 found 4 clones</h1>
+<h2>cli/runtime_test.go:38</h2>
+<pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatHTML))</pre>
+<h2>cli/runtime_test.go:43</h2>
+<pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatJSON))</pre>
+<h2>cli/runtime_test.go:48</h2>
+<pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatPlumbing))</pre>
+<h2>cli/runtime_test.go:53</h2>
+<pre>g.Expect(cfg.OutputFormat).To(gomega.Equal(config.OutputFormatText))</pre>
+<h1>#163 found 5 clones</h1>
+<h2>printer/text.go:92</h2>
+<pre>sort.Slice(clones, func(i, j int) bool {
+	return len(dups[i]) &gt; len(dups[j]) // Sort by token count
+})</pre>
+<h2>printer/text.go:97</h2>
+<pre>sort.Slice(clones, func(i, j int) bool {
+	return len(dups[i]) &gt; len(dups[j])
+})</pre>
+<h2>printer/text.go:102</h2>
+<pre>sort.Slice(clones, func(i, j int) bool {
+	return len(dups[i]) &gt; len(dups[j])
+})</pre>
+<h2>printer/text.go:107</h2>
+<pre>sort.Slice(clones, func(i, j int) bool {
+	return len(dups[i]) &gt; len(dups[j])
+})</pre>
+<h2>printer/text.go:177</h2>
+<pre>sort.Slice(sortedCloneGroups, func(i, j int) bool {
+	return len(sortedCloneGroups[i]) &gt; len(sortedCloneGroups[j])
+})</pre>
+<h1>#164 found 10 clones</h1>
+<h2>examples/examples_test.go:289</h2>
+<pre>func (l *testLogger) Debug(msg string, args ...any)  {}</pre>
+<h2>examples/examples_test.go:290</h2>
+<pre>func (l *testLogger) Info(msg string, args ...any)   {}</pre>
+<h2>examples/examples_test.go:291</h2>
+<pre>func (l *testLogger) Warn(msg string, args ...any)   {}</pre>
+<h2>pkg/artdupl/basic_test.go:211</h2>
+<pre>func (l *testLoggerBasic) Debug(msg string, args ...any)  {}</pre>
+<h2>pkg/artdupl/basic_test.go:212</h2>
+<pre>func (l *testLoggerBasic) Info(msg string, args ...any)   {}</pre>
+<h2>pkg/artdupl/basic_test.go:213</h2>
+<pre>func (l *testLoggerBasic) Warn(msg string, args ...any)   {}</pre>
+<h2>pkg/artdupl/types.go:151</h2>
+<pre>func (l *defaultLogger) Debug(msg string, args ...any) {}</pre>
+<h2>pkg/artdupl/types.go:152</h2>
+<pre>func (l *defaultLogger) Info(msg string, args ...any)  {}</pre>
+<h2>pkg/artdupl/types.go:153</h2>
+<pre>func (l *defaultLogger) Warn(msg string, args ...any)  {}</pre>
+<h2>pkg/artdupl/types.go:154</h2>
+<pre>func (l *defaultLogger) Error(msg string, args ...any) {}</pre>
+<h1>#165 found 2 clones</h1>
+<h2>printer/common.go:13</h2>
+<pre>func (c byNameAndLine) Len() int { return len(c) }
+
+func (c byNameAndLine) Swap(i, j int) { c[i], c[j] = c[j], c[i] }</pre>
+<h2>suffixtree/dupl_test.go:33</h2>
+<pre>func (p ByPos) Len() int {
+	return len(p)
+}
+
+func (p ByPos) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}</pre>
+<h1>#166 found 2 clones</h1>
+<h2>printer/text.go:95</h2>
+<pre>case &#34;occurrence&#34;:
+	// For text output, occurrence is same as size (each dup in different file)
+	sort.Slice(clones, func(i, j int) bool {
+		return len(dups[i]) &gt; len(dups[j])
+	})</pre>
+<h2>printer/text.go:175</h2>
+<pre>case &#34;occurrence&#34;:
+	// Sort by number of files in each clone group
+	sort.Slice(sortedCloneGroups, func(i, j int) bool {
+		return len(sortedCloneGroups[i]) &gt; len(sortedCloneGroups[j])
+	})</pre>
+<h1>#167 found 2 clones</h1>
+<h2>config/detectionmethod.go:12</h2>
+<pre>const (
+	// DetectionMethodHash uses hash-based comparison for code clones
+	DetectionMethodHash DetectionMethod = &#34;hash&#34;
+
+	// DetectionMethodArtDupl uses suffix tree-based detection (current method)
+	DetectionMethodArtDupl DetectionMethod = &#34;art-dupl&#34;
+
+	// DetectionMethodTodos finds TODO comments in code
+	DetectionMethodTodos DetectionMethod = &#34;todos&#34;
+
+	// DetectionMethodLegacy finds legacy code patterns
+	DetectionMethodLegacy DetectionMethod = &#34;legacy&#34;
+)
+
+// String implements fmt.Stringer for DetectionMethod
+func (dm DetectionMethod) String() string {
+	return string(dm)
+}
+
+// IsValid checks if the detection method is supported
+func (dm DetectionMethod) IsValid() bool {
+	switch dm {
+	case DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for DetectionMethod
+func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
+	// Explicitly type the isValid function
+	isValid := func(d DetectionMethod) bool { return d.IsValid() }
+	return MarshalEnumJSON(dm, isValid, &#34;detection method&#34;)
+}
+
+// UnmarshalJSON implements json.Unmarshaler for DetectionMethod
+func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
+	return UnmarshalJSONForEnum(dm, data, &#34;detection method&#34;)
+}
+
+// AllDetectionMethods returns list of all supported detection methods
+func AllDetectionMethods() []DetectionMethod {
+	return []DetectionMethod{
+		DetectionMethodHash,
+		DetectionMethodArtDupl,
+		DetectionMethodTodos,
+		DetectionMethodLegacy,
+	}
+}</pre>
+<h2>config/outputformat.go:43</h2>
+<pre>const (
+	SortBySize        SortCriteria = &#34;size&#34;
+	SortByOccurrence  SortCriteria = &#34;occurrence&#34;
+	SortByHash        SortCriteria = &#34;hash&#34;
+	SortByTotalTokens SortCriteria = &#34;total-tokens&#34;
+)
+
+// String implements fmt.Stringer for SortCriteria
+func (sc SortCriteria) String() string {
+	return string(sc)
+}
+
+// IsValid checks if the sort criteria is supported
+func (sc SortCriteria) IsValid() bool {
+	switch sc {
+	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler for SortCriteria
+func (sc SortCriteria) MarshalJSON() ([]byte, error) {
+	// Explicitly type isValid function
+	isValid := func(s SortCriteria) bool { return s.IsValid() }
+	return MarshalEnumJSON(sc, isValid, &#34;sort criteria&#34;)
+}
+
+// UnmarshalJSON implements json.Unmarshaler for SortCriteria
+func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	return UnmarshalJSONForEnum(sc, data, &#34;sort criteria&#34;)
+}
+
+// AllOutputFormats returns list of all supported output formats
+func AllOutputFormats() []OutputFormat {
+	return []OutputFormat{
+		OutputFormatText,
+		OutputFormatHTML,
+		OutputFormatJSON,
+		OutputFormatPlumbing,
+	}
 }</pre>
 
 </body>
