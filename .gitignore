@@ -9,3 +9,9 @@ cover.out
 .env
 .DS_Store
 *~
+# Go binaries
+/art-dupl
+/art-dupl-*
+/test-art-dupl
+/art-dupl-test
+*.exe
