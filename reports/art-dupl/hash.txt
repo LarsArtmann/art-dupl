@@ -1,0 +1,29 @@
+found 2 clones:
+  examples/examples_sdk_demo.go:12,16
+  examples/examples_test_advanced_api.go:14,18
+found 2 clones:
+  examples/examples_sdk_demo.go:200,203
+  examples/examples_test_advanced_api.go:60,63
+found 2 clones:
+  examples/examples_sdk_demo.go:200,203
+  examples/examples_test_advanced_api.go:60,63
+found 2 clones:
+  examples/examples_sdk_demo.go:200,203
+  examples/examples_test_advanced_api.go:60,63
+found 2 clones:
+  examples/examples_sdk_demo.go:12,16
+  examples/examples_test_advanced_api.go:14,18
+found 2 clones:
+  examples/examples_sdk_demo.go:1,16
+  examples/examples_test_advanced_api.go:1,18
+found 2 clones:
+  examples/examples_sdk_demo.go:200,203
+  examples/examples_test_advanced_api.go:60,63
+found 2 clones:
+  examples/examples_sdk_demo.go:12,16
+  examples/examples_test_advanced_api.go:14,18
+found 2 clones:
+  examples/examples_test_advanced_api.go:82,83
+  examples/examples_test_api.go:19,22
+
+Found total 9 clone groups.

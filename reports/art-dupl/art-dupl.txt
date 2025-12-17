@@ -1,0 +1,13 @@
+found 2 clones:
+  examples/examples_test_api.go:26,26
+  examples/examples_test_api.go:27,27
+found 2 clones:
+  examples/examples_sdk_demo.go:60,60
+  examples/examples_sdk_demo.go:121,121
+found 4 clones:
+  examples/examples_sdk_demo.go:211,213
+  examples/examples_sdk_demo.go:215,217
+  examples/examples_sdk_demo.go:219,221
+  examples/examples_sdk_demo.go:223,225
+
+Found total 3 clone groups.

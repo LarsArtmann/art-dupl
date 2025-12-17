@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Duplicates</title>
+<style>
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+</style>
+</head>
+<body>
+<h1>#1 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:12</h2>
+<pre>func RunSDKDemo() {
+	fmt.Println(&#34;=== dupl SDK Demo ===&#34;)
+
+	// Example 1: Basic SDK Usage
+	fmt</pre>
+<h2>examples/examples_test_advanced_api.go:14</h2>
+<pre>func RunAdvancedAPITest() {
+	fmt.Println(&#34;=== Advanced API Analysis ===&#34;)
+
+	// Test 1: Direct suffix tree access
+	fmt</pre>
+<h1>#2 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:200</h2>
+<pre>   err != nil {
+	fmt.Printf(&#34;✅ Expected error: %v\n&#34;, err)
+} else {
+	fmt.Printf</pre>
+<h2>examples/examples_test_advanced_api.go:60</h2>
+<pre>                                            err != nil {
+	log.Printf(&#34;Config validation error: %v&#34;, err)
+} else {
+	fmt.Printf</pre>
+<h1>#3 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:200</h2>
+<pre>              {
+	fmt.Printf(&#34;✅ Expected error: %v\n&#34;, err)
+} else {
+	fmt.Printf(&#34;❌ Expected error but got none\n&#34;</pre>
+<h2>examples/examples_test_advanced_api.go:60</h2>
+<pre>                                                       {
+	log.Printf(&#34;Config validation error: %v&#34;, err)
+} else {
+	fmt.Printf(&#34;  Custom config is valid\n&#34;</pre>
+<h1>#4 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:200</h2>
+<pre>   err != nil {
+	fmt.Printf(&#34;✅ Expected error: %v\n&#34;, err)
+} else {
+	fmt</pre>
+<h2>examples/examples_test_advanced_api.go:60</h2>
+<pre>                                            err != nil {
+	log.Printf(&#34;Config validation error: %v&#34;, err)
+} else {
+	fmt</pre>
+<h1>#5 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:12</h2>
+<pre>func RunSDKDemo() {
+	fmt.Println(&#34;=== dupl SDK Demo ===&#34;)
+
+	// Example 1: Basic SDK Usage
+	fmt.Println(&#34;1. Basic SDK Usage:&#34;</pre>
+<h2>examples/examples_test_advanced_api.go:14</h2>
+<pre>func RunAdvancedAPITest() {
+	fmt.Println(&#34;=== Advanced API Analysis ===&#34;)
+
+	// Test 1: Direct suffix tree access
+	fmt.Println(&#34;\n1. Direct Suffix Tree Access:&#34;</pre>
+<h1>#6 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:1</h2>
+<pre>package examples
+
+import (
+	&#34;context&#34;
+	&#34;fmt&#34;
+	&#34;log&#34;
+	&#34;time&#34;
+
+	&#34;github.com/LarsArtmann/art-dupl/pkg/artdupl&#34;
+)
+
+func RunSDKDemo() {
+	fmt.Println(&#34;=== dupl SDK Demo ===&#34;)
+
+	// Example 1: Basic SDK Usage
+	fmt.Println</pre>
+<h2>examples/examples_test_advanced_api.go:1</h2>
+<pre>package examples
+
+import (
+	&#34;fmt&#34;
+	&#34;log&#34;
+
+	&#34;github.com/LarsArtmann/art-dupl/config&#34;
+	&#34;github.com/LarsArtmann/art-dupl/job&#34;
+	&#34;github.com/LarsArtmann/art-dupl/suffixtree&#34;
+	&#34;github.com/LarsArtmann/art-dupl/syntax&#34;
+)
+
+// Test advanced API capabilities beyond basic lib.Run
+func RunAdvancedAPITest() {
+	fmt.Println(&#34;=== Advanced API Analysis ===&#34;)
+
+	// Test 1: Direct suffix tree access
+	fmt.Println</pre>
+<h1>#7 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:200</h2>
+<pre>          nil {
+	fmt.Printf(&#34;✅ Expected error: %v\n&#34;, err)
+} else {
+	fmt.Printf</pre>
+<h2>examples/examples_test_advanced_api.go:60</h2>
+<pre>                                                   nil {
+	log.Printf(&#34;Config validation error: %v&#34;, err)
+} else {
+	fmt.Printf</pre>
+<h1>#8 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:12</h2>
+<pre>    RunSDKDemo() {
+fmt.Println(&#34;=== dupl SDK Demo ===&#34;)
+
+// Example 1: Basic SDK Usage
+fmt.Println</pre>
+<h2>examples/examples_test_advanced_api.go:14</h2>
+<pre>    RunAdvancedAPITest() {
+fmt.Println(&#34;=== Advanced API Analysis ===&#34;)
+
+// Test 1: Direct suffix tree access
+fmt.Println</pre>
+<h1>#9 found 2 clones</h1>
+<h2>examples/examples_test_advanced_api.go:82</h2>
+<pre>fmt.Printf(&#34;  Processed %d files\n&#34;, fileCount)
+fmt.Printf(&#34;  Built suffix tree with %d nodes\n&#34;, len</pre>
+<h2>examples/examples_test_api.go:19</h2>
+<pre>	log.Fatalf(&#34;Error running analysis: %v&#34;, err)
+}
+
+fmt.Printf(&#34;Found %d duplicate issues:\n\n&#34;, len</pre>
+
+</body>
+</html>

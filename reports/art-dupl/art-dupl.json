@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-17T22:25:09.2216Z",
+  "threshold": 15,
+  "files_analyzed": 3,
+  "clone_groups": [
+    {
+      "hash": "a43c73f8aea9b3c3d65eec75a7272bc447538d3bedb34d84d01425bd650aeed3",
+      "size": 4,
+      "files": [
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 211,
+          "line_end": 213,
+          "fragment": "func (l *verboseLogger) Debug(msg string, args ...any) {\n\tfmt.Printf(\"[DEBUG] %s\\n\", fmt.Sprintf(msg, args...))\n}"
+        },
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 215,
+          "line_end": 217,
+          "fragment": "func (l *verboseLogger) Info(msg string, args ...any) {\n\tfmt.Printf(\"[INFO] %s\\n\", fmt.Sprintf(msg, args...))\n}"
+        },
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 219,
+          "line_end": 221,
+          "fragment": "func (l *verboseLogger) Warn(msg string, args ...any) {\n\tfmt.Printf(\"[WARN] %s\\n\", fmt.Sprintf(msg, args...))\n}"
+        },
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 223,
+          "line_end": 225,
+          "fragment": "func (l *verboseLogger) Error(msg string, args ...any) {\n\tfmt.Printf(\"[ERROR] %s\\n\", fmt.Sprintf(msg, args...))\n}"
+        }
+      ]
+    },
+    {
+      "hash": "43e22de36266767c24a5bab92cad2a9b568eb4affb23600a46e3db0b770dc54b",
+      "size": 2,
+      "files": [
+        {
+          "filename": "examples/examples_test_api.go",
+          "line_start": 26,
+          "line_end": 26,
+          "fragment": "fmt.Printf(\"  From: %s:%d-%d\\n\", issue.From.Filename(), issue.From.LineStart(), issue.From.LineEnd())"
+        },
+        {
+          "filename": "examples/examples_test_api.go",
+          "line_start": 27,
+          "line_end": 27,
+          "fragment": "fmt.Printf(\"  To:   %s:%d-%d\\n\", issue.To.Filename(), issue.To.LineStart(), issue.To.LineEnd())"
+        }
+      ]
+    },
+    {
+      "hash": "450874f52168583b539d9a62f9c26e55d4c2080131398661d3ff1bbce89d1b1d",
+      "size": 2,
+      "files": [
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 60,
+          "line_end": 60,
+          "fragment": "fmt.Printf(\"  First group: %s with %d clones\\n\", group.Hash[:8]+\"...\", len(group.Clones))"
+        },
+        {
+          "filename": "examples/examples_sdk_demo.go",
+          "line_start": 121,
+          "line_end": 121,
+          "fragment": "fmt.Printf(\"  Group %s: %d clones\\n\", group.Hash[:8]+\"...\", len(group.Clones))"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_clone_groups": 3,
+    "total_clones": 8,
+    "complexity_score": 2
+  }
+}

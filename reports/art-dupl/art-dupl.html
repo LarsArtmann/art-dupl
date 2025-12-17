@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Duplicates</title>
+<style>
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+</style>
+</head>
+<body>
+<h1>#1 found 2 clones</h1>
+<h2>examples/examples_test_api.go:26</h2>
+<pre>fmt.Printf(&#34;  From: %s:%d-%d\n&#34;, issue.From.Filename(), issue.From.LineStart(), issue.From.LineEnd())</pre>
+<h2>examples/examples_test_api.go:27</h2>
+<pre>fmt.Printf(&#34;  To:   %s:%d-%d\n&#34;, issue.To.Filename(), issue.To.LineStart(), issue.To.LineEnd())</pre>
+<h1>#2 found 2 clones</h1>
+<h2>examples/examples_sdk_demo.go:60</h2>
+<pre>fmt.Printf(&#34;  First group: %s with %d clones\n&#34;, group.Hash[:8]+&#34;...&#34;, len(group.Clones))</pre>
+<h2>examples/examples_sdk_demo.go:121</h2>
+<pre>fmt.Printf(&#34;  Group %s: %d clones\n&#34;, group.Hash[:8]+&#34;...&#34;, len(group.Clones))</pre>
+<h1>#3 found 4 clones</h1>
+<h2>examples/examples_sdk_demo.go:211</h2>
+<pre>func (l *verboseLogger) Debug(msg string, args ...any) {
+	fmt.Printf(&#34;[DEBUG] %s\n&#34;, fmt.Sprintf(msg, args...))
+}</pre>
+<h2>examples/examples_sdk_demo.go:215</h2>
+<pre>func (l *verboseLogger) Info(msg string, args ...any) {
+	fmt.Printf(&#34;[INFO] %s\n&#34;, fmt.Sprintf(msg, args...))
+}</pre>
+<h2>examples/examples_sdk_demo.go:219</h2>
+<pre>func (l *verboseLogger) Warn(msg string, args ...any) {
+	fmt.Printf(&#34;[WARN] %s\n&#34;, fmt.Sprintf(msg, args...))
+}</pre>
+<h2>examples/examples_sdk_demo.go:223</h2>
+<pre>func (l *verboseLogger) Error(msg string, args ...any) {
+	fmt.Printf(&#34;[ERROR] %s\n&#34;, fmt.Sprintf(msg, args...))
+}</pre>
+
+</body>
+</html>
