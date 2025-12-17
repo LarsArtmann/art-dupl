@@ -15,10 +15,10 @@ const (
 
 	// DetectionMethodArtDupl uses suffix tree-based detection (current method)
 	DetectionMethodArtDupl DetectionMethod = "art-dupl"
-	
+
 	// DetectionMethodTodos finds TODO comments in code
 	DetectionMethodTodos DetectionMethod = "todos"
-	
+
 	// DetectionMethodLegacy finds legacy code patterns
 	DetectionMethodLegacy DetectionMethod = "legacy"
 )

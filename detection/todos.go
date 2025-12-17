@@ -2,13 +2,11 @@ package detection
 
 import (
 	"fmt"
-	"go/ast"
 	"go/parser"
 	"go/token"
 	"regexp"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -17,7 +15,7 @@ type TodoIssue struct {
 	Filename string   `json:"filename"`
 	Line     int      `json:"line"`
 	Text     string   `json:"text"`
-	Type     string   `json:"type"` // TODO, FIXME, XXX, etc.
+	Type     string   `json:"type"`           // TODO, FIXME, XXX, etc.
 	Tags     []string `json:"tags,omitempty"` // @username, date, etc.
 }
 
@@ -44,10 +42,10 @@ func NewTodoDetector() *TodoDetector {
 	// // TODO(2024-01-01): replace with new API
 	// // XXX: this is a hack
 	patterns := make(map[string]*regexp.Regexp)
-	
+
 	// TODO pattern
 	patterns["TODO"] = regexp.MustCompile(`(?i)TODO\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
-	// FIXME pattern  
+	// FIXME pattern
 	patterns["FIXME"] = regexp.MustCompile(`(?i)FIXME\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
 	// XXX pattern
 	patterns["XXX"] = regexp.MustCompile(`(?i)XXX\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
@@ -55,37 +53,37 @@ func NewTodoDetector() *TodoDetector {
 	patterns["HACK"] = regexp.MustCompile(`(?i)HACK\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
 	// NOTE pattern
 	patterns["NOTE"] = regexp.MustCompile(`(?i)NOTE\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
-	
+
 	return &TodoDetector{patterns: patterns}
 }
 
 // FindTodos finds all TODO-style comments in the provided nodes
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
-	
+
 	go func() {
 		defer close(resultChan)
-		
+
 		// Group nodes by filename
 		nodesByFile := make(map[string][]*syntax.Node)
 		for _, node := range data {
 			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
 		}
-		
+
 		// Process each file
 		for filename, nodes := range nodesByFile {
 			todos := td.findTodosInFile(filename, nodes)
 			for _, todo := range todos {
 				// Create a match that represents the TODO
 				match := syntax.Match{
-					Hash: fmt.Sprintf("TODO-%s-%d", filename, todo.Line),
+					Hash:  fmt.Sprintf("TODO-%s-%d", filename, todo.Line),
 					Frags: [][]*syntax.Node{{}}, // Empty frag since TODOs aren't code fragments
 				}
 				resultChan <- match
 			}
 		}
 	}()
-	
+
 	return resultChan
 }
 
@@ -96,21 +94,21 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 	if err != nil {
 		return nil
 	}
-	
+
 	var todos []TodoIssue
-	
+
 	// Check all comment groups
 	for _, commentGroup := range file.Comments {
 		for _, comment := range commentGroup.List {
 			line := fset.Position(comment.Slash).Line
 			text := strings.TrimSpace(comment.Text)
-			
+
 			// Remove comment markers
 			text = strings.TrimPrefix(text, "//")
 			text = strings.TrimPrefix(text, "/*")
 			text = strings.TrimSuffix(text, "*/")
 			text = strings.TrimSpace(text)
-			
+
 			// Check against patterns
 			for todoType, pattern := range td.patterns {
 				matches := pattern.FindStringSubmatch(text)
@@ -123,12 +121,12 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 							tags[i] = strings.TrimSpace(tag)
 						}
 					}
-					
+
 					todoText := ""
 					if len(matches) > 2 {
 						todoText = strings.TrimSpace(matches[2])
 					}
-					
+
 					todos = append(todos, TodoIssue{
 						Filename: filename,
 						Line:     line,
@@ -141,7 +139,7 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 			}
 		}
 	}
-	
+
 	return todos
 }
 
@@ -152,12 +150,12 @@ type LegacyDetector struct {
 
 // LegacyPattern represents a pattern to detect legacy code
 type LegacyPattern struct {
-	Type        string   `json:"type"`
-	Message     string   `json:"message"`
-	Severity    string   `json:"severity"`
-	Functions   []string `json:"functions,omitempty"`   // Deprecated function names
-	Patterns    []string `json:"patterns,omitempty"`    // Regex patterns for code
-	Imports     []string `json:"imports,omitempty"`     // Deprecated import paths
+	Type      string   `json:"type"`
+	Message   string   `json:"message"`
+	Severity  string   `json:"severity"`
+	Functions []string `json:"functions,omitempty"` // Deprecated function names
+	Patterns  []string `json:"patterns,omitempty"`  // Regex patterns for code
+	Imports   []string `json:"imports,omitempty"`   // Deprecated import paths
 }
 
 // NewLegacyDetector creates a new legacy detector with default patterns
@@ -170,36 +168,36 @@ func NewLegacyDetector() *LegacyDetector {
 // FindLegacy finds all legacy patterns in the provided nodes
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
-	
+
 	go func() {
 		defer close(resultChan)
-		
+
 		// Group nodes by filename
 		nodesByFile := make(map[string][]*syntax.Node)
 		for _, node := range data {
 			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
 		}
-		
+
 		// Process each file
 		for filename, nodes := range nodesByFile {
 			legacies := ld.findLegacyInFile(filename, nodes)
 			for _, legacy := range legacies {
 				match := syntax.Match{
-					Hash: fmt.Sprintf("LEGACY-%s-%d", filename, legacy.Line),
+					Hash:  fmt.Sprintf("LEGACY-%s-%d", filename, legacy.Line),
 					Frags: [][]*syntax.Node{{}}, // Empty frag since legacy items aren't code fragments
 				}
 				resultChan <- match
 			}
 		}
 	}()
-	
+
 	return resultChan
 }
 
 // findLegacyInFile finds legacy patterns in a specific file
 func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node) []LegacyIssue {
 	var issues []LegacyIssue
-	
+
 	for _, node := range nodes {
 		// Check each legacy pattern
 		for _, pattern := range ld.patterns {
@@ -219,7 +217,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 			}
 		}
 	}
-	
+
 	return issues
 }
 
@@ -231,9 +229,9 @@ func getDefaultLegacyPatterns() []LegacyPattern {
 			Message:  "Use of deprecated function",
 			Severity: "medium",
 			Functions: []string{
-				"io/ioutil.ReadFile",  // Deprecated in Go 1.16
-				"io/ioutil.WriteFile", // Deprecated in Go 1.16
-				"io/ioutil.TempFile",  // Deprecated in Go 1.16
+				"io/ioutil.ReadFile",     // Deprecated in Go 1.16
+				"io/ioutil.WriteFile",    // Deprecated in Go 1.16
+				"io/ioutil.TempFile",     // Deprecated in Go 1.16
 				"os/exec.CommandContext", // Actually not deprecated, example
 			},
 		},
@@ -243,7 +241,7 @@ func getDefaultLegacyPatterns() []LegacyPattern {
 			Severity: "low",
 			Patterns: []string{
 				`for.*range.*len\(.*\).*{.*\[\].*=.*append\(.*,.*\)`, // range append pattern
-				`if.*err.*!=.*nil.*{.*return.*err}`, // error checking pattern (could be improved)
+				`if.*err.*!=.*nil.*{.*return.*err}`,                  // error checking pattern (could be improved)
 			},
 		},
 		{
@@ -252,7 +250,7 @@ func getDefaultLegacyPatterns() []LegacyPattern {
 			Severity: "high",
 			Imports: []string{
 				"golang.org/x/net/context", // Use context package instead
-				"gopkg.in/yaml.v1",       // Use v2 or v3
+				"gopkg.in/yaml.v1",         // Use v2 or v3
 			},
 		},
 	}
