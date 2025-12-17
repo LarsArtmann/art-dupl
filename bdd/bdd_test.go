@@ -255,10 +255,8 @@ func uniqueFunction(ctx context.Context) error {
 })
 
 var _ = Describe("Configuration Management", func() {
-	var (
-		tempDir string
-		// configFile string // Commented out since not used in current tests
-	)
+	var tempDir string
+	// configFile string // Commented out since not used in current tests
 
 	BeforeEach(func() {
 		var err error

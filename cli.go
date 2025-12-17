@@ -738,7 +738,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 	}
 
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
-		return fmt.Errorf("failed to create output directory: %v", err)
+		return fmt.Errorf("❌ Failed to create output directory '%s': %v\n💡 Try: Check if you have write permissions or specify a different output directory with --output-dir", outputDir, err)
 	}
 
 	// Define detection methods and output formats
@@ -797,7 +797,7 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 		}
 		totalClonesFound += stats.ClonesCount
 
-		if if _, err := fmt.Fprintf(cli.Stderr(), "✅ %s analysis completed (%.2fs) - %d files analyzed, %d clone groups found\n\n", method, time.Since(methodStart).Seconds(), stats.FilesCount, stats.ClonesCount); err != nil {
+		if _, err := fmt.Fprintf(cli.Stderr(), "✅ %s analysis completed (%.2fs) - %d files analyzed, %d clone groups found\n\n", method, time.Since(methodStart).Seconds(), stats.FilesCount, stats.ClonesCount); err != nil {
 			_ = err
 		}
 	}
@@ -854,7 +854,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 ) (*AnalysisStats, error) {
 	t, data, filesCount, err := buildSuffixTree(cfg.Paths, verbose, cfg.FilesFromStdin)
 	if err != nil {
-		return fmt.Errorf("failed to build suffix tree: %v", err)
+		return nil, fmt.Errorf("failed to build suffix tree: %v", err)
 	}
 
 	// Count clones by consuming the channel once
@@ -906,7 +906,7 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 		duplChanCopy := createDuplChannelForMethod(method, cfg, data, t, false) // don't log again
 
 		if err := printDupls(p, duplChanCopy, "size", cfg.Threshold); err != nil {
-			return fmt.Errorf("error writing %s format: %v", fmtInfo.name, err)
+			return nil, fmt.Errorf("error writing %s format: %v", fmtInfo.name, err)
 		}
 
 		if verbose {
