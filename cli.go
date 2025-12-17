@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
@@ -380,6 +381,11 @@ func createDuplChannelForMethod(method config.DetectionMethod, cfg *config.Confi
 func buildSuffixTree(paths []string, verbose, filesFromStdin bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
+	} else {
+		// Show basic progress even without verbose
+		if _, err := fmt.Fprintf(cli.Stderr(), "    📖 Parsing files and building analysis tree..."); err != nil {
+			_ = err
+		}
 	}
 
 	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin))
@@ -394,6 +400,11 @@ func buildSuffixTree(paths []string, verbose, filesFromStdin bool) (*suffixtree.
 
 	if verbose {
 		log.Println("Searching for clones")
+	} else {
+		// Show completion
+		if _, err := fmt.Fprintf(cli.Stderr(), " ✅\n"); err != nil {
+			_ = err
+		}
 	}
 
 	return t, *data, filesCount, nil
@@ -696,6 +707,36 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 // runAllMode generates all output formats for all detection methods
 func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []string) error {
+	// Record start time for overall timing
+	overallStart := time.Now()
+
+	// Start with clear feedback about what's happening
+	if _, err := fmt.Fprintf(cli.Stderr(), "🚀 Starting comprehensive code duplication analysis...\n\n"); err != nil {
+		// Continue even if we can't write to stderr
+		_ = err // Explicitly ignore error
+	}
+
+	// Show what's being analyzed
+	if len(paths) == 0 {
+		if _, err := fmt.Fprintf(cli.Stderr(), "📂 Analyzing current directory\n"); err != nil {
+			_ = err
+		}
+	} else {
+		if _, err := fmt.Fprintf(cli.Stderr(), "📂 Analyzing paths: %v\n", paths); err != nil {
+			_ = err
+		}
+	}
+
+	if _, err := fmt.Fprintf(cli.Stderr(), "📋 Output directory: %s\n", outputDir); err != nil {
+		_ = err
+	}
+	if _, err := fmt.Fprintf(cli.Stderr(), "⚡ Threshold: %d tokens\n", threshold); err != nil {
+		_ = err
+	}
+	if _, err := fmt.Fprintf(cli.Stderr(), "🔧 Include vendor: %t\n\n", vendor); err != nil {
+		_ = err
+	}
+
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create output directory: %v", err)
 	}
@@ -714,12 +755,24 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 		{"plumbing", config.OutputFormatPlumbing, ".plumbing", printer.NewPlumbing},
 	}
 
+	if _, err := fmt.Fprintf(cli.Stderr(), "🔍 Running analysis with %d detection methods and generating %d output formats each...\n\n", len(detectionMethods), len(outputFormats)); err != nil {
+		_ = err
+	}
+
+	// Track overall statistics
+	totalFilesAnalyzed := 0
+	totalClonesFound := 0
+
 	// Run analysis for each detection method
-	for _, method := range detectionMethods {
+	for i, method := range detectionMethods {
+		methodStart := time.Now()
+		if _, err := fmt.Fprintf(cli.Stderr(), "[%d/%d] 🔍 Analyzing with %s detection method...\n", i+1, len(detectionMethods), method); err != nil {
+			_ = err
+		}
+
 		if verbose {
-			if _, err := fmt.Fprintf(cli.Stderr(), "Running %s detection method...\n", method); err != nil {
-				// Continue even if verbose output fails
-				_ = err // Explicitly ignore the error
+			if _, err := fmt.Fprintf(cli.Stderr(), "    Debug: Running %s detection method...\n", method); err != nil {
+				_ = err
 			}
 		}
 
@@ -733,18 +786,62 @@ func runAllMode(outputDir string, threshold int, vendor, verbose bool, paths []s
 		}
 
 		// Run the analysis once per method and generate all formats
-		if err := runAnalysisForAllFormats(config, outputDir, outputFormats, method, verbose); err != nil {
+		stats, err := runAnalysisForAllFormats(config, outputDir, outputFormats, method, verbose)
+		if err != nil {
 			return fmt.Errorf("error running %s analysis: %v", method, err)
+		}
+
+		// Track overall statistics (use max files analyzed since each method analyzes same files)
+		if stats.FilesCount > totalFilesAnalyzed {
+			totalFilesAnalyzed = stats.FilesCount
+		}
+		totalClonesFound += stats.ClonesCount
+
+		if if _, err := fmt.Fprintf(cli.Stderr(), "✅ %s analysis completed (%.2fs) - %d files analyzed, %d clone groups found\n\n", method, time.Since(methodStart).Seconds(), stats.FilesCount, stats.ClonesCount); err != nil {
+			_ = err
 		}
 	}
 
+	// Final summary
+	if _, err := fmt.Fprintf(cli.Stderr(), "🎉 All analysis complete! (Total time: %.2fs)\n", time.Since(overallStart).Seconds()); err != nil {
+		_ = err
+	}
+	if _, err := fmt.Fprintf(cli.Stderr(), "📊 Overall statistics: %d files analyzed, %d total clone groups found\n", totalFilesAnalyzed, totalClonesFound); err != nil {
+		_ = err
+	}
+	if _, err := fmt.Fprintf(cli.Stderr(), "📁 All reports generated in: %s\n", outputDir); err != nil {
+		_ = err
+	}
+	
+	// List all generated files
+	if _, err := fmt.Fprintf(cli.Stderr(), "📋 Generated files:\n"); err != nil {
+		_ = err
+	}
+	for _, method := range detectionMethods {
+		for _, fmtInfo := range outputFormats {
+			filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
+			if _, err := fmt.Fprintf(cli.Stderr(), "   📄 %s\n", filename); err != nil {
+				_ = err
+			}
+		}
+	}
+	
+	if _, err := fmt.Fprintf(cli.Stderr(), "\n✨ Done! Use the reports above to review code duplication findings.\n"); err != nil {
+		_ = err
+	}
+
 	if verbose {
-		if _, err := fmt.Fprintf(cli.Stderr(), "All reports generated in: %s\n", outputDir); err != nil {
-			// Continue even if verbose output fails
-			_ = err // Explicitly ignore the error
+		if _, err := fmt.Fprintf(cli.Stderr(), "\nDebug: All reports generated in: %s\n", outputDir); err != nil {
+			_ = err
 		}
 	}
 	return nil
+}
+
+// AnalysisStats holds statistics from a single analysis run
+type AnalysisStats struct {
+	FilesCount int
+	ClonesCount int
 }
 
 // runAnalysisForAllFormats runs analysis once and generates all output formats
@@ -754,10 +851,17 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	ext        string
 	newPrinter func(io.Writer, printer.ReadFile) printer.Printer
 }, method config.DetectionMethod, verbose bool,
-) error {
+) (*AnalysisStats, error) {
 	t, data, filesCount, err := buildSuffixTree(cfg.Paths, verbose, cfg.FilesFromStdin)
 	if err != nil {
 		return fmt.Errorf("failed to build suffix tree: %v", err)
+	}
+
+	// Count clones by consuming the channel once
+	duplChanForCounting := createDuplChannelForMethod(method, cfg, data, t, false)
+	clonesCount := 0
+	for range duplChanForCounting {
+		clonesCount++
 	}
 
 	// Generate all output formats
@@ -765,10 +869,18 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 	for _, fmtInfo := range formats {
 		// Generate output for this format
 		filename := filepath.Join(outputDir, fmt.Sprintf("%s%s", method, fmtInfo.ext))
+		
+		if !verbose {
+			// Show format generation progress
+			if _, err := fmt.Fprintf(cli.Stderr(), "    📝 Generating %s format...", fmtInfo.name); err != nil {
+				_ = err
+			}
+		}
+		
 		// Create output file
 		file, err := os.Create(filename)
 		if err != nil {
-			return fmt.Errorf("failed to create %s file: %v", filename, err)
+			return nil, fmt.Errorf("failed to create %s file: %v", filename, err)
 		}
 		defer func() {
 			if err := file.Close(); err != nil {
@@ -802,8 +914,16 @@ func runAnalysisForAllFormats(cfg *config.Config, outputDir string, formats []st
 				// Continue even if we can't write verbose output
 				_ = err // Explicitly ignore error
 			}
+		} else {
+			// Show completion for non-verbose mode
+			if _, err := fmt.Fprintf(cli.Stderr(), " ✅\n"); err != nil {
+				_ = err
+			}
 		}
 	}
 
-	return nil
+	return &AnalysisStats{
+		FilesCount:  filesCount,
+		ClonesCount: clonesCount,
+	}, nil
 }
