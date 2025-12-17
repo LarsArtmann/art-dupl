@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 )
 
-func main() {
-	fmt.Println("=== dupl SDK Demo ===\n")
+func RunSDKDemo() {
+	fmt.Println("=== dupl SDK Demo ===")
 
 	// Example 1: Basic SDK Usage
 	fmt.Println("1. Basic SDK Usage:")
@@ -208,18 +208,18 @@ func errorExample() {
 // verboseLogger implements artdupl.Logger with verbose output
 type verboseLogger struct{}
 
-func (l *verboseLogger) Debug(msg string, args ...interface{}) {
+func (l *verboseLogger) Debug(msg string, args ...any) {
 	fmt.Printf("[DEBUG] %s\n", fmt.Sprintf(msg, args...))
 }
 
-func (l *verboseLogger) Info(msg string, args ...interface{}) {
+func (l *verboseLogger) Info(msg string, args ...any) {
 	fmt.Printf("[INFO] %s\n", fmt.Sprintf(msg, args...))
 }
 
-func (l *verboseLogger) Warn(msg string, args ...interface{}) {
+func (l *verboseLogger) Warn(msg string, args ...any) {
 	fmt.Printf("[WARN] %s\n", fmt.Sprintf(msg, args...))
 }
 
-func (l *verboseLogger) Error(msg string, args ...interface{}) {
+func (l *verboseLogger) Error(msg string, args ...any) {
 	fmt.Printf("[ERROR] %s\n", fmt.Sprintf(msg, args...))
 }

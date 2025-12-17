@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/lib"
 )
 
-func main() {
+func RunTestAPI() {
 	// Test the current lib API
 	files := []string{
 		"syntax/syntax.go", // Analyze some of our own files

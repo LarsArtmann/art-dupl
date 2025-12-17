@@ -116,10 +116,10 @@ type FileReaderFunc func(filename string) ([]byte, error)
 
 // Logger interface for logging operations
 type Logger interface {
-	Debug(msg string, args ...interface{})
-	Info(msg string, args ...interface{})
-	Warn(msg string, args ...interface{})
-	Error(msg string, args ...interface{})
+	Debug(msg string, args ...any)
+	Info(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Error(msg string, args ...any)
 }
 
 // DefaultOptions returns a configuration with sensible defaults
@@ -148,10 +148,10 @@ var readFileDefault = func(filename string) ([]byte, error) {
 // defaultLogger provides basic logging to stderr
 type defaultLogger struct{}
 
-func (l *defaultLogger) Debug(msg string, args ...interface{}) {}
-func (l *defaultLogger) Info(msg string, args ...interface{})  {}
-func (l *defaultLogger) Warn(msg string, args ...interface{})  {}
-func (l *defaultLogger) Error(msg string, args ...interface{}) {}
+func (l *defaultLogger) Debug(msg string, args ...any) {}
+func (l *defaultLogger) Info(msg string, args ...any)  {}
+func (l *defaultLogger) Warn(msg string, args ...any)  {}
+func (l *defaultLogger) Error(msg string, args ...any) {}
 
 // ValidateOptions checks if the provided options are valid
 func ValidateOptions(opts *Options) error {

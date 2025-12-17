@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 // Test advanced API capabilities beyond basic lib.Run
-func main() {
+func RunAdvancedAPITest() {
 	fmt.Println("=== Advanced API Analysis ===")
 
 	// Test 1: Direct suffix tree access

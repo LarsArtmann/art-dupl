@@ -77,7 +77,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	// Build and return result
-	return d.buildResult(cloneGroups, fileCount), nil
+	return d.buildResult(cloneGroups, 0), nil
 }
 
 // FindClonesStream provides streaming results for large projects
@@ -97,7 +97,7 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 		defer close(resultChan)
 
 		// Process files and build analysis pipeline
-		data, fileCount, err := d.buildAnalysisPipeline(ctx, files)
+		data, _, err := d.buildAnalysisPipeline(ctx, files)
 		if err != nil {
 			d.logger.Error("Analysis pipeline error: %v", err)
 			return
@@ -203,8 +203,8 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 
 	var allGroups []*CloneGroup
 
-	// Use multi-detector for consistent interface
-	multiDetector := detection.NewMultiDetector(d.config, data, nil, false) // tree not needed for all methods
+	// Note: Multi-detector would be used for multiple methods, but we handle single method for now
+	_ = detection.NewMultiDetector(d.config, data, nil, false) // tree not needed for all methods
 
 	// Get matches based on detection methods
 	threshold := d.config.Threshold
@@ -232,7 +232,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 		}
 
 		if len(match.Frags) > 0 {
-			groups[match.Hash] = append(groups[match.Hash], match.Frags)
+			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
 		}
 	}
 
@@ -265,7 +265,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		return ErrUnsupportedMethod
 	}
 
-	groups := make(map[string][]*syntax.Node)
+	groups := make(map[string][][]*syntax.Node)
 
 	for match := range matchesChan {
 		// Check for cancellation
@@ -276,7 +276,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		}
 
 		if len(match.Frags) > 0 {
-			groups[match.Hash] = append(groups[match.Hash], match.Frags)
+			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
 		}
 	}
 

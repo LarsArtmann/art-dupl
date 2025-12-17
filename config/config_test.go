@@ -311,8 +311,8 @@ func TestDetectionMethods(t *testing.T) {
 
 	// Test AllDetectionMethods
 	methods := AllDetectionMethods()
-	if len(methods) != 2 {
-		t.Errorf("Expected 2 methods, got %d", len(methods))
+	if len(methods) != 4 {
+		t.Errorf("Expected 4 methods, got %d", len(methods))
 	}
 
 	// Test ParseDetectionMethods
