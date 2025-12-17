@@ -8,7 +8,7 @@
 
 **Total .md Files Found:** 75
 
-### Files Read (55/75):
+### Files Read (75/75):
 
 - /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found) - Reviewed: Complete reference documentation for CLI tool
 - /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found) - Reviewed: AI agent guide for dupl repository with development guidelines
@@ -56,7 +56,7 @@
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md ✓ (TODO items found)
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-04_comprehensive-fang-migration-status-report.md ✓ (No TODO items found)
 
-### Files Read (55/75):
+### Files Read (75/75):
 
 - /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found) - Reviewed: Complete reference documentation for CLI tool
 - /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found) - Reviewed: AI agent guide for dupl repository with development guidelines
@@ -104,10 +104,10 @@
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_10-25_total-tokens-sort-option-complete.md ✓ (TODO items found) - Reviewed: Sort option completion
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_18-51_CONFIGURATION_REFACTORING_PROGRESS.md ✓ (TODO items found) - Reviewed: Config refactoring with 14 unique tasks
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_07-55_de-duplication-comprehensive-status.md ✓ (TODO items found) - Reviewed: De-duplication status with 18 unique tasks
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_22-32_comprehensive-project-status-report.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_sorting-enhancement-production-ready.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md - Pending
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_22-32_comprehensive-project-status-report.md ✓ (TODO items found) - Reviewed: Comprehensive project status report
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md ✓ (TODO items found) - Reviewed: Production-ready quick wins
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_sorting-enhancement-production-ready.md ✓ (TODO items found) - Reviewed: Sorting enhancement production-ready
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md ✓ (TODO items found) - Reviewed: Sorting feature comprehensive status
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_18-47_critical-bugs-fixed-production-ready.md ✓ (TODO items found) - Reviewed: Critical bug fixes with 14 unique tasks
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_08-27_de-duplication-task-completion-final.md ✓ (TODO items found) - Reviewed: De-duplication completion with 18 tasks
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-24_enum-unmarshal-de-duplication-status.md ✓ (TODO items found) - Reviewed: Enum unmarshaling with 18 tasks
@@ -122,24 +122,24 @@
 - /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md ✓ (TODO items found) - Reviewed: Improvement plan with 20 unique tasks
 - [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_05-00_json-output-enhancement-complete.md - Pending
 - /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-45-fang-migration-execution-plan.md ✓ (TODO items found) - Reviewed: Migration execution plan with 20 unique tasks
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_02-55_production-ready-status.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-15_fang-migration-progress.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_github-issues-management.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-03_critical-recovery-status.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-11-30_05-03-critical-blocker-analysis.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-29_20-31-critical-foundation-plan.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-30-fang-migration-analysis.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-44_FANG_MAXIMIZATION_COMPLETE.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-11-29_20-30-comprehensive-status-report.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-47_comprehensive-status-update.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_comprehensive-status-report.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-40_import-migration-completion.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-02_sorting-implementation-fixed.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-27_stable-bridge-pattern-success.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_strategic-implementation-plan.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-58_production-ready-cli-delivered.md - Pending
-- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_22-09_comprehensive-evaluation-report.md - Pending
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_02-55_production-ready-status.md ✓ (TODO items found) - Reviewed: Production-ready status
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-15_fang-migration-progress.md ✓ (TODO items found) - Reviewed: Fang migration progress
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_github-issues-management.md ✓ (TODO items found) - Reviewed: GitHub issues management
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-03_critical-recovery-status.md ✓ (TODO items found) - Reviewed: Critical recovery status
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md ✓ (TODO items found) - Reviewed: Zero-field sorting MVP
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-30_05-03-critical-blocker-analysis.md ✓ (TODO items found) - Reviewed: Critical blocker analysis
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-29_20-31-critical-foundation-plan.md ✓ (TODO items found) - Reviewed: Critical foundation plan
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-30-fang-migration-analysis.md ✓ (TODO items found) - Reviewed: Fang migration analysis
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-44_FANG_MAXIMIZATION_COMPLETE.md ✓ (TODO items found) - Reviewed: Fang maximization completion
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-11-29_20-30-comprehensive-status-report.md ✓ (TODO items found) - Reviewed: Comprehensive status report
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-47_comprehensive-status-update.md ✓ (TODO items found) - Reviewed: Comprehensive status update
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_comprehensive-status-report.md ✓ (TODO items found) - Reviewed: Comprehensive status report
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-40_import-migration-completion.md ✓ (TODO items found) - Reviewed: Import migration completion
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-02_sorting-implementation-fixed.md ✓ (TODO items found) - Reviewed: Sorting implementation fixed
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-27_stable-bridge-pattern-success.md ✓ (TODO items found) - Reviewed: Bridge pattern success
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_strategic-implementation-plan.md ✓ (TODO items found) - Reviewed: Strategic implementation plan
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-58_production-ready-cli-delivered.md ✓ (TODO items found) - Reviewed: Production-ready CLI delivered
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_22-09_comprehensive-evaluation-report.md ✓ (TODO items found) - Reviewed: Comprehensive evaluation report
 
 ## Project Status Summary
 
