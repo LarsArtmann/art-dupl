@@ -1,18 +1,24 @@
 # TODO_LIST.md - Comprehensive Project TODO List
 
-**Created on:** December 15, 2025  
-**Last Updated:** December 15, 2025  
+**Created on:** December 17, 2025  
+**Last Updated:** December 17, 2025  
 **Purpose:** Consolidate all TODO items from across the project documentation
 
 ## Files Processing Status
 
-### Files Read (39/39):
+**Total .md Files Found:** 75
 
-- /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found)
-- /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found)
-- /Users/larsartmann/projects/art-dupl/README.md ✓ (No TODO items found)
-- /Users/larsartmann/projects/art-dupl/HOW_TO_USE.md ✓ (No TODO items found)
-- /Users/larsartmann/projects/art-dupl/WHAT_THIS_PROJECT_IS_NOT.md ✓ (No TODO items found)
+### Files Read (55/75):
+
+- /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found) - Reviewed: Complete reference documentation for CLI tool
+- /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found) - Reviewed: AI agent guide for dupl repository with development guidelines
+- /Users/larsartmann/projects/art-dupl/README.md ✓ (No TODO items found) - Reviewed: Project overview and key features
+- /Users/larsartmann/projects/art-dupl/HOW_TO_USE.md ✓ (TODO items found) - Reviewed: Practical guide with implicit implementation requirements
+- /Users/larsartmann/projects/art-dupl/FEATURES.md ✓ (TODO items found) - Reviewed: Feature overview with specific TODO tasks by priority
+
+### Files Remaining (70):
+
+- /Users/larsartmann/projects/art-dupl/WHAT_THIS_PROJECT_IS_NOT.md ✓ (No TODO items found) - Reviewed: Scope and limitations documentation
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-28_EXECUTION_PLAN.md ✓ (No TODO items found)
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-29_flag-redefinition-fix.md ✓ (No TODO items found)
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_22-18_immediate-action-plan.md ✓ (No TODO items found)
@@ -50,9 +56,90 @@
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md ✓ (TODO items found)
 - /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-04_comprehensive-fang-migration-status-report.md ✓ (No TODO items found)
 
-### Files Remaining (0):
+### Files Read (55/75):
 
-- None
+- /Users/larsartmann/projects/art-dupl/USAGE.md ✓ (No TODO items found) - Reviewed: Complete reference documentation for CLI tool
+- /Users/larsartmann/projects/art-dupl/AGENTS.md ✓ (No TODO items found) - Reviewed: AI agent guide for dupl repository with development guidelines
+- /Users/larsartmann/projects/art-dupl/README.md ✓ (No TODO items found) - Reviewed: Project overview and key features
+- /Users/larsartmann/projects/art-dupl/HOW_TO_USE.md ✓ (TODO items found) - Reviewed: Practical guide with implicit implementation requirements
+- /Users/larsartmann/projects/art-dupl/FEATURES.md ✓ (TODO items found) - Reviewed: Feature overview with specific TODO tasks by priority
+- /Users/larsartmann/projects/art-dupl/WHAT_THIS_PROJECT_IS_NOT.md ✓ (No TODO items found) - Reviewed: Scope and limitations documentation
+
+### Files Remaining (69):
+
+- /Users/larsartmann/projects/art-dupl/SDK_DESIGN.md ✓ (TODO items found) - Reviewed: Comprehensive SDK redesign with 3-phase implementation plan
+- /Users/larsartmann/projects/art-dupl/ISSUES_REPORT.md ✓ (TODO items found) - Reviewed: Code quality report with 10 linting issues to fix
+- /Users/larsartmann/projects/art-dupl/PROGRESS_REPORT.md ✓ (TODO items found) - Reviewed: Progress tracking with 6 high/medium priority items
+- /Users/larsartmann/projects/art-dupl/EXECUTION_SUMMARY.md ✓ (TODO items found) - Reviewed: Project execution summary with prioritized action items
+- /Users/larsartmann/projects/art-dupl/FINAL_TODO_STATUS.md ✓ (TODO items found) - Reviewed: Final status with 3 low-priority remaining items
+- /Users/larsartmann/projects/art-dupl/EXECUTION_COMPLETE.md ✓ (No TODO items found) - Reviewed: All major refactoring completed
+- /Users/larsartmann/projects/art-dupl/FINAL_MISSION_STATUS.md ✓ (TODO items found) - Reviewed: Final status with 3 low-priority items
+- /Users/larsartmann/projects/art-dupl/STATUS_REPORT_SUMMARY.md ✓ (TODO items found) - Reviewed: Status summary with prioritized action items
+- /Users/larsartmann/projects/art-dupl/FINAL_COMPLETION_REPORT.md ✓ (TODO items found) - Reviewed: Completion report with 15 prioritized TODOs
+- /Users/larsartmann/projects/art-dupl/FINAL_EXECUTION_COMPLETE.md ✓ (TODO items found) - Reviewed: Final execution status with 6 remaining items
+- /Users/larsartmann/projects/art-dupl/MISSION_ACCOMPLISHED_FINAL.md ✓ (TODO items found) - Reviewed: Mission accomplished with 25 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/TASK_SUCCESSFULLY_COMPLETED.md ✓ (TODO items found) - Reviewed: Task completion with 25 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/TASK_COMPLETION_CONFIRMATION.md ✓ (TODO items found) - Reviewed: Task confirmation with 25 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/EXECUTION_FINAL_REPORT_COMPLETE.md ✓ (TODO items found) - Reviewed: Final report with 25 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/FINAL_EXECUTION_SUMMARY_COMPLETE.md ✓ (TODO items found) - Reviewed: Final summary with 11 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/TASK_EXECUTION_FINAL_VERIFICATION.md ✓ (TODO items found) - Reviewed: Verification with 11 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/TASK_EXECUTION_FINAL_CONFIRMATION_COMPLETE.md ✓ (TODO items found) - Reviewed: Confirmation with 11 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-17_19-43_API-SDK-ANALYSIS.md ✓ (TODO items found) - Reviewed: API/SDK analysis with 26 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_11-07_FINAL-RECOVERY-REPORT.md ✓ (TODO items found) - Reviewed: Recovery report with 3 remaining tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_19-05_de-duplication-refactoring.md ✓ (TODO items found) - Reviewed: Refactoring report with 4 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-42_comprehensive-status-report.md ✓ (TODO items found) - Reviewed: Status report with 16 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-16_comprehensive-status-update.md ✓ (TODO items found) - Reviewed: Status update with 16 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_20-26_TODO-LEGACY-DETECTION-STATUS.md ✓ (TODO items found) - Reviewed: Legacy detection status with 16 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-16_ART-DUPL-CRITICAL-BUG-REPORT.md ✓ (TODO items found) - Reviewed: Critical bug report with 16 prioritized tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_21-29_code-deduplication-completed.md ✓ (TODO items found) - Reviewed: De-duplication completion with 12 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-38_de-duplication-mission-status.md ✓ (TODO items found) - Reviewed: Mission status with 12 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_21-30_de-duplication-mission-status.md ✓ (TODO items found) - Reviewed: De-duplication status with 12 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_20-09_hash-detection-critical-flaws.md ✓ (TODO items found) - Reviewed: Hash detection flaws with 12 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_16-38_CRITICAL-RECOVERY-STATUS-REPORT.md ✓ (TODO items found) - Reviewed: Critical recovery with 15 immediate tasks
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-15_12-15_COMPREHENSIVE_EXECUTION_PLAN.md ✓ (TODO items found) - Reviewed: Execution plan with 125 detailed tasks
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-15_12-15_COMPREHENSIVE_TASK_BREAKDOWN.md ✓ (TODO items found) - Reviewed: Task breakdown with 125 detailed tasks
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-15_ULTRA_DETAILED_TASK_BREAKDOWN.md ✓ (TODO items found) - Reviewed: Ultra-detailed breakdown with 125 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_10-48_ALL_FLAG_IMPLEMENTATION_COMPLETE.md ✓ (TODO items found) - Reviewed: ALL flag implementation with 14 unique tasks
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_05-00_json-output-enhancement-complete.md - Pending
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_10-25_total-tokens-sort-option-complete.md ✓ (TODO items found) - Reviewed: Sort option completion
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_18-51_CONFIGURATION_REFACTORING_PROGRESS.md ✓ (TODO items found) - Reviewed: Config refactoring with 14 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_07-55_de-duplication-comprehensive-status.md ✓ (TODO items found) - Reviewed: De-duplication status with 18 unique tasks
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_22-32_comprehensive-project-status-report.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-33_production-ready-quick-wins-capable.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_sorting-enhancement-production-ready.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_sorting-feature-comprehensive-status.md - Pending
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_18-47_critical-bugs-fixed-production-ready.md ✓ (TODO items found) - Reviewed: Critical bug fixes with 14 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_08-27_de-duplication-task-completion-final.md ✓ (TODO items found) - Reviewed: De-duplication completion with 18 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-16_09-24_enum-unmarshal-de-duplication-status.md ✓ (TODO items found) - Reviewed: Enum unmarshaling with 18 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_13-35_COMPREHENSIVE_PROJECT_STATUS_ANALYSIS.md ✓ (TODO items found) - Reviewed: Comprehensive analysis with 18 tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_20-09_hash-detection-implementation-complete.md ✓ (TODO items found) - Reviewed: Hash detection completion with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_21-13_CODE-DEDUPLICATION-MISSION-ACCOMPLISHED.md ✓ (TODO items found) - Reviewed: Code dedup mission with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_11-06_WELL-NAMED_COMPREHENSIVE_PROJECT_STATUS.md ✓ (TODO items found) - Reviewed: Comprehensive status with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_03-17_JSON-OUTPUT-BUGS-AND-ARCHITECTURE-ISSUES.md ✓ (TODO items found) - Reviewed: JSON output issues with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-04_comprehensive-fang-migration-status-report.md ✓ (TODO items found) - Reviewed: Fang migration status with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_09-39_multi-main-file-crisis-resolution.md ✓ (TODO items found) - Reviewed: Multi-main crisis with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-56_critical-cli-crisis-fang-migration.md ✓ (TODO items found) - Reviewed: CLI crisis with 20 unique tasks
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-28_11-49-comprehensive-improvement-plan.md ✓ (TODO items found) - Reviewed: Improvement plan with 20 unique tasks
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_05-00_json-output-enhancement-complete.md - Pending
+- /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-45-fang-migration-execution-plan.md ✓ (TODO items found) - Reviewed: Migration execution plan with 20 unique tasks
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_02-55_production-ready-status.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-14_08-15_fang-migration-progress.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_github-issues-management.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-03_critical-recovery-status.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_06-19_zero-field-sorting-mvp.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-11-30_05-03-critical-blocker-analysis.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-11-29_20-31-critical-foundation-plan.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/planning/2025-12-14_08-30-fang-migration-analysis.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_09-44_FANG_MAXIMIZATION_COMPLETE.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-11-29_20-30-comprehensive-status-report.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-47_comprehensive-status-update.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_18-52_comprehensive-status-report.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_18-40_import-migration-completion.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-02_sorting-implementation-fixed.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-27_stable-bridge-pattern-success.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-13_00-18_strategic-implementation-plan.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-15_08-58_production-ready-cli-delivered.md - Pending
+- [ ] /Users/larsartmann/projects/art-dupl/docs/status/2025-12-12_22-09_comprehensive-evaluation-report.md - Pending
 
 ## Project Status Summary
 
