@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -99,17 +100,18 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
-		file, err := p.ReadFile(nstart.Filename)
+		// Use unified file processor
+		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
 			return err
 		}
 
-		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
-		start := findLineBeg(file, nstart.Pos)
+		lineStart := fileInfo.LineStart
+		start := findLineBeg(fileInfo.Content, nstart.Pos)
 		var content []byte
 
 		// Ensure all indices are within file bounds
-		fileLen := len(file)
+		fileLen := len(fileInfo.Content)
 		if start > fileLen {
 			start = fileLen
 		}
@@ -119,9 +121,9 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		// Only extract content if we have valid bounds
 		if startPos < endPos {
 			if start < startPos {
-				content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+				content = append(toWhitespace(fileInfo.Content[start:startPos]), fileInfo.Content[startPos:endPos]...)
 			} else {
-				content = file[startPos:endPos]
+				content = fileInfo.Content[startPos:endPos]
 			}
 		}
 		clones[i] = JSONClone{
@@ -193,5 +195,10 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 	encoder := json.NewEncoder(p.w)
 	encoder.SetIndent("", "  ")
-	return encoder.Encode(&output)
+	
+	err := encoder.Encode(&output)
+	if err != nil {
+		return errors.HandleMarshalingError("encode", "JSON output", err)
+	}
+	return nil
 }

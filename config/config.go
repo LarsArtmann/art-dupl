@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -75,7 +74,7 @@ func LoadConfig(filename string) (*Config, error) {
 
 	config := DefaultConfig()
 	if len(data) > 0 {
-		err = json.Unmarshal(data, config)
+		err = errors.SafeUnmarshal(data, config, fmt.Sprintf("config file: %s", filename))
 		if err != nil {
 			return nil, errors.NewConfigError(fmt.Sprintf("failed to parse config file: %s", filename), err)
 		}
@@ -92,9 +91,9 @@ func SaveConfig(config *Config, filename string) error {
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 
-	data, err := json.MarshalIndent(config, "", "  ")
+	data, err := errors.SafeMarshalIndent(config, "", "  ", "config")
 	if err != nil {
-		return errors.NewInternalError("failed to marshal config", err)
+		return err
 	}
 
 	err = os.WriteFile(filename, data, 0o644)

@@ -73,18 +73,18 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
-		file, err := p.ReadFile(nstart.Filename)
+		// Use unified file processor
+		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
 			return err
 		}
 
-		lineStart, _ := blockLines(file, nstart.Pos, nend.End)
-		cl := clone{filename: nstart.Filename, lineStart: lineStart}
-		start := findLineBeg(file, nstart.Pos)
+		cl := clone{filename: fileInfo.Filename, lineStart: fileInfo.LineStart}
+		start := findLineBeg(fileInfo.Content, nstart.Pos)
 		var content []byte
 
 		// Ensure all indices are within file bounds
-		fileLen := len(file)
+		fileLen := len(fileInfo.Content)
 		if start > fileLen {
 			start = fileLen
 		}
@@ -94,9 +94,9 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		// Only extract content if we have valid bounds
 		if startPos < endPos {
 			if start < startPos {
-				content = append(toWhitespace(file[start:startPos]), file[startPos:endPos]...)
+				content = append(toWhitespace(fileInfo.Content[start:startPos]), fileInfo.Content[startPos:endPos]...)
 			} else {
-				content = file[startPos:endPos]
+				content = fileInfo.Content[startPos:endPos]
 			}
 		}
 		cl.fragment = deindent(content)
