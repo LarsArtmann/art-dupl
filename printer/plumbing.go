@@ -26,22 +26,8 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 		sortCriteria = sortBy[0]
 	}
 
-	// Apply sorting to the clone groups before processing
-	sortedDups := make([][]*syntax.Node, len(dups))
-	copy(sortedDups, dups)
-
-	switch sortCriteria {
-	case "size":
-		sortedDups = SortClonesBySize(sortedDups)
-	case "occurrence":
-		sortedDups = SortClonesByOccurrence(sortedDups)
-	case "hash":
-		sortedDups = SortClonesByHash(sortedDups)
-	case "total-tokens":
-		sortedDups = SortClonesByTotalTokens(sortedDups)
-	default:
-		sortedDups = SortClonesBySize(sortedDups) // Default to size
-	}
+	// Apply sorting to the clone groups
+	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {

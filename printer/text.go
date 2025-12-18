@@ -33,21 +33,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	}
 
 	// Apply sorting to the clone groups before processing
-	sortedDups := make([][]*syntax.Node, len(dups))
-	copy(sortedDups, dups)
-
-	switch sortCriteria {
-	case "size":
-		sortedDups = SortClonesBySize(sortedDups)
-	case "occurrence":
-		sortedDups = SortClonesByOccurrence(sortedDups)
-	case "hash":
-		sortedDups = SortClonesByHash(sortedDups)
-	case "total-tokens":
-		sortedDups = SortClonesByTotalTokens(sortedDups)
-	default:
-		sortedDups = SortClonesBySize(sortedDups) // Default to size
-	}
+	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
 		return err
@@ -87,27 +73,10 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 	}
 
 	// Apply sorting based on criteria
-	switch sortBy {
-	case "size", "":
-		sort.Slice(clones, func(i, j int) bool {
-			return len(dups[i]) > len(dups[j]) // Sort by token count
-		})
-	case "occurrence":
-		// For text output, occurrence is same as size (each dup in different file)
-		sort.Slice(clones, func(i, j int) bool {
-			return len(dups[i]) > len(dups[j])
-		})
-	case "hash":
-		sortNodesByFilename(dups)
-		sort.Slice(clones, func(i, j int) bool {
-			return len(dups[i]) > len(dups[j])
-		})
-	default:
-		// Default to size sorting
-		sort.Slice(clones, func(i, j int) bool {
-			return len(dups[i]) > len(dups[j])
-		})
-	}
+	_ = SortNodesByCriteria(dups, sortBy) // Sorting applied, result not needed for this output
+	sort.Slice(clones, func(i, j int) bool {
+		return len(dups[i]) > len(dups[j])
+	})
 
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {

@@ -53,21 +53,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	}
 
 	// Apply sorting to the clone groups before processing
-	sortedDups := make([][]*syntax.Node, len(dups))
-	copy(sortedDups, dups)
-
-	switch sortCriteria {
-	case "size":
-		sortedDups = SortClonesBySize(sortedDups)
-	case "occurrence":
-		sortedDups = SortClonesByOccurrence(sortedDups)
-	case "hash":
-		sortedDups = SortClonesByHash(sortedDups)
-	case "total-tokens":
-		sortedDups = SortClonesByTotalTokens(sortedDups)
-	default:
-		sortedDups = SortClonesBySize(sortedDups) // Default to size
-	}
+	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
 	// Store clones for later output with sorting
 	p.dupMutex.Lock()
@@ -200,18 +186,8 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
 	p.dupMutex.Unlock()
 
 	// Apply sorting based on the specified criteria
-	switch sortBy {
-	case "size":
-		allDups = SortClonesBySize(allDups)
-	case "occurrence":
-		allDups = SortClonesByOccurrence(allDups)
-	case "hash":
-		allDups = SortClonesByHash(allDups)
-	case "total-tokens":
-		allDups = SortClonesByTotalTokens(allDups)
-	default:
-		allDups = SortClonesBySize(allDups) // Default to size
-	}
+	// Apply sorting based on specified criteria
+	allDups = SortNodesByCriteria(allDups, sortBy)
 
 	// Clear previous output
 	p.iota = 0
