@@ -12,6 +12,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/utils"
 )
 
 // BDD Test Suite for art-dupl
@@ -33,8 +35,9 @@ func TestBDD(t *testing.T) {
 
 var _ = Describe("Basic User Workflows", func() {
 	var (
-		tempDir   string
-		testFiles map[string]string
+		tempDir       string
+		testFiles     map[string]string
+		fileProcessor *utils.FileProcessor
 	)
 
 	BeforeEach(func() {
@@ -128,12 +131,10 @@ func uniqueFunction(ctx context.Context) error {
 }`,
 		}
 
-		// Write test files
-		for filename, content := range testFiles {
-			filePath := filepath.Join(tempDir, filename)
-			err := os.WriteFile(filePath, []byte(content), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-		}
+		// Write test files using unified processor
+		fileProcessor = utils.NewFileProcessor(tempDir)
+		err = fileProcessor.WriteTestFiles(testFiles)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
@@ -270,10 +271,11 @@ var _ = Describe("Configuration Management", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		// Create test Go file
-		testFile := filepath.Join(tempDir, "test.go")
-		err = os.WriteFile(testFile, []byte(`package main
+		testFile := "test.go"
+		testContent := `package main
 func a() {}
-func b() {}`), 0o644)
+func b() {}`
+		err = fileProcessor.WriteTextFile(testFile, testContent)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -389,15 +391,19 @@ func b() {}`), 0o644)
 
 var _ = Describe("File Targeting Scenarios", func() {
 	var (
-		tempDir string
-		subDir1 string
-		subDir2 string
+		tempDir       string
+		subDir1       string
+		subDir2       string
+		fileProcessor *utils.FileProcessor
 	)
 
 	BeforeEach(func() {
 		var err error
 		tempDir, err = os.MkdirTemp("", "art-dupl-files-bdd-*")
 		Expect(err).NotTo(HaveOccurred())
+
+		// Initialize file processor
+		fileProcessor = utils.NewFileProcessor(tempDir)
 
 		// Create subdirectories
 		subDir1 = filepath.Join(tempDir, "pkg1")
@@ -415,9 +421,9 @@ var _ = Describe("File Targeting Scenarios", func() {
 	Context("When analyzing specific directories", func() {
 		It("should limit analysis to specified paths", func() {
 			// Create multiple files in different directories with duplicates within each
-			file1 := filepath.Join(subDir1, "file1.go")
-			file2 := filepath.Join(subDir1, "file2.go") // Second file in same directory
-			file3 := filepath.Join(subDir2, "file3.go")
+			file1 := "pkg1/file1.go"
+			file2 := "pkg1/file2.go" // Second file in same directory
+			file3 := "pkg2/file3.go"
 
 			duplicateCode := `package pkg
 
@@ -430,11 +436,8 @@ func processData(data string) error {
 	return nil
 }`
 
-			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0o644) // Duplicate in same directory
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file3, []byte(duplicateCode), 0o644)
+			// Use unified file processor for all file operations
+			err := fileProcessor.WriteDuplicateFiles([]string{file1, file2, file3}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -486,11 +489,10 @@ func unique() {
 	return nil
 }`
 
-			err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
+			// Use unified file processor
+			err := fileProcessor.WriteDuplicateFiles([]string{"target1.go", "target2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file3, []byte(uniqueCode), 0o644)
+			err = fileProcessor.WriteTextFile("ignore.go", uniqueCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -500,8 +502,8 @@ func unique() {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Create stdin with only target files
-			stdin := fmt.Sprintf("%s\n%s\n", file1, file2)
+			// Create stdin with only target files (use relative paths)
+			stdin := fmt.Sprintf("pkg1/file1.go\npkg1/file2.go\n")
 			cmd = exec.Command("../bdd/art-dupl-test", "--files", "--threshold", "10")
 			cmd.Dir = ".."
 			cmd.Stdin = strings.NewReader(stdin)
@@ -517,12 +519,18 @@ func unique() {
 })
 
 var _ = Describe("Integration Scenarios", func() {
-	var tempDir string
+	var (
+		tempDir       string
+		fileProcessor *utils.FileProcessor
+	)
 
 	BeforeEach(func() {
 		var err error
 		tempDir, err = os.MkdirTemp("", "art-dupl-integration-bdd-*")
 		Expect(err).NotTo(HaveOccurred())
+
+		// Initialize file processor
+		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
@@ -563,9 +571,13 @@ func (s *Service) processInternal(data string) error {
 	return nil
 }`
 
-			err := os.WriteFile(file1, []byte(strings.ReplaceAll(serviceCode, "Service", "UserService")), 0o644)
+			// Use unified file processor with service replacements
+			userServiceCode := strings.ReplaceAll(serviceCode, "Service", "UserService")
+			orderServiceCode := strings.ReplaceAll(serviceCode, "Service", "OrderService")
+
+			err := fileProcessor.WriteTextFile("service1.go", userServiceCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(file2, []byte(strings.ReplaceAll(serviceCode, "Service", "OrderService")), 0o644)
+			err = fileProcessor.WriteTextFile("service2.go", orderServiceCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -630,11 +642,15 @@ func processItem(data string, index int) error {
 	return nil
 }`
 
+			// Create multiple duplicate files using unified processor
+			var filenames []string
 			for i := range numFiles {
-				filename := filepath.Join(tempDir, fmt.Sprintf("file%d.go", i))
-				err := os.WriteFile(filename, []byte(duplicateCode), 0o644)
-				Expect(err).NotTo(HaveOccurred())
+				filename := fmt.Sprintf("file%d.go", i)
+				filenames = append(filenames, filename)
 			}
+
+			err := fileProcessor.WriteDuplicateFiles(filenames, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")

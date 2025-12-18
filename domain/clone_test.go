@@ -1,0 +1,340 @@
+package domain_test
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/types"
+)
+
+var _ = Describe("Domain: Clone", func() {
+	Context("When validating clones", func() {
+		It("should accept valid clones", func() {
+			clone := domain.Clone{
+				ID:         "clone-1",
+				Filename:   "test.go",
+				StartLine:  10,
+				EndLine:    20,
+				StartPos:   100,
+				EndPos:     200,
+				Fragment:   "test code",
+				Hash:       "abc123",
+				Confidence: 0.95,
+				Complexity: 5,
+				Status:     types.FileProcessingStateCompleted,
+			}
+
+			Expect(clone.IsValid()).To(Succeed())
+		})
+
+		It("should reject clones with empty ID", func() {
+			clone := domain.Clone{
+				Filename:  "test.go",
+				StartLine: 10,
+				EndLine:   20,
+			}
+
+			Expect(clone.IsValid()).To(MatchError(ContainSubstring("clone ID cannot be empty")))
+		})
+
+		It("should reject clones with invalid position", func() {
+			clone := domain.Clone{
+				ID:        "clone-1",
+				Filename:  "test.go",
+				StartLine: 10,
+				EndLine:   20,
+				StartPos:  200,
+				EndPos:    100, // Invalid: end < start
+			}
+
+			Expect(clone.IsValid()).To(MatchError(ContainSubstring("end position must be > start position")))
+		})
+
+		It("should reject clones with invalid confidence", func() {
+			clone := domain.Clone{
+				ID:         "clone-1",
+				Filename:   "test.go",
+				Confidence: 1.5, // Invalid: > 1.0
+			}
+
+			Expect(clone.IsValid()).To(MatchError(ContainSubstring("confidence must be between 0 and 1")))
+		})
+	})
+
+	Context("When converting syntax nodes", func() {
+		It("should create valid clones from nodes", func() {
+			node := &syntax.Node{
+				Filename:   "test.go",
+				LineStart:  5,
+				LineEnd:    15,
+				Pos:        50,
+				End:        150,
+				Fragments:  []string{"func test() {}"},
+				Hash:       []byte("hash123"),
+				Complexity: 3,
+			}
+
+			clone := domain.NodeToClone(node, "test.go")
+			Expect(clone.Filename).To(Equal("test.go"))
+			Expect(clone.StartLine).To(Equal(uint(5)))
+			Expect(clone.EndLine).To(Equal(uint(15)))
+			Expect(clone.Status).To(Equal(types.FileProcessingStateCompleted))
+			Expect(clone.IsValid()).To(Succeed())
+		})
+	})
+})
+
+var _ = Describe("Domain: CloneGroup", func() {
+	Context("When validating clone groups", func() {
+		It("should accept valid clone groups", func() {
+			group := domain.CloneGroup{
+				ID:   "group-1",
+				Hash: "abc123",
+				Size: 100,
+				Clones: []domain.Clone{
+					{
+						ID:        "clone-1",
+						Filename:  "test1.go",
+						StartLine: 10,
+						EndLine:   20,
+						Status:    types.FileProcessingStateCompleted,
+					},
+					{
+						ID:        "clone-2",
+						Filename:  "test2.go",
+						StartLine: 15,
+						EndLine:   25,
+						Status:    types.FileProcessingStateCompleted,
+					},
+				},
+				Severity: domain.CloneSeverityMedium,
+				Status:   types.FileProcessingStateCompleted,
+			}
+
+			Expect(group.IsValid()).To(Succeed())
+		})
+
+		It("should reject groups with empty clones", func() {
+			group := domain.CloneGroup{
+				ID:       "group-1",
+				Hash:     "abc123",
+				Size:     100,
+				Clones:   []domain.Clone{},
+				Severity: domain.CloneSeverityMedium,
+			}
+
+			Expect(group.IsValid()).To(MatchError(ContainSubstring("must have at least one clone")))
+		})
+
+		It("should reject groups with invalid severity", func() {
+			group := domain.CloneGroup{
+				ID:   "group-1",
+				Hash: "abc123",
+				Size: 100,
+				Clones: []domain.Clone{
+					{
+						ID:        "clone-1",
+						Filename:  "test.go",
+						StartLine: 10,
+						EndLine:   20,
+						Status:    types.FileProcessingStateCompleted,
+					},
+				},
+				Severity: domain.CloneSeverity("invalid"),
+			}
+
+			Expect(group.IsValid()).To(MatchError(ContainSubstring("invalid clone severity")))
+		})
+
+		It("should propagate clone validation errors", func() {
+			group := domain.CloneGroup{
+				ID:   "group-1",
+				Hash: "abc123",
+				Size: 100,
+				Clones: []domain.Clone{
+					{
+						// Invalid: empty ID
+						Filename:  "test.go",
+						StartLine: 10,
+						EndLine:   20,
+						Status:    types.FileProcessingStateCompleted,
+					},
+				},
+				Severity: domain.CloneSeverityMedium,
+			}
+
+			Expect(group.IsValid()).To(MatchError(And(
+				ContainSubstring("clone 0"),
+				ContainSubstring("ID cannot be empty"),
+			)))
+		})
+	})
+})
+
+var _ = Describe("Domain: Analysis", func() {
+	Context("When validating analysis", func() {
+		It("should accept valid analysis", func() {
+			analysis := domain.Analysis{
+				ID:        "analysis-1",
+				State:     types.DetectionStateCompleted,
+				Mode:      types.AnalysisModeFull,
+				Threshold: 10,
+				CreatedAt: time.Now().Format(time.RFC3339),
+				CloneGroups: []domain.CloneGroup{
+					{
+						ID:   "group-1",
+						Hash: "abc123",
+						Size: 100,
+						Clones: []domain.Clone{
+							{
+								ID:        "clone-1",
+								Filename:  "test.go",
+								StartLine: 10,
+								EndLine:   20,
+								Status:    types.FileProcessingStateCompleted,
+							},
+						},
+						Severity: domain.CloneSeverityMedium,
+						Status:   types.FileProcessingStateCompleted,
+					},
+				},
+				Stats: domain.AnalysisStats{
+					FilesAnalyzed:    5,
+					TotalClones:      1,
+					TotalTokenSize:   100,
+					ComplexityScore:  0.5,
+					DuplicationRatio: 0.2,
+					ProcessingTime:   1000,
+				},
+			}
+
+			Expect(analysis.IsValid()).To(Succeed())
+		})
+
+		It("should reject analysis with empty ID", func() {
+			analysis := domain.Analysis{
+				State:     types.DetectionStateCompleted,
+				Mode:      types.AnalysisModeFull,
+				Threshold: 10,
+				CreatedAt: time.Now().Format(time.RFC3339),
+			}
+
+			Expect(analysis.IsValid()).To(MatchError(ContainSubstring("analysis ID cannot be empty")))
+		})
+
+		It("should reject analysis with zero threshold", func() {
+			analysis := domain.Analysis{
+				ID:        "analysis-1",
+				State:     types.DetectionStateCompleted,
+				Mode:      types.AnalysisModeFull,
+				Threshold: 0, // Invalid
+				CreatedAt: time.Now().Format(time.RFC3339),
+			}
+
+			Expect(analysis.IsValid()).To(MatchError(ContainSubstring("threshold cannot be zero")))
+		})
+	})
+})
+
+var _ = Describe("Domain: CloneSeverity", func() {
+	Context("When working with severity enums", func() {
+		It("should validate all severity levels", func() {
+			validSeverities := []domain.CloneSeverity{
+				domain.CloneSeverityLow,
+				domain.CloneSeverityMedium,
+				domain.CloneSeverityHigh,
+				domain.CloneSeverityCritical,
+			}
+
+			for _, severity := range validSeverities {
+				Expect(severity.IsValid()).To(BeTrue(), fmt.Sprintf("Severity %s should be valid", severity))
+			}
+		})
+
+		It("should reject invalid severity", func() {
+			invalidSeverity := domain.CloneSeverity("invalid")
+			Expect(invalidSeverity.IsValid()).To(BeFalse())
+		})
+
+		It("should marshal and unmarshal JSON correctly", func() {
+			original := domain.CloneSeverityHigh
+			data, err := json.Marshal(original)
+			Expect(err).To(BeNil())
+			Expect(string(data)).To(Equal(`"high"`))
+
+			var unmarshaled domain.CloneSeverity
+			err = json.Unmarshal(data, &unmarshaled)
+			Expect(err).To(BeNil())
+			Expect(unmarshaled).To(Equal(original))
+		})
+	})
+})
+
+var _ = Describe("Domain: DetectionOptions", func() {
+	Context("When validating detection options", func() {
+		It("should accept valid options", func() {
+			options := domain.DetectionOptions{
+				Threshold:     10,
+				Mode:          types.AnalysisModeFull,
+				IncludeVendor: false,
+				Verbose:       false,
+				Paths:         []string{"./src"},
+				OutputFormat:  "json",
+			}
+
+			Expect(options.IsValid()).To(Succeed())
+		})
+
+		It("should reject options with zero threshold", func() {
+			options := domain.DetectionOptions{
+				Threshold:    0, // Invalid
+				Mode:         types.AnalysisModeFull,
+				Paths:        []string{"./src"},
+				OutputFormat: "json",
+			}
+
+			Expect(options.IsValid()).To(MatchError(ContainSubstring("threshold must be > 0")))
+		})
+
+		It("should reject options with empty paths", func() {
+			options := domain.DetectionOptions{
+				Threshold:    10,
+				Mode:         types.AnalysisModeFull,
+				Paths:        []string{}, // Invalid
+				OutputFormat: "json",
+			}
+
+			Expect(options.IsValid()).To(MatchError(ContainSubstring("at least one path must be specified")))
+		})
+	})
+})
+
+var _ = Describe("Domain: Business Logic", func() {
+	Context("When calculating clone severity", func() {
+		It("should calculate low severity for simple clones", func() {
+			severity := domain.CalculateSeverity(20, 5)
+			Expect(severity).To(Equal(domain.CloneSeverityLow))
+		})
+
+		It("should calculate medium severity for moderate clones", func() {
+			severity := domain.CalculateSeverity(60, 15)
+			Expect(severity).To(Equal(domain.CloneSeverityMedium))
+		})
+
+		It("should calculate high severity for complex clones", func() {
+			severity := domain.CalculateSeverity(120, 25)
+			Expect(severity).To(Equal(domain.CloneSeverityHigh))
+		})
+
+		It("should calculate critical severity for very complex clones", func() {
+			severity := domain.CalculateSeverity(250, 60)
+			Expect(severity).To(Equal(domain.CloneSeverityCritical))
+		})
+	})
+})

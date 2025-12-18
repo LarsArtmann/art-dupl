@@ -25,7 +25,7 @@ func HandleMarshalingError(operation, context string, err error) error {
 	if err == nil {
 		return nil
 	}
-	
+
 	switch err.Error() {
 	case "json: unsupported value":
 		return &MarshalError{Operation: operation, Context: context, Cause: fmt.Errorf("unsupported value type: %w", err)}

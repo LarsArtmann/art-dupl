@@ -1,0 +1,214 @@
+package migration_test
+
+import (
+	"encoding/json"
+	"time"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/migration"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/types"
+)
+
+var _ = Describe("Migration Path", func() {
+	Context("When migrating from syntax to domain", func() {
+		It("should create valid domain analysis", func() {
+			nodes := [][]*syntax.Node{
+				{
+					{
+						Filename:   "test1.go",
+						LineStart:  10,
+						LineEnd:    20,
+						Pos:        100,
+						End:        200,
+						Fragments:  []string{"func test() {}"},
+						Hash:       []byte("hash1"),
+						Complexity: 5,
+					},
+				},
+			}
+
+			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{
+				Threshold: 10,
+				Paths:     []string{"./src"},
+			})
+
+			analysis := migrationPath.FromSyntaxToNodes(nodes, 10)
+
+			Expect(analysis.IsValid()).To(Succeed())
+			Expect(analysis.Threshold).To(Equal(uint(10)))
+			Expect(analysis.State).To(Equal(types.DetectionStateCompleted))
+			Expect(len(analysis.CloneGroups)).To(Equal(1))
+			Expect(len(analysis.CloneGroups[0].Clones)).To(Equal(1))
+		})
+	})
+
+	Context("When migrating configuration", func() {
+		It("should migrate valid old config", func() {
+			oldConfig := map[string]interface{}{
+				"threshold": 15,
+				"paths":     []string{"./src", "./lib"},
+			}
+
+			result := migration.MigrateConfig(oldConfig)
+			Expect(result.IsOk()).To(BeTrue())
+
+			options := result.Unwrap()
+			Expect(options.Threshold).To(Equal(uint(15)))
+			Expect(options.Paths).To(Equal([]string{"./src", "./lib"}))
+			Expect(options.IsValid()).To(Succeed())
+		})
+
+		It("should reject invalid config", func() {
+			oldConfig := map[string]interface{}{
+				// Missing threshold
+				"paths": []string{"./src"},
+			}
+
+			result := migration.MigrateConfig(oldConfig)
+			Expect(result.IsErr()).To(BeTrue())
+			Expect(result.Error.Error()).To(ContainSubstring("threshold"))
+		})
+	})
+
+	Context("When creating migration reports", func() {
+		It("should generate comprehensive migration report", func() {
+			before := domain.Analysis{
+				ID:        "analysis-1",
+				Threshold: 10,
+				CloneGroups: []domain.CloneGroup{
+					{
+						ID:   "group-1",
+						Size: 100,
+						Clones: []domain.Clone{
+							{ID: "clone-1", Filename: "test.go"},
+						},
+						Severity: domain.CloneSeverityMedium,
+					},
+				},
+				Stats: domain.AnalysisStats{
+					FilesAnalyzed:   5,
+					TotalClones:     1,
+					ComplexityScore: 0.5,
+				},
+				CreatedAt: "2023-01-01T00:00:00Z",
+			}
+
+			after := domain.Analysis{
+				ID:        "analysis-2",
+				Threshold: 10,
+				CloneGroups: []domain.CloneGroup{
+					{
+						ID:   "group-1",
+						Size: 100,
+						Clones: []domain.Clone{
+							{ID: "clone-1", Filename: "test.go"},
+						},
+						Severity: domain.CloneSeverityHigh, // Changed
+					},
+					{
+						ID:   "group-2",
+						Size: 50,
+						Clones: []domain.Clone{
+							{ID: "clone-2", Filename: "test2.go"},
+						},
+						Severity: domain.CloneSeverityLow, // New
+					},
+				},
+				Stats: domain.AnalysisStats{
+					FilesAnalyzed:   6,
+					TotalClones:     2,
+					ComplexityScore: 0.7, // Increased
+				},
+				CreatedAt: "2023-01-01T01:00:00Z",
+			}
+
+			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{})
+			report := migrationPath.CreateMigrationReport(before, after)
+
+			Expect(report.MigrationID).NotTo(BeEmpty())
+			Expect(report.Differences.CloneGroupsAdded).To(Equal(1))
+			Expect(report.Differences.ClonesAdded).To(Equal(1))
+			Expect(report.Differences.ComplexityChanges).To(Equal(0.2))
+			Expect(len(report.Validations)).To(BeNumerically(">", 0))
+			Expect(len(report.Recommendations)).To(BeNumerically(">", 0))
+		})
+	})
+
+	Context("When validating migration", func() {
+		It("should accept valid migration", func() {
+			analysis := domain.Analysis{
+				ID:        "test-analysis",
+				Threshold: 10,
+				State:     types.DetectionStateCompleted,
+				CreatedAt: time.Now().Format(time.RFC3339),
+			}
+
+			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{})
+			result := migrationPath.ValidateMigration(analysis)
+
+			Expect(result.IsOk()).To(BeTrue())
+			Expect(result.Unwrap().ID).To(Equal("test-analysis"))
+		})
+
+		It("should reject invalid migration", func() {
+			analysis := domain.Analysis{
+				// Missing required fields
+				Threshold: 0, // Invalid
+			}
+
+			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{})
+			result := migrationPath.ValidateMigration(analysis)
+
+			Expect(result.IsErr()).To(BeTrue())
+			Expect(result.Error.Error()).To(ContainSubstring("invalid analysis"))
+		})
+	})
+
+	Context("When JSON marshaling migration reports", func() {
+		It("should serialize migration reports correctly", func() {
+			report := migration.MigrationReport{
+				MigrationID: "test-migration",
+				CreatedAt:   "2023-01-01T00:00:00Z",
+				BeforeState: domain.Analysis{
+					ID:        "before",
+					Threshold: 10,
+				},
+				AfterState: domain.Analysis{
+					ID:        "after",
+					Threshold: 15,
+				},
+				Differences: migration.AnalysisDifferences{
+					CloneGroupsAdded: 1,
+					ClonesAdded:      2,
+				},
+				Validations: []migration.ValidationResult{
+					{
+						Check:    "test-check",
+						Status:   "passed",
+						Message:  "Test passed",
+						Severity: "info",
+					},
+				},
+				Recommendations: []string{"Test recommendation"},
+			}
+
+			data, err := json.Marshal(report)
+			Expect(err).To(BeNil())
+			Expect(string(data)).To(ContainSubstring("test-migration"))
+			Expect(string(data)).To(ContainSubstring("CloneGroupsAdded"))
+			Expect(string(data)).To(ContainSubstring("test-check"))
+
+			// Test unmarshaling
+			var unmarshaled migration.MigrationReport
+			err = json.Unmarshal(data, &unmarshaled)
+			Expect(err).To(BeNil())
+			Expect(unmarshaled.MigrationID).To(Equal("test-migration"))
+			Expect(unmarshaled.Differences.CloneGroupsAdded).To(Equal(1))
+			Expect(len(unmarshaled.Validations)).To(Equal(1))
+		})
+	})
+})

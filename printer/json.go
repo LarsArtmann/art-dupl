@@ -195,7 +195,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 	encoder := json.NewEncoder(p.w)
 	encoder.SetIndent("", "  ")
-	
+
 	err := encoder.Encode(&output)
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "JSON output", err)
