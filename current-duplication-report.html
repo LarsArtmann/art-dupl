@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Duplicates</title>
+<style>
+	pre {
+		background-color: #FFD;
+		border: 1px solid #E2E2E2;
+		padding: 1ex;
+	}
+</style>
+</head>
+<body>
+<h1>#1 found 2 clones</h1>
+<h2>testutils/unique_basic_test.go:45</h2>
+<pre>func TestUniqueness_Basic(t *testing.T) {
+	// Generate strings and check they&#39;re unique
+	uniqueSet := make(map[string]bool)
+
+	for i := 0; i &lt; 10; i++ {
+		str := UniqueTestHelper()
+
+		if uniqueSet[str] {
+			t.Errorf(&#34;Duplicate found: %s&#34;, str)
+		}
+		uniqueSet[str] = true
+	}
+
+	// Should have all unique strings
+	if len(uniqueSet) != 10 {
+		t.Errorf(&#34;Expected 10 unique strings, got %d&#34;, len(uniqueSet))
+	}
+}</pre>
+<h2>testutils/unique_test_clean.go:55</h2>
+<pre>func TestUniqueness_Clean(t *testing.T) {
+	// Generate strings and check they&#39;re unique
+	uniqueSet := make(map[string]bool)
+
+	for i := 0; i &lt; 50; i++ {
+		str := UniqueTestHelper()
+
+		if uniqueSet[str] {
+			t.Errorf(&#34;Duplicate found: %s&#34;, str)
+		}
+		uniqueSet[str] = true
+	}
+
+	// Should have all unique strings
+	if len(uniqueSet) != 50 {
+		t.Errorf(&#34;Expected 50 unique strings, got %d&#34;, len(uniqueSet))
+	}
+}</pre>
+<h1>#2 found 4 clones</h1>
+<h2>domain/clone_test.go:262</h2>
+<pre>It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+	original := domain.CloneSeverityHigh
+	data, err := json.Marshal(original)
+	Expect(err).To(BeNil())
+	Expect(string(data)).To(Equal(`&#34;high&#34;`))
+
+	var unmarshaled domain.CloneSeverity
+	err = json.Unmarshal(data, &amp;unmarshaled)
+	Expect(err).To(BeNil())
+	Expect(unmarshaled).To(Equal(original))
+})</pre>
+<h2>types/types_test.go:183</h2>
+<pre>It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+	original := types.DetectionStateCompleted
+	data, err := json.Marshal(original)
+	Expect(err).To(BeNil())
+	Expect(string(data)).To(Equal(`&#34;completed&#34;`))
+
+	var unmarshaled types.DetectionState
+	err = json.Unmarshal(data, &amp;unmarshaled)
+	Expect(err).To(BeNil())
+	Expect(unmarshaled).To(Equal(original))
+})</pre>
+<h2>types/types_test.go:223</h2>
+<pre>It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+	original := types.AnalysisModeFull
+	data, err := json.Marshal(original)
+	Expect(err).To(BeNil())
+	Expect(string(data)).To(Equal(`&#34;full&#34;`))
+
+	var unmarshaled types.AnalysisMode
+	err = json.Unmarshal(data, &amp;unmarshaled)
+	Expect(err).To(BeNil())
+	Expect(unmarshaled).To(Equal(original))
+})</pre>
+<h2>types/types_test.go:256</h2>
+<pre>It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+	original := types.FileProcessingStateCompleted
+	data, err := json.Marshal(original)
+	Expect(err).To(BeNil())
+	Expect(string(data)).To(Equal(`&#34;completed&#34;`))
+
+	var unmarshaled types.FileProcessingState
+	err = json.Unmarshal(data, &amp;unmarshaled)
+	Expect(err).To(BeNil())
+	Expect(unmarshaled).To(Equal(original))
+})</pre>
+<h1>#3 found 2 clones</h1>
+<h2>domain/clone.go:182</h2>
+<pre>func (as AnalysisStats) IsValid() error {
+	if as.FilesAnalyzed == 0 {
+		return fmt.Errorf(&#34;files analyzed cannot be zero&#34;)
+	}
+	if as.ProcessingTime == 0 {
+		return fmt.Errorf(&#34;processing time cannot be zero&#34;)
+	}
+	if as.ComplexityScore &lt; 0 {
+		return fmt.Errorf(&#34;complexity score cannot be negative&#34;)
+	}
+	if as.DuplicationRatio &lt; 0 {
+		return fmt.Errorf(&#34;duplication ratio cannot be negative&#34;)
+	}
+	return nil
+}</pre>
+<h2>domain/clone.go:235</h2>
+<pre>func (sf SourceFile) IsValid() error {
+	if sf.Path == &#34;&#34; {
+		return fmt.Errorf(&#34;source file path cannot be empty&#34;)
+	}
+	if sf.Name == &#34;&#34; {
+		return fmt.Errorf(&#34;source file name cannot be empty&#34;)
+	}
+	if sf.Size == 0 {
+		return fmt.Errorf(&#34;source file size cannot be zero&#34;)
+	}
+	if sf.Hash == &#34;&#34; {
+		return fmt.Errorf(&#34;source file hash cannot be empty&#34;)
+	}
+	return nil
+}</pre>
+<h1>#4 found 2 clones</h1>
+<h2>domain/clone_test.go:243</h2>
+<pre>Context(&#34;When working with severity enums&#34;, func() {
+	It(&#34;should validate all severity levels&#34;, func() {
+		validSeverities := []domain.CloneSeverity{
+			domain.CloneSeverityLow,
+			domain.CloneSeverityMedium,
+			domain.CloneSeverityHigh,
+			domain.CloneSeverityCritical,
+		}
+
+		for _, severity := range validSeverities {
+			Expect(severity.IsValid()).To(BeTrue(), fmt.Sprintf(&#34;Severity %s should be valid&#34;, severity))
+		}
+	})
+
+	It(&#34;should reject invalid severity&#34;, func() {
+		invalidSeverity := domain.CloneSeverity(&#34;invalid&#34;)
+		Expect(invalidSeverity.IsValid()).To(BeFalse())
+	})
+
+	It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+		original := domain.CloneSeverityHigh
+		data, err := json.Marshal(original)
+		Expect(err).To(BeNil())
+	Expect(string(data)).To(Equal(`&#34;high&#34;`))
+
+		var unmarshaled domain.CloneSeverity
+		err = json.Unmarshal(data, &amp;unmarshaled)
+		Expect(err).To(BeNil())
+		Expect(unmarshaled).To(Equal(original))
+	})
+})</pre>
+<h2>types/types_test.go:204</h2>
+<pre>Context(&#34;AnalysisMode enum&#34;, func() {
+	It(&#34;should validate analysis modes&#34;, func() {
+		validModes := []types.AnalysisMode{
+			types.AnalysisModeFull,
+			types.AnalysisModeIncremental,
+			types.AnalysisModeQuick,
+			types.AnalysisModeDeep,
+		}
+
+		for _, mode := range validModes {
+			Expect(mode.IsValid()).To(BeTrue(), fmt.Sprintf(&#34;Mode %s should be valid&#34;, mode))
+		}
+	})
+
+	It(&#34;should reject invalid analysis modes&#34;, func() {
+		invalidMode := types.AnalysisMode(&#34;invalid&#34;)
+		Expect(invalidMode.IsValid()).To(BeFalse())
+	})
+
+	It(&#34;should marshal and unmarshal JSON correctly&#34;, func() {
+		original := types.AnalysisModeFull
+		data, err := json.Marshal(original)
+		Expect(err).To(BeNil())
+		Expect(string(data)).To(Equal(`&#34;full&#34;`))
+
+		var unmarshaled types.AnalysisMode
+		err = json.Unmarshal(data, &amp;unmarshaled)
+		Expect(err).To(BeNil())
+		Expect(unmarshaled).To(Equal(original))
+	})
+})</pre>
+<h1>#5 found 2 clones</h1>
+<h2>printer/sorter.go:114</h2>
+<pre>                                                 {
+	sort.Slice(cloneGroups, func(i, j int) bool {
+		if len(cloneGroups[i]) == 0 &amp;&amp; len(cloneGroups[j]) == 0 {
+			return false
+		}
+		if len(cloneGroups[i]) == 0 {
+			return true
+		}
+		if len(cloneGroups[j]) == 0 {
+			return false
+		}
+		// Compare by filename of first clone in each group
+		if len(cloneGroups[i]) &gt; 0 &amp;&amp; len(cloneGroups[j]) &gt; 0 {
+			if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
+				return cloneGroups[i][0].lineStart &lt; cloneGroups[j][0].lineStart
+			}
+			return cloneGroups[i][0].filename &lt; cloneGroups[j][0].filename
+		}
+		return false
+	})
+}</pre>
+<h2>printer/sorter.go:136</h2>
+<pre>                                                {
+	sort.Slice(dups, func(i, j int) bool {
+		if len(dups[i]) == 0 &amp;&amp; len(dups[j]) == 0 {
+			return false
+		}
+		if len(dups[i]) == 0 {
+			return true
+		}
+		if len(dups[j]) == 0 {
+			return false
+		}
+		// Use Filename for deterministic sorting
+		if len(dups[i]) &gt; 0 &amp;&amp; len(dups[j]) &gt; 0 {
+			if dups[i][0].Filename == dups[j][0].Filename {
+				return dups[i][0].Pos &lt; dups[j][0].Pos
+			}
+			return dups[i][0].Filename &lt; dups[j][0].Filename
+		}
+		return false
+	})
+}</pre>
+<h1>#6 found 2 clones</h1>
+<h2>pkg/artdupl/detector.go:301</h2>
+<pre>func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) &lt;-chan syntax.Match {
+	// Build suffix tree
+	tree := d.buildSuffixTree(data)
+	suffixMatches := tree.FindDuplOver(threshold)
+
+	// Convert suffix tree matches to syntax matches
+	syntaxMatches := make(chan syntax.Match)
+	go func() {
+		defer close(syntaxMatches)
+
+		for match := range suffixMatches {
+			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
+			if len(syntaxMatch.Frags) &gt; 0 {
+				syntaxMatches &lt;- syntaxMatch
+			}
+		}
+	}()
+
+	return syntaxMatches
+}</pre>
+<h2>pkg/artdupl/detector.go:323</h2>
+<pre>func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) &lt;-chan syntax.Match {
+	// Build a suffix tree for hash detection method as well
+	tree := d.buildSuffixTree(data)
+	suffixMatches := tree.FindDuplOver(threshold)
+
+	// Convert suffix tree matches to syntax matches
+	syntaxMatches := make(chan syntax.Match)
+	go func() {
+		defer close(syntaxMatches)
+
+		for match := range suffixMatches {
+			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
+			if len(syntaxMatch.Frags) &gt; 0 {
+				syntaxMatches &lt;- syntaxMatch
+			}
+		}
+	}()
+
+	return syntaxMatches
+}</pre>
+<h1>#7 found 3 clones</h1>
+<h2>types/enums.go:41</h2>
+<pre>func (ds *DetectionState) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
+	}
+
+	state := DetectionState(str)
+	if !state.IsValid() {
+		return fmt.Errorf(&#34;invalid detection state: %s&#34;, str)
+	}
+	*ds = state
+	return nil
+}</pre>
+<h2>types/enums.go:89</h2>
+<pre>func (am *AnalysisMode) UnmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
+	}
+
+	mode := AnalysisMode(str)
+	if !mode.IsValid() {
+		return fmt.Errorf(&#34;invalid analysis mode: %s&#34;, str)
+	}
+	*am = mode
+	return nil
+}</pre>
+<h2>types/enums.go:139</h2>
+<pre>func (fps *FileProcessingState) UnmarshalJSON unmarshalJSON(data []byte) error {
+	str := string(data)
+	if len(str) &gt;= 2 &amp;&amp; str[0] == &#39;&#34;&#39; &amp;&amp; str[len(str)-1] == &#39;&#34;&#39; {
+		str = str[1 : len(str)-1]
+	}
+
+	state := FileProcessingState(str)
+	if !state.IsValid() {
+		return fmt.Errorf(&#34;invalid file processing state: %s&#34;, str)
+	}
+	*fps = state
+	return nil
+}</pre>
+<h1>#8 found 2 clones</h1>
+<h2>migration/migration.go:170</h2>
+<pre>if err := before.IsValid(); err != nil {
+	validations = append(validations, ValidationResult{
+		Check:    &#34;before-state-valid&#34;,
+		Status:   &#34;failed&#34;,
+		Message:  fmt.Sprintf(&#34;Before state invalid: %v&#34;, err),
+		Severity: &#34;error&#34;,
+	})
+} else {
+	validations = append(validations, ValidationResult{
+		Check:    &#34;before-state-valid&#34;,
+		Status:   &#34;passed&#34;,
+		Message:  &#34;Before state is valid&#34;,
+		Severity: &#34;info&#34;,
+	})
+}</pre>
+<h2>migration/migration.go:186</h2>
+<pre>if err := after.IsValid(); err != nil {
+	validations = append(validations, ValidationResult{
+		Check:    &#34;after-state-valid&#34;,
+		Status:   &#34;failed&#34;,
+		Message:  fmt.Sprintf(&#34;After state invalid: %v&#34;, err),
+		Severity: &#34;error&#34;,
+	})
+} else {
+	validations = append(validations, ValidationResult{
+		Check:    &#34;after-state-valid&#34;,
+		Status:   &#34;passed&#34;,
+		Message:  &#34;After state is valid&#34;,
+		Severity: &#34;info&#34;,
+	})
+}</pre>
+<h1>#9 found 2 clones</h1>
+<h2>detection/todos.go:61</h2>
+<pre>func (td *TodoDetector) FindTodos(data []*syntax.Node) &lt;-chan syntax.Match {
+	resultChan := make(chan syntax.Match)
+
+	go func() {
+		defer close(resultChan)
+
+		// Group nodes by filename
+		nodesByFile := make(map[string][]*syntax.Node)
+		for _, node := range data {
+			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+		}
+
+		// Process each file
+		for filename, nodes := range nodesByFile {
+			todos := td.findTodosInFile(filename, nodes)
+			for _, todo := range todos {
+				// Create a match that represents TODO
+				match := syntax.Match{
+					Hash:  fmt.Sprintf(&#34;TODO-%s-%d&#34;, filename, todo.Line),
+					Frags: [][]*syntax.Node{{}}, // Empty frag since TODOs aren&#39;t code fragments
+				}
+				resultChan &lt;- match
+			}
+		}
+	}()
+
+	return resultChan
+}</pre>
+<h2>detection/todos.go:169</h2>
+<pre>func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) &lt;-chan syntax.Match {
+	resultChan := make(chan syntax.Match)
+
+	go func() {
+		defer close(resultChan)
+
+		// Group nodes by filename
+		nodesByFile := make(map[string][]*syntax.Node)
+		for _, node := range data {
+			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+		}
+
+		// Process each file
+		for filename, nodes := range nodesByFile {
+			legacies := ld.findLegacyInFile(filename, nodes)
+			for _, legacy := range legacies {
+				match := syntax.Match{
+					Hash:  fmt.Sprintf(&#34;LEGACY-%s-%d&#34;, filename, legacy.Line),
+					Frags: [][]*syntax.Node{{}}, // Empty frag since legacy items aren&#39;t code fragments
+				}
+				resultChan &lt;- match
+			}
+		}
+	}()
+
+	return resultChan
+}</pre>
+<h1>#10 found 2 clones</h1>
+<h2>config/unmarshal_helper.go:42</h2>
+<pre>                                     {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+		// Use interface method to check validity
+		var enum T = t
+		return any(enum).(interface{ IsValid() bool }).IsValid()
+	}, typeName)
+	if err != nil {
+		return err
+	}
+	*e = candidate
+	return nil
+}</pre>
+<h2>config/unmarshal_helper.go:57</h2>
+<pre>                                                                               {
+	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
+		// Use interface method to check validity
+		var enum T = t
+		return any(enum).(interface{ IsValid() bool }).IsValid()
+	}, typeName)
+	if err != nil {
+		return err
+	}
+	*e = candidate
+	return nil
+}</pre>
+
+</body>
+</html>
