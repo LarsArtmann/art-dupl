@@ -46,6 +46,9 @@ var _ = Describe("Basic User Workflows", func() {
 		tempDir, err = os.MkdirTemp("", "art-dupl-bdd-*")
 		Expect(err).NotTo(HaveOccurred())
 
+		// Initialize file processor
+		fileProcessor = utils.NewFileProcessor(tempDir)
+
 		// Define test Go files with intentional duplicates
 		testFiles = map[string]string{
 			"duplicate1.go": `package main
@@ -256,13 +259,18 @@ func uniqueFunction(ctx context.Context) error {
 })
 
 var _ = Describe("Configuration Management", func() {
-	var tempDir string
-	// configFile string // Commented out since not used in current tests
+	var (
+		tempDir       string
+		fileProcessor *utils.FileProcessor
+	)
 
 	BeforeEach(func() {
 		var err error
 		tempDir, err = os.MkdirTemp("", "art-dupl-config-bdd-*")
 		Expect(err).NotTo(HaveOccurred())
+
+		// Initialize file processor
+		fileProcessor = utils.NewFileProcessor(tempDir)
 
 		// Build art-dupl binary for these tests
 		cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
@@ -466,11 +474,6 @@ func processData(data string) error {
 
 	Context("When reading file list from stdin", func() {
 		It("should analyze only files provided via stdin", func() {
-			// Create multiple files
-			file1 := filepath.Join(tempDir, "target1.go")
-			file2 := filepath.Join(tempDir, "target2.go")
-			file3 := filepath.Join(tempDir, "ignore.go")
-
 			duplicateCode := `package main
 
 import "fmt"
@@ -539,10 +542,6 @@ var _ = Describe("Integration Scenarios", func() {
 
 	Context("CI/CD Pipeline Integration", func() {
 		It("should provide JSON output suitable for automation", func() {
-			// Create files with duplicates
-			file1 := filepath.Join(tempDir, "service1.go")
-			file2 := filepath.Join(tempDir, "service2.go")
-
 			serviceCode := `package service
 
 import (
@@ -655,7 +654,7 @@ func processItem(data string, index int) error {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
 			cmd.Dir = ".."
-			err := cmd.Run()
+			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
@@ -663,7 +662,8 @@ func processItem(data string, index int) error {
 			start := time.Now()
 			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "20")
 			cmd.Dir = ".."
-			output, err := cmd.CombinedOutput()
+			var output []byte
+			output, err = cmd.CombinedOutput()
 			duration := time.Since(start)
 
 			// Verify it completes in reasonable time

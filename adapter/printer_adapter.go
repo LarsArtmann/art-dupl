@@ -1,8 +1,9 @@
 package adapter
 
 import (
+	"os"
+
 	"github.com/LarsArtmann/art-dupl/domain"
-	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/types"
 )
@@ -12,21 +13,17 @@ type PrinterAdapter struct {
 	// Existing printer will be wrapped
 }
 
-// CloneToDomain converts printer clone to domain clone
-func CloneToDomain(printerClone printer.Clone) domain.Clone {
-	return domain.Clone{
-		ID:        printerClone.Filename,
-		Filename:  printerClone.Filename,
-		StartLine: uint(printerClone.LineStart),
-		EndLine:   uint(printerClone.LineEnd),
-		Fragment:  string(printerClone.Fragment),
-		Status:    types.FileProcessingStateCompleted,
-	}
-}
-
 // NodeToDomainClone converts syntax node to domain clone
 func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
-	return domain.NodeToClone(node, filename)
+	// Try to read file content
+	var fileContent []byte
+	if filename != "" {
+		if content, err := os.ReadFile(filename); err == nil {
+			fileContent = content
+		}
+		// If file doesn't exist or can't be read, continue with empty content
+	}
+	return domain.NodeToClone(node, filename, fileContent)
 }
 
 // CloneGroupFromNodes creates domain clone group from syntax nodes

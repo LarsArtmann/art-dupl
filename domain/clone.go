@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"strings"
 
@@ -272,21 +273,43 @@ func (do DetectionOptions) IsValid() error {
 }
 
 // NodeToClone converts syntax nodes to domain Clone
-func NodeToClone(node *syntax.Node, filename string) Clone {
+func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Generate unique ID for clone
 	cloneID := fmt.Sprintf("%s-%d-%d", filename, node.Pos, node.End)
+
+	// Calculate line numbers from file content
+	lineStart, lineEnd := 1, 1 // defaults
+	if fileContent != nil {
+		lineStart, lineEnd = calculateLines(fileContent, node.Pos, node.End)
+	}
+
+	// Extract fragment from file content
+	var fragment string
+	if fileContent != nil {
+		start := node.Pos
+		end := node.End
+		if start >= 0 && end <= len(fileContent) && start < end {
+			fragment = string(fileContent[start:end])
+		}
+	}
+
+	// Generate hash from fragment
+	hash := ""
+	if fragment != "" {
+		hash = fmt.Sprintf("%x", sha256.Sum256([]byte(fragment)))
+	}
 
 	return Clone{
 		ID:         cloneID,
 		Filename:   filename,
-		StartLine:  uint(node.LineStart),
-		EndLine:    uint(node.LineEnd),
+		StartLine:  uint(lineStart),
+		EndLine:    uint(lineEnd),
 		StartPos:   uint(node.Pos),
 		EndPos:     uint(node.End),
-		Fragment:   strings.Join(node.Fragments, ""),
-		Hash:       string(node.Hash),
+		Fragment:   fragment,
+		Hash:       hash,
 		Confidence: 1.0, // TODO: Calculate actual confidence
-		Complexity: uint(node.Complexity),
+		Complexity: calculateComplexity(node),
 		Status:     types.FileProcessingStateCompleted,
 	}
 }
@@ -303,4 +326,50 @@ func CalculateSeverity(size, complexity uint) CloneSeverity {
 		return CloneSeverityMedium
 	}
 	return CloneSeverityLow
+}
+
+// calculateLines determines the line numbers for a given position range
+func calculateLines(fileContent []byte, from, to int) (int, int) {
+	line := 1
+	lineStart, lineEnd := 0, 0
+	for offset, b := range fileContent {
+		if b == '\n' {
+			line++
+		}
+		if offset == from {
+			lineStart = line
+		}
+		if offset == to-1 {
+			lineEnd = line
+			break
+		}
+	}
+	if lineStart == 0 {
+		lineStart = 1
+	}
+	if lineEnd == 0 {
+		lineEnd = lineStart
+	}
+	return lineStart, lineEnd
+}
+
+// calculateComplexity calculates a basic complexity metric for a node
+func calculateComplexity(node *syntax.Node) uint {
+	// Simple complexity based on node count and depth
+	complexity := uint(1) // Base complexity
+
+	// Add complexity for each child
+	for _, child := range node.Children {
+		complexity += calculateComplexity(child)
+	}
+
+	// Add complexity based on node value (type)
+	switch node.Type {
+	case 0: // Assume 0 might be a control structure
+		complexity += 2
+	default:
+		complexity += 1
+	}
+
+	return complexity
 }

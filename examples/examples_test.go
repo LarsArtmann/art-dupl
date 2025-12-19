@@ -262,7 +262,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	}
 
 	// Test progress callback
-	var callback artdupl.ProgressCallback = func(progress *artdupl.Progress) error {
+	var callback func(*artdupl.Progress) error = func(progress *artdupl.Progress) error {
 		// Test progress structure
 		if progress.Stage == "" {
 			t.Error("Progress stage should not be empty")

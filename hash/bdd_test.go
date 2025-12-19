@@ -34,6 +34,7 @@ func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) {
 	matches := collectMatches(matchesChan)
 	if len(matches) != 1 {
 		t.Errorf("Expected 1 match, got %d", len(matches))
+		return
 	}
 
 	// AND: The match should contain both files

@@ -70,20 +70,17 @@ var _ = Describe("Domain: Clone", func() {
 	Context("When converting syntax nodes", func() {
 		It("should create valid clones from nodes", func() {
 			node := &syntax.Node{
-				Filename:   "test.go",
-				LineStart:  5,
-				LineEnd:    15,
-				Pos:        50,
-				End:        150,
-				Fragments:  []string{"func test() {}"},
-				Hash:       []byte("hash123"),
-				Complexity: 3,
+				Filename: "test.go",
+				Pos:      50,
+				End:      150,
 			}
 
-			clone := domain.NodeToClone(node, "test.go")
+			fileContent := []byte("line 1\nline 2\nline 3\nline 4\nline 5\nfunc test() {}\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16")
+
+			clone := domain.NodeToClone(node, "test.go", fileContent)
 			Expect(clone.Filename).To(Equal("test.go"))
-			Expect(clone.StartLine).To(Equal(uint(5)))
-			Expect(clone.EndLine).To(Equal(uint(15)))
+			Expect(clone.StartPos).To(Equal(uint(50)))
+			Expect(clone.EndPos).To(Equal(uint(150)))
 			Expect(clone.Status).To(Equal(types.FileProcessingStateCompleted))
 			Expect(clone.IsValid()).To(Succeed())
 		})

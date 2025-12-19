@@ -19,14 +19,9 @@ var _ = Describe("Migration Path", func() {
 			nodes := [][]*syntax.Node{
 				{
 					{
-						Filename:   "test1.go",
-						LineStart:  10,
-						LineEnd:    20,
-						Pos:        100,
-						End:        200,
-						Fragments:  []string{"func test() {}"},
-						Hash:       []byte("hash1"),
-						Complexity: 5,
+						Filename: "test1.go",
+						Pos:      100,
+						End:      200,
 					},
 				},
 			}
@@ -56,7 +51,8 @@ var _ = Describe("Migration Path", func() {
 			result := migration.MigrateConfig(oldConfig)
 			Expect(result.IsOk()).To(BeTrue())
 
-			options := result.Unwrap()
+			options, err := result.Unwrap()
+			Expect(err).ToNot(HaveOccurred())
 			Expect(options.Threshold).To(Equal(uint(15)))
 			Expect(options.Paths).To(Equal([]string{"./src", "./lib"}))
 			Expect(options.IsValid()).To(Succeed())
@@ -151,7 +147,9 @@ var _ = Describe("Migration Path", func() {
 			result := migrationPath.ValidateMigration(analysis)
 
 			Expect(result.IsOk()).To(BeTrue())
-			Expect(result.Unwrap().ID).To(Equal("test-analysis"))
+			analysis, err := result.Unwrap()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(analysis.ID).To(Equal("test-analysis"))
 		})
 
 		It("should reject invalid migration", func() {
