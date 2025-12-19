@@ -1,7 +1,5 @@
 package types
 
-import "fmt"
-
 // DetectionState represents different detection states with type safety
 type DetectionState string
 
@@ -31,24 +29,16 @@ func (ds DetectionState) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency
 func (ds DetectionState) MarshalJSON() ([]byte, error) {
-	if !ds.IsValid() {
-		return nil, fmt.Errorf("invalid detection state: %s", ds)
-	}
-	return []byte(`"` + string(ds) + `"`), nil
+	return MarshalEnumJSON(ds, "detection state")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency
 func (ds *DetectionState) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
+	enum, err := UnmarshalEnumJSON(data, func(s string) DetectionState { return DetectionState(s) }, "detection state")
+	if err != nil {
+		return err
 	}
-
-	state := DetectionState(str)
-	if !state.IsValid() {
-		return fmt.Errorf("invalid detection state: %s", str)
-	}
-	*ds = state
+	*ds = *enum
 	return nil
 }
 
@@ -79,24 +69,16 @@ func (am AnalysisMode) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency
 func (am AnalysisMode) MarshalJSON() ([]byte, error) {
-	if !am.IsValid() {
-		return nil, fmt.Errorf("invalid analysis mode: %s", am)
-	}
-	return []byte(`"` + string(am) + `"`), nil
+	return MarshalEnumJSON(am, "analysis mode")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency
 func (am *AnalysisMode) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
+	enum, err := UnmarshalEnumJSON(data, func(s string) AnalysisMode { return AnalysisMode(s) }, "analysis mode")
+	if err != nil {
+		return err
 	}
-
-	mode := AnalysisMode(str)
-	if !mode.IsValid() {
-		return fmt.Errorf("invalid analysis mode: %s", str)
-	}
-	*am = mode
+	*am = *enum
 	return nil
 }
 
@@ -129,23 +111,15 @@ func (fps FileProcessingState) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency
 func (fps FileProcessingState) MarshalJSON() ([]byte, error) {
-	if !fps.IsValid() {
-		return nil, fmt.Errorf("invalid file processing state: %s", fps)
-	}
-	return []byte(`"` + string(fps) + `"`), nil
+	return MarshalEnumJSON(fps, "file processing state")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency
 func (fps *FileProcessingState) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
+	enum, err := UnmarshalEnumJSON(data, func(s string) FileProcessingState { return FileProcessingState(s) }, "file processing state")
+	if err != nil {
+		return err
 	}
-
-	state := FileProcessingState(str)
-	if !state.IsValid() {
-		return fmt.Errorf("invalid file processing state: %s", str)
-	}
-	*fps = state
+	*fps = *enum
 	return nil
 }
