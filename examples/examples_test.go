@@ -203,7 +203,7 @@ func TestExamplesDetector(t *testing.T) {
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
-	detector.Close()
+	_ = detector.Close()
 
 	// Test detector creation with default options
 	opts := artdupl.DefaultOptions()
@@ -214,7 +214,7 @@ func TestExamplesDetector(t *testing.T) {
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
-	detector.Close()
+	_ = detector.Close()
 
 	// Test detector creation with custom options
 	customOpts := &artdupl.Options{
@@ -234,7 +234,7 @@ func TestExamplesDetector(t *testing.T) {
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
-	detector.Close()
+	_ = detector.Close()
 }
 
 // TestExamplesInterfaces tests interface implementations
@@ -280,7 +280,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
-	detector.Close()
+	_ = detector.Close()
 }
 
 // testLogger implements Logger interface for testing

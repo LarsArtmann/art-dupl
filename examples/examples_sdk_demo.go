@@ -36,7 +36,7 @@ func basicExample() {
 		log.Printf("Failed to create detector: %v", err)
 		return
 	}
-	defer detector.Close()
+	defer func() { _ = detector.Close() }()
 
 	// Analyze some files
 	files := []string{
@@ -76,7 +76,7 @@ func progressExample() {
 		log.Printf("Failed to create detector: %v", err)
 		return
 	}
-	defer detector.Close()
+	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
 	files := []string{"suffixtree/suffixtree.go", "detection/multidetector.go"}
@@ -101,7 +101,7 @@ func streamingExample() {
 		log.Printf("Failed to create detector: %v", err)
 		return
 	}
-	defer detector.Close()
+	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
 	files := []string{"cli.go", "main.go"}
@@ -142,7 +142,7 @@ func configExample() {
 		log.Printf("Failed to create detector: %v", err)
 		return
 	}
-	defer detector.Close()
+	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
 	files := []string{"printer/printer.go"}
@@ -193,7 +193,7 @@ func errorExample() {
 			fmt.Printf("✅ Expected error: %v\n", err)
 			continue
 		}
-		defer detector.Close()
+		defer func() { _ = detector.Close() }()
 
 		ctx := context.Background()
 		_, err = detector.FindClones(ctx, tc.files)
