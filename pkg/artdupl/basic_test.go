@@ -105,13 +105,13 @@ func TestValidateOptions_Invalid_Basic(t *testing.T) {
 
 // TestErrorComparison_Basic tests error comparison behavior
 func TestErrorComparison_Basic(t *testing.T) {
-	// Test that errors are comparable using ==
-	if ErrNilOptions != ErrNilOptions {
-		t.Error("Error should be equal to itself")
+	// Test error comparison using errors.Is (handles wrapped errors)
+	if !errors.Is(ErrNilOptions, ErrNilOptions) {
+		t.Error("Error should match itself")
 	}
 
-	if ErrNilOptions == ErrInvalidThreshold {
-		t.Error("Different errors should not be equal")
+	if errors.Is(ErrNilOptions, ErrInvalidThreshold) {
+		t.Error("Different errors should not match")
 	}
 
 	// Test errors.Is compatibility

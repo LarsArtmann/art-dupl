@@ -18,7 +18,7 @@ func TestDuplError(t *testing.T) {
 	}
 
 	// Test unwrap
-	if err.Unwrap() != cause {
+	if !errors.Is(err, cause) {
 		t.Error("Unwrap should return cause error")
 	}
 

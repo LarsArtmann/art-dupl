@@ -2,6 +2,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 	"runtime/debug"
 )
@@ -95,7 +96,8 @@ func NewInternalError(msg string, cause error) *DuplError {
 
 // Is checks if error matches a specific type
 func Is(err error, errorType ErrorType) bool {
-	if duplErr, ok := err.(*DuplError); ok {
+	var duplErr *DuplError
+	if errors.As(err, &duplErr) {
 		return duplErr.Type == errorType
 	}
 	return false
