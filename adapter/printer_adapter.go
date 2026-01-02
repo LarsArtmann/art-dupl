@@ -92,7 +92,7 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 
 // Helper functions
 
-func generateGroupHash(clones []domain.Clone) string {
+func generateGroupHash(_ []domain.Clone) string {
 	// TODO: Implement proper hash generation
 	return "group-hash"
 }
