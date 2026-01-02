@@ -290,7 +290,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return fmt.Errorf("error loading config: %v", err)
+			return fmt.Errorf("error loading config: %w", err)
 		}
 	}
 
@@ -326,7 +326,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return fmt.Errorf("configuration error: %v", err)
+		return fmt.Errorf("configuration error: %w", err)
 	}
 
 	if allFlag {
@@ -335,7 +335,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
-		return fmt.Errorf("analysis error: %v", err)
+		return fmt.Errorf("analysis error: %w", err)
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat)(os.Stdout, os.ReadFile)
