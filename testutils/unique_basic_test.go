@@ -19,15 +19,16 @@ func TestUniqueTestHelper_Basic(t *testing.T) {
 func TestGenerateRandomSuffix_Basic(t *testing.T) {
 	suffix := generateRandomSuffix()
 
-	// Should be single letter
-	if len(suffix) != 1 {
-		t.Errorf("Suffix should be single character, got '%s' (len %d)", suffix, len(suffix))
+	// Should be 3 letters
+	if len(suffix) != 3 {
+		t.Errorf("Suffix should be 3 letters, got '%s' (len %d)", suffix, len(suffix))
 	}
 
-	// Should be lowercase letter a-z
-	char := suffix[0]
-	if char < 'a' || char > 'z' {
-		t.Errorf("Suffix should be lowercase letter a-z, got '%c'", char)
+	// Should be all lowercase letters a-z
+	for _, char := range suffix {
+		if char < 'a' || char > 'z' {
+			t.Errorf("Suffix should be lowercase letters a-z, got '%s' with invalid char '%c'", suffix, char)
+		}
 	}
 }
 

@@ -12,7 +12,13 @@ func UniqueTestHelper() string {
 // generateRandomSuffix generates a random suffix for uniqueness
 func generateRandomSuffix() string {
 	// As of Go 1.20, rand is automatically seeded, no need to call Seed()
-	return string(rune('a' + rand.Intn(26)))
+	// Generate 3-letter suffix for 26^3 = 17,576 possible combinations
+	const suffixLength = 3
+	suffix := make([]byte, suffixLength)
+	for i := range suffixLength {
+		suffix[i] = byte('a' + rand.Intn(26))
+	}
+	return string(suffix)
 }
 
 // UniqueFunction returns a unique function template
