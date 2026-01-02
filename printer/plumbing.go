@@ -10,6 +10,7 @@ import (
 
 type plumbing struct {
 	ReadFile
+
 	w io.Writer
 }
 

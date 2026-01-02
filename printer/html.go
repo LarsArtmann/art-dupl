@@ -15,6 +15,7 @@ import (
 
 type htmlprinter struct {
 	ReadFile
+
 	iota     int
 	w        io.Writer
 	dupMutex sync.Mutex

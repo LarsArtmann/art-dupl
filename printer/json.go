@@ -45,6 +45,7 @@ type Summary struct {
 
 type JSONPrinter struct {
 	ReadFile
+
 	iota int
 	w    io.Writer
 	filesCount  int

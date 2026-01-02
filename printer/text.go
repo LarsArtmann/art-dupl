@@ -11,6 +11,7 @@ import (
 
 type text struct {
 	ReadFile
+
 	cnt         int
 	w           io.Writer
 	totalSize   int
