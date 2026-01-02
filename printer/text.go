@@ -10,11 +10,11 @@ import (
 )
 
 type text struct {
+	ReadFile
 	cnt         int
 	w           io.Writer
 	totalSize   int
 	cloneGroups [][]clone
-	ReadFile
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
