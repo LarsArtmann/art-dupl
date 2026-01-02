@@ -14,7 +14,7 @@ type plumbing struct {
 }
 
 func NewPlumbing(w io.Writer, fread ReadFile) Printer {
-	return &plumbing{w, fread}
+	return &plumbing{ReadFile: fread, w: w}
 }
 
 func (p *plumbing) PrintHeader() error { return nil }
