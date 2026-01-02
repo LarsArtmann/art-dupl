@@ -252,7 +252,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	sort.Strings(keys)
 
 	if err := p.PrintHeader(); err != nil {
-		return err
+		return err // nolint:wrapcheck // Printer errors are already clear
 	}
 
 	for _, k := range keys {
@@ -262,16 +262,16 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return err
+				return err // nolint:wrapcheck // Printer errors are already clear
 			}
 		}
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(threshold, sortBy)
+		return jsonPrinter.OutputJSON(threshold, sortBy) // nolint:wrapcheck // Printer errors are already clear
 	}
 
-	return p.PrintFooter()
+	return p.PrintFooter() // nolint:wrapcheck // Printer errors are already clear
 }
 
 func runCobraCommand(cmd *cobra.Command, args []string) error {

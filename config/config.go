@@ -93,7 +93,7 @@ func SaveConfig(config *Config, filename string) error {
 
 	data, err := errors.SafeMarshalIndent(config, "", "  ", "config")
 	if err != nil {
-		return err
+		return err // nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
 	err = os.WriteFile(filename, data, 0o644)

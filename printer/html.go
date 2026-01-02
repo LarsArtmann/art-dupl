@@ -40,7 +40,7 @@ func (p *htmlprinter) PrintHeader() error {
 </head>
 <body>
 `)
-	return err
+	return err // nolint:wrapcheck // fmt errors are clear in context
 }
 
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
@@ -61,7 +61,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	p.dupMutex.Unlock()
 
 	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(sortedDups)); err != nil {
-		return err
+		return err // nolint:wrapcheck // fmt errors are clear in context
 	}
 
 	clones := make([]clone, len(sortedDups))
@@ -107,7 +107,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "<h2>%s:%d</h2>\n<pre>%s</pre>\n", cl.filename, cl.lineStart,
 			html.EscapeString(string(cl.fragment))); err != nil {
-			return err
+			return err // nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
 	return nil
@@ -118,7 +118,7 @@ func (p *htmlprinter) PrintFooter() error {
 </body>
 </html>
 `)
-	return err
+	return err // nolint:wrapcheck // fmt errors are clear in context
 }
 
 func findLineBeg(file []byte, index int) int {

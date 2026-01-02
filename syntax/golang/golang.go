@@ -65,7 +65,7 @@ func Parse(filename string) (*syntax.Node, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
-		return nil, err
+		return nil, err // nolint:wrapcheck // Parse errors are already clear
 	}
 	t := &transformer{
 		fileset:  fset,

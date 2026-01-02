@@ -129,7 +129,7 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	// Check for context cancellation
 	select {
 	case <-ctx.Done():
-		return ctx.Err()
+		return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
 	default:
 	}
 
@@ -178,7 +178,7 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 	case <-done:
 		// Tree building complete
 	case <-ctx.Done():
-		return nil, 0, ctx.Err()
+		return nil, 0, ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
 	case <-time.After(d.opts.Timeout):
 		return nil, 0, ErrAnalysisTimeout
 	}
@@ -227,7 +227,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return nil, ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
 		default:
 		}
 
@@ -271,7 +271,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
 		default:
 		}
 
@@ -289,7 +289,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 			select {
 			case resultChan <- group:
 			case <-ctx.Done():
-				return ctx.Err()
+				return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
 			}
 		}
 	}

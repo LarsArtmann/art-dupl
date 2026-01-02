@@ -36,7 +36,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
 	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
-		return err
+		return err // nolint:wrapcheck // fmt errors are clear in context
 	}
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
@@ -55,7 +55,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	sort.Sort(byNameAndLine(clones))
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
-			return err
+			return err // nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
 	return nil
@@ -65,7 +65,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 	p.cnt++
 	if _, err := fmt.Fprintf(p.w, "found %d clones (sorted by %s):\n", len(dups), sortBy); err != nil {
-		return err
+		return err // nolint:wrapcheck // fmt errors are clear in context
 	}
 	clones, err := prepareClonesInfo(p.ReadFile, dups)
 	if err != nil {
@@ -80,7 +80,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
-			return err
+			return err // nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
 	return nil
@@ -88,7 +88,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 
 func (p *text) PrintFooter() error {
 	_, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt)
-	return err
+	return err // nolint:wrapcheck // fmt errors are clear in context
 }
 
 func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
@@ -167,11 +167,11 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 		for _, cl := range cloneGroup {
 			if len(cl.fragment) > 0 {
 				if _, err := fmt.Fprintf(p.w, "%s\n%s:%d-%d\n\n", cl.fragment, cl.filename, cl.lineStart, cl.lineEnd); err != nil {
-					return err
+					return err // nolint:wrapcheck // fmt errors are clear in context
 				}
 			} else {
 				if _, err := fmt.Fprintf(p.w, "%s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
-					return err
+					return err // nolint:wrapcheck // fmt errors are clear in context
 				}
 			}
 		}

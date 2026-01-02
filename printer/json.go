@@ -198,7 +198,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 	err := encoder.Encode(&output)
 	if err != nil {
-		return errors.HandleMarshalingError("encode", "JSON output", err)
+		return errors.HandleMarshalingError("encode", "JSON output", err) // nolint:wrapcheck // Error already wraps cause
 	}
 	return nil
 }
