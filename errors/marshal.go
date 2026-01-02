@@ -39,7 +39,7 @@ func HandleMarshalingError(operation, context string, err error) error {
 }
 
 // SafeMarshal provides safe marshaling with consistent error handling
-func SafeMarshal(v interface{}, context string) ([]byte, error) {
+func SafeMarshal(v any, context string) ([]byte, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return nil, HandleMarshalingError("marshal", context, err)
@@ -48,7 +48,7 @@ func SafeMarshal(v interface{}, context string) ([]byte, error) {
 }
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling
-func SafeMarshalIndent(v interface{}, prefix, indent, context string) ([]byte, error) {
+func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, HandleMarshalingError("marshal indent", context, err)
@@ -57,7 +57,7 @@ func SafeMarshalIndent(v interface{}, prefix, indent, context string) ([]byte, e
 }
 
 // SafeUnmarshal provides safe unmarshaling with consistent error handling
-func SafeUnmarshal(data []byte, v interface{}, context string) error {
+func SafeUnmarshal(data []byte, v any, context string) error {
 	err := json.Unmarshal(data, v)
 	if err != nil {
 		return HandleMarshalingError("unmarshal", context, err)

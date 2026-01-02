@@ -43,7 +43,7 @@ var _ = Describe("Migration Path", func() {
 
 	Context("When migrating configuration", func() {
 		It("should migrate valid old config", func() {
-			oldConfig := map[string]interface{}{
+			oldConfig := map[string]any{
 				"threshold": 15,
 				"paths":     []string{"./src", "./lib"},
 			}
@@ -59,7 +59,7 @@ var _ = Describe("Migration Path", func() {
 		})
 
 		It("should reject invalid config", func() {
-			oldConfig := map[string]interface{}{
+			oldConfig := map[string]any{
 				// Missing threshold
 				"paths": []string{"./src"},
 			}

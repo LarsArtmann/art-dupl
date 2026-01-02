@@ -46,7 +46,7 @@ func TestUniqueness_Basic(t *testing.T) {
 	// Generate strings and check they're unique
 	uniqueSet := make(map[string]bool)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		str := UniqueTestHelper()
 
 		if uniqueSet[str] {

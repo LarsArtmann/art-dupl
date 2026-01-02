@@ -235,7 +235,7 @@ func generateMigrationID() string {
 }
 
 // MigrateConfig handles configuration migration
-func MigrateConfig(oldConfig map[string]interface{}) types.Result[domain.DetectionOptions] {
+func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOptions] {
 	options := domain.DetectionOptions{}
 
 	// Extract threshold
@@ -246,7 +246,7 @@ func MigrateConfig(oldConfig map[string]interface{}) types.Result[domain.Detecti
 	}
 
 	// Extract paths
-	if paths, ok := oldConfig["paths"].([]interface{}); ok {
+	if paths, ok := oldConfig["paths"].([]any); ok {
 		for _, path := range paths {
 			if str, ok := path.(string); ok {
 				options.Paths = append(options.Paths, str)

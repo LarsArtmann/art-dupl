@@ -9,7 +9,7 @@ import (
 // TestUniqueTestHelper_Clean tests unique helper functionality
 func TestUniqueTestHelper_Clean(t *testing.T) {
 	// Generate multiple unique strings
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		str := UniqueTestHelper()
 
 		// Check that it starts with "unique_"
@@ -22,7 +22,7 @@ func TestUniqueTestHelper_Clean(t *testing.T) {
 // TestGenerateRandomSuffix_Clean tests random suffix generation
 func TestGenerateRandomSuffix_Clean(t *testing.T) {
 	// Generate multiple suffixes
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		suffix := generateRandomSuffix()
 
 		// Should be single letter
@@ -41,7 +41,7 @@ func TestGenerateRandomSuffix_Clean(t *testing.T) {
 // TestUniqueFunction_Clean tests unique function generation
 func TestUniqueFunction_Clean(t *testing.T) {
 	// Generate multiple unique functions
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		fn := UniqueFunction()
 
 		// Check that it has proper structure
@@ -56,7 +56,7 @@ func TestUniqueness_Clean(t *testing.T) {
 	// Generate strings and check they're unique
 	uniqueSet := make(map[string]bool)
 
-	for i := 0; i < 50; i++ {
+	for range 50 {
 		str := UniqueTestHelper()
 
 		if uniqueSet[str] {
@@ -81,7 +81,7 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 	allStrings := make([]string, 0, numGoroutines*numPerGoroutine)
 
 	wg.Add(numGoroutines)
-	for i := 0; i < numGoroutines; i++ {
+	for range numGoroutines {
 		go func() {
 			defer wg.Done()
 
@@ -115,8 +115,7 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 
 // BenchmarkUniqueTestHelper_Clean benchmarks unique helper
 func BenchmarkUniqueTestHelper_Clean(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		UniqueTestHelper()
 	}
 }

@@ -21,7 +21,7 @@ func Err[T any](err error) Result[T] {
 }
 
 // Errf creates an error result with formatted message
-func Errf[T any](format string, args ...interface{}) Result[T] {
+func Errf[T any](format string, args ...any) Result[T] {
 	return Err[T](errors.NewValidationError(format, nil))
 }
 
@@ -81,7 +81,7 @@ func Validate[T any](value T, validator func(T) bool, errorMsg string) Result[T]
 }
 
 // Validatef provides generic validation with formatted error
-func Validatef[T any](value T, validator func(T) bool, format string, args ...interface{}) Result[T] {
+func Validatef[T any](value T, validator func(T) bool, format string, args ...any) Result[T] {
 	if !validator(value) {
 		return Err[T](errors.NewValidationError(format, nil))
 	}
