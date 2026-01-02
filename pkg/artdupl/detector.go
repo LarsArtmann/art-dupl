@@ -15,7 +15,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/util"
 )
 
-// detector implements the Detector interface using existing dupl components
+// detector implements the Detector interface using existing dupl components.
 type detector struct {
 	opts    *Options
 	config  *config.Config
@@ -23,7 +23,7 @@ type detector struct {
 	started time.Time
 }
 
-// NewDetector creates a new code duplication detector
+// NewDetector creates a new code duplication detector.
 func NewDetector(opts *Options) (Detector, error) {
 	// Use default options if none provided
 	if opts == nil {
@@ -55,7 +55,7 @@ func NewDetector(opts *Options) (Detector, error) {
 	}, nil
 }
 
-// FindClones performs complete duplication analysis
+// FindClones performs complete duplication analysis.
 func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error) {
 	d.started = time.Now()
 
@@ -80,7 +80,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	return d.buildResult(cloneGroups, 0), nil
 }
 
-// FindClonesStream provides streaming results for large projects
+// FindClonesStream provides streaming results for large projects.
 func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error) {
 	d.started = time.Now()
 
@@ -114,13 +114,13 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 	return resultChan, nil
 }
 
-// Close releases any resources held by the detector
+// Close releases any resources held by the detector.
 func (d *detector) Close() error {
 	// No persistent resources to clean up currently
 	return nil
 }
 
-// validateInputs checks that inputs are valid for analysis
+// validateInputs checks that inputs are valid for analysis.
 func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	if len(files) == 0 {
 		return ErrNoFilesProvided
@@ -129,14 +129,14 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	// Check for context cancellation
 	select {
 	case <-ctx.Done():
-		return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
+		return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
 	default:
 	}
 
 	return nil
 }
 
-// buildAnalysisPipeline processes files and prepares data for analysis
+// buildAnalysisPipeline processes files and prepares data for analysis.
 func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([]*syntax.Node, int, error) {
 	d.reportProgress(0, "Starting file processing", "")
 
@@ -178,7 +178,7 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 	case <-done:
 		// Tree building complete
 	case <-ctx.Done():
-		return nil, 0, ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
+		return nil, 0, ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
 	case <-time.After(d.opts.Timeout):
 		return nil, 0, ErrAnalysisTimeout
 	}
@@ -197,7 +197,7 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 	return nodeData, fileCount, nil
 }
 
-// runDetection executes the configured detection methods
+// runDetection executes the configured detection methods.
 func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
@@ -227,7 +227,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
+			return nil, ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
 		default:
 		}
 
@@ -250,7 +250,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 	return allGroups, nil
 }
 
-// streamDetectionResults streams detection results to the provided channel
+// streamDetectionResults streams detection results to the provided channel.
 func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.Node, resultChan chan<- *CloneGroup) error {
 	// Similar to runDetection but streams results instead of collecting all
 	threshold := d.config.Threshold
@@ -271,7 +271,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
+			return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
 		default:
 		}
 
@@ -289,7 +289,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 			select {
 			case resultChan <- group:
 			case <-ctx.Done():
-				return ctx.Err() // nolint:wrapcheck // Context cancellation errors are already clear
+				return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
 			}
 		}
 	}
@@ -297,7 +297,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 	return nil
 }
 
-// runArtDuplDetection executes art-dupl (suffix tree) detection method
+// runArtDuplDetection executes art-dupl (suffix tree) detection method.
 func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
 	// Build suffix tree
 	tree := d.buildSuffixTree(data)
@@ -319,7 +319,7 @@ func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node,
 	return syntaxMatches
 }
 
-// runHashDetection executes hash-based detection method
+// runHashDetection executes hash-based detection method.
 func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
 	// Build a suffix tree for the hash detection method as well
 	tree := d.buildSuffixTree(data)
@@ -341,7 +341,7 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 	return syntaxMatches
 }
 
-// buildSuffixTree creates a suffix tree from the provided data
+// buildSuffixTree creates a suffix tree from the provided data.
 func (d *detector) buildSuffixTree(data []*syntax.Node) *suffixtree.STree {
 	tree := suffixtree.New()
 	for _, node := range data {
@@ -350,7 +350,7 @@ func (d *detector) buildSuffixTree(data []*syntax.Node) *suffixtree.STree {
 	return tree
 }
 
-// convertToCloneGroup converts internal format to SDK CloneGroup format
+// convertToCloneGroup converts internal format to SDK CloneGroup format.
 func (d *detector) convertToCloneGroup(hash string, frags [][]*syntax.Node, method DetectionMethod) *CloneGroup {
 	clones := make([]*Clone, len(frags))
 	totalSize := 0
@@ -380,7 +380,7 @@ func (d *detector) convertToCloneGroup(hash string, frags [][]*syntax.Node, meth
 	}
 }
 
-// convertFragmentToClone converts a syntax fragment to SDK Clone format
+// convertFragmentToClone converts a syntax fragment to SDK Clone format.
 func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	if len(frag) == 0 {
 		return &Clone{}
@@ -407,7 +407,7 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	return clone
 }
 
-// extractFragmentContent extracts the actual source code for a fragment
+// extractFragmentContent extracts the actual source code for a fragment.
 func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	if len(frag) == 0 {
 		return ""
@@ -437,7 +437,7 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	return d.joinLines(fragmentLines)
 }
 
-// validateFile checks if a file should be processed
+// validateFile checks if a file should be processed.
 func (d *detector) validateFile(filename string) error {
 	// Check if file exists
 	info, err := os.Stat(filename)
@@ -460,7 +460,7 @@ func (d *detector) validateFile(filename string) error {
 	return nil
 }
 
-// buildResult creates final Result structure
+// buildResult creates final Result structure.
 func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result {
 	analysisTime := time.Since(d.started)
 
@@ -489,7 +489,7 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result
 	}
 }
 
-// reportProgress reports analysis progress if callback is provided
+// reportProgress reports analysis progress if callback is provided.
 func (d *detector) reportProgress(percentage float64, stage, currentFile string) {
 	if d.opts.ProgressCallback != nil {
 		progress := &Progress{
@@ -507,13 +507,13 @@ func (d *detector) reportProgress(percentage float64, stage, currentFile string)
 	}
 }
 
-// hashConfig creates a hash of the configuration for metadata
+// hashConfig creates a hash of the configuration for metadata.
 func (d *detector) hashConfig(opts *Options) string {
 	// Simple hash - in real implementation use proper hashing
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)
 }
 
-// Helper methods for line handling
+// Helper methods for line handling.
 func (d *detector) splitLines(content []byte) []string {
 	if len(content) == 0 {
 		return []string{}
@@ -558,7 +558,7 @@ func (d *detector) joinLines(lines []string) string {
 	return string(result)
 }
 
-// convertOptionsToConfig converts SDK options to internal config format
+// convertOptionsToConfig converts SDK options to internal config format.
 func convertOptionsToConfig(opts *Options) *config.Config {
 	cfg := config.DefaultConfig()
 	cfg.Threshold = opts.Threshold

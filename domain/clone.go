@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/types"
 )
 
-// Clone represents a code clone with strong typing
+// Clone represents a code clone with strong typing.
 type Clone struct {
 	ID         string                    `json:"id"`
 	Filename   string                    `json:"filename"`
@@ -24,33 +24,33 @@ type Clone struct {
 	Status     types.FileProcessingState `json:"status"`
 }
 
-// IsValid validates clone data
+// IsValid validates clone data.
 func (c Clone) IsValid() error {
 	if c.ID == "" {
-		return fmt.Errorf("clone ID cannot be empty")
+		return errors.New("clone ID cannot be empty")
 	}
 	if c.Filename == "" {
-		return fmt.Errorf("clone filename cannot be empty")
+		return errors.New("clone filename cannot be empty")
 	}
 	if c.StartLine == 0 {
-		return fmt.Errorf("clone start line cannot be zero")
+		return errors.New("clone start line cannot be zero")
 	}
 	if c.EndLine < c.StartLine {
-		return fmt.Errorf("clone end line must be >= start line")
+		return errors.New("clone end line must be >= start line")
 	}
 	if c.StartPos >= c.EndPos {
-		return fmt.Errorf("clone end position must be > start position")
+		return errors.New("clone end position must be > start position")
 	}
 	if !c.Status.IsValid() {
 		return fmt.Errorf("invalid clone processing state: %s", c.Status)
 	}
 	if c.Confidence < 0 || c.Confidence > 1 {
-		return fmt.Errorf("clone confidence must be between 0 and 1")
+		return errors.New("clone confidence must be between 0 and 1")
 	}
 	return nil
 }
 
-// CloneGroup represents a group of clones
+// CloneGroup represents a group of clones.
 type CloneGroup struct {
 	ID       string                    `json:"id"`
 	Clones   []Clone                   `json:"clones"`
@@ -60,13 +60,13 @@ type CloneGroup struct {
 	Status   types.FileProcessingState `json:"status"`
 }
 
-// IsValid validates clone group
+// IsValid validates clone group.
 func (cg CloneGroup) IsValid() error {
 	if cg.ID == "" {
-		return fmt.Errorf("clone group ID cannot be empty")
+		return errors.New("clone group ID cannot be empty")
 	}
 	if len(cg.Clones) == 0 {
-		return fmt.Errorf("clone group must have at least one clone")
+		return errors.New("clone group must have at least one clone")
 	}
 	if !cg.Severity.IsValid() {
 		return fmt.Errorf("invalid clone severity: %s", cg.Severity)
@@ -84,7 +84,7 @@ func (cg CloneGroup) IsValid() error {
 	return nil
 }
 
-// CloneSeverity represents clone severity levels
+// CloneSeverity represents clone severity levels.
 type CloneSeverity string
 
 const (
@@ -94,7 +94,7 @@ const (
 	CloneSeverityCritical CloneSeverity = "critical"
 )
 
-// IsValid checks if severity is valid
+// IsValid checks if severity is valid.
 func (cs CloneSeverity) IsValid() bool {
 	switch cs {
 	case CloneSeverityLow, CloneSeverityMedium, CloneSeverityHigh, CloneSeverityCritical:
@@ -104,12 +104,12 @@ func (cs CloneSeverity) IsValid() bool {
 	}
 }
 
-// String implements fmt.Stringer
+// String implements fmt.Stringer.
 func (cs CloneSeverity) String() string {
 	return string(cs)
 }
 
-// MarshalJSON implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
 	if !cs.IsValid() {
 		return nil, fmt.Errorf("invalid clone severity: %s", cs)
@@ -117,7 +117,7 @@ func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + string(cs) + `"`), nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler
+// UnmarshalJSON implements json.Unmarshaler.
 func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 	str := strings.Trim(string(data), `"`)
 	severity := CloneSeverity(str)
@@ -128,7 +128,7 @@ func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Analysis represents main analysis domain object
+// Analysis represents main analysis domain object.
 type Analysis struct {
 	ID          string               `json:"id"`
 	State       types.DetectionState `json:"state"`
@@ -141,10 +141,10 @@ type Analysis struct {
 	CompletedAt *string              `json:"completedAt,omitempty"`
 }
 
-// IsValid validates analysis
+// IsValid validates analysis.
 func (a Analysis) IsValid() error {
 	if a.ID == "" {
-		return fmt.Errorf("analysis ID cannot be empty")
+		return errors.New("analysis ID cannot be empty")
 	}
 	if !a.State.IsValid() {
 		return fmt.Errorf("invalid analysis state: %s", a.State)
@@ -153,10 +153,10 @@ func (a Analysis) IsValid() error {
 		return fmt.Errorf("invalid analysis mode: %s", a.Mode)
 	}
 	if a.Threshold == 0 {
-		return fmt.Errorf("analysis threshold cannot be zero")
+		return errors.New("analysis threshold cannot be zero")
 	}
 	if a.CreatedAt == "" {
-		return fmt.Errorf("analysis created at cannot be empty")
+		return errors.New("analysis created at cannot be empty")
 	}
 
 	// Validate all clone groups
@@ -168,7 +168,7 @@ func (a Analysis) IsValid() error {
 	return nil
 }
 
-// AnalysisStats represents analysis statistics
+// AnalysisStats represents analysis statistics.
 type AnalysisStats struct {
 	FilesAnalyzed    uint    `json:"filesAnalyzed"`
 	TotalClones      uint    `json:"totalClones"`
@@ -178,24 +178,24 @@ type AnalysisStats struct {
 	ProcessingTime   uint    `json:"processingTime"`
 }
 
-// IsValid validates analysis stats
+// IsValid validates analysis stats.
 func (as AnalysisStats) IsValid() error {
 	if as.FilesAnalyzed == 0 {
-		return fmt.Errorf("files analyzed cannot be zero")
+		return errors.New("files analyzed cannot be zero")
 	}
 	if as.ProcessingTime == 0 {
-		return fmt.Errorf("processing time cannot be zero")
+		return errors.New("processing time cannot be zero")
 	}
 	if as.ComplexityScore < 0 {
-		return fmt.Errorf("complexity score cannot be negative")
+		return errors.New("complexity score cannot be negative")
 	}
 	if as.DuplicationRatio < 0 {
-		return fmt.Errorf("duplication ratio cannot be negative")
+		return errors.New("duplication ratio cannot be negative")
 	}
 	return nil
 }
 
-// Repository represents source code repository
+// Repository represents source code repository.
 type Repository struct {
 	Path        string       `json:"path"`
 	Name        string       `json:"name"`
@@ -206,21 +206,21 @@ type Repository struct {
 	LastIndexed string       `json:"lastIndexed"`
 }
 
-// IsValid validates repository
+// IsValid validates repository.
 func (r Repository) IsValid() error {
 	if r.Path == "" {
-		return fmt.Errorf("repository path cannot be empty")
+		return errors.New("repository path cannot be empty")
 	}
 	if r.Name == "" {
-		return fmt.Errorf("repository name cannot be empty")
+		return errors.New("repository name cannot be empty")
 	}
 	if r.Language == "" {
-		return fmt.Errorf("repository language cannot be empty")
+		return errors.New("repository language cannot be empty")
 	}
 	return nil
 }
 
-// SourceFile represents a source code file
+// SourceFile represents a source code file.
 type SourceFile struct {
 	Path         string   `json:"path"`
 	Name         string   `json:"name"`
@@ -231,24 +231,24 @@ type SourceFile struct {
 	Dependencies []string `json:"dependencies,omitempty"`
 }
 
-// IsValid validates source file
+// IsValid validates source file.
 func (sf SourceFile) IsValid() error {
 	if sf.Path == "" {
-		return fmt.Errorf("source file path cannot be empty")
+		return errors.New("source file path cannot be empty")
 	}
 	if sf.Name == "" {
-		return fmt.Errorf("source file name cannot be empty")
+		return errors.New("source file name cannot be empty")
 	}
 	if sf.Size == 0 {
-		return fmt.Errorf("source file size cannot be zero")
+		return errors.New("source file size cannot be zero")
 	}
 	if sf.Hash == "" {
-		return fmt.Errorf("source file hash cannot be empty")
+		return errors.New("source file hash cannot be empty")
 	}
 	return nil
 }
 
-// DetectionOptions represents configuration for detection
+// DetectionOptions represents configuration for detection.
 type DetectionOptions struct {
 	Threshold     uint               `json:"threshold"`
 	Mode          types.AnalysisMode `json:"mode"`
@@ -258,21 +258,21 @@ type DetectionOptions struct {
 	OutputFormat  string             `json:"outputFormat"`
 }
 
-// IsValid validates detection options
+// IsValid validates detection options.
 func (do DetectionOptions) IsValid() error {
 	if do.Threshold == 0 {
-		return fmt.Errorf("threshold must be > 0")
+		return errors.New("threshold must be > 0")
 	}
 	if !do.Mode.IsValid() {
 		return fmt.Errorf("invalid analysis mode: %s", do.Mode)
 	}
 	if len(do.Paths) == 0 {
-		return fmt.Errorf("at least one path must be specified")
+		return errors.New("at least one path must be specified")
 	}
 	return nil
 }
 
-// NodeToClone converts syntax nodes to domain Clone
+// NodeToClone converts syntax nodes to domain Clone.
 func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Generate unique ID for clone
 	cloneID := fmt.Sprintf("%s-%d-%d", filename, node.Pos, node.End)
@@ -314,7 +314,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	}
 }
 
-// CalculateSeverity determines clone severity based on size and complexity
+// CalculateSeverity determines clone severity based on size and complexity.
 func CalculateSeverity(size, complexity uint) CloneSeverity {
 	if complexity > 50 || size > 200 {
 		return CloneSeverityCritical
@@ -328,7 +328,7 @@ func CalculateSeverity(size, complexity uint) CloneSeverity {
 	return CloneSeverityLow
 }
 
-// calculateLines determines the line numbers for a given position range
+// calculateLines determines the line numbers for a given position range.
 func calculateLines(fileContent []byte, from, to int) (int, int) {
 	line := 1
 	lineStart, lineEnd := 0, 0
@@ -353,7 +353,7 @@ func calculateLines(fileContent []byte, from, to int) (int, int) {
 	return lineStart, lineEnd
 }
 
-// calculateComplexity calculates a basic complexity metric for a node
+// calculateComplexity calculates a basic complexity metric for a node.
 func calculateComplexity(node *syntax.Node) uint {
 	// Simple complexity based on node count and depth
 	complexity := uint(1) // Base complexity

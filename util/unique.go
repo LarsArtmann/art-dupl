@@ -3,7 +3,7 @@ package util
 
 import "github.com/LarsArtmann/art-dupl/syntax"
 
-// Unique removes duplicate entries from a group of syntax nodes based on file and position
+// Unique removes duplicate entries from a group of syntax nodes based on file and position.
 func Unique(group [][]*syntax.Node) [][]*syntax.Node {
 	fileMap := make(map[string]map[int]struct{})
 

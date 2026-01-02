@@ -8,12 +8,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/types"
 )
 
-// PrinterAdapter bridges domain types with existing printer interface
+// PrinterAdapter bridges domain types with existing printer interface.
 type PrinterAdapter struct {
 	// Existing printer will be wrapped
 }
 
-// NodeToDomainClone converts syntax node to domain clone
+// NodeToDomainClone converts syntax node to domain clone.
 func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 	// Try to read file content
 	var fileContent []byte
@@ -26,7 +26,7 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 	return domain.NodeToClone(node, filename, fileContent)
 }
 
-// CloneGroupFromNodes creates domain clone group from syntax nodes
+// CloneGroupFromNodes creates domain clone group from syntax nodes.
 func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGroup {
 	var clones []domain.Clone
 	var totalSize uint
@@ -62,7 +62,7 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 	}
 }
 
-// CreateAnalysisFromClones creates domain analysis from clone data
+// CreateAnalysisFromClones creates domain analysis from clone data.
 func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) domain.Analysis {
 	var totalClones uint
 	var totalComplexity uint

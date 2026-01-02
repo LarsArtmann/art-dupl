@@ -10,7 +10,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// TodoIssue represents a TODO comment found in code
+// TodoIssue represents a TODO comment found in code.
 type TodoIssue struct {
 	Filename string   `json:"filename"`
 	Line     int      `json:"line"`
@@ -19,7 +19,7 @@ type TodoIssue struct {
 	Tags     []string `json:"tags,omitempty"` // @username, date, etc.
 }
 
-// LegacyIssue represents a legacy code pattern
+// LegacyIssue represents a legacy code pattern.
 type LegacyIssue struct {
 	Filename string `json:"filename"`
 	Line     int    `json:"line"`
@@ -28,12 +28,12 @@ type LegacyIssue struct {
 	Severity string `json:"severity"` // low, medium, high
 }
 
-// TodoDetector finds TODO comments in Go source code
+// TodoDetector finds TODO comments in Go source code.
 type TodoDetector struct {
 	patterns map[string]*regexp.Regexp
 }
 
-// NewTodoDetector creates a new TODO detector
+// NewTodoDetector creates a new TODO detector.
 func NewTodoDetector() *TodoDetector {
 	// Patterns for TODO comments with optional tags
 	// Examples:
@@ -57,7 +57,7 @@ func NewTodoDetector() *TodoDetector {
 	return &TodoDetector{patterns: patterns}
 }
 
-// FindTodos finds all TODO-style comments in the provided nodes
+// FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
 
@@ -87,7 +87,7 @@ func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	return resultChan
 }
 
-// findTodosInFile parses the file and finds TODO comments
+// findTodosInFile parses the file and finds TODO comments.
 func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) []TodoIssue {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
@@ -143,12 +143,12 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 	return todos
 }
 
-// LegacyDetector finds legacy code patterns
+// LegacyDetector finds legacy code patterns.
 type LegacyDetector struct {
 	patterns []LegacyPattern
 }
 
-// LegacyPattern represents a pattern to detect legacy code
+// LegacyPattern represents a pattern to detect legacy code.
 type LegacyPattern struct {
 	Type      string   `json:"type"`
 	Message   string   `json:"message"`
@@ -158,14 +158,14 @@ type LegacyPattern struct {
 	Imports   []string `json:"imports,omitempty"`   // Deprecated import paths
 }
 
-// NewLegacyDetector creates a new legacy detector with default patterns
+// NewLegacyDetector creates a new legacy detector with default patterns.
 func NewLegacyDetector() *LegacyDetector {
 	return &LegacyDetector{
 		patterns: getDefaultLegacyPatterns(),
 	}
 }
 
-// FindLegacy finds all legacy patterns in the provided nodes
+// FindLegacy finds all legacy patterns in the provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
 
@@ -194,7 +194,7 @@ func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 	return resultChan
 }
 
-// findLegacyInFile finds legacy patterns in a specific file
+// findLegacyInFile finds legacy patterns in a specific file.
 func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node) []LegacyIssue {
 	var issues []LegacyIssue
 
@@ -221,7 +221,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 	return issues
 }
 
-// getDefaultLegacyPatterns returns default legacy code patterns
+// getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
 	return []LegacyPattern{
 		{

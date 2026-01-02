@@ -1,6 +1,6 @@
 package config
 
-// OutputFormat represents the supported output formats with type safety
+// OutputFormat represents the supported output formats with type safety.
 type OutputFormat string
 
 const (
@@ -10,12 +10,12 @@ const (
 	OutputFormatPlumbing OutputFormat = "plumbing"
 )
 
-// String implements fmt.Stringer for OutputFormat
+// String implements fmt.Stringer for OutputFormat.
 func (of OutputFormat) String() string {
 	return string(of)
 }
 
-// IsValid checks if the output format is supported
+// IsValid checks if the output format is supported.
 func (of OutputFormat) IsValid() bool {
 	switch of {
 	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatPlumbing:
@@ -25,19 +25,19 @@ func (of OutputFormat) IsValid() bool {
 	}
 }
 
-// MarshalJSON implements json.Marshaler for OutputFormat
+// MarshalJSON implements json.Marshaler for OutputFormat.
 func (of OutputFormat) MarshalJSON() ([]byte, error) {
 	// Explicitly type isValid function
 	isValid := func(o OutputFormat) bool { return o.IsValid() }
 	return MarshalEnumJSON(of, isValid, "output format")
 }
 
-// UnmarshalJSON implements json.Unmarshaler for OutputFormat
+// UnmarshalJSON implements json.Unmarshaler for OutputFormat.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 	return UnmarshalJSONForEnum(of, data, "output format")
 }
 
-// SortCriteria represents supported sorting criteria with type safety
+// SortCriteria represents supported sorting criteria with type safety.
 type SortCriteria string
 
 const (
@@ -47,12 +47,12 @@ const (
 	SortByTotalTokens SortCriteria = "total-tokens"
 )
 
-// String implements fmt.Stringer for SortCriteria
+// String implements fmt.Stringer for SortCriteria.
 func (sc SortCriteria) String() string {
 	return string(sc)
 }
 
-// IsValid checks if the sort criteria is supported
+// IsValid checks if the sort criteria is supported.
 func (sc SortCriteria) IsValid() bool {
 	switch sc {
 	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
@@ -62,19 +62,19 @@ func (sc SortCriteria) IsValid() bool {
 	}
 }
 
-// MarshalJSON implements json.Marshaler for SortCriteria
+// MarshalJSON implements json.Marshaler for SortCriteria.
 func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 	// Explicitly type isValid function
 	isValid := func(s SortCriteria) bool { return s.IsValid() }
 	return MarshalEnumJSON(sc, isValid, "sort criteria")
 }
 
-// UnmarshalJSON implements json.Unmarshaler for SortCriteria
+// UnmarshalJSON implements json.Unmarshaler for SortCriteria.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	return UnmarshalJSONForEnum(sc, data, "sort criteria")
 }
 
-// AllOutputFormats returns list of all supported output formats
+// AllOutputFormats returns list of all supported output formats.
 func AllOutputFormats() []OutputFormat {
 	return []OutputFormat{
 		OutputFormatText,
@@ -84,7 +84,7 @@ func AllOutputFormats() []OutputFormat {
 	}
 }
 
-// AllSortCriteria returns list of all supported sort criteria
+// AllSortCriteria returns list of all supported sort criteria.
 func AllSortCriteria() []SortCriteria {
 	return []SortCriteria{
 		SortBySize,

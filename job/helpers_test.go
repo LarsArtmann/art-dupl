@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// Create test files for job package testing
+// Create test files for job package testing.
 func setupTestFiles(t *testing.T) string {
 	tmpDir := t.TempDir()
 
@@ -32,7 +32,7 @@ func helper() {
 	return goFile
 }
 
-// Test helpers for job package tests
+// Test helpers for job package tests.
 func setupMultipleTestFiles(t *testing.T) []string {
 	tmpDir := t.TempDir()
 

@@ -17,7 +17,7 @@ import (
 // 70_000 => 10.15s
 // 80_000 => 13.11s
 // 90_000 => 16.62s
-// 100_000 => 21.42s
+// 100_000 => 21.42s.
 const maxChildrenSerial = 10_000
 
 type Node struct {
@@ -157,7 +157,7 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 		}
 	}
 
-	for i := 0; i < indexes[cnt/2]; i++ {
+	for i := range indexes[cnt/2] {
 		nstart := nodes[i+indexes[0]]
 	AltLoop:
 		for alt := range alts {
@@ -202,5 +202,5 @@ func hashSeq(nodes []*Node) string {
 		bytes[i] = byte(node.Type)
 	}
 	h.Write(bytes)
-	return fmt.Sprintf("%x", h.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }

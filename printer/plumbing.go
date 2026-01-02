@@ -38,7 +38,7 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 		nextCl := clones[(i+1)%len(clones)]
 		if _, err := fmt.Fprintf(p.w, "%s:%d-%d: duplicate of %s:%d-%d\n", cl.filename, cl.lineStart, cl.lineEnd,
 			nextCl.filename, nextCl.lineStart, nextCl.lineEnd); err != nil {
-			return err // nolint:wrapcheck // fmt errors are clear in context
+			return err //nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
 	return nil
@@ -46,7 +46,7 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 
 func (p *plumbing) PrintFooter() error { return nil }
 
-// OutputPlumbing generates plumbing output with sorting
+// OutputPlumbing generates plumbing output with sorting.
 func (p *plumbing) OutputPlumbing(threshold int, sortBy string) error {
 	// Note: Plumbing output is generated during the normal PrintClones flow
 	// This method exists for consistency with other output formats

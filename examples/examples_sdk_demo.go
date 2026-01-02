@@ -205,7 +205,7 @@ func errorExample() {
 	}
 }
 
-// verboseLogger implements artdupl.Logger with verbose output
+// verboseLogger implements artdupl.Logger with verbose output.
 type verboseLogger struct{}
 
 func (l *verboseLogger) Debug(msg string, args ...any) {

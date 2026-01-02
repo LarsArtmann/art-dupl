@@ -48,11 +48,11 @@ func TestGetUnitsIndexes(t *testing.T) {
 		threshold int
 		expected  []int
 	}{
-		{"a8 a0 a2 a0 a0", 3, []int{2}},
-		{"a0 a8 a2 a0 a0", 1, []int{2}},
-		{"a3 a0 a0 a0 a1", 3, []int{0}},
-		{"a3 a0 a0 a0 a0", 1, []int{0, 4}},
-		{"a1 a0 a1 a0 a0", 2, []int{0, 2}},
+		{"a8 a0 a2 a0", 3, []int{2}},
+		{"a0 a8 a2 a0", 1, []int{2}},
+		{"a3 a0 a1", 3, []int{0}},
+		{"a3 a0 ", 1, []int{0, 4}},
+		{"a1 a0 a1 a0", 2, []int{0, 2}},
 	}
 
 Loop:
@@ -76,14 +76,14 @@ func TestCyclicDupl(t *testing.T) {
 	}{
 		{"a1 b0 a2 b0", []int{0, 2}, false},
 		{"a1 b0 a1 b0", []int{0, 2}, true},
-		{"a0 a0", []int{0, 1}, true},
+		{"a0", []int{0, 1}, true},
 		{"a1 b0 c1 b0 a1 b0 c1 b0", []int{0, 2, 4, 6}, true},
 		{"a1 b0 c1 b0 a1 b0", []int{0, 2, 4}, false},
 		{"a0 b0 a0 c0", []int{0, 1, 2, 3}, false},
 		{"a0 b0 a0 b0 a0", []int{0, 1, 2}, false},
 		{"a1 b0 a1 b0 c1 b0", []int{0, 2, 4}, false},
-		{"a1 a1 a1 a1 a1 a1", []int{0, 4}, false},
-		{"a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0", []int{0, 3, 6, 9, 12}, true},
+		{"a1 ", []int{0, 4}, false},
+		{"a2 b0 a2 b0 a2 b0 a2 b0 a2 b0", []int{0, 3, 6, 9, 12}, true},
 	}
 
 	for _, tc := range testCases {

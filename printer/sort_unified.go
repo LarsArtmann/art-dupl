@@ -4,7 +4,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// SortNodesByCriteria applies sorting criteria to node arrays using a unified switch
+// SortNodesByCriteria applies sorting criteria to node arrays using a unified switch.
 func SortNodesByCriteria(dups [][]*syntax.Node, sortBy string) [][]*syntax.Node {
 	sortedDups := make([][]*syntax.Node, len(dups))
 	copy(sortedDups, dups)

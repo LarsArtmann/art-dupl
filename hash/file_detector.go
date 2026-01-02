@@ -8,7 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// FileHash represents a hash of a complete file
+// FileHash represents a hash of a complete file.
 type FileHash struct {
 	Hash     string
 	Filename string
@@ -16,19 +16,19 @@ type FileHash struct {
 	Content  []byte
 }
 
-// FileDetector implements exact file duplicate detection
+// FileDetector implements exact file duplicate detection.
 type FileDetector struct {
 	threshold int
 }
 
-// NewFileDetector creates a new file-level hash detector
+// NewFileDetector creates a new file-level hash detector.
 func NewFileDetector(threshold int) *FileDetector {
 	return &FileDetector{
 		threshold: threshold,
 	}
 }
 
-// FindDuplOver finds exact file duplicates using SHA-256 hashing
+// FindDuplOver finds exact file duplicates using SHA-256 hashing.
 func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
 
@@ -57,7 +57,7 @@ func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 	return resultChan
 }
 
-// extractUniqueFiles gets unique list of files from nodes
+// extractUniqueFiles gets unique list of files from nodes.
 func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 	fileSet := make(map[string]bool)
 	var files []string
@@ -72,7 +72,7 @@ func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 	return files
 }
 
-// hashFiles calculates SHA-256 hash for each file content
+// hashFiles calculates SHA-256 hash for each file content.
 func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 	var fileHashes []FileHash
 
@@ -90,7 +90,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 		}
 
 		fileHash := FileHash{
-			Hash:     fmt.Sprintf("%x", hasher.Sum(nil)),
+			Hash:     hex.EncodeToString(hasher.Sum(nil)),
 			Filename: filename,
 			Size:     len(content),
 			Content:  content,
@@ -102,7 +102,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 	return fileHashes, nil
 }
 
-// groupByHash groups files by identical hash values
+// groupByHash groups files by identical hash values.
 func (f *FileDetector) groupByHash(fileHashes []FileHash) map[string][]FileHash {
 	hashGroups := make(map[string][]FileHash)
 
@@ -113,7 +113,7 @@ func (f *FileDetector) groupByHash(fileHashes []FileHash) map[string][]FileHash 
 	return hashGroups
 }
 
-// convertToMatches converts hash groups to syntax.Match format
+// convertToMatches converts hash groups to syntax.Match format.
 func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, threshold int) []syntax.Match {
 	var matches []syntax.Match
 

@@ -40,7 +40,7 @@ func (p *htmlprinter) PrintHeader() error {
 </head>
 <body>
 `)
-	return err // nolint:wrapcheck // fmt errors are clear in context
+	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
@@ -61,14 +61,14 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	p.dupMutex.Unlock()
 
 	if _, err := fmt.Fprintf(p.w, "<h1>#%d found %d clones</h1>\n", p.iota, len(sortedDups)); err != nil {
-		return err // nolint:wrapcheck // fmt errors are clear in context
+		return err //nolint:wrapcheck // fmt errors are clear in context
 	}
 
 	clones := make([]clone, len(sortedDups))
 	for i, dup := range sortedDups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return fmt.Errorf("internal error: zero length duplicate found")
+			return errors.New("internal error: zero length duplicate found")
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]
@@ -107,7 +107,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	for _, cl := range clones {
 		if _, err := fmt.Fprintf(p.w, "<h2>%s:%d</h2>\n<pre>%s</pre>\n", cl.filename, cl.lineStart,
 			html.EscapeString(string(cl.fragment))); err != nil {
-			return err // nolint:wrapcheck // fmt errors are clear in context
+			return err //nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
 	return nil
@@ -118,7 +118,7 @@ func (p *htmlprinter) PrintFooter() error {
 </body>
 </html>
 `)
-	return err // nolint:wrapcheck // fmt errors are clear in context
+	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
 func findLineBeg(file []byte, index int) int {
@@ -172,14 +172,14 @@ Loop:
 	return block
 }
 
-// OutputHTML generates HTML output with sorting
+// OutputHTML generates HTML output with sorting.
 func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
 	// Store clones for sorting - flatten the 3D structure to 2D
 	var allDups [][]*syntax.Node
 	p.dupMutex.Lock()
-	for i := 0; i < len(p.dupls); i++ {
+	for i := range len(p.dupls) {
 		// p.dupls[i] is [][]*syntax.Node, add each clone group to allDups
-		for j := 0; j < len(p.dupls[i]); j++ {
+		for j := range len(p.dupls[i]) {
 			allDups = append(allDups, p.dupls[i][j])
 		}
 	}

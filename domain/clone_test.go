@@ -262,12 +262,12 @@ var _ = Describe("Domain: CloneSeverity", func() {
 		It("should marshal and unmarshal JSON correctly", func() {
 			original := domain.CloneSeverityHigh
 			data, err := json.Marshal(original)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(Equal(`"high"`))
 
 			var unmarshaled domain.CloneSeverity
 			err = json.Unmarshal(data, &unmarshaled)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled).To(Equal(original))
 		})
 	})

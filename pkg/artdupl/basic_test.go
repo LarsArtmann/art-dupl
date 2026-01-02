@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestDetectionMethod_Values_Basic tests detection method constants
+// TestDetectionMethod_Values_Basic tests detection method constants.
 func TestDetectionMethod_Values_Basic(t *testing.T) {
 	methods := []DetectionMethod{
 		MethodArtDupl,
@@ -21,7 +21,7 @@ func TestDetectionMethod_Values_Basic(t *testing.T) {
 	}
 }
 
-// TestDefaultOptions_Basic tests default options creation
+// TestDefaultOptions_Basic tests default options creation.
 func TestDefaultOptions_Basic(t *testing.T) {
 	opts := DefaultOptions()
 
@@ -40,7 +40,7 @@ func TestDefaultOptions_Basic(t *testing.T) {
 	}
 }
 
-// TestValidateOptions_Valid_Basic tests valid options
+// TestValidateOptions_Valid_Basic tests valid options.
 func TestValidateOptions_Valid_Basic(t *testing.T) {
 	opts := DefaultOptions()
 	err := ValidateOptions(opts)
@@ -49,7 +49,7 @@ func TestValidateOptions_Valid_Basic(t *testing.T) {
 	}
 }
 
-// TestValidateOptions_Invalid_Basic tests invalid options
+// TestValidateOptions_Invalid_Basic tests invalid options.
 func TestValidateOptions_Invalid_Basic(t *testing.T) {
 	testCases := []struct {
 		name    string
@@ -103,7 +103,7 @@ func TestValidateOptions_Invalid_Basic(t *testing.T) {
 	}
 }
 
-// TestErrorComparison_Basic tests error comparison behavior
+// TestErrorComparison_Basic tests error comparison behavior.
 func TestErrorComparison_Basic(t *testing.T) {
 	// Test error comparison using errors.Is (handles wrapped errors)
 	if !errors.Is(ErrNilOptions, ErrNilOptions) {
@@ -124,7 +124,7 @@ func TestErrorComparison_Basic(t *testing.T) {
 	}
 }
 
-// TestErrorWrapping_Basic tests error wrapping functionality
+// TestErrorWrapping_Basic tests error wrapping functionality.
 func TestErrorWrapping_Basic(t *testing.T) {
 	// Test wrapping SDK errors
 	wrappedErr := fmt.Errorf("validation failed: %w", ErrInvalidThreshold)
@@ -141,7 +141,7 @@ func TestErrorWrapping_Basic(t *testing.T) {
 	}
 }
 
-// TestCloneGroup_Validation_Basic tests clone group structure
+// TestCloneGroup_Validation_Basic tests clone group structure.
 func TestCloneGroup_Validation_Basic(t *testing.T) {
 	group := CloneGroup{
 		Hash:   "test-hash",
@@ -164,7 +164,7 @@ func TestCloneGroup_Validation_Basic(t *testing.T) {
 	}
 }
 
-// TestProgress_Validation_Basic tests progress structure
+// TestProgress_Validation_Basic tests progress structure.
 func TestProgress_Validation_Basic(t *testing.T) {
 	progress := Progress{
 		Stage:       "parsing",
@@ -192,7 +192,7 @@ func TestProgress_Validation_Basic(t *testing.T) {
 	}
 }
 
-// TestLoggerInterface_Basic tests logger interface compliance
+// TestLoggerInterface_Basic tests logger interface compliance.
 func TestLoggerInterface_Basic(t *testing.T) {
 	var logger Logger = &testLoggerBasic{}
 
@@ -205,7 +205,7 @@ func TestLoggerInterface_Basic(t *testing.T) {
 	// Should not panic
 }
 
-// testLoggerBasic implements Logger interface for testing
+// testLoggerBasic implements Logger interface for testing.
 type testLoggerBasic struct{}
 
 func (l *testLoggerBasic) Debug(msg string, args ...any) {}

@@ -65,7 +65,7 @@ func Parse(filename string) (*syntax.Node, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
-		return nil, err // nolint:wrapcheck // Parse errors are already clear
+		return nil, err //nolint:wrapcheck // Parse errors are already clear
 	}
 	t := &transformer{
 		fileset:  fset,
@@ -79,7 +79,7 @@ type transformer struct {
 	filename string
 }
 
-// addWithNilCheck adds a child to o if not nil and valid
+// addWithNilCheck adds a child to o if not nil and valid.
 func (t *transformer) addWithNilCheck(o *syntax.Node, node ast.Node) {
 	if node != nil {
 		defer func() {
@@ -355,7 +355,6 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
 
 	default:
 		o.Type = BadNode
-
 	}
 
 	return o

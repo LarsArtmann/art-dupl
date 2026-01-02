@@ -75,13 +75,13 @@ func TestCLIIOWriters(t *testing.T) {
 	// Test stdout Write
 	data := []byte("test output")
 	n, err := stdout.Write(data)
-	g.Expect(err).To(gomega.BeNil())
+	g.Expect(err).ToNot(gomega.HaveOccurred())
 	g.Expect(n).To(gomega.Equal(len(data)))
 
 	// Test stderr Write
 	data = []byte("test error")
 	n, err = stderr.Write(data)
-	g.Expect(err).To(gomega.BeNil())
+	g.Expect(err).ToNot(gomega.HaveOccurred())
 	g.Expect(n).To(gomega.Equal(len(data)))
 
 	// Test that writing to os.Stdout works

@@ -60,7 +60,7 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 		if len(uniq) > 1 {
 			i, err := p.MakeIssues(uniq)
 			if err != nil {
-				return nil, err // nolint:wrapcheck // Printer errors are already clear
+				return nil, err //nolint:wrapcheck // Printer errors are already clear
 			}
 			issues = append(issues, i...)
 		}

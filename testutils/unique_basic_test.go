@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestUniqueTestHelper_Basic tests unique helper functionality
+// TestUniqueTestHelper_Basic tests unique helper functionality.
 func TestUniqueTestHelper_Basic(t *testing.T) {
 	str := UniqueTestHelper()
 
@@ -15,7 +15,7 @@ func TestUniqueTestHelper_Basic(t *testing.T) {
 	}
 }
 
-// TestGenerateRandomSuffix_Basic tests random suffix generation
+// TestGenerateRandomSuffix_Basic tests random suffix generation.
 func TestGenerateRandomSuffix_Basic(t *testing.T) {
 	suffix := generateRandomSuffix()
 
@@ -32,7 +32,7 @@ func TestGenerateRandomSuffix_Basic(t *testing.T) {
 	}
 }
 
-// TestUniqueFunction_Basic tests unique function generation
+// TestUniqueFunction_Basic tests unique function generation.
 func TestUniqueFunction_Basic(t *testing.T) {
 	fn := UniqueFunction()
 
@@ -42,7 +42,7 @@ func TestUniqueFunction_Basic(t *testing.T) {
 	}
 }
 
-// TestUniqueness_Basic tests basic uniqueness
+// TestUniqueness_Basic tests basic uniqueness.
 func TestUniqueness_Basic(t *testing.T) {
 	// Generate strings and check they're unique
 	uniqueSet := make(map[string]bool)

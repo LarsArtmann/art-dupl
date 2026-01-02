@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// createTempDir creates a temporary directory for testing and returns a cleanup function
+// createTempDir creates a temporary directory for testing and returns a cleanup function.
 func createTempDir(t *testing.T) (string, func()) {
 	tmpDir, err := os.MkdirTemp("", "dupl-test")
 	if err != nil {

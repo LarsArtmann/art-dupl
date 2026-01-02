@@ -20,7 +20,7 @@ var _ = Describe("Type Safety: Result[T]", func() {
 			Expect(result.IsErr()).To(BeFalse())
 			value, err := result.Unwrap()
 			Expect(value).To(Equal("test value"))
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("should support generic types", func() {
@@ -46,7 +46,7 @@ var _ = Describe("Type Safety: Result[T]", func() {
 			result := types.Errf[string]("validation failed: %s", "missing field")
 
 			Expect(result.IsOk()).To(BeFalse())
-			Expect(result.Error).NotTo(BeNil())
+			Expect(result.Error).To(HaveOccurred())
 			Expect(result.Error.Error()).To(ContainSubstring("validation failed"))
 		})
 	})
@@ -183,12 +183,12 @@ var _ = Describe("Type Safety: Enums", func() {
 		It("should marshal and unmarshal JSON correctly", func() {
 			original := types.DetectionStateCompleted
 			data, err := json.Marshal(original)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(Equal(`"completed"`))
 
 			var unmarshaled types.DetectionState
 			err = json.Unmarshal(data, &unmarshaled)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled).To(Equal(original))
 		})
 
@@ -196,7 +196,7 @@ var _ = Describe("Type Safety: Enums", func() {
 			invalidJSON := []byte(`"invalid-state"`)
 			var state types.DetectionState
 			err := json.Unmarshal(invalidJSON, &state)
-			Expect(err).NotTo(BeNil())
+			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("invalid detection state"))
 		})
 	})
@@ -223,12 +223,12 @@ var _ = Describe("Type Safety: Enums", func() {
 		It("should marshal and unmarshal JSON correctly", func() {
 			original := types.AnalysisModeFull
 			data, err := json.Marshal(original)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(Equal(`"full"`))
 
 			var unmarshaled types.AnalysisMode
 			err = json.Unmarshal(data, &unmarshaled)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled).To(Equal(original))
 		})
 	})
@@ -256,12 +256,12 @@ var _ = Describe("Type Safety: Enums", func() {
 		It("should marshal and unmarshal JSON correctly", func() {
 			original := types.FileProcessingStateCompleted
 			data, err := json.Marshal(original)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(Equal(`"completed"`))
 
 			var unmarshaled types.FileProcessingState
 			err = json.Unmarshal(data, &unmarshaled)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled).To(Equal(original))
 		})
 	})

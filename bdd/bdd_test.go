@@ -194,7 +194,7 @@ func uniqueFunction(ctx context.Context) error {
 			outputStr := string(output)
 
 			// Should not be empty (might find some matches or might not, but should run)
-			Expect(len(outputStr)).To(BeNumerically(">", 0))
+			Expect(outputStr).ToNot(BeEmpty())
 		})
 	})
 

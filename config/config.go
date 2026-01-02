@@ -8,7 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
-// Config represents the dupl configuration with strong typing
+// Config represents the dupl configuration with strong typing.
 type Config struct {
 	// Threshold sets the minimum token sequence size to consider as duplicate
 	Threshold int `json:"threshold,omitempty"`
@@ -44,7 +44,7 @@ type Config struct {
 	DetectionMethods DetectionMethods `json:"detectionMethods,omitempty"`
 }
 
-// DefaultConfig returns a default configuration
+// DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
 	return &Config{
 		Threshold:         15,
@@ -61,10 +61,10 @@ func DefaultConfig() *Config {
 	}
 }
 
-// LoadConfig loads configuration from file
+// LoadConfig loads configuration from file.
 func LoadConfig(filename string) (*Config, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return nil, errors.NewConfigError(fmt.Sprintf("config file not found: %s", filename), nil)
+		return nil, errors.NewConfigError("config file not found: "+filename, nil)
 	}
 
 	data, err := os.ReadFile(filename)
@@ -74,16 +74,16 @@ func LoadConfig(filename string) (*Config, error) {
 
 	config := DefaultConfig()
 	if len(data) > 0 {
-		err = errors.SafeUnmarshal(data, config, fmt.Sprintf("config file: %s", filename))
+		err = errors.SafeUnmarshal(data, config, "config file: "+filename)
 		if err != nil {
-			return nil, errors.NewConfigError(fmt.Sprintf("failed to parse config file: %s", filename), err)
+			return nil, errors.NewConfigError("failed to parse config file: "+filename, err)
 		}
 	}
 
 	return config, nil
 }
 
-// SaveConfig saves configuration to file
+// SaveConfig saves configuration to file.
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(filename)
@@ -93,7 +93,7 @@ func SaveConfig(config *Config, filename string) error {
 
 	data, err := errors.SafeMarshalIndent(config, "", "  ", "config")
 	if err != nil {
-		return err // nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
+		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
 	err = os.WriteFile(filename, data, 0o644)
@@ -104,7 +104,7 @@ func SaveConfig(config *Config, filename string) error {
 	return nil
 }
 
-// ValidateConfig validates the configuration
+// ValidateConfig validates the configuration.
 func ValidateConfig(config *Config) error {
 	if config.Threshold < 1 {
 		return errors.NewValidationError("threshold must be greater than 0", nil)
@@ -140,7 +140,7 @@ func ValidateConfig(config *Config) error {
 	return nil
 }
 
-// MergeConfigs merges two configurations, with command line config taking precedence
+// MergeConfigs merges two configurations, with command line config taking precedence.
 func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 	result := DefaultConfig()
 

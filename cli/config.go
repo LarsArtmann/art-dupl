@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CLIConfig holds all CLI flag values
+// CLIConfig holds all CLI flag values.
 type CLIConfig struct {
 	ConfigFile    *string
 	Vendor        *bool
@@ -23,7 +23,7 @@ type CLIConfig struct {
 	Paths         []string
 }
 
-// NewCLIConfig creates a new CLI configuration with default flags
+// NewCLIConfig creates a new CLI configuration with default flags.
 func NewCLIConfig() *CLIConfig {
 	return &CLIConfig{
 		ConfigFile:    flag.String("cli_config", "", "path to configuration file (JSON format)"),
@@ -40,12 +40,12 @@ func NewCLIConfig() *CLIConfig {
 	}
 }
 
-// AddFlagsToCommand adds CLI configuration flags to a Cobra command
+// AddFlagsToCommand adds CLI configuration flags to a Cobra command.
 func (c *CLIConfig) AddFlagsToCommand(cmd *cobra.Command) {
 	cmd.Flags().AddGoFlagSet(flag.CommandLine)
 }
 
-// GetThreshold returns the threshold value, preferring long form
+// GetThreshold returns the threshold value, preferring long form.
 func (c *CLIConfig) GetThreshold() int {
 	if *c.ThresholdLong != 15 {
 		return *c.ThresholdLong
@@ -53,12 +53,12 @@ func (c *CLIConfig) GetThreshold() int {
 	return *c.Threshold
 }
 
-// IsVerbose returns true if verbose logging is enabled
+// IsVerbose returns true if verbose logging is enabled.
 func (c *CLIConfig) IsVerbose() bool {
 	return *c.Verbose || *c.VerboseLong
 }
 
-// GetOutputFormats returns the output formats specified
+// GetOutputFormats returns the output formats specified.
 func (c *CLIConfig) GetOutputFormats() []string {
 	var formats []string
 	if *c.HTML {
@@ -76,7 +76,7 @@ func (c *CLIConfig) GetOutputFormats() []string {
 	return formats
 }
 
-// Constants
+// Constants.
 const (
 	DefaultThreshold = 15
 	VendorDirPrefix  = "vendor" + string(filepath.Separator)

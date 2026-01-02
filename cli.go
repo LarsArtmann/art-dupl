@@ -252,7 +252,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	sort.Strings(keys)
 
 	if err := p.PrintHeader(); err != nil {
-		return err // nolint:wrapcheck // Printer errors are already clear
+		return err //nolint:wrapcheck // Printer errors are already clear
 	}
 
 	for _, k := range keys {
@@ -262,16 +262,16 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return err // nolint:wrapcheck // Printer errors are already clear
+				return err //nolint:wrapcheck // Printer errors are already clear
 			}
 		}
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(threshold, sortBy) // nolint:wrapcheck // Printer errors are already clear
+		return jsonPrinter.OutputJSON(threshold, sortBy) //nolint:wrapcheck // Printer errors are already clear
 	}
 
-	return p.PrintFooter() // nolint:wrapcheck // Printer errors are already clear
+	return p.PrintFooter() //nolint:wrapcheck // Printer errors are already clear
 }
 
 func runCobraCommand(cmd *cobra.Command, args []string) error {
@@ -332,7 +332,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if allFlag {
-		return fmt.Errorf("all mode not yet implemented")
+		return errors.New("all mode not yet implemented")
 	}
 
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)

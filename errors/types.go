@@ -7,7 +7,7 @@ import (
 	"runtime/debug"
 )
 
-// ErrorType categorizes different types of errors
+// ErrorType categorizes different types of errors.
 type ErrorType string
 
 const (
@@ -18,7 +18,7 @@ const (
 	InternalError   ErrorType = "internal"
 )
 
-// DuplError is the main error type with rich context
+// DuplError is the main error type with rich context.
 type DuplError struct {
 	Type    ErrorType
 	Message string
@@ -28,7 +28,7 @@ type DuplError struct {
 	Stack   string
 }
 
-// Error implements the error interface
+// Error implements the error interface.
 func (e *DuplError) Error() string {
 	if e.File != "" {
 		return fmt.Sprintf("%s error at %s:%d: %s", e.Type, e.File, e.Line, e.Message)
@@ -36,12 +36,12 @@ func (e *DuplError) Error() string {
 	return fmt.Sprintf("%s error: %s", e.Type, e.Message)
 }
 
-// Unwrap implements the errors.Wrapper interface
+// Unwrap implements the errors.Wrapper interface.
 func (e *DuplError) Unwrap() error {
 	return e.Cause
 }
 
-// NewParseError creates a new parse error with context
+// NewParseError creates a new parse error with context.
 func NewParseError(file string, line int, msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    ParseError,
@@ -53,7 +53,7 @@ func NewParseError(file string, line int, msg string, cause error) *DuplError {
 	}
 }
 
-// NewConfigError creates a new configuration error
+// NewConfigError creates a new configuration error.
 func NewConfigError(msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    ConfigError,
@@ -63,7 +63,7 @@ func NewConfigError(msg string, cause error) *DuplError {
 	}
 }
 
-// NewIOError creates a new I/O error
+// NewIOError creates a new I/O error.
 func NewIOError(file, msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    IOError,
@@ -74,7 +74,7 @@ func NewIOError(file, msg string, cause error) *DuplError {
 	}
 }
 
-// NewValidationError creates a new validation error
+// NewValidationError creates a new validation error.
 func NewValidationError(msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    ValidationError,
@@ -84,7 +84,7 @@ func NewValidationError(msg string, cause error) *DuplError {
 	}
 }
 
-// NewInternalError creates a new internal error
+// NewInternalError creates a new internal error.
 func NewInternalError(msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    InternalError,
@@ -94,7 +94,7 @@ func NewInternalError(msg string, cause error) *DuplError {
 	}
 }
 
-// Is checks if error matches a specific type
+// Is checks if error matches a specific type.
 func Is(err error, errorType ErrorType) bool {
 	var duplErr *DuplError
 	if errors.As(err, &duplErr) {

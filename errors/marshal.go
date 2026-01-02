@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// MarshalError is a specialized error for JSON marshaling failures
+// MarshalError is a specialized error for JSON marshaling failures.
 type MarshalError struct {
 	Operation string
 	Context   string
@@ -20,7 +20,7 @@ func (e *MarshalError) Unwrap() error {
 	return e.Cause
 }
 
-// HandleMarshalingError provides unified JSON marshaling error handling
+// HandleMarshalingError provides unified JSON marshaling error handling.
 func HandleMarshalingError(operation, context string, err error) error {
 	if err == nil {
 		return nil
@@ -38,7 +38,7 @@ func HandleMarshalingError(operation, context string, err error) error {
 	}
 }
 
-// SafeMarshal provides safe marshaling with consistent error handling
+// SafeMarshal provides safe marshaling with consistent error handling.
 func SafeMarshal(v any, context string) ([]byte, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
@@ -47,7 +47,7 @@ func SafeMarshal(v any, context string) ([]byte, error) {
 	return data, nil
 }
 
-// SafeMarshalIndent provides safe indented marshaling with consistent error handling
+// SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
@@ -56,7 +56,7 @@ func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	return data, nil
 }
 
-// SafeUnmarshal provides safe unmarshaling with consistent error handling
+// SafeUnmarshal provides safe unmarshaling with consistent error handling.
 func SafeUnmarshal(data []byte, v any, context string) error {
 	err := json.Unmarshal(data, v)
 	if err != nil {

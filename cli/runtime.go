@@ -7,7 +7,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
-// RuntimeConfig represents the runtime configuration from CLI flags and config files
+// RuntimeConfig represents the runtime configuration from CLI flags and config files.
 type RuntimeConfig struct {
 	// CLI Flags
 	ConfigFile     string
@@ -28,7 +28,7 @@ type RuntimeConfig struct {
 	ErrorWriter  io.Writer
 }
 
-// ToConfig converts RuntimeConfig to config.Config
+// ToConfig converts RuntimeConfig to config.Config.
 func (r *RuntimeConfig) ToConfig() *config.Config {
 	cfg := &config.Config{
 		Threshold:      r.Threshold,
@@ -52,7 +52,7 @@ func (r *RuntimeConfig) ToConfig() *config.Config {
 	return cfg
 }
 
-// DefaultRuntimeConfig returns a default runtime configuration
+// DefaultRuntimeConfig returns a default runtime configuration.
 func DefaultRuntimeConfig() *RuntimeConfig {
 	return &RuntimeConfig{
 		Threshold:    15, // defaultThreshold
@@ -62,7 +62,7 @@ func DefaultRuntimeConfig() *RuntimeConfig {
 	}
 }
 
-// Interface wrappers for io.Writer to avoid import cycles
+// Interface wrappers for io.Writer to avoid import cycles.
 type cliStdout struct{}
 
 func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }

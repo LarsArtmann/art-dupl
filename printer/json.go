@@ -12,7 +12,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// JSONOutput represents the structured JSON output
+// JSONOutput represents the structured JSON output.
 type JSONOutput struct {
 	Version       string       `json:"version"`
 	Timestamp     time.Time    `json:"timestamp"`
@@ -22,14 +22,14 @@ type JSONOutput struct {
 	Summary       Summary      `json:"summary"`
 }
 
-// CloneGroup represents a group of duplicate code fragments
+// CloneGroup represents a group of duplicate code fragments.
 type CloneGroup struct {
 	Hash  string      `json:"hash"`
 	Size  int         `json:"size"`
 	Files []JSONClone `json:"files"`
 }
 
-// JSONClone represents a single code fragment duplicate for JSON output
+// JSONClone represents a single code fragment duplicate for JSON output.
 type JSONClone struct {
 	Filename  string `json:"filename"`
 	LineStart int    `json:"line_start"`
@@ -37,7 +37,7 @@ type JSONClone struct {
 	Fragment  string `json:"fragment"`
 }
 
-// Summary provides analysis summary statistics
+// Summary provides analysis summary statistics.
 type Summary struct {
 	TotalCloneGroups int     `json:"total_clone_groups"`
 	TotalClones      int     `json:"total_clones"`
@@ -61,7 +61,7 @@ func NewJSON(w io.Writer, fread ReadFile) Printer {
 	}
 }
 
-// countLinesInFragment counts actual lines in a fragment by counting newline characters
+// countLinesInFragment counts actual lines in a fragment by counting newline characters.
 func countLinesInFragment(fragment string) int {
 	if fragment == "" {
 		return 1 // At least one line even for empty content
@@ -78,12 +78,12 @@ func (p *JSONPrinter) PrintHeader() error {
 	return nil
 }
 
-// SetHash sets the current hash for the clone group being processed
+// SetHash sets the current hash for the clone group being processed.
 func (p *JSONPrinter) SetHash(hash string) {
 	p.currentHash = hash
 }
 
-// SetFilesCount sets the total number of files analyzed
+// SetFilesCount sets the total number of files analyzed.
 func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
@@ -95,7 +95,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return fmt.Errorf("internal error: zero length duplicate found")
+			return errors.New("internal error: zero length duplicate found")
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]
@@ -175,7 +175,7 @@ func (*JSONPrinter) PrintFooter() error {
 	return nil
 }
 
-// OutputJSON generates the complete JSON output
+// OutputJSON generates the complete JSON output.
 func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
@@ -198,7 +198,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
 
 	err := encoder.Encode(&output)
 	if err != nil {
-		return errors.HandleMarshalingError("encode", "JSON output", err) // nolint:wrapcheck // Error already wraps cause
+		return errors.HandleMarshalingError("encode", "JSON output", err) //nolint:wrapcheck // Error already wraps cause
 	}
 	return nil
 }

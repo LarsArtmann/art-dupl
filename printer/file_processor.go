@@ -5,7 +5,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// FileInfo represents processed file information
+// FileInfo represents processed file information.
 type FileInfo struct {
 	Filename  string
 	LineStart int
@@ -14,7 +14,7 @@ type FileInfo struct {
 	Node      *syntax.Node
 }
 
-// ProcessFileContent unified file processing for all printers
+// ProcessFileContent unified file processing for all printers.
 func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	if node == nil {
 		return nil, errors.NewInternalError("nil node provided", nil)
@@ -38,7 +38,7 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	}, nil
 }
 
-// ProcessNodeRange processes a range of nodes (start to end)
+// ProcessNodeRange processes a range of nodes (start to end).
 func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInfo, error) {
 	if startNode == nil || endNode == nil {
 		return nil, errors.NewInternalError("nil start or end node provided", nil)

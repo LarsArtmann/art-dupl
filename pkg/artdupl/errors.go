@@ -2,9 +2,9 @@ package artdupl
 
 import "errors"
 
-// SDK-specific error types
+// SDK-specific error types.
 var (
-	// Configuration errors
+	// Configuration errors.
 	ErrNilOptions         = errors.New("options cannot be nil")
 	ErrInvalidThreshold   = errors.New("threshold must be >= 1")
 	ErrThresholdTooLarge  = errors.New("threshold too large (max 1000)")
@@ -14,7 +14,7 @@ var (
 	ErrInvalidTimeout     = errors.New("timeout must be >= 0")
 	ErrUnsupportedMethod  = errors.New("unsupported detection method")
 
-	// Analysis errors
+	// Analysis errors.
 	ErrNoFilesProvided = errors.New("no files provided for analysis")
 	ErrFileNotFound    = errors.New("file not found")
 	ErrFileTooLarge    = errors.New("file size exceeds maximum limit")
@@ -22,16 +22,16 @@ var (
 	ErrContextCanceled = errors.New("analysis canceled")
 	ErrAnalysisTimeout = errors.New("analysis timed out")
 
-	// Result errors
+	// Result errors.
 	ErrNoDuplicatesFound = errors.New("no duplicates found")
 	ErrResultProcessing  = errors.New("error processing results")
 
-	// System errors
+	// System errors.
 	ErrMemoryLimit = errors.New("memory limit exceeded")
 	ErrInternal    = errors.New("internal error")
 )
 
-// validateDetectionMethods checks if all detection methods are supported
+// validateDetectionMethods checks if all detection methods are supported.
 func validateDetectionMethods(methods []DetectionMethod) error {
 	if len(methods) == 0 {
 		return ErrNoDetectionMethods

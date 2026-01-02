@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-// TestConstants_Clean tests that all node type constants are defined
+// TestConstants_Clean tests that all node type constants are defined.
 func TestConstants_Clean(t *testing.T) {
 	types := []int{
 		BadNode, File, ArrayType, AssignStmt, BasicLit, BinaryExpr,
@@ -26,7 +26,7 @@ func TestConstants_Clean(t *testing.T) {
 	}
 }
 
-// TestTransformer_Clean tests transformer creation
+// TestTransformer_Clean tests transformer creation.
 func TestTransformer_Clean(t *testing.T) {
 	transformer := &transformer{}
 
@@ -35,7 +35,7 @@ func TestTransformer_Clean(t *testing.T) {
 	}
 }
 
-// TestAddWithNilCheck_Clean tests addWithNilCheck with safe inputs
+// TestAddWithNilCheck_Clean tests addWithNilCheck with safe inputs.
 func TestAddWithNilCheck_Clean(t *testing.T) {
 	transformer := &transformer{}
 

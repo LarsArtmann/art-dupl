@@ -3,6 +3,7 @@ package hash
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -13,7 +14,7 @@ import (
 // Behavior-Driven Development Tests for Hash Detection
 // These tests verify file-level exact duplicate detection using SHA-256 hashing
 
-// TestBasicHashDetectionShouldFindExactDuplicates tests that identical files are detected
+// TestBasicHashDetectionShouldFindExactDuplicates tests that identical files are detected.
 func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) {
 	// GIVEN: Two identical files
 	tmpDir := t.TempDir()
@@ -88,7 +89,7 @@ func processUser(name string, age int) error {
 	}
 }
 
-// TestHashDetectionShouldIgnoreSmallFiles tests that small files below threshold are ignored
+// TestHashDetectionShouldIgnoreSmallFiles tests that small files below threshold are ignored.
 func TestHashDetectionShouldIgnoreSmallFiles(t *testing.T) {
 	// GIVEN: Two small identical files (below threshold)
 	tmpDir := t.TempDir()
@@ -133,7 +134,7 @@ func hello() {
 	}
 }
 
-// TestHashDetectionShouldFindMultipleDuplicateGroups tests that multiple duplicate groups are found
+// TestHashDetectionShouldFindMultipleDuplicateGroups tests that multiple duplicate groups are found.
 func TestHashDetectionShouldFindMultipleDuplicateGroups(t *testing.T) {
 	// GIVEN: Multiple files with duplicate patterns
 	tmpDir := t.TempDir()
@@ -205,7 +206,7 @@ func processProduct(name string, price int) error {
 	}
 }
 
-// TestHashDetectionShouldHandleEmptyInput tests handling of no input
+// TestHashDetectionShouldHandleEmptyInput tests handling of no input.
 func TestHashDetectionShouldHandleEmptyInput(t *testing.T) {
 	// GIVEN: No input files
 	var nodes []*syntax.Node
@@ -245,10 +246,5 @@ func getFilesInMatch(match syntax.Match) []string {
 }
 
 func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, item)
 }

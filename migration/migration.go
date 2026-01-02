@@ -11,13 +11,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/types"
 )
 
-// MigrationPath handles conversion between old and new type systems
+// MigrationPath handles conversion between old and new type systems.
 type MigrationPath struct {
 	legacyPrinter printer.Printer
 	processor     *domain.DetectionOptions
 }
 
-// NewMigrationPath creates a new migration path
+// NewMigrationPath creates a new migration path.
 func NewMigrationPath(legacyPrinter printer.Printer, options domain.DetectionOptions) *MigrationPath {
 	return &MigrationPath{
 		legacyPrinter: legacyPrinter,
@@ -25,7 +25,7 @@ func NewMigrationPath(legacyPrinter printer.Printer, options domain.DetectionOpt
 	}
 }
 
-// FromSyntaxToDomain converts syntax nodes to domain types
+// FromSyntaxToDomain converts syntax nodes to domain types.
 func (mp *MigrationPath) FromSyntaxToNodes(dups [][]*syntax.Node, threshold uint) domain.Analysis {
 	// Convert each duplicate group to domain clone group
 	var cloneGroups []domain.CloneGroup
@@ -43,7 +43,7 @@ func (mp *MigrationPath) FromSyntaxToNodes(dups [][]*syntax.Node, threshold uint
 }
 
 // FromPrinterClonesToDomain converts printer clones to domain clones
-// TODO: This function needs to be reimplemented as printer.Clone is not exported
+// TODO: This function needs to be reimplemented as printer.Clone is not exported.
 func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone) []domain.Clone {
 	// This function is temporarily disabled due to missing printer.Clone type
 	var domainClones []domain.Clone
@@ -59,7 +59,7 @@ func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone
 	return domainClones
 }
 
-// ValidateMigration checks if migration is valid
+// ValidateMigration checks if migration is valid.
 func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) types.Result[domain.Analysis] {
 	if err := analysis.IsValid(); err != nil {
 		return types.Errf[domain.Analysis]("invalid analysis for migration: %v", err)
@@ -67,7 +67,7 @@ func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) types.Resul
 	return types.Ok(analysis)
 }
 
-// CreateMigrationReport generates a migration report
+// CreateMigrationReport generates a migration report.
 func (mp *MigrationPath) CreateMigrationReport(before, after domain.Analysis) MigrationReport {
 	return MigrationReport{
 		MigrationID:     generateMigrationID(),
@@ -80,7 +80,7 @@ func (mp *MigrationPath) CreateMigrationReport(before, after domain.Analysis) Mi
 	}
 }
 
-// MigrationReport tracks migration status and changes
+// MigrationReport tracks migration status and changes.
 type MigrationReport struct {
 	MigrationID     string              `json:"migrationId"`
 	CreatedAt       string              `json:"createdAt"`
@@ -91,7 +91,7 @@ type MigrationReport struct {
 	Recommendations []string            `json:"recommendations"`
 }
 
-// AnalysisDifferences tracks changes between analyses
+// AnalysisDifferences tracks changes between analyses.
 type AnalysisDifferences struct {
 	CloneGroupsAdded   int            `json:"cloneGroupsAdded"`
 	CloneGroupsRemoved int            `json:"cloneGroupsRemoved"`
@@ -101,7 +101,7 @@ type AnalysisDifferences struct {
 	ComplexityChanges  float64        `json:"complexityChanges"`
 }
 
-// ValidationResult represents migration validation result
+// ValidationResult represents migration validation result.
 type ValidationResult struct {
 	Check    string `json:"check"`
 	Status   string `json:"status"`
@@ -234,7 +234,7 @@ func generateMigrationID() string {
 	return fmt.Sprintf("migration-%d", time.Now().Unix())
 }
 
-// MigrateConfig handles configuration migration
+// MigrateConfig handles configuration migration.
 func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOptions] {
 	options := domain.DetectionOptions{}
 

@@ -6,7 +6,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
 )
 
-// TestExamplesPackage tests examples package functionality
+// TestExamplesPackage tests examples package functionality.
 func TestExamplesPackage(t *testing.T) {
 	// Test default options
 	opts := artdupl.DefaultOptions()
@@ -45,7 +45,7 @@ func TestExamplesPackage(t *testing.T) {
 	}
 }
 
-// TestExamplesTypes tests type definitions
+// TestExamplesTypes tests type definitions.
 func TestExamplesTypes(t *testing.T) {
 	// Test detection method constants
 	methods := []artdupl.DetectionMethod{
@@ -193,7 +193,7 @@ func TestExamplesTypes(t *testing.T) {
 	}
 }
 
-// TestExamplesDetector tests detector functionality
+// TestExamplesDetector tests detector functionality.
 func TestExamplesDetector(t *testing.T) {
 	// Test detector creation with nil options
 	detector, err := artdupl.NewDetector(nil)
@@ -237,7 +237,7 @@ func TestExamplesDetector(t *testing.T) {
 	_ = detector.Close()
 }
 
-// TestExamplesInterfaces tests interface implementations
+// TestExamplesInterfaces tests interface implementations.
 func TestExamplesInterfaces(t *testing.T) {
 	// Test logger interface
 	var logger artdupl.Logger = &testLogger{}
@@ -262,7 +262,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	}
 
 	// Test progress callback
-	var callback func(*artdupl.Progress) error = func(progress *artdupl.Progress) error {
+	var callback = func(progress *artdupl.Progress) error {
 		// Test progress structure
 		if progress.Stage == "" {
 			t.Error("Progress stage should not be empty")
@@ -283,7 +283,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	_ = detector.Close()
 }
 
-// testLogger implements Logger interface for testing
+// testLogger implements Logger interface for testing.
 type testLogger struct{}
 
 func (l *testLogger) Debug(msg string, args ...any) {}

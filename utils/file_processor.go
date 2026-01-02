@@ -7,12 +7,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
-// FileProcessor provides unified file operations with consistent error handling
+// FileProcessor provides unified file operations with consistent error handling.
 type FileProcessor struct {
 	baseDir string
 }
 
-// NewFileProcessor creates a new file processor with optional base directory
+// NewFileProcessor creates a new file processor with optional base directory.
 func NewFileProcessor(baseDir ...string) *FileProcessor {
 	fp := &FileProcessor{}
 	if len(baseDir) > 0 && baseDir[0] != "" {
@@ -21,7 +21,7 @@ func NewFileProcessor(baseDir ...string) *FileProcessor {
 	return fp
 }
 
-// WriteFile writes content to a file with consistent error handling
+// WriteFile writes content to a file with consistent error handling.
 func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.FileMode) error {
 	// Create full path if base directory is set
 	fullPath := filename
@@ -43,12 +43,12 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 	return nil
 }
 
-// WriteTextFile writes text content to a file with consistent permissions
+// WriteTextFile writes text content to a file with consistent permissions.
 func (fp *FileProcessor) WriteTextFile(filename, content string) error {
 	return fp.WriteFile(filename, []byte(content), 0o644)
 }
 
-// ReadFile reads file content with consistent error handling
+// ReadFile reads file content with consistent error handling.
 func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 	// Create full path if base directory is set
 	fullPath := filename
@@ -64,7 +64,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 	return data, nil
 }
 
-// WriteTestFiles creates multiple test files from content map
+// WriteTestFiles creates multiple test files from content map.
 func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
 	for filename, content := range files {
 		if err := fp.WriteTextFile(filename, content); err != nil {
@@ -74,7 +74,7 @@ func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
 	return nil
 }
 
-// WriteDuplicateFiles creates files with identical content for testing
+// WriteDuplicateFiles creates files with identical content for testing.
 func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string) error {
 	for _, filename := range filenames {
 		if err := fp.WriteTextFile(filename, content); err != nil {

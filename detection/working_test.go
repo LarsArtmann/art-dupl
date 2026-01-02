@@ -8,7 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// TestNewMultiDetector_Working tests MultiDetector constructor
+// TestNewMultiDetector_Working tests MultiDetector constructor.
 func TestNewMultiDetector_Working(t *testing.T) {
 	cfg := &config.Config{
 		Threshold:        15,
@@ -45,7 +45,7 @@ func TestNewMultiDetector_Working(t *testing.T) {
 	}
 }
 
-// TestTodoDetector_Working tests TODO detector creation
+// TestTodoDetector_Working tests TODO detector creation.
 func TestTodoDetector_Working(t *testing.T) {
 	detector := NewTodoDetector()
 
@@ -58,7 +58,7 @@ func TestTodoDetector_Working(t *testing.T) {
 	}
 }
 
-// TestLegacyDetector_Working tests legacy detector creation
+// TestLegacyDetector_Working tests legacy detector creation.
 func TestLegacyDetector_Working(t *testing.T) {
 	detector := NewLegacyDetector()
 
@@ -71,7 +71,7 @@ func TestLegacyDetector_Working(t *testing.T) {
 	}
 }
 
-// TestMultiDetector_logVerbose_Working tests verbose logging
+// TestMultiDetector_logVerbose_Working tests verbose logging.
 func TestMultiDetector_logVerbose_Working(t *testing.T) {
 	detector := &MultiDetector{verbose: true}
 

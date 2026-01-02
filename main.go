@@ -109,7 +109,7 @@ Examples:
 	}
 }
 
-// runCmd implements the Cobra command execution
+// runCmd implements the Cobra command execution.
 func runCmd(cmd *cobra.Command, args []string) error {
 	return runCobraCommand(cmd, args)
 }

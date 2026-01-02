@@ -8,9 +8,11 @@ import (
 
 func (m Match) String() string {
 	str := "(["
+	var strSb11 strings.Builder
 	for _, p := range m.Ps {
-		str += fmt.Sprintf("%d, ", p)
+		strSb11.WriteString(fmt.Sprintf("%d, ", p))
 	}
+	str += strSb11.String()
 	return str[:len(str)-2] + fmt.Sprintf("], %d)", m.Len)
 }
 

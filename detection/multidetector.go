@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// MultiDetector runs multiple detection methods and combines results
+// MultiDetector runs multiple detection methods and combines results.
 type MultiDetector struct {
 	config  *config.Config
 	data    []*syntax.Node
@@ -17,7 +17,7 @@ type MultiDetector struct {
 	verbose bool
 }
 
-// NewMultiDetector creates a new multi-method detector
+// NewMultiDetector creates a new multi-method detector.
 func NewMultiDetector(cfg *config.Config, data []*syntax.Node, tree *suffixtree.STree, verbose bool) *MultiDetector {
 	return &MultiDetector{
 		config:  cfg,
@@ -27,7 +27,7 @@ func NewMultiDetector(cfg *config.Config, data []*syntax.Node, tree *suffixtree.
 	}
 }
 
-// FindDuplOver runs all configured detection methods
+// FindDuplOver runs all configured detection methods.
 func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 	// If only art-dupl method is selected, use existing logic
 	if md.config.DetectionMethods.IsDefault() {
@@ -83,7 +83,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 	return resultChan
 }
 
-// logVerbose prints verbose output if enabled
+// logVerbose prints verbose output if enabled.
 func (md *MultiDetector) logVerbose(message string) {
 	if md.verbose {
 		fmt.Printf("%s\n", message)

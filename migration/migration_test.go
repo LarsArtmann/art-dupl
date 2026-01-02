@@ -36,8 +36,8 @@ var _ = Describe("Migration Path", func() {
 			Expect(analysis.IsValid()).To(Succeed())
 			Expect(analysis.Threshold).To(Equal(uint(10)))
 			Expect(analysis.State).To(Equal(types.DetectionStateCompleted))
-			Expect(len(analysis.CloneGroups)).To(Equal(1))
-			Expect(len(analysis.CloneGroups[0].Clones)).To(Equal(1))
+			Expect(analysis.CloneGroups).To(HaveLen(1))
+			Expect(analysis.CloneGroups[0].Clones).To(HaveLen(1))
 		})
 	})
 
@@ -129,8 +129,8 @@ var _ = Describe("Migration Path", func() {
 			Expect(report.Differences.CloneGroupsAdded).To(Equal(1))
 			Expect(report.Differences.ClonesAdded).To(Equal(1))
 			Expect(report.Differences.ComplexityChanges).To(Equal(0.2))
-			Expect(len(report.Validations)).To(BeNumerically(">", 0))
-			Expect(len(report.Recommendations)).To(BeNumerically(">", 0))
+			Expect(report.Validations).ToNot(BeEmpty())
+			Expect(report.Recommendations).ToNot(BeEmpty())
 		})
 	})
 
@@ -195,7 +195,7 @@ var _ = Describe("Migration Path", func() {
 			}
 
 			data, err := json.Marshal(report)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(ContainSubstring("test-migration"))
 			Expect(string(data)).To(ContainSubstring("CloneGroupsAdded"))
 			Expect(string(data)).To(ContainSubstring("test-check"))
@@ -203,10 +203,10 @@ var _ = Describe("Migration Path", func() {
 			// Test unmarshaling
 			var unmarshaled migration.MigrationReport
 			err = json.Unmarshal(data, &unmarshaled)
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled.MigrationID).To(Equal("test-migration"))
 			Expect(unmarshaled.Differences.CloneGroupsAdded).To(Equal(1))
-			Expect(len(unmarshaled.Validations)).To(Equal(1))
+			Expect(unmarshaled.Validations).To(HaveLen(1))
 		})
 	})
 })

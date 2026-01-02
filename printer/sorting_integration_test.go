@@ -10,7 +10,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-// TestSortingIntegration tests the complete sorting functionality across all printers
+// TestSortingIntegration tests the complete sorting functionality across all printers.
 func TestSortingIntegration(t *testing.T) {
 	// Create test file content with multiple clone groups
 	testContent := `package main
@@ -135,7 +135,7 @@ func anotherLargeFunction() {
 	}
 }
 
-// testPrinterSorting tests a printer's sorting functionality with standard verification logic
+// testPrinterSorting tests a printer's sorting functionality with standard verification logic.
 func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer,
 	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string,
 ) {
@@ -160,7 +160,7 @@ func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Prin
 	}
 }
 
-// createMockCloneGroup creates a mock clone group with specified characteristics
+// createMockCloneGroup creates a mock clone group with specified characteristics.
 func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTokens int) []*syntax.Node {
 	// Create nodes that represent the tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
@@ -177,7 +177,7 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTo
 	return nodes
 }
 
-// TestCommonSortingUtilities tests the common sorting functions directly
+// TestCommonSortingUtilities tests the common sorting functions directly.
 func TestCommonSortingUtilities(t *testing.T) {
 	smallClone := createMockCloneGroup(t, "small.go", 10, 20, 2)
 	mediumClone := createMockCloneGroup(t, "medium.go", 30, 50, 5)

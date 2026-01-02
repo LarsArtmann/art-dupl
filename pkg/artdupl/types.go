@@ -5,21 +5,21 @@ import (
 	"time"
 )
 
-// DetectionMethod represents different code duplication detection algorithms
+// DetectionMethod represents different code duplication detection algorithms.
 type DetectionMethod string
 
 const (
-	// MethodArtDupl uses suffix tree algorithm on AST tokens
+	// MethodArtDupl uses suffix tree algorithm on AST tokens.
 	MethodArtDupl DetectionMethod = "art-dupl"
 
-	// MethodHash uses rolling hash on file content
+	// MethodHash uses rolling hash on file content.
 	MethodHash DetectionMethod = "hash"
 
-	// MethodAll uses both detection methods
+	// MethodAll uses both detection methods.
 	MethodAll DetectionMethod = "all"
 )
 
-// Detector is the main interface for code duplication detection
+// Detector is the main interface for code duplication detection.
 type Detector interface {
 	// FindClones performs duplication analysis and returns complete results
 	FindClones(ctx context.Context, files []string) (*Result, error)
@@ -31,14 +31,14 @@ type Detector interface {
 	Close() error
 }
 
-// Result contains all detected duplicates with metadata and statistics
+// Result contains all detected duplicates with metadata and statistics.
 type Result struct {
 	CloneGroups []*CloneGroup `json:"clone_groups"`
 	Summary     *Summary      `json:"summary"`
 	Metadata    *Metadata     `json:"metadata"`
 }
 
-// CloneGroup represents a group of identical or similar code fragments
+// CloneGroup represents a group of identical or similar code fragments.
 type CloneGroup struct {
 	Hash      string          `json:"hash"`             // Unique identifier for this clone group
 	Clones    []*Clone        `json:"clones"`           // All occurrences of this clone
@@ -47,7 +47,7 @@ type CloneGroup struct {
 	Method    DetectionMethod `json:"detection_method"` // Method that found this group
 }
 
-// Clone represents a single occurrence of duplicated code
+// Clone represents a single occurrence of duplicated code.
 type Clone struct {
 	Filename  string `json:"filename"`           // File containing this clone
 	StartLine int    `json:"start_line"`         // Starting line number
@@ -58,7 +58,7 @@ type Clone struct {
 	Size      int    `json:"size"`               // Size in bytes/tokens
 }
 
-// Summary provides statistics and metadata about the analysis
+// Summary provides statistics and metadata about the analysis.
 type Summary struct {
 	TotalFiles    int               `json:"total_files"`
 	TotalClones   int               `json:"total_clones"`
@@ -68,7 +68,7 @@ type Summary struct {
 	LinesAnalyzed int               `json:"lines_analyzed"`
 }
 
-// Metadata contains additional information about the analysis
+// Metadata contains additional information about the analysis.
 type Metadata struct {
 	Version    string    `json:"version"`     // SDK version
 	Timestamp  time.Time `json:"timestamp"`   // When analysis was performed
@@ -76,7 +76,7 @@ type Metadata struct {
 	Toolchain  string    `json:"toolchain"`   // Go version, etc.
 }
 
-// Options configures the detector behavior
+// Options configures the detector behavior.
 type Options struct {
 	// Detection settings
 	Threshold        int               `json:"threshold"`         // Minimum size to consider as clone
@@ -101,7 +101,7 @@ type Options struct {
 	Logger           Logger                `json:"-"` // Custom logger
 }
 
-// Progress reports analysis progress
+// Progress reports analysis progress.
 type Progress struct {
 	Stage       string  `json:"stage"`                  // Current processing stage
 	Completed   int     `json:"completed"`              // Number of items completed
@@ -111,10 +111,10 @@ type Progress struct {
 	CurrentFile string  `json:"current_file,omitempty"` // Currently processing file
 }
 
-// FileReaderFunc represents a function that can read file contents
+// FileReaderFunc represents a function that can read file contents.
 type FileReaderFunc func(filename string) ([]byte, error)
 
-// Logger interface for logging operations
+// Logger interface for logging operations.
 type Logger interface {
 	Debug(msg string, args ...any)
 	Info(msg string, args ...any)
@@ -122,7 +122,7 @@ type Logger interface {
 	Error(msg string, args ...any)
 }
 
-// DefaultOptions returns a configuration with sensible defaults
+// DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
 	return &Options{
 		Threshold:         15,
@@ -139,13 +139,13 @@ func DefaultOptions() *Options {
 	}
 }
 
-// readFileDefault is the default file reader using os package
+// readFileDefault is the default file reader using os package.
 var readFileDefault = func(filename string) ([]byte, error) {
 	// This will be implemented with actual file reading
 	return nil, nil
 }
 
-// defaultLogger provides basic logging to stderr
+// defaultLogger provides basic logging to stderr.
 type defaultLogger struct{}
 
 func (l *defaultLogger) Debug(msg string, args ...any) {}
@@ -153,7 +153,7 @@ func (l *defaultLogger) Info(msg string, args ...any)  {}
 func (l *defaultLogger) Warn(msg string, args ...any)  {}
 func (l *defaultLogger) Error(msg string, args ...any) {}
 
-// ValidateOptions checks if the provided options are valid
+// ValidateOptions checks if the provided options are valid.
 func ValidateOptions(opts *Options) error {
 	if opts == nil {
 		return ErrNilOptions

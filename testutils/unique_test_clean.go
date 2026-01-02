@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestUniqueTestHelper_Clean tests unique helper functionality
+// TestUniqueTestHelper_Clean tests unique helper functionality.
 func TestUniqueTestHelper_Clean(t *testing.T) {
 	// Generate multiple unique strings
 	for range 10 {
@@ -19,7 +19,7 @@ func TestUniqueTestHelper_Clean(t *testing.T) {
 	}
 }
 
-// TestGenerateRandomSuffix_Clean tests random suffix generation
+// TestGenerateRandomSuffix_Clean tests random suffix generation.
 func TestGenerateRandomSuffix_Clean(t *testing.T) {
 	// Generate multiple suffixes
 	for range 100 {
@@ -39,7 +39,7 @@ func TestGenerateRandomSuffix_Clean(t *testing.T) {
 	}
 }
 
-// TestUniqueFunction_Clean tests unique function generation
+// TestUniqueFunction_Clean tests unique function generation.
 func TestUniqueFunction_Clean(t *testing.T) {
 	// Generate multiple unique functions
 	for range 5 {
@@ -52,7 +52,7 @@ func TestUniqueFunction_Clean(t *testing.T) {
 	}
 }
 
-// TestUniqueness_Clean tests basic uniqueness
+// TestUniqueness_Clean tests basic uniqueness.
 func TestUniqueness_Clean(t *testing.T) {
 	// Generate strings and check they're unique
 	uniqueSet := make(map[string]bool)
@@ -72,7 +72,7 @@ func TestUniqueness_Clean(t *testing.T) {
 	}
 }
 
-// TestUniqueness_Concurrent_Clean tests concurrency
+// TestUniqueness_Concurrent_Clean tests concurrency.
 func TestUniqueness_Concurrent_Clean(t *testing.T) {
 	numGoroutines := 3
 	numPerGoroutine := 5
@@ -114,7 +114,7 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 	}
 }
 
-// BenchmarkUniqueTestHelper_Clean benchmarks unique helper
+// BenchmarkUniqueTestHelper_Clean benchmarks unique helper.
 func BenchmarkUniqueTestHelper_Clean(b *testing.B) {
 	for b.Loop() {
 		UniqueTestHelper()
