@@ -2,7 +2,7 @@ package syntax
 
 import (
 	"crypto/sha256"
-	"fmt"
+	"encoding/hex"
 
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )

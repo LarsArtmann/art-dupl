@@ -3,6 +3,7 @@ package suffixtree
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"testing"
 )
 

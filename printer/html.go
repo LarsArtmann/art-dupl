@@ -9,6 +9,7 @@ import (
 	"sort"
 	"sync"
 
+	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -68,7 +69,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 	for i, dup := range sortedDups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return errors.New("internal error: zero length duplicate found")
+			return errors.NewInternalError("zero length duplicate found", nil)
 		}
 		nstart := dup[0]
 		nend := dup[cnt-1]

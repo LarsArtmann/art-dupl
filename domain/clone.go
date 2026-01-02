@@ -2,6 +2,7 @@ package domain
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"strings"
 

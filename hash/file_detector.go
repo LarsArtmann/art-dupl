@@ -2,6 +2,7 @@ package hash
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"os"
 
