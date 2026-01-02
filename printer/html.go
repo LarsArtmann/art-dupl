@@ -14,11 +14,11 @@ import (
 )
 
 type htmlprinter struct {
+	ReadFile
 	iota     int
 	w        io.Writer
 	dupMutex sync.Mutex
 	dupls    [][][]*syntax.Node
-	ReadFile
 }
 
 func NewHTML(w io.Writer, fread ReadFile) Printer {
