@@ -505,8 +505,8 @@ func unique() {
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
-			// Create stdin with only target files (use relative paths)
-			stdin := fmt.Sprintf("pkg1/file1.go\npkg1/file2.go\n")
+			// Create stdin with only target files (use absolute paths)
+			stdin := fmt.Sprintf("%s\n%s\n", filepath.Join(tempDir, "target1.go"), filepath.Join(tempDir, "target2.go"))
 			cmd = exec.Command("../bdd/art-dupl-test", "--files", "--threshold", "10")
 			cmd.Dir = ".."
 			cmd.Stdin = strings.NewReader(stdin)
