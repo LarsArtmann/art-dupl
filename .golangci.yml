@@ -557,6 +557,7 @@ linters-settings:
         - github.com/samber/do
         - github.com/maypok86/otter/v2
         - github.com/onsi/ginkgo/v2
+        - github.com/onsi/gomega
         - github.com/google/uuid
         - github.com/klauspost/cpuid/v2
         - github.com/cockroachdb/errors
@@ -662,10 +663,6 @@ linters-settings:
               - google.golang.org/protobuf
 
         # 🏗️ ARCHITECTURAL BANS - Company standards & best practices
-        - github.com/onsi/gomega:
-            reason: "Use Ginkgo's built-in assertions instead of Gomega dependencies"
-            recommendations:
-              - github.com/onsi/ginkgo/v2
         - github.com/cucumber/godog:
             reason: "Prefer Ginkgo for BDD-style testing in Go"
             recommendations:
