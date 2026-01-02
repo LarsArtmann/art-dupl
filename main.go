@@ -52,7 +52,7 @@ Examples:
 	_ = rootCmd.Flags().MarkHidden("timeout")
 
 	// Enhanced error handler with context-aware suggestions
-	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
+	errorHandler := func(w io.Writer, _ fang.Styles, err error) {
 		if _, err := fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err); err != nil {
 			// Can't write the error, continue anyway
 			_ = err // Explicitly ignore error

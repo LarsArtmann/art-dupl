@@ -137,6 +137,8 @@ func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.Rea
 		return printer.NewPlumbing
 	case config.OutputFormatJSON:
 		return printer.NewJSON
+	case config.OutputFormatText:
+		return printer.NewText
 	default:
 		return printer.NewText
 	}
@@ -194,7 +196,7 @@ func crawlPaths(paths []string) chan string {
 				fchan <- path
 				continue
 			}
-			err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
 				// Check vendor flag using flag lookup to avoid redefinition
 				vendorFlag := flag.Lookup("vendor")
 				includeVendor := vendorFlag == nil || vendorFlag.Value.(flag.Getter).Get().(bool)
