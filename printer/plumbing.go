@@ -9,8 +9,8 @@ import (
 )
 
 type plumbing struct {
-	w io.Writer
 	ReadFile
+	w io.Writer
 }
 
 func NewPlumbing(w io.Writer, fread ReadFile) Printer {
