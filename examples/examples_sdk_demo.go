@@ -1,3 +1,4 @@
+//nolint:forbidigo // Demo examples use fmt.Println for demonstration
 package examples
 
 import (

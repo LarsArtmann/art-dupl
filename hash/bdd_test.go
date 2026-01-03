@@ -35,10 +35,10 @@ func processUser(name string, age int) error {
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
 
-	if err := os.WriteFile(file1, []byte(content1), 0o644); err != nil {
+	if err := os.WriteFile(file1, []byte(content1), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(file2, []byte(content1), 0o644); err != nil {
+	if err := os.WriteFile(file2, []byte(content1), 0600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -104,10 +104,10 @@ func hello() {
 	file1 := filepath.Join(tmpDir, "small1.go")
 	file2 := filepath.Join(tmpDir, "small2.go")
 
-	if err := os.WriteFile(file1, []byte(content), 0o644); err != nil {
+	if err := os.WriteFile(file1, []byte(content), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(file2, []byte(content), 0o644); err != nil {
+	if err := os.WriteFile(file2, []byte(content), 0600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -170,16 +170,16 @@ func processProduct(name string, price int) error {
 	file3 := filepath.Join(tmpDir, "product1.go")
 	file4 := filepath.Join(tmpDir, "product2.go")
 
-	if err := os.WriteFile(file1, []byte(content1), 0o644); err != nil {
+	if err := os.WriteFile(file1, []byte(content1), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(file2, []byte(content1), 0o644); err != nil {
+	if err := os.WriteFile(file2, []byte(content1), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(file3, []byte(content2), 0o644); err != nil {
+	if err := os.WriteFile(file3, []byte(content2), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(file4, []byte(content2), 0o644); err != nil {
+	if err := os.WriteFile(file4, []byte(content2), 0600); err != nil {
 		t.Fatal(err)
 	}
 

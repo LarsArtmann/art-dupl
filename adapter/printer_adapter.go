@@ -18,6 +18,7 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 	// Try to read file content
 	var fileContent []byte
 	if filename != "" {
+		//nolint:gosec // G304: filename is controlled input from syntax tree, not user input
 		if content, err := os.ReadFile(filename); err == nil {
 			fileContent = content
 		}

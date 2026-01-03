@@ -67,6 +67,7 @@ func LoadConfig(filename string) (*Config, error) {
 		return nil, errors.NewConfigError("config file not found: "+filename, nil)
 	}
 
+	//nolint:gosec // G304: filename is controlled config path, not user input
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, errors.NewIOError(filename, "failed to read config file", err)
