@@ -155,7 +155,6 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run art-dupl on test directory
-			//nolint:forbidigo // G204: Command arguments are controlled test values
 			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "10")
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
@@ -508,7 +507,6 @@ func unique() {
 
 			// Create stdin with only target files (use absolute paths)
 			stdin := fmt.Sprintf("%s\n%s\n", filepath.Join(tempDir, "target1.go"), filepath.Join(tempDir, "target2.go"))
-			//nolint:forbidigo // G204: Command arguments are controlled test values
 			cmd = exec.Command("../bdd/art-dupl-test", "--files", "--threshold", "10")
 			cmd.Dir = ".."
 			cmd.Stdin = strings.NewReader(stdin)
@@ -662,7 +660,6 @@ func processItem(data string, index int) error {
 
 			// Measure execution time
 			start := time.Now()
-			//nolint:forbidigo // G204: Command arguments are controlled test values
 			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "20")
 			cmd.Dir = ".."
 			var output []byte

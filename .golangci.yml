@@ -436,6 +436,10 @@ linters-settings:
       - errors.Unwrap(
       - .Wrap(
       - .Wrapf(
+      # Ignore errors from file operations (Write, Close, etc.)
+      - .Write
+      - .Close
+      - .Sync
     ignoreSigRegexps:
       - \.New.*Error\(
     ignorePackageGlobs:

@@ -65,8 +65,10 @@ func DefaultRuntimeConfig() *RuntimeConfig {
 // Interface wrappers for io.Writer to avoid import cycles.
 type cliStdout struct{}
 
+//nolint:wrapcheck // Error wrapping not needed for IO Write operations
 func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }
 
 type cliStderr struct{}
 
+//nolint:wrapcheck // Error wrapping not needed for IO Write operations
 func (c *cliStderr) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }
