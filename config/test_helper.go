@@ -6,6 +6,7 @@ import (
 
 // AssertMergeConfigsWithNil is a helper function for testing merge configs with nil parameters.
 func AssertMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig bool, expectedValues map[string]any) {
+	t.Helper()
 	var merged *Config
 	var testName string
 

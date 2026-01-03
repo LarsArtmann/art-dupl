@@ -31,6 +31,7 @@ func genNodes(cnt int) []*Node {
 }
 
 func compareSeries(t *testing.T, stream []*Node, owns []int) {
+	t.Helper()
 	if len(stream) != len(owns) {
 		t.Errorf("series aren't the same length; got %d, want %d", len(stream), len(owns))
 		return

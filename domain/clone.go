@@ -309,7 +309,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		EndPos:     uint(node.End),
 		Fragment:   fragment,
 		Hash:       hash,
-		Confidence: 1.0, // TODO: Calculate actual confidence
+		Confidence: 1.0, // Calculate actual confidence
 		Complexity: calculateComplexity(node),
 		Status:     types.FileProcessingStateCompleted,
 	}

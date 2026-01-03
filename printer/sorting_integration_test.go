@@ -139,6 +139,7 @@ func anotherLargeFunction() {
 func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer,
 	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string,
 ) {
+	t.Helper()
 	var buf bytes.Buffer
 	printer := constructor(&buf, mockReadFile(testContent))
 
@@ -162,6 +163,7 @@ func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Prin
 
 // createMockCloneGroup creates a mock clone group with specified characteristics.
 func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTokens int) []*syntax.Node {
+	t.Helper()
 	// Create nodes that represent the tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
 

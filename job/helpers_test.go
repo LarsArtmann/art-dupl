@@ -8,6 +8,7 @@ import (
 
 // Create test files for job package testing.
 func setupTestFiles(t *testing.T) string {
+	t.Helper()
 	tmpDir := t.TempDir()
 
 	// Create a simple Go file
@@ -34,6 +35,7 @@ func helper() {
 
 // Test helpers for job package tests.
 func setupMultipleTestFiles(t *testing.T) []string {
+	t.Helper()
 	tmpDir := t.TempDir()
 
 	files := make([]string, 2)

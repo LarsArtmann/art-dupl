@@ -68,6 +68,7 @@ func TestConstruction(t *testing.T) {
 }
 
 func compareTrees(t *testing.T, expected, actual *state) {
+	t.Helper()
 	ch1, ch2 := walker(expected), walker(actual)
 	for {
 		etran, ok1 := <-ch1

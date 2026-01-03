@@ -28,19 +28,6 @@ type DuplError struct {
 	Stack   string
 }
 
-// Error implements the error interface.
-func (e *DuplError) Error() string {
-	if e.File != "" {
-		return fmt.Sprintf("%s error at %s:%d: %s", e.Type, e.File, e.Line, e.Message)
-	}
-	return fmt.Sprintf("%s error: %s", e.Type, e.Message)
-}
-
-// Unwrap implements the errors.Wrapper interface.
-func (e *DuplError) Unwrap() error {
-	return e.Cause
-}
-
 // NewParseError creates a new parse error with context.
 func NewParseError(file string, line int, msg string, cause error) *DuplError {
 	return &DuplError{
@@ -92,6 +79,19 @@ func NewInternalError(msg string, cause error) *DuplError {
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
+}
+
+// Error implements the error interface.
+func (e *DuplError) Error() string {
+	if e.File != "" {
+		return fmt.Sprintf("%s error at %s:%d: %s", e.Type, e.File, e.Line, e.Message)
+	}
+	return fmt.Sprintf("%s error: %s", e.Type, e.Message)
+}
+
+// Unwrap implements the errors.Wrapper interface.
+func (e *DuplError) Unwrap() error {
+	return e.Cause
 }
 
 // Is checks if error matches a specific type.

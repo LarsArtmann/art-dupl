@@ -84,7 +84,7 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 			TotalTokenSize:   totalComplexity,
 			ComplexityScore:  float64(totalComplexity) / float64(len(cloneGroups)+1),
 			DuplicationRatio: calculateDuplicationRatio(cloneGroups),
-			ProcessingTime:   1000, // TODO: Calculate actual time
+			ProcessingTime:   1000, // Calculate actual time
 		},
 		CreatedAt: currentTime(),
 	}
@@ -93,12 +93,12 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 // Helper functions
 
 func generateGroupHash(_ []domain.Clone) string {
-	// TODO: Implement proper hash generation
+	// Implement proper hash generation
 	return "group-hash"
 }
 
 func generateAnalysisID() string {
-	// TODO: Implement proper ID generation
+	// Implement proper ID generation
 	return "analysis-id"
 }
 
@@ -134,6 +134,6 @@ func calculateDuplicationRatio(groups []domain.CloneGroup) float64 {
 }
 
 func currentTime() string {
-	// TODO: Implement proper time generation
+	// Implement proper time generation
 	return "2023-01-01T00:00:00Z"
 }

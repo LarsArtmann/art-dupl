@@ -6,22 +6,23 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+
 // SortCloneGroups sorts CloneGroup arrays by specified criteria.
 func SortCloneGroups(groups []CloneGroup, sortBy string) {
 	switch sortBy {
-	case "size":
+	case sortBySize:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Size > groups[j].Size
 		})
-	case "occurrence":
+	case sortByOccurrence:
 		sort.Slice(groups, func(i, j int) bool {
 			return len(groups[i].Files) > len(groups[j].Files)
 		})
-	case "hash":
+	case sortByHash:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Hash < groups[j].Hash
 		})
-	case "total-tokens":
+	case sortByTotalTokens:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Size > groups[j].Size // Same as size for CloneGroup
 		})

@@ -46,8 +46,8 @@ type Summary struct {
 type JSONPrinter struct {
 	ReadFile
 
-	iota int
-	w    io.Writer
+	iota        int
+	w           io.Writer
 	filesCount  int
 	totalClones int
 	cloneGroups []CloneGroup

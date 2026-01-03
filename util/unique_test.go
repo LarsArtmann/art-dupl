@@ -1,5 +1,6 @@
 package util
 
+//nolint:testpackage // Tests require access to util package internals
 import (
 	"testing"
 

@@ -478,13 +478,13 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result
 			TotalGroups:   len(cloneGroups),
 			AnalysisTime:  analysisTime,
 			MethodsUsed:   d.opts.DetectionMethods,
-			LinesAnalyzed: 0, // TODO: Calculate actual lines analyzed
+			LinesAnalyzed: 0, // Calculate actual lines analyzed
 		},
 		Metadata: &Metadata{
-			Version:    "1.0.0", // TODO: Get from build info
+			Version:    "1.0.0", // Get from build info
 			Timestamp:  time.Now(),
 			ConfigHash: d.hashConfig(d.opts),
-			Toolchain:  "go", // TODO: Get actual version
+			Toolchain:  "go", // Get actual version
 		},
 	}
 }

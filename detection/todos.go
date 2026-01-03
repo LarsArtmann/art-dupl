@@ -15,7 +15,7 @@ type TodoIssue struct {
 	Filename string   `json:"filename"`
 	Line     int      `json:"line"`
 	Text     string   `json:"text"`
-	Type     string   `json:"type"`           // TODO, FIXME, XXX, etc.
+	Type     string   `json:"type"` //nolint:godox // TODO, FIXME, XXX, etc.
 	Tags     []string `json:"tags,omitempty"` // @username, date, etc.
 }
 
@@ -43,12 +43,17 @@ func NewTodoDetector() *TodoDetector {
 	// // XXX: this is a hack
 	patterns := make(map[string]*regexp.Regexp)
 
+	// Pattern definitions below
+	//nolint:godox
 	// TODO pattern
 	patterns["TODO"] = regexp.MustCompile(`(?i)TODO\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
+	//nolint:godox
 	// FIXME pattern
 	patterns["FIXME"] = regexp.MustCompile(`(?i)FIXME\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
+	//nolint:godox
 	// XXX pattern
 	patterns["XXX"] = regexp.MustCompile(`(?i)XXX\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
+	//nolint:godox
 	// HACK pattern
 	patterns["HACK"] = regexp.MustCompile(`(?i)HACK\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
 	// NOTE pattern

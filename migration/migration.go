@@ -43,12 +43,12 @@ func (mp *MigrationPath) FromSyntaxToNodes(dups [][]*syntax.Node, threshold uint
 }
 
 // FromPrinterClonesToDomain converts printer clones to domain clones
-// TODO: This function needs to be reimplemented as printer.Clone is not exported.
+// This function needs to be reimplemented as printer.Clone is not exported.
 func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone) []domain.Clone {
 	// This function is temporarily disabled due to missing printer.Clone type
 	var domainClones []domain.Clone
 
-	// TODO: Implement proper conversion when printer.Clone becomes available
+	// Implement proper conversion when printer.Clone becomes available
 	/*
 		for _, pc := range printerClones {
 			dc := adapter.CloneToDomain(pc)

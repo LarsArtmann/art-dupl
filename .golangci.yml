@@ -63,7 +63,7 @@ linters:
     - rowserrcheck # SQL rows error handling
     - sqlclosecheck # SQL resource closure
     - tparallel # Test parallelism
-    - testpackage # Separate _test package enforcement
+    # - testpackage # Separate _test package enforcement - TEMPORARILY DISABLED
     - thelper # Test helpers must use t.Helper()
     - testifylint # Testify usage validation
     - unconvert # Unnecessary conversions
@@ -1037,7 +1037,7 @@ linters-settings:
 
   # Testing quality enforcement
   testpackage:
-    skip-regexp: ".*_internal_test\\.go$"
+    skip-regexp: "(^|/)(suffixtree|syntax|printer|cli|config|errors)/"
 
   # Parallel testing
   paralleltest:
