@@ -86,6 +86,6 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 // logVerbose prints verbose output if enabled.
 func (md *MultiDetector) logVerbose(message string) {
 	if md.verbose {
-			fmt.Printf("%s\n", message)
+		fmt.Printf("%s\n", message)
 	}
 }
