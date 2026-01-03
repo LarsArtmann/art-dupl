@@ -132,25 +132,3 @@ func sortClonesByFilename(cloneGroups [][]clone) {
 		return false
 	})
 }
-
-func sortNodesByFilename(dups [][]*syntax.Node) {
-	sort.Slice(dups, func(i, j int) bool {
-		if len(dups[i]) == 0 && len(dups[j]) == 0 {
-			return false
-		}
-		if len(dups[i]) == 0 {
-			return true
-		}
-		if len(dups[j]) == 0 {
-			return false
-		}
-		// Use Filename for deterministic sorting
-		if len(dups[i]) > 0 && len(dups[j]) > 0 {
-			if dups[i][0].Filename == dups[j][0].Filename {
-				return dups[i][0].Pos < dups[j][0].Pos
-			}
-			return dups[i][0].Filename < dups[j][0].Filename
-		}
-		return false
-	})
-}

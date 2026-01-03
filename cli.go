@@ -57,11 +57,12 @@ func Run() int {
 		appConfig.FilesFromStdin = *cliCfg.Files
 	}
 
-	if *cliCfg.HTML {
+	switch {
+	case *cliCfg.HTML:
 		appConfig.OutputFormat = config.OutputFormatHTML
-	} else if *cliCfg.Plumbing {
+	case *cliCfg.Plumbing:
 		appConfig.OutputFormat = config.OutputFormatPlumbing
-	} else if *cliCfg.JSONFlag {
+	case *cliCfg.JSONFlag:
 		appConfig.OutputFormat = config.OutputFormatJSON
 	}
 
@@ -101,6 +102,7 @@ func Run() int {
 	}
 
 	outputWriter := os.Stdout
+	var outputFile *os.File
 	if mergedConfig.OutputFile != "" {
 		file, err := os.Create(mergedConfig.OutputFile)
 		if err != nil {
@@ -113,6 +115,7 @@ func Run() int {
 				fmt.Fprintf(os.Stderr, "warning: failed to close file: %v\n", closeErr)
 			}
 		}()
+		outputFile = file
 		outputWriter = file
 	}
 
@@ -124,6 +127,9 @@ func Run() int {
 
 	if err := printDupls(p, duplChan, *cliCfg.SortBy, mergedConfig.Threshold); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		if outputFile != nil {
+			_ = outputFile.Close()
+		}
 		os.Exit(1)
 		return 1
 	}
@@ -223,7 +229,7 @@ func crawlPaths(paths []string) chan string {
 func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int, error) {
 	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("failed to build suffix tree for paths %v: %w", paths, err)
 	}
 
 	multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
@@ -253,7 +259,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	sort.Strings(keys)
 
 	if err := p.PrintHeader(); err != nil {
-		return err //nolint:wrapcheck // Printer errors are already clear
+		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy, threshold, err)
 	}
 
 	for _, k := range keys {
@@ -263,16 +269,21 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return err //nolint:wrapcheck // Printer errors are already clear
+				return fmt.Errorf("failed to print clones for hash %s (sortBy: %s): %w", k, sortBy, err)
 			}
 		}
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		return jsonPrinter.OutputJSON(threshold, sortBy) //nolint:wrapcheck // Printer errors are already clear
+		if err := jsonPrinter.OutputJSON(threshold, sortBy); err != nil {
+			return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy, err)
+		}
 	}
 
-	return p.PrintFooter() //nolint:wrapcheck // Printer errors are already clear
+	if err := p.PrintFooter(); err != nil {
+		return fmt.Errorf("failed to print footer: %w", err)
+	}
+	return nil
 }
 
 func runCobraCommand(cmd *cobra.Command, args []string) error {
@@ -293,7 +304,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return fmt.Errorf("error loading config: %w", err)
+			return fmt.Errorf("error loading config from file %q: %w", configFile, err)
 		}
 	}
 
@@ -314,11 +325,12 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 		appConfig.FilesFromStdin = files
 	}
 
-	if html {
+	switch {
+	case html:
 		appConfig.OutputFormat = config.OutputFormatHTML
-	} else if plumbing {
+	case plumbing:
 		appConfig.OutputFormat = config.OutputFormatPlumbing
-	} else if jsonFlag {
+	case jsonFlag:
 		appConfig.OutputFormat = config.OutputFormatJSON
 	}
 
@@ -329,7 +341,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return fmt.Errorf("configuration error: %w", err)
+		return fmt.Errorf("configuration validation failed (paths: %v): %w", mergedConfig.Paths, err)
 	}
 
 	if allFlag {
@@ -338,7 +350,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
-		return fmt.Errorf("analysis error: %w", err)
+		return fmt.Errorf("analysis failed for paths %v: %w", mergedConfig.Paths, err)
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat)(os.Stdout, os.ReadFile)
@@ -348,7 +360,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := printDupls(p, duplChan, sortBy, mergedConfig.Threshold); err != nil {
-		return err
+		return fmt.Errorf("failed to print duplicates (sortBy: %s, threshold: %d): %w", sortBy, mergedConfig.Threshold, err)
 	}
 
 	return nil

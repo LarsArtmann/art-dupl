@@ -11,7 +11,7 @@ import (
 )
 
 // TestSortingIntegration tests the complete sorting functionality across all printers.
-func TestSortingIntegration(t *testing.T) {
+func TestSortingIntegration(t *testing.T) { //nolint:funlen // Comprehensive integration test
 	// Create test file content with multiple clone groups
 	testContent := `package main
 

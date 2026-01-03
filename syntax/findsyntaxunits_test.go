@@ -65,6 +65,7 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	nodes2[5].Owns = 2
 
 	data := append(nodes1, nodes2...)
+	_ = data //nolint:gocritic // Creating combined slice for testing purposes
 
 	match := suffixtree.Match{
 		Ps:  []suffixtree.Pos{0, 10},
@@ -80,7 +81,7 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	}
 }
 
-func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
+func TestFindSyntaxUnitsEdgeCases(t *testing.T) { //nolint:funlen // Comprehensive edge case testing
 	tests := []struct {
 		name       string
 		setup      func() []*Node

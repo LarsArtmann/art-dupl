@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -68,7 +69,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
 	for filename, content := range files {
 		if err := fp.WriteTextFile(filename, content); err != nil {
-			return err
+			return fmt.Errorf("failed to write test file %s: %w", filename, err)
 		}
 	}
 	return nil
@@ -78,7 +79,7 @@ func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
 func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string) error {
 	for _, filename := range filenames {
 		if err := fp.WriteTextFile(filename, content); err != nil {
-			return err
+			return fmt.Errorf("failed to write duplicate file %s: %w", filename, err)
 		}
 	}
 	return nil

@@ -18,7 +18,7 @@ func UnmarshalEnumJSON[T ValidatableEnum](data []byte, constructor func(string) 
 
 	enum := constructor(str)
 	if !enum.IsValid() {
-		return nil, fmt.Errorf("invalid %s: %s", typeName, str)
+		return nil, fmt.Errorf("enum validation failed for %s: invalid value %q (data: %q)", typeName, str, string(data))
 	}
 	return &enum, nil
 }
@@ -26,7 +26,7 @@ func UnmarshalEnumJSON[T ValidatableEnum](data []byte, constructor func(string) 
 // MarshalEnumJSON provides generic marshaling for enum types.
 func MarshalEnumJSON[T ValidatableEnum](enum T, typeName string) ([]byte, error) {
 	if !enum.IsValid() {
-		return nil, fmt.Errorf("invalid %s: %v", typeName, enum)
+		return nil, fmt.Errorf("failed to marshal %s: invalid value %v (value must pass validation)", typeName, enum)
 	}
 	return []byte(`"` + fmt.Sprintf("%v", enum) + `"`), nil
 }

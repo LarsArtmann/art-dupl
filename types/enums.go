@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 // DetectionState represents different detection states with type safety.
 type DetectionState string
 
@@ -29,14 +31,18 @@ func (ds DetectionState) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency.
 func (ds DetectionState) MarshalJSON() ([]byte, error) {
-	return MarshalEnumJSON(ds, "detection state")
+	data, err := MarshalEnumJSON(ds, "detection state")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal detection state: %w", err)
+	}
+	return data, nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency.
 func (ds *DetectionState) UnmarshalJSON(data []byte) error {
 	enum, err := UnmarshalEnumJSON(data, func(s string) DetectionState { return DetectionState(s) }, "detection state")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal detection state: %w", err)
 	}
 	*ds = *enum
 	return nil
@@ -69,14 +75,18 @@ func (am AnalysisMode) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency.
 func (am AnalysisMode) MarshalJSON() ([]byte, error) {
-	return MarshalEnumJSON(am, "analysis mode")
+	data, err := MarshalEnumJSON(am, "analysis mode")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal analysis mode: %w", err)
+	}
+	return data, nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency.
 func (am *AnalysisMode) UnmarshalJSON(data []byte) error {
 	enum, err := UnmarshalEnumJSON(data, func(s string) AnalysisMode { return AnalysisMode(s) }, "analysis mode")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal analysis mode: %w", err)
 	}
 	*am = *enum
 	return nil
@@ -111,14 +121,18 @@ func (fps FileProcessingState) String() string {
 
 // MarshalJSON implements json.Marshaler for API consistency.
 func (fps FileProcessingState) MarshalJSON() ([]byte, error) {
-	return MarshalEnumJSON(fps, "file processing state")
+	data, err := MarshalEnumJSON(fps, "file processing state")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal file processing state: %w", err)
+	}
+	return data, nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for API consistency.
 func (fps *FileProcessingState) UnmarshalJSON(data []byte) error {
 	enum, err := UnmarshalEnumJSON(data, func(s string) FileProcessingState { return FileProcessingState(s) }, "file processing state")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal file processing state: %w", err)
 	}
 	*fps = *enum
 	return nil

@@ -145,68 +145,72 @@ func ValidateConfig(config *Config) error {
 func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 	result := DefaultConfig()
 
-	// Start with file config
-	if fileConfig != nil {
-		result.Threshold = fileConfig.Threshold
-		result.IncludeVendor = fileConfig.IncludeVendor
-		result.FilesFromStdin = fileConfig.FilesFromStdin
-		if fileConfig.OutputFormat != "" {
-			result.OutputFormat = fileConfig.OutputFormat
-		}
-		result.Verbose = fileConfig.Verbose
-		if len(fileConfig.Paths) > 0 {
-			result.Paths = fileConfig.Paths
-		}
-		if len(fileConfig.IgnoreFiles) > 0 {
-			result.IgnoreFiles = fileConfig.IgnoreFiles
-		}
-		if fileConfig.MaxChildrenSerial != 0 {
-			result.MaxChildrenSerial = fileConfig.MaxChildrenSerial
-		}
-		if fileConfig.OutputFile != "" {
-			result.OutputFile = fileConfig.OutputFile
-		}
-		if len(fileConfig.DetectionMethods) > 0 {
-			result.DetectionMethods = fileConfig.DetectionMethods
-		}
-	}
-
-	// Override with CLI config
-	if cliConfig != nil {
-		// Note: Only set CLI values if they're non-zero or booleans set to true
-		// to allow file config values to take precedence
-		if cliConfig.Threshold != 0 {
-			result.Threshold = cliConfig.Threshold
-		}
-		if cliConfig.IncludeVendor {
-			result.IncludeVendor = cliConfig.IncludeVendor
-		}
-		if cliConfig.FilesFromStdin {
-			result.FilesFromStdin = cliConfig.FilesFromStdin
-		}
-		// Only override output format if CLI provided it
-		if cliConfig.OutputFormat != "" {
-			result.OutputFormat = cliConfig.OutputFormat
-		}
-		if cliConfig.Verbose {
-			result.Verbose = cliConfig.Verbose
-		}
-		if len(cliConfig.Paths) > 0 {
-			result.Paths = cliConfig.Paths
-		}
-		if len(cliConfig.IgnoreFiles) > 0 {
-			result.IgnoreFiles = cliConfig.IgnoreFiles
-		}
-		if cliConfig.MaxChildrenSerial != 0 {
-			result.MaxChildrenSerial = cliConfig.MaxChildrenSerial
-		}
-		if cliConfig.OutputFile != "" {
-			result.OutputFile = cliConfig.OutputFile
-		}
-		if len(cliConfig.DetectionMethods) > 0 {
-			result.DetectionMethods = cliConfig.DetectionMethods
-		}
-	}
+	mergeFileConfig(result, fileConfig)
+	mergeCLIConfig(result, cliConfig)
 
 	return result
+}
+
+func mergeFileConfig(result, cfg *Config) {
+	if cfg == nil {
+		return
+	}
+	result.Threshold = cfg.Threshold
+	result.IncludeVendor = cfg.IncludeVendor
+	result.FilesFromStdin = cfg.FilesFromStdin
+	if cfg.OutputFormat != "" {
+		result.OutputFormat = cfg.OutputFormat
+	}
+	result.Verbose = cfg.Verbose
+	if len(cfg.Paths) > 0 {
+		result.Paths = cfg.Paths
+	}
+	if len(cfg.IgnoreFiles) > 0 {
+		result.IgnoreFiles = cfg.IgnoreFiles
+	}
+	if cfg.MaxChildrenSerial != 0 {
+		result.MaxChildrenSerial = cfg.MaxChildrenSerial
+	}
+	if cfg.OutputFile != "" {
+		result.OutputFile = cfg.OutputFile
+	}
+	if len(cfg.DetectionMethods) > 0 {
+		result.DetectionMethods = cfg.DetectionMethods
+	}
+}
+
+func mergeCLIConfig(result, cfg *Config) {
+	if cfg == nil {
+		return
+	}
+	if cfg.Threshold != 0 {
+		result.Threshold = cfg.Threshold
+	}
+	if cfg.IncludeVendor {
+		result.IncludeVendor = cfg.IncludeVendor
+	}
+	if cfg.FilesFromStdin {
+		result.FilesFromStdin = cfg.FilesFromStdin
+	}
+	if cfg.OutputFormat != "" {
+		result.OutputFormat = cfg.OutputFormat
+	}
+	if cfg.Verbose {
+		result.Verbose = cfg.Verbose
+	}
+	if len(cfg.Paths) > 0 {
+		result.Paths = cfg.Paths
+	}
+	if len(cfg.IgnoreFiles) > 0 {
+		result.IgnoreFiles = cfg.IgnoreFiles
+	}
+	if cfg.MaxChildrenSerial != 0 {
+		result.MaxChildrenSerial = cfg.MaxChildrenSerial
+	}
+	if cfg.OutputFile != "" {
+		result.OutputFile = cfg.OutputFile
+	}
+	if len(cfg.DetectionMethods) > 0 {
+		result.DetectionMethods = cfg.DetectionMethods
+	}
 }

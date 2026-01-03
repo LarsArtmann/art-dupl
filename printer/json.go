@@ -2,6 +2,7 @@ package printer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"sort"
 	"strings"
@@ -88,7 +89,7 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
+func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error { //nolint:funlen // Complex processing for JSON output
 	p.iota++
 
 	clones := make([]JSONClone, len(dups))
@@ -103,7 +104,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		// Use unified file processor
 		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w", nstart.Filename, i+1, len(dups), err)
 		}
 
 		lineStart := fileInfo.LineStart

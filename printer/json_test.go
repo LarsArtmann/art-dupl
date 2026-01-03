@@ -149,6 +149,7 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 }
 
 func createMockNodes(t *testing.T) []*syntax.Node {
+	t.Helper()
 	// Create a simple mock node structure
 	// In practice, these would be real AST nodes from parsed Go code
 	nodes := make([]*syntax.Node, 2)

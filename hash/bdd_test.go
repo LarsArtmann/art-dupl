@@ -135,7 +135,7 @@ func hello() {
 }
 
 // TestHashDetectionShouldFindMultipleDuplicateGroups tests that multiple duplicate groups are found.
-func TestHashDetectionShouldFindMultipleDuplicateGroups(t *testing.T) {
+func TestHashDetectionShouldFindMultipleDuplicateGroups(t *testing.T) { //nolint:funlen // Comprehensive test with multiple scenarios
 	// GIVEN: Multiple files with duplicate patterns
 	tmpDir := t.TempDir()
 

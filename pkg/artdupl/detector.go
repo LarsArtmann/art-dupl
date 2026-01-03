@@ -61,19 +61,19 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("input validation failed for %d files: %w", len(files), err)
 	}
 
 	// Process files and build analysis pipeline
 	data, _, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("analysis pipeline construction failed for %d files: %w", len(files), err)
 	}
 
 	// Run detection based on configured methods
 	cloneGroups, err := d.runDetection(ctx, data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("detection failed: %w", err)
 	}
 
 	// Build and return result
@@ -86,7 +86,7 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("input validation failed for streaming with %d files: %w", len(files), err)
 	}
 
 	// Create output channel
@@ -216,6 +216,10 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
+	case MethodAll:
+		// For now, use art-dupl method when MethodAll is specified
+		// TODO: Implement multi-detection method support
+		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	default:
 		return nil, ErrUnsupportedMethod
 	}
@@ -261,6 +265,10 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
+	case MethodAll:
+		// For now, use art-dupl method when MethodAll is specified
+		// TODO: Implement multi-detection method support
+		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	default:
 		return ErrUnsupportedMethod
 	}

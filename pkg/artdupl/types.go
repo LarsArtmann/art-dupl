@@ -140,7 +140,7 @@ func DefaultOptions() *Options {
 }
 
 // readFileDefault is the default file reader using os package.
-var readFileDefault = func(filename string) ([]byte, error) {
+var readFileDefault = func(filename string) ([]byte, error) { //nolint:gochecknoglobals // Default implementation for config
 	// This will be implemented with actual file reading
 	return nil, nil
 }

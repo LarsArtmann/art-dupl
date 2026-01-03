@@ -27,8 +27,8 @@ func (p *text) PrintHeader() error { return nil }
 func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.cnt++
 
-	// Extract sortBy parameter, default to "size"
-	sortCriteria := "size"
+	// Extract sortBy parameter, default to sortBySize
+	sortCriteria := sortBySize
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
@@ -41,7 +41,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	}
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to prepare clones info for %d duplicates: %w", len(sortedDups), err)
 	}
 
 	// Store clones with size for sorting
@@ -70,7 +70,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
 	}
 	clones, err := prepareClonesInfo(p.ReadFile, dups)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to prepare clones info for sorted output (%d duplicates): %w", len(dups), err)
 	}
 
 	// Apply sorting based on criteria
@@ -104,7 +104,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 
 		file, err := fread(nstart.Filename)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to read file %s for clone info: %w", nstart.Filename, err)
 		}
 
 		cl := clone{filename: nstart.Filename}

@@ -12,7 +12,8 @@ func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isVa
 	candidate := enumType(str)
 	if !isValid(candidate) {
 		var zero T
-		return zero, fmt.Errorf(errorMsg, str)
+		// Include all relevant context: original data, parsed string, candidate, and validation failure
+		return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed string: %q, candidate: %q, type: T)", fmt.Errorf(errorMsg, str), data, str, candidate)
 	}
 	return candidate, nil
 }
@@ -25,7 +26,7 @@ func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid 
 // MarshalEnumJSON is a generic helper for implementing MarshalJSON for enum types.
 func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) ([]byte, error) {
 	if !isValid(value) {
-		return nil, fmt.Errorf("invalid %s: %s", typeName, value)
+		return nil, fmt.Errorf("failed to marshal enum: invalid %s value %q (value must pass validation)", typeName, value)
 	}
 	return fmt.Appendf(nil, `"%s"`, value), nil
 }
@@ -46,7 +47,7 @@ func NewEnumUnmarshalJSON[T ~string](typeName string) func(*T, []byte) error {
 			return any(enum).(interface{ IsValid() bool }).IsValid()
 		}, typeName)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to unmarshal %s from data %q: %w", typeName, string(data), err)
 		}
 		*e = candidate
 		return nil
@@ -61,7 +62,7 @@ func UnmarshalJSONForEnum[T ~string](e *T, data []byte, typeName string) error {
 		return any(enum).(interface{ IsValid() bool }).IsValid()
 	}, typeName)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal %s from data %q: %w", typeName, string(data), err)
 	}
 	*e = candidate
 	return nil

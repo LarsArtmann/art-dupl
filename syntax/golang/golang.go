@@ -95,7 +95,7 @@ func (t *transformer) addWithNilCheck(o *syntax.Node, node ast.Node) {
 }
 
 // trans transforms given golang AST to uniform tree structure.
-func (t *transformer) trans(node ast.Node) (o *syntax.Node) {
+func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocognit // High complexity is inherent to AST transformation
 	o = syntax.NewNode()
 	o.Filename = t.filename
 	st, end := node.Pos(), node.End()

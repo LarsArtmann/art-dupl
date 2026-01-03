@@ -38,13 +38,14 @@ func (r *RuntimeConfig) ToConfig() *config.Config {
 		Paths:          r.Paths,
 	}
 
-	if r.HTML {
+	switch {
+	case r.HTML:
 		cfg.OutputFormat = config.OutputFormatHTML
-	} else if r.Plumbing {
+	case r.Plumbing:
 		cfg.OutputFormat = config.OutputFormatPlumbing
-	} else if r.JSON {
+	case r.JSON:
 		cfg.OutputFormat = config.OutputFormatJSON
-	} else {
+	default:
 		// Default to text format when no output format is specified
 		cfg.OutputFormat = config.OutputFormatText
 	}

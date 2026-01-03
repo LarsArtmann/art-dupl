@@ -133,7 +133,7 @@ func TestSaveConfig(t *testing.T) {
 	}
 }
 
-func TestValidateConfig(t *testing.T) {
+func TestValidateConfig(t *testing.T) { //nolint:funlen // Comprehensive test with multiple scenarios
 	tests := []struct {
 		name    string
 		config  *Config

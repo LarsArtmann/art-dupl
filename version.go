@@ -6,7 +6,7 @@ import (
 )
 
 // Version information - can be overridden during build.
-var (
+var ( //nolint:gochecknoglobals // Build-time variables meant to be overridden
 	Version = "dev"
 	Commit  = "unknown"
 	Date    = "unknown"
