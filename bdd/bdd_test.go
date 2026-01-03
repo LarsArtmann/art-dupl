@@ -160,7 +160,7 @@ func uniqueFunction(ctx context.Context) error {
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
-				t.Logf("Command failed with output: %s\n", string(output))
+				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
@@ -186,7 +186,7 @@ func uniqueFunction(ctx context.Context) error {
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
-				t.Logf("Command failed with output: %s\n", string(output))
+				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
@@ -213,7 +213,7 @@ func uniqueFunction(ctx context.Context) error {
 			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			// Print debug information if there's an error
 			if err != nil {
-				t.Logf("Command failed with output: %s\n", string(output))
+				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
@@ -461,7 +461,7 @@ func processData(data string) error {
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
-				t.Logf("Command failed with output: %s\n", string(output))
+				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify - should only mention files from subDir1

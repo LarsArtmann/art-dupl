@@ -6,10 +6,10 @@ import (
 )
 
 // Version information - can be overridden during build.
-var ( //nolint:gochecknoglobals // Build-time variables meant to be overridden
-	Version = "dev"
-	Commit  = "unknown"
-	Date    = "unknown"
+var (
+	Version = "dev"     //nolint:gochecknoglobals // Build-time variables meant to be overridden
+	Commit  = "unknown" //nolint:gochecknoglobals
+	Date    = "unknown" //nolint:gochecknoglobals
 )
 
 // GetVersion returns version information including build info.
@@ -35,6 +35,6 @@ func GetBuildDate() string {
 
 // PrintVersion prints version information.
 func PrintVersion() {
-	fmt.Printf("art-dupl version %s\n", GetVersion())
-	fmt.Printf("Built with %s %s/%s\n", runtime.Compiler, runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("art-dupl version %s\n", GetVersion())                                   //nolint:forbidigo // Version output
+	fmt.Printf("Built with %s %s/%s\n", runtime.Compiler, runtime.GOOS, runtime.GOARCH) //nolint:forbidigo // Build info output
 }

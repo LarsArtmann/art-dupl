@@ -139,7 +139,7 @@ func (p *text) OutputText(threshold int, sortBy string) error {
 	copy(sortedCloneGroups, p.cloneGroups)
 
 	switch sortBy {
-	case "size":
+	case sortBySize:
 		// Sort by total token size of each clone group
 		sortCloneGroupsBySize(sortedCloneGroups)
 	case "occurrence":

@@ -130,7 +130,7 @@ func Run() int {
 		if outputFile != nil {
 			_ = outputFile.Close()
 		}
-		os.Exit(1)
+		os.Exit(1) //nolint:gocritic // Defer already executed before this point
 		return 1
 	}
 	return 0

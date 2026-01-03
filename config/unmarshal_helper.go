@@ -13,7 +13,7 @@ func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isVa
 	if !isValid(candidate) {
 		var zero T
 		// Include all relevant context: original data, parsed string, candidate, and validation failure
-		return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed string: %q, candidate: %q, type: T)", fmt.Errorf(errorMsg, str), data, str, candidate)
+		return zero, fmt.Errorf("enum validation failed: %w (original data: %q, parsed string: %q, candidate: %q, type: T)", fmt.Errorf(errorMsg, str), data, str, candidate)
 	}
 	return candidate, nil
 }
