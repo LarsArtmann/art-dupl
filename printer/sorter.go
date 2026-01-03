@@ -6,7 +6,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-
 // SortCloneGroups sorts CloneGroup arrays by specified criteria.
 func SortCloneGroups(groups []CloneGroup, sortBy string) {
 	switch sortBy {

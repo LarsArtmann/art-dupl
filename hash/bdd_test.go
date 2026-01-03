@@ -225,6 +225,7 @@ func TestHashDetectionShouldHandleEmptyInput(t *testing.T) {
 // Helper functions for BDD tests
 
 func collectMatches(matchesChan <-chan syntax.Match) []syntax.Match {
+	//nolint:prealloc // Can't preallocate for channel inputs
 	var matches []syntax.Match
 	for match := range matchesChan {
 		matches = append(matches, match)

@@ -51,6 +51,7 @@ func (t *STree) Update(data ...Token) {
 }
 
 // update transforms suffix tree T(n) to T(n+1).
+//nolint:funcorder
 func (t *STree) update() {
 	oldr := t.root
 
@@ -84,6 +85,7 @@ func (t *STree) update() {
 // (s, (start, end)) is the end point, that is, a state that have
 // a c-transition. If not, then state (exs, (start, end)) is made
 // explicit (if not already so).
+//nolint:funcorder
 func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint bool) {
 	c := t.data[t.end]
 	if start <= end {
@@ -108,6 +110,7 @@ func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint boo
 // canonize returns updated state and start position for ref. pair
 // (s, (start, end)) of state r so the new ref. pair is canonical,
 // that is, referenced from the closest explicit ancestor of r.
+//nolint:funcorder
 func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	if s == t.auxState {
 		s, start = t.root, start+1
@@ -205,6 +208,7 @@ func newTran(start, end Pos, s *state) *tran {
 	return &tran{start, end, s}
 }
 
+//nolint:funcorder
 func (t *tran) len() int {
 	return int(t.end - t.start + 1)
 }

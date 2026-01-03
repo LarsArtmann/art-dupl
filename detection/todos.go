@@ -15,7 +15,7 @@ type TodoIssue struct {
 	Filename string   `json:"filename"`
 	Line     int      `json:"line"`
 	Text     string   `json:"text"`
-	Type     string   `json:"type"` //nolint:godox // TODO, FIXME, XXX, etc.
+	Type     string   `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
 	Tags     []string `json:"tags,omitempty"` // @username, date, etc.
 }
 
