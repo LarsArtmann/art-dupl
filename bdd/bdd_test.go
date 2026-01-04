@@ -155,7 +155,7 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run art-dupl on test directory
-			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "10") //nolint:gosec //G204 Test code, controlled input
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
@@ -181,7 +181,7 @@ func uniqueFunction(ctx context.Context) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Run with high threshold
-			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "50")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "50") //nolint:gosec //G204 Test code, controlled input
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
@@ -416,9 +416,9 @@ var _ = Describe("File Targeting Scenarios", func() {
 		// Create subdirectories
 		subDir1 = filepath.Join(tempDir, "pkg1")
 		subDir2 = filepath.Join(tempDir, "pkg2")
-		err = os.MkdirAll(subDir1, 0o755)
+		err = os.MkdirAll(subDir1, 0o755) //nolint:gosec //G301 Test directory permissions
 		Expect(err).NotTo(HaveOccurred())
-		err = os.MkdirAll(subDir2, 0o755)
+		err = os.MkdirAll(subDir2, 0o755) //nolint:gosec //G301 Test directory permissions
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -456,7 +456,7 @@ func processData(data string) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Analyze only subDir1
-			cmd = exec.Command("../bdd/art-dupl-test", subDir1, "--threshold", "10")
+			cmd = exec.Command("../bdd/art-dupl-test", subDir1, "--threshold", "10") //nolint:gosec //G204 Test code, controlled input
 			cmd.Dir = ".."
 			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
