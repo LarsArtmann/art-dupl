@@ -966,6 +966,12 @@ linters-settings:
       - "json.Marshaler"
       # Allow printer interface returns
       - "printer.Printer"
+      # Allow internal package interfaces
+      - "github.com/LarsArtmann/art-dupl/printer.Printer"
+      - "github.com/LarsArtmann/art-dupl/pkg/artdupl.Detector"
+      - "github.com/LarsArtmann/art-dupl/suffixtree.Token"
+      # Allow generic utility functions
+      - "T"
 
   # Structured logging validation
   loggercheck:

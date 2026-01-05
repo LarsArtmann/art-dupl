@@ -14,7 +14,7 @@ type plumbing struct {
 	w io.Writer
 }
 
-func NewPlumbing(w io.Writer, fread ReadFile) Printer {
+func NewPlumbing(w io.Writer, fread ReadFile) Printer { //nolint:ireturn // Printer interface is not intended to be returned as concrete type
 	return &plumbing{ReadFile: fread, w: w}
 }
 
