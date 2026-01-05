@@ -32,7 +32,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil { //nolint:gosec //G301 Test data needs readable directory permission
 		return errors.NewIOError(dir, "failed to create directory", err)
 	}
 
@@ -46,7 +46,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 // WriteTextFile writes text content to a file with consistent permissions.
 func (fp *FileProcessor) WriteTextFile(filename, content string) error {
-	return fp.WriteFile(filename, []byte(content), 0o644)
+	return fp.WriteFile(filename, []byte(content), 0o644) //nolint:gosec //G306 Test data needs readable file permission
 }
 
 // ReadFile reads file content with consistent error handling.

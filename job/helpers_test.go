@@ -25,7 +25,7 @@ func helper() {
 	fmt.Println("helper")
 }`)
 
-	err := os.WriteFile(goFile, content, 0o644)
+	err := os.WriteFile(goFile, content, 0o644) //nolint:gosec //G306 Test file needs readable permission
 	if err != nil {
 		t.Fatalf("Failed to create test Go file: %v", err)
 	}
@@ -47,7 +47,7 @@ func setupMultipleTestFiles(t *testing.T) []string {
 func function1() {
 	println("test1")
 }`)
-	err := os.WriteFile(file1, content1, 0o644)
+	err := os.WriteFile(file1, content1, 0o644) //nolint:gosec //G306 Test file needs readable permission
 	if err != nil {
 		t.Fatalf("Failed to create test file 1: %v", err)
 	}
@@ -60,7 +60,7 @@ func function1() {
 func function1() {
 	println("test2")
 }`)
-	err = os.WriteFile(file2, content2, 0o644)
+	err = os.WriteFile(file2, content2, 0o644) //nolint:gosec //G306 Test file needs readable permission
 	if err != nil {
 		t.Fatalf("Failed to create test file 2: %v", err)
 	}

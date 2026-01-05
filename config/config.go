@@ -88,7 +88,7 @@ func LoadConfig(filename string) (*Config, error) {
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(filename)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil { //nolint:gosec //G301 Config directory needs readable permission
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 
@@ -97,7 +97,7 @@ func SaveConfig(config *Config, filename string) error {
 		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
-	err = os.WriteFile(filename, data, 0o644)
+	err = os.WriteFile(filename, data, 0o644) //nolint:gosec //G306 Config file needs to be readable by user
 	if err != nil {
 		return errors.NewIOError(filename, "failed to write config file", err)
 	}

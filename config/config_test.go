@@ -53,7 +53,7 @@ func TestLoadConfig(t *testing.T) {
 		"maxChildrenSerial": 20000
 	}`
 
-	err := os.WriteFile(configFile, []byte(configContent), 0o644)
+	err := os.WriteFile(configFile, []byte(configContent), 0o644) //nolint:gosec //G306 Test config needs readable permission
 	if err != nil {
 		t.Fatalf("Failed to write config file: %v", err)
 	}
