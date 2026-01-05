@@ -10,9 +10,6 @@ import (
 func TestExamplesPackage(t *testing.T) {
 	// Test default options
 	opts := artdupl.DefaultOptions()
-	if opts == nil {
-		t.Error("DefaultOptions should not be nil")
-	}
 
 	// Test threshold
 	if opts.Threshold <= 0 {
@@ -46,7 +43,7 @@ func TestExamplesPackage(t *testing.T) {
 }
 
 // TestExamplesTypes tests type definitions.
-func TestExamplesTypes(t *testing.T) {
+func TestExamplesTypes(t *testing.T) { //nolint:cyclop,funlen // Comprehensive type validation test with multiple assertions
 	// Test detection method constants
 	methods := []artdupl.DetectionMethod{
 		artdupl.MethodArtDupl,

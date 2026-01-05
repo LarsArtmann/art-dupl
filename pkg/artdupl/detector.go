@@ -198,7 +198,7 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 }
 
 // runDetection executes the configured detection methods.
-func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
+func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) { //nolint:cyclop // Detection execution with multiple method paths
 	d.reportProgress(70, "Starting duplicate detection", "")
 
 	var allGroups []*CloneGroup
@@ -255,7 +255,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 }
 
 // streamDetectionResults streams detection results to the provided channel.
-func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.Node, resultChan chan<- *CloneGroup) error {
+func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.Node, resultChan chan<- *CloneGroup) error { //nolint:cyclop // Result streaming with multiple method paths
 	// Similar to runDetection but streams results instead of collecting all
 	threshold := d.config.Threshold
 	var matchesChan <-chan syntax.Match

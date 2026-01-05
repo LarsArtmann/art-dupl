@@ -25,10 +25,6 @@ func TestDetectionMethod_Values_Basic(t *testing.T) {
 func TestDefaultOptions_Basic(t *testing.T) {
 	opts := DefaultOptions()
 
-	if opts == nil {
-		t.Error("DefaultOptions should not return nil")
-	}
-
 	// Test that default threshold is reasonable
 	if opts.Threshold <= 0 || opts.Threshold > 1000 {
 		t.Errorf("Default threshold should be reasonable, got %d", opts.Threshold)

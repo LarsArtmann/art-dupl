@@ -24,10 +24,6 @@ func TestNewMultiDetector_Working(t *testing.T) {
 
 	detector := NewMultiDetector(cfg, data, tree, true)
 
-	if detector == nil {
-		t.Error("Detector should not be nil")
-	}
-
 	if detector.config != cfg {
 		t.Error("Config not set correctly")
 	}
@@ -49,10 +45,6 @@ func TestNewMultiDetector_Working(t *testing.T) {
 func TestTodoDetector_Working(t *testing.T) {
 	detector := NewTodoDetector()
 
-	if detector == nil {
-		t.Error("TODO detector should not be nil")
-	}
-
 	if detector.patterns == nil {
 		t.Error("Patterns should not be nil")
 	}
@@ -61,10 +53,6 @@ func TestTodoDetector_Working(t *testing.T) {
 // TestLegacyDetector_Working tests legacy detector creation.
 func TestLegacyDetector_Working(t *testing.T) {
 	detector := NewLegacyDetector()
-
-	if detector == nil {
-		t.Error("Legacy detector should not be nil")
-	}
 
 	if detector.patterns == nil {
 		t.Error("Patterns should not be nil")

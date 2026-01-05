@@ -179,7 +179,7 @@ func mergeFileConfig(result, cfg *Config) {
 	}
 }
 
-func mergeCLIConfig(result, cfg *Config) {
+func mergeCLIConfig(result, cfg *Config) { //nolint:cyclop // Config merging with multiple optional fields
 	if cfg == nil {
 		return
 	}

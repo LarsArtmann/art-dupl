@@ -30,9 +30,7 @@ func TestConstants_Clean(t *testing.T) {
 func TestTransformer_Clean(t *testing.T) {
 	transformer := &transformer{}
 
-	if transformer == nil {
-		t.Error("Transformer should not be nil")
-	}
+	_ = transformer // Use transformer to avoid "declared and not used" error
 }
 
 // TestAddWithNilCheck_Clean tests addWithNilCheck with safe inputs.

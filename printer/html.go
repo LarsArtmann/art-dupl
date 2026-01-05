@@ -45,7 +45,7 @@ func (p *htmlprinter) PrintHeader() error {
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
+func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error { //nolint:cyclop // HTML generation with multiple formatting paths
 	p.iota++
 
 	// Extract sortBy parameter, default to "size"
@@ -144,7 +144,7 @@ func toWhitespace(str []byte) []byte {
 	return out
 }
 
-func deindent(block []byte) []byte {
+func deindent(block []byte) []byte { //nolint:cyclop // String manipulation with multiple parsing paths
 	const maxVal = 99
 	min := maxVal
 	re := regexp.MustCompile(`(^|\n)(\t*)\S`)

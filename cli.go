@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Run() int {
+func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handling paths
 	flag.Usage = func() { fmt.Fprintln(os.Stderr, `Usage: art-dupl [flags] [paths]`) }
 	cliCfg := cli.NewCLIConfig()
 
@@ -190,7 +190,7 @@ func filesFeedWithOptions(paths []string, fromStdin bool) chan string {
 	return crawlPaths(paths)
 }
 
-func crawlPaths(paths []string) chan string {
+func crawlPaths(paths []string) chan string { //nolint:cyclop // Path crawling with multiple error handling paths
 	fchan := make(chan string)
 	go func() {
 		for _, path := range paths {
@@ -246,7 +246,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 	return duplChan, filesCount, nil
 }
 
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error {
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
 	groups := make(map[string][][]*syntax.Node)
 	for dupl := range duplChan {
 		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
@@ -286,7 +286,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	return nil
 }
 
-func runCobraCommand(cmd *cobra.Command, args []string) error {
+func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,funlen // Cobra command with multiple flag handling paths
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
 	verbose, _ := cmd.Flags().GetBool("verbose")

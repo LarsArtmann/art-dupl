@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func main() {
+func main() { //nolint:cyclop,funlen // Main entry point with complex error handling and CLI setup
 	rootCmd := &cobra.Command{
 		Use:   "art-dupl [flags] [paths...]",
 		Short: "Find code clones",

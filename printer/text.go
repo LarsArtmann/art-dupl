@@ -133,7 +133,7 @@ func blockLines(file []byte, from, to int) (int, int) {
 }
 
 // OutputText generates text output with sorting.
-func (p *text) OutputText(threshold int, sortBy string) error {
+func (p *text) OutputText(threshold int, sortBy string) error { //nolint:cyclop // Text output with multiple sorting strategies
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)

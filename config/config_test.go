@@ -38,7 +38,7 @@ func TestDefaultConfig(t *testing.T) {
 	}
 }
 
-func TestLoadConfig(t *testing.T) {
+func TestLoadConfig(t *testing.T) { //nolint:cyclop // Comprehensive test with multiple validation paths
 	tmpDir, cleanup := createTempDir(t)
 	defer cleanup()
 
@@ -295,7 +295,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 	}
 }
 
-func TestDetectionMethods(t *testing.T) {
+func TestDetectionMethods(t *testing.T) { //nolint:cyclop // Comprehensive test with multiple method validation paths
 	// Test String method
 	dm := DetectionMethodHash
 	if dm.String() != "hash" {

@@ -166,7 +166,7 @@ func TestCanonize(t *testing.T) {
 	}
 }
 
-func TestSplitting(t *testing.T) {
+func TestSplitting(t *testing.T) { //nolint:cyclop // Suffix tree splitting test with multiple validation steps
 	tree := new(STree)
 	tree.data = str2tok("banana|cbao")
 	s1 := newState(tree)

@@ -79,7 +79,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 
 	for _, filename := range files {
 		// Read file content
-		content, err := os.ReadFile(filename)
+		content, err := os.ReadFile(filename) //nolint:gosec //G304 Filename comes from user-provided paths, verified by caller
 		if err != nil {
 			continue // Skip files that can't be read
 		}

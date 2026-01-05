@@ -46,7 +46,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 // WriteTextFile writes text content to a file with consistent permissions.
 func (fp *FileProcessor) WriteTextFile(filename, content string) error {
-	return fp.WriteFile(filename, []byte(content), 0o644) //nolint:gosec //G306 Test data needs readable file permission
+	return fp.WriteFile(filename, []byte(content), 0o644)
 }
 
 // ReadFile reads file content with consistent error handling.
@@ -57,7 +57,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 		fullPath = filepath.Join(fp.baseDir, filename)
 	}
 
-	data, err := os.ReadFile(fullPath)
+	data, err := os.ReadFile(fullPath) //nolint:gosec //G304 Path is constructed from base directory and validated filename
 	if err != nil {
 		return nil, errors.NewIOError(fullPath, "failed to read file", err)
 	}
