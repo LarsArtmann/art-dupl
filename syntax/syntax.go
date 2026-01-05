@@ -123,7 +123,7 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 	for i := 0; i < len(nodeSeq); {
 		n := nodeSeq[i]
 		switch {
-		case n.Owns >= len(nodeSeq)-i:
+		case n.Owns > len(nodeSeq)-i:
 			// not complete syntax unit
 			i++
 			split = true
