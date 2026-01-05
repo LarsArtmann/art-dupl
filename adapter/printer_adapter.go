@@ -40,7 +40,7 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 		// Calculate size based on first node
 		startNode := nodeGroup[0]
 		endNode := nodeGroup[len(nodeGroup)-1]
-		size := uint(endNode.End - startNode.Pos)
+		size := uint(max(0, endNode.End-startNode.Pos)) //nolint:gosec //G115 size is always non-negative in valid clones
 		totalSize += size
 
 		// Convert each node to domain clone

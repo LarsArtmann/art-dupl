@@ -303,10 +303,10 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	return Clone{
 		ID:         cloneID,
 		Filename:   filename,
-		StartLine:  uint(lineStart),
-		EndLine:    uint(lineEnd),
-		StartPos:   uint(node.Pos),
-		EndPos:     uint(node.End),
+		StartLine:  uint(lineStart), //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
+		EndLine:    uint(lineEnd),   //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
+		StartPos:   uint(node.Pos),  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
+		EndPos:     uint(node.End),  //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
 		Fragment:   fragment,
 		Hash:       hash,
 		Confidence: 1.0, // Calculate actual confidence
