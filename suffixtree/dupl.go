@@ -1,6 +1,9 @@
 package suffixtree
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 type Match struct {
 	Ps  []Pos
