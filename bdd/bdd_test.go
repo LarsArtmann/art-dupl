@@ -587,7 +587,7 @@ func (s *Service) processInternal(data string) error {
 			defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 
 			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
-			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--json", "--threshold", "15")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
 			cmd.Dir = ".."
 			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
@@ -660,7 +660,7 @@ func processItem(data string, index int) error {
 
 			// Measure execution time
 			start := time.Now()
-			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "20")
+			cmd = exec.Command("../bdd/art-dupl-test", tempDir, "--threshold", "20") //nolint:gosec //G204 Test code, controlled input
 			cmd.Dir = ".."
 			var output []byte
 			output, err = cmd.CombinedOutput()
