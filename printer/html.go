@@ -22,7 +22,8 @@ type htmlprinter struct {
 	dupls    [][][]*syntax.Node
 }
 
-func NewHTML(w io.Writer, fread ReadFile) Printer { //nolint:ireturn // Printer interface is the correct return type
+//nolint:ireturn // Printer interface is appropriate return type for factory function
+func NewHTML(w io.Writer, fread ReadFile) Printer {
 	return &htmlprinter{w: w, ReadFile: fread, dupls: make([][][]*syntax.Node, 0)}
 }
 

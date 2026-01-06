@@ -77,14 +77,14 @@ func TestCyclicDupl(t *testing.T) {
 	}{
 		{"a1 b0 a2 b0", []int{0, 2}, false},
 		{"a1 b0 a1 b0", []int{0, 2}, true},
-		{"a0 a0", []int{0, 1}, true},
+		{"a0 a0", []int{0, 1}, true}, //nolint:dupword // Intentional duplicate for testing
 		{"a1 b0 c1 b0 a1 b0 c1 b0", []int{0, 2, 4, 6}, true},
 		{"a1 b0 c1 b0 a1 b0", []int{0, 2, 4}, false},
 		{"a0 b0 a0 c0", []int{0, 1, 2, 3}, false},
 		{"a0 b0 a0 b0 a0", []int{0, 1, 2}, false},
 		{"a1 b0 a1 b0 c1 b0", []int{0, 2, 4}, false},
-		{"a1 a1 a1 a1 a1 a1", []int{0, 4}, false},
-		{"a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0", []int{0, 3, 6, 9, 12}, true},
+		{"a1 a1 a1 a1 a1 a1", []int{0, 4}, false},                                     //nolint:dupword // Intentional duplicates for testing
+		{"a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0", []int{0, 3, 6, 9, 12}, true}, //nolint:dupword // Intentional duplicates for testing
 	}
 
 	for _, tc := range testCases {

@@ -18,7 +18,8 @@ type text struct {
 	cloneGroups [][]clone
 }
 
-func NewText(w io.Writer, fread ReadFile) Printer { //nolint:ireturn // Printer interface is not intended to be returned as concrete type
+//nolint:ireturn // Printer interface is appropriate return type for factory function
+func NewText(w io.Writer, fread ReadFile) Printer {
 	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
 }
 

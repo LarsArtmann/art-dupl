@@ -144,7 +144,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	return s, start, nil
 }
 
-func (t *STree) At(p Pos) Token { //nolint:ireturn // Token interface is correct return type
+//nolint:ireturn // Token interface is appropriate return type for STree
+func (t *STree) At(p Pos) Token {
 	// Safe conversion: len(t.data) will not overflow Pos in practice
 	if p < 0 || p >= Pos(len(t.data)) { //nolint:gosec //G115 Data size won't exceed MaxInt32
 		return nil

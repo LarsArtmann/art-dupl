@@ -3,7 +3,9 @@ package config
 import "fmt"
 
 // UnmarshalStringToEnum is a generic helper for unmarshaling JSON strings to typed enums.
-func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, errorMsg string) (T, error) { //nolint:ireturn // Generic type T is correct return for utility function
+//
+//nolint:ireturn // Generic type T is appropriate return for utility function
+func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, errorMsg string) (T, error) {
 	str := string(data)
 	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
 		str = str[1 : len(str)-1]
@@ -19,7 +21,9 @@ func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isVa
 }
 
 // UnmarshalEnumJSON is a generic helper for implementing UnmarshalJSON for enum types.
-func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, typeName string) (T, error) { //nolint:ireturn // Generic type T is correct return for utility function
+//
+//nolint:ireturn // Generic type T is appropriate return for utility function
+func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid func(T) bool, typeName string) (T, error) {
 	return UnmarshalStringToEnum(data, enumType, isValid, "invalid %s: %"+typeName)
 }
 

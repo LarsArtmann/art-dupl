@@ -55,7 +55,8 @@ type JSONPrinter struct {
 	currentHash string // Hash for the current clone group
 }
 
-func NewJSON(w io.Writer, fread ReadFile) Printer { //nolint:ireturn // Printer interface is not intended to be returned as concrete type
+//nolint:ireturn // Printer interface is appropriate return type for factory function
+func NewJSON(w io.Writer, fread ReadFile) Printer {
 	return &JSONPrinter{
 		w:        w,
 		ReadFile: fread,
