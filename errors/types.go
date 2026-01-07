@@ -28,6 +28,33 @@ type DuplError struct {
 	Stack   string
 }
 
+// EnumValidationError provides domain-specific error context for enum validation failures.
+type EnumValidationError struct {
+	DuplError
+	EnumValue string
+	EnumType  string
+}
+
+// Error implements the error interface for EnumValidationError.
+func (e *EnumValidationError) Error() string {
+	return fmt.Sprintf("enum validation failed: type=%s, value=%q (file: %s:%d)",
+		e.EnumType, e.EnumValue, e.File, e.Line)
+}
+
+// NewEnumValidationError creates a new enum validation error with rich context.
+func NewEnumValidationError(enumType, enumValue string, cause error) *EnumValidationError {
+	return &EnumValidationError{
+		DuplError: DuplError{
+			Type:    ValidationError,
+			Message: fmt.Sprintf("enum validation error: type=%s, value=%q", enumType, enumValue),
+			Cause:   cause,
+			Stack:   string(debug.Stack()),
+		},
+		EnumValue: enumValue,
+		EnumType:  enumType,
+	}
+}
+
 // NewParseError creates a new parse error with context.
 func NewParseError(file string, line int, msg string, cause error) *DuplError {
 	return &DuplError{
