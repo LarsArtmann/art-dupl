@@ -90,7 +90,7 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error { //nolint:funlen // Complex processing for JSON output
+func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.iota++
 
 	clones := make([]JSONClone, len(dups))
@@ -109,25 +109,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		}
 
 		lineStart := fileInfo.LineStart
-		start := findLineBeg(fileInfo.Content, nstart.Pos)
-		var content []byte
-
-		// Ensure all indices are within file bounds
-		fileLen := len(fileInfo.Content)
-		if start > fileLen {
-			start = fileLen
-		}
-		startPos := min(nstart.Pos, fileLen)
-		endPos := min(nend.End, fileLen)
-
-		// Only extract content if we have valid bounds
-		if startPos < endPos {
-			if start < startPos {
-				content = append(toWhitespace(fileInfo.Content[start:startPos]), fileInfo.Content[startPos:endPos]...)
-			} else {
-				content = fileInfo.Content[startPos:endPos]
-			}
-		}
+		content := extractContent(fileInfo, nstart, nend)
 		clones[i] = JSONClone{
 			Filename:  nstart.Filename,
 			LineStart: lineStart,

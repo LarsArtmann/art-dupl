@@ -68,14 +68,19 @@ func NewParseError(file string, line int, msg string, cause error) *DuplError {
 	}
 }
 
-// NewConfigError creates a new configuration error.
-func NewConfigError(msg string, cause error) *DuplError {
+// newError creates a new error with the specified type.
+func newError(errorType ErrorType, msg string, cause error) *DuplError {
 	return &DuplError{
-		Type:    ConfigError,
+		Type:    errorType,
 		Message: msg,
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
+}
+
+// NewConfigError creates a new configuration error.
+func NewConfigError(msg string, cause error) *DuplError {
+	return newError(ConfigError, msg, cause)
 }
 
 // NewIOError creates a new I/O error.
@@ -91,22 +96,12 @@ func NewIOError(file, msg string, cause error) *DuplError {
 
 // NewValidationError creates a new validation error.
 func NewValidationError(msg string, cause error) *DuplError {
-	return &DuplError{
-		Type:    ValidationError,
-		Message: msg,
-		Cause:   cause,
-		Stack:   string(debug.Stack()),
-	}
+	return newError(ValidationError, msg, cause)
 }
 
 // NewInternalError creates a new internal error.
 func NewInternalError(msg string, cause error) *DuplError {
-	return &DuplError{
-		Type:    InternalError,
-		Message: msg,
-		Cause:   cause,
-		Stack:   string(debug.Stack()),
-	}
+	return newError(InternalError, msg, cause)
 }
 
 // Error implements the error interface.

@@ -25,7 +25,6 @@ type detector struct {
 }
 
 // NewDetector creates a new code duplication detector.
-//
 //nolint:ireturn // Detector interface is the correct return type for factory pattern
 func NewDetector(opts *Options) (Detector, error) {
 	// Use default options if none provided
@@ -308,13 +307,11 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 	return nil
 }
 
-// runArtDuplDetection executes art-dupl (suffix tree) detection method.
-func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
-	// Build suffix tree
+// runSuffixTreeDetection executes suffix tree-based detection.
+func (d *detector) runSuffixTreeDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
 	tree := d.buildSuffixTree(data)
 	suffixMatches := tree.FindDuplOver(threshold)
 
-	// Convert suffix tree matches to syntax matches
 	syntaxMatches := make(chan syntax.Match)
 	go func() {
 		defer close(syntaxMatches)
@@ -330,26 +327,14 @@ func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node,
 	return syntaxMatches
 }
 
+// runArtDuplDetection executes art-dupl (suffix tree) detection method.
+func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
+	return d.runSuffixTreeDetection(ctx, data, threshold)
+}
+
 // runHashDetection executes hash-based detection method.
 func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
-	// Build a suffix tree for the hash detection method as well
-	tree := d.buildSuffixTree(data)
-	suffixMatches := tree.FindDuplOver(threshold)
-
-	// Convert suffix tree matches to syntax matches
-	syntaxMatches := make(chan syntax.Match)
-	go func() {
-		defer close(syntaxMatches)
-
-		for match := range suffixMatches {
-			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
-			if len(syntaxMatch.Frags) > 0 {
-				syntaxMatches <- syntaxMatch
-			}
-		}
-	}()
-
-	return syntaxMatches
+	return d.runSuffixTreeDetection(ctx, data, threshold)
 }
 
 // buildSuffixTree creates a suffix tree from the provided data.

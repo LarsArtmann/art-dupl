@@ -1,11 +1,9 @@
 package printer
 
 import (
-	"bytes"
 	"fmt"
 	"html"
 	"io"
-	"regexp"
 	"sort"
 	"sync"
 
@@ -46,7 +44,7 @@ func (p *htmlprinter) PrintHeader() error {
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error { //nolint:cyclop // HTML generation with multiple formatting paths
+func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.iota++
 
 	// Extract sortBy parameter, default to "size"
@@ -83,26 +81,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error
 		}
 
 		cl := clone{filename: fileInfo.Filename, lineStart: fileInfo.LineStart}
-		start := findLineBeg(fileInfo.Content, nstart.Pos)
-		var content []byte
-
-		// Ensure all indices are within file bounds
-		fileLen := len(fileInfo.Content)
-		if start > fileLen {
-			start = fileLen
-		}
-		startPos := min(nstart.Pos, fileLen)
-		endPos := min(nend.End, fileLen)
-
-		// Only extract content if we have valid bounds
-		if startPos < endPos {
-			if start < startPos {
-				content = append(toWhitespace(fileInfo.Content[start:startPos]), fileInfo.Content[startPos:endPos]...)
-			} else {
-				content = fileInfo.Content[startPos:endPos]
-			}
-		}
-		cl.fragment = deindent(content)
+		cl.fragment = extractContent(fileInfo, nstart, nend)
 		clones[i] = cl
 	}
 
@@ -122,57 +101,6 @@ func (p *htmlprinter) PrintFooter() error {
 </html>
 `)
 	return err //nolint:wrapcheck // fmt errors are clear in context
-}
-
-func findLineBeg(file []byte, index int) int {
-	for i := index; i >= 0; i-- {
-		if file[i] == '\n' {
-			return i + 1
-		}
-	}
-	return 0
-}
-
-func toWhitespace(str []byte) []byte {
-	var out []byte
-	for _, c := range bytes.Runes(str) {
-		if c == '\t' {
-			out = append(out, '\t')
-		} else {
-			out = append(out, ' ')
-		}
-	}
-	return out
-}
-
-func deindent(block []byte) []byte { //nolint:cyclop // String manipulation with multiple parsing paths
-	const maxVal = 99
-	min := maxVal
-	re := regexp.MustCompile(`(^|\n)(\t*)\S`)
-	for _, line := range re.FindAllSubmatch(block, -1) {
-		indent := line[2]
-		if len(indent) < min {
-			min = len(indent)
-		}
-	}
-	if min == 0 || min == maxVal {
-		return block
-	}
-	block = block[min:]
-Loop:
-	for i := 0; i < len(block); i++ {
-		if block[i] == '\n' && i != len(block)-1 {
-			for j := 0; j < min && i+j+1 < len(block); j++ {
-				if block[i+j+1] != '\t' {
-					continue Loop
-				}
-			}
-			if i+min+1 <= len(block) {
-				block = append(block[:i+1], block[i+1+min:]...)
-			}
-		}
-	}
-	return block
 }
 
 // OutputHTML generates HTML output with sorting.
