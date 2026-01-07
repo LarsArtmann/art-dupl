@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/types"
 )
@@ -281,7 +282,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Calculate line numbers from file content
 	lineStart, lineEnd := 1, 1 // defaults
 	if fileContent != nil {
-		lineStart, lineEnd = calculateLines(fileContent, node.Pos, node.End)
+		lineStart, lineEnd = position.ByteRangeToLines(fileContent, node.Pos, node.End)
 	}
 
 	// Extract fragment from file content
@@ -327,31 +328,6 @@ func CalculateSeverity(size, complexity uint) CloneSeverity {
 		return CloneSeverityMedium
 	}
 	return CloneSeverityLow
-}
-
-// calculateLines determines the line numbers for a given position range.
-func calculateLines(fileContent []byte, from, to int) (int, int) {
-	line := 1
-	lineStart, lineEnd := 0, 0
-	for offset, b := range fileContent {
-		if b == '\n' {
-			line++
-		}
-		if offset == from {
-			lineStart = line
-		}
-		if offset == to-1 {
-			lineEnd = line
-			break
-		}
-	}
-	if lineStart == 0 {
-		lineStart = 1
-	}
-	if lineEnd == 0 {
-		lineEnd = lineStart
-	}
-	return lineStart, lineEnd
 }
 
 // calculateComplexity calculates a basic complexity metric for a node.

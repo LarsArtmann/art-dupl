@@ -2,6 +2,7 @@ package printer
 
 import (
 	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -27,7 +28,7 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	}
 
 	// Calculate line positions
-	lineStart, lineEnd := blockLines(file, node.Pos, node.End)
+	lineStart, lineEnd := position.ByteRangeToLines(file, node.Pos, node.End)
 
 	return &FileInfo{
 		Filename:  node.Filename,
@@ -50,7 +51,7 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 		return nil, err
 	}
 
-	lineStart, lineEnd := blockLines(file, startNode.Pos, endNode.End)
+	lineStart, lineEnd := position.ByteRangeToLines(file, startNode.Pos, endNode.End)
 
 	return &FileInfo{
 		Filename:  startNode.Filename,

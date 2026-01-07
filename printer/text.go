@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -109,29 +110,13 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 		}
 
 		cl := clone{filename: nstart.Filename}
-		cl.lineStart, cl.lineEnd = blockLines(file, nstart.Pos, nend.End)
+		cl.lineStart, cl.lineEnd = position.ByteRangeToLines(file, nstart.Pos, nend.End)
 		clones[i] = cl
 	}
 	return clones, nil
 }
 
-func blockLines(file []byte, from, to int) (int, int) {
-	line := 1
-	lineStart, lineEnd := 0, 0
-	for offset, b := range file {
-		if b == '\n' {
-			line++
-		}
-		if offset == from {
-			lineStart = line
-		}
-		if offset == to-1 {
-			lineEnd = line
-			break
-		}
-	}
-	return lineStart, lineEnd
-}
+
 
 // OutputText generates text output with sorting.
 func (p *text) OutputText(threshold int, sortBy string) error { //nolint:cyclop // Text output with multiple sorting strategies
