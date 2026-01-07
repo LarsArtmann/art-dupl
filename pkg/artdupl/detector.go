@@ -13,6 +13,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 )
 
 // detector implements the Detector interface using existing dupl components.
@@ -429,7 +430,7 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	}
 
 	// Extract the relevant lines
-	lines := d.splitLines(content)
+	lines := position.SplitLines(content)
 	start := frag[0].Pos - 1 // Convert to 0-based
 	end := frag[len(frag)-1].End
 
@@ -442,7 +443,7 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 		fragmentLines = append(fragmentLines, lines[i])
 	}
 
-	return d.joinLines(fragmentLines)
+	return position.JoinLines(fragmentLines)
 }
 
 // validateFile checks if a file should be processed.
@@ -521,50 +522,6 @@ func (d *detector) hashConfig(opts *Options) string {
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)
 }
 
-// Helper methods for line handling.
-func (d *detector) splitLines(content []byte) []string {
-	if len(content) == 0 {
-		return []string{}
-	}
-
-	contentStr := string(content)
-	lines := make([]string, 0, 100) // Pre-allocate reasonable capacity
-
-	start := 0
-	for i, char := range contentStr {
-		if char == '\n' {
-			if i > start {
-				lines = append(lines, contentStr[start:i])
-			} else {
-				lines = append(lines, "")
-			}
-			start = i + 1
-		}
-	}
-
-	// Add final line if content doesn't end with newline
-	if start < len(contentStr) {
-		lines = append(lines, contentStr[start:])
-	}
-
-	return lines
-}
-
-func (d *detector) joinLines(lines []string) string {
-	if len(lines) == 0 {
-		return ""
-	}
-
-	result := make([]byte, 0, 100) // Pre-allocate reasonable capacity
-	for i, line := range lines {
-		result = append(result, line...)
-		if i < len(lines)-1 {
-			result = append(result, '\n')
-		}
-	}
-
-	return string(result)
-}
 
 // convertOptionsToConfig converts SDK options to internal config format.
 func convertOptionsToConfig(opts *Options) *config.Config {

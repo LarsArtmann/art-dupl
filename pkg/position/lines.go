@@ -1,6 +1,10 @@
 // Package position provides utilities for working with source code positions.
 package position
 
+import (
+	"strings"
+)
+
 // ByteRangeToLines converts byte positions to line numbers.
 // Returns (startLine, endLine) where both are 1-indexed.
 // Handles edge cases where positions are at file boundaries.
@@ -34,4 +38,20 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 	}
 
 	return lineStart, lineEnd
+}
+
+// SplitLines splits content into lines by newline characters.
+func SplitLines(content []byte) []string {
+	if len(content) == 0 {
+		return []string{}
+	}
+	return strings.Split(string(content), "\n")
+}
+
+// JoinLines joins lines with newline characters.
+func JoinLines(lines []string) string {
+	if len(lines) == 0 {
+		return ""
+	}
+	return strings.Join(lines, "\n")
 }
