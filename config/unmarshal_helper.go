@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"reflect"
+	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 // UnmarshalStringToEnum is a generic helper for unmarshaling JSON strings to typed enums.
@@ -17,8 +18,9 @@ func UnmarshalStringToEnum[T ~string](data []byte, enumType func(string) T, isVa
 	candidate := enumType(str)
 	if !isValid(candidate) {
 		var zero T
-		// Include all relevant context: original data, parsed string, candidate, validation state, and type
-		return zero, fmt.Errorf("enum validation failed: value %q did not pass validation for type %s (original data: %q, parsed string: %q, candidate: %q)", str, reflect.TypeOf(zero).Name(), data, str, candidate)
+		// Use errors package for rich error context with stack trace
+		validationErr := fmt.Errorf("value %q did not pass validation for type %s (original data: %q, parsed string: %q, candidate: %q)", str, reflect.TypeOf(zero).Name(), data, str, candidate)
+		return zero, errors.NewValidationError(validationErr.Error(), validationErr)
 	}
 	return candidate, nil
 }
@@ -33,7 +35,9 @@ func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid 
 // MarshalEnumJSON is a generic helper for implementing MarshalJSON for enum types.
 func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) ([]byte, error) {
 	if !isValid(value) {
-		return nil, fmt.Errorf("failed to marshal enum: value=%q, isValid=%v, typeName=%s", value, isValid(value), typeName)
+		// Use errors package for rich error context with stack trace
+		validationErr := fmt.Errorf("value=%q, isValid=%v, typeName=%s", value, isValid(value), typeName)
+		return nil, errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr)
 	}
 	return fmt.Appendf(nil, `"%s"`, value), nil
 }
