@@ -1,0 +1,27 @@
+
+
+VARIABLES
+
+var (
+	Version = "dev"     //nolint:gochecknoglobals // Build-time variables meant to be overridden
+	Commit  = "unknown" //nolint:gochecknoglobals
+	Date    = "unknown" //nolint:gochecknoglobals
+)
+    Version information - can be overridden during build.
+
+
+FUNCTIONS
+
+func GetBuildDate() string
+    GetBuildDate returns the build date.
+
+func GetCommit() string
+    GetCommit returns the commit hash.
+
+func GetVersion() string
+    GetVersion returns version information including build info.
+
+func PrintVersion()
+    PrintVersion prints version information.
+
+func Run() int
