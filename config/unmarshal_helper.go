@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/LarsArtmann/art-dupl/errors"
 	"reflect"
+
+	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 // UnmarshalStringToEnum is a generic helper for unmarshaling JSON strings to typed enums.
