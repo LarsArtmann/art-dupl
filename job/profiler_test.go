@@ -9,7 +9,7 @@ import (
 func TestProfile(t *testing.T) {
 	// Test that Profile() captures metrics without panicking
 	result := Profile()
-	
+
 	if result.AllocMB < 0 {
 		t.Errorf("AllocMB should be >= 0, got %f", result.AllocMB)
 	}
@@ -20,16 +20,16 @@ func TestProfile(t *testing.T) {
 
 func TestStartProfile(t *testing.T) {
 	start := StartProfile()
-	
+
 	if start.Duration != 0 {
 		t.Errorf("StartProfile duration should be 0 initially, got %v", start.Duration)
 	}
-	
+
 	// Wait a bit
 	time.Sleep(10 * time.Millisecond)
-	
+
 	end := EndProfile(start)
-	
+
 	if end.Duration == 0 {
 		t.Errorf("EndProfile should calculate duration, got 0")
 	}
@@ -38,7 +38,7 @@ func TestStartProfile(t *testing.T) {
 func TestProfileWithDuration(t *testing.T) {
 	duration := 100 * time.Millisecond
 	result := ProfileWithDuration(duration)
-	
+
 	if result.Duration != duration {
 		t.Errorf("ProfileWithDuration duration should match input, got %v want %v", result.Duration, duration)
 	}
@@ -48,14 +48,14 @@ func TestProfileDiff(t *testing.T) {
 	start := Profile()
 	time.Sleep(10 * time.Millisecond)
 	end := Profile()
-	
+
 	diff := ProfileDiff(start, end)
-	
+
 	// Diff should have positive duration (approximately)
 	if diff.Duration < 0 {
 		t.Errorf("ProfileDiff duration should be >= 0, got %v", diff.Duration)
 	}
-	
+
 	// NumGC difference should be >= 0
 	//nolint:staticcheck // NumGC is uint32, check is for documentation
 	if diff.NumGC < 0 {
@@ -67,7 +67,7 @@ func TestContextTimeout(t *testing.T) {
 	// Test that timeout context works correctly
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
-	
+
 	select {
 	case <-time.After(5 * time.Millisecond):
 		// Should complete before timeout
@@ -80,14 +80,14 @@ func TestContextTimeoutExpired(t *testing.T) {
 	// Test that timeout context expires correctly
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
 	defer cancel()
-	
+
 	select {
 	case <-time.After(10 * time.Millisecond):
 		// Should timeout after 5ms
 	case <-ctx.Done():
 		// Expected timeout
 	}
-	
+
 	// Context should be cancelled
 	if ctx.Err() != context.DeadlineExceeded {
 		t.Errorf("Context should have deadline exceeded error, got %v", ctx.Err())
