@@ -81,13 +81,13 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 	}
 
 	// Validate mutually exclusive output format flags
-	if exitIfBothSet(&cliCfg.HTML, &cliCfg.Plumbing, "plumbing", "HTML") != 0 {
+	if cli.ExitIfBothSet(cliCfg.HTML, cliCfg.Plumbing, "plumbing", "HTML") != 0 {
 		return 1
 	}
-	if exitIfBothSet(&cliCfg.HTML, &cliCfg.JSONFlag, "HTML", "JSON") != 0 {
+	if cli.ExitIfBothSet(cliCfg.HTML, cliCfg.JSONFlag, "HTML", "JSON") != 0 {
 		return 1
 	}
-	if exitIfBothSet(&cliCfg.Plumbing, &cliCfg.JSONFlag, "plumbing", "JSON") != 0 {
+	if cli.ExitIfBothSet(cliCfg.Plumbing, cliCfg.JSONFlag, "plumbing", "JSON") != 0 {
 		return 1
 	}
 

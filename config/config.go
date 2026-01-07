@@ -162,7 +162,7 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 // mergeConfig merges source config into result config.
 // If skipZeroValues is true, fields with zero/empty values are skipped.
 // This provides a single source of truth for config merging.
-func mergeConfig(result, cfg *Config, skipZeroValues bool) {
+func mergeConfig(result, cfg *Config, skipZeroValues bool) { //nolint:cyclop // Config merging with multiple optional fields
 	if cfg == nil {
 		return
 	}
@@ -237,6 +237,6 @@ func mergeFileConfig(result, cfg *Config) {
 	mergeConfig(result, cfg, false)
 }
 
-func mergeCLIConfig(result, cfg *Config) { //nolint:cyclop // Config merging with multiple optional fields
+func mergeCLIConfig(result, cfg *Config) {
 	mergeConfig(result, cfg, true)
 }

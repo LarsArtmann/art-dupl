@@ -964,14 +964,15 @@ linters-settings:
       - "io.Closer"
       - "json.Unmarshaler"
       - "json.Marshaler"
-      # Allow printer interface returns
-      - "printer.Printer"
       # Allow internal package interfaces
+      - "printer.Printer"
+      - "suffixtree.Token"
       - "github.com/LarsArtmann/art-dupl/printer.Printer"
       - "github.com/LarsArtmann/art-dupl/pkg/artdupl.Detector"
       - "github.com/LarsArtmann/art-dupl/suffixtree.Token"
-      # Allow generic utility functions
+      # Allow generic type parameters and utility functions
       - "T"
+      - "Detector"
 
   # Structured logging validation
   loggercheck:
