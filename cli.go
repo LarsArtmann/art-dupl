@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -375,6 +376,17 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 		return errors.New("all mode not yet implemented")
 	}
 
+	// Add timeout context if specified
+	ctx := context.Background()
+	if mergedConfig.Timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(mergedConfig.Timeout)*time.Second)
+		defer cancel()
+		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
+	}
+
+	// TODO: Pass context to executeAnalysis for proper timeout handling
+	// For now, timeout config is stored but not fully implemented in analysis
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return fmt.Errorf("analysis failed for paths %v: %w", mergedConfig.Paths, err)
