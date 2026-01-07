@@ -80,19 +80,14 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 		return 1
 	}
 
-	if *cliCfg.HTML && *cliCfg.Plumbing {
-		fmt.Fprintf(os.Stderr, "error: you can have either plumbing or HTML output\n")
-		os.Exit(1)
+	// Validate mutually exclusive output format flags
+	if exitIfBothSet(&cliCfg.HTML, &cliCfg.Plumbing, "plumbing", "HTML") != 0 {
 		return 1
 	}
-	if *cliCfg.HTML && *cliCfg.JSONFlag {
-		fmt.Fprintf(os.Stderr, "error: you can have either HTML or JSON output\n")
-		os.Exit(1)
+	if exitIfBothSet(&cliCfg.HTML, &cliCfg.JSONFlag, "HTML", "JSON") != 0 {
 		return 1
 	}
-	if *cliCfg.Plumbing && *cliCfg.JSONFlag {
-		fmt.Fprintf(os.Stderr, "error: you can have either plumbing or JSON output\n")
-		os.Exit(1)
+	if exitIfBothSet(&cliCfg.Plumbing, &cliCfg.JSONFlag, "plumbing", "JSON") != 0 {
 		return 1
 	}
 
