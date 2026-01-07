@@ -228,6 +228,12 @@ func crawlPaths(paths []string) chan string { //nolint:cyclop // Path crawling w
 }
 
 func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int, error) {
+	var startProfile job.ProfileResult
+	if cfg.Profile {
+		startProfile = job.StartProfile()
+		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
+	}
+
 	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to build suffix tree for paths %v: %w", paths, err)
@@ -243,6 +249,11 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 			duplChan <- match
 		}
 	}()
+
+	if cfg.Profile {
+		endProfile := job.EndProfile(startProfile)
+		job.PrintProfileResult(endProfile)
+	}
 
 	return duplChan, filesCount, nil
 }
