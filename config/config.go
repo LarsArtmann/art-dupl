@@ -159,66 +159,85 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 	return result
 }
 
-func mergeFileConfig(result, cfg *Config) {
+
+
+// mergeConfig merges source config into result config.
+// If skipZeroValues is true, fields with zero/empty values are skipped.
+// This provides a single source of truth for config merging.
+func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if cfg == nil {
 		return
 	}
-	result.Threshold = cfg.Threshold
-	result.IncludeVendor = cfg.IncludeVendor
-	result.FilesFromStdin = cfg.FilesFromStdin
-	if cfg.OutputFormat != "" {
+
+	// Threshold (int)
+	if !skipZeroValues || cfg.Threshold != 0 {
+		result.Threshold = cfg.Threshold
+	}
+
+	// IncludeVendor (bool)
+	if !skipZeroValues || cfg.IncludeVendor {
+		result.IncludeVendor = cfg.IncludeVendor
+	}
+
+	// FilesFromStdin (bool)
+	if !skipZeroValues || cfg.FilesFromStdin {
+		result.FilesFromStdin = cfg.FilesFromStdin
+	}
+
+	// OutputFormat (OutputFormat)
+	if !skipZeroValues || cfg.OutputFormat != "" {
 		result.OutputFormat = cfg.OutputFormat
 	}
-	result.Verbose = cfg.Verbose
-	if len(cfg.Paths) > 0 {
+
+	// Verbose (bool)
+	if !skipZeroValues || cfg.Verbose {
+		result.Verbose = cfg.Verbose
+	}
+
+	// Paths ([]string)
+	if !skipZeroValues || len(cfg.Paths) > 0 {
 		result.Paths = cfg.Paths
 	}
-	if len(cfg.IgnoreFiles) > 0 {
+
+	// IgnoreFiles ([]string)
+	if !skipZeroValues || len(cfg.IgnoreFiles) > 0 {
 		result.IgnoreFiles = cfg.IgnoreFiles
 	}
-	if cfg.MaxChildrenSerial != 0 {
+
+	// MaxChildrenSerial (int)
+	if !skipZeroValues || cfg.MaxChildrenSerial != 0 {
 		result.MaxChildrenSerial = cfg.MaxChildrenSerial
 	}
-	if cfg.OutputFile != "" {
+
+	// OutputFile (string)
+	if !skipZeroValues || cfg.OutputFile != "" {
 		result.OutputFile = cfg.OutputFile
 	}
-	if len(cfg.DetectionMethods) > 0 {
+
+	// SortBy (SortCriteria) - not in old functions, adding for completeness
+	if !skipZeroValues || cfg.SortBy != "" {
+		result.SortBy = cfg.SortBy
+	}
+
+	// DetectionMethods (DetectionMethods) - not in old functions, adding for completeness
+	if !skipZeroValues || len(cfg.DetectionMethods) > 0 {
 		result.DetectionMethods = cfg.DetectionMethods
 	}
+
+	// Profile (bool) - not in old functions, adding for completeness
+	if !skipZeroValues || cfg.Profile {
+		result.Profile = cfg.Profile
+	}
+
+	// Timeout (int) - not in old functions, adding for completeness
+	if !skipZeroValues || cfg.Timeout != 0 {
+		result.Timeout = cfg.Timeout
+	}
+}
+func mergeFileConfig(result, cfg *Config) {
+	mergeConfig(result, cfg, false)
 }
 
 func mergeCLIConfig(result, cfg *Config) { //nolint:cyclop // Config merging with multiple optional fields
-	if cfg == nil {
-		return
-	}
-	if cfg.Threshold != 0 {
-		result.Threshold = cfg.Threshold
-	}
-	if cfg.IncludeVendor {
-		result.IncludeVendor = cfg.IncludeVendor
-	}
-	if cfg.FilesFromStdin {
-		result.FilesFromStdin = cfg.FilesFromStdin
-	}
-	if cfg.OutputFormat != "" {
-		result.OutputFormat = cfg.OutputFormat
-	}
-	if cfg.Verbose {
-		result.Verbose = cfg.Verbose
-	}
-	if len(cfg.Paths) > 0 {
-		result.Paths = cfg.Paths
-	}
-	if len(cfg.IgnoreFiles) > 0 {
-		result.IgnoreFiles = cfg.IgnoreFiles
-	}
-	if cfg.MaxChildrenSerial != 0 {
-		result.MaxChildrenSerial = cfg.MaxChildrenSerial
-	}
-	if cfg.OutputFile != "" {
-		result.OutputFile = cfg.OutputFile
-	}
-	if len(cfg.DetectionMethods) > 0 {
-		result.DetectionMethods = cfg.DetectionMethods
-	}
+	mergeConfig(result, cfg, true)
 }
