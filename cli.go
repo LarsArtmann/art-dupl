@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
@@ -298,6 +299,8 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 	sortBy, _ := cmd.Flags().GetString("sort")
 	allFlag, _ := cmd.Flags().GetBool("all")
 	_, _ = cmd.Flags().GetString("output-dir")
+	profile, _ := cmd.Flags().GetBool("profile")
+	timeoutStr, _ := cmd.Flags().GetString("timeout")
 
 	var fileConfig *config.Config
 	var err error
@@ -332,6 +335,19 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 		appConfig.OutputFormat = config.OutputFormatPlumbing
 	case jsonFlag:
 		appConfig.OutputFormat = config.OutputFormatJSON
+	}
+
+	if profile {
+		appConfig.Profile = true
+	}
+
+	// Parse timeout duration (e.g., "30m", "1h", "2h30m")
+	if timeoutStr != "30m" && timeoutStr != "" {
+		duration, err := time.ParseDuration(timeoutStr)
+		if err != nil {
+			return fmt.Errorf("invalid timeout format %q (use '30m', '1h', etc.): %w", timeoutStr, err)
+		}
+		appConfig.Timeout = int(duration.Seconds())
 	}
 
 	if len(args) > 0 {

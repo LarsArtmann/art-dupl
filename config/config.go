@@ -42,6 +42,12 @@ type Config struct {
 
 	// DetectionMethods specifies which detection methods to use
 	DetectionMethods DetectionMethods `json:"detectionMethods,omitempty"`
+
+	// Profile enables performance profiling output
+	Profile bool `json:"profile,omitempty"`
+
+	// Timeout specifies maximum execution time in seconds (0 = no timeout)
+	Timeout int `json:"timeout,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.
@@ -58,6 +64,8 @@ func DefaultConfig() *Config {
 		OutputFile:        "",
 		SortBy:            SortBySize,
 		DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+		Profile:           false,
+		Timeout:           0,
 	}
 }
 
