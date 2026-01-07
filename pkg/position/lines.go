@@ -16,7 +16,7 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 	line := 1
 	lineStart, lineEnd := 0, 0
 
-	for offset := 0; offset < len(content); offset++ {
+	for offset := range content {
 		if content[offset] == '\n' {
 			line++
 		}

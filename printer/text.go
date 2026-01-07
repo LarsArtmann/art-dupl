@@ -116,8 +116,6 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 	return clones, nil
 }
 
-
-
 // OutputText generates text output with sorting.
 func (p *text) OutputText(threshold int, sortBy string) error { //nolint:cyclop // Text output with multiple sorting strategies
 	// Sort all clone groups based on the specified criteria

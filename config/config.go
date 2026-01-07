@@ -159,8 +159,6 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 	return result
 }
 
-
-
 // mergeConfig merges source config into result config.
 // If skipZeroValues is true, fields with zero/empty values are skipped.
 // This provides a single source of truth for config merging.
@@ -234,6 +232,7 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.Timeout = cfg.Timeout
 	}
 }
+
 func mergeFileConfig(result, cfg *Config) {
 	mergeConfig(result, cfg, false)
 }

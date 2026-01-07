@@ -10,10 +10,10 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/util"
-	"github.com/LarsArtmann/art-dupl/pkg/position"
 )
 
 // detector implements the Detector interface using existing dupl components.
@@ -521,7 +521,6 @@ func (d *detector) hashConfig(opts *Options) string {
 	// Simple hash - in real implementation use proper hashing
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)
 }
-
 
 // convertOptionsToConfig converts SDK options to internal config format.
 func convertOptionsToConfig(opts *Options) *config.Config {
