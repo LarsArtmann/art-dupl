@@ -21,7 +21,7 @@ func TestNewEnumValidationError(t *testing.T) {
 	if err.Type != ValidationError {
 		t.Errorf("Expected Type=ValidationError, got %s", err.Type)
 	}
-	if err.Cause != cause {
+	if !errors.Is(err, cause) {
 		t.Errorf("Expected Cause to match input cause")
 	}
 	if err.Stack == "" {
@@ -69,7 +69,7 @@ func TestEnumValidationError_Unwrap(t *testing.T) {
 
 	// Unwrap should return original cause
 	unwrapped := errors.Unwrap(err)
-	if unwrapped != cause {
+	if !errors.Is(unwrapped, cause) {
 		t.Errorf("Expected Unwrap to return cause, got %v", unwrapped)
 	}
 }

@@ -31,14 +31,9 @@ type DuplError struct {
 // EnumValidationError provides domain-specific error context for enum validation failures.
 type EnumValidationError struct {
 	DuplError
+
 	EnumValue string
 	EnumType  string
-}
-
-// Error implements the error interface for EnumValidationError.
-func (e *EnumValidationError) Error() string {
-	return fmt.Sprintf("enum validation failed: type=%s, value=%q (file: %s:%d)",
-		e.EnumType, e.EnumValue, e.File, e.Line)
 }
 
 // NewEnumValidationError creates a new enum validation error with rich context.
@@ -53,6 +48,12 @@ func NewEnumValidationError(enumType, enumValue string, cause error) *EnumValida
 		EnumValue: enumValue,
 		EnumType:  enumType,
 	}
+}
+
+// Error implements the error interface for EnumValidationError.
+func (e *EnumValidationError) Error() string {
+	return fmt.Sprintf("enum validation failed: type=%s, value=%q (file: %s:%d)",
+		e.EnumType, e.EnumValue, e.File, e.Line)
 }
 
 // NewParseError creates a new parse error with context.
