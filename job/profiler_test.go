@@ -57,6 +57,7 @@ func TestProfileDiff(t *testing.T) {
 	}
 	
 	// NumGC difference should be >= 0
+	//nolint:staticcheck // NumGC is uint32, check is for documentation
 	if diff.NumGC < 0 {
 		t.Errorf("ProfileDiff NumGC should be >= 0, got %d", diff.NumGC)
 	}
