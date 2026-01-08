@@ -107,7 +107,7 @@ func countUniqueFiles(groups []domain.CloneGroup) uint {
 	fileSet := make(map[string]bool)
 	for _, group := range groups {
 		for _, clone := range group.Clones {
-			fileSet[clone.Filename] = true
+			fileSet[clone.Filename.String()] = true
 		}
 	}
 	return uint(len(fileSet))

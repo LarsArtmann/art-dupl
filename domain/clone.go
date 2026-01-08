@@ -14,42 +14,35 @@ import (
 // Clone represents a code clone with strong typing.
 type Clone struct {
 	ID         CloneID                   `json:"id"`
-	Filename   string                    `json:"filename"`
-	StartLine  uint                      `json:"startLine"`
-	EndLine    uint                      `json:"endLine"`
-	StartPos   uint                      `json:"startPos"`
-	EndPos     uint                      `json:"endPos"`
+	Filename   Filepath                  `json:"filename"`
+	StartLine  LineNumber               `json:"startLine"`
+	EndLine    LineNumber               `json:"endLine"`
+	StartPos   BytePosition             `json:"startPos"`
+	EndPos     BytePosition             `json:"endPos"`
 	Fragment   string                    `json:"fragment"`
-	Hash       string                    `json:"hash"`
-	Confidence float64                   `json:"confidence"`
-	Complexity uint                      `json:"complexity"`
+	Hash       Hash                     `json:"hash"`
+	Confidence Confidence              `json:"confidence"`
+	Complexity ComplexityScore         `json:"complexity"`
 	Status     types.FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone data.
+// Note: Domain types handle their own validation (e.g., non-empty strings, non-zero line numbers).
+// This method only validates cross-field relationships and enum types.
 func (c Clone) IsValid() error {
-	// CloneID validation is now handled by the type itself
-	if c.ID == "" {
-		return errors.New("clone ID cannot be empty")
-	}
-	if c.Filename == "" {
-		return errors.New("clone filename cannot be empty")
-	}
-	if c.StartLine == 0 {
-		return errors.New("clone start line cannot be zero")
-	}
+	// Cross-field validation: end must be >= start
 	if c.EndLine < c.StartLine {
 		return errors.New("clone end line must be >= start line")
 	}
 	if c.StartPos >= c.EndPos {
 		return errors.New("clone end position must be > start position")
 	}
+
+	// Enum type validation
 	if !c.Status.IsValid() {
 		return fmt.Errorf("invalid clone processing state: %s", c.Status)
 	}
-	if c.Confidence < 0 || c.Confidence > 1 {
-		return errors.New("clone confidence must be between 0 and 1")
-	}
+
 	return nil
 }
 
@@ -297,22 +290,32 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	}
 
 	// Generate hash from fragment
-	hash := ""
+	hashStr := ""
 	if fragment != "" {
-		hash = fmt.Sprintf("%x", sha256.Sum256([]byte(fragment)))
+		hashStr = fmt.Sprintf("%x", sha256.Sum256([]byte(fragment)))
 	}
+	hash, _ := NewHash(hashStr)
+
+	// Create domain types from primitive values
+	fp, _ := NewFilepath(filename)
+	startLn, _ := NewLineNumber(uint(lineStart))      //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
+	endLn, _ := NewLineNumber(uint(lineEnd))        //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
+	startPos := NewBytePosition(uint(node.Pos))      //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
+	endPos := NewBytePosition(uint(node.End))        //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
+	conf, _ := NewConfidence(1.0)                // Calculate actual confidence
+	complexity := NewComplexityScore(calculateComplexity(node))
 
 	return Clone{
 		ID:         cloneID,
-		Filename:   filename,
-		StartLine:  uint(lineStart), //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
-		EndLine:    uint(lineEnd),   //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
-		StartPos:   uint(node.Pos),  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
-		EndPos:     uint(node.End),  //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
+		Filename:   fp,
+		StartLine:  startLn,
+		EndLine:    endLn,
+		StartPos:   startPos,
+		EndPos:     endPos,
 		Fragment:   fragment,
 		Hash:       hash,
-		Confidence: 1.0, // Calculate actual confidence
-		Complexity: calculateComplexity(node),
+		Confidence: conf,
+		Complexity: complexity,
 		Status:     types.FileProcessingStateCompleted,
 	}
 }
