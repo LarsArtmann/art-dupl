@@ -46,22 +46,6 @@ type EnumType[T ~string] interface {
 	IsValid() bool
 }
 
-// NewEnumUnmarshalJSON creates an UnmarshalJSON function for any enum type.
-func NewEnumUnmarshalJSON[T ~string](typeName string) func(*T, []byte) error {
-	return func(e *T, data []byte) error {
-		candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {
-			// Use the interface method to check validity
-			enum := t
-			return any(enum).(interface{ IsValid() bool }).IsValid()
-		}, typeName)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal %s from data %q: %w", typeName, string(data), err)
-		}
-		*e = candidate
-		return nil
-	}
-}
-
 // UnmarshalJSONForEnum is a generic function that can be used as UnmarshalJSON method.
 func UnmarshalJSONForEnum[T ~string](e *T, data []byte, typeName string) error {
 	candidate, err := UnmarshalEnumJSON(data, func(s string) T { return T(s) }, func(t T) bool {

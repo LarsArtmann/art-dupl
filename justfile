@@ -57,9 +57,9 @@ build-all:
 install-local:
     go install -ldflags "-s -w" -trimpath
 
-# Find code duplicates using golangci-lint with dupl linter
+# Find code duplicates using art-dupl
 fd:
-    golangci-lint run --enable-only dupl -v
+    art-dupl -v
 
 # Legacy alias for find-duplicates
 find-duplicates: fd
