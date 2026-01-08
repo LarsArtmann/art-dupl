@@ -13,7 +13,7 @@ import (
 
 // Clone represents a code clone with strong typing.
 type Clone struct {
-	ID         string                    `json:"id"`
+	ID         CloneID                   `json:"id"`
 	Filename   string                    `json:"filename"`
 	StartLine  uint                      `json:"startLine"`
 	EndLine    uint                      `json:"endLine"`
@@ -28,6 +28,7 @@ type Clone struct {
 
 // IsValid validates clone data.
 func (c Clone) IsValid() error {
+	// CloneID validation is now handled by the type itself
 	if c.ID == "" {
 		return errors.New("clone ID cannot be empty")
 	}
@@ -277,7 +278,7 @@ func (do DetectionOptions) IsValid() error {
 // NodeToClone converts syntax nodes to domain Clone.
 func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Generate unique ID for clone
-	cloneID := fmt.Sprintf("%s-%d-%d", filename, node.Pos, node.End)
+	cloneID, _ := NewCloneID(fmt.Sprintf("%s-%d-%d", filename, node.Pos, node.End))
 
 	// Calculate line numbers from file content
 	lineStart, lineEnd := 1, 1 // defaults
