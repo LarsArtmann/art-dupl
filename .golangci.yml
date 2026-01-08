@@ -970,9 +970,16 @@ linters-settings:
       - "github.com/LarsArtmann/art-dupl/printer.Printer"
       - "github.com/LarsArtmann/art-dupl/pkg/artdupl.Detector"
       - "github.com/LarsArtmann/art-dupl/suffixtree.Token"
+      # Allow factory pattern returns for Detector and Printer interfaces
+      - "github.com/LarsArtmann/art-dupl/pkg/artdupl.(*detector)"
+      - "github.com/LarsArtmann/art-dupl/printer.(*text)"
+      - "github.com/LarsArtmann/art-dupl/printer.(*json)"
+      - "github.com/LarsArtmann/art-dupl/printer.(*html)"
+      - "github.com/LarsArtmann/art-dupl/printer.(*plumbing)"
       # Allow generic type parameters and utility functions
       - "T"
       - "Detector"
+      - "Printer"
 
   # Structured logging validation
   loggercheck:
