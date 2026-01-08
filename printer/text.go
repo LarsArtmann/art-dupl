@@ -26,15 +26,6 @@ func NewText(w io.Writer, fread ReadFile) Printer {
 
 func (p *text) PrintHeader() error { return nil }
 
-func (p *text) printCloneList(clones []clone) error {
-	for _, cl := range clones {
-		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
-			return err //nolint:wrapcheck // fmt errors are clear in context
-		}
-	}
-	return nil
-}
-
 func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 	p.cnt++
 
@@ -162,4 +153,13 @@ func (p *text) OutputText(threshold int, sortBy string) error { //nolint:cyclop 
 	}
 
 	return p.PrintFooter()
+}
+
+func (p *text) printCloneList(clones []clone) error {
+	for _, cl := range clones {
+		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+			return err //nolint:wrapcheck // fmt errors are clear in context
+		}
+	}
+	return nil
 }

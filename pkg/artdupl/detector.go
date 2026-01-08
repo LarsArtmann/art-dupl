@@ -25,8 +25,6 @@ type detector struct {
 }
 
 // NewDetector creates a new code duplication detector.
-//
-//nolint:ireturn // Detector interface is the correct return type for factory pattern
 func NewDetector(opts *Options) (Detector, error) {
 	// Use default options if none provided
 	if opts == nil {
