@@ -1,5 +1,25 @@
 package config
 
+// TEMPORARY: This package contains internal enum marshaling utilities for config package enums.
+//
+// ⚠️ DEPRECATION NOTICE: This functionality will be moved to pkg/enum package.
+// See docs/enum-consolidation-plan.md for migration roadmap.
+//
+// This file implements JSON marshaling/unmarshaling for config package enums
+// (DetectionMethod, OutputFormat, SortCriteria). It uses a method-value approach
+// where validation functions are passed explicitly as parameters.
+//
+// Note: There is a similar implementation in types/enum_utils.go with a different
+// API. This split-brain situation is temporary and will be resolved.
+// Please do not add new types to this utility - see consolidation plan.
+//
+// Current Usage:
+// - config.DetectionMethod.MarshalJSON()
+// - config.OutputFormat.MarshalJSON()
+// - config.SortCriteria.MarshalJSON()
+//
+// Migration Target: pkg/enum package (see Phase 3 in consolidation plan)
+
 import (
 	"fmt"
 	"reflect"

@@ -1,5 +1,25 @@
 package types
 
+// TEMPORARY: This package contains internal enum marshaling utilities for types package enums.
+//
+// ⚠️ DEPRECATION NOTICE: This functionality will be moved to pkg/enum package.
+// See docs/enum-consolidation-plan.md for migration roadmap.
+//
+// This file implements JSON marshaling/unmarshaling for types package enums
+// (DetectionState, AnalysisMode, FileProcessingState). It uses an interface-based
+// approach where validation is inferred from the ValidatableEnum interface.
+//
+// Note: There is a similar implementation in config/unmarshal_helper.go with a
+// different API. This split-brain situation is temporary and will be resolved.
+// Please do not add new types to this utility - see consolidation plan.
+//
+// Current Usage:
+// - types.DetectionState.MarshalJSON()
+// - types.AnalysisMode.MarshalJSON()
+// - types.FileProcessingState.MarshalJSON()
+//
+// Migration Target: pkg/enum package (see Phase 3 in consolidation plan)
+
 import (
 	"fmt"
 )
