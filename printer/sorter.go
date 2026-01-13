@@ -11,15 +11,15 @@ func SortCloneGroups(groups []CloneGroup, sortBy string) {
 	switch sortBy {
 	case sortBySize:
 		sort.Slice(groups, func(i, j int) bool {
-			return groups[i].Size > groups[j].Size
+			return groups[i].Size > groups[j].Size // Largest first (descending)
 		})
 	case sortByOccurrence:
 		sort.Slice(groups, func(i, j int) bool {
-			return len(groups[i].Files) > len(groups[j].Files)
+			return len(groups[i].Files) > len(groups[j].Files) // Most files first (descending)
 		})
 	case sortByHash:
 		sort.Slice(groups, func(i, j int) bool {
-			return groups[i].Hash < groups[j].Hash
+			return groups[i].Hash < groups[j].Hash // Alphabetical (ascending)
 		})
 	case sortByTotalTokens:
 		sort.Slice(groups, func(i, j int) bool {
@@ -33,7 +33,7 @@ func SortCloneGroups(groups []CloneGroup, sortBy string) {
 	}
 }
 
-// SortClonesBySize sorts clone groups by token count (largest first).
+// SortClonesBySize sorts clone groups by token count (largest first, descending order).
 func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
 		if len(dups[i]) == 0 {
@@ -50,14 +50,16 @@ func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 	return dups
 }
 
-// SortClonesByOccurrence sorts clone groups by number of files (most widespread first).
+// SortClonesByOccurrence sorts clone groups by number of files (most files first, descending order).
 func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node {
-	// For [][]*syntax.Node, occurrence is always 1 (single group)
-	// This function is kept for compatibility but sorts by size instead
-	return SortClonesBySize(dups)
+	sort.Slice(dups, func(i, j int) bool {
+		// Sort by number of occurrences (files in each clone group)
+		return len(dups[i]) > len(dups[j])
+	})
+	return dups
 }
 
-// SortClonesByHash sorts clone groups by hash (alphabetical).
+// SortClonesByHash sorts clone groups by hash (alphabetical, ascending order).
 func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
 		if len(dups[i]) == 0 {

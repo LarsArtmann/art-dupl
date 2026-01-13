@@ -67,9 +67,9 @@ func anotherLargeFunction() {
 			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"},
 		},
 		{
-			name:          "Sort by occurrence (file count)",
+			name:          "Sort by occurrence (file count, descending)",
 			sortBy:        "occurrence",
-			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"}, // All have same occurrence, should fallback to size
+			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"}, // All have same occurrence (1), falls back to hash sort which is alphabetical
 		},
 		{
 			name:          "Sort by hash (filename order)",

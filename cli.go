@@ -17,6 +17,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
+	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
@@ -148,14 +149,14 @@ func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.Rea
 	}
 }
 
-func buildSuffixTree(paths []string, verbose, filesFromStdin bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		log.Println("Building suffix tree")
 	} else {
 		fmt.Fprintf(os.Stderr, "    📖 Parsing files and building analysis tree...")
 	}
 
-	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin))
+	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin, filterParam))
 	t, data, done := job.BuildTree(schan)
 	<-done
 
@@ -171,23 +172,28 @@ func buildSuffixTree(paths []string, verbose, filesFromStdin bool) (*suffixtree.
 	return t, *data, filesCount, nil
 }
 
-func filesFeedWithOptions(paths []string, fromStdin bool) chan string {
+func filesFeedWithOptions(paths []string, fromStdin bool, filter *filter.Filter) chan string {
 	if fromStdin {
 		fchan := make(chan string)
 		go func() {
 			s := bufio.NewScanner(os.Stdin)
 			for s.Scan() {
 				f := s.Text()
-				fchan <- strings.TrimPrefix(f, "./")
+				path := strings.TrimPrefix(f, "./")
+				// Apply filter if enabled
+				if filter != nil && filter.ShouldFilter(path) {
+					continue
+				}
+				fchan <- path
 			}
 			close(fchan)
 		}()
 		return fchan
 	}
-	return crawlPaths(paths)
+	return crawlPaths(paths, filter)
 }
 
-func crawlPaths(paths []string) chan string { //nolint:cyclop // Path crawling with multiple error handling paths
+func crawlPaths(paths []string, filter *filter.Filter) chan string { //nolint:cyclop // Path crawling with multiple error handling paths
 	fchan := make(chan string)
 	go func() {
 		for _, path := range paths {
@@ -197,6 +203,10 @@ func crawlPaths(paths []string) chan string { //nolint:cyclop // Path crawling w
 				os.Exit(1)
 			}
 			if !info.IsDir() {
+				// Apply filter to single file
+				if filter != nil && filter.ShouldFilter(path) {
+					continue
+				}
 				fchan <- path
 				continue
 			}
@@ -209,6 +219,10 @@ func crawlPaths(paths []string) chan string { //nolint:cyclop // Path crawling w
 					return nil
 				}
 				if !info.IsDir() && strings.HasSuffix(info.Name(), ".go") {
+					// Apply filter to file
+					if filter != nil && filter.ShouldFilter(path) {
+						return nil
+					}
 					fchan <- path
 				}
 				return nil
@@ -230,7 +244,28 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
-	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin)
+	// Create filter based on config
+	var filterParam *filter.Filter
+	if cfg.FilterGenerated {
+		// Determine which types to filter out
+		var filterOptions []filter.FilterOption
+		if !cfg.IncludeSQLC {
+			filterOptions = append(filterOptions, filter.FilterSQLC)
+		}
+		if !cfg.IncludeTempl {
+			filterOptions = append(filterOptions, filter.FilterTempl)
+		}
+
+		filterParam = filter.NewFilter(true, filterOptions)
+		filterParam.WithIncludePatterns(cfg.IncludePatterns)
+		filterParam.WithExcludePatterns(cfg.ExcludePatterns)
+
+		if cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled\n")
+		}
+	}
+
+	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to build suffix tree for paths %v: %w", paths, err)
 	}
@@ -264,7 +299,22 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	for k := range groups {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
+
+	// Sort clone groups based on the sortBy criteria
+	switch sortBy {
+	case "occurrence":
+		// Sort by number of files in each clone group (most files first, descending)
+		sort.Slice(keys, func(i, j int) bool {
+			return len(groups[keys[i]]) > len(groups[keys[j]])
+		})
+	case "hash":
+		// Sort alphabetically by hash (ascending)
+		sort.Strings(keys)
+	default:
+		// For size and other criteria, sort alphabetically by hash for now
+		// Individual clones within groups will be sorted by PrintClones
+		sort.Strings(keys)
+	}
 
 	if err := p.PrintHeader(); err != nil {
 		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy, threshold, err)
@@ -308,6 +358,11 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 	_, _ = cmd.Flags().GetString("output-dir")
 	profile, _ := cmd.Flags().GetBool("profile")
 	timeoutStr, _ := cmd.Flags().GetString("timeout")
+	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
+	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
+	includeTempl, _ := cmd.Flags().GetBool("include-templ")
+	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
+	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 
 	var fileConfig *config.Config
 	var err error
@@ -355,6 +410,23 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 			return fmt.Errorf("invalid timeout format %q (use '30m', '1h', etc.): %w", timeoutStr, err)
 		}
 		appConfig.Timeout = int(duration.Seconds())
+	}
+
+	// Set filter configuration
+	if filterGenerated {
+		appConfig.FilterGenerated = true
+	}
+	if includeSQLC {
+		appConfig.IncludeSQLC = true
+	}
+	if includeTempl {
+		appConfig.IncludeTempl = true
+	}
+	if len(includePatterns) > 0 {
+		appConfig.IncludePatterns = includePatterns
+	}
+	if len(excludePatterns) > 0 {
+		appConfig.ExcludePatterns = excludePatterns
 	}
 
 	if len(args) > 0 {

@@ -19,14 +19,22 @@ func main() { //nolint:cyclop,funlen // Main entry point with complex error hand
 It analyzes abstract syntax trees (ASTs) to find structural code clones
 while ignoring literal values using suffix tree algorithms.
 
+Sorting Options:
+- size: Shows largest clones first (highest token count)
+- occurrence: Shows most widespread clones first (most files)
+- hash: Alphabetical order by hash value
+
 Examples:
   art-dupl ./src                          # Default analysis
   art-dupl -t 20 ./src                    # Higher threshold
   art-dupl --json -t 20 ./src             # JSON output with threshold
   art-dupl --html --vendor ./src           # HTML with vendor included
-  art-dupl --plumbing --sort occurrence ./src # Plumbing sorted by occurrence
+  art-dupl --plumbing --sort occurrence ./src # Most widespread clones first
   art-dupl --all ./src                     # Generate all formats for all detection methods
-  art-dupl --all --output-dir ./my-reports ./src  # Custom output directory`,
+  art-dupl --all --output-dir ./my-reports ./src  # Custom output directory
+  art-dupl --filter-generated ./src         # Filter out auto-generated code (sqlc, templ)
+  art-dupl --filter-generated --include-sqlc ./src  # Filter but keep sqlc files
+  art-dupl --filter-generated --include-pattern "vendor/*" ./src  # Include vendor directory`,
 		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
 		RunE: runCmd,
 	}
@@ -40,10 +48,17 @@ Examples:
 	rootCmd.Flags().Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
 	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
-	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups by: size, occurrence, hash (default: size)")
+	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical) (default: size)")
 	rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
 	rootCmd.Flags().BoolP("all", "a", false, "generate all output formats for all detection methods")
 	rootCmd.Flags().StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")
+
+	// Add smart filtering flags
+	rootCmd.Flags().Bool("filter-generated", false, "enable smart filtering of auto-generated code (sqlc, templ, etc.)")
+	rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (only when --filter-generated is set)")
+	rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated files (only when --filter-generated is set)")
+	rootCmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
+	rootCmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 
 	// Add hidden flags for advanced features
 	rootCmd.Flags().Bool("profile", false, "enable performance profiling")
