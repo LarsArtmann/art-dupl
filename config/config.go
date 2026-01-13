@@ -48,6 +48,21 @@ type Config struct {
 
 	// Timeout specifies maximum execution time in seconds (0 = no timeout)
 	Timeout int `json:"timeout,omitempty"`
+
+	// FilterGenerated enables smart filtering of auto-generated code
+	FilterGenerated bool `json:"filterGenerated,omitempty"`
+
+	// IncludeSQLC includes sqlc.dev generated files (only when filterGenerated is true)
+	IncludeSQLC bool `json:"includeSQLC,omitempty"`
+
+	// IncludeTempl includes templ.guide generated files (only when filterGenerated is true)
+	IncludeTempl bool `json:"includeTempl,omitempty"`
+
+	// IncludePatterns specifies file patterns to always include (takes precedence over filter)
+	IncludePatterns []string `json:"includePatterns,omitempty"`
+
+	// ExcludePatterns specifies additional file patterns to exclude
+	ExcludePatterns []string `json:"excludePatterns,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.
@@ -66,6 +81,11 @@ func DefaultConfig() *Config {
 		DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 		Profile:           false,
 		Timeout:           0,
+		FilterGenerated:   false,
+		IncludeSQLC:       false,
+		IncludeTempl:      false,
+		IncludePatterns:   []string{},
+		ExcludePatterns:   []string{},
 	}
 }
 
@@ -230,6 +250,31 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) { //nolint:cyclop // 
 	// Timeout (int) - not in old functions, adding for completeness
 	if !skipZeroValues || cfg.Timeout != 0 {
 		result.Timeout = cfg.Timeout
+	}
+
+	// FilterGenerated (bool) - new field for auto-generated code filtering
+	if !skipZeroValues || cfg.FilterGenerated {
+		result.FilterGenerated = cfg.FilterGenerated
+	}
+
+	// IncludeSQLC (bool) - new field for including sqlc files
+	if !skipZeroValues || cfg.IncludeSQLC {
+		result.IncludeSQLC = cfg.IncludeSQLC
+	}
+
+	// IncludeTempl (bool) - new field for including templ files
+	if !skipZeroValues || cfg.IncludeTempl {
+		result.IncludeTempl = cfg.IncludeTempl
+	}
+
+	// IncludePatterns ([]string) - new field for include patterns
+	if !skipZeroValues || len(cfg.IncludePatterns) > 0 {
+		result.IncludePatterns = cfg.IncludePatterns
+	}
+
+	// ExcludePatterns ([]string) - new field for exclude patterns
+	if !skipZeroValues || len(cfg.ExcludePatterns) > 0 {
+		result.ExcludePatterns = cfg.ExcludePatterns
 	}
 }
 
