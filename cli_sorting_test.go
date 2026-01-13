@@ -12,9 +12,9 @@ import (
 // TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.
 func TestOccurrenceSorting(t *testing.T) {
 	tests := []struct {
-		name           string
-		matches        []syntax.Match
-		expectedOrder  []string // Hashes in expected order
+		name          string
+		matches       []syntax.Match
+		expectedOrder []string // Hashes in expected order
 	}{
 		{
 			name: "simple descending by unique count",

@@ -89,7 +89,7 @@ func Authenticate(username, password string) bool {
 		// Create all files
 		for path, content := range files {
 			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750)) //nolint:gosec //G301 Test directory permissions
+			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))     //nolint:gosec //G301 Test directory permissions
 			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600)) //nolint:gosec //G306 Test file permissions
 		}
 
@@ -128,7 +128,7 @@ func Header() templ.Component { return nil }
 
 		for path, content := range files {
 			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750)) //nolint:gosec //G301 Test directory permissions
+			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))     //nolint:gosec //G301 Test directory permissions
 			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600)) //nolint:gosec //G306 Test file permissions
 		}
 
@@ -153,7 +153,7 @@ func Header() templ.Component { return nil }
 package db
 type User struct {}
 `
-		assert.NoError(t, os.MkdirAll(filepath.Dir(vendorFile), 0o750)) //nolint:gosec //G301 Test directory permissions
+		assert.NoError(t, os.MkdirAll(filepath.Dir(vendorFile), 0o750))           //nolint:gosec //G301 Test directory permissions
 		assert.NoError(t, os.WriteFile(vendorFile, []byte(vendorContent), 0o600)) //nolint:gosec //G306 Test file permissions
 
 		// Create filter with include pattern for vendor

@@ -15,14 +15,14 @@ import (
 type Clone struct {
 	ID         CloneID                   `json:"id"`
 	Filename   Filepath                  `json:"filename"`
-	StartLine  LineNumber               `json:"startLine"`
-	EndLine    LineNumber               `json:"endLine"`
-	StartPos   BytePosition             `json:"startPos"`
-	EndPos     BytePosition             `json:"endPos"`
+	StartLine  LineNumber                `json:"startLine"`
+	EndLine    LineNumber                `json:"endLine"`
+	StartPos   BytePosition              `json:"startPos"`
+	EndPos     BytePosition              `json:"endPos"`
 	Fragment   string                    `json:"fragment"`
-	Hash       Hash                     `json:"hash"`
-	Confidence Confidence              `json:"confidence"`
-	Complexity ComplexityScore         `json:"complexity"`
+	Hash       Hash                      `json:"hash"`
+	Confidence Confidence                `json:"confidence"`
+	Complexity ComplexityScore           `json:"complexity"`
 	Status     types.FileProcessingState `json:"status"`
 }
 
@@ -298,10 +298,10 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 
 	// Create domain types from primitive values
 	fp, _ := NewFilepath(filename)
-	startLn, _ := NewLineNumber(uint(lineStart))      //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
-	endLn, _ := NewLineNumber(uint(lineEnd))        //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
-	startPos := NewBytePosition(uint(node.Pos))      //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
-	endPos := NewBytePosition(uint(node.End))        //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
+	startLn, _ := NewLineNumber(uint(lineStart)) //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
+	endLn, _ := NewLineNumber(uint(lineEnd))     //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
+	startPos := NewBytePosition(uint(node.Pos))  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
+	endPos := NewBytePosition(uint(node.End))    //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
 	conf, _ := NewConfidence(1.0)                // Calculate actual confidence
 	complexity := NewComplexityScore(calculateComplexity(node))
 

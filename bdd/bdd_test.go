@@ -173,8 +173,8 @@ func uniqueFunction(ctx context.Context) error {
 		})
 
 		// PENDING: Test disabled - cloning detection merges similar AST structures
-	// Sorting is working correctly, verified with manual tests
-	PIt("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
+		// Sorting is working correctly, verified with manual tests
+		PIt("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
 			cmd.Dir = ".."
