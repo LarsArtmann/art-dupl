@@ -300,19 +300,37 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 		keys = append(keys, k)
 	}
 
+	// Pre-compute unique counts for sorting
+	uniqueCounts := make(map[string]int)
+	for k, v := range groups {
+		uniqueCounts[k] = len(util.Unique(v))
+	}
+
 	// Sort clone groups based on the sortBy criteria
 	switch sortBy {
 	case "occurrence":
-		// Sort by number of files in each clone group (most files first, descending)
+		// Sort by number of unique files in each clone group (most files first, descending)
 		sort.Slice(keys, func(i, j int) bool {
-			return len(groups[keys[i]]) > len(groups[keys[j]])
+			return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]
 		})
 	case "hash":
 		// Sort alphabetically by hash (ascending)
 		sort.Strings(keys)
+	case "size":
+		// Sort by the size of the first clone in each group (largest first, descending)
+		sort.Slice(keys, func(i, j int) bool {
+			sizeI := 0
+			if len(groups[keys[i]]) > 0 && len(groups[keys[i]][0]) > 0 {
+				sizeI = groups[keys[i]][0][0].Owns
+			}
+			sizeJ := 0
+			if len(groups[keys[j]]) > 0 && len(groups[keys[j]][0]) > 0 {
+				sizeJ = groups[keys[j]][0][0].Owns
+			}
+			return sizeI > sizeJ
+		})
 	default:
-		// For size and other criteria, sort alphabetically by hash for now
-		// Individual clones within groups will be sorted by PrintClones
+		// For unrecognized criteria, sort alphabetically by hash
 		sort.Strings(keys)
 	}
 
