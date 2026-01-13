@@ -289,24 +289,26 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 	return duplChan, filesCount, nil
 }
 
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
+// buildCloneGroups builds a map of hash to clone groups from matches.
+func buildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node {
 	groups := make(map[string][][]*syntax.Node)
 	for dupl := range duplChan {
 		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
 	}
+	return groups
+}
 
-	keys := make([]string, 0, len(groups))
-	for k := range groups {
-		keys = append(keys, k)
-	}
-
-	// Pre-compute unique counts for sorting
+// computeUniqueCounts calculates unique file counts for each clone group.
+func computeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 	uniqueCounts := make(map[string]int)
 	for k, v := range groups {
 		uniqueCounts[k] = len(util.Unique(v))
 	}
+	return uniqueCounts
+}
 
-	// Sort clone groups based on the sortBy criteria
+// sortCloneGroupKeys sorts clone group hashes based on specified criteria.
+func sortCloneGroupKeys(keys []string, sortBy string, groups map[string][][]*syntax.Node, uniqueCounts map[string]int) {
 	switch sortBy {
 	case "occurrence":
 		// Sort by number of unique files in each clone group (most files first, descending)
@@ -317,7 +319,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 		// Sort alphabetically by hash (ascending)
 		sort.Strings(keys)
 	case "size":
-		// Sort by the size of the first clone in each group (largest first, descending)
+		// Sort by size of first clone in each group (largest first, descending)
 		sort.Slice(keys, func(i, j int) bool {
 			sizeI := 0
 			if len(groups[keys[i]]) > 0 && len(groups[keys[i]][0]) > 0 {
@@ -333,6 +335,23 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 		// For unrecognized criteria, sort alphabetically by hash
 		sort.Strings(keys)
 	}
+}
+
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
+	// Build groups from matches
+	groups := buildCloneGroups(duplChan)
+
+	// Get sorted keys
+	keys := make([]string, 0, len(groups))
+	for k := range groups {
+		keys = append(keys, k)
+	}
+
+	// Pre-compute unique counts for sorting
+	uniqueCounts := computeUniqueCounts(groups)
+
+	// Sort clone groups based on sortBy criteria
+	sortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
 	if err := p.PrintHeader(); err != nil {
 		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy, threshold, err)
