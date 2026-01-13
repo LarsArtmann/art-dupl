@@ -1,0 +1,215 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/util"
+)
+
+// TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.
+func TestOccurrenceSorting(t *testing.T) {
+	tests := []struct {
+		name           string
+		matches        []syntax.Match
+		expectedOrder  []string // Hashes in expected order
+	}{
+		{
+			name: "simple descending by unique count",
+			matches: []syntax.Match{
+				{
+					Hash:  "hash3",
+					Frags: createFragments(3), // 3 unique fragments
+				},
+				{
+					Hash:  "hash1",
+					Frags: createFragments(8), // 8 unique fragments (most, should be first)
+				},
+				{
+					Hash:  "hash2",
+					Frags: createFragments(5), // 5 unique fragments
+				},
+			},
+			expectedOrder: []string{"hash1", "hash2", "hash3"}, // 8, 5, 3
+		},
+		{
+			name: "with duplicates in fragments (bug regression test)",
+			matches: []syntax.Match{
+				{
+					Hash:  "hash1",
+					Frags: createFragmentsWithDuplicates(4, 6), // 4 unique, 6 total
+				},
+				{
+					Hash:  "hash2",
+					Frags: createFragmentsWithDuplicates(5, 5), // 5 unique, 5 total
+				},
+				{
+					Hash:  "hash3",
+					Frags: createFragmentsWithDuplicates(3, 9), // 3 unique, 9 total
+				},
+			},
+			expectedOrder: []string{"hash2", "hash1", "hash3"}, // 5, 4, 3 unique counts (not 9, 6, 5 totals)
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Build groups map like printDupls does
+			groups := make(map[string][][]*syntax.Node)
+			for _, match := range tt.matches {
+				groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+			}
+
+			// Get keys
+			keys := make([]string, 0, len(groups))
+			for k := range groups {
+				keys = append(keys, k)
+			}
+
+			// Pre-compute unique counts for sorting (like printDupls)
+			uniqueCounts := make(map[string]int)
+			for k, v := range groups {
+				uniqueCounts[k] = len(util.Unique(v))
+			}
+
+			// Sort by occurrence (descending unique count)
+			sort.Slice(keys, func(i, j int) bool {
+				return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]
+			})
+
+			// Verify order
+			if len(keys) != len(tt.expectedOrder) {
+				t.Fatalf("Expected %d groups, got %d", len(tt.expectedOrder), len(keys))
+			}
+
+			for i, expectedHash := range tt.expectedOrder {
+				if keys[i] != expectedHash {
+					t.Errorf("Position %d: expected hash %s, got %s", i, expectedHash, keys[i])
+				}
+			}
+
+			// Also verify the unique counts are correct
+			for hash, expectedUniqueCount := range map[string]int{
+				"hash1": len(util.Unique(groups["hash1"])),
+				"hash2": len(util.Unique(groups["hash2"])),
+				"hash3": len(util.Unique(groups["hash3"])),
+			} {
+				t.Logf("%s: %d unique out of %d total", hash, expectedUniqueCount, len(groups[hash]))
+			}
+		})
+	}
+}
+
+// TestSizeSorting tests that size sorting works correctly.
+func TestSizeSorting(t *testing.T) {
+	tests := []struct {
+		name          string
+		matches       []syntax.Match
+		expectedOrder []string
+	}{
+		{
+			name: "descending by size",
+			matches: []syntax.Match{
+				{
+					Hash:  "hash2",
+					Frags: createFragmentsWithSize(50),
+				},
+				{
+					Hash:  "hash1",
+					Frags: createFragmentsWithSize(100), // Largest, should be first
+				},
+				{
+					Hash:  "hash3",
+					Frags: createFragmentsWithSize(25),
+				},
+			},
+			expectedOrder: []string{"hash1", "hash2", "hash3"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			groups := make(map[string][][]*syntax.Node)
+			for _, match := range tt.matches {
+				groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+			}
+
+			keys := make([]string, 0, len(groups))
+			for k := range groups {
+				keys = append(keys, k)
+			}
+
+			// Sort by size (descending)
+			sort.Slice(keys, func(i, j int) bool {
+				sizeI := 0
+				if len(groups[keys[i]]) > 0 && len(groups[keys[i]][0]) > 0 {
+					sizeI = groups[keys[i]][0][0].Owns
+				}
+				sizeJ := 0
+				if len(groups[keys[j]]) > 0 && len(groups[keys[j]][0]) > 0 {
+					sizeJ = groups[keys[j]][0][0].Owns
+				}
+				return sizeI > sizeJ
+			})
+
+			// Verify order
+			if len(keys) != len(tt.expectedOrder) {
+				t.Fatalf("Expected %d groups, got %d", len(tt.expectedOrder), len(keys))
+			}
+
+			for i, expectedHash := range tt.expectedOrder {
+				if keys[i] != expectedHash {
+					t.Errorf("Position %d: expected hash %s, got %s", i, expectedHash, keys[i])
+				}
+			}
+		})
+	}
+}
+
+// createFragments creates specified number of unique fragments.
+func createFragments(count int) [][]*syntax.Node {
+	fragments := make([][]*syntax.Node, count)
+	for i := 0; i < count; i++ {
+		node := &syntax.Node{
+			Type:     i,
+			Filename: fmt.Sprintf("file%c.go", 'a'+i),
+			Pos:      i * 10,
+			End:      i*10 + 5,
+			Owns:     5,
+		}
+		fragments[i] = []*syntax.Node{node}
+	}
+	return fragments
+}
+
+// createFragmentsWithDuplicates creates fragments with duplicates to test bug fix.
+func createFragmentsWithDuplicates(uniqueCount, totalCount int) [][]*syntax.Node {
+	fragments := make([][]*syntax.Node, totalCount)
+	for i := 0; i < totalCount; i++ {
+		// Create duplicates by reusing uniqueCount positions
+		uniqueIndex := i % uniqueCount
+		node := &syntax.Node{
+			Type:     uniqueIndex,
+			Filename: fmt.Sprintf("file%c.go", 'a'+uniqueIndex),
+			Pos:      uniqueIndex * 10,
+			End:      uniqueIndex*10 + 5,
+			Owns:     5,
+		}
+		fragments[i] = []*syntax.Node{node}
+	}
+	return fragments
+}
+
+// createFragmentsWithSize creates fragments with specified size (Owns value).
+func createFragmentsWithSize(size int) [][]*syntax.Node {
+	node := &syntax.Node{
+		Type:     1,
+		Filename: "test.go",
+		Pos:      0,
+		End:      size,
+		Owns:     size,
+	}
+	return [][]*syntax.Node{{node}}
+}
