@@ -123,7 +123,7 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, *cliCfg.SortBy, mergedConfig.Threshold); err != nil {
+	if err := printDupls(p, duplChan, printer.SortBy(*cliCfg.SortBy), mergedConfig.Threshold); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		if outputFile != nil {
 			_ = outputFile.Close()
@@ -308,17 +308,17 @@ func computeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 }
 
 // sortCloneGroupKeys sorts clone group hashes based on specified criteria.
-func sortCloneGroupKeys(keys []string, sortBy string, groups map[string][][]*syntax.Node, uniqueCounts map[string]int) {
+func sortCloneGroupKeys(keys []string, sortBy printer.SortBy, groups map[string][][]*syntax.Node, uniqueCounts map[string]int) {
 	switch sortBy {
-	case "occurrence":
+	case printer.SortByOccurrence:
 		// Sort by number of unique files in each clone group (most files first, descending)
 		sort.Slice(keys, func(i, j int) bool {
 			return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]
 		})
-	case "hash":
+	case printer.SortByHash:
 		// Sort alphabetically by hash (ascending)
 		sort.Strings(keys)
-	case "size":
+	case printer.SortBySize:
 		// Sort by size of first clone in each group (largest first, descending)
 		sort.Slice(keys, func(i, j int) bool {
 			sizeI := 0
@@ -337,7 +337,7 @@ func sortCloneGroupKeys(keys []string, sortBy string, groups map[string][][]*syn
 	}
 }
 
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
 	// Build groups from matches
 	groups := buildCloneGroups(duplChan)
 
@@ -354,7 +354,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 	sortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
 	if err := p.PrintHeader(); err != nil {
-		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy, threshold, err)
+		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy.String(), threshold, err)
 	}
 
 	for _, k := range keys {
@@ -364,14 +364,14 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy string, 
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return fmt.Errorf("failed to print clones for hash %s (sortBy: %s): %w", k, sortBy, err)
+				return fmt.Errorf("failed to print clones for hash %s (sortBy: %s): %w", k, sortBy.String(), err)
 			}
 		}
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		if err := jsonPrinter.OutputJSON(threshold, sortBy); err != nil {
-			return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy, err)
+			return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy.String(), err)
 		}
 	}
 
@@ -391,6 +391,12 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sortBy, _ := cmd.Flags().GetString("sort")
+
+	// Validate sorting criteria
+	if _, err := printer.ParseSortBy(sortBy); err != nil {
+		return fmt.Errorf("invalid --sort value %q: %w", sortBy, err)
+	}
+
 	allFlag, _ := cmd.Flags().GetBool("all")
 	_, _ = cmd.Flags().GetString("output-dir")
 	profile, _ := cmd.Flags().GetBool("profile")
@@ -501,7 +507,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, sortBy, mergedConfig.Threshold); err != nil {
+	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold); err != nil {
 		return fmt.Errorf("failed to print duplicates (sortBy: %s, threshold: %d): %w", sortBy, mergedConfig.Threshold, err)
 	}
 

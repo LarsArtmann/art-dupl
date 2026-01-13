@@ -58,27 +58,27 @@ func anotherLargeFunction() {
 
 	testCases := []struct {
 		name          string
-		sortBy        string
+		sortBy        SortBy
 		expectedOrder []string // Expected filenames in order
 	}{
 		{
 			name:          "Sort by size descending",
-			sortBy:        "size",
+			sortBy:        SortBySize,
 			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"},
 		},
 		{
 			name:          "Sort by occurrence (file count, descending)",
-			sortBy:        "occurrence",
+			sortBy:        SortByOccurrence,
 			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"}, // All have same occurrence (1), falls back to hash sort which is alphabetical
 		},
 		{
 			name:          "Sort by hash (filename order)",
-			sortBy:        "hash",
+			sortBy:        SortByHash,
 			expectedOrder: []string{"another_large.go", "large.go", "medium.go", "small.go"},
 		},
 		{
 			name:          "Sort by total-tokens",
-			sortBy:        "total-tokens",
+			sortBy:        SortByTotalTokens,
 			expectedOrder: []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"}, // multi.go has 5 occurrences of 3 tokens = 15 total
 		},
 	}
@@ -106,7 +106,7 @@ func anotherLargeFunction() {
 
 				// For total-tokens sorting, we need special handling since it's the same as size in JSON
 				output := buf.String()
-				if tc.sortBy == "total-tokens" {
+				if tc.sortBy == SortByTotalTokens {
 					// Just check that output contains expected files
 					for _, file := range []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"} {
 						if !strings.Contains(output, file) {
@@ -137,7 +137,7 @@ func anotherLargeFunction() {
 
 // testPrinterSorting tests a printer's sorting functionality with standard verification logic.
 func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer,
-	testContent string, clones [][]*syntax.Node, sortBy string, expectedOrder []string, printerName string,
+	testContent string, clones [][]*syntax.Node, sortBy SortBy, expectedOrder []string, printerName string,
 ) {
 	t.Helper()
 	var buf bytes.Buffer

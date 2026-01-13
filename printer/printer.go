@@ -6,6 +6,6 @@ type ReadFile func(filename string) ([]byte, error)
 
 type Printer interface {
 	PrintHeader() error
-	PrintClones(dups [][]*syntax.Node, sortBy ...string) error // Add optional sortBy parameter
+	PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error // Add optional sortBy parameter
 	PrintFooter() error
 }

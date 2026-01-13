@@ -44,11 +44,11 @@ func (p *htmlprinter) PrintHeader() error {
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
+func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.iota++
 
-	// Extract sortBy parameter, default to "size"
-	sortCriteria := "size"
+	// Extract sortBy parameter, default to SortBySize
+	sortCriteria := SortBySize
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
@@ -104,7 +104,7 @@ func (p *htmlprinter) PrintFooter() error {
 }
 
 // OutputHTML generates HTML output with sorting.
-func (p *htmlprinter) OutputHTML(threshold int, sortBy string) error {
+func (p *htmlprinter) OutputHTML(threshold int, sortBy SortBy) error {
 	// Store clones for sorting - flatten the 3D structure to 2D
 	var allDups [][]*syntax.Node
 	p.dupMutex.Lock()

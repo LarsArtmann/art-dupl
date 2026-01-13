@@ -26,11 +26,11 @@ func NewText(w io.Writer, fread ReadFile) Printer {
 
 func (p *text) PrintHeader() error { return nil }
 
-func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
+func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.cnt++
 
-	// Extract sortBy parameter, default to sortBySize
-	sortCriteria := sortBySize
+	// Extract sortBy parameter, default to SortBySize
+	sortCriteria := SortBySize
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
@@ -60,7 +60,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
 }
 
 // PrintClonesSorted prints clones with specified sorting criteria.
-func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy string) error {
+func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) error {
 	p.cnt++
 	if _, err := fmt.Fprintf(p.w, "found %d clones (sorted by %s):\n", len(dups), sortBy); err != nil {
 		return err //nolint:wrapcheck // fmt errors are clear in context
@@ -107,24 +107,24 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 }
 
 // OutputText generates text output with sorting.
-func (p *text) OutputText(threshold int, sortBy string) error { //nolint:cyclop // Text output with multiple sorting strategies
+func (p *text) OutputText(threshold int, sortBy SortBy) error { //nolint:cyclop // Text output with multiple sorting strategies
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
 	switch sortBy {
-	case sortBySize:
+	case SortBySize:
 		// Sort by total token size of each clone group
 		sortCloneGroupsBySize(sortedCloneGroups)
-	case "occurrence":
+	case SortByOccurrence:
 		// Sort by number of files in each clone group
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
 			return len(sortedCloneGroups[i]) > len(sortedCloneGroups[j])
 		})
-	case "hash":
+	case SortByHash:
 		// Sort by filename for deterministic output
 		sortClonesByFilename(sortedCloneGroups)
-	case "total-tokens":
+	case SortByTotalTokens:
 		// Sort by total tokens across all files in each clone group
 		sortCloneGroupsBySize(sortedCloneGroups)
 	default:

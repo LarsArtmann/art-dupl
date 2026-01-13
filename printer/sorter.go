@@ -7,21 +7,21 @@ import (
 )
 
 // SortCloneGroups sorts CloneGroup arrays by specified criteria.
-func SortCloneGroups(groups []CloneGroup, sortBy string) {
+func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
 	switch sortBy {
-	case sortBySize:
+	case SortBySize:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Size > groups[j].Size // Largest first (descending)
 		})
-	case sortByOccurrence:
+	case SortByOccurrence:
 		sort.Slice(groups, func(i, j int) bool {
 			return len(groups[i].Files) > len(groups[j].Files) // Most files first (descending)
 		})
-	case sortByHash:
+	case SortByHash:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Hash < groups[j].Hash // Alphabetical (ascending)
 		})
-	case sortByTotalTokens:
+	case SortByTotalTokens:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Size > groups[j].Size // Same as size for CloneGroup
 		})

@@ -90,7 +90,7 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...string) error {
+func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.iota++
 
 	clones := make([]JSONClone, len(dups))
@@ -160,7 +160,7 @@ func (*JSONPrinter) PrintFooter() error {
 }
 
 // OutputJSON generates the complete JSON output.
-func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
+func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy) error {
 	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
 
