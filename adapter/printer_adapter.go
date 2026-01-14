@@ -5,7 +5,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/types"
 )
 
 // PrinterAdapter bridges domain types with existing printer interface.
@@ -59,7 +58,7 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 		Size:     totalSize,
 		Hash:     generateGroupHash(clones),
 		Severity: severity,
-		Status:   types.FileProcessingStateCompleted,
+		Status:   domain.FileProcessingStateCompleted,
 	}
 }
 
@@ -75,8 +74,8 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 
 	return domain.Analysis{
 		ID:          generateAnalysisID(),
-		State:       types.DetectionStateCompleted,
-		Mode:        types.AnalysisModeFull,
+		State:       domain.DetectionStateCompleted,
+		Mode:        domain.AnalysisModeFull,
 		Threshold:   threshold,
 		CloneGroups: cloneGroups,
 		Stats: domain.AnalysisStats{

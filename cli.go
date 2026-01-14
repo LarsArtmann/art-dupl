@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -17,12 +16,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/util"
 	"github.com/spf13/cobra"
 )
 
@@ -67,6 +66,8 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 		appConfig.OutputFormat = config.OutputFormatPlumbing
 	case *cliCfg.JSONFlag:
 		appConfig.OutputFormat = config.OutputFormatJSON
+	case *cliCfg.SimpleJSON:
+		appConfig.OutputFormat = config.OutputFormatSimpleJSON
 	}
 
 	if flag.NArg() > 0 {
@@ -88,7 +89,16 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 	if cli.ExitIfBothSet(cliCfg.HTML, cliCfg.JSONFlag, "HTML", "JSON") != 0 {
 		return 1
 	}
+	if cli.ExitIfBothSet(cliCfg.HTML, cliCfg.SimpleJSON, "HTML", "simple-json") != 0 {
+		return 1
+	}
 	if cli.ExitIfBothSet(cliCfg.Plumbing, cliCfg.JSONFlag, "plumbing", "JSON") != 0 {
+		return 1
+	}
+	if cli.ExitIfBothSet(cliCfg.Plumbing, cliCfg.SimpleJSON, "plumbing", "simple-json") != 0 {
+		return 1
+	}
+	if cli.ExitIfBothSet(cliCfg.JSONFlag, cliCfg.SimpleJSON, "JSON", "simple-json") != 0 {
 		return 1
 	}
 
@@ -123,7 +133,7 @@ func Run() int { //nolint:cyclop,funlen // Main CLI entry point with error handl
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, printer.SortBy(*cliCfg.SortBy), mergedConfig.Threshold); err != nil {
+	if err := printDupls(p, duplChan, printer.SortBy(*cliCfg.SortBy), mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		if outputFile != nil {
 			_ = outputFile.Close()
@@ -302,7 +312,7 @@ func buildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node 
 func computeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 	uniqueCounts := make(map[string]int)
 	for k, v := range groups {
-		uniqueCounts[k] = len(util.Unique(v))
+		uniqueCounts[k] = len(utils.Unique(v))
 	}
 	return uniqueCounts
 }
@@ -337,7 +347,7 @@ func sortCloneGroupKeys(keys []string, sortBy printer.SortBy, groups map[string]
 	}
 }
 
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int) error { //nolint:cyclop // Output formatting with multiple conditional paths
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat) error {
 	// Build groups from matches
 	groups := buildCloneGroups(duplChan)
 
@@ -358,7 +368,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	}
 
 	for _, k := range keys {
-		uniq := util.Unique(groups[k])
+		uniq := utils.Unique(groups[k])
 		if len(uniq) > 1 {
 			if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 				jsonPrinter.SetHash(k)
@@ -370,8 +380,14 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		if err := jsonPrinter.OutputJSON(threshold, sortBy); err != nil {
-			return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy.String(), err)
+		if outputFormat == config.OutputFormatSimpleJSON {
+			if err := jsonPrinter.OutputSimpleJSON(); err != nil {
+				return fmt.Errorf("failed to output simple JSON: %w", err)
+			}
+		} else {
+			if err := jsonPrinter.OutputJSON(threshold, sortBy); err != nil {
+				return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy.String(), err)
+			}
 		}
 	}
 
@@ -381,7 +397,8 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	return nil
 }
 
-func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,funlen // Cobra command with multiple flag handling paths
+// RunCobraCommand implements Cobra command execution (exported for cmd package).
+func RunCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,funlen // Cobra command with multiple flag handling paths
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
 	verbose, _ := cmd.Flags().GetBool("verbose")
@@ -483,7 +500,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 	}
 
 	if allFlag {
-		return errors.New("all mode not yet implemented")
+		return runAllModes(mergedConfig, sortBy, args)
 	}
 
 	// Add timeout context if specified
@@ -507,9 +524,82 @@ func runCobraCommand(cmd *cobra.Command, args []string) error { //nolint:cyclop,
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold); err != nil {
+	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
 		return fmt.Errorf("failed to print duplicates (sortBy: %s, threshold: %d): %w", sortBy, mergedConfig.Threshold, err)
 	}
 
 	return nil
+}
+
+// runAllModes runs all detection methods and generates all output formats.
+func runAllModes(cfg *config.Config, sortBy string, args []string) error {
+	// Set detection methods to all available methods
+	cfg.DetectionMethods = config.AllDetectionMethods()
+
+	// Set output directory if not specified
+	if cfg.OutputFile == "" {
+		cfg.OutputFile = "reports/art-dupl"
+	}
+
+	outputDir := cfg.OutputFile
+	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+		return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
+	}
+
+	fmt.Fprintf(os.Stderr, "📂 Running all detection methods and generating all output formats in %s...\n", outputDir)
+
+	// Run analysis once
+	duplChan, filesCount, err := executeAnalysis(cfg, cfg.Paths)
+	if err != nil {
+		return fmt.Errorf("analysis failed for paths %v: %w", cfg.Paths, err)
+	}
+
+	// Convert channel to slice for reuse
+	matches := collectMatches(duplChan)
+
+	// Generate all output formats
+	formats := config.AllOutputFormats()
+	sortByEnum := printer.SortBy(sortBy)
+
+	for _, format := range formats {
+		filename := filepath.Join(outputDir, "report."+string(format))
+		file, err := os.Create(filename)
+		if err != nil {
+			return fmt.Errorf("failed to create output file %q: %w", filename, err)
+		}
+		defer file.Close()
+
+		p := createPrinter(format)(file, os.ReadFile)
+
+		if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+			jsonPrinter.SetFilesCount(filesCount)
+		}
+
+		// Create channel from matches for this printer
+		matchChan := make(chan syntax.Match)
+		go func() {
+			defer close(matchChan)
+			for _, match := range matches {
+				matchChan <- match
+			}
+		}()
+
+		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, cfg.OutputFormat); err != nil {
+			return fmt.Errorf("failed to print %s format: %w", format, err)
+		}
+
+		fmt.Fprintf(os.Stderr, "  ✅ Generated %s\n", filename)
+	}
+
+	fmt.Fprintf(os.Stderr, "\n✨ All formats generated successfully!\n")
+	return nil
+}
+
+// collectMatches collects all matches from a channel into a slice.
+func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
+	var matches []syntax.Match
+	for match := range matchChan {
+		matches = append(matches, match)
+	}
+	return matches
 }

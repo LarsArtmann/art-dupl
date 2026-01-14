@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
 // TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.
@@ -171,7 +171,7 @@ func TestSizeSorting(t *testing.T) {
 // createFragments creates specified number of unique fragments.
 func createFragments(count int) [][]*syntax.Node {
 	fragments := make([][]*syntax.Node, count)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		node := &syntax.Node{
 			Type:     i,
 			Filename: fmt.Sprintf("file%c.go", 'a'+i),
@@ -187,7 +187,7 @@ func createFragments(count int) [][]*syntax.Node {
 // createFragmentsWithDuplicates creates fragments with duplicates to test bug fix.
 func createFragmentsWithDuplicates(uniqueCount, totalCount int) [][]*syntax.Node {
 	fragments := make([][]*syntax.Node, totalCount)
-	for i := 0; i < totalCount; i++ {
+	for i := range totalCount {
 		// Create duplicates by reusing uniqueCount positions
 		uniqueIndex := i % uniqueCount
 		node := &syntax.Node{

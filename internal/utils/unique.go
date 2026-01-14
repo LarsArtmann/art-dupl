@@ -1,5 +1,4 @@
-// Package util provides shared utility functions for dupl
-package util
+package utils
 
 import "github.com/LarsArtmann/art-dupl/syntax"
 

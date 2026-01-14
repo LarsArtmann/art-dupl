@@ -66,7 +66,7 @@ func TestSortByString(t *testing.T) {
 // TestSortByIsValid tests IsValid method for all SortBy values.
 func TestSortByIsValid(t *testing.T) {
 	tests := []struct {
-		sortBy SortBy
+		sortBy  SortBy
 		isValid bool
 	}{
 		{SortBySize, true},

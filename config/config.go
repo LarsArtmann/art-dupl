@@ -8,6 +8,29 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
+// DetectionMethods is a slice of DetectionMethod for type safety.
+type DetectionMethods []DetectionMethod
+
+// IsDefault checks if methods have default value.
+func (dm DetectionMethods) IsDefault() bool {
+	return len(dm) == 1 && dm[0] == DetectionMethodArtDupl
+}
+
+// Contains checks if method is in methods list.
+func (dm DetectionMethods) Contains(method DetectionMethod) bool {
+	for _, m := range dm {
+		if m == method {
+			return true
+		}
+	}
+	return false
+}
+
+// IsEmpty checks if methods list is empty.
+func (dm DetectionMethods) IsEmpty() bool {
+	return len(dm) == 0
+}
+
 // Config represents the dupl configuration with strong typing.
 type Config struct {
 	// Threshold sets the minimum token sequence size to consider as duplicate

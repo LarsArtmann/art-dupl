@@ -8,8 +8,92 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/types"
 )
+
+// FileProcessingState represents the processing state of a file.
+type FileProcessingState string
+
+const (
+	// FileProcessingStatePending indicates file is pending processing.
+	FileProcessingStatePending FileProcessingState = "pending"
+	// FileProcessingStateProcessing indicates file is currently being processed.
+	FileProcessingStateProcessing FileProcessingState = "processing"
+	// FileProcessingStateCompleted indicates file processing is complete.
+	FileProcessingStateCompleted FileProcessingState = "completed"
+	// FileProcessingStateFailed indicates file processing failed.
+	FileProcessingStateFailed FileProcessingState = "failed"
+)
+
+// String implements fmt.Stringer for FileProcessingState.
+func (fps FileProcessingState) String() string {
+	return string(fps)
+}
+
+// IsValid checks if FileProcessingState is valid.
+func (fps FileProcessingState) IsValid() bool {
+	switch fps {
+	case FileProcessingStatePending, FileProcessingStateProcessing, FileProcessingStateCompleted, FileProcessingStateFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// DetectionState represents the state of clone detection.
+type DetectionState string
+
+const (
+	// DetectionStateIdle indicates no detection in progress.
+	DetectionStateIdle DetectionState = "idle"
+	// DetectionStateRunning indicates detection is running.
+	DetectionStateRunning DetectionState = "running"
+	// DetectionStateCompleted indicates detection completed.
+	DetectionStateCompleted DetectionState = "completed"
+	// DetectionStateFailed indicates detection failed.
+	DetectionStateFailed DetectionState = "failed"
+)
+
+// String implements fmt.Stringer for DetectionState.
+func (ds DetectionState) String() string {
+	return string(ds)
+}
+
+// IsValid checks if DetectionState is valid.
+func (ds DetectionState) IsValid() bool {
+	switch ds {
+	case DetectionStateIdle, DetectionStateRunning, DetectionStateCompleted, DetectionStateFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// AnalysisMode represents the mode of code analysis.
+type AnalysisMode string
+
+const (
+	// AnalysisModeFull performs full analysis.
+	AnalysisModeFull AnalysisMode = "full"
+	// AnalysisModeQuick performs quick analysis.
+	AnalysisModeQuick AnalysisMode = "quick"
+	// AnalysisModeDeep performs deep analysis.
+	AnalysisModeDeep AnalysisMode = "deep"
+)
+
+// String implements fmt.Stringer for AnalysisMode.
+func (am AnalysisMode) String() string {
+	return string(am)
+}
+
+// IsValid checks if AnalysisMode is valid.
+func (am AnalysisMode) IsValid() bool {
+	switch am {
+	case AnalysisModeFull, AnalysisModeQuick, AnalysisModeDeep:
+		return true
+	default:
+		return false
+	}
+}
 
 // Clone represents a code clone with strong typing.
 type Clone struct {
@@ -23,7 +107,7 @@ type Clone struct {
 	Hash       Hash                      `json:"hash"`
 	Confidence Confidence                `json:"confidence"`
 	Complexity ComplexityScore           `json:"complexity"`
-	Status     types.FileProcessingState `json:"status"`
+	Status     FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone data.
@@ -53,7 +137,7 @@ type CloneGroup struct {
 	Hash     string                    `json:"hash"`
 	Size     uint                      `json:"size"`
 	Severity CloneSeverity             `json:"severity"`
-	Status   types.FileProcessingState `json:"status"`
+	Status   FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone group.
@@ -127,8 +211,8 @@ func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 // Analysis represents main analysis domain object.
 type Analysis struct {
 	ID          string               `json:"id"`
-	State       types.DetectionState `json:"state"`
-	Mode        types.AnalysisMode   `json:"mode"`
+	State       DetectionState `json:"state"`
+	Mode        AnalysisMode   `json:"mode"`
 	Threshold   uint                 `json:"threshold"`
 	CloneGroups []CloneGroup         `json:"cloneGroups"`
 	Stats       AnalysisStats        `json:"stats"`
@@ -247,7 +331,7 @@ func (sf SourceFile) IsValid() error {
 // DetectionOptions represents configuration for detection.
 type DetectionOptions struct {
 	Threshold     uint               `json:"threshold"`
-	Mode          types.AnalysisMode `json:"mode"`
+	Mode          AnalysisMode `json:"mode"`
 	IncludeVendor bool               `json:"includeVendor"`
 	Verbose       bool               `json:"verbose"`
 	Paths         []string           `json:"paths"`
@@ -316,7 +400,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		Hash:       hash,
 		Confidence: conf,
 		Complexity: complexity,
-		Status:     types.FileProcessingStateCompleted,
+		Status:     FileProcessingStateCompleted,
 	}
 }
 

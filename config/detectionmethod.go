@@ -1,34 +1,31 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
-	"slices"
 	"strings"
 )
 
-// DetectionMethod represents the supported detection methods with type safety.
+// DetectionMethod represents the detection method type.
 type DetectionMethod string
 
 const (
-	// DetectionMethodHash uses hash-based comparison for code clones.
+	// DetectionMethodHash uses hash-based comparison.
 	DetectionMethodHash DetectionMethod = "hash"
-
-	// DetectionMethodArtDupl uses suffix tree-based detection (current method).
+	// DetectionMethodArtDupl uses suffix tree detection.
 	DetectionMethodArtDupl DetectionMethod = "art-dupl"
-
-	// DetectionMethodTodos finds TODO comments in code.
+	// DetectionMethodTodos finds TODO comments.
 	DetectionMethodTodos DetectionMethod = "todos"
-
 	// DetectionMethodLegacy finds legacy code patterns.
 	DetectionMethodLegacy DetectionMethod = "legacy"
 )
 
-// String implements fmt.Stringer for DetectionMethod.
+// String implements fmt.Stringer.
 func (dm DetectionMethod) String() string {
 	return string(dm)
 }
 
-// IsValid checks if the detection method is supported.
+// IsValid validates detection method.
 func (dm DetectionMethod) IsValid() bool {
 	switch dm {
 	case DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy:
@@ -38,17 +35,215 @@ func (dm DetectionMethod) IsValid() bool {
 	}
 }
 
-// MarshalJSON implements json.Marshaler for DetectionMethod.
+// MarshalJSON implements json.Marshaler.
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
-	return MarshalEnumJSON(dm, DetectionMethod.IsValid, "detection method")
+	if !dm.IsValid() {
+		return nil, fmt.Errorf("invalid detection method: %s", dm)
+	}
+	return json.Marshal(string(dm))
 }
 
-// UnmarshalJSON implements json.Unmarshaler for DetectionMethod.
+// UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	return UnmarshalJSONForEnum(dm, data, "detection method")
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	parsed := DetectionMethod(str)
+	if !parsed.IsValid() {
+		*dm = DetectionMethodArtDupl // default
+		return fmt.Errorf("invalid detection method: %s", str)
+	}
+
+	*dm = parsed
+	return nil
 }
 
-// AllDetectionMethods returns list of all supported detection methods.
+// OutputFormat represents the output format type.
+type OutputFormat string
+
+const (
+	OutputFormatText      OutputFormat = "text"
+	OutputFormatHTML      OutputFormat = "html"
+	OutputFormatJSON      OutputFormat = "json"
+	OutputFormatPlumbing OutputFormat = "plumbing"
+	OutputFormatSimpleJSON OutputFormat = "simple-json"
+)
+
+// String implements fmt.Stringer.
+func (of OutputFormat) String() string {
+	return string(of)
+}
+
+// IsValid validates output format.
+func (of OutputFormat) IsValid() bool {
+	switch of {
+	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatPlumbing, OutputFormatSimpleJSON:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler.
+func (of OutputFormat) MarshalJSON() ([]byte, error) {
+	if !of.IsValid() {
+		return nil, fmt.Errorf("invalid output format: %s", of)
+	}
+	return json.Marshal(string(of))
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (of *OutputFormat) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	parsed := OutputFormat(str)
+	if !parsed.IsValid() {
+		*of = OutputFormatText // default
+		return fmt.Errorf("invalid output format: %s", str)
+	}
+
+	*of = parsed
+	return nil
+}
+
+// SortCriteria represents the sort criteria type.
+type SortCriteria string
+
+const (
+	SortBySize        SortCriteria = "size"
+	SortByOccurrence  SortCriteria = "occurrence"
+	SortByHash        SortCriteria = "hash"
+	SortByTotalTokens SortCriteria = "total-tokens"
+)
+
+// String implements fmt.Stringer.
+func (sc SortCriteria) String() string {
+	return string(sc)
+}
+
+// IsValid validates sort criteria.
+func (sc SortCriteria) IsValid() bool {
+	switch sc {
+	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
+		return true
+	default:
+		return false
+	}
+}
+
+// MarshalJSON implements json.Marshaler.
+func (sc SortCriteria) MarshalJSON() ([]byte, error) {
+	if !sc.IsValid() {
+		return nil, fmt.Errorf("invalid sort criteria: %s", sc)
+	}
+	return json.Marshal(string(sc))
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	parsed := SortCriteria(str)
+	if !parsed.IsValid() {
+		*sc = SortBySize // default
+		return fmt.Errorf("invalid sort criteria: %s", str)
+	}
+
+	*sc = parsed
+	return nil
+}
+
+// AllOutputFormats returns all supported output formats.
+func AllOutputFormats() []OutputFormat {
+	return []OutputFormat{
+		OutputFormatText,
+		OutputFormatHTML,
+		OutputFormatJSON,
+		OutputFormatPlumbing,
+		OutputFormatSimpleJSON,
+	}
+}
+
+// AllSortCriteria returns all supported sort criteria.
+func AllSortCriteria() []SortCriteria {
+	return []SortCriteria{
+		SortBySize,
+		SortByOccurrence,
+		SortByHash,
+		SortByTotalTokens,
+	}
+}
+
+// ParseDetectionMethods parses comma-separated detection methods.
+func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
+	if methodsStr == "" {
+		return []DetectionMethod{DetectionMethodArtDupl}, nil
+	}
+
+	methods := strings.Split(methodsStr, ",")
+	var result []DetectionMethod
+
+	for _, method := range methods {
+		method = strings.TrimSpace(method)
+		if method == "" {
+			continue
+		}
+
+		dm := DetectionMethod(method)
+		if !dm.IsValid() {
+			return nil, fmt.Errorf("invalid detection method: %s", method)
+		}
+
+		result = append(result, dm)
+	}
+
+	// Remove duplicates while preserving order
+	seen := make(map[DetectionMethod]bool)
+	var unique []DetectionMethod
+	for _, m := range result {
+		if !seen[m] {
+			seen[m] = true
+			unique = append(unique, m)
+		}
+	}
+
+	return unique, nil
+}
+
+// ValidateDetectionMethods validates a list of detection methods.
+func ValidateDetectionMethods(methods []DetectionMethod) error {
+	for _, method := range methods {
+		if !method.IsValid() {
+			return fmt.Errorf("invalid detection method: %s", method)
+		}
+	}
+	return nil
+}
+
+// DefaultDetectionMethod returns the default detection method.
+func DefaultDetectionMethod() DetectionMethod {
+	return DetectionMethodArtDupl
+}
+
+// DefaultOutputFormat returns the default output format.
+func DefaultOutputFormat() OutputFormat {
+	return OutputFormatText
+}
+
+// DefaultSortCriteria returns the default sort criteria.
+func DefaultSortCriteria() SortCriteria {
+	return SortBySize
+}
+
+// AllDetectionMethods returns all supported detection methods.
 func AllDetectionMethods() []DetectionMethod {
 	return []DetectionMethod{
 		DetectionMethodHash,
@@ -56,57 +251,4 @@ func AllDetectionMethods() []DetectionMethod {
 		DetectionMethodTodos,
 		DetectionMethodLegacy,
 	}
-}
-
-// DetectionMethods represents a collection of detection methods.
-type DetectionMethods []DetectionMethod
-
-// String implements fmt.Stringer for DetectionMethods.
-func (dms DetectionMethods) String() string {
-	if len(dms) == 0 {
-		return ""
-	}
-	methods := make([]string, len(dms))
-	for i, dm := range dms {
-		methods[i] = dm.String()
-	}
-	return strings.Join(methods, ",")
-}
-
-// ParseDetectionMethods parses a comma-separated string of detection methods.
-func ParseDetectionMethods(s string) (DetectionMethods, error) {
-	if s == "" {
-		return DetectionMethods{DetectionMethodArtDupl}, nil // default
-	}
-
-	parts := strings.Split(s, ",")
-	methods := make(DetectionMethods, 0, len(parts))
-
-	for _, part := range parts {
-		method := DetectionMethod(strings.TrimSpace(part))
-		if !method.IsValid() {
-			return nil, fmt.Errorf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", part)
-		}
-		// Avoid duplicates
-		found := slices.Contains(methods, method)
-		if !found {
-			methods = append(methods, method)
-		}
-	}
-
-	if len(methods) == 0 {
-		return DetectionMethods{DetectionMethodArtDupl}, nil
-	}
-
-	return methods, nil
-}
-
-// Contains checks if the methods contain a specific method.
-func (dms DetectionMethods) Contains(method DetectionMethod) bool {
-	return slices.Contains(dms, method)
-}
-
-// IsDefault checks if only art-dupl method is selected.
-func (dms DetectionMethods) IsDefault() bool {
-	return len(dms) == 1 && dms[0] == DetectionMethodArtDupl
 }

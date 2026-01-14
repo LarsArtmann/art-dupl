@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//nolint:gosec // All file I/O in tests uses controlled paths from t.TempDir()
-
 // TestSmartFilteringIntegration is an integration test for smart filtering feature.
 func TestSmartFilteringIntegration(t *testing.T) {
 	t.Run("filters sqlc and templ files when filter-generated is set", func(t *testing.T) {
@@ -89,8 +87,8 @@ func Authenticate(username, password string) bool {
 		// Create all files
 		for path, content := range files {
 			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))     //nolint:gosec //G301 Test directory permissions
-			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600)) //nolint:gosec //G306 Test file permissions
+			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))
+			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600))
 		}
 
 		// Test that filter correctly identifies files
@@ -128,8 +126,8 @@ func Header() templ.Component { return nil }
 
 		for path, content := range files {
 			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))     //nolint:gosec //G301 Test directory permissions
-			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600)) //nolint:gosec //G306 Test file permissions
+			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))
+			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600))
 		}
 
 		// Create filter with sqlc included (not filtered)
@@ -153,8 +151,8 @@ func Header() templ.Component { return nil }
 package db
 type User struct {}
 `
-		assert.NoError(t, os.MkdirAll(filepath.Dir(vendorFile), 0o750))           //nolint:gosec //G301 Test directory permissions
-		assert.NoError(t, os.WriteFile(vendorFile, []byte(vendorContent), 0o600)) //nolint:gosec //G306 Test file permissions
+		assert.NoError(t, os.MkdirAll(filepath.Dir(vendorFile), 0o750))
+		assert.NoError(t, os.WriteFile(vendorFile, []byte(vendorContent), 0o600))
 
 		// Create filter with include pattern for vendor
 		filter := filter.NewFilter(true, []filter.FilterOption{filter.FilterAll})

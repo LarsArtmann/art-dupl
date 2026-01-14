@@ -9,34 +9,36 @@ import (
 
 // CLIConfig holds all CLI flag values.
 type CLIConfig struct {
-	ConfigFile    *string
-	Vendor        *bool
-	Verbose       *bool
-	VerboseLong   *bool
-	Threshold     *int
-	ThresholdLong *int
-	Files         *bool
-	HTML          *bool
-	JSONFlag      *bool
-	Plumbing      *bool
-	SortBy        *string
-	Paths         []string
+	ConfigFile     *string
+	Vendor         *bool
+	Verbose        *bool
+	VerboseLong    *bool
+	Threshold      *int
+	ThresholdLong  *int
+	Files          *bool
+	HTML           *bool
+	JSONFlag       *bool
+	SimpleJSON     *bool
+	Plumbing       *bool
+	SortBy         *string
+	Paths          []string
 }
 
 // NewCLIConfig creates a new CLI configuration with default flags.
 func NewCLIConfig() *CLIConfig {
 	return &CLIConfig{
-		ConfigFile:    flag.String("cli_config", "", "path to configuration file (JSON format)"),
-		Vendor:        flag.Bool("vendor", false, "include vendor directory in analysis"),
-		Verbose:       flag.Bool("v", false, "enable verbose logging to show processing progress"),
-		VerboseLong:   flag.Bool("verbose", false, "enable verbose logging to show processing progress"),
-		Threshold:     flag.Int("t", 15, "minimum token sequence size to consider as clone"),
-		ThresholdLong: flag.Int("threshold", 15, "minimum token sequence size to consider as clone"),
-		Files:         flag.Bool("files", false, "read file names from stdin, one per line"),
-		HTML:          flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments"),
-		JSONFlag:      flag.Bool("json", false, "output structured JSON format with metadata and statistics"),
-		Plumbing:      flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration"),
-		SortBy:        flag.String("sort", "size", "sort clone groups by: size, occurrence, hash, total-tokens"),
+		ConfigFile:     flag.String("cli_config", "", "path to configuration file (JSON format)"),
+		Vendor:         flag.Bool("vendor", false, "include vendor directory in analysis"),
+		Verbose:        flag.Bool("v", false, "enable verbose logging to show processing progress"),
+		VerboseLong:    flag.Bool("verbose", false, "enable verbose logging to show processing progress"),
+		Threshold:      flag.Int("t", 15, "minimum token sequence size to consider as clone"),
+		ThresholdLong:  flag.Int("threshold", 15, "minimum token sequence size to consider as clone"),
+		Files:          flag.Bool("files", false, "read file names from stdin, one per line"),
+		HTML:           flag.Bool("html", false, "output results as HTML with syntax-highlighted code fragments"),
+		JSONFlag:       flag.Bool("json", false, "output structured JSON format with metadata and statistics"),
+		SimpleJSON:     flag.Bool("simple-json", false, "output simple JSON format (legacy format from duplicates project)"),
+		Plumbing:       flag.Bool("plumbing", false, "output machine-readable plumbing format for script integration"),
+		SortBy:         flag.String("sort", "size", "sort clone groups by: size, occurrence, hash, total-tokens"),
 	}
 }
 
@@ -66,6 +68,9 @@ func (c *CLIConfig) GetOutputFormats() []string {
 	}
 	if *c.JSONFlag {
 		formats = append(formats, "json")
+	}
+	if *c.SimpleJSON {
+		formats = append(formats, "simple-json")
 	}
 	if *c.Plumbing {
 		formats = append(formats, "plumbing")

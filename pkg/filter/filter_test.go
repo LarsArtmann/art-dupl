@@ -63,7 +63,7 @@ func TestShouldFilter(t *testing.T) {
 package db
 type User struct {}
 `
-		assert.NoError(t, os.WriteFile(sqlcFile, []byte(sqlcContent), 0o600)) //nolint:gosec //G306 Test file permissions
+		assert.NoError(t, os.WriteFile(sqlcFile, []byte(sqlcContent), 0o600))
 
 		// Create templ file
 		templFile := filepath.Join(tmpDir, "header_templ.go")
@@ -71,14 +71,14 @@ type User struct {}
 import "github.com/a-h/templ"
 func header() templ.Component { return nil }
 `
-		assert.NoError(t, os.WriteFile(templFile, []byte(templContent), 0o600)) //nolint:gosec //G306 Test file permissions
+		assert.NoError(t, os.WriteFile(templFile, []byte(templContent), 0o600))
 
 		// Create regular file
 		regularFile := filepath.Join(tmpDir, "main.go")
 		regularContent := `package main
 func main() {}
 `
-		assert.NoError(t, os.WriteFile(regularFile, []byte(regularContent), 0o600)) //nolint:gosec //G306 Test file permissions
+		assert.NoError(t, os.WriteFile(regularFile, []byte(regularContent), 0o600))
 
 		f := NewFilter(true, []FilterOption{FilterAll})
 		assert.True(t, f.ShouldFilter(sqlcFile), "should filter sqlc file")
@@ -374,7 +374,7 @@ func TestIsGeneratedByFilename(t *testing.T) { //nolint:funlen
 	}
 }
 
-func TestShouldFilterIntegration(t *testing.T) { //nolint:funlen
+func TestShouldFilterIntegration(t *testing.T) {
 	// Create temporary directory structure
 	tmpDir := t.TempDir()
 
@@ -384,7 +384,7 @@ func TestShouldFilterIntegration(t *testing.T) { //nolint:funlen
 package db
 type User struct {}
 `
-		assert.NoError(t, os.WriteFile(sqlcFile, []byte(content), 0o600)) //nolint:gosec //G306 Test file permissions
+		assert.NoError(t, os.WriteFile(sqlcFile, []byte(content), 0o600))
 
 		f := NewFilter(true, []FilterOption{FilterSQLC})
 		assert.True(t, f.ShouldFilter(sqlcFile))

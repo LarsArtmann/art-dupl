@@ -42,7 +42,28 @@ type Summary struct {
 	TotalCloneGroups int     `json:"total_clone_groups"`
 	TotalClones      int     `json:"total_clones"`
 	ComplexityScore  float64 `json:"complexity_score"`
+	// ImpactScore represents total duplicated code volume (tokens × instances)
+	// This is the simple scoring metric from the duplicates project
+	ImpactScore int `json:"impact_score,omitempty"`
 }
+
+// SimpleJSONClone represents a single code clone instance in simple format (from duplicates project).
+type SimpleJSONClone struct {
+	Filename   string `json:"filename"`
+	StartLine  int    `json:"start_line"`
+	EndLine    int    `json:"end_line"`
+	TokenCount int    `json:"token_count"`
+}
+
+// SimpleCloneGroup represents a clone group in simple format (from duplicates project).
+type SimpleCloneGroup struct {
+	Hash      string            `json:"hash"`
+	Score     int               `json:"score"` // Impact score: tokens × instances
+	Instances []SimpleJSONClone `json:"instances"`
+}
+
+// SimpleJSONOutput represents the simple JSON output format (from duplicates project).
+type SimpleJSONOutput []SimpleCloneGroup
 
 type JSONPrinter struct {
 	ReadFile
@@ -186,3 +207,41 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy) error {
 	}
 	return nil
 }
+
+// OutputSimpleJSON generates simple JSON output format (from duplicates project).
+// This provides a simpler, more straightforward JSON format for users who prefer it.
+func (p *JSONPrinter) OutputSimpleJSON() error {
+	simpleOutput := make(SimpleJSONOutput, len(p.cloneGroups))
+
+	for i, group := range p.cloneGroups {
+		// Calculate impact score: tokens × instances
+		impactScore := group.Size * len(group.Files)
+
+		// Convert to simple format
+		simpleInstances := make([]SimpleJSONClone, len(group.Files))
+		for j, file := range group.Files {
+			simpleInstances[j] = SimpleJSONClone{
+				Filename:   file.Filename,
+				StartLine:  file.LineStart,
+				EndLine:    file.LineEnd,
+				TokenCount: group.Size, // Each clone in group has same size
+			}
+		}
+
+		simpleOutput[i] = SimpleCloneGroup{
+			Hash:      group.Hash,
+			Score:     impactScore,
+			Instances: simpleInstances,
+		}
+	}
+
+	encoder := json.NewEncoder(p.w)
+	encoder.SetIndent("", "  ")
+
+	err := encoder.Encode(simpleOutput)
+	if err != nil {
+		return errors.HandleMarshalingError("encode", "simple JSON output", err) //nolint:wrapcheck // Error already wraps cause
+	}
+	return nil
+}
+

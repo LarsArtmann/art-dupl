@@ -2,6 +2,7 @@
 package position
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -55,3 +56,36 @@ func JoinLines(lines []string) string {
 	}
 	return strings.Join(lines, "\n")
 }
+
+// LineIndex helps convert byte offsets to line numbers efficiently using binary search.
+// It pre-indexes all newline positions for O(log n) line number lookups.
+type LineIndex struct {
+	newlines []int
+}
+
+// NewLineIndex creates an index from file content.
+// It records the byte offset of each newline character.
+func NewLineIndex(content []byte) *LineIndex {
+	newlines := make([]int, 0, len(content)/40) // estimate 40 chars per line
+	newlines = append(newlines, 0)              // Line 1 starts at 0
+	for i, b := range content {
+		if b == '\n' {
+			newlines = append(newlines, i+1)
+		}
+	}
+	return &LineIndex{newlines: newlines}
+}
+
+// Line returns the 1-based line number for a byte offset.
+// Uses binary search for O(log n) performance.
+// If offset is out of bounds, returns the last line number.
+func (li *LineIndex) Line(offset int) int {
+	// Find the first newline index that is > offset.
+	// The line number is the index of that newline in our array.
+	// We want the index i such that newlines[i] <= offset < newlines[i+1]
+	idx := sort.Search(len(li.newlines), func(i int) bool {
+		return li.newlines[i] > offset
+	})
+	return idx
+}
+

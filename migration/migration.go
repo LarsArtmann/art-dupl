@@ -259,7 +259,7 @@ func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOption
 	}
 
 	// Set defaults
-	options.Mode = types.AnalysisModeFull
+	options.Mode = domain.AnalysisModeFull
 	options.IncludeVendor = false
 	options.Verbose = false
 	options.OutputFormat = "json"

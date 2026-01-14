@@ -8,7 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/util"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
 func Run(files []string, threshold int) ([]printer.Issue, error) {
@@ -56,7 +56,7 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 
 	var issues []printer.Issue
 	for _, k := range keys {
-		uniq := util.Unique(groups[k])
+		uniq := utils.Unique(groups[k])
 		if len(uniq) > 1 {
 			i, err := p.MakeIssues(uniq)
 			if err != nil {

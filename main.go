@@ -6,70 +6,21 @@ import (
 	"io"
 	"os"
 
+	"github.com/LarsArtmann/art-dupl/cmd"
 	"github.com/charmbracelet/fang"
-	"github.com/spf13/cobra"
 )
 
-func main() { //nolint:cyclop,funlen // Main entry point with complex error handling and CLI setup
-	rootCmd := &cobra.Command{
-		Use:   "art-dupl [flags] [paths...]",
-		Short: "Find code clones",
-		Long: `art-dupl finds code clones in Go source files.
+func main() { //nolint:funlen // Main entry point with CLI setup
+	// Create root command
+	rootCmd := cmd.NewRootCommand()
 
-It analyzes abstract syntax trees (ASTs) to find structural code clones
-while ignoring literal values using suffix tree algorithms.
-
-Sorting Options:
-- size: Shows largest clones first (highest token count)
-- occurrence: Shows most widespread clones first (most files)
-- hash: Alphabetical order by hash value
-
-Examples:
-  art-dupl ./src                          # Default analysis
-  art-dupl -t 20 ./src                    # Higher threshold
-  art-dupl --json -t 20 ./src             # JSON output with threshold
-  art-dupl --html --vendor ./src           # HTML with vendor included
-  art-dupl --plumbing --sort occurrence ./src # Most widespread clones first
-  art-dupl --all ./src                     # Generate all formats for all detection methods
-  art-dupl --all --output-dir ./my-reports ./src  # Custom output directory
-  art-dupl --filter-generated ./src         # Filter out auto-generated code (sqlc, templ)
-  art-dupl --filter-generated --include-sqlc ./src  # Filter but keep sqlc files
-  art-dupl --filter-generated --include-pattern "vendor/*" ./src  # Include vendor directory`,
-		Args: cobra.ArbitraryArgs, // Allow any number of positional arguments
-		RunE: runCmd,
-	}
-
-	// Add all flags to root command with better descriptions
-	rootCmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
-	rootCmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
-	rootCmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
-	rootCmd.Flags().IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
-	rootCmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
-	rootCmd.Flags().Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
-	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
-	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
-	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical) (default: size)")
-	rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
-	rootCmd.Flags().BoolP("all", "a", false, "generate all output formats for all detection methods")
-	rootCmd.Flags().StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")
-
-	// Add smart filtering flags
-	rootCmd.Flags().Bool("filter-generated", false, "enable smart filtering of auto-generated code (sqlc, templ, etc.)")
-	rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (only when --filter-generated is set)")
-	rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated files (only when --filter-generated is set)")
-	rootCmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
-	rootCmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
-
-	// Add hidden flags for advanced features
-	rootCmd.Flags().Bool("profile", false, "enable performance profiling")
-	rootCmd.Flags().String("timeout", "30m", "maximum execution time (default: 30m)")
-	_ = rootCmd.Flags().MarkHidden("profile")
-	_ = rootCmd.Flags().MarkHidden("timeout")
+	// Add all flags
+	cmd.AddFlags(rootCmd)
 
 	// Enhanced error handler with context-aware suggestions
 	errorHandler := func(w io.Writer, _ fang.Styles, err error) {
 		if _, err := fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err); err != nil {
-			// Can't write the error, continue anyway
+			// Can't write error, continue anyway
 			_ = err // Explicitly ignore error
 		}
 
@@ -77,54 +28,41 @@ Examples:
 		switch {
 		case fmt.Sprint(err) == "flag: help requested":
 			if _, err := fmt.Fprintf(w, "💡 Use examples below to get started:\n\n"); err != nil {
-				// Can't write help, continue anyway
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 			if _, err := fmt.Fprintf(w, "  art-dupl                    # Analyze current directory\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 			if _, err := fmt.Fprintf(w, "  art-dupl -t 50 ./src        # Higher threshold for larger clones\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 			if _, err := fmt.Fprintf(w, "  art-dupl --json -t 20 . | jq # JSON output with post-processing\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 			if _, err := fmt.Fprintf(w, "  art-dupl --all --output-dir ./reports # Generate all formats\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 		default:
 			if _, err := fmt.Fprintf(w, "Quick Fix: Check file paths and permissions\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 			if _, err := fmt.Fprintf(w, "Get Help: art-dupl --help\n"); err != nil {
-				// Can't write help examples
-				_ = err // Explicitly ignore error
+				_ = err
 			}
 		}
 		if _, err := fmt.Fprintf(w, "\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n"); err != nil {
-			// Can't write final message
-			_ = err // Explicitly ignore error
+			_ = err
 		}
 	}
 
 	// Enable fang features for better CLI experience
 	options := []fang.Option{
-		fang.WithVersion(GetVersion()),
-		fang.WithColorSchemeFunc(fang.DefaultColorScheme), // Auto-detect dark/light theme
+		fang.WithVersion(cmd.GetVersion()),
+		fang.WithColorSchemeFunc(fang.DefaultColorScheme),
 		fang.WithErrorHandler(errorHandler),
 	}
 
 	if err := fang.Execute(context.Background(), rootCmd, options...); err != nil {
 		os.Exit(1)
 	}
-}
-
-// runCmd implements the Cobra command execution.
-func runCmd(cmd *cobra.Command, args []string) error {
-	return runCobraCommand(cmd, args)
 }

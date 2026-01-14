@@ -9,11 +9,11 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/util"
 )
 
 // detector implements the Detector interface using existing dupl components.
@@ -245,7 +245,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 
 	// Convert to CloneGroup format
 	for hash, frags := range groups {
-		uniq := util.Unique(frags)
+		uniq := utils.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
 			allGroups = append(allGroups, group)
@@ -293,7 +293,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 
 	// Stream results
 	for hash, frags := range groups {
-		uniq := util.Unique(frags)
+		uniq := utils.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
 

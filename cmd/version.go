@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -23,12 +23,12 @@ func GetVersion() string {
 	return version
 }
 
-// GetCommit returns the commit hash.
+// GetCommit returns commit hash.
 func GetCommit() string {
 	return Commit
 }
 
-// GetBuildDate returns the build date.
+// GetBuildDate returns build date.
 func GetBuildDate() string {
 	return Date
 }
