@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/errors"
@@ -44,11 +45,9 @@ func UnmarshalJSON[T StringEnum](dest *T, data []byte, typeName string, defaultV
 
 	candidate := T(str)
 	// Validate against provided values
-	for _, valid := range validValues {
-		if candidate == valid {
-			*dest = candidate
-			return nil
-		}
+	if slices.Contains(validValues, candidate) {
+		*dest = candidate
+		return nil
 	}
 
 	// Create error with rich context
@@ -65,10 +64,8 @@ func UnmarshalJSON[T StringEnum](dest *T, data []byte, typeName string, defaultV
 //	}
 func MarshalJSON[T StringEnum](value T, validValues ...T) ([]byte, error) {
 	// Validate that current value is in valid list
-	for _, valid := range validValues {
-		if value == valid {
-			return json.Marshal(string(value))
-		}
+	if slices.Contains(validValues, value) {
+		return json.Marshal(string(value))
 	}
 
 	// If we get here, the value is invalid
@@ -90,11 +87,9 @@ func UnmarshalJSONFromStrings[T StringEnum](dest *T, data []byte, typeName strin
 	}
 
 	// Check against valid strings
-	for _, valid := range validStrings {
-		if str == valid {
-			*dest = T(str)
-			return nil
-		}
+	if slices.Contains(validStrings, str) {
+		*dest = T(str)
+		return nil
 	}
 
 	validationErr := fmt.Errorf("invalid %s value %q, must be one of %v", typeName, str, validStrings)
@@ -110,10 +105,8 @@ func ParseEnum[T StringEnum](str string, defaultValue T, validValues ...T) T {
 	}
 
 	candidate := T(str)
-	for _, valid := range validValues {
-		if candidate == valid {
-			return candidate
-		}
+	if slices.Contains(validValues, candidate) {
+		return candidate
 	}
 	return defaultValue
 }
@@ -176,12 +169,7 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 
 // ValidateEnum checks if an enum value is in the list of valid values.
 func ValidateEnum[T StringEnum](value T, validValues ...T) bool {
-	for _, valid := range validValues {
-		if value == valid {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(validValues, value)
 }
 
 // EnumNames returns string names of enum values.

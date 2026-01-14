@@ -97,16 +97,16 @@ func (am AnalysisMode) IsValid() bool {
 
 // Clone represents a code clone with strong typing.
 type Clone struct {
-	ID         CloneID                   `json:"id"`
-	Filename   Filepath                  `json:"filename"`
-	StartLine  LineNumber                `json:"startLine"`
-	EndLine    LineNumber                `json:"endLine"`
-	StartPos   BytePosition              `json:"startPos"`
-	EndPos     BytePosition              `json:"endPos"`
-	Fragment   string                    `json:"fragment"`
-	Hash       Hash                      `json:"hash"`
-	Confidence Confidence                `json:"confidence"`
-	Complexity ComplexityScore           `json:"complexity"`
+	ID         CloneID             `json:"id"`
+	Filename   Filepath            `json:"filename"`
+	StartLine  LineNumber          `json:"startLine"`
+	EndLine    LineNumber          `json:"endLine"`
+	StartPos   BytePosition        `json:"startPos"`
+	EndPos     BytePosition        `json:"endPos"`
+	Fragment   string              `json:"fragment"`
+	Hash       Hash                `json:"hash"`
+	Confidence Confidence          `json:"confidence"`
+	Complexity ComplexityScore     `json:"complexity"`
 	Status     FileProcessingState `json:"status"`
 }
 
@@ -132,11 +132,11 @@ func (c Clone) IsValid() error {
 
 // CloneGroup represents a group of clones.
 type CloneGroup struct {
-	ID       string                    `json:"id"`
-	Clones   []Clone                   `json:"clones"`
-	Hash     string                    `json:"hash"`
-	Size     uint                      `json:"size"`
-	Severity CloneSeverity             `json:"severity"`
+	ID       string              `json:"id"`
+	Clones   []Clone             `json:"clones"`
+	Hash     string              `json:"hash"`
+	Size     uint                `json:"size"`
+	Severity CloneSeverity       `json:"severity"`
 	Status   FileProcessingState `json:"status"`
 }
 
@@ -210,15 +210,15 @@ func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 
 // Analysis represents main analysis domain object.
 type Analysis struct {
-	ID          string               `json:"id"`
-	State       DetectionState `json:"state"`
-	Mode        AnalysisMode   `json:"mode"`
-	Threshold   uint                 `json:"threshold"`
-	CloneGroups []CloneGroup         `json:"cloneGroups"`
-	Stats       AnalysisStats        `json:"stats"`
-	Metadata    map[string]string    `json:"metadata"`
-	CreatedAt   string               `json:"createdAt"`
-	CompletedAt *string              `json:"completedAt,omitempty"`
+	ID          string            `json:"id"`
+	State       DetectionState    `json:"state"`
+	Mode        AnalysisMode      `json:"mode"`
+	Threshold   uint              `json:"threshold"`
+	CloneGroups []CloneGroup      `json:"cloneGroups"`
+	Stats       AnalysisStats     `json:"stats"`
+	Metadata    map[string]string `json:"metadata"`
+	CreatedAt   string            `json:"createdAt"`
+	CompletedAt *string           `json:"completedAt,omitempty"`
 }
 
 // IsValid validates analysis.
@@ -330,12 +330,12 @@ func (sf SourceFile) IsValid() error {
 
 // DetectionOptions represents configuration for detection.
 type DetectionOptions struct {
-	Threshold     uint               `json:"threshold"`
+	Threshold     uint         `json:"threshold"`
 	Mode          AnalysisMode `json:"mode"`
-	IncludeVendor bool               `json:"includeVendor"`
-	Verbose       bool               `json:"verbose"`
-	Paths         []string           `json:"paths"`
-	OutputFormat  string             `json:"outputFormat"`
+	IncludeVendor bool         `json:"includeVendor"`
+	Verbose       bool         `json:"verbose"`
+	Paths         []string     `json:"paths"`
+	OutputFormat  string       `json:"outputFormat"`
 }
 
 // IsValid validates detection options.

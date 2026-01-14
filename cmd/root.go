@@ -30,8 +30,8 @@ Examples:
   art-dupl --filter-generated ./src         # Filter out auto-generated code (sqlc, templ)
   art-dupl --filter-generated --include-sqlc ./src  # Filter but keep sqlc files
   art-dupl --filter-generated --include-pattern "vendor/*" ./src  # Include vendor directory`,
-		Args:  cobra.ArbitraryArgs,
-		RunE:  runCmd,
+		Args: cobra.ArbitraryArgs,
+		RunE: runCmd,
 	}
 
 	return rootCmd

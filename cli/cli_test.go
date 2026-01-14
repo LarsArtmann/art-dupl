@@ -41,7 +41,7 @@ func TestCLIConfigHelpers(t *testing.T) {
 		VerboseLong:   new(bool),
 		HTML:          new(bool),
 		JSONFlag:      new(bool),
-		SimpleJSON:     new(bool),
+		SimpleJSON:    new(bool),
 		Plumbing:      new(bool),
 	}
 

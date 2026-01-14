@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/LarsArtmann/art-dupl/errors"
 )
@@ -18,12 +19,7 @@ func (dm DetectionMethods) IsDefault() bool {
 
 // Contains checks if method is in methods list.
 func (dm DetectionMethods) Contains(method DetectionMethod) bool {
-	for _, m := range dm {
-		if m == method {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(dm, method)
 }
 
 // IsEmpty checks if methods list is empty.

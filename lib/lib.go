@@ -5,10 +5,10 @@ import (
 	"os"
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
 func Run(files []string, threshold int) ([]printer.Issue, error) {

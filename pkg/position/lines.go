@@ -88,4 +88,3 @@ func (li *LineIndex) Line(offset int) int {
 	})
 	return idx
 }
-

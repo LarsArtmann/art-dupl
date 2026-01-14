@@ -244,4 +244,3 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 	}
 	return nil
 }
-

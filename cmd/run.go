@@ -157,7 +157,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// createPrinter returns the appropriate printer based on output format
+// createPrinter returns the appropriate printer based on output format.
 func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
@@ -173,7 +173,7 @@ func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.Rea
 	}
 }
 
-// buildSuffixTree builds a suffix tree from provided paths
+// buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter, includeVendor bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Building suffix tree")
@@ -197,7 +197,7 @@ func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *
 	return t, *data, filesCount, nil
 }
 
-// filesFeedWithOptions creates a channel of file paths with options
+// filesFeedWithOptions creates a channel of file paths with options.
 func filesFeedWithOptions(paths []string, fromStdin bool, filter *filter.Filter, includeVendor bool) chan string {
 	if fromStdin {
 		fchan := make(chan string)
@@ -219,7 +219,7 @@ func filesFeedWithOptions(paths []string, fromStdin bool, filter *filter.Filter,
 	return crawlPaths(paths, filter, includeVendor)
 }
 
-// crawlPaths walks paths and returns a channel of Go files
+// crawlPaths walks paths and returns a channel of Go files.
 func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan string {
 	fchan := make(chan string)
 	go func() {
@@ -262,7 +262,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 	return fchan
 }
 
-// executeAnalysis runs the core duplicate analysis logic
+// executeAnalysis runs the core duplicate analysis logic.
 func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int, error) {
 	var startProfile job.ProfileResult
 	if cfg.Profile {
@@ -363,7 +363,7 @@ func sortCloneGroupKeys(keys []string, sortBy printer.SortBy, groups map[string]
 	}
 }
 
-// printDupls prints duplicates using the specified printer
+// printDupls prints duplicates using the specified printer.
 func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat) error {
 	// Build groups from matches
 	groups := buildCloneGroups(duplChan)
@@ -409,7 +409,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 }
 
 // runAllModes runs all detection methods and generates all output formats.
-func runAllModes(cfg *config.Config, sortBy string, outputDir string) error {
+func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 	// Set detection methods to all available methods
 	cfg.DetectionMethods = config.AllDetectionMethods()
 

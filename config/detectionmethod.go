@@ -64,10 +64,10 @@ func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
 type OutputFormat string
 
 const (
-	OutputFormatText      OutputFormat = "text"
-	OutputFormatHTML      OutputFormat = "html"
-	OutputFormatJSON      OutputFormat = "json"
-	OutputFormatPlumbing OutputFormat = "plumbing"
+	OutputFormatText       OutputFormat = "text"
+	OutputFormatHTML       OutputFormat = "html"
+	OutputFormatJSON       OutputFormat = "json"
+	OutputFormatPlumbing   OutputFormat = "plumbing"
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
 )
 

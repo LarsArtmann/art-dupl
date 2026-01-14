@@ -5,8 +5,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.

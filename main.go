@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/fang"
 )
 
-func main() { //nolint:funlen // Main entry point with CLI setup
+func main() {
 	// Create root command
 	rootCmd := cmd.NewRootCommand()
 
