@@ -358,8 +358,8 @@ func TestDetectionMethods(t *testing.T) { //nolint:cyclop // Comprehensive test 
 func TestOutputFormats(t *testing.T) {
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
-	if len(formats) != 4 {
-		t.Errorf("Expected 4 formats, got %d", len(formats))
+	if len(formats) != 5 {
+		t.Errorf("Expected 5 formats, got %d", len(formats))
 	}
 
 	// Test AllSortCriteria

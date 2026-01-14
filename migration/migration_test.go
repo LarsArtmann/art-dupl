@@ -10,7 +10,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/migration"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/types"
 )
 
 var _ = Describe("Migration Path", func() {
@@ -35,7 +34,7 @@ var _ = Describe("Migration Path", func() {
 
 			Expect(analysis.IsValid()).To(Succeed())
 			Expect(analysis.Threshold).To(Equal(uint(10)))
-			Expect(analysis.State).To(Equal(types.DetectionStateCompleted))
+			Expect(analysis.State).To(Equal(domain.DetectionStateCompleted))
 			Expect(analysis.CloneGroups).To(HaveLen(1))
 			Expect(analysis.CloneGroups[0].Clones).To(HaveLen(1))
 		})
@@ -139,7 +138,7 @@ var _ = Describe("Migration Path", func() {
 			analysis := domain.Analysis{
 				ID:        "test-analysis",
 				Threshold: 10,
-				State:     types.DetectionStateCompleted,
+				State:     domain.DetectionStateCompleted,
 				CreatedAt: time.Now().Format(time.RFC3339),
 			}
 

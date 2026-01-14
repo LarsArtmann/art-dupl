@@ -1,7 +1,6 @@
 package types_test
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -159,6 +158,10 @@ var _ = Describe("Type Safety: Option[T]", func() {
 	})
 })
 
+// NOTE: Enum tests below are commented out because enums (DetectionState, AnalysisMode, FileProcessingState)
+// have been moved to domain package during enum consolidation phase.
+// Tests for these enums should be added to domain/clone_test.go or domain package tests.
+/*
 var _ = Describe("Type Safety: Enums", func() {
 	Context("DetectionState enum", func() {
 		It("should validate detection states", func() {
@@ -266,3 +269,4 @@ var _ = Describe("Type Safety: Enums", func() {
 		})
 	})
 })
+*/

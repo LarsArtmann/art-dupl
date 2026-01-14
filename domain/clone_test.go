@@ -10,7 +10,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/types"
 )
 
 var _ = Describe("Domain: Clone", func() {
@@ -27,7 +26,7 @@ var _ = Describe("Domain: Clone", func() {
 				Hash:       "abc123",
 				Confidence: 0.95,
 				Complexity: 5,
-				Status:     types.FileProcessingStateCompleted,
+				Status:     domain.FileProcessingStateCompleted,
 			}
 
 			Expect(clone.IsValid()).To(Succeed())
@@ -81,7 +80,7 @@ var _ = Describe("Domain: Clone", func() {
 			Expect(clone.Filename).To(Equal("test.go"))
 			Expect(clone.StartPos).To(Equal(uint(50)))
 			Expect(clone.EndPos).To(Equal(uint(150)))
-			Expect(clone.Status).To(Equal(types.FileProcessingStateCompleted))
+			Expect(clone.Status).To(Equal(domain.FileProcessingStateCompleted))
 			Expect(clone.IsValid()).To(Succeed())
 		})
 	})
@@ -100,18 +99,18 @@ var _ = Describe("Domain: CloneGroup", func() {
 						Filename:  "test1.go",
 						StartLine: 10,
 						EndLine:   20,
-						Status:    types.FileProcessingStateCompleted,
+						Status:    domain.FileProcessingStateCompleted,
 					},
 					{
 						ID:        "clone-2",
 						Filename:  "test2.go",
 						StartLine: 15,
 						EndLine:   25,
-						Status:    types.FileProcessingStateCompleted,
+						Status:    domain.FileProcessingStateCompleted,
 					},
 				},
 				Severity: domain.CloneSeverityMedium,
-				Status:   types.FileProcessingStateCompleted,
+				Status:   domain.FileProcessingStateCompleted,
 			}
 
 			Expect(group.IsValid()).To(Succeed())
@@ -140,7 +139,7 @@ var _ = Describe("Domain: CloneGroup", func() {
 						Filename:  "test.go",
 						StartLine: 10,
 						EndLine:   20,
-						Status:    types.FileProcessingStateCompleted,
+						Status:    domain.FileProcessingStateCompleted,
 					},
 				},
 				Severity: domain.CloneSeverity("invalid"),
@@ -160,7 +159,7 @@ var _ = Describe("Domain: CloneGroup", func() {
 						Filename:  "test.go",
 						StartLine: 10,
 						EndLine:   20,
-						Status:    types.FileProcessingStateCompleted,
+						Status:    domain.FileProcessingStateCompleted,
 					},
 				},
 				Severity: domain.CloneSeverityMedium,
@@ -179,8 +178,8 @@ var _ = Describe("Domain: Analysis", func() {
 		It("should accept valid analysis", func() {
 			analysis := domain.Analysis{
 				ID:        "analysis-1",
-				State:     types.DetectionStateCompleted,
-				Mode:      types.AnalysisModeFull,
+				State:     domain.DetectionStateCompleted,
+				Mode:      domain.AnalysisModeFull,
 				Threshold: 10,
 				CreatedAt: time.Now().Format(time.RFC3339),
 				CloneGroups: []domain.CloneGroup{
@@ -194,11 +193,11 @@ var _ = Describe("Domain: Analysis", func() {
 								Filename:  "test.go",
 								StartLine: 10,
 								EndLine:   20,
-								Status:    types.FileProcessingStateCompleted,
+								Status:    domain.FileProcessingStateCompleted,
 							},
 						},
 						Severity: domain.CloneSeverityMedium,
-						Status:   types.FileProcessingStateCompleted,
+						Status:   domain.FileProcessingStateCompleted,
 					},
 				},
 				Stats: domain.AnalysisStats{
@@ -216,8 +215,8 @@ var _ = Describe("Domain: Analysis", func() {
 
 		It("should reject analysis with empty ID", func() {
 			analysis := domain.Analysis{
-				State:     types.DetectionStateCompleted,
-				Mode:      types.AnalysisModeFull,
+				State:     domain.DetectionStateCompleted,
+				Mode:      domain.AnalysisModeFull,
 				Threshold: 10,
 				CreatedAt: time.Now().Format(time.RFC3339),
 			}
@@ -228,8 +227,8 @@ var _ = Describe("Domain: Analysis", func() {
 		It("should reject analysis with zero threshold", func() {
 			analysis := domain.Analysis{
 				ID:        "analysis-1",
-				State:     types.DetectionStateCompleted,
-				Mode:      types.AnalysisModeFull,
+				State:     domain.DetectionStateCompleted,
+				Mode:      domain.AnalysisModeFull,
 				Threshold: 0, // Invalid
 				CreatedAt: time.Now().Format(time.RFC3339),
 			}
@@ -278,7 +277,7 @@ var _ = Describe("Domain: DetectionOptions", func() {
 		It("should accept valid options", func() {
 			options := domain.DetectionOptions{
 				Threshold:     10,
-				Mode:          types.AnalysisModeFull,
+				Mode:          domain.AnalysisModeFull,
 				IncludeVendor: false,
 				Verbose:       false,
 				Paths:         []string{"./src"},
@@ -291,7 +290,7 @@ var _ = Describe("Domain: DetectionOptions", func() {
 		It("should reject options with zero threshold", func() {
 			options := domain.DetectionOptions{
 				Threshold:    0, // Invalid
-				Mode:         types.AnalysisModeFull,
+				Mode:         domain.AnalysisModeFull,
 				Paths:        []string{"./src"},
 				OutputFormat: "json",
 			}
@@ -302,7 +301,7 @@ var _ = Describe("Domain: DetectionOptions", func() {
 		It("should reject options with empty paths", func() {
 			options := domain.DetectionOptions{
 				Threshold:    10,
-				Mode:         types.AnalysisModeFull,
+				Mode:         domain.AnalysisModeFull,
 				Paths:        []string{}, // Invalid
 				OutputFormat: "json",
 			}
