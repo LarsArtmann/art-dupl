@@ -22,6 +22,7 @@ func createTempDir(t *testing.T) (string, func()) {
 }
 
 func TestDefaultConfig(t *testing.T) {
+	t.Parallel()
 	config := DefaultConfig()
 
 	if config.Threshold != 15 {
@@ -87,6 +88,7 @@ func TestLoadConfig(t *testing.T) { //nolint:cyclop // Comprehensive test with m
 }
 
 func TestLoadConfigNotFound(t *testing.T) {
+	t.Parallel()
 	_, err := LoadConfig("nonexistent-config.json")
 	if err == nil {
 		t.Error("Expected error for nonexistent config file")
@@ -296,6 +298,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 }
 
 func TestDetectionMethods(t *testing.T) { //nolint:cyclop // Comprehensive test with multiple method validation paths
+	t.Parallel()
 	// Test String method
 	dm := DetectionMethodHash
 	if dm.String() != "hash" {
@@ -356,6 +359,7 @@ func TestDetectionMethods(t *testing.T) { //nolint:cyclop // Comprehensive test 
 }
 
 func TestOutputFormats(t *testing.T) {
+	t.Parallel()
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
 	if len(formats) != 5 {
@@ -370,6 +374,7 @@ func TestOutputFormats(t *testing.T) {
 }
 
 func TestJSONMarshalUnmarshal(t *testing.T) {
+	t.Parallel()
 	// Test DetectionMethod JSON marshal/unmarshal
 	dm := DetectionMethodHash
 	data, err := dm.MarshalJSON()

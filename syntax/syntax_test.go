@@ -3,6 +3,7 @@ package syntax
 import "testing"
 
 func TestSerialization(t *testing.T) {
+	t.Parallel()
 	n := genNodes(7)
 	n[0].AddChildren(n[1], n[2], n[3])
 	n[1].AddChildren(n[4], n[5])
@@ -44,6 +45,7 @@ func compareSeries(t *testing.T, stream []*Node, owns []int) {
 }
 
 func TestGetUnitsIndexes(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		seq       string
 		threshold int
@@ -70,6 +72,7 @@ Loop:
 }
 
 func TestCyclicDupl(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		seq      string
 		indexes  []int
@@ -106,4 +109,95 @@ func str2nodes(str string) []*Node {
 		nodes[i/3] = &Node{Type: int(chars[i]), Owns: int(chars[i+1] - '0')}
 	}
 	return nodes
+}
+
+func FuzzSerialize(f *testing.F) {
+	// Add seed corpus with valid Go code patterns
+	f.Add("package main\n\nfunc main() {\n\tprintln(\"hello\")\n}")
+	f.Add("func test() int {\n\treturn 42\n}")
+	f.Add("type Foo struct {\n\tX int\n}")
+	f.Add("if x > 0 {\n\treturn true\n}")
+	f.Add("for i := 0; i < 10; i++ {\n\tfmt.Println(i)\n}")
+	f.Add("var x int = 5")
+	f.Add("func (f *Foo) Method() string {\n\treturn \"test\"\n}")
+	f.Add("switch v {\ncase 1:\n\treturn \"one\"\ndefault:\n\treturn \"unknown\"\n}")
+	f.Add("defer func() {\n\tlog.Println(\"done\")\n}()")
+	f.Add("package main")
+
+	f.Fuzz(func(t *testing.T, input string) {
+		// Parse input to create AST nodes
+		// Since we can't reliably parse all fuzz inputs as Go code,
+		// we'll create synthetic nodes based on input characteristics
+
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Serialize panicked with input %q: %v", input, r)
+			}
+		}()
+
+		// Create a simple node tree structure
+		root := createTestNodeTree(input)
+
+		// Serialize the node tree
+		stream := Serialize(root)
+
+		// Verify invariants
+		if stream == nil {
+			t.Error("Serialize returned nil stream")
+		}
+
+		// Verify stream is not empty for non-empty input
+		if len(input) > 0 && len(stream) == 0 {
+			t.Error("Serialize returned empty stream for non-empty input")
+		}
+
+		// Verify each node in stream is non-nil
+		for i, node := range stream {
+			if node == nil {
+				t.Errorf("Stream contains nil node at index %d", i)
+			}
+		}
+
+		// Verify root owns the correct number of descendants
+		if len(stream) > 0 && root.Owns != len(stream)-1 {
+			t.Errorf("Root Owns mismatch: got %d, want %d", root.Owns, len(stream)-1)
+		}
+	})
+}
+
+// createTestNodeTree creates a synthetic node tree for fuzz testing
+func createTestNodeTree(input string) *Node {
+	if len(input) == 0 {
+		return NewNode()
+	}
+
+	// Create a tree based on input length and content
+	root := NewNode()
+	root.Type = len(input) % 100
+	root.Filename = "test.go"
+	root.Pos = 0
+	root.End = len(input)
+
+	// Add children based on input characteristics
+	childCount := len(input) % 20
+	for i := 0; i < childCount; i++ {
+		child := NewNode()
+		child.Type = int(input[i%len(input)]) % 50
+		child.Filename = "test.go"
+		child.Pos = i
+		child.End = i + 1
+		root.AddChildren(child)
+
+		// Add grandchildren
+		if i%2 == 0 && i+1 < childCount {
+			grandchild := NewNode()
+			grandchild.Type = int(input[(i+1)%len(input)]) % 30
+			grandchild.Filename = "test.go"
+			grandchild.Pos = i + 1
+			grandchild.End = i + 2
+			child.AddChildren(grandchild)
+		}
+	}
+
+	return root
 }

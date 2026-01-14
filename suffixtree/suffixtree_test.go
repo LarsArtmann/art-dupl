@@ -17,6 +17,7 @@ func str2tok(str string) []Token {
 }
 
 func TestConstruction(t *testing.T) {
+	t.Parallel()
 	str := "cacao"
 	_, s := genStates(8, str)
 	// s[0] is root
@@ -122,6 +123,7 @@ type refPair struct {
 }
 
 func TestCanonize(t *testing.T) {
+	t.Parallel()
 	tree, s := genStates(5, "somebanana")
 	tree.auxState, tree.root = s[4], s[0]
 	s[0].addTran(0, 3, s[1])
@@ -167,6 +169,7 @@ func TestCanonize(t *testing.T) {
 }
 
 func TestSplitting(t *testing.T) { //nolint:cyclop // Suffix tree splitting test with multiple validation steps
+	t.Parallel()
 	tree := new(STree)
 	tree.data = str2tok("banana|cbao")
 	s1 := newState(tree)
@@ -226,6 +229,7 @@ func TestPosMaxValue(t *testing.T) {
 }
 
 func BenchmarkConstruction(b *testing.B) {
+	b.ReportAllocs()
 	stream := str2tok(`all work and no play makes jack a dull boy
 all work and no play makes jack a dull boy
 all work and no play makes jack a dull boy`)
@@ -234,4 +238,57 @@ all work and no play makes jack a dull boy`)
 		t := New()
 		t.Update(stream...)
 	}
+}
+
+func FuzzSuffixTreeUpdate(f *testing.F) {
+	// Add seed corpus with typical code patterns
+	f.Add("func main() {}")
+	f.Add("package main\n\nfunc test() {\n\treturn 42\n}")
+	f.Add("var x int = 5\nvar y int = 10")
+	f.Add("for i := 0; i < 10; i++ {\n\tfmt.Println(i)\n}")
+	f.Add("if x > 0 {\n\treturn true\n} else {\n\treturn false\n}")
+	f.Add("type Foo struct {\n\tX int\n\tY string\n}")
+	f.Add("func (f *Foo) Method() int {\n\treturn f.X\n}")
+	f.Add("switch v := i.(type) {\ncase int:\n\treturn v\ndefault:\n\treturn 0\n}")
+	f.Add("defer func() {\n\tif r := recover(); r != nil {\n\t\tlog.Println(r)\n\t}\n}()")
+
+	f.Fuzz(func(t *testing.T, input string) {
+		// Create a new tree for each fuzz iteration
+		tree := New()
+
+		// Convert input to tokens
+		tokens := str2tok(input)
+
+		// This should not panic
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Update panicked with input %q: %v", input, r)
+			}
+		}()
+
+		// Update tree with tokens
+		tree.Update(tokens...)
+
+		// Verify invariants
+		if len(tree.data) != len(tokens) {
+			t.Errorf("Data length mismatch: got %d, want %d", len(tree.data), len(tokens))
+		}
+
+		// Verify root is always set
+		if tree.root == nil {
+			t.Error("Root should not be nil after Update")
+		}
+
+		// Verify aux state is always set
+		if tree.auxState == nil {
+			t.Error("AuxState should not be nil after Update")
+		}
+
+		// Verify data is stored correctly
+		for i, token := range tokens {
+			if tree.data[i].Val() != token.Val() {
+				t.Errorf("Data mismatch at index %d: got %d, want %d", i, tree.data[i].Val(), token.Val())
+			}
+		}
+	})
 }

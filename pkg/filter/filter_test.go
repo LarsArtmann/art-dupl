@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"testing/quick"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -438,4 +440,100 @@ func TestSomething() {}
 		f.WithExcludePatterns([]string{"test*.go"})
 		assert.True(t, f.ShouldFilter(testFile))
 	})
+}
+
+// Property-based tests for filter logic
+
+func TestFilterIdempotentProperty(t *testing.T) {
+	t.Parallel()
+
+	// Property: Filter should be idempotent (applying twice gives same result)
+	f := func(enabled bool, options []FilterOption, filePath string) bool {
+		if filePath == "" || filePath[0] != '/' {
+			return true // Non-absolute paths, skip
+		}
+
+		filter1 := NewFilter(enabled, options)
+		filter2 := NewFilter(enabled, options)
+
+		result1 := filter1.ShouldFilter(filePath)
+		result2 := filter2.ShouldFilter(filePath)
+
+		return result1 == result2
+	}
+	if err := quick.Check(f, nil); err != nil {
+		t.Errorf("Idempotent property failed: %v", err)
+	}
+}
+
+func TestDisabledFilterProperty(t *testing.T) {
+	t.Parallel()
+
+	// Property: Disabled filter never filters
+	f := func(filePath string) bool {
+		if filePath == "" {
+			return true // Empty path, skip
+		}
+
+		filter := NewFilter(false, nil)
+		return !filter.ShouldFilter(filePath)
+	}
+	if err := quick.Check(f, nil); err != nil {
+		t.Errorf("Disabled filter property failed: %v", err)
+	}
+}
+
+func TestIncludePatternProperty(t *testing.T) {
+	t.Parallel()
+
+	// Property: Files matching include pattern are not filtered
+	f := func(includePattern, filePath string) bool {
+		// Skip invalid inputs
+		if includePattern == "" || filePath == "" {
+			return true // Empty strings, skip
+		}
+		// Skip paths with control characters or invalid Unicode
+		for _, r := range includePattern + filePath {
+			if r < 32 && r != '/' {
+				return true // Control character, skip
+			}
+		}
+
+		filter := NewFilter(true, nil)
+		filter.WithIncludePatterns([]string{includePattern})
+
+		// If pattern should match, filter should return false
+		shouldNotFilter := matchPattern(filePath, includePattern)
+		shouldBeFiltered := !filter.ShouldFilter(filePath)
+
+		// The two should match
+		return shouldNotFilter == shouldBeFiltered
+	}
+	if err := quick.Check(f, nil); err != nil {
+		t.Errorf("Include pattern property failed: %v", err)
+	}
+}
+
+func TestExcludePatternProperty(t *testing.T) {
+	t.Parallel()
+
+	// Property: Files matching exclude pattern are filtered
+	f := func(excludePattern, filePath string) bool {
+		if excludePattern == "" || filePath == "" {
+			return true // Empty strings, skip
+		}
+
+		filter := NewFilter(true, nil)
+		filter.WithExcludePatterns([]string{excludePattern})
+
+		// If pattern should match, filter should return true
+		shouldFilter := matchPattern(filePath, excludePattern)
+		isFiltered := filter.ShouldFilter(filePath)
+
+		// The two should match
+		return shouldFilter == isFiltered
+	}
+	if err := quick.Check(f, nil); err != nil {
+		t.Errorf("Exclude pattern property failed: %v", err)
+	}
 }
