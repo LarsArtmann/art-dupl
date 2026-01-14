@@ -34,6 +34,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sortBy, _ := cmd.Flags().GetString("sort")
+	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
 
 	// Validate sorting criteria
 	if _, err := printer.ParseSortBy(sortBy); err != nil {
@@ -64,6 +65,13 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if verbose {
 		appConfig.Verbose = true
 	}
+
+	// Parse and set detection methods
+	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
+	if err != nil {
+		return fmt.Errorf("invalid detection methods %q: %w", detectionMethods, err)
+	}
+	appConfig.DetectionMethods = parsedMethods
 
 	if threshold != 15 {
 		appConfig.Threshold = threshold
