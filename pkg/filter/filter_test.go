@@ -3,20 +3,15 @@ package filter
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
-
 	"testing/quick"
 )
 
 // Helper function for contains check
 func contains[T comparable](slice []T, item T) bool {
-	for _, v := range slice {
-		if v == item {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, item)
 }
 
 func TestNewFilter(t *testing.T) {
@@ -146,7 +141,6 @@ func TestMatchPattern(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt // Capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			result := matchPattern(tt.path, tt.pattern)
 			if result != tt.expected {
@@ -348,7 +342,6 @@ type User struct {
 	}
 
 	for _, tt := range tests {
-		tt := tt // Capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			result := isSQLCGenerated(tt.filePath, tt.content)
 			if result != tt.expected {
@@ -403,7 +396,6 @@ func Helper() string {
 	}
 
 	for _, tt := range tests {
-		tt := tt // Capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			result := isTemplGenerated(tt.filePath, tt.content)
 			if result != tt.expected {
@@ -444,7 +436,6 @@ func TestStringContains(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			result := contains(tt.slice, tt.item)
 			if result != tt.expect {
