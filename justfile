@@ -36,9 +36,48 @@ coverage:
     go test -coverprofile=cover.out ./...
     go tool cover -html=cover.out -o coverage.html
 
-# Run benchmarks
+# Run benchmarks with memory tracking
 bench:
     go test -bench=. -benchmem ./...
+
+# Run tests with coverage and show total percentage
+test-coverage:
+    go test -coverprofile=cover.out ./...
+    go tool cover -func=cover.out | grep total
+
+# Check coverage meets 80% threshold
+check-coverage:
+    @go test -coverprofile=cover.out ./...
+    @COVERAGE=$$(go tool cover -func=cover.out | grep total | awk '{print $$3}' | tr -d '%'); \
+    if [ $$(echo "$$COVERAGE < 80" | bc) -eq 1 ]; then \
+        echo "Coverage is $$COVERAGE%, below 80% threshold"; \
+        exit 1; \
+    fi; \
+    echo "Coverage is $$COVERAGE%, meets 80% threshold"
+
+# Run fuzz tests
+test-fuzz:
+    go test -fuzz=. -fuzztime=30s ./...
+
+# Run fuzz tests with longer duration
+test-fuzz-long:
+    go test -fuzz=. -fuzztime=60s ./...
+
+# List all tests
+list-tests:
+    go test -list=. ./...
+
+# Run unit tests only (exclude integration/bdd)
+test-unit:
+    go test -run=^Test -v ./...
+
+# Run integration tests only
+test-integration:
+    go test -run=Integration -v ./...
+
+# Run benchmarks with allocs reporting
+bench-allocs:
+    go test -bench=. -benchmem -run=^$ ./...
 
 # Format code
 fmt:
