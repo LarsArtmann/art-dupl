@@ -180,7 +180,7 @@ func createTestNodeTree(input string) *Node {
 
 	// Add children based on input characteristics
 	childCount := len(input) % 20
-	for i := 0; i < childCount; i++ {
+	for i := range childCount {
 		child := NewNode()
 		child.Type = int(input[i%len(input)]) % 50
 		child.Filename = "test.go"
