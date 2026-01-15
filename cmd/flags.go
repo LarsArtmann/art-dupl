@@ -21,9 +21,9 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")
 
 	// Add smart filtering flags
-	rootCmd.Flags().Bool("filter-generated", false, "enable smart filtering of auto-generated code (sqlc, templ, etc.)")
-	rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (only when --filter-generated is set)")
-	rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated files (only when --filter-generated is set)")
+	rootCmd.Flags().Bool("filter-generated", false, "enable extended filtering of sqlc.dev generated code (templ files are always filtered by default)")
+	rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (requires --filter-generated)")
+	rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated files (templ files are filtered by default unless this flag is set)")
 	rootCmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	rootCmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 

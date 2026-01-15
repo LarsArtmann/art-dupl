@@ -280,22 +280,31 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 
 	// Create filter based on config
 	var filterParam *filter.Filter
+	var filterOptions []filter.FilterOption
+
+	// ALWAYS filter templ files by default (unless --include-templ is set)
+	if !cfg.IncludeTempl {
+		filterOptions = append(filterOptions, filter.FilterTempl)
+	}
+
+	// If --filter-generated is set, also filter sqlc files (unless --include-sqlc is set)
 	if cfg.FilterGenerated {
-		// Determine which types to filter out
-		var filterOptions []filter.FilterOption
 		if !cfg.IncludeSQLC {
 			filterOptions = append(filterOptions, filter.FilterSQLC)
 		}
-		if !cfg.IncludeTempl {
-			filterOptions = append(filterOptions, filter.FilterTempl)
+		if cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "🔍 Extended auto-generated code filtering enabled (sqlc)\n")
 		}
+	}
 
+	// Create the filter if there are any options or include/exclude patterns
+	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 {
 		filterParam = filter.NewFilter(true, filterOptions)
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
 		filterParam.WithExcludePatterns(cfg.ExcludePatterns)
 
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled\n")
+			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ files filtered by default)\n")
 		}
 	}
 

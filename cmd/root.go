@@ -27,9 +27,10 @@ Examples:
   art-dupl --plumbing --sort occurrence ./src # Most widespread clones first
   art-dupl --all ./src                     # Generate all formats for all detection methods
   art-dupl --all --output-dir ./my-reports ./src  # Custom output directory
-  art-dupl --filter-generated ./src         # Filter out auto-generated code (sqlc, templ)
-  art-dupl --filter-generated --include-sqlc ./src  # Filter but keep sqlc files
-  art-dupl --filter-generated --include-pattern "vendor/*" ./src  # Include vendor directory`,
+  art-dupl --filter-generated ./src         # Also filter sqlc.dev generated code (templ files filtered by default)
+  art-dupl --filter-generated --include-sqlc ./src  # Filter generated but keep sqlc files
+  art-dupl --include-templ ./src             # Include templ.guide generated files (templ filtered by default)
+  art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern`,
 		Args: cobra.ArbitraryArgs,
 		RunE: runCmd,
 	}
