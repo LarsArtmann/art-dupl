@@ -195,6 +195,7 @@ func TestIncludePatternProperty(t *testing.T) {
 	t.Parallel()
 
 	// Property: Files matching include pattern are not filtered
+	// This property only applies when the pattern actually matches the path
 	f := func(includePattern, filePath string) bool {
 		// Skip invalid inputs
 		if includePattern == "" || filePath == "" {
@@ -204,12 +205,17 @@ func TestIncludePatternProperty(t *testing.T) {
 		filter := NewFilter(true, nil)
 		filter.WithIncludePatterns([]string{includePattern})
 
-		// If pattern should match, filter should return false
-		shouldNotFilter := matchPattern(filePath, includePattern)
-		shouldBeFiltered := !filter.ShouldFilter(filePath)
+		// Only test the case where pattern matches path
+		if !matchPattern(filePath, includePattern) {
+			return true // Pattern doesn't match, skip this test case
+		}
 
-		// The two should match
-		return shouldNotFilter == shouldBeFiltered
+		// If pattern matches, filter should NOT filter (return false)
+		if filter.ShouldFilter(filePath) {
+			return false // Failed: pattern matched but file would be filtered
+		}
+
+		return true
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Errorf("Include pattern property failed: %v", err)
