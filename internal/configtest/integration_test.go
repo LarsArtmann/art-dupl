@@ -22,7 +22,7 @@ func TestConfigurationIntegration(t *testing.T) { //nolint:cyclop // Integration
 
 	cliConfig := &config.Config{
 		Threshold:        50,                                                     // Should override file config
-		OutputFormat:     config.OutputFormatHTML,                                                 // Should override file config
+		OutputFormat:     config.OutputFormatHTML,                                // Should override file config
 		IncludeVendor:    true,                                                   // Should override file config
 		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl}, // Should override file config
 	}
