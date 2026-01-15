@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
@@ -332,58 +331,10 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 	return duplChan, filesCount, nil
 }
 
-// buildCloneGroups builds a map of hash to clone groups from matches.
-func buildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node {
-	groups := make(map[string][][]*syntax.Node)
-	for dupl := range duplChan {
-		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
-	}
-	return groups
-}
-
-// computeUniqueCounts calculates unique file counts for each clone group.
-func computeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
-	uniqueCounts := make(map[string]int)
-	for k, v := range groups {
-		uniqueCounts[k] = len(utils.Unique(v))
-	}
-	return uniqueCounts
-}
-
-// sortCloneGroupKeys sorts clone group hashes based on specified criteria.
-func sortCloneGroupKeys(keys []string, sortBy printer.SortBy, groups map[string][][]*syntax.Node, uniqueCounts map[string]int) {
-	switch sortBy {
-	case printer.SortByOccurrence:
-		// Sort by number of unique files in each clone group (most files first, descending)
-		sort.Slice(keys, func(i, j int) bool {
-			return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]
-		})
-	case printer.SortByHash:
-		// Sort alphabetically by hash (ascending)
-		sort.Strings(keys)
-	case printer.SortBySize:
-		// Sort by size of first clone in each group (largest first, descending)
-		sort.Slice(keys, func(i, j int) bool {
-			sizeI := 0
-			if len(groups[keys[i]]) > 0 && len(groups[keys[i]][0]) > 0 {
-				sizeI = groups[keys[i]][0][0].Owns
-			}
-			sizeJ := 0
-			if len(groups[keys[j]]) > 0 && len(groups[keys[j]][0]) > 0 {
-				sizeJ = groups[keys[j]][0][0].Owns
-			}
-			return sizeI > sizeJ
-		})
-	default:
-		// For unrecognized criteria, sort alphabetically by hash
-		sort.Strings(keys)
-	}
-}
-
 // printDupls prints duplicates using the specified printer.
 func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat) error {
 	// Build groups from matches
-	groups := buildCloneGroups(duplChan)
+	groups := printer.BuildCloneGroups(duplChan)
 
 	// Get sorted keys
 	keys := make([]string, 0, len(groups))
@@ -392,10 +343,10 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	}
 
 	// Pre-compute unique counts for sorting
-	uniqueCounts := computeUniqueCounts(groups)
+	uniqueCounts := printer.ComputeUniqueCounts(groups)
 
 	// Sort clone groups based on sortBy criteria
-	sortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
+	printer.SortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
 	if err := p.PrintHeader(); err != nil {
 		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy.String(), threshold, err)

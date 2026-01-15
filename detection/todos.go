@@ -62,8 +62,12 @@ func NewTodoDetector() *TodoDetector {
 	return &TodoDetector{patterns: patterns}
 }
 
-// FindTodos finds all TODO-style comments in the provided nodes.
-func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
+// findIssuesInFile is a generic function that finds issues in a file and returns them.
+func findIssuesInFile[T any](
+	data []*syntax.Node,
+	finder func(filename string, nodes []*syntax.Node) []T,
+	matchCreator func(issue T, filename string) syntax.Match,
+) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
 
 	go func() {
@@ -77,19 +81,24 @@ func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 
 		// Process each file
 		for filename, nodes := range nodesByFile {
-			todos := td.findTodosInFile(filename, nodes)
-			for _, todo := range todos {
-				// Create a match that represents the TODO
-				match := syntax.Match{
-					Hash:  fmt.Sprintf("TODO-%s-%d", filename, todo.Line),
-					Frags: [][]*syntax.Node{{}}, // Empty frag since TODOs aren't code fragments
-				}
-				resultChan <- match
+			issues := finder(filename, nodes)
+			for _, issue := range issues {
+				resultChan <- matchCreator(issue, filename)
 			}
 		}
 	}()
 
 	return resultChan
+}
+
+// FindTodos finds all TODO-style comments in the provided nodes.
+func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
+	return findIssuesInFile(data, td.findTodosInFile, func(todo TodoIssue, filename string) syntax.Match {
+		return syntax.Match{
+			Hash:  fmt.Sprintf("TODO-%s-%d", filename, todo.Line),
+			Frags: [][]*syntax.Node{{}}, // Empty frag since TODOs aren't code fragments
+		}
+	})
 }
 
 // findTodosInFile parses the file and finds TODO comments.
@@ -170,33 +179,14 @@ func NewLegacyDetector() *LegacyDetector {
 	}
 }
 
-// FindLegacy finds all legacy patterns in the provided nodes.
+// FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
-	resultChan := make(chan syntax.Match)
-
-	go func() {
-		defer close(resultChan)
-
-		// Group nodes by filename
-		nodesByFile := make(map[string][]*syntax.Node)
-		for _, node := range data {
-			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+	return findIssuesInFile(data, ld.findLegacyInFile, func(legacy LegacyIssue, filename string) syntax.Match {
+		return syntax.Match{
+			Hash:  fmt.Sprintf("LEGACY-%s-%d", filename, legacy.Line),
+			Frags: [][]*syntax.Node{{}}, // Empty frag since legacy items aren't code fragments
 		}
-
-		// Process each file
-		for filename, nodes := range nodesByFile {
-			legacies := ld.findLegacyInFile(filename, nodes)
-			for _, legacy := range legacies {
-				match := syntax.Match{
-					Hash:  fmt.Sprintf("LEGACY-%s-%d", filename, legacy.Line),
-					Frags: [][]*syntax.Node{{}}, // Empty frag since legacy items aren't code fragments
-				}
-				resultChan <- match
-			}
-		}
-	}()
-
-	return resultChan
+	})
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.

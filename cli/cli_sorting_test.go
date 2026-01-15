@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -143,15 +144,7 @@ func TestSizeSorting(t *testing.T) {
 
 			// Sort by size (descending)
 			sort.Slice(keys, func(i, j int) bool {
-				sizeI := 0
-				if len(groups[keys[i]]) > 0 && len(groups[keys[i]][0]) > 0 {
-					sizeI = groups[keys[i]][0][0].Owns
-				}
-				sizeJ := 0
-				if len(groups[keys[j]]) > 0 && len(groups[keys[j]][0]) > 0 {
-					sizeJ = groups[keys[j]][0][0].Owns
-				}
-				return sizeI > sizeJ
+				return printer.GetCloneSize(groups[keys[i]]) > printer.GetCloneSize(groups[keys[j]])
 			})
 
 			// Verify order
