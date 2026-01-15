@@ -1,4 +1,4 @@
-package main
+package configtest
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ func TestConfigurationIntegration(t *testing.T) { //nolint:cyclop // Integration
 	fileConfig := &config.Config{
 		Threshold:         30,
 		IncludeVendor:     true,
-		OutputFormat:      "json",
+		OutputFormat:      config.OutputFormatJSON,
 		Verbose:           true,
 		Paths:             []string{"./test"},
 		IgnoreFiles:       []string{"*_test.go"},
@@ -22,7 +22,7 @@ func TestConfigurationIntegration(t *testing.T) { //nolint:cyclop // Integration
 
 	cliConfig := &config.Config{
 		Threshold:        50,                                                     // Should override file config
-		OutputFormat:     "html",                                                 // Should override file config
+		OutputFormat:     config.OutputFormatHTML,                                                 // Should override file config
 		IncludeVendor:    true,                                                   // Should override file config
 		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl}, // Should override file config
 	}
@@ -71,7 +71,7 @@ func TestConfigurationValidation(t *testing.T) {
 			name: "Valid config",
 			config: &config.Config{
 				Threshold:         15,
-				OutputFormat:      "text",
+				OutputFormat:      config.OutputFormatText,
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			},
@@ -81,7 +81,7 @@ func TestConfigurationValidation(t *testing.T) {
 			name: "Invalid threshold",
 			config: &config.Config{
 				Threshold:         0,
-				OutputFormat:      "text",
+				OutputFormat:      config.OutputFormatText,
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			},
@@ -91,7 +91,7 @@ func TestConfigurationValidation(t *testing.T) {
 			name: "Invalid output format",
 			config: &config.Config{
 				Threshold:         15,
-				OutputFormat:      "xml",
+				OutputFormat:      config.OutputFormat("xml"),
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			},
