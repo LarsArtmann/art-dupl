@@ -20,7 +20,7 @@ build:
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p dist/
-    go build -ldflags "-s -w" -trimpath -o dist/dupl
+    go build -ldflags "-s -w" -trimpath -o dist/art-dupl ./cmd/art-dupl
 
 # Install dependencies
 deps:
@@ -94,7 +94,7 @@ build-all:
 
 # Install the binary locally
 install-local:
-    go install -ldflags "-s -w" -trimpath
+    go install -ldflags "-s -w" -trimpath ./cmd/art-dupl
 
 # Find code duplicates using art-dupl
 fd:
