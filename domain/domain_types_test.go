@@ -7,65 +7,201 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
+// testUintType is a helper for testing uint-based types with New*, Uint(), and RoundTrip methods.
+type testUintType[T comparable] struct {
+	newFunc     func(uint) T
+	uintFunc    func(T) uint
+	jsonMarshal func(T) ([]byte, error)
+	jsonUnmarshal func(*T, []byte) error
+}
+
+// testUintTypeSuite runs the standard test suite for uint-based types.
+func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintType[T]) {
+	t.Run("New"+typeName, func(t *testing.T) {
+		tests := []struct {
+			name  string
+			input uint
+			want  T
+		}{
+			{"zero", 0, tt.newFunc(0)},
+			{"positive", 100, tt.newFunc(100)},
+		}
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				got := tt.newFunc(tc.input)
+				if got != tc.want {
+					t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
+				}
+			})
+		}
+	})
+
+	t.Run("Uint", func(t *testing.T) {
+		val := tt.newFunc(42)
+		if got := tt.uintFunc(val); got != 42 {
+			t.Errorf("Uint() = %v, want %v", got, 42)
+		}
+	})
+
+	t.Run("RoundTrip", func(t *testing.T) {
+		original := tt.newFunc(123)
+		data, _ := tt.jsonMarshal(original)
+		var result T
+		if err := tt.jsonUnmarshal(&result, data); err != nil {
+			t.Fatalf("UnmarshalJSON() error: %v", err)
+		}
+		if result != original {
+			t.Errorf("Round trip failed: %v != %v", result, original)
+		}
+	})
+}
+
+// testJSONRoundTrip is a helper for testing JSON marshaling and unmarshaling.
+func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
+	data, err := marshal(original)
+	if err != nil {
+		t.Fatalf("MarshalJSON() error: %v", err)
+	}
+
+	var result T
+	if err := unmarshal(&result, data); err != nil {
+		t.Fatalf("UnmarshalJSON() error: %v", err)
+	}
+
+	if result != original {
+		t.Errorf("Round trip failed: %v != %v", result, original)
+	}
+}
+
+// testConstructorWithError is a helper for testing constructors that may return errors.
+type constructorTest[T comparable] struct {
+	name      string
+	input     any
+	want      T
+	wantError bool
+}
+
+// runConstructorTests runs a series of constructor tests with error checking.
+func runConstructorTests[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], newFunc func(any) (T, error)) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := newFunc(tt.input)
+
+			if tt.wantError {
+				if gotErr == nil {
+					t.Errorf("%s() expected error, got nil", constructorName)
+					return
+				}
+				var validationErr *duplerrors.DuplError
+				if !stderrors.As(gotErr, &validationErr) {
+					t.Errorf("%s() expected ValidationError, got %T", constructorName, gotErr)
+				}
+			} else {
+				if gotErr != nil {
+					t.Errorf("%s() unexpected error: %v", constructorName, gotErr)
+					return
+				}
+				if got != tt.want {
+					t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
+				}
+			}
+		})
+	}
+}
+
+// testJSONMarshalUnmarshal is a helper for testing JSON marshaling/unmarshaling.
+type jsonTest[T comparable] struct {
+	name    string
+	input   T
+	want    string
+	wantErr bool
+}
+
+// runJSONTests runs JSON marshal/unmarshal tests.
+func runJSONTests[T comparable](t *testing.T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error, tests []jsonTest[T]) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := marshal(tt.input)
+
+			if tt.wantErr {
+				if gotErr == nil {
+					t.Errorf("MarshalJSON() expected error, got nil")
+					return
+				}
+			} else {
+				if gotErr != nil {
+					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
+					return
+				}
+				if string(got) != tt.want {
+					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
+				}
+			}
+		})
+	}
+}
+
+// runJSONUnmarshalTests runs JSON unmarshal tests.
+func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte) error, tests []struct {
+	name      string
+	input     string
+	want      T
+	wantError bool
+}) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got T
+			gotErr := unmarshal(&got, []byte(tt.input))
+
+			if tt.wantError {
+				if gotErr == nil {
+					t.Errorf("UnmarshalJSON() expected error, got nil")
+					return
+				}
+			} else {
+				if gotErr != nil {
+					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
+					return
+				}
+				if got != tt.want {
+					t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
+				}
+			}
+		})
+	}
+}
+
 // TestCloneID_NewCloneID tests the NewCloneID constructor.
 func TestCloneID_NewCloneID(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		wantID    CloneID
-		wantError bool
-	}{
+	tests := []constructorTest[CloneID]{
 		{
 			name:      "valid clone ID",
 			input:     "clone-123",
-			wantID:    CloneID("clone-123"),
+			want:      CloneID("clone-123"),
 			wantError: false,
 		},
 		{
 			name:      "empty string should error",
 			input:     "",
-			wantID:    "",
+			want:      "",
 			wantError: true,
 		},
 		{
 			name:      "ID with special characters",
 			input:     "clone-123_abc",
-			wantID:    CloneID("clone-123_abc"),
+			want:      CloneID("clone-123_abc"),
 			wantError: false,
 		},
 		{
 			name:      "ID with spaces",
 			input:     "clone 123",
-			wantID:    CloneID("clone 123"),
+			want:      CloneID("clone 123"),
 			wantError: false,
 		},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotID, gotErr := NewCloneID(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewCloneID() expected error, got nil")
-					return
-				}
-				// Verify error type
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewCloneID() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewCloneID() unexpected error: %v", gotErr)
-					return
-				}
-				if gotID != tt.wantID {
-					t.Errorf("NewCloneID() = %v, want %v", gotID, tt.wantID)
-				}
-			}
-		})
-	}
+	runConstructorTests(t, "NewCloneID", tests, func(input any) (CloneID, error) {
+		return NewCloneID(input.(string))
+	})
 }
 
 // TestCloneID_String tests the String method.
@@ -195,56 +331,29 @@ func TestCloneID_RoundTrip(t *testing.T) {
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 func TestLineNumber_NewLineNumber(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     uint
-		want      LineNumber
-		wantError bool
-	}{
+	tests := []constructorTest[LineNumber]{
 		{
 			name:      "valid line number",
-			input:     1,
+			input:     uint(1),
 			want:      LineNumber(1),
 			wantError: false,
 		},
 		{
 			name:      "another valid line number",
-			input:     42,
+			input:     uint(42),
 			want:      LineNumber(42),
 			wantError: false,
 		},
 		{
 			name:      "zero should error",
-			input:     0,
+			input:     uint(0),
 			want:      0,
 			wantError: true,
 		},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewLineNumber(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewLineNumber() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewLineNumber() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewLineNumber() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewLineNumber() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runConstructorTests(t, "NewLineNumber", tests, func(input any) (LineNumber, error) {
+		return NewLineNumber(input.(uint))
+	})
 }
 
 // TestLineNumber_Uint tests the Uint method.
@@ -374,12 +483,7 @@ func TestLineNumber_RoundTrip(t *testing.T) {
 
 // TestConfidence_NewConfidence tests the NewConfidence constructor.
 func TestConfidence_NewConfidence(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     float64
-		want      Confidence
-		wantError bool
-	}{
+	tests := []constructorTest[Confidence]{
 		{
 			name:      "valid confidence 0.0",
 			input:     0.0,
@@ -411,31 +515,9 @@ func TestConfidence_NewConfidence(t *testing.T) {
 			wantError: true,
 		},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewConfidence(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewConfidence() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewConfidence() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewConfidence() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewConfidence() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runConstructorTests(t, "NewConfidence", tests, func(input any) (Confidence, error) {
+		return NewConfidence(input.(float64))
+	})
 }
 
 // TestConfidence_Float64 tests the Float64 method.
@@ -1078,206 +1160,51 @@ func TestHash_NewHash(t *testing.T) {
 
 // TestBytePosition tests BytePosition type.
 func TestBytePosition(t *testing.T) {
-	t.Run("NewBytePosition", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input uint
-			want  BytePosition
-		}{
-			{"zero", 0, BytePosition(0)},
-			{"positive", 100, BytePosition(100)},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got := NewBytePosition(tt.input)
-				if got != tt.want {
-					t.Errorf("NewBytePosition() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	})
-
-	t.Run("Uint", func(t *testing.T) {
-		bp := BytePosition(42)
-		if got := bp.Uint(); got != 42 {
-			t.Errorf("Uint() = %v, want %v", got, 42)
-		}
-	})
-
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := BytePosition(123)
-		data, _ := original.MarshalJSON()
-		var result BytePosition
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
+	testUintTypeSuite(t, "BytePosition", testUintType[BytePosition]{
+		newFunc: func(u uint) BytePosition { return BytePosition(u) },
+		uintFunc: func(bp BytePosition) uint { return bp.Uint() },
+		jsonMarshal: func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
+		jsonUnmarshal: func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) },
 	})
 }
 
 // TestTokenCount tests TokenCount type.
 func TestTokenCount(t *testing.T) {
-	t.Run("NewTokenCount", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input uint
-			want  TokenCount
-		}{
-			{"zero", 0, TokenCount(0)},
-			{"positive", 50, TokenCount(50)},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got := NewTokenCount(tt.input)
-				if got != tt.want {
-					t.Errorf("NewTokenCount() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	})
-
-	t.Run("Uint", func(t *testing.T) {
-		tc := TokenCount(100)
-		if got := tc.Uint(); got != 100 {
-			t.Errorf("Uint() = %v, want %v", got, 100)
-		}
-	})
-
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := TokenCount(200)
-		data, _ := original.MarshalJSON()
-		var result TokenCount
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
+	testUintTypeSuite(t, "TokenCount", testUintType[TokenCount]{
+		newFunc: func(u uint) TokenCount { return TokenCount(u) },
+		uintFunc: func(tc TokenCount) uint { return tc.Uint() },
+		jsonMarshal: func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
+		jsonUnmarshal: func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) },
 	})
 }
 
 // TestComplexityScore tests ComplexityScore type.
 func TestComplexityScore(t *testing.T) {
-	t.Run("NewComplexityScore", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input uint
-			want  ComplexityScore
-		}{
-			{"zero", 0, ComplexityScore(0)},
-			{"positive", 25, ComplexityScore(25)},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got := NewComplexityScore(tt.input)
-				if got != tt.want {
-					t.Errorf("NewComplexityScore() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	})
-
-	t.Run("Uint", func(t *testing.T) {
-		cs := ComplexityScore(30)
-		if got := cs.Uint(); got != 30 {
-			t.Errorf("Uint() = %v, want %v", got, 30)
-		}
-	})
-
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := ComplexityScore(50)
-		data, _ := original.MarshalJSON()
-		var result ComplexityScore
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
+	testUintTypeSuite(t, "ComplexityScore", testUintType[ComplexityScore]{
+		newFunc: func(u uint) ComplexityScore { return ComplexityScore(u) },
+		uintFunc: func(cs ComplexityScore) uint { return cs.Uint() },
+		jsonMarshal: func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
+		jsonUnmarshal: func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) },
 	})
 }
 
 // TestFileCount tests FileCount type.
 func TestFileCount(t *testing.T) {
-	t.Run("NewFileCount", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input uint
-			want  FileCount
-		}{
-			{"zero", 0, FileCount(0)},
-			{"positive", 10, FileCount(10)},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got := NewFileCount(tt.input)
-				if got != tt.want {
-					t.Errorf("NewFileCount() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	})
-
-	t.Run("Uint", func(t *testing.T) {
-		fc := FileCount(5)
-		if got := fc.Uint(); got != 5 {
-			t.Errorf("Uint() = %v, want %v", got, 5)
-		}
-	})
-
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := FileCount(20)
-		data, _ := original.MarshalJSON()
-		var result FileCount
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
+	testUintTypeSuite(t, "FileCount", testUintType[FileCount]{
+		newFunc: func(u uint) FileCount { return FileCount(u) },
+		uintFunc: func(fc FileCount) uint { return fc.Uint() },
+		jsonMarshal: func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
+		jsonUnmarshal: func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) },
 	})
 }
 
 // TestCloneCount tests CloneCount type.
 func TestCloneCount(t *testing.T) {
-	t.Run("NewCloneCount", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input uint
-			want  CloneCount
-		}{
-			{"zero", 0, CloneCount(0)},
-			{"positive", 3, CloneCount(3)},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got := NewCloneCount(tt.input)
-				if got != tt.want {
-					t.Errorf("NewCloneCount() = %v, want %v", got, tt.want)
-				}
-			})
-		}
-	})
-
-	t.Run("Uint", func(t *testing.T) {
-		cc := CloneCount(15)
-		if got := cc.Uint(); got != 15 {
-			t.Errorf("Uint() = %v, want %v", got, 15)
-		}
-	})
-
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := CloneCount(8)
-		data, _ := original.MarshalJSON()
-		var result CloneCount
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
+	testUintTypeSuite(t, "CloneCount", testUintType[CloneCount]{
+		newFunc: func(u uint) CloneCount { return CloneCount(u) },
+		uintFunc: func(cc CloneCount) uint { return cc.Uint() },
+		jsonMarshal: func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
+		jsonUnmarshal: func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) },
 	})
 }
 

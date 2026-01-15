@@ -56,35 +56,29 @@ func TestNewFilter(t *testing.T) {
 
 func TestWithIncludePatterns(t *testing.T) {
 	t.Parallel()
-
 	f := NewFilter(true, []FilterOption{FilterAll})
 	f.WithIncludePatterns([]string{"vendor/*", "generated/keep.go"})
 
-	if len(f.includePatterns) != 2 {
-		t.Errorf("Expected 2 patterns, got %d", len(f.includePatterns))
-	}
-	if !contains(f.includePatterns, "vendor/*") {
-		t.Error("Expected vendor/* in include patterns")
-	}
-	if !contains(f.includePatterns, "generated/keep.go") {
-		t.Error("Expected generated/keep.go in include patterns")
-	}
+	testPatternSlices(t, "Include", f.includePatterns, []string{"vendor/*", "generated/keep.go"})
 }
 
 func TestWithExcludePatterns(t *testing.T) {
 	t.Parallel()
-
 	f := NewFilter(true, []FilterOption{FilterAll})
 	f.WithExcludePatterns([]string{"test/*", "*.pb.go"})
 
-	if len(f.excludePatterns) != 2 {
-		t.Errorf("Expected 2 patterns, got %d", len(f.excludePatterns))
+	testPatternSlices(t, "Exclude", f.excludePatterns, []string{"test/*", "*.pb.go"})
+}
+
+// testPatternSlices is a helper for testing pattern slices.
+func testPatternSlices(t *testing.T, patternType string, patterns []string, wantPatterns []string) {
+	if len(patterns) != len(wantPatterns) {
+		t.Errorf("Expected %d patterns, got %d", len(wantPatterns), len(patterns))
 	}
-	if !contains(f.excludePatterns, "test/*") {
-		t.Error("Expected test/* in exclude patterns")
-	}
-	if !contains(f.excludePatterns, "*.pb.go") {
-		t.Error("Expected *.pb.go in exclude patterns")
+	for _, pattern := range wantPatterns {
+		if !contains(patterns, pattern) {
+			t.Errorf("Expected %s in %s patterns", pattern, patternType)
+		}
 	}
 }
 
