@@ -413,7 +413,11 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", filename, err)
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, err)
+			}
+		}()
 
 		p := createPrinter(format)(file, os.ReadFile)
 
