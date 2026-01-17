@@ -173,6 +173,8 @@ func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.Rea
 		return printer.NewPlumbing
 	case config.OutputFormatJSON:
 		return printer.NewJSON
+	case config.OutputFormatSimpleJSON:
+		return printer.NewJSON
 	case config.OutputFormatText:
 		return printer.NewText
 	default:
