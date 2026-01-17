@@ -72,6 +72,7 @@ func TestWithExcludePatterns(t *testing.T) {
 
 // testPatternSlices is a helper for testing pattern slices.
 func testPatternSlices(t *testing.T, patternType string, patterns, wantPatterns []string) {
+	t.Helper()
 	if len(patterns) != len(wantPatterns) {
 		t.Errorf("Expected %d patterns, got %d", len(wantPatterns), len(patterns))
 	}
