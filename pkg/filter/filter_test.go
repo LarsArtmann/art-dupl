@@ -9,7 +9,7 @@ import (
 	"testing/quick"
 )
 
-// Helper function for contains check
+// Helper function for contains check.
 func contains[T comparable](slice []T, item T) bool {
 	return slices.Contains(slice, item)
 }

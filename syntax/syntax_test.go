@@ -165,7 +165,7 @@ func FuzzSerialize(f *testing.F) {
 	})
 }
 
-// createTestNodeTree creates a synthetic node tree for fuzz testing
+// createTestNodeTree creates a synthetic node tree for fuzz testing.
 func createTestNodeTree(input string) *Node {
 	if len(input) == 0 {
 		return NewNode()
