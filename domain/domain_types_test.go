@@ -17,6 +17,7 @@ type testUintType[T comparable] struct {
 
 // testUintTypeSuite runs the standard test suite for uint-based types.
 func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintType[T]) {
+	t.Helper()
 	t.Run("New"+typeName, func(t *testing.T) {
 		tests := []struct {
 			name  string
@@ -58,6 +59,7 @@ func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintT
 
 // testJSONRoundTrip is a helper for testing JSON marshaling and unmarshaling.
 func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
+	t.Helper()
 	data, err := marshal(original)
 	if err != nil {
 		t.Fatalf("MarshalJSON() error: %v", err)
@@ -179,6 +181,7 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 // This helper reduces boilerplate when creating tests for simple uint wrapper types
 // that don't have validation logic in their constructor.
 func registerUintTypeTest[T comparable](t *testing.T, typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+	t.Helper()
 	testUintTypeSuite(t, typeName, testUintType[T]{
 		newFunc:       newFunc,
 		uintFunc:      uintFunc,
@@ -560,6 +563,7 @@ func TestProcessingTime_RoundTrip(t *testing.T) {
 // This helper reduces boilerplate when creating tests for types constructed
 // from strings with validation logic.
 func registerStringConstructorTest[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], constructorFunc func(string) (T, error)) {
+	t.Helper()
 	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
 		return constructorFunc(input.(string))
 	})
