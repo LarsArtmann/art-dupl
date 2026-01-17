@@ -47,6 +47,23 @@ func SortCloneGroupKeys(keys []string, sortBy SortBy, groups map[string][][]*syn
 		sort.Slice(keys, func(i, j int) bool {
 			return GetCloneSize(groups[keys[i]]) > GetCloneSize(groups[keys[j]])
 		})
+	case SortByTotalTokens:
+		sort.Slice(keys, func(i, j int) bool {
+			// Count total tokens across all nodes in each group
+			tokensI := 0
+			for _, nodes := range groups[keys[i]] {
+				for range nodes {
+					tokensI++
+				}
+			}
+			tokensJ := 0
+			for _, nodes := range groups[keys[j]] {
+				for range nodes {
+					tokensJ++
+				}
+			}
+			return tokensI > tokensJ
+		})
 	default:
 		sort.Strings(keys)
 	}
