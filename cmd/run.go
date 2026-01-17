@@ -388,7 +388,7 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 		outputDir = "reports/art-dupl"
 	}
 
-	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+	if err := os.MkdirAll(outputDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
 	}
 
