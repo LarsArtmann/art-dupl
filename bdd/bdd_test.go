@@ -148,7 +148,7 @@ func uniqueFunction(ctx context.Context) error {
 	Context("When analyzing code for duplicates", func() {
 		It("should find structural duplicates ignoring literal values", func() {
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", "./cmd/art-dupl")
+			cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", "./cmd/art-dupl/main.go")
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("bdd/art-dupl-test") }()
@@ -174,7 +174,7 @@ func uniqueFunction(ctx context.Context) error {
 		// Sorting is working correctly, verified with manual tests
 		PIt("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", "./cmd/art-dupl/main.go")
 						err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
