@@ -77,9 +77,9 @@ var _ = Describe("Domain: Clone", func() {
 			fileContent := []byte("line 1\nline 2\nline 3\nline 4\nline 5\nfunc test() {}\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16")
 
 			clone := domain.NodeToClone(node, "test.go", fileContent)
-			Expect(clone.Filename).To(Equal("test.go"))
-			Expect(clone.StartPos).To(Equal(uint(50)))
-			Expect(clone.EndPos).To(Equal(uint(150)))
+			Expect(clone.Filename).To(BeEquivalentTo("test.go"))
+			Expect(clone.StartPos).To(BeEquivalentTo(uint(50)))
+			Expect(clone.EndPos).To(BeEquivalentTo(uint(150)))
 			Expect(clone.Status).To(Equal(domain.FileProcessingStateCompleted))
 			Expect(clone.IsValid()).To(Succeed())
 		})
