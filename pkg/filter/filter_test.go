@@ -11,7 +11,6 @@ import (
 
 // Helper function for contains check
 func contains[T comparable](slice []T, item T) bool {
-	t.Helper()
 	return slices.Contains(slice, item)
 }
 
