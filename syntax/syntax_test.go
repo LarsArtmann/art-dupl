@@ -2,6 +2,8 @@ package syntax
 
 import "testing"
 
+const testFilename = "test.go"
+
 func TestSerialization(t *testing.T) {
 	t.Parallel()
 	n := genNodes(7)
@@ -174,7 +176,7 @@ func createTestNodeTree(input string) *Node {
 	// Create a tree based on input length and content
 	root := NewNode()
 	root.Type = len(input) % 100
-	root.Filename = "test.go"
+	root.Filename = testFilename
 	root.Pos = 0
 	root.End = len(input)
 
@@ -183,7 +185,7 @@ func createTestNodeTree(input string) *Node {
 	for i := range childCount {
 		child := NewNode()
 		child.Type = int(input[i%len(input)]) % 50
-		child.Filename = "test.go"
+		child.Filename = testFilename
 		child.Pos = i
 		child.End = i + 1
 		root.AddChildren(child)
@@ -192,7 +194,7 @@ func createTestNodeTree(input string) *Node {
 		if i%2 == 0 && i+1 < childCount {
 			grandchild := NewNode()
 			grandchild.Type = int(input[(i+1)%len(input)]) % 30
-			grandchild.Filename = "test.go"
+			grandchild.Filename = testFilename
 			grandchild.Pos = i + 1
 			grandchild.End = i + 2
 			child.AddChildren(grandchild)
