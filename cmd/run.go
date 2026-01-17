@@ -409,6 +409,7 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
+		//nolint:gosec //G304 filename is constructed from controlled config output dir and format
 		file, err := os.Create(filename)
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", filename, err)
