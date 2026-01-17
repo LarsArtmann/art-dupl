@@ -9,9 +9,9 @@ import (
 
 // testUintType is a helper for testing uint-based types with New*, Uint(), and RoundTrip methods.
 type testUintType[T comparable] struct {
-	newFunc     func(uint) T
-	uintFunc    func(T) uint
-	jsonMarshal func(T) ([]byte, error)
+	newFunc       func(uint) T
+	uintFunc      func(T) uint
+	jsonMarshal   func(T) ([]byte, error)
 	jsonUnmarshal func(*T, []byte) error
 }
 
@@ -73,7 +73,7 @@ func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) (
 	}
 }
 
-// testConstructorWithError is a helper for testing constructors that may return errors.
+// constructorTest is a helper for testing constructors that may return errors.
 type constructorTest[T comparable] struct {
 	name      string
 	input     any
@@ -83,6 +83,7 @@ type constructorTest[T comparable] struct {
 
 // runConstructorTests runs a series of constructor tests with error checking.
 func runConstructorTests[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], newFunc func(any) (T, error)) {
+	t.Helper()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, gotErr := newFunc(tt.input)
@@ -109,7 +110,7 @@ func runConstructorTests[T comparable](t *testing.T, constructorName string, tes
 	}
 }
 
-// testJSONMarshalUnmarshal is a helper for testing JSON marshaling/unmarshaling.
+// jsonTest is a helper for testing JSON marshaling/unmarshaling.
 type jsonTest[T comparable] struct {
 	name    string
 	input   T
@@ -119,6 +120,7 @@ type jsonTest[T comparable] struct {
 
 // runJSONTests runs JSON marshal/unmarshal tests.
 func runJSONTests[T comparable](t *testing.T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error, tests []jsonTest[T]) {
+	t.Helper()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, gotErr := marshal(tt.input)
@@ -147,7 +149,9 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	input     string
 	want      T
 	wantError bool
-}) {
+},
+) {
+	t.Helper()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var got T
@@ -169,6 +173,18 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 			}
 		})
 	}
+}
+
+// registerUintTypeTest creates and runs a test suite for a uint-based type.
+// This helper reduces boilerplate when creating tests for simple uint wrapper types
+// that don't have validation logic in their constructor.
+func registerUintTypeTest[T comparable](t *testing.T, typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+	testUintTypeSuite(t, typeName, testUintType[T]{
+		newFunc:       newFunc,
+		uintFunc:      uintFunc,
+		jsonMarshal:   marshalFunc,
+		jsonUnmarshal: unmarshalFunc,
+	})
 }
 
 // TestCloneID_NewCloneID tests the NewCloneID constructor.
@@ -214,46 +230,11 @@ func TestCloneID_String(t *testing.T) {
 
 // TestCloneID_MarshalJSON tests JSON marshaling.
 func TestCloneID_MarshalJSON(t *testing.T) {
-	tests := []struct {
-		name    string
-		id      CloneID
-		want    string
-		wantErr bool
-	}{
-		{
-			name:    "valid clone ID",
-			id:      CloneID("clone-123"),
-			want:    `"clone-123"`,
-			wantErr: false,
-		},
-		{
-			name:    "empty ID should error",
-			id:      CloneID(""),
-			want:    "",
-			wantErr: true,
-		},
+	tests := []jsonTest[CloneID]{
+		{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
+		{name: "empty ID should error", input: CloneID(""), want: "", wantErr: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := tt.id.MarshalJSON()
-
-			if tt.wantErr {
-				if gotErr == nil {
-					t.Errorf("MarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if string(got) != tt.want {
-					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
-				}
-			}
-		})
-	}
+	runJSONTests(t, func(id CloneID) ([]byte, error) { return id.MarshalJSON() }, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) }, tests)
 }
 
 // TestCloneID_UnmarshalJSON tests JSON unmarshaling.
@@ -261,72 +242,19 @@ func TestCloneID_UnmarshalJSON(t *testing.T) {
 	tests := []struct {
 		name      string
 		input     string
-		wantID    CloneID
+		want      CloneID
 		wantError bool
 	}{
-		{
-			name:      "valid JSON",
-			input:     `"clone-123"`,
-			wantID:    CloneID("clone-123"),
-			wantError: false,
-		},
-		{
-			name:      "empty JSON string should error",
-			input:     `""`,
-			wantID:    "",
-			wantError: true,
-		},
-		{
-			name:      "invalid JSON",
-			input:     `not-json`,
-			wantID:    "",
-			wantError: true,
-		},
+		{name: "valid JSON", input: `"clone-123"`, want: CloneID("clone-123"), wantError: false},
+		{name: "empty JSON string should error", input: `""`, want: CloneID(""), wantError: true},
+		{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var gotID CloneID
-			gotErr := gotID.UnmarshalJSON([]byte(tt.input))
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("UnmarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if gotID != tt.wantID {
-					t.Errorf("UnmarshalJSON() = %v, want %v", gotID, tt.wantID)
-				}
-			}
-		})
-	}
+	runJSONUnmarshalTests(t, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) }, tests)
 }
 
 // TestCloneID_RoundTrip tests JSON marshaling and unmarshaling round trip.
 func TestCloneID_RoundTrip(t *testing.T) {
-	original := CloneID("clone-456")
-
-	// Marshal
-	data, err := original.MarshalJSON()
-	if err != nil {
-		t.Fatalf("MarshalJSON() error: %v", err)
-	}
-
-	// Unmarshal
-	var result CloneID
-	if err := result.UnmarshalJSON(data); err != nil {
-		t.Fatalf("UnmarshalJSON() error: %v", err)
-	}
-
-	// Verify round trip
-	if result != original {
-		t.Errorf("Round trip failed: %v != %v", result, original)
-	}
+	testJSONRoundTrip(t, CloneID("clone-456"), func(id CloneID) ([]byte, error) { return id.MarshalJSON() }, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) })
 }
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
@@ -366,46 +294,11 @@ func TestLineNumber_Uint(t *testing.T) {
 
 // TestLineNumber_MarshalJSON tests JSON marshaling.
 func TestLineNumber_MarshalJSON(t *testing.T) {
-	tests := []struct {
-		name    string
-		line    LineNumber
-		want    string
-		wantErr bool
-	}{
-		{
-			name:    "valid line number",
-			line:    LineNumber(10),
-			want:    `10`,
-			wantErr: false,
-		},
-		{
-			name:    "zero line number should error",
-			line:    LineNumber(0),
-			want:    "",
-			wantErr: true,
-		},
+	tests := []jsonTest[LineNumber]{
+		{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
+		{name: "zero line number should error", input: LineNumber(0), want: "", wantErr: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := tt.line.MarshalJSON()
-
-			if tt.wantErr {
-				if gotErr == nil {
-					t.Errorf("MarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if string(got) != tt.want {
-					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
-				}
-			}
-		})
-	}
+	runJSONTests(t, func(line LineNumber) ([]byte, error) { return line.MarshalJSON() }, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) }, tests)
 }
 
 // TestLineNumber_UnmarshalJSON tests JSON unmarshaling.
@@ -416,69 +309,16 @@ func TestLineNumber_UnmarshalJSON(t *testing.T) {
 		want      LineNumber
 		wantError bool
 	}{
-		{
-			name:      "valid JSON",
-			input:     `42`,
-			want:      LineNumber(42),
-			wantError: false,
-		},
-		{
-			name:      "zero should error",
-			input:     `0`,
-			want:      0,
-			wantError: true,
-		},
-		{
-			name:      "invalid JSON",
-			input:     `not-json`,
-			want:      0,
-			wantError: true,
-		},
+		{name: "valid JSON", input: `42`, want: LineNumber(42), wantError: false},
+		{name: "zero should error", input: `0`, want: LineNumber(0), wantError: true},
+		{name: "invalid JSON", input: `not-json`, want: LineNumber(0), wantError: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var got LineNumber
-			gotErr := got.UnmarshalJSON([]byte(tt.input))
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("UnmarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runJSONUnmarshalTests(t, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) }, tests)
 }
 
 // TestLineNumber_RoundTrip tests JSON marshaling and unmarshaling round trip.
 func TestLineNumber_RoundTrip(t *testing.T) {
-	original := LineNumber(123)
-
-	// Marshal
-	data, err := original.MarshalJSON()
-	if err != nil {
-		t.Fatalf("MarshalJSON() error: %v", err)
-	}
-
-	// Unmarshal
-	var result LineNumber
-	if err := result.UnmarshalJSON(data); err != nil {
-		t.Fatalf("UnmarshalJSON() error: %v", err)
-	}
-
-	// Verify round trip
-	if result != original {
-		t.Errorf("Round trip failed: %v != %v", result, original)
-	}
+	testJSONRoundTrip(t, LineNumber(123), func(line LineNumber) ([]byte, error) { return line.MarshalJSON() }, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) })
 }
 
 // TestConfidence_NewConfidence tests the NewConfidence constructor.
@@ -568,58 +408,13 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence_MarshalJSON tests JSON marshaling.
 func TestConfidence_MarshalJSON(t *testing.T) {
-	tests := []struct {
-		name    string
-		conf    Confidence
-		want    string
-		wantErr bool
-	}{
-		{
-			name:    "valid confidence 0.5",
-			conf:    Confidence(0.5),
-			want:    `0.5`,
-			wantErr: false,
-		},
-		{
-			name:    "valid confidence 1.0",
-			conf:    Confidence(1.0),
-			want:    `1`,
-			wantErr: false,
-		},
-		{
-			name:    "negative confidence should error",
-			conf:    Confidence(-0.1),
-			want:    "",
-			wantErr: true,
-		},
-		{
-			name:    "confidence > 1.0 should error",
-			conf:    Confidence(1.5),
-			want:    "",
-			wantErr: true,
-		},
+	tests := []jsonTest[Confidence]{
+		{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
+		{name: "valid confidence 1.0", input: Confidence(1.0), want: `1`, wantErr: false},
+		{name: "negative confidence should error", input: Confidence(-0.1), want: "", wantErr: true},
+		{name: "confidence > 1.0 should error", input: Confidence(1.5), want: "", wantErr: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := tt.conf.MarshalJSON()
-
-			if tt.wantErr {
-				if gotErr == nil {
-					t.Errorf("MarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if string(got) != tt.want {
-					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
-				}
-			}
-		})
-	}
+	runJSONTests(t, func(conf Confidence) ([]byte, error) { return conf.MarshalJSON() }, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) }, tests)
 }
 
 // TestConfidence_UnmarshalJSON tests JSON unmarshaling.
@@ -630,135 +425,30 @@ func TestConfidence_UnmarshalJSON(t *testing.T) {
 		want      Confidence
 		wantError bool
 	}{
-		{
-			name:      "valid JSON 0.5",
-			input:     `0.5`,
-			want:      Confidence(0.5),
-			wantError: false,
-		},
-		{
-			name:      "valid JSON 1.0",
-			input:     `1.0`,
-			want:      Confidence(1.0),
-			wantError: false,
-		},
-		{
-			name:      "negative should error",
-			input:     `-0.1`,
-			want:      0,
-			wantError: true,
-		},
-		{
-			name:      "> 1.0 should error",
-			input:     `1.5`,
-			want:      0,
-			wantError: true,
-		},
-		{
-			name:      "invalid JSON",
-			input:     `not-json`,
-			want:      0,
-			wantError: true,
-		},
+		{name: "valid JSON 0.5", input: `0.5`, want: Confidence(0.5), wantError: false},
+		{name: "valid JSON 1.0", input: `1.0`, want: Confidence(1.0), wantError: false},
+		{name: "negative should error", input: `-0.1`, want: Confidence(0), wantError: true},
+		{name: "> 1.0 should error", input: `1.5`, want: Confidence(0), wantError: true},
+		{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var got Confidence
-			gotErr := got.UnmarshalJSON([]byte(tt.input))
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("UnmarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runJSONUnmarshalTests(t, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) }, tests)
 }
 
 // TestConfidence_RoundTrip tests JSON marshaling and unmarshaling round trip.
 func TestConfidence_RoundTrip(t *testing.T) {
-	original := Confidence(0.75)
-
-	// Marshal
-	data, err := original.MarshalJSON()
-	if err != nil {
-		t.Fatalf("MarshalJSON() error: %v", err)
-	}
-
-	// Unmarshal
-	var result Confidence
-	if err := result.UnmarshalJSON(data); err != nil {
-		t.Fatalf("UnmarshalJSON() error: %v", err)
-	}
-
-	// Verify round trip
-	if result != original {
-		t.Errorf("Round trip failed: %v != %v", result, original)
-	}
+	testJSONRoundTrip(t, Confidence(0.75), func(conf Confidence) ([]byte, error) { return conf.MarshalJSON() }, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) })
 }
 
 // TestProcessingTime_NewProcessingTime tests the NewProcessingTime constructor.
 func TestProcessingTime_NewProcessingTime(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     uint
-		want      ProcessingTime
-		wantError bool
-	}{
-		{
-			name:      "valid processing time",
-			input:     500,
-			want:      ProcessingTime(500),
-			wantError: false,
-		},
-		{
-			name:      "one millisecond",
-			input:     1,
-			want:      ProcessingTime(1),
-			wantError: false,
-		},
-		{
-			name:      "zero should error",
-			input:     0,
-			want:      0,
-			wantError: true,
-		},
+	tests := []constructorTest[ProcessingTime]{
+		{name: "valid processing time", input: uint(500), want: ProcessingTime(500), wantError: false},
+		{name: "one millisecond", input: uint(1), want: ProcessingTime(1), wantError: false},
+		{name: "zero should error", input: uint(0), want: ProcessingTime(0), wantError: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewProcessingTime(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewProcessingTime() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewProcessingTime() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewProcessingTime() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewProcessingTime() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runConstructorTests(t, "NewProcessingTime", tests, func(input any) (ProcessingTime, error) {
+		return NewProcessingTime(input.(uint))
+	})
 }
 
 // TestProcessingTime_Uint tests the Uint method.
@@ -839,46 +529,11 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime_MarshalJSON tests JSON marshaling.
 func TestProcessingTime_MarshalJSON(t *testing.T) {
-	tests := []struct {
-		name    string
-		pt      ProcessingTime
-		want    string
-		wantErr bool
-	}{
-		{
-			name:    "valid processing time",
-			pt:      ProcessingTime(500),
-			want:    `500`,
-			wantErr: false,
-		},
-		{
-			name:    "zero should error",
-			pt:      ProcessingTime(0),
-			want:    "",
-			wantErr: true,
-		},
+	tests := []jsonTest[ProcessingTime]{
+		{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
+		{name: "zero should error", input: ProcessingTime(0), want: "", wantErr: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := tt.pt.MarshalJSON()
-
-			if tt.wantErr {
-				if gotErr == nil {
-					t.Errorf("MarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if string(got) != tt.want {
-					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
-				}
-			}
-		})
-	}
+	runJSONTests(t, func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() }, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) }, tests)
 }
 
 // TestProcessingTime_UnmarshalJSON tests JSON unmarshaling.
@@ -889,323 +544,84 @@ func TestProcessingTime_UnmarshalJSON(t *testing.T) {
 		want      ProcessingTime
 		wantError bool
 	}{
-		{
-			name:      "valid JSON",
-			input:     `500`,
-			want:      ProcessingTime(500),
-			wantError: false,
-		},
-		{
-			name:      "zero should error",
-			input:     `0`,
-			want:      0,
-			wantError: true,
-		},
-		{
-			name:      "invalid JSON",
-			input:     `not-json`,
-			want:      0,
-			wantError: true,
-		},
+		{name: "valid JSON", input: `500`, want: ProcessingTime(500), wantError: false},
+		{name: "zero should error", input: `0`, want: ProcessingTime(0), wantError: true},
+		{name: "invalid JSON", input: `not-json`, want: ProcessingTime(0), wantError: true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var got ProcessingTime
-			gotErr := got.UnmarshalJSON([]byte(tt.input))
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("UnmarshalJSON() expected error, got nil")
-					return
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	runJSONUnmarshalTests(t, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) }, tests)
 }
 
 // TestProcessingTime_RoundTrip tests JSON marshaling and unmarshaling round trip.
 func TestProcessingTime_RoundTrip(t *testing.T) {
-	original := ProcessingTime(5000)
+	testJSONRoundTrip(t, ProcessingTime(5000), func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() }, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) })
+}
 
-	// Marshal
-	data, err := original.MarshalJSON()
-	if err != nil {
-		t.Fatalf("MarshalJSON() error: %v", err)
-	}
-
-	// Unmarshal
-	var result ProcessingTime
-	if err := result.UnmarshalJSON(data); err != nil {
-		t.Fatalf("UnmarshalJSON() error: %v", err)
-	}
-
-	// Verify round trip
-	if result != original {
-		t.Errorf("Round trip failed: %v != %v", result, original)
-	}
+// registerStringConstructorTest creates and runs tests for a string-based constructor.
+// This helper reduces boilerplate when creating tests for types constructed
+// from strings with validation logic.
+func registerStringConstructorTest[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], constructorFunc func(string) (T, error)) {
+	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
+		return constructorFunc(input.(string))
+	})
 }
 
 // TestCloneGroupID_NewCloneGroupID tests the NewCloneGroupID constructor.
 func TestCloneGroupID_NewCloneGroupID(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      CloneGroupID
-		wantError bool
-	}{
-		{
-			name:      "valid clone group ID",
-			input:     "group-123",
-			want:      CloneGroupID("group-123"),
-			wantError: false,
-		},
-		{
-			name:      "empty string should error",
-			input:     "",
-			want:      "",
-			wantError: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewCloneGroupID(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewCloneGroupID() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewCloneGroupID() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewCloneGroupID() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewCloneGroupID() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	registerStringConstructorTest(t, "NewCloneGroupID", []constructorTest[CloneGroupID]{
+		{name: "valid clone group ID", input: "group-123", want: CloneGroupID("group-123"), wantError: false},
+		{name: "empty string should error", input: "", want: CloneGroupID(""), wantError: true},
+	}, NewCloneGroupID)
 }
 
 // TestAnalysisID_NewAnalysisID tests the NewAnalysisID constructor.
 func TestAnalysisID_NewAnalysisID(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      AnalysisID
-		wantError bool
-	}{
-		{
-			name:      "valid analysis ID",
-			input:     "analysis-456",
-			want:      AnalysisID("analysis-456"),
-			wantError: false,
-		},
-		{
-			name:      "empty string should error",
-			input:     "",
-			want:      "",
-			wantError: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewAnalysisID(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewAnalysisID() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewAnalysisID() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewAnalysisID() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewAnalysisID() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	registerStringConstructorTest(t, "NewAnalysisID", []constructorTest[AnalysisID]{
+		{name: "valid analysis ID", input: "analysis-456", want: AnalysisID("analysis-456"), wantError: false},
+		{name: "empty string should error", input: "", want: AnalysisID(""), wantError: true},
+	}, NewAnalysisID)
 }
 
 // TestFilepath_NewFilepath tests the NewFilepath constructor.
 func TestFilepath_NewFilepath(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      Filepath
-		wantError bool
-	}{
-		{
-			name:      "valid filepath",
-			input:     "/path/to/file.go",
-			want:      Filepath("/path/to/file.go"),
-			wantError: false,
-		},
-		{
-			name:      "relative path",
-			input:     "./file.go",
-			want:      Filepath("./file.go"),
-			wantError: false,
-		},
-		{
-			name:      "empty string should error",
-			input:     "",
-			want:      "",
-			wantError: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewFilepath(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewFilepath() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewFilepath() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewFilepath() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewFilepath() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	registerStringConstructorTest(t, "NewFilepath", []constructorTest[Filepath]{
+		{name: "valid filepath", input: "/path/to/file.go", want: Filepath("/path/to/file.go"), wantError: false},
+		{name: "relative path", input: "./file.go", want: Filepath("./file.go"), wantError: false},
+		{name: "empty string should error", input: "", want: Filepath(""), wantError: true},
+	}, NewFilepath)
 }
 
 // TestHash_NewHash tests the NewHash constructor.
 func TestHash_NewHash(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      Hash
-		wantError bool
-	}{
-		{
-			name:      "valid SHA256 hash",
-			input:     "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
-			want:      Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"),
-			wantError: false,
-		},
-		{
-			name:      "short hash",
-			input:     "abc123",
-			want:      Hash("abc123"),
-			wantError: false,
-		},
-		{
-			name:      "empty string should error",
-			input:     "",
-			want:      "",
-			wantError: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := NewHash(tt.input)
-
-			if tt.wantError {
-				if gotErr == nil {
-					t.Errorf("NewHash() expected error, got nil")
-					return
-				}
-				var validationErr *duplerrors.DuplError
-				if !stderrors.As(gotErr, &validationErr) {
-					t.Errorf("NewHash() expected ValidationError, got %T", gotErr)
-				}
-			} else {
-				if gotErr != nil {
-					t.Errorf("NewHash() unexpected error: %v", gotErr)
-					return
-				}
-				if got != tt.want {
-					t.Errorf("NewHash() = %v, want %v", got, tt.want)
-				}
-			}
-		})
-	}
+	registerStringConstructorTest(t, "NewHash", []constructorTest[Hash]{
+		{name: "valid SHA256 hash", input: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", want: Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"), wantError: false},
+		{name: "short hash", input: "abc123", want: Hash("abc123"), wantError: false},
+		{name: "empty string should error", input: "", want: Hash(""), wantError: true},
+	}, NewHash)
 }
 
 // TestBytePosition tests BytePosition type.
 func TestBytePosition(t *testing.T) {
-	testUintTypeSuite(t, "BytePosition", testUintType[BytePosition]{
-		newFunc: func(u uint) BytePosition { return BytePosition(u) },
-		uintFunc: func(bp BytePosition) uint { return bp.Uint() },
-		jsonMarshal: func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
-		jsonUnmarshal: func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) },
-	})
+	registerUintTypeTest(t, "BytePosition", func(u uint) BytePosition { return BytePosition(u) }, func(bp BytePosition) uint { return bp.Uint() }, func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() }, func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) })
 }
 
 // TestTokenCount tests TokenCount type.
 func TestTokenCount(t *testing.T) {
-	testUintTypeSuite(t, "TokenCount", testUintType[TokenCount]{
-		newFunc: func(u uint) TokenCount { return TokenCount(u) },
-		uintFunc: func(tc TokenCount) uint { return tc.Uint() },
-		jsonMarshal: func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
-		jsonUnmarshal: func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) },
-	})
+	registerUintTypeTest(t, "TokenCount", func(u uint) TokenCount { return TokenCount(u) }, func(tc TokenCount) uint { return tc.Uint() }, func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() }, func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) })
 }
 
 // TestComplexityScore tests ComplexityScore type.
 func TestComplexityScore(t *testing.T) {
-	testUintTypeSuite(t, "ComplexityScore", testUintType[ComplexityScore]{
-		newFunc: func(u uint) ComplexityScore { return ComplexityScore(u) },
-		uintFunc: func(cs ComplexityScore) uint { return cs.Uint() },
-		jsonMarshal: func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
-		jsonUnmarshal: func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) },
-	})
+	registerUintTypeTest(t, "ComplexityScore", func(u uint) ComplexityScore { return ComplexityScore(u) }, func(cs ComplexityScore) uint { return cs.Uint() }, func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() }, func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) })
 }
 
 // TestFileCount tests FileCount type.
 func TestFileCount(t *testing.T) {
-	testUintTypeSuite(t, "FileCount", testUintType[FileCount]{
-		newFunc: func(u uint) FileCount { return FileCount(u) },
-		uintFunc: func(fc FileCount) uint { return fc.Uint() },
-		jsonMarshal: func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
-		jsonUnmarshal: func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) },
-	})
+	registerUintTypeTest(t, "FileCount", func(u uint) FileCount { return FileCount(u) }, func(fc FileCount) uint { return fc.Uint() }, func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() }, func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) })
 }
 
 // TestCloneCount tests CloneCount type.
 func TestCloneCount(t *testing.T) {
-	testUintTypeSuite(t, "CloneCount", testUintType[CloneCount]{
-		newFunc: func(u uint) CloneCount { return CloneCount(u) },
-		uintFunc: func(cc CloneCount) uint { return cc.Uint() },
-		jsonMarshal: func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
-		jsonUnmarshal: func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) },
-	})
+	registerUintTypeTest(t, "CloneCount", func(u uint) CloneCount { return CloneCount(u) }, func(cc CloneCount) uint { return cc.Uint() }, func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() }, func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) })
 }
 
 // TestThreshold tests Threshold type.

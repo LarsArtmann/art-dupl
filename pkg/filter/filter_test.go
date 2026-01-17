@@ -11,6 +11,7 @@ import (
 
 // Helper function for contains check
 func contains[T comparable](slice []T, item T) bool {
+	t.Helper()
 	return slices.Contains(slice, item)
 }
 
@@ -71,7 +72,7 @@ func TestWithExcludePatterns(t *testing.T) {
 }
 
 // testPatternSlices is a helper for testing pattern slices.
-func testPatternSlices(t *testing.T, patternType string, patterns []string, wantPatterns []string) {
+func testPatternSlices(t *testing.T, patternType string, patterns, wantPatterns []string) {
 	if len(patterns) != len(wantPatterns) {
 		t.Errorf("Expected %d patterns, got %d", len(wantPatterns), len(patterns))
 	}

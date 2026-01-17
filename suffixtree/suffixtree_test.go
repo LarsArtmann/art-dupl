@@ -1,17 +1,23 @@
 package suffixtree
 
-import "testing"
+import (
+	"unicode/utf8"
+	"testing"
+)
 
-type char byte
+type char rune
 
 func (c char) Val() int {
 	return int(c)
 }
 
 func str2tok(str string) []Token {
-	toks := make([]Token, len(str))
-	for i, c := range str {
+	// Use utf8.RuneCountInString to get actual character count for Unicode support
+	toks := make([]Token, utf8.RuneCountInString(str))
+	i := 0
+	for _, c := range str {
 		toks[i] = char(c)
+		i++
 	}
 	return toks
 }
@@ -291,4 +297,57 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestUnicodeSupport(t *testing.T) {
+	t.Parallel()
+	// Test that suffix tree correctly handles Unicode characters
+	testCases := []struct {
+		name     string
+		input    string
+		expected []rune
+	}{
+		{
+			name:     "Armenian characters",
+			input:    "աբգ",
+			expected: []rune{'ա', 'բ', 'գ'},
+		},
+		{
+			name:     "Chinese characters",
+			input:    "你好世界",
+			expected: []rune{'你', '好', '世', '界'},
+		},
+		{
+			name:     "Emoji",
+			input:    "🎉🚀✨",
+			expected: []rune{'🎉', '🚀', '✨'},
+		},
+		{
+			name:     "Mixed ASCII and Unicode",
+			input:    "aբb🎉c",
+			expected: []rune{'a', 'բ', 'b', '🎉', 'c'},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tree := New()
+			tokens := str2tok(tc.input)
+			
+			// This should not panic on Unicode input
+			tree.Update(tokens...)
+			
+			// Verify all characters were converted
+			if len(tokens) != len(tc.expected) {
+				t.Errorf("Expected %d tokens, got %d", len(tc.expected), len(tokens))
+			}
+			
+			// Verify token values
+			for i, token := range tokens {
+				if char(token.Val()) != char(tc.expected[i]) {
+					t.Errorf("Token %d: expected %v, got %v", i, tc.expected[i], token.Val())
+				}
+			}
+		})
+	}
 }
