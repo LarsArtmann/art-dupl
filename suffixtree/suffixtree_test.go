@@ -1,8 +1,8 @@
 package suffixtree
 
 import (
-	"unicode/utf8"
 	"testing"
+	"unicode/utf8"
 )
 
 type char rune
@@ -333,15 +333,15 @@ func TestUnicodeSupport(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tree := New()
 			tokens := str2tok(tc.input)
-			
+
 			// This should not panic on Unicode input
 			tree.Update(tokens...)
-			
+
 			// Verify all characters were converted
 			if len(tokens) != len(tc.expected) {
 				t.Errorf("Expected %d tokens, got %d", len(tc.expected), len(tokens))
 			}
-			
+
 			// Verify token values
 			for i, token := range tokens {
 				if char(token.Val()) != char(tc.expected[i]) {

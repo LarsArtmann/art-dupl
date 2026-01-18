@@ -175,7 +175,7 @@ func uniqueFunction(ctx context.Context) error {
 		PIt("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", "./cmd/art-dupl/main.go")
-						err := cmd.Run()
+			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
@@ -210,7 +210,7 @@ func lessCommon() {
 
 			// Run art-dupl with --sort occurrence
 			cmd = exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "5", "--sort", "occurrence") //nolint:gosec //G204 Test code, controlled input
-						output, err := cmd.CombinedOutput()
+			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -235,13 +235,13 @@ func lessCommon() {
 		It("should respect threshold settings to filter noise", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err := cmd.Run()
+			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Run with high threshold
 			cmd = exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "50") //nolint:gosec //G204 Test code, controlled input
-						output, err := cmd.CombinedOutput()
+			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -260,13 +260,13 @@ func lessCommon() {
 		It("should produce valid JSON output with statistics", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err := cmd.Run()
+			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Run with JSON output on current directory - separate stdout from stderr to avoid JSON corruption
 			cmd = exec.Command("./bdd/art-dupl-test", "--json", "--threshold", "10", ".")
-						output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -292,13 +292,13 @@ func lessCommon() {
 		It("should produce HTML output with code fragments", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err := cmd.Run()
+			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Run with HTML output on current directory
 			cmd = exec.Command("./bdd/art-dupl-test", "--html", "--threshold", "10", ".")
-						output, err := cmd.CombinedOutput()
+			output, err := cmd.CombinedOutput()
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
@@ -328,7 +328,7 @@ var _ = Describe("Configuration Management", func() {
 
 		// Build art-dupl binary for these tests
 		cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-				err = cmd.Run()
+		err = cmd.Run()
 		Expect(err).NotTo(HaveOccurred())
 
 		// Create test Go file
@@ -501,13 +501,13 @@ func processData(data string) error {
 
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err = cmd.Run()
+			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Analyze only subDir1
 			cmd = exec.Command("./bdd/art-dupl-test", subDir1, "--threshold", "10") //nolint:gosec //G204 Test code, controlled input
-						output, err := cmd.CombinedOutput()
+			output, err := cmd.CombinedOutput()
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -549,14 +549,14 @@ func unique() {
 
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err = cmd.Run()
+			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Create stdin with only target files (use absolute paths)
 			stdin := fmt.Sprintf("%s\n%s\n", filepath.Join(tempDir, "target1.go"), filepath.Join(tempDir, "target2.go"))
 			cmd = exec.Command("./bdd/art-dupl-test", "--files", "--threshold", "10")
-						cmd.Stdin = strings.NewReader(stdin)
+			cmd.Stdin = strings.NewReader(stdin)
 			output, err := cmd.CombinedOutput()
 
 			// Verify - should find duplicates between target files
@@ -628,13 +628,13 @@ func (s *Service) processInternal(data string) error {
 
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err = cmd.Run()
+			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
 			cmd = exec.Command("./bdd/art-dupl-test", tempDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
-						output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			output, err := cmd.Output()                                                       // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response
@@ -698,14 +698,14 @@ func processItem(data string, index int) error {
 
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-test", ".")
-						err = cmd.Run()
+			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./bdd/art-dupl-test") }()
 
 			// Measure execution time
 			start := time.Now()
 			cmd = exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "20") //nolint:gosec //G204 Test code, controlled input
-						var output []byte
+			var output []byte
 			output, err = cmd.CombinedOutput()
 			duration := time.Since(start)
 
