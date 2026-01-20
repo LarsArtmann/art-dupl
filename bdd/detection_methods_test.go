@@ -45,7 +45,7 @@ var _ = Describe("Detection Methods", func() {
 
 	AfterEach(func() {
 		_ = os.RemoveAll(tempDir)
-		_ = os.Remove(./bdd/art-dupl-detection_methods-test)
+		_ = os.Remove("./bdd/art-dupl-detection_methods-test")
 	})
 
 	Context("When using hash-based detection", func() {
@@ -72,12 +72,12 @@ func main() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with hash detection
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "hash", "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -99,12 +99,12 @@ func duplicate() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with hash detection and JSON output
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "hash", "--json", "--threshold", "5")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash", "--json", "--threshold", "5")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -157,12 +157,12 @@ func processProduct(name string, price int) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with art-dupl detection
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "art-dupl", "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "art-dupl", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -186,12 +186,12 @@ func test() error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run without specifying detection method (should default to art-dupl)
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -236,12 +236,12 @@ func structuralB(value string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with combined detection methods
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "hash,art-dupl", "--threshold", "5")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash,art-dupl", "--threshold", "5")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -265,12 +265,12 @@ func detect() error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with combined detection and JSON
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "hash,art-dupl", "--json", "--threshold", "5")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash,art-dupl", "--json", "--threshold", "5")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -297,12 +297,12 @@ func test() {}
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-detection_methods-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-detection_methods-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid detection method
-			cmd = exec.Command(./bdd/art-dupl-detection_methods-test, tempDir, "--detection-methods", "invalid_method")
+			cmd = exec.Command("./bdd/art-dupl-detection_methods-test", tempDir, "--detection-methods", "invalid_method")
 			output, err := cmd.CombinedOutput()
 
 			// Should handle error gracefully

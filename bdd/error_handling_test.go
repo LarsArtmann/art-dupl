@@ -29,16 +29,14 @@ func TestErrorHandling(t *testing.T) {
 }
 
 var _ = Describe("Error Handling", func() {
-	var (
-		binaryPath string
-	)
+	var binaryPath string
 
 	BeforeEach(func() {
 		// Build art-dupl binary
-		cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-error_handling-test, "./cmd/art-dupl/main.go")
+		cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-error_handling-test", "./cmd/art-dupl/main.go")
 		err := cmd.Run()
 		Expect(err).NotTo(HaveOccurred())
-		binaryPath = ./bdd/art-dupl-error_handling-test
+		binaryPath = "./bdd/art-dupl-error_handling-test"
 	})
 
 	AfterEach(func() {

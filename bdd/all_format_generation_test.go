@@ -51,7 +51,7 @@ var _ = Describe("All Format Generation (--all flag)", func() {
 
 	AfterEach(func() {
 		_ = os.RemoveAll(tempDir)
-		_ = os.Remove(./bdd/art-dupl-all_format_generation-test)
+		_ = os.Remove("./bdd/art-dupl-all_format_generation-test")
 	})
 
 	Context("When generating all formats with default settings", func() {
@@ -72,12 +72,12 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -117,12 +117,12 @@ func duplicate() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -160,7 +160,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
@@ -168,7 +168,7 @@ func test() {}`
 			customOutputDir := filepath.Join(tempDir, "custom", "nested", "output")
 
 			// Run with --all flag and custom output directory
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", customOutputDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", customOutputDir, "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -192,7 +192,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
@@ -201,7 +201,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag using existing directory
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -225,12 +225,12 @@ func multiDetect() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and multiple detection methods
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--detection-methods", "hash,art-dupl", "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--detection-methods", "hash,art-dupl", "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -288,12 +288,12 @@ func small() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and high threshold
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--threshold", "100")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "100")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -321,12 +321,12 @@ func unique2() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", ./bdd/art-dupl-all_format_generation-test, "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-all_format_generation-test", "./cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command(./bdd/art-dupl-all_format_generation-test, tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			cmd = exec.Command("./bdd/art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			_, err = cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
