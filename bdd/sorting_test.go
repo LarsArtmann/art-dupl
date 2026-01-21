@@ -171,20 +171,26 @@ func process(data string) error {
 	Context("When sorting by occurrence", func() {
 		It("should display most widespread clones first", func() {
 			// Create code that appears in many files
+			// Pattern 1: Function with string parameter and no return value
 			widespreadCode := `package main
 
 import "fmt"
 
-func commonFunction() {
-	fmt.Println("this appears in many files")
+func commonFunction(message string) {
+	fmt.Println(message)
 }`
 
+			// Pattern 2: Function with two parameters and error return value
+			// This creates a structurally different AST pattern
 			lessCommonCode := `package main
 
-import "fmt"
+import "errors"
 
-func lessCommonFunction() {
-	fmt.Println("this appears in fewer files")
+func lessCommonFunction(id int, name string) error {
+	if id == 0 {
+		return errors.New("invalid id")
+	}
+	return nil
 }`
 
 			// Create 4 files with widespread code
