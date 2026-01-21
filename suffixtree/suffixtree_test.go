@@ -234,18 +234,6 @@ func TestPosMaxValue(t *testing.T) {
 	}
 }
 
-func BenchmarkConstruction(b *testing.B) {
-	b.ReportAllocs()
-	stream := str2tok(`all work and no play makes jack a dull boy
-all work and no play makes jack a dull boy
-all work and no play makes jack a dull boy`)
-
-	for b.Loop() {
-		t := New()
-		t.Update(stream...)
-	}
-}
-
 func FuzzSuffixTreeUpdate(f *testing.F) {
 	// Add seed corpus with typical code patterns
 	f.Add("func main() {}")

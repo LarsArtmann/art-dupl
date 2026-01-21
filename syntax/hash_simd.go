@@ -116,15 +116,15 @@ func BatchHash(sequences [][]*Node) []string {
 		return nil
 	}
 
-	// Use SIMD hasher if available
-	var hasher interface {
-		Hash(data []byte) []byte
-	}
-
-	if simd.Available() {
-		// TODO: Use SIMD hasher when implemented
-		hasher = nil
-	}
+	// TODO: Use SIMD hasher when available
+	//
+	// var hasher interface {
+	//     Hash(data []byte) []byte
+	// }
+	//
+	// if simd.Available() {
+	//     hasher = &simdHasher{}
+	// }
 
 	results := make([]string, len(sequences))
 

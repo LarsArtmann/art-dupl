@@ -192,16 +192,6 @@ func (s *state) fork(i Pos) *state {
 	return r
 }
 
-// findTran finds c-transition.
-func (s *state) findTran(c Token) *tran {
-	for _, tran := range s.trans {
-		if s.tree.data[tran.start].Val() == c.Val() {
-			return tran
-		}
-	}
-	return nil
-}
-
 // tran represents a state's transition.
 type tran struct {
 	start, end Pos

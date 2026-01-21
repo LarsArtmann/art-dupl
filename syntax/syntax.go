@@ -1,9 +1,6 @@
 package syntax
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
@@ -193,14 +190,4 @@ func spansMultipleFiles(indexes []int, nodes []*Node) bool {
 		}
 	}
 	return false
-}
-
-func hashSeq(nodes []*Node) string {
-	h := sha256.New()
-	bytes := make([]byte, len(nodes))
-	for i, node := range nodes {
-		bytes[i] = byte(node.Type)
-	}
-	h.Write(bytes)
-	return hex.EncodeToString(h.Sum(nil))
 }
