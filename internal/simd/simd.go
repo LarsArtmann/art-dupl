@@ -186,7 +186,7 @@ func UnsafeBytes[T any](data []byte) *T {
 // WARNING: This function uses unsafe operations and must be used carefully.
 func UnsafeSlice[T any](data []byte) []T {
 	var t T
-	header := (*[1 << 30]T)(UnsafeBytes[T](data))
+	header := (*[1 << 30]T)(unsafe.Pointer(&data[0]))
 	n := len(data) / int(unsafe.Sizeof(t))
 	return header[:n:n]
 }
