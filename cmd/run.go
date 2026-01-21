@@ -299,9 +299,35 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		filterOptions = append(filterOptions, filter.FilterTempl)
 	}
 
+	// Auto-detect sqlc.yaml files and enable sqlc filtering if found
+	// This provides "out of the box" support for sqlc generated code
+	sqlcOutputDirs, err := filter.GetSQLOutputDirs(paths)
+	if err != nil && cfg.Verbose {
+		fmt.Fprintf(os.Stderr, "warning: failed to detect sqlc config: %v\n", err)
+	}
+
+	// Enable sqlc filtering if sqlc.yaml is detected AND --include-sqlc is not set
+	if len(sqlcOutputDirs) > 0 && !cfg.IncludeSQLC {
+		filterOptions = append(filterOptions, filter.FilterSQLC)
+		if cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "🔍 Auto-detected sqlc.yaml, filtering sqlc generated code\n")
+			for _, dir := range sqlcOutputDirs {
+				fmt.Fprintf(os.Stderr, "   - %s\n", dir)
+			}
+		}
+	}
+
 	// If --filter-generated is set, also filter sqlc files (unless --include-sqlc is set)
-	if cfg.FilterGenerated {
-		if !cfg.IncludeSQLC {
+	if cfg.FilterGenerated && !cfg.IncludeSQLC {
+		// sqlc filtering may already be enabled by auto-detection, avoid duplicate
+		alreadyFilteringSQLC := false
+		for _, opt := range filterOptions {
+			if opt == filter.FilterSQLC {
+				alreadyFilteringSQLC = true
+				break
+			}
+		}
+		if !alreadyFilteringSQLC {
 			filterOptions = append(filterOptions, filter.FilterSQLC)
 		}
 		if cfg.Verbose {

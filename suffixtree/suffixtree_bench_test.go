@@ -51,8 +51,7 @@ func BenchmarkFindTranSmall(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTran(token)
 	}
 }
@@ -68,8 +67,7 @@ func BenchmarkFindTranMedium(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTran(token)
 	}
 }
@@ -85,8 +83,7 @@ func BenchmarkFindTranLarge(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTran(token)
 	}
 }
@@ -102,8 +99,7 @@ func BenchmarkFindTranVeryLarge(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTran(token)
 	}
 }
@@ -119,8 +115,7 @@ func BenchmarkFindTranFallback(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTranFallback(token)
 	}
 }
@@ -140,8 +135,7 @@ func BenchmarkFindTranBatch(b *testing.B) {
 		tokens[i] = tree.data[tree.root.trans[idx].start]
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTranBatch(tokens)
 	}
 }
@@ -186,8 +180,7 @@ func BenchmarkConstructionParallel(b *testing.B) {
 func BenchmarkOptimizeTree(b *testing.B) {
 	tree := generateTreeWithTransitions(100, 50)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.OptimizeTree()
 	}
 }
@@ -206,8 +199,7 @@ func BenchmarkFindTranOptimized(b *testing.B) {
 	target := tree.root.trans[0]
 	token := tree.data[target.start]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.root.findTranFast(token)
 	}
 }
@@ -218,8 +210,7 @@ func BenchmarkCanonize(b *testing.B) {
 	tokens := generateRandomTokens(1000)
 	tree.Update(tokens...)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.canonize(tree.root, 0, 100)
 	}
 }
@@ -253,8 +244,7 @@ func BenchmarkAt(b *testing.B) {
 		positions[i] = r.Intn(len(tokens))
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		for _, pos := range positions {
 			tree.At(Pos(pos))
 		}
@@ -268,8 +258,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 	tree := New()
 	tokens := generateRandomTokens(10000)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree = New()
 		tree.Update(tokens...)
 	}
@@ -281,8 +270,7 @@ func BenchmarkTestAndSplit(b *testing.B) {
 	tokens := generateRandomTokens(1000)
 	tree.Update(tokens...)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tree.testAndSplit(tree.root, 0, 100)
 	}
 }
@@ -300,8 +288,7 @@ func BenchmarkSearch(b *testing.B) {
 	// Search for the first 10 tokens
 	searchTokens := tokens[:10]
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		// Simulate a search by traversing transitions
 		s := tree.root
 		for _, token := range searchTokens {
