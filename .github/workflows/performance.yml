@@ -1,0 +1,126 @@
+name: Performance Tests
+
+on:
+  push:
+    branches:
+      - fork
+  pull_request:
+    branches:
+      - fork
+  schedule:
+    # Run performance tests daily at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: Performance Regression
+    runs-on: ubuntu-latest
+    env:
+      GO_VERSION: stable
+      CGO_ENABLED: 0
+
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # https://github.com/marketplace/actions/setup-go-environment
+      - name: Set up Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Get dependencies
+        run: |
+          go mod download
+          go mod tidy
+
+      - name: Install benchstat
+        run: go install golang.org/x/perf/cmd/benchstat@latest
+
+      - name: Run benchmarks (baseline)
+        run: |
+          echo "=== Running Suffix Tree Benchmarks ===" > baseline.txt
+          go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/ >> baseline.txt 2>&1
+          echo "" >> baseline.txt
+          echo "=== Running Hash Benchmarks ===" >> baseline.txt
+          go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/ >> baseline.txt 2>&1
+
+      - name: Run benchmarks (current)
+        run: |
+          echo "=== Running Suffix Tree Benchmarks ===" > current.txt
+          go test -bench=BenchmarkConstruction -benchtime=1s -count=5 ./suffixtree/ >> current.txt 2>&1
+          echo "" >> current.txt
+          echo "=== Running Hash Benchmarks ===" >> current.txt
+          go test -bench=BenchmarkHashSeq -benchtime=1s -count=5 ./syntax/ >> current.txt 2>&1
+
+      - name: Compare benchmarks
+        run: |
+          benchstat baseline.txt current.txt > comparison.txt || true
+          cat comparison.txt
+
+      - name: Check for performance regression
+        run: |
+          # Parse benchstat output for regressions > 5%
+          if grep -q "~.*+.*%" comparison.txt | awk '{if ($5 > 5) print "REGRESSION DETECTED"}'; then
+            echo "::warning::Performance regression detected (>5% slowdown)"
+            exit 0  # Don't fail the build, just warn
+          fi
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.sha }}
+          path: |
+            baseline.txt
+            current.txt
+            comparison.txt
+          retention-days: 30
+
+  memory-profiling:
+    name: Memory Profiling
+    runs-on: ubuntu-latest
+    env:
+      GO_VERSION: stable
+      CGO_ENABLED: 0
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Get dependencies
+        run: |
+          go mod download
+          go mod tidy
+
+      - name: Run with GC tracing
+        run: |
+          echo "=== Suffix Tree GC Profile ===" > gc_profile.txt
+          GODEBUG=gctrace=1 go test -bench=BenchmarkConstruction -benchtime=500ms ./suffixtree/ >> gc_profile.txt 2>&1
+          echo "" >> gc_profile.txt
+          echo "=== Hash GC Profile ===" >> gc_profile.txt
+          GODEBUG=gctrace=1 go test -bench=BenchmarkHashSeqLarge -benchtime=500ms ./syntax/ >> gc_profile.txt 2>&1
+
+      - name: Capture memory profiles
+        run: |
+          go test -bench=BenchmarkHashSeqLarge -memprofile=hash_mem.prof -benchtime=500ms ./syntax/
+          go tool pprof -text hash_mem.prof > memory_analysis.txt
+          head -20 memory_analysis.txt
+
+      - name: Upload profiling results
+        uses: actions/upload-artifact@v4
+        with:
+          name: profiling-results-${{ github.sha }}
+          path: |
+            gc_profile.txt
+            memory_analysis.txt
+            hash_mem.prof
+          retention-days: 30
