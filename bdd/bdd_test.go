@@ -170,20 +170,23 @@ func uniqueFunction(ctx context.Context) error {
 			Expect(outputStr).To(ContainSubstring("duplicate2.go"))
 		})
 
-		// PENDING: Test disabled - cloning detection merges similar AST structures
-		// Sorting is working correctly, verified with manual tests
-		PIt("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
+		// Test: Verify occurrence sorting prioritizes clones with more unique files
+		It("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
 			// Build art-dupl binary
 			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
 			err := cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
-			// Create additional files to create clones with different occurrence counts
+			// Create code pattern 1: Function with single string parameter, no return
 			widespreadCode := `package main
 
-func veryCommon() {
-	println("this appears in many files")
+import "fmt"
+
+func veryCommon(message string) {
+	for i := 0; i < 3; i++ {
+		fmt.Println(message)
+	}
 }`
 
 			// Create 4 files with the same code
@@ -196,11 +199,16 @@ func veryCommon() {
 			err = fileProcessor.WriteTextFile("widespread4.go", widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Create 2 files with different code (fewer occurrences)
+			// Create code pattern 2: Function with int parameter and error return (different AST)
 			lessCommonCode := `package main
 
-func lessCommon() {
-	println("this appears in fewer files")
+import "errors"
+
+func lessCommon(id int) error {
+	if id == 0 {
+		return errors.New("invalid id")
+	}
+	return nil
 }`
 
 			err = fileProcessor.WriteTextFile("less1.go", lessCommonCode)

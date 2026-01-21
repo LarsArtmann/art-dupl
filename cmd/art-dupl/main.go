@@ -17,41 +17,44 @@ func main() {
 	// Add all flags
 	cmd.AddFlags(rootCmd)
 
-	// Enhanced error handler with context-aware suggestions
-	errorHandler := func(w io.Writer, _ fang.Styles, err error) {
-		if _, err := fmt.Fprintf(w, "\n❌ ERROR: %v\n\n", err); err != nil {
-			// Can't write error, continue anyway
-			_ = err // Explicitly ignore error
-		}
+	// Enhanced error handler with fang styling and context-aware suggestions
+	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
+		// Use fang's default error rendering as base
+		fang.DefaultErrorHandler(w, styles, err)
 
-		// Provide context-aware suggestions based on error type
+		// Add context-aware suggestions based on error type
+		errStr := err.Error()
 		switch {
-		case fmt.Sprint(err) == "flag: help requested":
-			if _, err := fmt.Fprintf(w, "💡 Use examples below to get started:\n\n"); err != nil {
-				_ = err
-			}
-			if _, err := fmt.Fprintf(w, "  art-dupl                    # Analyze current directory\n"); err != nil {
-				_ = err
-			}
-			if _, err := fmt.Fprintf(w, "  art-dupl -t 50 ./src        # Higher threshold for larger clones\n"); err != nil {
-				_ = err
-			}
-			if _, err := fmt.Fprintf(w, "  art-dupl --json -t 20 . | jq # JSON output with post-processing\n"); err != nil {
-				_ = err
-			}
-			if _, err := fmt.Fprintf(w, "  art-dupl --all --output-dir ./reports # Generate all formats\n"); err != nil {
-				_ = err
+		case errStr == "flag: help requested":
+			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
+				if _, writeErr := fmt.Fprintln(w, styles.Text.Render("💡 Use examples below to get started:")); writeErr == nil {
+					examples := []string{
+						"  art-dupl                    # Analyze current directory",
+						"  art-dupl -t 50 ./src        # Higher threshold for larger clones",
+						"  art-dupl --json -t 20 . | jq # JSON output with post-processing",
+						"  art-dupl --all --output-dir ./reports # Generate all formats",
+					}
+					for _, ex := range examples {
+						if _, writeErr := fmt.Fprintln(w, styles.Codeblock.Program.Name.Render(ex)); writeErr != nil {
+							break
+						}
+					}
+				}
 			}
 		default:
-			if _, err := fmt.Fprintf(w, "Quick Fix: Check file paths and permissions\n"); err != nil {
-				_ = err
-			}
-			if _, err := fmt.Fprintf(w, "Get Help: art-dupl --help\n"); err != nil {
-				_ = err
+			// Provide helpful hints for common errors
+			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
+				if _, writeErr := fmt.Fprintln(w, styles.Text.Render("Quick Fix: Check file paths and permissions")); writeErr == nil {
+					if _, writeErr := fmt.Fprintln(w, styles.Text.Render("Get Help: art-dupl --help")); writeErr != nil {
+						_ = writeErr
+					}
+				}
 			}
 		}
-		if _, err := fmt.Fprintf(w, "\n📚 Visit https://github.com/LarsArtmann/art-dupl for documentation\n"); err != nil {
-			_ = err
+		if _, writeErr := fmt.Fprintln(w); writeErr == nil {
+			if _, writeErr := fmt.Fprintln(w, styles.Text.Render("📚 Visit https://github.com/LarsArtmann/art-dupl for documentation")); writeErr != nil {
+				_ = writeErr
+			}
 		}
 	}
 
@@ -60,6 +63,7 @@ func main() {
 		fang.WithVersion(cmd.GetVersion()),
 		fang.WithColorSchemeFunc(fang.DefaultColorScheme),
 		fang.WithErrorHandler(errorHandler),
+		fang.WithNotifySignal(os.Interrupt), // Handle Ctrl+C gracefully
 	}
 
 	if err := fang.Execute(context.Background(), rootCmd, options...); err != nil {
