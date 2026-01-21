@@ -21,3 +21,14 @@ func Unique(group [][]*syntax.Node) [][]*syntax.Node {
 	}
 	return newGroup
 }
+
+// CountUniqueFiles returns the number of unique files in a clone group.
+func CountUniqueFiles(group [][]*syntax.Node) int {
+	uniqueFiles := make(map[string]bool)
+	for _, seq := range group {
+		if len(seq) > 0 {
+			uniqueFiles[seq[0].Filename] = true
+		}
+	}
+	return len(uniqueFiles)
+}

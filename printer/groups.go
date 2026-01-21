@@ -29,7 +29,7 @@ func BuildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node 
 func ComputeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 	uniqueCounts := make(map[string]int)
 	for k, v := range groups {
-		uniqueCounts[k] = len(utils.Unique(v))
+		uniqueCounts[k] = utils.CountUniqueFiles(v)
 	}
 	return uniqueCounts
 }
