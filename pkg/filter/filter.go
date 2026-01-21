@@ -68,13 +68,18 @@ func (f *Filter) ShouldFilter(filePath string) bool {
 		return false
 	}
 
-	// Check include patterns first (take precedence)
-	for _, pattern := range f.includePatterns {
-		if matchPattern(filePath, pattern) {
-			return false // Don't filter if it matches include pattern
+	// If include patterns are specified, use strict include-only logic
+	// Only files matching include patterns are analyzed, all others are filtered out
+	if len(f.includePatterns) > 0 {
+		for _, pattern := range f.includePatterns {
+			if matchPattern(filePath, pattern) {
+				return false // Don't filter if it matches include pattern
+			}
 		}
+		return true // Filter out if it doesn't match ANY include pattern
 	}
 
+	// No include patterns specified, use exclude logic
 	// Check exclude patterns
 	for _, pattern := range f.excludePatterns {
 		if matchPattern(filePath, pattern) {
@@ -145,7 +150,12 @@ func matchPattern(path, pattern string) bool {
 		// Convert pattern to a simple path matching string
 		// Replace "*" with empty string to get path prefix to match
 		// e.g., "pkg1/*" -> "pkg1/"
-		prefix := strings.ReplaceAll(pattern, "*", "")
+		prefix := strings.Split(pattern, "*")[0]
+
+		// Ensure prefix ends with separator for proper matching
+		if !strings.HasSuffix(prefix, string(filepath.Separator)) && !strings.HasSuffix(prefix, "/") {
+			prefix += "/"
+		}
 
 		// Check if path contains prefix
 		return strings.Contains(path, prefix)
