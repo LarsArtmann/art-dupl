@@ -288,7 +288,7 @@ func hello() {
 
 			// Should handle the error gracefully
 			// Either by showing error message or defaulting to size sorting
-			Expect(len(output)).To(BeNumerically(">", 0), "Should produce some output")
+			Expect(output).ToNot(BeEmpty(), "Should produce some output")
 		})
 	})
 })

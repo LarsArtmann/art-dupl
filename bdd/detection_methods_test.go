@@ -306,7 +306,7 @@ func test() {}
 			output, err := cmd.CombinedOutput()
 
 			// Should handle error gracefully
-			Expect(len(output)).To(BeNumerically(">", 0))
+			Expect(output).ToNot(BeEmpty())
 		})
 	})
 })

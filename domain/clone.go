@@ -118,8 +118,11 @@ func (c Clone) IsValid() error {
 	if c.EndLine < c.StartLine {
 		return errors.New("clone end line must be >= start line")
 	}
-	if c.StartPos >= c.EndPos {
-		return errors.New("clone end position must be > start position")
+	// Only validate positions if both are set (non-zero)
+	if c.StartPos > 0 || c.EndPos > 0 {
+		if c.StartPos >= c.EndPos {
+			return errors.New("clone end position must be > start position")
+		}
 	}
 
 	// Enum type validation

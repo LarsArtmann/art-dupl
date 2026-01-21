@@ -53,7 +53,7 @@ func UnmarshalJSON[T StringEnum](dest *T, data []byte, typeName string, defaultV
 	// Create error with rich context
 	validationErr := fmt.Errorf("invalid %s value %q, must be one of %v", typeName, str, validValues)
 	*dest = defaultValue
-	return errors.NewValidationError(validationErr.Error(), validationErr)
+	return fmt.Errorf("%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validValues=%v): %w", typeName, str, dest, defaultValue, validValues, errors.NewValidationError(validationErr.Error(), validationErr))
 }
 
 // MarshalJSON provides generic JSON marshaling for enum types.
@@ -70,7 +70,7 @@ func MarshalJSON[T StringEnum](value T, validValues ...T) ([]byte, error) {
 
 	// If we get here, the value is invalid
 	validationErr := fmt.Errorf("enum value %q is not in valid list %v", value, validValues)
-	return nil, errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr)
+	return nil, fmt.Errorf("marshaling failed for value %v (validValues=%v): %w", value, validValues, errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr))
 }
 
 // UnmarshalJSONFromStrings unmarshals JSON using a string slice for validation.
@@ -94,7 +94,7 @@ func UnmarshalJSONFromStrings[T StringEnum](dest *T, data []byte, typeName strin
 
 	validationErr := fmt.Errorf("invalid %s value %q, must be one of %v", typeName, str, validStrings)
 	*dest = defaultValue
-	return errors.NewValidationError(validationErr.Error(), validationErr)
+	return fmt.Errorf("%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validStrings=%v): %w", typeName, str, dest, defaultValue, validStrings, errors.NewValidationError(validationErr.Error(), validationErr))
 }
 
 // ParseEnum parses a string into an enum type with validation.
@@ -161,7 +161,7 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 	// Validate using IsValid method
 	if !value.IsValid() {
 		validationErr := fmt.Errorf("enum value %q is invalid (must pass validation)", value)
-		return nil, errors.NewValidationError("failed to marshal "+typeName+": "+validationErr.Error(), validationErr)
+		return nil, fmt.Errorf("marshaling %s failed for value %v: %w", typeName, value, errors.NewValidationError("failed to marshal "+typeName+": "+validationErr.Error(), validationErr))
 	}
 
 	return json.Marshal(value.String())

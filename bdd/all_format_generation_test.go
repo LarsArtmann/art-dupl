@@ -86,7 +86,7 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Should have multiple output files
-			Expect(len(files)).To(BeNumerically(">=", 1))
+			Expect(files).ToNot(BeEmpty())
 
 			// Verify at least one JSON file was created
 			hasJSON := false
@@ -179,7 +179,7 @@ func test() {}`
 			// Verify files were created in the custom directory
 			files, err := os.ReadDir(customOutputDir)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(files)).To(BeNumerically(">=", 1), "Should have output files in custom directory")
+			Expect(files).ToNot(BeEmpty(), "Should have output files in custom directory")
 		})
 
 		It("should use existing output directory without errors", func() {
@@ -208,7 +208,7 @@ func test() {}`
 			// Verify files were created
 			files, err := os.ReadDir(outputDir)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(files)).To(BeNumerically(">=", 1))
+			Expect(files).ToNot(BeEmpty())
 		})
 	})
 
@@ -300,7 +300,7 @@ func small() {}`
 			// Verify files were created even if few/no clones
 			files, err := os.ReadDir(outputDir)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(files)).To(BeNumerically(">=", 1), "Should create output files even with high threshold")
+			Expect(files).ToNot(BeEmpty(), "Should create output files even with high threshold")
 		})
 	})
 
@@ -333,7 +333,7 @@ func unique2() {}`
 			// Verify files were created even with no duplicates
 			files, err := os.ReadDir(outputDir)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(files)).To(BeNumerically(">=", 1), "Should create output files even with no duplicates")
+			Expect(files).ToNot(BeEmpty(), "Should create output files even with no duplicates")
 
 			// Verify JSON shows no clones
 			for _, file := range files {

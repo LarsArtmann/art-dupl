@@ -191,7 +191,7 @@ var _ = Describe("Error Handling", func() {
 
 			// Should handle gracefully (may use defaults or show error)
 			outputStr := string(output)
-			Expect(len(outputStr) > 0).To(BeTrue())
+			Expect(len(outputStr)).To(BeNumerically(">", 0))
 		})
 	})
 
@@ -324,7 +324,7 @@ var _ = Describe("Error Handling", func() {
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle empty directory")
 			// Output may be empty or show no files analyzed
-			Expect(len(output) >= 0).To(BeTrue())
+			Expect(len(output)).To(BeNumerically(">=", 0))
 		})
 
 		It("should handle directory with no Go files", func() {
@@ -346,7 +346,7 @@ var _ = Describe("Error Handling", func() {
 
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle directory with no Go files")
-			Expect(len(output) >= 0).To(BeTrue())
+			Expect(len(output)).To(BeNumerically(">=", 0))
 		})
 	})
 
