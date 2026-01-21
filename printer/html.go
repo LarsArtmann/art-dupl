@@ -14,19 +14,24 @@ import (
 type htmlprinter struct {
 	ReadFile
 
-	iota     int
-	w        io.Writer
-	dupMutex sync.Mutex
-	dupls    [][][]*syntax.Node
+	iota      int
+	w         io.Writer
+	threshold int
+	dupMutex  sync.Mutex
+	dupls     [][][]*syntax.Node
 }
 
 //nolint:ireturn // Printer interface is appropriate return type for factory function
-func NewHTML(w io.Writer, fread ReadFile) Printer {
-	return &htmlprinter{w: w, ReadFile: fread, dupls: make([][][]*syntax.Node, 0)}
+func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
+	thresh := 15
+	if len(threshold) > 0 {
+		thresh = threshold[0]
+	}
+	return &htmlprinter{w: w, ReadFile: fread, threshold: thresh, dupls: make([][][]*syntax.Node, 0)}
 }
 
 func (p *htmlprinter) PrintHeader() error {
-	_, err := fmt.Fprint(p.w, `<!DOCTYPE html>
+	_, err := fmt.Fprintf(p.w, `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8"/>
@@ -37,10 +42,17 @@ func (p *htmlprinter) PrintHeader() error {
 		border: 1px solid #E2E2E2;
 		padding: 1ex;
 	}
+	.meta {
+		background-color: #f0f0f0;
+		padding: 1ex;
+		margin-bottom: 1em;
+		border: 1px solid #ccc;
+	}
 </style>
 </head>
 <body>
-`)
+<div class="meta"><strong>Threshold:</strong> %d tokens</div>
+`, p.threshold)
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
