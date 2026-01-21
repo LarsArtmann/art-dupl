@@ -44,7 +44,7 @@ var _ = Describe("Filter Features", func() {
 
 	AfterEach(func() {
 		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./bdd/art-dupl-filter_features-test")
+		_ = os.Remove("./art-dupl-filter_features-test")
 	})
 
 	Context("When filtering generated code", func() {
@@ -74,12 +74,12 @@ type User struct {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with filter-generated flag
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--filter-generated", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--filter-generated", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -114,12 +114,12 @@ func Render() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run default (templ should be filtered)
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -142,12 +142,12 @@ type Query struct {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with filter-generated but include-sqlc
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--filter-generated", "--include-sqlc", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--filter-generated", "--include-sqlc", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -169,12 +169,12 @@ func Component() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include-templ
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--include-templ", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--include-templ", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -205,12 +205,12 @@ func exclude() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include pattern for pkg1
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--include-pattern", "pkg1/*", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--include-pattern", "pkg1/*", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -236,12 +236,12 @@ func two() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with multiple include patterns
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--include-pattern", "pkg1/*", "--include-pattern", "pkg2/*", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--include-pattern", "pkg1/*", "--include-pattern", "pkg2/*", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -269,12 +269,12 @@ func discard() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with exclude pattern for pkg2
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--exclude-pattern", "pkg2/*", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--exclude-pattern", "pkg2/*", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -298,12 +298,12 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include and exclude - include should take precedence
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--include-pattern", "specific/*", "--exclude-pattern", "*/file.go", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--include-pattern", "specific/*", "--exclude-pattern", "*/file.go", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -333,12 +333,12 @@ func duplicate() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run without vendor flag (should exclude vendor)
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -365,12 +365,12 @@ func vendorFunc() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-filter_features-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-filter_features-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with vendor flag
-			cmd = exec.Command("./bdd/art-dupl-filter_features-test", tempDir, "--vendor", "--threshold", "10")
+			cmd = exec.Command("./art-dupl-filter_features-test", tempDir, "--vendor", "--threshold", "10")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 

@@ -33,10 +33,10 @@ var _ = Describe("Error Handling", func() {
 
 	BeforeEach(func() {
 		// Build art-dupl binary
-		cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-error_handling-test", "./cmd/art-dupl/main.go")
+		cmd := exec.Command("go", "build", "-o", "./art-dupl-error_handling-test", "../cmd/art-dupl/main.go")
 		err := cmd.Run()
 		Expect(err).NotTo(HaveOccurred())
-		binaryPath = "./bdd/art-dupl-error_handling-test"
+		binaryPath = "./art-dupl-error_handling-test"
 	})
 
 	AfterEach(func() {

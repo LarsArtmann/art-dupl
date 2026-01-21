@@ -45,7 +45,7 @@ var _ = Describe("Sorting Functionality", func() {
 
 	AfterEach(func() {
 		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./bdd/art-dupl-sorting-test")
+		_ = os.Remove("./art-dupl-sorting-test")
 	})
 
 	Context("When sorting by size", func() {
@@ -116,12 +116,12 @@ func processItem(data string, index int) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-sorting-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with default sorting (size)
-			cmd = exec.Command("./bdd/art-dupl-sorting-test", tempDir, "--threshold", "15", "--sort", "size")
+			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "15", "--sort", "size")
 			output, err := cmd.CombinedOutput()
 			// Print debug info on error
 			if err != nil {
@@ -156,12 +156,12 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-sorting-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with size sorting
-			cmd = exec.Command("./bdd/art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "size")
+			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "size")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("size1.go"))
@@ -200,12 +200,12 @@ func lessCommonFunction() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-sorting-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with occurrence sorting
-			cmd = exec.Command("./bdd/art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "occurrence")
+			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "occurrence")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -248,12 +248,12 @@ func functionB() error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-sorting-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with hash sorting
-			cmd = exec.Command("./bdd/art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "hash")
+			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "hash")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -278,12 +278,12 @@ func hello() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-sorting-test", "./cmd/art-dupl/main.go")
+			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid sort option - should default to size
-			cmd = exec.Command("./bdd/art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "invalid")
+			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "invalid")
 			output, err := cmd.CombinedOutput()
 
 			// Should handle the error gracefully
