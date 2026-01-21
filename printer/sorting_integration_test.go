@@ -122,7 +122,7 @@ func anotherLargeFunction() {
 				constructor func(io.Writer, ReadFile) Printer
 			}{
 				{"TextPrinter", NewText},
-				{"HTMLPrinter", NewHTML},
+				{"HTMLPrinter", func(w io.Writer, fread ReadFile) Printer { return NewHTML(w, fread) }},
 				{"PlumbingPrinter", NewPlumbing},
 			}
 

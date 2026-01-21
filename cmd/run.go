@@ -152,7 +152,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("analysis failed for paths %v: %w", mergedConfig.Paths, err)
 	}
 
-	p := createPrinter(mergedConfig.OutputFormat)(os.Stdout, os.ReadFile)
+	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(filesCount)
@@ -176,10 +176,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 }
 
 // createPrinter returns the appropriate printer based on output format.
-func createPrinter(outputFormat config.OutputFormat) func(io.Writer, printer.ReadFile) printer.Printer {
+func createPrinter(outputFormat config.OutputFormat, threshold int) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
-		return printer.NewHTML
+		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
+			return printer.NewHTML(w, fread, threshold)
+		}
 	case config.OutputFormatPlumbing:
 		return printer.NewPlumbing
 	case config.OutputFormatJSON:
@@ -467,7 +469,7 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 			}
 		}()
 
-		p := createPrinter(format)(file, os.ReadFile)
+		p := createPrinter(format, cfg.Threshold)(file, os.ReadFile)
 
 		if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 			jsonPrinter.SetFilesCount(filesCount)
