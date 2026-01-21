@@ -158,7 +158,17 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		jsonPrinter.SetFilesCount(filesCount)
 	}
 
-	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat); err != nil {
+	// Convert detection methods to comma-separated string
+	detectionMethodStr := ""
+	if len(mergedConfig.DetectionMethods) > 0 {
+		methods := make([]string, len(mergedConfig.DetectionMethods))
+		for i, dm := range mergedConfig.DetectionMethods {
+			methods[i] = dm.String()
+		}
+		detectionMethodStr = strings.Join(methods, ",")
+	}
+
+	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat, detectionMethodStr); err != nil {
 		return fmt.Errorf("failed to print duplicates (sortBy: %s, threshold: %d): %w", sortBy, mergedConfig.Threshold, err)
 	}
 
@@ -335,7 +345,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 }
 
 // printDupls prints duplicates using the specified printer.
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat) error {
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat, detectionMethod string) error {
 	// Build groups from matches
 	groups := printer.BuildCloneGroups(duplChan)
 
@@ -368,7 +378,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	}
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		if err := jsonPrinter.OutputJSON(threshold, sortBy); err != nil {
+		if err := jsonPrinter.OutputJSON(threshold, sortBy, detectionMethod); err != nil {
 			return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w", threshold, sortBy.String(), err)
 		}
 	}
@@ -408,6 +418,16 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 	formats := config.AllOutputFormats()
 	sortByEnum := printer.SortBy(sortBy)
 
+	// Convert detection methods to comma-separated string
+	detectionMethodStr := ""
+	if len(cfg.DetectionMethods) > 0 {
+		methods := make([]string, len(cfg.DetectionMethods))
+		for i, dm := range cfg.DetectionMethods {
+			methods[i] = dm.String()
+		}
+		detectionMethodStr = strings.Join(methods, ",")
+	}
+
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
 		//nolint:gosec //G304 filename is constructed from controlled config output dir and format
@@ -436,7 +456,7 @@ func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
 			}
 		}()
 
-		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, cfg.OutputFormat); err != nil {
+		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, cfg.OutputFormat, detectionMethodStr); err != nil {
 			return fmt.Errorf("failed to print %s format: %w", format, err)
 		}
 

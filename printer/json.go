@@ -14,12 +14,13 @@ import (
 
 // JSONOutput represents the structured JSON output.
 type JSONOutput struct {
-	Version       string       `json:"version"`
-	Timestamp     time.Time    `json:"timestamp"`
-	Threshold     int          `json:"threshold"`
-	FilesAnalyzed int          `json:"files_analyzed"`
-	CloneGroups   []CloneGroup `json:"clone_groups"`
-	Summary       Summary      `json:"summary"`
+	Version        string       `json:"version"`
+	Timestamp      time.Time    `json:"timestamp"`
+	Threshold      int          `json:"threshold"`
+	FilesAnalyzed  int          `json:"files_analyzed"`
+	DetectionMethod string       `json:"detection_method,omitempty"`
+	CloneGroups    []CloneGroup `json:"clone_groups"`
+	Summary        Summary      `json:"summary"`
 }
 
 // CloneGroup represents a group of duplicate code fragments.
@@ -181,16 +182,17 @@ func (*JSONPrinter) PrintFooter() error {
 }
 
 // OutputJSON generates the complete JSON output.
-func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy) error {
+func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod string) error {
 	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
 
 	output := JSONOutput{
-		Version:       "1.0",
-		Timestamp:     time.Now().UTC(),
-		Threshold:     threshold,
-		FilesAnalyzed: p.filesCount,
-		CloneGroups:   p.cloneGroups,
+		Version:        "1.0",
+		Timestamp:      time.Now().UTC(),
+		Threshold:      threshold,
+		FilesAnalyzed:  p.filesCount,
+		DetectionMethod: detectionMethod,
+		CloneGroups:    p.cloneGroups,
 		Summary: Summary{
 			TotalCloneGroups: len(p.cloneGroups),
 			TotalClones:      p.totalClones,

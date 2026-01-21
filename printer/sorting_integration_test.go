@@ -99,7 +99,7 @@ func anotherLargeFunction() {
 				}
 
 				// Verify sorting by calling OutputJSON
-				err = printer.(*JSONPrinter).OutputJSON(15, tc.sortBy)
+				err = printer.(*JSONPrinter).OutputJSON(15, tc.sortBy, "")
 				if err != nil {
 					t.Fatalf("JSONPrinter.OutputJSON failed: %v", err)
 				}

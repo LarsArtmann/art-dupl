@@ -97,7 +97,7 @@ func foo() {
 	jsonPrinter.totalClones = 1
 	jsonPrinter.filesCount = 1
 
-	err := jsonPrinter.OutputJSON(15, "size")
+	err := jsonPrinter.OutputJSON(15, "size", "")
 	if err != nil {
 		t.Fatalf("OutputJSON failed: %v", err)
 	}
@@ -125,7 +125,7 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
-	err = jsonPrinter.OutputJSON(15, "size")
+	err = jsonPrinter.OutputJSON(15, "size", "")
 	if err != nil {
 		t.Fatalf("OutputJSON with empty data failed: %v", err)
 	}
