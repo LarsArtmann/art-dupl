@@ -634,7 +634,7 @@ func (s *Service) processInternal(data string) error {
 
 			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
 			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.Output()                                                           // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			output, err := cmd.Output()                                                       // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response
