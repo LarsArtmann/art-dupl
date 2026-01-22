@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
@@ -63,7 +64,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 			return nil
 		})
 		if err != nil {
-			return nil, fmt.Errorf("error walking path %s: %w", path, err)
+			return nil, errors.WrapFile(err, path, "walking path")
 		}
 	}
 
@@ -74,12 +75,12 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading sqlc config %s: %w", configPath, err)
+		return nil, errors.WrapFile(err, configPath, "reading sqlc config")
 	}
 
 	var config SQLCConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("error parsing sqlc config %s: %w", configPath, err)
+		return nil, errors.WrapConfig(err, "parsing sqlc config")
 	}
 
 	return &config, nil

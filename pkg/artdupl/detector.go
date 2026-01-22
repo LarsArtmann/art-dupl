@@ -9,6 +9,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
+	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -36,7 +37,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	// Validate options
 	if err := ValidateOptions(opts); err != nil {
-		return nil, fmt.Errorf("invalid options: %w", err)
+		return nil, errors.WrapConfig(err, "invalid options")
 	}
 
 	// Set default file reader if not provided
@@ -65,19 +66,19 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, fmt.Errorf("input validation failed for %d files: %w", len(files), err)
+		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for %d files", len(files)))
 	}
 
 	// Process files and build analysis pipeline
 	data, _, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
-		return nil, fmt.Errorf("analysis pipeline construction failed for %d files: %w", len(files), err)
+		return nil, errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("analysis pipeline construction failed for %d files", len(files)))
 	}
 
 	// Run detection based on configured methods
 	cloneGroups, err := d.runDetection(ctx, data)
 	if err != nil {
-		return nil, fmt.Errorf("detection failed: %w", err)
+		return nil, errors.Wrap(err, errors.DetectionError, "detection failed")
 	}
 
 	// Build and return result
@@ -90,7 +91,7 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, fmt.Errorf("input validation failed for streaming with %d files: %w", len(files), err)
+		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for streaming with %d files", len(files)))
 	}
 
 	// Create output channel

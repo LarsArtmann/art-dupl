@@ -17,10 +17,10 @@ type Logger interface {
 
 // Config holds logging configuration.
 type Config struct {
-	Level      string
-	Output     io.Writer
+	Level        string
+	Output       io.Writer
 	ReportCaller bool
-	Prefix     string
+	Prefix       string
 }
 
 // DefaultConfig returns sensible default configuration.

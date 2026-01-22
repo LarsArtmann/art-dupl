@@ -58,6 +58,18 @@ func TestErrorTypes(t *testing.T) {
 		{"InternalError", func() *DuplError {
 			return NewInternalError("", nil)
 		}, InternalError},
+		{"DetectionError", func() *DuplError {
+			return NewDetectionError("", nil)
+		}, DetectionError},
+		{"AnalysisError", func() *DuplError {
+			return NewAnalysisError("", nil)
+		}, AnalysisError},
+		{"FileError", func() *DuplError {
+			return NewFileError("", "", nil)
+		}, FileError},
+		{"TimeoutError", func() *DuplError {
+			return NewTimeoutError("", nil)
+		}, TimeoutError},
 	}
 
 	for _, tc := range tests {
@@ -94,5 +106,128 @@ func TestIs(t *testing.T) {
 	standardErr := errors.New("standard error")
 	if Is(standardErr, ParseError) {
 		t.Error("Should not match standard error")
+	}
+}
+
+func TestWrap(t *testing.T) {
+	cause := errors.New("cause error")
+
+	t.Run("Wrap creates new error", func(t *testing.T) {
+		wrapped := Wrap(cause, InternalError, "wrapping message")
+		if wrapped == nil {
+			t.Fatal("Wrapped error should not be nil")
+		}
+		if !errors.Is(wrapped, cause) {
+			t.Error("Wrapped error should contain cause")
+		}
+		if !Is(wrapped, InternalError) {
+			t.Error("Wrapped error should be InternalError type")
+		}
+	})
+
+	t.Run("Wrap nil returns nil", func(t *testing.T) {
+		wrapped := Wrap(nil, InternalError, "message")
+		if wrapped != nil {
+			t.Error("Wrapping nil should return nil")
+		}
+	})
+
+	t.Run("Wrap does not double-wrap DuplError", func(t *testing.T) {
+		duplErr := NewInternalError("original", nil)
+		wrapped := Wrap(duplErr, ConfigError, "wrapping")
+		if wrapped != duplErr {
+			t.Error("Should not re-wrap DuplError")
+		}
+	})
+}
+
+func TestWrapf(t *testing.T) {
+	cause := errors.New("cause error")
+
+	t.Run("Wrapf with format", func(t *testing.T) {
+		wrapped := Wrapf(cause, InternalError, "failed to process %d items", 42)
+		if wrapped == nil {
+			t.Fatal("Wrapped error should not be nil")
+		}
+		if !errors.Is(wrapped, cause) {
+			t.Error("Wrapped error should contain cause")
+		}
+	})
+}
+
+func TestWrapIO(t *testing.T) {
+	cause := errors.New("read error")
+
+	t.Run("WrapIO creates IOError", func(t *testing.T) {
+		wrapped := WrapIO(cause, "test.go", "reading file")
+		if !Is(wrapped, IOError) {
+			t.Error("Should be IOError type")
+		}
+	})
+
+	t.Run("WrapIO does not double-wrap", func(t *testing.T) {
+		ioErr := NewIOError("test.go", "original", nil)
+		wrapped := WrapIO(ioErr, "test.go", "new operation")
+		if wrapped != ioErr {
+			t.Error("Should not re-wrap IOError")
+		}
+	})
+}
+
+func TestWrapConfig(t *testing.T) {
+	cause := errors.New("parse error")
+
+	t.Run("WrapConfig creates ConfigError", func(t *testing.T) {
+		wrapped := WrapConfig(cause, "loading config")
+		if !Is(wrapped, ConfigError) {
+			t.Error("Should be ConfigError type")
+		}
+	})
+}
+
+func TestWrapValidation(t *testing.T) {
+	cause := errors.New("invalid value")
+
+	t.Run("WrapValidation creates ValidationError", func(t *testing.T) {
+		wrapped := WrapValidation(cause, "field validation")
+		if !Is(wrapped, ValidationError) {
+			t.Error("Should be ValidationError type")
+		}
+	})
+}
+
+func TestWrapFile(t *testing.T) {
+	cause := errors.New("not found")
+
+	t.Run("WrapFile creates FileError", func(t *testing.T) {
+		wrapped := WrapFile(cause, "test.go", "stat")
+		if !Is(wrapped, FileError) {
+			t.Error("Should be FileError type")
+		}
+	})
+}
+
+func TestErrorTypeString(t *testing.T) {
+	tests := []struct {
+		errorType ErrorType
+		expected  string
+	}{
+		{ParseError, "parse"},
+		{ConfigError, "config"},
+		{IOError, "io"},
+		{ValidationError, "validation"},
+		{InternalError, "internal"},
+		{DetectionError, "detection"},
+		{AnalysisError, "analysis"},
+		{FileError, "file"},
+		{TimeoutError, "timeout"},
+	}
+
+	for _, tc := range tests {
+		t.Run(string(tc.errorType), func(t *testing.T) {
+			if tc.errorType.String() != tc.expected {
+				t.Errorf("Expected %s, got %s", tc.expected, tc.errorType.String())
+			}
+		})
 	}
 }

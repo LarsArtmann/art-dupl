@@ -38,7 +38,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	// Validate sorting criteria
 	if _, err := printer.ParseSortBy(sortBy); err != nil {
-		return fmt.Errorf("invalid --sort value %q: %w", sortBy, err)
+		return errors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
 	}
 
 	allFlag, _ := cmd.Flags().GetBool("all")
@@ -56,7 +56,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return fmt.Errorf("error loading config from file %q: %w", configFile, err)
+			return errors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
 		}
 	}
 
@@ -69,7 +69,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return fmt.Errorf("invalid detection methods %q: %w", detectionMethods, err)
+		return errors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
 	}
 	appConfig.DetectionMethods = parsedMethods
 
@@ -101,7 +101,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := time.ParseDuration(timeoutStr)
 		if err != nil {
-			return fmt.Errorf("invalid timeout format %q (use '30m', '1h', etc.): %w", timeoutStr, err)
+			return errors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
 		}
 		appConfig.Timeout = int(duration.Seconds())
 	}
@@ -130,7 +130,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return fmt.Errorf("configuration validation failed (paths: %v): %w", mergedConfig.Paths, err)
+		return errors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
 	if allFlag {
@@ -150,7 +150,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// For now, timeout config is stored but not fully implemented in analysis
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
-		return fmt.Errorf("analysis failed for paths %v: %w", mergedConfig.Paths, err)
+		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
@@ -170,7 +170,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat, detectionMethodStr); err != nil {
-		return fmt.Errorf("failed to print duplicates (sortBy: %s, threshold: %d): %w", sortBy, mergedConfig.Threshold, err)
+		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print duplicates (sortBy: %s, threshold: %d)", sortBy, mergedConfig.Threshold))
 	}
 
 	return nil
@@ -345,7 +345,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 
 	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to build suffix tree for paths %v: %w", paths, err)
+		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
 
 	multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
@@ -385,7 +385,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	printer.SortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
 	if err := p.PrintHeader(); err != nil {
-		return fmt.Errorf("failed to print header (sortBy: %s, threshold: %d): %w", sortBy.String(), threshold, err)
+		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print header (sortBy: %s, threshold: %d)", sortBy.String(), threshold))
 	}
 
 	for _, k := range keys {
@@ -395,7 +395,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return fmt.Errorf("failed to print clones for hash %s (sortBy: %s): %w", k, sortBy.String(), err)
+				return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
 			}
 		}
 	}
