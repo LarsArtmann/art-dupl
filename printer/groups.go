@@ -39,7 +39,7 @@ func SortCloneGroupKeys(keys []string, sortBy SortBy, groups map[string][][]*syn
 	switch sortBy {
 	case SortByOccurrence:
 		sort.Slice(keys, func(i, j int) bool {
-			return uniqueCounts[keys[i]] > uniqueCounts[keys[j]]
+			return len(groups[keys[i]]) > len(groups[keys[j]])
 		})
 	case SortByHash:
 		sort.Strings(keys)
