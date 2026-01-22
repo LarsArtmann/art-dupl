@@ -49,8 +49,7 @@ var _ = Describe("Error Handling", func() {
 			// Try to analyze non-existent directory
 			nonExistentPath := "/tmp/art-dupl-test-nonexistent-xyz123"
 
-			cmd := exec.Command(binaryPath, nonExistentPath)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl(nonExistentPath)
 
 			// Should fail gracefully with error message
 			Expect(err).To(HaveOccurred(), "Should error when path doesn't exist")
@@ -66,8 +65,7 @@ var _ = Describe("Error Handling", func() {
 			// Try to analyze non-existent file
 			nonExistentFile := "/tmp/art-dupl-test-nonexistent-file.go"
 
-			cmd := exec.Command(binaryPath, nonExistentFile)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl(nonExistentFile)
 
 			// Should fail gracefully
 			Expect(err).To(HaveOccurred())
