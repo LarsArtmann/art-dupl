@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -11,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for All Format Generation
@@ -32,26 +31,22 @@ func TestAllFormatGeneration(t *testing.T) {
 
 var _ = Describe("All Format Generation (--all flag)", func() {
 	var (
-		tempDir       string
-		outputDir     string
-		fileProcessor *utils.FileProcessor
+		setup     *testutil.BDDTestSetup
+		outputDir string
 	)
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-all-format-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 
-		outputDir = filepath.Join(tempDir, "output")
+		outputDir = filepath.Join(setup.TmpDir, "output")
 		err = os.MkdirAll(outputDir, 0o755)
 		Expect(err).NotTo(HaveOccurred())
-
-		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./art-dupl-all_format_generation-test")
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When generating all formats with default settings", func() {
@@ -68,17 +63,11 @@ func process(data string) error {
 	return nil
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"file1.go", "file2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check that output directory contains expected files
@@ -113,17 +102,11 @@ func process(data string) error {
 
 func duplicate() {}`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"meta1.go", "meta2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"meta1.go", "meta2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check JSON files for metadata
@@ -156,20 +139,14 @@ func duplicate() {}`
 
 func test() {}`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"test1.go", "test2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Specify a non-existent output directory
-			customOutputDir := filepath.Join(tempDir, "custom", "nested", "output")
+			customOutputDir := filepath.Join(setup.TmpDir, "custom", "nested", "output")
 
 			// Run with --all flag and custom output directory
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", customOutputDir, "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", customOutputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify directory was created
@@ -188,12 +165,7 @@ func test() {}`
 
 func test() {}`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"test1.go", "test2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Output directory already exists
@@ -201,8 +173,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag using existing directory
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created
@@ -221,17 +192,11 @@ func multiDetect() string {
 	return "test"
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"multi1.go", "multi2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"multi1.go", "multi2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and multiple detection methods
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--detection-methods", "hash,art-dupl", "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--detection-methods", "hash,art-dupl", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check for files from both methods
@@ -284,17 +249,11 @@ func multiDetect() string {
 
 func small() {}`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"small1.go", "small2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and high threshold
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "100")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "100")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even if few/no clones
@@ -315,19 +274,13 @@ func unique1() {}`
 
 func unique2() {}`
 
-			err := fileProcessor.WriteTextFile("unique1.go", uniqueCode1)
+			err := setup.CreateTestFile("unique1.go", uniqueCode1)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("unique2.go", uniqueCode2)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-all_format_generation-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err = setup.CreateTestFile("unique2.go", uniqueCode2)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			cmd = exec.Command("./art-dupl-all_format_generation-test", tempDir, "--all", "--output-dir", outputDir, "--threshold", "10")
-			_, err = cmd.CombinedOutput()
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even with no duplicates
