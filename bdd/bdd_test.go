@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -13,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for art-dupl
@@ -34,23 +33,15 @@ func TestBDD(t *testing.T) {
 }
 
 var _ = Describe("Basic User Workflows", func() {
-	var (
-		tempDir       string
-		testFiles     map[string]string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		// Create temporary directory for test files
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 
-		// Initialize file processor
-		fileProcessor = utils.NewFileProcessor(tempDir)
-
 		// Define test Go files with intentional duplicates
-		testFiles = map[string]string{
+		testFiles := map[string]string{
 			"duplicate1.go": `package main
 
 import (
@@ -135,14 +126,12 @@ func uniqueFunction(ctx context.Context) error {
 		}
 
 		// Write test files using unified processor
-		fileProcessor = utils.NewFileProcessor(tempDir)
-		err = fileProcessor.WriteTestFiles(testFiles)
+		err := setup.CreateTestFiles(testFiles)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		// Clean up temporary directory
-		_ = os.RemoveAll(tempDir)
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When analyzing code for duplicates", func() {
@@ -250,15 +239,10 @@ func (v *Validator) lessCommon(id int) error {
 		})
 
 		It("should respect threshold settings to filter noise", func() {
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err := cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
-
 			// Run with high threshold
-			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--threshold", "50") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "50",
+			})
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure

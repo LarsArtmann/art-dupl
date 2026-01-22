@@ -261,17 +261,14 @@ func hello() {
 	println("hello")
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"test1.go", "test2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid sort option - should default to size
-			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "invalid")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "5",
+				"sort":      "invalid",
+			})
 
 			// Should handle the error gracefully
 			// Either by showing error message or defaulting to size sorting
