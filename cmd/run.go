@@ -13,6 +13,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"

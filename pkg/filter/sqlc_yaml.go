@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
