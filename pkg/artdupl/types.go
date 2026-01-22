@@ -3,6 +3,8 @@ package artdupl
 import (
 	"context"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // DetectionMethod represents different code duplication detection algorithms.
@@ -114,13 +116,8 @@ type Progress struct {
 // FileReaderFunc represents a function that can read file contents.
 type FileReaderFunc func(filename string) ([]byte, error)
 
-// Logger interface for logging operations.
-type Logger interface {
-	Debug(msg string, args ...any)
-	Info(msg string, args ...any)
-	Warn(msg string, args ...any)
-	Error(msg string, args ...any)
-}
+// Logger is an alias to the logger package's Logger interface.
+type Logger = logger.Logger
 
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
@@ -135,7 +132,7 @@ func DefaultOptions() *Options {
 		MaxClonesPerGroup: 50,
 		ProgressCallback:  nil,
 		FileReader:        readFileDefault,
-		Logger:            &defaultLogger{},
+		Logger:            logger.Default,
 	}
 }
 
@@ -144,14 +141,6 @@ var readFileDefault = func(filename string) ([]byte, error) { //nolint:gocheckno
 	// This will be implemented with actual file reading
 	return nil, nil
 }
-
-// defaultLogger provides basic logging to stderr.
-type defaultLogger struct{}
-
-func (l *defaultLogger) Debug(msg string, args ...any) {}
-func (l *defaultLogger) Info(msg string, args ...any)  {}
-func (l *defaultLogger) Warn(msg string, args ...any)  {}
-func (l *defaultLogger) Error(msg string, args ...any) {}
 
 // ValidateOptions checks if the provided options are valid.
 func ValidateOptions(opts *Options) error {

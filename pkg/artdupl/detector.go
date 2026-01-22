@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -45,7 +46,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	// Set default logger if not provided
 	if opts.Logger == nil {
-		opts.Logger = &defaultLogger{}
+		opts.Logger = logger.Default
 	}
 
 	// Convert SDK options to internal config

@@ -6,19 +6,20 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
 
 // SQLCConfig represents a sqlc.yaml configuration file structure.
 type SQLCConfig struct {
-	Version string  `yaml:"version"`
+	Version string       `yaml:"version"`
 	SQL     []SQLCEngine `yaml:"sql"`
 }
 
 // SQLCEngine represents a single SQL engine configuration in sqlc.yaml.
 type SQLCEngine struct {
-	Schema string       `yaml:"schema"`
-	Engine string       `yaml:"engine"`
+	Schema string        `yaml:"schema"`
+	Engine string        `yaml:"engine"`
 	Gen    SQLCGenConfig `yaml:"gen"`
 }
 
@@ -61,7 +62,6 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 
 			return nil
 		})
-
 		if err != nil {
 			return nil, fmt.Errorf("error walking path %s: %w", path, err)
 		}
@@ -97,7 +97,7 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 		config, err := ParseSQLCConfig(configPath)
 		if err != nil {
 			// Log but continue - one bad config shouldn't stop everything
-			fmt.Fprintf(os.Stderr, "warning: failed to parse %s: %v\n", configPath, err)
+			logger.Default.Warn("failed to parse sqlc config", "file", configPath, "err", err)
 			continue
 		}
 

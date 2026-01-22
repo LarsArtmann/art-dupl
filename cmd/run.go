@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -322,13 +323,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 	// If --filter-generated is set, also filter sqlc files (unless --include-sqlc is set)
 	if cfg.FilterGenerated && !cfg.IncludeSQLC {
 		// sqlc filtering may already be enabled by auto-detection, avoid duplicate
-		alreadyFilteringSQLC := false
-		for _, opt := range filterOptions {
-			if opt == filter.FilterSQLC {
-				alreadyFilteringSQLC = true
-				break
-			}
-		}
+		alreadyFilteringSQLC := slices.Contains(filterOptions, filter.FilterSQLC)
 		if !alreadyFilteringSQLC {
 			filterOptions = append(filterOptions, filter.FilterSQLC)
 		}

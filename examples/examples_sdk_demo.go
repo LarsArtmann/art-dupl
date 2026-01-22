@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 func RunSDKDemo() {
@@ -135,7 +136,7 @@ func configExample() {
 		MaxFileSize:      1024 * 1024, // 1MB
 		MaxWorkers:       2,
 		Timeout:          30 * time.Second,
-		Logger:           &verboseLogger{},
+		Logger:           logger.NewLogger(&logger.Config{Level: "debug"}),
 	}
 
 	detector, err := artdupl.NewDetector(opts)
@@ -204,23 +205,4 @@ func errorExample() {
 			fmt.Printf("❌ Expected error but got none\n")
 		}
 	}
-}
-
-// verboseLogger implements artdupl.Logger with verbose output.
-type verboseLogger struct{}
-
-func (l *verboseLogger) Debug(msg string, args ...any) {
-	fmt.Printf("[DEBUG] %s\n", fmt.Sprintf(msg, args...))
-}
-
-func (l *verboseLogger) Info(msg string, args ...any) {
-	fmt.Printf("[INFO] %s\n", fmt.Sprintf(msg, args...))
-}
-
-func (l *verboseLogger) Warn(msg string, args ...any) {
-	fmt.Printf("[WARN] %s\n", fmt.Sprintf(msg, args...))
-}
-
-func (l *verboseLogger) Error(msg string, args ...any) {
-	fmt.Printf("[ERROR] %s\n", fmt.Sprintf(msg, args...))
 }

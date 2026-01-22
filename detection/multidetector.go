@@ -1,10 +1,9 @@
 package detection
 
 import (
-	"fmt"
-
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/hash"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -86,6 +85,6 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 // logVerbose prints verbose output if enabled.
 func (md *MultiDetector) logVerbose(message string) {
 	if md.verbose {
-		fmt.Printf("%s\n", message) //nolint:forbidigo // Verbose CLI output
+		logger.Default.Info(message)
 	}
 }

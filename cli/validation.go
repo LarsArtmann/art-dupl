@@ -4,6 +4,8 @@ package cli
 import (
 	"fmt"
 	"os"
+
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // ExitIfBothSet prints error and exits if both flags are true.
@@ -11,7 +13,7 @@ import (
 func ExitIfBothSet(flag1, flag2 *bool, flag1Name, flag2Name string) int {
 	if flag1 != nil && *flag1 && flag2 != nil && *flag2 {
 		names := fmt.Sprintf("%s and %s", flag1Name, flag2Name)
-		fmt.Fprintf(os.Stderr, "error: you can have either %s output\n", names)
+		logger.Default.Error("you can have either output", "format", names)
 		os.Exit(1)
 		return 1
 	}
