@@ -10,6 +10,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for Error Handling
