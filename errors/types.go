@@ -16,6 +16,10 @@ const (
 	IOError         ErrorType = "io"
 	ValidationError ErrorType = "validation"
 	InternalError   ErrorType = "internal"
+	DetectionError  ErrorType = "detection"
+	AnalysisError   ErrorType = "analysis"
+	FileError       ErrorType = "file"
+	TimeoutError    ErrorType = "timeout"
 )
 
 // DuplError is the main error type with rich context.
@@ -104,6 +108,32 @@ func NewInternalError(msg string, cause error) *DuplError {
 	return newError(InternalError, msg, cause)
 }
 
+// NewDetectionError creates a new detection error.
+func NewDetectionError(msg string, cause error) *DuplError {
+	return newError(DetectionError, msg, cause)
+}
+
+// NewAnalysisError creates a new analysis error.
+func NewAnalysisError(msg string, cause error) *DuplError {
+	return newError(AnalysisError, msg, cause)
+}
+
+// NewFileError creates a new file error with context.
+func NewFileError(file string, msg string, cause error) *DuplError {
+	return &DuplError{
+		Type:    FileError,
+		Message: msg,
+		File:    file,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
+}
+
+// NewTimeoutError creates a new timeout error.
+func NewTimeoutError(msg string, cause error) *DuplError {
+	return newError(TimeoutError, msg, cause)
+}
+
 // Error implements the error interface.
 func (e *DuplError) Error() string {
 	if e.File != "" {
@@ -124,4 +154,114 @@ func Is(err error, errorType ErrorType) bool {
 		return duplErr.Type == errorType
 	}
 	return false
+}
+
+// Wrap wraps an error with additional context using the specified error type.
+// If the cause is already a DuplError, it returns the original error.
+func Wrap(err error, errorType ErrorType, msg string) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already a DuplError
+	var duplErr *DuplError
+	if errors.As(err, &duplErr) {
+		return err
+	}
+
+	return &DuplError{
+		Type:    errorType,
+		Message: msg,
+		Cause:   err,
+		Stack:   string(debug.Stack()),
+	}
+}
+
+// Wrapf wraps an error with formatted context using the specified error type.
+func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already a DuplError
+	var duplErr *DuplError
+	if errors.As(err, &duplErr) {
+		return err
+	}
+
+	return &DuplError{
+		Type:    errorType,
+		Message: fmt.Sprintf(format, args...),
+		Cause:   err,
+		Stack:   string(debug.Stack()),
+	}
+}
+
+// WrapIO wraps an error as an IOError with file context.
+func WrapIO(err error, file, operation string) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already an IOError
+	if Is(err, IOError) {
+		return err
+	}
+
+	return NewIOError(file, operation, err)
+}
+
+// WrapConfig wraps an error as a ConfigError.
+func WrapConfig(err error, context string) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already a ConfigError
+	if Is(err, ConfigError) {
+		return err
+	}
+
+	msg := context
+	if err != nil {
+		msg += ": " + err.Error()
+	}
+	return NewConfigError(msg, err)
+}
+
+// WrapValidation wraps an error as a ValidationError.
+func WrapValidation(err error, context string) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already a ValidationError
+	if Is(err, ValidationError) {
+		return err
+	}
+
+	msg := context
+	if err != nil {
+		msg += ": " + err.Error()
+	}
+	return NewValidationError(msg, err)
+}
+
+// WrapFile wraps an error as a FileError with operation context.
+func WrapFile(err error, file, operation string) error {
+	if err == nil {
+		return nil
+	}
+
+	// Don't wrap if already a FileError
+	if Is(err, FileError) {
+		return err
+	}
+
+	return NewFileError(file, operation, err)
+}
+
+// GetTypeName returns the string name of an ErrorType.
+func (et ErrorType) String() string {
+	return string(et)
 }
