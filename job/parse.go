@@ -10,7 +10,7 @@ func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
 	// parse AST
 	achan := make(chan *syntax.Node)
 	countChan := make(chan int, 1)
-		go func() {
+	go func() {
 		fileCount := 0
 		for file := range fchan {
 			fileCount++
