@@ -13,8 +13,8 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
-	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/detection"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
@@ -39,7 +39,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	// Validate sorting criteria
 	if _, err := printer.ParseSortBy(sortBy); err != nil {
-		return errors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
+		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
 	}
 
 	allFlag, _ := cmd.Flags().GetBool("all")
@@ -57,7 +57,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return errors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
+			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
 		}
 	}
 
@@ -70,7 +70,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return errors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
+		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
 	}
 	appConfig.DetectionMethods = parsedMethods
 
@@ -102,7 +102,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := time.ParseDuration(timeoutStr)
 		if err != nil {
-			return errors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
+			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
 		}
 		appConfig.Timeout = int(duration.Seconds())
 	}
@@ -131,7 +131,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return errors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
+		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
 	if allFlag {
@@ -151,7 +151,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// For now, timeout config is stored but not fully implemented in analysis
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
-		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
+		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
@@ -171,7 +171,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat, detectionMethodStr); err != nil {
-		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print duplicates (sortBy: %s, threshold: %d)", sortBy, mergedConfig.Threshold))
+		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to print duplicates (sortBy: %s, threshold: %d)", sortBy, mergedConfig.Threshold))
 	}
 
 	return nil
@@ -346,7 +346,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 
 	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if err != nil {
-		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
+		return nil, 0, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
 
 	multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
@@ -386,7 +386,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	printer.SortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
 	if err := p.PrintHeader(); err != nil {
-		return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print header (sortBy: %s, threshold: %d)", sortBy.String(), threshold))
+		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to print header (sortBy: %s, threshold: %d)", sortBy.String(), threshold))
 	}
 
 	for _, k := range keys {
@@ -396,7 +396,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 				jsonPrinter.SetHash(k)
 			}
 			if err := p.PrintClones(uniq, sortBy); err != nil {
-				return errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
+				return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
 			}
 		}
 	}

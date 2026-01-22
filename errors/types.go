@@ -119,7 +119,7 @@ func NewAnalysisError(msg string, cause error) *DuplError {
 }
 
 // NewFileError creates a new file error with context.
-func NewFileError(file string, msg string, cause error) *DuplError {
+func NewFileError(file, msg string, cause error) *DuplError {
 	return &DuplError{
 		Type:    FileError,
 		Message: msg,

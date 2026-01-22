@@ -225,6 +225,7 @@ func lessCommonFunction(id int, name string) error {
 			Expect(lessCommonIndex).ToNot(Equal(-1), "Less common clone should be found")
 			Expect(widespreadIndex).To(BeNumerically("<", lessCommonIndex), "More widespread clone should appear first")
 		})
+
 	})
 
 	Context("When sorting by hash", func() {
