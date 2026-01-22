@@ -32,18 +32,16 @@ func TestErrorHandling(t *testing.T) {
 }
 
 var _ = Describe("Error Handling", func() {
-	var binaryPath string
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		// Build art-dupl binary
-		cmd := exec.Command("go", "build", "-o", "./art-dupl-error_handling-test", "../cmd/art-dupl/main.go")
-		err := cmd.Run()
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-		binaryPath = "./art-dupl-error_handling-test"
 	})
 
 	AfterEach(func() {
-		_ = os.Remove(binaryPath)
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When analyzing non-existent paths", func() {
