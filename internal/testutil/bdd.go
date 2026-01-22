@@ -31,7 +31,7 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	}
 
 	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../../cmd/art-dupl/main.go")
+	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		os.RemoveAll(tmpDir)
@@ -60,7 +60,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	}
 
 	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../../cmd/art-dupl/main.go")
+	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		os.RemoveAll(tmpDir)
@@ -106,7 +106,9 @@ func (s *BDDTestSetup) RunArtDupl(args ...string) ([]byte, error) {
 
 // RunArtDuplOnDir executes art-dupl binary on a specific directory with given arguments.
 func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, error) {
-	s.T.Helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...)
 	return cmd.CombinedOutput()
 }
@@ -118,7 +120,9 @@ func (s *BDDTestSetup) RunArtDuplWithFlags(flags map[string]string) ([]byte, err
 
 // RunArtDuplOnDirWithFlags executes art-dupl on directory with flag map.
 func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]string) ([]byte, error) {
-	s.T.Helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 
 	args := []string{dir}
 	for flag, value := range flags {
@@ -135,7 +139,9 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]str
 
 // RunArtDuplWithStdin executes art-dupl with stdin input.
 func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string) ([]byte, error) {
-	s.T.Helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 
 	args := []string{"--files"}
 	for flag, value := range flags {
@@ -153,11 +159,17 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 
 // RunArtDuplAndVerifyOutput executes art-dupl and verifies it completes successfully.
 func (s *BDDTestSetup) RunArtDuplAndVerifyOutput(args ...string) string {
-	s.T.Helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 
 	output, err := s.RunArtDupl(args...)
 	if err != nil {
-		s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
+		if s.T != nil {
+			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
+		} else {
+			panic(fmt.Sprintf("art-dupl command failed: %v\nOutput: %s", err, string(output)))
+		}
 	}
 
 	return string(output)
@@ -165,11 +177,17 @@ func (s *BDDTestSetup) RunArtDuplAndVerifyOutput(args ...string) string {
 
 // RunArtDuplWithFlagsAndVerify executes art-dupl with flags and verifies success.
 func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) string {
-	s.T.Helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 
 	output, err := s.RunArtDuplWithFlags(flags)
 	if err != nil {
-		s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
+		if s.T != nil {
+			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
+		} else {
+			panic(fmt.Sprintf("art-dupl command failed: %v\nOutput: %s", err, string(output)))
+		}
 	}
 
 	return string(output)

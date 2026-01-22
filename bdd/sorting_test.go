@@ -2,15 +2,13 @@ package bdd
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for Sorting Features
@@ -30,22 +28,16 @@ func TestSorting(t *testing.T) {
 }
 
 var _ = Describe("Sorting Functionality", func() {
-	var (
-		tempDir       string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-sorting-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-
-		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./art-dupl-sorting-test")
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When sorting by size", func() {
