@@ -3,7 +3,6 @@ package bdd
 //nolint:errcheck // Test cleanup code - error returns not critical
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -137,9 +136,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid config
-			cmd := exec.Command(binaryPath, "--config", configFile, ".")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl("--config", configFile, ".")
 			// Should fail gracefully with clear error
 			Expect(err).To(HaveOccurred(), "Should error on invalid config")
 			outputStr := string(output)
@@ -154,9 +151,7 @@ var _ = Describe("Error Handling", func() {
 			// Try to use non-existent config file
 			nonExistentConfig := "/tmp/art-dupl-nonexistent-config.json"
 
-			cmd := exec.Command(binaryPath, "--config", nonExistentConfig, ".")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl("--config", nonExistentConfig, ".")
 			// Should fail gracefully
 			Expect(err).To(HaveOccurred())
 			Expect(string(output)).NotTo(BeEmpty())
@@ -183,9 +178,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid config
-			cmd := exec.Command(binaryPath, "--config", configFile, ".")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl("--config", configFile, ".")
 			// Should handle gracefully (may use defaults or show error)
 			outputStr := string(output)
 			Expect(len(outputStr)).To(BeNumerically(">", 0))
@@ -204,9 +197,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Try to use multiple output format flags
-			cmd := exec.Command(binaryPath, tempDir, "--json", "--html", "--plumbing")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir, "--json", "--html", "--plumbing")
 			// Should handle gracefully (may use first one or show error)
 			Expect(string(output)).ToNot(BeEmpty())
 		})
@@ -222,9 +213,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Use invalid sort option
-			cmd := exec.Command(binaryPath, tempDir, "--sort", "invalid_sort_option")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir, "--sort", "invalid_sort_option")
 			// Should handle gracefully (may default or show error)
 			Expect(string(output)).ToNot(BeEmpty())
 		})
@@ -240,9 +229,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Use invalid detection method
-			cmd := exec.Command(binaryPath, tempDir, "--detection-methods", "invalid_method")
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir, "--detection-methods", "invalid_method")
 			// Should handle gracefully
 			Expect(string(output)).ToNot(BeEmpty())
 		})
@@ -265,9 +252,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on directory
-			cmd := exec.Command(binaryPath, tempDir)
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir)
 			// Restore permissions before cleanup
 			_ = os.Chmod(testFile, 0o644)
 
@@ -296,9 +281,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on parent directory
-			cmd := exec.Command(binaryPath, parentDir)
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(parentDir)
 			// Restore permissions before cleanup
 			_ = os.Chmod(subDir, 0o755)
 
@@ -315,9 +298,7 @@ var _ = Describe("Error Handling", func() {
 			defer os.RemoveAll(tempDir)
 
 			// Run art-dupl on empty directory
-			cmd := exec.Command(binaryPath, tempDir)
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir)
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle empty directory")
 			// Output may be empty or show no files analyzed
@@ -338,9 +319,7 @@ var _ = Describe("Error Handling", func() {
 			}
 
 			// Run art-dupl
-			cmd := exec.Command(binaryPath, tempDir)
-			output, err := cmd.CombinedOutput()
-
+			output, err := setup.RunArtDupl(tempDir)
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle directory with no Go files")
 			Expect(len(output)).To(BeNumerically(">=", 0))
@@ -350,8 +329,7 @@ var _ = Describe("Error Handling", func() {
 	Context("When reading from stdin with invalid input", func() {
 		It("should handle empty stdin gracefully", func() {
 			// Use --files flag with empty stdin
-			cmd := exec.Command(binaryPath, "--files", "--threshold", "10")
-			// Empty stdin
+			output, err := setup.RunArtDupl("--files", "--threshold", "10")
 			cmd.Stdin = strings.NewReader("")
 			output, _ := cmd.CombinedOutput()
 
@@ -362,8 +340,7 @@ var _ = Describe("Error Handling", func() {
 		It("should handle stdin with invalid file paths gracefully", func() {
 			// Use --files flag with invalid file paths
 			invalidPaths := "/nonexistent/file1.go\n/nonexistent/file2.go\n"
-			cmd := exec.Command(binaryPath, "--files", "--threshold", "10")
-			cmd.Stdin = strings.NewReader(invalidPaths)
+			output, err := setup.RunArtDupl("--files", "--threshold", "10")
 			output, _ := cmd.CombinedOutput()
 
 			// Should handle gracefully
