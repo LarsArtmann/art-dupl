@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 func TestJSONPrinter_PrintHeader(t *testing.T) {
@@ -152,21 +152,13 @@ func createMockNodes(t *testing.T) []*syntax.Node {
 	t.Helper()
 	// Create a simple mock node structure
 	// In practice, these would be real AST nodes from parsed Go code
-	nodes := make([]*syntax.Node, 2)
+	nodes := testutil.CreateMockNodes(2, "test.go")
 
-	nodes[0] = &syntax.Node{
-		Type:     golang.FuncDecl,
-		Filename: "test.go",
-		Pos:      10,
-		End:      30,
-	}
-
-	nodes[1] = &syntax.Node{
-		Type:     golang.FuncDecl,
-		Filename: "test.go",
-		Pos:      40,
-		End:      60,
-	}
+	// Adjust positions for specific test requirements
+	nodes[0].Pos = 10
+	nodes[0].End = 30
+	nodes[1].Pos = 40
+	nodes[1].End = 60
 
 	return nodes
 }

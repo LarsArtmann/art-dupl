@@ -1,19 +1,20 @@
 package filtertest
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestSmartFilteringIntegration is an integration test for smart filtering feature.
 func TestSmartFilteringIntegration(t *testing.T) {
 	t.Run("filters sqlc and templ files when filter-generated is set", func(t *testing.T) {
 		// Create temporary test directory
-		tmpDir := t.TempDir()
+		setup := testutil.NewTestFileSetup(t)
 
 		// Create directory structure
 		// tmpDir/
@@ -64,8 +65,7 @@ func Header(title string) templ.Component {
         w.Write([]byte("<header>" + title + "</header>"))
         return nil
     })
-}
-`,
+}`,
 			"service/user.go": `package service
 
 type User struct {
@@ -74,43 +74,38 @@ type User struct {
 
 func NewUser(name string) *User {
     return &User{Name: name}
-}
-`,
+}`,
 			"service/auth.go": `package service
 
 func Authenticate(username, password string) bool {
     return username == "admin" && password == "secret"
-}
-`,
+}`,
 		}
 
-		// Create all files
-		for path, content := range files {
-			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))
-			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600))
-		}
+		// Create all files using testutil
+		err := setup.CreateTestFiles(files)
+		require.NoError(t, err)
 
 		// Test that filter correctly identifies files
-		filter := filter.NewFilter(true, []filter.FilterOption{
+		fltr := filter.NewFilter(true, []filter.FilterOption{
 			filter.FilterAll,
 		})
 
 		// Regular files should NOT be filtered
-		assert.False(t, filter.ShouldFilter(filepath.Join(tmpDir, "main.go")), "main.go should not be filtered")
-		assert.False(t, filter.ShouldFilter(filepath.Join(tmpDir, "service/user.go")), "service/user.go should not be filtered")
-		assert.False(t, filter.ShouldFilter(filepath.Join(tmpDir, "service/auth.go")), "service/auth.go should not be filtered")
+		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("main.go")), "main.go should not be filtered")
+		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("service/user.go")), "service/user.go should not be filtered")
+		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("service/auth.go")), "service/auth.go should not be filtered")
 
 		// sqlc files SHOULD be filtered
-		assert.True(t, filter.ShouldFilter(filepath.Join(tmpDir, "db/models.go")), "db/models.go should be filtered (sqlc)")
-		assert.True(t, filter.ShouldFilter(filepath.Join(tmpDir, "db/querier.go")), "db/querier.go should be filtered (sqlc)")
+		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("db/models.go")), "db/models.go should be filtered (sqlc)")
+		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("db/querier.go")), "db/querier.go should be filtered (sqlc)")
 
 		// templ files SHOULD be filtered
-		assert.True(t, filter.ShouldFilter(filepath.Join(tmpDir, "components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
+		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
 	})
 
 	t.Run("include sqlc but filter templ", func(t *testing.T) {
-		tmpDir := t.TempDir()
+		setup := testutil.NewTestFileSetup(t)
 
 		// Create test files
 		files := map[string]string{
@@ -124,41 +119,42 @@ func Header() templ.Component { return nil }
 `,
 		}
 
-		for path, content := range files {
-			fullPath := filepath.Join(tmpDir, path)
-			assert.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o750))
-			assert.NoError(t, os.WriteFile(fullPath, []byte(content), 0o600))
-		}
+		err := setup.CreateTestFiles(files)
+		require.NoError(t, err)
 
 		// Create filter with sqlc included (not filtered)
-		filter := filter.NewFilter(true, []filter.FilterOption{
+		fltr := filter.NewFilter(true, []filter.FilterOption{
 			filter.FilterTempl,
 		})
 
 		// sqlc should NOT be filtered (not in options)
-		assert.False(t, filter.ShouldFilter(filepath.Join(tmpDir, "db/models.go")), "db/models.go should not be filtered")
+		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("db/models.go")), "db/models.go should not be filtered")
 
 		// templ SHOULD be filtered
-		assert.True(t, filter.ShouldFilter(filepath.Join(tmpDir, "components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
+		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
 	})
 
 	t.Run("include pattern takes precedence", func(t *testing.T) {
-		tmpDir := t.TempDir()
+		setup := testutil.NewTestFileSetup(t)
 
 		// Create a vendor directory with sqlc file
-		vendorFile := filepath.Join(tmpDir, "vendor", "models.go")
+		vendorFile := setup.GetFilePath(filepath.Join("vendor", "models.go"))
 		vendorContent := `// Code generated by sqlc. DO NOT EDIT.
 package db
 type User struct {}
 `
-		assert.NoError(t, os.MkdirAll(filepath.Dir(vendorFile), 0o750))
-		assert.NoError(t, os.WriteFile(vendorFile, []byte(vendorContent), 0o600))
+
+		files := map[string]string{
+			filepath.Join("vendor", "models.go"): vendorContent,
+		}
+		err := setup.CreateTestFiles(files)
+		require.NoError(t, err)
 
 		// Create filter with include pattern for vendor
-		filter := filter.NewFilter(true, []filter.FilterOption{filter.FilterAll})
-		filter.WithIncludePatterns([]string{"vendor/*"})
+		fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterAll})
+		fltr.WithIncludePatterns([]string{"vendor/*"})
 
 		// Vendor file should NOT be filtered due to include pattern
-		assert.False(t, filter.ShouldFilter(vendorFile), "vendor/models.go should not be filtered (include pattern)")
+		assert.False(t, fltr.ShouldFilter(vendorFile), "vendor/models.go should not be filtered (include pattern)")
 	})
 }

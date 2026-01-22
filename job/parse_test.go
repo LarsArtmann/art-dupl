@@ -3,10 +3,29 @@ package job
 import (
 	"testing"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 func TestParse(t *testing.T) {
-	goFile := setupTestFiles(t)
+	setup := testutil.NewTestFileSetup(t)
+
+	testContent := `package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("hello")
+}
+
+func helper() {
+	fmt.Println("helper")
+}`
+
+	goFile := setup.GetFilePath("test.go")
+	if err := setup.CreateTestFile("test.go", testContent); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
 
 	fchan := make(chan string, 2)
 	fchan <- goFile
@@ -41,10 +60,32 @@ func TestParseErrorHandling(t *testing.T) {
 }
 
 func TestParseMultipleFiles(t *testing.T) {
-	files := setupMultipleTestFiles(t)
+	setup := testutil.NewTestFileSetup(t)
+
+	files := map[string]string{
+		"file1.go": `package main
+
+func function1() {
+	println("test1")
+}`,
+		"file2.go": `package main
+
+func function1() {
+	println("test2")
+}`,
+	}
+
+	if err := setup.CreateTestFiles(files); err != nil {
+		t.Fatalf("Failed to create test files: %v", err)
+	}
+
+	filePaths := []string{
+		setup.GetFilePath("file1.go"),
+		setup.GetFilePath("file2.go"),
+	}
 
 	fchan := make(chan string, 3)
-	for _, file := range files {
+	for _, file := range filePaths {
 		fchan <- file
 	}
 	close(fchan)
