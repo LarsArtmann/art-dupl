@@ -86,8 +86,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on directory with only non-Go files
-			cmd := exec.Command(binaryPath, tempDir)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl(tempDir)
 
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle non-Go files without error")
@@ -116,8 +115,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl - should only analyze Go files
-			cmd := exec.Command(binaryPath, tempDir)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl(tempDir)
 
 			// Should not crash
 			Expect(err).ToNot(HaveOccurred(), "Should handle mixed file types")
