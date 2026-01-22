@@ -102,19 +102,16 @@ func processItem(data string, index int) error {
 }`
 
 			// Create duplicates with different sizes
-			err := fileProcessor.WriteDuplicateFiles([]string{"large1.go", "large2.go"}, largeClone)
+			err := setup.CreateDuplicateFiles([]string{"large1.go", "large2.go"}, largeClone)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteDuplicateFiles([]string{"medium1.go", "medium2.go"}, mediumClone)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err = setup.CreateDuplicateFiles([]string{"medium1.go", "medium2.go"}, mediumClone)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with default sorting (size)
-			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "15", "--sort", "size")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "15",
+				"sort":      "size",
+			})
 			// Print debug info on error
 			if err != nil {
 				fmt.Printf("DEBUG: Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output
@@ -144,17 +141,14 @@ func process(data string) error {
 	return nil
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"size1.go", "size2.go"}, duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"size1.go", "size2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with size sorting
-			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "size")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "10",
+				"sort":      "size",
+			})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("size1.go"))
 		})
@@ -186,25 +180,22 @@ func lessCommonFunction(id int, name string) error {
 }`
 
 			// Create 4 files with widespread code
-			err := fileProcessor.WriteDuplicateFiles([]string{
+			err := setup.CreateDuplicateFiles([]string{
 				"wide1.go", "wide2.go", "wide3.go", "wide4.go",
 			}, widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create 2 files with less common code
-			err = fileProcessor.WriteDuplicateFiles([]string{
+			err = setup.CreateDuplicateFiles([]string{
 				"less1.go", "less2.go",
 			}, lessCommonCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-
 			// Run with occurrence sorting
-			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "5", "--sort", "occurrence")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "5",
+				"sort":      "occurrence",
+			})
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -241,19 +232,16 @@ func functionB() error {
 	return nil
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"fileA1.go", "fileA2.go"}, codeA)
+			err := setup.CreateDuplicateFiles([]string{"fileA1.go", "fileA2.go"}, codeA)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteDuplicateFiles([]string{"fileB1.go", "fileB2.go"}, codeB)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-sorting-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err = setup.CreateDuplicateFiles([]string{"fileB1.go", "fileB2.go"}, codeB)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with hash sorting
-			cmd = exec.Command("./art-dupl-sorting-test", tempDir, "--threshold", "10", "--sort", "hash")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithFlags(map[string]string{
+				"threshold": "10",
+				"sort":      "hash",
+			})
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
