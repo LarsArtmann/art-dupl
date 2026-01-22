@@ -1,5 +1,6 @@
 package bdd
 
+//nolint:errcheck // Test cleanup code - error returns not critical
 import (
 	"os"
 	"os/exec"

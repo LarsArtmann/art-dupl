@@ -125,7 +125,7 @@ func processItem(data string, index int) error {
 			output, err := cmd.CombinedOutput()
 			// Print debug info on error
 			if err != nil {
-				fmt.Printf("DEBUG: Command failed with output: %s\n", string(output))
+				fmt.Printf("DEBUG: Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output
 			}
 			Expect(err).ToNot(HaveOccurred())
 
