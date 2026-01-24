@@ -231,33 +231,53 @@ func TestCloneID_String(t *testing.T) {
 	}
 }
 
-// TestCloneID_MarshalJSON tests JSON marshaling.
-func TestCloneID_MarshalJSON(t *testing.T) {
-	tests := []jsonTest[CloneID]{
-		{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
-		{name: "empty ID should error", input: CloneID(""), want: "", wantErr: true},
-	}
-	runJSONTests(t, func(id CloneID) ([]byte, error) { return id.MarshalJSON() }, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) }, tests)
+// registerJSONTestSuite creates and runs a complete test suite for JSON marshaling/unmarshaling.
+// This helper reduces boilerplate when creating tests for types with JSON support.
+func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalTests []jsonTest[T], unmarshalTests []struct {
+	name      string
+	input     string
+	want      T
+	wantError bool
+}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+	t.Helper()
+
+	t.Run(typeName+"_MarshalJSON", func(t *testing.T) {
+		runJSONTests(t, marshalFunc, unmarshalFunc, marshalTests)
+	})
+
+	t.Run(typeName+"_UnmarshalJSON", func(t *testing.T) {
+		runJSONUnmarshalTests(t, unmarshalFunc, unmarshalTests)
+	})
+
+	t.Run(typeName+"_RoundTrip", func(t *testing.T) {
+		testJSONRoundTrip(t, roundTripValue, marshalFunc, unmarshalFunc)
+	})
 }
 
-// TestCloneID_UnmarshalJSON tests JSON unmarshaling.
-func TestCloneID_UnmarshalJSON(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      CloneID
-		wantError bool
-	}{
-		{name: "valid JSON", input: `"clone-123"`, want: CloneID("clone-123"), wantError: false},
-		{name: "empty JSON string should error", input: `""`, want: CloneID(""), wantError: true},
-		{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
-	}
-	runJSONUnmarshalTests(t, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) }, tests)
-}
+// TestCloneID tests CloneID type.
+func TestCloneID(t *testing.T) {
+	t.Run("NewCloneID", TestCloneID_NewCloneID)
+	t.Run("String", TestCloneID_String)
 
-// TestCloneID_RoundTrip tests JSON marshaling and unmarshaling round trip.
-func TestCloneID_RoundTrip(t *testing.T) {
-	testJSONRoundTrip(t, CloneID("clone-456"), func(id CloneID) ([]byte, error) { return id.MarshalJSON() }, func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) })
+	registerJSONTestSuite(t, "CloneID",
+		[]jsonTest[CloneID]{
+			{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
+			{name: "empty ID should error", input: CloneID(""), want: "", wantErr: true},
+		},
+		[]struct {
+			name      string
+			input     string
+			want      CloneID
+			wantError bool
+		}{
+			{name: "valid JSON", input: `"clone-123"`, want: CloneID("clone-123"), wantError: false},
+			{name: "empty JSON string should error", input: `""`, want: CloneID(""), wantError: true},
+			{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
+		},
+		CloneID("clone-456"),
+		func(id CloneID) ([]byte, error) { return id.MarshalJSON() },
+		func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) },
+	)
 }
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
@@ -295,33 +315,30 @@ func TestLineNumber_Uint(t *testing.T) {
 	}
 }
 
-// TestLineNumber_MarshalJSON tests JSON marshaling.
-func TestLineNumber_MarshalJSON(t *testing.T) {
-	tests := []jsonTest[LineNumber]{
-		{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
-		{name: "zero line number should error", input: LineNumber(0), want: "", wantErr: true},
-	}
-	runJSONTests(t, func(line LineNumber) ([]byte, error) { return line.MarshalJSON() }, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) }, tests)
-}
+// TestLineNumber tests LineNumber type.
+func TestLineNumber(t *testing.T) {
+	t.Run("NewLineNumber", TestLineNumber_NewLineNumber)
+	t.Run("Uint", TestLineNumber_Uint)
 
-// TestLineNumber_UnmarshalJSON tests JSON unmarshaling.
-func TestLineNumber_UnmarshalJSON(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      LineNumber
-		wantError bool
-	}{
-		{name: "valid JSON", input: `42`, want: LineNumber(42), wantError: false},
-		{name: "zero should error", input: `0`, want: LineNumber(0), wantError: true},
-		{name: "invalid JSON", input: `not-json`, want: LineNumber(0), wantError: true},
-	}
-	runJSONUnmarshalTests(t, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) }, tests)
-}
-
-// TestLineNumber_RoundTrip tests JSON marshaling and unmarshaling round trip.
-func TestLineNumber_RoundTrip(t *testing.T) {
-	testJSONRoundTrip(t, LineNumber(123), func(line LineNumber) ([]byte, error) { return line.MarshalJSON() }, func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) })
+	registerJSONTestSuite(t, "LineNumber",
+		[]jsonTest[LineNumber]{
+			{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
+			{name: "zero line number should error", input: LineNumber(0), want: "", wantErr: true},
+		},
+		[]struct {
+			name      string
+			input     string
+			want      LineNumber
+			wantError bool
+		}{
+			{name: "valid JSON", input: `42`, want: LineNumber(42), wantError: false},
+			{name: "zero should error", input: `0`, want: LineNumber(0), wantError: true},
+			{name: "invalid JSON", input: `not-json`, want: LineNumber(0), wantError: true},
+		},
+		LineNumber(123),
+		func(line LineNumber) ([]byte, error) { return line.MarshalJSON() },
+		func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) },
+	)
 }
 
 // TestConfidence_NewConfidence tests the NewConfidence constructor.
@@ -409,37 +426,35 @@ func TestConfidence_String(t *testing.T) {
 	}
 }
 
-// TestConfidence_MarshalJSON tests JSON marshaling.
-func TestConfidence_MarshalJSON(t *testing.T) {
-	tests := []jsonTest[Confidence]{
-		{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
-		{name: "valid confidence 1.0", input: Confidence(1.0), want: `1`, wantErr: false},
-		{name: "negative confidence should error", input: Confidence(-0.1), want: "", wantErr: true},
-		{name: "confidence > 1.0 should error", input: Confidence(1.5), want: "", wantErr: true},
-	}
-	runJSONTests(t, func(conf Confidence) ([]byte, error) { return conf.MarshalJSON() }, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) }, tests)
-}
+// TestConfidence tests Confidence type.
+func TestConfidence(t *testing.T) {
+	t.Run("NewConfidence", TestConfidence_NewConfidence)
+	t.Run("Float64", TestConfidence_Float64)
+	t.Run("String", TestConfidence_String)
 
-// TestConfidence_UnmarshalJSON tests JSON unmarshaling.
-func TestConfidence_UnmarshalJSON(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      Confidence
-		wantError bool
-	}{
-		{name: "valid JSON 0.5", input: `0.5`, want: Confidence(0.5), wantError: false},
-		{name: "valid JSON 1.0", input: `1.0`, want: Confidence(1.0), wantError: false},
-		{name: "negative should error", input: `-0.1`, want: Confidence(0), wantError: true},
-		{name: "> 1.0 should error", input: `1.5`, want: Confidence(0), wantError: true},
-		{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
-	}
-	runJSONUnmarshalTests(t, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) }, tests)
-}
-
-// TestConfidence_RoundTrip tests JSON marshaling and unmarshaling round trip.
-func TestConfidence_RoundTrip(t *testing.T) {
-	testJSONRoundTrip(t, Confidence(0.75), func(conf Confidence) ([]byte, error) { return conf.MarshalJSON() }, func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) })
+	registerJSONTestSuite(t, "Confidence",
+		[]jsonTest[Confidence]{
+			{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
+			{name: "valid confidence 1.0", input: Confidence(1.0), want: `1`, wantErr: false},
+			{name: "negative confidence should error", input: Confidence(-0.1), want: "", wantErr: true},
+			{name: "confidence > 1.0 should error", input: Confidence(1.5), want: "", wantErr: true},
+		},
+		[]struct {
+			name      string
+			input     string
+			want      Confidence
+			wantError bool
+		}{
+			{name: "valid JSON 0.5", input: `0.5`, want: Confidence(0.5), wantError: false},
+			{name: "valid JSON 1.0", input: `1.0`, want: Confidence(1.0), wantError: false},
+			{name: "negative should error", input: `-0.1`, want: Confidence(0), wantError: true},
+			{name: "> 1.0 should error", input: `1.5`, want: Confidence(0), wantError: true},
+			{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
+		},
+		Confidence(0.75),
+		func(conf Confidence) ([]byte, error) { return conf.MarshalJSON() },
+		func(conf *Confidence, data []byte) error { return conf.UnmarshalJSON(data) },
+	)
 }
 
 // TestProcessingTime_NewProcessingTime tests the NewProcessingTime constructor.
@@ -530,33 +545,31 @@ func TestProcessingTime_String(t *testing.T) {
 	}
 }
 
-// TestProcessingTime_MarshalJSON tests JSON marshaling.
-func TestProcessingTime_MarshalJSON(t *testing.T) {
-	tests := []jsonTest[ProcessingTime]{
-		{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
-		{name: "zero should error", input: ProcessingTime(0), want: "", wantErr: true},
-	}
-	runJSONTests(t, func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() }, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) }, tests)
-}
+// TestProcessingTime tests ProcessingTime type.
+func TestProcessingTime(t *testing.T) {
+	t.Run("NewProcessingTime", TestProcessingTime_NewProcessingTime)
+	t.Run("Uint", TestProcessingTime_Uint)
+	t.Run("String", TestProcessingTime_String)
 
-// TestProcessingTime_UnmarshalJSON tests JSON unmarshaling.
-func TestProcessingTime_UnmarshalJSON(t *testing.T) {
-	tests := []struct {
-		name      string
-		input     string
-		want      ProcessingTime
-		wantError bool
-	}{
-		{name: "valid JSON", input: `500`, want: ProcessingTime(500), wantError: false},
-		{name: "zero should error", input: `0`, want: ProcessingTime(0), wantError: true},
-		{name: "invalid JSON", input: `not-json`, want: ProcessingTime(0), wantError: true},
-	}
-	runJSONUnmarshalTests(t, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) }, tests)
-}
-
-// TestProcessingTime_RoundTrip tests JSON marshaling and unmarshaling round trip.
-func TestProcessingTime_RoundTrip(t *testing.T) {
-	testJSONRoundTrip(t, ProcessingTime(5000), func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() }, func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) })
+	registerJSONTestSuite(t, "ProcessingTime",
+		[]jsonTest[ProcessingTime]{
+			{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
+			{name: "zero should error", input: ProcessingTime(0), want: "", wantErr: true},
+		},
+		[]struct {
+			name      string
+			input     string
+			want      ProcessingTime
+			wantError bool
+		}{
+			{name: "valid JSON", input: `500`, want: ProcessingTime(500), wantError: false},
+			{name: "zero should error", input: `0`, want: ProcessingTime(0), wantError: true},
+			{name: "invalid JSON", input: `not-json`, want: ProcessingTime(0), wantError: true},
+		},
+		ProcessingTime(5000),
+		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
+		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
+	)
 }
 
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
