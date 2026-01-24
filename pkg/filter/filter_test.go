@@ -325,12 +325,7 @@ func main() {}
 func TestIsSQLCGenerated(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name     string
-		filePath string
-		content  string
-		expected bool
-	}{
+	tests := []fileContentTest{
 		{
 			name:     "sqlc models with comment",
 			filePath: "db/models.go",
@@ -372,14 +367,11 @@ type User struct {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := isSQLCGenerated(tt.filePath, tt.content)
-			if result != tt.expected {
-				t.Errorf("Expected %v, got %v", tt.expected, result)
-			}
-		})
-	}
+	runTestCases(t, tests,
+		func(tt fileContentTest) string { return tt.name },
+		func(tt fileContentTest) bool { return isSQLCGenerated(tt.filePath, tt.content) },
+		func(tt fileContentTest) bool { return tt.expected },
+	)
 }
 
 func TestIsTemplGenerated(t *testing.T) {
