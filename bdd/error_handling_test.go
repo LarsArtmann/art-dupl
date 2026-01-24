@@ -4,7 +4,6 @@ package bdd
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -329,21 +328,24 @@ var _ = Describe("Error Handling", func() {
 	Context("When reading from stdin with invalid input", func() {
 		It("should handle empty stdin gracefully", func() {
 			// Use --files flag with empty stdin
-			output, err := setup.RunArtDupl("--files", "--threshold", "10")
-			cmd.Stdin = strings.NewReader("")
-			output, _ := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithStdin("", map[string]string{
+				"threshold": "10",
+			})
 
 			// Should handle gracefully
+			Expect(err).ToNot(HaveOccurred(), "Should handle empty stdin")
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 
 		It("should handle stdin with invalid file paths gracefully", func() {
 			// Use --files flag with invalid file paths
 			invalidPaths := "/nonexistent/file1.go\n/nonexistent/file2.go\n"
-			output, err := setup.RunArtDupl("--files", "--threshold", "10")
-			output, _ := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplWithStdin(invalidPaths, map[string]string{
+				"threshold": "10",
+			})
 
 			// Should handle gracefully
+			Expect(err).ToNot(HaveOccurred(), "Should handle invalid file paths")
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 	})

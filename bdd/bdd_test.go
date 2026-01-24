@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -13,6 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
 // BDD Test Suite for art-dupl
@@ -126,7 +128,7 @@ func uniqueFunction(ctx context.Context) error {
 		}
 
 		// Write test files using unified processor
-		err := setup.CreateTestFiles(testFiles)
+		err = setup.CreateTestFiles(testFiles)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -136,15 +138,8 @@ func uniqueFunction(ctx context.Context) error {
 
 	Context("When analyzing code for duplicates", func() {
 		It("should find structural duplicates ignoring literal values", func() {
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err := cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
-
 			// Run art-dupl on test directory
-			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--threshold", "10") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--threshold", "10")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -161,11 +156,6 @@ func uniqueFunction(ctx context.Context) error {
 
 		// Test: Verify occurrence sorting prioritizes clones with more unique files
 		It("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err := cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
 			// Create code pattern 1: Complex function with unique structure
 			widespreadCode := `package main
@@ -185,13 +175,13 @@ func (p *Processor) veryCommon(message string) {
 }`
 
 			// Create 4 files with the same code
-			err = fileProcessor.WriteTextFile("widespread1.go", widespreadCode)
+			err := setup.FileProcessor.WriteTextFile("widespread1.go", widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("widespread2.go", widespreadCode)
+			err = setup.FileProcessor.WriteTextFile("widespread2.go", widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("widespread3.go", widespreadCode)
+			err = setup.FileProcessor.WriteTextFile("widespread3.go", widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("widespread4.go", widespreadCode)
+			err = setup.FileProcessor.WriteTextFile("widespread4.go", widespreadCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create code pattern 2: Different complex function with error handling
@@ -211,14 +201,13 @@ func (v *Validator) lessCommon(id int) error {
 	return nil
 }`
 
-			err = fileProcessor.WriteTextFile("less1.go", lessCommonCode)
+			err = setup.FileProcessor.WriteTextFile("less1.go", lessCommonCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("less2.go", lessCommonCode)
+			err = setup.FileProcessor.WriteTextFile("less2.go", lessCommonCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl with --sort occurrence
-			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--threshold", "5", "--sort", "occurrence") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--threshold", "5", "--sort", "occurrence")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -259,15 +248,9 @@ func (v *Validator) lessCommon(id int) error {
 
 	Context("When generating reports", func() {
 		It("should produce valid JSON output with statistics", func() {
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err := cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
-
-			// Run with JSON output on current directory - separate stdout from stderr to avoid JSON corruption
-			cmd = exec.Command("./art-dupl-bdd-test", "--json", "--threshold", "10", ".")
-			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			// Run with JSON output on current directory - use Output() to get only stdout (no stderr)
+			cmd := exec.Command(setup.BinaryPath, ".", "--json", "--threshold", "10")
+			output, err := cmd.Output()
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -291,15 +274,8 @@ func (v *Validator) lessCommon(id int) error {
 		})
 
 		It("should produce HTML output with code fragments", func() {
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err := cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
-
 			// Run with HTML output on current directory
-			cmd = exec.Command("./art-dupl-bdd-test", "--html", "--threshold", "10", ".")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDuplOnDir(".", "--html", "--threshold", "10")
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())

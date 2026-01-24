@@ -145,8 +145,8 @@ func processProduct(name string, price int) error {
 	files := map[string]string{
 		"user1.go":    content1,
 		"user2.go":    content1,
-		"product1.go":  content2,
-		"product2.go":  content2,
+		"product1.go": content2,
+		"product2.go": content2,
 	}
 
 	if err := setup.CreateTestFiles(files); err != nil {

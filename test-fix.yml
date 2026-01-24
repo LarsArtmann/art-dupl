@@ -128,8 +128,8 @@ linters:
 
   # 🔧 LINTER SETTINGS - Maximum strictness
   settings:
-    # 🚨 TYPE SAFETY & STRUCTURED LOGGING - ZERO TOLERANCE
-    forbidigo:
+  # 🚨 TYPE SAFETY & STRUCTURED LOGGING - ZERO TOLERANCE
+  forbidigo:
     forbid:
       # Type safety violations
       - pattern: 'interface\{\}'
