@@ -50,6 +50,21 @@ func unmarshalStringID(data []byte, typeName string, validationMsg string, assig
 	return nil
 }
 
+// unmarshalUintNonZero is a helper function for unmarshaling uint-based types
+// that must not be zero. It handles the common pattern of unmarshaling JSON to uint
+// and validating that the value is non-zero.
+func unmarshalUintNonZero(data []byte, typeName string, validationMsg string, assign func(uint)) error {
+	var n uint
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
+	}
+	if n == 0 {
+		return errors.NewValidationError(validationMsg, nil)
+	}
+	assign(n)
+	return nil
+}
+
 // CloneID represents a unique identifier for a code clone.
 type CloneID string
 
@@ -203,15 +218,9 @@ func (ln LineNumber) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for LineNumber.
 func (ln *LineNumber) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal LineNumber: %w", err)
-	}
-	if n == 0 {
-		return errors.NewValidationError("line number cannot be 0", nil)
-	}
-	*ln = LineNumber(n)
-	return nil
+	return unmarshalUintNonZero(data, "LineNumber", "line number cannot be 0", func(n uint) {
+		*ln = LineNumber(n)
+	})
 }
 
 // BytePosition represents a byte position in a file.
@@ -482,15 +491,9 @@ func (pt ProcessingTime) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for ProcessingTime.
 func (pt *ProcessingTime) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal ProcessingTime: %w", err)
-	}
-	if n == 0 {
-		return errors.NewValidationError("processing time cannot be 0", nil)
-	}
-	*pt = ProcessingTime(n)
-	return nil
+	return unmarshalUintNonZero(data, "ProcessingTime", "processing time cannot be 0", func(n uint) {
+		*pt = ProcessingTime(n)
+	})
 }
 
 // Threshold represents the minimum token threshold for clone detection.
@@ -520,13 +523,7 @@ func (t Threshold) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for Threshold.
 func (t *Threshold) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal Threshold: %w", err)
-	}
-	if n == 0 {
-		return errors.NewValidationError("threshold cannot be 0", nil)
-	}
-	*t = Threshold(n)
-	return nil
+	return unmarshalUintNonZero(data, "Threshold", "threshold cannot be 0", func(n uint) {
+		*t = Threshold(n)
+	})
 }
