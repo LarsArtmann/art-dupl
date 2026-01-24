@@ -91,13 +91,19 @@ func findIssuesInFile[T any](
 	return resultChan
 }
 
+// createIssueMatch creates a syntax.Match for an issue type that has a line number.
+// This is used by FindTodos and FindLegacy to avoid duplicating the match creation logic.
+func createIssueMatch(prefix string, filename string, line int) syntax.Match {
+	return syntax.Match{
+		Hash:  fmt.Sprintf("%s-%s-%d", prefix, filename, line),
+		Frags: [][]*syntax.Node{{}}, // Empty frag since issues aren't code fragments
+	}
+}
+
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	return findIssuesInFile(data, td.findTodosInFile, func(todo TodoIssue, filename string) syntax.Match {
-		return syntax.Match{
-			Hash:  fmt.Sprintf("TODO-%s-%d", filename, todo.Line),
-			Frags: [][]*syntax.Node{{}}, // Empty frag since TODOs aren't code fragments
-		}
+		return createIssueMatch("TODO", filename, todo.Line)
 	})
 }
 
@@ -182,10 +188,7 @@ func NewLegacyDetector() *LegacyDetector {
 // FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 	return findIssuesInFile(data, ld.findLegacyInFile, func(legacy LegacyIssue, filename string) syntax.Match {
-		return syntax.Match{
-			Hash:  fmt.Sprintf("LEGACY-%s-%d", filename, legacy.Line),
-			Frags: [][]*syntax.Node{{}}, // Empty frag since legacy items aren't code fragments
-		}
+		return createIssueMatch("LEGACY", filename, legacy.Line)
 	})
 }
 
