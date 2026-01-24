@@ -54,11 +54,9 @@ func benchmarkFindTran(b *testing.B, stateCount, transPerState int, fn func(*sta
 	}
 }
 
-// BenchmarkFindTranSmall benchmarks findTran with a small number of transitions.
-func BenchmarkFindTranSmall(b *testing.B) {
-	tree := New()
-	tokens := generateRandomTokens(100)
-	tree.Update(tokens...)
+// benchmarkFindTranWithSetup is a helper for benchmarking findTran functions with custom tree setup.
+func benchmarkFindTranWithSetup(b *testing.B, setup func() *STree, fn func(*state, Token) *tran) {
+	tree := setup()
 
 	if len(tree.root.trans) == 0 {
 		b.Skip("No transitions to benchmark")
@@ -68,8 +66,20 @@ func BenchmarkFindTranSmall(b *testing.B) {
 	token := tree.data[target.start]
 
 	for b.Loop() {
-		tree.root.findTran(token)
+		fn(tree.root, token)
 	}
+}
+
+// BenchmarkFindTranSmall benchmarks findTran with a small number of transitions.
+func BenchmarkFindTranSmall(b *testing.B) {
+	benchmarkFindTranWithSetup(b, func() *STree {
+		tree := New()
+		tokens := generateRandomTokens(100)
+		tree.Update(tokens...)
+		return tree
+	}, func(s *state, t Token) *tran {
+		return s.findTran(t)
+	})
 }
 
 // BenchmarkFindTranMedium benchmarks findTran with a medium number of transitions.
@@ -167,21 +177,13 @@ func BenchmarkOptimizeTree(b *testing.B) {
 
 // BenchmarkFindTranOptimized benchmarks findTran after tree optimization.
 func BenchmarkFindTranOptimized(b *testing.B) {
-	tree := generateTreeWithTransitions(100, 50)
-
-	// Optimize tree first
-	tree.OptimizeTree()
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	target := tree.root.trans[0]
-	token := tree.data[target.start]
-
-	for b.Loop() {
-		tree.root.findTranFast(token)
-	}
+	benchmarkFindTranWithSetup(b, func() *STree {
+		tree := generateTreeWithTransitions(100, 50)
+		tree.OptimizeTree()
+		return tree
+	}, func(s *state, t Token) *tran {
+		return s.findTranFast(t)
+	})
 }
 
 // BenchmarkCanonize benchmarks the canonize operation.
