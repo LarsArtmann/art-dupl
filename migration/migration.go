@@ -2,6 +2,7 @@ package migration
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/adapter"
@@ -166,38 +167,8 @@ func (mp *MigrationPath) countSeverities(groups []domain.CloneGroup) map[domain.
 func (mp *MigrationPath) validateMigration(before, after domain.Analysis) []ValidationResult {
 	var validations []ValidationResult
 
-	// Validate analysis integrity
-	if err := before.IsValid(); err != nil {
-		validations = append(validations, ValidationResult{
-			Check:    "before-state-valid",
-			Status:   "failed",
-			Message:  fmt.Sprintf("Before state invalid: %v", err),
-			Severity: "error",
-		})
-	} else {
-		validations = append(validations, ValidationResult{
-			Check:    "before-state-valid",
-			Status:   "passed",
-			Message:  "Before state is valid",
-			Severity: "info",
-		})
-	}
-
-	if err := after.IsValid(); err != nil {
-		validations = append(validations, ValidationResult{
-			Check:    "after-state-valid",
-			Status:   "failed",
-			Message:  fmt.Sprintf("After state invalid: %v", err),
-			Severity: "error",
-		})
-	} else {
-		validations = append(validations, ValidationResult{
-			Check:    "after-state-valid",
-			Status:   "passed",
-			Message:  "After state is valid",
-			Severity: "info",
-		})
-	}
+	validations = append(validations, mp.validateAnalysisState(before, "before"))
+	validations = append(validations, mp.validateAnalysisState(after, "after"))
 
 	// Validate migration logic
 	if before.Threshold != after.Threshold {
@@ -210,6 +181,30 @@ func (mp *MigrationPath) validateMigration(before, after domain.Analysis) []Vali
 	}
 
 	return validations
+}
+
+func (mp *MigrationPath) validateAnalysisState(analysis domain.Analysis, state string) ValidationResult {
+	if err := analysis.IsValid(); err != nil {
+		return ValidationResult{
+			Check:    fmt.Sprintf("%s-state-valid", state),
+			Status:   "failed",
+			Message:  fmt.Sprintf("%s state invalid: %v", capitalize(state), err),
+			Severity: "error",
+		}
+	}
+	return ValidationResult{
+		Check:    fmt.Sprintf("%s-state-valid", state),
+		Status:   "passed",
+		Message:  fmt.Sprintf("%s state is valid", capitalize(state)),
+		Severity: "info",
+	}
+}
+
+func capitalize(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	return strings.ToUpper(string(s[0])) + s[1:]
 }
 
 func (mp *MigrationPath) generateRecommendations(before, after domain.Analysis) []string {
