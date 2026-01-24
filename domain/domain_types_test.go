@@ -572,6 +572,17 @@ func TestProcessingTime(t *testing.T) {
 	)
 }
 
+// emptyStringErrorTest returns a test case that verifies empty string input causes an error.
+func emptyStringErrorTest[T comparable]() constructorTest[T] {
+	var zero T
+	return constructorTest[T]{
+		name:      "empty string should error",
+		input:     "",
+		want:      zero,
+		wantError: true,
+	}
+}
+
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
 // This helper reduces boilerplate when creating tests for types constructed
 // from strings with validation logic.
@@ -586,7 +597,7 @@ func registerStringConstructorTest[T comparable](t *testing.T, constructorName s
 func TestCloneGroupID_NewCloneGroupID(t *testing.T) {
 	registerStringConstructorTest(t, "NewCloneGroupID", []constructorTest[CloneGroupID]{
 		{name: "valid clone group ID", input: "group-123", want: CloneGroupID("group-123"), wantError: false},
-		{name: "empty string should error", input: "", want: CloneGroupID(""), wantError: true},
+		emptyStringErrorTest[CloneGroupID](),
 	}, NewCloneGroupID)
 }
 
@@ -594,7 +605,7 @@ func TestCloneGroupID_NewCloneGroupID(t *testing.T) {
 func TestAnalysisID_NewAnalysisID(t *testing.T) {
 	registerStringConstructorTest(t, "NewAnalysisID", []constructorTest[AnalysisID]{
 		{name: "valid analysis ID", input: "analysis-456", want: AnalysisID("analysis-456"), wantError: false},
-		{name: "empty string should error", input: "", want: AnalysisID(""), wantError: true},
+		emptyStringErrorTest[AnalysisID](),
 	}, NewAnalysisID)
 }
 
@@ -603,7 +614,7 @@ func TestFilepath_NewFilepath(t *testing.T) {
 	registerStringConstructorTest(t, "NewFilepath", []constructorTest[Filepath]{
 		{name: "valid filepath", input: "/path/to/file.go", want: Filepath("/path/to/file.go"), wantError: false},
 		{name: "relative path", input: "./file.go", want: Filepath("./file.go"), wantError: false},
-		{name: "empty string should error", input: "", want: Filepath(""), wantError: true},
+		emptyStringErrorTest[Filepath](),
 	}, NewFilepath)
 }
 
@@ -612,7 +623,7 @@ func TestHash_NewHash(t *testing.T) {
 	registerStringConstructorTest(t, "NewHash", []constructorTest[Hash]{
 		{name: "valid SHA256 hash", input: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", want: Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"), wantError: false},
 		{name: "short hash", input: "abc123", want: Hash("abc123"), wantError: false},
-		{name: "empty string should error", input: "", want: Hash(""), wantError: true},
+		emptyStringErrorTest[Hash](),
 	}, NewHash)
 }
 
