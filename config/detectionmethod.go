@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+// unmarshalStringType unmarshals JSON into a string type with validation.
+func unmarshalStringType(data []byte, parsedStr *string, isValid func(string) bool, setDefault func(), typeName string) error {
+	if err := json.Unmarshal(data, parsedStr); err != nil {
+		return err
+	}
+
+	if !isValid(*parsedStr) {
+		setDefault()
+		return fmt.Errorf("invalid %s: %s", typeName, *parsedStr)
+	}
+
+	return nil
+}
+
 // DetectionMethod represents the detection method type.
 type DetectionMethod string
 
@@ -46,17 +60,15 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
 	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
+	err := unmarshalStringType(data, &str,
+		func(s string) bool { return DetectionMethod(s).IsValid() },
+		func() { *dm = DetectionMethodArtDupl },
+		"detection method",
+	)
+	if err != nil {
 		return err
 	}
-
-	parsed := DetectionMethod(str)
-	if !parsed.IsValid() {
-		*dm = DetectionMethodArtDupl // default
-		return fmt.Errorf("invalid detection method: %s", str)
-	}
-
-	*dm = parsed
+	*dm = DetectionMethod(str)
 	return nil
 }
 
@@ -97,17 +109,15 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
+	err := unmarshalStringType(data, &str,
+		func(s string) bool { return OutputFormat(s).IsValid() },
+		func() { *of = OutputFormatText },
+		"output format",
+	)
+	if err != nil {
 		return err
 	}
-
-	parsed := OutputFormat(str)
-	if !parsed.IsValid() {
-		*of = OutputFormatText // default
-		return fmt.Errorf("invalid output format: %s", str)
-	}
-
-	*of = parsed
+	*of = OutputFormat(str)
 	return nil
 }
 
@@ -147,17 +157,15 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
+	err := unmarshalStringType(data, &str,
+		func(s string) bool { return SortCriteria(s).IsValid() },
+		func() { *sc = SortBySize },
+		"sort criteria",
+	)
+	if err != nil {
 		return err
 	}
-
-	parsed := SortCriteria(str)
-	if !parsed.IsValid() {
-		*sc = SortBySize // default
-		return fmt.Errorf("invalid sort criteria: %s", str)
-	}
-
-	*sc = parsed
+	*sc = SortCriteria(str)
 	return nil
 }
 
