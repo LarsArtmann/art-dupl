@@ -593,20 +593,28 @@ func registerStringConstructorTest[T comparable](t *testing.T, constructorName s
 	})
 }
 
+// registerBasicStringConstructorTest creates and runs basic tests for a string-based constructor.
+// It automatically includes a valid test case and an empty string error test.
+// Additional custom tests can be provided via the extraTests parameter.
+// This helper further reduces boilerplate for simple constructors with standard validation.
+func registerBasicStringConstructorTest[T comparable](t *testing.T, constructorName string, sampleValue string, expectedValue T, constructorFunc func(string) (T, error), extraTests ...constructorTest[T]) {
+	t.Helper()
+	tests := []constructorTest[T]{
+		{name: "valid " + constructorName, input: sampleValue, want: expectedValue, wantError: false},
+		emptyStringErrorTest[T](),
+	}
+	tests = append(tests, extraTests...)
+	registerStringConstructorTest(t, constructorName, tests, constructorFunc)
+}
+
 // TestCloneGroupID_NewCloneGroupID tests the NewCloneGroupID constructor.
 func TestCloneGroupID_NewCloneGroupID(t *testing.T) {
-	registerStringConstructorTest(t, "NewCloneGroupID", []constructorTest[CloneGroupID]{
-		{name: "valid clone group ID", input: "group-123", want: CloneGroupID("group-123"), wantError: false},
-		emptyStringErrorTest[CloneGroupID](),
-	}, NewCloneGroupID)
+	registerBasicStringConstructorTest(t, "NewCloneGroupID", "group-123", CloneGroupID("group-123"), NewCloneGroupID)
 }
 
 // TestAnalysisID_NewAnalysisID tests the NewAnalysisID constructor.
 func TestAnalysisID_NewAnalysisID(t *testing.T) {
-	registerStringConstructorTest(t, "NewAnalysisID", []constructorTest[AnalysisID]{
-		{name: "valid analysis ID", input: "analysis-456", want: AnalysisID("analysis-456"), wantError: false},
-		emptyStringErrorTest[AnalysisID](),
-	}, NewAnalysisID)
+	registerBasicStringConstructorTest(t, "NewAnalysisID", "analysis-456", AnalysisID("analysis-456"), NewAnalysisID)
 }
 
 // TestFilepath_NewFilepath tests the NewFilepath constructor.
