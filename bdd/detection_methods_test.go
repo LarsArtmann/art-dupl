@@ -2,14 +2,13 @@ package bdd
 
 import (
 	"encoding/json"
-	"os"
 	"os/exec"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for Detection Methods
@@ -30,22 +29,16 @@ func TestDetectionMethods(t *testing.T) {
 }
 
 var _ = Describe("Detection Methods", func() {
-	var (
-		tempDir       string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-detection-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-
-		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./art-dupl-detection_methods-test")
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When using hash-based detection", func() {
@@ -66,19 +59,13 @@ func main() {
 	processData("test")
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{
+			err := setup.CreateDuplicateFiles([]string{
 				"exact1.go", "exact2.go", "exact3.go",
 			}, identicalCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-
 			// Run with hash detection
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash", "--threshold", "10")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
