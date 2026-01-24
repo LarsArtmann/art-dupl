@@ -5,7 +5,9 @@ This directory contains generated API documentation for the art-dupl project.
 ## Files
 
 ### API.md
+
 Comprehensive Markdown documentation covering:
+
 - Package index with descriptions
 - Key types and structures
 - Key functions with parameters
@@ -16,11 +18,13 @@ Comprehensive Markdown documentation covering:
 - Contributing guidelines
 
 ### api-go.txt
+
 Raw Go API documentation generated using `go doc -all`.
 
 ## Generating Documentation
 
 ### Markdown Documentation
+
 ```bash
 # Already generated in docs/api/API.md
 # View directly or convert to HTML
@@ -28,12 +32,14 @@ cat docs/api/API.md
 ```
 
 ### Go Doc Format
+
 ```bash
 # Generate raw Go doc
 go doc -all github.com/LarsArtmann/art-dupl > docs/api/api-go.txt
 ```
 
 ### HTML Documentation (Requires godoc)
+
 ```bash
 # Install godoc
 go install golang.org/x/tools/cmd/godoc@latest
@@ -45,6 +51,7 @@ godoc -html github.com/LarsArtmann/art-dupl > docs/api/api-go.html
 ## Documentation Coverage
 
 ### Packages Documented
+
 - ✅ cli - Command-line interface
 - ✅ config - Configuration management
 - ✅ detection - Multi-detector coordination
@@ -59,6 +66,7 @@ godoc -html github.com/LarsArtmann/art-dupl > docs/api/api-go.html
 - ✅ testutils - Test helpers
 
 ### Topics Covered
+
 - ✅ Package overview
 - ✅ Type definitions
 - ✅ Function signatures

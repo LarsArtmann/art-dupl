@@ -7,21 +7,25 @@ All functionality from the `duplicates` project has been successfully merged int
 ## What's New in art-dupl
 
 ### 1. Efficient LineIndex ✨
+
 Binary search-based line number lookups (O(log n)) for better performance on large files.
 
 **Use**: Automatically integrated into position package
 **Tests**: ✅ All tests passing
 
 ### 2. Simple JSON Format 📄
+
 Legacy JSON format matching duplicates project exactly, for backward compatibility.
 
 **CLI Flag**: `--simple-json`
 **Example**:
+
 ```bash
 art-dupl --simple-json > report.json
 ```
 
 ### 3. Impact Scoring 📊
+
 Simple scoring metric: `tokens × instances` - complements existing complexity_score.
 
 **Use**: Available in both JSON formats
@@ -43,18 +47,18 @@ art-dupl --all --output-dir ./reports --threshold 20
 
 ### Flag Mapping
 
-| duplicates Flag | art-dupl Flag | Notes |
-|----------------|----------------|--------|
-| `-threshold N` | `--threshold N` or `-t N` | Same functionality |
-| `-json` | `--simple-json` | Legacy format |
-| `--json` | `--json` | Enhanced format with metadata |
-| `-html` | `--html` | Same functionality |
-| `-text` | default (no flag) | Text is default |
-| `-plumbing` | `--plumbing` | Same functionality |
-| `-v` | `--verbose` or `-v` | Same functionality |
-| `-exclude "pattern"` | `--exclude-pattern "pattern"` | More powerful patterns |
-| `-json report.json` | `--simple-json > report.json` | Use redirection |
-| `-html report.html` | `--html > report.html` | Use redirection or `--output-dir` |
+| duplicates Flag      | art-dupl Flag                 | Notes                             |
+| -------------------- | ----------------------------- | --------------------------------- |
+| `-threshold N`       | `--threshold N` or `-t N`     | Same functionality                |
+| `-json`              | `--simple-json`               | Legacy format                     |
+| `--json`             | `--json`                      | Enhanced format with metadata     |
+| `-html`              | `--html`                      | Same functionality                |
+| `-text`              | default (no flag)             | Text is default                   |
+| `-plumbing`          | `--plumbing`                  | Same functionality                |
+| `-v`                 | `--verbose` or `-v`           | Same functionality                |
+| `-exclude "pattern"` | `--exclude-pattern "pattern"` | More powerful patterns            |
+| `-json report.json`  | `--simple-json > report.json` | Use redirection                   |
+| `-html report.html`  | `--html > report.html`        | Use redirection or `--output-dir` |
 
 ### New Features to Try
 
@@ -86,6 +90,7 @@ art-dupl --simple-json
 ```
 
 Output:
+
 ```json
 [
   {
@@ -112,6 +117,7 @@ art-dupl --json
 ```
 
 Output:
+
 ```json
 {
   "version": "1.0",
@@ -131,15 +137,19 @@ Output:
 ## Scoring Metrics
 
 ### Impact Score (from duplicates)
+
 ```
 score = token_count × instance_count
 ```
+
 Measures total duplicated code volume. Use to prioritize refactoring by how much code is duplicated.
 
 ### Complexity Score (from art-dupl)
+
 ```
 complexity_score = total_clones / clone_groups
 ```
+
 Measures duplication density. Use to assess overall codebase complexity.
 
 Both are included in enhanced JSON format!
@@ -167,6 +177,7 @@ make build
 ## Status
 
 ✅ **Migration Complete**
+
 - All valuable features migrated
 - Tests passing
 - Documentation updated

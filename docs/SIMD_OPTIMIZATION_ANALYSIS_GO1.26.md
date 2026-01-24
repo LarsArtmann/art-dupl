@@ -12,14 +12,17 @@ This document analyzes how art-dupl can benefit from the new SIMD support in Go 
 ### Key Findings
 
 ✅ **Immediate Benefits Available:**
+
 - Green Tea GC SIMD optimization (automatic, ~10% GC overhead reduction)
 - SHA-256 hardware acceleration (automatic, already optimized in Go)
 
 ⚠️ **Current Limitations:**
+
 - Explicit `simd/archsimd` package is **AMD64-only** (not available on ARM64)
 - Apple Silicon (ARM64) cannot use manual SIMD API yet
 
 🎯 **Strategic Opportunities:**
+
 - Code structure is already SIMD-friendly
 - Hashing operations are prime candidates for future ARM64 SIMD
 - Suffix tree token comparisons could benefit from SIMD
@@ -40,6 +43,7 @@ The Green Tea GC in Go 1.26 now uses vector instructions for scanning small obje
 - **Enable/Disable:** `GOEXPERIMENT=nogreenteagc` to disable
 
 **Impact on art-dupl:**
+
 - Reduces memory allocation overhead in suffix tree construction
 - Improves performance during AST serialization
 - Benefits node slicing and token stream processing
@@ -56,6 +60,7 @@ The new `simd/archsimd` package provides explicit SIMD operations but has critic
 - **Future:** Plans for portable high-level SIMD package
 
 **Why This Matters:**
+
 - The user is on Apple M2 (ARM64)
 - Cannot use explicit SIMD API today
 - Must wait for future Go versions for ARM64 support
@@ -79,11 +84,13 @@ Go's `crypto/sha256` already uses hardware acceleration when available:
 #### 2.1.1 SHA-256 Hashing (Multiple Locations)
 
 **Locations:**
+
 - `syntax/syntax.go:198-205` - `hashSeq()` for AST nodes
 - `hash/file_detector.go:88-91` - File content hashing
 - `domain/clone.go:382` - Fragment hashing
 
 **Current Implementation:**
+
 ```go
 func hashSeq(nodes []*Node) string {
     h := sha256.New()
@@ -97,6 +104,7 @@ func hashSeq(nodes []*Node) string {
 ```
 
 **Analysis:**
+
 - Uses Go's optimized SHA-256 implementation
 - Already benefits from hardware acceleration
 - Memory allocation: `make([]byte, len(nodes))`
@@ -106,16 +114,19 @@ func hashSeq(nodes []*Node) string {
 **Location:** `suffixtree/suffixtree.go`
 
 **Benchmark Results (Apple M2):**
+
 ```
 BenchmarkConstruction-8    18358    6455 ns/op    7929 B/op    151 allocs/op
 ```
 
 **Performance Characteristics:**
+
 - 6,455 nanoseconds per operation
 - 7,929 bytes allocated per operation
 - 151 allocations per operation
 
 **Hot Operations:**
+
 1. Token comparisons in `findTran()` (line 196-202)
 2. State transitions in `canonize()` (line 117-145)
 3. Tree building in `update()` (line 56-83)
@@ -127,6 +138,7 @@ BenchmarkConstruction-8    18358    6455 ns/op    7929 B/op    151 allocs/op
 **Operation:** Recursive tree traversal generating byte sequences for hashing
 
 **Current Implementation:**
+
 ```go
 func serial(n *Node, stream *[]*Node) int {
     *stream = append(*stream, n)
@@ -143,6 +155,7 @@ func serial(n *Node, stream *[]*Node) int {
 ```
 
 **Performance Concerns:**
+
 - Recursive calls may cause stack overflow on large trees
 - Slicing limit: `maxChildrenSerial = 10_000`
 - Generates large byte arrays for SHA-256 hashing
@@ -158,16 +171,19 @@ func serial(n *Node, stream *[]*Node) int {
 **Implementation:** Automatic (already enabled in Go 1.26)
 
 **Expected Impact:**
+
 - **GC overhead:** ~10% reduction
 - **Overall runtime:** 2-5% improvement (estimated)
 - **Memory pressure:** Reduced allocation overhead
 
 **Action Items:**
+
 - [x] Ensure using Go 1.26 or later
 - [ ] Run baseline benchmarks to measure improvement
 - [ ] Monitor GC pauses with `GODEBUG=gctrace=1`
 
 **Verification:**
+
 ```bash
 # Enable GC tracing
 GODEBUG=gctrace=1 go test ./suffixtree/ -bench=.
@@ -183,6 +199,7 @@ GODEBUG=gctrace=1 go test ./suffixtree/ -bench=.
 **Current Status:** Already optimized, no changes needed
 
 **Verification:**
+
 ```bash
 # Check if using SHA extensions
 go test -bench=. ./syntax/ -benchtime=1s -cpuprofile=cpu.prof
@@ -199,6 +216,7 @@ go tool pprof cpu.prof
 **When Available:** ARM64 `simd/archsimd` support in future Go versions
 
 **Potential Implementation:**
+
 ```go
 // Future ARM64 SIMD implementation
 func hashSeqSIMD(nodes []*Node) string {
@@ -209,17 +227,20 @@ func hashSeqSIMD(nodes []*Node) string {
 ```
 
 **Expected Impact:**
+
 - **Hashing speed:** 2-4x improvement (estimated)
 - **Memory usage:** Reduced allocations with SIMD-friendly patterns
 - **Overall runtime:** 10-20% improvement (estimated)
 
 **Preparation Strategy:**
+
 1. Profile current hashing bottlenecks
 2. Benchmark hashSeq performance with varying input sizes
 3. Document current performance characteristics
 4. Prepare fallback for non-SIMD architectures
 
 **Implementation Checklist:**
+
 ```go
 // Future-proof design
 func hashSeq(nodes []*Node) string {
@@ -235,6 +256,7 @@ func hashSeq(nodes []*Node) string {
 **Location:** `suffixtree/suffixtree.go:196-202`
 
 **Current Implementation:**
+
 ```go
 func (s *state) findTran(c Token) *tran {
     for _, tran := range s.trans {
@@ -247,6 +269,7 @@ func (s *state) findTran(c Token) *tran {
 ```
 
 **Potential SIMD Implementation:**
+
 ```go
 // Compare multiple tokens in parallel using SIMD
 // Vectorize token value comparisons
@@ -254,10 +277,12 @@ func (s *state) findTran(c Token) *tran {
 ```
 
 **Expected Impact:**
+
 - **Search speed:** 2-3x improvement in findTran
 - **Suffix tree construction:** 5-10% overall improvement
 
 **Challenges:**
+
 - Data structure may not be SIMD-friendly (slice vs contiguous array)
 - May require refactoring state.transition storage
 - Variable number of transitions complicates vectorization
@@ -267,6 +292,7 @@ func (s *state) findTran(c Token) *tran {
 **Location:** `syntax/syntax.go:198-204`
 
 **Current Implementation:**
+
 ```go
 bytes := make([]byte, len(nodes))
 for i, node := range nodes {
@@ -275,6 +301,7 @@ for i, node := range nodes {
 ```
 
 **Potential SIMD Implementation:**
+
 ```go
 // Vectorized byte extraction from node.Type
 // Batch conversion operations
@@ -282,6 +309,7 @@ for i, node := range nodes {
 ```
 
 **Expected Impact:**
+
 - **Serialization speed:** 2-3x improvement
 - **Memory overhead:** Reduced allocations
 
@@ -296,12 +324,14 @@ for i, node := range nodes {
 **Objective:** Confirm automatic GC SIMD improvements
 
 **Steps:**
+
 1. Run baseline benchmarks with Go 1.26
 2. Enable GC tracing: `GODEBUG=gctrace=1`
 3. Compare with Go 1.25 benchmarks (if available)
 4. Document performance improvements
 
 **Commands:**
+
 ```bash
 # Run benchmarks with GC tracing
 GODEBUG=gctrace=1 go test -bench=. ./suffixtree/ -benchtime=1s
@@ -316,6 +346,7 @@ go tool pprof mem.prof
 ```
 
 **Success Criteria:**
+
 - Observe reduced GC pauses
 - Lower memory allocation rates
 - Overall benchmark improvement
@@ -325,12 +356,14 @@ go tool pprof mem.prof
 **Objective:** Identify bottlenecks for future SIMD optimization
 
 **Steps:**
+
 1. Profile suffix tree construction
 2. Profile AST serialization
 3. Profile hashing operations
 4. Document current performance characteristics
 
 **Commands:**
+
 ```bash
 # Comprehensive profiling
 go test -bench= BenchmarkConstruction -cpuprofile=cpu.prof ./suffixtree/
@@ -342,6 +375,7 @@ go tool pprof -http=:8080 cpu.prof
 ```
 
 **Expected Findings:**
+
 - Identify top CPU-consuming functions
 - Measure time spent in hashing
 - Quantify memory allocation patterns
@@ -351,12 +385,14 @@ go tool pprof -http=:8080 cpu.prof
 **Objective:** Establish baseline for SIMD comparison
 
 **Steps:**
+
 1. Create benchmark for `hashSeq()`
 2. Test with varying input sizes (small, medium, large)
 3. Measure time and allocations
 4. Document baseline performance
 
 **Implementation:**
+
 ```go
 // Create: syntax/hash_bench_test.go
 package syntax
@@ -400,6 +436,7 @@ func BenchmarkHashSeqLarge(b *testing.B) {
 ```
 
 **Commands:**
+
 ```bash
 # Run hashing benchmarks
 go test -bench=. -benchtime=1s ./syntax/
@@ -416,12 +453,14 @@ go tool pprof cpu.prof
 **Objective:** Prepare for ARM64 SIMD support
 
 **Steps:**
+
 1. Watch Go issue tracker for ARM64 SIMD progress
 2. Subscribe to Go dev mailing list
 3. Test Go 1.27 beta releases for SIMD support
 4. Evaluate portable SIMD API proposals
 
 **Resources:**
+
 - Go Issue Tracker: https://github.com/golang/go/issues
 - Go Weekly Newsletter
 - Go Blog: https://go.dev/blog/
@@ -431,6 +470,7 @@ go tool pprof cpu.prof
 **Objective:** Prepare codebase for portable SIMD
 
 **Approach:**
+
 ```go
 // Create: internal/simd/simd.go
 package simd
@@ -461,6 +501,7 @@ func Available() bool {
 ```
 
 **Benefits:**
+
 - Easy to add SIMD when available
 - Fallback for non-SIMD systems
 - Cross-platform compatibility
@@ -470,12 +511,14 @@ func Available() bool {
 **Objective:** Prepare data structures for SIMD
 
 **Focus Areas:**
+
 1. Ensure arrays are contiguous (better for SIMD)
 2. Align data structures for SIMD operations
 3. Reduce indirection in hot paths
 4. Consider struct-of-arrays vs array-of-structs
 
 **Example:**
+
 ```go
 // Current: Array of structs
 type Node struct {
@@ -499,6 +542,7 @@ type NodeArray struct {
 **When:** ARM64 SIMD support available in Go
 
 **Implementation:**
+
 ```go
 // +build !noasm
 
@@ -526,6 +570,7 @@ func hashSeqSIMD(nodes []*Node) string {
 **When:** ARM64 SIMD support available in Go
 
 **Implementation:**
+
 ```go
 // SIMD-optimized token comparison
 func (s *state) findTranSIMD(c Token) *tran {
@@ -539,6 +584,7 @@ func (s *state) findTranSIMD(c Token) *tran {
 **When:** After SIMD implementations
 
 **Steps:**
+
 1. Compare SIMD vs fallback performance
 2. Validate correctness with extensive testing
 3. Profile to identify remaining bottlenecks
@@ -550,21 +596,21 @@ func (s *state) findTranSIMD(c Token) *tran {
 
 ### 5.1 Technical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| ARM64 SIMD not released in Go 1.27 | High | Medium | Continue with Green Tea GC benefits |
-| SIMD performance lower than expected | Medium | Low | Profile before and after |
-| Code complexity increases | Medium | Medium | Keep abstraction layer clean |
-| Compatibility issues with older Go versions | Low | High | Use build tags and feature detection |
+| Risk                                        | Probability | Impact | Mitigation                           |
+| ------------------------------------------- | ----------- | ------ | ------------------------------------ |
+| ARM64 SIMD not released in Go 1.27          | High        | Medium | Continue with Green Tea GC benefits  |
+| SIMD performance lower than expected        | Medium      | Low    | Profile before and after             |
+| Code complexity increases                   | Medium      | Medium | Keep abstraction layer clean         |
+| Compatibility issues with older Go versions | Low         | High   | Use build tags and feature detection |
 
 ### 5.2 Implementation Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| Data structure refactoring breaks existing code | Medium | High | Comprehensive test coverage |
-| SIMD code becomes non-portable | High | Medium | Use abstraction layer |
-| Performance regressions on non-SIMD systems | Low | Medium | Fallback implementation |
-| Maintenance burden increases | Medium | Low | Clear documentation |
+| Risk                                            | Probability | Impact | Mitigation                  |
+| ----------------------------------------------- | ----------- | ------ | --------------------------- |
+| Data structure refactoring breaks existing code | Medium      | High   | Comprehensive test coverage |
+| SIMD code becomes non-portable                  | High        | Medium | Use abstraction layer       |
+| Performance regressions on non-SIMD systems     | Low         | Medium | Fallback implementation     |
+| Maintenance burden increases                    | Medium      | Low    | Clear documentation         |
 
 ---
 
@@ -572,30 +618,30 @@ func (s *state) findTranSIMD(c Token) *tran {
 
 ### 6.1 Immediate Benefits (Go 1.26)
 
-| Component | Expected Improvement | Confidence |
-|-----------|---------------------|------------|
-| Green Tea GC overhead | 5-10% | High |
-| SHA-256 hardware acceleration | Already optimized | N/A |
-| Overall runtime | 2-5% | Medium |
-| Memory allocation | 5-10% reduction | High |
+| Component                     | Expected Improvement | Confidence |
+| ----------------------------- | -------------------- | ---------- |
+| Green Tea GC overhead         | 5-10%                | High       |
+| SHA-256 hardware acceleration | Already optimized    | N/A        |
+| Overall runtime               | 2-5%                 | Medium     |
+| Memory allocation             | 5-10% reduction      | High       |
 
 ### 6.2 Future SIMD Benefits (When Available)
 
-| Component | Expected Improvement | Confidence |
-|-----------|---------------------|------------|
-| Hashing operations | 2-4x | Medium |
-| Token comparisons | 2-3x | Low-Medium |
-| Suffix tree construction | 5-10% | Medium |
-| Overall runtime | 10-20% | Low-Medium |
+| Component                | Expected Improvement | Confidence |
+| ------------------------ | -------------------- | ---------- |
+| Hashing operations       | 2-4x                 | Medium     |
+| Token comparisons        | 2-3x                 | Low-Medium |
+| Suffix tree construction | 5-10%                | Medium     |
+| Overall runtime          | 10-20%               | Low-Medium |
 
 ### 6.3 Estimated Timeline
 
-| Milestone | Expected Time |
-|-----------|---------------|
-| Go 1.26 release | Q1 2026 (current) |
-| Green Tea GC benefits | Immediate |
-| ARM64 SIMD support | Go 1.28+ (estimated late 2026/early 2027) |
-| SIMD implementation ready | 3-6 months after ARM64 support |
+| Milestone                 | Expected Time                             |
+| ------------------------- | ----------------------------------------- |
+| Go 1.26 release           | Q1 2026 (current)                         |
+| Green Tea GC benefits     | Immediate                                 |
+| ARM64 SIMD support        | Go 1.28+ (estimated late 2026/early 2027) |
+| SIMD implementation ready | 3-6 months after ARM64 support            |
 
 ---
 
@@ -606,12 +652,14 @@ func (s *state) findTranSIMD(c Token) *tran {
 **Objective:** Establish performance baseline before optimizations
 
 **Steps:**
+
 1. Run full test suite with Go 1.26
 2. Benchmark all performance-critical paths
 3. Document baseline metrics
 4. Store baseline results for comparison
 
 **Commands:**
+
 ```bash
 # Full benchmark suite
 go test -bench=. -benchtime=1s -count=5 ./... 2>&1 | tee baseline.txt
@@ -628,11 +676,13 @@ go test -bench=. -memprofile=baseline_mem.prof ./...
 **Objective:** Ensure no performance regressions
 
 **Strategy:**
+
 - Run benchmarks on every commit
 - Compare against baseline
 - Alert on >5% performance degradation
 
 **Implementation:**
+
 ```yaml
 # .github/workflows/performance.yml
 name: Performance Tests
@@ -644,7 +694,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.26'
+          go-version: "1.26"
       - name: Run benchmarks
         run: |
           go test -bench=. -benchtime=1s ./... > results.txt
@@ -656,12 +706,14 @@ jobs:
 **Objective:** Verify SIMD improvements
 
 **Steps:**
+
 1. Run SIMD benchmarks
 2. Compare with baseline
 3. Validate correctness
 4. Profile to ensure expected gains
 
 **Commands:**
+
 ```bash
 # SIMD benchmark comparison
 go test -bench=. -benchtime=1s -count=5 ./syntax/ > simd_results.txt
@@ -680,6 +732,7 @@ go test -race -count=100 ./...
 ### 8.1 Key Performance Indicators
 
 **To Track:**
+
 - Suffix tree construction time
 - Hashing operation time
 - Memory allocation rate
@@ -689,11 +742,13 @@ go test -race -count=100 ./...
 ### 8.2 Monitoring Tools
 
 **Built-in:**
+
 - `go test -bench`
 - `go tool pprof`
 - `GODEBUG=gctrace=1`
 
 **Optional:**
+
 - Prometheus + Grafana
 - Continuous profiling with `net/http/pprof`
 - Performance dashboards
@@ -703,6 +758,7 @@ go test -race -count=100 ./...
 **Frequency:** Weekly during development, monthly in production
 
 **Format:**
+
 - Benchmark comparison charts
 - GC metrics trends
 - Memory usage graphs
@@ -732,16 +788,19 @@ go test -race -count=100 ./...
 ### Recommended Approach
 
 **Phase 1 (Immediate - Next 1-2 weeks):**
+
 1. Verify Green Tea GC benefits with profiling
 2. Establish performance baseline
 3. Document current hot paths
 
 **Phase 2 (Short-term - Next 1-3 months):**
+
 1. Create benchmark suite for hashing operations
 2. Design SIMD abstraction layer
 3. Monitor Go 1.27+ SIMD developments
 
 **Phase 3 (Long-term - When ARM64 SIMD available):**
+
 1. Implement SIMD-optimized hashing
 2. Optimize token comparisons with SIMD
 3. Validate performance improvements
@@ -749,16 +808,19 @@ go test -race -count=100 ./...
 ### Success Criteria
 
 **Short-term (Phase 1):**
+
 - ✅ Documented 5-10% GC improvement
 - ✅ Baseline performance metrics established
 - ✅ Hot path profiling completed
 
 **Medium-term (Phase 2):**
+
 - ✅ Comprehensive benchmark suite in place
 - ✅ SIMD abstraction layer designed
 - ✅ Monitoring for ARM64 SIMD support
 
 **Long-term (Phase 3):**
+
 - ✅ SIMD hashing implemented and validated
 - ✅ 10-20% overall performance improvement
 - ✅ Cross-platform SIMD support

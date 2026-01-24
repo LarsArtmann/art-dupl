@@ -12,12 +12,14 @@
 This session investigated the critical blocker preventing **Task 1: Remove dual CLI systems** from proceeding. The investigation answered the question: **"Why does the codebase maintain DUAL CLI SYSTEMS?"**
 
 **Investigation Goals:**
+
 1. Identify all external dependencies on the old `Run()` function
 2. Determine if backward compatibility is required
 3. Assess safety of removing the old CLI system
 4. Unblock Task 1 and related CLI improvements
 
 **Investigation Results:**
+
 - ✅ **Old `Run()` function is DEAD CODE**
 - ✅ **ZERO external dependencies found**
 - ✅ **No backward compatibility needed**
@@ -25,6 +27,7 @@ This session investigated the critical blocker preventing **Task 1: Remove dual 
 - ✅ **Task 1 is now UNBLOCKED**
 
 **Key Findings:**
+
 - Old system: `cli.go:28-134` (107 lines) - `Run()` function using `flag` package
 - New system: `main.go:13-115` + `cli.go:297-400` - Cobra-based with rich features
 - No external scripts, documentation, or tests reference old `Run()`
@@ -32,6 +35,7 @@ This session investigated the critical blocker preventing **Task 1: Remove dual 
 - Old function exists but is never called in the codebase
 
 **Impact of Removal:**
+
 - Lines eliminated: 107 lines of dead code
 - Maintenance burden: Reduced from 2 systems to 1
 - Confusion: Eliminated (single source of truth for CLI)
@@ -46,6 +50,7 @@ This session investigated the critical blocker preventing **Task 1: Remove dual 
 The codebase maintains **TWO separate CLI entry points**:
 
 #### System 1: Old CLI (DEPRECATED - BUT STILL PRESENT)
+
 ```go
 // cli.go:28-134
 func Run() int {
@@ -58,6 +63,7 @@ func Run() int {
 ```
 
 **Characteristics:**
+
 - Uses Go's standard `flag` package
 - Manual flag parsing with `flag.Parse()`
 - Returns `int` exit code directly
@@ -65,6 +71,7 @@ func Run() int {
 - **Status: NOT CALLED ANYWHERE**
 
 #### System 2: New CLI (ACTIVE - IN USE)
+
 ```go
 // main.go:13-115
 func main() {
@@ -84,6 +91,7 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 ```
 
 **Characteristics:**
+
 - Uses modern `cobra` + `fang` libraries
 - Rich CLI features: help text, color schemes, error handlers
 - Returns `error` for better error handling
@@ -93,13 +101,16 @@ func runCobraCommand(cmd *cobra.Command, args []string) error {
 ### The Blocking Question
 
 **Task 1** from the comprehensive improvement plan asked to:
+
 > "Remove dual CLI systems - delete old Run() function from cli.go"
 
 **However, the task was BLOCKED by a critical question:**
+
 > **"Why does codebase maintain DUAL CLI SYSTEMS?"**
 
 **Reason for Blocker:**
 Before removing the old system, we needed to understand:
+
 - Are there external dependencies (scripts, tools) calling `Run()`?
 - Is backward compatibility required?
 - Are there tests relying on the old system?
@@ -112,11 +123,13 @@ Before removing the old system, we needed to understand:
 ### Step 1: Search for External Dependencies
 
 #### Search 1: All `.Run()` References in Go Files
+
 ```bash
 grep -r "\.Run()" --include="*.go" .
 ```
 
 **Results:**
+
 - **2 matches found:**
   1. `cli.go:28` - The old `Run()` function itself
   2. `lib/lib.go:14` - Different `Run()` function in library package
@@ -124,21 +137,25 @@ grep -r "\.Run()" --include="*.go" .
 **Finding:** The old `Run()` function is only defined, never called.
 
 #### Search 2: Shell Script References
+
 ```bash
 grep -r "\.Run()" --include="*.sh" .
 ```
 
 **Results:**
+
 - **0 matches found**
 
 **Finding:** No shell scripts reference the old CLI system.
 
 #### Search 3: Documentation References
+
 ```bash
 grep -r "\.Run()" --include="*.md" .
 ```
 
 **Results:**
+
 - **10 matches found, ALL referencing Cobra's `cmd.Run()` method:**
   - `docs/status/2026-01-07_05-58_comprehensive-code-quality-improvement-status.md`
     - `err := cmd.Run()` - Cobra command execution
@@ -154,6 +171,7 @@ grep -r "cmd.Run()" --include="*_test.go" .
 ```
 
 **Results:**
+
 - **8 matches in `bdd/bdd_test.go`:**
   - Lines 85, 110, 122, 126, 145, 152, 160, 166
   - All use `cmd.Run()` - Cobra's command execution method
@@ -163,11 +181,13 @@ grep -r "cmd.Run()" --include="*_test.go" .
 ### Step 3: Check Build System
 
 #### Makefile Analysis
+
 ```bash
 cat Makefile
 ```
 
 **Content:**
+
 ```makefile
 .PHONY: clean check test build
 
@@ -191,11 +211,13 @@ build:
 ### Step 4: Import Analysis
 
 **Search for external imports:**
+
 ```bash
 grep -r "import.*cli" --include="*.go" .
 ```
 
 **Results:**
+
 - **No packages import the old `Run()` function**
 - The function is not exported (no package prefix)
 - It's a private function in `main` package
@@ -208,20 +230,22 @@ grep -r "import.*cli" --include="*.go" .
 
 ### Evidence Summary Table
 
-| Check Type | Result | Evidence |
-|------------|--------|----------|
-| **Go code references** | ✅ NONE | Only function definition found |
-| **Shell script calls** | ✅ NONE | No shell scripts in codebase |
-| **Documentation** | ✅ NONE | References Cobra's `cmd.Run()` only |
-| **BDD tests** | ✅ NONE | Tests use Cobra's `cmd.Run()` |
-| **Makefile/Build** | ✅ NONE | Standard Go build process |
-| **Public API exports** | ✅ NONE | Function not exported |
-| **External packages** | ✅ NONE | No imports found |
+| Check Type             | Result  | Evidence                            |
+| ---------------------- | ------- | ----------------------------------- |
+| **Go code references** | ✅ NONE | Only function definition found      |
+| **Shell script calls** | ✅ NONE | No shell scripts in codebase        |
+| **Documentation**      | ✅ NONE | References Cobra's `cmd.Run()` only |
+| **BDD tests**          | ✅ NONE | Tests use Cobra's `cmd.Run()`       |
+| **Makefile/Build**     | ✅ NONE | Standard Go build process           |
+| **Public API exports** | ✅ NONE | Function not exported               |
+| **External packages**  | ✅ NONE | No imports found                    |
 
 ### Critical Findings
 
 #### Finding 1: Dead Code Confirmed
+
 The old `Run()` function exists at `cli.go:28-134` but is **NEVER CALLED**:
+
 - Not called by any other function in the codebase
 - Not called by external scripts
 - Not called by tests
@@ -229,21 +253,27 @@ The old `Run()` function exists at `cli.go:28-134` but is **NEVER CALLED**:
 - Not referenced in documentation
 
 #### Finding 2: New System Fully Active
+
 The new Cobra-based system is **FULLY OPERATIONAL**:
+
 - All CLI interactions use Cobra commands
 - All tests use Cobra's `cmd.Run()`
 - All documentation describes Cobra-based CLI
 - Build process compiles Cobra-based main function
 
 #### Finding 3: No Backward Compatibility Needed
+
 Because the old system is not called anywhere:
+
 - No external tools depend on it
 - No user-facing APIs use it
 - No integration tests require it
 - No documentation describes it
 
 #### Finding 4: Safe to Remove
+
 **Removal Safety Assessment:**
+
 - ✅ Zero external dependencies
 - ✅ No breaking changes to public API
 - ✅ No test coverage impact (tests don't use it)
@@ -281,13 +311,13 @@ Because the old system is not called anywhere:
 
 ### Safety Assessment
 
-| Risk Factor | Level | Explanation |
-|-------------|-------|-------------|
-| **Breaking changes** | ✅ NONE | No public API changes |
-| **Test failures** | ✅ NONE | Tests don't use old system |
-| **User impact** | ✅ NONE | Function never exposed |
-| **Documentation** | ✅ NONE | No docs reference it |
-| **External tools** | ✅ NONE | No external dependencies |
+| Risk Factor          | Level   | Explanation                |
+| -------------------- | ------- | -------------------------- |
+| **Breaking changes** | ✅ NONE | No public API changes      |
+| **Test failures**    | ✅ NONE | Tests don't use old system |
+| **User impact**      | ✅ NONE | Function never exposed     |
+| **Documentation**    | ✅ NONE | No docs reference it       |
+| **External tools**   | ✅ NONE | No external dependencies   |
 
 **Overall Risk Level: ZERO** ✅
 
@@ -300,11 +330,13 @@ Because the old system is not called anywhere:
 #### Files to Modify
 
 **File: `cli.go`**
+
 - **Lines to delete:** 28-134 (107 lines)
 - **Function:** `func Run() int`
 - **Action:** Delete entire function
 
 **Steps:**
+
 1. Backup current state (git commit)
 2. Delete lines 28-134 from `cli.go`
 3. Run tests to verify no regressions
@@ -313,12 +345,12 @@ Because the old system is not called anywhere:
 
 #### Expected Impact
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| **Lines of code** | 400+ | 293+ | -107 lines |
-| **CLI entry points** | 2 | 1 | -50% |
-| **Maintenance burden** | High | Low | Significant |
-| **Code clarity** | Confusing | Clear | Improved |
+| Metric                 | Before    | After | Change      |
+| ---------------------- | --------- | ----- | ----------- |
+| **Lines of code**      | 400+      | 293+  | -107 lines  |
+| **CLI entry points**   | 2         | 1     | -50%        |
+| **Maintenance burden** | High      | Low   | Significant |
+| **Code clarity**       | Confusing | Clear | Improved    |
 
 #### Test Verification
 
@@ -340,11 +372,13 @@ go build -ldflags "-s -w" -trimpath
 ## 🎯 Next Steps
 
 ### Task 1: Remove Dual CLI Systems
+
 **Status:** ✅ READY TO EXECUTE
 **Priority:** HIGH (blocks 7 other tasks)
 **Estimated Time:** 15 minutes
 
 **Subtasks:**
+
 1. Delete old `Run()` function (cli.go:28-134) [5 min]
 2. Run tests to verify no regressions [5 min]
 3. Build and verify CLI functionality [5 min]
@@ -389,36 +423,36 @@ With Task 1 complete, these tasks can now proceed:
 
 ### Investigation Results
 
-| Metric | Value |
-|--------|--------|
-| **Investigation time** | 15 minutes |
-| **Searches performed** | 6 |
-| **Files analyzed** | 3 (cli.go, main.go, Makefile) |
-| **Dependencies found** | 0 |
-| **Risk level** | ZERO |
-| **Blocker status** | ✅ RESOLVED |
+| Metric                 | Value                         |
+| ---------------------- | ----------------------------- |
+| **Investigation time** | 15 minutes                    |
+| **Searches performed** | 6                             |
+| **Files analyzed**     | 3 (cli.go, main.go, Makefile) |
+| **Dependencies found** | 0                             |
+| **Risk level**         | ZERO                          |
+| **Blocker status**     | ✅ RESOLVED                   |
 
 ### Impact Assessment
 
-| Category | Before | After | Impact |
-|----------|--------|-------|--------|
-| **CLI systems** | 2 (dual) | 1 (unified) | +100% clarity |
-| **Lines of dead code** | 107 | 0 | -100% waste |
-| **Maintenance burden** | High | Low | Significant |
-| **Confusion factor** | High | None | Eliminated |
+| Category               | Before   | After       | Impact        |
+| ---------------------- | -------- | ----------- | ------------- |
+| **CLI systems**        | 2 (dual) | 1 (unified) | +100% clarity |
+| **Lines of dead code** | 107      | 0           | -100% waste   |
+| **Maintenance burden** | High     | Low         | Significant   |
+| **Confusion factor**   | High     | None        | Eliminated    |
 
 ### Task Impact
 
-| Task | Status | Unblock Time Saved |
-|------|--------|-------------------|
-| **Task 1: Remove dual CLI** | ✅ Ready | IMMEDIATE |
-| **Task 2: Refactor cli.go** | ✅ Ready | IMMEDIATE |
-| **Task 3: Test binary builder** | ✅ Ready | IMMEDIATE |
-| **Task 4: Error messages** | ✅ Ready | IMMEDIATE |
-| **Task 5: Structured logging** | ✅ Ready | IMMEDIATE |
-| **Task 6: Config validation** | ✅ Ready | IMMEDIATE |
-| **Task 7: Integration tests** | ✅ Ready | IMMEDIATE |
-| **Task 8: Package docs** | ✅ Ready | IMMEDIATE |
+| Task                            | Status   | Unblock Time Saved |
+| ------------------------------- | -------- | ------------------ |
+| **Task 1: Remove dual CLI**     | ✅ Ready | IMMEDIATE          |
+| **Task 2: Refactor cli.go**     | ✅ Ready | IMMEDIATE          |
+| **Task 3: Test binary builder** | ✅ Ready | IMMEDIATE          |
+| **Task 4: Error messages**      | ✅ Ready | IMMEDIATE          |
+| **Task 5: Structured logging**  | ✅ Ready | IMMEDIATE          |
+| **Task 6: Config validation**   | ✅ Ready | IMMEDIATE          |
+| **Task 7: Integration tests**   | ✅ Ready | IMMEDIATE          |
+| **Task 8: Package docs**        | ✅ Ready | IMMEDIATE          |
 
 **Total tasks unblocked:** 8
 **Total time saved from blocking:** ~15 minutes of investigation
@@ -478,13 +512,13 @@ With Task 1 complete, these tasks can now proceed:
 
 ### Blocker Resolution
 
-| Status | Details |
-|--------|---------|
-| **Investigation** | ✅ Complete |
-| **Findings** | ✅ Old system is dead code |
-| **Risk assessment** | ✅ ZERO risk |
-| **Task 1 status** | ✅ UNBLOCKED |
-| **Ready to execute** | ✅ YES |
+| Status               | Details                    |
+| -------------------- | -------------------------- |
+| **Investigation**    | ✅ Complete                |
+| **Findings**         | ✅ Old system is dead code |
+| **Risk assessment**  | ✅ ZERO risk               |
+| **Task 1 status**    | ✅ UNBLOCKED               |
+| **Ready to execute** | ✅ YES                     |
 
 ### Next Session Priorities
 
@@ -512,4 +546,4 @@ The investigation was thorough, comprehensive, and conclusive. All evidence poin
 
 ---
 
-*End of Report*
+_End of Report_

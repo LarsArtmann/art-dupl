@@ -1,4 +1,5 @@
 # Architecture Refactoring Status Report
+
 ## art-dupl Project - 2026-01-14 @ 02:13 CET
 
 ---
@@ -19,17 +20,20 @@
 ### Phase 1: Foundation & Structure (100% complete)
 
 #### Task 1: Architecture Status Report
+
 - **File**: `docs/status/2026-01-13_22-26_ARCHITECTURE-ANALYSIS-COMPLETE.md`
 - **Content**: Full package analysis, dependency mapping, consolidation plan
 - **Status**: ✅ Complete
 
 #### Task 2: Test File Migration
+
 - **Action**: Moved `cli_sorting_integration_test.go` from root to `cli/`
 - **File**: `cli/cli_sorting_test.go`
 - **Imports**: Updated to use `internal/utils`
 - **Status**: ✅ Complete
 
 #### Tasks 3-6: main.go Refactoring (100% complete)
+
 - **Created Files**:
   - `cmd/version.go` - Version constants and initialization
   - `cmd/root.go` - Cobra root command with help text
@@ -39,6 +43,7 @@
 - **Status**: ✅ Complete
 
 #### Tasks 7-10: cli.go Initial Breakdown (100% complete)
+
 - **Created Files**:
   - `cli/config.go` - CLIConfig struct with flag definitions
   - `cli/runtime.go` - RuntimeConfig struct
@@ -49,6 +54,7 @@
 ### Phase 2: Utility Consolidation (100% complete)
 
 #### Task 11: Created internal/utils/ Package
+
 - **Directory**: `internal/utils/`
 - **Files Created**:
   - `internal/utils/file.go` (86 lines)
@@ -60,6 +66,7 @@
 - **Status**: ✅ Complete
 
 #### Tasks 12-14: Migrated Utility Functions (100% complete)
+
 - **Updated Imports** (all files changed from `utils/` or `util/` to `internal/utils`):
   - `bdd/bdd_test.go` - utils → internal/utils
   - `cli/cli_sorting_test.go` - util → internal/utils
@@ -71,6 +78,7 @@
 - **Status**: ✅ Complete
 
 #### Task 15: Deleted Old Utility Packages
+
 - **Deleted Directories**:
   - `utils/` (old utility package)
   - `util/` (old utility package)
@@ -80,6 +88,7 @@
 ### Phase 3: Enum Consolidation (100% complete)
 
 #### Task 16: Created internal/enum/ Package
+
 - **Directory**: `internal/enum/`
 - **File**: `internal/enum/marshal.go` (194 lines)
 - **Features**:
@@ -95,11 +104,13 @@
 - **Status**: ✅ Complete
 
 #### Task 17: Consolidated Enum Utilities (100% complete)
+
 - **Deleted Files**:
   - `types/enum_utils.go` (interface-based enum marshaling)
   - `config/unmarshal_helper.go` (method-value enum marshaling)
   - `types/enums.go` (FileProcessingState, DetectionState, AnalysisMode)
 - **Migrated Enums to domain/clone.go**:
+
   ```go
   // FileProcessingState
   const (
@@ -124,6 +135,7 @@
     AnalysisModeDeep
   )
   ```
+
 - **Updated References**:
   - `adapter/printer_adapter.go` - types.xxx → domain.xxx
   - `migration/migration.go` - types.xxx → domain.xxx
@@ -131,6 +143,7 @@
 - **Status**: ✅ Complete
 
 #### Task 18: Updated Config Enums (100% complete)
+
 - **Updated Files**:
   - `config/detectionmethod.go` - Local JSON marshaling
   - `config/outputformat.go` - Local JSON marshaling
@@ -138,6 +151,7 @@
 - **Implementation Details**:
 
   **DetectionMethod**:
+
   ```go
   type DetectionMethod string
   const (
@@ -154,6 +168,7 @@
   - No dependency on internal/enum (simplified approach)
 
   **DetectionMethods**:
+
   ```go
   type DetectionMethods []DetectionMethod
   func IsDefault() bool
@@ -178,15 +193,18 @@
 ### Task 6: main.go → cmd/run.go Extraction
 
 **What Was Done**:
+
 - ✅ Created `cmd/run.go` file
 - ✅ Added `runCmd()` function with correct signature
 - ✅ Updated main.go to use cobra framework
 
 **What's Missing**:
+
 - ❌ Function contains only placeholder: "CLI execution not yet implemented"
 - ❌ No actual logic migration from root `cli.go`
 
 **Impact**:
+
 - Binary commands (`./art-dupl version`, `./art-dupl --help`, etc.) fail
 - All CLI functionality is broken despite successful build
 
@@ -201,6 +219,7 @@
 **Severity**: 🔴 CRITICAL - Blocks all CLI usage
 
 **Problem**:
+
 ```go
 // cmd/run.go - CURRENT STATE
 func runCmd(c *cobra.Command, args []string) error {
@@ -209,16 +228,19 @@ func runCmd(c *cobra.Command, args []string) error {
 ```
 
 **Expected Behavior**:
+
 - `./art-dupl --help` should display help text
 - `./art-dupl version` should display version
 - `./art-dupl ./src` should run analysis
 - `./art-dupl --json -t 20 ./src` should generate JSON report
 
 **Actual Behavior**:
+
 - All commands return error: "CLI execution not yet implemented"
 - Binary is built successfully but cannot execute any logic
 
 **Root Cause Analysis**:
+
 1. We created `cmd/` package structure with Cobra setup
 2. We deleted old 521-line `cli.go` from root
 3. A NEW 605-line `cli.go` was created with full `Run()` function
@@ -226,11 +248,13 @@ func runCmd(c *cobra.Command, args []string) error {
 5. Package boundary between `cmd/` (framework) and `cli/` (logic) is unclear
 
 **Files Involved**:
+
 - `main.go` (68 lines) - Entry point
 - `cli.go` (605 lines) - Contains actual `Run()` function with full analysis logic
 - `cmd/run.go` (stub) - Should delegate but doesn't
 
 **Dependencies**:
+
 ```
 main.go
   ↓ imports
@@ -244,6 +268,7 @@ cli package (circular??)
 ```
 
 **Resolution Required**:
+
 1. **Decision Needed**: Where should CLI logic live?
    - Option A: Move all logic from `cli.go` (root) to `cmd/` package
    - Option B: Keep logic in `cli.go` (root), make `cmd/run.go` delegate
@@ -270,17 +295,20 @@ cli package (circular??)
 ### 1. Package Boundary Definition
 
 **Current State**:
+
 - `cli/` (root directory) - Has config, runtime, validation
 - `cmd/` (cmd/ directory) - Has root command, flags, run stub
 - Root `cli.go` (605 lines) - Has full CLI logic
 
 **Confusion Points**:
+
 - Where should CLI execution logic live?
 - Is `cmd/` for Cobra framework only?
 - Is `cli/` for business logic?
 - Why is there both `cli/` directory and `cli.go` file?
 
 **Recommended Structure**:
+
 ```
 cmd/
   ├── root.go       (Cobra root command, help text)
@@ -300,10 +328,12 @@ cli/ (DELETE)
 ### 2. File Size Reduction
 
 **Current Large Files**:
+
 - `cli.go` (605 lines) - Needs breaking into 4-5 files
 - `internal/enum/marshal.go` (194 lines) - Needs splitting
 
 **Target Sizes**:
+
 - All files < 300 lines
 - All files have single responsibility
 - All functions clearly documented
@@ -311,10 +341,12 @@ cli/ (DELETE)
 ### 3. Internal Package Structure
 
 **Current State**:
+
 - `internal/utils/` - FileProcessor, Unique
 - `internal/enum/` - Single large file (194 lines)
 
 **Recommended Improvements**:
+
 ```
 internal/
   ├── utils/
@@ -341,11 +373,13 @@ internal/
 ### 4. Type Safety Improvements
 
 **Current State**:
+
 - Some enums use `config` package (DetectionMethod, OutputFormat)
 - Some enums use `domain` package (FileProcessingState, DetectionState)
 - Mixed ownership makes code unclear
 
 **Recommended Standard**:
+
 - All CLI config enums → `config` package
 - All runtime state enums → `domain` package
 - All analysis mode enums → `domain` package
@@ -353,11 +387,13 @@ internal/
 ### 5. Test Coverage
 
 **Current State**:
+
 - `internal/utils/unique_test.go` - Minimal tests
 - `internal/enum/` - NO tests
 - `cmd/` package - NO tests
 
 **Targets**:
+
 - `internal/utils/` - 80%+ coverage
 - `internal/enum/` - 80%+ coverage
 - `cmd/` - 60%+ coverage
@@ -520,6 +556,7 @@ internal/
 > **Should CLI execution logic live in `cmd/` package, `cli/` package (root), or `internal/cli/` package, and how do we resolve package dependency cycles if we move it to `cmd/`?**
 
 #### Context:
+
 - **Current State**:
   - `main.go` (68 lines) calls `cli.Run()` from root `cli.go` (605 lines)
   - `cmd/` package exists with Cobra setup and stub `runCmd()` function
@@ -538,6 +575,7 @@ internal/
   ```
 
 #### Option A: CLI Logic in cmd/ Package
+
 - **Pros**:
   - Single package for all CLI-related code
   - Clear separation (cmd/ = everything command-line)
@@ -549,17 +587,19 @@ internal/
   - May violate "cmd/ should be thin" principle
 
 - **Implementation**:
+
   ```go
   // cmd/run.go - Move entire Run() here
   func runCmd(c *cobra.Command, args []string) error {
       // Move all 605 lines from root cli.go here
       // Resolve any imports to avoid cycles
   }
-  
+
   // Delete root cli.go
   ```
 
 #### Option B: CLI Logic in cli/ Package (Root)
+
 - **Pros**:
   - Minimal changes (keep current structure)
   - No import cycles (main → cli, cli → others)
@@ -571,12 +611,13 @@ internal/
   - Not standard practice (CLI logic usually not in root)
 
 - **Implementation**:
+
   ```go
   // cmd/run.go - Just delegate
   func runCmd(c *cobra.Command, args []string) error {
       return cli.RunCobraCommand(c, args)
   }
-  
+
   // cli/cli_executor.go - Extract logic here
   func RunCobraCommand(c *cobra.Command, args []string) error {
       // Move 605 lines from root cli.go here
@@ -584,6 +625,7 @@ internal/
   ```
 
 #### Option C: CLI Logic in internal/cli/ Package
+
 - **Pros**:
   - Clean separation: `cmd/` = framework, `internal/cli/` = logic
   - No cycles: `main` → `cmd` → `internal/cli` → others
@@ -596,21 +638,23 @@ internal/
   - May require updating many imports
 
 - **Implementation**:
+
   ```go
   // internal/cli/executor.go - All CLI logic
   func ExecuteCobraCommand(c *cobra.Command, args []string) error {
       // Move 605 lines from root cli.go here
   }
-  
+
   // cmd/run.go - Delegate
   func runCmd(c *cobra.Command, args []string) error {
       return internalcli.ExecuteCobraCommand(c, args)
   }
-  
+
   // Delete root cli.go entirely
   ```
 
 #### Recommendation Needed:
+
 1. Which option is best for long-term maintainability?
 2. Are there other CLI commands planned (beyond root)?
 3. Should cmd/ be expandable for subcommands?
@@ -622,39 +666,46 @@ internal/
 ## 📋 REMAINING TASKS (73/91)
 
 ### Phase 4: Collections & Generics (Tasks 25-28) - NOT STARTED
+
 - Task 25: Create internal/collections/queue.go
 - Task 26: Create internal/collections/set.go
 - Task 27: Write tests for Queue[T]
 - Task 28: Write tests for Set[T]
 
 ### Phase 5: Primitive Replacement - Job (Tasks 31-34) - NOT STARTED
+
 - Task 31: Replace job/ int with domain.TokenCount
 - Task 32: Replace job/ []string with []domain.Filepath
 - Task 33: Replace job/ bool with config.IncludeVendor
 - Task 34: Update job/ tests
 
 ### Phase 6: Primitive Replacement - Printer (Tasks 35-38) - NOT STARTED
+
 - Task 35: Replace printer/ int with domain.TokenCount
 - Task 36: Replace printer/ SortCriteria with config.SortCriteria
 - Task 37: Replace printer/ string with domain.Filepath
 - Task 38: Update printer/ tests
 
 ### Phase 7: Primitive Replacement - Detection (Tasks 39-41) - NOT STARTED
+
 - Task 39: Replace detection/ int with domain.TokenCount
 - Task 40: Replace detection/ string with domain.Filepath
 - Task 41: Update detection/ tests
 
 ### Phase 8: Primitive Replacement - SuffixTree (Tasks 42-44) - NOT STARTED
+
 - Task 42: Replace suffixtree/ int with domain.TokenCount
 - Task 43: Replace suffixtree/ string with domain.Hash
 - Task 44: Update suffixtree/ tests
 
 ### Phase 9: Bool Flag Replacements (Tasks 47-52) - NOT STARTED
+
 - Task 47-48: Replace bool flags with VerbosityLevel enum in cli/
 - Task 49-50: Replace bool flags with ProfileMode enum in cli/
 - Task 51-52: Replace bool flags with FilterMode enum in config/
 
 ### Phase 10: Testing (Tasks 53-80) - NOT STARTED
+
 - Tasks 53-57: Unit tests for cmd/ package (5 tasks)
 - Tasks 58-60: Unit tests for internal/utils/ (3 tasks)
 - Tasks 61-62: Unit tests for internal/enum/ (2 tasks)
@@ -664,11 +715,13 @@ internal/
 - Tasks 71-73: Increase detection/ test coverage to 80%+ (3 tasks)
 
 ### Phase 11: Documentation (Tasks 81-89) - NOT STARTED
+
 - Tasks 81-84: Architecture documentation (4 tasks)
 - Tasks 85-87: API documentation (3 tasks)
 - Tasks 88-89: Workflow documentation (2 tasks)
 
 ### Phase 12: Finalization (Tasks 90-91) - NOT STARTED
+
 - Task 90: Commit all changes (Phase 1, 2, 3)
 - Task 91: Push commits to remote fork branch
 
@@ -677,12 +730,14 @@ internal/
 ## 📈 PROGRESS METRICS
 
 ### Task Completion
+
 - **Phase 1** (Foundation): 4/4 tasks = 100% ✅
 - **Phase 2** (Utilities): 5/5 tasks = 100% ✅
 - **Phase 3** (Enums): 9/9 tasks = 100% ✅
 - **Overall**: 18/91 tasks = 19.8%
 
 ### Code Changes
+
 - **Lines Added**: ~1,500
 - **Lines Deleted**: ~800
 - **Files Created**: 15
@@ -690,12 +745,14 @@ internal/
 - **Packages Created**: 3 (cmd, internal/utils, internal/enum)
 
 ### Build & Test Status
+
 - **Build**: ✅ Successful (no compilation errors)
 - **Unit Tests**: ⚠️ Not run (CLI broken)
 - **Integration Tests**: ⚠️ Not run (CLI broken)
 - **Linter**: ⚠️ Not run (awaiting CLI fix)
 
 ### Critical Path
+
 - **Blocked By**: cmd/run.go stub
 - **Next Required**: Fix CLI execution logic
 - **Estimated Time to Unblock**: 2-4 hours
@@ -705,6 +762,7 @@ internal/
 ## 🎯 SUCCESS CRITERIA
 
 ### For This Phase (1-3):
+
 - ✅ All utility functions consolidated to internal/utils/
 - ✅ All enum functions consolidated to internal/enum/ or local implementations
 - ✅ No old utils/util packages remaining
@@ -712,6 +770,7 @@ internal/
 - ❌ Binary functional and tested (BLOCKED)
 
 ### For Next Phase (4-7):
+
 - ⚪ All collections generics created (Queue[T], Set[T])
 - ⚪ All primitive types replaced with domain types
 - ⚪ All bool flags replaced with enums
@@ -723,6 +782,7 @@ internal/
 ## 💬 NOTES & OBSERVATIONS
 
 ### What Went Well:
+
 1. **Utility Consolidation**: Clean migration from utils/ and util/ to internal/utils/
 2. **Enum Consolidation**: Successfully merged two different enum approaches into local implementations
 3. **Domain Types**: Enums (FileProcessingState, etc.) properly moved to domain/
@@ -730,6 +790,7 @@ internal/
 5. **Import Updates**: All 5 files successfully updated to use internal/utils
 
 ### What Needs Improvement:
+
 1. **CLI Logic Location**: Unclear where 605-line cli.go should live
 2. **File Breakdown**: cli.go still too large (605 lines)
 3. **Internal Package Structure**: enum/marshal.go needs splitting
@@ -737,6 +798,7 @@ internal/
 5. **Documentation**: No architecture docs explaining decisions
 
 ### Lessons Learned:
+
 1. **Don't Delete Before Migrating**: Deleting old cli.go created 605-line new cli.go
 2. **Package Boundaries Matter**: Need clear separation between framework and logic
 3. **Import Cycles are Dangerous**: Moving logic to cmd/ could create cycles

@@ -12,6 +12,7 @@
 **Fang CLI starter kit integration is fully operational.**
 
 The art-dupl tool has been successfully enhanced with charmbracelet/fang v0.4.4, providing:
+
 - Fancy styled help and usage pages with theming
 - Beautifully formatted error messages
 - Automatic version flag with build info support
@@ -30,9 +31,11 @@ The art-dupl tool has been successfully enhanced with charmbracelet/fang v0.4.4,
 ## ✅ COMPLETED WORK
 
 ### 1. Fang Repository Research & Analysis ✅
+
 **Status**: Fully Completed
 
 **Actions Taken**:
+
 - Researched and analyzed charmbracelet/fang GitHub repository (v0.4.4)
 - Studied core implementation files:
   - `fang.go`: Main API with Execute function, options pattern
@@ -45,6 +48,7 @@ The art-dupl tool has been successfully enhanced with charmbracelet/fang v0.4.4,
   - Auto-detect terminal capabilities (color, TTY, width)
 
 **Key Findings**:
+
 - Fang provides batteries-included CLI enhancements
 - Simple API: `fang.Execute(context.Background(), cmd, options...)`
 - Option pattern for configuration (version, theme, error handler, signals)
@@ -52,6 +56,7 @@ The art-dupl tool has been successfully enhanced with charmbracelet/fang v0.4.4,
 - Professional out-of-the-box styling
 
 **Files Reviewed**:
+
 - https://github.com/charmbracelet/fang
 - Core files analyzed: fang.go, help.go, theme.go
 - Documentation reviewed: README, API docs
@@ -59,11 +64,13 @@ The art-dupl tool has been successfully enhanced with charmbracelet/fang v0.4.4,
 ---
 
 ### 2. Fang Integration Implementation ✅
+
 **Status**: Fully Completed
 
 **File Modified**: `cmd/art-dupl/main.go`
 
 **Changes Made**:
+
 ```go
 // Line 21-56: Enhanced error handler with fang styling
 errorHandler := func(w io.Writer, styles fang.Styles, err error) {
@@ -84,12 +91,14 @@ errorHandler := func(w io.Writer, styles fang.Styles, err error) {
 ```
 
 **Key Features Implemented**:
+
 - **Fang Default Error Handler**: Provides consistent error styling with "ERROR" header
 - **Context-Aware Suggestions**: Different hints for help requests vs other errors
 - **Styled Examples**: Uses fang's `styles.Codeblock.Program.Name` for colored examples
 - **Documentation Links**: Styled links to GitHub repository
 
 **Execution Options**:
+
 ```go
 options := []fang.Option{
     fang.WithVersion(cmd.GetVersion()),
@@ -100,6 +109,7 @@ options := []fang.Option{
 ```
 
 **Benefits**:
+
 - Professional error messages with consistent styling
 - Automatic light/dark mode color detection
 - Graceful Ctrl+C handling without abrupt termination
@@ -108,27 +118,32 @@ options := []fang.Option{
 ---
 
 ### 3. Signal Handling Implementation ✅
+
 **Status**: Fully Completed
 
 **Implementation**: `fang.WithNotifySignal(os.Interrupt)`
 
 **How It Works**:
+
 - Creates signal.NotifyContext that listens for os.Interrupt (Ctrl+C)
 - Automatically cancels the context when signal received
 - Allows graceful shutdown of running operations
 - Prevents abrupt process termination
 
 **Testing**:
+
 - Signal handling verified through fang's Execute function
 - Properly integrates with Cobra's ExecuteContext
 
 **Behavior**:
+
 - Before: Ctrl+C would immediately terminate process
 - After: Ctrl+C triggers context cancellation, allowing cleanup
 
 ---
 
 ### 4. Help Documentation Enhancement ✅
+
 **Status**: Fully Completed
 
 **File Modified**: `cmd/root.go`
@@ -136,6 +151,7 @@ options := []fang.Option{
 **Changes Made**: Lines 10-60 - Enhanced Long description
 
 **New Documentation Structure**:
+
 ```
 art-dupl finds code clones in Go source files.
 
@@ -162,12 +178,14 @@ Examples:
 ```
 
 **Improvements**:
+
 - Better organized documentation with clear sections
 - Commented examples explaining usage
 - All major features documented
 - Practical real-world examples
 
 **Examples Included**:
+
 1. Basic analysis
 2. Higher threshold
 3. JSON output with post-processing
@@ -182,11 +200,13 @@ Examples:
 ---
 
 ### 5. Manpage Generation ✅
+
 **Status**: Fully Implemented and Tested
 
 **Command**: `art-dupl man` (hidden command)
 
 **Testing Results**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl man 2>&1 | head -30
 .TH ART-DUPL 1 "2026-01-22" "art-dupl" "Find code clones"
@@ -200,6 +220,7 @@ art-dupl finds code clones in Go source files\&.
 ```
 
 **Features**:
+
 - Uses mango library for manpage generation
 - Includes all documentation from Cobra command
 - Proper roff format compatible with man utility
@@ -207,6 +228,7 @@ art-dupl finds code clones in Go source files\&.
 - Automatically integrated by fang
 
 **Installation** (future enhancement):
+
 ```bash
 ./art-dupl man > /usr/local/share/man/man1/art-dupl.1
 man art-dupl
@@ -215,11 +237,13 @@ man art-dupl
 ---
 
 ### 6. Shell Completions ✅
+
 **Status**: Fully Implemented and Tested
 
 **Command**: `art-dupl completion [bash|fish|powershell|zsh]`
 
 **Testing Results**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl completion --help
 Generate the autocompletion script for the specified shell.
@@ -232,6 +256,7 @@ COMMANDS:
 ```
 
 **Bash Completion Output** (sample):
+
 ```bash
 # bash completion V2 for art-dupl
 __art-dupl_debug()
@@ -245,12 +270,14 @@ complete -F __start_art-dupl art-dupl
 ```
 
 **Features**:
+
 - Supports all major shells (bash, zsh, fish, powershell)
 - Auto-generated from Cobra command definitions
 - Includes all flags and subcommands
 - Installation instructions in completion output
 
 **Installation** (future enhancement):
+
 ```bash
 # Bash
 ./art-dupl completion bash > ~/.local/share/bash-completion/completions/art-dupl
@@ -263,43 +290,51 @@ source ~/.local/share/bash-completion/completions/art-dupl
 ---
 
 ### 7. Version Flag Verification ✅
+
 **Status**: Fully Functional
 
 **Command**: `art-dupl --version`
 
 **Testing Results**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl --version
 art-dupl version dev
 ```
 
 **Integration Points**:
+
 - Fang automatically adds `--version` flag
 - Uses `cmd.GetVersion()` for version string
 - Version defined in `cmd/version.go:10` (currently "dev")
 - Commit information included when available
 
 **Build-Time Configuration** (future enhancement):
+
 ```makefile
 LDFLAGS=-ldflags "-X cmd.Version=1.0.0 -X cmd.Commit=$(shell git rev-parse --short HEAD)"
 go build $(LDFLAGS)
 ```
 
 **Output Format**:
+
 - Basic: `art-dupl version dev`
 - With commit: `art-dupl version 1.0.0 (abc1234)`
 
 ---
 
 ### 8. Build and Basic Execution ✅
+
 **Status**: Fully Operational
 
 **Build Command**:
+
 ```bash
 go build -o cmd/art-dupl/art-dupl ./cmd/art-dupl
 ```
 
 **Execution Tests**:
+
 ```bash
 # Help output with fang styling
 $ ./cmd/art-dupl/art-dupl --help
@@ -327,6 +362,7 @@ Get Help: art-dupl --help
 ```
 
 **Verification Points**:
+
 - ✅ Binary builds without errors
 - ✅ Help output displays with fang styling
 - ✅ Progress indicators work (✅, 📖 emojis)
@@ -339,9 +375,11 @@ Get Help: art-dupl --help
 ## ⚠️ PARTIALLY COMPLETED WORK
 
 ### 1. Test Suite Execution ⚠️
+
 **Status**: 48/54 Tests Passing
 
 **Full Test Results**:
+
 ```
 === RUN   TestAllFormatGeneration
 Running Suite: art-dupl All Format Generation BDD Suite
@@ -351,6 +389,7 @@ FAIL! -- 48 Passed | 5 Failed | 1 Pending | 0 Skipped
 ```
 
 **Failed Tests** (All Pre-Existing, Not Fang-Related):
+
 1. `Filter Features - should include sqlc files when --include-sqlc is specified`
 2. `Filter Features - should support multiple include patterns`
 3. `Filter Features - should exclude files matching exclude patterns`
@@ -358,6 +397,7 @@ FAIL! -- 48 Passed | 5 Failed | 1 Pending | 0 Skipped
 5. `Filter Features - should exclude vendor directory by default`
 
 **Root Cause Analysis**:
+
 - These failures are **NOT related to fang integration**
 - Failures exist in codebase before fang implementation
 - All failures are in filtering feature implementation
@@ -365,22 +405,26 @@ FAIL! -- 48 Passed | 5 Failed | 1 Pending | 0 Skipped
 - Actual output: `Found total 0 clone groups.`
 
 **Test Environment**:
+
 - Test data missing for these specific filtering scenarios
 - Filtering logic works correctly (no errors)
 - Issue is with test setup, not fang integration
 
 **Fang Integration Verification**:
+
 - ✅ Fang does not interfere with core functionality
 - ✅ All successful tests pass with fang enabled
 - ✅ Error messages properly styled throughout tests
 - ✅ Progress indicators work correctly
 
 **Pending Test**:
+
 - `Basic User Workflows - should sort clones by occurrence (most files first) when using --sort occurrence`
 - Status: PENDING (pre-existing)
 - Not blocking fang integration
 
 **Recommendation**:
+
 - Document these pre-existing failures
 - Create separate task to fix filtering test issues
 - Fang integration is NOT affected by these failures
@@ -388,14 +432,17 @@ FAIL! -- 48 Passed | 5 Failed | 1 Pending | 0 Skipped
 ---
 
 ### 2. Color Scheme Verification ⚠️
+
 **Status**: Default Scheme Applied, Light/Dark Mode Not Explicitly Tested
 
 **Implementation**:
+
 ```go
 fang.WithColorSchemeFunc(fang.DefaultColorScheme)
 ```
 
 **How It Works**:
+
 - `fang.DefaultColorScheme` receives `lipgloss.LightDarkFunc`
 - Function auto-detects terminal background using:
   ```go
@@ -404,22 +451,26 @@ fang.WithColorSchemeFunc(fang.DefaultColorScheme)
 - Returns appropriate colors (dark theme for dark terminals, light theme for light terminals)
 
 **Testing Performed**:
+
 - ✅ Help output displays with colors (assumed dark terminal)
 - ✅ Error messages styled with colors
 - ✅ No ANSI escape sequence errors
 
 **Missing Verification**:
+
 - ❌ Light mode not explicitly tested
 - ❌ Dark mode not explicitly tested
 - ❌ NO_COLOR environment variable not tested
 - ❌ Non-TTY terminal not tested
 
 **Auto-Detection Behavior**:
+
 - Fang uses `term.IsTerminal(os.Stdout.Fd())` to detect TTY
 - If not TTY, uses `colorprofile.Ascii` (no colors)
 - If TTY, auto-detects dark/light background
 
 **Recommendation**:
+
 - Add explicit light/dark mode tests
 - Test with NO_COLOR environment variable
 - Test in CI/CD environment (non-TTY)
@@ -429,9 +480,11 @@ fang.WithColorSchemeFunc(fang.DefaultColorScheme)
 ## ❌ NOT STARTED WORK (CRITICAL)
 
 ### 1. Git Commit ❌ CRITICAL
+
 **Status**: PENDING - MUST BE DONE IMMEDIATELY
 
 **Modified Files**:
+
 1. `/Users/larsartmann/projects/art-dupl/cmd/art-dupl/main.go`
    - Lines 21-56: Enhanced error handler with fang styling
    - Lines 59-63: Added fang options including signal handling
@@ -440,12 +493,14 @@ fang.WithColorSchemeFunc(fang.DefaultColorScheme)
    - Lines 10-60: Enhanced help documentation with examples
 
 **Commit Requirements**:
+
 - ✅ All changes reviewed and verified
 - ✅ Code follows project conventions
 - ✅ Documentation updated
 - ❌ NOT COMMITTED YET
 
 **Recommended Commit Message**:
+
 ```
 feat(cli): integrate fang CLI starter kit for enhanced UX
 
@@ -484,18 +539,22 @@ Related: https://github.com/charmbracelet/fang
 ---
 
 ### 2. Git Push ❌ CRITICAL
+
 **Status**: PENDING - MUST BE DONE IMMEDIATELY
 
 **Current State**:
+
 - Branch: `fork`
 - Changes: Modified but uncommitted
 - Remote: Not pushed yet
 
 **Required Actions**:
+
 1. Commit changes (see Git Commit section above)
 2. Push to remote: `git push origin fork`
 
 **Verification**:
+
 ```bash
 git status    # Should show "On branch fork" and clean
 git log -1    # Should show new commit
@@ -506,15 +565,18 @@ git log -1    # Should show new commit
 ## 🎯 IMPROVEMENT OPPORTUNITIES
 
 ### 1. Error Handling Path Errors 🚨 HIGH PRIORITY
+
 **Issue**: Error for non-existent path bypasses fang's error handler
 
 **Current Behavior**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl /nonexistent/path
 error: cannot stat /nonexistent/path: lstat /nonexistent/path: no such file or directory
 ```
 
 **Expected Behavior**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl /nonexistent/path
 
@@ -531,11 +593,13 @@ Get Help: art-dupl --help
 ```
 
 **Root Cause**:
+
 - Location: `cmd/run.go:251-253`
 - Problem: Code uses `os.Exit(1)` directly instead of returning error
 - Fang's error handler only receives errors returned from `runCmd`
 
 **Current Code**:
+
 ```go
 // cmd/run.go:249-253
 info, err := os.Lstat(path)
@@ -546,6 +610,7 @@ if err != nil {
 ```
 
 **Recommended Fix**:
+
 ```go
 // cmd/run.go:249-254
 info, err := os.Lstat(path)
@@ -556,11 +621,13 @@ if err != nil {
 ```
 
 **Impact**: HIGH
+
 - Ensures consistent error styling across all error types
 - Better user experience with context-aware suggestions
 - Follows fang best practices (errors should be returned, not exit directly)
 
 **Estimated Effort**: 15 minutes
+
 - Change 1 location in cmd/run.go
 - Test with invalid path
 - Verify fang styling appears
@@ -568,16 +635,20 @@ if err != nil {
 ---
 
 ### 2. Silent Usage Mode Verification 🔍 MEDIUM PRIORITY
+
 **Issue**: Silent mode not explicitly verified
 
 **Fang Feature**:
+
 > "Silent usage output (help doesn't show after user errors for cleaner error handling)"
 
 **Current Implementation**:
+
 - Fang sets `root.SilenceUsage = true` in `Execute` function
 - Should prevent Cobra from showing usage on errors
 
 **Testing Required**:
+
 ```bash
 # Test 1: Invalid flag should NOT show usage
 $ ./cmd/art-dupl/art-dupl --invalid-flag 2>&1
@@ -591,11 +662,13 @@ $ ./cmd/art-dupl/art-dupl --help 2>&1
 ```
 
 **Recommendation**:
+
 - Add explicit test for silent mode behavior
 - Document expected behavior
 - Verify no usage appears on user errors (not help requests)
 
 **Estimated Effort**: 10 minutes
+
 - Run test commands
 - Verify output
 - Document behavior
@@ -603,14 +676,17 @@ $ ./cmd/art-dupl/art-dupl --help 2>&1
 ---
 
 ### 3. Custom Theme Options 🎨 MEDIUM PRIORITY
+
 **Issue**: ANSI-only theme not exposed for CI/CD environments
 
 **Current Behavior**:
+
 - Default: Uses `fang.DefaultColorScheme` (colored)
 - Auto-detects terminal capabilities
 - Falls back to ASCII for non-TTY
 
 **Fang Available Options**:
+
 ```go
 // ANSI colors (limited, no backgrounds)
 fang.WithColorSchemeFunc(fang.AnsiColorScheme)
@@ -621,11 +697,13 @@ fang.WithTheme(ColorScheme{...})
 ```
 
 **Use Case**: CI/CD Environments
+
 - Many CI systems have limited color support
 - NO_COLOR environment variable support needed
 - ANSI-only theme provides better compatibility
 
 **Recommended Enhancement**:
+
 ```go
 // cmd/art-dupl/main.go
 import "os"
@@ -643,11 +721,13 @@ if _, nocolor := os.LookupEnv("NO_COLOR"); nocolor {
 ```
 
 **Impact**: MEDIUM
+
 - Better CI/CD compatibility
 - Respects NO_COLOR standard
 - No impact on interactive use
 
 **Estimated Effort**: 20 minutes
+
 - Implement NO_COLOR detection
 - Test with NO_COLOR=1
 - Test without NO_COLOR
@@ -656,15 +736,18 @@ if _, nocolor := os.LookupEnv("NO_COLOR"); nocolor {
 ---
 
 ### 4. Version Build Info 🔖 MEDIUM PRIORITY
+
 **Issue**: Version hardcoded as "dev"
 
 **Current State**:
+
 ```go
 // cmd/version.go:10
 var Version = "dev"
 ```
 
 **Build-Time Configuration**:
+
 ```makefile
 # Add to Makefile
 VERSION ?= dev
@@ -680,6 +763,7 @@ build:
 ```
 
 **Justfile Integration**:
+
 ```makefile
 # justfile
 version := "dev"
@@ -690,15 +774,18 @@ build:
 ```
 
 **Output Examples**:
+
 - Development: `art-dupl version dev (abc1234)`
 - Release: `art-dupl version 1.0.0 (abc1234)`
 
 **Recommendation**:
+
 - Add version configuration to Makefile/Justfile
 - Update build documentation
 - Tag releases in git
 
 **Estimated Effort**: 30 minutes
+
 - Modify Makefile or Justfile
 - Test build with version info
 - Update build documentation
@@ -707,19 +794,23 @@ build:
 ---
 
 ### 5. Progress Indicators 📊 MEDIUM PRIORITY
+
 **Issue**: Progress output verification with fang styling
 
 **Current Progress Indicators**:
+
 ```
 📖 Parsing files and building analysis tree... ✅
 ```
 
 **Questions**:
+
 - Does fang's color scheme affect emoji rendering?
 - Are progress indicators still visible with custom themes?
 - Does progress output interfere with error messages?
 
 **Testing Required**:
+
 ```bash
 # Test 1: Normal progress
 $ ./cmd/art-dupl/art-dupl -vv .
@@ -735,11 +826,13 @@ $ ./cmd/art-dupl/art-dupl /invalid/path
 ```
 
 **Recommendation**:
+
 - Add progress indicator tests
 - Verify compatibility with all color schemes
 - Document progress output behavior
 
 **Estimated Effort**: 20 minutes
+
 - Run various test scenarios
 - Verify emoji rendering
 - Test with different color schemes
@@ -748,15 +841,18 @@ $ ./cmd/art-dupl/art-dupl /invalid/path
 ---
 
 ### 6. Configuration File Integration 📝 LOW PRIORITY
+
 **Issue**: Config validation errors not styled with fang
 
 **Current Behavior**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl --config invalid.json
 error: error loading config from file "invalid.json": invalid JSON
 ```
 
 **Expected Behavior**:
+
 ```
    ERROR
 
@@ -769,16 +865,19 @@ Get Help: art-dupl --help
 ```
 
 **Root Cause**:
+
 - Config validation errors return from `runCmd`
 - Should already be handled by fang
 - Need verification
 
 **Recommendation**:
+
 - Test config error handling
 - Verify fang styling applied
 - Add specific config error hints if needed
 
 **Estimated Effort**: 15 minutes
+
 - Test with invalid config file
 - Verify error styling
 - Add config-specific hints if missing
@@ -786,9 +885,11 @@ Get Help: art-dupl --help
 ---
 
 ### 7. All Formats Mode Enhancement 🚀 LOW PRIORITY
+
 **Issue**: Multi-format generation could benefit from fang-styled progress
 
 **Current Behavior**:
+
 ```bash
 $ ./cmd/art-dupl/art-dupl --all ./src
 📂 Running all detection methods and generating all output formats in reports/art-dupl...
@@ -801,6 +902,7 @@ $ ./cmd/art-dupl/art-dupl --all ./src
 ```
 
 **Potential Enhancements**:
+
 - Use fang's codeblock styling for file paths
 - Add colored status indicators (✅, ⚠️, ❌)
 - Use fang's text styles for messages
@@ -808,11 +910,13 @@ $ ./cmd/art-dupl/art-dupl --all ./src
 **Current Code**: `cmd/run.go:434-495`
 
 **Recommendation**:
+
 - Evaluate current progress output
 - Add fang styling if beneficial
 - Maintain backward compatibility
 
 **Estimated Effort**: 30 minutes
+
 - Review current output code
 - Apply fang styles appropriately
 - Test all formats generation
@@ -821,9 +925,11 @@ $ ./cmd/art-dupl/art-dupl --all ./src
 ---
 
 ### 8. Documentation 📚 HIGH PRIORITY
+
 **Issue**: No dedicated Fang Integration documentation
 
 **Required Documentation**:
+
 1. README.md section on Fang features
 2. Features guide for users
 3. Developer guide for customization
@@ -832,7 +938,8 @@ $ ./cmd/art-dupl/art-dupl --all ./src
 **Proposed Documentation Structure**:
 
 **README.md Section**:
-```markdown
+
+````markdown
 ## User Experience
 
 art-dupl uses [fang](https://github.com/charmbracelet/fang) CLI starter kit,
@@ -847,6 +954,7 @@ providing professional-looking command-line interface with:
 ### Installation
 
 #### Shell Completions
+
 ```bash
 # Bash
 art-dupl completion bash > ~/.local/share/bash-completion/completions/art-dupl
@@ -854,13 +962,16 @@ art-dupl completion bash > ~/.local/share/bash-completion/completions/art-dupl
 # Zsh
 art-dupl completion zsh > /usr/local/share/zsh/site-functions/_art-dupl
 ```
+````
 
 #### Man Page
+
 ```bash
 art-dupl man > /usr/local/share/man/man1/art-dupl.1
 man art-dupl
 ```
-```
+
+````
 
 **New File**: `docs/FANG_INTEGRATION.md`
 ```markdown
@@ -887,9 +998,10 @@ art-dupl integrates fang CLI starter kit v0.4.4 for enhanced UX.
 ### Colors Not Working
 ### Completions Not Loading
 ### Man Page Not Found
-```
+````
 
 **Estimated Effort**: 60 minutes
+
 - Write README section (15 min)
 - Create Fang Integration guide (30 min)
 - Write developer customization guide (15 min)
@@ -901,10 +1013,12 @@ art-dupl integrates fang CLI starter kit v0.4.4 for enhanced UX.
 ### Priority P0 - CRITICAL (Next 3 actions)
 
 #### 1. Git Commit Changes 🔴 CRITICAL
+
 **Why Critical**: Changes need to be saved before push
 **Effort**: 5 minutes
 **Files**: cmd/art-dupl/main.go, cmd/root.go
 **Command**:
+
 ```bash
 git status
 git diff
@@ -919,7 +1033,9 @@ git commit -m "feat(cli): integrate fang CLI starter kit for enhanced UX
 - Add hidden man command for manpage generation
 - Provide shell completions for bash, zsh, fish, powershell"
 ```
+
 **Verification**:
+
 ```bash
 git log -1
 git status
@@ -928,13 +1044,17 @@ git status
 ---
 
 #### 2. Git Push to Remote 🔴 CRITICAL
+
 **Why Critical**: Changes not accessible to others
 **Effort**: 2 minutes
 **Command**:
+
 ```bash
 git push origin fork
 ```
+
 **Verification**:
+
 ```bash
 git log --oneline origin/fork
 ```
@@ -942,9 +1062,11 @@ git log --oneline origin/fork
 ---
 
 #### 3. Fix Error Handling in runCmd 🟠 HIGH PRIORITY
+
 **Issue**: Path errors bypass fang's error handler
 **File**: cmd/run.go:249-253
 **Change**:
+
 ```diff
   info, err := os.Lstat(path)
   if err != nil {
@@ -953,8 +1075,10 @@ git log --oneline origin/fork
 +     return fmt.Errorf("cannot stat %s: %w", path, err)
   }
 ```
+
 **Effort**: 15 minutes
 **Testing**:
+
 ```bash
 ./art-dupl /nonexistent/path
 # Should show fang-styled error with "ERROR" header
@@ -965,21 +1089,26 @@ git log --oneline origin/fork
 ### Priority P1 - HIGH (Next 6 actions)
 
 #### 4. Verify Silent Usage Mode
+
 **Goal**: Ensure no usage shows on user errors
 **Effort**: 10 minutes
 **Test**:
+
 ```bash
 ./art-dupl --invalid-flag 2>&1 | grep -i "usage:"
 # Should return empty (no usage shown)
 ```
+
 **Documentation**: Update README if behavior differs
 
 ---
 
 #### 5. Test ANSI Theme for CI/CD
+
 **Goal**: Verify NO_COLOR support
 **Effort**: 20 minutes
 **Implementation**:
+
 ```go
 // cmd/art-dupl/main.go
 if _, nocolor := os.LookupEnv("NO_COLOR"); nocolor {
@@ -988,7 +1117,9 @@ if _, nocolor := os.LookupEnv("NO_COLOR"); nocolor {
     options = append(options, fang.WithColorSchemeFunc(fang.DefaultColorScheme))
 }
 ```
+
 **Testing**:
+
 ```bash
 NO_COLOR=1 ./art-dupl --help
 ./art-dupl --help
@@ -997,10 +1128,12 @@ NO_COLOR=1 ./art-dupl --help
 ---
 
 #### 6. Add Version Build Info to Makefile
+
 **Goal**: Proper versioning in releases
 **Effort**: 30 minutes
 **Implementation**: Update Makefile with LDFLAGS
 **Testing**:
+
 ```bash
 make build
 ./dist/art-dupl --version
@@ -1009,6 +1142,7 @@ make build
 ---
 
 #### 7. Document Fang Integration in README
+
 **Goal**: Inform users about new features
 **Effort**: 15 minutes
 **Section**: Add "User Experience" section
@@ -1017,21 +1151,26 @@ make build
 ---
 
 #### 8. Test Manpage Installation
+
 **Goal**: Verify manpage works
 **Effort**: 10 minutes
 **Commands**:
+
 ```bash
 ./art-dupl man > /tmp/art-dupl.1
 man /tmp/art-dupl.1
 ```
+
 **Verification**: Manpage displays correctly
 
 ---
 
 #### 9. Verify Shell Completion Installation
+
 **Goal**: Ensure completions work in shell
 **Effort**: 15 minutes
 **Test for each shell**:
+
 ```bash
 # Bash
 ./art-dupl completion bash > /tmp/art-dupl.bash
@@ -1048,6 +1187,7 @@ source /tmp/art-dupl.bash
 ### Priority P1 - HIGH (Continued)
 
 #### 10. Add Fang-Styled Config Errors
+
 **Goal**: Consistent error styling
 **File**: config/config.go validation functions
 **Effort**: 15 minutes
@@ -1056,6 +1196,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 11. Enhance Progress Output Styling
+
 **Goal**: Better visual feedback
 **File**: cmd/run.go:434-495
 **Effort**: 30 minutes
@@ -1064,6 +1205,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 12. Test Light/Dark Mode Color Schemes
+
 **Goal**: Verify auto-detection works
 **Effort**: 15 minutes
 **Test**: Run on terminals with different backgrounds
@@ -1071,6 +1213,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 13. Add --theme Flag for Color Schemes
+
 **Goal**: Allow user theme selection
 **Effort**: 20 minutes
 **Implementation**: Add flag to cmd/flags.go
@@ -1079,6 +1222,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 14. Create Fang Integration Documentation
+
 **Goal**: Comprehensive user/developer guide
 **File**: docs/FANG_INTEGRATION.md
 **Effort**: 30 minutes
@@ -1086,6 +1230,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 15. Add Integration Tests for Fang Features
+
 **Goal**: Ensure fang features work correctly
 **File**: cli/fang_integration_test.go
 **Effort**: 30 minutes
@@ -1096,6 +1241,7 @@ source /tmp/art-dupl.bash
 ### Priority P2 - MEDIUM
 
 #### 16. Improve Error Messages for Path Errors
+
 **Goal**: More helpful error messages
 **File**: cmd/run.go
 **Effort**: 15 minutes
@@ -1104,6 +1250,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 17. Add Verbose Mode Help Text Styling
+
 **Goal**: Styled verbose output
 **File**: cmd/run.go verbose logging
 **Effort**: 20 minutes
@@ -1111,6 +1258,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 18. Test with NO_COLOR Environment Variable
+
 **Goal**: Verify NO_COLOR compliance
 **Effort**: 10 minutes
 **Test**: `NO_COLOR=1 ./art-dupl --help`
@@ -1118,9 +1266,11 @@ source /tmp/art-dupl.bash
 ---
 
 #### 19. Verify TTY Detection Works Correctly
+
 **Goal**: Colors work in TTY, disabled in pipes
 **Effort**: 10 minutes
 **Test**:
+
 ```bash
 ./art-dupl --help | cat  # Should have no colors
 ./art-dupl --help         # Should have colors
@@ -1129,6 +1279,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 20. Test Windows Compatibility (if applicable)
+
 **Goal**: Ensure fang works on Windows
 **Effort**: 30 minutes
 **Notes**: Fang includes Windows VT processing support
@@ -1138,6 +1289,7 @@ source /tmp/art-dupl.bash
 ### Priority P3 - LOW
 
 #### 21. Create Custom Theme Example
+
 **Goal**: Demonstrate theme customization
 **File**: examples/custom_theme.go
 **Effort**: 30 minutes
@@ -1145,6 +1297,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 22. Add Completion Script Installation Guide
+
 **Goal**: Help users install completions
 **File**: docs/INSTALL_COMPLETIONS.md
 **Effort**: 20 minutes
@@ -1152,6 +1305,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 23. Test Manpage on Different Systems
+
 **Goal**: Cross-platform manpage compatibility
 **Systems**: Linux, macOS
 **Effort**: 15 minutes
@@ -1159,6 +1313,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 24. Performance Testing with Fang Enabled
+
 **Goal**: Verify minimal performance impact
 **Metrics**: Startup time, help rendering time
 **Effort**: 30 minutes
@@ -1166,6 +1321,7 @@ source /tmp/art-dupl.bash
 ---
 
 #### 25. Add Fang-Related BDD Tests
+
 **Goal**: Test fang features in BDD style
 **File**: bdd/fang_features_test.go
 **Effort**: 45 minutes
@@ -1180,11 +1336,13 @@ source /tmp/art-dupl.bash
 
 **Problem Description**:
 When running `./cmd/art-dupl/art-dupl /nonexistent/path`, the error output is:
+
 ```
 error: cannot stat /nonexistent/path: lstat /nonexistent/path: no such file or directory
 ```
 
 This shows a **raw error with NO fang styling**:
+
 - No "ERROR" header with colors
 - No "Try --help for usage" message
 - No context-aware suggestions
@@ -1192,6 +1350,7 @@ This shows a **raw error with NO fang styling**:
 
 **Root Cause**:
 Looking at `cmd/run.go:249-253`:
+
 ```go
 info, err := os.Lstat(path)
 if err != nil {
@@ -1205,6 +1364,7 @@ This code directly calls `os.Exit(1)` and bypasses the error return path that wo
 **Options Considered**:
 
 **Option A**: Return error from `runCmd` instead of `os.Exit(1)`
+
 ```go
 // cmd/run.go:249-253
 info, err := os.Lstat(path)
@@ -1214,17 +1374,20 @@ if err != nil {
 ```
 
 **Pros**:
+
 - Follows fang best practices (return errors, don't exit directly)
 - Consistent error styling across all error types
 - Fang's error handler can add context-aware suggestions
 - Cleaner separation of concerns
 
 **Cons**:
+
 - Changes behavior: previously exited immediately, now returns error
 - Potential impact on other code paths
 - Need to verify all callers handle errors correctly
 
 **Option B**: Manually call custom error handler in this location
+
 ```go
 // cmd/run.go:249-256
 info, err := os.Lstat(path)
@@ -1238,17 +1401,20 @@ if err != nil {
 ```
 
 **Pros**:
+
 - Maintains immediate exit behavior
 - Ensures fang styling is applied
 - No behavior change beyond styling
 
 **Cons**:
+
 - Duplicates error handling logic
 - Requires importing fang's internal functions
 - Violates DRY principle
 - Need to create styles (dependencies)
 
 **Option C**: Keep `os.Exit(1)` for critical errors (file access failures)
+
 ```go
 // No change - keep as is
 info, err := os.Lstat(path)
@@ -1259,11 +1425,13 @@ if err != nil {
 ```
 
 **Pros**:
+
 - No change required
 - Maintains existing behavior
 - File access errors are critical - immediate exit makes sense
 
 **Cons**:
+
 - Inconsistent error styling (some errors styled, some not)
 - Poor user experience (no context, no suggestions)
 - Doesn't leverage fang's capabilities
@@ -1272,6 +1440,7 @@ if err != nil {
 **My Recommendation**: **Option A**
 
 **Reasoning**:
+
 1. **Fang's Design Philosophy**: Fang is designed to handle all errors through its error handler. The `Execute` function catches errors returned from commands and applies styling.
 2. **Consistency**: All errors should be handled consistently for a professional UX.
 3. **User Experience**: Path errors are common and users benefit from context-aware suggestions (e.g., "Check file paths and permissions").
@@ -1279,11 +1448,13 @@ if err != nil {
 5. **Minimal Impact**: The change is small and localized to one location.
 
 **Potential Impact**:
+
 - **Breaking Change**: No, only affects error message styling
 - **Behavior Change**: Yes, error returns instead of immediate exit, but fang's Execute will still exit after handling the error
 - **User-Visible Change**: Yes, errors will now be styled with fang's formatting
 
 **Implementation Plan**:
+
 1. Modify `cmd/run.go:249-253` to return error
 2. Test with invalid path to verify fang styling
 3. Verify other error paths still work correctly
@@ -1297,6 +1468,7 @@ Is Option A the correct approach according to fang best practices? Are there any
 ## 🔍 ARCHITECTURE ASSESSMENT
 
 ### Current Architecture
+
 ```
 art-dupl CLI
   ├── cmd/
@@ -1310,18 +1482,21 @@ art-dupl CLI
 ```
 
 ### Fang Integration Points
+
 1. **Entry Point**: `cmd/art-dupl/main.go:65` - `fang.Execute()`
 2. **Error Handler**: `main.go:21-56` - Custom error handler
 3. **Options**: `main.go:59-63` - Version, theme, signal handling
 4. **Help**: `root.go:10-60` - Enhanced documentation
 
 ### Type Safety Assessment
+
 - ✅ Fang's `Styles` type is strongly typed
 - ✅ `ErrorHandler` function signature is explicit
 - ✅ Options pattern is type-safe
 - ❌ No domain-specific types for error handling (opportunity)
 
 ### Potential Type Improvements
+
 ```go
 // Create domain types for error context
 type ErrorContext struct {
@@ -1337,6 +1512,7 @@ func handleError(ctx ErrorContext, err error) {
 ```
 
 ### Library Usage
+
 - ✅ Fang leverages lipgloss for styling
 - ✅ Uses colorprofile for terminal detection
 - ✅ Integrates with Cobra seamlessly
@@ -1347,6 +1523,7 @@ func handleError(ctx ErrorContext, err error) {
 ## 📊 TEST RESULTS SUMMARY
 
 ### Full Test Suite
+
 ```
 Total Tests: 54
 Passed:      48
@@ -1357,6 +1534,7 @@ Pass Rate:    88.9%
 ```
 
 ### Failed Tests (Pre-Existing, Not Fang-Related)
+
 1. `should include sqlc files when --include-sqlc is specified`
 2. `should support multiple include patterns`
 3. `should exclude files matching exclude patterns`
@@ -1368,11 +1546,13 @@ Pass Rate:    88.9%
 **Impact on Fang**: None - all failures in filtering logic, not CLI integration
 
 ### Pending Test
+
 1. `should sort clones by occurrence (most files first) when using --sort occurrence`
    - Status: PENDING (pre-existing)
    - Not blocking fang integration
 
 ### Fang-Specific Tests
+
 - ❌ No dedicated fang integration tests
 - **Recommendation**: Add BDD tests for fang features (Action Item #15)
 
@@ -1381,17 +1561,20 @@ Pass Rate:    88.9%
 ## 📝 DOCUMENTATION STATUS
 
 ### Existing Documentation
+
 - ✅ README.md - General project documentation
 - ✅ AGENTS.md - AI agent guidelines
 - ❌ No fang-specific documentation
 
 ### Required Documentation
+
 1. **README.md** - Add "User Experience" section about fang
 2. **docs/FANG_INTEGRATION.md** - Comprehensive fang guide
 3. **docs/INSTALL_COMPLETIONS.md** - Shell completion instructions
 4. **Justfile/Makefile** - Document version build process
 
 ### Documentation Tasks
+
 - [ ] Write README section on fang features (15 min)
 - [ ] Create Fang Integration guide (30 min)
 - [ ] Write completion installation guide (20 min)
@@ -1402,6 +1585,7 @@ Pass Rate:    88.9%
 ## 🎓 LESSONS LEARNED
 
 ### What Went Well ✅
+
 1. **Fang Integration Smooth**: Fang's API is simple and well-documented
 2. **Minimal Code Changes**: Only 2 files modified for full integration
 3. **Immediate Impact**: User experience significantly improved
@@ -1409,6 +1593,7 @@ Pass Rate:    88.9%
 5. **Auto-Features**: Completions and manpages came for free
 
 ### Challenges Faced ⚠️
+
 1. **Error Handler Bypass**: Path errors don't use fang's error handler
    - **Root Cause**: Direct `os.Exit(1)` calls in runCmd
    - **Solution**: Return errors instead (identified, not yet implemented)
@@ -1419,6 +1604,7 @@ Pass Rate:    88.9%
    - **Solution**: Need to create comprehensive documentation
 
 ### What Could Have Been Done Better 💡
+
 1. **Research Error Handling**: Should have investigated error handling path before implementation
 2. **Test Color Schemes**: Should have explicitly tested light/dark modes
 3. **Create Integration Tests**: Should have added tests for fang features
@@ -1426,6 +1612,7 @@ Pass Rate:    88.9%
 5. **Version Build Info**: Should have integrated version build tags immediately
 
 ### Knowledge Gaps 📚
+
 1. **Fang Best Practices**: Unclear about proper error handling approach (see Top #1 Question)
 2. **NO_COLOR Support**: Need to verify fang's NO_COLOR environment variable support
 3. **Theme Customization**: Limited experience with creating custom fang themes
@@ -1436,6 +1623,7 @@ Pass Rate:    88.9%
 ## 🚀 NEXT STEPS
 
 ### Immediate Actions (Next 1 hour)
+
 1. ⏸️ **WAIT FOR USER GUIDANCE** on error handling approach (Top #1 Question)
 2. ✅ Commit changes with proper message (once guidance received)
 3. ✅ Push to remote fork branch
@@ -1443,6 +1631,7 @@ Pass Rate:    88.9%
 5. ✅ Test with invalid path to verify fang styling
 
 ### Short-Term Actions (Next 1 day)
+
 6. ✅ Verify silent usage mode works correctly
 7. ✅ Test ANSI theme for CI/CD environments
 8. ✅ Add version build info to Makefile/Justfile
@@ -1451,6 +1640,7 @@ Pass Rate:    88.9%
 11. ✅ Verify shell completion installation
 
 ### Medium-Term Actions (Next 1 week)
+
 12. ✅ Add Fang Integration documentation (docs/FANG_INTEGRATION.md)
 13. ✅ Create shell completion installation guide
 14. ✅ Add integration tests for fang features
@@ -1464,6 +1654,7 @@ Pass Rate:    88.9%
 22. ✅ Test Windows compatibility (if applicable)
 
 ### Long-Term Actions (Next 1 month)
+
 23. ✅ Create custom theme example
 24. ✅ Performance testing with fang enabled
 25. ✅ Add fang-related BDD tests
@@ -1476,6 +1667,7 @@ Pass Rate:    88.9%
 ## 🎯 SUCCESS METRICS
 
 ### Implementation Success
+
 - ✅ Fang integrated successfully (v0.4.4)
 - ✅ Help output styled correctly
 - ✅ Error messages enhanced
@@ -1485,6 +1677,7 @@ Pass Rate:    88.9%
 - ✅ Signal handling working
 
 ### Code Quality
+
 - ✅ No breaking changes
 - ✅ Minimal code changes (2 files)
 - ✅ Clean integration point
@@ -1492,11 +1685,13 @@ Pass Rate:    88.9%
 - ✅ No technical debt added
 
 ### Testing
+
 - ✅ 48/54 tests passing
 - ⚠️ 5 pre-existing failures (unrelated to fang)
 - ❌ No dedicated fang tests (needs improvement)
 
 ### User Experience
+
 - ✅ Professional-looking help pages
 - ✅ Consistent error styling
 - ✅ Context-aware suggestions
@@ -1509,17 +1704,20 @@ Pass Rate:    88.9%
 ## 📌 BLOCKERS & DEPENDENCIES
 
 ### Current Blockers
+
 1. **User Guidance Required**: Need approval on error handling approach (Option A vs B vs C)
    - **Impact**: Cannot commit changes until resolved
    - **Timeline**: Awaiting user response
 
 ### Dependencies
+
 1. **Git Commit**: Depends on error handling guidance
 2. **Git Push**: Depends on commit
 3. **Documentation Creation**: Depends on finalizing feature set
 4. **Integration Tests**: Depends on time allocation
 
 ### External Dependencies
+
 - **Fang Library**: Already integrated (v0.4.4)
 - **Go Standard Library**: Used (fmt, os, context)
 - **Lipgloss**: Fang dependency (included via fang)
@@ -1530,6 +1728,7 @@ Pass Rate:    88.9%
 ## 📈 PROGRESS TRACKING
 
 ### Fang Integration Tasks
+
 ```
 Task                             | Status
 ---------------------------------|----------
@@ -1564,24 +1763,28 @@ Git push                       | ⏸️ Waiting
 ## 💡 RECOMMENDATIONS
 
 ### For Immediate Action
+
 1. **Resolve Error Handling**: Get user guidance on Option A approach
 2. **Commit Changes**: Save work once guidance received
 3. **Push to Remote**: Make changes available to others
 4. **Fix Path Error Styling**: Return errors instead of os.Exit in runCmd
 
 ### For Short-Term Improvement
+
 1. **Add NO_COLOR Support**: Implement ANSI theme for CI/CD
 2. **Create Documentation**: Inform users about fang features
 3. **Add Tests**: Ensure fang features work correctly
 4. **Enhance Error Messages**: Add context-aware suggestions
 
 ### For Long-Term Enhancement
+
 1. **Custom Themes**: Allow users to select themes
 2. **Advanced Error Handling**: Add more specific error contexts
 3. **Performance Optimization**: Verify minimal impact
 4. **User Feedback**: Collect feedback on UX improvements
 
 ### Architecture Improvements
+
 1. **Type Safety**: Add domain types for error context
 2. **Separation of Concerns**: Move error handling to separate package
 3. **Configuration**: Allow fang options via config file
@@ -1594,6 +1797,7 @@ Git push                       | ⏸️ Waiting
 **Fang CLI starter kit integration is successfully completed and fully operational.**
 
 The art-dupl tool now provides a professional command-line interface with:
+
 - Beautifully styled help pages
 - Enhanced error messages with context-aware suggestions
 - Automatic shell completions
@@ -1603,6 +1807,7 @@ The art-dupl tool now provides a professional command-line interface with:
 - Light/dark mode color detection
 
 **Critical Next Steps**:
+
 1. Resolve error handling approach question
 2. Commit and push changes
 3. Fix path error styling

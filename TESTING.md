@@ -21,6 +21,7 @@ This guide covers the testing practices used in the art-dupl project, focusing o
 ### Testing Package Types
 
 **Type T - Unit Tests**
+
 ```go
 func TestFunction(t *testing.T) {
     t.Run("case1", func(t *testing.T) {
@@ -34,6 +35,7 @@ func TestFunction(t *testing.T) {
 ```
 
 **Type B - Benchmarks**
+
 ```go
 func BenchmarkFunction(b *testing.B) {
     b.ReportAllocs() // Track memory allocations
@@ -45,6 +47,7 @@ func BenchmarkFunction(b *testing.B) {
 ```
 
 **Type F - Fuzzing**
+
 ```go
 func FuzzFunction(f *testing.F) {
     f.Add(seedInput) // Add seed corpus
@@ -57,10 +60,12 @@ func FuzzFunction(f *testing.F) {
 ## Test Organization
 
 ### File Naming
+
 - Test files: `*_test.go`
 - Next to source files: `package.go` and `package_test.go`
 
 ### Test Structure
+
 ```go
 func TestFeature(t *testing.T) {
     t.Parallel() // If independent
@@ -93,12 +98,14 @@ func TestFeature(t *testing.T) {
 ## Parallel Testing
 
 ### When to Use `t.Parallel()`
+
 - Tests that don't share state
 - Tests that don't use global variables
 - Tests that don't write to same files
 - Tests that are independent of each other
 
 ### When NOT to Use `t.Parallel()`
+
 - Tests using shared resources (database, files)
 - Tests with dependencies on other tests
 - Tests that modify global state
@@ -107,6 +114,7 @@ func TestFeature(t *testing.T) {
 ## Benchmarks
 
 ### Best Practices
+
 ```go
 func BenchmarkImportantFunction(b *testing.B) {
     b.ReportAllocs() // Always track memory
@@ -123,6 +131,7 @@ func BenchmarkImportantFunction(b *testing.B) {
 ```
 
 ### Running Benchmarks
+
 ```bash
 just bench                           # Run all benchmarks
 go test -bench=. -benchmem ./...    # With memory tracking
@@ -132,12 +141,14 @@ go test -bench=BenchmarkName ./...   # Specific benchmark
 ## Fuzzing
 
 ### Purpose
+
 - Find edge cases and bugs
 - Test with random inputs
 - Improve code robustness
 - Prevent regression
 
 ### Writing Fuzz Tests
+
 ```go
 func FuzzSerialize(f *testing.F) {
     // Add seed corpus with typical inputs
@@ -158,6 +169,7 @@ func FuzzSerialize(f *testing.F) {
 ```
 
 ### Running Fuzz Tests
+
 ```bash
 go test -fuzz=. -fuzztime=30s ./...      # Run all fuzz tests
 go test -fuzz=FuzzName -fuzztime=60s ./...  # Specific fuzz test
@@ -166,11 +178,13 @@ go test -fuzz=FuzzName -fuzztime=60s ./...  # Specific fuzz test
 ## Property-Based Testing
 
 ### Purpose
+
 - Test invariants and properties
 - Verify code behavior across input space
 - Complement example-based tests
 
 ### Using `testing/quick`
+
 ```go
 func TestSortingProperty(t *testing.T) {
     f := func(x []int) bool {
@@ -206,12 +220,14 @@ just test-coverage          # Show coverage percentage
 ### Target: 80% minimum
 
 ### Checking Coverage
+
 ```bash
 just test-coverage          # Show coverage percentage
 just coverage               # Generate HTML report
 ```
 
 ### Coverage Quality Gates
+
 ```bash
 go test -coverprofile=cover.out ./...
 COVERAGE=$(go tool cover -func=cover.out | grep total | awk '{print $3}' | tr -d '%')
@@ -224,6 +240,7 @@ fi
 ## Test Helpers
 
 ### Common Patterns
+
 ```go
 // Helper for test setup
 func setupTestFile(t *testing.T, content string) string {
@@ -259,6 +276,7 @@ func compareSlices[T comparable](t *testing.T, got, want []T) {
 ## Common Pitfalls
 
 ### 1. Not Using `t.Helper()`
+
 ```go
 // Bad
 func assertEqual(t *testing.T, got, want any) {
@@ -277,6 +295,7 @@ func assertEqual(t *testing.T, got, want any) {
 ```
 
 ### 2. Race Conditions in Parallel Tests
+
 ```go
 // Bad - shared variable
 var counter int
@@ -298,6 +317,7 @@ for i := 0; i < 10; i++ {
 ```
 
 ### 3. Not Resetting Timer in Benchmarks
+
 ```go
 // Bad
 func BenchmarkSlow(b *testing.B) {
@@ -320,6 +340,7 @@ func BenchmarkFast(b *testing.B) {
 ## Integration Testing
 
 Integration tests should:
+
 - Use `t.Parallel()` carefully (avoid shared state)
 - Have clear setup/teardown with `t.Cleanup()`
 - Use realistic data and scenarios
@@ -346,6 +367,7 @@ func TestIntegrationWorkflow(t *testing.T) {
 ## Test-Driven Development (TDD)
 
 ### Workflow
+
 1. Write a failing test
 2. Run test and confirm it fails
 3. Write minimal code to make test pass
@@ -353,6 +375,7 @@ func TestIntegrationWorkflow(t *testing.T) {
 5. Refactor if needed
 
 ### Example
+
 ```go
 // Step 1: Write failing test
 func TestCalculateComplexity(t *testing.T) {
@@ -377,12 +400,14 @@ func CalculateComplexity(code string) int {
 ## Continuous Integration
 
 ### CI Test Requirements
+
 - All tests must pass
 - Coverage must be ≥ 80%
 - No race conditions (`-race`)
 - No linter warnings
 
 ### CI Test Matrix
+
 - Multiple Go versions
 - Multiple OS platforms
 - With and without race detector
@@ -390,12 +415,14 @@ func CalculateComplexity(code string) int {
 ## Resources
 
 ### Official Documentation
+
 - [Go Testing Package](https://pkg.go.dev/testing)
 - [Go Fuzzing Tutorial](https://go.dev/doc/tutorial/fuzz)
 - [Property-Based Testing](https://pkg.go.dev/testing/quick)
 - [Table-Driven Tests](https://dave.cheney.net/2019/05/07/prefer-table-driven-tests)
 
 ### Best Practices
+
 - Write tests before or with code (TDD)
 - Keep tests simple and focused
 - Use descriptive test names
@@ -406,6 +433,7 @@ func CalculateComplexity(code string) int {
 ## Migration from External Frameworks
 
 ### From Ginkgo/Gomega to Native
+
 ```go
 // Old (Ginkgo)
 var _ = Describe("Feature", func() {
@@ -425,6 +453,7 @@ func TestFeature(t *testing.T) {
 ```
 
 ### From Testify to Native
+
 ```go
 // Old (testify)
 assert.Equal(t, expected, result)

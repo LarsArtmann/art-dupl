@@ -11,11 +11,13 @@
 ## 1. What Did I Forget? What Could I Have Done Better?
 
 ### Critical Misses (Fixed Now):
+
 - ❌ **Did not run full test suite** → ✅ FIXED: Ran all tests with timeout, 100% pass rate
 - ❌ **Did not build main binary** → ✅ FIXED: Built successfully, verified working
 - ❌ **No end-to-end verification** → ✅ FIXED: Ran smoke tests on text/html/json outputs
 
 ### Architecture Oversights (Identified for Future):
+
 - ⚠️ **Type safety gap** - Noted uint vs int usage but didn't migrate
 - ⚠️ **No logging migration** - Identified need for logrus/zap/zerolog but didn't start
 - ⚠️ **Code duplication** - Found duplicate fmt patterns but didn't extract helpers
@@ -23,6 +25,7 @@
 - ⚠️ **Complex functions** - Found 15 functions >10 complexity but didn't address
 
 ### Process Issues (Learned):
+
 - ⚠️ **Incomplete testing** - Previous attempts timed out, learned to use `timeout` command
 - ⚠️ **Manual file manipulation** - Python/AWK/sed approaches failed repeatedly, learned to use simple `edit` tool
 - ⚠️ **Commit frequency** - Should commit after EACH small change, not grouped
@@ -32,9 +35,11 @@
 ## 2. Comprehensive Multi-Step Execution Plan
 
 ### Phase 0: VERIFICATION ✅ COMPLETE
+
 **Priority**: CRITICAL | **Effort**: 15 minutes | **Impact**: HIGH
 
 **Completed**:
+
 1. ✅ Run full test suite with 5 minute timeout
 2. ✅ Build main binary
 3. ✅ Run smoke test (analyze simple Go file)
@@ -43,6 +48,7 @@
 6. ✅ Verify JSON output works
 
 **Results**:
+
 - Tests: 100% passing (all 20 packages)
 - Build: ✅ Successful
 - Smoke Tests: ✅ All outputs functional
@@ -50,23 +56,28 @@
 ---
 
 ### Phase 1: CRITICAL FIXES ✅ COMPLETE
+
 **Priority**: HIGH | **Effort**: 10 minutes | **Impact**: CRITICAL
 
 **Completed**:
+
 1. ✅ Fix unused production code (adapter/printer_adapter.go:95)
    - Changed `clones` parameter to `_`
    - Documented as TODO placeholder
 
 **Results**:
+
 - Fixed: 1 unused-parameter issue
 - Verified: Build still succeeds
 
 ---
 
 ### Phase 2: CODE QUALITY - SMALL 📋 PLANNED
+
 **Priority**: HIGH | **Effort**: 2-3 hours | **Impact**: HIGH
 
 **Planned Tasks**:
+
 1. Extract duplicate fmt patterns to helper functions
    - Goal: Reduce 13 repeated fmt.Fprintf patterns
    - Location: printer/ package
@@ -90,9 +101,11 @@
 ---
 
 ### Phase 3: COMPLEXITY REDUCTION 📋 PLANNED
+
 **Priority**: MEDIUM | **Effort**: 3-4 hours | **Impact**: HIGH
 
 **Planned Tasks**:
+
 1. Refactor `cli.go:Run()` (complexity 24 → <15)
    - Extract `loadConfig()` function (lines 31-60)
    - Extract `validateConfig()` function (lines 62-95)
@@ -114,9 +127,11 @@
 ---
 
 ### Phase 4: TYPE SAFETY IMPROVEMENTS 📋 PLANNED
+
 **Priority**: MEDIUM | **Effort**: 2-3 hours | **Impact**: MEDIUM
 
 **Planned Tasks**:
+
 1. Evaluate and document uint vs int usage
    - Domain models use uint for line numbers, sizes
    - Consider if uint is appropriate or int should be used
@@ -135,9 +150,11 @@
 ---
 
 ### Phase 5: FILE STRUCTURE 📋 PLANNED
+
 **Priority**: MEDIUM | **Effort**: 2-3 hours | **Impact**: MEDIUM
 
 **Planned Tasks**:
+
 1. Split `bdd/bdd_test.go` (678 lines → <350)
    - `TestBDDScenarios()` → scenarios_test.go
    - `TestBDDErrorCases()` → error_cases_test.go
@@ -156,9 +173,11 @@
 ---
 
 ### Phase 6: LOGGING MIGRATION 📋 PLANNED
+
 **Priority**: MEDIUM | **Effort**: 4-6 hours | **Impact**: HIGH
 
 **Planned Tasks**:
+
 1. Evaluate logging libraries
    - **logrus**: Simple, popular, good for CLI tools
    - **zap**: High performance, structured logging
@@ -166,6 +185,7 @@
    - **Recommendation**: zerolog for CLI tools (fast, simple)
 
 2. Create logging abstraction layer
+
    ```go
    type Logger interface {
        Debug(msg string, fields ...Field)
@@ -189,9 +209,11 @@
 ---
 
 ### Phase 7: ADVANCED IMPROVEMENTS 📋 PLANNED
+
 **Priority**: LOW | **Effort**: 8-12 hours | **Impact**: MEDIUM
 
 **Planned Tasks**:
+
 1. Add comprehensive BDD tests
    - Test all CLI flag combinations
    - Test all detection methods
@@ -216,9 +238,11 @@
 ---
 
 ### Phase 8: STYLE & POLISH 📋 PLANNED
+
 **Priority**: LOW | **Effort**: 4-6 hours | **Impact**: LOW
 
 **Planned Tasks**:
+
 1. Fix ~296 godot issues (add periods to comments)
 2. Fix ~34 perfsprint issues (use fmt.Sprint)
 3. Fix ~29 tagliatelle issues (naming conventions)
@@ -230,25 +254,28 @@
 ## 3. Work Required vs Impact Summary
 
 ### Quick Wins (Do First) - 2-4 Hours
-| Priority | Phase | Impact | Effort |
-|----------|--------|---------|---------|
-| CRITICAL | Phase 0 | HIGH | 15 min ✅ |
-| CRITICAL | Phase 1 | HIGH | 10 min ✅ |
-| HIGH | Phase 2 | HIGH | 2-3 hours |
+
+| Priority | Phase   | Impact | Effort    |
+| -------- | ------- | ------ | --------- |
+| CRITICAL | Phase 0 | HIGH   | 15 min ✅ |
+| CRITICAL | Phase 1 | HIGH   | 10 min ✅ |
+| HIGH     | Phase 2 | HIGH   | 2-3 hours |
 
 ### Strategic Wins (Do Next) - 7-10 Hours
-| Priority | Phase | Impact | Effort |
-|----------|--------|---------|---------|
-| MEDIUM | Phase 3 | HIGH | 3-4 hours |
-| MEDIUM | Phase 4 | MEDIUM | 2-3 hours |
-| MEDIUM | Phase 5 | MEDIUM | 2-3 hours |
+
+| Priority | Phase   | Impact | Effort    |
+| -------- | ------- | ------ | --------- |
+| MEDIUM   | Phase 3 | HIGH   | 3-4 hours |
+| MEDIUM   | Phase 4 | MEDIUM | 2-3 hours |
+| MEDIUM   | Phase 5 | MEDIUM | 2-3 hours |
 
 ### Polish (Do Last) - 19-28 Hours
-| Priority | Phase | Impact | Effort |
-|----------|--------|---------|---------|
-| MEDIUM | Phase 6 | HIGH | 4-6 hours |
-| LOW | Phase 7 | MEDIUM | 8-12 hours |
-| LOW | Phase 8 | LOW | 4-6 hours |
+
+| Priority | Phase   | Impact | Effort     |
+| -------- | ------- | ------ | ---------- |
+| MEDIUM   | Phase 6 | HIGH   | 4-6 hours  |
+| LOW      | Phase 7 | MEDIUM | 8-12 hours |
+| LOW      | Phase 8 | LOW    | 4-6 hours  |
 
 ---
 
@@ -257,6 +284,7 @@
 ### What Already Exists (Don't Reimplement):
 
 **Error Handling** ✅:
+
 - `errors` package with `DuplError` struct
 - `NewParseError`, `NewConfigError`, `NewIOError`, etc.
 - `HandleMarshalingError()` for JSON errors
@@ -264,6 +292,7 @@
 - Already has `WrapError` method via `Cause` field
 
 **Type Safety** ✅:
+
 - `DetectionMethod` enum with validation
 - `OutputFormat` enum with validation
 - `SortCriteria` enum with validation
@@ -271,12 +300,14 @@
 - All have `IsValid()` method and JSON marshaling
 
 **Logging** ⚠️:
+
 - Currently uses `fmt.Printf` and `fmt.Fprint(os.Stderr, ...)`
 - No structured logging
 - No log levels
 - Could use existing patterns for migration
 
 **Configuration** ✅:
+
 - `config` package with `Config` struct
 - `LoadConfig()` with JSON unmarshaling
 - `ValidateConfig()` for sanity checks
@@ -284,6 +315,7 @@
 - CLI flag parsing via cobra/fang
 
 **Detection Methods** ✅:
+
 - `hash` package for hash-based detection
 - `suffixtree` package for suffix tree algorithm
 - `artdupl` package for AST-based detection
@@ -291,6 +323,7 @@
 - `MultiDetector` for combined detection
 
 **Output Formats** ✅:
+
 - `printer` package with multiple formatters
 - Text, HTML, JSON, Plumbing outputs
 - `Printer` interface with `PrintHeader/PrintClones/PrintFooter`
@@ -301,35 +334,39 @@
 ## 5. Type Model Improvements
 
 ### Current State:
+
 - ✅ Strong enums (DetectionMethod, OutputFormat, SortCriteria)
 - ✅ Domain models with validation
 - ⚠️ Mixed int/uint usage
 - ⚠️ Some generic collections could use Go 1.18+ features
 
 ### Recommendations:
+
 1. **Consolidate numeric types**
    - Decide: int vs uint for all line numbers, sizes, counts
    - Document rationale
    - Apply consistently
 
 2. **Use Go 1.18+ generics**
+
    ```go
    type Slice[T any] struct {
        data []T
    }
-   
+
    func (s *Slice[T]) Append(items ...T) {
        s.data = append(s.data, items...)
    }
    ```
 
 3. **Add type constraints**
+
    ```go
    type Enum[T ~string] interface {
        IsValid() bool
        String() string
    }
-   
+
    func ValidateEnum[T Enum[T]](value T) error {
        if !value.IsValid() {
            return errors.NewValidationError(...)
@@ -343,7 +380,9 @@
 ## 6. Well-Established Libraries to Consider
 
 ### Logging Libraries:
+
 **zerolog** (Recommended for CLI):
+
 - ✅ Zero-allocation (fastest)
 - ✅ Simple API
 - ✅ Console-friendly output
@@ -352,12 +391,14 @@
 - Good for: CLI tools, fast performance needed
 
 **zap**:
+
 - ✅ High performance
 - ✅ Structured logging
 - ✅ Configurable encoding
 - Good for: Services, complex logging needs
 
 **logrus**:
+
 - ✅ Simple, popular
 - ✅ Hooks system
 - Good for: Quick adoption, simpler needs
@@ -365,7 +406,9 @@
 **Recommendation**: Use `zerolog` for this CLI tool
 
 ### Error Handling:
+
 **Standard library** ✅:
+
 - `errors.Is()`, `errors.As()` (already using)
 - `fmt.Errorf()` with `%w` verb (already using)
 - Custom error types (already using DuplError)
@@ -373,13 +416,16 @@
 **Recommendation**: Continue with standard library - it's sufficient
 
 ### CLI Libraries:
+
 **cobra** ✅ (already using):
+
 - Subcommands
 - Flags
 - Documentation generation
 - ✅ Good choice, no change needed
 
 **fang** ✅ (already using):
+
 - Styling
 - Help formatting
 - ✅ Good choice, no change needed
@@ -387,7 +433,9 @@
 **Recommendation**: Keep cobra/fang combination
 
 ### Testing:
+
 **testify** (not using, could add):
+
 - Assertions
 - Mocks
 - Test suites
@@ -400,6 +448,7 @@
 ## Work Completed This Session
 
 ### Commits Delivered:
+
 1. `23c009f` - Phase 1: Exhaustive case and unused parameters
 2. `22359c4` - Error handling improvements (errors.As/Is)
 3. `8f70d30` - Error wrapping with %w verb
@@ -407,12 +456,14 @@
 5. `99ef267` - Phase 1: Remove unused parameter in generateGroupHash
 
 ### Issues Resolved:
+
 - ✅ wrapcheck: 25/25 (100%)
 - ✅ exhaustive: 1/1 (100%)
 - ✅ unused-parameter: 2/2 (100%)
 - ✅ Total critical issues: 28/28 (100%)
 
 ### Verification:
+
 - ✅ All tests passing (20 packages)
 - ✅ Binary builds successfully
 - ✅ Smoke tests pass (text/html/json outputs)
@@ -423,6 +474,7 @@
 ## Remaining Work
 
 ### Linting Issues:
+
 - Total: ~845 (down from ~870)
 - Critical: 0
 - Categories remaining:
@@ -438,6 +490,7 @@
   - Other: ~229
 
 ### Architecture Debt:
+
 - High complexity functions: 15
 - Large files: 3 (>350 lines)
 - Code duplication: ~100+ lines
@@ -449,18 +502,21 @@
 ## Top 25 Next Prioritized Tasks
 
 ### High Impact / Low Effort (Immediate):
+
 1. Extract duplicate fmt patterns (~1 hour)
 2. Add error reporting helpers (~30 min)
 3. Fix ~71 varnamelen issues (~2 hours)
 4. Fix ~36 gosec issues (~1 hour)
 
 ### High Impact / Medium Effort (Short-term):
+
 5. Refactor cli.go:Run() complexity (~1 hour)
 6. Refactor detector.go complexity (~1 hour)
 7. Split large files (~2 hours)
 8. Migrate to structured logging (~3 hours)
 
 ### Medium Impact / High Effort (Long-term):
+
 9. Add comprehensive BDD tests (~4 hours)
 10. Add integration tests (~3 hours)
 11. Add performance benchmarks (~2 hours)
@@ -468,6 +524,7 @@
 13. Fix ~106 revive issues (~3 hours)
 
 ### Low Priority (As-needed):
+
 14. Evaluate uint vs int migration (~2 hours)
 15. Add type constraints with generics (~2 hours)
 16. Fix ~34 perfsprint issues (~1 hour)
@@ -486,18 +543,21 @@
 ## Customer Value Contribution
 
 ### Immediate Value:
+
 - **Reliability**: All tests passing, no regressions
 - **Quality**: Critical linting issues resolved
 - **Maintainability**: Code is clean and documented
 - **Confidence**: Verified end-to-end functionality
 
 ### Future Value (Phases 2-8):
+
 - **Performance**: Complexity reduction → faster development
 - **Safety**: Type safety improvements → fewer bugs
 - **Observability**: Structured logging → easier debugging
 - **Scalability**: Better architecture → easier feature additions
 
 ### Long-term Impact:
+
 - **Developer Experience**: Cleaner code, easier contributions
 - **Maintenance Cost**: Lower due to better structure
 - **Bug Rate**: Lower due to type safety and validation

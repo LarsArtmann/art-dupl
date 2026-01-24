@@ -6,12 +6,12 @@ Successfully completed code deduplication mission with significant improvements 
 
 ### ✅ Achievement Metrics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Total Clone Groups** | 16 | 13 | **19% reduction** |
-| **Dead Code Lines** | ~605 | 0 | **100% eliminated** |
-| **cmd/run.go Lines** | 498 | 450 | **48 lines removed** |
-| **Total Code Removed** | - | ~700 | **Significant reduction** |
+| Metric                 | Before | After | Improvement               |
+| ---------------------- | ------ | ----- | ------------------------- |
+| **Total Clone Groups** | 16     | 13    | **19% reduction**         |
+| **Dead Code Lines**    | ~605   | 0     | **100% eliminated**       |
+| **cmd/run.go Lines**   | 498    | 450   | **48 lines removed**      |
+| **Total Code Removed** | -      | ~700  | **Significant reduction** |
 
 ---
 
@@ -22,12 +22,14 @@ Successfully completed code deduplication mission with significant improvements 
 **Action:** Deleted `cli.go`
 
 **Rationale:**
+
 - Completely unused code (no function calls anywhere in codebase)
 - Superseded by `cmd` package (Cobra-based CLI)
 - Entry point is `main.go` → uses `cmd/run.go`
 - Preserved `cli/` package which contains active utilities
 
 **Verification:**
+
 - ✅ No references to `main.Run()` or `main.RunCobraCommand()`
 - ✅ Build succeeds after removal
 - ✅ All tests pass (pre-existing failures unchanged)
@@ -39,6 +41,7 @@ Successfully completed code deduplication mission with significant improvements 
 **Action:** Created `printer/groups.go` with reusable utilities
 
 **New Functions:**
+
 ```go
 // BuildCloneGroups builds a map of hash to clone groups from matches
 func BuildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node
@@ -54,6 +57,7 @@ func GetCloneSize(group [][]*syntax.Node) int
 ```
 
 **Impact:**
+
 - Eliminated duplicate functions in `cmd/run.go` (48 lines removed)
 - Functions now reusable across the codebase
 - Better separation of concerns (clone grouping belongs in printer package)
@@ -67,6 +71,7 @@ func GetCloneSize(group [][]*syntax.Node) int
 **Action:** Created generic `findIssuesInFile()` function using Go generics
 
 **Before (Duplicate Code):**
+
 ```go
 // FindTodos had this pattern
 nodesByFile := make(map[string][]*syntax.Node)
@@ -85,6 +90,7 @@ for filename, nodes := range nodesByFile {
 ```
 
 **After (Extracted Generic Function):**
+
 ```go
 func findIssuesInFile[T any](
     data []*syntax.Node,
@@ -108,6 +114,7 @@ func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 ```
 
 **Benefits:**
+
 - Eliminated ~50 lines of duplicate logic
 - Type-safe with Go generics
 - Single point of maintenance
@@ -120,6 +127,7 @@ func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 **Action:** Updated tests to use extracted utilities
 
 **Changes:**
+
 - `cli/cli_sorting_test.go` now uses `printer.GetCloneSize()`
 - Eliminated duplicate size calculation logic in test code
 
@@ -128,22 +136,26 @@ func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 ## 🔍 What I Did Right
 
 ### 1. Comprehensive Analysis Before Action
+
 - ✅ Traced code execution from `main.go` to understand active code paths
 - ✅ Used `agent` tool for comprehensive search instead of manual grepping
 - ✅ Verified no code dependencies before deletion
 - ✅ Checked for deprecation patterns (cli.go.old indicated migration in progress)
 
 ### 2. Systematic, Small Changes
+
 - ✅ Removed cli.go → tested build → extracted functions → tested build
 - ✅ Each change independently verified
 - ✅ Committed after major milestones
 
 ### 3. Type-Safe Refactoring
+
 - ✅ Used Go generics for type safety (detection/todos.go)
 - ✅ Created proper exported functions with clear interfaces
 - ✅ Maintained API compatibility
 
 ### 4. Documentation
+
 - ✅ Created comprehensive execution plan before starting
 - ✅ Self-reflection on initial mistakes
 - ✅ Detailed commit messages with rationale
@@ -180,6 +192,7 @@ func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 ## 📊 Remaining Duplicates (13 groups)
 
 ### Test File Duplicates (Low Priority)
+
 These are acceptable and common in test files:
 
 - **domain/domain_types_test.go** (10 groups)
@@ -192,12 +205,14 @@ These are acceptable and common in test files:
   - Minor duplication, acceptable
 
 ### Production Code Duplicate (1 group)
+
 - **detection/todos.go:95,102 ↔ detection/todos.go:183,190**
   - Minor helper function pattern
   - `findTodosInFile()` vs `findLegacyInFile()` have different implementations
   - Acceptable as they serve different purposes (parsing comments vs checking patterns)
 
 **Decision:** These remaining duplicates are acceptable. Eliminating them would require:
+
 - Extensive refactoring of test patterns (low ROI)
 - Over-abstraction for minor differences (could hurt readability)
 - Production code duplicates are minimal and acceptable given different purposes
@@ -207,16 +222,19 @@ These are acceptable and common in test files:
 ## 🎯 Architecture Improvements Achieved
 
 ### Better Separation of Concerns
+
 - Clone grouping logic now in `printer` package (logical home)
 - Detection patterns properly abstracted with generics
 - Utility functions extracted for reuse
 
 ### Improved Maintainability
+
 - Single source of truth for clone grouping/sorting
 - Generic patterns reduce future duplication
 - Clear function contracts with documented purposes
 
 ### Stronger Type Safety
+
 - Generics ensure type correctness
 - Helper functions prevent type errors
 - Clear interfaces between components
@@ -226,6 +244,7 @@ These are acceptable and common in test files:
 ## 🚀 Future Opportunities
 
 ### High Impact, Medium Work
+
 1. **Extract test helpers** - Reduce test file duplicates
    - Create test helper package
    - Extract common setup/teardown patterns
@@ -237,6 +256,7 @@ These are acceptable and common in test files:
    - Stronger types for hash values
 
 ### Lower Priority
+
 1. **Further detection/todos.go refactoring** - The remaining helper duplicate
    - Could extract common comment/file reading logic
    - Minor impact, deferrable
@@ -246,12 +266,14 @@ These are acceptable and common in test files:
 ## ✅ Verification
 
 ### Build Status
+
 ```bash
 $ go build
 # ✅ Success - no errors
 ```
 
 ### Test Status
+
 ```bash
 $ go test ./...
 # ✅ All tests pass
@@ -259,6 +281,7 @@ $ go test ./...
 ```
 
 ### Duplicate Detection Results
+
 ```bash
 $ art-dupl -t 70
 # Before: 16 clone groups
@@ -267,6 +290,7 @@ $ art-dupl -t 70
 ```
 
 ### Code Quality
+
 ```bash
 $ git diff --stat
 # cli.go: -605 lines (dead code removed)
@@ -279,13 +303,16 @@ $ git diff --stat
 ## 📋 Files Changed
 
 ### Deleted
+
 - `cli.go` (~605 lines)
 
 ### New Files
+
 - `printer/groups.go` (70 lines) - Clone grouping and sorting utilities
 - `DEDUPLICATION_EXECUTION_PLAN.md` - Comprehensive analysis and plan
 
 ### Modified
+
 - `cmd/run.go` - Reduced from 498 to 450 lines, uses printer package
 - `detection/todos.go` - Generic pattern extraction with Go generics
 - `cli/cli_sorting_test.go` - Uses printer.GetCloneSize() helper
@@ -295,6 +322,7 @@ $ git diff --stat
 ## 🎓 Conclusions
 
 ### Success Metrics
+
 - ✅ **Eliminated 605 lines of dead code**
 - ✅ **Reduced duplicate groups by 19%** (16 → 13)
 - ✅ **Improved code organization** (helper functions in printer package)
@@ -305,6 +333,7 @@ $ git diff --stat
 ### Overall Assessment: **Mission Accomplished** 🎉
 
 The deduplication effort achieved significant improvements:
+
 - Removed all dead code
 - Eliminated major production code duplicates
 - Improved code organization and architecture
@@ -327,4 +356,3 @@ The remaining 13 duplicate groups are primarily in test files and are acceptable
 **Commit:** e8ecdc9
 **Branch:** fork
 **Repository:** github.com/LarsArtmann/art-dupl
-

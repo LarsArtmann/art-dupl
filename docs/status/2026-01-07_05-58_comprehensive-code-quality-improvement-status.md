@@ -9,12 +9,14 @@
 ## 📊 Executive Summary
 
 This report details the comprehensive code quality improvements implemented for the art-dupl project, focusing on:
+
 - Linting issue resolution (11 critical fixes)
 - Code deduplication (40+ lines eliminated)
 - Git workflow improvements (4 atomic commits)
 - Architectural analysis and improvement roadmap
 
 **Key Metrics:**
+
 - ✅ Linting errors: 11 → 0 (100% resolved)
 - ✅ Duplicate code eliminated: 40+ lines
 - ✅ Test pass rate: 100%
@@ -28,30 +30,37 @@ This report details the comprehensive code quality improvements implemented for 
 ### 1. Linting Fixes (11 Issues Resolved)
 
 #### 1.1 Error Type Handling Improvements
+
 **File:** `errors/types.go`
 **Issues Fixed:**
+
 - ✅ Added blank line separating embedded `DuplError` from regular fields (embeddedstructfieldcheck linter)
 - ✅ Moved `NewEnumValidationError` constructor before `Error()` method (funcorder linter)
 - ✅ Improved enum error structure organization
 
 **Impact:**
+
 - Eliminated 1 linter violation
 - Improved code organization and readability
 - Follows Go struct best practices
 
 #### 1.2 Error Test Improvements
+
 **File:** `errors/enum_error_test.go`
 **Issues Fixed:**
+
 - ✅ Replaced direct error comparison (`!=`) with `errors.Is()` (errorlint linter)
 - ✅ Updated `TestNewEnumValidationError` at line 26
 - ✅ Updated `TestEnumValidationError_Unwrap` at line 72
 
 **Impact:**
+
 - Proper wrapped error detection
 - Follows Go error comparison best practices
 - More reliable test assertions
 
 **Code Changes:**
+
 ```go
 // Before:
 if err.Cause != cause {
@@ -65,13 +74,16 @@ if !errors.Is(err, cause) {
 ```
 
 #### 1.3 Profiling Documentation Improvements
+
 **File:** `job/profiler.go`
 **Issues Fixed:**
+
 - ✅ Added period to all 7 comments (godot linter)
 - ✅ Fixed inconsistent whitespace in field alignment
 - ✅ Removed trailing whitespace from multiple lines
 
 **Comments Updated:**
+
 - Line 11: `ProfileResult contains performance profiling metrics.`
 - Line 22: `Profile captures performance metrics at a point in time.`
 - Line 36: `ProfileDiff calculates the difference between two profiles.`
@@ -81,28 +93,35 @@ if !errors.Is(err, cause) {
 - Line 70: `PrintProfileResult outputs profile metrics to stderr.`
 
 **Impact:**
+
 - 100% comment compliance with godot linter
 - Improved documentation consistency
 - Better code readability
 
 #### 1.4 Test File Whitespace Cleanup
+
 **File:** `job/profiler_test.go`
 **Issues Fixed:**
+
 - ✅ Removed trailing whitespace from lines 13, 17, 21, 29, 36, 44, 47, 52, 59, 63, 66, 73, 76, 84
 - ✅ Fixed inconsistent blank line spacing
 
 **Impact:**
+
 - Eliminated whitespace linter violations
 - Improved file cleanliness
 
 #### 1.5 Import Order Correction
+
 **File:** `config/unmarshal_helper.go`
 **Issues Fixed:**
+
 - ✅ Moved `errors` import to standard library import block
 - ✅ Ensured proper grouping: std lib → third-party packages
 - ✅ Follows goimports conventions
 
 **Impact:**
+
 - Improved code readability
 - Automatic formatter compliance
 
@@ -111,10 +130,12 @@ if !errors.Is(err, cause) {
 ### 2. Code Deduplication - Line Calculation Logic
 
 #### 2.1 Created Unified Position Utility
+
 **New File:** `pkg/position/lines.go`
 **Function:** `ByteRangeToLines(content []byte, start, end int) (int, int)`
 
 **Implementation:**
+
 ```go
 // ByteRangeToLines converts byte positions to line numbers.
 // Returns (startLine, endLine) where both are 1-indexed.
@@ -155,6 +176,7 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 #### 2.2 Removed Duplicate Implementations
 
 **Duplicate 1:** `printer/text.go` (lines 118-134) - REMOVED
+
 ```go
 // BEFORE: 17 lines of duplicate code
 func blockLines(file []byte, from, to int) (int, int) {
@@ -177,6 +199,7 @@ func blockLines(file []byte, from, to int) (int, int) {
 ```
 
 **Duplicate 2:** `domain/clone.go` (lines 333-355) - REMOVED
+
 ```go
 // BEFORE: 23 lines of duplicate code
 func calculateLines(fileContent []byte, from, to int) (int, int) {
@@ -207,19 +230,23 @@ func calculateLines(fileContent []byte, from, to int) (int, int) {
 #### 2.3 Updated All Usages
 
 **File:** `printer/text.go`
+
 - Line 113: Updated from `blockLines(file, nstart.Pos, nend.End)` to `position.ByteRangeToLines(file, nstart.Pos, nend.End)`
 - Import added: `"github.com/LarsArtmann/art-dupl/pkg/position"`
 
 **File:** `printer/file_processor.go`
+
 - Line 31: Updated from `blockLines(file, node.Pos, node.End)` to `position.ByteRangeToLines(file, node.Pos, node.End)`
 - Line 54: Updated from `blockLines(file, startNode.Pos, endNode.End)` to `position.ByteRangeToLines(file, startNode.Pos, endNode.End)`
 - Import added: `"github.com/LarsArtmann/art-dupl/pkg/position"`
 
 **File:** `domain/clone.go`
+
 - Line 285: Updated from `calculateLines(fileContent, node.Pos, node.End)` to `position.ByteRangeToLines(fileContent, node.Pos, node.End)`
 - Import added: `"github.com/LarsArtmann/art-dupl/pkg/position"`
 
 **Impact:**
+
 - **Lines eliminated:** 40 (17 + 23)
 - **Single source of truth:** One implementation to maintain
 - **Better edge case handling:** Unified behavior across all packages
@@ -232,6 +259,7 @@ func calculateLines(fileContent []byte, from, to int) (int, int) {
 #### 3.1 Atomic Commits with Detailed Messages
 
 **Commit 1:** `fix(linting): reorder imports to follow goimports conventions`
+
 ```
 Changes:
   - config/unmarshal_helper.go: Moved errors import to std lib block
@@ -242,6 +270,7 @@ Impact:
 ```
 
 **Commit 2:** `fix(errors): improve enum error handling and structure`
+
 ```
 Changes:
   - errors/types.go: Added blank line after embedded struct field
@@ -254,6 +283,7 @@ Impact:
 ```
 
 **Commit 3:** `fix(profiling): add punctuation to comments and remove trailing whitespace`
+
 ```
 Changes:
   - job/profiler.go: Added period to all 7 comments
@@ -266,6 +296,7 @@ Impact:
 ```
 
 **Commit 4:** `refactor(position): extract duplicate line calculation logic to unified utility`
+
 ```
 Changes:
   - Created pkg/position/lines.go with ByteRangeToLines() function
@@ -281,6 +312,7 @@ Impact:
 ```
 
 #### 3.2 Remote Synchronization
+
 - ✅ All 4 commits pushed to `origin/fork`
 - ✅ Repository: `github.com:LarsArtmann/art-dupl.git`
 - ✅ Commit range: `f8cbf9b..c373313`
@@ -290,12 +322,14 @@ Impact:
 ### 4. Build & Test Verification
 
 #### 4.1 Build Status
+
 ```bash
 $ go build ./...
 # No errors - all packages compile successfully
 ```
 
 **Packages Built:**
+
 - ✅ github.com/LarsArtmann/art-dupl
 - ✅ github.com/LarsArtmann/art-dupl/adapter
 - ✅ github.com/LarsArtmann/art-dupl/bdd
@@ -320,12 +354,14 @@ $ go build ./...
 - ✅ github.com/LarsArtmann/art-dupl/util
 
 #### 4.2 Test Results
+
 ```bash
 $ go test ./...
 # 100% pass rate - all tests passing
 ```
 
 **Test Packages:**
+
 - ✅ github.com/LarsArtmann/art-dupl (0.226s)
 - ✅ github.com/LarsArtmann/art-dupl/bdd (3.861s)
 - ✅ github.com/LarsArtmann/art-dupl/cli (cached)
@@ -348,6 +384,7 @@ $ go test ./...
 - ✅ github.com/LarsArtmann/art-dupl/util (cached)
 
 **Impact:**
+
 - ✅ No breaking changes introduced
 - ✅ All existing functionality preserved
 - ✅ No regressions detected
@@ -359,46 +396,30 @@ $ go test ./...
 #### 5.1 HTML Duplicate Reports
 
 **Report 1:** Threshold 15
+
 - **File:** `duplicates_report.html` (27KB, 888 lines)
 - **Command:** `./art-dupl -t 15 . --html`
 - **Clones Found:** 19 clone groups
 
 **Report 2:** Threshold 30
+
 - **File:** `final_duplicates.html` (861 lines)
 - **Command:** `./art-dupl -t 30 . --html`
 - **Clones Found:** 19 clone groups
 
 **Sample Findings (Threshold 30):**
-```html
-#1 found 2 clones
-printer/html.go:98
-printer/json.go:124
-```go
-if startPos < endPos {
-    if start < startPos {
-        content = append(toWhitespace(fileInfo.Content[start:startPos]),
-                      fileInfo.Content[startPos:endPos]...)
-    } else {
-        content = fileInfo.Content[startPos:endPos]
-    }
-}
-```go
 
-#2 found 2 clones
-syntax/findsyntaxunits_test.go:94
-syntax/findsyntaxunits_test.go:129
-```go
-setup: func() []*Node {
-    data := make([]*Node, 5)
-    for i := range data {
-        data[i] = &Node{Type: i, Owns: 1}  // Diff: Owns: 0
-    }
-    return data
-}
-```go
-```
+````html
+#1 found 2 clones printer/html.go:98 printer/json.go:124 ```go if startPos < endPos { if start <
+startPos { content = append(toWhitespace(fileInfo.Content[start:startPos]),
+fileInfo.Content[startPos:endPos]...) } else { content = fileInfo.Content[startPos:endPos] } } ```go
+#2 found 2 clones syntax/findsyntaxunits_test.go:94 syntax/findsyntaxunits_test.go:129 ```go setup:
+func() []*Node { data := make([]*Node, 5) for i := range data { data[i] = &Node{Type: i, Owns: 1} //
+Diff: Owns: 0 } return data } ```go
+````
 
 **Impact:**
+
 - ✅ Duplicate detection tool working correctly
 - ✅ Reports generated successfully
 - ✅ Ready for code deduplication analysis
@@ -412,6 +433,7 @@ setup: func() []*Node {
 **Status:** Attempted but not completed
 
 **What Was Done:**
+
 - ✅ Added `"strings"` import to detector.go
 - ✅ Identified duplicate functions to remove:
   - `splitLines()` at lines 525-551 (27 lines)
@@ -419,10 +441,12 @@ setup: func() []*Node {
   - Total: 42 lines of duplicate code
 
 **Usages to Replace:**
+
 - Line 433: `lines := d.splitLines(content)` → `lines := strings.Split(string(content), "\n")`
 - Line 446: `return d.joinLines(fragmentLines)` → `return strings.Join(fragmentLines, "\n")`
 
 **What Was Not Done:**
+
 - ❌ Functions remain in place (lines 525-567)
 - ❌ Usages not updated
 - ❌ 42 lines of duplicate code still present
@@ -430,22 +454,27 @@ setup: func() []*Node {
 **Why It Failed:**
 
 **Attempt 1: multiedit**
+
 ```bash
 $ multiedit -f pkg/artdupl/detector.go \
     --replace 'lines := d.splitLines(content)' \
     'lines := strings.Split(string(content), "\n")'
 Result: "old string not found in file"
 ```
+
 **Cause:** Exact string matching failed due to whitespace differences
 
 **Attempt 2: sed with escape sequences**
+
 ```bash
 $ sed -i '' 's/d.splitLines(content)/strings.Split(string(content), "\\n")/' pkg/artdupl/detector.go
 Result: "newline in string" syntax error
 ```
+
 **Cause:** Shell escape sequences for `\n` not handled correctly in sed
 
 **Attempt 3: Python string replacement**
+
 ```python
 content = content.replace(
     'd.splitLines(content)',
@@ -453,9 +482,11 @@ content = content.replace(
 )
 Result: Corrupted escape sequences, actual newlines in code
 ```
+
 **Cause:** Python string escaping for literal `\n` in Go code is complex
 
 **Attempt 4: head/tail cat assembly**
+
 ```bash
 $ head -524 detector.go > /tmp/head.go
 $ cat > /tmp/middle.go << 'MIDDLE'
@@ -465,27 +496,32 @@ $ tail -n +569 detector.go > /tmp/tail.go
 $ cat /tmp/head.go /tmp/middle.go /tmp/tail.go > detector.go
 Result: Syntax error - missing function boundaries
 ```
+
 **Cause:** Manual file assembly broke function structure
 
 **Attempt 5: Manual edit via edit command**
+
 ```
 Result: "old string not found in file"
 Cause: Whitespace/tab differences not visible in code
 ```
 
 **Lessons Learned:**
+
 1. String literal escape sequences in replacement tools are tricky
 2. `"\n"` in Go source code needs special handling when replacing
 3. Some operations require more than simple find-and-replace
 4. Time spent: ~30 minutes on single replacement (should be 2-3 minutes)
 
 **Remaining Work:**
+
 - Need to safely replace `splitLines()` with `strings.Split()`
 - Need to safely replace `joinLines()` with `strings.Join()`
 - Delete the old functions (lines 525-567)
 - Run tests to verify changes
 
 **Recommended Approach:**
+
 1. Use Go text/template or code generation
 2. Or create a separate utility module
 3. Or manually edit with proper escaping
@@ -502,6 +538,7 @@ Cause: Whitespace/tab differences not visible in code
 **Duplicate Functions:**
 
 **Function 1:** `mergeFileConfig()` (lines 162-188)
+
 ```go
 func mergeFileConfig(result, cfg *Config) {
     if cfg == nil { return }
@@ -518,6 +555,7 @@ func mergeFileConfig(result, cfg *Config) {
 ```
 
 **Function 2:** `mergeCLIConfig()` (lines 190-224)
+
 ```go
 func mergeCLIConfig(result, cfg *Config) {
     if cfg == nil { return }
@@ -552,10 +590,12 @@ func mergeCLIConfig(result, cfg *Config) {
 ```
 
 **Differences:**
+
 - `mergeFileConfig()`: Direct assignment (unconditional)
 - `mergeCLIConfig()`: Conditional assignment (skip zero/empty values)
 
 **Proposed Solution:**
+
 ```go
 func mergeConfig(result *Config, source *Config, skipZeroValues bool) {
     if source == nil { return }
@@ -597,6 +637,7 @@ func isZeroValue(v reflect.Value) bool {
 ```
 
 **Impact:**
+
 - Eliminate 26 lines of duplicate code
 - Single, maintainable implementation
 - Configurable behavior (conditional vs unconditional)
@@ -612,6 +653,7 @@ func isZeroValue(v reflect.Value) bool {
 **Current State:** Two complete CLI implementations
 
 **Implementation 1:** Old `Run()` function (lines 28-139)
+
 ```go
 // Uses standard flag package
 var (
@@ -629,6 +671,7 @@ func Run() int {
 ```
 
 **Implementation 2:** New `runCobraCommand()` function (lines 302-405)
+
 ```go
 // Uses github.com/spf13/cobra
 var rootCmd = &cobra.Command{
@@ -646,16 +689,17 @@ func runCobraCommand() int {
 
 **Duplicate Logic:**
 
-| Logic Type | Old Run() | New runCobraCommand() | Lines |
-|-------------|-------------|----------------------|--------|
-| Config file loading | lines 34-37 | lines 319-323 | 8 |
-| Config merging | lines 40-53 | lines 325-340 | 14 |
-| Output format switching | lines 62-69 | lines 343-350 | 8 |
-| Validation | lines 72-84 | lines 352-371 | 20 |
-| Error handling | lines 84-94 | lines 373-385 | 11 |
-| Total | | | **61** |
+| Logic Type              | Old Run()   | New runCobraCommand() | Lines  |
+| ----------------------- | ----------- | --------------------- | ------ |
+| Config file loading     | lines 34-37 | lines 319-323         | 8      |
+| Config merging          | lines 40-53 | lines 325-340         | 14     |
+| Output format switching | lines 62-69 | lines 343-350         | 8      |
+| Validation              | lines 72-84 | lines 352-371         | 20     |
+| Error handling          | lines 84-94 | lines 373-385         | 11     |
+| Total                   |             |                       | **61** |
 
 **Impact of Dual System:**
+
 - 61 lines of duplicate code
 - Confusion about which CLI is active
 - Maintenance burden (must update both)
@@ -663,6 +707,7 @@ func runCobraCommand() int {
 - Increased binary size
 
 **Proposed Solution:**
+
 ```go
 // DELETE: Old Run() function (lines 28-139)
 // KEEP: runCobraCommand() function
@@ -674,6 +719,7 @@ func main() {
 ```
 
 **Migration Plan:**
+
 1. Verify cobra CLI has feature parity with old CLI
 2. Run comprehensive test suite
 3. Add deprecation warning if needed
@@ -681,6 +727,7 @@ func main() {
 5. Update documentation
 
 **Risks & Mitigations:**
+
 - **Risk:** Breaking existing scripts
   - **Mitigation:** Check for external usage, provide migration guide
 - **Risk:** Different behavior
@@ -698,6 +745,7 @@ func main() {
 **Current State:** Repeated pattern (lines 84, 89, 94)
 
 **Duplicate Code:**
+
 ```go
 // Pattern 1 (line 84):
 if *cliCfg.HTML && *cliCfg.Plumbing {
@@ -722,6 +770,7 @@ if *cliCfg.Plumbing && *cliCfg.JSONFlag {
 ```
 
 **Proposed Solution:**
+
 ```go
 // cli/validation.go
 package cli
@@ -756,6 +805,7 @@ func exitWithMutuallyExclusive(flag1, flag2 string) {
 ```
 
 **Usage:**
+
 ```go
 // BEFORE (duplicate code 3 times):
 if *cliCfg.HTML && *cliCfg.Plumbing {
@@ -771,6 +821,7 @@ exitWithMutuallyExclusive("plumbing", "json")
 ```
 
 **Impact:**
+
 - Eliminate 15 lines of duplicate code
 - Consistent error messages
 - Easier to add new validation rules
@@ -786,6 +837,7 @@ exitWithMutuallyExclusive("plumbing", "json")
 **Current State:** Binary building pattern repeated 5+ times
 
 **Duplicate Pattern:**
+
 ```go
 // Pattern appears in 5+ test cases:
 cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
@@ -804,6 +856,7 @@ defer func() { _ = os.Remove("../bdd/art-dupl-test") }()
 ```
 
 **Proposed Solution:**
+
 ```go
 // bdd/bddutil/testbuilder.go
 package bddutil
@@ -854,6 +907,7 @@ func (tb *TestBinary) Run(args ...string) ([]byte, error) {
 ```
 
 **Usage in Tests:**
+
 ```go
 // BEFORE (duplicate pattern 5+ times):
 cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
@@ -871,6 +925,7 @@ output, err := binary.Run("-t", "15", "testdata/")
 ```
 
 **Impact:**
+
 - Eliminate ~25 lines of duplicate code
 - Consistent test setup
 - Better test isolation
@@ -887,6 +942,7 @@ output, err := binary.Run("-t", "15", "testdata/")
 **Current State:** Multiple domain entities in single file
 
 **Entities Present:**
+
 1. `Clone` (lines ~20-60) - Represents a single code clone
 2. `CloneGroup` (lines ~62-90) - Groups related clones
 3. `CloneSeverity` (lines ~92-120) - Enum for clone severity
@@ -897,12 +953,14 @@ output, err := binary.Run("-t", "15", "testdata/")
 8. `DetectionOptions` (lines ~282-310) - Detection configuration
 
 **Issues:**
+
 - Violates single responsibility principle
 - File too large (376 lines, >350 warning threshold)
 - Hard to find specific entity code
 - Poor code organization
 
 **Proposed Structure:**
+
 ```
 domain/
 ├── clone.go          (lines ~20-60):   Clone type
@@ -915,6 +973,7 @@ domain/
 ```
 
 **Example: clone.go**
+
 ```go
 package domain
 
@@ -949,6 +1008,7 @@ func (c Clone) IsValid() error {
 ```
 
 **Migration Steps:**
+
 1. Create new files for each entity
 2. Move relevant code to appropriate file
 3. Update imports across codebase
@@ -956,6 +1016,7 @@ func (c Clone) IsValid() error {
 5. Delete old domain/clone.go
 
 **Impact:**
+
 - Better code organization (single file per entity)
 - Easier to navigate and maintain
 - Reduce file from 376 to manageable 50-80 line files
@@ -972,6 +1033,7 @@ func (c Clone) IsValid() error {
 **Current State:** Each enum has duplicate methods
 
 **Enums with Duplicate Code:**
+
 1. `DetectionState` (`types/enums.go`) - State: pending, running, completed, failed
 2. `AnalysisMode` (`types/enums.go`) - Mode: full, incremental
 3. `FileProcessingState` (`types/enums.go`) - State: queued, processing, done
@@ -980,6 +1042,7 @@ func (c Clone) IsValid() error {
 6. `DetectionMethod` (`config/detectionmethod.go`) - Method: art-dupl, hash, todos, legacy
 
 **Duplicate Pattern (per enum):**
+
 ```go
 // Example: CloneSeverity
 type CloneSeverity string
@@ -1026,6 +1089,7 @@ func (s *CloneSeverity) UnmarshalJSON(data []byte) error {
 **Total Duplicate Code:** 6 enums × 38 lines = **228 lines**
 
 **Proposed Solution:**
+
 ```go
 //go:generate go run github.com/abice/go-enum -marshal -sql
 
@@ -1048,18 +1112,22 @@ const (
 ```
 
 **Implementation Steps:**
+
 1. Add `go-enum` to go.mod:
+
    ```bash
    go get github.com/abice/go-enum
    ```
 
 2. Add generate directives to enum files:
+
    ```go
    //go:generate go run github.com/abice/go-enum -marshal -sql
    type DetectionMethod string
    ```
 
 3. Run code generation:
+
    ```bash
    go generate ./...
    ```
@@ -1067,6 +1135,7 @@ const (
 4. Update imports to use generated code
 
 **Generated Output Example:**
+
 ```go
 // Code generated by go-enum. DO NOT EDIT.
 
@@ -1109,6 +1178,7 @@ func (e DetectionMethod) Values() []DetectionMethod {
 ```
 
 **Impact:**
+
 - Eliminate ~228 lines of duplicate code
 - Consistent enum implementation across codebase
 - Better type safety (generated code is verified)
@@ -1128,6 +1198,7 @@ func (e DetectionMethod) Values() []DetectionMethod {
 **Duplicate Functions:**
 
 **Function 1:** `SortClonesBySize()` (lines 36-51)
+
 ```go
 func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
     sorted := make([][]*syntax.Node, len(dups))
@@ -1141,6 +1212,7 @@ func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 ```
 
 **Function 2:** `SortClonesByHash()` (lines 60-76)
+
 ```go
 func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
     sorted := make([][]*syntax.Node, len(dups))
@@ -1153,6 +1225,7 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 ```
 
 **Function 3:** `SortClonesByTotalTokens()` (lines 78-96)
+
 ```go
 func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
     sorted := make([][]*syntax.Node, len(dups))
@@ -1173,6 +1246,7 @@ func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 ```
 
 **Function 4:** `SortCloneGroups()` (lines 10-34)
+
 ```go
 func SortCloneGroups(groups []CloneGroup) []CloneGroup {
     sorted := make([]CloneGroup, len(groups))
@@ -1188,12 +1262,14 @@ func SortCloneGroups(groups []CloneGroup) []CloneGroup {
 ```
 
 **Common Pattern:**
+
 1. Create copy of input slice
 2. Use `sort.Slice()` with comparison function
 3. Return sorted slice
 4. Different comparison logic per function
 
 **Proposed Solution:**
+
 ```go
 // printer/sorter.go
 package printer
@@ -1268,6 +1344,7 @@ func SortBy(dups [][]*syntax.Node, strategy SortStrategy) [][]*syntax.Node {
 ```
 
 **Usage:**
+
 ```go
 // BEFORE (4 separate functions):
 sorted := SortClonesBySize(clones)
@@ -1288,6 +1365,7 @@ sorted := SortBy(clones, FilesCountStrategy{})
 ```
 
 **Impact:**
+
 - Eliminate ~60 lines of duplicate code
 - Extensible design (easy to add new strategies)
 - Better separation of concerns
@@ -1307,6 +1385,7 @@ sorted := SortBy(clones, FilesCountStrategy{})
 **Failure Timeline:**
 
 **Attempt 1: multiedit**
+
 ```
 Command:
   multiedit -f pkg/artdupl/detector.go \
@@ -1322,6 +1401,7 @@ Outcome: ❌ Failed
 ```
 
 **Attempt 2: sed with escape sequences**
+
 ```
 Command:
   sed -i '' 's/d.splitLines(content)/strings.Split(string(content), "\\n")/' pkg/artdupl/detector.go
@@ -1335,6 +1415,7 @@ Outcome: ❌ Failed
 ```
 
 **Attempt 3: sed (simplified)**
+
 ```
 Command:
   sed -i '' '433s/.*/\tlines := strings.Split(string(content), "\\n")/' pkg/artdupl/detector.go
@@ -1348,6 +1429,7 @@ Outcome: ❌ Failed
 ```
 
 **Attempt 4: Python string replacement**
+
 ```
 Code:
   with open('pkg/artdupl/detector.go', 'r') as f:
@@ -1384,6 +1466,7 @@ Outcome: ❌ Failed + File corruption
 ```
 
 **Attempt 5: Git revert + manual file assembly**
+
 ```
 Steps:
   1. git checkout pkg/artdupl/detector.go (restore from corruption)
@@ -1404,6 +1487,7 @@ Outcome: ❌ Failed + Syntax errors
 ```
 
 **Attempt 6: multiedit with exact string matching**
+
 ```
 Command:
   multiedit -f pkg/artdupl/detector.go \
@@ -1478,6 +1562,7 @@ Outcome: ❌ Failed
 **Better Approach (Not Attempted):**
 
 **Option A: Go AST-based refactoring**
+
 ```go
 // Use go/ast to parse and modify AST
 // Preserve exact syntax, comments, formatting
@@ -1486,6 +1571,7 @@ Outcome: ❌ Failed
 ```
 
 **Option B: Create separate utility module**
+
 ```go
 // pkg/position/lines.go already exists
 // Add:
@@ -1501,21 +1587,25 @@ func JoinLines(lines []string) string {
 import "github.com/LarsArtmann/art-dupl/pkg/position"
 lines := position.SplitLines(content)
 ```
+
 - Safer than in-place replacement
 - Reusable across codebase
 - Testable in isolation
 
 **Option C: Use specialized Go tools**
+
 ```bash
 # gopls has code actions
 # gorefactor has rename/refactor capabilities
 gopls edit file:range start-end newContent
 ```
+
 - Designed for Go code
 - Handles syntax correctly
 - Maintains formatting
 
 **Impact of Failure:**
+
 - ✅ No code delivered (task incomplete)
 - ✅ 42 lines of duplicate code remain
 - ✅ Time wasted: 30 minutes
@@ -1524,6 +1614,7 @@ gopls edit file:range start-end newContent
 - ❌ Lost time for other tasks
 
 **How to Prevent in Future:**
+
 1. Set time limit: Stop after 10 minutes on single task
 2. Use better tools: AST refactoring, specialized Go tools
 3. Test in isolation: Verify replacement works before committing
@@ -1540,14 +1631,14 @@ gopls edit file:range start-end newContent
 
 **Files > 350 lines:**
 
-| File | Lines | Issue | Recommended Action |
-|------|--------|--------|-------------------|
-| `bdd/bdd_test.go` | 678 | BDD tests mixed | Split by feature: basic, config, files, output |
-| `cli.go` | 405 | Dual CLI systems | Remove old Run(), use cobra only |
-| `config/config_test.go` | 404 | Mixed test concerns | Split: load, save, validate, merge tests |
-| `domain/clone.go` | 376 | Multiple entities | Split by entity: clone, group, analysis, repo |
-| `pkg/artdupl/detector.go` | 584 | Mixed responsibilities | Split: detector, methods, pipeline, results |
-| `syntax/golang/golang.go` | 361 | Complex AST logic | Group related transformations, consider visitor pattern |
+| File                      | Lines | Issue                  | Recommended Action                                      |
+| ------------------------- | ----- | ---------------------- | ------------------------------------------------------- |
+| `bdd/bdd_test.go`         | 678   | BDD tests mixed        | Split by feature: basic, config, files, output          |
+| `cli.go`                  | 405   | Dual CLI systems       | Remove old Run(), use cobra only                        |
+| `config/config_test.go`   | 404   | Mixed test concerns    | Split: load, save, validate, merge tests                |
+| `domain/clone.go`         | 376   | Multiple entities      | Split by entity: clone, group, analysis, repo           |
+| `pkg/artdupl/detector.go` | 584   | Mixed responsibilities | Split: detector, methods, pipeline, results             |
+| `syntax/golang/golang.go` | 361   | Complex AST logic      | Group related transformations, consider visitor pattern |
 
 **Proposed Structure:**
 
@@ -1594,6 +1685,7 @@ syntax/golang/
 ```
 
 **Impact:**
+
 - Each file < 150 lines (manageable)
 - Single responsibility per file
 - Easier to navigate and review
@@ -1608,24 +1700,26 @@ syntax/golang/
 
 **String-Based Types Requiring Improvement:**
 
-| Type | Location | Current | Recommended |
-|-------|-----------|----------|---------------|
-| OutputFormat | config/outputformat.go | `type OutputFormat string` | Strongly-typed enum |
-| DetectionMethod | config/detectionmethod.go | `type DetectionMethod string` | Strongly-typed enum |
-| SortCriteria | config/outputformat.go | `type SortCriteria string` | Strongly-typed enum |
-| ErrorType | errors/types.go | `type ErrorType string` | Strongly-typed enum |
-| CloneSeverity | domain/clone.go | `type CloneSeverity string` | Strongly-typed enum |
-| DetectionState | types/enums.go | `type DetectionState string` | Strongly-typed enum |
-| AnalysisMode | types/enums.go | `type AnalysisMode string` | Strongly-typed enum |
-| FileProcessingState | types/enums.go | `type FileProcessingState string` | Strongly-typed enum |
+| Type                | Location                  | Current                           | Recommended         |
+| ------------------- | ------------------------- | --------------------------------- | ------------------- |
+| OutputFormat        | config/outputformat.go    | `type OutputFormat string`        | Strongly-typed enum |
+| DetectionMethod     | config/detectionmethod.go | `type DetectionMethod string`     | Strongly-typed enum |
+| SortCriteria        | config/outputformat.go    | `type SortCriteria string`        | Strongly-typed enum |
+| ErrorType           | errors/types.go           | `type ErrorType string`           | Strongly-typed enum |
+| CloneSeverity       | domain/clone.go           | `type CloneSeverity string`       | Strongly-typed enum |
+| DetectionState      | types/enums.go            | `type DetectionState string`      | Strongly-typed enum |
+| AnalysisMode        | types/enums.go            | `type AnalysisMode string`        | Strongly-typed enum |
+| FileProcessingState | types/enums.go            | `type FileProcessingState string` | Strongly-typed enum |
 
 **Current Problems:**
+
 - Any string can be assigned (invalid values possible)
 - Validation only at runtime (not compile-time)
 - Easy to make typos (no autocomplete)
 - Duplicate validation code across all enums
 
 **Proposed Solution:**
+
 ```go
 //go:generate go run github.com/abice/go-enum -marshal -sql
 
@@ -1651,6 +1745,7 @@ const (
 ```
 
 **Benefits:**
+
 - Compile-time type safety
 - Invalid values caught at unmarshal time
 - Better IDE autocomplete
@@ -1666,6 +1761,7 @@ const (
 **Current Problems:**
 
 **Problem 1: Inconsistent Error Comparison**
+
 ```go
 // SOME PLACES (correct):
 if errors.Is(err, expectedError) {
@@ -1679,6 +1775,7 @@ if err.Cause != nil {
 ```
 
 **Problem 2: Inconsistent Error Messages**
+
 ```go
 // PATTERN 1:
 fmt.Fprintf(os.Stderr, "error: you can have either html or plumbing output\n")
@@ -1691,6 +1788,7 @@ log.Println("Error:", err)
 ```
 
 **Problem 3: Inconsistent Error Wrapping**
+
 ```go
 // PATTERN 1:
 return fmt.Errorf("failed to read file: %w", err)
@@ -1703,6 +1801,7 @@ return err // Not wrapping at all
 ```
 
 **Proposed Solution:**
+
 ```go
 // errors/handlers.go
 package errors
@@ -1743,6 +1842,7 @@ errors.ExitWithError("invalid output format", err, 1)
 ```
 
 **Benefits:**
+
 - Consistent error messages
 - Proper error wrapping
 - Centralized error handling
@@ -1757,15 +1857,16 @@ errors.ExitWithError("invalid output format", err, 1)
 
 **Uncovered Code:**
 
-| Package/File | Issue | Risk | Priority |
-|--------------|---------|-------|----------|
-| `pkg/position` | No tests at all | High | Critical |
-| `pkg/artdupl/detector.go` | Limited unit tests | Medium | High |
-| `printer/sorter.go` | No test for SortBy | Low | Medium |
-| `domain/clone.go` | Missing edge case tests | Medium | Medium |
-| `errors/types.go` | No enum validation tests | Low | Medium |
+| Package/File              | Issue                    | Risk   | Priority |
+| ------------------------- | ------------------------ | ------ | -------- |
+| `pkg/position`            | No tests at all          | High   | Critical |
+| `pkg/artdupl/detector.go` | Limited unit tests       | Medium | High     |
+| `printer/sorter.go`       | No test for SortBy       | Low    | Medium   |
+| `domain/clone.go`         | Missing edge case tests  | Medium | Medium   |
+| `errors/types.go`         | No enum validation tests | Low    | Medium   |
 
 **Proposed Test Cases for pkg/position:**
+
 ```go
 // pkg/position/lines_test.go
 package position
@@ -1847,6 +1948,7 @@ func TestByteRangeToLines_EndOfFile(t *testing.T) {
 ```
 
 **Impact:**
+
 - Prevent regressions in critical position utility
 - Ensure edge cases handled correctly
 - Improve overall code reliability
@@ -1860,18 +1962,19 @@ func TestByteRangeToLines_EndOfFile(t *testing.T) {
 
 **Missing Documentation:**
 
-| Type | Missing | Impact | Priority |
-|-------|-----------|---------|----------|
-| Package READMEs | pkg/position has none | Medium | High |
-| Godoc comments | Some public APIs undocumented | Medium | Medium |
-| Usage examples | No example code | Low | Low |
-| Architecture docs | No system overview | Low | Medium |
-| Migration guides | No upgrade docs | Low | Low |
+| Type              | Missing                       | Impact | Priority |
+| ----------------- | ----------------------------- | ------ | -------- |
+| Package READMEs   | pkg/position has none         | Medium | High     |
+| Godoc comments    | Some public APIs undocumented | Medium | Medium   |
+| Usage examples    | No example code               | Low    | Low      |
+| Architecture docs | No system overview            | Low    | Medium   |
+| Migration guides  | No upgrade docs               | Low    | Low      |
 
 **Proposed Documentation:**
 
 **Package README: pkg/position/README.md**
-```markdown
+
+````markdown
 # Position Package
 
 The position package provides utilities for working with source code positions
@@ -1888,22 +1991,27 @@ content := []byte("line 1\nline 2\nline 3")
 startLine, endLine := position.ByteRangeToLines(content, 7, 13)
 // startLine = 2, endLine = 2
 ```
+````
 
 **Parameters:**
+
 - `content`: The file content as bytes
 - `start`: Starting byte position (0-indexed)
 - `end`: Ending byte position (0-indexed)
 
 **Returns:**
+
 - `lineStart`: Starting line number (1-indexed)
 - `lineEnd`: Ending line number (1-indexed)
 
 **Edge Cases:**
+
 - Empty content: Returns (1, 1)
 - Position at start of file: Returns (1, 1)
 - Position at end of file: Returns last line number
 - Position out of bounds: Returns default (1, 1)
-```
+
+````
 
 **Godoc Examples:**
 ```go
@@ -1915,9 +2023,10 @@ func ExampleByteRangeToLines() {
     fmt.Printf("Lines: %d-%d", start, end)
     // Output: Lines: 2-2
 }
-```
+````
 
 **Benefits:**
+
 - Better developer onboarding
 - Easier to use public APIs
 - Reduced support burden
@@ -1932,6 +2041,7 @@ func ExampleByteRangeToLines() {
 **Current State:**
 
 **Problems:**
+
 1. **Manual Linting**
    - Developer must run `golangci-lint` manually
    - Linting errors caught after commit
@@ -1953,6 +2063,7 @@ func ExampleByteRangeToLines() {
    - No automated test running
 
 **Proposed CI/CD Pipeline:**
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI
@@ -1970,7 +2081,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.25'
+          go-version: "1.25"
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -1983,7 +2094,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.25'
+          go-version: "1.25"
       - name: Run tests
         run: go test -v -race -coverprofile=coverage.out ./...
       - name: Upload coverage
@@ -1997,7 +2108,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.25'
+          go-version: "1.25"
       - name: Install go-enum
         run: go install github.com/abice/go-enum@latest
       - name: Generate code
@@ -2007,6 +2118,7 @@ jobs:
 ```
 
 **Pre-commit Hooks:**
+
 ```bash
 # .pre-commit-config.yaml
 repos:
@@ -2032,6 +2144,7 @@ repos:
 ```
 
 **Benefits:**
+
 - Catch issues early (before commit)
 - Automated quality enforcement
 - Consistent developer experience
@@ -2045,11 +2158,13 @@ repos:
 ### IMMEDIATE PRIORITY (Today)
 
 #### 1. ✅ Fix splitLines/joinLines Replacement in detector.go
+
 **Status:** Planned
 **Effort:** 30 minutes
 **Impact:** Eliminate 42 lines of duplicate code
 
 **Approach:**
+
 - Create separate utility functions in `pkg/position/lines.go`
 - Update usages in `pkg/artdupl/detector.go`
 - Delete old functions (lines 525-567)
@@ -2074,11 +2189,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 2. ✅ Create Unified Config Merging Helper
+
 **Status:** Planned
 **Effort:** 45 minutes
 **Impact:** Eliminate 26 lines of duplicate code
 
 **Approach:**
+
 - Implement `mergeConfig()` with reflection
 - Replace `mergeFileConfig()` and `mergeCLIConfig()`
 - Update all usages
@@ -2087,11 +2204,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 3. ✅ Remove Dual CLI Systems
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Eliminate 111 lines of duplicate code
 
 **Approach:**
+
 - Verify cobra CLI has feature parity
 - Run comprehensive test suite
 - Delete old `Run()` function (lines 28-139)
@@ -2103,11 +2222,13 @@ return position.JoinLines(fragmentLines)
 ### HIGH PRIORITY (This Week)
 
 #### 4. ✅ Create Mutually Exclusive Flags Validation Helper
+
 **Status:** Planned
 **Effort:** 30 minutes
 **Impact:** Eliminate 15 lines of duplicate code
 
 **Approach:**
+
 - Create `cli/validation.go` with helper
 - Replace duplicate patterns (lines 84, 89, 94)
 - Test all flag combinations
@@ -2115,11 +2236,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 5. ✅ Extract Test Binary Builder from bdd_test.go
+
 **Status:** Planned
 **Effort:** 1 hour
 **Impact:** Reduce test file by 25+ lines
 
 **Approach:**
+
 - Create `bddutil` package with `TestRunner` type
 - Implement `buildTestBinary()` and cleanup
 - Replace 5+ duplicate patterns
@@ -2128,11 +2251,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 6. ✅ Split domain/clone.go by Entity
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Reduce from 376 to manageable 60-80 line files
 
 **Approach:**
+
 - Create files: `clone.go`, `clone_group.go`, `analysis.go`, `repository.go`
 - Move code to appropriate files
 - Update imports across codebase
@@ -2141,11 +2266,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 7. ✅ Implement Code Generation for Enums
+
 **Status:** Planned
 **Effort:** 1.5 hours
 **Impact:** Eliminate ~100 lines of duplicate code
 
 **Approach:**
+
 - Add `go-enum` to go.mod
 - Add `//go:generate` comments to enum definitions
 - Generate enum implementations
@@ -2154,11 +2281,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 8. ✅ Add Tests for pkg/position Package
+
 **Status:** Planned
 **Effort:** 45 minutes
 **Impact:** Improve reliability, prevent regressions
 
 **Approach:**
+
 - Create `pkg/position/lines_test.go`
 - Test edge cases: empty content, boundary positions
 - Test large files, unicode content
@@ -2167,11 +2296,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 9. ✅ Create Generic Sorting Utility
+
 **Status:** Planned
 **Effort:** 1 hour
 **Impact:** Eliminate 60 lines of duplicate code
 
 **Approach:**
+
 - Implement `SortStrategy[T]` interface
 - Add `SortBy[T]()` function
 - Replace 4 sorting functions
@@ -2180,11 +2311,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 10. ✅ Split bdd/bdd_test.go by Feature
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Reduce from 678 to manageable 150-200 line files
 
 **Approach:**
+
 - Create files: `bdd_basic_test.go`, `bdd_config_test.go`, `bdd_files_test.go`
 - Extract common setup to test helpers
 - Update import paths
@@ -2195,11 +2328,13 @@ return position.JoinLines(fragmentLines)
 ### MEDIUM PRIORITY (Next Sprint)
 
 #### 11. ✅ Split pkg/artdupl/detector.go
+
 **Status:** Planned
 **Effort:** 2.5 hours
 **Impact:** Reduce from 584 to manageable 100-150 line files
 
 **Files to Create:**
+
 - `detector.go` - Main detector interface
 - `detection_methods.go` - Method selection
 - `pipeline.go` - Analysis pipeline
@@ -2209,11 +2344,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 12. ✅ Split syntax/golang/golang.go
+
 **Status:** Planned
 **Effort:** 3 hours
 **Impact:** Improve maintainability of complex AST logic
 
 **Approach:**
+
 - Group related node transformations
 - Consider visitor pattern
 - Consider code generation for repetitive transforms
@@ -2221,11 +2358,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 13. ✅ Split config/config_test.go
+
 **Status:** Planned
 **Effort:** 1.5 hours
 **Impact:** Reduce from 404 to manageable 100-150 line files
 
 **Files to Create:**
+
 - `config_load_test.go`
 - `config_save_test.go`
 - `config_validate_test.go`
@@ -2234,11 +2373,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 14. ✅ Add Structured Logging
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Better debugging, log analysis
 
 **Approach:**
+
 - Replace `fmt.Fprintf(os.Stderr, ...)` with structured logging
 - Choose library: logrus or zap
 - Add log levels: debug, info, warn, error
@@ -2247,11 +2388,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 15. ✅ Implement Config Validation at Type Level
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Catch errors early, better type safety
 
 **Approach:**
+
 - Create custom types: `Threshold`, `FilePath`, `Position`
 - Add `Validate()` methods to each
 - Update Config to use custom types
@@ -2260,11 +2403,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 16. ✅ Add File Watching Support
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Better DX for large projects
 
 **Approach:**
+
 - Implement incremental analysis with fsnotify
 - Add `--watch` flag to CLI
 - Debounce file events (250ms)
@@ -2273,11 +2418,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 17. ✅ Create Package Documentation
+
 **Status:** Planned
 **Effort:** 3 hours
 **Impact:** Better developer experience
 
 **Files to Create:**
+
 - `pkg/position/README.md`
 - `pkg/artdupl/README.md`
 - `printer/README.md`
@@ -2286,11 +2433,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 18. ✅ Implement Benchmarking
+
 **Status:** Planned
 **Effort:** 2 hours
 **Impact:** Ensure code remains fast
 
 **Benchmarks to Add:**
+
 - Line calculation performance
 - Sorting algorithm performance
 - Detection algorithm performance
@@ -2299,11 +2448,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 19. ✅ Add Integration Tests
+
 **Status:** Planned
 **Effort:** 3 hours
 **Impact:** Catch integration bugs
 
 **Tests to Add:**
+
 - Complete workflow end-to-end
 - CLI integration with different flags
 - Config file loading
@@ -2312,11 +2463,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 20. ✅ Improve Error Messages
+
 **Status:** Planned
 **Effort:** 1.5 hours
 **Impact:** Better user experience
 
 **Approach:**
+
 - Standardize error format: "operation: reason (context)"
 - Add context: file:line, suggestions
 - Create error message style guide
@@ -2327,11 +2480,13 @@ return position.JoinLines(fragmentLines)
 ### LOWER PRIORITY (Future Sprints)
 
 #### 21. ✅ Refactor to Use Well-Established Libraries
+
 **Status:** Planned
 **Effort:** 3 hours
 **Impact:** Less maintenance, better features
 
 **Libraries to Consider:**
+
 - **Viper** for config management
   - Environment variable support
   - Multiple config formats
@@ -2345,11 +2500,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 22. ✅ Implement Profile-Guided Optimization
+
 **Status:** Planned
 **Effort:** 4 hours
 **Impact:** Better performance
 
 **Approach:**
+
 - Benchmark hot paths
 - Use pprof to identify bottlenecks
 - Optimize memory allocations
@@ -2358,11 +2515,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 23. ✅ Implement Plugin System
+
 **Status:** Planned
 **Effort:** 5 hours
 **Impact:** Extensibility
 
 **Components:**
+
 - Plugin interface and discovery
 - Plugin registration
 - Plugin lifecycle (init, run, cleanup)
@@ -2371,11 +2530,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 24. ✅ Add Web UI for Results
+
 **Status:** Planned
 **Effort:** 8 hours
 **Impact:** Better analysis experience
 
 **Features:**
+
 - Live duplicate visualization
 - Interactive exploration
 - Filter and search
@@ -2384,11 +2545,13 @@ return position.JoinLines(fragmentLines)
 ---
 
 #### 25. ✅ Machine Learning for False Positive Reduction
+
 **Status:** Planned
 **Effort:** 20+ hours
 **Impact:** Higher accuracy
 
 **Approach:**
+
 - Train model on real codebases
 - Classify duplicates: true positive vs false positive
 - Adaptive threshold tuning
@@ -2405,6 +2568,7 @@ return position.JoinLines(fragmentLines)
 **Location:** `cli.go` (405 lines total)
 
 **System 1:** Old CLI (lines 28-139)
+
 ```go
 // Uses standard library flag package
 var (
@@ -2428,6 +2592,7 @@ func Run() int {
 ```
 
 **System 2:** New CLI (lines 302-405)
+
 ```go
 // Uses github.com/spf13/cobra
 var rootCmd = &cobra.Command{
@@ -2452,18 +2617,19 @@ func runCobraCommand() int {
 
 #### Duplicate Code Analysis
 
-| Logic Type | Old Run() | New runCobraCommand() | Lines | Status |
-|-------------|-------------|----------------------|--------|--------|
-| Config file loading | lines 34-37 | lines 319-323 | 8 | Identical |
-| Config merging | lines 40-53 | lines 325-340 | 14 | Similar |
-| Output format switching | lines 62-69 | lines 343-350 | 8 | Identical |
-| Validation | lines 72-84 | lines 352-371 | 20 | Similar |
-| Error handling | lines 84-94 | lines 373-385 | 11 | Identical |
-| Analysis execution | lines 96-120 | lines 387-400 | 25 | Similar |
-| Result printing | lines 122-139 | lines 402-405 | 18 | Similar |
-| **Total Duplicate** | | | **104** | |
+| Logic Type              | Old Run()     | New runCobraCommand() | Lines   | Status    |
+| ----------------------- | ------------- | --------------------- | ------- | --------- |
+| Config file loading     | lines 34-37   | lines 319-323         | 8       | Identical |
+| Config merging          | lines 40-53   | lines 325-340         | 14      | Similar   |
+| Output format switching | lines 62-69   | lines 343-350         | 8       | Identical |
+| Validation              | lines 72-84   | lines 352-371         | 20      | Similar   |
+| Error handling          | lines 84-94   | lines 373-385         | 11      | Identical |
+| Analysis execution      | lines 96-120  | lines 387-400         | 25      | Similar   |
+| Result printing         | lines 122-139 | lines 402-405         | 18      | Similar   |
+| **Total Duplicate**     |               |                       | **104** |           |
 
 **Impact:**
+
 - **104 lines of duplicate code** (not 61 as previously estimated)
 - Two complete implementations to maintain
 - Potential for inconsistent behavior
@@ -2474,24 +2640,28 @@ func runCobraCommand() int {
 #### What I Cannot Figure Out
 
 **1. Is this intentional backward compatibility?**
+
 - Are we keeping old CLI for existing scripts?
 - Is there a migration period planned?
 - How long should we maintain both?
 - When will old CLI be deprecated?
 
 **2. Is there a technical reason?**
+
 - Does cobra not support certain flags?
 - Are there performance differences?
 - Does old CLI have features cobra doesn't?
 - Is there integration with external tools?
 
 **3. What is the activation logic?**
+
 - How does main() choose between old and new?
 - Is there a flag to select CLI version?
 - Is there environment variable to control it?
 - Which CLI is actually being used in production?
 
 **4. Why hasn't this been addressed?**
+
 - The duplication is obvious (104 lines)
 - Both implementations have similar logic
 - Solution seems straightforward (delete old code)
@@ -2499,18 +2669,21 @@ func runCobraCommand() int {
 - Is this tracked as technical debt?
 
 **5. What are the risks of removing old CLI?**
+
 - Will it break existing user scripts?
 - Are there external tools depending on old interface?
 - Are there documentation references to old flags?
 - Will there be user migration burden?
 
 **6. What testing is required before removal?**
+
 - Are there integration tests covering both paths?
 - Do we need to test with real user scenarios?
 - Is there a test matrix for all flag combinations?
 - Should we run existing test suite with both CLIs to verify parity?
 
 **7. What are the external dependencies?**
+
 - Are there shell scripts using `art-dupl -f config.json`?
 - Are there CI/CD pipelines using old CLI?
 - Are there documentation examples using old flags?
@@ -2519,17 +2692,20 @@ func runCobraCommand() int {
 #### Why This Question Matters
 
 **Critical Impact:**
+
 - **HIGH IMPACT:** 104 lines of duplicate code
 - **Major technical debt:** Maintenance burden doubled
 - **User confusion:** Which CLI interface should users use?
 - **Potential bugs:** Two implementations could diverge
 
 **Straightforward Solution:**
+
 - **LOW EFFORT:** Delete old `Run()` function
 - **Simple testing:** Run existing test suite
 - **Documentation update:** Single CLI interface to document
 
 **Blocks Progress:**
+
 - Can't refactor CLI architecture cleanly
 - Can't add new CLI features efficiently
 - Can't consolidate error handling
@@ -2538,18 +2714,21 @@ func runCobraCommand() int {
 #### Strategic Importance
 
 **This question needs to be answered BEFORE:**
+
 - ✅ Task #3 (Remove dual CLI systems) can be completed
 - ✅ We can proceed with other CLI improvements
 - ✅ We can confidently refactor CLI architecture
 - ✅ We can update documentation to single interface
 
 **Without answering:**
+
 - ❌ Risk of breaking user workflows
 - ❌ Potential for silent bugs (wrong CLI active)
 - ❌ Continued maintenance burden
 - ❌ Confusion for new contributors
 
 **I Need to Know:**
+
 1. **Migration Plan:** Is there a timeline for deprecation?
 2. **External Dependencies:** Are there scripts/tools using old CLI?
 3. **Active CLI:** Which one is actually in production use?
@@ -2559,6 +2738,7 @@ func runCobraCommand() int {
 7. **User Communication:** How do we inform users of the change?
 
 **Cannot Proceed Without Answering:**
+
 - Safe removal of 104 lines of duplicate code
 - Clean CLI architecture
 - Single source of truth for CLI behavior
@@ -2571,40 +2751,40 @@ func runCobraCommand() int {
 
 ### Code Quality Improvements
 
-| Metric | Before | After | Change |
-|---------|---------|--------|--------|
-| Linting errors | 11 | 0 | ✅ 100% resolved |
-| Duplicate line calculation | 2 implementations | 1 utility | ✅ 50% reduction |
-| Lines of duplicate code eliminated | 0 | 40 | ✅ +40 lines saved |
-| Files with comments ending with period | 0% | 100% | ✅ Full compliance |
-| Test pass rate | 100% | 100% | ✅ Maintained |
+| Metric                                 | Before            | After     | Change             |
+| -------------------------------------- | ----------------- | --------- | ------------------ |
+| Linting errors                         | 11                | 0         | ✅ 100% resolved   |
+| Duplicate line calculation             | 2 implementations | 1 utility | ✅ 50% reduction   |
+| Lines of duplicate code eliminated     | 0                 | 40        | ✅ +40 lines saved |
+| Files with comments ending with period | 0%                | 100%      | ✅ Full compliance |
+| Test pass rate                         | 100%              | 100%      | ✅ Maintained      |
 
 ### Git Workflow
 
-| Metric | Value |
-|---------|--------|
-| Commits made | 4 |
-| Lines added | 84 |
-| Lines removed | 46 |
-| Files changed | 5 |
+| Metric            | Value    |
+| ----------------- | -------- |
+| Commits made      | 4        |
+| Lines added       | 84       |
+| Lines removed     | 46       |
+| Files changed     | 5        |
 | Branches affected | 1 (fork) |
 
 ### Build & Test Status
 
-| Component | Status | Time |
-|-----------|--------|-------|
-| All packages build | ✅ Pass | < 10s |
-| All tests pass | ✅ Pass | 22s |
-| HTML report generation | ✅ Pass | < 5s |
+| Component              | Status  | Time  |
+| ---------------------- | ------- | ----- |
+| All packages build     | ✅ Pass | < 10s |
+| All tests pass         | ✅ Pass | 22s   |
+| HTML report generation | ✅ Pass | < 5s  |
 
 ### Work Completed
 
-| Category | Tasks | Status |
-|-----------|--------|--------|
-| Fully Done | 4 | ✅ Complete |
-| Partially Done | 1 | 🔄 Incomplete |
-| Not Started | 7 | ⏸️ Pending |
-| Totally Fucked Up | 1 | 💥 Failed |
+| Category          | Tasks | Status        |
+| ----------------- | ----- | ------------- |
+| Fully Done        | 4     | ✅ Complete   |
+| Partially Done    | 1     | 🔄 Incomplete |
+| Not Started       | 7     | ⏸️ Pending    |
+| Totally Fucked Up | 1     | 💥 Failed     |
 
 ---
 

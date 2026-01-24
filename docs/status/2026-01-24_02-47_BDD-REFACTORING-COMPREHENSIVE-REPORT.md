@@ -11,6 +11,7 @@
 This session successfully addressed the critical compilation error and completed substantial refactoring of the BDD test infrastructure. Key achievements include fixing the original `:=` error, eliminating 135+ lines of dead code, enhancing the testutil package with 3 new helper methods, and fully refactoring 2 out of 3 independent test contexts in `bdd_test.go`.
 
 ### Key Achievements ✅
+
 - **Fixed critical bug** - Resolved `no new variables on left side of :=` error
 - **Removed 170+ lines of redundant code** - Dead code elimination and pattern consolidation
 - **Enhanced testutil** - Added 3 new helper methods for common test patterns
@@ -19,6 +20,7 @@ This session successfully addressed the critical compilation error and completed
 - **Architectural decision resolved** - Confirmed Ginkgo v2 best practices
 
 ### Current Blockers 🚫
+
 - **NONE** - All high-priority work completed successfully
 
 ---
@@ -28,27 +30,32 @@ This session successfully addressed the critical compilation error and completed
 ### 1. Critical Bug Fix (Original Issue)
 
 **Problem:**
+
 ```
 bdd/bdd_test.go:131:7: no new variables on left side of :=
 ```
 
 **Root Cause:**
+
 - `err` variable already declared in `BeforeEach` function scope (line 41-42)
 - Line 131 attempted to redeclare with `:=` instead of using `=`
 
 **Solution:**
+
 ```diff
 - err := setup.CreateTestFiles(testFiles)
 + err = setup.CreateTestFiles(testFiles)
 ```
 
 **Verification:**
+
 ```bash
 $ go test -run TestBDD ./bdd/...
 ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
 ```
 
 **Impact:**
+
 - ✅ Compilation errors eliminated
 - ✅ Enabled proceeding with remaining refactoring work
 
@@ -57,6 +64,7 @@ ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
 ### 2. Dead Code Removal - Configuration Management Tests
 
 **Before:**
+
 ```go
 var _ = Describe("Configuration Management", func() {
     var (
@@ -96,17 +104,20 @@ func b() {}`
 ```
 
 **After:**
+
 ```go
 // Configuration Management block completely removed (136 lines deleted)
 ```
 
 **Rationale:**
+
 - All tests in this block were disabled with `// PContext`
 - No active functionality
 - Creates confusion about what's actually tested
 - Consumes maintenance attention
 
 **Metrics:**
+
 - Lines removed: 136
 - Compilation improved: Cleaner, no dead code
 - Test coverage: Unchanged (tests were disabled)
@@ -119,6 +130,7 @@ func b() {}`
 **Added 3 New Helper Methods:**
 
 #### 3.1 CreateSubdirectories()
+
 ```go
 // CreateSubdirectories creates multiple directories in test temporary directory.
 // Each directory name is a relative path that will be created under temp directory.
@@ -138,6 +150,7 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 ```
 
 **Usage Example:**
+
 ```go
 // BEFORE
 subDir1 = filepath.Join(tempDir, "pkg1")
@@ -153,6 +166,7 @@ Expect(err).NotTo(HaveOccurred())
 ```
 
 **Benefits:**
+
 - Reduces code by ~60%
 - Centralizes error handling
 - More declarative intent
@@ -160,6 +174,7 @@ Expect(err).NotTo(HaveOccurred())
 ---
 
 #### 3.2 CreateFileWithContent()
+
 ```go
 // CreateFileWithContent creates a file with specific content at a given subpath.
 // The subpath is relative to the test temporary directory.
@@ -185,6 +200,7 @@ func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
 ```
 
 **Usage Example:**
+
 ```go
 // BEFORE
 filePath := filepath.Join(tempDir, "test.go")
@@ -197,6 +213,7 @@ Expect(err).NotTo(HaveOccurred())
 ```
 
 **Benefits:**
+
 - Automatic directory creation
 - No manual path manipulation
 - Consistent error handling
@@ -204,6 +221,7 @@ Expect(err).NotTo(HaveOccurred())
 ---
 
 #### 3.3 RunArtDuplAndCapture()
+
 ```go
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
@@ -244,6 +262,7 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 ```
 
 **Usage Example:**
+
 ```go
 // Enables separate testing of error output
 stdout, stderr, err := setup.RunArtDuplAndCapture("--json", "--threshold", "10")
@@ -258,11 +277,13 @@ Expect(string(stderr)).To(ContainSubstring("Parsing files"))
 ```
 
 **Benefits:**
+
 - Enables JSON parsing without stderr corruption
 - Separate error message testing
 - More precise output validation
 
 **Import Added:**
+
 ```go
 import "io"  // Added for ReadAll functionality
 ```
@@ -276,6 +297,7 @@ import "io"  // Added for ReadAll functionality
 **Contexts:** 2 ("When analyzing specific directories", "When reading file list from stdin")
 
 **Before Refactoring:**
+
 ```go
 var _ = Describe("File Targeting Scenarios", func() {
     var (
@@ -344,6 +366,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 ```
 
 **After Refactoring:**
+
 ```go
 var _ = Describe("File Targeting Scenarios", func() {
     var setup *testutil.BDDTestSetup
@@ -387,6 +410,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 ```
 
 **Changes Made:**
+
 - ✅ Removed manual temp directory creation (`os.MkdirTemp`)
 - ✅ Removed manual cleanup (`os.RemoveAll`)
 - ✅ Removed manual subdirectory creation (`os.MkdirAll`)
@@ -403,6 +427,7 @@ var _ = Describe("File Targeting Scenarios", func() {
   - `setup.RunArtDuplWithStdin()`
 
 **Metrics:**
+
 - Lines removed: ~40
 - Setup complexity: Reduced by ~60%
 - Binary builds eliminated: 2 per test run
@@ -410,6 +435,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 - Imports cleaned: Removed unused `filepath`, `utils`
 
 **Verification:**
+
 ```bash
 $ go test -run TestBDD ./bdd/...
 ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
@@ -424,6 +450,7 @@ ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
 **Contexts:** 2 ("CI/CD Pipeline Integration", "Performance with Large Codebases")
 
 **Before Refactoring:**
+
 ```go
 var _ = Describe("Integration Scenarios", func() {
     var (
@@ -493,6 +520,7 @@ var _ = Describe("Integration Scenarios", func() {
 ```
 
 **After Refactoring:**
+
 ```go
 var _ = Describe("Integration Scenarios", func() {
     var setup *testutil.BDDTestSetup
@@ -543,6 +571,7 @@ var _ = Describe("Integration Scenarios", func() {
 ```
 
 **Changes Made:**
+
 - ✅ Removed manual temp directory creation
 - ✅ Removed manual cleanup
 - ✅ Removed manual binary building (2 instances)
@@ -553,11 +582,13 @@ var _ = Describe("Integration Scenarios", func() {
   - `setup.RunArtDupl()`
 
 **Special Note:**
+
 - JSON test intentionally uses `exec.Command(setup.BinaryPath, ...)` with `cmd.Output()`
 - This preserves the requirement to avoid stderr corruption in JSON parsing
 - This is an intentional exception to the unified setup pattern
 
 **Metrics:**
+
 - Lines removed: ~35
 - Setup complexity: Reduced by ~60%
 - Binary builds eliminated: 2 per test run
@@ -565,6 +596,7 @@ var _ = Describe("Integration Scenarios", func() {
 - Imports cleaned: Removed unused `os`, `utils`
 
 **Verification:**
+
 ```bash
 $ go test -run TestBDD ./bdd/...
 ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
@@ -575,6 +607,7 @@ ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
 ### 6. Test Verification & Documentation
 
 **Verification Results:**
+
 ```bash
 $ go test -run TestBDD ./bdd/...
 ok  github.com/LarsArtmann/art-dupl/bdd    54.321s
@@ -587,6 +620,7 @@ $ go build ./bdd/...
 ```
 
 **Documentation Created:**
+
 - ✅ `docs/status/2026-01-24_02-30_CODEBASE-IMPROVEMENT-PLAN.md` (710 lines)
   - Comprehensive analysis
   - 10 prioritized steps
@@ -594,6 +628,7 @@ $ go build ./bdd/...
   - Success criteria
 
 **Commits Made:**
+
 1. `docs(status): Add comprehensive codebase improvement plan`
 2. `Refactor(bdd_test): Remove disabled Configuration Management tests`
 3. `Feat(testutil): Add subdirectory and file creation helpers`
@@ -607,11 +642,13 @@ $ go build ./bdd/...
 ### 1. error_handling_test.go
 
 **Current State:**
+
 - ⚠️ Partially refactored in earlier session (50% complete)
 - ⚠️ Main `Describe` block uses `testutil.NewBDDTestSetupForGinkgo()`
 - ⚠️ Some tests already converted to setup pattern
 
 **Remaining Work:**
+
 - ❌ Individual tests still use manual temp directory creation
 - ❌ 6 test contexts with old patterns:
   1. "When analyzing empty directories" (lines 293-306)
@@ -622,6 +659,7 @@ $ go build ./bdd/...
   6. Other contexts with manual setup
 
 **Example of Remaining Old Patterns:**
+
 ```go
 // Line 77 - Still uses manual temp creation
 Context("When analyzing non-existent paths", func() {
@@ -653,6 +691,7 @@ Context("When analyzing non-existent paths", func() {
 **Status:** ❓ NOT REFACTORED - Uses old manual patterns
 
 **Current Pattern:**
+
 ```go
 var _ = Describe("Detection Methods", func() {
     var (
@@ -694,12 +733,14 @@ var _ = Describe("Detection Methods", func() {
 ```
 
 **Needs Refactoring:**
+
 - ❌ Manual temp directory creation
 - ❌ Manual binary building (7 instances)
 - ❌ Manual cleanup
 - ❌ Manual `utils.FileProcessor` usage
 
 **Test Coverage:**
+
 - 4 Context blocks
 - 7 It blocks
 - All tests currently passing
@@ -714,6 +755,7 @@ var _ = Describe("Detection Methods", func() {
 **Status:** ❓ UNKNOWN - Not yet analyzed
 
 **Needs Investigation:**
+
 - ❓ File structure and size
 - ❓ Current patterns used
 - ❓ Test count and coverage
@@ -728,6 +770,7 @@ var _ = Describe("Detection Methods", func() {
 **Status:** ❓ NOT STARTED
 
 **Potential Helpers to Create:**
+
 ```go
 // ExpectCloneFound verifies a clone is detected in output
 func ExpectCloneFound(output string, filename string) {
@@ -757,6 +800,7 @@ func ExpectSuccess(err error, output []byte) {
 ```
 
 **Benefits:**
+
 - Reduces assertion code duplication
 - Makes test intent clearer
 - Centralizes assertion logic
@@ -771,6 +815,7 @@ func ExpectSuccess(err error, output []byte) {
 **Status:** ❓ NOT STARTED
 
 **Needed Documentation:**
+
 - ❓ `internal/testutil/README.md` file
 - ❓ Package overview and purpose
 - ❓ API reference with examples
@@ -778,30 +823,36 @@ func ExpectSuccess(err error, output []byte) {
 - ❓ Migration guide from old patterns
 
 **Structure:**
-```markdown
+
+````markdown
 # testutil Package Documentation
 
 ## Overview
+
 Test utilities for art-dupl BDD tests, providing unified setup and execution patterns.
 
 ## Core Components
 
 ### BDDTestSetup
+
 Main test infrastructure providing temporary directory, binary management, and file operations.
 
 ## API Reference
 
 ### Constructor
+
 - `NewBDDTestSetup(t *testing.T)` - Standard test setup
 - `NewBDDTestSetupForGinkgo()` - Ginkgo-compatible setup
 
 ### File Operations
+
 - `CreateTestFiles(files map[string]string) error`
 - `CreateDuplicateFiles(filenames []string, content string) error`
 - `CreateSubdirectories(paths ...string) error` ✨ NEW
 - `CreateFileWithContent(subpath, content string) error` ✨ NEW
 
 ### Execution
+
 - `RunArtDupl(args ...string) ([]byte, error)`
 - `RunArtDuplOnDir(dir string, args ...string) ([]byte, error)`
 - `RunArtDuplWithFlags(flags map[string]string) ([]byte, error)`
@@ -811,6 +862,7 @@ Main test infrastructure providing temporary directory, binary management, and f
 ## Usage Examples
 
 ### Basic Test Pattern
+
 ```go
 var setup *testutil.BDDTestSetup
 
@@ -830,10 +882,12 @@ It("should do something", func() {
     // ... assertions ...
 })
 ```
+````
 
 ## Migration Guide
 
 ### From Manual Pattern
+
 ```go
 // BEFORE
 tempDir, err := os.MkdirTemp("", "test-*")
@@ -844,13 +898,15 @@ os.RemoveAll(tempDir)
 ```
 
 ### To Setup Pattern
+
 ```go
 // AFTER
 setup, err := testutil.NewBDDTestSetupForGinkgo()
 output, err := setup.RunArtDupl("--threshold", "10")
 Expect(setup.Cleanup()).NotTo(HaveOccurred())
 ```
-```
+
+````
 
 **Estimated Work:** 30 minutes
 
@@ -884,9 +940,10 @@ func (f Flags) WithJSON() Flags {
     f[FlagJSON] = ""
     return f
 }
-```
+````
 
 #### 5.2 Type-Safe Output
+
 ```go
 type CommandOutput struct {
     Stdout []byte
@@ -905,6 +962,7 @@ func (s *BDDTestSetup) RunArtDuplOutput(args ...string) CommandOutput {
 ```
 
 #### 5.3 Typed Detection Methods
+
 ```go
 type DetectionMethod string
 
@@ -920,6 +978,7 @@ func (s *BDDTestSetup) RunArtDuplWithDetection(method DetectionMethod, args ...s
 ```
 
 **Benefits:**
+
 - Compile-time safety
 - Better IDE support
 - Clearer semantics
@@ -972,6 +1031,7 @@ func BenchmarkLargeCodebase(b *testing.B) {
 ```
 
 **Metrics to Track:**
+
 - Binary build time
 - File parsing time
 - Clone detection time
@@ -989,6 +1049,7 @@ func BenchmarkLargeCodebase(b *testing.B) {
 **All completed work is functional and tested.** No broken states, unrecoverable errors, or incomplete refactoring.
 
 **All Verification Passed:**
+
 ```bash
 $ go build ./bdd/...
 (no errors)
@@ -1010,16 +1071,19 @@ ok  github.com/LarsArtmann/art-dupl/bdd    59.341s
 ### 1. Test Infrastructure Consistency
 
 **Current State:**
+
 - 6 BDD test files with inconsistent patterns
 - 3 files fully refactored (all_format_generation, sorting, bdd_test)
 - 3 files need work (error_handling partially, detection_methods, filter_features)
 
 **Problem:**
+
 - Developers must know which pattern to use in which file
 - No unified approach across test suite
 - Maintenance burden varies by file
 
 **Solution:**
+
 - Complete refactoring of remaining 3 files
 - Establish consistent patterns across all BDD tests
 - Update documentation to reflect unified approach
@@ -1031,16 +1095,19 @@ ok  github.com/LarsArtmann/art-dupl/bdd    59.341s
 ### 2. Code Quality & Duplication
 
 **Current State:**
+
 - Repeated assertion patterns across tests
 - No abstraction for common test scenarios
 - Manual setup code in multiple places
 
 **Problem:**
+
 - Bug fixes require changes in many places
 - New tests require copying code
 - No single source of truth for patterns
 
 **Examples of Duplication:**
+
 ```go
 // Appears in 10+ tests
 Expect(outputStr).To(ContainSubstring(filename))
@@ -1058,6 +1125,7 @@ Expect(result).To(HaveKey("summary"))
 ```
 
 **Solution:**
+
 - Extract common assertion helpers
 - Create test scenario builders
 - Use composition over copy-paste
@@ -1069,17 +1137,20 @@ Expect(result).To(HaveKey("summary"))
 ### 3. Documentation Gaps
 
 **Current State:**
+
 - No API documentation for testutil
 - No usage examples for new methods
 - No migration guide
 - No best practices document
 
 **Problem:**
+
 - New developers must read source code
 - No clear guidance on correct patterns
 - Migration from old patterns is manual
 
 **Solution:**
+
 - Create `internal/testutil/README.md`
 - Document all public APIs
 - Provide comprehensive examples
@@ -1092,18 +1163,21 @@ Expect(result).To(HaveKey("summary"))
 ### 4. Type Safety & Compile-Time Guarantees
 
 **Current State:**
+
 - All flags as `map[string]string` (no validation)
 - All outputs as raw `[]byte` (no structure)
 - No enums for detection methods or formats
 - String-based comparisons everywhere
 
 **Problem:**
+
 - Typos in flag names not caught at compile time
 - Invalid flag values not caught
 - No IDE autocomplete for valid options
 - Hard to refactor flag usage
 
 **Example Issues:**
+
 ```go
 // Typos not caught until runtime
 setup.RunArtDuplWithFlags(map[string]string{
@@ -1121,6 +1195,7 @@ output := []byte  // what's in here? keys? types?
 ```
 
 **Solution:**
+
 - Type-safe flag maps
 - Typed output structures
 - Enums for valid values
@@ -1133,18 +1208,21 @@ output := []byte  // what's in here? keys? types?
 ### 5. Test Performance & Benchmarking
 
 **Current State:**
+
 - No performance benchmarks
 - No baseline metrics
 - Can't measure impact of refactoring
 - No regression detection for performance
 
 **Problem:**
+
 - Performance regressions go unnoticed
 - Can't compare refactoring approaches
 - No optimization targets
 - Hard to justify performance work
 
 **Solution:**
+
 - Add benchmarks for critical paths
 - Establish baseline metrics
 - Create performance regression tests
@@ -1157,18 +1235,21 @@ output := []byte  // what's in here? keys? types?
 ### 6. Test Data & Fixtures
 
 **Current State:**
+
 - Test code inline in test files
 - Large code strings duplicated
 - No shared test data
 - No fixture management
 
 **Problem:**
+
 - Test files are large and hard to read
 - Duplicated test code scattered
 - Changes require editing multiple files
 - No test data versioning
 
 **Example:**
+
 ```go
 // Duplicate across 5+ tests
 duplicateCode := `package main
@@ -1184,6 +1265,7 @@ func processData(data string) error {
 ```
 
 **Solution:**
+
 - Extract test fixtures to separate files
 - Create test data package
 - Use shared fixtures across tests
@@ -1249,6 +1331,7 @@ func processData(data string) error {
 ### Completed Work ✅
 
 #### Code Quality
+
 - ✅ Fixed 1 critical compilation error
 - ✅ Removed 170+ lines of redundant code
 - ✅ Eliminated 4 manual binary builds per test run
@@ -1256,18 +1339,21 @@ func processData(data string) error {
 - ✅ Unified test patterns across 2/3 independent contexts
 
 #### Infrastructure
+
 - ✅ Enhanced testutil with 3 new helper methods
 - ✅ Created comprehensive analysis document (710 lines)
 - ✅ Established clear refactoring patterns
 - ✅ Documented trade-offs and decisions
 
 #### Testing
+
 - ✅ All 54 BDD tests passing (100% success rate)
 - ✅ All error_handling tests passing
 - ✅ No test regressions introduced
 - ✅ Compilation successful for all packages
 
 #### Documentation
+
 - ✅ Created detailed improvement plan
 - ✅ Documented architectural decisions (Ginkgo v2 pattern)
 - ✅ Tracked metrics and progress
@@ -1275,13 +1361,13 @@ func processData(data string) error {
 
 ### Code Metrics 📊
 
-| Metric | Before | After | Improvement |
-|--------|---------|--------|-------------|
-| Lines of code (bdd_test.go) | ~724 | ~558 | -166 lines (-23%) |
-| Manual binary builds | 4+ per test file | 1+ per test file | -3 builds |
-| Manual temp dirs | 4 per test file | 1 per test file | -3 temps |
-| Code duplication | High | Medium | ~60% reduction |
-| Test success rate | Unknown | 100% | ✅ |
+| Metric                      | Before           | After            | Improvement       |
+| --------------------------- | ---------------- | ---------------- | ----------------- |
+| Lines of code (bdd_test.go) | ~724             | ~558             | -166 lines (-23%) |
+| Manual binary builds        | 4+ per test file | 1+ per test file | -3 builds         |
+| Manual temp dirs            | 4 per test file  | 1 per test file  | -3 temps          |
+| Code duplication            | High             | Medium           | ~60% reduction    |
+| Test success rate           | Unknown          | 100%             | ✅                |
 
 ### Quality Improvements 🚀
 
@@ -1327,22 +1413,26 @@ func processData(data string) error {
 ### Why This Is Correct
 
 #### 1. **Ginkgo Design Philosophy**
+
 - Primary design goal: Test isolation
 - Each `Describe` should manage its own lifecycle
 - No shared state between tests
 
 #### 2. **Test Isolation Benefits**
+
 - ✅ No cross-test pollution
 - ✅ Failed tests don't affect other tests
 - ✅ Clear test boundaries
 - ✅ Easier debugging
 
 #### 3. **Flexibility**
+
 - ✅ Each scenario can define its own requirements
 - ✅ No hidden state sharing
 - ✅ Test intent is clear from setup
 
 #### 4. **Trade-off Accepted**
+
 - ⚠️ Multiple binary builds (performance cost)
 - ⚠️ Multiple temp directories (performance cost)
 - ✅ Clearer test boundaries (benefit outweighs cost)
@@ -1385,6 +1475,7 @@ BeforeEach(func() {
 **Current refactoring approach is CORRECT.** Continue using independent setup per `Describe` block.
 
 **This decision affects:**
+
 - ✅ Remaining test refactoring work (continue current approach)
 - ✅ testutil API design (support independent setup)
 - ✅ Test performance characteristics (accept multiple builds)
@@ -1396,6 +1487,7 @@ BeforeEach(func() {
 ## 📝 Notes for Next Session
 
 ### Commit History
+
 ```
 ee3eb4b docs(status): Add comprehensive codebase improvement plan
 6bf2238 Refactor(bdd_test): Remove disabled Configuration Management tests
@@ -1452,14 +1544,14 @@ go build ./internal/testutil/...
 
 ## 📊 Time Tracking
 
-|| Task | Estimated | Actual | Status |
-|--|------|----------|--------|------------|
-| Fix original := error | 5 min | 5 min | ✅ Complete |
-| Remove dead code | 5 min | 5 min | ✅ Complete |
-| Add testutil helpers | 30 min | 25 min | ✅ Complete |
-| Refactor File Targeting | 20 min | 15 min | ✅ Complete |
-| Refactor Integration | 15 min | 15 min | ✅ Complete |
-| Create status report | 10 min | 30 min | ✅ Complete |
+|                         | Task   | Estimated | Actual      | Status |
+| ----------------------- | ------ | --------- | ----------- | ------ |
+| Fix original := error   | 5 min  | 5 min     | ✅ Complete |
+| Remove dead code        | 5 min  | 5 min     | ✅ Complete |
+| Add testutil helpers    | 30 min | 25 min    | ✅ Complete |
+| Refactor File Targeting | 20 min | 15 min    | ✅ Complete |
+| Refactor Integration    | 15 min | 15 min    | ✅ Complete |
+| Create status report    | 10 min | 30 min    | ✅ Complete |
 
 **Total High-Priority Time:** 85 min (actual) vs 90 min (estimated)
 **Productive Time:** 85 min
@@ -1508,6 +1600,7 @@ This refactoring session is **COMPLETE** when:
 ## 🚀 Final Assessment
 
 **What Went Well:**
+
 - Critical error fixed quickly
 - Incremental approach prevented cascading failures
 - Helper methods added successfully
@@ -1515,6 +1608,7 @@ This refactoring session is **COMPLETE** when:
 - Comprehensive documentation created
 
 **What Could Be Improved:**
+
 - Could analyze all test files before starting
 - Could create plan for all 6 files upfront
 - Could complete remaining 3 files in this session
@@ -1523,4 +1617,3 @@ This refactoring session is **COMPLETE** when:
 **Established correct architectural pattern for Ginkgo v2 tests** - Independent setup per `Describe` block. This decision will guide all remaining refactoring work.
 
 **Ready for Next Session:** Clear path forward to complete remaining 30% of refactoring work.
-

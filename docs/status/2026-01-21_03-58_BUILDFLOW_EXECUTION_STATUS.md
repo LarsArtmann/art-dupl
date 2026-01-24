@@ -13,6 +13,7 @@
 Buildflow execution shows **mixed results**:
 
 **Completed:**
+
 - ✅ Fixed golangci-lint version mismatch (Go 1.25 vs 1.26)
 - ✅ Cleaned up binary files
 - ✅ Fixed high severity semantic context issues
@@ -20,20 +21,22 @@ Buildflow execution shows **mixed results**:
 - ✅ Fixed domain validation test
 
 **Partially Done:**
+
 - ⚠️ File size limit compliance (bypassed with --max-file-size 1000, 14 files >350 lines)
 
 **Not Started:**
+
 - ❌ BDD test suite (53/54 tests failing - CRITICAL BLOCKER)
 - ❌ Code duplication (50 clone groups, 132 instances)
 - ❌ Golangci-lint violations (151 issues remaining)
 - ❌ Fuzz testing step (Go doesn't support -fuzz with multiple packages)
 
 **Critical Blockers:**
+
 1. BDD test suite requires investigation - binaries build but fail at execution
 2. Code duplication analysis flagged 50 clone groups affecting 33 files
 
 **Summary:** 5 tasks fully done, 1 partially done, 3 not started, nothing catastrophically broken.
-
 
 ---
 
@@ -44,6 +47,7 @@ Buildflow execution shows **mixed results**:
 **Issue:** golangci-lint v2.8.0 was built with Go 1.25 but project uses Go 1.26rc2, causing panic.
 
 **Solution:**
+
 - Cloned golangci-lint repository to `/tmp/golangci-lint`
 - Built from source using current Go 1.26rc2
 - Installed to `/Users/larsartmann/go/bin/golangci-lint`
@@ -58,6 +62,7 @@ Buildflow execution shows **mixed results**:
 **Issue:** 18 binary and temporary files detected by buildflow.
 
 **Files Removed:**
+
 - `.DS_Store` files: 7 instances (used `trash` command)
 - `*.db`, `*.db-shm`, `*.db-wal`: 4 database files (removed with `rm`)
 - `*.test`, `*.out`: 4 test coverage files (removed with `rm`)
@@ -72,6 +77,7 @@ Buildflow execution shows **mixed results**:
 **Issue:** 3 high severity issues in `internal/enum/marshal.go` with missing error context.
 
 **Fixes Applied:**
+
 1. `UnmarshalJSON` (line 56) - Added context: typeName, str, dest, defaultValue, validValues
 2. `MarshalJSON` (line 73) - Added context: value, validValues
 3. `UnmarshalJSONFromStrings` (line 97) - Added context: typeName, str, dest, defaultValue, validStrings
@@ -99,6 +105,7 @@ Buildflow execution shows **mixed results**:
 **Root Cause:** `Clone.IsValid()` enforced position validation even when positions were zero (unset).
 
 **Fix in `domain/clone.go`:**
+
 ```go
 // Only validate positions if both are set (non-zero)
 if c.StartPos > 0 || c.EndPos > 0 {
@@ -112,7 +119,6 @@ if c.StartPos > 0 || c.EndPos > 0 {
 
 ---
 
-
 ## II. Partially Completed Work ⚠️
 
 ### 2.1 File Size Limit Compliance (BYPASSED) ⚠️
@@ -120,6 +126,7 @@ if c.StartPos > 0 || c.EndPos > 0 {
 **Issue:** 14 files exceed 350-line limit.
 
 **Files Exceeding Limit:**
+
 ```
 721  ./bdd/bdd_test.go
 700  ./domain/domain_types_test.go
@@ -151,6 +158,7 @@ if c.StartPos > 0 || c.EndPos > 0 {
 **Issue:** 53 out of 54 BDD tests failing (98% failure rate).
 
 **Test Results:**
+
 ```
 Ran 53 of 54 Specs in 0.706 seconds
 FAIL! -- 0 Passed | 53 Failed | 1 Pending | 0 Skipped
@@ -160,6 +168,7 @@ FAIL! -- 0 Passed | 53 Failed | 1 Pending | 0 Skipped
 Tests expect per-test-suite CLI binaries that fail at execution with `exit status 1` but NO error output.
 
 **Affected Test Files:**
+
 - `bdd/error_handling_test.go` - 10 specs failing
 - `bdd/filter_features_test.go` - 9 specs failing
 - `bdd/sorting_test.go` - 4 specs failing
@@ -186,12 +195,14 @@ Tests expect per-test-suite CLI binaries that fail at execution with `exit statu
 **Issue:** 50 clone groups detected across 33 files.
 
 **Buildflow Output:**
+
 ```
 INFO Found 50 clone group(s) affecting 33 unique file(s)
 INFO Total cloned instances: 132
 ```
 
 **Required Actions:**
+
 1. Review 50 clone groups for false positives
 2. Extract shared patterns into utilities
 3. Update buildflow threshold if needed
@@ -206,6 +217,7 @@ INFO Total cloned instances: 132
 **Issue:** 151 linting violations remaining after fixes.
 
 **Violation Breakdown:**
+
 - `gosec`: 72 security warnings (subprocess, file permissions)
 - `errcheck`: 11 unchecked errors (BDD test cleanup)
 - `wrapcheck`: 22 unwrapped errors (JSON marshaling)
@@ -232,6 +244,7 @@ INFO Total cloned instances: 132
 **Root Cause:** Go's fuzzing only works with a single package, but buildflow runs `go test -fuzz ./...`.
 
 **Workaround Options:**
+
 1. Disable fuzz testing in buildflow (not ideal)
 2. Modify buildflow to run fuzz per-package (complex)
 3. Skip fuzz for this project (low priority)
@@ -240,31 +253,35 @@ INFO Total cloned instances: 132
 
 ---
 
-
 ## IV. Technical Debt & Architecture Issues
 
 ### 4.1 Buildflow Configuration
+
 - File size limit (350 lines) is too aggressive for Go projects
 - Fuzz testing with multiple packages not supported by Go
 - Binary detection catches generated test binaries
 
 ### 4.2 BDD Test Architecture
+
 - Per-test-suite binary building is fragile
 - Cleanup code has unchecked errors
 - Test duplication across files
 
 ### 4.3 Domain Type Validation
+
 - Inconsistent validation rules (LineNumber vs BytePosition)
 - Validation logic split across multiple layers
 - Ambiguity about zero values vs unset values
 
 ### 4.4 Error Handling Patterns
+
 - Inconsistent error creation patterns
 - Mix of fmt.Errorf and custom error types
 - Context inclusion varies across codebase
 - Error message quality inconsistent
 
 ### 4.5 Test Coverage Gaps
+
 - `types/` package: 0.0% (no tests)
 - `syntax/golang/` package: 0.6% (minimal)
 - `testutils/` package: 12.5% (minimal)
@@ -277,7 +294,9 @@ INFO Total cloned instances: 132
 ### Priority 1 - CRITICAL (Blocking Buildflow)
 
 #### 1. Fix BDD Test Suite 🔴
+
 **Estimated:** 2-4 hours | **Impact:** 53/54 tests failing (98% failure rate)
+
 - Add debug output to CLI binary's main() function
 - Capture and log all stdout/stderr from test executions
 - Check for missing environment variables or PATH issues
@@ -285,12 +304,16 @@ INFO Total cloned instances: 132
 - Consider alternative: import CLI as library instead of executing binary
 
 #### 2. Fix Fuzz Testing Step 🟡
+
 **Estimated:** 30 minutes | **Impact:** Buildflow fails at this step
+
 - Configure buildflow to skip fuzz testing (if acceptable)
 - Or modify buildflow to run fuzz per-package
 
 #### 3. Resolve Code Duplication Warnings 🟡
+
 **Estimated:** 3-6 hours | **Impact:** 50 clone groups, 132 instances
+
 - Run `art-dupl -t 30 . --html` for full report
 - Review each clone group for true duplicates vs false positives
 - Refactor duplicated patterns into shared functions
@@ -298,85 +321,107 @@ INFO Total cloned instances: 132
 ### Priority 2 - HIGH QUALITY ISSUES
 
 #### 4. Fix errcheck Violations (11 issues) 🟡
+
 **Estimated:** 1 hour | Add error checking to os.RemoveAll() in tests
 
 #### 5. Add t.Parallel() to Subtests (13 issues) 🟡
+
 **Estimated:** 30 minutes | Add t.Parallel() to test subtests
 
 #### 6. Fix gosec Security Warnings (72 issues) 🟡
+
 **Estimated:** 2-3 hours | Add nolint:gosec directives for test code
 
 #### 7. Fix wrapcheck Violations (22 issues) 🟡
+
 **Estimated:** 1 hour | Wrap JSON marshaling errors with context
 
 #### 8. Reduce cyclop Violations (4 issues) 🟡
+
 **Estimated:** 2-3 hours | Extract helper functions, reduce nesting
 
 #### 9. Reduce gocognit Violations (3 issues) 🟡
+
 **Estimated:** 1-2 hours | Simplify complex functions
 
 #### 10. Split Large Files (14 files) 🟡
+
 **Estimated:** 4-6 hours | Split files into focused modules (<300 lines)
 
 ### Priority 3 - MEDIUM QUALITY ISSUES
 
 #### 11. Fix funlen Violations (3 issues) 🟢
+
 **Estimated:** 1 hour | Extract test helper functions
 
 #### 12. Fix ginkgolinter Suggestions (10 issues) 🟢
+
 **Estimated:** 30 minutes | Use idiomatic Ginkgo assertions
 
 #### 13. Fix goconst Violation (1 issue) 🟢
+
 **Estimated:** 15 minutes | Extract magic string to constant
 
 #### 14. Fix ineffassign Violations (9 issues) 🟢
+
 **Estimated:** 30 minutes | Remove unused variable assignments
 
 #### 15. Fix forbidigo Violation (1 issue) 🟢
+
 **Estimated:** 5 minutes | Remove or nolint fmt.Printf
 
 #### 16. Fix ireturn Violations (2 issues) 🟢
+
 **Estimated:** 30 minutes | Add nolint:ireturn comments
 
 ### Priority 4 - ARCHITECTURE IMPROVEMENTS
 
 #### 17. Extract Shared Test Utilities (2 hours) 🟢
+
 Create bdd/test_helpers.go with common functions
 
 #### 18. Add Integration Tests for CLI (3 hours) 🟢
+
 Test CLI directly without subprocess execution
 
 #### 19. Improve Error Messages (2 hours) 🟢
+
 Better error messages for debugging
 
 #### 20. Add Benchmark Tests (2 hours) 🟢
+
 Performance baseline and regression detection
 
 ### Priority 5 - DOCUMENTATION & POLISH
 
 #### 21. Update README.md (1 hour) 🟢
+
 Add examples and troubleshooting
 
 #### 22. Add Architecture Documentation (2 hours) 🟢
+
 Document design decisions and pipeline
 
 #### 23. Improve Code Comments (3 hours) 🟢
+
 Add package-level docs and algorithm explanations
 
 #### 24. Create Developer Guide (2 hours) 🟢
+
 Setup, testing, and contribution guidelines
 
 #### 25. Add Performance Profiling Guide (1 hour) 🟢
+
 Document --profile flag usage
 
 ---
-
 
 ## VI. Critical Unanswered Question
 
 ### 🤔 Why Do BDD Tests Fail with Silent Exit Status 1?
 
 **Context:**
+
 - Tests build CLI binary: `go build -o bdd/art-dupl-all_format_generation-test ./cmd/art-dupl`
 - Build succeeds with no errors
 - Test runs binary: `exec.Command("./bdd/art-dupl-all_format_generation-test", ...)`
@@ -386,6 +431,7 @@ Document --profile flag usage
 **Investigation Status:**
 
 ✅ **Verified Working:**
+
 - Binary file exists after build
 - File has correct permissions (755)
 - Binary path is correct
@@ -393,6 +439,7 @@ Document --profile flag usage
 - Binary works when run manually with same arguments
 
 ❌ **Not Working:**
+
 - Error output is not captured from binary
 - Adding `-v` flag doesn't reveal more information
 - Environment variables appear identical to manual execution
@@ -409,6 +456,7 @@ Document --profile flag usage
 **Suggested Investigation Steps:**
 
 1. Add debug logging to cmd/art-dupl/main.go:
+
    ```go
    log.SetOutput(os.Stderr)
    log.Println("DEBUG: main() called")
@@ -417,6 +465,7 @@ Document --profile flag usage
    ```
 
 2. Try redirecting stderr explicitly in test:
+
    ```go
    var stderr bytes.Buffer
    cmd.Stderr = &stderr
@@ -436,18 +485,22 @@ Document --profile flag usage
 ## VII. Recommendations
 
 ### Immediate Actions (Next 1-2 Days)
+
 1. Fix BDD test suite (Priority 1, Item #1) - CRITICAL BLOCKER
 2. Fix high-priority lint violations (Priority 2, Items #4-9) - Easy wins
 
 ### Short-term Goals (Next Week)
+
 3. Resolve code duplication warnings (Priority 1, Item #3)
 4. Split largest files (Priority 2, Item #10)
 
 ### Medium-term Goals (Next Month)
+
 5. Improve test coverage (types/, syntax/golang/ packages)
 6. Add integration tests for CLI (Priority 4, Item #18)
 
 ### Long-term Goals (Next Quarter)
+
 7. Architecture improvements (BDD, error handling, domain types)
 8. Documentation and polish (Priority 5, Items #21-25)
 
@@ -472,6 +525,7 @@ Buildflow execution will be considered successful when:
 Buildflow execution reveals a project in **good overall health** but with **specific quality issues** that need attention.
 
 **Strengths:**
+
 - ✅ Build infrastructure works correctly
 - ✅ Codebase compiles and runs
 - ✅ Core functionality is stable
@@ -479,6 +533,7 @@ Buildflow execution reveals a project in **good overall health** but with **spec
 - ✅ Strong type safety with domain types
 
 **Weaknesses:**
+
 - ❌ BDD test suite is completely broken (98% failure rate)
 - ❌ Code duplication needs cleanup (50 clone groups)
 - ❌ Linting violations remain (151 issues)
@@ -486,6 +541,7 @@ Buildflow execution reveals a project in **good overall health** but with **spec
 - ❌ Test coverage gaps in some packages
 
 **Critical Path:**
+
 1. Fix BDD tests → 2. Resolve code duplication → 3. Fix high-priority lint violations → 4. Split large files → 5. Complete
 
 **Overall Assessment:**

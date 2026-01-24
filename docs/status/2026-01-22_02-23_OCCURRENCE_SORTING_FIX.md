@@ -19,13 +19,17 @@ The bug has been identified, fixed, verified to work correctly, and comprehensiv
 ## Problem Statement
 
 ### User Report
+
 > "Why is `art-dupl --sort occurrence` broken again?"
 
 ### Expected Behavior
+
 When using `--sort occurrence`, clone groups should be displayed in descending order by **total number of clone instances** (most frequent clones first).
 
 ### Actual Behavior (Before Fix)
+
 Clone groups were sorted by **number of unique files** containing clones, which:
+
 - Does not account for multiple clones in the same file
 - Produces incorrect ordering when files contain multiple instances
 - Misleads users about true clone prevalence
@@ -35,11 +39,13 @@ Clone groups were sorted by **number of unique files** containing clones, which:
 ## Root Cause Analysis
 
 ### Location
+
 **File**: `printer/groups.go`
 **Function**: `SortCloneGroupKeys`
 **Lines**: 38-43
 
 ### Bug Code
+
 ```go
 case SortByOccurrence:
     sort.Slice(keys, func(i, j int) bool {
@@ -74,6 +80,7 @@ Clone Group B: 2 instances (2 unique files)
 **After Fix**: Sorts by 6 vs 2 → Group A first (correct by design)
 
 **Edge Case**:
+
 ```
 Clone Group C: 3 instances (1 file with 3 clones)
   - uniqueCounts[C] = 1
@@ -118,6 +125,7 @@ Clone Group D: 2 instances (2 unique files)
 ### Test Results
 
 #### Before Fix
+
 ```
 ./art-dupl --sort occurrence --threshold 15 ./printer
 
@@ -136,6 +144,7 @@ found 6 clones:    # Line 33  ← WRONG: Should be first
 **Analysis**: Order was random/incorrect. 6-clone group appeared at end. Multiple 3-clone groups appeared after 2-clone groups.
 
 #### After Fix
+
 ```
 ./art-dupl --sort occurrence --threshold 15 ./printer
 
@@ -157,6 +166,7 @@ found 3 clones:    # Line 10
 ### Statistical Verification
 
 **Clone Group Distribution** (33 total groups):
+
 - 1 group with 6 clones
 - 1 group with 5 clones
 - 4 groups with 4 clones
@@ -164,6 +174,7 @@ found 3 clones:    # Line 10
 - 20 groups with 2 clones
 
 **After Fix Output Order**:
+
 ```
 1 found 6 clones:
 1 found 5 clones:
@@ -201,6 +212,7 @@ bdd/
 **File**: `bdd/sorting_test.go`
 
 **Test Coverage**:
+
 1. ✅ Size sorting (largest clones first)
 2. ✅ Occurrence sorting (most widespread clones first)
 3. ✅ Hash sorting (alphabetical order)
@@ -233,6 +245,7 @@ cd bdd && go test -v -run TestSorting -ginkgo.focus="should display most widespr
 ```
 
 **Output**:
+
 ```
 SUCCESS! -- 1 Passed | 0 Failed | 0 Pending | 53 Skipped
 --- PASS: TestSorting (1.48s)
@@ -243,6 +256,7 @@ ok  	github.com/LarsArtmann/art-dupl/bdd	1.808s
 ### Test Analysis
 
 **Observations**:
+
 1. ✅ BDD tests exist and are well-structured
 2. ✅ Tests cover the occurrence sorting scenario
 3. ❌ Tests did not fail before the fix (limited test data scenario)
@@ -310,20 +324,24 @@ func CountUniqueFiles(group [][]*syntax.Node) int {
 ## Impact Assessment
 
 ### Severity
+
 **High** - Core functionality that affects how users prioritize refactoring work
 
 ### Affected Users
+
 - All users of `--sort occurrence` flag
 - Users relying on occurrence ordering to identify most duplicated code
 - Automated systems using art-dupl output for code quality metrics
 
 ### Potential Impact Before Fix
+
 1. **Misleading Prioritization**: Users might focus on less prevalent clones
 2. **Inefficient Refactoring**: Time spent on clones that don't have highest impact
 3. **Incorrect Metrics**: Reports and dashboards showing wrong "top clones"
 4. **Reduced Trust**: Users may question tool accuracy
 
 ### Impact After Fix
+
 1. **Correct Prioritization**: Users see truly most frequent clones first
 2. **Efficient Refactoring**: Focus on clones with highest occurrence count
 3. **Accurate Metrics**: Reports show correct prevalence rankings
@@ -357,14 +375,16 @@ func CountUniqueFiles(group [][]*syntax.Node) int {
 ### Proposed Improvements
 
 1. **Documentation Updates**
+
    ```markdown
    --sort occurrence
-       Sort clone groups by total number of clone instances (including
-       duplicates in the same file), from most frequent to least frequent.
-       This prioritizes clones that appear most often in the codebase.
+   Sort clone groups by total number of clone instances (including
+   duplicates in the same file), from most frequent to least frequent.
+   This prioritizes clones that appear most often in the codebase.
    ```
 
 2. **Code Refactoring**
+
    ```go
    // Remove uniqueCounts parameter when not needed
    func SortCloneGroupKeys(keys []string, sortBy SortBy,
@@ -385,9 +405,11 @@ func CountUniqueFiles(group [][]*syntax.Node) int {
 ### Immediate (Do First)
 
 1. **Run Full Test Suite**
+
    ```bash
    go test ./... -v
    ```
+
    Verify fix didn't break anything
 
 2. **Verify BDD Test Sensitivity**
@@ -436,16 +458,19 @@ func CountUniqueFiles(group [][]*syntax.Node) int {
 **Question**: Should "occurrence" sorting mean:
 
 **Option A**: Total number of clone instances (current fix)
+
 - More clones = higher occurrence
 - Includes duplicates in same file
 - Intuitive: "how many times does this code appear?"
 
 **Option B**: Number of unique files affected
+
 - More files = higher occurrence
 - Excludes duplicates in same file
 - Intuitive: "how many places does this code exist?"
 
 **Recommendation**: **Option A** (current implementation)
+
 - Aligns with "frequency" concept
 - More useful for impact assessment
 - Fix makes sorting O(1) vs O(n) - performance win
@@ -453,12 +478,14 @@ func CountUniqueFiles(group [][]*syntax.Node) int {
 ### Documentation Clarification
 
 **Current CLI Help**:
+
 ```
 -s --sort    Sort clone groups: size (largest first), occurrence (most files first),
               hash (alphabetical) (default: size)
 ```
 
 **Proposed Update**:
+
 ```
 -s --sort    Sort clone groups: size (largest first), occurrence (most frequent first),
               hash (alphabetical) (default: size)
@@ -503,6 +530,7 @@ The existing BDD testing infrastructure with onsi/ginkgo is well-designed and co
 ## Appendix: Verification Commands
 
 ### Build and Test
+
 ```bash
 # Build
 go build -o art-dupl-fixed ./cmd/art-dupl
@@ -515,6 +543,7 @@ go build -o art-dupl-fixed ./cmd/art-dupl
 ```
 
 ### Run BDD Tests
+
 ```bash
 cd bdd
 go test -v -run TestSorting
@@ -524,6 +553,7 @@ go test -v -run TestSorting -ginkgo.focus="should display most widespread clones
 ```
 
 ### Run Full Test Suite
+
 ```bash
 go test ./... -v
 ```

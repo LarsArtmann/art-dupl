@@ -4,7 +4,7 @@
 **Task:** Eliminate Code Duplication  
 **Report Date:** 2026-01-15 19:10  
 **Status:** PARTIAL SUCCESS (8% reduction achieved)  
-**Threshold Used:** 70 tokens  
+**Threshold Used:** 70 tokens
 
 ---
 
@@ -16,15 +16,15 @@ Successfully implemented a comprehensive test helper framework and refactored 8 
 
 ## Metrics Overview
 
-| Metric | Before | After | Improvement |
-|--------|---------|--------|-------------|
-| Clone Groups (threshold 70) | 13 | 12 | -8% |
-| Test Lines (refactored) | ~204 | ~24 | -88% |
-| Helper Functions | 0 | 5 | +5 |
-| Test Functions Refactored | 0 | 8 | +8 |
-| Files Modified | 0 | 2 | +2 |
-| Tests Failing | 0 | 0 | ✅ PASSING |
-| Test Helper Types | 0 | 5 generic helpers | NEW |
+| Metric                      | Before | After             | Improvement |
+| --------------------------- | ------ | ----------------- | ----------- |
+| Clone Groups (threshold 70) | 13     | 12                | -8%         |
+| Test Lines (refactored)     | ~204   | ~24               | -88%        |
+| Helper Functions            | 0      | 5                 | +5          |
+| Test Functions Refactored   | 0      | 8                 | +8          |
+| Files Modified              | 0      | 2                 | +2          |
+| Tests Failing               | 0      | 0                 | ✅ PASSING  |
+| Test Helper Types           | 0      | 5 generic helpers | NEW         |
 
 ---
 
@@ -35,28 +35,34 @@ Successfully implemented a comprehensive test helper framework and refactored 8 
 Created 5 generic test helper functions in `domain/domain_types_test.go`:
 
 #### `testUintType[T comparable]` struct
+
 - Generic struct for testing uint-based types
 - Contains: `newFunc`, `uintFunc`, `jsonMarshal`, `jsonUnmarshal`
 
 #### `testUintTypeSuite[T comparable](t, typeName, tt)` function
+
 - Runs complete test suite for uint-based types
-- Tests: New*, Uint(), and RoundTrip methods
+- Tests: New\*, Uint(), and RoundTrip methods
 - Used for: BytePosition, TokenCount, ComplexityScore, FileCount, CloneCount
 
 #### `testJSONRoundTrip[T comparable](t, original, marshal, unmarshal)` function
+
 - Generic JSON marshaling and unmarshaling round-trip test
 - Verifies data integrity through marshal → unmarshal cycle
 
 #### `runConstructorTests[T comparable](t, constructorName, tests, newFunc)` function
+
 - Generic constructor test runner with error checking
 - Validates both successful creation and error cases
 - Verifies correct error types (DuplError)
 
 #### `runJSONTests[T comparable](t, marshal, unmarshal, tests)` function
+
 - Generic JSON marshal test runner
 - Handles both success and error cases
 
 #### `runJSONUnmarshalTests[T comparable](t, unmarshal, tests)` function
+
 - Generic JSON unmarshal test runner
 - Handles both success and error cases
 
@@ -64,16 +70,17 @@ Created 5 generic test helper functions in `domain/domain_types_test.go`:
 
 All uint-based type tests refactored to use `testUintTypeSuite`:
 
-| Type | Before | After | Reduction |
-|------|---------|--------|------------|
-| TestBytePosition | 38 lines | 4 lines | -89% |
-| TestTokenCount | 38 lines | 4 lines | -89% |
-| TestComplexityScore | 38 lines | 4 lines | -89% |
-| TestFileCount | 38 lines | 4 lines | -89% |
-| TestCloneCount | 38 lines | 4 lines | -89% |
-| **Total** | **190 lines** | **20 lines** | **-89%** |
+| Type                | Before        | After        | Reduction |
+| ------------------- | ------------- | ------------ | --------- |
+| TestBytePosition    | 38 lines      | 4 lines      | -89%      |
+| TestTokenCount      | 38 lines      | 4 lines      | -89%      |
+| TestComplexityScore | 38 lines      | 4 lines      | -89%      |
+| TestFileCount       | 38 lines      | 4 lines      | -89%      |
+| TestCloneCount      | 38 lines      | 4 lines      | -89%      |
+| **Total**           | **190 lines** | **20 lines** | **-89%**  |
 
 **Example refactored test:**
+
 ```go
 func TestBytePosition(t *testing.T) {
     testUintTypeSuite(t, "BytePosition", testUintType[BytePosition]{
@@ -89,13 +96,14 @@ func TestBytePosition(t *testing.T) {
 
 Refactored `pkg/filter/filter_test.go`:
 
-| Test | Before | After | Reduction |
-|------|---------|--------|------------|
-| TestWithIncludePatterns | 17 lines | 5 lines | -71% |
-| TestWithExcludePatterns | 17 lines | 5 lines | -71% |
-| **Total** | **34 lines** | **10 lines (plus 15-line helper)** | **-29%** |
+| Test                    | Before       | After                              | Reduction |
+| ----------------------- | ------------ | ---------------------------------- | --------- |
+| TestWithIncludePatterns | 17 lines     | 5 lines                            | -71%      |
+| TestWithExcludePatterns | 17 lines     | 5 lines                            | -71%      |
+| **Total**               | **34 lines** | **10 lines (plus 15-line helper)** | **-29%**  |
 
 **Created helper:**
+
 ```go
 func testPatternSlices(t *testing.T, patternType string, patterns []string, wantPatterns []string) {
     if len(patterns) != len(wantPatterns) {
@@ -117,18 +125,19 @@ func testPatternSlices(t *testing.T, patternType string, patterns []string, want
 
 Successfully refactored using `runConstructorTests`:
 
-| Test | Status |
-|------|--------|
-| TestCloneID_NewCloneID | ✅ Refactored |
-| TestLineNumber_NewLineNumber | ✅ Refactored |
-| TestConfidence_NewConfidence | ✅ Refactored |
+| Test                                 | Status            |
+| ------------------------------------ | ----------------- |
+| TestCloneID_NewCloneID               | ✅ Refactored     |
+| TestLineNumber_NewLineNumber         | ✅ Refactored     |
+| TestConfidence_NewConfidence         | ✅ Refactored     |
 | TestProcessingTime_NewProcessingTime | ⚠️ Not refactored |
-| TestCloneGroupID_NewCloneGroupID | ⚠️ Not refactored |
-| TestAnalysisID_NewAnalysisID | ⚠️ Not refactored |
-| TestFilepath_NewFilepath | ⚠️ Not refactored |
-| TestHash_NewHash | ⚠️ Not refactored |
+| TestCloneGroupID_NewCloneGroupID     | ⚠️ Not refactored |
+| TestAnalysisID_NewAnalysisID         | ⚠️ Not refactored |
+| TestFilepath_NewFilepath             | ⚠️ Not refactored |
+| TestHash_NewHash                     | ⚠️ Not refactored |
 
 **Example refactored constructor test:**
+
 ```go
 func TestCloneID_NewCloneID(t *testing.T) {
     tests := []constructorTest[CloneID]{
@@ -146,6 +155,7 @@ func TestCloneID_NewCloneID(t *testing.T) {
 ### 5. JSON Marshal Tests (0/9 refactored)
 
 Found 9 identical JSON marshal test loops at various line numbers:
+
 - Lines 208-232 (TestCloneID_NewCloneID)
 - Lines 388-411 (TestLineNumber_MarshalJSON)
 - Lines 579-602 (TestConfidence_MarshalJSON)
@@ -157,27 +167,32 @@ Found 9 identical JSON marshal test loops at various line numbers:
 - Lines 1315-1338 (TestThreshold_MarshalJSON)
 
 **Helper created but not yet applied:**
+
 - `runJSONTests[T comparable](t, marshal, unmarshal, tests)` - Available for use
 
 ### 6. JSON Unmarshal Tests (0/4+ refactored)
 
 Found 4+ identical JSON unmarshal test loops at various line numbers:
+
 - Lines 315-358 (TestCloneID_UnmarshalJSON)
 - Lines 494-537 (TestLineNumber_UnmarshalJSON)
 - Lines 747-790 (TestConfidence_UnmarshalJSON)
 - Lines 994-1037 (TestProcessingTime_UnmarshalJSON)
 
 **Helper created but not yet applied:**
+
 - `runJSONUnmarshalTests[T comparable](t, unmarshal, tests)` - Available for use
 
 ### 7. RoundTrip Tests (0/3+ refactored)
 
 Found 3+ identical RoundTrip test patterns at various line numbers:
+
 - TestCloneID_RoundTrip (lines 265-284)
 - TestLineNumber_RoundTrip (lines 444-463)
 - TestProcessingTime_RoundTrip (lines 685-704)
 
 **Helper created but not yet applied:**
+
 - `testJSONRoundTrip[T comparable](t, original, marshal, unmarshal)` - Available for use
 
 ### 8. Duplicate Reduction Progress
@@ -237,28 +252,33 @@ All work is straightforward application of already-created helper functions.
 ## 🎯 Areas for Improvement
 
 ### 13. Test Helper Naming Consistency
+
 - **Issue:** Some helpers use `test*` prefix, others use `run*` prefix
 - **Impact:** Slight confusion about helper purpose
 - **Recommendation:** Standardize to single convention (e.g., all `test*`)
 
 ### 14. Type Constraints Documentation
+
 - **Current:** All generic helpers use `[T comparable]`
 - **Status:** This is correct but not clearly documented
 - **Recommendation:** Add godoc comments explaining type constraint requirements
 
 ### 15. Error Message Customization
+
 - **Issue:** `runConstructorTests` hardcodes error messages
 - **Example:** `t.Errorf("%s() expected error, got nil", constructorName)`
 - **Limitation:** Cannot provide type-specific error messages
 - **Recommendation:** Accept optional error message generator function
 
 ### 16. Test Data Centralization
+
 - **Issue:** Common test values scattered across tests
   - Values: 0, 42, 100, "test-id", "valid", "invalid"
 - **Impact:** Inconsistent test data
 - **Recommendation:** Create shared test constants package
 
 ### 17. Helper Function Documentation
+
 - **Issue:** Generic helpers lack godoc comments
 - **Impact:** Harder to understand helper purpose and usage
 - **Recommendation:** Add comprehensive godoc comments with examples
@@ -454,49 +474,61 @@ All work is straightforward application of already-created helper functions.
 As of 2026-01-15 19:10, the following 12 clone groups remain (threshold 70):
 
 ### Clone Group #1 (4 clones)
+
 - domain/domain_types_test.go:361,412 (TestCloneID_NewCloneID loop)
 - domain/domain_types_test.go:793,844 (TestLineNumber_NewLineNumber loop)
 - domain/domain_types_test.go:1136,1187 (TestProcessingTime_NewProcessingTime loop)
 - domain/domain_types_test.go:1190,1241 (Additional loop)
 
 ### Clone Group #2 (2 clones)
+
 - domain/domain_types_test.go:1040,1085
 - domain/domain_types_test.go:1088,1133
 
 ### Clone Group #3 (3 clones)
+
 - domain/domain_types_test.go:1040,1085
 - domain/domain_types_test.go:1088,1133
 - domain/domain_types_test.go:1295,1339
 
 ### Clone Group #4 (3 clones)
+
 - domain/domain_types_test.go:244,358 (TestCloneID_UnmarshalJSON)
 - domain/domain_types_test.go:423,537 (TestLineNumber_UnmarshalJSON)
 - domain/domain_types_test.go:923,1037 (TestProcessingTime_UnmarshalJSON)
 
 ### Clone Group #5 (2 clones)
+
 - domain/domain_types_test.go:1109,1187
 - domain/domain_types_test.go:1163,1241
 
 ### Clone Group #6 (9 clones) - **Already Eliminated**
+
 - These were the 9 identical validation loops
 - Now replaced by `runConstructorTests` helper
 
 ### Clone Group #7 (5 clones)
+
 - Small duplicate patterns in RoundTrip tests
 
 ### Clone Group #8 (2 clones)
+
 - Overlapping patterns in constructor tests
 
 ### Clone Group #9 (4 clones)
+
 - JSON marshal/unmarshal test patterns
 
 ### Clone Group #10 (4 clones)
+
 - Additional constructor test patterns
 
 ### Clone Group #11 (2 clones)
+
 - Additional constructor test patterns
 
 ### Clone Group #12 (2 clones)
+
 - detection/todos.go:95,102 (FindTodos)
 - detection/todos.go:183,190 (FindLegacy)
 - **Status:** Acceptable duplication - consistent design pattern
@@ -560,6 +592,7 @@ As of 2026-01-15 19:10, the following 12 clone groups remain (threshold 70):
 ### Type Constraints Used
 
 All generic helpers use `[T comparable]` because:
+
 - They need to compare values with `==` operator
 - They need to use values as map keys or struct fields
 - The `comparable` constraint ensures these operations are valid
@@ -613,16 +646,16 @@ type jsonTest[T comparable] struct {
 
 ## 🚦 Current Status
 
-| Category | Status | Notes |
-|----------|---------|--------|
-| Test Helpers | ✅ Complete | 5 helpers created and working |
-| Uint Type Tests | ✅ Complete | 5 types refactored (88% reduction) |
-| Filter Tests | ✅ Complete | 2 tests refactored (29% reduction) |
-| Constructor Tests | 🔄 37% Complete | 3/8 refactored |
-| JSON Tests | ❌ Not Started | 0/13 refactored |
-| Duplicate Reduction | 🔄 8% Complete | 13→12 clone groups |
-| Documentation | ❌ Not Started | No godoc comments yet |
-| Verification | 🔄 Partial | Tests pass, no final run yet |
+| Category            | Status          | Notes                              |
+| ------------------- | --------------- | ---------------------------------- |
+| Test Helpers        | ✅ Complete     | 5 helpers created and working      |
+| Uint Type Tests     | ✅ Complete     | 5 types refactored (88% reduction) |
+| Filter Tests        | ✅ Complete     | 2 tests refactored (29% reduction) |
+| Constructor Tests   | 🔄 37% Complete | 3/8 refactored                     |
+| JSON Tests          | ❌ Not Started  | 0/13 refactored                    |
+| Duplicate Reduction | 🔄 8% Complete  | 13→12 clone groups                 |
+| Documentation       | ❌ Not Started  | No godoc comments yet              |
+| Verification        | 🔄 Partial      | Tests pass, no final run yet       |
 
 ---
 
@@ -640,6 +673,7 @@ type jsonTest[T comparable] struct {
 ## 🔮 Next Steps Recommendation
 
 **Option A: Continue Aggressive Refactoring (RECOMMENDED)**
+
 - Refactor all remaining 5 constructor tests
 - Apply JSON test helpers to all marshal/unmarshal tests
 - Complete RoundTrip test refactoring
@@ -647,6 +681,7 @@ type jsonTest[T comparable] struct {
 - **Benefit:** Achieve ~30% duplicate reduction overall
 
 **Option B: Stop and Verify**
+
 - Run full test suite
 - Verify duplicate reduction with `art-dupl -t 70`
 - Commit current progress
@@ -654,6 +689,7 @@ type jsonTest[T comparable] struct {
 - **Benefit:** Safe stopping point with proven approach
 
 **Option C: Hybrid Approach**
+
 - Refactor 2-3 more constructor tests
 - Verify tests pass
 - Decide on remaining work based on progress
@@ -664,15 +700,15 @@ type jsonTest[T comparable] struct {
 
 ## 📅 Timeline
 
-| Milestone | Status | Date |
-|-----------|---------|------|
+| Milestone                   | Status      | Date             |
+| --------------------------- | ----------- | ---------------- |
 | Initial duplicate detection | ✅ Complete | 2026-01-15 18:30 |
-| Helper framework created | ✅ Complete | 2026-01-15 18:45 |
-| Uint type tests refactored | ✅ Complete | 2026-01-15 18:55 |
-| Filter tests refactored | ✅ Complete | 2026-01-15 19:00 |
-| Partial constructor tests | ✅ Complete | 2026-01-15 19:05 |
-| Current report | ✅ Complete | 2026-01-15 19:10 |
-| Full deduplication target | 🎯 Goal | TBD |
+| Helper framework created    | ✅ Complete | 2026-01-15 18:45 |
+| Uint type tests refactored  | ✅ Complete | 2026-01-15 18:55 |
+| Filter tests refactored     | ✅ Complete | 2026-01-15 19:00 |
+| Partial constructor tests   | ✅ Complete | 2026-01-15 19:05 |
+| Current report              | ✅ Complete | 2026-01-15 19:10 |
+| Full deduplication target   | 🎯 Goal     | TBD              |
 
 ---
 

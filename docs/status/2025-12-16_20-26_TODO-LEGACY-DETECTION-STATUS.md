@@ -11,6 +11,7 @@ Implementation started for TODO and Legacy detection methods in art-dupl codebas
 ## Completed Work ✅
 
 ### Configuration Updates
+
 - **File**: `config/detectionmethod.go`
   - Added `DetectionMethodTodos` and `DetectionMethodLegacy` constants
   - Updated `IsValid()` to include new methods
@@ -18,6 +19,7 @@ Implementation started for TODO and Legacy detection methods in art-dupl codebas
   - Updated error messages with valid methods: "hash, art-dupl, todos, legacy"
 
 ### Basic Detector Implementation
+
 - **File**: `detection/todos.go` (NEW)
   - `TodoDetector`: Parses Go AST for TODO-style comments using regex patterns
   - `LegacyDetector`: Identifies deprecated functions and old code patterns
@@ -26,6 +28,7 @@ Implementation started for TODO and Legacy detection methods in art-dupl codebas
   - Default legacy patterns (deprecated io/ioutil functions, old coding patterns)
 
 ### Research Completed
+
 - Go AST comment handling patterns documented
 - Found go-critic has `todoCommentWithoutDetail` checker
 - Identified existing static analysis tool patterns
@@ -52,12 +55,14 @@ Implementation started for TODO and Legacy detection methods in art-dupl codebas
 ## Current Implementation Gaps
 
 ### Integration Points Missing
+
 - **MultiDetector**: Not updated to handle new detection methods
 - **CLI Interface**: New methods not exposed via flags
 - **Printers**: Cannot handle TODO/Legacy result types
 - **Configuration**: Default settings don't include new methods
 
 ### Data Model Issues
+
 - **Result Representation**: Need unified interface for different result types
 - **Metadata Handling**: TODO/Legacy have different metadata requirements
 - **Output Formatting**: Each type needs custom formatting logic
@@ -65,6 +70,7 @@ Implementation started for TODO and Legacy detection methods in art-dupl codebas
 ## Required Architecture Changes
 
 ### Option 1: Generic Interface Approach
+
 ```go
 type DetectionResult interface {
     GetType() DetectionMethod
@@ -79,11 +85,13 @@ type LegacyResult struct { ... } // New structure
 ```
 
 ### Option 2: Separate Pipelines
+
 - Keep existing clone detection pipeline unchanged
 - Create separate TODO and Legacy detection pipelines
 - Separate processing logic and output handling
 
 ### Option 3: Union Type Approach
+
 - Extend existing structures to handle multiple result types
 - Add type discriminators and result-specific fields
 - Maintain current printer interfaces with conditional logic
@@ -91,18 +99,21 @@ type LegacyResult struct { ... } // New structure
 ## Next Steps Priority
 
 ### Immediate (Critical Path)
+
 1. **DECISION**: Choose architecture approach for result type handling
 2. **REFACTOR**: Implement chosen interface design
 3. **INTEGRATE**: Update MultiDetector for new detection methods
 4. **TEST**: End-to-end integration testing
 
 ### Short-term (Implementation)
+
 5. Update CLI flags and help text
 6. Extend all printer implementations
 7. Add comprehensive test coverage
 8. Performance testing with large codebases
 
 ### Long-term (Enhancement)
+
 9. Custom pattern configuration
 10. Integration with existing linters
 11. Severity-based filtering
@@ -111,11 +122,13 @@ type LegacyResult struct { ... } // New structure
 ## Risk Assessment
 
 ### Technical Risks
+
 - **High**: Current approach will cause runtime errors when printing non-clone results
 - **Medium**: Performance impact of architectural refactoring
 - **Low**: Backwards compatibility issues
 
 ### Timeline Impact
+
 - **Current Progress**: ~20% of total effort
 - **Architecture Decision**: Critical path blocker
 - **Estimated Completion**: 2-3 weeks depending on chosen approach
@@ -123,11 +136,13 @@ type LegacyResult struct { ... } // New structure
 ## Stakeholder Impact
 
 ### Users
+
 - New detection methods will enhance code quality insights
 - Need clear documentation on usage patterns
 - Migration path for existing workflows
 
 ### Development Team
+
 - Significant refactoring required regardless of approach
 - Testing strategy must cover all detection method combinations
 - CI/CD pipeline updates needed
@@ -135,12 +150,15 @@ type LegacyResult struct { ... } // New structure
 ## Recommendations
 
 ### Immediate Action
+
 1. **HOLD**: Stop current implementation until architecture decision made
 2. **REVIEW**: Evaluate three architectural approaches with trade-off analysis
 3. **DECIDE**: Choose approach before proceeding with implementation
 
 ### Preferred Approach
+
 **Option 1 (Generic Interface)** recommended because:
+
 - Maintains clean separation of concerns
 - Allows future extension with new detection methods
 - Provides consistent user experience
@@ -149,13 +167,16 @@ type LegacyResult struct { ... } // New structure
 ## Files Modified
 
 ### New Files
+
 - `detection/todos.go` - Basic detector implementations
 
 ### Modified Files
+
 - `config/detectionmethod.go` - Added new detection methods
 - `config/config.go` - Updated error messages
 
 ### Files Needing Updates
+
 - `detection/multidetector.go` - Integration point
 - `cli.go` - CLI flag handling
 - `printer/*.go` - All printer implementations
@@ -164,6 +185,7 @@ type LegacyResult struct { ... } // New structure
 ## Metrics
 
 ### Code Coverage
+
 - **Configuration**: 100% complete
 - **Detection Logic**: 30% complete (basic implementation only)
 - **Integration**: 0% complete
@@ -171,6 +193,7 @@ type LegacyResult struct { ... } // New structure
 - **Documentation**: 10% complete
 
 ### Complexity Metrics
+
 - **New Code**: ~300 lines added
 - **Refactoring Needed**: ~1000+ lines estimated
 - **Test Coverage**: 500+ lines needed

@@ -21,19 +21,20 @@
 ## Step 0.2: Existing Validation Infrastructure ✅
 
 **Files Checked**:
+
 - `errors/types.go`
 
 **Findings**:
 
 ### Excellent Existing Infrastructure:
 
-1. **NewValidationError(msg string, cause error) *DuplError**
+1. **NewValidationError(msg string, cause error) \*DuplError**
    - ✅ Already exists and is perfect for our use
    - ✅ Includes stack trace
    - ✅ Wraps cause error
    - ✅ Rich context (file, line, type)
 
-2. **NewEnumValidationError(enumType, enumValue string, cause error) *EnumValidationError**
+2. **NewEnumValidationError(enumType, enumValue string, cause error) \*EnumValidationError**
    - ✅ Specialized for enum validation
    - ✅ Includes enum type and value in error
    - ✅ Extends DuplError with enum-specific context
@@ -43,6 +44,7 @@
    - ✅ Used by DuplError for error classification
 
 **Current Usage in Domain Types**:
+
 ```go
 // domain/domain_types.go
 func NewCloneID(id string) (CloneID, error) {
@@ -67,24 +69,30 @@ func NewCloneID(id string) (CloneID, error) {
 ### Existing String-Based Types (Not Duplicating):
 
 **types/enums.go**:
+
 - `DetectionState string` - Enum for detection state
 - `AnalysisMode string` - Enum for analysis mode
 - `FileProcessingState string` - Enum for file processing state
 
 **types/enum_utils.go**:
+
 - `StringEnum string` - Base type for string enums
 
 **config/detectionmethod.go**:
+
 - `DetectionMethod string` - Enum for detection method
 
 **config/outputformat.go**:
+
 - `OutputFormat string` - Enum for output format
 - `SortCriteria string` - Enum for sort criteria
 
 **errors/types.go**:
+
 - `ErrorType string` - Enum for error types
 
 **domain/clone.go**:
+
 - `CloneSeverity string` - Enum for clone severity
 
 ### My New String-Based Types (domain/domain_types.go) - Filling Gaps:
@@ -102,7 +110,7 @@ func NewCloneID(id string) (CloneID, error) {
 
 **Search Results**: Zero existing uint-based value objects in codebase
 
-**My New Uint-Based Types (domain/domain_types.go) - Filling Major Gaps:
+\*\*My New Uint-Based Types (domain/domain_types.go) - Filling Major Gaps:
 
 - `LineNumber uint` - ✅ NEW, not duplicating (no line number type exists)
 - `BytePosition uint` - ✅ NEW, not duplicating (no byte position type exists)
@@ -123,14 +131,17 @@ func NewCloneID(id string) (CloneID, error) {
 ### Libraries Investigated:
 
 #### 1. github.com/go-playground/validator/v10
+
 **Purpose**: Struct validation with struct tags
 **Features**:
+
 - Declarative validation via tags
 - Custom validators
 - Error translation
 - Struct-level validation
 
 **Example**:
+
 ```go
 type Clone struct {
     ID         CloneID   `validate:"required"`
@@ -144,6 +155,7 @@ func (c Clone) Validate() error {
 ```
 
 **Assessment**:
+
 - ✅ Good for complex struct validation
 - ✅ Reduces boilerplate in IsValid() methods
 - ❌ Adds external dependency
@@ -154,14 +166,17 @@ func (c Clone) Validate() error {
 **Recommendation**: **MAY USE LATER** for complex structs (CloneGroup, Analysis), but not needed now for simple value objects.
 
 #### 2. github.com/google/go-cmp/cmp
+
 **Purpose**: Deep equality comparison for testing
 **Features**:
+
 - Deep equality
 - Custom comparers
 - Human-readable diffs
 - Better than reflect.DeepEqual
 
 **Example**:
+
 ```go
 func TestCloneID(t *testing.T) {
     id1 := CloneID("valid")
@@ -174,6 +189,7 @@ func TestCloneID(t *testing.T) {
 ```
 
 **Assessment**:
+
 - ✅ Excellent for testing domain types
 - ✅ Better than reflect.DeepEqual
 - ✅ Human-readable diffs
@@ -184,13 +200,16 @@ func TestCloneID(t *testing.T) {
 **Recommendation**: **CONSIDER USING** for better test assertions, but standard library is adequate for now.
 
 #### 3. github.com/leanovate/mapper
+
 **Purpose**: Type mapping and conversion
 **Features**:
+
 - Map between types
 - Custom mapping functions
 - Struct tag based
 
 **Assessment**:
+
 - ❌ Not needed for our use case
 - ❌ Adds unnecessary complexity
 - ❌ Our types are simple (string, uint) - conversion is trivial
@@ -198,12 +217,15 @@ func TestCloneID(t *testing.T) {
 **Recommendation**: **DO NOT USE** - overkill for our needs.
 
 #### 4. github.com/cheekybits/genny
+
 **Purpose**: Generic code generation
 **Features**:
+
 - Generate boilerplate from templates
 - Type-safe generic code generation
 
 **Example**:
+
 ```go
 //go:generate genny -in=types.tmpl -out=domain_types.go gen "Type=CloneID,Type=LineNumber"
 
@@ -216,6 +238,7 @@ func New{{.Type}}(v {{.UnderlyingType}}) ({{.Type}}, error) {
 ```
 
 **Assessment**:
+
 - ✅ Could reduce 548 lines of manual code
 - ✅ Consistent code generation
 - ✅ Easier to add new types
@@ -228,12 +251,12 @@ func New{{.Type}}(v {{.UnderlyingType}}) ({{.Type}}, error) {
 
 ### External Libraries Summary:
 
-| Library | Use Case | Recommendation | Priority |
-|----------|-----------|------------------|------------|
-| go-playground/validator | Struct validation | Maybe for complex structs | Low |
-| google/go-cmp | Better test assertions | Consider for testing | Low |
-| leanovate/mapper | Type mapping | Do not use | None |
-| cheekybits/genny | Code generation | Consider for many types | Low |
+| Library                 | Use Case               | Recommendation            | Priority |
+| ----------------------- | ---------------------- | ------------------------- | -------- |
+| go-playground/validator | Struct validation      | Maybe for complex structs | Low      |
+| google/go-cmp           | Better test assertions | Consider for testing      | Low      |
+| leanovate/mapper        | Type mapping           | Do not use                | None     |
+| cheekybits/genny        | Code generation        | Consider for many types   | Low      |
 
 **Overall Assessment**: ✅ Current implementation is pragmatic and doesn't need external libraries yet.
 
@@ -272,12 +295,14 @@ func New{{.Type}}(v {{.UnderlyingType}}) ({{.Type}}, error) {
 **Focus**: Add comprehensive tests for domain types
 
 **Why Critical**:
+
 - 15 new types with ZERO tests
 - Validation logic untested
 - JSON marshaling untested
 - Edge cases untested
 
 **Plan**:
+
 1. Create test file structure
 2. Test each type's validation
 3. Test each type's JSON marshaling

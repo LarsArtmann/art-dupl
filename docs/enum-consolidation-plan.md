@@ -14,6 +14,7 @@
 We have **TWO enum utility packages** with **same function names, different APIs**:
 
 #### config/unmarshal_helper.go
+
 ```go
 // Generic constraint: T ~string
 // Validation: Passed as parameter func(T) bool
@@ -25,6 +26,7 @@ func UnmarshalEnumJSON[T ~string](data []byte, enumType func(string) T, isValid 
 ```
 
 **Usage Pattern**:
+
 ```go
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
     return MarshalEnumJSON(dm, DetectionMethod.IsValid, "detection method")
@@ -32,6 +34,7 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 ```
 
 #### types/enum_utils.go
+
 ```go
 // Generic constraint: T ValidatableEnum interface
 // Validation: Inferred from interface method
@@ -43,6 +46,7 @@ func UnmarshalEnumJSON[T ValidatableEnum](data []byte, constructor func(string) 
 ```
 
 **Usage Pattern**:
+
 ```go
 func (ds DetectionState) MarshalJSON() ([]byte, error) {
     data, err := MarshalEnumJSON(ds, "detection state")
@@ -58,7 +62,7 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 1. **Same Names, Different Signatures**: Developer confusion when switching between packages
 2. **No Single Source of Truth**: Two implementations to maintain
 3. **Inconsistent Error Messages**: Different format and content
-4. **Incompatible Return Types**: T vs *T makes code non-portable
+4. **Incompatible Return Types**: T vs \*T makes code non-portable
 5. **Different Validation Approaches**: Method value vs interface inference
 
 ---
@@ -77,12 +81,14 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 4. ✅ Document differences in APIs
 
 **Benefits**:
+
 - Zero breaking changes
 - Immediate clarity for developers
 - Clear path forward
 - Minimal effort (1-2 hours)
 
 **Risks**:
+
 - None (documentation only)
 
 ---
@@ -94,6 +100,7 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 **Actions**:
 
 1. Create `pkg/enum/interface.go` with shared interface:
+
 ```go
 // Package enum provides shared interfaces and utilities for enum marshaling.
 package enum
@@ -127,12 +134,14 @@ type Enum[T any] interface {
 4. Add migration tests
 
 **Benefits**:
+
 - Shared contract without full consolidation
 - Can verify both implementations work correctly
 - Incremental migration possible
 - Clear interface for documentation
 
 **Risks**:
+
 - Medium (interface changes require testing)
 - No code reduction yet (still two implementations)
 
@@ -145,6 +154,7 @@ type Enum[T any] interface {
 **Actions**:
 
 1. Design unified API combining best of both approaches:
+
 ```go
 // pkg/enum/marshal.go
 package enum
@@ -185,6 +195,7 @@ type Validatable interface {
 ```
 
 2. Migrate config package enums:
+
 ```go
 // Before (config/detectionmethod.go)
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
@@ -198,6 +209,7 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 ```
 
 3. Migrate types package enums:
+
 ```go
 // Before (types/enums.go)
 func (ds DetectionState) MarshalJSON() ([]byte, error) {
@@ -220,6 +232,7 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
    - Update imports
 
 **Benefits**:
+
 - Single source of truth
 - Consistent error handling
 - Eliminates split brain completely
@@ -227,6 +240,7 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 - Better type safety
 
 **Risks**:
+
 - High (breaking change for both packages)
 - Requires comprehensive testing
 - Circular dependency concerns
@@ -241,17 +255,20 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 ### Rollout Plan
 
 **Week 1**: Phase 1 (Documentation)
+
 - Add package docs
 - Create migration plan
 - Review with team
 
 **Week 2-3**: Phase 2 (Interface)
+
 - Create shared interface
 - Update both packages
 - Add migration tests
 - Monitor for issues
 
 **Week 4-5**: Phase 3 (Consolidation)
+
 - Create shared implementation
 - Migrate one package (config)
 - Test thoroughly
@@ -262,6 +279,7 @@ func (ds DetectionState) MarshalJSON() ([]byte, error) {
 ### Rollback Plan
 
 If Phase 3 causes issues:
+
 - Revert to Phase 2 (interface-based approach)
 - Keep both implementations for now
 - Re-evaluate consolidation strategy
@@ -270,20 +288,21 @@ If Phase 3 causes issues:
 
 ## Decision Matrix
 
-| Approach | Risk | Effort | Benefits | When to Use |
-|-----------|-------|---------|-----------|--------------|
-| **Phase 1: Docs Only** | None | 1-2 hours | Clarity, minimal changes | **NOW** - Immediate |
-| **Phase 2: Interface** | Medium | 2-3 days | Shared contract, incremental | **NEXT SPRINT** |
-| **Phase 3: Consolidate** | High | 1-2 weeks | Single source, complete fix | **QUARTER** |
-| **Option A (Full Now)** | High | 1-2 days | Best long-term, single effort | Only if no constraints |
-| **Option B (Keep Forever)** | None | 0 hours | Safe, but technical debt | Not recommended |
-| **Option C (Coupling)** | Medium | 2-4 hours | Quick, but bad design | Not recommended |
+| Approach                    | Risk   | Effort    | Benefits                      | When to Use            |
+| --------------------------- | ------ | --------- | ----------------------------- | ---------------------- |
+| **Phase 1: Docs Only**      | None   | 1-2 hours | Clarity, minimal changes      | **NOW** - Immediate    |
+| **Phase 2: Interface**      | Medium | 2-3 days  | Shared contract, incremental  | **NEXT SPRINT**        |
+| **Phase 3: Consolidate**    | High   | 1-2 weeks | Single source, complete fix   | **QUARTER**            |
+| **Option A (Full Now)**     | High   | 1-2 days  | Best long-term, single effort | Only if no constraints |
+| **Option B (Keep Forever)** | None   | 0 hours   | Safe, but technical debt      | Not recommended        |
+| **Option C (Coupling)**     | Medium | 2-4 hours | Quick, but bad design         | Not recommended        |
 
 ---
 
 ## Current Status
 
 ### Phase 1 Progress
+
 - [x] Analyzed both enum utility packages
 - [ ] Add package-level documentation to config/unmarshal_helper.go
 - [ ] Add package-level documentation to types/enum_utils.go
@@ -291,12 +310,14 @@ If Phase 3 causes issues:
 - [ ] Create migration plan document (this file)
 
 ### Phase 2 Planning
+
 - [ ] Design shared interface
 - [ ] Define Enum[T] contract
 - [ ] Plan migration tests
 - [ ] Estimate effort for Phase 3
 
 ### Phase 3 Planning
+
 - [ ] Define unified API
 - [ ] Plan migration order (config first, then types)
 - [ ] Identify circular dependency risks
@@ -309,16 +330,19 @@ If Phase 3 causes issues:
 ### config/unmarshal_helper.go (Method Value Approach)
 
 **Pros**:
+
 - Explicit about validation (passed as parameter)
 - Works with types that don't have IsValid() method
 - More flexible (validation can be external)
 
 **Cons**:
+
 - Requires passing validation function explicitly
 - More verbose calling convention
 - Can accidentally pass wrong validation function
 
 **Signature**:
+
 ```go
 func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) ([]byte, error)
 ```
@@ -326,17 +350,20 @@ func MarshalEnumJSON[T ~string](value T, isValid func(T) bool, typeName string) 
 ### types/enum_utils.go (Interface Approach)
 
 **Pros**:
+
 - Cleaner calling convention (validation inferred)
 - More idiomatic Go (interface-based)
 - Less verbose
 - Validates that type has IsValid() method at compile time
 
 **Cons**:
+
 - Requires all types to implement IsValid() method
 - Less flexible (validation must be built-in)
-- Returns *T (pointer) which is inconsistent
+- Returns \*T (pointer) which is inconsistent
 
 **Signature**:
+
 ```go
 func MarshalEnumJSON[T ValidatableEnum](enum T, typeName string) ([]byte, error)
 ```
@@ -346,25 +373,29 @@ func MarshalEnumJSON[T ValidatableEnum](enum T, typeName string) ([]byte, error)
 ## Recommendations
 
 ### For Phase 1 (Immediate)
+
 - Add clear documentation to both packages
 - Explain this is TEMPORARY and will be consolidated
 - Add deprecation notices
 - No code changes (minimize risk)
 
 ### For Phase 2 (Next Sprint)
+
 - Create `pkg/enum` with shared interface
 - Update both packages to implement interface
 - Add adapter functions for backward compatibility
 - Write migration tests
 
 ### For Phase 3 (Consolidation)
+
 - Use interface approach (types/enum_utils.go) as base
-- Keep return type as *T (more Go-idiomatic)
+- Keep return type as \*T (more Go-idiomatic)
 - Add richer error messages from config version
 - Create comprehensive test suite
 - Migrate incrementally, test thoroughly
 
 ### Long-Term
+
 - Consider code generation for enum marshaling
 - Use go:generate to create MarshalJSON/UnmarshalJSON automatically
 - Reduce boilerplate further
@@ -374,18 +405,21 @@ func MarshalEnumJSON[T ValidatableEnum](enum T, typeName string) ([]byte, error)
 ## Success Criteria
 
 ### Phase 1 Success
+
 - [ ] Developers understand the split brain issue
 - [ ] Documentation clearly explains the situation
 - [ ] Migration path is documented
 - [ ] No breaking changes
 
 ### Phase 2 Success
+
 - [ ] Shared interface exists and is clear
 - [ ] Both packages implement the interface
 - [ ] Tests verify compatibility
 - [ ] Code compiles and passes all tests
 
 ### Phase 3 Success
+
 - [ ] Single implementation in pkg/enum
 - [ ] No duplicate code
 - [ ] All tests pass

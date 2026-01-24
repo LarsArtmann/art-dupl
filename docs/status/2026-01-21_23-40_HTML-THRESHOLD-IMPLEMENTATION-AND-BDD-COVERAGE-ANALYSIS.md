@@ -43,6 +43,7 @@ Successfully implemented threshold display in HTML reports and conducted compreh
 ```
 
 Output now includes:
+
 ```html
 <div class="meta"><strong>Threshold:</strong> 100 tokens</div>
 ```
@@ -56,24 +57,25 @@ All printer tests pass. Build successful.
 ### Test Suite Overview
 
 **Total BDD Test Files**: 10
+
 - **Integration-Level Tests**: 6 (bdd/ directory)
 - **Unit-Level Tests**: 4 (domain/, types/, migration/, hash/)
 
 ### Coverage by Category
 
-| Feature Category | Coverage | Status |
-|-----------------|----------|--------|
-| Core Detection | 95% | ✅ Excellent |
-| Output Formats (Text, HTML, JSON, Plumbing) | 100% | ✅ Excellent |
-| Sorting (Size, Occurrence, Hash) | 100% | ✅ Excellent |
-| Filtering (sqlc, templ, patterns, vendor) | 90% | ✅ Good |
-| Configuration | 60% | 🟠 Partial (tests disabled) |
-| CLI Professional Features | 30% | 🔴 Poor |
-| Error Handling | 95% | ✅ Excellent |
-| Performance | 20% | 🔴 Poor |
-| CI/CD Integration | 70% | 🟠 Good |
-| Domain Logic | 100% | ✅ Excellent |
-| Migration | 100% | ✅ Excellent |
+| Feature Category                            | Coverage | Status                      |
+| ------------------------------------------- | -------- | --------------------------- |
+| Core Detection                              | 95%      | ✅ Excellent                |
+| Output Formats (Text, HTML, JSON, Plumbing) | 100%     | ✅ Excellent                |
+| Sorting (Size, Occurrence, Hash)            | 100%     | ✅ Excellent                |
+| Filtering (sqlc, templ, patterns, vendor)   | 90%      | ✅ Good                     |
+| Configuration                               | 60%      | 🟠 Partial (tests disabled) |
+| CLI Professional Features                   | 30%      | 🔴 Poor                     |
+| Error Handling                              | 95%      | ✅ Excellent                |
+| Performance                                 | 20%      | 🔴 Poor                     |
+| CI/CD Integration                           | 70%      | 🟠 Good                     |
+| Domain Logic                                | 100%     | ✅ Excellent                |
+| Migration                                   | 100%     | ✅ Excellent                |
 
 **Overall Feature Coverage**: ~75%
 **Critical User-Facing Coverage**: ~80%
@@ -84,67 +86,75 @@ All printer tests pass. Build successful.
 
 ### Integration-Level Tests (bdd/)
 
-| File | Suite Name | Coverage |
-|------|-----------|----------|
-| `bdd_test.go` | art-dupl BDD Suite | Main workflows, output formats, config, file targeting |
-| `sorting_test.go` | art-dupl Sorting BDD Suite | Size, occurrence, hash sorting |
-| `filter_features_test.go` | art-dupl Filter Features BDD Suite | Generated code filtering, patterns, vendor |
-| `all_format_generation_test.go` | art-dupl All Format Generation BDD Suite | --all flag, output directory |
-| `error_handling_test.go` | art-dupl Error Handling BDD Suite | Invalid paths, malformed configs, permissions |
-| `detection_methods_test.go` | art-dupl Detection Methods BDD Suite | Hash, art-dupl, combined detection |
+| File                            | Suite Name                               | Coverage                                               |
+| ------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
+| `bdd_test.go`                   | art-dupl BDD Suite                       | Main workflows, output formats, config, file targeting |
+| `sorting_test.go`               | art-dupl Sorting BDD Suite               | Size, occurrence, hash sorting                         |
+| `filter_features_test.go`       | art-dupl Filter Features BDD Suite       | Generated code filtering, patterns, vendor             |
+| `all_format_generation_test.go` | art-dupl All Format Generation BDD Suite | --all flag, output directory                           |
+| `error_handling_test.go`        | art-dupl Error Handling BDD Suite        | Invalid paths, malformed configs, permissions          |
+| `detection_methods_test.go`     | art-dupl Detection Methods BDD Suite     | Hash, art-dupl, combined detection                     |
 
 ### Unit-Level Tests
 
-| File | Coverage |
-|------|----------|
-| `domain/clone_test.go` | Domain model validation, severity calculation |
-| `types/types_test.go` | Type safety features (Result[T], Option[T]) |
-| `migration/migration_test.go` | Migration path validation, config migration |
-| `hash/bdd_test.go` | Hash detection behavior |
+| File                          | Coverage                                      |
+| ----------------------------- | --------------------------------------------- |
+| `domain/clone_test.go`        | Domain model validation, severity calculation |
+| `types/types_test.go`         | Type safety features (Result[T], Option[T])   |
+| `migration/migration_test.go` | Migration path validation, config migration   |
+| `hash/bdd_test.go`            | Hash detection behavior                       |
 
 ---
 
 ## Well-Covered Features ✅
 
 ### Core Functionality
+
 - Duplicate detection with structural analysis (ignoring literal values)
 - Hash-based exact file duplicates
 - Art-dupl structural clones via suffix tree
 - Multi-detection mode (combined results)
 
 ### Output Formats
+
 - Text: Human-readable listings with paths/lines
 - HTML: Syntax-highlighted reports with code fragments **(now with threshold)**
 - JSON: Structured data with metadata (version, timestamp, threshold, stats)
 - Plumbing: Machine-readable format for scripts
 
 ### Sorting Options
+
 - Size: Largest clones first (default)
 - Occurrence: Most widespread clones first
 - Hash: Alphabetical order by hash
 
 ### Filtering Features
+
 - Generated code: Exclude sqlc/templ by default
 - Include/Exclude patterns: --include-pattern/--exclude-pattern
 - Vendor directory: Default excluded, --vendor to include
 - Override flags: --include-sqlc, --include-templ
 
 ### Configuration
+
 - JSON config files (dupl.json)
 - CLI flag overrides config values
 - Threshold control
 
 ### Input Methods
+
 - Directory scanning (recursive)
 - Specific paths (multiple)
 - Stdin file lists (--files flag)
 
 ### Batch Generation
+
 - --all flag for all formats
 - Custom output directory
 - Multiple detection methods
 
 ### Error Handling
+
 - Non-existent paths
 - Invalid configs
 - Invalid file types
@@ -153,6 +163,7 @@ All printer tests pass. Build successful.
 - Conflicting output formats
 
 ### Domain Model
+
 - Clone validation (ID, positions, confidence)
 - CloneGroup validation (count, severity enum)
 - Analysis validation (threshold, state, mode)
@@ -166,7 +177,9 @@ All printer tests pass. Build successful.
 ### High Priority
 
 #### 1. CLI Professional Features (30% coverage)
+
 **Missing Tests:**
+
 - Shell completions (bash, zsh, fish, powershell)
 - Man page generation
 - Version information (--version flag)
@@ -176,25 +189,31 @@ All printer tests pass. Build successful.
 **Impact**: Users can't verify CLI helper utilities work correctly.
 
 #### 2. Configuration Tests (60% - partially disabled)
+
 **Status**: Tests temporarily disabled due to binary path issues (bdd_test.go lines 351-449)
 
 **Missing Tests:**
+
 - Config file with relative paths to testdata
 - CLI flags properly overriding config values
 
 **Impact**: Configuration loading behavior not fully validated.
 
 #### 3. Advanced Output Features
+
 **Missing Tests:**
+
 - Unified sorting (combined output with unified sorting)
 - Total tokens sorting (exists in code but not exposed in config)
 
 **Impact**: Some sorting options may not work as documented.
 
 #### 4. Performance/Profiling Features (20% coverage)
+
 **Status**: --profile and --timeout flags exist but have no implementation
 
 **Missing Tests:**
+
 - Large codebase performance (100+ files)
 - Memory usage validation
 - Timeout functionality when implemented
@@ -202,7 +221,9 @@ All printer tests pass. Build successful.
 **Impact**: Performance regression risk, no validation of scalability.
 
 #### 5. Filtering Edge Cases
+
 **Missing Tests:**
+
 - SQLC YAML auto-detection (mentioned in docs but no tests)
 - Complex pattern matching scenarios
 - Pattern precedence conflicts
@@ -212,7 +233,9 @@ All printer tests pass. Build successful.
 ### Medium Priority
 
 #### 6. Integration Workflows
+
 **Missing Tests:**
+
 - Git hook integration scenarios
 - Makefile integration
 - Progressive analysis (multiple threshold runs)
@@ -220,7 +243,9 @@ All printer tests pass. Build successful.
 - Monthly/historical comparison workflows
 
 #### 7. Exit Code Testing
+
 **Missing Tests:**
+
 - Exit code 0 (success)
 - Exit code 1 (errors)
 - Exit code 2 (usage errors)
@@ -228,7 +253,9 @@ All printer tests pass. Build successful.
 **Impact**: Scripts can't reliably detect failure conditions.
 
 #### 8. Cross-Platform Behavior
+
 **Missing Tests:**
+
 - Windows vs Unix path handling
 - Unicode/UTF-8 file handling
 - File encoding edge cases
@@ -236,7 +263,9 @@ All printer tests pass. Build successful.
 **Impact**: Windows users may encounter unexpected behavior.
 
 #### 9. Advanced CI/CD Scenarios
+
 **Missing Tests:**
+
 - Failing build based on clone count thresholds
 - Generating reports with timestamps
 - Integration with jq and Unix tools
@@ -244,11 +273,13 @@ All printer tests pass. Build successful.
 ### Low Priority
 
 #### 10. Developer Experience
+
 - Verbose logging validation (-v flag)
 - Debug output scenarios
 - Performance profiling output validation
 
 #### 11. Edge Cases
+
 - Very large files (>10K lines)
 - Files with Unicode characters
 - Symlink handling
@@ -263,6 +294,7 @@ All printer tests pass. Build successful.
 **Date**: 2026-01-21 23:29
 
 **Results**:
+
 - ✅ **Passed**: 44 specs
 - ❌ **Failed**: 9 specs (all unrelated to HTML threshold feature)
 - ⏸️ **Pending**: 1 spec

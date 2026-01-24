@@ -1,4 +1,5 @@
 # Status Report: embeddedstructfieldcheck Fixes & Architecture Research
+
 **Date:** January 3, 2026, 07:07 CET
 **Branch:** fork
 **Session Focus:** Fix embeddedstructfieldcheck violations, research architecture patterns, investigate test failures
@@ -19,36 +20,44 @@
 
 **Problem:**
 Golangci-lint's `embeddedstructfieldcheck` rule reported violations in all printer implementations:
+
 - `printer/html.go` - htmlprinter struct
 - `printer/json.go` - JSONPrinter struct
 - `printer/plumbing.go` - plumbing struct
 - `printer/text.go` - text struct
 
 **Rule Requirements:**
+
 1. Embedded fields must be listed before regular fields
 2. Empty line must separate embedded fields from regular fields
 
 **Solution Implemented:**
 
 #### Commit 44c1e42: "fix: reorder embedded struct fields before regular fields"
+
 - Reordered `htmlprinter` struct: moved `ReadFile` to top
 - Reordered `JSONPrinter` struct: moved `ReadFile` to top
 
 #### Commit 0d48e89: "fix: reorder embedded struct field in plumbing printer"
+
 - Reordered `plumbing` struct: moved `ReadFile` to top
 
 #### Commit 22980d8: "fix: reorder embedded struct field in text printer"
+
 - Reordered `text` struct: moved `ReadFile` to top
 
 #### Commit f932185: "fix: use named fields in plumbing constructor"
+
 - Fixed broken constructor: changed `return &plumbing{w, fread}` to `return &plumbing{ReadFile: fread, w: w}`
 - **Root cause:** After field reordering, positional arguments assigned wrong types
 
 #### Commit 99c049a: "style: add empty line separation after embedded struct fields"
+
 - Added empty line after `ReadFile` in all 4 structs
 - Final fix to fully comply with embeddedstructfieldcheck rule
 
 **Verification:**
+
 - `embeddedstructfieldcheck` violations: **0** ✓
 - All tests passing (except pre-existing syntax failures)
 - Git push successful to `origin/fork`
@@ -64,6 +73,7 @@ Golangci-lint's `embeddedstructfieldcheck` rule reported violations in all print
 **Findings:**
 
 #### Historical Context
+
 - **Commit 72dc2d8 (2017-11-19):** Changed from `FileReader` interface to `ReadFile` function type
 - **Before:**
   ```go
@@ -87,17 +97,20 @@ Golangci-lint's `embeddedstructfieldcheck` rule reported violations in all print
 #### Pattern Analysis
 
 **What Embedding Does in Go:**
+
 - Promotes embedded type's methods to the containing struct
 - Allows accessing embedded type's members directly
 - Standard for: structs, interfaces
 
 **What Embedding a Function Type Does:**
+
 - **Nothing meaningful** - function types have no fields or methods to promote
 - No syntactic advantage over regular field
 - No interface implementation benefit
 - No composition benefit
 
 **Evidence Against Pattern:**
+
 1. **Unidiomatic Go** - No examples in Go stdlib, common open-source projects
 2. **No Benefit** - `p.ReadFile("file")` works identically whether embedded or regular field
 3. **Confusing** - Suggests there's something being promoted when there isn't
@@ -106,6 +119,7 @@ Golangci-lint's `embeddedstructfieldcheck` rule reported violations in all print
 #### Recommendations
 
 **Refactor to Use Regular Field:**
+
 ```go
 // Current (unusual):
 type htmlprinter struct {
@@ -125,12 +139,14 @@ type htmlprinter struct {
 ```
 
 **Benefits:**
+
 - More idiomatic Go
 - Clearer intent
 - No confusion about promotion
 - Identical behavior
 
 **Impact:**
+
 - Zero functional change (all structs are private)
 - No breaking changes (only constructors are public)
 - Improved code clarity
@@ -144,12 +160,14 @@ type htmlprinter struct {
 ### 3. Syntax Package Test Failures
 
 **Failing Tests:**
+
 1. `TestGetUnitsIndexes` - 5 assertion failures
 2. `TestCyclicDupl` - 2 assertion failures
 
 **Root Cause Analysis:**
 
 #### Timeline
+
 - **2015-05-01:** `TestGetUnitsIndexes` created with original algorithm
 - **2015-05-06:** Algorithm changed in commit `19c9f88` ("fix getUnitsIndexes")
   - Added "split" logic to handle discontinuous matches
@@ -161,6 +179,7 @@ type htmlprinter struct {
 #### Algorithm Comparison
 
 **Original Algorithm (2015-05-01):**
+
 ```go
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
     indexes := make([]int, 0)
@@ -181,6 +200,7 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 ```
 
 **Current Algorithm (after 2015-05-06):**
+
 ```go
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
     var indexes []int
@@ -215,11 +235,13 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 **Example 1:** `TestGetUnitsIndexes` - seq `"a8 a0 a2 a0"`, threshold=3
 
 **Test Data:**
+
 - Creates 4 nodes: `[Owns=8, Owns=0, Owns=2, Owns=0]`
 - Test expects: `[2]` (index of node with Owns=2)
 - Algorithm returns: `[]` (empty)
 
 **Debug Trace:**
+
 ```
 i=0, Owns=8, len-i=4, split=false
   → skip (not complete, Owns>=len-i)
@@ -245,6 +267,7 @@ Result: [] (never reaches default case to add index)
 **Example 2:** `TestCyclicDupl` - seq `"a0"`, indexes `[0, 1]`, expected `true`
 
 **Test Data:**
+
 - Creates 1 node: `[Owns=0]`
 - Calls `isCyclic([0, 1], nodes)`
 - Test expects: `true`
@@ -291,6 +314,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
    - Should test data be fixed or implementation?
 
 **Impact of Decision:**
+
 - **Wrong fix choice:** Could introduce bugs or hide existing ones
 - **Algorithm is core to syntax package functionality**
 - **Tests have been failing for 10+ years**
@@ -301,17 +325,20 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ## 📊 Current State
 
 ### Git Status
+
 - **Working directory:** Clean
 - **Branch:** fork
 - **Commits ahead:** 5 (all pushed)
 - **Remote:** origin/fork (up to date)
 
 ### Linter Status
+
 - **embeddedstructfieldcheck violations:** 0 ✅ (was 4)
 - **Total lint violations:** ~374 (across 20 linters)
 - **Syntax test failures:** 2 ⚠️
 
 ### Test Status
+
 - **Most packages:** Passing
 - **Syntax package:** 2 failures ⚠️
   - `TestGetUnitsIndexes`: 5 failures
@@ -349,10 +376,12 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Phase 1: Resolve Critical Blockers (BLOCKED)
 
 **Step 1: Await User Guidance on Algorithm/Tests**
+
 - [ ] **BLOCKED** - Need decision on algorithm vs. test correctness
 - [ ] Impact: Unblocks all other work
 
 **Step 2: Fix Syntax Package Tests**
+
 - [ ] **BLOCKED** - Depends on Step 1
 - [ ] Fix `TestGetUnitsIndexes` (5 failures)
 - [ ] Fix `TestCyclicDupl` (2 failures)
@@ -362,6 +391,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Phase 2: Architecture Decisions (PENDING)
 
 **Step 3: Decide on Embedded Function Type Pattern**
+
 - [ ] **PENDING** - Need user approval
 - [ ] Decision: Keep as-is or refactor to regular fields
 - [ ] If refactor: Implement for all 4 printers
@@ -372,34 +402,40 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Phase 3: Quick Wins (High Impact, Low Work)
 
 **Step 4: Fix unused Violation (1)**
+
 - [ ] Remove unused variable/function
 - [ ] Commit fix
 - [ ] Impact: Low (code cleanliness)
 
 **Step 5: Fix usetesting Violation (1)**
+
 - [ ] Fix test package issue
 - [ ] Commit fix
 - [ ] Impact: Low (test structure)
 
 **Step 6: Fix nonamedreturns Violations (2)**
+
 - [ ] Remove named returns
 - [ ] Update function signatures
 - [ ] Commit each file
 - [ ] Impact: Low (code clarity)
 
 **Step 7: Fix recvcheck Violations (7)**
+
 - [ ] Rename receivers to follow conventions
 - [ ] Test to ensure no breaks
 - [ ] Commit each file
 - [ ] Impact: Medium (code quality)
 
 **Step 8: Fix godoclint Violations (4)**
+
 - [ ] Fix documentation formatting
 - [ ] Add missing docs
 - [ ] Commit each file
 - [ ] Impact: Medium (documentation)
 
 **Step 9: Fix prealloc Violations (5)**
+
 - [ ] Identify slices for pre-allocation
 - [ ] Add capacity hints
 - [ ] Benchmark improvements
@@ -407,6 +443,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (performance)
 
 **Step 10: Fix nestif Violations (2)**
+
 - [ ] Identify deeply nested conditionals
 - [ ] Refactor with early returns
 - [ ] Extract helpers if needed
@@ -414,6 +451,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (readability)
 
 **Step 11: Fix godox Violations (13)**
+
 - [ ] List all TODO/FIXME comments
 - [ ] Implement or remove each
 - [ ] Document decisions
@@ -423,12 +461,14 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Phase 4: Medium-Effort Quality Improvements
 
 **Step 12: Fix unparam Violations (3)**
+
 - [ ] Identify unused parameters
 - [ ] Remove or use appropriately
 - [ ] Commit each file
 - [ ] Impact: Low (API cleanliness)
 
 **Step 13: Fix gosec Violations (36)**
+
 - [ ] Categorize by severity
 - [ ] Fix high-severity first
 - [ ] Document low-severity exceptions
@@ -436,6 +476,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: High (security)
 
 **Step 14: Fix staticcheck Violations (20)**
+
 - [ ] Categorize by type (null check, etc.)
 - [ ] Fix actual bugs first
 - [ ] Evaluate warning impact
@@ -443,6 +484,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: High (bug prevention)
 
 **Step 15: Fix tagliatelle Violations (29)**
+
 - [ ] Identify struct tag naming issues
 - [ ] Standardize naming convention
 - [ ] Ensure JSON encoding works
@@ -450,6 +492,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (encoding correctness)
 
 **Step 16: Fix testpackage Violations (17)**
+
 - [ ] Review test organization
 - [ ] Decide on proper structure
 - [ ] Refactor tests if needed
@@ -459,6 +502,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Phase 5: Deep Quality Improvements
 
 **Step 17: Fix ireturn Violations (9)**
+
 - [ ] Review interface returns
 - [ ] Determine if interfaces should be concrete
 - [ ] Refactor as appropriate
@@ -466,6 +510,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (interface hygiene)
 
 **Step 18: Fix varnamelen Violations (73)**
+
 - [ ] Identify short variable names
 - [ ] Rename to meaningful names
 - [ ] Focus on code clarity
@@ -473,6 +518,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (readability)
 
 **Step 19: Fix mnd Violations (46)**
+
 - [ ] Identify magic numbers
 - [ ] Extract to named constants
 - [ ] Document rationale for each
@@ -480,6 +526,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - [ ] Impact: Medium (maintainability)
 
 **Step 20: Fix revive Violations (103)**
+
 - [ ] Categorize by rule type
 - [ ] Fix critical issues first
 - [ ] Batch style fixes by file
@@ -494,21 +541,25 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Existing Code Patterns (Reuse Opportunities)
 
 **Detector Pattern:**
+
 - `detection/` has `MultiDetector` with multiple detection methods
 - Pattern: Config-driven detection with extensibility
 - **Reuse:** For adding new detection methods
 
 **Printer Pattern:**
+
 - `printer/` has interface-based design with 4 concrete implementations
 - Pattern: Common interface (`PrintHeader`, `PrintClones`, `PrintFooter`)
 - **Reuse:** For adding new output formats
 
 **Config Pattern:**
+
 - `config/` has file + CLI merging with validation
 - Pattern: Hierarchical configuration with precedence
 - **Reuse:** For adding new configuration options
 
 **Error Pattern:**
+
 - Custom error types with wrapping support
 - Pattern: Type-specific errors with context
 - **Reuse:** For adding new error types
@@ -516,11 +567,13 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ### Well-Established Libraries Considerations
 
 **Current Stack:**
+
 - Go standard library (no external runtime dependencies)
 - Golangci-lint (development tooling only)
 - Standard `testing` package for tests
 
 **Potential Additions:**
+
 - **Testing:** `testify/assert` for better assertions (currently using stdlib)
 - **CLI:** Already using standard library appropriately
 - **Config:** JSON is sufficient, could add Viper for advanced features
@@ -534,18 +587,21 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ## 📈 Metrics
 
 ### Code Quality
+
 - **Linter compliance:** Partial (1 rule fully compliant, 19 others with violations)
 - **Test coverage:** High (most packages, syntax has 91.2%)
 - **Architecture:** Good (clean separation of concerns)
 - **Documentation:** Adequate (some improvements needed)
 
 ### Process Quality
+
 - **Commit discipline:** Excellent (small, focused commits with detailed messages)
 - **Test discipline:** Poor (committed 3 fixes before testing - broke build)
 - **Research discipline:** Good (thorough investigation before changes)
 - **Blocker handling:** Excellent (identified and reported, not proceeding blindly)
 
 ### Project Health
+
 - **Critical blockers:** 1 (syntax test failures - awaiting guidance)
 - **Technical debt:** Medium (374 linter violations to address)
 - **Architecture questions:** 1 (embedded function type pattern - awaiting decision)
@@ -674,6 +730,7 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ## 🔗 References
 
 ### Commits This Session
+
 - `44c1e42` - fix: reorder embedded struct fields before regular fields
 - `0d48e89` - fix: reorder embedded struct field in plumbing printer
 - `22980d8` - fix: reorder embedded struct field in text printer
@@ -681,18 +738,21 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 - `99c049a` - style: add empty line separation after embedded struct fields
 
 ### Key Historical Commits
+
 - `72dc2d8` (2017) - printer: Change FileReader interface to ReadFile func type
 - `19c9f88` (2015) - syntax: fix getUnitsIndexes
 - `a6b4f34` (2015) - syntax: refactor FindSyntaxUnits
 - `f4d3fca` (2025) - refactor: improve FindSyntaxUnits algorithm
 
 ### Files Modified
+
 - `printer/html.go` - struct field ordering + empty line
 - `printer/json.go` - struct field ordering + empty line
 - `printer/plumbing.go` - struct field ordering + empty line + constructor
 - `printer/text.go` - struct field ordering + empty line
 
 ### Files Investigated
+
 - `printer/printer.go` - ReadFile type definition
 - `syntax/syntax.go` - getUnitsIndexes implementation
 - `syntax/syntax_test.go` - failing test cases
@@ -703,29 +763,34 @@ The `getUnitsIndexes` algorithm was changed significantly in 2015, but tests wer
 ## 🏁 Session Conclusion
 
 **Primary Task:** ✅ COMPLETED
+
 - All 4 `embeddedstructfieldcheck` violations fixed
 - All changes committed and pushed
 
 **Research:** ✅ COMPLETED
+
 - Embedded function type pattern investigated
 - Recommendations documented
 - Awaiting decision on refactoring
 
 **Investigation:** ✅ COMPLETED
+
 - Syntax test failures root cause identified
 - Algorithm timeline documented
 - Questions formulated for user guidance
 
 **Status:** 🚦 BLOCKED
+
 - Cannot proceed with syntax test fixes without user guidance
 - Cannot proceed with architecture refactor without user decision
 - All linter cleanup (quick wins) ready to start once unblocked
 
 **Next Action:** ⏸️ AWAITING USER RESPONSE
+
 - Answer to algorithm/test correctness question required
 - Decision on embedded function type pattern required
 
 ---
 
-*Generated by Crush AI Assistant*
-*Session: January 3, 2026, 07:07 CET*
+_Generated by Crush AI Assistant_
+_Session: January 3, 2026, 07:07 CET_

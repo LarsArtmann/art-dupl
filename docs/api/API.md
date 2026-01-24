@@ -14,24 +14,29 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ## Package Index
 
 ### 📦 cli
+
 **Location:** `./cli`  
 **Purpose:** Command-line interface configuration and helpers
 
 **Key Types:**
+
 - `CLIConfig`: CLI configuration structure
 - `OutputFormat`: Supported output formats (Text, HTML, JSON, Plumbing)
 
 **Key Functions:**
+
 - `NewCLIConfig()`: Creates default CLI configuration
 - `Run()`: Main CLI entry point
 
 ---
 
 ### 📦 config
+
 **Location:** `./config`  
 **Purpose:** Configuration management with validation
 
 **Key Types:**
+
 - `Config`: Main configuration structure
   - `Threshold`: Minimum token sequence size (default: 15)
   - `IncludeVendor`: Include vendor directory (default: false)
@@ -66,6 +71,7 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
   - `DetectionMethodLegacy`: Legacy detection
 
 **Key Functions:**
+
 - `DefaultConfig()`: Returns default configuration
 - `LoadConfig(path string)`: Loads configuration from JSON file
 - `MergeConfigs(file, cli *Config)`: Merges file and CLI configurations
@@ -77,14 +83,17 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 detection
+
 **Location:** `./detection`  
 **Purpose:** Multi-detector coordination and clone detection
 
 **Key Types:**
+
 - `MultiDetector`: Multi-detection orchestrator
 - `DetectionMethod`: Detection method implementation interface
 
 **Key Functions:**
+
 - `NewMultiDetector(cfg *config.Config, data *[]*syntax.Node, t *suffixtree.STree, verbose bool)`: Creates multi-detector
 - `FindDuplOver(threshold int)`: Finds duplicates over threshold
 - `FindAllDupl()`: Finds all duplicates
@@ -92,20 +101,24 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 hash
+
 **Location:** `./hash`  
 **Purpose:** SHA1 hash-based detection implementation
 
 **Key Functions:**
+
 - `Detect(data *[]*syntax.Node, threshold int)`: Hash-based duplicate detection
 - `ComputeHash(nodes []*syntax.Node)`: Computes SHA1 hash for nodes
 
 ---
 
 ### 📦 job
+
 **Location:** `./job`  
 **Purpose:** Job orchestration and performance profiling
 
 **Key Types:**
+
 - `ProfileResult`: Performance profiling metrics
   - `AllocMB`: Memory allocated in MB
   - `TotalAllocMB`: Total memory allocated in MB
@@ -116,6 +129,7 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
   - `NumGoroutine`: Number of goroutines
 
 **Key Functions:**
+
 - `BuildTree(schan chan []*syntax.Node)`: Builds suffix tree from node channel
 - `Profile()`: Captures performance metrics
 - `StartProfile()`: Starts profiling session
@@ -126,10 +140,12 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 printer
+
 **Location:** `./printer`  
 **Purpose:** Output formatting for all supported formats
 
 **Key Types:**
+
 - `Printer`: Output formatter interface
 - `TextPrinter`: Human-readable text output
 - `HTMLPrinter`: HTML report with syntax highlighting
@@ -138,6 +154,7 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 - `CloneGroup`: Clone group with hash and fragments
 
 **Key Functions:**
+
 - `CreatePrinter(format)`: Creates printer for format
 - `PrintClones(printer, groups, threshold)`: Outputs clone groups
 - `SortCloneGroups(groups, sortBy)`: Sorts groups by criteria
@@ -149,14 +166,17 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 suffixtree
+
 **Location:** `./suffixtree`  
 **Purpose:** Core suffix tree implementation
 
 **Key Types:**
+
 - `STree`: Suffix tree structure
 - `Node`: Suffix tree node
 
 **Key Functions:**
+
 - `New()`: Creates new suffix tree
 - `Update(node)`: Adds node to suffix tree
 - `FindDupl(threshold)`: Finds duplicates using suffix tree
@@ -164,15 +184,18 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 syntax
+
 **Location:** `./syntax`  
 **Purpose:** AST handling, serialization, and node processing
 
 **Key Types:**
+
 - `Node`: Abstract syntax tree node
 - `Match`: Duplicate match with hash and fragments
 - `Fragment`: Code fragment with positions
 
 **Key Functions:**
+
 - `Parse(files, verbose)`: Parses Go source files to ASTs
 - `Serialize(node)`: Serializes AST node to string
 - `GetUnitsIndexes(nodeSeq)`: Identifies complete syntax units
@@ -180,25 +203,30 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 - `GetUnits(nodeSeq, threshold)`: Gets complete syntax units
 
 **Language Support:**
+
 - `syntax/golang`: Go language implementation
 
 ---
 
 ### 📦 types
+
 **Location:** `./types`  
 **Purpose:** Common type definitions and utilities
 
 **Key Types:**
+
 - `StringEnum`: Generic string-based enum
 - `ValidatableEnum`: Interface for enum validation
 
 ---
 
 ### 📦 errors
+
 **Location:** `./errors`  
 **Purpose:** Rich error handling with context and stack traces
 
 **Key Types:**
+
 - `ErrorType`: Error type categories
   - `ParseError`: Parsing errors
   - `ConfigError`: Configuration errors
@@ -215,6 +243,7 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
   - `Stack`: Stack trace
 
 **Key Functions:**
+
 - `NewParseError(file, line, msg, cause)`: Creates parse error
 - `NewConfigError(msg, cause)`: Creates config error
 - `NewIOError(file, msg, cause)`: Creates I/O error
@@ -225,20 +254,24 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 ---
 
 ### 📦 util
+
 **Location:** `./util`  
 **Purpose:** Utility functions
 
 **Key Functions:**
+
 - `Unique(strings)`: Returns unique strings
 - `Contains(slice, item)`: Checks if item in slice
 
 ---
 
 ### 📦 testutils
+
 **Location:** `./testutils`  
 **Purpose:** Test helpers and utilities
 
 **Key Functions:**
+
 - `GenerateRandomSuffix()`: Generates random suffix for tests
 - `UniqueTestHelper`: Unique test helper utilities
 
@@ -264,17 +297,17 @@ func main() {
     cfg := config.DefaultConfig()
     cfg.Threshold = 20
     cfg.Paths = []string{"./src"}
-    
+
     // Parse files
     t, data, filesCount, err := buildSuffixTree(cfg.Paths, cfg.Verbose, cfg.FilesFromStdin)
     if err != nil {
         panic(err)
     }
-    
+
     // Detect duplicates
     multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
     matches := multiDetector.FindDuplOver(cfg.Threshold)
-    
+
     // Output results
     for match := range matches {
         println(match.Hash, len(match.Frags))
@@ -449,11 +482,13 @@ Enable performance profiling to analyze:
 - Concurrency (goroutines)
 
 **Usage:**
+
 ```bash
 art-dupl --profile ./src
 ```
 
 **Example Output:**
+
 ```
 ═════════════════════════════════════════════════════════
                     PERFORMANCE PROFILING RESULTS

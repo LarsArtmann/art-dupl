@@ -3,13 +3,15 @@
 ## Current State Analysis
 
 ### ✅ Strengths
+
 - Core algorithms (suffixtree, syntax, detection) are well-decoupled from CLI
 - Clean interfaces exist: `Printer`, `Token`, `Config`
 - MIT license allows flexible usage
 - Configuration system is robust with validation
 - File processing pipeline is modular and reusable
 
-### ❌ Limitations  
+### ❌ Limitations
+
 - `lib.Run()` is too simplistic - only returns `[]printer.Issue`
 - No unified high-level SDK interface
 - Advanced features (multi-detection, hash detection) not exposed in lib
@@ -28,7 +30,7 @@ package artdupl
 type Detector interface {
     // FindClones performs duplication analysis
     FindClones(ctx context.Context, files []string) (*Result, error)
-    
+
     // FindClonesStream provides streaming results for large projects
     FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error)
 }
@@ -75,22 +77,22 @@ type Options struct {
     // Detection settings
     Threshold         int               `json:"threshold"`
     DetectionMethods  []DetectionMethod `json:"detection_methods"`
-    
+
     // File processing
     IncludeVendor    bool              `json:"include_vendor"`
     IgnoreFiles      []string          `json:"ignore_files"`
     MaxFileSize      int64             `json:"max_file_size"`
-    
+
     // Performance
     MaxWorkers       int               `json:"max_workers"`
     Timeout          time.Duration     `json:"timeout"`
-    
+
     // Output customization
     IncludeFragments bool              `json:"include_fragments"`
-    
+
     // Callbacks for progress
     ProgressCallback func(progress *Progress) error
-    
+
     // Custom file reader (for testing/virtual files)
     FileReader      FileReaderFunc
 }
@@ -108,18 +110,21 @@ type Progress struct {
 ### 3. Implementation Strategy
 
 #### Phase 1: Core SDK Interface
+
 - Create `pkg/artdupl/` package with clean API
 - Implement Detector interface using existing components
 - Expose all detection methods (art-dupl, hash)
 - Add proper error handling and context support
 
-#### Phase 2: Advanced Features  
+#### Phase 2: Advanced Features
+
 - Streaming API for large projects
 - Progress reporting and cancellation
 - Custom file readers (in-memory, virtual files)
 - Configurable output formats
 
 #### Phase 3: Integration Features
+
 - Plugin system for custom detection methods
 - Export/import functionality
 - Caching and incremental analysis
@@ -128,6 +133,7 @@ type Progress struct {
 ## Usage Examples
 
 ### Basic Usage
+
 ```go
 import "github.com/LarsArtmann/art-dupl/pkg/artdupl"
 
@@ -145,6 +151,7 @@ fmt.Printf("Found %d clone groups\n", len(result.CloneGroups))
 ```
 
 ### Advanced Usage with Streaming
+
 ```go
 detector := artdupl.NewDetector(&artdupl.Options{
     Threshold: 20,
@@ -166,6 +173,7 @@ for group := range cloneChan {
 ```
 
 ### Integration with CI/CD
+
 ```go
 detector := artdupl.NewDetector(&artdupl.Options{
     Threshold: 30,

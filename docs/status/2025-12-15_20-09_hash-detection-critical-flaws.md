@@ -12,7 +12,9 @@ The hash detection method (`art-dupl -m hash`) is severely broken and produces u
 ## Critical Issues Identified
 
 ### 1. Flawed Sliding Window Implementation
+
 **Location:** `/Users/larsartmann/projects/art-dupl/hash/detector.go:100-106`
+
 ```go
 for i := 0; i <= len(nodes)-windowSize; i++ {
     window := nodes[i : i+windowSize]
@@ -26,12 +28,15 @@ for i := 0; i <= len(nodes)-windowSize; i++ {
 **Problem:** The algorithm concatenates overlapping window sequences, creating artificial node sequences that don't represent actual code structure. This fundamentally corrupts the data being analyzed.
 
 ### 2. Inefficient Hash Grouping Logic
+
 **Location:** `/Users/larsartmann/projects/art-dupl/hash/detector.go:48-54`
 
 **Problem:** The hash grouping mixes nodes from different window positions and files without proper separation, leading to cross-contamination of sequence data.
 
 ### 3. Broken Sequence Length Detection
+
 **Location:** `/Users/larsartmann/projects/art-dupl/hash/detector.go:114-121`
+
 ```go
 func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
     // ...
@@ -42,6 +47,7 @@ func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
 **Problem:** Always returns the threshold value regardless of actual sequence length, making proper clone detection impossible.
 
 ### 4. Incorrect Position Calculation
+
 **Location:** `/Users/larsartmann/projects/art-dupl/hash/detector.go:65-70`
 
 **Problem:** Assumes perfectly aligned sequences that rarely exist in real code, leading to incorrect fragment boundaries.
@@ -49,12 +55,14 @@ func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
 ## Impact Analysis
 
 ### Functional Impact
+
 - **False Positives:** Reports duplicates that don't exist
 - **False Negatives:** Misses actual duplicates due to corrupted data
 - **Unreliable Results:** Output cannot be trusted for decision-making
 - **Performance Impact:** Inefficient algorithm creates unnecessary computational overhead
 
 ### User Experience Impact
+
 - **Misleading Information:** Users make decisions based on incorrect data
 - **Feature Unreliability:** Core feature advertised but non-functional
 - **Trust Issues:** Damages credibility of the entire tool
@@ -62,6 +70,7 @@ func (h *HashDetector) calculateSequenceLength(nodes []*syntax.Node) int {
 ## Current Behavior vs Expected Behavior
 
 ### Current (Broken) Behavior
+
 ```
 found 3 clones:
   errors/types_test.go:27,30
@@ -70,6 +79,7 @@ found 3 clones:
 ```
 
 ### Expected (Correct) Behavior
+
 ```
 found 2 clones:
   file1.go:50,65
@@ -79,12 +89,14 @@ found 2 clones:
 ## Technical Root Cause Analysis
 
 ### Algorithm Design Flaws
+
 1. **Sliding Window Corruption:** Overlapping windows concatenated incorrectly
 2. **Hash Collision Mishandling:** No proper deduplication of hash collisions
 3. **Sequence Boundary Detection:** No algorithm to identify actual code boundaries
 4. **Cross-File Comparison:** Fails to properly compare sequences across files
 
 ### Data Structure Issues
+
 1. **Node Sequence Corruption:** Artificial sequences created from overlapping windows
 2. **Hash Map Mismanagement:** Keys don't properly represent unique code patterns
 3. **Fragment Generation:** Incorrect calculation of fragment boundaries
@@ -92,17 +104,20 @@ found 2 clones:
 ## Recommended Solution Strategy
 
 ### Phase 1: Emergency Fix (Immediate)
+
 1. **Disable Hash Detection:** Temporarily disable the feature to prevent misleading results
 2. **Add Warning:** Clearly communicate the issue in CLI output
 3. **Add Tests:** Implement comprehensive test suite to catch regressions
 
 ### Phase 2: Complete Rewrite (Short-term)
+
 1. **Redesign Algorithm:** Implement proper hash-based clone detection
 2. **Fix Data Structures:** Ensure correct handling of node sequences
 3. **Add Comprehensive Testing:** Unit and integration tests for all scenarios
 4. **Performance Optimization:** Efficient sliding window implementation
 
 ### Phase 3: Enhancement (Long-term)
+
 1. **Advanced Hashing:** Implement rolling hash for better performance
 2. **Configurable Sensitivity:** Allow users to adjust detection sensitivity
 3. **Multi-Language Support:** Extend beyond Go-specific optimizations
@@ -111,18 +126,21 @@ found 2 clones:
 ## Implementation Plan
 
 ### Immediate Actions Required
+
 1. [ ] **Add Feature Gate:** Disable hash detection with clear error message
 2. [ ] **Documentation Update:** Clearly mark hash detection as experimental/broken
 3. [ ] **Test Coverage:** Add tests that demonstrate current failures
 4. [ ] **Issue Tracking:** Create GitHub issue for tracking progress
 
 ### Code Changes Required
+
 1. **Complete Algorithm Rewrite:** New implementation in `/hash/detector.go`
 2. **Proper Sliding Window:** Correct overlapping window handling
 3. **Cross-File Comparison:** Robust comparison across different files
 4. **Fragment Boundary Detection:** Accurate identification of code boundaries
 
 ### Testing Strategy
+
 1. **Unit Tests:** Individual algorithm components
 2. **Integration Tests:** End-to-end hash detection workflow
 3. **Regression Tests:** Prevent future breakage
@@ -131,11 +149,13 @@ found 2 clones:
 ## Risk Assessment
 
 ### High Risk
+
 - **Data Corruption:** Current implementation creates incorrect results
 - **User Misinformation:** Users make decisions based on false positives
 - **Feature Credibility:** Damages trust in the entire tool
 
 ### Medium Risk
+
 - **Performance Issues:** Inefficient algorithm affects large codebases
 - **Maintenance Burden:** Complex fix requires ongoing attention
 - **User Experience:** Broken feature affects overall tool usability
@@ -143,12 +163,14 @@ found 2 clones:
 ## Success Metrics
 
 ### Functional Requirements
+
 - [ ] **Accuracy:** 95%+ precision and recall on test datasets
 - [ ] **Performance:** Sub-second analysis on medium codebases (<1000 files)
 - [ ] **Reliability:** Zero false positives on clean test datasets
 - [ ] **Usability:** Clear, actionable output for users
 
 ### Technical Requirements
+
 - [ ] **Code Coverage:** 90%+ test coverage for hash detection
 - [ ] **Performance:** Memory usage <100MB for typical codebases
 - [ ] **Maintainability:** Clear, well-documented implementation
@@ -168,6 +190,7 @@ This represents a critical quality issue that affects the core value proposition
 4. **LONG-TERM:** Advanced features and optimizations
 
 ---
+
 **Status:** CRITICAL - REQUIRES IMMEDIATE ATTENTION  
 **ETA for Fix:** 2-3 weeks for complete rewrite and testing  
 **Blocking Issues:** Algorithm design, testing infrastructure, performance optimization

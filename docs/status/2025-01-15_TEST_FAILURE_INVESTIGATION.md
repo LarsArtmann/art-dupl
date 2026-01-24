@@ -20,12 +20,14 @@ return shouldNotFilter == shouldBeFiltered
 ```
 
 **The Problem:**
+
 1. The test creates a filter with `nil` options (no auto-generated detection)
 2. It only sets include patterns
 3. It assumes: "If pattern matches path, filter should not filter; if pattern doesn't match, filter should filter"
 
 **Why This Is Wrong:**
 When a filter has no auto-generated options set and only include patterns:
+
 - If pattern matches: `ShouldFilter()` returns `false` (correct)
 - If pattern doesn't match: `ShouldFilter()` returns `false` (filter doesn't auto-detect anything)
 
@@ -54,6 +56,7 @@ return true
 ```
 
 **Why This Works:**
+
 - Only tests the property when it makes sense (pattern matches)
 - Skips cases where pattern doesn't match (behavior depends on auto-generated detection, which is not set)
 - Correctly validates: "Files matching include pattern are not filtered"
@@ -77,6 +80,7 @@ return true
 ## Test Results After Fix
 
 ### Passing Tests
+
 - ✓ All filter package tests (including fixed TestIncludePatternProperty)
 - ✓ All integration tests
 - ✓ All CLI tests
@@ -85,6 +89,7 @@ return true
 - ✓ All syntax tests
 
 ### Failing Tests (Pre-Existing)
+
 - ✗ FuzzSuffixTreeUpdate - Nil pointer in fuzz test (unrelated)
 - ✗ TestDomainCloneGroupValidation - Invalid test data (unrelated)
 

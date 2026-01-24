@@ -15,11 +15,13 @@ The `--all` flag is partially implemented but fails due to a critical import cyc
 ## Problem Statement
 
 **User Command That Fails:**
+
 ```bash
 ./art-dupl -t 30 . --sort occurrence --all
 ```
 
 **Error Message:**
+
 ```
 ❌ ERROR: not yet implemented - awaiting cli.go refactoring
 ```
@@ -33,6 +35,7 @@ The `--all` flag is partially implemented but fails due to a critical import cyc
 ### Multiple CLI Implementations (3 separate approaches):
 
 #### 1. **cli.go** (Legacy/Old Implementation)
+
 - **Location**: `/cli.go`
 - **Purpose**: Contains `runCobraCommand()` with full CLI logic
 - **Status**: NOT used by main.go, contains working code
@@ -43,6 +46,7 @@ The `--all` flag is partially implemented but fails due to a critical import cyc
   - Added `collectMatches()` helper function (lines 582-589)
 
 #### 2. **cmd/** Package (Current Cobra Implementation)
+
 - **Location**: `/cmd/`
 - **Files**:
   - `root.go` - Creates root Cobra command
@@ -54,6 +58,7 @@ The `--all` flag is partially implemented but fails due to a critical import cyc
 - **Entry Point**: `main.go` → `cmd.NewRootCommand()`
 
 #### 3. **cli/** Package (New Refactored Implementation)
+
 - **Location**: `/cli/`
 - **Files**:
   - `runtime.go` - RuntimeConfig struct and ToConfig()
@@ -89,9 +94,11 @@ cmd/ package
 ### ✅ Fully Implemented
 
 1. **runAllModes() Function** (cli.go:517-580):
+
    ```go
    func runAllModes(cfg *config.Config, sortBy string, args []string) error
    ```
+
    - Sets all detection methods: `cfg.DetectionMethods = config.AllDetectionMethods()`
    - Creates output directory: `reports/art-dupl/`
    - Runs analysis once via `executeAnalysis()`
@@ -100,9 +107,11 @@ cmd/ package
    - Files created: `report.{format}` in output directory
 
 2. **collectMatches() Helper** (cli.go:582-589):
+
    ```go
    func collectMatches(matchChan <-chan syntax.Match) []syntax.Match
    ```
+
    - Converts match channel to slice
    - Enables reuse across multiple output formats
 
@@ -133,6 +142,7 @@ cmd/ package
        return fmt.Errorf("not yet implemented - awaiting cli.go refactoring")
    }
    ```
+
    - Returns placeholder error
    - Needs to call actual implementation
 
@@ -229,6 +239,7 @@ if md.config.DetectionMethods.Contains(config.DetectionMethodArtDupl) {
 ```
 
 **Missing Implementation**:
+
 - DetectionMethodTodos detection
 - DetectionMethodLegacy detection
 
@@ -241,6 +252,7 @@ if md.config.DetectionMethods.Contains(config.DetectionMethodArtDupl) {
 **Location**: `cmd/run.go` → `main package`
 
 **Current Code**:
+
 ```go
 // cmd/run.go - DOES NOT COMPILE
 import (
@@ -254,6 +266,7 @@ func runCmd(c *cobra.Command, args []string) error {
 ```
 
 **Error**:
+
 ```
 import "github.com/LarsArtmann/art-dupl" is a program, not an importable package
 package github.com/LarsArtmann/art-dupl
@@ -262,12 +275,14 @@ package github.com/LarsArtmann/art-dupl
 ```
 
 **Why This Happens**:
+
 1. `main.go` is in package `main`
 2. `main.go` imports `cmd` package
 3. `cmd/run.go` tries to import `main` package
 4. Go forbids circular imports
 
 **Possible Solutions**:
+
 1. Move `RunCobraCommand()` to `cmd/` package (duplication)
 2. Move `RunCobraCommand()` to `cli/` package (refactor)
 3. Create a new `internal/` package for shared logic
@@ -276,11 +291,13 @@ package github.com/LarsArtmann/art-dupl
 ### 🚨 Issue #2: Architecture Confusion
 
 **Three competing implementations**:
+
 - `cli.go` - Full implementation, not used
 - `cmd/` - Stub only, used by main.go
 - `cli/` - Partial implementation, not connected
 
 **Decision Needed**:
+
 1. Which implementation to keep?
 2. Which to delete?
 3. Which becomes the source of truth?
@@ -288,10 +305,12 @@ package github.com/LarsArtmann/art-dupl
 ### 🚨 Issue #3: Missing Detection Method Implementations
 
 **Todos Detection**:
+
 - Constant exists: `DetectionMethodTodos`
 - Implementation: NOT FOUND in multi-detector.go
 
 **Legacy Detection**:
+
 - Constant exists: `DetectionMethodLegacy`
 - Implementation: NOT FOUND in multi-detector.go
 
@@ -332,9 +351,11 @@ package github.com/LarsArtmann/art-dupl
 ### Tests Run
 
 1. **Build Test**:
+
    ```bash
    make build
    ```
+
    **Result**: ❌ FAILED - Import cycle error
 
 2. **Command Test**:
@@ -356,17 +377,20 @@ package github.com/LarsArtmann/art-dupl
 ## Git Status
 
 ### Modified Files
+
 ```
 M  cli.go
 ```
 
 ### Untracked Files
+
 ```
 ?? IMPROVEMENTS_REPORT.md
 ?? docs/status/2026-01-13_22-26_ARCHITECTURE-ANALYSIS-COMPLETE.md
 ```
 
 ### Status Summary
+
 - Implementation code written in cli.go
 - Import cycle prevents compilation
 - Command currently returns placeholder error
@@ -486,6 +510,7 @@ M  cli.go
 The `--all` flag implementation is 70% complete but blocked by a fundamental architectural issue. The core logic is written and sound, but the Go module structure prevents execution due to an import cycle between the main package and the cmd package.
 
 **Key Statistic**:
+
 - Implementation: 70% ✅
 - Compilation: 0% ❌ (blocked by import cycle)
 - Testing: 0% ❌ (cannot test without compilation)
@@ -494,6 +519,7 @@ The `--all` flag implementation is 70% complete but blocked by a fundamental arc
 **Immediate Action Required**: Resolve import cycle by deciding final CLI architecture and moving logic to appropriate package.
 
 **Estimated Time to Complete**:
+
 - Architecture decision: 1-2 hours
 - Import cycle resolution: 2-4 hours
 - Testing: 4-6 hours

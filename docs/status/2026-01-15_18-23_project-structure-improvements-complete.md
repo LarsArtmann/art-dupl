@@ -13,6 +13,7 @@
 All project structure improvements identified in the analysis have been successfully implemented, tested, committed, and pushed. The codebase now follows standard Go project layout conventions with no root-level package files.
 
 **Results**:
+
 - ✅ 1/1 CRITICAL issues resolved
 - ✅ 3/3 HIGH issues resolved
 - ✅ 4/4 total issues resolved (100%)
@@ -28,6 +29,7 @@ All project structure improvements identified in the analysis have been successf
 ### 🔴 CRITICAL Priority
 
 #### 1. Root-level main.go
+
 - **Issue**: `main.go` located at project root (non-standard)
 - **Resolution**: Moved to `cmd/dupl/main.go`
 - **Status**: ✅ COMPLETE
@@ -36,6 +38,7 @@ All project structure improvements identified in the analysis have been successf
 ### 🟠 HIGH Priority
 
 #### 1. Root-level integration_test.go
+
 - **Issue**: `integration_test.go` located at project root with `package main`
 - **Resolution**: Moved to `internal/configtest/integration_test.go` with `package configtest`
 - **Status**: ✅ COMPLETE
@@ -43,6 +46,7 @@ All project structure improvements identified in the analysis have been successf
 - **Impact**: Proper test package organization, uses config package imports correctly
 
 #### 2. Root-level integration_filter_test.go
+
 - **Issue**: `integration_filter_test.go` located at project root with `package main`
 - **Resolution**: Moved to `internal/filtertest/integration_filter_test.go` with `package filtertest`
 - **Status**: ✅ COMPLETE
@@ -50,6 +54,7 @@ All project structure improvements identified in the analysis have been successf
 - **Impact**: Proper test package organization, tests filter functionality
 
 #### 3. Root-level cli.go
+
 - **Issue**: `cli.go` found at project root
 - **Resolution**: File already removed (not present when work started)
 - **Status**: ✅ ALREADY RESOLVED
@@ -61,15 +66,16 @@ All project structure improvements identified in the analysis have been successf
 
 ### File Moves
 
-| From | To | Git Status |
-|-------|-----|-----------|
-| `main.go` | `cmd/dupl/main.go` | Renamed |
-| `integration_test.go` | `internal/configtest/integration_test.go` | Renamed |
-| `integration_filter_test.go` | `internal/filtertest/integration_filter_test.go` | Renamed |
+| From                         | To                                               | Git Status |
+| ---------------------------- | ------------------------------------------------ | ---------- |
+| `main.go`                    | `cmd/dupl/main.go`                               | Renamed    |
+| `integration_test.go`        | `internal/configtest/integration_test.go`        | Renamed    |
+| `integration_filter_test.go` | `internal/filtertest/integration_filter_test.go` | Renamed    |
 
 ### Code Changes
 
 #### internal/configtest/integration_test.go
+
 - Changed package: `main` → `configtest`
 - Added import: `"github.com/LarsArtmann/art-dupl/config"`
 - Updated type usage:
@@ -82,6 +88,7 @@ All project structure improvements identified in the analysis have been successf
 - All tests passing: `TestConfigurationIntegration`, `TestConfigurationValidation`, `TestOutputFormatSelection`
 
 #### internal/filtertest/integration_filter_test.go
+
 - Changed package: `main` → `filtertest`
 - Imports: `"github.com/LarsArtmann/art-dupl/pkg/filter"` (unchanged)
 - All tests passing: `TestSmartFilteringIntegration` (3 scenarios)
@@ -93,6 +100,7 @@ All project structure improvements identified in the analysis have been successf
 ### Packages Modified
 
 #### internal/configtest
+
 ```
 === RUN   TestConfigurationIntegration
 --- PASS: TestConfigurationIntegration (0.00s)
@@ -105,6 +113,7 @@ ok      github.com/LarsArtmann/art-dupl/internal/configtest        0.446s
 ```
 
 #### internal/filtertest
+
 ```
 === RUN   TestSmartFilteringIntegration
 === RUN   TestSmartFilteringIntegration/filters_sqlc_and_templ_files_when_filter-generated_is_set
@@ -116,6 +125,7 @@ ok      github.com/LarsArtmann/art-dupl/internal/filtertest       0.434s
 ```
 
 ### Full Test Suite Status
+
 - **Affected packages**: 2/2 (100%) passing
 - **Unaffected packages**: 20/23 passing
 - **Pre-existing failures**: 3 packages (bdd, domain, suffixtree) - unrelated to changes
@@ -125,18 +135,22 @@ ok      github.com/LarsArtmann/art-dupl/internal/filtertest       0.434s
 ## Code Quality Verification
 
 ### Formatting
+
 ```bash
 $ go fmt ./...
 internal/configtest/integration_test.go
 ```
+
 - Files formatted: 1
 - Status: ✅ COMPLETE
 
 ### Static Analysis
+
 ```bash
 $ go vet ./...
 (no output)
 ```
+
 - Issues found: 0
 - Status: ✅ COMPLETE
 
@@ -145,6 +159,7 @@ $ go vet ./...
 ## Git History
 
 ### Commit 1: Main Entry Point
+
 ```
 commit e60cddc
 refactor(structure): move main.go and integration_test.go to proper locations
@@ -159,6 +174,7 @@ This addresses CRITICAL and HIGH priority improvements from project structure an
 ```
 
 ### Commit 2: Filter Tests
+
 ```
 commit a527e22
 refactor(tests): move integration_filter_test.go to internal/filtertest
@@ -172,17 +188,20 @@ This addresses HIGH priority improvement from project structure analysis.
 ```
 
 ### Commit 3: Code Formatting
+
 ```
 commit aa51131
 style: apply go fmt to internal/configtest
 ```
 
 ### Push Status
+
 ```bash
 $ git push origin fork
 To github.com:LarsArtmann/art-dupl.git
    cf8ba76..aa51131  fork -> fork
 ```
+
 - Status: ✅ PUSHED SUCCESSFULLY
 
 ---
@@ -190,6 +209,7 @@ To github.com:LarsArtmann/art-dupl.git
 ## Current Project Structure
 
 ### Root Level
+
 ```
 art-dupl/
 ├── cmd/                    # ✅ CLI entry points
@@ -214,11 +234,13 @@ art-dupl/
 ```
 
 ### Files Removed from Root
+
 - ✅ `main.go` → moved to `cmd/dupl/`
 - ✅ `integration_test.go` → moved to `internal/configtest/`
 - ✅ `integration_filter_test.go` → moved to `internal/filtertest/`
 
 ### Root-Level Files Remaining (Non-Go)
+
 - `go.mod`, `go.sum`
 - `Makefile`, `justfile`
 - `README.md`
@@ -230,15 +252,18 @@ art-dupl/
 ## Build Verification
 
 ### Status
+
 ⚠️ **BLOCKED** - Cannot verify binary build due to disk space issue
 
 ### Error
+
 ```bash
 $ go build -o /tmp/art-dupl ./cmd/dupl
 go: creating work dir: mkdir .../T/go-build1403800888: no space left on device
 ```
 
 ### Disk Space Status
+
 ```bash
 $ df -h /
 Filesystem      Size  Used Avail Use% Mounted on
@@ -246,6 +271,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 ```
 
 ### Alternative Verification
+
 ✅ **Code compiles successfully** - All packages build
 ✅ **Import paths valid** - No import errors
 ✅ **CLI structure correct** - Help output verified before disk full
@@ -256,11 +282,13 @@ Filesystem      Size  Used Avail Use% Mounted on
 ## Open Issues & Recommendations
 
 ### Blocking Issues
+
 1. 🔴 **Disk Space**: System at 100% capacity (229G/229G)
    - **Impact**: Cannot build binaries for final verification
    - **Action Required**: Free up disk space, then run `go build ./cmd/dupl`
 
 ### Non-Blocking Issues
+
 1. 🟡 **Root-level cleanup**: Backup files exist at root
    - `cli.go.backup`
    - `cli.go.bak`
@@ -292,12 +320,14 @@ Filesystem      Size  Used Avail Use% Mounted on
 ## Future Improvements
 
 ### Quick Wins (High Impact / Low Effort)
+
 1. Clean up root-level backup files (5 min)
 2. Move root-level markdown to `docs/` (10 min)
 3. Update README build command to `go build ./cmd/dupl` (2 min)
 4. Free up disk space (10-30 min - external action)
 
 ### Medium Effort
+
 1. Fix bdd test failures (1-2 hours)
 2. Fix domain clone validation test (30 min)
 3. Fix suffixtree fuzz test panic (1 hour)
@@ -305,6 +335,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 5. Consolidate filter tests (1 hour)
 
 ### Architecture Improvements
+
 1. Document pkg/ vs internal/ distinction
 2. Create `docs/architecture.md`
 3. Standardize test file naming conventions
@@ -315,20 +346,20 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 ## Metrics Summary
 
-| Metric | Value | Status |
-|---------|-------|--------|
-| Issues Identified | 4 | - |
-| Issues Resolved | 4 | ✅ 100% |
-| Critical Issues | 1/1 | ✅ 100% |
-| High Issues | 3/3 | ✅ 100% |
-| Files Moved | 3 | ✅ Complete |
-| Packages Created | 2 | ✅ Complete |
-| Tests Modified | 2 | ✅ Complete |
-| Tests Passing (affected) | 6/6 | ✅ 100% |
-| Code Quality (fmt/vet) | 0 issues | ✅ Pass |
-| Commits Made | 3 | ✅ Complete |
-| Git Push | Success | ✅ Complete |
-| Binary Build | Blocked | ⚠️ Disk full |
+| Metric                     | Value      | Status       |
+| -------------------------- | ---------- | ------------ |
+| Issues Identified          | 4          | -            |
+| Issues Resolved            | 4          | ✅ 100%      |
+| Critical Issues            | 1/1        | ✅ 100%      |
+| High Issues                | 3/3        | ✅ 100%      |
+| Files Moved                | 3          | ✅ Complete  |
+| Packages Created           | 2          | ✅ Complete  |
+| Tests Modified             | 2          | ✅ Complete  |
+| Tests Passing (affected)   | 6/6        | ✅ 100%      |
+| Code Quality (fmt/vet)     | 0 issues   | ✅ Pass      |
+| Commits Made               | 3          | ✅ Complete  |
+| Git Push                   | Success    | ✅ Complete  |
+| Binary Build               | Blocked    | ⚠️ Disk full |
 | Pre-existing Test Failures | 3 packages | ⚠️ Unrelated |
 
 ---
@@ -336,6 +367,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Clear task breakdown**: Small, actionable tasks with verification steps
 2. ✅ **Commit early, commit often**: 3 separate commits for logical changes
 3. ✅ **Test-driven approach**: Verified after each change, caught issues early
@@ -343,12 +375,14 @@ Filesystem      Size  Used Avail Use% Mounted on
 5. ✅ **Type safety improvements**: Used typed constants instead of raw strings
 
 ### What Could Be Improved
+
 1. ⚠️ **Disk space monitoring**: Should have checked disk space before starting
 2. ⚠️ **Build verification**: Final build verification blocked by external issue
 3. ⚠️ **Pre-existing issues**: Should have documented test failures before starting
 4. ⚠️ **Documentation**: No architecture doc explaining pkg/ vs internal/ distinction
 
 ### Best Practices Applied
+
 1. ✅ **Standard Go project layout**: Followed Go community conventions
 2. ✅ **Semantic commit messages**: Clear, descriptive commit messages
 3. ✅ **Package organization**: Proper separation of concerns
@@ -371,6 +405,7 @@ All project structure improvements from the analysis document have been successf
 **Status**: ✅ **COMPLETE AND VERIFIED** (except binary build blocked by disk space)
 
 **Next Steps**:
+
 1. Free up disk space
 2. Verify binary build: `go build -o art-dupl ./cmd/dupl`
 3. Test CLI end-to-end

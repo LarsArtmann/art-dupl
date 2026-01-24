@@ -176,14 +176,14 @@
 
 ```json
 {
-  "threshold": 15,           // Minimum token sequence size
-  "includeVendor": false,     // Include vendor directory
-  "outputFormat": "text",     // Output: text, html, json, plumbing
-  "verbose": false,           // Verbose logging
-  "paths": ["."],            // Paths to analyze
-  "ignoreFiles": [],          // File patterns to ignore (NOT IMPLEMENTED)
+  "threshold": 15, // Minimum token sequence size
+  "includeVendor": false, // Include vendor directory
+  "outputFormat": "text", // Output: text, html, json, plumbing
+  "verbose": false, // Verbose logging
+  "paths": ["."], // Paths to analyze
+  "ignoreFiles": [], // File patterns to ignore (NOT IMPLEMENTED)
   "maxChildrenSerial": 10000, // Performance tuning
-  "outputFile": ""           // Output to file (NOT IMPLEMENTED)
+  "outputFile": "" // Output to file (NOT IMPLEMENTED)
 }
 ```
 

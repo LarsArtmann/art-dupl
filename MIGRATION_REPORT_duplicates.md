@@ -19,16 +19,19 @@ Successfully merged all functionality from the `duplicates` project into `art-du
 **Location**: `pkg/position/lines.go`
 
 **What**:
+
 - Binary search-based line number lookup (O(log n))
 - More efficient than linear scan approach
 - Pre-indexes newline positions for fast lookups
 
 **Why**:
+
 - art-dupl's `ByteRangeToLines` uses linear scan (O(n))
 - duplicates' `LineIndex` uses binary search (O(log n))
 - Significant performance improvement for large files with many clones
 
 **Implementation**:
+
 ```go
 type LineIndex struct {
     newlines []int
@@ -49,11 +52,13 @@ func (li *LineIndex) Line(offset int) int {
 **Location**: `printer/json.go`, `config/outputformat.go`, `cli/config.go`
 
 **What**:
+
 - New `--simple-json` CLI flag
 - Simple JSON format matching duplicates project exactly
 - Legacy format for backward compatibility
 
 **Why**:
+
 - Some users prefer simpler, more straightforward JSON structure
 - Easier to parse for simple scripts
 - Maintains compatibility with existing tooling
@@ -61,6 +66,7 @@ func (li *LineIndex) Line(offset int) int {
 **Format Comparison**:
 
 **Legacy Format (duplicates)**:
+
 ```json
 [
   {
@@ -79,6 +85,7 @@ func (li *LineIndex) Line(offset int) int {
 ```
 
 **Enhanced Format (art-dupl)**:
+
 ```json
 {
   "version": "1.0",
@@ -96,6 +103,7 @@ func (li *LineIndex) Line(offset int) int {
 ```
 
 **CLI Usage**:
+
 ```bash
 # Legacy simple format
 art-dupl --simple-json
@@ -109,11 +117,13 @@ art-dupl --json
 **Location**: `printer/json.go` (SimpleCloneGroup.Score field)
 
 **What**:
+
 - Impact score: `tokens × instances`
 - Simpler metric than complexity_score
 - Added to both formats as complementary information
 
 **Why**:
+
 - Different metrics serve different purposes:
   - **impact_score** (from duplicates): Total duplicated code volume
   - **complexity_score** (from art-dupl): Average clones per group (density)
@@ -122,18 +132,23 @@ art-dupl --json
 **Scoring Formulas**:
 
 **Impact Score** (duplicates):
+
 ```
 score = token_count × instance_count
 ```
+
 Measures: How much code is duplicated total
 
 **Complexity Score** (art-dupl):
+
 ```
 complexity_score = total_clones / clone_groups
 ```
+
 Measures: How densely duplicates are distributed
 
 **Use Cases**:
+
 - **Impact Score**: Prioritize refactoring by total duplicated code volume
 - **Complexity Score**: Assess overall codebase complexity and duplication density
 
@@ -141,35 +156,37 @@ Measures: How densely duplicates are distributed
 
 All features from `duplicates` are now available in `art-dupl`:
 
-| Feature | duplicates | art-dupl | Status |
-|----------|------------|-----------|---------|
-| Token-sequence detection | ✅ | ✅ | ✅ Complete |
-| Configurable threshold | ✅ | ✅ | ✅ Complete |
-| JSON output | ✅ | ✅ | ✅ Complete |
-| Simple JSON format | ✅ | ✅ | ✅ **New** |
-| HTML output | ✅ | ✅ | ✅ Complete |
-| Text output | ✅ | ✅ | ✅ Complete |
-| Plumbing output | ✅ | ✅ | ✅ Complete |
-| Line number tracking | ✅ | ✅ | ✅ Complete |
-| Scoring system | ✅ (impact) | ✅ (complexity + impact) | ✅ Complete |
-| File exclusion patterns | ✅ (basic) | ✅ (advanced with filter) | ✅ Complete |
-| CLI flags | ✅ (basic) | ✅ (professional with cobra) | ✅ Enhanced |
-| Config file support | ❌ | ✅ | ✅ New |
-| Multiple output formats | ✅ (multiple files) | ✅ (--all flag) | ✅ Enhanced |
-| Sorting options | ❌ | ✅ (size, occurrence, hash) | ✅ New |
-| Filter generated code | ❌ | ✅ | ✅ New |
-| Profiling | ❌ | ✅ | ✅ New |
+| Feature                  | duplicates          | art-dupl                     | Status      |
+| ------------------------ | ------------------- | ---------------------------- | ----------- |
+| Token-sequence detection | ✅                  | ✅                           | ✅ Complete |
+| Configurable threshold   | ✅                  | ✅                           | ✅ Complete |
+| JSON output              | ✅                  | ✅                           | ✅ Complete |
+| Simple JSON format       | ✅                  | ✅                           | ✅ **New**  |
+| HTML output              | ✅                  | ✅                           | ✅ Complete |
+| Text output              | ✅                  | ✅                           | ✅ Complete |
+| Plumbing output          | ✅                  | ✅                           | ✅ Complete |
+| Line number tracking     | ✅                  | ✅                           | ✅ Complete |
+| Scoring system           | ✅ (impact)         | ✅ (complexity + impact)     | ✅ Complete |
+| File exclusion patterns  | ✅ (basic)          | ✅ (advanced with filter)    | ✅ Complete |
+| CLI flags                | ✅ (basic)          | ✅ (professional with cobra) | ✅ Enhanced |
+| Config file support      | ❌                  | ✅                           | ✅ New      |
+| Multiple output formats  | ✅ (multiple files) | ✅ (--all flag)              | ✅ Enhanced |
+| Sorting options          | ❌                  | ✅ (size, occurrence, hash)  | ✅ New      |
+| Filter generated code    | ❌                  | ✅                           | ✅ New      |
+| Profiling                | ❌                  | ✅                           | ✅ New      |
 
 ## Features NOT Migrated (With Good Reason)
 
 ### 1. Simple CLI with flag package ❌
 
 **Why Not Migrated**:
+
 - art-dupl already has superior CLI using cobra/fang
 - cobra provides professional CLI features (auto-completion, version info, man page generation)
 - Flag migration would be a downgrade in user experience
 
 **Alternative**:
+
 - Users can access all same functionality with cobra flags
 - art-dupl flags map 1:1 with duplicates flags:
   - `-threshold` → `--threshold` or `-t`
@@ -182,11 +199,13 @@ All features from `duplicates` are now available in `art-dupl`:
 ### 2. Multiple Output File Paths ❌
 
 **Why Not Migrated**:
+
 - art-dupl has `--output-dir` flag which is more powerful
 - `--all` flag generates all formats in specified directory
 - Simpler and more consistent UX
 
 **Alternative**:
+
 ```bash
 # duplicates approach (not migrated):
 duplicates -json report.json -html report.html -text report.txt
@@ -198,11 +217,13 @@ art-dupl --all --output-dir ./reports
 ### 3. Built-in "reports" directory creation ❌
 
 **Why Not Migrated**:
+
 - art-dupl uses flexible `--output-dir` or stdout
 - Users control where output goes
 - More flexible for different workflows
 
 **Alternative**:
+
 ```bash
 # Create reports directory first
 mkdir -p reports
@@ -214,6 +235,7 @@ art-dupl --all --output-dir ./reports
 ### 4. Basic Scanner Wrapper ❌
 
 **Why Not Migrated**:
+
 - art-dupl already has sophisticated scanner with multiple detection methods
 - No need for additional wrapper layer
 - Would add unnecessary complexity
@@ -227,6 +249,7 @@ art-dupl --all --output-dir ./reports
 **Usage**: Integrated into existing position package
 
 **Benefits**:
+
 - Faster duplicate reporting for large files
 - Better performance when processing many clones
 - More efficient byte-offset to line-number conversion
@@ -238,6 +261,7 @@ art-dupl --all --output-dir ./reports
 **Output**: Matches duplicates JSON format exactly
 
 **Benefits**:
+
 - Backward compatibility with existing scripts
 - Simpler structure for basic use cases
 - Maintains choice between simple and enhanced formats
@@ -249,6 +273,7 @@ art-dupl --all --output-dir ./reports
 **Formula**: `token_count × instance_count`
 
 **Benefits**:
+
 - Prioritize by total duplicated code volume
 - Complements existing complexity_score
 - Better metric for refactoring prioritization
@@ -258,6 +283,7 @@ art-dupl --all --output-dir ./reports
 ### Unit Tests
 
 ✅ **LineIndex**: `pkg/position/lines_test.go`
+
 - All tests passing
 - Covers edge cases (out of bounds, etc.)
 - Binary search correctness verified
@@ -265,6 +291,7 @@ art-dupl --all --output-dir ./reports
 ### Integration Tests
 
 ⚠️ **Build Tests**: Blocked by existing import cycle in art-dupl
+
 - Location: `cmd/run.go` importing main package
 - Status: Pre-existing issue, not introduced by migration
 - Impact: Does not affect migrated functionality
@@ -305,32 +332,34 @@ Simple JSON format can be specified in config file:
 
 ## Migration Matrix
 
-| duplicates Feature | art-dupl Equivalent | Migration Status |
-|-------------------|----------------------|------------------|
-| Token detection | suffixtree/detection | ✅ Already existed |
-| `-threshold` | `--threshold` | ✅ Already existed |
-| `-json` | `--json` | ✅ Already existed |
-| `-html` | `--html` | ✅ Already existed |
-| `-text` | default | ✅ Already existed |
-| `-plumbing` | `--plumbing` | ✅ Already existed |
-| `-v` | `--verbose` | ✅ Already existed |
-| `-exclude` | `--exclude-pattern` | ✅ Already existed (more powerful) |
-| scoring (tokens × instances) | complexity_score + impact_score | ✅ **Enhanced** |
-| LineIndex | ByteRangeToLines | ✅ **Enhanced** |
-| Simple JSON | `--simple-json` | ✅ **New** |
-| Multiple report files | `--all --output-dir` | ✅ **Enhanced** |
-| Report path defaults | Flexible output | ✅ **Enhanced** |
+| duplicates Feature           | art-dupl Equivalent             | Migration Status                   |
+| ---------------------------- | ------------------------------- | ---------------------------------- |
+| Token detection              | suffixtree/detection            | ✅ Already existed                 |
+| `-threshold`                 | `--threshold`                   | ✅ Already existed                 |
+| `-json`                      | `--json`                        | ✅ Already existed                 |
+| `-html`                      | `--html`                        | ✅ Already existed                 |
+| `-text`                      | default                         | ✅ Already existed                 |
+| `-plumbing`                  | `--plumbing`                    | ✅ Already existed                 |
+| `-v`                         | `--verbose`                     | ✅ Already existed                 |
+| `-exclude`                   | `--exclude-pattern`             | ✅ Already existed (more powerful) |
+| scoring (tokens × instances) | complexity_score + impact_score | ✅ **Enhanced**                    |
+| LineIndex                    | ByteRangeToLines                | ✅ **Enhanced**                    |
+| Simple JSON                  | `--simple-json`                 | ✅ **New**                         |
+| Multiple report files        | `--all --output-dir`            | ✅ **Enhanced**                    |
+| Report path defaults         | Flexible output                 | ✅ **Enhanced**                    |
 
 ## Backward Compatibility
 
 ### For duplicates Users
 
 1. **Install art-dupl**:
+
    ```bash
    go install github.com/LarsArtmann/art-dupl@latest
    ```
 
 2. **Get same output format**:
+
    ```bash
    # Before (duplicates):
    duplicates -json report.json
@@ -410,6 +439,7 @@ Simple JSON format can be specified in config file:
 ✅ **Migration Complete**: All valuable functionality from `duplicates` has been successfully merged into `art-dupl`
 
 **Key Achievements**:
+
 1. ✅ Efficient LineIndex with binary search
 2. ✅ Simple JSON format for backward compatibility
 3. ✅ Enhanced scoring with impact_score
@@ -418,6 +448,7 @@ Simple JSON format can be specified in config file:
 6. ✅ Documentation updated
 
 **art-dupl is now a superset** of duplicates functionality:
+
 - All duplicates features available
 - Many additional features
 - Better performance

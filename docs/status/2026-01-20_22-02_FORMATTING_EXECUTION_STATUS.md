@@ -12,6 +12,7 @@
 Successfully executed code formatting tools (`gofumpt` and `goimports`) across the entire codebase. Fixed critical syntax errors preventing formatting. Core packages build and test successfully. BDD test suite has pre-existing issues unrelated to formatting changes that require investigation.
 
 ### Status by Metric
+
 - **Formatting**: ✅ COMPLETE
 - **Build**: ✅ SUCCESSFUL
 - **Core Tests**: ✅ PASSING (14/16 packages)
@@ -26,6 +27,7 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 ### 1. Formatting Execution (FULLY DONE)
 
 #### 1.1 Applied Code Formatting Tools
+
 ```bash
 ✅ gofumpt -w .    # Stricter Go formatting
 ✅ goimports -w .   # Import organization + formatting
@@ -35,9 +37,11 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 **Result**: Zero formatting errors, consistent code style across entire codebase
 
 #### 1.2 Fixed Critical Syntax Errors (6 Files)
+
 **Problem**: String literals missing quotes in test files
 **Pattern**: `./bdd/art-dupl-test` → `"./bdd/art-dupl-test"`
 **Files Fixed**:
+
 1. `bdd/all_format_generation_test.go` - 6 occurrences
 2. `bdd/bdd_test.go` - 12 occurrences
 3. `bdd/detection_methods_test.go` - 9 occurrences
@@ -52,17 +56,21 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 ### 2. Build Verification (FULLY DONE)
 
 #### 2.1 Main Binary Build
+
 ```bash
 ✅ go build -ldflags "-s -w" -trimpath ./cmd/art-dupl
 ```
+
 - **Status**: SUCCESS
 - **Binary**: `./art-dupl` (5.1MB)
 - **Functionality**: Verified with `--help` command
 
 #### 2.2 Test Binary Build
+
 ```bash
 ✅ go build -o ./bdd/test-binary ./cmd/art-dupl/main.go
 ```
+
 - **Status**: SUCCESS
 - **Location**: `./bdd/test-binary`
 - **Verified**: Binary executes and shows help text
@@ -73,29 +81,31 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 
 #### 3.1 Passing Packages (14/16) ✅
 
-| Package | Status | Test Count | Time |
-|---------|--------|------------|------|
-| `job` | ✅ PASS | 11 | 0.307s |
-| `syntax` | ✅ PASS | - | 0.827s |
-| `hash` | ✅ PASS | - | 1.095s |
-| `lib` | ✅ PASS | - | 12.993s |
-| `errors` | ✅ PASS | - | 0.541s |
-| `cli` | ✅ PASS (cached) | - | - |
-| `config` | ✅ PASS (cached) | - | - |
-| `detection` | ✅ PASS (cached) | - | - |
-| `examples` | ✅ PASS | - | 1.344s |
-| `internal/configtest` | ✅ PASS | - | 1.583s |
-| `internal/filtertest` | ✅ PASS | - | 1.108s |
-| `internal/utils` | ✅ PASS | - | 1.945s |
-| `pkg/artdupl` | ✅ PASS | - | 1.767s |
-| `migration` | ✅ PASS (no tests) | - | 1.776s |
+| Package               | Status             | Test Count | Time    |
+| --------------------- | ------------------ | ---------- | ------- |
+| `job`                 | ✅ PASS            | 11         | 0.307s  |
+| `syntax`              | ✅ PASS            | -          | 0.827s  |
+| `hash`                | ✅ PASS            | -          | 1.095s  |
+| `lib`                 | ✅ PASS            | -          | 12.993s |
+| `errors`              | ✅ PASS            | -          | 0.541s  |
+| `cli`                 | ✅ PASS (cached)   | -          | -       |
+| `config`              | ✅ PASS (cached)   | -          | -       |
+| `detection`           | ✅ PASS (cached)   | -          | -       |
+| `examples`            | ✅ PASS            | -          | 1.344s  |
+| `internal/configtest` | ✅ PASS            | -          | 1.583s  |
+| `internal/filtertest` | ✅ PASS            | -          | 1.108s  |
+| `internal/utils`      | ✅ PASS            | -          | 1.945s  |
+| `pkg/artdupl`         | ✅ PASS            | -          | 1.767s  |
+| `migration`           | ✅ PASS (no tests) | -          | 1.776s  |
 
 #### 3.2 BDD Tests (bdd) ❌
+
 **Status**: 53/54 tests FAILING
 **Error Pattern**: All failures occur in `BeforeEach` during binary build
 **Exit Code**: 1 (no stderr/stdout captured)
 
 **Test Files**:
+
 - `bdd/all_format_generation_test.go`
 - `bdd/bdd_test.go`
 - `bdd/detection_methods_test.go`
@@ -104,17 +114,20 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 - `bdd/sorting_test.go`
 
 **Key Issues**:
+
 - Tests use hardcoded binary paths: `./bdd/art-dupl-*-test`
 - Each test rebuilds binary in `BeforeEach` (inefficient)
 - No error output captured when build fails
 - Manual build works, test build fails (environment issue?)
 
 #### 3.3 Domain Tests (domain) ❌
+
 **Status**: 1 test FAILING
 **Failing Test**: `TestDomainCloneGroupValidation/should_accept_valid_clone_groups`
 **Error**: `clone 0 in group group-1 is invalid: clone end position must be > start position`
 
 **Passing Tests**:
+
 - All type validation tests (CloneID, LineNumber, Confidence, etc.)
 - All JSON marshaling/unmarshaling tests
 - All type conversion tests
@@ -124,18 +137,20 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 ## Files Modified
 
 ### Modified by Formatting Tools
-| File | Changes |
-|------|---------|
+
+| File                                | Changes                  |
+| ----------------------------------- | ------------------------ |
 | `bdd/all_format_generation_test.go` | Quote fixes + formatting |
-| `bdd/bdd_test.go` | Quote fixes + formatting |
-| `bdd/detection_methods_test.go` | Quote fixes + formatting |
-| `bdd/error_handling_test.go` | Quote fixes + formatting |
-| `bdd/filter_features_test.go` | Quote fixes + formatting |
-| `bdd/sorting_test.go` | Quote fixes + formatting |
-| `go.mod` | Pre-existing (unrelated) |
-| `go.sum` | Pre-existing (unrelated) |
+| `bdd/bdd_test.go`                   | Quote fixes + formatting |
+| `bdd/detection_methods_test.go`     | Quote fixes + formatting |
+| `bdd/error_handling_test.go`        | Quote fixes + formatting |
+| `bdd/filter_features_test.go`       | Quote fixes + formatting |
+| `bdd/sorting_test.go`               | Quote fixes + formatting |
+| `go.mod`                            | Pre-existing (unrelated) |
+| `go.sum`                            | Pre-existing (unrelated) |
 
 ### Total Changes
+
 - **Files touched**: 8
 - **Syntax fixes**: 47 quotes added
 - **Formatting applied**: All Go files
@@ -148,12 +163,14 @@ Successfully executed code formatting tools (`gofumpt` and `goimports`) across t
 ### CRITICAL Issues (Blocking)
 
 #### 1. BDD Test Infrastructure Failure 🚨
+
 **Severity**: HIGH
 **Impact**: 53/54 BDD tests cannot run
 **Root Cause**: Unknown (binary build fails in test context)
 **Status**: NOT INVESTIGATED
 
 **Symptoms**:
+
 ```go
 // In Each BeforeEach:
 cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-bdd-test", "./cmd/art-dupl/main.go")
@@ -162,12 +179,14 @@ Expect(err).NotTo(HaveOccurred())  // ← FAILS HERE with exit status 1
 ```
 
 **Mystery**:
+
 - ✅ Same command works when run manually
 - ❌ Fails when run via `exec.Command()` in tests
 - No stderr/stdout captured
 - Working directory appears correct
 
 **Required Investigation**:
+
 1. Capture stderr/stdout from failed builds
 2. Check git history for test state before changes
 3. Verify test working directory during execution
@@ -175,17 +194,20 @@ Expect(err).NotTo(HaveOccurred())  // ← FAILS HERE with exit status 1
 5. Look for test documentation or setup instructions
 
 #### 2. Domain Test Validation Failure 🚨
+
 **Severity**: MEDIUM
 **Impact**: 1 domain validation test fails
 **Root Cause**: Validation logic vs test data mismatch
 **Status**: NOT INVESTIGATED
 
 **Error**:
+
 ```
 clone 0 in group group-1 is invalid: clone end position must be > start position
 ```
 
 **Questions**:
+
 - Is validation too strict?
 - Is test data incorrect?
 - Should validation be defensive (log warning, not error)?
@@ -195,18 +217,21 @@ clone 0 in group group-1 is invalid: clone end position must be > start position
 ### HIGH IMPACT Issues (Quality)
 
 #### 3. Hardcoded Binary Paths
+
 **File**: All BDD test files
 **Problem**: Tests use `./bdd/art-dupl-*-test` hardcoded paths
 **Impact**: Not portable, potential conflicts, difficult to debug
 **Fix**: Use temp directory with unique names
 
 #### 4. Inefficient Test Build
+
 **File**: All BDD test files
 **Problem**: Each test rebuilds same binary in `BeforeEach`
 **Impact**: Slow test execution (53 rebuilds per suite)
 **Fix**: Build once per test suite
 
 #### 5. Poor Error Messages
+
 **File**: All BDD test files
 **Problem**: `exit status 1` with no stderr/stdout
 **Impact**: Impossible to debug failures
@@ -217,17 +242,20 @@ clone 0 in group group-1 is invalid: clone end position must be > start position
 ### MEDIUM IMPACT Issues (Maintainability)
 
 #### 6. No Test Documentation
+
 **Missing**: `bdd/README.md` or test setup guide
 **Impact**: Developers don't know how to run/debug BDD tests
 **Fix**: Create comprehensive test documentation
 
 #### 7. Magic Numbers in Tests
+
 **Files**: All BDD test files
 **Problem**: Thresholds like `10`, `15`, `50`, `100` scattered throughout
 **Impact**: Hard to understand, inconsistent
 **Fix**: Extract to constants with descriptive names
 
 #### 8. Duplicated Test Code
+
 **Files**: All BDD test files
 **Problem**: Binary build, test file creation repeated everywhere
 **Impact**: Code duplication, hard to fix issues
@@ -238,11 +266,13 @@ clone 0 in group group-1 is invalid: clone end position must be > start position
 ### LOW IMPACT Issues (Polish)
 
 #### 9. No Test Cleanup Verification
+
 **Problem**: `AfterEach` removes binaries but failures skip cleanup
 **Impact**: Leftover test binaries in repository
 **Fix**: Add cleanup verification or use proper temp directories
 
 #### 10. Command String Construction
+
 **Problem**: Tests build command strings instead of using config structs
 **Impact**: Harder to maintain, type safety lost
 **Fix**: Use config objects and command builders
@@ -254,13 +284,16 @@ clone 0 in group group-1 is invalid: clone end position must be > start position
 ### Type Model Improvements
 
 #### 1. Domain Validation Refactoring
+
 **Current Issue**: Validation is strict and fails tests
 **Recommendation**:
+
 - Add validation levels (strict, lenient, off)
 - Provide detailed validation errors with context
 - Support validation for debugging vs production
 
 **Example**:
+
 ```go
 type ValidationLevel int
 
@@ -276,6 +309,7 @@ func (g CloneGroup) Validate(level ValidationLevel) error {
 ```
 
 #### 2. Test Config Types
+
 **Current**: String concatenation for CLI commands
 **Recommended**: Structured configuration
 
@@ -298,9 +332,11 @@ func (c TestConfig) ToArgs() []string {
 ### Test Architecture Improvements
 
 #### 1. Shared Test Utilities Package
+
 **Recommended**: `internal/testutil/` package
 
 **Functions to provide**:
+
 ```go
 // Build test binary with error capture
 func BuildTestBinary(name string, output io.Writer) (string, error)
@@ -313,6 +349,7 @@ func RunArtDupl(args []string, dir string) ([]byte, error)
 ```
 
 #### 2. Test Fixture Management
+
 **Current**: Inline code strings
 **Recommended**: `bdd/fixtures/` directory
 
@@ -331,6 +368,7 @@ bdd/fixtures/
 ```
 
 #### 3. Test Lifecycle Management
+
 **Current**: Manual `BeforeEach`/`AfterEach`
 **Recommended**: Structured test suite builder
 
@@ -355,15 +393,18 @@ func (s *BDDBinarySuite) Teardown() {
 ### Library Integration Opportunities
 
 #### 1. Test Command Execution
+
 **Current**: `exec.Command` with manual error handling
 **Recommended**: Use well-tested library
 
 **Options**:
+
 - `github.com/stretchr/testify` - Already in go.mod
 - `github.com/ory/dockertest` - For container-based tests
 - `github.com/stretchr/testify/require` - Better assertions
 
 #### 2. Output Comparison
+
 **Current**: String searching and manual parsing
 **Recommended**: Use golden file testing
 
@@ -376,6 +417,7 @@ golden.RequireGolden(t, output)
 ```
 
 #### 3. Temporary Resource Management
+
 **Current**: Manual cleanup with `os.RemoveAll`
 **Recommended**: Use test helpers
 
@@ -543,6 +585,7 @@ func (s *TestSuite) SetupSuite() {
 **Why do BDD tests fail with `exit status 1` during binary build, when the exact same command succeeds when run manually?**
 
 **Context**:
+
 ```go
 // Test code (FAILS):
 cmd := exec.Command("go", "build", "-o", "./bdd/art-dupl-bdd-test", "./cmd/art-dupl/main.go")
@@ -558,12 +601,14 @@ Success: 0
 ```
 
 **Investigation Performed**:
+
 - ✅ Verified binary paths are properly quoted
 - ✅ Manually built and ran binary - works fine
 - ✅ Checked working directory appears correct
 - ✅ No test documentation found
 
 **What I Need to Know**:
+
 1. What is the actual error from the failed build?
 2. Why does manual execution succeed but test execution fails?
 3. Is there a working directory or environment difference?
@@ -585,24 +630,28 @@ Success: 0
 ## Immediate Next Steps (Recommended)
 
 ### Phase 1: Investigation (30 min)
+
 1. Check git history for BDD test state
 2. Add debug output to capture stderr/stdout
 3. Run manual tests to verify environment
 4. Check for missing dependencies
 
 ### Phase 2: Critical Fixes (2 hours)
+
 5. Fix BDD test binary paths (temp directories)
 6. Build binaries once per suite
 7. Fix domain test validation
 8. Verify all binaries work before testing
 
 ### Phase 3: Quality Improvements (4 hours)
+
 9. Add comprehensive error messages
 10. Create test helpers package
 11. Write BDD test README
 12. Extract constants and standardize patterns
 
 ### Phase 4: Architecture (10 hours)
+
 13. Refactor BDD tests with proper patterns
 14. Improve domain type model
 15. Add test fixtures and utilities
@@ -613,6 +662,7 @@ Success: 0
 ## Conclusion
 
 ### Summary
+
 - ✅ **Formatting**: Complete and successful
 - ✅ **Core Tests**: Passing (14/16 packages)
 - ⚠️ **BDD Tests**: Failing (53/54 specs) - needs investigation
@@ -620,12 +670,15 @@ Success: 0
 - 📊 **Overall Health**: Functional but with test infrastructure issues
 
 ### Key Achievement
+
 Applied `gofumpt` and `goimports` across entire codebase, fixed critical syntax errors preventing compilation, and verified core functionality works correctly.
 
 ### Primary Blocker
+
 BDD test infrastructure failure prevents comprehensive test suite execution. Root cause unknown - investigation needed.
 
 ### Recommendations
+
 1. Start with Phase 1 (Investigation) to understand test issues
 2. Prioritize quick wins (#1-10) for immediate improvements
 3. Document findings as you investigate

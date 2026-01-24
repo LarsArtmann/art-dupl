@@ -23,6 +23,7 @@ Successfully implemented comprehensive domain type architecture with 14 strongly
 All types defined in `domain/domain_types.go` (548 lines):
 
 **String-Based Types (5) - Non-empty validation:**
+
 - `CloneID` - Unique identifier for code clone
 - `CloneGroupID` - Unique identifier for clone group
 - `AnalysisID` - Unique identifier for analysis
@@ -30,11 +31,13 @@ All types defined in `domain/domain_types.go` (548 lines):
 - `Hash` - Hash value (typically SHA256)
 
 **Uint-Based Types with Validation (3):**
+
 - `LineNumber` - Line number in source file (cannot be 0)
 - `ProcessingTime` - Processing time in milliseconds (cannot be 0, human-readable String())
 - `Threshold` - Minimum token threshold for clone detection (cannot be 0)
 
 **Uint-Based Types without Validation (5):**
+
 - `BytePosition` - Byte position in file
 - `TokenCount` - Count of tokens in code
 - `ComplexityScore` - Complexity metric
@@ -42,9 +45,11 @@ All types defined in `domain/domain_types.go` (548 lines):
 - `CloneCount` - Number of clones
 
 **Float64-Based Type (1):**
+
 - `Confidence` - Confidence score 0.0-1.0 (range validation, String() as percentage)
 
 #### All Types Include:
+
 - ✅ Construction validation (fail-fast, returns error)
 - ✅ JSON marshaling/unmarshaling support
 - ✅ String() methods for human-readable output
@@ -58,6 +63,7 @@ All types defined in `domain/domain_types.go` (548 lines):
 All tests in `domain/domain_types_test.go` (1328 lines):
 
 **Test Coverage:**
+
 - ✅ Constructor validation (valid inputs, invalid inputs)
 - ✅ String() method formatting
 - ✅ JSON marshaling (with validation)
@@ -67,6 +73,7 @@ All tests in `domain/domain_types_test.go` (1328 lines):
 - ✅ Error type validation (DuplError checks)
 
 **Test Results:**
+
 - ✅ All 140+ subtests passing
 - ✅ Zero failures
 - ✅ Zero skipped tests
@@ -78,6 +85,7 @@ All tests in `domain/domain_types_test.go` (1328 lines):
 #### Clone Struct Updated
 
 **Before:**
+
 ```go
 type Clone struct {
     ID         string
@@ -95,6 +103,7 @@ type Clone struct {
 ```
 
 **After:**
+
 ```go
 type Clone struct {
     ID         CloneID
@@ -114,6 +123,7 @@ type Clone struct {
 #### NodeToClone Function Updated
 
 Updated to use all domain type constructors:
+
 ```go
 func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
     // Generate validated domain types
@@ -145,12 +155,14 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 #### Clone.IsValid() Simplified
 
 **Removed redundant validation:**
+
 - ❌ CloneID empty check (handled by CloneID type)
 - ❌ Filename empty check (handled by Filepath type)
 - ❌ StartLine zero check (handled by LineNumber type)
 - ❌ Confidence range check (handled by Confidence type)
 
 **Kept only cross-field validation:**
+
 - ✅ EndLine >= StartLine
 - ✅ StartPos < EndPos
 - ✅ Status.IsValid()
@@ -160,6 +172,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 #### Adapter Package Fixed
 
 Updated `adapter/printer_adapter.go`:
+
 ```go
 // Before:
 fileSet[clone.Filename] = true  // ERROR: Filename is Filepath, not string
@@ -171,14 +184,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ### Phase 5: Verification (100% Complete)
 
 #### Build Verification
+
 - ✅ `go build ./domain/...` - Success
 - ✅ `go build ./...` - Success
 
 #### Test Verification
+
 - ✅ `go test ./domain -v` - All 140+ tests passing
 - ✅ `go test ./...` - All packages passing
 
 #### Git Workflow
+
 - ✅ 3 focused commits with detailed messages
 - ✅ All changes pushed to remote fork branch
 - ✅ Clean git history
@@ -190,12 +206,14 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ### 1. Clone Struct Migration - Not Tested in Real Usage
 
 **What Was Done:**
+
 - ✅ Updated Clone struct to use domain types
 - ✅ Updated NodeToClone to use domain constructors
 - ✅ Fixed compilation error in adapter package
 - ✅ All domain tests passing
 
 **What's Missing:**
+
 - ❌ **Did NOT verify Clone usage in printer package** (likely has string comparisons, concatenations that will fail)
 - ❌ **Did NOT verify Clone usage in detection package** (likely creates Clone objects with raw types that won't compile)
 - ❌ **Did NOT verify Clone usage in CLI package** (likely has string operations on Clone fields)
@@ -203,6 +221,7 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 - ❌ **Did NOT grep for all Clone instantiations** to find and fix all usages
 
 **Impact:**
+
 - Printer, detection, CLI packages likely have compilation errors
 - Actual tool may not work end-to-end
 - Integration tests may fail
@@ -210,11 +229,13 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ### 2. Type Safety - Incomplete Adoption
 
 **What Was Done:**
+
 - ✅ Clone struct uses domain types
 - ✅ NodeToClone uses domain type constructors
 - ✅ Validation enforced at construction
 
 **What's Missing:**
+
 - ❌ **Other packages still use raw types** (no migration path)
 - ❌ **CloneGroup struct** still has `ID string`, `Size uint`, `Hash string` fields
 - ❌ **Analysis struct** still has `ID string`, `Threshold uint`, `ProcessingTime` fields
@@ -224,6 +245,7 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 - ❌ **DetectionOptions struct** still has `Threshold uint` field
 
 **Impact:**
+
 - Inconsistent type safety across codebase
 - Mixed usage of domain types and raw types
 - Potential type confusion
@@ -231,33 +253,39 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ### 3. Validation - No Integration Tests
 
 **What Was Done:**
+
 - ✅ Domain types validate at construction
 - ✅ All domain type constructor tests passing
 - ✅ Clone.IsValid() simplified
 
 **What's Missing:**
+
 - ❌ **No integration tests** validating real Clone objects created by NodeToClone
 - ❌ **No integration tests** for Clone JSON serialization/deserialization
 - ❌ **No integration tests** for Clone validation across packages
 - ❌ **No integration tests** for Clone creation from syntax nodes
 
 **Impact:**
+
 - Validation logic not tested in real usage scenarios
 - Potential edge cases not covered
 
 ### 4. JSON Support - Not Tested End-to-End
 
 **What Was Done:**
+
 - ✅ Domain types have MarshalJSON/UnmarshalJSON
 - ✅ All domain type JSON tests passing
 - ✅ Clone struct has JSON tags
 
 **What's Missing:**
+
 - ❌ **No end-to-end JSON tests** with actual Clone objects
 - ❌ **No backward compatibility tests** for existing JSON data
 - ❌ **No migration strategy** for existing JSON data
 
 **Impact:**
+
 - JSON serialization may fail in real usage
 - Existing JSON data may not be compatible
 
@@ -266,7 +294,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ## ❌ Work Not Started
 
 ### 1. CloneGroup Struct Migration
+
 **Fields Need Domain Types:**
+
 - `ID string` → `CloneGroupID`
 - `Hash string` → `Hash`
 - `Size uint` → `TokenCount` or `CloneCount`
@@ -274,14 +304,18 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 30 minutes
 
 ### 2. Analysis Struct Migration
+
 **Fields Need Domain Types:**
+
 - `ID string` → `AnalysisID`
 - `Threshold uint` → `Threshold`
 
 **Estimated Effort:** 30 minutes
 
 ### 3. AnalysisStats Struct Migration
+
 **Fields Need Domain Types:**
+
 - `FilesAnalyzed uint` → `FileCount`
 - `TotalClones uint` → `CloneCount`
 - `ProcessingTime uint` → `ProcessingTime`
@@ -291,14 +325,18 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 30 minutes
 
 ### 4. Repository Struct Migration
+
 **Fields Need Domain Types:**
+
 - `Path string` → `Filepath`
 - `Size uint64` → New domain type needed (FileSize)
 
 **Estimated Effort:** 30 minutes
 
 ### 5. SourceFile Struct Migration
+
 **Fields Need Domain Types:**
+
 - `Path string` → `Filepath`
 - `Size uint64` → New domain type needed (FileSize)
 - `Hash string` → `Hash`
@@ -306,13 +344,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 30 minutes
 
 ### 6. DetectionOptions Struct Migration
+
 **Fields Need Domain Types:**
+
 - `Threshold uint` → `Threshold`
 
 **Estimated Effort:** 15 minutes
 
 ### 7. Printer Package Updates
+
 **Likely Issues:**
+
 - String comparisons on Clone.Filename
 - String concatenations with Clone.Filename
 - Integer arithmetic on Clone.StartLine, Clone.EndLine
@@ -321,7 +363,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 2-4 hours
 
 ### 8. Detection Package Updates
+
 **Likely Issues:**
+
 - Clone instantiation with raw types
 - Arithmetic on Clone fields
 - String operations on Clone fields
@@ -329,7 +373,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 1-2 hours
 
 ### 9. CLI Package Updates
+
 **Likely Issues:**
+
 - Clone field access for display
 - String operations on Clone fields
 - Clone field comparisons
@@ -337,7 +383,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 1-2 hours
 
 ### 10. Integration Tests
+
 **Tests Needed:**
+
 - Clone creation from syntax nodes
 - Clone JSON serialization/deserialization
 - Clone validation across packages
@@ -346,7 +394,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 2-3 hours
 
 ### 11. Performance Benchmarks
+
 **Benchmarks Needed:**
+
 - Domain type construction overhead
 - String()/Uint()/Float64() accessor overhead
 - JSON marshaling/unmarshaling overhead
@@ -355,7 +405,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 2 hours
 
 ### 12. Migration Documentation
+
 **Documentation Needed:**
+
 - How to update existing code to use domain types
 - Migration strategy for existing JSON data
 - Best practices for using domain types
@@ -364,7 +416,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 2 hours
 
 ### 13. Backward Compatibility
+
 **Strategy Needed:**
+
 - Migration path for existing JSON data
 - Versioning strategy for API changes
 - Compatibility layer for external consumers
@@ -372,7 +426,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 4 hours
 
 ### 14. Type Conversion Utilities
+
 **Utilities Needed:**
+
 - Helper functions for common conversions
 - Conversion between domain types and raw types
 - Safe conversion with error handling
@@ -380,7 +436,9 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Estimated Effort:** 2 hours
 
 ### 15. Code Generation
+
 **Improvement Needed:**
+
 - Replace manual 1159 lines of boilerplate with `go:generate`
 - Reduce maintenance burden
 - Ensure consistency across domain types
@@ -392,14 +450,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 ## 🚨 Critical Issues Identified
 
 ### 1. BREAKING PRINTER PACKAGE - HIGH PRIORITY
+
 **Issue:** Updated Clone struct but did NOT check printer package for usage.
 
 **Likely Failures:**
+
 - String comparisons: `if clone.Filename == "test.go"` (ERROR: Filename is Filepath)
 - String concatenations: `clone.Filename + ":" + clone.StartLine` (ERROR: type mismatch)
 - String formatting: `fmt.Sprintf("%s:%d", clone.Filename, clone.StartLine)` (ERROR: type mismatch)
 
 **Evidence:**
+
 - Only checked `adapter/printer_adapter.go`
 - Did NOT check `printer/text.go`, `printer/json.go`, `printer/html.go`, `printer/plumbing.go`
 - Did NOT grep for Clone field usages in printer package
@@ -409,14 +470,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Review all Clone field accesses in printer package and add `.String()` or `.Uint()` as needed.
 
 ### 2. BREAKING DETECTION PACKAGE - HIGH PRIORITY
+
 **Issue:** Updated Clone struct but did NOT check detection package for usage.
 
 **Likely Failures:**
+
 - Clone instantiation with raw types: `Clone{Filename: "test.go"}` (ERROR: Filename expects Filepath)
 - Clone field arithmetic: `clone.EndLine - clone.StartLine` (ERROR: LineNumber cannot be subtracted)
 - Clone field comparisons: `if clone.StartLine < 10` (ERROR: cannot compare LineNumber with int)
 
 **Evidence:**
+
 - Did NOT check `detection/legacy.go`, `detection/multi.go`
 - Did NOT grep for Clone instantiations in detection package
 
@@ -425,14 +489,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Update all Clone instantiations to use domain type constructors and accessor methods.
 
 ### 3. BREAKING CLI PACKAGE - HIGH PRIORITY
+
 **Issue:** Updated Clone struct but did NOT check CLI package for usage.
 
 **Likely Failures:**
+
 - Clone field access for display: `clone.Filename` (ERROR: need `.String()`)
 - String operations: `strings.Contains(clone.Filename, "test")` (ERROR: need `.String()`)
 - Clone field comparisons: `clone.StartLine > 100` (ERROR: need `.Uint()`)
 
 **Evidence:**
+
 - Did NOT check CLI package for Clone field usage
 - Did NOT grep for Clone field accesses in CLI package
 
@@ -441,9 +508,11 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Update all Clone field accesses to use accessor methods.
 
 ### 4. NO REAL TESTING - HIGH PRIORITY
+
 **Issue:** Created 140+ tests but did NOT run the actual tool to verify it works end-to-end.
 
 **What's Missing:**
+
 - Did NOT run `./art-dupl -t 30` to verify tool works
 - Did NOT run `./art-dupl --html` to verify HTML output
 - Did NOT run `./art-dupl --json` to verify JSON output
@@ -454,9 +523,11 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Run tool on test codebase and verify all functionality.
 
 ### 5. NO TYPE SAFETY CHECK - HIGH PRIORITY
+
 **Issue:** Updated Clone struct but did NOT verify all usages across codebase.
 
 **What's Missing:**
+
 - Did NOT grep for `Clone{` to find all instantiations
 - Did NOT grep for `clone.` to find all field accesses
 - Did NOT verify compilation of all packages
@@ -467,14 +538,17 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Grep for all Clone usages and verify compilation.
 
 ### 6. NO PERFORMANCE CONSIDERATION - MEDIUM PRIORITY
+
 **Issue:** Added type conversion overhead but did NOT benchmark or consider performance impact.
 
 **Overhead Added:**
+
 - Method calls for `.String()`, `.Uint()`, `.Float64()` (every field access)
 - String allocations for `.String()` (every clone field access)
 - Type conversion overhead (every clone field access)
 
 **What's Missing:**
+
 - Did NOT benchmark domain type operations
 - Did NOT compare performance with raw types
 - Did NOT consider hot path optimizations
@@ -485,9 +559,11 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Benchmark domain type operations and measure tool runtime.
 
 ### 7. INCOMPLETE MIGRATION - MEDIUM PRIORITY
+
 **Issue:** Only updated Clone struct but did NOT update related structs with similar fields.
 
 **Structs Need Migration:**
+
 - CloneGroup (ID, Hash, Size fields)
 - Analysis (ID, Threshold fields)
 - AnalysisStats (FilesAnalyzed, TotalClones, ProcessingTime, ComplexityScore, DuplicationRatio fields)
@@ -500,9 +576,11 @@ fileSet[clone.Filename.String()] = true  // OK: Convert Filepath to string
 **Fix Required:** Update all structs to use domain types.
 
 ### 8. BOILERPLATE NIGHTMARE - LOW PRIORITY
+
 **Issue:** Manually wrote 1159 lines of repetitive code instead of using code generation.
 
 **Boilerplate Examples:**
+
 ```go
 // Repeated 14 times for 14 types:
 type CloneID string
@@ -513,6 +591,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 ```
 
 **Impact:**
+
 - High maintenance burden (14 types × 4 methods = 56 methods to maintain)
 - Risk of inconsistency (manual updates may miss some types)
 - Development friction (slow to add new types)
@@ -520,9 +599,11 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 **Fix Required:** Use `go:generate` to auto-generate boilerplate.
 
 ### 9. NO ERROR CONTEXT - LOW PRIORITY
+
 **Issue:** Domain types return generic validation errors without context.
 
 **Current Errors:**
+
 ```
 "clone ID cannot be empty"
 "line number cannot be 0"
@@ -530,6 +611,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 ```
 
 **What's Missing:**
+
 - Field name (which field caused the error?)
 - Struct name (which struct contains the field?)
 - File name (which file has the error?)
@@ -540,9 +622,11 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 **Fix Required:** Add context to validation errors (field name, struct name, etc.).
 
 ### 10. NO MIGRATION STRATEGY - LOW PRIORITY
+
 **Issue:** Changed core data structure but did NOT plan migration for existing code, tests, JSON data.
 
 **What's Missing:**
+
 - Migration path for existing code (how to update?)
 - Migration path for existing tests (how to fix?)
 - Migration path for existing JSON data (how to convert?)
@@ -597,6 +681,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
    - **Impact:** MEDIUM (reduces boilerplate, improves maintainability)
 
    **Example:**
+
    ```go
    type ValidatedString[T constraints] struct {
        value string
@@ -609,6 +694,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
     - **Impact:** MEDIUM (reduces maintenance, ensures consistency)
 
     **Example:**
+
     ```go
     //go:generate go run github.com/LarsArtmann/art-dupl/cmd/gen-domain-types
     ```
@@ -618,6 +704,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
     - **Impact:** MEDIUM (improves ergonomics, reduces verbosity)
 
     **Example:**
+
     ```go
     func CloneFromStrings(id, filename string, startLine uint) (Clone, error) {
         cloneID, err := NewCloneID(id)
@@ -645,6 +732,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
     - **Impact:** MEDIUM (improves debuggability)
 
     **Example:**
+
     ```go
     "Clone.ID cannot be empty (struct: Clone, field: ID, file: clone.go:42)"
     ```
@@ -841,6 +929,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 ### Context
 
 **Current Implementation:**
+
 - Added **significant boilerplate** (1159 lines for 14 types)
 - Every field access requires **type conversion** (`clone.Filename.String()`, `clone.StartLine.Uint()`)
 - This adds **overhead** (method calls, string allocations) and reduces **ergonomics** (more verbose code)
@@ -849,6 +938,7 @@ func (id *CloneID) UnmarshalJSON(data []byte) error { ... }
 **Example of Verbosity:**
 
 **Before (Raw Types):**
+
 ```go
 // Clean and simple
 clone := Clone{
@@ -866,6 +956,7 @@ if clone.StartLine > 10 {
 ```
 
 **After (Domain Types):**
+
 ```go
 // Verbose with constructors
 cloneID, _ := NewCloneID("clone-123")
@@ -946,26 +1037,31 @@ if clone.StartLine.Uint() > 10 {
 ### Potential Approaches to Investigate
 
 **Option A: Embrace Verbosity (Current Approach)**
+
 - Accept the boilerplate and verbosity
 - Prioritize type safety over ergonomics
 - Use code generation to reduce maintenance burden
 
 **Option B: Use Go Generics**
+
 - Create generic `ValidatedString[T]`, `ValidatedUint[T]` types
 - Reduce boilerplate with type parameters
 - Trade complexity for reduced verbosity
 
 **Option C: Use External Library**
+
 - Adopt `go-playground/validator` for struct validation
 - Use `ent` for domain modeling with code generation
 - Trade dependency for better ergonomics
 
 **Option D: Hybrid Approach**
+
 - Use domain types for critical fields (ID, Filename, Hash)
 - Use raw types for less critical fields (StartLine, EndLine)
 - Balance type safety with ergonomics
 
 **Option E: Embed Primitives**
+
 - Use struct with embedded primitive (e.g., `type Filepath struct{ path string }`)
 - Provide direct access (`clone.Filename.Path`) and accessor (`clone.Filename.String()`)
 - Trade type safety for ergonomics
@@ -977,11 +1073,13 @@ if clone.StartLine.Uint() > 10 {
 ### Overall Progress: ~60% Complete
 
 **Phase 1: Testing Foundation** - ✅ 100% COMPLETE
+
 - [x] Create 14 domain types
 - [x] Write 140+ tests
 - [x] All tests passing
 
 **Phase 2: Incremental Adoption** - ⚠️ 60% COMPLETE
+
 - [x] Update Clone struct to use domain types
 - [x] Update NodeToClone to use domain constructors
 - [x] Fix compilation errors in adapter package
@@ -991,39 +1089,46 @@ if clone.StartLine.Uint() > 10 {
 - [ ] Test tool end-to-end
 
 **Phase 3: Validation Refactoring** - ⚠️ 50% COMPLETE
+
 - [x] Simplify Clone.IsValid()
 - [x] Remove redundant validation
 - [ ] Add error context to validation
 - [ ] Add integration tests
 
 **Phase 4: Printer Package Migration** - ❌ 0% NOT STARTED
+
 - [ ] Update printer package to use domain types
 - [ ] Fix Clone field accesses
 - [ ] Test printer functionality
 
 **Phase 5: Detection Package Migration** - ❌ 0% NOT STARTED
+
 - [ ] Update detection package to use domain types
 - [ ] Fix Clone instantiations
 - [ ] Test detection functionality
 
 **Phase 6: CLI & Adapter Migration** - ⚠️ 50% COMPLETE
+
 - [x] Fix adapter package
 - [ ] Update CLI package to use domain types
 - [ ] Fix Clone field accesses
 - [ ] Test CLI functionality
 
 **Phase 7: Full Test Suite** - ⚠️ 70% COMPLETE
+
 - [x] All domain type tests passing
 - [x] All existing tests passing
 - [ ] Add integration tests
 - [ ] Test tool end-to-end
 
 **Phase 8: Documentation & Examples** - ❌ 0% NOT STARTED
+
 - [ ] Write migration guide
 - [ ] Add usage examples
 - [ ] Generate godoc
 
 **Phase 9: Optional Enhancements** - ❌ 0% NOT STARTED
+
 - [ ] Benchmark domain types
 - [ ] Add type conversion utilities
 - [ ] Use code generation

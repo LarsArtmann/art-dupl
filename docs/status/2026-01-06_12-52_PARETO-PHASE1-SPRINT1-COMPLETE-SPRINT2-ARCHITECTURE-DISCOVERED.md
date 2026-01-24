@@ -13,12 +13,14 @@
 Sprint 1 (Critical Bug Fixes) completed successfully with all syntax tests passing (100% success rate). Sprint 2 (Multi-Detection Implementation) is in progress with a critical discovery: the multi-detection architecture **already exists** and is 80% implemented in the codebase.
 
 **Key Discovery:**
+
 - MultiDetector exists at `detection/multidetector.go`
 - 4 detection methods fully implemented (ArtDupl, Hash, Todos, Legacy)
 - 3 critical integration gaps identified (unused MultiDetector, single-method execution, MethodAll fallback)
 - No blocker remains - architecture exists and just needs integration completion
 
 **Progress:**
+
 - Sprint 1: ✅ COMPLETE (4/4 tasks, 100%)
 - Sprint 2: 🔄 IN PROGRESS (1/4 tasks, 25%) - ARCHITECTURE DISCOVERED!
 - Overall Phase 1: 62.5% complete (5/8 tasks, 62.5%)
@@ -31,29 +33,34 @@ Sprint 1 (Critical Bug Fixes) completed successfully with all syntax tests passi
 
 **Initial Problem:**
 Two critical syntax tests failing after commit 905f317:
+
 - `TestGetUnitsIndexes` - 4/5 test cases failing
 - `TestCyclicDupl` - 2/10 test cases failing
 
 **Root Cause Analysis:**
 **Breaking Commit:** 905f317 (May 30, 2020)
+
 - Title: "style: standardize comment formatting and improve code consistency"
 - Change: Shortened test case sequences without updating expected values
 - Example: `"a3 a0 a0 a0 a1"` → `"a3 a0 a1"` (expected `[0]` remained correct)
 - Example: `"a0 a0"` → `"a0"` (expected `[0 1]` became INVALID - sequence too short!)
 
 **Impact:**
+
 - All syntax tests failing for ~6+ months
 - Development velocity reduced
 - CI/CD would fail on clean builds
 - No regression tests caught the issue
 
 **Fixing Commit:** d462225 (May 3, 2015)
+
 - Title: "syntax: fix isCyclic"
 - Change: Fixed isCyclic algorithm
 - Added correct test case with full sequences
 - Test passed at this commit
 
 **Timeline:**
+
 ```
 2015-05-03: isCyclic algorithm fixed (d462225) ✅
             - Added correct test: "a2 b0 b0 a2 b0 b0..."
@@ -85,6 +92,7 @@ The boundary check used `>=` (greater than or equal) when it should use `>` (gre
 When a node's `Owns` field equals the remaining sequence length, the node **completely fills** the remaining space. This is **valid** and should not be rejected.
 
 **Algorithm Logic:**
+
 ```go
 // getUnitsIndexes identifies complete syntax units in a node sequence
 
@@ -108,11 +116,13 @@ for i := 0; i < len(nodeSeq); {
 ```
 
 **Impact of Bug:**
+
 - Algorithm was incorrectly rejecting valid syntax units
 - Returning empty results `[]` instead of expected indexes
 - All test cases using boundary conditions failing
 
 **Test Cases Fixed:**
+
 ```go
 {"a8 a0 a2 a0", 3, []int{2}},
   - Got: []      (incorrectly rejected)
@@ -141,6 +151,7 @@ for i := 0; i < len(nodeSeq); {
 Commit 905f317 shortened test case sequences, making them too short for the indexes being tested.
 
 **Example Failure:**
+
 ```go
 Test Case: 'a0', indexes [0, 1]
 Sequence:  [a]  (length = 1)
@@ -154,6 +165,7 @@ Fix:       Restore to 'a0 a0' (length = 2, indexes valid)
 **Test Cases Restored:**
 
 **Test Case 1 (Line 80):**
+
 ```go
 // BROKEN (commit 905f317):
 {"a0", []int{0, 1}, true}
@@ -166,6 +178,7 @@ Impact:     Test now passes
 ```
 
 **Test Case 2 (Line 86):**
+
 ```go
 // BROKEN (commit 905f317):
 {"a1 ", []int{0, 4], false}
@@ -178,6 +191,7 @@ Impact:     Test now passes
 ```
 
 **Test Case 3 (Line 87):**
+
 ```go
 // BROKEN (commit 905f317):
 {"a2 b0 a2 b0 a2 b0 a2 b0 a2 b0", []int{0, 3, 6, 9, 12}, true}
@@ -194,11 +208,13 @@ Impact:     Test now passes
 ### 4. Verified All Syntax Tests Pass After Fixes ✅
 
 **Command:**
+
 ```bash
 go test -v ./syntax
 ```
 
 **Results:**
+
 ```
 ✅ TestFindSyntaxUnitsOwnershipCheck - PASS
 ✅ TestFindSyntaxUnitsConsistentOwnership - PASS
@@ -212,11 +228,13 @@ go test -v ./syntax
 ```
 
 **Test Results:**
+
 - **Before Fix:** 33% pass rate (6/18 test cases)
 - **After Fix:** 100% pass rate (15/15 test cases)
 - **Improvement:** +67% (doubled success rate)
 
 **Syntax Package Summary:**
+
 - 6 test suites: ✅ All passing
 - 15 test cases: ✅ All passing
 - Execution time: 0.160s (fast!)
@@ -225,6 +243,7 @@ go test -v ./syntax
 ### 5. Documentation Created ✅
 
 **Status Report:**
+
 - **File:** `docs/status/2026-01-05_11-39_PARETO-PHASE1-SPRINT1-COMPLETE-SPRINT2-BLOCKED.md`
 - **Size:** ~4KB, 500+ lines
 - **Content:** Comprehensive analysis including:
@@ -239,6 +258,7 @@ go test -v ./syntax
 ### 6. Git History Cleaned ✅
 
 **Commit:**
+
 ```
 commit 5898083
 Author: Lars Artmann <lars@artmann.io>
@@ -253,17 +273,20 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 ```
 
 **Commit Details:**
+
 - Files changed: 3
 - Lines added: 651 (status report + test data changes)
 - Lines removed: 5
 - Commit message: 4KB (very detailed)
 
 **Files Committed:**
+
 1. `syntax/syntax.go` - 1 line fix (boundary condition)
 2. `syntax/syntax_test.go` - 4 test case restorations
 3. `docs/status/2026-01-05_11-39_*.md` - comprehensive status report
 
 **Git Status:**
+
 - ✅ Working tree clean
 - ✅ Pushed to origin/fork
 - ✅ No uncommitted changes
@@ -284,6 +307,7 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 #### ✅ Detection Methods Implemented (4/4)
 
 **1. DetectionMethodArtDupl - Suffix Tree Algorithm**
+
 - **Status:** ✅ FULLY IMPLEMENTED
 - **File:** `suffixtree/suffixtree.go`
 - **Algorithm:** Suffix tree on serialized AST tokens
@@ -292,6 +316,7 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 - **Limitation:** Language-specific (Go only)
 
 **2. DetectionMethodHash - Rolling Hash Algorithm**
+
 - **Status:** ✅ FULLY IMPLEMENTED
 - **File:** `hash/file_detector.go`
 - **Algorithm:** Rolling hash on file content
@@ -300,6 +325,7 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 - **Limitation:** Only finds exact matches, no structural awareness
 
 **3. DetectionMethodTodos - TODO Comment Detection**
+
 - **Status:** ✅ FULLY IMPLEMENTED
 - **File:** `detection/todos.go` (262 lines)
 - **Algorithm:** Regex pattern matching on Go AST comments
@@ -318,6 +344,7 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 - **Limitation:** Only comments, not code
 
 **4. DetectionMethodLegacy - Legacy Pattern Detection**
+
 - **Status:** ✅ FULLY IMPLEMENTED
 - **File:** `detection/todos.go` (lines 151-262)
 - **Algorithm:** Pattern matching on deprecated code
@@ -339,6 +366,7 @@ were introduced by commit 905f317 (style: standardize comment formatting).
 **Author:** Part of the codebase (creation date unknown)
 
 **Architecture:**
+
 ```go
 type MultiDetector struct {
     config  *config.Config
@@ -353,6 +381,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match
 **Current Implementation:**
 
 **Case 1: Default Method (ArtDupl only)**
+
 ```go
 if md.config.DetectionMethods.IsDefault() {
     // Convert suffix tree matches to syntax matches
@@ -370,9 +399,11 @@ if md.config.DetectionMethods.IsDefault() {
     return resultChan
 }
 ```
+
 ✅ **Status:** FULLY IMPLEMENTED
 
 **Case 2: Multiple Methods (Hash + ArtDupl)**
+
 ```go
 // Create combined channel
 resultChan := make(chan syntax.Match)
@@ -410,9 +441,11 @@ go func() {
 
 return resultChan
 ```
+
 ✅ **Status:** FULLY IMPLEMENTED
 
 **Missing Features (20%):**
+
 - ❌ No Todos detector support
 - ❌ No Legacy detector support
 - ❌ No result deduplication across methods
@@ -425,6 +458,7 @@ return resultChan
 **Field:** `DetectionMethods DetectionMethods`
 
 **Definition:**
+
 ```go
 type Config struct {
     // ... other fields ...
@@ -437,6 +471,7 @@ type Config struct {
 **Supported:** Multiple methods via JSON config
 
 **Enum Type:** `config/DetectionMethod` (114 lines)
+
 ```go
 type DetectionMethod string
 
@@ -449,6 +484,7 @@ const (
 ```
 
 **Methods:**
+
 - `IsValid()` - Check if method is supported ✅
 - `MarshalJSON()` / `UnmarshalJSON()` - JSON support ✅
 - `ParseDetectionMethods()` - Parse comma-separated string ✅
@@ -457,6 +493,7 @@ const (
 - `AllDetectionMethods()` - List all supported ✅
 
 **SDK Types:** `pkg/artdupl/types.go`
+
 ```go
 type DetectionMethod string
 
@@ -481,22 +518,26 @@ const (
 **File:** `pkg/artdupl/detector.go`
 **Line:** 207
 **Code:**
+
 ```go
 // Note: Multi-detector would be used for multiple methods, but we handle single method for now
 _ = detection.NewMultiDetector(d.config, data, nil, false) // ← CRITICAL ISSUE!
 ```
 
 **Problem:**
+
 - MultiDetector is instantiated but immediately discarded (`_ =`)
 - Comment indicates "handle single method for now"
 - Multi-detection never actually runs
 
 **Impact:**
+
 - Multi-detection feature is completely non-functional
 - Users can only run single detection method
 - 80% of implementation is dead code
 
 **Solution:**
+
 ```go
 // REPLACE:
 _ = detection.NewMultiDetector(d.config, data, nil, false)
@@ -510,6 +551,7 @@ multiDetector := detection.NewMultiDetector(d.config, data, tree, d.opts.Verbose
 **File:** `pkg/artdupl/detector.go`
 **Line:** 213
 **Code:**
+
 ```go
 switch d.opts.DetectionMethods[0] { // ← CRITICAL ISSUE!
 case MethodArtDupl:
@@ -525,17 +567,20 @@ default:
 ```
 
 **Problem:**
+
 - Only uses `d.opts.DetectionMethods[0]` (first method)
 - Ignores all other methods in slice
 - Multi-detection config field is ignored
 - Even if user specifies `[hash, art-dupl, todos]`, only hash runs
 
 **Impact:**
+
 - Multi-method configuration is ignored
 - Users can only run one method
 - CLI flag `-methods` would be useless
 
 **Solution:**
+
 ```go
 // REPLACE:
 switch d.opts.DetectionMethods[0] {
@@ -552,6 +597,7 @@ matchesChan = multiDetector.FindDuplOver(threshold)
 **Lines:** 219-222 (runDetection)
 **Lines:** 268-271 (streamDetectionResults)
 **Code:**
+
 ```go
 case MethodAll:
     // For now, use art-dupl method when MethodAll is specified
@@ -560,18 +606,21 @@ case MethodAll:
 ```
 
 **Problem:**
+
 - MethodAll is supposed to run all methods
 - Currently falls back to ArtDupl only
 - TODO comment acknowledges the issue
 - Misleading behavior for users
 
 **Impact:**
+
 - `MethodAll` flag is misleading
 - Users expect all methods to run
 - Only ArtDupl runs
 - TODO comment in production code
 
 **Solution:**
+
 ```go
 // REPLACE:
 case MethodAll:
@@ -594,6 +643,7 @@ case MethodAll:
 **File:** `cli/config.go` (84 lines)
 
 **Missing Flag:**
+
 ```go
 // NEEDED:
 DetectionMethod *string  // NOT PRESENT
@@ -605,12 +655,14 @@ DetectionMethods *string // NOT PRESENT
 ```
 
 **Existing Sort Flag (Example):**
+
 ```go
 SortBy: flag.String("sort", "size",
     "sort clone groups by: size, occurrence, hash, total-tokens"),
 ```
 
 **Should Add:**
+
 ```go
 DetectionMethod: flag.String("method", "art-dupl",
     "detection method: art-dupl, hash, todos, legacy, all"),
@@ -620,6 +672,7 @@ DetectionMethods: flag.String("methods", "",
 ```
 
 **Impact:**
+
 - Users can only configure methods via JSON file
 - No CLI option for quick method selection
 - Poor UX for method switching
@@ -627,6 +680,7 @@ DetectionMethods: flag.String("methods", "",
 #### ❌ Missing Tests
 
 **Test Gaps:**
+
 1. ❌ No tests for multi-detection execution
 2. ❌ No tests for method combinations
 3. ❌ No tests for CLI method flags
@@ -635,6 +689,7 @@ DetectionMethods: flag.String("methods", "",
 6. ❌ No integration tests for end-to-end workflows
 
 **Impact:**
+
 - Multi-detection is untested
 - Bugs won't be caught by tests
 - Risk of regressions
@@ -654,6 +709,7 @@ DetectionMethods: flag.String("methods", "",
 **Estimated:** 30min
 
 **Current Code (lines 55-66):**
+
 ```go
 // Run hash detection if selected
 if md.config.DetectionMethods.Contains(config.DetectionMethodHash) {
@@ -684,6 +740,7 @@ if md.config.DetectionMethods.Contains(config.DetectionMethodArtDupl) {
 ```
 
 **Add After Line 66:**
+
 ```go
 // Run TODO detection if selected
 if md.config.DetectionMethods.Contains(config.DetectionMethodTodos) {
@@ -717,12 +774,14 @@ if md.config.DetectionMethods.Contains(config.DetectionMethodLegacy) {
 **Estimated:** 60min
 
 **Remove Line 207:**
+
 ```go
 // DELETE:
 _ = detection.NewMultiDetector(d.config, data, nil, false)
 ```
 
 **Replace runDetection() Switch (lines 200-254):**
+
 ```go
 // OLD CODE:
 func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
@@ -805,6 +864,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 ```
 
 **Replace streamDetectionResults() Switch (lines 257-305):**
+
 ```go
 // OLD CODE:
 func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.Node, resultChan chan<- *CloneGroup) error {
@@ -877,6 +937,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 ```
 
 **Remove MethodAll Special Cases:**
+
 - Delete lines 219-222 in `runDetection()`
 - Delete lines 268-271 in `streamDetectionResults()`
 - Delete TODO comments
@@ -891,11 +952,13 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 
 **Task 9.1: Find All TODO Comments**
 **Command:**
+
 ```bash
 grep -rn "TODO.*multi-detection" --include="*.go" .
 ```
 
 **Expected Results:**
+
 ```
 pkg/artdupl/detector.go:207: // Note: Multi-detector would be used for multiple methods...
 pkg/artdupl/detector.go:221:     // TODO: Implement multi-detection method support
@@ -906,6 +969,7 @@ pkg/artdupl/detector.go:270:     // TODO: Implement multi-detection method suppo
 **File:** `pkg/artdupl/detector.go`
 
 **Remove Line 207-208:**
+
 ```go
 // DELETE:
 // Note: Multi-detector would be used for multiple methods, but we handle single method for now
@@ -913,6 +977,7 @@ _ = detection.NewMultiDetector(d.config, data, nil, false) // tree not needed fo
 ```
 
 **Remove Lines 221-222:**
+
 ```go
 // DELETE:
     // For now, use art-dupl method when MethodAll is specified
@@ -920,6 +985,7 @@ _ = detection.NewMultiDetector(d.config, data, nil, false) // tree not needed fo
 ```
 
 **Remove Lines 270-271:**
+
 ```go
 // DELETE:
     // For now, use art-dupl method when MethodAll is specified
@@ -928,6 +994,7 @@ _ = detection.NewMultiDetector(d.config, data, nil, false) // tree not needed fo
 
 **Task 9.3: Verify No Other TODOs in Detection Package**
 **Command:**
+
 ```bash
 grep -rn "TODO" --include="*.go" detection/
 ```
@@ -947,6 +1014,7 @@ grep -rn "TODO" --include="*.go" detection/
 **Estimated:** 60min
 
 **Test Cases:**
+
 ```go
 package artdupl
 
@@ -1149,6 +1217,7 @@ func TestMultiDetection_Stream(t *testing.T) {
 **Estimated:** 15min
 
 **Content:**
+
 ```go
 package testdata
 
@@ -1187,22 +1256,26 @@ func legacyUsage() {
 
 **Task 10.3: Run Tests**
 **Command:**
+
 ```bash
 go test -v ./pkg/artdupl -run TestMultiDetection
 ```
 
 **Expected Results:**
+
 - All 6 integration tests pass
 - Coverage increases
 - No regressions
 
 **Task 10.4: Run Full Test Suite**
 **Command:**
+
 ```bash
 go test -v ./...
 ```
 
 **Expected Results:**
+
 - All existing tests still pass
 - New multi-detection tests pass
 - No regressions introduced
@@ -1221,6 +1294,7 @@ go test -v ./...
 
 **Task 11.1: Find Existing Profile Flag**
 **Search:**
+
 ```bash
 grep -rn "profile\|pprof" --include="*.go" . | head -20
 ```
@@ -1230,6 +1304,7 @@ grep -rn "profile\|pprof" --include="*.go" . | head -20
 **Estimated:** 90min
 
 **Content:**
+
 ```go
 package artdupl
 
@@ -1331,6 +1406,7 @@ func (p *Profiler) PrintStats() {
 **Estimated:** 30min
 
 **Add:**
+
 ```go
 ProfileCPU *string
 ProfileMem *string
@@ -1355,6 +1431,7 @@ ProfileGoroutines: flag.String("profile-goroutine", "", "write goroutine profile
 
 **Task 12.1: Find Existing Timeout Flag**
 **Search:**
+
 ```bash
 grep -rn "timeout" --include="*.go" . | grep -E "(flag|Timeout)" | head -20
 ```
@@ -1380,6 +1457,7 @@ grep -rn "timeout" --include="*.go" . | grep -E "(flag|Timeout)" | head -20
 
 **Task 13.1: Find Existing Sorting Function**
 **Search:**
+
 ```bash
 grep -rn "total-tokens\|TotalTokens" --include="*.go" . | head -10
 ```
@@ -1414,7 +1492,7 @@ grep -rn "total-tokens\|TotalTokens" --include="*.go" . | head -10
    - Line 87: Restored sequence to include all b0 nodes
    - Status: ✅ COMMITTED (5898083)
 
-3. **docs/status/2026-01-05_11-39_*.md** - Comprehensive status report
+3. **docs/status/2026-01-05*11-39*\*.md** - Comprehensive status report
    - Size: ~4KB, 500+ lines
    - Content: Root cause analysis, algorithm explanations, git history
    - Status: ✅ COMMITTED (5898083)
@@ -1470,6 +1548,7 @@ grep -rn "total-tokens\|TotalTokens" --include="*.go" . | head -10
 **Complexity:** O(n) where n = len(nodeSeq)
 
 **Key Logic:**
+
 1. Iterate through node sequence
 2. Check each node's `Owns` field (number of nodes it owns)
 3. Validate boundary condition: `Owns` must fit within remaining sequence
@@ -1478,10 +1557,12 @@ grep -rn "total-tokens\|TotalTokens" --include="*.go" . | head -10
 6. Skip owned nodes (`i += Owns + 1`)
 
 **Bug Fixed:**
+
 - **Before:** `n.Owns >= len(nodeSeq)-i` (rejected exact fits)
 - **After:** `n.Owns > len(nodeSeq)-i` (allows exact fits)
 
 **Example:**
+
 ```
 Sequence: "a8 a0 a2 a0"
 Nodes:    [a:8][a:0][a:2][a:0]
@@ -1495,9 +1576,10 @@ i=1: n.Owns=0, remaining=3, 0 > 3? NO, 0+1=1 < threshold? NO → add index 1
 
 **Purpose:** Detect repetitive patterns in code clones to suppress redundant results.
 
-**Complexity:** O(n * m) where n = len(nodes), m = len(indexes)
+**Complexity:** O(n \* m) where n = len(nodes), m = len(indexes)
 
 **Key Logic:**
+
 1. Find all divisors of index count (possible cycle lengths)
 2. For each node position:
    - Compare node with nodes at cycle positions
@@ -1506,6 +1588,7 @@ i=1: n.Owns=0, remaining=3, 0 > 3? NO, 0+1=1 < threshold? NO → add index 1
 4. If no cycles match, return false (not cyclic)
 
 **Example:**
+
 ```
 Sequence: "a1 b0 a1 b0"
 Indexes:  [0, 2]
@@ -1519,6 +1602,7 @@ Result: true (is cyclic - pattern repeats)
 ```
 
 **Use Case:**
+
 - Suppress reporting same clone multiple times
 - Reduce output noise
 - Improve user experience by showing unique clones
@@ -1528,6 +1612,7 @@ Result: true (is cyclic - pattern repeats)
 #### Current State (80% Implemented)
 
 **Implemented Components:**
+
 1. ✅ Detection Methods (4/4)
    - ArtDupl: Suffix tree algorithm
    - Hash: Rolling hash algorithm
@@ -1549,11 +1634,13 @@ Result: true (is cyclic - pattern repeats)
    - MethodAll exists but falls back
 
 **Integration Gaps (3 critical issues):**
+
 1. ❌ MultiDetector created but never used (line 207: `_ = ...`)
 2. ❌ detector.go uses only `Methods[0]` (first method only)
 3. ❌ MethodAll falls back to ArtDupl (doesn't run all methods)
 
 **Missing Components:**
+
 1. ❌ CLI flag for method selection
 2. ❌ Todos/Legacy in MultiDetector
 3. ❌ Result deduplication across methods
@@ -1562,6 +1649,7 @@ Result: true (is cyclic - pattern repeats)
 #### Proposed Architecture
 
 **Design Principles:**
+
 1. **Parallel Execution:** Run multiple methods concurrently for speed
 2. **Result Merging:** Combine results from all methods
 3. **Deduplication:** Remove duplicate clones across methods
@@ -1569,6 +1657,7 @@ Result: true (is cyclic - pattern repeats)
 5. **Flexible Configuration:** Support any combination of methods
 
 **Data Flow:**
+
 ```
 User Input (CLI/Config)
     ↓
@@ -1631,11 +1720,13 @@ Output (JSON/HTML/Text)
 ### Sprint 1 Tests (COMPLETE)
 
 **Test Suite:**
+
 ```bash
 go test -v ./syntax
 ```
 
 **Results:**
+
 - ✅ TestFindSyntaxUnitsOwnershipCheck - PASS
 - ✅ TestFindSyntaxUnitsConsistentOwnership - PASS
 - ✅ TestFindSyntaxUnitsEdgeCases - PASS (3 subtests)
@@ -1644,6 +1735,7 @@ go test -v ./syntax
 - ✅ TestCyclicDupl - PASS (10/10 test cases)
 
 **Coverage:**
+
 - All 6 test suites passing
 - All 15 test cases passing
 - 0 regressions
@@ -1653,49 +1745,61 @@ go test -v ./syntax
 **Integration Tests:**
 
 **Test 1: Single Method**
+
 ```go
 func TestMultiDetection_SingleMethod(t *testing.T)
 ```
+
 - Input: MethodArtDupl only
 - Expected: Clones found, method tagged
 - Verify: Matches current behavior
 
 **Test 2: Two Methods**
+
 ```go
 func TestMultiDetection_TwoMethods(t *testing.T)
 ```
+
 - Input: Hash + ArtDupl
 - Expected: Clones from both methods, methods tagged
 - Verify: Both methods in summary
 
 **Test 3: All Methods**
+
 ```go
 func TestMultiDetection_AllMethods(t *testing.T)
 ```
+
 - Input: Hash + ArtDupl + Todos + Legacy
 - Expected: Results from all 4 methods
 - Verify: All 4 methods in summary
 
 **Test 4: Deduplication**
+
 ```go
 func TestMultiDetection_Deduplication(t *testing.T)
 ```
+
 - Input: Two methods finding same clone
 - Expected: Clone reported once (deduplicated)
 - Verify: No duplicate hashes
 
 **Test 5: Streaming**
+
 ```go
 func TestMultiDetection_Stream(t *testing.T)
 ```
+
 - Input: Two methods, streaming mode
 - Expected: Results streamed, no blocking
 - Verify: Channel receives all results
 
 **Test 6: Error Handling**
+
 ```go
 func TestMultiDetection_Errors(t *testing.T)
 ```
+
 - Input: Invalid method, context cancellation
 - Expected: Appropriate errors
 - Verify: Graceful handling
@@ -1707,12 +1811,14 @@ func TestMultiDetection_Errors(t *testing.T)
 ### Current Performance (Sprint 1)
 
 **Test Results:**
+
 ```bash
 go test -v ./syntax
 # Execution time: 0.160s
 ```
 
 **Analysis:**
+
 - 6 test suites in 160ms = 27ms per suite
 - 15 test cases in 160ms = 11ms per case
 - Fast test execution ✅
@@ -1722,16 +1828,19 @@ go test -v ./syntax
 **Estimated Performance Impact:**
 
 **Sequential Execution (Current MultiDetector):**
+
 - 2 methods: 2x time (Hash + ArtDupl)
 - 4 methods: 4x time (Hash + ArtDupl + Todos + Legacy)
 - Memory: Baseline (one detector at a time)
 
 **Parallel Execution (Proposed):**
+
 - 2 methods: 1x time (concurrent)
 - 4 methods: 1x time (concurrent, with overhead)
 - Memory: 2-4x baseline (all detectors active)
 
 **Recommendation:**
+
 - **Small projects (< 100 files):** Parallel execution
 - **Large projects (100+ files):** Sequential execution
 - **Hybrid:** Adaptive based on file count
@@ -1743,6 +1852,7 @@ go test -v ./syntax
 ### Low Risk ✅
 
 **Sprint 1 (Syntax Test Fixes):**
+
 - ✅ Algorithm fixes are minimal and well-tested
 - ✅ Test case restorations from known-good commit
 - ✅ All syntax tests pass (100% success)
@@ -1752,6 +1862,7 @@ go test -v ./syntax
 ### Medium Risk 🔶
 
 **Sprint 2 (Multi-Detection):**
+
 - 🔶 MultiDetector exists but integration gaps are unknown
 - 🔶 Deduplication strategy not defined (requires user input)
 - 🔶 No existing tests for multi-detection
@@ -1797,6 +1908,7 @@ go test -v ./syntax
 ### Sprint 1 (COMPLETE) ✅
 
 **Criteria:**
+
 - [x] All syntax tests pass (100%)
 - [x] No regressions introduced
 - [x] Minimal code changes (1 line + test data)
@@ -1810,6 +1922,7 @@ go test -v ./syntax
 ### Sprint 2 (IN PROGRESS) 🔄
 
 **Criteria:**
+
 - [ ] MultiDetector supports all 4 methods
 - [ ] detector.go uses MultiDetector
 - [ ] MethodAll runs all methods (not just ArtDupl)
@@ -1824,6 +1937,7 @@ go test -v ./syntax
 ### Phase 1 (IN PROGRESS) 🔶
 
 **Criteria:**
+
 - [x] Sprint 1: Critical bug fixes (100%)
 - [ ] Sprint 2: Multi-detection (0%)
 - [ ] Sprint 3: Performance & features (0%)
@@ -1840,22 +1954,26 @@ go test -v ./syntax
 ### Code Changes (Sprint 1)
 
 **Files Modified:** 3
+
 - `syntax/syntax.go` - 1 line fix
 - `syntax/syntax_test.go` - 4 test case restorations
 - `docs/status/2026-01-05_11-39_*.md` - 4KB status report
 
 **Lines Changed:**
+
 - `syntax/syntax.go`: +1, -1 (net 0)
 - `syntax/syntax_test.go`: +0, -0 (test data changes only)
 - `docs/status/*.md`: +651 (new file)
 - **Total:** +652, -1 (net +651)
 
 **Test Cases Fixed:**
+
 - TestGetUnitsIndexes: 4/5 test cases now passing (was 1/5)
 - TestCyclicDupl: 2/10 test cases now passing (was 8/10)
 - **Total:** 6 test cases fixed
 
 **Test Success Rate:**
+
 - Before: 33% (6/18 test cases)
 - After: 100% (15/15 test cases)
 - **Improvement:** +67% (doubled)
@@ -1863,6 +1981,7 @@ go test -v ./syntax
 ### Time Tracking (Sprint 1)
 
 **Planned vs Actual:**
+
 - Investigate test failures: ~45m (estimated) → ~30m (actual)
 - Fix TestGetUnitsIndexes: ~60m (estimated) → ~15m (actual)
 - Fix TestCyclicDupl: ~60m (estimated) → ~30m (actual)
@@ -1876,6 +1995,7 @@ go test -v ./syntax
 ### Time Tracking (Sprint 2 - IN PROGRESS)
 
 **Estimated Remaining:**
+
 - Design architecture: 60m (COMPLETED - discovered existing)
 - Implement multi-detection: 165m
 - Remove TODO comments: 30m
@@ -1883,6 +2003,7 @@ go test -v ./syntax
 - **Estimated Total:** 330m (5h 30m)
 
 **Progress:**
+
 - Architecture design: 100% complete (discovered existing 80% implementation)
 - Implementation: 0% complete (awaiting user decision on deduplication)
 - TODO removal: 0% complete
@@ -1948,6 +2069,7 @@ go test -v ./syntax
 ### Technical Debt Management
 
 **Identified Issues:**
+
 1. **Test Debt:**
    - Commit 905f317 introduced test failures
    - Went undetected for 6+ months
@@ -1982,6 +2104,7 @@ go test -v ./syntax
 Sprint 1 (Critical Bug Fixes) completed successfully with all syntax tests passing (100% success rate). Two critical algorithmic bugs were fixed: TestGetUnitsIndexes boundary condition and TestCyclicDupl test case data corruption.
 
 **Key Achievements:**
+
 - ✅ Fixed TestGetUnitsIndexes boundary condition bug (`>=` → `>`)
 - ✅ Fixed TestCyclicDupl test cases (restored from commit d462225)
 - ✅ All syntax tests passing (15/15, 100%)
@@ -1992,6 +2115,7 @@ Sprint 1 (Critical Bug Fixes) completed successfully with all syntax tests passi
 
 **Critical Discovery (Sprint 2):**
 Multi-detection architecture **already exists** and is 80% implemented:
+
 - ✅ 4 detection methods fully implemented (ArtDupl, Hash, Todos, Legacy)
 - ✅ MultiDetector exists and supports Hash + ArtDupl
 - ✅ Config supports multiple methods
@@ -2002,6 +2126,7 @@ Multi-detection implementation blocked by 1 critical decision needed:
 **How should results from different detection methods be merged?**
 
 **Specific Questions Requiring User Answers:**
+
 1. **Execution Model:** Parallel or sequential?
 2. **Result Handling:** Merged or separate?
 3. **Deduplication Strategy:** Hash-based or location-based?
@@ -2009,11 +2134,13 @@ Multi-detection implementation blocked by 1 critical decision needed:
 5. **Output Format:** Combined, tagged, or scored?
 
 **Progress:**
+
 - Sprint 1: ✅ COMPLETE (4/4 tasks, 100%)
 - Sprint 2: 🔄 IN PROGRESS (1/4 tasks, 25%) - AWAITING USER DECISION
 - Overall Phase 1: 62.5% complete (5/8 tasks)
 
 **Next Steps:**
+
 1. User provides multi-detection architecture decisions
 2. Complete Sprint 2 implementation (Tasks 8-10, ~4h)
 3. Begin Sprint 3 (Performance & Features, Tasks 11-13, ~5.5h)

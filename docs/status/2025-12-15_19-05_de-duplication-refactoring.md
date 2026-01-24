@@ -10,10 +10,12 @@ Successfully refactored duplicate code in two key areas, improving maintainabili
 ### 1. cli.go Channel Creation Logic (Lines ~753 and ~803)
 
 **Issue**: Identical code blocks for creating duplicate detection channels in two locations:
+
 - `executeAnalysis` function (line 753)
 - `runAnalysisForAllFormats` function (line 803)
 
 **Solution**: Extracted two helper functions:
+
 - `createDuplChannel()` - For use with config containing detection methods
 - `createDuplChannelForMethod()` - For use with single method detection
 
@@ -22,10 +24,12 @@ Successfully refactored duplicate code in two key areas, improving maintainabili
 ### 2. printer/sorter.go Sorting Logic (Lines 10 and 30)
 
 **Issue**: Nearly identical sorting logic for:
+
 - `sortNodesByFilename()` - Sorting `[]*syntax.Node` groups
 - `sortClonesByFilename()` - Sorting `[]clone` groups
 
 **Solution**: Created a generic helper function:
+
 - `sortByFilenameAndPosition()` - Takes type-agnostic comparison functions
 - Updated both existing functions to use the helper
 
@@ -36,7 +40,7 @@ Successfully refactored duplicate code in two key areas, improving maintainabili
 ### Refactoring Approach
 
 1. **Pattern Recognition**: Identified identical/near-identical code blocks
-2. **Extraction Strategy**: 
+2. **Extraction Strategy**:
    - For cli.go: Created specialized functions for different contexts
    - For sorter.go: Created generic function with callbacks for type differences
 3. **Type Safety**: Ensured all refactored code maintains type safety
@@ -52,15 +56,19 @@ Successfully refactored duplicate code in two key areas, improving maintainabili
 ## Verification
 
 ### Build Status
+
 ✅ **Successful**: `go build` completes without errors
 
 ### Test Results
+
 - ✅ Unit tests pass for modified packages (`cli`, `printer`)
 - ✅ Integration tests show tool functionality preserved
 - ✅ No regressions detected in duplicate detection
 
 ### Functionality Verification
+
 ✅ **Confirmed**: Tool correctly detects duplicates post-refactoring
+
 - Tested with various threshold settings
 - Verified both detection methods (hash and suffix tree)
 - Confirmed output format generation works correctly

@@ -13,6 +13,7 @@
 All test suite failures have been successfully resolved. The project now compiles cleanly with all tests passing across 21 packages. A comprehensive code duplication analysis has been performed, documenting the relationship between legacy and current CLI implementations.
 
 **Success Metrics:**
+
 - ✅ Test Suite: 100% Passing (21 packages)
 - ✅ Build Status: Successful (no compilation errors)
 - ✅ Code Quality: All enum references consolidated to domain package
@@ -28,6 +29,7 @@ All test suite failures have been successfully resolved. The project now compile
 #### Package-by-Package Results
 
 **✅ cli Package** (3 files modified)
+
 - **cli/cli_sorting_test.go** (8 lines changed)
   - Added missing imports: `fmt`, `sort`, `testing`, `syntax`, `internal/utils`
   - Fixed 4 instances: `util.Unique()` → `utils.Unique()`
@@ -40,6 +42,7 @@ All test suite failures have been successfully resolved. The project now compile
   - Test results: `PASS: TestCLIConfig`, `PASS: TestCLIConfigHelpers`
 
 **✅ domain Package** (1 file modified)
+
 - **domain/clone_test.go** (37 lines changed)
   - Replaced all `types.FileProcessingStateCompleted` → `domain.FileProcessingStateCompleted`
   - Replaced all `types.DetectionStateCompleted` → `domain.DetectionStateCompleted`
@@ -48,18 +51,21 @@ All test suite failures have been successfully resolved. The project now compile
   - Test results: `PASS` (0.436s)
 
 **✅ migration Package** (1 file modified)
+
 - **migration/migration_test.go** (5 lines changed)
   - Replaced `types.DetectionStateCompleted` → `domain.DetectionStateCompleted` (2 occurrences)
   - Removed unused `"github.com/LarsArtmann/art-dupl/types"` import
   - Test results: `ok` (no tests to run)
 
 **✅ config Package** (1 file modified)
+
 - **config/config_test.go** (4 lines changed)
   - Changed assertion: `len(formats) != 4` → `len(formats) != 5`
   - Now accounts for `simple-json` output format added in previous work
   - Test results: `PASS` (0.587s)
 
 **✅ types Package** (1 file modified)
+
 - **types/types_test.go** (6 lines changed)
   - Commented out enum test block (lines 162-268)
   - Removed unused `"encoding/json"` import
@@ -69,6 +75,7 @@ All test suite failures have been successfully resolved. The project now compile
 ### 2. Full Test Suite Results - COMPLETE
 
 **All Packages Passing:**
+
 ```
 ✅ github.com/LarsArtmann/art-dupl            (cached)
 ✅ github.com/LarsArtmann/art-dupl/bdd            (cached)
@@ -103,6 +110,7 @@ All test suite failures have been successfully resolved. The project now compile
 **Two CLI Implementations Coexist:**
 
 **1. cli.go (Root Directory) - 605 Lines**
+
 ```go
 // Location: /cli.go
 // Size: 605 lines
@@ -110,6 +118,7 @@ All test suite failures have been successfully resolved. The project now compile
 ```
 
 **Contains:**
+
 - `Run()` function (lines 28-145) - Flag-based CLI entry point
 - `RunCobraCommand()` function (lines 400-532) - Cobra command execution (130 lines)
 - Helper functions (lines 147-605) - Shared execution logic (380 lines)
@@ -126,6 +135,7 @@ All test suite failures have been successfully resolved. The project now compile
   - `runAllModes()`
 
 **2. cmd/run.go (cmd Package) - 481 Lines**
+
 ```go
 // Location: /cmd/run.go
 // Size: 481 lines
@@ -133,6 +143,7 @@ All test suite failures have been successfully resolved. The project now compile
 ```
 
 **Contains:**
+
 - `runCmd()` function (lines 27-158) - Cobra command execution (130 lines)
 - Helper functions (lines 161-481) - Nearly identical shared logic (380 lines)
   - `createPrinter()` (identical to cli.go)
@@ -149,15 +160,16 @@ All test suite failures have been successfully resolved. The project now compile
 
 #### Duplication Breakdown
 
-| Component | cli.go Lines | cmd/run.go Lines | Duplication |
-|-----------|--------------|-----------------|-------------|
-| Cobra Command Execution | 130 (RunCobraCommand) | 130 (runCmd) | **~95% similar** |
-| Helper Functions | 380 | 380 | **~100% identical** |
-| **TOTAL** | **605** | **481** | **~470 lines duplicated** |
+| Component               | cli.go Lines          | cmd/run.go Lines | Duplication               |
+| ----------------------- | --------------------- | ---------------- | ------------------------- |
+| Cobra Command Execution | 130 (RunCobraCommand) | 130 (runCmd)     | **~95% similar**          |
+| Helper Functions        | 380                   | 380              | **~100% identical**       |
+| **TOTAL**               | **605**               | **481**          | **~470 lines duplicated** |
 
 #### Key Differences
 
 **1. Function Signatures (cmd/run.go has extra parameter):**
+
 ```go
 // cli.go (old)
 func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter) (*suffixtree.STree, []*syntax.Node, int, error)
@@ -171,6 +183,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 ```
 
 **2. Vendor Flag Handling:**
+
 - **cli.go**: Uses flag lookup in crawlPaths(): `vendorFlag := flag.Lookup("vendor")`
 - **cmd/run.go**: Passes `includeVendor` parameter from command flags
 - **cmd/run.go approach**: Cleaner, more explicit, easier to test
@@ -178,6 +191,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 **3. CLI Execution Flow:**
 
 **Current Active Path:**
+
 ```
 main.go (68 lines)
   ↓ imports
@@ -189,6 +203,7 @@ cmd.runCmd() → executeAnalysis() → printDupls()
 ```
 
 **Legacy/Backup Path:**
+
 ```
 cli.go (605 lines)
   ↓ exports
@@ -200,21 +215,25 @@ main.go (not called)
 #### Architectural Issues
 
 **1. Source of Truth Ambiguity**
+
 - Question: Which implementation is authoritative?
 - Answer: cmd/run.go (actively used by main.go)
 - Risk: cli.go changes may go unnoticed
 
 **2. Maintenance Burden**
+
 - Any bug fix requires updating both implementations
 - Risk of diverging behavior between implementations
 - ~470 lines must be kept in sync
 
 **3. Test Coverage Gap**
+
 - cmd package has no test files
 - cmd/run.go is active CLI but untested via unit tests
 - Only integration testing validates cmd/run.go
 
 **4. Package Boundary Confusion**
+
 - `cli/` directory exists (config.go, runtime.go, validation.go)
 - `cli.go` file exists in root (605 lines of logic)
 - `cmd/` package exists (root.go, flags.go, run.go, version.go)
@@ -227,12 +246,14 @@ main.go (not called)
 ### Option 1: Keep Current Structure (Do Nothing)
 
 **Pros:**
+
 - Both implementations work correctly
 - No risk of breaking changes
 - cmd/run.go is actively used and tested via integration
 - cli.go serves as backup/reference
 
 **Cons:**
+
 - ~470 lines of code duplication
 - Maintenance burden (sync required for changes)
 - Unclear source of truth
@@ -247,6 +268,7 @@ main.go (not called)
 ### Option 2: Extract Shared Logic to internal/executor (RECOMMENDED)
 
 **Approach:**
+
 1. Create `internal/executor` package
 2. Move all shared helper functions (380 lines) to executor:
    - `executeAnalysis()`
@@ -264,6 +286,7 @@ main.go (not called)
 4. Add comprehensive tests to internal/executor package
 
 **Resulting Structure:**
+
 ```
 internal/executor/
   ├── executor.go       (Core execution logic - ~200 lines)
@@ -281,6 +304,7 @@ cmd/run.go (481 → ~130 lines)
 ```
 
 **Pros:**
+
 - Eliminates ~380 lines of duplication
 - Single source of truth for execution logic
 - Easy to test (isolated executor package)
@@ -288,6 +312,7 @@ cmd/run.go (481 → ~130 lines)
 - Clear separation of concerns
 
 **Cons:**
+
 - Requires adding tests for executor package
 - Import dependencies to resolve
 - Need to ensure no import cycles
@@ -301,12 +326,14 @@ cmd/run.go (481 → ~130 lines)
 ### Option 3: Unify to Single CLI Implementation
 
 **Approach:**
+
 1. Keep cmd/run.go as single source of truth
 2. Remove RunCobraCommand() from cli.go
 3. Add deprecation notice to Run() function if still needed
 4. Consider moving remaining cli.go functions to cmd/ package
 
 **Resulting Structure:**
+
 ```
 cmd/
   ├── root.go          (Root command setup)
@@ -323,12 +350,14 @@ main.go (simplified entry point)
 ```
 
 **Pros:**
+
 - Single CLI implementation (no confusion)
 - Clear architecture
 - No duplication
 - Easier to maintain
 
 **Cons:**
+
 - Breaking changes (if anyone uses RunCobraCommand())
 - Requires updating main.go (already uses cmd package)
 - May need to migrate any remaining flag-based usage
@@ -342,18 +371,21 @@ main.go (simplified entry point)
 ### Option 4: Comprehensive Cleanup (BOTH Options 2 + 3)
 
 **Approach:**
+
 1. Extract shared logic to internal/executor (Option 2)
 2. Unify CLI implementations (Option 3)
 3. Add comprehensive tests
 4. Update documentation
 
 **Pros:**
+
 - Best of both worlds
 - Cleanest architecture
 - Minimal duplication
 - Full test coverage
 
 **Cons:**
+
 - Highest effort
 - Most changes at once
 - Higher risk of breaking changes
@@ -366,21 +398,22 @@ main.go (simplified entry point)
 
 ## 📋 FILES CHANGED (6 Files Modified)
 
-| File | Lines Added | Lines Deleted | Net Change | Purpose |
-|-------|-------------|---------------|-------------|---------|
-| cli/cli_sorting_test.go | +4 | -4 | 0 | Fix imports and util references |
-| cli/cli_test.go | +1 | 0 | +1 | Add SimpleJSON initialization |
-| config/config_test.go | +2 | -2 | 0 | Fix output format count |
-| domain/clone_test.go | +18 | -19 | -1 | Update enum references to domain |
-| migration/migration_test.go | +3 | -2 | +1 | Update enum references to domain |
-| types/types_test.go | +4 | -2 | +2 | Comment out moved enum tests |
-| **TOTAL** | **+32** | **-29** | **+3** | All test fixes |
+| File                        | Lines Added | Lines Deleted | Net Change | Purpose                          |
+| --------------------------- | ----------- | ------------- | ---------- | -------------------------------- |
+| cli/cli_sorting_test.go     | +4          | -4            | 0          | Fix imports and util references  |
+| cli/cli_test.go             | +1          | 0             | +1         | Add SimpleJSON initialization    |
+| config/config_test.go       | +2          | -2            | 0          | Fix output format count          |
+| domain/clone_test.go        | +18         | -19           | -1         | Update enum references to domain |
+| migration/migration_test.go | +3          | -2            | +1         | Update enum references to domain |
+| types/types_test.go         | +4          | -2            | +2         | Comment out moved enum tests     |
+| **TOTAL**                   | **+32**     | **-29**       | **+3**     | All test fixes                   |
 
 ---
 
 ## 📊 METRICS
 
 ### Before Fixes
+
 ```
 ✅ Build: PASSING
 ❌ Tests: 5 FAILING
@@ -393,6 +426,7 @@ main.go (simplified entry point)
 ```
 
 ### After Fixes
+
 ```
 ✅ Build: PASSING (no compilation errors)
 ✅ Tests: 21/21 PASSING (100% success rate)
@@ -401,6 +435,7 @@ main.go (simplified entry point)
 ```
 
 ### Code Quality Improvements
+
 - **Type Safety:** ✅ All enum references consolidated to domain package
 - **Consistency:** ✅ No more references to moved types package enums
 - **Maintainability:** ✅ Clear ownership of enum types
@@ -411,7 +446,9 @@ main.go (simplified entry point)
 ## 🎯 NEXT STEPS (Priority Order)
 
 ### Phase 1: Immediate (Zero Effort)
+
 **Status:** ✅ Complete
+
 - [x] Fix all test failures
 - [x] Document code duplication analysis
 - [x] Create comprehensive status report
@@ -419,10 +456,12 @@ main.go (simplified entry point)
 ### Phase 2: High Impact / Medium Work (Recommended)
 
 #### Task 1: Extract Shared Execution Logic to internal/executor
+
 **Estimated Effort:** 3-4 hours
 **Impact:** Eliminates ~380 lines of duplication
 
 **Steps:**
+
 1. Create `internal/executor` package directory
 2. Create files:
    - `executor.go` - Core execution logic
@@ -437,15 +476,18 @@ main.go (simplified entry point)
 7. Run full test suite
 
 **Result:**
+
 - ~380 lines of shared code in single location
 - Both CLI implementations benefit
 - Easy to test and maintain
 
 #### Task 2: Add Tests for cmd Package
+
 **Estimated Effort:** 2-3 hours
 **Impact:** Increases test coverage for active CLI
 
 **Steps:**
+
 1. Create `cmd/cmd_test.go`
 2. Test cases:
    - `runCmd` with various flag combinations
@@ -456,6 +498,7 @@ main.go (simplified entry point)
 4. Verify cmd package tests pass
 
 **Result:**
+
 - Active CLI (cmd/run.go) now has unit tests
 - Higher confidence in CLI changes
 - Easier to refactor safely
@@ -463,10 +506,12 @@ main.go (simplified entry point)
 ### Phase 3: Medium Impact / Medium Work (Future)
 
 #### Task 3: Unify CLI Implementations
+
 **Estimated Effort:** 2-3 hours
 **Impact:** Eliminates ~130 lines of duplication
 
 **Steps:**
+
 1. Deprecate `RunCobraCommand()` in cli.go
 2. Remove `RunCobraCommand()` from cli.go
 3. Update documentation
@@ -475,6 +520,7 @@ main.go (simplified entry point)
 6. Verify CLI still works
 
 **Result:**
+
 - Single source of truth for CLI execution
 - Clearer architecture
 - Reduced maintenance burden
@@ -482,10 +528,12 @@ main.go (simplified entry point)
 ### Phase 4: Low Impact / High Work (Optional)
 
 #### Task 4: Architectural Documentation
+
 **Estimated Effort:** 2-3 hours
 **Impact:** Better developer onboarding
 
 **Steps:**
+
 1. Create `docs/architecture/cli.md`
 2. Document:
    - CLI package structure
@@ -497,6 +545,7 @@ main.go (simplified entry point)
 5. Add diagrams (Mermaid, PlantUML)
 
 **Result:**
+
 - Clearer architecture for new contributors
 - Better documentation of design decisions
 - Easier to understand codebase
@@ -506,6 +555,7 @@ main.go (simplified entry point)
 ## 📝 NOTES & OBSERVATIONS
 
 ### What Went Well
+
 1. **Systematic Fix Approach** - Fixed packages in dependency order (cli, domain, migration, config, types)
 2. **Root Cause Analysis** - Understood that enum consolidation caused test failures (types → domain)
 3. **Comprehensive Analysis** - Documented code duplication thoroughly before proposing solutions
@@ -513,6 +563,7 @@ main.go (simplified entry point)
 5. **Incremental Changes** - Small, focused fixes to each file
 
 ### What Could Be Improved
+
 1. **Test First** - Should have run full test suite before starting to understand scope
 2. **Better Test Coverage** - cmd package has no tests (now active CLI)
 3. **Documentation** - Architecture decisions not documented (why two CLI implementations?)
@@ -520,6 +571,7 @@ main.go (simplified entry point)
 5. **Code Review** - Duplication in cmd/run.go not caught during implementation
 
 ### Lessons Learned
+
 1. **Consolidation Ripple Effects** - Moving enums from types to domain broke tests that weren't updated
 2. **Import Management** - Unused imports cause build failures, need to be removed
 3. **Test Assertions** - When adding new features (like simple-json), must update test expectations
@@ -570,6 +622,7 @@ main.go (simplified entry point)
 **Ready to Execute:**
 
 1. **Commit Test Fixes** (5 minutes)
+
    ```bash
    git add cli/cli_sorting_test.go cli/cli_test.go
    git add domain/clone_test.go migration/migration_test.go
@@ -582,11 +635,12 @@ main.go (simplified entry point)
    - Fix migration/migration_test.go: update types.* → domain.*
    - Fix config/config_test.go: update format count (4 → 5)
    - Fix types/types_test.go: comment out moved enum tests
-   
+
    All tests now pass (21 packages, 100% success)"
    ```
 
 2. **Push to Remote** (2 minutes)
+
    ```bash
    git push origin fork
    ```
@@ -603,6 +657,6 @@ main.go (simplified entry point)
 
 **Report End**
 
-*Generated: 2026-01-14 @ 04:38 CET*
-*Project: art-dupl*
-*Status: ✅ ALL TESTS PASSING - CODE ANALYSIS COMPLETE*
+_Generated: 2026-01-14 @ 04:38 CET_
+_Project: art-dupl_
+_Status: ✅ ALL TESTS PASSING - CODE ANALYSIS COMPLETE_

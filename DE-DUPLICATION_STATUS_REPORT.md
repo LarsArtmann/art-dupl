@@ -8,6 +8,7 @@
 ## 📊 EXECUTION SUMMARY
 
 ### ✅ FULLY COMPLETED
+
 1. **Enum Unmarshaling Refactoring**
    - Created `types/enum_utils.go` with generic helpers
    - Eliminated clone #7 (3 instances of duplicate unmarshaling logic)
@@ -20,15 +21,17 @@
    - Generated comprehensive HTML report
    - Identified 10 distinct clone patterns for elimination
 
-### ⚠️ PARTIALLY COMPLETED  
+### ⚠️ PARTIALLY COMPLETED
+
 1. **Generic Enum Patterns**
    - Started enum marshaling refactoring
    - Created foundation for type-safe enum handling
    - Type conversion issues remain for complete elimination
 
 ### ❌ NOT YET STARTED
+
 1. **Detection Method Refactoring** (clone #6 - HIGH IMPACT)
-2. **Validation Framework** (clone #3 - HIGH IMPACT) 
+2. **Validation Framework** (clone #3 - HIGH IMPACT)
 3. **Generic Detector Pattern** (clone #9 - HIGH IMPACT)
 4. **Sorting Logic Cleanup** (clone #5 - MEDIUM IMPACT)
 5. **Migration Validation** (clone #8 - MEDIUM IMPACT)
@@ -38,16 +41,19 @@
 ## 🎯 PRIORITY EXECUTION PLAN
 
 ### HIGH IMPACT (Do First)
+
 1. **Detection Methods Refactoring** - 2 instances in `pkg/artdupl/detector.go`
-2. **Validation Framework** - 2 instances in `domain/clone.go`  
+2. **Validation Framework** - 2 instances in `domain/clone.go`
 3. **Generic Detector Pattern** - 2 instances in `detection/todos.go`
 
 ### MEDIUM IMPACT (Do Next)
+
 4. **Sorting Logic** - 2 instances in `printer/sorter.go`
 5. **Migration Validation** - 2 instances in `migration/migration.go`
 6. **Test Patterns** - 4 instances across test files
 
 ### LOW IMPACT (Do Last)
+
 7. **Code Blocks** - 2 instances in `config/unmarshal_helper.go`
 
 ## 🤔 CRITICAL ARCHITECTURAL QUESTIONS
@@ -67,6 +73,7 @@ This question impacts the fundamental architecture and affects our ability to el
 ## 🔄 VERIFICATION STRATEGY
 
 After each refactoring:
+
 ```bash
 # Re-run analysis to verify elimination
 ./dist/dupl -t 50 --html . > after-refactoring.html

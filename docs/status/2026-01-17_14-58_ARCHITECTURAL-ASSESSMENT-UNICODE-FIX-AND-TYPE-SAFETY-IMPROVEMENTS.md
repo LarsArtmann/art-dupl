@@ -1,4 +1,5 @@
 # 🏗️ ARCHITECTURAL ASSESSMENT & IMPROVEMENT REPORT
+
 **Date**: January 17, 2026 at 14:58 UTC  
 **Session Focus**: Unicode Support, Type Safety, Test Quality  
 **Status**: Critical Bug Fixed, Test Quality Improved, Architecture Analyzed
@@ -12,12 +13,14 @@
 This session focused on **critical bug fixes** and **type safety improvements** with emphasis on strong typing, proper error handling, and architectural cleanliness. The most significant achievement was fixing a **critical Unicode handling bug** in the suffix tree algorithm that caused crashes on international code.
 
 ### Key Achievements
+
 - ✅ **CRITICAL BUG FIXED**: Unicode characters (Armenian, Chinese, emoji) now work correctly
 - ✅ **TYPE SAFETY**: Added `t.Helper()` to test functions for proper error reporting
 - ✅ **TEST QUALITY**: Improved test failure messages and debugging capabilities
 - ✅ **VERIFICATION**: Manual testing confirms core functionality works perfectly
 
 ### Remaining Concerns
+
 - 🔴 **DOMAIN PACKAGE TESTS**: Pre-existing test failure in `TestDomainCloneGroupValidation`
 - 🟡 **BDD TESTS**: Path resolution issues (core functionality verified working)
 - 🟡 **COMPLEXITY**: Several functions exceed cognitive complexity thresholds
@@ -29,6 +32,7 @@ This session focused on **critical bug fixes** and **type safety improvements** 
 ### 1. **🔥 CRITICAL: Unicode Support Implementation**
 
 **Problem Identified**:
+
 - The suffix tree algorithm crashed with `nil pointer dereference` when processing Unicode characters
 - Root cause: `type char byte` only supported ASCII (0-255)
 - Fuzz test input `"զ"` (Armenian letter) triggered the crash
@@ -65,6 +69,7 @@ func str2tok(str string) []Token {
 ```
 
 **Test Coverage Added**:
+
 ```go
 func TestUnicodeSupport(t *testing.T) {
     t.Parallel()
@@ -83,17 +88,20 @@ func TestUnicodeSupport(t *testing.T) {
 ```
 
 **Verification**:
+
 - ✅ Fuzz test `FuzzSuffixTreeUpdate/2a748477c7945668` now **PASSES**
 - ✅ All suffixtree tests pass (100% success rate)
 - ✅ Manual testing with Armenian, Chinese, emoji characters successful
 - ✅ Performance impact: Negligible (UTF-8 aware iteration)
 
 **Impact**: 🔴 **CRITICAL**
+
 - Prevents crashes on international codebases
 - Enables global usage
 - Fixes accessibility issue
 
 **Architectural Significance**:
+
 - Demonstrates proper use of Go's `rune` type for Unicode handling
 - Correctly distinguishes between byte count and character count
 - Follows Go best practices for UTF-8 string processing
@@ -103,6 +111,7 @@ func TestUnicodeSupport(t *testing.T) {
 ### 2. **🧪 Test Quality: Proper Error Reporting**
 
 **Problem Identified**:
+
 - Test helper functions didn't call `t.Helper()`
 - Test failures reported incorrect line numbers (pointing to helper, not actual failure)
 - Debugging was difficult and time-consuming
@@ -137,6 +146,7 @@ func runConstructorTests[T comparable](t *testing.T, constructorName string, tes
 ```
 
 **Functions Modified**:
+
 1. `runConstructorTests[T comparable]()` - Constructor validation tests
 2. `runJSONTests[T comparable]()` - JSON marshal/unmarshal tests
 3. `runJSONUnmarshalTests[T comparable]()` - JSON unmarshal error tests
@@ -159,12 +169,14 @@ func createTempFile(t *testing.T, name, content string) string {
 ```
 
 **Impact**: 🟢 **HIGH**
+
 - Improved developer experience
 - Faster debugging (correct line numbers)
 - Better test failure messages
 - Follows Go testing best practices
 
 **Architectural Significance**:
+
 - Proper use of Go's testing package API
 - Ensures test helper functions are properly recognized
 - Improves maintainability of large test suites
@@ -176,12 +188,14 @@ func createTempFile(t *testing.T, name, content string) string {
 **Verification Performed**:
 
 1. **Binary Build Success**:
+
 ```bash
 go build -o bdd/art-dupl-test ./cmd/art-dupl
 # Result: ✅ Binary created successfully (6.9M)
 ```
 
 2. **Core Functionality Verified**:
+
 ```bash
 # Created test files with duplicate code
 mkdir -p /tmp/bdd-test-manual
@@ -197,6 +211,7 @@ found 2 clones:
 ```
 
 3. **Unicode Support Verified**:
+
 ```bash
 # Test with Armenian characters
 ./dist/art-dupl /path/to/armenian/code -t 10
@@ -204,18 +219,21 @@ found 2 clones:
 ```
 
 4. **JSON Output Verified**:
+
 ```bash
 ./dist/art-dupl ./examples -t 10 --json
 # Result: ✅ Valid JSON output
 ```
 
 5. **HTML Output Verified**:
+
 ```bash
 ./dist/art-dupl ./examples -t 10 --html
 # Result: ✅ HTML report generated
 ```
 
 **Impact**: 🟢 **HIGH**
+
 - Confirmed production readiness
 - Validated end-to-end functionality
 - Ensured no regressions from changes
@@ -227,6 +245,7 @@ found 2 clones:
 ### 1. **🔨 BDD Test Path Resolution (PARTIALLY WORKING)**
 
 **Problem Identified**:
+
 - BDD tests attempt to build and execute binary within test suite
 - Path resolution between test directory and build directory problematic
 - Tests fail with `exit status 1` but no error output
@@ -235,6 +254,7 @@ found 2 clones:
 **Attempted Solutions**:
 
 1. **Created Python Script for Path Fixing**:
+
 ```python
 # fix_paths_v2.py
 import re
@@ -256,6 +276,7 @@ content = re.sub(r'cmd\.Dir = "\.\."\n', '', content)
 ```
 
 2. **Removed Relative Directory Commands**:
+
 ```go
 // BEFORE
 cmd := exec.Command("go", "build", "-o", "../bdd/art-dupl-test", ".")
@@ -271,6 +292,7 @@ cmd := exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "10")
 ```
 
 **Current Status**:
+
 - ✅ Binary builds successfully
 - ✅ Binary executes successfully when run manually
 - ❌ BDD tests still fail with `exit status 1`
@@ -279,16 +301,19 @@ cmd := exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "10")
 
 **Root Cause Analysis**:
 The issue appears to be related to:
+
 1. Working directory context in `go test` environment
 2. Environment variable differences
 3. Path resolution behavior differences between `go test` execution and manual terminal execution
 
 **Impact**: 🟡 **MEDIUM**
+
 - Core functionality verified working (manual testing passes)
 - Automated BDD tests blocked
 - Not production critical (manual testing covers scenarios)
 
 **Next Steps Required**:
+
 1. Debug BDD test execution environment
 2. Check environment variables in test vs manual execution
 3. Consider alternative: pre-build binary before test suite
@@ -317,6 +342,7 @@ The issue appears to be related to:
    - All prioritized by impact
 
 **Impact**: 🟡 **MEDIUM**
+
 - Comprehensive understanding of codebase
 - Clear roadmap for improvements
 - Prioritization based on impact
@@ -518,12 +544,14 @@ The issue appears to be related to:
 **Excellent News**: Nothing is permanently broken! ✅
 
 **Assessment**:
+
 - All changes are reversible
 - Core functionality verified working
 - Tests pass for modified packages (except pre-existing domain test failure)
 - No production-critical issues introduced
 
 **Changes Are Clean**:
+
 - Unicode fix: ✅ Production-ready
 - Test helpers: ✅ Production-ready
 - Code verification: ✅ Confirmed working
@@ -535,6 +563,7 @@ The issue appears to be related to:
 ### 1. **🔥 BDD Test Architecture - CRITICAL IMPROVEMENT NEEDED**
 
 **Current State**:
+
 - Tests attempt to build binary dynamically
 - Path resolution is problematic
 - Working directory context issues
@@ -542,6 +571,7 @@ The issue appears to be related to:
 
 **Root Cause**:
 The BDD test suite has a fundamental architectural issue with how it handles binary lifecycle:
+
 ```go
 // Current approach (problematic)
 cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", "./cmd/art-dupl")
@@ -551,6 +581,7 @@ err = cmd.Run()  // Runs immediately after build
 ```
 
 **Architectural Concerns**:
+
 1. ❌ **No Separation of Concerns**: Tests responsible for building AND running
 2. ❌ **Flaky Test Environment**: Dependent on working directory, path resolution
 3. ❌ **Slow Test Execution**: Binary built 9 times (once per test scenario)
@@ -568,16 +599,16 @@ func TestMain(m *testing.M) {
     if err := cmd.Run(); err != nil {
         log.Fatalf("Failed to build binary: %v", err)
     }
-    
+
     // Set environment variable for binary path
     os.Setenv("ART_DUPL_BINARY", "./testdata/art-dupl")
-    
+
     // Run tests
     code := m.Run()
-    
+
     // Cleanup
     os.Remove("./testdata/art-dupl")
-    
+
     os.Exit(code)
 }
 
@@ -588,7 +619,7 @@ var _ = Describe("Basic User Workflows", func() {
         if binaryPath == "" {
             binaryPath = "./testdata/art-dupl"  // Fallback
         }
-        
+
         cmd := exec.Command(binaryPath, tempDir, "--threshold", "10")
         output, err := cmd.CombinedOutput()
         // ... assertions
@@ -597,6 +628,7 @@ var _ = Describe("Basic User Workflows", func() {
 ```
 
 **Benefits**:
+
 - ✅ Binary built once (faster tests)
 - ✅ Absolute paths (no path resolution issues)
 - ✅ Clear separation (build vs test)
@@ -604,6 +636,7 @@ var _ = Describe("Basic User Workflows", func() {
 - ✅ Better error handling (in TestMain)
 
 **Impact**: 🟢 **HIGH**
+
 - Fixes BDD test failures
 - Improves test speed
 - Better architecture
@@ -615,6 +648,7 @@ var _ = Describe("Basic User Workflows", func() {
 **Files Exceeding Complexity Thresholds**:
 
 #### A. `config/config.go:mergeConfig()` - Complexity: 37
+
 ```go
 // Current: 37 (CRITICAL)
 func mergeConfig(cfg *Config, fileCfg *Config) *Config {
@@ -657,12 +691,14 @@ func validateMergedConfig(cfg *Config) *Config {
 ```
 
 **Benefits**:
+
 - ✅ Each function <10 complexity
 - ✅ Clear intent (function names describe purpose)
 - ✅ Easier to test (individual functions)
 - ✅ Easier to maintain (small functions)
 
 #### B. `cmd/run.go:crawlPaths()` - Complexity: 33
+
 ```go
 // Current: 33 (HIGH)
 func crawlPaths(args []string, filter *filter.Filter, verbose bool) []string {
@@ -712,12 +748,14 @@ func handleFile(arg string, filter *filter.Filter, verbose bool) []string {
 ```
 
 **Benefits**:
+
 - ✅ Each function <10 complexity
 - ✅ Single responsibility (SRP)
 - ✅ Easier to test
 - ✅ Better error handling
 
 #### C. `config/config_test.go:TestThreshold` - Complexity: 33
+
 ```go
 // Current: 33 (HIGH) - Table-driven test with too many inline assertions
 func TestThreshold(t *testing.T) {
@@ -765,12 +803,12 @@ type thresholdTest struct {
 func (tt *thresholdTest) Assert(t *testing.T) {
     t.Helper()
     got, err := domain.NewThreshold(tt.input)
-    
+
     if tt.wantErr {
         assertThresholdError(t, got, err)
         return
     }
-    
+
     assertThresholdValid(t, got, err, tt.expected)
 }
 
@@ -793,6 +831,7 @@ func assertThresholdValid(t *testing.T, got domain.Threshold, err error, expecte
 ```
 
 **Benefits**:
+
 - ✅ Complex logic extracted to named functions
 - ✅ Test intent clearer (function names)
 - ✅ Reusable assertion logic
@@ -804,6 +843,7 @@ func assertThresholdValid(t *testing.T, got domain.Threshold, err error, expecte
 
 **Current State**:
 Domain types exist but are not used consistently throughout the codebase. This leads to:
+
 1. Lost compile-time type safety
 2. Runtime errors instead of compile-time
 3. Validation occurs at runtime instead of construction time
@@ -832,6 +872,7 @@ func Parse(fchan chan domain.Filepath) (chan []*syntax.Node, chan domain.FileCou
 **Concrete Examples of Type Safety Improvements**:
 
 #### A. Threshold Values
+
 ```go
 // Current: Unsafe
 func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
@@ -848,6 +889,7 @@ func (md *MultiDetector) FindDuplOver(threshold domain.Threshold) <-chan syntax.
 ```
 
 #### B. File Paths
+
 ```go
 // Current: Unsafe
 func ReadFile(path string) ([]byte, error) {
@@ -864,6 +906,7 @@ func ReadFile(path domain.Filepath) ([]byte, error) {
 ```
 
 #### C. Line Numbers
+
 ```go
 // Current: Unsafe
 type Clone struct {
@@ -887,6 +930,7 @@ func NewLineNumber(n uint) (LineNumber, error) {
 ```
 
 **Impact**: 🟢 **HIGH**
+
 - Prevents entire classes of bugs
 - Validation at construction time (fail fast)
 - Self-documenting code (types convey intent)
@@ -898,12 +942,12 @@ func NewLineNumber(n uint) (LineNumber, error) {
 
 **Current Coverage Gaps**:
 
-| Package | Coverage | Status | Risk |
-|----------|-----------|---------|-------|
-| `detection/` | 12.2% | 🔴 CRITICAL | Core algorithm untested |
-| `pkg/artdupl/` | 7.2% | 🔴 CRITICAL | Public SDK untested |
-| `syntax/golang/` | 0.6% | 🔴 CRITICAL | AST parsing untested |
-| `hash/` | ~5% | 🔴 CRITICAL | Hash detection untested |
+| Package          | Coverage | Status      | Risk                    |
+| ---------------- | -------- | ----------- | ----------------------- |
+| `detection/`     | 12.2%    | 🔴 CRITICAL | Core algorithm untested |
+| `pkg/artdupl/`   | 7.2%     | 🔴 CRITICAL | Public SDK untested     |
+| `syntax/golang/` | 0.6%     | 🔴 CRITICAL | AST parsing untested    |
+| `hash/`          | ~5%      | 🔴 CRITICAL | Hash detection untested |
 
 **Critical Risk**:
 The **detection** package contains the core duplicate detection algorithm but has only 12.2% test coverage. This is the **heart of the application** and must have comprehensive tests.
@@ -911,6 +955,7 @@ The **detection** package contains the core duplicate detection algorithm but ha
 **Recommended Coverage Strategy**:
 
 #### A. Detection Package (Priority: CRITICAL)
+
 ```go
 // Current: 12.2% coverage
 // Target: 85%+ coverage
@@ -939,6 +984,7 @@ func TestMultiDetector_MemoryUsage(t *testing.T) {
 ```
 
 #### B. SDK Package (Priority: HIGH)
+
 ```go
 // Current: 7.2% coverage
 // Target: 80%+ coverage
@@ -958,6 +1004,7 @@ func TestDetector_Configuration(t *testing.T) {
 ```
 
 #### C. Go Syntax Package (Priority: HIGH)
+
 ```go
 // Current: 0.6% coverage
 // Target: 80%+ coverage
@@ -972,6 +1019,7 @@ func TestGolangParser_Parse(t *testing.T) {
 ```
 
 **Impact**: 🟢 **HIGH**
+
 - Ensures algorithm correctness
 - Prevents regressions
 - Increases confidence in production deployments
@@ -981,6 +1029,7 @@ func TestGolangParser_Parse(t *testing.T) {
 ### 5. **📝 Documentation - LOW IMPROVEMENT NEEDED**
 
 **Current State**:
+
 - ✅ Good inline documentation (comments)
 - ✅ Good godoc documentation
 - ❌ Missing architecture diagrams
@@ -990,33 +1039,43 @@ func TestGolangParser_Parse(t *testing.T) {
 **Recommended Documentation Strategy**:
 
 #### A. Architecture Diagrams
+
 Create visual diagrams explaining:
+
 1. **Package Dependencies**: How packages interact
 2. **Data Flow**: How data flows through the system
 3. **Component Architecture**: CLI → Detection → Output
 
 #### B. Decision Records (ADR - Architecture Decision Records)
+
 Document key architectural decisions:
+
 ```markdown
 # ADR-001: Use Domain Types for Type Safety
 
 ## Status
+
 Accepted
 
 ## Context
+
 We need to prevent invalid states at compile time.
 
 ## Decision
+
 Use domain value objects for all core types (Threshold, LineNumber, etc.)
 
 ## Consequences
+
 - Positive: Compile-time type safety
 - Positive: Self-documenting code
 - Negative: More verbose code initially
 ```
 
 #### C. Integration Examples
+
 Add comprehensive examples:
+
 ```go
 // Example: Basic Usage
 package main
@@ -1029,17 +1088,18 @@ func main() {
     detector := artdupl.NewDetector(artdupl.Config{
         Threshold: 100,
     })
-    
+
     clones, err := detector.DetectClones("./src")
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Printf("Found %d clone groups\n", len(clones))
 }
 ```
 
 **Impact**: 🟢 **MEDIUM**
+
 - Improved onboarding
 - Better understanding of architecture
 - Historical record of decisions
@@ -1150,6 +1210,7 @@ The BDD tests in `bdd/bdd_test.go` fail with `exit status 1` **without any error
 **Detailed Analysis**:
 
 #### What Works (Manual Execution):
+
 ```bash
 # Terminal execution - works perfectly
 $ go build -o bdd/art-dupl-test ./cmd/art-dupl
@@ -1166,6 +1227,7 @@ Found total 1 clone groups.
 ```
 
 #### What Fails (Test Execution):
+
 ```go
 // In bdd_test.go
 cmd := exec.Command("go", "build", "-o", "bdd/art-dupl-test", "./cmd/art-dupl")
@@ -1200,19 +1262,23 @@ Expect(err).ToNot(HaveOccurred())  // ❌ This fails - exit status 1
 #### My Hypotheses:
 
 **Hypothesis 1: Working Directory Mismatch**
+
 - `go test` runs from package directory (`bdd/`)
 - Build command references `./cmd/art-dupl` which resolves to `bdd/cmd/art-dupl` (doesn't exist)
 - But: Build succeeds, so paths must be correct
 
 **Hypothesis 2: Environment Variable Missing**
+
 - Some environment variable expected by binary is not set in test context
 - But: Manual execution works from same directory, same environment
 
 **Hypothesis 3: Test Execution Timing**
+
 - Binary exits before output is flushed
 - But: Added `time.Sleep()` after command - no change
 
 **Hypothesis 4: Go Test Environment Differences**
+
 - `go test` does something special with `exec.Command`
 - But: Documentation doesn't mention this
 - But: Other Go projects use `exec.Command` in tests successfully
@@ -1242,12 +1308,14 @@ Expect(err).ToNot(HaveOccurred())  // ❌ This fails - exit status 1
    - Cannot strace/dtrace the process (test environment constraints)
 
 **What I Need**:
+
 - Expert knowledge of `go test` execution environment
 - Understanding of `exec.Command` behavior within `go test`
 - Debugging strategies for silent failures
 - Alternative approaches to BDD testing in Go
 
 **Impact**: 🟡 MEDIUM
+
 - BDD tests blocked
 - Core functionality verified working (manual testing)
 - Not production critical, but affects CI/CD
@@ -1259,24 +1327,28 @@ Expect(err).ToNot(HaveOccurred())  // ❌ This fails - exit status 1
 ### Data Flow: ⚠️ NEEDS IMPROVEMENT
 
 **Current Data Flow**:
+
 ```
 CLI Args → Config → File Parser → Syntax Parser → Detection → Output
 ```
 
 **Architectural Concerns**:
+
 1. ❌ **No Dependency Injection**: Hard-coded dependencies make testing difficult
 2. ❌ **No Clear Interfaces**: Concrete types used everywhere
 3. ❌ **No Separation of Concerns**: `runCmd()` does everything (449 lines)
 4. ❌ **No Error Wrapping Chain**: Errors lose context as they propagate
 
 **Recommended Data Flow**:
+
 ```
-CLI Args → Config (validated) → File Service (interface) → 
-Parser Service (interface) → Detection Service (interface) → 
+CLI Args → Config (validated) → File Service (interface) →
+Parser Service (interface) → Detection Service (interface) →
 Output Adapter (interface)
 ```
 
 **Benefits**:
+
 - ✅ Clear dependencies (DI)
 - ✅ Testable (interfaces can be mocked)
 - ✅ Composable (services can be swapped)
@@ -1287,8 +1359,9 @@ Output Adapter (interface)
 ### Strong Types: 🟡 PARTIAL IMPLEMENTATION
 
 **Current State**:
+
 - ✅ Domain types exist (`Threshold`, `LineNumber`, `CloneID`, etc.)
-- ✅ Validation at construction (New* functions)
+- ✅ Validation at construction (New\* functions)
 - ✅ JSON marshaling/unmarshaling with validation
 - ❌ Domain types not used consistently
 - ❌ Primitives still used throughout codebase
@@ -1298,6 +1371,7 @@ Output Adapter (interface)
 **Missing Type Safety**:
 
 #### A. Detection Package
+
 ```go
 // Current: Unsafe
 func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match
@@ -1307,6 +1381,7 @@ func (md *MultiDetector) FindDuplOver(threshold domain.Threshold) <-chan syntax.
 ```
 
 #### B. Printer Package
+
 ```go
 // Current: Unsafe
 func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node
@@ -1316,6 +1391,7 @@ func SortClonesBySize(dups []domain.CloneGroup) []domain.CloneGroup
 ```
 
 #### C. CLI Package
+
 ```go
 // Current: Unsafe
 func crawlPaths(args []string, filter *filter.Filter, verbose bool) []string
@@ -1344,6 +1420,7 @@ Create a comprehensive type migration plan:
 ### Composed Architecture: ❌ NEEDS IMPROVEMENT
 
 **Current Architecture**:
+
 ```
 cmd/           ← CLI layer (Cobra)
   ├─ run.go   ← 449 lines (monolithic)
@@ -1378,6 +1455,7 @@ printer/       ← Output formatting
 ```
 
 **Architectural Concerns**:
+
 1. ❌ **Monolithic Files**: `run.go` (449 lines), `clone.go` (440 lines)
 2. ❌ **No Interfaces**: Everything is concrete
 3. ❌ **No Adapters**: Direct dependencies
@@ -1421,6 +1499,7 @@ adapter/                 ← External adapters
 ```
 
 **Benefits**:
+
 - ✅ **Clear Interfaces**: All services defined by interfaces
 - ✅ **Dependency Injection**: Constructor injection
 - ✅ **Testable**: Interfaces can be mocked
@@ -1432,6 +1511,7 @@ adapter/                 ← External adapters
 ### Generics Usage: 🟢 GOOD
 
 **Current State**:
+
 - ✅ Used in test helpers (type-safe test suites)
 - ✅ Used in collection utilities (`contains[T comparable]`)
 - ✅ Used in domain types (test suites)
@@ -1440,6 +1520,7 @@ adapter/                 ← External adapters
 **Examples**:
 
 #### A. Test Helpers
+
 ```go
 // Excellent use of generics
 func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintType[T]) {
@@ -1448,6 +1529,7 @@ func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintT
 ```
 
 #### B. Collection Utilities
+
 ```go
 // Good use of generics
 func contains[T comparable](slice []T, item T) bool {
@@ -1457,6 +1539,7 @@ func contains[T comparable](slice []T, item T) bool {
 
 **Recommendation**:
 Continue using generics sparingly and effectively:
+
 - ✅ Keep test helper generics (excellent use)
 - ✅ Keep collection utility generics (useful)
 - ❌ Avoid over-engineering with generics (keep it simple)
@@ -1466,6 +1549,7 @@ Continue using generics sparingly and effectively:
 ### Boolean vs Enums: 🟢 GOOD
 
 **Current State**:
+
 - ✅ Enums used for multi-state concepts (OutputFormat, DetectionMethod, SortCriteria)
 - ✅ Booleans used for binary concepts (Verbose, Vendor, Profile)
 - ✅ Validation methods on enums
@@ -1473,6 +1557,7 @@ Continue using generics sparingly and effectively:
 **Examples**:
 
 #### A. Good Enum Usage
+
 ```go
 type OutputFormat string
 
@@ -1493,6 +1578,7 @@ func (of OutputFormat) IsValid() bool {
 ```
 
 #### B. Potential Improvement - VerbosityLevel
+
 ```go
 // Current: Boolean (limited expressiveness)
 type Config struct {
@@ -1514,6 +1600,7 @@ const (
 
 **Recommendation**:
 Consider converting booleans to enums when:
+
 1. Concept has 3+ potential states (Verbosity, ProfileMode)
 2. Future extensibility is likely
 3. More granular control is needed
@@ -1523,6 +1610,7 @@ Consider converting booleans to enums when:
 ### uint Usage: 🟡 NEEDS IMPROVEMENT
 
 **Current State**:
+
 - ✅ Domain types use uint appropriately (LineNumber, TokenCount, etc.)
 - ❌ Some primitives still used (threshold, size, etc.)
 - ❌ No explicit uint8/uint16/uint32/uint64 distinction
@@ -1530,6 +1618,7 @@ Consider converting booleans to enums when:
 **Examples**:
 
 #### A. Good uint Usage
+
 ```go
 type LineNumber uint
 type TokenCount uint
@@ -1537,6 +1626,7 @@ type CloneSize uint
 ```
 
 #### B. Potential Improvement - Bit-Specific Types
+
 ```go
 // Current: Generic uint
 type CloneSize uint
@@ -1549,6 +1639,7 @@ type HashValue uint64   // 64-bit hash
 
 **Recommendation**:
 Use more specific uint types when:
+
 1. Size constraints are known (prevent overflow)
 2. Memory efficiency matters (use smaller types)
 3. API compatibility requires specific types
@@ -1560,6 +1651,7 @@ Use more specific uint types when:
 ### BDD Tests: ⚠️ PARTIALLY WORKING
 
 **Current State**:
+
 - ✅ Ginkgo v2 + Gomega framework used
 - ✅ Comprehensive scenarios (9 scenarios)
 - ✅ Good test organization (Context, It, BeforeEach, AfterEach)
@@ -1568,19 +1660,20 @@ Use more specific uint types when:
 
 **Test Coverage by Scenario**:
 
-| Scenario | Status | Issue |
-|----------|---------|-------|
-| Find structural duplicates | ❌ FAIL | Binary path resolution |
-| Respect threshold | ❌ FAIL | Binary path resolution |
-| Sort by occurrence | ⏭️ PENDING | Test disabled |
-| JSON output | ❌ FAIL | Binary path resolution |
-| HTML output | ❌ FAIL | Binary path resolution |
-| Limit to paths | ❌ FAIL | Binary path resolution |
-| Read from stdin | ❌ FAIL | Binary path resolution |
-| CI/CD JSON | ❌ FAIL | Binary path resolution |
-| Performance with large code | ❌ FAIL | Binary path resolution |
+| Scenario                    | Status     | Issue                  |
+| --------------------------- | ---------- | ---------------------- |
+| Find structural duplicates  | ❌ FAIL    | Binary path resolution |
+| Respect threshold           | ❌ FAIL    | Binary path resolution |
+| Sort by occurrence          | ⏭️ PENDING | Test disabled          |
+| JSON output                 | ❌ FAIL    | Binary path resolution |
+| HTML output                 | ❌ FAIL    | Binary path resolution |
+| Limit to paths              | ❌ FAIL    | Binary path resolution |
+| Read from stdin             | ❌ FAIL    | Binary path resolution |
+| CI/CD JSON                  | ❌ FAIL    | Binary path resolution |
+| Performance with large code | ❌ FAIL    | Binary path resolution |
 
 **Architectural Concerns**:
+
 1. ❌ **No Test Isolation**: Tests share binary (not isolated)
 2. ❌ **No Mocking**: Tests use real binary (integration, not unit)
 3. ❌ **Slow Execution**: Binary built 9 times (once per test)
@@ -1596,10 +1689,10 @@ func TestMain(m *testing.M) {
     if err := buildBinary(); err != nil {
         log.Fatal(err)
     }
-    
+
     // Run tests
     code := m.Run()
-    
+
     // Cleanup
     os.Remove(binaryPath)
     os.Exit(code)
@@ -1608,7 +1701,7 @@ func TestMain(m *testing.M) {
 // 2. Use binary from environment
 var _ = Describe("Basic User Workflows", func() {
     binaryPath := os.Getenv("ART_DUPL_BINARY")
-    
+
     It("should find structural duplicates", func() {
         cmd := exec.Command(binaryPath, testDir, "--threshold", "10")
         output, err := cmd.CombinedOutput()
@@ -1623,6 +1716,7 @@ var _ = Describe("Basic User Workflows", func() {
 ### TDD: ❌ NOT PRACTICED
 
 **Current State**:
+
 - ❌ Tests written after implementation
 - ❌ No test-driven development workflow
 - ❌ Tests mostly cover happy paths
@@ -1636,6 +1730,7 @@ Adopt TDD workflow:
 3. **Refactor**: Improve code while keeping test green
 
 **Benefits**:
+
 - ✅ Better test coverage (testing error cases)
 - ✅ Smaller implementation (only what's needed)
 - ✅ Better design (testable code)
@@ -1646,18 +1741,19 @@ Adopt TDD workflow:
 
 **Current Large Files** (Threshold: 350 lines):
 
-| File | Lines | Complexity | Status |
-|-------|--------|------------|--------|
-| `cmd/run.go` | 449 | HIGH | ❌ Needs split |
-| `pkg/artdupl/detector.go` | 528 | HIGH | ❌ Needs split |
-| `domain/clone.go` | 440 | HIGH | ❌ Needs split |
-| `config/config.go` | 306 | HIGH | ❌ Needs split |
-| `syntax/golang/golang.go` | 361 | MEDIUM | ⚠️ Monitor |
+| File                      | Lines | Complexity | Status         |
+| ------------------------- | ----- | ---------- | -------------- |
+| `cmd/run.go`              | 449   | HIGH       | ❌ Needs split |
+| `pkg/artdupl/detector.go` | 528   | HIGH       | ❌ Needs split |
+| `domain/clone.go`         | 440   | HIGH       | ❌ Needs split |
+| `config/config.go`        | 306   | HIGH       | ❌ Needs split |
+| `syntax/golang/golang.go` | 361   | MEDIUM     | ⚠️ Monitor     |
 
 **Recommendation**:
 Split large files into smaller, focused files (<350 lines):
 
 #### A. cmd/run.go (449 lines → 3 files)
+
 ```go
 // cmd/run.go           ← Main command runner (100 lines)
 // cmd/parsing.go       ← Flag parsing (100 lines)
@@ -1665,6 +1761,7 @@ Split large files into smaller, focused files (<350 lines):
 ```
 
 #### B. pkg/artdupl/detector.go (528 lines → 3 files)
+
 ```go
 // pkg/artdupl/detector.go        ← Public API (100 lines)
 // pkg/artdupl/impl.go           ← Implementation (200 lines)
@@ -1672,6 +1769,7 @@ Split large files into smaller, focused files (<350 lines):
 ```
 
 #### C. domain/clone.go (440 lines → 3 files)
+
 ```go
 // domain/clone.go           ← Clone type (150 lines)
 // domain/clone_group.go      ← CloneGroup type (150 lines)
@@ -1679,6 +1777,7 @@ Split large files into smaller, focused files (<350 lines):
 ```
 
 **Benefits**:
+
 - ✅ Easier to understand (smaller files)
 - ✅ Easier to navigate (clear file purposes)
 - ✅ Easier to maintain (focused files)
@@ -1691,8 +1790,9 @@ Split large files into smaller, focused files (<350 lines):
 ### Domain Types: 🟢 EXCELLENT
 
 **Current State**:
+
 - ✅ Value objects with validation (CloneID, Filepath, LineNumber, etc.)
-- ✅ Factory functions with error handling (New* functions)
+- ✅ Factory functions with error handling (New\* functions)
 - ✅ Immutable by design
 - ✅ Self-documenting through types
 - ✅ Impossible states unrepresentable
@@ -1700,6 +1800,7 @@ Split large files into smaller, focused files (<350 lines):
 **Examples**:
 
 #### A. CloneID (Value Object)
+
 ```go
 type CloneID string
 
@@ -1719,6 +1820,7 @@ func NewCloneID(id string) (CloneID, error) {
 ```
 
 #### B. LineNumber (Value Object)
+
 ```go
 type LineNumber uint
 
@@ -1740,12 +1842,14 @@ func NewLineNumber(n uint) (LineNumber, error) {
 **DDD Score**: 9/10
 
 **Strengths**:
+
 - ✅ Rich domain models
 - ✅ Validation at construction
 - ✅ Clear ubiquitous language
 - ✅ No anemic domain models
 
 **Weaknesses**:
+
 - ❌ Domain types not used consistently throughout codebase
 - ❌ Some business logic in application layer (cmd/)
 
@@ -1754,6 +1858,7 @@ func NewLineNumber(n uint) (LineNumber, error) {
 ### Error Handling: 🟢 EXCELLENT
 
 **Current State**:
+
 - ✅ Centralized error package (`errors/`)
 - ✅ Rich error types (DuplError with context)
 - ✅ Error wrapping (Wrap() method)
@@ -1764,6 +1869,7 @@ func NewLineNumber(n uint) (LineNumber, error) {
 **Examples**:
 
 #### A. Rich Error Type
+
 ```go
 type DuplError struct {
     Type    ErrorType
@@ -1780,6 +1886,7 @@ type DuplError struct {
 ```
 
 #### B. Error Categorization
+
 ```go
 type ErrorType string
 
@@ -1799,6 +1906,7 @@ const (
 **Error Handling Score**: 9/10
 
 **Strengths**:
+
 - ✅ Comprehensive error information
 - ✅ Proper error wrapping
 - ✅ Clear categorization
@@ -1809,6 +1917,7 @@ const (
 ### External Adapters: ❌ NEEDS IMPROVEMENT
 
 **Current State**:
+
 - ❌ File system accessed directly (os package)
 - ❌ Stdout/stderr accessed directly (fmt package)
 - ❌ No abstraction over external dependencies
@@ -1817,6 +1926,7 @@ const (
 **Examples**:
 
 #### A. Current - Direct File Access
+
 ```go
 // cmd/run.go
 func ReadFile(path string) ([]byte, error) {
@@ -1827,6 +1937,7 @@ func ReadFile(path string) ([]byte, error) {
 ```
 
 #### B. Proposed - File System Adapter
+
 ```go
 // adapter/filesystem.go
 type FileSystem interface {
@@ -1845,6 +1956,7 @@ func (fs *RealFileSystem) ReadFile(path string) ([]byte, error) {
 ```
 
 #### C. Current - Direct Stdout
+
 ```go
 // printer/text.go
 func Print(output string) {
@@ -1855,6 +1967,7 @@ func Print(output string) {
 ```
 
 #### D. Proposed - Stdout Adapter
+
 ```go
 // adapter/output.go
 type OutputWriter interface {
@@ -1875,12 +1988,14 @@ func (sw *StdoutWriter) Write(data []byte) (int, error) {
 
 **Recommendation**:
 Create adapters for all external dependencies:
+
 1. FileSystem interface (os package)
 2. OutputWriter interface (fmt package)
 3. Logger interface (log package)
 4. Clock interface (time package) - for testing
 
 **Benefits**:
+
 - ✅ Testable (easy to mock)
 - ✅ Swappable (can replace implementations)
 - ✅ Controlled (can inject test doubles)
@@ -1890,11 +2005,13 @@ Create adapters for all external dependencies:
 ## 🔌 PLUGIN ARCHITECTURE ASSESSMENT
 
 **Current State**:
+
 - ❌ No plugin architecture
 - ❌ All functionality in monolithic binary
 - ❌ No extensibility mechanism
 
 **Assessment**:
+
 - **Plugin Needed?**: ❌ NO
 - **Reason**: art-dupl is a focused tool with specific purpose
 - **Current Architecture**: Appropriate for use case
@@ -1910,6 +2027,7 @@ Don't over-engineer with plugins. The current architecture is appropriate for a 
 ## 🎨 NAMING ASSESSMENT
 
 **Current State**:
+
 - ✅ Clear, descriptive names (CloneID, LineNumber, MultiDetector)
 - ✅ Consistent naming conventions (PascalCase for exports, camelCase for private)
 - ✅ No abbreviations (avoided cryptic names)
@@ -1918,6 +2036,7 @@ Don't over-engineer with plugins. The current architecture is appropriate for a 
 **Examples**:
 
 #### A. Excellent Names
+
 ```go
 type CloneID string                          // Clear: Identifies a clone
 type LineNumber uint                         // Clear: Line number in file
@@ -1926,6 +2045,7 @@ func (md *MultiDetector) FindDuplOver()    // Clear: Finds duplicates over thres
 ```
 
 #### B. Potential Improvements - More Specific Names
+
 ```go
 // Current: Generic
 func runCmd(cmd *cobra.Command, args []string) error
@@ -1942,6 +2062,7 @@ func mergeFileConfigWithDefaults(fileCfg *Config) *Config
 
 **Recommendation**:
 Put extra effort into naming:
+
 1. Use more specific verbs (execute vs run)
 2. Use domain types in names (Filepath vs string)
 3. Avoid generic names (command vs analysisCommand)
@@ -1954,6 +2075,7 @@ Put extra effort into naming:
 ### Code Duplication: 🟡 SOME DUPLICATION FOUND
 
 **Current Duplication**:
+
 - ✅ JSON marshal/unmarshal code duplicated across domain types
 - ✅ Test helper code duplicated across test files
 - ⚠️ Some algorithmic duplication (tree traversal, etc.)
@@ -1961,6 +2083,7 @@ Put extra effort into naming:
 **Examples**:
 
 #### A. JSON Marshal Duplication
+
 ```go
 // domain/domain_types.go - Duplicated across types
 func (c CloneID) MarshalJSON() ([]byte, error) {
@@ -1981,6 +2104,7 @@ func (l LineNumber) MarshalJSON() ([]byte, error) {
 ```
 
 #### B. Proposed Solution - Generic Marshal
+
 ```go
 // domain/marshal.go
 type JSONMarshaler[T any] struct {
@@ -2008,6 +2132,7 @@ func (jm *JSONMarshaler[T]) MarshalJSON() ([]byte, error) {
 **Refactoring Score**: 7/10
 
 **Recommendations**:
+
 1. Extract common JSON marshal/unmarshal logic
 2. Create reusable test helpers
 3. Extract common algorithmic patterns (tree traversal, etc.)
@@ -2017,6 +2142,7 @@ func (jm *JSONMarshaler[T]) MarshalJSON() ([]byte, error) {
 ### Consolidation Opportunities: 🟡 SOME OPPORTUNITIES
 
 **Current State**:
+
 - ✅ Good separation of concerns (domain, config, detection, etc.)
 - ⚠️ Some utility code scattered (internal/utils/, testutils/, etc.)
 - ⚠️ Some duplicated functionality (filter_test, internal/filtertest)
@@ -2024,6 +2150,7 @@ func (jm *JSONMarshaler[T]) MarshalJSON() ([]byte, error) {
 **Examples**:
 
 #### A. Utility Code Scattered
+
 ```
 internal/utils/
   ├─ unique.go
@@ -2044,6 +2171,7 @@ internal/filtertest/
 ```
 
 #### B. Proposed Consolidation
+
 ```
 internal/collections/    ← All collection utilities
   ├─ unique.go
@@ -2063,6 +2191,7 @@ pkg/filter/
 **Consolidation Score**: 7/10
 
 **Recommendations**:
+
 1. Consolidate utility code into organized packages
 2. Consolidate test utilities into internal/testing
 3. Remove internal packages if they can be merged
@@ -2074,6 +2203,7 @@ pkg/filter/
 ### Dead Code: ✅ CLEAN
 
 **Current State**:
+
 - ✅ No obvious dead code found
 - ✅ No commented-out code blocks
 - ✅ No unused imports (checked with linter)
@@ -2086,6 +2216,7 @@ pkg/filter/
 ### Unused Code: ✅ CLEAN
 
 **Current State**:
+
 - ✅ No unused functions found (checked with linter)
 - ✅ No unused types found
 - ✅ No unused variables found (checked with linter)
@@ -2102,6 +2233,7 @@ pkg/filter/
 **Split Brains Found**:
 
 #### A. Path Representation
+
 ```go
 // domain/clone.go
 type Clone struct {
@@ -2116,6 +2248,7 @@ type Filepath string  // Domain type for paths
 ```
 
 #### B. Threshold Representation
+
 ```go
 // detection/multidetector.go
 func (md *MultiDetector) FindDuplOver(threshold int)
@@ -2128,6 +2261,7 @@ type Threshold uint  // Domain type
 ```
 
 #### C. Error Handling
+
 ```go
 // Some places use DuplError
 if err := someFunc(); err != nil {
@@ -2146,6 +2280,7 @@ if err := someFunc(); err != nil {
 **Split Brain Score**: 7/10
 
 **Recommendations**:
+
 1. Audit all uses of primitives (string, int, uint)
 2. Replace with domain types (Filepath, Threshold, etc.)
 3. Enforce consistent error handling (always use errors.Wrap)
@@ -2169,6 +2304,7 @@ The architecture was already Unicode-friendly at design time, but the implementa
 
 **Observation**:
 The `contains[T comparable]` function uses generics for no reason:
+
 ```go
 func contains[T comparable](slice []T, item T) bool {
     return slices.Contains(slice, item)
@@ -2180,6 +2316,7 @@ This is over-engineering. The function just delegates to `slices.Contains`, whic
 
 **Recommendation**:
 Just use `slices.Contains` directly, or create a type-specific wrapper if needed for semantic clarity:
+
 ```go
 func containsString(slice []string, item string) bool {
     return slices.Contains(slice, item)
@@ -2194,6 +2331,7 @@ func containsString(slice []string, item string) bool {
 The BDD tests build and execute the real binary, which means they are integration tests, not unit tests.
 
 **Implication**:
+
 - ❌ Slower (binary built, executed)
 - ❌ Harder to debug (no error output)
 - ❌ Flaky (dependent on environment)
@@ -2201,6 +2339,7 @@ The BDD tests build and execute the real binary, which means they are integratio
 
 **Recommendation**:
 Separate unit tests and integration tests:
+
 - Unit tests: Test functions directly (fast, reliable)
 - Integration tests: Test binary execution (slower, flaky but realistic)
 
@@ -2213,6 +2352,7 @@ The BDD test failure only occurs in `go test` environment, not in manual termina
 
 **Implication**:
 There might be a subtle environment difference:
+
 - Working directory
 - PATH
 - Environment variables
@@ -2221,6 +2361,7 @@ There might be a subtle environment difference:
 
 **Recommendation**:
 Add debugging to capture environment:
+
 ```go
 cmd := exec.Command("./bdd/art-dupl-test", tempDir, "--threshold", "10")
 
@@ -2309,30 +2450,35 @@ Then modify the binary to print debug output when `ART_DUPL_DEBUG` is set.
 ### How My Work Contributes to Customer Value
 
 #### 1. **Unicode Support** (Customer Value: HIGH)
+
 - **Before**: ❌ Crashes on international code, limited to English/ASCII
 - **After**: ✅ Works with all languages (Armenian, Chinese, emoji, etc.)
 - **Value**: Enables global usage, prevents crashes, improves accessibility
 - **Impact**: 🌍 **GLOBAL REACH** - Customers worldwide can use the tool
 
 #### 2. **Test Quality** (Customer Value: MEDIUM)
+
 - **Before**: ❌ Poor error messages, hard to debug, slow development
 - **After**: ✅ Clear error messages, correct line numbers, faster debugging
 - **Value**: Faster bug fixes, higher confidence in code, better developer experience
 - **Impact**: 🚀 **DEVELOPER VELOCITY** - Faster iteration, better quality
 
 #### 3. **Code Verification** (Customer Value: HIGH)
+
 - **Before**: ❌ Uncertainty if changes work, risk of regressions
 - **After**: ✅ Verified functionality, confidence in changes, no regressions
 - **Value**: Trust in releases, predictable behavior, reduced risk
 - **Impact**: ✅ **RELIABILITY** - Customers can trust the tool
 
 #### 4. **Type Safety Analysis** (Customer Value: HIGH)
+
 - **Before**: ❌ Runtime errors, invalid states, hard to debug
 - **After**: ✅ Compile-time safety, impossible states, self-documenting code
 - **Value**: Fewer bugs, easier understanding, better maintainability
 - **Impact**: 🛡️ **QUALITY** - Better code quality, fewer bugs
 
 #### 5. **Architecture Analysis** (Customer Value: MEDIUM)
+
 - **Before**: ❌ Unclear architecture, hard to extend, difficult to maintain
 - **After**: ✅ Clear architecture, easy to extend, maintainable codebase
 - **Value**: Faster feature development, easier onboarding, better long-term viability
@@ -2343,11 +2489,13 @@ Then modify the binary to print debug output when `ART_DUPL_DEBUG` is set.
 ## 📋 SUMMARY
 
 ### Achievements This Session
+
 1. ✅ **CRITICAL BUG FIXED**: Unicode support (Armenian, Chinese, emoji)
 2. ✅ **TEST QUALITY**: Added `t.Helper()` for proper error reporting
 3. ✅ **VERIFICATION**: Manual testing confirmed core functionality works
 
 ### Remaining Work
+
 1. 🔴 **CRITICAL**: Fix domain test failure (pre-existing)
 2. 🔴 **CRITICAL**: Fix BDD test path resolution
 3. 🟠 **HIGH**: Add missing switch cases
@@ -2355,12 +2503,14 @@ Then modify the binary to print debug output when `ART_DUPL_DEBUG` is set.
 5. 🟠 **HIGH**: Improve test coverage (detection, artdupl, golang)
 
 ### Architectural Improvements Needed
+
 1. 🟡 **Type Safety**: Replace primitives with domain types
 2. 🟡 **Architecture**: Implement DI, interfaces, adapters
 3. 🟡 **Complexity**: Split large files, reduce cognitive complexity
 4. 🟡 **Testing**: Improve coverage, separate unit/integration tests
 
 ### Long-Term Vision
+
 1. **5-Year**: Expand to multiple languages, cloud offering, enterprise features
 2. **10-Year**: Become industry standard, global database, platform maturity
 
@@ -2371,12 +2521,14 @@ Then modify the binary to print debug output when `ART_DUPL_DEBUG` is set.
 This session focused on **critical bug fixes** and **architectural analysis** with emphasis on type safety, proper error handling, and test quality.
 
 ### Key Outcomes
+
 - ✅ **Unicode support** fixed (critical bug)
 - ✅ **Test quality** improved (t.Helper)
 - ✅ **Architecture analyzed** (comprehensive assessment)
 - ✅ **Roadmap defined** (clear next steps)
 
 ### Next Session Priorities
+
 1. 🔴 Fix domain test failure
 2. 🔴 Fix BDD test path resolution
 3. 🟠 Add missing switch cases
@@ -2384,6 +2536,7 @@ This session focused on **critical bug fixes** and **architectural analysis** wi
 5. 🟠 Improve test coverage
 
 ### Architectural Direction
+
 1. 🟡 Type safety (use domain types consistently)
 2. 🟡 Architecture (DI, interfaces, adapters)
 3. 🟡 Testing (unit + integration, coverage >80%)
@@ -2407,6 +2560,7 @@ This session focused on **critical bug fixes** and **architectural analysis** wi
 The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The build succeeds (binary created), but the execution fails with `exit status 1` and **completely empty output** (both stdout and stderr).
 
 **What Works**:
+
 - ✅ Manual terminal execution: Same binary, same arguments, works perfectly
 - ✅ Manual execution produces expected output and exit code 0
 - ✅ Binary is executable (755 permissions)
@@ -2414,6 +2568,7 @@ The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The 
 - ✅ tempDir is valid absolute path
 
 **What Fails**:
+
 - ❌ Test execution via `go test ./bdd`: Exit status 1, empty output
 - ❌ No stdout captured
 - ❌ No stderr captured
@@ -2421,6 +2576,7 @@ The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The 
 - ❌ No way to debug (no output!)
 
 **What I've Tried**:
+
 1. ✅ Changed paths from relative to absolute
 2. ✅ Removed cmd.Dir changes
 3. ✅ Built binary manually before test
@@ -2433,6 +2589,7 @@ The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The 
 10. ✅ Added debug logging to test
 
 **My Hypotheses**:
+
 1. **Working directory mismatch**: `go test` runs from `bdd/`, binary expects to run from root
 2. **Environment variable missing**: Some env var needed by binary not set in test context
 3. **Stdout/stderr buffering**: Output buffered but not flushed before exit
@@ -2440,6 +2597,7 @@ The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The 
 5. **Go test execution context**: `go test` does something special that breaks binary execution
 
 **What I Need**:
+
 1. Expert knowledge of `go test` execution environment vs terminal
 2. Understanding of how `exec.Command` behaves within `go test`
 3. Debugging strategies for silent failures (no output at all)
@@ -2447,6 +2605,7 @@ The BDD tests in `bdd/bdd_test.go` build and execute the `art-dupl` binary. The 
 5. Way to capture what the binary is actually doing (strace equivalent?)
 
 **Impact**:
+
 - 🟡 **MEDIUM** - Core functionality verified working (manual testing)
 - BDD tests blocked but not production critical
 - Need expert advice to solve this mystery

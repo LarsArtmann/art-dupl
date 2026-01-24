@@ -108,7 +108,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: '1.21'
+          go-version: "1.21"
 
       - name: Install art-dupl
         run: go install github.com/LarsArtmann/art-dupl@latest
@@ -299,13 +299,13 @@ The HTML report provides:
 ```json
 {
   "ignoreFiles": [
-    "*_test.go",     // Test files often repeat setup code
-    "*_mock.go",     // Generated mocks
-    "*_gen.go",      // Generated code
-    "vendor/*",      // Dependencies
-    "*.pb.go",       // Protocol buffers
-    "*.mock.go",     // Mock implementations
-    "testdata/*"     // Test data
+    "*_test.go", // Test files often repeat setup code
+    "*_mock.go", // Generated mocks
+    "*_gen.go", // Generated code
+    "vendor/*", // Dependencies
+    "*.pb.go", // Protocol buffers
+    "*.mock.go", // Mock implementations
+    "testdata/*" // Test data
   ]
 }
 ```

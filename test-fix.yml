@@ -363,32 +363,32 @@ linters:
     enable-all-rules: true
     disabled-rules:
       # Style rules that create too many warnings
-      - file-length-limit  # File length warnings are less critical
-      - export-rule  # Exported name warnings can be too strict
-      - var-naming  # Variable naming conflicts with varnamelen
-      - blank-imports  # Handled by goimports
-      - context-as-argument  # Context in struct is sometimes necessary
-      - context-keys-type  # Context key type warnings
-      - dot-imports  # Dot imports are sometimes useful for tests
-      - errorf  # Error formatting rules
-      - error-naming  # Error name rules
-      - error-strings  # Error string rules
-      - exported  # Exported function comments
-      - if-return  # If-return warnings
-      - import-shadowing  # Import shadowing warnings
-      - indent-error-flow  # Indent error flow warnings
-      - max-public-structs  # Max public structs warning
-      - modifies-parameter  # Modifies parameter warnings
-      - range  # Range loop warnings
-      - receiver-naming  # Receiver naming conflicts with varnamelen
-      - redefines-builtin-id  # Redefines builtin warnings
-      - string-format  # String format warnings
-      - struct-tag  # Struct tag conflicts with tagliatelle
-      - superfluous-else  # Superfluous else warnings
-      - time-naming  # Time naming warnings
-      - unexported-return  # Unexported return warnings
-      - unused-parameter  # Handled by unparam linter
-      - waitgroup-by-value  # Waitgroup by value warning
+      - file-length-limit # File length warnings are less critical
+      - export-rule # Exported name warnings can be too strict
+      - var-naming # Variable naming conflicts with varnamelen
+      - blank-imports # Handled by goimports
+      - context-as-argument # Context in struct is sometimes necessary
+      - context-keys-type # Context key type warnings
+      - dot-imports # Dot imports are sometimes useful for tests
+      - errorf # Error formatting rules
+      - error-naming # Error name rules
+      - error-strings # Error string rules
+      - exported # Exported function comments
+      - if-return # If-return warnings
+      - import-shadowing # Import shadowing warnings
+      - indent-error-flow # Indent error flow warnings
+      - max-public-structs # Max public structs warning
+      - modifies-parameter # Modifies parameter warnings
+      - range # Range loop warnings
+      - receiver-naming # Receiver naming conflicts with varnamelen
+      - redefines-builtin-id # Redefines builtin warnings
+      - string-format # String format warnings
+      - struct-tag # Struct tag conflicts with tagliatelle
+      - superfluous-else # Superfluous else warnings
+      - time-naming # Time naming warnings
+      - unexported-return # Unexported return warnings
+      - unused-parameter # Handled by unparam linter
+      - waitgroup-by-value # Waitgroup by value warning
     rules:
       # Keep critical rules enabled
       - name: defer
@@ -1088,7 +1088,7 @@ linters:
   # Variable name length validation - RELAXED for practical development
   varnamelen:
     max-distance: 5
-    min-name-length: 1  # Changed from 3 to allow single-letter vars
+    min-name-length: 1 # Changed from 3 to allow single-letter vars
     check-receiver: true
     check-return: true
     check-type-param: true

@@ -275,10 +275,10 @@ _(Text representation of working functionality)_
 
 ```json
 {
-  "files_analyzed": 0,           // ❌ BROKEN
-  "hash": "hash1",              // ❌ PLACEHOLDER
-  "size": 1234,                // ❌ CHARACTER COUNT
-  "line_end": 1234             // ❌ INCORRECT
+  "files_analyzed": 0, // ❌ BROKEN
+  "hash": "hash1", // ❌ PLACEHOLDER
+  "size": 1234, // ❌ CHARACTER COUNT
+  "line_end": 1234 // ❌ INCORRECT
 }
 ```
 
@@ -286,10 +286,10 @@ _(Text representation of working functionality)_
 
 ```json
 {
-  "files_analyzed": 8,           // ✅ ACCURATE
-  "hash": "04d542c8fc5...",     // ✅ SHA256
-  "size": 4,                   // ✅ TOKEN COUNT
-  "line_end": 143              // ✅ PRECISE
+  "files_analyzed": 8, // ✅ ACCURATE
+  "hash": "04d542c8fc5...", // ✅ SHA256
+  "size": 4, // ✅ TOKEN COUNT
+  "line_end": 143 // ✅ PRECISE
 }
 ```
 

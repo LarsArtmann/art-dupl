@@ -12,6 +12,7 @@
 The art-dupl codebase is in excellent condition with the critical `--sort occurrence` bug fully verified and working correctly. All 54 sorting BDD tests pass successfully, and the core functionality is production-ready. Minor build issues affecting non-critical packages (hash, job) need attention but don't block core operations.
 
 **Key Achievements**:
+
 - ✅ Verified occurrence sorting fix uses correct logic (total instances vs unique files)
 - ✅ Resolved build errors in pkg/filter/sqlc_yaml.go and cmd/run.go
 - ✅ Validated comprehensive BDD test infrastructure with onsi/ginkgo
@@ -19,6 +20,7 @@ The art-dupl codebase is in excellent condition with the critical `--sort occurr
 - ✅ Demonstrated correct descending order (6→5→4→3) in real code
 
 **Known Issues**:
+
 - ⚠️ internal/testutil build failure blocks hash/job package tests (non-critical)
 - ⚠️ Limited edge case test coverage for sorting scenarios
 
@@ -33,6 +35,7 @@ The art-dupl codebase is in excellent condition with the critical `--sort occurr
 **Location**: `printer/groups.go:38-43`
 
 **Fix Applied** (previously):
+
 ```go
 // Before Fix (incorrect):
 case SortByOccurrence:
@@ -48,6 +51,7 @@ case SortByOccurrence:
 ```
 
 **Verification Steps**:
+
 1. ✅ Reviewed source code - Confirmed fix uses `len(groups[key])`
 2. ✅ Built binary successfully - No compilation errors
 3. ✅ Ran sorting BDD tests - All 54/54 tests pass
@@ -55,6 +59,7 @@ case SortByOccurrence:
 5. ✅ Verified semantic correctness - Most frequent clones appear first
 
 **Test Results**:
+
 ```
 ./art-dupl --sort occurrence --threshold 15 ./printer
 
@@ -71,6 +76,7 @@ found 2 clones:   # Lowest frequency
 ```
 
 **Impact**:
+
 - ✅ Users now see truly most prevalent clones first
 - ✅ Improved refactoring prioritization accuracy
 - ✅ Better alignment with user expectations
@@ -85,6 +91,7 @@ found 2 clones:   # Lowest frequency
 **Issue**: Unused `fmt` import causing build failure
 
 **Fix**:
+
 ```diff
 import (
 -   "fmt"
@@ -102,6 +109,7 @@ import (
 #### 2.2 Fixed: cmd/run.go
 
 **Issues**:
+
 1. Missing errors package import
 2. Incorrect error wrapping syntax
 3. Wrong return signatures in executeAnalysis function
@@ -109,6 +117,7 @@ import (
 **Fixes Applied**:
 
 1. **Added errors import with alias**:
+
 ```diff
 import (
     // ...
@@ -118,6 +127,7 @@ import (
 ```
 
 2. **Fixed error wrapping calls** (10 occurrences):
+
 ```diff
 // Before:
 -   return errors.WrapValidation(err, fmt.Sprintf(...))
@@ -148,6 +158,7 @@ import (
 **Status**: ✅ INSTALLED AND WORKING
 
 **Test Suite Status**:
+
 ```
 Test Suite: art-dupl Sorting BDD Suite
 Total Specs: 54
@@ -176,6 +187,7 @@ Result: ✅ 100% PASS RATE
    - Invalid sorting options handled gracefully
 
 **Test Execution Commands**:
+
 ```bash
 # Run all sorting tests
 cd bdd && go test -v -run TestSorting
@@ -195,23 +207,27 @@ cd bdd && go test -v -run TestSorting -ginkgo.focus="occurrence"
 **Objective**: Add comprehensive test for "total instances vs unique files" scenario
 
 **Scenario to Test**:
+
 - Pattern A: 3 clones in 1 file (total: 3, unique: 1)
 - Pattern B: 2 clones in 2 files (total: 2, unique: 2)
 - Expected: Pattern A should appear first (3 > 2)
 - Before fix: Pattern B would appear first (2 > 1)
 
 **Attempted Approach**:
+
 1. Created test with multiple similar functions in one file
 2. Used validation functions with identical structure
 3. Expected to detect multiple clone instances from same file
 
 **Result**: ❌ COULD NOT MAKE TEST WORK RELIABLY
+
 - Test files were created successfully
 - Binary built successfully
 - But expected clones were not detected in output
 - Removed the test to keep test suite passing
 
 **Root Cause**: NOT INVESTIGATED
+
 - May be related to AST structure differences
 - May need lower threshold value
 - May require different code patterns
@@ -225,6 +241,7 @@ cd bdd && go test -v -run TestSorting -ginkgo.focus="occurrence"
 **Command**: `go test ./...`
 
 **Results**:
+
 ```
 ✅ github.com/LarsArtmann/art-dupl/cli - PASS
 ✅ github.com/LarsArtmann/art-dupl/cmd - [no test files]
@@ -243,15 +260,18 @@ cd bdd && go test -v -run TestSorting -ginkgo.focus="occurrence"
 ```
 
 **Build Error**:
+
 ```
 github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /Users/larsartmann/projects/art-dupl/internal/testutil
 ```
 
 **Affected Packages**:
+
 - ❌ hash (cannot build tests)
 - ❌ job (cannot build tests)
 
 **Not Affected** (Critical functionality works):
+
 - ✅ bdd (all 54 tests pass)
 - ✅ printer (core functionality)
 - ✅ detection (core functionality)
@@ -268,16 +288,19 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 **Issue**: Package is treated as "test-only" causing build failures
 
 **Error Details**:
+
 ```
 github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /Users/larsartmann/projects/art-dupl/internal/testutil
 ```
 
 **Impact**:
+
 - Blocks hash package tests
 - Blocks job package tests
 - Does NOT affect core functionality
 
 **Investigation Needed**:
+
 - Directory structure inspection
 - File content review
 - Package declaration verification
@@ -332,6 +355,7 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 ### 4. Performance Benchmarking ❌
 
 **Needed**:
+
 - Benchmarks for SortCloneGroupKeys function
 - Compare O(1) vs O(n) performance
 - Measure memory usage differences
@@ -344,6 +368,7 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 ### 5. Cross-Package Integration Testing ❌
 
 **Needed Tests**:
+
 - Printer + Detection pipeline integration
 - Sorting + Output format interactions
 - Threshold + Sort combined behavior
@@ -355,6 +380,7 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 ### 6. Security Audit ❌
 
 **Needed**:
+
 - Review all dependencies for vulnerabilities
 - Check for security best practices
 - Audit file permission handling
@@ -367,6 +393,7 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 ### 7. Release Preparation ❌
 
 **Needed**:
+
 - Update CHANGELOG.md with occurrence sorting fix
 - Bump version number (semantic versioning)
 - Prepare release notes
@@ -381,76 +408,76 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 
 ### Build Health 🟢
 
-| Component | Status | Details |
-|-----------|---------|----------|
-| Core Binary | ✅ PASS | Builds without errors |
-| CLI Package | ✅ PASS | Tests pass |
-| Config Package | ✅ PASS | Tests pass |
-| Detection Package | ✅ PASS | Tests pass |
-| Printer Package | ✅ PASS | Core functionality works |
-| BDD Package | ✅ PASS | 54/54 tests pass |
-| Hash Package | ❌ FAIL | Build issue (testutil) |
-| Job Package | ❌ FAIL | Build issue (testutil) |
-| Overall | 🟡 GOOD | Critical functionality works |
+| Component         | Status  | Details                      |
+| ----------------- | ------- | ---------------------------- |
+| Core Binary       | ✅ PASS | Builds without errors        |
+| CLI Package       | ✅ PASS | Tests pass                   |
+| Config Package    | ✅ PASS | Tests pass                   |
+| Detection Package | ✅ PASS | Tests pass                   |
+| Printer Package   | ✅ PASS | Core functionality works     |
+| BDD Package       | ✅ PASS | 54/54 tests pass             |
+| Hash Package      | ❌ FAIL | Build issue (testutil)       |
+| Job Package       | ❌ FAIL | Build issue (testutil)       |
+| Overall           | 🟡 GOOD | Critical functionality works |
 
 ---
 
 ### Test Health 🟢
 
-| Test Suite | Status | Pass Rate | Duration |
-|------------|---------|-----------|----------|
-| Sorting BDD | ✅ PASS | 100% (54/54) | 49-82s |
-| CLI Tests | ✅ PASS | 100% | <1s |
-| Config Tests | ✅ PASS | 100% | <1s |
-| Detection Tests | ✅ PASS | 100% | <1s |
-| Filter Tests | ✅ PASS | 100% | <1s |
-| Syntax Tests | ✅ PASS | 100% | Cached |
-| SuffixTree Tests | ✅ PASS | 100% | <2s |
-| Hash Tests | ❌ CANNOT RUN | N/A | Build fail |
-| Job Tests | ❌ CANNOT RUN | N/A | Build fail |
-| Overall | 🟡 EXCELLENT | Critical tests pass | |
+| Test Suite       | Status        | Pass Rate           | Duration   |
+| ---------------- | ------------- | ------------------- | ---------- |
+| Sorting BDD      | ✅ PASS       | 100% (54/54)        | 49-82s     |
+| CLI Tests        | ✅ PASS       | 100%                | <1s        |
+| Config Tests     | ✅ PASS       | 100%                | <1s        |
+| Detection Tests  | ✅ PASS       | 100%                | <1s        |
+| Filter Tests     | ✅ PASS       | 100%                | <1s        |
+| Syntax Tests     | ✅ PASS       | 100%                | Cached     |
+| SuffixTree Tests | ✅ PASS       | 100%                | <2s        |
+| Hash Tests       | ❌ CANNOT RUN | N/A                 | Build fail |
+| Job Tests        | ❌ CANNOT RUN | N/A                 | Build fail |
+| Overall          | 🟡 EXCELLENT  | Critical tests pass |            |
 
 ---
 
 ### Functionality Health 🟢
 
-| Feature | Status | Verification |
-|----------|---------|--------------|
-| Occurrence Sorting | ✅ WORKING | Tested with real code |
-| Size Sorting | ✅ WORKING | BDD tests pass |
-| Hash Sorting | ✅ WORKING | BDD tests pass |
-| Default Sorting | ✅ WORKING | BDD tests pass |
-| Error Handling | ✅ WORKING | Invalid options handled |
-| AST Processing | ✅ WORKING | All tests pass |
-| Clone Detection | ✅ WORKING | Core algorithm verified |
-| Output Generation | ✅ WORKING | Multiple formats supported |
-| Overall | 🟢 EXCELLENT | All critical features work |
+| Feature            | Status       | Verification               |
+| ------------------ | ------------ | -------------------------- |
+| Occurrence Sorting | ✅ WORKING   | Tested with real code      |
+| Size Sorting       | ✅ WORKING   | BDD tests pass             |
+| Hash Sorting       | ✅ WORKING   | BDD tests pass             |
+| Default Sorting    | ✅ WORKING   | BDD tests pass             |
+| Error Handling     | ✅ WORKING   | Invalid options handled    |
+| AST Processing     | ✅ WORKING   | All tests pass             |
+| Clone Detection    | ✅ WORKING   | Core algorithm verified    |
+| Output Generation  | ✅ WORKING   | Multiple formats supported |
+| Overall            | 🟢 EXCELLENT | All critical features work |
 
 ---
 
 ### Code Quality Health 🟢
 
-| Metric | Status | Details |
-|--------|---------|----------|
-| Linting | ✅ CLEAN | No errors after fixes |
-| Type Safety | ✅ STRICT | No `any` types in core code |
-| Error Handling | ✅ ROBUST | Type-safe error wrapping |
-| Code Style | ✅ CONSISTENT | Follows Go conventions |
-| Documentation | 🟡 PARTIAL | Core documented, needs updates |
-| Test Coverage | 🟡 GOOD | Critical paths covered |
-| Overall | 🟢 GOOD | Production-ready quality |
+| Metric         | Status        | Details                        |
+| -------------- | ------------- | ------------------------------ |
+| Linting        | ✅ CLEAN      | No errors after fixes          |
+| Type Safety    | ✅ STRICT     | No `any` types in core code    |
+| Error Handling | ✅ ROBUST     | Type-safe error wrapping       |
+| Code Style     | ✅ CONSISTENT | Follows Go conventions         |
+| Documentation  | 🟡 PARTIAL    | Core documented, needs updates |
+| Test Coverage  | 🟡 GOOD       | Critical paths covered         |
+| Overall        | 🟢 GOOD       | Production-ready quality       |
 
 ---
 
 ### Security Health 🟡
 
-| Metric | Status | Details |
-|--------|---------|----------|
-| Dependency Audit | ❌ NOT DONE | Need to run |
-| Input Validation | ✅ DONE | Proper validation in place |
-| File Permissions | ✅ SAFE | Appropriate permissions |
-| Error Messages | ✅ SAFE | No secrets in logs |
-| Overall | 🟡 NEEDS REVIEW | Security audit needed |
+| Metric           | Status          | Details                    |
+| ---------------- | --------------- | -------------------------- |
+| Dependency Audit | ❌ NOT DONE     | Need to run                |
+| Input Validation | ✅ DONE         | Proper validation in place |
+| File Permissions | ✅ SAFE         | Appropriate permissions    |
+| Error Messages   | ✅ SAFE         | No secrets in logs         |
+| Overall          | 🟡 NEEDS REVIEW | Security audit needed      |
 
 ---
 
@@ -499,12 +526,14 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 **"Why does internal/testutil fail to build with 'no non-test Go files' error when hash and job packages try to test against it?"**
 
 **Context**:
+
 - Error: `github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /Users/larsartmann/projects/art-dupl/internal/testutil`
 - Affects: hash package tests, job package tests
 - Not critical: Core functionality (bdd, printer, detection) all work fine
 - Other packages: cli, config, etc. test successfully
 
 **What's Needed**:
+
 - Inspect internal/testutil directory structure
 - View all .go files in the directory
 - Check package declarations
@@ -512,6 +541,7 @@ github.com/LarsArtmann/art-dupl/internal/testutil: no non-test Go files in /User
 - Identify what makes it different from working test utilities
 
 **Potential Causes**:
+
 - Directory contains only test files
 - Package declaration issues
 - Build tag problems
@@ -620,6 +650,7 @@ cd bdd && go test -v -run TestSorting -ginkgo.focus="occurrence"
 ### Test Output Examples
 
 **Occurrence Sorting Verification**:
+
 ```
 $ ./art-dupl --sort occurrence --threshold 15 ./printer | grep "^found" | nl
      1  found 5 clones:
@@ -635,6 +666,7 @@ $ ./art-dupl --sort occurrence --threshold 15 ./printer | grep "^found" | nl
 ```
 
 **Sort Order Verification**:
+
 ```
 $ ./art-dupl --sort occurrence --threshold 15 ./printer | \
     grep "^found" | sed 's/found \([0-9]*\).*/\1/' | sort -rn | head -10
@@ -650,6 +682,7 @@ $ ./art-dupl --sort occurrence --threshold 15 ./printer | \
 ```
 
 **BDD Test Results**:
+
 ```
 $ cd bdd && go test -v -run TestSorting
 === RUN   TestSorting

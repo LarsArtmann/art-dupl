@@ -18,6 +18,7 @@ The art-dupl project has completed two major refactoring initiatives in recent w
 The codebase is now significantly cleaner, more maintainable, and follows Go best practices. All changes have been tested, committed, and pushed to the remote repository.
 
 **Key Achievements**:
+
 - ✅ Removed 605 lines of dead code (cli.go)
 - ✅ Reduced code duplication from 16 to 13 clone groups (19% reduction)
 - ✅ Extracted reusable utilities to printer package
@@ -59,12 +60,12 @@ The codebase is now significantly cleaner, more maintainable, and follows Go bes
 
 #### Results
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Dead Code Lines | 605 | 0 | 100% removed |
-| Clone Groups | 16 | 13 | 19% reduction |
-| cmd/run.go Lines | 498 | 450 | 48 lines removed |
-| Total Duplicates Removed | - | ~700 | Significant |
+| Metric                   | Before | After | Improvement      |
+| ------------------------ | ------ | ----- | ---------------- |
+| Dead Code Lines          | 605    | 0     | 100% removed     |
+| Clone Groups             | 16     | 13    | 19% reduction    |
+| cmd/run.go Lines         | 498    | 450   | 48 lines removed |
+| Total Duplicates Removed | -      | ~700  | Significant      |
 
 #### Files Modified
 
@@ -107,24 +108,25 @@ cf8ba76 - docs: Add comprehensive deduplication final report
 
 #### Results
 
-| Issue Type | Before | After | Status |
-|------------|--------|-------|--------|
-| Root-level Go files | 4 | 0 | ✅ Complete |
-| Critical Issues | 1 | 0 | ✅ Fixed |
-| High Priority Issues | 3 | 0 | ✅ Fixed |
-| Test Packages | 0 | 2 | ✅ Created |
+| Issue Type           | Before | After | Status      |
+| -------------------- | ------ | ----- | ----------- |
+| Root-level Go files  | 4      | 0     | ✅ Complete |
+| Critical Issues      | 1      | 0     | ✅ Fixed    |
+| High Priority Issues | 3      | 0     | ✅ Fixed    |
+| Test Packages        | 0      | 2     | ✅ Created  |
 
 #### Files Moved
 
-| From | To | Package Change |
-|------|-----|----------------|
-| `main.go` | `cmd/dupl/main.go` | main → main |
-| `integration_test.go` | `internal/configtest/integration_test.go` | main → configtest |
+| From                         | To                                               | Package Change    |
+| ---------------------------- | ------------------------------------------------ | ----------------- |
+| `main.go`                    | `cmd/dupl/main.go`                               | main → main       |
+| `integration_test.go`        | `internal/configtest/integration_test.go`        | main → configtest |
 | `integration_filter_test.go` | `internal/filtertest/integration_filter_test.go` | main → filtertest |
 
 #### Test Results
 
 **internal/configtest**:
+
 ```
 ✅ TestConfigurationIntegration
 ✅ TestConfigurationValidation
@@ -133,6 +135,7 @@ All tests passing (0.446s)
 ```
 
 **internal/filtertest**:
+
 ```
 ✅ TestSmartFilteringIntegration (3 scenarios)
 ✅ filters_sqlc_and_templ_files
@@ -201,11 +204,13 @@ art-dupl/
 ### Root-Level Files (Non-Go)
 
 **Configuration**:
+
 - `go.mod`, `go.sum` - Go module definition
 - `Makefile`, `justfile` - Build automation
 - `.go-arch-lint.yml`, `.golangci.yml` - Linting configuration
 
 **Documentation**:
+
 - `README.md`
 - `AGENTS.md`
 - `USAGE.md`
@@ -213,6 +218,7 @@ art-dupl/
 - Various analysis documents
 
 **Build Artifacts** (should be removed):
+
 - `cli.go.backup`
 - `cli.go.bak`
 - `cli.go.old`
@@ -225,11 +231,13 @@ art-dupl/
 ### Duplication Analysis
 
 **Current State** (threshold: 70 tokens):
+
 - Clone groups: ~13 (down from 16)
 - Most duplicates in: `domain/domain_types_test.go`
 - Acceptable level: Test duplicates are common and acceptable
 
 **Duplication Breakdown**:
+
 - Test file duplicates: ~8 groups (acceptable)
 - Production code duplicates: ~5 groups (acceptable)
 - Remaining duplicates balance between deduplication and readability
@@ -237,6 +245,7 @@ art-dupl/
 ### Test Status
 
 **Passing Packages** (20/23):
+
 - ✅ All modified packages passing
 - ✅ config package tests
 - ✅ filter package tests
@@ -244,6 +253,7 @@ art-dupl/
 - ✅ Most unit tests
 
 **Failing Packages** (3/23):
+
 - ❌ `bdd` - 8/9 specs failing (pre-existing)
 - ❌ `domain` - Clone validation failing (pre-existing)
 - ❌ `suffixtree` - Fuzz test panicking (pre-existing)
@@ -253,16 +263,19 @@ art-dupl/
 ### Code Quality Checks
 
 **Formatting**:
+
 ```bash
 ✅ go fmt ./... - All files properly formatted
 ```
 
 **Static Analysis**:
+
 ```bash
 ✅ go vet ./... - No issues found
 ```
 
 **Build**:
+
 ```bash
 ⚠️ Cannot verify binary build due to disk space issue
 ✅ Code compiles successfully (all packages)
@@ -296,12 +309,14 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
 ### Separation of Concerns
 
 **Before**:
+
 - ❌ Root-level package files mixed with configuration
 - ❌ Integration tests at root with package main
 - ❌ Duplicate code across cmd and detection packages
 - ❌ Dead code (cli.go) cluttering the codebase
 
 **After**:
+
 - ✅ Clear package boundaries (cmd, internal, pkg, config)
 - ✅ Integration tests properly organized (internal/configtest, internal/filtertest)
 - ✅ Reusable utilities extracted (printer/groups.go)
@@ -375,6 +390,7 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
 ### Current Duplication State
 
 **Analysis**:
+
 - **Total clone groups**: ~13 (threshold: 70 tokens)
 - **Test duplicates**: ~8 groups (acceptable - common in test files)
 - **Production duplicates**: ~5 groups (acceptable balance)
@@ -410,6 +426,7 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
    - Estimated time: 10-30 minutes
 
 2. **Clean up root-level backups** (5 minutes)
+
    ```bash
    trash cli.go.backup cli.go.bak cli.go.old temp_switch.txt
    ```
@@ -454,24 +471,24 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
 
 ## Metrics Summary
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Code Deduplication** |
-| Dead Code Removed | 605 lines | ✅ Complete |
-| Duplicate Groups | 16 → 13 | ✅ 19% reduction |
-| Total Lines Removed | ~700 | ✅ Significant |
-| **Project Structure** |
-| Root-level Go Files | 4 → 0 | ✅ Complete |
-| Critical Issues | 1 → 0 | ✅ Fixed |
-| High Priority Issues | 3 → 0 | ✅ Fixed |
-| Test Packages Created | 2 | ✅ Complete |
-| **Quality** |
-| Tests Passing (modified) | 6/6 | ✅ 100% |
-| Code Quality (fmt/vet) | 0 issues | ✅ Pass |
-| Commits Made | 10 | ✅ Complete |
-| Git Push | Success | ✅ Complete |
-| Binary Build | Blocked | ⚠️ Disk full |
-| Pre-existing Test Failures | 3 packages | ⚠️ Unrelated |
+| Metric                     | Value      | Status           |
+| -------------------------- | ---------- | ---------------- |
+| **Code Deduplication**     |
+| Dead Code Removed          | 605 lines  | ✅ Complete      |
+| Duplicate Groups           | 16 → 13    | ✅ 19% reduction |
+| Total Lines Removed        | ~700       | ✅ Significant   |
+| **Project Structure**      |
+| Root-level Go Files        | 4 → 0      | ✅ Complete      |
+| Critical Issues            | 1 → 0      | ✅ Fixed         |
+| High Priority Issues       | 3 → 0      | ✅ Fixed         |
+| Test Packages Created      | 2          | ✅ Complete      |
+| **Quality**                |
+| Tests Passing (modified)   | 6/6        | ✅ 100%          |
+| Code Quality (fmt/vet)     | 0 issues   | ✅ Pass          |
+| Commits Made               | 10         | ✅ Complete      |
+| Git Push                   | Success    | ✅ Complete      |
+| Binary Build               | Blocked    | ⚠️ Disk full     |
+| Pre-existing Test Failures | 3 packages | ⚠️ Unrelated     |
 
 ---
 
@@ -589,6 +606,7 @@ e548064 - feat(filter): Filter templ files by default and make --include-templ i
 The art-dupl project is in a **healthy and improving state** after completing two major refactoring initiatives:
 
 **Code Deduplication Mission**:
+
 - ✅ Removed 605 lines of dead code
 - ✅ Reduced duplication by 19%
 - ✅ Extracted reusable utilities
@@ -596,6 +614,7 @@ The art-dupl project is in a **healthy and improving state** after completing tw
 - ✅ All changes tested and committed
 
 **Project Structure Improvements**:
+
 - ✅ Migrated to standard Go project layout
 - ✅ Organized integration tests properly
 - ✅ Eliminated root-level package files
@@ -606,6 +625,7 @@ The art-dupl project is in a **healthy and improving state** after completing tw
 The codebase is now cleaner, more maintainable, and follows Go best practices. All changes have been thoroughly tested, committed, and pushed to the remote repository.
 
 **Next Priority Actions**:
+
 1. Free up disk space (blocking)
 2. Clean up root-level backups (5 min)
 3. Fix pre-existing test failures (2-4 hours)

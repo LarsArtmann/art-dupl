@@ -11,6 +11,7 @@
 Successfully extended the error handling system with comprehensive error types and helper functions. Began systematic refactoring of `fmt.Errorf` usage to typed errors across core packages. Type model architecture analysis reveals critical consolidation opportunities.
 
 ### Progress Metrics
+
 - **Error Types Extended:** ✅ 4 new types (DetectionError, AnalysisError, FileError, TimeoutError)
 - **Error Helper Functions:** ✅ 6 new wrap functions (Wrap, Wrapf, WrapIO, WrapConfig, WrapValidation, WrapFile)
 - **Packages Refactored:** 🔄 2 of ~10 packages (20%)
@@ -25,12 +26,14 @@ Successfully extended the error handling system with comprehensive error types a
 ### 1. Error Types Extension (errors/types.go)
 
 Added 4 new error types to support broader error categorization:
+
 - `DetectionError` - For duplicate detection failures
 - `AnalysisError` - For analysis pipeline errors
 - `FileError` - For file operation errors with context
 - `TimeoutError` - For timeout-related errors
 
 **Updated ErrorType enum:**
+
 ```go
 const (
     ParseError      ErrorType = "parse"
@@ -50,30 +53,36 @@ const (
 Implemented 6 comprehensive error wrapping helper functions:
 
 #### `Wrap(err error, errorType ErrorType, msg string) error`
+
 - Generic wrapper with error type
 - Prevents double-wrapping DuplError instances
 - Includes stack traces
 
 #### `Wrapf(err error, errorType ErrorType, format string, args ...any) error`
+
 - Formatted message variant of Wrap
 - Useful for dynamic error context
 
 #### `WrapIO(err error, file, operation string) error`
+
 - Specialized IO error wrapper
 - Prevents double-wrapping existing IOErrors
 - Captures file and operation context
 
 #### `WrapConfig(err error, context string) error`
+
 - Configuration error wrapper
 - Prevents double-wrapping existing ConfigErrors
 - Appends context to existing message
 
 #### `WrapValidation(err error, context string) error`
+
 - Validation error wrapper
 - Prevents double-wrapping existing ValidationErrors
 - Appends context to existing message
 
 #### `WrapFile(err error, file, operation string) error`
+
 - File operation error wrapper
 - Prevents double-wrapping existing FileErrors
 - Captures file and operation context
@@ -81,6 +90,7 @@ Implemented 6 comprehensive error wrapping helper functions:
 ### 3. ErrorType.String() Method
 
 Added string representation method for ErrorType:
+
 ```go
 func (et ErrorType) String() string {
     return string(et)
@@ -90,6 +100,7 @@ func (et ErrorType) String() string {
 ### 4. Comprehensive Test Suite (errors/types_test.go)
 
 Added test coverage for all new functionality:
+
 - **TestErrorTypes** - Tests all 9 error types (including 4 new)
 - **TestWrap** - Tests Wrap function behavior including nil handling and double-wrap prevention
 - **TestWrapf** - Tests formatted wrapping
@@ -176,6 +187,7 @@ Added test coverage for all new functionality:
    - After: `return errors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))`
 
 **Remaining Locations (~5):**
+
 - Line 153 - Analysis failed error
 - Line 173 - Print duplicates error
 - Line 348 - Build suffix tree error
@@ -223,6 +235,7 @@ Added test coverage for all new functionality:
    - JSON-specific structures
 
 **Type Inconsistencies:**
+
 - `CloneGroup` exists in 3 different packages (pkg/artdupl, printer, internal)
 - `Result` exists in 2 different packages (types, pkg-artdupl) with completely different semantics
 - `Hash` is `string` in pkg/artdupl but typed `Hash` in domain
@@ -236,6 +249,7 @@ Added test coverage for all new functionality:
 ### 1. printer/ Package Refactoring
 
 **Files to Refactor:**
+
 - `printer/text.go` - 3 fmt.Errorf locations
 - `printer/json.go` - 1 fmt.Errorf location (marshal errors)
 - `printer/html.go` - 1 validation error
@@ -247,6 +261,7 @@ Added test coverage for all new functionality:
 **Complexity:** HIGH - Nested error wrapping patterns
 
 **Locations:** 7 error locations with complex nesting:
+
 - Line 54 - Unmarshaling with validValues validation
 - Line 73 - Marshaling with validValues validation
 - Line 95 - Unmarshaling with validStrings validation
@@ -261,12 +276,14 @@ Added test coverage for all new functionality:
 ### 3. config/ Package Refactoring
 
 **Files:**
+
 - `config/detectionmethod.go` - 5 validation errors
 - `config/outputformat.go` - 2 validation errors
 
 ### 4. domain/ Package Refactoring
 
 **Files:**
+
 - `domain/clone.go` - 8 validation errors using fmt.Errorf
 - `domain/domain_types.go` - 14 unmarshaling errors using fmt.Errorf
 
@@ -275,6 +292,7 @@ Added test coverage for all new functionality:
 **Scope:** MAJOR ARCHITECTURAL REFACTOR
 
 **Tasks:**
+
 - Design unified type hierarchy
 - Migrate pkg/artdupl to use domain types
 - Consolidate CloneGroup definitions
@@ -288,6 +306,7 @@ Added test coverage for all new functionality:
 ### 6. Test Suite Execution
 
 **Planned Tests:**
+
 - `go test ./errors/...` - ✅ COMPLETED
 - `go test ./pkg/artdupl/...` - PENDING
 - `go test ./pkg/filter/...` - PENDING
@@ -306,6 +325,7 @@ Added test coverage for all new functionality:
 ### 8. Documentation Updates
 
 **Required Updates:**
+
 - Error handling best practices guide
 - Type model architecture documentation
 - Migration guide for type consolidation
@@ -318,11 +338,13 @@ Added test coverage for all new functionality:
 ### 1. Error Context Richness
 
 **Current State:**
+
 - Some errors lack file/line/operation context
 - Inconsistent error message formatting
 - Missing operation context in many places
 
 **Required:**
+
 - ALL errors should include:
   - File path (if applicable)
   - Operation being performed
@@ -337,38 +359,45 @@ Three parallel type hierarchies causing confusion and duplication.
 **Proposed Solution:**
 
 **Option A: Domain-First Architecture**
+
 - domain/ as single source of truth
 - pkg/artdupl as compatibility layer around domain
 - types/ for generic utilities only
 - Printer uses domain types directly
 
 **Pros:**
+
 - Clear separation of concerns
 - Domain types are well-designed with validation
 - Easy to maintain single source of truth
 
 **Cons:**
+
 - Major migration effort
 - Potential breaking changes for SDK consumers
 - Need for compatibility layer
 
 **Option B: Gradual Migration**
+
 - Keep current structure for now
 - Slowly migrate pkg/artdupl to use domain types
 - Use type aliases during transition
 - Document deprecation path
 
 **Pros:**
+
 - Less disruptive
 - Can test incrementally
 - Maintains backward compatibility
 
 **Cons:**
+
 - Longer migration period
 - Temporary duplication
 - More complex codebase
 
 **RECOMMENDATION:** Option B (Gradual Migration)
+
 1. Create type aliases for compatibility
 2. Add deprecation notices
 3. Migrate internal code first
@@ -378,10 +407,12 @@ Three parallel type hierarchies causing confusion and duplication.
 ### 3. Error Recovery Strategy
 
 **Current State:**
+
 - No distinction between recoverable vs fatal errors
 - All errors stop execution immediately
 
 **Proposed:**
+
 - Categorize errors by severity
 - Implement retry logic for transient errors (e.g., file read failures)
 - Continue processing on non-fatal errors (e.g., single file parse failure)
@@ -390,11 +421,13 @@ Three parallel type hierarchies causing confusion and duplication.
 ### 4. Validation Consistency
 
 **Current Issues:**
+
 - Different validation patterns across packages
 - Inconsistent error messages for same validation
 - Mix of runtime and construction-time validation
 
 **Proposed:**
+
 - Standardize validation patterns
 - Use domain value objects for all validated data
 - Centralize validation logic in constructors
@@ -403,11 +436,13 @@ Three parallel type hierarchies causing confusion and duplication.
 ### 5. Enum Error Handling
 
 **Current Complexity:**
+
 - internal/enum/marshal.go has deeply nested error wrapping
 - Validation errors wrapped in MarshalError-like context
 - Multiple layers of fmt.Errorf nesting
 
 **Proposed:**
+
 - Create specialized enum validation errors
 - Simplify error wrapping chain
 - Use new helper functions
@@ -609,6 +644,7 @@ Please clarify your vision for unified type model architecture so we can proceed
 ## 📊 PROGRESS STATISTICS
 
 ### Error Refactoring Progress
+
 - **Total Error Locations Identified:** 100+
 - **Error Locations Refactored:** 11 (~11%)
 - **Packages Started:** 3 of ~10 (30%)
@@ -617,6 +653,7 @@ Please clarify your vision for unified type model architecture so we can proceed
 - **Test Results:** 100% PASSING
 
 ### Code Quality Metrics
+
 - **New Error Types:** 4
 - **New Error Helper Functions:** 6
 - **Files Modified:** 3
@@ -625,6 +662,7 @@ Please clarify your vision for unified type model architecture so we can proceed
 - **Test Executions:** 11 PASSING
 
 ### Type Model Analysis
+
 - **Packages Analyzed:** 5
 - **Type Hierarchies Identified:** 3
 - **Duplicate Types Found:** 5+ (CloneGroup, Result, Clone, etc.)
@@ -651,6 +689,7 @@ Please clarify your vision for unified type model architecture so we can proceed
 ## 🎯 SUCCESS CRITERIA
 
 ### Error Handling Consistency
+
 - [ ] All 100+ error locations refactored to use typed errors
 - [ ] All error messages include proper context (file, operation, values)
 - [ ] No double-wrapping of errors
@@ -659,6 +698,7 @@ Please clarify your vision for unified type model architecture so we can proceed
 - [ ] Error handling documentation complete
 
 ### Type Model Architecture
+
 - [ ] Unified type hierarchy designed
 - [ ] Migration plan implemented
 - [ ] Duplicate types eliminated
@@ -705,11 +745,13 @@ Please clarify your vision for unified type model architecture so we can proceed
 ## 🚦 NEXT STEPS
 
 **IMMEDIATE ACTION REQUIRED:**
+
 1. Clarify type model architecture vision (see Critical Open Question above)
 2. Approve or modify prioritized action plan
 3. Decide on error handling scope for this iteration
 
 **THEN:**
+
 1. Complete cmd/run.go refactoring
 2. Refactor printer package
 3. Refactor internal/enum/marshal.go

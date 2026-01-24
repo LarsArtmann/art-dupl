@@ -153,7 +153,6 @@ func uniqueFunction(ctx context.Context) error {
 
 		// Test: Verify occurrence sorting prioritizes clones with more unique files
 		It("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
-
 			// Create code pattern 1: Complex function with unique structure
 			widespreadCode := `package main
 
@@ -434,7 +433,7 @@ func (s *Service) processInternal(data string) error {
 
 			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
 			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			output, err := cmd.Output()                                                        // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response

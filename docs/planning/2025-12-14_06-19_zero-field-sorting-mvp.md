@@ -150,28 +150,26 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy string) error {
   "clone_groups": [
     {
       "hash": "04d542c8fc586219e50657b2c3970514dfcd7b631cb8907ab35ae50743f447da",
-      "size": 24,           // 🔥 BIGGEST FIRST (size sort)
+      "size": 24, // 🔥 BIGGEST FIRST (size sort)
       "files": [
-        {"filename": "file1.go", "line_start": 10, "line_end": 45},
-        {"filename": "file2.go", "line_start": 20, "line_end": 55}
+        { "filename": "file1.go", "line_start": 10, "line_end": 45 },
+        { "filename": "file2.go", "line_start": 20, "line_end": 55 }
       ]
     },
     {
       "hash": "071f72b9f7de5009fb872b908e45726563f239de18570a35d383649b673a9428",
-      "size": 8,            // Medium size
+      "size": 8, // Medium size
       "files": [
-        {"filename": "file3.go", "line_start": 30, "line_end": 40},
-        {"filename": "file4.go", "line_start": 50, "line_end": 60},
-        {"filename": "file5.go", "line_start": 70, "line_end": 80},
-        {"filename": "file6.go", "line_start": 90, "line_end": 100}
-      ]  // 🎯 MOST OCCURRENCES (occurrence sort)
+        { "filename": "file3.go", "line_start": 30, "line_end": 40 },
+        { "filename": "file4.go", "line_start": 50, "line_end": 60 },
+        { "filename": "file5.go", "line_start": 70, "line_end": 80 },
+        { "filename": "file6.go", "line_start": 90, "line_end": 100 }
+      ] // 🎯 MOST OCCURRENCES (occurrence sort)
     },
     {
       "hash": "1175bc303dfb4786da3ffe193eab5148595a1766a1fa7ca9508a7a0316ef1bbc",
-      "size": 4,            // Small size
-      "files": [
-        {"filename": "file7.go", "line_start": 5, "line_end": 10}
-      ]  // 📊 SMALLEST LAST
+      "size": 4, // Small size
+      "files": [{ "filename": "file7.go", "line_start": 5, "line_end": 10 }] // 📊 SMALLEST LAST
     }
   ],
   "summary": {

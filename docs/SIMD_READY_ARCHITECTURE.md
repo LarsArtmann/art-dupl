@@ -61,6 +61,7 @@ The optimized hashing implementation includes:
    - Eliminates ~96% of allocation overhead from profiling results
 
 2. **Runtime SIMD Selection:** Automatically chooses SIMD or fallback
+
    ```go
    if simd.Available() {
        hashSeqSIMD(nodes, buf)
@@ -153,6 +154,7 @@ BenchmarkFindTranLarge-8        50000   28000 ns/op    0 B/op    0 allocs/op
 ### 4. Comprehensive Benchmark Suite
 
 **Files:**
+
 - `syntax/hash_bench_test.go` (15 benchmark functions)
 - `suffixtree/suffixtree_bench_test.go` (18 benchmark functions)
 - `suffixtree/suffixtree_test.go` (existing tests)
@@ -160,12 +162,14 @@ BenchmarkFindTranLarge-8        50000   28000 ns/op    0 B/op    0 allocs/op
 **Coverage:**
 
 **Hashing Benchmarks:**
+
 - Size variations: Small (10), Medium (1,000), Large (10,000), Very Large (100,000)
 - Implementation comparisons: Fallback, SIMD (when available)
 - Operations: Single hash, batch hash, parallel hash
 - Features: Configurable hashing, memory pooling
 
 **Suffix Tree Benchmarks:**
+
 - Transition search: Small, Medium, Large, Very Large
 - Construction: Various sizes, parallel construction
 - Operations: Canonize, Update, TestAndSplit
@@ -233,6 +237,7 @@ if regression_detected:
 ### Phase 1: ✅ COMPLETED - SIMD-Ready Architecture (Current)
 
 **Completed:**
+
 - [x] SIMD abstraction layer with runtime detection
 - [x] SIMD-ready hashing with memory pool optimization
 - [x] SIMD-ready suffix tree search with multiple strategies
@@ -241,6 +246,7 @@ if regression_detected:
 - [x] Documentation and implementation guides
 
 **Benefits Delivered:**
+
 - ~10% improvement from memory pooling (reduces 96% of allocations)
 - Zero-breaking changes to existing code
 - Ready for ARM64 SIMD when Go 1.28+ released
@@ -389,12 +395,14 @@ go tool pprof -http=:8080 mem.prof
 ### Current Performance (Go 1.26, Non-SIMD)
 
 **Hashing Operations:**
+
 - Small (10 nodes): 155 ns/op, 80 B/op, 4 allocs/op
 - Medium (1,000 nodes): 1,500 ns/op, 1,024 B/op, 4 allocs/op
 - Large (10,000 nodes): 15,000 ns/op, 10,240 B/op, 4 allocs/op
 - Very Large (100,000 nodes): 150,000 ns/op, 102,400 B/op, 4 allocs/op
 
 **Suffix Tree Operations:**
+
 - Construction (1,000 nodes): 10,000 ns/op, 8,000 B/op, 150 allocs/op
 - Transition search (small): 250 ns/op, 0 B/op, 0 allocs/op
 - Transition search (large): 28,000 ns/op, 0 B/op, 0 allocs/op
@@ -402,16 +410,19 @@ go tool pprof -http=:8080 mem.prof
 ### Expected Performance (With ARM64 SIMD)
 
 **Hashing Operations:**
+
 - Small (10 nodes): 100-120 ns/op (1.5-1.8x improvement)
 - Medium (1,000 nodes): 700-900 ns/op (2x improvement)
 - Large (10,000 nodes): 6,000-7,500 ns/op (2.5x improvement)
 - Very Large (100,000 nodes): 50,000-60,000 ns/op (3x improvement)
 
 **Suffix Tree Operations:**
+
 - Construction: 9,000-9,500 ns/op (5-10% improvement)
 - Transition search (large): 9,000-14,000 ns/op (2-3x improvement)
 
 **Overall Clone Detection:**
+
 - Expected: 10-20% overall improvement
 - Hot paths: 50-70% improvement in hashSeq and findTran
 
@@ -465,6 +476,7 @@ bash .github/workflows/performance.yml
 **Issue:** `simd.Available()` returns false on ARM64
 
 **Solution:**
+
 - Verify Go version >= 1.28 (ARM64 SIMD expected then)
 - Check build flags: `GOEXPERIMENT=simd`
 - Verify architecture: `go env GOARCH`
@@ -475,6 +487,7 @@ bash .github/workflows/performance.yml
 **Issue:** SIMD enabled but no performance improvement
 
 **Solutions:**
+
 1. **Small input sizes:** SIMD has overhead, optimal for large inputs
 2. **Memory bottlenecks:** Check GC behavior with `GODEBUG=gctrace=1`
 3. **CPU frequency:** Verify CPU isn't throttling
@@ -485,6 +498,7 @@ bash .github/workflows/performance.yml
 **Issue:** Inconsistent benchmark results
 
 **Solutions:**
+
 1. Run multiple iterations: `-count=5` or higher
 2. Disable CPU frequency scaling:
    ```bash
@@ -499,16 +513,19 @@ bash .github/workflows/performance.yml
 ## References
 
 ### Go SIMD Documentation
+
 - [Go SIMD Proposal](https://go.dev/design/simd)
 - [Issue #73787: SIMD Support](https://github.com/golang/go/issues/73787)
 - [simd/archsimd Package](https://pkg.go.dev/simd/archsimd)
 
 ### SIMD Resources
+
 - [ARM NEON Intrinsics](https://developer.arm.com/architectures/instruction-sets/intrinsics/)
 - [Intel Intrinsics Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/)
 - [SIMD Optimization Guide](https://www.agner.org/optimize/optimizing_software.pdf)
 
 ### Project Documentation
+
 - [SIMD Optimization Analysis](./SIMD_OPTIMIZATION_ANALYSIS_GO1.26.md)
 - [Performance Baseline](./SIMD_PERFORMANCE_BASELINE.md)
 - [AGENTS.md - Development Guide](../AGENTS.md)
@@ -546,12 +563,14 @@ The SIMD-ready architecture is **complete and production-ready**. All components
 ✅ Complete documentation
 
 **When ARM64 SIMD becomes available in Go 1.28+:**
+
 - Update `simd.Available()` to return true
 - Implement `hashSeqSIMD()` and `findTranSIMD()`
 - Validate with benchmark suite
 - Expected 10-20% overall improvement
 
 **Until then:**
+
 - Architecture is fully functional
 - Memory pooling provides ~10% improvement
 - All existing features work perfectly

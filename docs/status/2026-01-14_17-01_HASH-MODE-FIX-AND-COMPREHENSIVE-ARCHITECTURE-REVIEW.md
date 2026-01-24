@@ -11,6 +11,7 @@
 Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defined but never read in the CLI, rendering hash mode completely non-functional. However, comprehensive architectural review revealed **MULTIPLE SPLIT BRAINS**, type safety violations, and code quality issues requiring immediate attention.
 
 ### Key Achievement
+
 ✅ **Hash mode now works perfectly**: `art-dupl -m hash` detects exact file duplicates
 ✅ **Combined mode works**: `art-dupl -m "hash,art-dupl"` runs both detection methods
 ✅ **Default mode preserved**: Standard art-dupl mode continues to work as expected
@@ -86,12 +87,14 @@ Successfully fixed **CRITICAL BUG** where `--detection-methods/-m` flag was defi
 #### 1. **SPLIT BRAIN: Dual CLI Implementations** 🔴 CRITICAL
 
 **The Problem:**
+
 - `cli.go` (605 lines) contains complete old CLI implementation with `Run()` function
 - `cmd/run.go` (489 lines) contains new Cobra-based CLI implementation
 - `main.go` uses Cobra via `cmd` package, NOT `cli.Run()`
 - **cli.go is COMPLETELY DEAD CODE**
 
 **Evidence:**
+
 ```go
 // main.go uses Cobra
 cmd.NewRootCommand()
@@ -106,6 +109,7 @@ func Run() int { // nolint:cyclop,funlen
 ```
 
 **Impact:**
+
 - Code duplication and maintenance burden
 - Confusing for developers (which CLI is the "real" one?)
 - Split functionality between implementations (timeout implemented in both, but broken in both)
@@ -113,6 +117,7 @@ func Run() int { // nolint:cyclop,funlen
 - Documentation drift
 
 **Immediate Action Required:**
+
 1. Delete `cli.go` entirely (605 lines of dead code)
 2. Remove `cli/` package if it only supports old implementation
 3. Update any tests that import `cli` package
@@ -121,6 +126,7 @@ func Run() int { // nolint:cyclop,funlen
 #### 2. **Type Safety Violation: Hardcoded String Literal** 🔴
 
 **The Problem:**
+
 ```go
 // cmd/flags.go:19
 rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "...")
@@ -131,6 +137,7 @@ rootCmd.Flags().StringP("detection-methods", "m",
 ```
 
 **Impact:**
+
 - If default detection method changes, flag default doesn't update automatically
 - Violates DRY principle
 - Type safety weakened (string literal vs typed constant)
@@ -143,20 +150,21 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 **Files >350 lines (excluding generated files):**
 
-| File | Lines | Action Required |
-|-------|--------|----------------|
-| `domain/domain_types_test.go` | 1,353 | 🔴 CRITICAL - Split into multiple test files |
-| `bdd/bdd_test.go` | 742 | 🔴 URGENT - Split by scenario |
-| `cli.go` | 605 | 🔴 DELETE - Dead code |
-| `domain/domain_types.go` | 548 | 🟡 Split into domain files |
-| `pkg/artdupl/detector.go` | 528 | 🟡 Split by responsibility |
-| `cmd/run.go` | 489 | 🟡 Split into functions/commands |
-| `domain/clone.go` | 440 | 🟡 Split by functionality |
-| `config/config_test.go` | 409 | 🟡 Split by test groups |
-| `suffixtree/suffixtree_test.go` | 294 | 🟡 Split by test type |
-| `syntax/golang/golang.go` | 361 | 🟡 Split by concern |
+| File                            | Lines | Action Required                              |
+| ------------------------------- | ----- | -------------------------------------------- |
+| `domain/domain_types_test.go`   | 1,353 | 🔴 CRITICAL - Split into multiple test files |
+| `bdd/bdd_test.go`               | 742   | 🔴 URGENT - Split by scenario                |
+| `cli.go`                        | 605   | 🔴 DELETE - Dead code                        |
+| `domain/domain_types.go`        | 548   | 🟡 Split into domain files                   |
+| `pkg/artdupl/detector.go`       | 528   | 🟡 Split by responsibility                   |
+| `cmd/run.go`                    | 489   | 🟡 Split into functions/commands             |
+| `domain/clone.go`               | 440   | 🟡 Split by functionality                    |
+| `config/config_test.go`         | 409   | 🟡 Split by test groups                      |
+| `suffixtree/suffixtree_test.go` | 294   | 🟡 Split by test type                        |
+| `syntax/golang/golang.go`       | 361   | 🟡 Split by concern                          |
 
 **Impact:**
+
 - Maintainability nightmare
 - Hard to understand and navigate
 - Single responsibility principle violated
@@ -168,6 +176,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 ### e) WHAT WE SHOULD IMPROVE 🟡
 
 #### Type Safety & Strong Types
+
 1. **Consolidate String Literals**
    - Replace all hardcoded strings with typed constants
    - Default values should reference typed defaults
@@ -184,6 +193,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
    - Consider builder pattern for complex types
 
 #### Architecture
+
 1. **Separation of Concerns**
    - Split large files by responsibility
    - Create clear package boundaries
@@ -200,6 +210,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
    - Handle timeout and cancellation gracefully
 
 #### Code Quality
+
 1. **Remove Dead Code**
    - Delete `cli.go` and related unused code
    - Remove TODO comments that won't be addressed
@@ -216,6 +227,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
    - Document detection method behavior
 
 #### Domain-Driven Design
+
 1. **Rich Domain Models**
    - Review `domain/` package for completeness
    - Ensure domain types capture business rules
@@ -227,6 +239,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
    - Document domain model in docs
 
 #### Generics Usage
+
 1. **Type Parameters**
    - Review where generics could reduce duplication
    - Consider generic printer adapters
@@ -241,12 +254,14 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 ## f) Top #25 Things We Should Get Done Next (Pareto-Prioritized)
 
 ### 🚨 CRITICAL (Do Immediately - High Impact, Low Effort)
+
 1. **DELETE `cli.go`** - Remove 605 lines of dead code
 2. **Fix type safety violation** - Replace hardcoded "art-dupl" with constant
 3. **Implement timeout context** - Connect timeout flag to actual timeout
 4. **Remove TODO comments** - Either implement or delete
 
 ### 🔴 HIGH PRIORITY (High Impact, Medium Effort)
+
 5. **Split `domain/domain_types_test.go`** - 1,353 lines into multiple test files
 6. **Split `bdd/bdd_test.go`** - 742 lines by scenario
 7. **Split `domain/domain_types.go`** - 548 lines by domain concern
@@ -257,6 +272,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 12. **Test integration** - End-to-end tests for all detection methods
 
 ### 🟡 MEDIUM PRIORITY (Medium Impact, Medium Effort)
+
 13. **Consolidate string literals** - Create constants for magic strings
 14. **Review error types** - Ensure centralized error handling
 15. **Split `domain/clone.go`** - 440 lines by functionality
@@ -267,6 +283,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 20. **Add integration tests** - For complete workflows
 
 ### 🟢 LOW PRIORITY (Low Impact, High Effort - Future Work)
+
 21. **Split remaining large files** - All files >350 lines
 22. **Implement generics** - Where appropriate to reduce duplication
 23. **Add fuzz testing** - For detection algorithms
@@ -281,6 +298,7 @@ Use `config.DefaultDetectionMethod().String()` instead of hardcoded "art-dupl"
 
 **Context:**
 We have `pkg/artdupl/detector.go` with TODO comments:
+
 ```go
 // pkg/artdupl/detector.go:224, 273
 // TODO: Implement multi-detection method support
@@ -290,6 +308,7 @@ We have `pkg/artdupl/detector.go` with TODO comments:
 Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTENDED IMPLEMENTATION of art-dupl detection method?
 
 **Why I Can't Answer:**
+
 1. We have TWO implementations of art-dupl detection:
    - `suffixtree.STree.FindDuplOver()` (used in `cmd/run.go` via `MultiDetector`)
    - `pkg/artdupl.Detector.FindDuplOver()` (has TODOs, unclear if used)
@@ -304,17 +323,20 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 4. Tests might use one or both (unclear without deeper investigation)
 
 **Impact of Wrong Decision:**
+
 - If `pkg/artdupl/` is legacy: Delete it and remove TODOs
 - If it's intended: Complete implementation and remove TODOs
 - If both are needed: Clarify architecture and relationship
 
 **What I Need To Know:**
+
 1. Which implementation does `cmd/run.go` actually use?
 2. Do any tests rely on `pkg/artdupl`?
 3. Was this a migration that was never completed?
 4. What's the architectural intent behind having two packages?
 
 **My Recommendation:**
+
 1. Audit all usages of `pkg/artdupl` across codebase
 2. Check if it's imported in `cmd/run.go` or `detection/multidetector.go`
 3. Review git history to see if there was a migration plan
@@ -325,6 +347,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 ## Architectural Analysis: Split Brains & Duplications
 
 ### 1. CLI Implementations (SPLIT BRAIN)
+
 - **cli.go** - 605 lines of dead code
 - **cmd/run.go** - 489 lines of active code
 - Both implement similar functionality
@@ -332,21 +355,25 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 - **Action:** DELETE `cli.go`
 
 ### 2. Art-Dupl Detection (UNCLEAR)
+
 - `suffixtree.STree.FindDuplOver()` - Active, used in MultiDetector
 - `pkg/artdupl.Detector.FindDuplOver()` - Has TODOs, unclear status
 - **Action:** Clarify and consolidate
 
 ### 3. Timeout Implementation (DUPLICATED & BROKEN)
+
 - Both `cli.go` and `cmd/run.go` create context but don't use it
 - TODOs in both files for same issue
 - **Action:** Implement proper context propagation in `cmd/run.go`
 
 ### 4. String Literals (TYPE SAFETY VIOLATION)
+
 - Default values hardcoded as strings
 - Should use typed constants
 - **Action:** Replace with `DefaultDetectionMethod().String()`
 
 ### 5. Large Files (SINGLE RESPONSIBILITY VIOLATION)
+
 - Multiple files >350 lines
 - Difficult to maintain and understand
 - **Action:** Split by responsibility
@@ -356,6 +383,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 ## Testing Status
 
 ### Passing Tests ✅
+
 - `config/` - All tests pass
 - `hash/` - All tests pass (hash detection works!)
 - `syntax/` - All tests pass
@@ -363,6 +391,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 - Integration tests pass
 
 ### Failing Tests ❌ (Pre-existing, Not Related to Hash Fix)
+
 - `domain/` - `TestDomainCloneGroupValidation` (pre-existing)
 - `pkg/filter/` - `TestIncludePatternProperty` (pre-existing fuzz test issue)
 - `suffixtree/` - `FuzzSuffixTreeUpdate` (pre-existing fuzz test issue)
@@ -377,6 +406,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 **Status:** Clean (committed hash mode fix)
 
 **Recent Commits:**
+
 - `e6e0625` - fix(cmd): Read and parse --detection-methods flag
 - `bec35e0` - chore(test): Add testify removal script and modernize test patterns
 
@@ -385,18 +415,21 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 ## Recommendations
 
 ### Immediate Actions (This Session)
+
 1. ✅ Fix hash mode flag reading - **DONE**
 2. Delete `cli.go` (605 lines dead code)
 3. Fix type safety violation in flags.go
 4. Implement timeout context propagation
 
 ### Short-Term (Next Week)
+
 1. Split largest test files
 2. Clarify `pkg/artdupl` status
 3. Add BDD tests for detection methods
 4. Update documentation
 
 ### Long-Term (This Month)
+
 1. Split all files >350 lines
 2. Implement plugin architecture
 3. Enhance domain model with DDD
@@ -407,6 +440,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 ## Metrics
 
 **Code Quality:**
+
 - Go files: 96
 - Total lines: ~16,000
 - Files >350 lines: 10
@@ -414,11 +448,13 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 - Split brains: 2 (CLI, art-dupl detection)
 
 **Test Coverage:**
+
 - Passing packages: 13/16
 - Failing packages: 3 (pre-existing)
 - Critical functionality tested: ✓
 
 **Type Safety:**
+
 - Strong typed enums: ✓ (DetectionMethod, OutputFormat, SortCriteria)
 - Hardcoded string literals: 2 (should be constants)
 - Impossible states: Some exist in config (can be improved)
@@ -434,6 +470,7 @@ Is `pkg/artdupl/` package LEGACY CODE that should be removed, or is it the INTEN
 **Testing:** ✅ Core functionality works, pre-existing failures unrelated
 
 **Next Steps:**
+
 1. Commit and push hash mode fix
 2. Delete dead code (`cli.go`)
 3. Fix type safety violations

@@ -15,13 +15,16 @@ Successfully identified and corrected a factually incorrect library policy that 
 ## Problem Identification
 
 ### Initial Analysis
+
 - **Policy Location:** `.golangci.yml` (lines 665-672)
 - **Blocked Module:** `github.com/onsi/gomega`
 - **Policy Rationale:** "Use Ginkgo's built-in assertions instead of Gomega dependencies"
 - **Active Usage:** 6 test files using Gomega (bdd/bdd_test.go, domain/clone_test.go, types/types_test.go, cli/cli_test.go, cli/runtime_test.go, migration/migration_test.go)
 
 ### Policy Violation
+
 The library policy was incorrectly blocking `github.com/onsi/gomega` despite it being:
+
 1. **Actively used** in 6 test files across the codebase
 2. **Required by design** for Ginkgo v2 testing framework
 3. **Approved by Ginkgo maintainers** as the standard testing stack
@@ -34,6 +37,7 @@ The library policy was incorrectly blocking `github.com/onsi/gomega` despite it 
 ### Ginkgo v2 and Gomega Relationship
 
 **Key Findings:**
+
 - **Ginkgo v2 does NOT have built-in assertions**
 - Ginkgo v2 is designed to work WITH Gomega as complementary libraries
 - **Separation of Concerns:**
@@ -41,12 +45,14 @@ The library policy was incorrectly blocking `github.com/onsi/gomega` despite it 
   - **Gomega:** Provides assertion/matcher library (Expect, To, BeTrue, Equal, etc.)
 
 **Documentation Evidence:**
+
 - Ginkgo documentation explicitly states: "Ginkgo is best paired with Gomega matcher library"
 - Bootstrap code imports both packages by default
 - `RegisterFailHandler(Fail)` is the glue code connecting Ginkgo to Gomega
 - Usage examples show Gomega assertions (e.g., `Expect(x).To(Equal(y))`)
 
 ### Installation Pattern
+
 ```bash
 go install github.com/onsi/ginkgo/v2/ginkgo
 go get github.com/onsi/gomega/...
@@ -61,6 +67,7 @@ Both are installed together as a complete testing solution.
 ### Changes to `.golangci.yml`
 
 #### 1. Added Gomega to Allowed Modules (Line 560)
+
 ```yaml
 allowed:
   modules:
@@ -77,13 +84,14 @@ allowed:
     - github.com/samber/do
     - github.com/maypok86/otter/v2
     - github.com/onsi/ginkgo/v2
-    - github.com/onsi/gomega  # ✅ ADDED
+    - github.com/onsi/gomega # ✅ ADDED
     - github.com/google/uuid
     - github.com/klauspost/cpuid/v2
     # ... other modules
 ```
 
 #### 2. Removed Incorrect Gomega Ban (Lines 665-672)
+
 ```yaml
 blocked:
   modules:
@@ -107,6 +115,7 @@ blocked:
 ```
 
 #### 3. Import Alias Configuration (Line 851)
+
 ```yaml
 importas:
   no-unaliased: true
@@ -115,7 +124,7 @@ importas:
     - pkg: github.com/onsi/ginkgo/v2
       alias: ginkgo
     - pkg: github.com/onsi/gomega
-      alias: gomega  # ✅ ALREADY CONFIGURED
+      alias: gomega # ✅ ALREADY CONFIGURED
 ```
 
 ---
@@ -123,6 +132,7 @@ importas:
 ## Verification
 
 ### 1. Gomodguard Linter Check
+
 ```bash
 $ golangci-lint run --enable-only gomodguard
 # Result: 0 issues ✅
@@ -131,12 +141,14 @@ $ golangci-lint run --enable-only gomodguard
 **Status:** All library policies now pass cleanly with 0 violations.
 
 ### 2. Dependency Validation
+
 ```bash
 $ go list -m all | grep gomega
 github.com/onsi/gomega v1.38.3  # ✅ VERIFIED ACTIVE
 ```
 
 ### 3. Usage Verification
+
 ```bash
 $ grep -r "github.com/onsi/gomega" --include="*.go"
 ./bdd/bdd_test.go:14: . "github.com/onsi/gomega"
@@ -153,12 +165,14 @@ $ grep -r "github.com/onsi/gomega" --include="*.go"
 ## Impact Assessment
 
 ### Before Fix
+
 - **Policy:** Incorrectly banned Gomega
 - **Compliance:** Failing (6 active violations)
 - **Testing:** Potential future test failures when gomodguard runs
 - **Architecture:** Inconsistent with Ginkgo v2 design principles
 
 ### After Fix
+
 - **Policy:** Correctly allows both Ginkgo v2 and Gomega
 - **Compliance:** Passing (0 violations)
 - **Testing:** Aligned with standard Ginkgo/Gomega testing pattern
@@ -169,12 +183,14 @@ $ grep -r "github.com/onsi/gomega" --include="*.go"
 ## Testing Stack Status
 
 ### Current Configuration
+
 - **Test Framework:** Ginkgo v2 (v2.27.3) ✅
 - **Assertion Library:** Gomega (v1.38.3) ✅
 - **Integration:** Properly configured via RegisterFailHandler ✅
 - **Usage Pattern:** Standard BDD with `Expect(x).To(EqualTo(y))` ✅
 
 ### Test Files Using Gomega
+
 1. `bdd/bdd_test.go` - BDD-style end-to-end tests
 2. `domain/clone_test.go` - Domain entity validation
 3. `types/types_test.go` - Type system tests
@@ -187,15 +203,17 @@ $ grep -r "github.com/onsi/gomega" --include="*.go"
 ## Policy Compliance Summary
 
 ### Library Policy Categories
-| Category | Status | Notes |
-|----------|--------|-------|
-| **Security Bans** | ✅ PASS | CVEs and vulnerabilities properly blocked |
-| **Deprecated Bans** | ✅ PASS | Archived/unmaintained libraries blocked |
-| **Performance Bans** | ✅ PASS | Superior alternatives enforced |
-| **Architectural Bans** | ✅ PASS | Company standards maintained |
-| **Testing Libraries** | ✅ PASS | Ginkgo/Gomega now correctly allowed |
+
+| Category               | Status  | Notes                                     |
+| ---------------------- | ------- | ----------------------------------------- |
+| **Security Bans**      | ✅ PASS | CVEs and vulnerabilities properly blocked |
+| **Deprecated Bans**    | ✅ PASS | Archived/unmaintained libraries blocked   |
+| **Performance Bans**   | ✅ PASS | Superior alternatives enforced            |
+| **Architectural Bans** | ✅ PASS | Company standards maintained              |
+| **Testing Libraries**  | ✅ PASS | Ginkgo/Gomega now correctly allowed       |
 
 ### Allowed Testing Libraries
+
 - ✅ `github.com/onsi/ginkgo/v2` - BDD testing framework
 - ✅ `github.com/onsi/gomega` - Assertion/matcher library
 
@@ -206,6 +224,7 @@ $ grep -r "github.com/onsi/gomega" --include="*.go"
 ## Git Changes
 
 ### Modified Files
+
 ```bash
 $ git diff --stat .golangci.yml
  .golangci.yml | 4 +---
@@ -213,6 +232,7 @@ $ git diff --stat .golangci.yml
 ```
 
 ### Diff Summary
+
 ```diff
 @@ -557,6 +557,7 @@ linters-settings:
          - github.com/samber/do
@@ -237,15 +257,18 @@ $ git diff --stat .golangci.yml
 ## Recommendations
 
 ### 1. Documentation Updates
+
 - **Action Required:** Update any internal documentation that references the incorrect policy
 - **Target:** Developer onboarding guides, testing guidelines, policy documents
 
 ### 2. Future Policy Reviews
+
 - **Frequency:** Quarterly library policy reviews recommended
 - **Focus:** Validate architectural assumptions against library documentation
 - **Process:** Research before banning based on design principles
 
 ### 3. Testing Standards
+
 - **Current State:** ✅ Aligned with Ginkgo/Gomega best practices
 - **Guidelines:** Continue using standard BDD patterns with both libraries
 - **Training:** Ensure team understands complementary library relationship
@@ -255,16 +278,19 @@ $ git diff --stat .golangci.yml
 ## Lessons Learned
 
 ### 1. Assumption Validation
+
 - **Lesson:** Always research library documentation before creating architectural bans
 - **Impact:** Incorrect policies can block valid dependencies and cause confusion
 - **Resolution:** Research confirmed Ginkgo/Gomega are complementary, not competing
 
 ### 2. Library Relationship Understanding
+
 - **Lesson:** Some libraries are designed as complementary packages
 - **Example:** Ginkgo (framework) + Gomega (assertions) = complete testing solution
 - **Guidance:** Check library ecosystems for recommended pairings
 
 ### 3. Policy Enforcement
+
 - **Lesson:** Policies should reflect actual usage patterns and library design
 - **Observation:** Codebase was using Gomega despite ban, indicating policy was outdated
 - **Outcome:** Fixed policy to match both library design and actual usage
@@ -283,6 +309,7 @@ The library policy has been successfully corrected to reflect the actual relatio
 4. **Developer clarity** - Clear guidance on approved testing libraries
 
 **Next Steps:**
+
 - ✅ Commit library policy changes to repository
 - ✅ Update any related documentation
 - ✅ Continue using standard Ginkgo/Gomega testing patterns

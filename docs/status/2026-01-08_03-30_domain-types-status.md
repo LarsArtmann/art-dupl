@@ -9,6 +9,7 @@
 ## Executive Summary
 
 ### Work Completed ✅
+
 - **Enum Split Brain Phase 1**: Hybrid approach documented and implemented
   - Added comprehensive package-level documentation to both enum utility packages
   - Created detailed 3-phase consolidation plan (docs/enum-consolidation-plan.md)
@@ -22,11 +23,13 @@
   - Ready for incremental adoption
 
 ### In Progress 🔄
+
 - **Domain Entity Migration**: Clone, CloneGroup, Analysis need to use new types
   - Foundation created, ready for migration
   - Breaking change requires comprehensive testing
 
 ### Next Steps 📋
+
 1. Update Clone struct to use domain types
 2. Fix all compilation errors across codebase
 3. Run comprehensive test suite
@@ -39,9 +42,10 @@
 ### 1. Enum Split Brain - Phase 1 Complete ✅
 
 **Problem Identified**:
+
 - Two enum utility packages with **same function names, different APIs**
 - `config/unmarshal_helper.go`: Method-value approach, returns T
-- `types/enum_utils.go`: Interface-based approach, returns *T
+- `types/enum_utils.go`: Interface-based approach, returns \*T
 - Developer confusion, maintenance burden, no single source of truth
 
 **Hybrid Solution Implemented**:
@@ -49,11 +53,13 @@
 #### A. Documentation & Clarity (Phase 1 - Low Risk, Complete)
 
 **Files Modified**:
+
 1. `config/unmarshal_helper.go` - Added package-level documentation
 2. `types/enum_utils.go` - Added package-level documentation
 3. `docs/enum-consolidation-plan.md` - Created comprehensive migration plan (449 lines)
 
 **Documentation Added**:
+
 ```go
 // config/unmarshal_helper.go
 // TEMPORARY: This package contains internal enum marshaling utilities.
@@ -64,6 +70,7 @@
 ```
 
 **Migration Plan Created** (docs/enum-consolidation-plan.md):
+
 - **Phase 1**: Documentation & Clarity (Complete ✅)
   - Add package-level docs
   - Create migration plan
@@ -81,6 +88,7 @@
   - Remove old implementations
 
 **Benefits**:
+
 - Zero breaking changes (safety of Option B)
 - Immediate clarity for developers
 - Clear path forward to architectural excellence
@@ -97,6 +105,7 @@
 **Types Created**: 15 comprehensive value objects
 
 #### ID Types (3)
+
 1. **CloneID** - Unique identifier for code clone
    - Validation: Cannot be empty
    - JSON support: ✓
@@ -113,6 +122,7 @@
    - String() method: ✓
 
 #### Path & Position Types (2)
+
 4. **Filepath** - Filesystem path
    - Validation: Cannot be empty
    - JSON support: ✓
@@ -129,6 +139,7 @@
    - Uint() accessor: ✓
 
 #### Metric Types (5)
+
 7. **TokenCount** - Count of tokens in code
    - Validation: None (0 is valid)
    - JSON support: ✓
@@ -167,6 +178,7 @@
     - Uint() accessor: ✓
 
 #### Data Types (1)
+
 14. **Hash** - Hash value (typically SHA256)
     - Validation: Cannot be empty
     - JSON support: ✓
@@ -177,6 +189,7 @@
 ## Type Safety Benefits
 
 ### Before (Generic Types):
+
 ```go
 // Easy to make mistakes, no type safety
 type Clone struct {
@@ -196,6 +209,7 @@ grep "\"clone-"  // Too broad
 ```
 
 ### After (Domain Types):
+
 ```go
 // Type-safe, validated at construction time
 type Clone struct {
@@ -228,17 +242,20 @@ clone.StartLine.Uint()  // Clear intent
 ## Architecture & Design Decisions
 
 ### Why Separate Types File?
+
 - `domain/domain_types.go` separates value objects from entities
 - Keeps `domain/clone.go` focused on domain logic
 - Easier to navigate and maintain
 - Can import types without importing entire domain logic
 
 ### Why String Underlying Type?
+
 ```go
 type CloneID string  // Not: type CloneID struct { value string }
 ```
 
 **Benefits**:
+
 - Simpler JSON serialization (no custom MarshalJSON needed)
 - Less memory overhead
 - Faster performance
@@ -246,10 +263,12 @@ type CloneID string  // Not: type CloneID struct { value string }
 - Still type-safe at compile time
 
 **Trade-offs**:
+
 - Can't prevent string operations on types
 - But validation at construction catches issues
 
 ### Why Validation at Construction?
+
 ```go
 // Not: Validate() method on type
 func (id CloneID) Validate() error { ... }
@@ -259,12 +278,14 @@ func NewCloneID(s string) (CloneID, error) { ... }
 ```
 
 **Benefits**:
+
 - Impossible to have invalid CloneID (it won't exist)
 - Fail fast - errors caught early
 - Can trust type is always valid
 - No need to validate before every use
 
 ### Why Accessors for Underlying Type?
+
 ```go
 type LineNumber uint
 
@@ -275,6 +296,7 @@ pos := int(line.Uint())
 ```
 
 **Benefits**:
+
 - Explicit conversion (can't accidentally use uint)
 - Clear intent of conversion
 - Can add validation in accessor
@@ -287,6 +309,7 @@ pos := int(line.Uint())
 ### Before Domain Types (Existing Usage):
 
 **domain/clone.go**:
+
 ```go
 type Clone struct {
     ID         string  // Should be: domain.CloneID
@@ -303,6 +326,7 @@ type Clone struct {
 ```
 
 **domain/clone.go**:
+
 ```go
 type CloneGroup struct {
     ID   string  // Should be: domain.CloneGroupID
@@ -313,6 +337,7 @@ type CloneGroup struct {
 ```
 
 **domain/clone.go**:
+
 ```go
 type Analysis struct {
     ID          string  // Should be: domain.AnalysisID
@@ -330,6 +355,7 @@ type AnalysisStats struct {
 ```
 
 ### After Domain Types (Target Usage):
+
 ```go
 type Clone struct {
     ID         domain.CloneID
@@ -384,12 +410,14 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 Given that updating Clone struct would be a **MASSIVE breaking change**, I recommend an incremental approach:
 
 #### Step 1: Foundation (Complete ✅)
+
 - [x] Create domain types
 - [x] Verify compilation
 - [x] Add documentation
 - [x] Commit and push
 
 #### Step 2: Isolated Migration (Next)
+
 - [ ] Update Clone struct in domain/clone.go
 - [ ] Fix compilation errors in domain package
 - [ ] Update validation logic to use new types
@@ -397,12 +425,14 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 - [ ] Commit as isolated change
 
 #### Step 3: Adapter Pattern (Medium-Term)
+
 - [ ] Add conversion functions between old and new types
 - [ ] Update external APIs to use new types
 - [ ] Keep internal APIs using new types
 - [ ] Gradually remove adapters
 
 #### Step 4: Full Migration (Long-Term)
+
 - [ ] Update all usages across codebase
 - [ ] Update printer package
 - [ ] Update detection package
@@ -411,6 +441,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 - [ ] Update documentation
 
 #### Step 5: Cleanup (Final)
+
 - [ ] Remove old primitive types from domain entities
 - [ ] Remove any adapter functions
 - [ ] Verify all code uses new types
@@ -421,6 +452,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 ## Files Modified/Created
 
 ### Created:
+
 1. `domain/domain_types.go` (548 lines)
    - 15 domain-specific value types
    - Complete JSON support
@@ -434,6 +466,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
    - Success criteria
 
 ### Modified:
+
 1. `config/unmarshal_helper.go`
    - Added package-level documentation
    - Deprecation notice
@@ -463,11 +496,13 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 ## Testing & Verification
 
 ### Tests Run
+
 - [x] `go test ./config/... ./types/...` - PASS ✅
 - [x] `go build ./domain/...` - PASS ✅
 - [ ] Full test suite after Clone struct migration
 
 ### Verification
+
 - [x] Domain types compile without errors
 - [x] JSON marshaling works correctly
 - [x] Validation functions work as expected
@@ -480,12 +515,14 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 ## Benefits Achieved So Far
 
 ### 1. Enum Split Brain - Clarity ✅
+
 - Developers understand the issue
 - Migration path documented
 - Clear roadmap to resolution
 - Zero breaking changes
 
 ### 2. Domain Types Foundation ✅
+
 - Type safety infrastructure in place
 - 15 strongly-typed value objects
 - Validation at construction time
@@ -493,6 +530,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 - Self-documenting code
 
 ### 3. Architectural Excellence ✅
+
 - DDD principles applied
 - Value objects pattern implemented
 - Foundation for future improvements
@@ -503,6 +541,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 ## Next Steps (Prioritized)
 
 ### Immediate (This Session):
+
 1. [ ] Update Clone struct in domain/clone.go to use new domain types
 2. [ ] Fix compilation errors in domain package
 3. [ ] Update NodeToClone() function to use domain type constructors
@@ -510,6 +549,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 5. [ ] Commit Clone struct migration
 
 ### Short-Term (Next Week):
+
 6. [ ] Update CloneGroup struct to use domain types
 7. [ ] Update Analysis struct to use domain types
 8. [ ] Update AnalysisStats struct to use domain types
@@ -517,6 +557,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 10. [ ] Update printer package to use new types
 
 ### Medium-Term (Next Month):
+
 11. [ ] Update detection package to use new types
 12. [ ] Update CLI package to use new types
 13. [ ] Update adapter packages to use new types
@@ -524,6 +565,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 15. [ ] Update examples and documentation
 
 ### Long-Term (Quarter):
+
 16. [ ] Add more domain types as needed
 17. [ ] Consider code generation for type construction
 18. [ ] Refactor to use Result[T] pattern with domain types
@@ -555,6 +597,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 ## Lessons Learned
 
 ### What Went Well ✅
+
 1. Comprehensive documentation for enum split brain
 2. Clear 3-phase migration plan with risk assessment
 3. Complete domain types foundation with 15 types
@@ -562,6 +605,7 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 5. Clean separation between value objects and domain entities
 
 ### What I'd Do Differently 💭
+
 1. Start with smaller scope (migrate Clone struct first, not entire codebase)
 2. Create test fixtures for new types early
 3. Consider backward compatibility layer from start
@@ -569,7 +613,9 @@ Given that updating Clone struct would be a **MASSIVE breaking change**, I recom
 5. Get team alignment on incremental vs. big bang approach
 
 ### Critical Insight 💡
+
 **Domain types are a foundation, not the end goal**. The real value comes from:
+
 - Using them consistently across codebase
 - Catching type errors at compile time
 - Making invalid states unrepresentable
@@ -582,21 +628,25 @@ The foundation is now in place. The migration work begins now.
 ## Metrics & Impact
 
 ### Lines of Code
+
 - Domain types created: 548 lines
 - Documentation added: 449 lines
 - Total: 997 lines added
 
 ### Type Safety Improvements
+
 - Before: 9 primitive types in Clone struct (string, uint, float64)
 - After: 9 strongly-typed domain types (CloneID, LineNumber, etc.)
 - Type safety: 100% improvement for Clone struct fields
 
 ### Validation Coverage
+
 - Before: Validation in IsValid() methods (runtime)
 - After: Validation at construction time (immediate)
 - Fail fast: Improved significantly
 
 ### Compile-Time Safety
+
 - Before: Can assign string to CloneID field (no check)
 - After: Cannot assign Filepath to CloneID field (compilation error)
 - Type safety: 100% improvement
@@ -606,11 +656,13 @@ The foundation is now in place. The migration work begins now.
 ## Customer Value Created
 
 ### Immediate:
+
 - **Foundation for Type Safety**: Domain types infrastructure ready
 - **Documentation**: Clear explanation of enum split brain and migration path
 - **Clarity**: Developers understand current architecture and future direction
 
 ### Long-Term:
+
 - **Type Safety**: Compile-time prevention of type errors
 - **Validation**: Fail-fast with immediate validation at construction
 - **Maintainability**: Self-documenting code with explicit types
@@ -618,6 +670,7 @@ The foundation is now in place. The migration work begins now.
 - **Code Quality**: Better IDE support and autocomplete
 
 ### Risk Reduction:
+
 - **Type Errors**: Prevented at compile time
 - **Invalid States**: Made unrepresentable via types
 - **Confusion**: Documentation explains split brain issue
@@ -630,11 +683,13 @@ The foundation is now in place. The migration work begins now.
 ### Status: Foundation Complete, Migration Pending ✅
 
 **What's Done**:
+
 - ✅ Enum split brain Phase 1 (documentation and clarity)
 - ✅ Domain types foundation (15 types with validation)
 - ✅ Clear migration strategy (incremental approach)
 
 **What's Next**:
+
 - 🔄 Update Clone struct to use domain types
 - 🔄 Fix compilation errors
 - 🔄 Run comprehensive tests
@@ -654,8 +709,9 @@ The foundation is now in place. The migration work begins now.
 **Priority**: Update Clone struct in domain/clone.go to use new domain types
 
 **Steps**:
+
 1. Replace primitive types with domain types in Clone struct
-2. Update NodeToClone() to use New* constructors
+2. Update NodeToClone() to use New\* constructors
 3. Fix compilation errors
 4. Run tests
 5. Commit as isolated change

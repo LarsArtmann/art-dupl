@@ -15,6 +15,7 @@ Successfully identified and eliminated code duplication in three `UnmarshalJSON`
 ## 📊 BEFORE vs AFTER
 
 ### Before (28 lines of duplicated code):
+
 ```go
 // config/detectionmethod.go:43
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
@@ -54,6 +55,7 @@ func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 ```
 
 ### After (6 lines total, 22 lines eliminated):
+
 ```go
 // All three types now use:
 func (type *Type) UnmarshalJSON(data []byte) error {
@@ -79,17 +81,20 @@ func UnmarshalJSONForEnum[T ~string](e *T, data []byte, typeName string) error {
 ## 🔧 IMPLEMENTATION DETAILS
 
 ### Files Modified:
+
 1. **`config/unmarshal_helper.go`** - Added generic `UnmarshalJSONForEnum` function
 2. **`config/detectionmethod.go`** - Replaced with shared implementation (lines 43-52 → 43-44)
 3. **`config/outputformat.go`** - Replaced with shared implementation for two types
 
 ### Technical Approach:
+
 - **Go 1.25.5 generics** leveraged for type-safe abstraction
 - **Interface assertion** used to access `IsValid()` method without requiring explicit type constraints
 - **Type parameter `T ~string`** ensures only string-based types can use the function
 - **Preserved existing API** - no breaking changes to public interfaces
 
 ### Code Quality Metrics:
+
 - **Lines eliminated:** 22 lines (78.5% reduction)
 - **Cyclomatic complexity reduced:** From 3 separate implementations to 1
 - **Maintainability improved:** Single source of truth for enum unmarshaling logic
@@ -100,6 +105,7 @@ func UnmarshalJSONForEnum[T ~string](e *T, data []byte, typeName string) error {
 ## ✅ VERIFICATION RESULTS
 
 ### Testing Status:
+
 ```bash
 === RUN   TestDefaultConfig
 --- PASS: TestDefaultConfig (0.00s)
@@ -126,6 +132,7 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 **All tests pass - functionality preserved exactly.**
 
 ### Build Status:
+
 ```bash
 ✅ Compilation successful
 ✅ No linting issues
@@ -137,6 +144,7 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 ## 🚀 OPPORTUNITIES FOR FURTHER IMPROVEMENT
 
 ### Immediate Wins (Next 5 commits):
+
 1. **MarshalJSON De-duplication:** Similar pattern exists in MarshalJSON methods
 2. **String() Method Elimination:** All types have identical `String() string { return string(Type) }`
 3. **IsValid() Pattern Abstraction:** Switch statement pattern could be generic
@@ -144,12 +152,14 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 5. **Interface Contracts:** Compile-time constraints for enum completeness
 
 ### Medium-term Architecture:
+
 - **Code Generation:** go:generate tool for future enum types
 - **Custom Linting:** Prevent future enum duplication
 - **Performance Benchmarking:** Generic vs specific implementations
 - **Documentation:** Pattern library for common Go abstractions
 
 ### Long-term Strategic:
+
 - **Architecture Review:** Identify other duplication patterns across entire codebase
 - **Generic Patterns Library:** Reusable abstractions for common Go patterns
 - **Build-time Validation:** Compile-time guarantees for architectural contracts
@@ -158,27 +168,29 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 
 ## 🎯 MISSION SUCCESS CRITERIA
 
-| Criteria | Status | Notes |
-|----------|--------|-------|
+| Criteria                       | Status  | Notes                            |
+| ------------------------------ | ------- | -------------------------------- |
 | ✅ Code duplication eliminated | SUCCESS | 78.5% reduction in targeted area |
-| ✅ All tests pass | SUCCESS | Zero test failures |
-| ✅ Build successful | SUCCESS | No compilation errors |
-| ✅ No breaking changes | SUCCESS | Public APIs unchanged |
-| ✅ Type safety preserved | SUCCESS | Runtime behavior identical |
-| ✅ Performance maintained | SUCCESS | No measurable impact |
-| ✅ Documentation updated | TODO | Needs inline documentation |
-| ✅ Future extensibility | SUCCESS | Pattern reusable for new types |
+| ✅ All tests pass              | SUCCESS | Zero test failures               |
+| ✅ Build successful            | SUCCESS | No compilation errors            |
+| ✅ No breaking changes         | SUCCESS | Public APIs unchanged            |
+| ✅ Type safety preserved       | SUCCESS | Runtime behavior identical       |
+| ✅ Performance maintained      | SUCCESS | No measurable impact             |
+| ✅ Documentation updated       | TODO    | Needs inline documentation       |
+| ✅ Future extensibility        | SUCCESS | Pattern reusable for new types   |
 
 ---
 
 ## 📈 IMPACT ANALYSIS
 
 ### Quantitative Impact:
+
 - **Code reduction:** 22 lines eliminated (78.5%)
 - **Complexity reduction:** 3 implementations → 1 implementation
 - **Maintenance burden:** Single point of change for enum unmarshaling
 
 ### Qualitative Impact:
+
 - **Developer experience:** Easier to add new enum types
 - **Code consistency:** Standardized pattern across all enums
 - **Architectural alignment:** Follows DRY principle effectively
@@ -191,6 +203,7 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 **Primary Challenge:** How can we create compile-time constraints that ensure all future enum types implement the complete set of required methods (String(), IsValid(), MarshalJSON(), UnmarshalJSON()) without manual verification?
 
 **Potential Approaches:**
+
 1. **Advanced Go interface constraints** (limited by current generics capabilities)
 2. **Code generation with go:generate** (most practical solution)
 3. **Custom linting rules** (enforcement at development time)
@@ -201,6 +214,7 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 ## 📋 NEXT ACTION ITEMS
 
 ### Immediate (This Week):
+
 1. [ ] De-duplicate MarshalJSON methods using similar generic pattern
 2. [ ] Add comprehensive tests for `UnmarshalJSONForEnum` edge cases
 3. [ ] Improve documentation with usage examples
@@ -208,6 +222,7 @@ ok  	github.com/LarsArtmann/art-dupl/config	0.384s
 5. [ ] Performance benchmarking of new implementation
 
 ### Short-term (Next Month):
+
 1. [ ] Code generation tool for enum creation
 2. [ ] Custom lint rule for enum duplication
 3. [ ] Architecture documentation for generic patterns
@@ -228,6 +243,6 @@ The de-duplication mission achieved its primary objectives with measurable succe
 
 ---
 
-*Report generated: 2025-12-16_09-24*  
-*Mission: Enum UnmarshalJSON De-Duplication*  
-*Status: COMPLETED*
+_Report generated: 2025-12-16_09-24_  
+_Mission: Enum UnmarshalJSON De-Duplication_  
+_Status: COMPLETED_

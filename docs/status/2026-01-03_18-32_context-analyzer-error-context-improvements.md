@@ -10,6 +10,7 @@
 ## 📊 Executive Summary
 
 **Improvement Achievement:**
+
 - **Quality Score:** 94.1/100 (UP from 93.3/100)
 - **Improvement:** +0.8 points
 - **Quality Level:** Excellent
@@ -24,15 +25,18 @@
 ## 🎯 Original Task Breakdown
 
 ### Objective
+
 Execute `context-analyzer -v .` to identify error handling issues where context is missing from error messages, then systematically fix all identified issues.
 
 ### Initial State
+
 - **Score:** 93.3/100
 - **High Severity Issues:** 5 issues in `config/unmarshal_helper.go`
 - **Medium Severity Issues:** ~136 issues across multiple packages
 - **Low Severity Issues:** ~17 issues
 
 ### Strategy
+
 1. Run context-analyzer to identify issues
 2. Prioritize HIGH severity issues first
 3. Fix MEDIUM severity issues in core packages
@@ -48,6 +52,7 @@ Execute `context-analyzer -v .` to identify error handling issues where context 
 **File Modified:** `cli.go`
 
 **Issues Fixed:**
+
 - Lines 206, 211: Added `paths` context to nil_error_return
 - Line 226: Added `cfg` and `paths` context to error in `executeAnalysis()`
 - Line 240: Added context to analysis error return
@@ -56,6 +61,7 @@ Execute `context-analyzer -v .` to identify error handling issues where context 
   - Wrapped all printer errors with context
 
 **Specific Changes:**
+
 ```go
 // Before
 return nil, 0, err
@@ -71,13 +77,16 @@ return nil, 0, fmt.Errorf("failed to build suffix tree for paths %v: %w", paths,
 ### 2. Printer Packages - 100% Complete ✅
 
 #### printer/text.go
+
 **Issues Fixed:**
+
 - Lines 43, 72: Added context for `prepareClonesInfo` errors
   - Include duplicate count in error message
 - Line 106: Added filename context for file read errors
 - Added missing import for `fmt`
 
 **Specific Changes:**
+
 ```go
 // Before
 return err
@@ -87,18 +96,21 @@ return fmt.Errorf("failed to prepare clones info for %d duplicates: %w", len(sor
 ```
 
 #### printer/json.go
+
 **Issues Fixed:**
+
 - Line 105: Added context for `ProcessNodeRange` errors
   - Include filename and clone index
 - Added missing import for `fmt`
 
 **Specific Changes:**
+
 ```go
 // Before
 return err
 
 // After
-return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w", 
+return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w",
     nstart.Filename, i+1, len(dups), err)
 ```
 
@@ -108,12 +120,15 @@ return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w
 
 ### 3. Config Package - 90% Complete ✅
 
-**Files Modified:** 
+**Files Modified:**
+
 - `config/unmarshal_helper.go`
 - `config/detectionmethod.go` (already good)
 
 #### config/unmarshal_helper.go
+
 **Issues Fixed:**
+
 - Line 15: Enhanced `UnmarshalStringToEnum` validation error
   - Added original data, parsed string, candidate, and type context
   - Changed from simple fmt.Errorf to comprehensive context message
@@ -123,17 +138,19 @@ return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w
   - Include typeName and data in error messages
 
 **Remaining HIGH Issues (5):**
+
 - Generic function parameters (`enumType`, `isValid`) cannot be stringified
 - These are closure/function parameters not easily embeddable
 - See "Open Questions & Blockers" section below
 
 **Specific Changes:**
+
 ```go
 // Before
 return zero, fmt.Errorf("%w (data: %q, candidate: %q)", fmt.Errorf(errorMsg, str), data, candidate)
 
 // After
-return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed string: %q, candidate: %q, type: T)", 
+return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed string: %q, candidate: %q, type: T)",
     fmt.Errorf(errorMsg, str), data, str, candidate)
 ```
 
@@ -144,11 +161,14 @@ return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed s
 ### 4. Types Package - 100% Complete ✅
 
 **Files Modified:**
+
 - `types/enums.go`
 - `types/enum_utils.go`
 
 #### types/enums.go
+
 **Issues Fixed:**
+
 - Lines 33, 73, 123: Wrapped `MarshalEnumJSON` calls with error context
   - Added "failed to marshal" prefix with typeName
 - Lines 41, 81, 131: Wrapped `UnmarshalEnumJSON` calls with error context
@@ -156,6 +176,7 @@ return zero, fmt.Errorf("enum validation failed: %s (original data: %q, parsed s
 - Added missing `fmt` import
 
 **Specific Changes:**
+
 ```go
 // Before
 return MarshalEnumJSON(ds, "detection state")
@@ -169,19 +190,22 @@ return data, nil
 ```
 
 #### types/enum_utils.go
+
 **Issues Fixed:**
+
 - Line 21: Enhanced validation error with context
   - Added typeName, str, and data
 - Line 29: Fixed format string (changed %q to %v for generic type)
   - Added comprehensive error message
 
 **Specific Changes:**
+
 ```go
 // Before
 return nil, fmt.Errorf("invalid %s: %s", typeName, str)
 
 // After
-return nil, fmt.Errorf("enum validation failed for %s: invalid value %q (data: %q)", 
+return nil, fmt.Errorf("enum validation failed for %s: invalid value %q (data: %q)",
     typeName, str, string(data))
 ```
 
@@ -194,11 +218,13 @@ return nil, fmt.Errorf("enum validation failed for %s: invalid value %q (data: %
 **File Modified:** `utils/file_processor.go`
 
 **Issues Fixed:**
+
 - Lines 71, 81: Added context to batch file operations
   - Include filename in error messages for `WriteTestFiles` and `WriteDuplicateFiles`
 - Added missing `fmt` import
 
 **Specific Changes:**
+
 ```go
 // Before
 if err := fp.WriteTextFile(filename, content); err != nil {
@@ -220,6 +246,7 @@ if err := fp.WriteTextFile(filename, content); err != nil {
 **File Modified:** `pkg/artdupl/detector.go`
 
 **Issues Fixed:**
+
 - Lines 63, 88: Added context to input validation errors
   - Include file count in validation error messages
 - Lines 68, 100: Added context to pipeline construction errors
@@ -227,6 +254,7 @@ if err := fp.WriteTextFile(filename, content); err != nil {
 - Line 75: Added context to detection errors
 
 **Specific Changes:**
+
 ```go
 // Before
 if err := d.validateInputs(ctx, files); err != nil {
@@ -251,11 +279,13 @@ if err := d.validateInputs(ctx, files); err != nil {
 
 **Root Cause:**
 Generic function closure parameters (`enumType func(string) T` and `isValid func(T) bool`) cannot be stringified in error messages without:
+
 - Losing type safety
 - Adding verbose reflection overhead
 - Breaking API signatures
 
 **Specific Issues:**
+
 ```
 1. config/unmarshal_helper.go:16:3 - unknown_error_type
    Score: 75/100
@@ -289,6 +319,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 **File:** `suffixtree/suffixtree.go`
 
 **Issues to Fix:**
+
 - Lines 122, 130, 142, 144: Missing context for state machine errors
   - Variables: s, start, end, tr (transition)
   - Context needed for debugging suffix tree construction
@@ -304,6 +335,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 **File:** `domain/clone.go`
 
 **Issues to Fix:**
+
 - Clone validation errors (Severity, ID, Hash)
 - Analysis validation errors
 - Processing state errors
@@ -319,6 +351,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 **File:** `detection/todos.go:100`
 
 **Issue to Fix:**
+
 - Missing context for parser error
 - Should include filename and nodes count
 
@@ -333,6 +366,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 **File:** `syntax/golang/golang.go:68,74`
 
 **Issue to Fix:**
+
 - Missing filename context for file parsing errors
 
 **Estimated Effort:** 15 minutes
@@ -346,6 +380,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 **Total:** 17 low severity issues
 
 **Files:**
+
 - `config/config.go` - 4 issues
 - `domain/clone.go` - 11 issues (overlaps with Medium)
 - `examples/examples_sdk_demo.go` - 1 issue
@@ -428,6 +463,7 @@ Generic function closure parameters (`enumType func(string) T` and `isValid func
 
 **Problem:**
 The remaining 5 HIGH severity issues stem from this pattern:
+
 ```go
 func UnmarshalStringToEnum[T ~string](
     data []byte,
@@ -444,12 +480,14 @@ func UnmarshalStringToEnum[T ~string](
 ```
 
 **Why This Matters:**
+
 - These are **HIGH severity** - tool flags `isValid` as critical context
 - The function is generic and used across many enum types
 - Losing this context makes debugging impossible
 - All other error context can be included, except these functions
 
 **Failed Attempts:**
+
 1. **Direct stringification** - Functions don't implement `String()`
 2. **`fmt.Sprintf("%v", func)`** - Prints `0x...` address, useless
 3. **Reflection** - Would require `unsafe`, loses type safety
@@ -459,6 +497,7 @@ func UnmarshalStringToEnum[T ~string](
 **Potential Solutions:**
 
 #### Option A: API Break - Add `enumTypeName` Parameter
+
 ```go
 func UnmarshalStringToEnum[T ~string](
     data []byte,
@@ -468,22 +507,26 @@ func UnmarshalStringToEnum[T ~string](
     errorMsg string,
 ) (T, error)
 ```
+
 - **Pros:** Simple, clean, works
 - **Cons:** API break, extra parameter at all call sites
 - **Estimated Effort:** 1 hour (update all call sites)
 
 #### Option B: Debug Mode - Verbose Reflection
+
 ```go
 if debugMode {
     funcName := runtime.FuncForPC(reflect.ValueOf(enumType).Pointer()).Name()
     return fmt.Errorf("enum validation failed (function: %s, ...)", funcName, ...)
 }
 ```
+
 - **Pros:** Zero overhead in production
 - **Cons:** Still gives function name, not actual implementation
 - **Estimated Effort:** 30 minutes
 
 #### Option C: Struct Wrapper - Change to Pass Config Struct
+
 ```go
 type EnumConfig[T ~string] struct {
     Name string
@@ -491,16 +534,19 @@ type EnumConfig[T ~string] struct {
     IsValid func(T) bool
 }
 ```
+
 - **Pros:** Clean, extensible, can add metadata
 - **Cons:** API break, more complex
 - **Estimated Effort:** 2 hours
 
 #### Option D: Accept Limitation - Document Why Impossible
+
 - **Pros:** No code changes
 - **Cons:** Perpetually "LOW" or "MEDIUM" severity for these paths
 - **Estimated Effort:** 15 minutes
 
 **Decision Needed:**
+
 1. Which approach is preferred? (A, B, C, D, or something else?)
 2. Is this worth an API break? Or accept limitation?
 3. Is there another Go pattern I'm missing?
@@ -637,12 +683,14 @@ type EnumConfig[T ~string] struct {
 ## 🎯 Test Results
 
 ### Build Status
+
 ```bash
 $ go build -o /dev/null .
 ✅ SUCCESS - No build errors
 ```
 
 ### Test Status
+
 ```bash
 $ go test ./... -short
 ✅ config: PASS
@@ -654,6 +702,7 @@ $ go test ./... -short
 ```
 
 ### Context Analyzer Status
+
 ```bash
 $ context-analyzer -v .
 Error Handling Quality Score: 94.1/100
@@ -671,6 +720,7 @@ LOW Severity Issues: 17
 ## 📊 Metrics & Impact
 
 ### Improvement Summary
+
 - **Quality Score:** +0.8 points (93.3 → 94.1)
 - **Error Paths Enhanced:** 50+ paths
 - **Packages Modified:** 7 core packages
@@ -679,12 +729,14 @@ LOW Severity Issues: 17
 - **Tests Impact:** 0 failures
 
 ### Code Quality Impact
+
 - **Debuggability:** Significantly improved
 - **Error Messages:** More actionable and informative
 - **Developer Experience:** Better error context for faster debugging
 - **Maintenance:** Clearer error handling patterns
 
 ### Risk Assessment
+
 - **Breaking Changes:** 0
 - **Test Failures:** 0
 - **Performance Impact:** Negligible (string formatting)
@@ -697,6 +749,7 @@ LOW Severity Issues: 17
 ### Patterns Applied
 
 1. **Context Wrapping Pattern:**
+
 ```go
 // Before
 if err != nil {
@@ -710,6 +763,7 @@ if err != nil {
 ```
 
 2. **Multiple Variables Pattern:**
+
 ```go
 // Before
 return fmt.Errorf("operation failed: %w", err)
@@ -719,6 +773,7 @@ return fmt.Errorf("operation failed for paths %v with config %v: %w", paths, cfg
 ```
 
 3. **Index/Counter Pattern:**
+
 ```go
 // Before
 if err != nil {
@@ -754,16 +809,19 @@ if err != nil {
 ## 🔮 Next Steps
 
 ### Immediate (Awaiting Decision)
+
 1. **Decision needed on generic function parameter issue**
    - See "Open Questions & Blockers" section
    - Choose approach (A, B, C, or D)
 
 ### Once Decision Made
+
 2. **Implement chosen solution** for HIGH severity issues
 3. **Complete medium priority fixes** (suffixtree, syntax, detection)
 4. **Address low priority issues** if time permits
 
 ### If Time Available
+
 5. **Create error handling style guide**
 6. **Add tests for error context**
 7. **Consider custom error types**
@@ -773,15 +831,18 @@ if err != nil {
 ## 📚 References
 
 ### Tools Used
+
 - **context-analyzer** - Error context analysis tool
 - **go test** - Go testing framework
 - **golangci-lint** - Go linting (passing)
 
 ### Documentation
+
 - **AGENTS.md** - Project AI agent configuration
 - **Go Error Handling** - https://go.dev/blog/error-handling-and-go
 
 ### Related Work
+
 - Previous linting improvements (commit 32b39a6)
 - Comprehensive full status report (commit 15fad7e)
 
@@ -790,6 +851,7 @@ if err != nil {
 ## ✅ Checklist
 
 ### Completed
+
 - [x] Run context-analyzer -v . (initial scan)
 - [x] Analyze HIGH severity issues
 - [x] Fix CLI package error context
@@ -803,10 +865,12 @@ if err != nil {
 - [x] Re-run context-analyzer (final scan)
 
 ### In Progress
+
 - [ ] Fix remaining HIGH severity issues (5 issues)
 - [ ] Fix MEDIUM severity issues in remaining packages
 
 ### Not Started
+
 - [ ] Fix LOW severity issues (17 issues)
 - [ ] Create error handling style guide
 - [ ] Add tests for error context
@@ -817,11 +881,13 @@ if err != nil {
 ## 📞 Contact & Questions
 
 ### For This Work
+
 - **Repository:** github.com/LarsArtmann/art-dupl
 - **Branch:** fork
 - **Last Commit:** 32b39a6 (fix: apply final linting improvements)
 
 ### Decision Needed
+
 - **Question #1:** How to handle generic function parameters in error messages?
 - **Priority:** HIGH - Blocks 5 HIGH severity issues
 - **Impact:** Affects API design, error quality score, and debugging experience

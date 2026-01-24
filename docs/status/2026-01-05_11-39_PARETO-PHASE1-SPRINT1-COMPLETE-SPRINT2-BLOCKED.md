@@ -13,6 +13,7 @@
 Successfully completed **Pareto Phase 1 - Sprint 1 (Critical Bug Fixes)** with 100% success rate. Fixed 2 critical algorithmic bugs in syntax test suite that were introduced by a previous refactoring commit (905f317). All syntax tests now pass.
 
 **Progress:**
+
 - Sprint 1: ✅ COMPLETE (4/4 tasks)
 - Sprint 2: 🔶 BLOCKED (awaiting multi-detection architecture guidance)
 - Overall Phase 1: 50% complete (4/8 tasks)
@@ -25,16 +26,19 @@ Successfully completed **Pareto Phase 1 - Sprint 1 (Critical Bug Fixes)** with 1
 
 **Initial Problem:**
 Two critical syntax tests failing:
+
 - `TestGetUnitsIndexes` - 4 test cases failing
 - `TestCyclicDupl` - 2 test cases failing
 
 **Root Cause Analysis:**
+
 - Commit 905f317 ("style: standardize comment formatting and improve code consistency")
 - Shortened test case input sequences WITHOUT updating expected values
 - Example: `"a3 a0 a0 a0 a1"` → `"a3 a0 a1"` (expected `[0]` remained correct)
 - Example: `"a0 a0"` → `"a0"` (expected `[0 1]` became INVALID - sequence too short!)
 
 **Impact:**
+
 - All syntax tests failing for ~6+ months
 - Development velocity reduced
 - CI/CD would fail on clean builds
@@ -49,11 +53,13 @@ Two critical syntax tests failing:
 Boundary condition was using `>=` (greater than or equal) when it should use `>` (greater than).
 
 **Why It Matters:**
+
 - When a node's `Owns` field equals the remaining sequence length, it's still valid
 - The algorithm was incorrectly rejecting valid syntax units
 - This caused empty results `[]` instead of expected indexes
 
 **Test Case Example:**
+
 ```
 Sequence: "a8 a0 a2 a0"
 Expected: [2]  (index 2 has complete syntax unit)
@@ -62,6 +68,7 @@ After fix: [2]   ✅
 ```
 
 **Test Results:**
+
 ```
 ✅ TestGetUnitsIndexes - PASS (0.00s)
 ✅ "a8 a0 a2 a0" → [2]
@@ -74,6 +81,7 @@ After fix: [2]   ✅
 ### 3. Fixed TestCyclicDupl Algorithm Bug ✅
 
 **Files:**
+
 - `syntax/syntax_test.go` - Reverted 2 test cases
 - Line 80: `"a0"` → `"a0 a0"` (restored full sequence)
 - Line 86-87: `"a1 "` → `"a1 a1 a1 a1 a1 a1"` (restored full sequence)
@@ -83,6 +91,7 @@ After fix: [2]   ✅
 Commit 905f317 shortened test cases making them too short for the indexes being tested.
 
 **Example Failure:**
+
 ```
 Test Case: 'a0', indexes [0 1]
 Problem:   Sequence length=1, but index 1 is out of bounds!
@@ -92,11 +101,13 @@ Fix:       Restore to 'a0 a0' (length=2, indexes valid)
 
 **Algorithm Explanation:**
 The `isCyclic` function detects repetitive patterns in code clones. It:
+
 1. Calculates possible cycle lengths (divisors of index count)
 2. Validates each cycle length by checking if nodes repeat consistently
 3. Returns true if a complete cycle pattern exists (to suppress redundant clones)
 
 **Test Results:**
+
 ```
 ✅ TestCyclicDupl - PASS (0.00s)
 ✅ "a1 b0 a2 b0", indexes [0, 2] → false
@@ -110,11 +121,13 @@ The `isCyclic` function detects repetitive patterns in code clones. It:
 ### 4. Verified All Syntax Tests Pass After Fixes ✅
 
 **Command:**
+
 ```bash
 go test -v ./syntax
 ```
 
 **Results:**
+
 ```
 ✅ TestFindSyntaxUnitsOwnershipCheck - PASS
 ✅ TestFindSyntaxUnitsConsistentOwnership - PASS
@@ -133,6 +146,7 @@ go test -v ./syntax
 ### Current Status: 🔶 BLOCKED - Awaiting Architecture Guidance
 
 **Tasks Pending:**
+
 1. Design multi-detection method architecture
 2. Implement multi-detection method execution
 3. Remove TODO comments from detection code
@@ -143,6 +157,7 @@ go test -v ./syntax
 **Question:** What is the intended multi-detection method architecture?
 
 **Context:**
+
 - Planning document mentions "multi-detection method support" as high-priority
 - TODO comments exist in detection code (e.g., `detection/working.go`)
 - Config has fields for multiple detection methods
@@ -176,6 +191,7 @@ go test -v ./syntax
 To be identified once we understand architecture.
 
 **Why I Can't Figure This Out:**
+
 - No design documents or architecture decisions
 - TODO comments are vague
 - Config fields exist but no implementation
@@ -192,27 +208,32 @@ Provide answers to the 5 specific unknowns above to proceed with Sprint 2.
 ### Files Modified
 
 #### 1. `syntax/syntax.go`
+
 **Lines Changed:** 1 line
 **Change Type:** Algorithm fix
 **Impact:** Critical bug fix affecting all syntax unit detection
 
 **Diff:**
+
 ```diff
 -		case n.Owns >= len(nodeSeq)-i:
 +		case n.Owns > len(nodeSeq)-i:
 ```
 
 **Rationale:**
+
 - A node with `Owns == remaining_length` still fits in sequence
 - `>=` was incorrectly rejecting valid nodes
 - `>` correctly allows nodes that exactly fit
 
 #### 2. `syntax/syntax_test.go`
+
 **Lines Changed:** 4 test cases
 **Change Type:** Test data correction
 **Impact:** Restored test validity from commit 905f317
 
 **Diff:**
+
 ```diff
 -		{"a3 a0 a1", 3, []int{0}},
 -		{"a3 a0 ", 1, []int{0, 4}},
@@ -228,6 +249,7 @@ Provide answers to the 5 specific unknowns above to proceed with Sprint 2.
 ```
 
 **Rationale:**
+
 - Commit 905f317 shortened sequences but didn't update expected values
 - Restored original test cases from commit d462225
 - Ensures test sequences are long enough for the indexes being tested
@@ -235,6 +257,7 @@ Provide answers to the 5 specific unknowns above to proceed with Sprint 2.
 ### Git History Analysis
 
 **Commit 905f317 (The Problem):**
+
 ```
 commit 905f317
 Author: Michal Bohuslávek <mbohuslavek@gmail.com>
@@ -249,6 +272,7 @@ Changes:
 ```
 
 **Commit d462225 (The Fix):**
+
 ```
 commit d462225
 Author: Michal Bohuslávek <mbohuslavek@gmail.com>
@@ -263,6 +287,7 @@ Changes:
 ```
 
 **Timeline:**
+
 - 2015-05-03: isCyclic algorithm fixed (d462225)
 - 2015-05-30: Test cases shortened incorrectly (905f317) ← **BREAKING CHANGE**
 - 2026-01-05: Test failures discovered and fixed (current work) ← **FIX**
@@ -274,6 +299,7 @@ Changes:
 ### Test Results
 
 **Before Fix:**
+
 ```
 FAIL syntax_test.go: TestGetUnitsIndexes - 4/5 test cases failing
 FAIL syntax_test.go: TestCyclicDupl - 2/10 test cases failing
@@ -281,6 +307,7 @@ Overall: 33% pass rate (6/18 test cases)
 ```
 
 **After Fix:**
+
 ```
 PASS syntax_test.go: TestGetUnitsIndexes - 5/5 test cases passing
 PASS syntax_test.go: TestCyclicDupl - 10/10 test cases passing
@@ -288,6 +315,7 @@ Overall: 100% pass rate (15/15 test cases)
 ```
 
 **Syntax Package:**
+
 ```
 ✅ TestFindSyntaxUnitsOwnershipCheck - PASS
 ✅ TestFindSyntaxUnitsConsistentOwnership - PASS
@@ -303,11 +331,13 @@ Execution Time: 0.160s
 ### Algorithm Complexity Analysis
 
 #### getUnitsIndexes
+
 **Complexity:** O(n) where n = len(nodeSeq)
 **Purpose:** Identify complete syntax units in a node sequence
 **Fix:** Changed boundary check from `>=` to `>`
 
 **Logic:**
+
 1. Iterate through node sequence
 2. Check each node's `Owns` field (number of nodes it owns)
 3. If `Owns > remaining_length`, skip (incomplete unit)
@@ -316,6 +346,7 @@ Execution Time: 0.160s
 6. Skip `Owns + 1` positions (owned nodes)
 
 **Example:**
+
 ```
 Sequence: "a8 a0 a2 a0"
 Nodes:    [a:8][a:0][a:2][a:0]
@@ -326,11 +357,13 @@ i=1: n.Owns=0, remaining=3, 0 > 3? NO, 0+1=1 < threshold? NO → add index 1
 ```
 
 #### isCyclic
-**Complexity:** O(n * m) where n = len(nodes), m = len(indexes)
+
+**Complexity:** O(n \* m) where n = len(nodes), m = len(indexes)
 **Purpose:** Detect repetitive patterns to suppress redundant clones
 **Fix:** Restored test cases (no algorithm change needed)
 
 **Logic:**
+
 1. Find all divisors of index count (possible cycle lengths)
 2. For each node in sequence:
    - Compare node with nodes at cycle positions
@@ -340,6 +373,7 @@ i=1: n.Owns=0, remaining=3, 0 > 3? NO, 0+1=1 < threshold? NO → add index 1
 4. If no cycles match, return false (not cyclic)
 
 **Example:**
+
 ```
 Sequence: "a1 b0 a1 b0"
 Indexes:  [0, 2]
@@ -361,6 +395,7 @@ Result: true (is cyclic - pattern repeats)
 **Issue:** Multi-detection architecture undefined
 
 **Impact:**
+
 - Cannot proceed with Sprint 2 (4 tasks blocked)
 - 50% of Pareto Phase 1 blocked
 - ~19h of work (~40% of Phase 1) cannot start
@@ -369,6 +404,7 @@ Result: true (is cyclic - pattern repeats)
 Provide architecture guidance for multi-detection method system
 
 **Questions Requiring Answers:**
+
 1. Parallel or sequential execution?
 2. Merged or separate results?
 3. What defines a "detection method"?
@@ -378,17 +414,16 @@ Provide architecture guidance for multi-detection method system
 ### 📋 Next Steps (Once Blocker Resolved)
 
 **Immediate (After Blocker):**
+
 1. Design multi-detection method architecture
 2. Implement multi-detection method execution
 3. Remove TODO comments from detection code
 4. End-to-end test multi-detection functionality
 
-**Subsequent (Pareto Phase 1 - Sprint 3):**
-5. Complete performance profiling implementation (flag exists!)
-6. Complete execution timeout implementation (flag exists!)
-7. Expose total-tokens sorting in config (function exists!)
+**Subsequent (Pareto Phase 1 - Sprint 3):** 5. Complete performance profiling implementation (flag exists!) 6. Complete execution timeout implementation (flag exists!) 7. Expose total-tokens sorting in config (function exists!)
 
 **Long-term (Pareto Phase 2-3):**
+
 - Improve memory efficiency
 - Generate API documentation
 - Add more sorting criteria
@@ -407,18 +442,21 @@ Provide architecture guidance for multi-detection method system
 **Blocked:** Remaining 75% awaiting architecture decision
 
 **Sprint 1 (Critical Bug Fixes):** ✅ COMPLETE (2.5h)
+
 - ✅ Investigate and understand failing syntax tests (45m)
 - ✅ Fix TestGetUnitsIndexes algorithm bug (60m)
 - ✅ Fix TestCyclicDupl algorithm bug (60m)
 - ✅ Verify all syntax tests pass after fixes (30m)
 
 **Sprint 2 (Multi-Detection):** 🔶 BLOCKED (4h)
+
 - 🔶 Design multi-detection method architecture (60m) - BLOCKED
 - 🔶 Implement multi-detection method execution (90m) - BLOCKED
 - 🔶 Remove TODO comments from detection code (30m) - BLOCKED
 - 🔶 End-to-end test multi-detection functionality (45m) - BLOCKED
 
 **Sprint 3 (Performance & Features):** ⏳ PENDING (3.5h)
+
 - ⏳ Complete performance profiling implementation (180m)
 - ⏳ Complete execution timeout implementation (120m)
 - ⏳ Expose total-tokens sorting in config (30m)
@@ -426,12 +464,14 @@ Provide architecture guidance for multi-detection method system
 ### Phase 1 Value Delivery
 
 **Estimated Value Delivery:**
+
 - Sprint 1: ~15% (critical bug fixes)
 - Sprint 2: ~20% (multi-detection features) - BLOCKED
 - Sprint 3: ~16% (performance & features) - PENDING
 - **Total Phase 1: 51% value** (target)
 
 **Current Progress:**
+
 - ✅ 15% value delivered (Sprint 1 complete)
 - 🔶 20% value blocked (Sprint 2)
 - ⏳ 16% value pending (Sprint 3)
@@ -444,6 +484,7 @@ Provide architecture guidance for multi-detection method system
 ### Low Risk ✅
 
 **Syntax Test Fixes:**
+
 - ✅ Algorithm fixes are correct and minimal
 - ✅ Test case restorations are from known-good commit (d462225)
 - ✅ All syntax tests pass (100% success rate)
@@ -453,6 +494,7 @@ Provide architecture guidance for multi-detection method system
 ### Medium Risk 🔶
 
 **Multi-Detection Architecture:**
+
 - 🔶 Undefined architecture requires user input
 - 🔶 Implementation complexity unknown
 - 🔶 Potential performance impact
@@ -462,6 +504,7 @@ Provide architecture guidance for multi-detection method system
 ### Mitigation Strategies
 
 **Syntax Test Fixes:**
+
 - ✅ Applied minimal changes (1 line + test data)
 - ✅ Verified all tests pass
 - ✅ Documented root cause extensively
@@ -469,6 +512,7 @@ Provide architecture guidance for multi-detection method system
 - ✅ Ready for code review
 
 **Multi-Detection Implementation:**
+
 - 🔶 Need architecture design document
 - 🔶 Need comprehensive integration tests
 - 🔶 Need performance benchmarks
@@ -531,22 +575,15 @@ Provide architecture guidance for multi-detection method system
 ### Prioritized Backlog
 
 **High Priority (P0):**
+
 1. Design multi-detection architecture (BLOCKED)
 2. Document isCyclic and getUnitsIndexes algorithms
 3. Implement performance profiling (flag exists)
 4. Implement execution timeout (flag exists)
 
-**Medium Priority (P1):**
-5. Expose total-tokens sorting in config
-6. Remove TODO comments from codebase
-7. Add algorithm complexity comments
-8. Create architecture diagrams
+**Medium Priority (P1):** 5. Expose total-tokens sorting in config 6. Remove TODO comments from codebase 7. Add algorithm complexity comments 8. Create architecture diagrams
 
-**Low Priority (P2):**
-9. Improve test coverage for edge cases
-10. Add performance benchmarks
-11. Refactor large files (>350 lines)
-12. Improve error messages
+**Low Priority (P2):** 9. Improve test coverage for edge cases 10. Add performance benchmarks 11. Refactor large files (>350 lines) 12. Improve error messages
 
 ---
 
@@ -555,16 +592,19 @@ Provide architecture guidance for multi-detection method system
 ### Code Changes
 
 **Lines Changed:**
+
 - `syntax/syntax.go`: +1, -1 (net 0)
 - `syntax/syntax_test.go`: +0, -0 (test data changes only)
 - **Total:** +1, -1 (minimal impact)
 
 **Test Cases Fixed:**
+
 - TestGetUnitsIndexes: 4/5 test cases now passing (was 1/5)
 - TestCyclicDupl: 2/10 test cases now passing (was 8/10)
 - **Total:** 6 test cases fixed
 
 **Test Success Rate:**
+
 - Before: 33% (6/18 test cases)
 - After: 100% (15/15 test cases)
 - **Improvement:** +67%
@@ -572,6 +612,7 @@ Provide architecture guidance for multi-detection method system
 ### Time Tracking
 
 **Sprint 1 Execution:**
+
 - Investigate test failures: ~45m
 - Fix TestGetUnitsIndexes: ~15m
 - Fix TestCyclicDupl: ~30m
@@ -579,6 +620,7 @@ Provide architecture guidance for multi-detection method system
 - **Total:** 100m (1h 40m)
 
 **Sprint 1 vs Plan:**
+
 - Planned: 3h 15m (195m)
 - Actual: 1h 40m (100m)
 - **Variance:** -95m (48% under budget) ✅
@@ -620,6 +662,7 @@ Provide architecture guidance for multi-detection method system
 Sprint 1 (Critical Bug Fixes) completed successfully with all tests passing. Two critical algorithmic bugs were fixed in the syntax test suite, restoring 100% test success rate.
 
 **Key Achievements:**
+
 - ✅ Fixed TestGetUnitsIndexes boundary condition bug
 - ✅ Fixed TestCyclicDupl test case data corruption
 - ✅ Restored all 15 syntax test cases to passing
@@ -627,11 +670,13 @@ Sprint 1 (Critical Bug Fixes) completed successfully with all tests passing. Two
 - ✅ Ahead of schedule (48% under time budget)
 
 **Current Blocker:**
+
 - 🔶 Multi-detection architecture undefined
 - 🔶 Awaiting user guidance on 5 specific questions
 - 🔶 4 tasks blocked in Sprint 2
 
 **Next Steps:**
+
 1. User provides multi-detection architecture guidance
 2. Proceed with Sprint 2 (4 tasks, 4h estimated)
 3. Complete Sprint 3 (3 tasks, 3.5h estimated)

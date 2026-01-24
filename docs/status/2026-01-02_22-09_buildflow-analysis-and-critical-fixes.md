@@ -64,9 +64,11 @@
 ### A. Compilation Errors (FIXED ✅)
 
 **Issue 1: Undefined `errors.New` in printer/html.go:72**
+
 - **Error:** `printer/html.go:72:18: undefined: errors.New`
 - **Root Cause:** Incorrect usage of local errors package vs stdlib errors
 - **Fix Applied:**
+
   ```go
   // Before (WRONG):
   return errors.New("internal error: zero length duplicate found")
@@ -74,9 +76,11 @@
   // After (CORRECT):
   return errors.NewInternalError("zero length duplicate found", nil)
   ```
+
 - **Import Alias:** Added `errors "github.com/LarsArtmann/art-dupl/errors"`
 
 **Issue 2: Undefined `errors.New` in printer/json.go:97**
+
 - **Error:** `printer/json.go:97:18: undefined: errors.New`
 - **Root Cause:** Same as Issue 1
 - **Fix Applied:** Identical to Issue 1
@@ -87,6 +91,7 @@
 **Status:** FAIL (2 tests, 4 assertions)
 
 **Test 1: TestGetUnitsIndexes**
+
 ```
 FAIL: syntax/syntax_test.go:64
   - Sequence 'a8 a0 a2 a0': Expected [2], Got []
@@ -96,6 +101,7 @@ FAIL: syntax/syntax_test.go:64
 ```
 
 **Test 2: TestCyclicDupl**
+
 ```
 FAIL: syntax/syntax_test.go:92
   - Sequence 'a0' with indexes [0, 1]: Expected true, Got false
@@ -103,6 +109,7 @@ FAIL: syntax/syntax_test.go:92
 ```
 
 **Analysis:**
+
 - Tests were passing before recent commit `905f317`
 - Recent commit: "style: standardize comment formatting and improve code consistency"
 - Changes included string concatenation from `fmt.Sprintf`
@@ -111,14 +118,14 @@ FAIL: syntax/syntax_test.go:92
 
 ### C. File Size Violations (6 files > 350 lines)
 
-| File | Lines | Severity | Action Required |
-|------|-------|----------|----------------|
-| `bdd/bdd_test.go` | 678 | CRITICAL | Extract test helpers, split scenarios |
-| `config/config_test.go` | 403 | HIGH | Extract test helpers |
-| `pkg/artdupl/detector.go` | 576 | HIGH | Extract detection logic |
-| `domain/clone.go` | 376 | MEDIUM | Extract clone functions |
-| `syntax/golang/golang.go` | 361 | MEDIUM | Extract transformer logic |
-| `cli.go` | 355 | MEDIUM | Extract CLI sub-functions |
+| File                      | Lines | Severity | Action Required                       |
+| ------------------------- | ----- | -------- | ------------------------------------- |
+| `bdd/bdd_test.go`         | 678   | CRITICAL | Extract test helpers, split scenarios |
+| `config/config_test.go`   | 403   | HIGH     | Extract test helpers                  |
+| `pkg/artdupl/detector.go` | 576   | HIGH     | Extract detection logic               |
+| `domain/clone.go`         | 376   | MEDIUM   | Extract clone functions               |
+| `syntax/golang/golang.go` | 361   | MEDIUM   | Extract transformer logic             |
+| `cli.go`                  | 355   | MEDIUM   | Extract CLI sub-functions             |
 
 ---
 
@@ -342,30 +349,31 @@ FAIL: syntax/syntax_test.go:92
 
 ### Overall Coverage by Package
 
-| Package | Coverage | Status |
-|---------|----------|--------|
-| job | 100.0% | ✅ EXCELLENT |
-| util | 100.0% | ✅ EXCELLENT |
-| hash | 92.5% | ✅ EXCELLENT |
-| cli | 89.3% | ✅ EXCELLENT |
-| syntax | 91.2% | ✅ EXCELLENT (BUT TESTS FAILING) |
-| suffixtree | 90.6% | ✅ EXCELLENT |
-| lib | 74.3% | ✅ GOOD |
-| printer | 59.9% | ⚠️ MODERATE |
-| errors | 35.3% | ⚠️ NEEDS WORK |
-| config | 72.0% | ✅ GOOD |
-| detection | 12.2% | 🟡 LOW |
-| examples | 0.0% | 🔴 NONE |
-| hash (domain) | 0.0% | 🔴 NONE |
-| migration | 0.0% | 🔴 NONE |
-| types | 0.0% | 🔴 NONE |
-| testutils | 12.5% | 🟡 LOW |
-| syntax/golang | 0.6% | 🔴 NONE |
-| pkg/artdupl | 7.2% | 🟡 LOW |
-| adapter | 0.0% | 🔴 NONE |
-| utils | 0.0% | 🔴 NONE |
+| Package       | Coverage | Status                           |
+| ------------- | -------- | -------------------------------- |
+| job           | 100.0%   | ✅ EXCELLENT                     |
+| util          | 100.0%   | ✅ EXCELLENT                     |
+| hash          | 92.5%    | ✅ EXCELLENT                     |
+| cli           | 89.3%    | ✅ EXCELLENT                     |
+| syntax        | 91.2%    | ✅ EXCELLENT (BUT TESTS FAILING) |
+| suffixtree    | 90.6%    | ✅ EXCELLENT                     |
+| lib           | 74.3%    | ✅ GOOD                          |
+| printer       | 59.9%    | ⚠️ MODERATE                      |
+| errors        | 35.3%    | ⚠️ NEEDS WORK                    |
+| config        | 72.0%    | ✅ GOOD                          |
+| detection     | 12.2%    | 🟡 LOW                           |
+| examples      | 0.0%     | 🔴 NONE                          |
+| hash (domain) | 0.0%     | 🔴 NONE                          |
+| migration     | 0.0%     | 🔴 NONE                          |
+| types         | 0.0%     | 🔴 NONE                          |
+| testutils     | 12.5%    | 🟡 LOW                           |
+| syntax/golang | 0.6%     | 🔴 NONE                          |
+| pkg/artdupl   | 7.2%     | 🟡 LOW                           |
+| adapter       | 0.0%     | 🔴 NONE                          |
+| utils         | 0.0%     | 🔴 NONE                          |
 
 **Observations:**
+
 - Excellent coverage in core packages (job, util, hash, cli)
 - Critical syntax package has high coverage but failing tests
 - Several packages with zero or minimal coverage (examples, adapter, utils)
@@ -465,10 +473,12 @@ FAIL: syntax/syntax_test.go:92
 ### Phase 1: Critical Blockers (Immediate - Days 1-3)
 
 #### Task 1.1: Fix Failing Tests 🔴
+
 **Priority:** CRITICAL
 **Files:** `syntax/syntax_test.go`, `syntax/syntax.go`
 
 **Subtasks:**
+
 1. Investigate `getUnitsIndexes()` function logic
 2. Verify test expectations are correct for current implementation
 3. Debug why `'a8 a0 a2 a0'` returns `[]` instead of `[2]`
@@ -477,36 +487,43 @@ FAIL: syntax/syntax_test.go:92
 6. Update tests OR fix implementation based on root cause
 
 **Acceptance Criteria:**
+
 - ✅ `TestGetUnitsIndexes` passes all 4 assertions
 - ✅ `TestCyclicDupl` passes all 2 assertions
 - ✅ `make test` completes with 0 failures
 
 #### Task 1.2: Fix Exhaustive Switch Cases 🟠
+
 **Priority:** HIGH
 **File:** `pkg/artdupl/detector.go`
 
 **Subtasks:**
+
 1. Add case for `artdupl.MethodAll` at line 213
 2. Add case for `artdupl.MethodAll` at line 259
 3. Implement proper handling for MethodAll
 4. Test all detection methods including MethodAll
 
 **Acceptance Criteria:**
+
 - ✅ No exhaustive linter errors
 - ✅ All detection methods work correctly
 - ✅ golangci-lint passes for detector.go
 
 #### Task 1.3: Fix Critical Security Issues 🔴
+
 **Priority:** HIGH
 **Scope:** Address top 10 gosec G104 violations
 
 **Subtasks:**
+
 1. Review and fix unhandled errors in critical paths
 2. Add proper error handling or explicit ignoring
 3. Document decision for each ignored error
 4. Focus on CLI and detector code paths
 
 **Acceptance Criteria:**
+
 - ✅ Zero unhandled errors in critical paths
 - ✅ All G104 violations in core code resolved
 - ✅ Documentation added for intentionally ignored errors
@@ -514,11 +531,13 @@ FAIL: syntax/syntax_test.go:92
 ### Phase 2: Complexity Reduction (Week 1-2)
 
 #### Task 2.1: Refactor Run() Function 🟠
+
 **Priority:** HIGH
 **File:** `cli.go`
 **Current Complexity:** 24
 
 **Subtasks:**
+
 1. Extract configuration parsing into `loadConfiguration()`
 2. Extract path crawling into `crawlPaths()`
 3. Extract output printer creation into `createPrinter()`
@@ -526,44 +545,52 @@ FAIL: syntax/syntax_test.go:92
 5. Reduce complexity to <10
 
 **Target Functions to Extract:**
+
 - `loadConfiguration(*RuntimeConfig) (*Config, error)`
 - `crawlPaths([]string) chan string`
 - `createPrinter(OutputFormat) func(io.Writer, ReadFile) Printer`
 - `printDupls(Printer, <-chan syntax.Match, string, int) error`
 
 **Acceptance Criteria:**
+
 - ✅ `Run()` complexity <10
 - ✅ All extracted functions testable
 - ✅ No functional changes
 
 #### Task 2.2: Refactor trans() Function 🟠
+
 **Priority:** HIGH
 **File:** `syntax/golang/golang.go`
 **Current Complexity:** 35
 
 **Subtasks:**
+
 1. Analyze transformer logic flow
 2. Extract node-type-specific handling into separate functions
 3. Reduce cognitive complexity to <30
 4. Maintain exact functionality
 
 **Acceptance Criteria:**
+
 - ✅ `trans()` cognitive complexity <30
 - ✅ All tests pass
 - ✅ Performance maintained
 
 #### Task 2.3: Refactor MergeConfigs() Function 🟠
+
 **Priority:** MEDIUM
 **File:** `config/config.go`
 **Current Complexity:** 34
 
 **Subtasks:**
+
 1. Extract config field merging into separate functions
 2. Simplify nil-checking logic
 3. Reduce cognitive complexity to <30
 4. Add unit tests for merge logic
 
 **Acceptance Criteria:**
+
 - ✅ `MergeConfigs()` cognitive complexity <30
 - ✅ All existing tests pass
 - ✅ Additional merge scenarios tested
@@ -571,10 +598,12 @@ FAIL: syntax/syntax_test.go:92
 ### Phase 3: Code Quality Improvements (Week 2-4)
 
 #### Task 3.1: Split Large Files 🟡
+
 **Priority:** MEDIUM
 **Files:** 6 files >350 lines
 
 **Subtasks:**
+
 1. **bdd/bdd_test.go** (678 lines)
    - Extract test scenarios to separate files
    - Create `bdd/scenarios.go` for test data
@@ -603,52 +632,62 @@ FAIL: syntax/syntax_test.go:92
    - May need further splitting if still large
 
 **Acceptance Criteria:**
+
 - ✅ All files <350 lines
 - ✅ Clear separation of concerns
 - ✅ All tests pass
 - ✅ No import cycles created
 
 #### Task 3.2: Improve Test Structure 🟡
+
 **Priority:** MEDIUM
 **Scope:** All test packages
 
 **Subtasks:**
+
 1. Rename test packages to `*_test` (17 violations)
 2. Add `t.Helper()` to all helper functions (7 violations)
 3. Extract test utilities to shared packages
 4. Improve test organization
 
 **Acceptance Criteria:**
+
 - ✅ Zero testpackage violations
 - ✅ Zero thelper violations
 - ✅ Better test failure messages
 
 #### Task 3.3: Replace Global Variables 🟡
+
 **Priority:** MEDIUM
 **File:** `version.go`
 
 **Subtasks:**
+
 1. Create `VersionInfo` struct
 2. Pass version to `main()` or `Run()` as parameter
 3. Remove global variables
 4. Update tests to pass version info
 
 **Acceptance Criteria:**
+
 - ✅ Zero global variables
 - ✅ Version still accessible via CLI flags
 - ✅ Tests can mock version info
 
 #### Task 3.4: Extract Magic Numbers to Constants 🟡
+
 **Priority:** LOW
 **Files:** Multiple
 
 **Subtasks:**
+
 1. Identify critical magic numbers (thresholds, sizes, etc.)
 2. Extract to named constants at package level
 3. Document constant purpose
 4. Focus on high-impact constants first
 
 **Acceptance Criteria:**
+
 - ✅ Critical magic numbers replaced
 - ✅ Code more self-documenting
 - ✅ No magic numbers in core algorithms
@@ -656,44 +695,53 @@ FAIL: syntax/syntax_test.go:92
 ### Phase 4: Style and Polish (Ongoing)
 
 #### Task 4.1: Fix Revive Violations 🟡
+
 **Priority:** LOW
 **Count:** 107 violations
 
 **Subtasks:**
+
 1. Address most common revive issues
 2. Fix naming conventions
 3. Improve code documentation
 4. Standardize error messages
 
 **Acceptance Criteria:**
+
 - ✅ Reduce revive violations by 50%
 - ✅ Critical style issues resolved
 
 #### Task 4.2: Fix Variable Naming 🟡
+
 **Priority:** LOW
 **Count:** 73 violations
 **Impact:** Readability only
 
 **Subtasks:**
+
 1. Rename short variables in long scopes
 2. Use descriptive names for loop indices where helpful
 3. Maintain Go conventions for idiomatic code
 
 **Acceptance Criteria:**
+
 - ✅ Reduce varnamelen violations by 50%
 - ✅ Critical readability issues resolved
 
 #### Task 4.3: Remove TODO Comments 🟡
+
 **Priority:** LOW
 **Count:** 13 violations
 
 **Subtasks:**
+
 1. Review each TODO comment
 2. Implement if still relevant
 3. Remove if obsolete
 4. Document if deferred intentionally
 
 **Acceptance Criteria:**
+
 - ✅ Zero TODO comments
 - ✅ All actionable items implemented or documented
 
@@ -777,11 +825,13 @@ FAIL: syntax/syntax_test.go:92
 ### Question 1: Test Expectations vs Implementation 🔴
 
 **Context:**
+
 - `TestGetUnitsIndexes` and `TestCyclicDupl` are failing
 - Recent commit `905f317` was labeled "style: standardize comment formatting"
 - Test expectations don't match current implementation behavior
 
 **Questions:**
+
 1. Are the test expectations correct for the CURRENT design?
 2. Did the string concatenation change in commit `905f317` inadvertently change logic?
 3. Should we fix the tests or fix the implementation?
@@ -793,11 +843,13 @@ Cannot proceed with Phase 2 refactoring until test expectations clarified.
 ### Question 2: Linting Policy 🟡
 
 **Context:**
+
 - 471 linting violations present
 - Some are subjective (variable naming, style)
 - Some are objective (complexity, security, correctness)
 
 **Questions:**
+
 1. Should we aim for zero violations or target a specific threshold (e.g., <100)?
 2. Which linter violations are most critical for this project?
 3. Can we disable subjective linters (varnamelen, some revive rules)?
@@ -809,11 +861,13 @@ Affects prioritization and resource allocation for code quality improvements.
 ### Question 3: Breaking Changes 🟠
 
 **Context:**
+
 - Removing global variables (version.go)
 - Restructuring test packages (renaming to `*_test`)
 - Splitting large files may change import paths
 
 **Questions:**
+
 1. Can we make breaking changes in this version?
 2. Do we need to maintain backward compatibility?
 3. Should we increment major version?
@@ -875,30 +929,26 @@ The art-dupl project **builds successfully** but suffers from **significant tech
 ### Recommended Action Plan
 
 **Week 1 (Critical Path):**
+
 1. Fix 2 failing tests in syntax package
 2. Add MethodAll switch cases
 3. Fix unhandled errors in critical paths
 
-**Week 2-4 (Complexity Reduction):**
-4. Refactor high-complexity functions (Run, trans, MergeConfigs)
-5. Split large files (>350 lines)
-6. Remove global variables
+**Week 2-4 (Complexity Reduction):** 4. Refactor high-complexity functions (Run, trans, MergeConfigs) 5. Split large files (>350 lines) 6. Remove global variables
 
-**Month 2-3 (Quality Improvements):**
-7. Reduce remaining lint violations to <100
-8. Improve test structure and coverage
-9. Address security issues
-10. Establish automated quality gates
+**Month 2-3 (Quality Improvements):** 7. Reduce remaining lint violations to <100 8. Improve test structure and coverage 9. Address security issues 10. Establish automated quality gates
 
 ### Risk Outlook
 
 **Without Immediate Action:**
+
 - Failing tests may mask serious bugs
 - Complexity makes maintenance increasingly difficult
 - Security issues may lead to vulnerabilities
 - Technical debt will accumulate exponentially
 
 **With Recommended Action Plan:**
+
 - Code quality will improve significantly
 - Maintainability will increase
 - Risk of bugs will decrease
@@ -908,37 +958,37 @@ The art-dupl project **builds successfully** but suffers from **significant tech
 
 ## Appendix A: Detailed Violation Counts by Linter
 
-| Linter | Count | Severity | Priority |
-|--------|-------|----------|----------|
-| varnamelen | 73 | LOW | 4 |
-| revive | 107 | LOW-MEDIUM | 3 |
-| mnd | 46 | LOW | 3 |
-| gosec | 36 | HIGH | 1 |
-| tagliatelle | 29 | LOW | 3 |
-| lll | 11 | LOW | 4 |
-| testpackage | 17 | MEDIUM | 2 |
-| godox | 13 | LOW | 4 |
-| forbidigo | 31 | LOW-MEDIUM | 2 |
-| cyclop | 15 | HIGH | 1 |
-| staticcheck | 20 | LOW-MEDIUM | 2 |
-| gocognit | 2 | HIGH | 1 |
-| gocritic | 5 | MEDIUM | 2 |
-| gochecknoglobals | 3 | MEDIUM | 2 |
-| goconst | 4 | LOW | 3 |
-| funlen | 4 | MEDIUM | 2 |
-| ireturn | 8 | LOW | 3 |
-| prealloc | 5 | LOW | 4 |
-| recvcheck | 7 | LOW | 3 |
-| nestif | 2 | MEDIUM | 2 |
-| nonamedreturns | 2 | LOW | 4 |
-| thelper | 7 | MEDIUM | 2 |
-| unparam | 3 | LOW | 3 |
-| unused | 1 | LOW | 4 |
-| usetesting | 1 | LOW | 4 |
-| godoclint | 4 | LOW | 3 |
-| exhaustive | 2 | MEDIUM | 2 |
-| embeddedstructfieldcheck | 4 | MEDIUM | 2 |
-| funcorder | 9 | LOW | 4 |
+| Linter                   | Count | Severity   | Priority |
+| ------------------------ | ----- | ---------- | -------- |
+| varnamelen               | 73    | LOW        | 4        |
+| revive                   | 107   | LOW-MEDIUM | 3        |
+| mnd                      | 46    | LOW        | 3        |
+| gosec                    | 36    | HIGH       | 1        |
+| tagliatelle              | 29    | LOW        | 3        |
+| lll                      | 11    | LOW        | 4        |
+| testpackage              | 17    | MEDIUM     | 2        |
+| godox                    | 13    | LOW        | 4        |
+| forbidigo                | 31    | LOW-MEDIUM | 2        |
+| cyclop                   | 15    | HIGH       | 1        |
+| staticcheck              | 20    | LOW-MEDIUM | 2        |
+| gocognit                 | 2     | HIGH       | 1        |
+| gocritic                 | 5     | MEDIUM     | 2        |
+| gochecknoglobals         | 3     | MEDIUM     | 2        |
+| goconst                  | 4     | LOW        | 3        |
+| funlen                   | 4     | MEDIUM     | 2        |
+| ireturn                  | 8     | LOW        | 3        |
+| prealloc                 | 5     | LOW        | 4        |
+| recvcheck                | 7     | LOW        | 3        |
+| nestif                   | 2     | MEDIUM     | 2        |
+| nonamedreturns           | 2     | LOW        | 4        |
+| thelper                  | 7     | MEDIUM     | 2        |
+| unparam                  | 3     | LOW        | 3        |
+| unused                   | 1     | LOW        | 4        |
+| usetesting               | 1     | LOW        | 4        |
+| godoclint                | 4     | LOW        | 3        |
+| exhaustive               | 2     | MEDIUM     | 2        |
+| embeddedstructfieldcheck | 4     | MEDIUM     | 2        |
+| funcorder                | 9     | LOW        | 4        |
 
 **Total:** 471 violations across 26 linters
 
@@ -949,6 +999,7 @@ The art-dupl project **builds successfully** but suffers from **significant tech
 **Overall Project Coverage:** ~65% (estimated)
 
 **High Coverage Packages (>80%):**
+
 - job: 100.0%
 - util: 100.0%
 - hash: 92.5%
@@ -958,16 +1009,19 @@ The art-dupl project **builds successfully** but suffers from **significant tech
 - lib: 74.3%
 
 **Medium Coverage Packages (50-80%):**
+
 - config: 72.0%
 - printer: 59.9%
 - errors: 35.3%
 
 **Low Coverage Packages (<50%):**
+
 - testutils: 12.5%
 - pkg/artdupl: 7.2%
 - detection: 12.2%
 
 **Zero Coverage Packages:**
+
 - examples: 0.0%
 - adapter: 0.0%
 - utils: 0.0%

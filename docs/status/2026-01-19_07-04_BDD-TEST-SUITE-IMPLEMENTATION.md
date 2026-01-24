@@ -16,14 +16,16 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## a) FULLY DONE ✅
 
 ### 1. **BDD Test Suite Files Created**
+
 - ✅ `bdd/sorting_test.go` - 5 test scenarios
-- ✅ `bdd/detection_methods_test.go` - 7 test scenarios  
+- ✅ `bdd/detection_methods_test.go` - 7 test scenarios
 - ✅ `bdd/filter_features_test.go` - 10 test scenarios
 - ✅ `bdd/all_format_generation_test.go` - 7 test scenarios
 - ✅ `bdd/error_handling_test.go` - 13 test scenarios
 - ✅ Enhanced existing `bdd/bdd_test.go` with new scenarios
 
 ### 2. **Sorting Functionality Tests (sorting_test.go)**
+
 - ✅ Size sorting (largest clones first)
 - ✅ Occurrence sorting (most widespread first)
 - ✅ Hash sorting (alphabetical order)
@@ -31,6 +33,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ Default sorting behavior verification
 
 ### 3. **Detection Methods Tests (detection_methods_test.go)**
+
 - ✅ Hash-based exact duplicate detection
 - ✅ Art-dupl structural duplicate detection
 - ✅ Combined detection (hash + art-dupl)
@@ -40,6 +43,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ Default detection method verification
 
 ### 4. **Filter Features Tests (filter_features_test.go)**
+
 - ✅ SQLC generated code filtering
 - ✅ Templ generated code filtering
 - ✅ Include SQLC with `--include-sqlc`
@@ -52,6 +56,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ Vendor directory inclusion with `--vendor`
 
 ### 5. **All Format Generation Tests (all_format_generation_test.go)**
+
 - ✅ Generate all output formats (text, HTML, JSON, plumbing)
 - ✅ Metadata in generated files
 - ✅ Custom output directory creation
@@ -61,6 +66,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ No-duplicates scenario handling
 
 ### 6. **Error Handling Tests (error_handling_test.go)**
+
 - ✅ Non-existent directory handling
 - ✅ Non-existent file handling
 - ✅ Non-Go files ignoring
@@ -79,11 +85,13 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ Invalid stdin paths handling
 
 ### 7. **Build Path Fixes**
+
 - ✅ Fixed all `go build` commands to use `./cmd/art-dupl/main.go` instead of `.`
 - ✅ Fixed relative paths in all test files
 - ✅ Ensured consistent binary naming
 
 ### 8. **Race Condition Resolution**
+
 - ✅ Implemented unique binary names per test suite:
   - `./bdd/art-dupl-sorting-test`
   - `./bdd/art-dupl-detection_methods-test`
@@ -95,6 +103,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ Each test suite now has isolated binary
 
 ### 9. **Code Quality**
+
 - ✅ Used Ginkgo/Gomega BDD framework
 - ✅ Proper Gherkin-style scenario descriptions
 - ✅ Consistent test structure (Given/When/Then)
@@ -105,6 +114,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - ✅ No unused variables
 
 ### 10. **Test Compilation**
+
 - ✅ All BDD test files compile without errors
 - ✅ All imports resolved correctly
 - ✅ No syntax errors
@@ -115,16 +125,19 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## b) PARTIALLY DONE 🔄
 
 ### 1. **BDD Test Execution**
+
 - ⚠️ Tests written and compiled but not yet verified to pass
 - ⚠️ Need to run full test suite and verify all scenarios pass
 - ⚠️ May need adjustments based on actual art-dupl behavior
 
 ### 2. **Test Output Verification**
+
 - ⚠️ Test assertions written based on expected behavior
 - ⚠️ Need to verify actual art-dupl output matches expectations
 - ⚠️ May need to adjust assertions if output format differs
 
 ### 3. **Edge Case Coverage**
+
 - ⚠️ Main scenarios covered but edge cases may need refinement
 - ⚠️ Threshold boundary conditions may need testing
 - ⚠️ Large file handling may need verification
@@ -134,32 +147,38 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## c) NOT STARTED 📋
 
 ### 1. **Test Execution & Verification**
+
 - ❌ Run full BDD test suite: `go test -v ./bdd/...`
 - ❌ Verify all 42+ new test scenarios pass
 - ❌ Fix any failing assertions
 - ❌ Adjust tests based on actual art-dupl behavior
 
 ### 2. **Test Coverage Analysis**
+
 - ❌ Measure test coverage with `go test -cover ./bdd/...`
 - ❌ Identify any uncovered code paths
 - ❌ Add tests for any gaps found
 
 ### 3. **Performance Testing**
+
 - ❌ Measure test execution time
 - ❌ Optimize slow test scenarios
 - ❌ Consider parallel test execution
 
 ### 4. **Documentation**
+
 - ❌ Document BDD test structure
 - ❌ Create guide for adding new tests
 - ❌ Update README with test information
 
 ### 5. **CI/CD Integration**
+
 - ❌ Add BDD tests to CI pipeline
 - ❌ Configure test reporting
 - ❌ Set up coverage thresholds
 
 ### 6. **Additional Test Scenarios**
+
 - ❌ Configuration file integration tests (currently disabled in bdd_test.go)
 - ❌ Performance tests with large codebases
 - ❌ Stress tests with thousands of files
@@ -169,13 +188,15 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## d) TOTALLY FUCKED UP 💥
 
 ### 1. **Initial Build Path Issues**
-- **Problem:** All test files used `go build -o "./bdd/art-dupl-test" "."` 
+
+- **Problem:** All test files used `go build -o "./bdd/art-dupl-test" "."`
 - **Impact:** Failed because current directory has no main.go
 - **Root Cause:** Copied pattern without understanding project structure
 - **Fix Applied:** Changed all to use `./cmd/art-dupl/main.go`
 - **Lessons Learned:** Always verify build paths match actual project structure
 
 ### 2. **Binary Path Inconsistencies**
+
 - **Problem:** Some tests used `"bdd/art-dupl-test"` without leading `./`
 - **Impact:** Failed to find binary during test execution
 - **Root Cause:** Inconsistent path string formats across files
@@ -183,6 +204,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - **Time Wasted:** ~30 minutes debugging build failures
 
 ### 3. **Race Condition Hell**
+
 - **Problem:** Multiple test suites building same binary simultaneously
 - **Impact:** All tests failed with `exit status 1`
 - **Error:** `exec.ExitError: exit status 1` on every test
@@ -196,12 +218,14 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - **Lessons Learned:** In test suites, always use unique resources per suite
 
 ### 4. **Import Statement Issues**
+
 - **Problem:** Added `fmt` import for debugging without including in import list
 - **Impact:** Compilation failure: `undefined: fmt`
 - **Fix Applied:** Added `"fmt"` to import statement
 - **Time Wasted:** ~5 minutes
 
 ### 5. **Unused Variable Errors**
+
 - **Problem:** `output` variable declared but not used in some error cases
 - **Impact:** Build failures in all_format_generation_test.go and error_handling_test.go
 - **Root Cause:** Copying error handling patterns without adapting
@@ -209,6 +233,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - **Time Wasted:** ~10 minutes
 
 ### 6. **Gomega Matcher Issues**
+
 - **Problem:** Used `.Or()` method which doesn't exist in Gomega
 - **Impact:** Build failures in detection_methods_test.go and error_handling_test.go
 - **Root Cause:** Confused with other testing libraries
@@ -216,6 +241,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 - **Time Wasted:** ~15 minutes
 
 ### 7. **Strings Import Issues**
+
 - **Problem:** Imported `strings` but didn't use it in filter_features_test.go
 - **Impact:** Build failure
 - **Fix Applied:** Removed unused import
@@ -226,54 +252,64 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## e) WHAT WE SHOULD IMPROVE 📈
 
 ### 1. **Test Structure & Organization**
+
 - **Improvement:** Create shared test utilities package
 - **Why:** Repeated patterns for building binaries, creating temp dirs, etc.
 - **Impact:** Reduce code duplication by ~40%
 
 ### 2. **Test Execution Speed**
+
 - **Improvement:** Parallel test execution where safe
 - **Why:** Current suite takes >1.5 seconds
 - **Target:** Reduce to <500ms
 - **How:** Use `ginkgo -p` and mark thread-safe tests
 
 ### 3. **Error Debugging**
+
 - **Improvement:** Better error messages in test failures
 - **Why:** Currently only shows "exit status 1"
 - **Impact:** Faster debugging when tests fail
 - **How:** Capture and print stderr/stdout on errors
 
 ### 4. **Test Coverage Metrics**
+
 - **Improvement:** Add coverage reporting
 - **Why:** Don't know if tests actually exercise all code
 - **Target:** >80% coverage for critical paths
 
 ### 5. **Mocking Strategy**
+
 - **Improvement:** Use mocks instead of real binary execution
 - **Why:** Current tests are slow (build binary every test)
 - **Impact:** Could be 10x faster
 - **How:** Mock art-dupl execution interface
 
 ### 6. **Configuration Tests**
+
 - **Improvement:** Enable and fix disabled config tests in bdd_test.go
 - **Why:** Lines 351-450 commented out due to "binary path issues"
 - **Impact:** Missing ~10 test scenarios
 
 ### 7. **Data-Driven Testing**
+
 - **Improvement:** Use table-driven tests for similar scenarios
 - **Why:** Current tests have repetitive code
 - **Impact:** Cleaner, more maintainable tests
 
 ### 8. **Snapshot Testing**
+
 - **Improvement:** Add snapshot tests for output formats
 - **Why:** Hard to verify exact output format
 - **Impact:** Easier to catch output format changes
 
 ### 9. **Property-Based Testing**
+
 - **Improvement:** Use property-based testing for edge cases
 - **Why:** Current tests only cover specific examples
 - **Impact:** Find bugs in corner cases automatically
 
 ### 10. **Test Documentation**
+
 - **Improvement:** Add JSDoc-style comments to test functions
 - **Why:** Test purposes not always clear
 - **Impact:** Better maintainability for future developers
@@ -283,6 +319,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ## f) Top #25 Things We Should Get Done Next 🎯
 
 ### Priority 1 - Critical (Must Do First)
+
 1. **Run full BDD test suite** and document which tests pass/fail
 2. **Fix all failing test assertions** based on actual art-dupl behavior
 3. **Verify sorting functionality** works as expected with real output
@@ -290,6 +327,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 5. **Verify filter features** (sqlc, templ, patterns, vendor)
 
 ### Priority 2 - High (Complete Core Testing)
+
 6. **Verify all format generation** (--all flag produces correct files)
 7. **Verify error handling** tests catch actual error conditions
 8. **Enable and fix disabled configuration tests** (lines 351-450 in bdd_test.go)
@@ -297,6 +335,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 10. **Verify JSON output structure** matches expected format
 
 ### Priority 3 - Medium (Enhance Test Quality)
+
 11. **Add test coverage reporting** with go test -cover
 12. **Target 80%+ code coverage** for critical paths
 13. **Add property-based tests** for edge cases
@@ -304,6 +343,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 15. **Create test utilities package** to reduce duplication
 
 ### Priority 4 - Optimization
+
 16. **Optimize test execution speed** (reduce from 1.5s to <500ms)
 17. **Enable parallel test execution** where safe
 18. **Add benchmarks** for performance regression detection
@@ -311,6 +351,7 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 20. **Add test data fixtures** for consistent testing
 
 ### Priority 5 - Documentation & CI/CD
+
 21. **Document BDD test structure** and patterns
 22. **Create guide for adding new BDD tests**
 23. **Add BDD tests to CI pipeline** (GitHub Actions)
@@ -365,11 +406,13 @@ Successfully implemented comprehensive BDD (Behavior-Driven Development) test su
 ### How This Could Be Answered:
 
 1. **Run a few manual tests:**
+
    ```bash
    ./art-dupl ./test-dir --json
    ./art-dupl ./test-dir --sort size
    ./art-dupl ./test-dir --filter-generated
    ```
+
    Examine actual output format
 
 2. **Check art-dupl documentation:**
@@ -407,18 +450,21 @@ This is the blocking issue preventing test completion. Until I understand actual
 ## Current Blockers
 
 ### 🚫 **BLOCKER #1: Test Verification**
+
 - **Status:** BLOCKED
 - **Reason:** Haven't run full test suite to verify passes
 - **Impact:** Cannot move to production or CI
 - **Next Action:** Run `go test -v ./bdd/...` and fix failures
 
 ### 🚫 **BLOCKER #2: Output Format Knowledge**
+
 - **Status:** BLOCKED (see Question #1 above)
 - **Reason:** Uncertain about actual art-dupl output format
 - **Impact:** Test assertions may be incorrect
 - **Next Action:** Manual testing to understand output format
 
 ### 🚫 **BLOCKER #3: Configuration Tests**
+
 - **Status:** BLOCKED
 - **Reason:** Configuration tests commented out
 - **Impact:** Missing 10 test scenarios
@@ -429,6 +475,7 @@ This is the blocking issue preventing test completion. Until I understand actual
 ## Success Metrics
 
 ### Current State:
+
 - ✅ **Test Files Created:** 6
 - ✅ **Test Scenarios Written:** 42+
 - ⚠️ **Tests Compiled:** Yes
@@ -437,6 +484,7 @@ This is the blocking issue preventing test completion. Until I understand actual
 - ❌ **Coverage Measured:** No
 
 ### Target State:
+
 - ✅ **All Tests Pass:** 100% (42+ scenarios)
 - ✅ **Coverage:** >80% for critical paths
 - ✅ **Execution Time:** <500ms
@@ -444,6 +492,7 @@ This is the blocking issue preventing test completion. Until I understand actual
 - ✅ **Documentation:** Complete
 
 ### Progress: **60%**
+
 - Test writing: ✅ 100%
 - Test compilation: ✅ 100%
 - Test verification: ❌ 0%
@@ -460,6 +509,7 @@ This is the blocking issue preventing test completion. Until I understand actual
 5. **Lack of Shared Utilities:** Harder to maintain
 
 ### Estimated Time to Pay Debt: **4-6 hours**
+
 1. Create shared test utilities: 2 hours
 2. Refactor existing tests: 2 hours
 3. Add documentation: 1 hour
@@ -470,14 +520,17 @@ This is the blocking issue preventing test completion. Until I understand actual
 ## Next Immediate Steps
 
 ### Step 1: Run Tests & Assess Damage (15 minutes)
+
 ```bash
 go test -v ./bdd/... 2>&1 | tee test-results.log
 ```
+
 - Document which tests pass
 - Document which tests fail
 - Analyze failure patterns
 
 ### Step 2: Manual Art-dupl Testing (30 minutes)
+
 ```bash
 # Test sorting
 ./art-dupl ./test-data --sort size
@@ -491,27 +544,32 @@ go test -v ./bdd/... 2>&1 | tee test-results.log
 # Test detection methods
 ./art-dupl ./test-data --detection-methods hash,art-dupl
 ```
+
 - Understand actual output format
 - Compare with test expectations
 - Adjust assertions if needed
 
 ### Step 3: Fix Failing Tests (2-4 hours)
+
 - Go through each failing test
 - Understand why it fails
 - Fix assertions to match actual behavior
 - Re-run until all pass
 
 ### Step 4: Enable Config Tests (1 hour)
+
 - Investigate commented-out config tests
 - Fix any issues
 - Enable and verify
 
 ### Step 5: Coverage Measurement (30 minutes)
+
 ```bash
 go test -cover ./bdd/...
 go test -coverprofile=coverage.out ./bdd/...
 go tool cover -html=coverage.out
 ```
+
 - Measure current coverage
 - Identify gaps
 - Add tests if needed
@@ -521,25 +579,30 @@ go tool cover -html=coverage.out
 ## Conclusion
 
 ### Achievements:
+
 - ✅ **Comprehensive BDD test suite written** covering all major features
 - ✅ **All test compilation errors fixed**
 - ✅ **Critical race conditions resolved**
 - ✅ **Professional test structure** with Gherkin scenarios
 
 ### Remaining Work:
+
 - ⏳ **Run and verify all tests pass** (PRIMARY BLOCKER)
 - ⏳ **Fix any failing assertions** based on actual behavior
 - ⏳ **Measure and improve coverage**
 - ⏳ **Integrate with CI/CD**
 
 ### Critical Question Answer Needed:
+
 ❓ **Will test assertions match actual art-dupl behavior and output format?**
 This MUST be answered before proceeding with test fixes.
 
 ### Recommended Action:
+
 **Stop and verify.** Don't write more code until we verify the current tests actually pass. Run the test suite, examine the failures, understand the actual behavior, then proceed with fixes.
 
 ### Project Status: **YELLOW** ⚠️
+
 - Tests written ✅
 - Tests compiled ✅
 - Tests verified ❌ (BLOCKING)

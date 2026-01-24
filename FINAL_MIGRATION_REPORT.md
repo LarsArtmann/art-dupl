@@ -1,4 +1,5 @@
 # FINAL MIGRATION REPORT
+
 ## duplicates → art-dupl Integration Complete
 
 **Date**: January 14, 2026
@@ -24,25 +25,25 @@ Successfully merged **ALL** functionality from the `duplicates` project into `ar
 
 ### Core Features ✅
 
-| Feature | Source | Status |
-|---------|---------|--------|
-| Token-sequence based detection | golangci/dupl | ✅ Already existed |
-| Configurable threshold | duplicates | ✅ Already existed |
-| Line number tracking | duplicates | ✅ Enhanced with LineIndex |
-| Scoring system (tokens × instances) | duplicates | ✅ Added as impact_score |
-| File exclusion patterns | duplicates | ✅ Already existed (more powerful) |
-| Multiple output formats | duplicates | ✅ Already existed (more options) |
-| Fast AST-based scanning | golangci/dupl | ✅ Already existed |
+| Feature                             | Source        | Status                             |
+| ----------------------------------- | ------------- | ---------------------------------- |
+| Token-sequence based detection      | golangci/dupl | ✅ Already existed                 |
+| Configurable threshold              | duplicates    | ✅ Already existed                 |
+| Line number tracking                | duplicates    | ✅ Enhanced with LineIndex         |
+| Scoring system (tokens × instances) | duplicates    | ✅ Added as impact_score           |
+| File exclusion patterns             | duplicates    | ✅ Already existed (more powerful) |
+| Multiple output formats             | duplicates    | ✅ Already existed (more options)  |
+| Fast AST-based scanning             | golangci/dupl | ✅ Already existed                 |
 
 ### Output Formats ✅
 
-| Format | duplicates | art-dupl | Status |
-|--------|------------|-----------|--------|
-| JSON | ✅ | ✅ | ✅ Complete |
-| **Simple JSON** | ✅ | ✅ | ✅ **NEW** |
-| HTML | ✅ | ✅ | ✅ Complete |
-| Text | ✅ | ✅ | ✅ Complete |
-| Plumbing | ✅ | ✅ | ✅ Complete |
+| Format          | duplicates | art-dupl | Status      |
+| --------------- | ---------- | -------- | ----------- |
+| JSON            | ✅         | ✅       | ✅ Complete |
+| **Simple JSON** | ✅         | ✅       | ✅ **NEW**  |
+| HTML            | ✅         | ✅       | ✅ Complete |
+| Text            | ✅         | ✅       | ✅ Complete |
+| Plumbing        | ✅         | ✅       | ✅ Complete |
 
 ### New Enhancements Added ✅
 
@@ -58,11 +59,13 @@ Successfully merged **ALL** functionality from the `duplicates` project into `ar
 ### Files Created/Modified
 
 #### Created:
+
 1. `pkg/position/lines_test.go` - LineIndex tests
 2. `MIGRATION_REPORT_duplicates.md` - Complete technical documentation
 3. `MIGRATION_QUICK_START.md` - Quick start guide
 
 #### Modified:
+
 1. `pkg/position/lines.go` - Added LineIndex struct and methods
 2. `printer/json.go` - Added simple JSON format and types
 3. `config/outputformat.go` - Added OutputFormatSimpleJSON constant
@@ -83,34 +86,34 @@ All Tests Passing: ✅
 
 ## Feature Comparison Matrix
 
-| Feature Category | duplicates | art-dupl | Migration Status |
-|-----------------|------------|-----------|------------------|
-| **Detection** | | | |
-| Token-sequence detection | ✅ | ✅ | Already existed |
-| Configurable threshold | ✅ | ✅ | Already existed |
-| Multiple detection methods | ❌ | ✅ | **Enhanced** |
-| **Output** | | | |
-| JSON format | ✅ | ✅ | Already existed |
-| Simple JSON format | ✅ | ✅ | **NEW** |
-| HTML format | ✅ | ✅ | Already existed |
-| Text format | ✅ | ✅ | Already existed |
-| Plumbing format | ✅ | ✅ | Already existed |
-| Multiple format generation | ✅ (multiple flags) | ✅ (--all) | **Enhanced** |
-| **Performance** | | | |
-| Line tracking | ✅ (basic) | ✅ (LineIndex) | **Enhanced** |
-| Fast scanning | ✅ | ✅ | Already existed |
-| Performance profiling | ❌ | ✅ | **NEW** |
-| **Configuration** | | | |
-| CLI flags | ✅ (basic) | ✅ (professional) | **Enhanced** |
-| Config file support | ❌ | ✅ | **NEW** |
-| File exclusion | ✅ (simple) | ✅ (advanced filter) | **Enhanced** |
-| Auto-completion | ❌ | ✅ | **NEW** |
-| Version info | ❌ | ✅ | **NEW** |
-| Man page generation | ❌ | ✅ | **NEW** |
-| **Scoring** | | | |
-| Impact score (tokens × instances) | ✅ | ✅ | **NEW** |
-| Complexity score | ❌ | ✅ | **NEW** |
-| Sorting options | ❌ | ✅ | **NEW** |
+| Feature Category                  | duplicates          | art-dupl             | Migration Status |
+| --------------------------------- | ------------------- | -------------------- | ---------------- |
+| **Detection**                     |                     |                      |                  |
+| Token-sequence detection          | ✅                  | ✅                   | Already existed  |
+| Configurable threshold            | ✅                  | ✅                   | Already existed  |
+| Multiple detection methods        | ❌                  | ✅                   | **Enhanced**     |
+| **Output**                        |                     |                      |                  |
+| JSON format                       | ✅                  | ✅                   | Already existed  |
+| Simple JSON format                | ✅                  | ✅                   | **NEW**          |
+| HTML format                       | ✅                  | ✅                   | Already existed  |
+| Text format                       | ✅                  | ✅                   | Already existed  |
+| Plumbing format                   | ✅                  | ✅                   | Already existed  |
+| Multiple format generation        | ✅ (multiple flags) | ✅ (--all)           | **Enhanced**     |
+| **Performance**                   |                     |                      |                  |
+| Line tracking                     | ✅ (basic)          | ✅ (LineIndex)       | **Enhanced**     |
+| Fast scanning                     | ✅                  | ✅                   | Already existed  |
+| Performance profiling             | ❌                  | ✅                   | **NEW**          |
+| **Configuration**                 |                     |                      |                  |
+| CLI flags                         | ✅ (basic)          | ✅ (professional)    | **Enhanced**     |
+| Config file support               | ❌                  | ✅                   | **NEW**          |
+| File exclusion                    | ✅ (simple)         | ✅ (advanced filter) | **Enhanced**     |
+| Auto-completion                   | ❌                  | ✅                   | **NEW**          |
+| Version info                      | ❌                  | ✅                   | **NEW**          |
+| Man page generation               | ❌                  | ✅                   | **NEW**          |
+| **Scoring**                       |                     |                      |                  |
+| Impact score (tokens × instances) | ✅                  | ✅                   | **NEW**          |
+| Complexity score                  | ❌                  | ✅                   | **NEW**          |
+| Sorting options                   | ❌                  | ✅                   | **NEW**          |
 
 ---
 
@@ -222,14 +225,15 @@ Priority: Low (existing issue, not migration-related)
 
 ### LineIndex vs ByteRangeToLines
 
-| Metric | duplicates (LineIndex) | art-dupl (ByteRangeToLines) | Improvement |
-|---------|----------------------|------------------------------|-------------|
-| Time Complexity | O(log n) | O(n) | **2-10x faster** |
-| Space Complexity | O(1) per lookup | O(1) per lookup | Same |
-| Setup Cost | O(n) once | None | **Amortized over many lookups** |
-| Best Use Case | Files with many clones | Files with few clones | **Significant benefit** |
+| Metric           | duplicates (LineIndex) | art-dupl (ByteRangeToLines) | Improvement                     |
+| ---------------- | ---------------------- | --------------------------- | ------------------------------- |
+| Time Complexity  | O(log n)               | O(n)                        | **2-10x faster**                |
+| Space Complexity | O(1) per lookup        | O(1) per lookup             | Same                            |
+| Setup Cost       | O(n) once              | None                        | **Amortized over many lookups** |
+| Best Use Case    | Files with many clones | Files with few clones       | **Significant benefit**         |
 
 **Benchmark**: On a file with 10,000 lines and 1000 clone lookups:
+
 - LineIndex: ~1ms total
 - ByteRangeToLines: ~10-20ms total
 - **Improvement**: 10-20x faster for heavy reporting
@@ -265,14 +269,14 @@ Priority: Low (existing issue, not migration-related)
 
 ## Success Criteria
 
-| Criterion | Target | Status |
-|------------|----------|--------|
-| Feature parity | 100% | ✅ **100%** |
-| Breaking changes | 0 | ✅ **0** |
-| Tests passing | 100% | ✅ **100%** |
-| Documentation | Complete | ✅ **Complete** |
-| Performance | Improved | ✅ **Improved** |
-| Backward compatibility | Yes | ✅ **Yes** |
+| Criterion              | Target   | Status          |
+| ---------------------- | -------- | --------------- |
+| Feature parity         | 100%     | ✅ **100%**     |
+| Breaking changes       | 0        | ✅ **0**        |
+| Tests passing          | 100%     | ✅ **100%**     |
+| Documentation          | Complete | ✅ **Complete** |
+| Performance            | Improved | ✅ **Improved** |
+| Backward compatibility | Yes      | ✅ **Yes**      |
 
 ---
 
@@ -301,6 +305,7 @@ Priority: Low (existing issue, not migration-related)
 ### Migration Status: ✅ COMPLETE
 
 **Summary**:
+
 - All valuable features from `duplicates` successfully merged
 - Zero breaking changes introduced
 - Performance improvements added (LineIndex)
@@ -309,6 +314,7 @@ Priority: Low (existing issue, not migration-related)
 - All tests passing
 
 **Result**: `art-dupl` is now a **superset** of `duplicates` with:
+
 - ✅ All original features
 - ✅ Better performance
 - ✅ More output formats
@@ -318,6 +324,7 @@ Priority: Low (existing issue, not migration-related)
 - ✅ Professional tooling
 
 **Next Steps**:
+
 1. Users can confidently switch from `duplicates` to `art-dupl`
 2. Consider deprecating `duplicates` project
 3. Update all documentation to reference `art-dupl`

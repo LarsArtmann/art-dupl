@@ -11,14 +11,15 @@
 SQLC YAML auto-detection feature has been **SUCCESSFULLY IMPLEMENTED** and is **WORKING CORRECTLY**. The feature automatically detects `sqlc.yaml` configuration files and enables sqlc code filtering without requiring the `--filter-generated` flag, providing true "out of the box" support.
 
 **Current State:**
+
 - ✅ Core auto-detection functionality: **WORKING**
 - ✅ YAML parsing: **WORKING**
 - ✅ Filter integration: **WORKING**
 - ✅ User override (`--include-sqlc`): **WORKING**
-- ⚠️  Unit tests for yaml functions: **NOT STARTED**
-- ⚠️  Integration tests: **NOT STARTED**
-- ⚠️  Documentation updates: **NOT STARTED**
-- ⚠️  Multiple config warnings: **NOT STARTED**
+- ⚠️ Unit tests for yaml functions: **NOT STARTED**
+- ⚠️ Integration tests: **NOT STARTED**
+- ⚠️ Documentation updates: **NOT STARTED**
+- ⚠️ Multiple config warnings: **NOT STARTED**
 - ❌ BDD tests: **FAILING (7 failures - some pre-existing)**
 
 ---
@@ -26,15 +27,18 @@ SQLC YAML auto-detection feature has been **SUCCESSFULLY IMPLEMENTED** and is **
 ## A) FULLY DONE ✅
 
 ### 1. Core Auto-Detection Implementation ✅
+
 **Status:** COMPLETE AND VERIFIED
 
 **Files Created:**
+
 - `pkg/filter/sqlc_yaml.go` (137 lines)
   - `FindSQLCConfigs(paths []string) (map[string]string, error)` - Walks paths to find sqlc.yaml/sqlc.yml files
   - `ParseSQLCConfig(configPath string) (*SQLCConfig, error)` - Parses YAML into structured data
   - `GetSQLOutputDirs(paths []string) ([]string, error)` - Extracts output directories from sqlc configs
 
 **Data Structures:**
+
 ```go
 type SQLCConfig struct {
     Version string       `yaml:"version"`
@@ -58,6 +62,7 @@ type SQLCGoConfig struct {
 ```
 
 **Integration in cmd/run.go (lines 304-320):**
+
 ```go
 // Auto-detect sqlc.yaml files and enable sqlc filtering if found
 // This provides "out of the box" support for sqlc generated code
@@ -79,41 +84,51 @@ if len(sqlcOutputDirs) > 0 && !cfg.IncludeSQLC {
 ```
 
 ### 2. Filter Integration ✅
+
 **Status:** WORKING CORRECTLY
 
 **Verified Behavior:**
+
 - Auto-detection runs before filter creation
 - `FilterSQLC` option is correctly added when sqlc.yaml found
 - Filter correctly uses `isSQLCGenerated()` function for detection
 - Existing sqlc filtering logic works as expected
 
 ### 3. User Override Support ✅
+
 **Status:** WORKING CORRECTLY
 
 **Verified Behavior:**
+
 - `--include-sqlc` flag correctly overrides auto-detection
 - When `--include-sqlc` is set, sqlc files appear in results
 - Auto-detection message is suppressed when override is active
 
 ### 4. YAML Dependency ✅
+
 **Status:** PRESENT (indirect)
 
 **Dependency:**
+
 - `gopkg.in/yaml.v3 v3.0.1` - Already present as indirect dependency
 - Marked as `// indirect` in go.mod but actively used in code
 
 ### 5. Status Documentation ✅
+
 **Status:** CREATED
 
 **File:** `docs/status/2026-01-21_22-47_SQLC-YAML-AUTO-DETECTION-STATUS.md`
+
 - Comprehensive status report with implementation details
 - Bug analysis and resolution
 - Next steps and todo list
 
 ### 6. Existing Tests Pass ✅
+
 **Status:** PASSING
 
 **Test Results:**
+
 ```bash
 $ go test ./pkg/filter -v
 PASS
@@ -121,16 +136,19 @@ ok      github.com/LarsArtmann/art-dupl/pkg/filter    0.282s
 ```
 
 All existing filter tests pass, including:
+
 - `TestIsSQLCGenerated` - Tests for sqlc filename and content patterns
 - `TestShouldFilterIntegration` - Integration tests for sqlc file filtering
 - Other filter option and pattern matching tests
 
 ### 7. Functional Verification ✅
+
 **Status:** VERIFIED THROUGH TESTING
 
 **Test Scenario Created:** `/tmp/test-sqlc/`
 
 **File Structure:**
+
 ```
 /tmp/test-sqlc/
 ├── sqlc.yaml          # sqlc config file
@@ -142,23 +160,28 @@ All existing filter tests pass, including:
 ```
 
 **Test 1: Auto-detection works without flags**
+
 ```bash
 $ ./art-dupl /tmp/test-sqlc --threshold 5
 found 2 clones:
   /tmp/test-sqlc/file1.go:1,9
   /tmp/test-sqlc/file2.go:1,9
 ```
+
 ✅ **Result:** sqlc_models.go correctly filtered out (not in results)
 
 **Test 2: Verbose shows auto-detection message**
+
 ```bash
 $ ./art-dupl /tmp/test-sqlc --verbose --threshold 5
 🔍 Auto-detected sqlc.yaml, filtering sqlc generated code
    - /tmp/test-sqlc/db
 ```
+
 ✅ **Result:** Auto-detection message displayed
 
 **Test 3: --include-sqlc overrides auto-detection**
+
 ```bash
 $ ./art-dupl /tmp/test-sqlc --include-sqlc --threshold 5
 found 3 clones:
@@ -166,14 +189,17 @@ found 3 clones:
   /tmp/test-sqlc/file1.go:3,9
   /tmp/test-sqlc/file2.go:3,9
 ```
+
 ✅ **Result:** sqlc_models.go appears in results when override is set
 
 **Test 4: No config = no auto-detection**
+
 ```bash
 $ rm /tmp/test-sqlc/sqlc.yaml
 $ ./art-dupl /tmp/test-sqlc --threshold 5
 # Filter options: [templ] (sqlc NOT added)
 ```
+
 ✅ **Result:** No auto-detection without config file
 
 ---
@@ -181,14 +207,17 @@ $ ./art-dupl /tmp/test-sqlc --threshold 5
 ## B) PARTIALLY DONE ⚠️
 
 ### 1. YAML Dependency Management ⚠️
+
 **Status:** FUNCTIONAL BUT NOT OPTIMAL
 
 **Current State:**
+
 - Dependency is present and working
 - Marked as `// indirect` in go.mod
 - No direct dependency declared
 
 **Issue:**
+
 ```go
 $ go mod tidy
 # No changes - dependency remains indirect
@@ -202,14 +231,17 @@ Consider making `gopkg.in/yaml.v3` a direct dependency by explicitly using it in
 ## C) NOT STARTED 🚧
 
 ### 1. Unit Tests for YAML Functions 🚧
+
 **Status:** NOT STARTED
 
 **Required Tests:**
+
 - `TestFindSQLCConfigs()` - Test config file discovery
 - `TestParseSQLCConfig()` - Test YAML parsing with valid/invalid configs
 - `TestGetSQLOutputDirs()` - Test output directory extraction
 
 **Test Coverage Needed:**
+
 - Valid sqlc.yaml parsing (version 1 and 2)
 - Invalid config handling (malformed YAML, missing fields)
 - Multiple configs in different directories
@@ -218,6 +250,7 @@ Consider making `gopkg.in/yaml.v3` a direct dependency by explicitly using it in
 - Edge cases (relative paths, absolute paths, nested directories)
 
 ### 2. Integration Tests for Auto-Detection 🚧
+
 **Status:** NOT STARTED
 
 **Required Test:** Add to `bdd/filter_features_test.go`
@@ -247,13 +280,15 @@ Context("When auto-detecting sqlc.yaml", func() {
 ```
 
 ### 3. Documentation Updates 🚧
+
 **Status:** NOT STARTED
 
 **Files to Update:**
 
 **a) `docs/SMART_FILTERING.md`**
 Add section on automatic sqlc.yaml detection:
-```markdown
+
+````markdown
 ## Automatic sqlc.yaml Detection
 
 art-dupl automatically detects `sqlc.yaml` configuration files and filters sqlc-generated code without requiring any flags. This provides "out of the box" support for sqlc projects.
@@ -272,6 +307,7 @@ To include sqlc files despite auto-detection:
 ```bash
 art-dupl . --include-sqlc
 ```
+````
 
 ### Example Output
 
@@ -289,7 +325,8 @@ $ art-dupl . --verbose
 - Works with both sqlc v1 and v2 configuration formats
 - Respects user overrides via --include-sqlc flag
 - Compatible with existing --filter-generated flag behavior
-```
+
+````
 
 **b) `cmd/root.go` Help Text**
 Update examples to mention auto-detection:
@@ -298,10 +335,11 @@ Examples:
   art-dupl ./src                    # Auto-detects and filters sqlc/templ code
   art-dupl ./src --verbose          # Shows auto-detection messages
   art-dupl ./src --include-sqlc     # Override and include sqlc files
-```
+````
 
 **c) `cmd/flags.go` Flag Descriptions**
 Update `--filter-generated` description:
+
 ```go
 filterGenerated := flags.Bool("filter-generated", false,
     "Enable extended filtering of sqlc.dev generated code "+
@@ -310,11 +348,13 @@ filterGenerated := flags.Bool("filter-generated", false,
 ```
 
 ### 4. Multiple Config File Warnings 🚧
+
 **Status:** NOT STARTED
 
 **Requirement:** Detect and warn when multiple sqlc config files exist in same directory
 
 **Current Behavior:**
+
 - Uses first config found
 - No warning about multiple configs
 - No user feedback about which config is being used
@@ -378,9 +418,11 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 ```
 
 ### 5. Performance Testing 🚧
+
 **Status:** NOT STARTED
 
 **Required Testing:**
+
 - Benchmark directory walking with many directories
 - Measure impact of yaml parsing on startup time
 - Test with large codebases (1000+ directories)
@@ -392,9 +434,11 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 ## D) TOTALLY FUCKED UP ❌
 
 ### 1. BDD Test Failures ❌
+
 **Status:** 7 FAILING TESTS
 
 **Test Results:**
+
 ```bash
 $ go test ./bdd -v -run "Filter"
 Ran 53 of 54 Specs in 60.007 seconds
@@ -435,6 +479,7 @@ FAIL! -- 46 Passed | 7 Failed | 1 Pending | 0 Skipped
    - **Impact:** Unknown - need investigation
 
 **Analysis:**
+
 - **Most failures (6/7)** appear to be **PRE-EXISTING ISSUES**, not caused by auto-detection changes
 - **One failure (sqlc test)** is related to filter design, not auto-detection
 - Auto-detection code itself is working correctly
@@ -472,11 +517,13 @@ func isSQLCGenerated(filePath, content string) bool {
 ```
 
 **Problem:**
+
 - Content is ONLY checked if filename matches patterns
 - Files with valid sqlc comments but wrong filenames are never detected
 - BDD test files (`sqlc1.go`, `sqlc2.go`) have correct comments but wrong names
 
 **Fix Options:**
+
 1. **Option A (Better):** Check content FIRST, then use filename as additional confirmation
 2. **Option B (Easier):** Update BDD test to use correct filenames
 3. **Option C (Comprehensive):** Support both approaches (filename OR content matching)
@@ -488,11 +535,13 @@ func isSQLCGenerated(filePath, content string) bool {
 ## E) WHAT WE SHOULD IMPROVE 📈
 
 ### 1. Use sqlc's Official Config Parser 📈
+
 **Current Approach:** Manual YAML parsing with custom structs
 
 **Better Approach:** Copy sqlc's config parsing code with attribution
 
 **Benefits:**
+
 - ✅ Handles both v1 and v2 sqlc.yaml formats automatically
 - ✅ Includes proper validation and error messages
 - ✅ Handles environment variable substitution
@@ -500,21 +549,25 @@ func isSQLCGenerated(filePath, content string) bool {
 - ✅ More reliable and battle-tested
 
 **Why Can't Import Directly:**
+
 - sqlc's config is in `github.com/sqlc-dev/sqlc/internal/config`
 - Go's module system blocks external imports of `internal` packages
 - No public API exposed for config parsing
 
 **Implementation Plan:**
+
 1. Copy relevant code from `sqlc/internal/config/` to `pkg/filter/sqlc_config.go`
 2. Add attribution comment pointing to sqlc source
 3. Update `GetSQLOutputDirs()` to use sqlc's config structures
 4. Test with both v1 and v2 yaml formats
 
 **Files to Reference:**
+
 - https://github.com/sqlc-dev/sqlc/tree/main/internal/config
 - config.go, v_one.go, v_two.go, env.go
 
 ### 2. Improve Filter Design - Content-First Detection 📈
+
 **Current Issue:** Filter requires BOTH filename match AND content match
 
 **Better Approach:** Check content first, use filename as additional signal
@@ -571,12 +624,14 @@ func isSQLCGenerated(filePath, content string) bool {
 ```
 
 **Benefits:**
+
 - ✅ More robust detection (content-first)
 - ✅ Handles edge cases (non-standard filenames)
 - ✅ Reduces false negatives
 - ✅ Fixes BDD test failures
 
 ### 3. Add Comprehensive Error Handling 📈
+
 **Current Issue:** Limited error context when config parsing fails
 
 **Improvements Needed:**
@@ -638,6 +693,7 @@ func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
 ```
 
 ### 4. Add Caching for Config Detection 📈
+
 **Current Issue:** Walks directory tree on every run
 
 **Optimization:** Cache discovered configs during run
@@ -676,6 +732,7 @@ func GetCachedConfig(configPath string) (*SQLCConfig, error) {
 ```
 
 ### 5. Add Config Validation 📈
+
 **Current Issue:** No validation of sqlc.yaml structure
 
 **Improvements:**
@@ -707,11 +764,13 @@ func ValidateSQLCConfig(config *SQLCConfig) error {
 ```
 
 ### 6. Better Test Coverage 📈
+
 **Current Issue:** No unit tests for yaml functions
 
 **Improvements Needed:**
 
 **Test Structure:**
+
 ```go
 // pkg/filter/sqlc_yaml_test.go (CREATE)
 
@@ -977,9 +1036,11 @@ func TestGetSQLOutputDirs(t *testing.T) {
 ## G) TOP QUESTION I CANNOT FIGURE OUT MYSELF ❓
 
 ### Question:
+
 **Should we use sqlc's official config parsing code or continue with our custom YAML parsing?**
 
 **Context:**
+
 - sqlc has battle-tested config parsing in `internal/config/`
 - It handles v1/v2 formats, env var substitution, validation
 - But it's in an `internal` package, can't import directly
@@ -988,23 +1049,28 @@ func TestGetSQLOutputDirs(t *testing.T) {
 **Options:**
 
 **Option 1: Keep Custom Parsing**
+
 - Pros: ✅ Simple, ✅ Works now, ✅ Less code to maintain
 - Cons: ❌ Limited features, ❌ May diverge from sqlc, ❌ More maintenance long-term
 
 **Option 2: Copy sqlc's Code**
+
 - Pros: ✅ Battle-tested, ✅ Feature-complete, ✅ Sync with sqlc updates
 - Cons: ❌ More code, ❌ Attribution needed, ❌ Needs periodic sync
 
 **Option 3: Hybrid Approach**
+
 - Pros: ✅ Best of both worlds, ✅ Start simple, enhance later
 - Cons: ❌ More complex, ❌ Two implementations, ❌ Decision paralysis
 
 **My Analysis:**
+
 - For **MVP**: Option 1 (keep custom) is sufficient
 - For **long-term**: Option 2 (copy sqlc) is better
 - For **right now**: Start with Option 1, migrate to Option 2 if needed
 
 **What I Need Help With:**
+
 1. What's your preference? Simple or feature-complete?
 2. Is it worth the complexity to use sqlc's code?
 3. Should we plan a migration path now?
@@ -1015,6 +1081,7 @@ func TestGetSQLOutputDirs(t *testing.T) {
 ## SUMMARY STATISTICS
 
 ### Code Changes:
+
 - **Files Created:** 1 new file (`pkg/filter/sqlc_yaml.go`)
 - **Files Modified:** 1 file (`cmd/run.go`)
 - **Lines Added:** ~150 lines (implementation + integration)
@@ -1022,12 +1089,14 @@ func TestGetSQLOutputDirs(t *testing.T) {
 - **Test Coverage:** 0% for new yaml functions (needs tests)
 
 ### Test Status:
+
 - **Unit Tests:** 100% passing (existing tests)
 - **Integration Tests:** 0 tests for auto-detection
 - **BDD Tests:** 7 failures (6 pre-existing, 1 filter design issue)
 - **End-to-End:** Manual verification passed
 
 ### Feature Status:
+
 - **Core Functionality:** ✅ WORKING
 - **User Experience:** ✅ WORKING (auto-detection, override, verbose output)
 - **Documentation:** ❌ NEEDS UPDATES
@@ -1035,6 +1104,7 @@ func TestGetSQLOutputDirs(t *testing.T) {
 - **Performance:** ⚠️ UNKNOWN (no benchmarks)
 
 ### Risk Assessment:
+
 - **Technical Risk:** LOW (simple implementation, proven concepts)
 - **Maintenance Risk:** MEDIUM (custom parsing may diverge from sqlc)
 - **User Risk:** LOW (fails gracefully, respects user overrides)
@@ -1054,6 +1124,7 @@ func TestGetSQLOutputDirs(t *testing.T) {
 4. **Must Update:** Documentation (SMART_FILTERING.md, help text)
 
 **Recommended Next Steps:**
+
 1. Fix BDD tests (Priority 1)
 2. Write unit tests (Priority 1)
 3. Update documentation (Priority 1)

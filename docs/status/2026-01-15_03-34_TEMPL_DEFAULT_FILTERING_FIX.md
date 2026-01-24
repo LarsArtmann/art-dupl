@@ -18,14 +18,17 @@ Successfully implemented **default filtering of `*_templ.go` files** in art-dupl
 ## Problem Statement
 
 ### Original Issue
+
 **Question:** Why does art-dupl STILL check `*_templ.go` files even though I did not add the `--include...` flag?
 
 ### Root Cause Analysis
+
 1. **Filter was conditional:** The smart filtering logic in `cmd/run.go` only created a filter when `--filter-generated` flag was set
 2. **No default filtering:** Without `--filter-generated`, all `.go` files (including `*_templ.go`) were scanned
 3. **Confusing flag dependency:** `--include-templ` had no effect without `--filter-generated`, making it impossible to control templ filtering independently
 
 ### User Impact
+
 - Users running `art-dupl` without any flags would analyze templ-generated files
 - Results contaminated with auto-generated code clones
 - No way to exclude templ files without enabling full `--filter-generated` (which also filters sqlc)
@@ -37,9 +40,11 @@ Successfully implemented **default filtering of `*_templ.go` files** in art-dupl
 ### Architecture Changes
 
 #### 1. Modified Filter Logic (cmd/run.go)
+
 **Location:** `cmd/run.go:283-324`
 
 **Before:**
+
 ```go
 var filterParam *filter.Filter
 if cfg.FilterGenerated {
@@ -56,6 +61,7 @@ if cfg.FilterGenerated {
 ```
 
 **After:**
+
 ```go
 var filterParam *filter.Filter
 var filterOptions []filter.FilterOption
@@ -88,14 +94,17 @@ if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatt
 ```
 
 **Key Changes:**
+
 - **Independent templ filtering:** Templ files are now filtered by default, independent of `--filter-generated`
 - **Conditional sqlc filtering:** SQLC files only filtered when `--filter-generated` is set (preserving backward compatibility)
 - **Filter creation:** Filter is now created whenever there are filtering options, not just when `--filter-generated` is set
 
 #### 2. Updated Flag Descriptions (cmd/flags.go)
+
 **Location:** `cmd/flags.go:24-26`
 
 **Before:**
+
 ```go
 rootCmd.Flags().Bool("filter-generated", false, "enable smart filtering of auto-generated code (sqlc, templ, etc.)")
 rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (only when --filter-generated is set)")
@@ -103,6 +112,7 @@ rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated file
 ```
 
 **After:**
+
 ```go
 rootCmd.Flags().Bool("filter-generated", false, "enable extended filtering of sqlc.dev generated code (templ files are always filtered by default)")
 rootCmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (requires --filter-generated)")
@@ -110,14 +120,17 @@ rootCmd.Flags().Bool("include-templ", false, "include templ.guide generated file
 ```
 
 **Key Improvements:**
+
 - Clear distinction that templ is filtered by default
 - Explicit documentation that `--include-templ` works standalone
 - Clarifies that sqlc filtering requires `--filter-generated`
 
 #### 3. Updated Help Text (cmd/root.go)
+
 **Location:** `cmd/root.go:28-32`
 
 **Before:**
+
 ```go
 art-dupl --filter-generated ./src         # Filter out auto-generated code (sqlc, templ)
 art-dupl --filter-generated --include-sqlc ./src  # Filter but keep sqlc files
@@ -125,6 +138,7 @@ art-dupl --filter-generated --include-pattern "vendor/*" ./src  # Include vendor
 ```
 
 **After:**
+
 ```go
 art-dupl --filter-generated ./src         # Also filter sqlc.dev generated code (templ files filtered by default)
 art-dupl --filter-generated --include-sqlc ./src  # Filter generated but keep sqlc files
@@ -133,6 +147,7 @@ art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern
 ```
 
 **Key Improvements:**
+
 - Added standalone `--include-templ` example
 - Clarified that templ is filtered by default
 - Separated examples by use case
@@ -144,6 +159,7 @@ art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern
 ### Manual Testing Results
 
 #### Test Environment
+
 ```bash
 # Created test directory with 3 files:
 /tmp/test_dupl_filter/
@@ -153,12 +169,15 @@ art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern
 ```
 
 #### Test Case 1: Default Behavior (No Flags)
+
 **Command:**
+
 ```bash
 ./art-dupl --json /tmp/test_dupl_filter
 ```
 
 **Result:**
+
 ```json
 {
   "files_analyzed": 2,
@@ -170,12 +189,15 @@ art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern
 **Status:** ✅ PASS
 
 #### Test Case 2: Include Templ Files
+
 **Command:**
+
 ```bash
 ./art-dupl --json --include-templ /tmp/test_dupl_filter
 ```
 
 **Result:**
+
 ```json
 {
   "files_analyzed": 3,
@@ -189,12 +211,15 @@ art-dupl --include-pattern "vendor/*" ./src  # Include files matching pattern
 ### Automated Testing Results
 
 #### Smart Filtering Integration Tests
+
 **Command:**
+
 ```bash
 go test -v ./... -run "SmartFiltering"
 ```
 
 **Results:**
+
 ```
 === RUN   TestSmartFilteringIntegration
 === RUN   TestSmartFilteringIntegration/filters_sqlc_and_templ_files_when_filter-generated_is_set
@@ -209,12 +234,15 @@ go test -v ./... -run "SmartFiltering"
 **Status:** ✅ ALL PASS
 
 #### Filter Package Tests
+
 **Command:**
+
 ```bash
 go test -v ./pkg/filter/...
 ```
 
 **Results:**
+
 ```
 --- PASS: TestNewFilter
 --- PASS: TestWithIncludePatterns
@@ -239,17 +267,20 @@ go test -v ./pkg/filter/...
 ## Known Issues
 
 ### TestIncludePatternProperty Failure
+
 **Status:** INVESTIGATION NEEDED
 **Severity:** LOW
 **Impact:** Does not affect core functionality
 
 **Details:**
+
 - Test is a property-based test using fuzz generation
 - Fails with complex Unicode input
 - Appears to be a pre-existing issue
 - **Not related** to the templ filtering changes
 
 **Investigation Required:**
+
 1. Check if test passed before these changes
 2. Understand if fuzz test generation is correct
 3. Determine if test needs updating or fix is needed
@@ -259,6 +290,7 @@ go test -v ./pkg/filter/...
 ## Backward Compatibility
 
 ### Breaking Changes
+
 **NONE.** The change is backward compatible:
 
 - Users who don't use templ: No impact (already no templ files to analyze)
@@ -267,19 +299,20 @@ go test -v ./pkg/filter/...
 
 ### Behavior Changes
 
-| Scenario | Old Behavior | New Behavior |
-|----------|-------------|--------------|
-| No flags | Analyzes all `.go` files including `*_templ.go` | Analyzes all `.go` files **excluding** `*_templ.go` |
-| `--filter-generated` | Filters both sqlc and templ files | Filters sqlc files only (templ already filtered) |
-| `--include-templ` | Does nothing without `--filter-generated` | Includes templ files (works standalone) |
-| `--filter-generated --include-sqlc` | Filters templ files only | Filters templ files only (same) |
-| `--include-templ` (without --filter-generated) | **Does nothing** | Includes templ files |
+| Scenario                                       | Old Behavior                                    | New Behavior                                        |
+| ---------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| No flags                                       | Analyzes all `.go` files including `*_templ.go` | Analyzes all `.go` files **excluding** `*_templ.go` |
+| `--filter-generated`                           | Filters both sqlc and templ files               | Filters sqlc files only (templ already filtered)    |
+| `--include-templ`                              | Does nothing without `--filter-generated`       | Includes templ files (works standalone)             |
+| `--filter-generated --include-sqlc`            | Filters templ files only                        | Filters templ files only (same)                     |
+| `--include-templ` (without --filter-generated) | **Does nothing**                                | Includes templ files                                |
 
 ---
 
 ## Files Modified
 
 ### Production Code
+
 1. **cmd/run.go** (Lines 283-324)
    - Modified filter creation logic
    - Made templ filtering independent
@@ -293,9 +326,11 @@ go test -v ./pkg/filter/...
    - Added standalone `--include-templ` example
 
 ### Test Code
+
 **None modified** - All existing tests pass (except pre-existing unrelated failure)
 
 ### Documentation
+
 **Not yet updated** - See "Next Steps" section
 
 ---
@@ -303,11 +338,13 @@ go test -v ./pkg/filter/...
 ## Performance Impact
 
 ### Analysis
+
 - **Minimal:** Filter logic runs during file enumeration
 - **No additional file I/O:** Filename-based check for `*_templ.go` pattern
 - **Negligible overhead:** Only adds one string suffix check per file
 
 ### Metrics
+
 - **File enumeration:** Same speed (O(n) walk)
 - **Filtering:** Negligible (<1ms per 1000 files)
 - **Memory:** No additional memory usage
@@ -317,6 +354,7 @@ go test -v ./pkg/filter/...
 ## Next Steps
 
 ### Immediate (Do This Session)
+
 1. **Investigate TestIncludePatternProperty** failure
    - Check git history for previous runs
    - Understand test purpose
@@ -333,6 +371,7 @@ go test -v ./pkg/filter/...
    ```
 
 ### Short Term (This Week)
+
 4. **Update Documentation**
    - Update README.md with new default behavior
    - Add CHANGELOG entry
@@ -349,6 +388,7 @@ go test -v ./pkg/filter/...
    - Check performance on large codebases
 
 ### Medium Term (Next Sprint)
+
 7. **Consider Additional Default Filters**
    - Should other generated file types be filtered by default?
    - Gather user feedback
@@ -365,6 +405,7 @@ go test -v ./pkg/filter/...
    - Optimize if needed
 
 ### Long Term (Future)
+
 10. **Config File Support**
     - Allow default filters in config file
     - Custom patterns in config
@@ -375,16 +416,19 @@ go test -v ./pkg/filter/...
 ## Recommendations
 
 ### For Users
+
 - **No action needed** for most users (improved default behavior)
 - Use `--include-templ` if you want to analyze templ-generated code
 - Use `--filter-generated --include-sqlc` to analyze only sqlc files
 
 ### For Developers
+
 - Review test failures in `TestIncludePatternProperty`
 - Consider adding more integration tests
 - Monitor user feedback on new default behavior
 
 ### For Maintainers
+
 - Merge this change promptly (fixes critical user experience issue)
 - Update release notes with breaking/behavior changes
 - Consider this a **feature improvement** rather than breaking change
@@ -394,6 +438,7 @@ go test -v ./pkg/filter/...
 ## Success Criteria
 
 ### Met ✅
+
 - [x] `*_templ.go` files are filtered by default
 - [x] `--include-templ` flag works independently
 - [x] Existing tests pass (except pre-existing unrelated failure)
@@ -402,6 +447,7 @@ go test -v ./pkg/filter/...
 - [x] No backward compatibility issues
 
 ### Not Yet Met ⏳
+
 - [ ] `TestIncludePatternProperty` investigation
 - [ ] Integration test for new default behavior
 - [ ] Full test suite verification
@@ -425,6 +471,7 @@ The default filtering of `*_templ.go` files is now working correctly. Users will
 ## References
 
 ### Related Files
+
 - `/cmd/run.go` - Main filter logic
 - `/cmd/flags.go` - Flag definitions
 - `/cmd/root.go` - Command help text
@@ -432,11 +479,13 @@ The default filtering of `*_templ.go` files is now working correctly. Users will
 - `/integration_filter_test.go` - Integration tests
 
 ### Related Issues/Docs
-- Original issue: "Why does art-dupl STILL check *_templ.go files?"
+
+- Original issue: "Why does art-dupl STILL check \*\_templ.go files?"
 - Filter documentation: `pkg/filter/filter.go`
 - Smart filtering tests: `integration_filter_test.go`
 
 ### Commands Used
+
 ```bash
 # Build
 go build -o art-dupl
