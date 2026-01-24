@@ -5,7 +5,6 @@ import (
 	"io"
 	"sort"
 
-	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
