@@ -68,6 +68,7 @@ Command: `just check` and `just fd`
   - **Priority**: Medium - Future compatibility
 
 - **Location**: `testutils/unique.go:15`
+
   ```go
   rand.Seed(time.Now().UnixNano())
   ```
@@ -91,6 +92,7 @@ Command: `just check` and `just fd`
   - **Priority**: Low - Code cleanliness
 
 - **Location**: `cli.go:444`
+
   ```go
   func filesFeed() chan string {
   ```

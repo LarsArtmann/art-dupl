@@ -137,6 +137,7 @@ cmd/ package
    - Exported as `RunCobraCommand()` for package access
 
 2. **cmd/run.go Stub**:
+
    ```go
    func runCmd(_ *cobra.Command, _ []string) error {
        return fmt.Errorf("not yet implemented - awaiting cli.go refactoring")
