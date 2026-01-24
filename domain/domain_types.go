@@ -85,6 +85,12 @@ func unmarshalUint(data []byte, typeName string, assign func(uint)) error {
 	return nil
 }
 
+// marshalUint is a helper function for marshaling uint-based types.
+// It handles the common pattern of marshaling uint-wrapped types to JSON.
+func marshalUint(n uint) ([]byte, error) {
+	return json.Marshal(n)
+}
+
 // CloneID represents a unique identifier for a code clone.
 type CloneID string
 
@@ -246,7 +252,7 @@ func (bp BytePosition) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for BytePosition.
 func (bp BytePosition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint(bp))
+	return marshalUint(uint(bp))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for BytePosition.
@@ -271,7 +277,7 @@ func (tc TokenCount) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for TokenCount.
 func (tc TokenCount) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint(tc))
+	return marshalUint(uint(tc))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for TokenCount.
@@ -348,7 +354,7 @@ func (cs ComplexityScore) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for ComplexityScore.
 func (cs ComplexityScore) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint(cs))
+	return marshalUint(uint(cs))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ComplexityScore.
@@ -401,7 +407,7 @@ func (fc FileCount) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for FileCount.
 func (fc FileCount) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint(fc))
+	return marshalUint(uint(fc))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for FileCount.
@@ -426,7 +432,7 @@ func (cc CloneCount) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for CloneCount.
 func (cc CloneCount) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint(cc))
+	return marshalUint(uint(cc))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCount.
