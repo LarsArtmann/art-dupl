@@ -1,7 +1,6 @@
 package bdd
 
 import (
-	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
@@ -9,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for Filter Features
@@ -29,22 +28,16 @@ func TestFilterFeatures(t *testing.T) {
 }
 
 var _ = Describe("Filter Features", func() {
-	var (
-		tempDir       string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-filter-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-
-		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
-		_ = os.Remove("./art-dupl-filter_features-test")
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When filtering generated code", func() {
