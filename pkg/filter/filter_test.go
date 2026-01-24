@@ -44,6 +44,13 @@ type containsTest struct {
 	expect bool
 }
 
+type matchPatternTest struct {
+	name     string
+	path     string
+	pattern  string
+	expected bool
+}
+
 func TestNewFilter(t *testing.T) {
 	t.Parallel()
 
@@ -127,12 +134,7 @@ func TestShouldFilter(t *testing.T) {
 func TestMatchPattern(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name     string
-		path     string
-		pattern  string
-		expected bool
-	}{
+	tests := []matchPatternTest{
 		{
 			name:     "exact match",
 			path:     "file.go",
@@ -165,14 +167,11 @@ func TestMatchPattern(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := matchPattern(tt.path, tt.pattern)
-			if result != tt.expected {
-				t.Errorf("For pattern %q and path %q: got %v, want %v", tt.pattern, tt.path, result, tt.expected)
-			}
-		})
-	}
+	runTestCases(t, tests,
+		func(tt matchPatternTest) string { return tt.name },
+		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
+		func(tt matchPatternTest) bool { return tt.expected },
+	)
 }
 
 // Property-based tests for filter logic
