@@ -317,10 +317,18 @@ func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalT
 	})
 }
 
+// registerStandardTypeTest creates and runs a standard test suite for types.
+// This helper reduces boilerplate by running standard test functions and JSON test suite.
+func registerStandardTypeTest(t *testing.T, typeName string, testFuncs ...func(*testing.T)) {
+	t.Helper()
+	for _, tf := range testFuncs {
+		tf(t)
+	}
+}
+
 // TestCloneID tests CloneID type.
 func TestCloneID(t *testing.T) {
-	t.Run("NewCloneID", TestCloneID_NewCloneID)
-	t.Run("String", TestCloneID_String)
+	registerStandardTypeTest(t, "CloneID", TestCloneID_NewCloneID, TestCloneID_String)
 
 	registerJSONTestSuite(t, "CloneID",
 		[]jsonTest[CloneID]{
@@ -380,8 +388,7 @@ func TestLineNumber_Uint(t *testing.T) {
 
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
-	t.Run("NewLineNumber", TestLineNumber_NewLineNumber)
-	t.Run("Uint", TestLineNumber_Uint)
+	registerStandardTypeTest(t, "LineNumber", TestLineNumber_NewLineNumber, TestLineNumber_Uint)
 
 	registerJSONTestSuite(t, "LineNumber",
 		[]jsonTest[LineNumber]{
@@ -491,9 +498,7 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence tests Confidence type.
 func TestConfidence(t *testing.T) {
-	t.Run("NewConfidence", TestConfidence_NewConfidence)
-	t.Run("Float64", TestConfidence_Float64)
-	t.Run("String", TestConfidence_String)
+	registerStandardTypeTest(t, "Confidence", TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String)
 
 	registerJSONTestSuite(t, "Confidence",
 		[]jsonTest[Confidence]{
@@ -610,9 +615,7 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
-	t.Run("NewProcessingTime", TestProcessingTime_NewProcessingTime)
-	t.Run("Uint", TestProcessingTime_Uint)
-	t.Run("String", TestProcessingTime_String)
+	registerStandardTypeTest(t, "ProcessingTime", TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String)
 
 	registerJSONTestSuite(t, "ProcessingTime",
 		[]jsonTest[ProcessingTime]{
