@@ -52,12 +52,11 @@ func TestUniqueFunction_Clean(t *testing.T) {
 	}
 }
 
-// TestUniqueness_Clean tests basic uniqueness.
-func TestUniqueness_Clean(t *testing.T) {
-	// Generate strings and check they're unique
+// testUniquenessHelper tests that UniqueTestHelper generates unique strings.
+func testUniquenessHelper(t *testing.T, count int) {
 	uniqueSet := make(map[string]bool)
 
-	for range 50 {
+	for range count {
 		str := UniqueTestHelper()
 
 		if uniqueSet[str] {
@@ -66,10 +65,14 @@ func TestUniqueness_Clean(t *testing.T) {
 		uniqueSet[str] = true
 	}
 
-	// Should have all unique strings
-	if len(uniqueSet) != 50 {
-		t.Errorf("Expected 50 unique strings, got %d", len(uniqueSet))
+	if len(uniqueSet) != count {
+		t.Errorf("Expected %d unique strings, got %d", count, len(uniqueSet))
 	}
+}
+
+// TestUniqueness_Clean tests basic uniqueness.
+func TestUniqueness_Clean(t *testing.T) {
+	testUniquenessHelper(t, 50)
 }
 
 // TestUniqueness_Concurrent_Clean tests concurrency.

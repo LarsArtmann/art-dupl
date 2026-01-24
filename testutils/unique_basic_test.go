@@ -44,20 +44,5 @@ func TestUniqueFunction_Basic(t *testing.T) {
 
 // TestUniqueness_Basic tests basic uniqueness.
 func TestUniqueness_Basic(t *testing.T) {
-	// Generate strings and check they're unique
-	uniqueSet := make(map[string]bool)
-
-	for range 10 {
-		str := UniqueTestHelper()
-
-		if uniqueSet[str] {
-			t.Errorf("Duplicate found: %s", str)
-		}
-		uniqueSet[str] = true
-	}
-
-	// Should have all unique strings
-	if len(uniqueSet) != 10 {
-		t.Errorf("Expected 10 unique strings, got %d", len(uniqueSet))
-	}
+	testUniquenessHelper(t, 10)
 }
