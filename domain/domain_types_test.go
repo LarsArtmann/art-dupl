@@ -703,50 +703,12 @@ func TestHash_NewHash(t *testing.T) {
 
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
-	t.Run("NewThreshold", func(t *testing.T) {
-		tests := []struct {
-			name      string
-			input     uint
-			want      Threshold
-			wantError bool
-		}{
-			{
-				name:      "valid threshold",
-				input:     15,
-				want:      Threshold(15),
-				wantError: false,
-			},
-			{
-				name:      "zero should error",
-				input:     0,
-				want:      0,
-				wantError: true,
-			},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got, gotErr := NewThreshold(tt.input)
-
-				if tt.wantError {
-					if gotErr == nil {
-						t.Errorf("NewThreshold() expected error, got nil")
-						return
-					}
-					var validationErr *duplerrors.DuplError
-					if !stderrors.As(gotErr, &validationErr) {
-						t.Errorf("NewThreshold() expected ValidationError, got %T", gotErr)
-					}
-				} else {
-					if gotErr != nil {
-						t.Errorf("NewThreshold() unexpected error: %v", gotErr)
-						return
-					}
-					if got != tt.want {
-						t.Errorf("NewThreshold() = %v, want %v", got, tt.want)
-					}
-				}
-			})
-		}
+	tests := []constructorTest[Threshold]{
+		{name: "valid threshold", input: uint(15), want: Threshold(15), wantError: false},
+		{name: "zero should error", input: uint(0), want: 0, wantError: true},
+	}
+	runConstructorTests(t, "NewThreshold", tests, func(input any) (Threshold, error) {
+		return NewThreshold(input.(uint))
 	})
 
 	t.Run("Uint", func(t *testing.T) {
@@ -756,18 +718,23 @@ func TestThreshold(t *testing.T) {
 		}
 	})
 
-	t.Run("RoundTrip", func(t *testing.T) {
-		original := Threshold(50)
-		data, err := original.MarshalJSON()
-		if err != nil {
-			t.Fatalf("MarshalJSON() error: %v", err)
-		}
-		var result Threshold
-		if err := result.UnmarshalJSON(data); err != nil {
-			t.Fatalf("UnmarshalJSON() error: %v", err)
-		}
-		if result != original {
-			t.Errorf("Round trip failed: %v != %v", result, original)
-		}
-	})
+	registerJSONTestSuite(t, "Threshold",
+		[]jsonTest[Threshold]{
+			{name: "valid threshold", input: Threshold(15), want: `15`, wantErr: false},
+			{name: "zero should error", input: Threshold(0), want: "", wantErr: true},
+		},
+		[]struct {
+			name      string
+			input     string
+			want      Threshold
+			wantError bool
+		}{
+			{name: "valid JSON", input: `50`, want: Threshold(50), wantError: false},
+			{name: "zero should error", input: `0`, want: Threshold(0), wantError: true},
+			{name: "invalid JSON", input: `not-json`, want: Threshold(0), wantError: true},
+		},
+		Threshold(30),
+		func(th Threshold) ([]byte, error) { return th.MarshalJSON() },
+		func(th *Threshold, data []byte) error { return th.UnmarshalJSON(data) },
+	)
 }
