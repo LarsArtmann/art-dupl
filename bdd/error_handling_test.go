@@ -29,6 +29,19 @@ func TestErrorHandling(t *testing.T) {
 	RunSpecs(t, "art-dupl Error Handling BDD Suite")
 }
 
+// createTempTestFile is a helper that creates a temp directory with a test file
+// and returns the temp directory path. The caller is responsible for cleanup.
+func createTempTestFile(pattern string) string {
+	tempDir, err := os.MkdirTemp("", pattern)
+	Expect(err).NotTo(HaveOccurred())
+
+	testFile := filepath.Join(tempDir, "test.go")
+	err = os.WriteFile(testFile, []byte("package main\nfunc test() {}"), 0o644)
+	Expect(err).NotTo(HaveOccurred())
+
+	return tempDir
+}
+
 var _ = Describe("Error Handling", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -186,14 +199,8 @@ var _ = Describe("Error Handling", func() {
 
 	Context("When using invalid flag combinations", func() {
 		It("should handle conflicting output format flags gracefully", func() {
-			// Create temp directory with test file
-			tempDir, err := os.MkdirTemp("", "art-dupl-flag-conflict-bdd-*")
-			Expect(err).NotTo(HaveOccurred())
+			tempDir := createTempTestFile("art-dupl-flag-conflict-bdd-*")
 			defer os.RemoveAll(tempDir)
-
-			testFile := filepath.Join(tempDir, "test.go")
-			err = os.WriteFile(testFile, []byte("package main\nfunc test() {}"), 0o644)
-			Expect(err).NotTo(HaveOccurred())
 
 			// Try to use multiple output format flags
 			output, err := setup.RunArtDupl(tempDir, "--json", "--html", "--plumbing")
@@ -202,14 +209,8 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle invalid sorting option gracefully", func() {
-			// Create temp directory with test file
-			tempDir, err := os.MkdirTemp("", "art-dupl-sort-error-bdd-*")
-			Expect(err).NotTo(HaveOccurred())
+			tempDir := createTempTestFile("art-dupl-sort-error-bdd-*")
 			defer os.RemoveAll(tempDir)
-
-			testFile := filepath.Join(tempDir, "test.go")
-			err = os.WriteFile(testFile, []byte("package main\nfunc test() {}"), 0o644)
-			Expect(err).NotTo(HaveOccurred())
 
 			// Use invalid sort option
 			output, err := setup.RunArtDupl(tempDir, "--sort", "invalid_sort_option")
@@ -218,14 +219,8 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle invalid detection method gracefully", func() {
-			// Create temp directory with test file
-			tempDir, err := os.MkdirTemp("", "art-dupl-method-error-bdd-*")
-			Expect(err).NotTo(HaveOccurred())
+			tempDir := createTempTestFile("art-dupl-method-error-bdd-*")
 			defer os.RemoveAll(tempDir)
-
-			testFile := filepath.Join(tempDir, "test.go")
-			err = os.WriteFile(testFile, []byte("package main\nfunc test() {}"), 0o644)
-			Expect(err).NotTo(HaveOccurred())
 
 			// Use invalid detection method
 			output, err := setup.RunArtDupl(tempDir, "--detection-methods", "invalid_method")
@@ -236,18 +231,14 @@ var _ = Describe("Error Handling", func() {
 
 	Context("When dealing with permission issues", func() {
 		It("should handle unreadable files gracefully", func() {
-			// Create temp directory
-			tempDir, err := os.MkdirTemp("", "art-dupl-permission-bdd-*")
-			Expect(err).NotTo(HaveOccurred())
+			tempDir := createTempTestFile("art-dupl-permission-bdd-*")
 			defer os.RemoveAll(tempDir)
 
-			// Create file with no read permissions
-			testFile := filepath.Join(tempDir, "noperm.go")
-			err = os.WriteFile(testFile, []byte("package main\nfunc test() {}"), 0o644)
-			Expect(err).NotTo(HaveOccurred())
+			// Get the test file path
+			testFile := filepath.Join(tempDir, "test.go")
 
 			// Remove read permissions
-			err = os.Chmod(testFile, 0o000)
+			err := os.Chmod(testFile, 0o000)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on directory
