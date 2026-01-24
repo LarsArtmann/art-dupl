@@ -520,6 +520,8 @@ func TestConfidence(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
 		},
 		Confidence(0.75),
+		func(c Confidence) ([]byte, error) { return c.MarshalJSON() },
+		func(c *Confidence, data []byte) error { return c.UnmarshalJSON(data) },
 	)
 }
 
@@ -631,6 +633,8 @@ func TestProcessingTime(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: ProcessingTime(0), wantError: true},
 		},
 		ProcessingTime(5000),
+		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
+		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
 	)
 }
 
@@ -730,5 +734,7 @@ func TestThreshold(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: Threshold(0), wantError: true},
 		},
 		Threshold(30),
+		func(t Threshold) ([]byte, error) { return t.MarshalJSON() },
+		func(t *Threshold, data []byte) error { return t.UnmarshalJSON(data) },
 	)
 }
