@@ -130,6 +130,15 @@ func BenchmarkFindTranBatch(b *testing.B) {
 	}
 }
 
+// benchmarkTreeOperation benchmarks tree-level operations with standard setup.
+func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*STree)) {
+	tree := setup()
+
+	for b.Loop() {
+		operation(tree)
+	}
+}
+
 // BenchmarkConstruction benchmarks full suffix tree construction.
 func BenchmarkConstruction(b *testing.B) {
 	sizes := []int{10, 100, 1000, 10000}
@@ -168,11 +177,11 @@ func BenchmarkConstructionParallel(b *testing.B) {
 
 // BenchmarkOptimizeTree benchmarks tree optimization.
 func BenchmarkOptimizeTree(b *testing.B) {
-	tree := generateTreeWithTransitions(100, 50)
-
-	for b.Loop() {
+	benchmarkTreeOperation(b, func() *STree {
+		return generateTreeWithTransitions(100, 50)
+	}, func(tree *STree) {
 		tree.OptimizeTree()
-	}
+	})
 }
 
 // BenchmarkFindTranOptimized benchmarks findTran after tree optimization.
@@ -188,13 +197,14 @@ func BenchmarkFindTranOptimized(b *testing.B) {
 
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
-	tree := New()
-	tokens := generateRandomTokens(1000)
-	tree.Update(tokens...)
-
-	for b.Loop() {
+	benchmarkTreeOperation(b, func() *STree {
+		tree := New()
+		tokens := generateRandomTokens(1000)
+		tree.Update(tokens...)
+		return tree
+	}, func(tree *STree) {
 		tree.canonize(tree.root, 0, 100)
-	}
+	})
 }
 
 // BenchmarkUpdate benchmarks incremental tree updates.
@@ -248,13 +258,14 @@ func BenchmarkMemoryUsage(b *testing.B) {
 
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
-	tree := New()
-	tokens := generateRandomTokens(1000)
-	tree.Update(tokens...)
-
-	for b.Loop() {
+	benchmarkTreeOperation(b, func() *STree {
+		tree := New()
+		tokens := generateRandomTokens(1000)
+		tree.Update(tokens...)
+		return tree
+	}, func(tree *STree) {
 		tree.testAndSplit(tree.root, 0, 100)
-	}
+	})
 }
 
 // BenchmarkSearch benchmarks searching for specific patterns in the tree.
