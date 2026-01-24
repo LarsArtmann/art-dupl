@@ -36,6 +36,20 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
+// unmarshalStringID is a helper function for unmarshaling string-based ID types.
+// It handles the common pattern of unmarshaling JSON to string and validating emptiness.
+func unmarshalStringID(data []byte, typeName string, validationMsg string, assign func(string)) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
+	}
+	if s == "" {
+		return errors.NewValidationError(validationMsg, nil)
+	}
+	assign(s)
+	return nil
+}
+
 // CloneID represents a unique identifier for a code clone.
 type CloneID string
 
@@ -63,15 +77,9 @@ func (id CloneID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneID.
 func (id *CloneID) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("failed to unmarshal CloneID: %w", err)
-	}
-	if s == "" {
-		return errors.NewValidationError("clone ID cannot be empty", nil)
-	}
-	*id = CloneID(s)
-	return nil
+	return unmarshalStringID(data, "CloneID", "clone ID cannot be empty", func(s string) {
+		*id = CloneID(s)
+	})
 }
 
 // CloneGroupID represents a unique identifier for a clone group.
@@ -100,15 +108,9 @@ func (id CloneGroupID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneGroupID.
 func (id *CloneGroupID) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("failed to unmarshal CloneGroupID: %w", err)
-	}
-	if s == "" {
-		return errors.NewValidationError("clone group ID cannot be empty", nil)
-	}
-	*id = CloneGroupID(s)
-	return nil
+	return unmarshalStringID(data, "CloneGroupID", "clone group ID cannot be empty", func(s string) {
+		*id = CloneGroupID(s)
+	})
 }
 
 // AnalysisID represents a unique identifier for an analysis.
@@ -137,15 +139,9 @@ func (id AnalysisID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for AnalysisID.
 func (id *AnalysisID) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("failed to unmarshal AnalysisID: %w", err)
-	}
-	if s == "" {
-		return errors.NewValidationError("analysis ID cannot be empty", nil)
-	}
-	*id = AnalysisID(s)
-	return nil
+	return unmarshalStringID(data, "AnalysisID", "analysis ID cannot be empty", func(s string) {
+		*id = AnalysisID(s)
+	})
 }
 
 // Filepath represents a filesystem path.
@@ -174,15 +170,9 @@ func (fp Filepath) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for Filepath.
 func (fp *Filepath) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("failed to unmarshal Filepath: %w", err)
-	}
-	if s == "" {
-		return errors.NewValidationError("filepath cannot be empty", nil)
-	}
-	*fp = Filepath(s)
-	return nil
+	return unmarshalStringID(data, "Filepath", "filepath cannot be empty", func(s string) {
+		*fp = Filepath(s)
+	})
 }
 
 // LineNumber represents a line number in a source file.
@@ -386,15 +376,9 @@ func (h Hash) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for Hash.
 func (h *Hash) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("failed to unmarshal Hash: %w", err)
-	}
-	if s == "" {
-		return errors.NewValidationError("hash cannot be empty", nil)
-	}
-	*h = Hash(s)
-	return nil
+	return unmarshalStringID(data, "Hash", "hash cannot be empty", func(s string) {
+		*h = Hash(s)
+	})
 }
 
 // FileCount represents the number of files.
