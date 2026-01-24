@@ -174,37 +174,37 @@ func TestWrapIO(t *testing.T) {
 	})
 }
 
-func TestWrapConfig(t *testing.T) {
-	cause := errors.New("parse error")
+func TestWrapFunctions(t *testing.T) {
+	tests := []struct {
+		name     string
+		wrapFunc func() error
+		expected ErrorType
+	}{
+		{
+			name:     "WrapConfig creates ConfigError",
+			wrapFunc: func() error { return WrapConfig(errors.New("parse error"), "loading config") },
+			expected: ConfigError,
+		},
+		{
+			name:     "WrapValidation creates ValidationError",
+			wrapFunc: func() error { return WrapValidation(errors.New("invalid value"), "field validation") },
+			expected: ValidationError,
+		},
+		{
+			name:     "WrapFile creates FileError",
+			wrapFunc: func() error { return WrapFile(errors.New("not found"), "test.go", "stat") },
+			expected: FileError,
+		},
+	}
 
-	t.Run("WrapConfig creates ConfigError", func(t *testing.T) {
-		wrapped := WrapConfig(cause, "loading config")
-		if !Is(wrapped, ConfigError) {
-			t.Error("Should be ConfigError type")
-		}
-	})
-}
-
-func TestWrapValidation(t *testing.T) {
-	cause := errors.New("invalid value")
-
-	t.Run("WrapValidation creates ValidationError", func(t *testing.T) {
-		wrapped := WrapValidation(cause, "field validation")
-		if !Is(wrapped, ValidationError) {
-			t.Error("Should be ValidationError type")
-		}
-	})
-}
-
-func TestWrapFile(t *testing.T) {
-	cause := errors.New("not found")
-
-	t.Run("WrapFile creates FileError", func(t *testing.T) {
-		wrapped := WrapFile(cause, "test.go", "stat")
-		if !Is(wrapped, FileError) {
-			t.Error("Should be FileError type")
-		}
-	})
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			wrapped := tc.wrapFunc()
+			if !Is(wrapped, tc.expected) {
+				t.Errorf("Should be %s type", tc.expected)
+			}
+		})
+	}
 }
 
 func TestErrorTypeString(t *testing.T) {

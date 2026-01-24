@@ -36,6 +36,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
+// marshalStringID is a helper function for marshaling string-based ID types.
+// It handles the common pattern of validating non-empty strings and marshaling to JSON.
+func marshalStringID(s string, typeName string, validationMsg string) ([]byte, error) {
+	if s == "" {
+		return nil, errors.NewValidationError(validationMsg, nil)
+	}
+	return json.Marshal(s)
+}
+
 // unmarshalStringID is a helper function for unmarshaling string-based ID types.
 // It handles the common pattern of unmarshaling JSON to string and validating emptiness.
 func unmarshalStringID(data []byte, typeName string, validationMsg string, assign func(string)) error {
@@ -95,10 +104,7 @@ func (id CloneID) String() string {
 
 // MarshalJSON implements json.Marshaler for CloneID.
 func (id CloneID) MarshalJSON() ([]byte, error) {
-	if id == "" {
-		return nil, errors.NewValidationError("clone ID cannot be empty", nil)
-	}
-	return json.Marshal(string(id))
+	return marshalStringID(string(id), "CloneID", "clone ID cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneID.
@@ -126,10 +132,7 @@ func (id CloneGroupID) String() string {
 
 // MarshalJSON implements json.Marshaler for CloneGroupID.
 func (id CloneGroupID) MarshalJSON() ([]byte, error) {
-	if id == "" {
-		return nil, errors.NewValidationError("clone group ID cannot be empty", nil)
-	}
-	return json.Marshal(string(id))
+	return marshalStringID(string(id), "CloneGroupID", "clone group ID cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneGroupID.
@@ -157,10 +160,7 @@ func (id AnalysisID) String() string {
 
 // MarshalJSON implements json.Marshaler for AnalysisID.
 func (id AnalysisID) MarshalJSON() ([]byte, error) {
-	if id == "" {
-		return nil, errors.NewValidationError("analysis ID cannot be empty", nil)
-	}
-	return json.Marshal(string(id))
+	return marshalStringID(string(id), "AnalysisID", "analysis ID cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for AnalysisID.
@@ -188,10 +188,7 @@ func (fp Filepath) String() string {
 
 // MarshalJSON implements json.Marshaler for Filepath.
 func (fp Filepath) MarshalJSON() ([]byte, error) {
-	if fp == "" {
-		return nil, errors.NewValidationError("filepath cannot be empty", nil)
-	}
-	return json.Marshal(string(fp))
+	return marshalStringID(string(fp), "Filepath", "filepath cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Filepath.
@@ -379,10 +376,7 @@ func (h Hash) String() string {
 
 // MarshalJSON implements json.Marshaler for Hash.
 func (h Hash) MarshalJSON() ([]byte, error) {
-	if h == "" {
-		return nil, errors.NewValidationError("hash cannot be empty", nil)
-	}
-	return json.Marshal(string(h))
+	return marshalStringID(string(h), "Hash", "hash cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Hash.
