@@ -158,13 +158,13 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 	return cmd.CombinedOutput()
 }
 
-// RunArtDuplAndVerifyOutput executes art-dupl and verifies it completes successfully.
-func (s *BDDTestSetup) RunArtDuplAndVerifyOutput(args ...string) string {
+// runCommandAndVerify executes a command function and verifies it completes successfully.
+func (s *BDDTestSetup) runCommandAndVerify(execute func() ([]byte, error)) string {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	output, err := s.RunArtDupl(args...)
+	output, err := execute()
 	if err != nil {
 		if s.T != nil {
 			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
@@ -176,22 +176,18 @@ func (s *BDDTestSetup) RunArtDuplAndVerifyOutput(args ...string) string {
 	return string(output)
 }
 
+// RunArtDuplAndVerifyOutput executes art-dupl and verifies it completes successfully.
+func (s *BDDTestSetup) RunArtDuplAndVerifyOutput(args ...string) string {
+	return s.runCommandAndVerify(func() ([]byte, error) {
+		return s.RunArtDupl(args...)
+	})
+}
+
 // RunArtDuplWithFlagsAndVerify executes art-dupl with flags and verifies success.
 func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) string {
-	if s.T != nil {
-		s.T.Helper()
-	}
-
-	output, err := s.RunArtDuplWithFlags(flags)
-	if err != nil {
-		if s.T != nil {
-			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
-		} else {
-			panic(fmt.Sprintf("art-dupl command failed: %v\nOutput: %s", err, string(output)))
-		}
-	}
-
-	return string(output)
+	return s.runCommandAndVerify(func() ([]byte, error) {
+		return s.RunArtDuplWithFlags(flags)
+	})
 }
 
 // CreateSubdirectories creates multiple directories in test temporary directory.
