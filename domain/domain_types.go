@@ -65,6 +65,17 @@ func unmarshalUintNonZero(data []byte, typeName string, validationMsg string, as
 	return nil
 }
 
+// unmarshalUint is a helper function for unmarshaling uint-based types
+// that allow zero values. It handles the common pattern of unmarshaling JSON to uint.
+func unmarshalUint(data []byte, typeName string, assign func(uint)) error {
+	var n uint
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
+	}
+	assign(n)
+	return nil
+}
+
 // CloneID represents a unique identifier for a code clone.
 type CloneID string
 
@@ -243,12 +254,9 @@ func (bp BytePosition) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for BytePosition.
 func (bp *BytePosition) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal BytePosition: %w", err)
-	}
-	*bp = BytePosition(n)
-	return nil
+	return unmarshalUint(data, "BytePosition", func(n uint) {
+		*bp = BytePosition(n)
+	})
 }
 
 // TokenCount represents a count of tokens in code.
@@ -271,12 +279,9 @@ func (tc TokenCount) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for TokenCount.
 func (tc *TokenCount) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal TokenCount: %w", err)
-	}
-	*tc = TokenCount(n)
-	return nil
+	return unmarshalUint(data, "TokenCount", func(n uint) {
+		*tc = TokenCount(n)
+	})
 }
 
 // Confidence represents a confidence score (0.0 to 1.0).
@@ -351,12 +356,9 @@ func (cs ComplexityScore) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for ComplexityScore.
 func (cs *ComplexityScore) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal ComplexityScore: %w", err)
-	}
-	*cs = ComplexityScore(n)
-	return nil
+	return unmarshalUint(data, "ComplexityScore", func(n uint) {
+		*cs = ComplexityScore(n)
+	})
 }
 
 // Hash represents a hash value (typically SHA256).
@@ -410,12 +412,9 @@ func (fc FileCount) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for FileCount.
 func (fc *FileCount) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal FileCount: %w", err)
-	}
-	*fc = FileCount(n)
-	return nil
+	return unmarshalUint(data, "FileCount", func(n uint) {
+		*fc = FileCount(n)
+	})
 }
 
 // CloneCount represents the number of clones.
@@ -438,12 +437,9 @@ func (cc CloneCount) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCount.
 func (cc *CloneCount) UnmarshalJSON(data []byte) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal CloneCount: %w", err)
-	}
-	*cc = CloneCount(n)
-	return nil
+	return unmarshalUint(data, "CloneCount", func(n uint) {
+		*cc = CloneCount(n)
+	})
 }
 
 // ProcessingTime represents processing time in milliseconds.
