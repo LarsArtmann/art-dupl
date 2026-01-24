@@ -7,17 +7,18 @@ import (
 )
 
 // unmarshalStringType unmarshals JSON into a string type with validation.
-func unmarshalStringType(data []byte, parsedStr *string, isValid func(string) bool, setDefault func(), typeName string) error {
-	if err := json.Unmarshal(data, parsedStr); err != nil {
-		return err
+func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string) (T, error) {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return defaultVal, err
 	}
 
-	if !isValid(*parsedStr) {
-		setDefault()
-		return fmt.Errorf("invalid %s: %s", typeName, *parsedStr)
+	typed := T(str)
+	if !isValid(typed) {
+		return defaultVal, fmt.Errorf("invalid %s: %s", typeName, str)
 	}
 
-	return nil
+	return typed, nil
 }
 
 // DetectionMethod represents the detection method type.
@@ -59,16 +60,15 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	var str string
-	err := unmarshalStringType(data, &str,
-		func(s string) bool { return DetectionMethod(s).IsValid() },
-		func() { *dm = DetectionMethodArtDupl },
+	val, err := unmarshalStringType[DetectionMethod](data,
+		func(s DetectionMethod) bool { return s.IsValid() },
+		DetectionMethodArtDupl,
 		"detection method",
 	)
 	if err != nil {
 		return err
 	}
-	*dm = DetectionMethod(str)
+	*dm = val
 	return nil
 }
 
@@ -108,16 +108,15 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	var str string
-	err := unmarshalStringType(data, &str,
-		func(s string) bool { return OutputFormat(s).IsValid() },
-		func() { *of = OutputFormatText },
+	val, err := unmarshalStringType[OutputFormat](data,
+		func(s OutputFormat) bool { return s.IsValid() },
+		OutputFormatText,
 		"output format",
 	)
 	if err != nil {
 		return err
 	}
-	*of = OutputFormat(str)
+	*of = val
 	return nil
 }
 
@@ -156,16 +155,15 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	var str string
-	err := unmarshalStringType(data, &str,
-		func(s string) bool { return SortCriteria(s).IsValid() },
-		func() { *sc = SortBySize },
+	val, err := unmarshalStringType[SortCriteria](data,
+		func(s SortCriteria) bool { return s.IsValid() },
+		SortBySize,
 		"sort criteria",
 	)
 	if err != nil {
 		return err
 	}
-	*sc = SortCriteria(str)
+	*sc = val
 	return nil
 }
 
