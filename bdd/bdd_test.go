@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -290,32 +289,20 @@ func (v *Validator) lessCommon(id int) error {
 })
 
 var _ = Describe("File Targeting Scenarios", func() {
-	var (
-		tempDir       string
-		subDir1       string
-		subDir2       string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-files-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-
-		// Initialize file processor
-		fileProcessor = utils.NewFileProcessor(tempDir)
 
 		// Create subdirectories
-		subDir1 = filepath.Join(tempDir, "pkg1")
-		subDir2 = filepath.Join(tempDir, "pkg2")
-		err = os.MkdirAll(subDir1, 0o755) //nolint:gosec //G301 Test directory permissions
-		Expect(err).NotTo(HaveOccurred())
-		err = os.MkdirAll(subDir2, 0o755) //nolint:gosec //G301 Test directory permissions
+		err = setup.CreateSubdirectories("pkg1", "pkg2")
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When analyzing specific directories", func() {
@@ -336,19 +323,13 @@ func processData(data string) error {
 	return nil
 }`
 
-			// Use unified file processor for all file operations
-			err := fileProcessor.WriteDuplicateFiles([]string{file1, file2, file3}, duplicateCode)
+			// Use setup's file creation method
+			err := setup.CreateDuplicateFiles([]string{file1, file2, file3}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
 			// Analyze only subDir1
-			cmd = exec.Command("./art-dupl-bdd-test", subDir1, "--threshold", "10") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.CombinedOutput()
+			subDir1 := setup.GetFilePath("pkg1")
+			output, err := setup.RunArtDuplOnDir(subDir1, "--threshold", "10")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
@@ -382,23 +363,15 @@ func unique() {
 	return nil
 }`
 
-			// Use unified file processor
-			err := fileProcessor.WriteDuplicateFiles([]string{"target1.go", "target2.go"}, duplicateCode)
+			// Use setup's file creation methods
+			err := setup.CreateDuplicateFiles([]string{"target1.go", "target2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("ignore.go", uniqueCode)
+			err = setup.CreateFileWithContent("ignore.go", uniqueCode)
 			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
 			// Create stdin with only target files (use absolute paths)
-			stdin := fmt.Sprintf("%s\n%s\n", filepath.Join(tempDir, "target1.go"), filepath.Join(tempDir, "target2.go"))
-			cmd = exec.Command("./art-dupl-bdd-test", "--files", "--threshold", "10")
-			cmd.Stdin = strings.NewReader(stdin)
-			output, err := cmd.CombinedOutput()
+			stdin := fmt.Sprintf("%s\n%s\n", setup.GetFilePath("target1.go"), setup.GetFilePath("target2.go"))
+			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{"threshold": "10"})
 
 			// Verify - should find duplicates between target files
 			Expect(err).ToNot(HaveOccurred())
