@@ -61,5 +61,9 @@ Examples:
 		RunE: runCmd,
 	}
 
+	// Add stats subcommand
+	statsCmd := NewStatsCommand()
+	rootCmd.AddCommand(statsCmd)
+
 	return rootCmd
 }
