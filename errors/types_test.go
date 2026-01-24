@@ -176,32 +176,31 @@ func TestWrapIO(t *testing.T) {
 
 func TestWrapFunctions(t *testing.T) {
 	tests := []struct {
-		name     string
-		wrapFunc func() error
-		expected ErrorType
+		name       string
+		wrappedErr error
+		expected   ErrorType
 	}{
 		{
-			name:     "WrapConfig creates ConfigError",
-			wrapFunc: func() error { return WrapConfig(errors.New("parse error"), "loading config") },
-			expected: ConfigError,
+			name:       "WrapConfig creates ConfigError",
+			wrappedErr: WrapConfig(errors.New("parse error"), "loading config"),
+			expected:   ConfigError,
 		},
 		{
-			name:     "WrapValidation creates ValidationError",
-			wrapFunc: func() error { return WrapValidation(errors.New("invalid value"), "field validation") },
-			expected: ValidationError,
+			name:       "WrapValidation creates ValidationError",
+			wrappedErr: WrapValidation(errors.New("invalid value"), "field validation"),
+			expected:   ValidationError,
 		},
 		{
-			name:     "WrapFile creates FileError",
-			wrapFunc: func() error { return WrapFile(errors.New("not found"), "test.go", "stat") },
-			expected: FileError,
+			name:       "WrapFile creates FileError",
+			wrappedErr: WrapFile(errors.New("not found"), "test.go", "stat"),
+			expected:   FileError,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			wrapped := tc.wrapFunc()
-			if !Is(wrapped, tc.expected) {
-				t.Errorf("Should be %s type", tc.expected)
+			if !Is(tc.wrappedErr, tc.expected) {
+				t.Errorf("Expected %s type", tc.expected)
 			}
 		})
 	}
