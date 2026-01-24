@@ -261,21 +261,31 @@ type AnalysisStats struct {
 	ProcessingTime   uint    `json:"processingTime"`
 }
 
-// IsValid validates analysis stats.
-func (as AnalysisStats) IsValid() error {
-	if as.FilesAnalyzed == 0 {
-		return errors.New("files analyzed cannot be zero")
+// isValidAnalysisStats validates analysis stats.
+func isValidAnalysisStats(as AnalysisStats) error {
+	type validationRule struct {
+		valid bool
+		msg   string
 	}
-	if as.ProcessingTime == 0 {
-		return errors.New("processing time cannot be zero")
+
+	rules := []validationRule{
+		{as.FilesAnalyzed > 0, "files analyzed cannot be zero"},
+		{as.ProcessingTime > 0, "processing time cannot be zero"},
+		{as.ComplexityScore >= 0, "complexity score cannot be negative"},
+		{as.DuplicationRatio >= 0, "duplication ratio cannot be negative"},
 	}
-	if as.ComplexityScore < 0 {
-		return errors.New("complexity score cannot be negative")
-	}
-	if as.DuplicationRatio < 0 {
-		return errors.New("duplication ratio cannot be negative")
+
+	for _, rule := range rules {
+		if !rule.valid {
+			return errors.New(rule.msg)
+		}
 	}
 	return nil
+}
+
+// IsValid validates analysis stats.
+func (as AnalysisStats) IsValid() error {
+	return isValidAnalysisStats(as)
 }
 
 // Repository represents source code repository.
@@ -314,21 +324,31 @@ type SourceFile struct {
 	Dependencies []string `json:"dependencies,omitempty"`
 }
 
-// IsValid validates source file.
-func (sf SourceFile) IsValid() error {
-	if sf.Path == "" {
-		return errors.New("source file path cannot be empty")
+// isValidSourceFile validates source file.
+func isValidSourceFile(sf SourceFile) error {
+	type validationRule struct {
+		valid bool
+		msg   string
 	}
-	if sf.Name == "" {
-		return errors.New("source file name cannot be empty")
+
+	rules := []validationRule{
+		{sf.Path != "", "source file path cannot be empty"},
+		{sf.Name != "", "source file name cannot be empty"},
+		{sf.Size > 0, "source file size cannot be zero"},
+		{sf.Hash != "", "source file hash cannot be empty"},
 	}
-	if sf.Size == 0 {
-		return errors.New("source file size cannot be zero")
-	}
-	if sf.Hash == "" {
-		return errors.New("source file hash cannot be empty")
+
+	for _, rule := range rules {
+		if !rule.valid {
+			return errors.New(rule.msg)
+		}
 	}
 	return nil
+}
+
+// IsValid validates source file.
+func (sf SourceFile) IsValid() error {
+	return isValidSourceFile(sf)
 }
 
 // DetectionOptions represents configuration for detection.
