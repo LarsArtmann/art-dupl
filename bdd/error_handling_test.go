@@ -42,6 +42,13 @@ func createTempTestFile(pattern string) string {
 	return tempDir
 }
 
+// runWithFlagsAndCheckOutput is a helper that runs art-dupl with given flags
+// and verifies that it produces non-empty output without crashing.
+func runWithFlagsAndCheckOutput(setup *testutil.BDDTestSetup, path string, flags ...string) {
+	output, _ := setup.RunArtDuplOnDir(path, flags...)
+	Expect(string(output)).ToNot(BeEmpty(), "Should handle gracefully and produce output")
+}
+
 var _ = Describe("Error Handling", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -203,9 +210,7 @@ var _ = Describe("Error Handling", func() {
 			defer os.RemoveAll(tempDir)
 
 			// Try to use multiple output format flags
-			output, err := setup.RunArtDupl(tempDir, "--json", "--html", "--plumbing")
-			// Should handle gracefully (may use first one or show error)
-			Expect(string(output)).ToNot(BeEmpty())
+			runWithFlagsAndCheckOutput(setup, tempDir, "--json", "--html", "--plumbing")
 		})
 
 		It("should handle invalid sorting option gracefully", func() {
@@ -213,9 +218,7 @@ var _ = Describe("Error Handling", func() {
 			defer os.RemoveAll(tempDir)
 
 			// Use invalid sort option
-			output, err := setup.RunArtDupl(tempDir, "--sort", "invalid_sort_option")
-			// Should handle gracefully (may default or show error)
-			Expect(string(output)).ToNot(BeEmpty())
+			runWithFlagsAndCheckOutput(setup, tempDir, "--sort", "invalid_sort_option")
 		})
 
 		It("should handle invalid detection method gracefully", func() {
@@ -223,9 +226,7 @@ var _ = Describe("Error Handling", func() {
 			defer os.RemoveAll(tempDir)
 
 			// Use invalid detection method
-			output, err := setup.RunArtDupl(tempDir, "--detection-methods", "invalid_method")
-			// Should handle gracefully
-			Expect(string(output)).ToNot(BeEmpty())
+			runWithFlagsAndCheckOutput(setup, tempDir, "--detection-methods", "invalid_method")
 		})
 	})
 
