@@ -82,7 +82,7 @@ func duplicate() string {
 	return "duplicate"
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"file1.go", "file2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary
@@ -138,19 +138,13 @@ func processProduct(name string, price int) error {
 	return nil
 }`
 
-			err := fileProcessor.WriteTextFile("user.go", userCode)
+			err := setup.CreateFileWithContent("user.go", userCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("product.go", productCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err = setup.CreateFileWithContent("product.go", productCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with art-dupl detection
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "art-dupl", "--threshold", "10")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--detection-methods", "art-dupl", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -169,17 +163,11 @@ func test() error {
 	return nil
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"default1.go", "default2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"default1.go", "default2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run without specifying detection method (should default to art-dupl)
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--threshold", "10")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -215,21 +203,15 @@ func structuralB(value string) error {
 	return nil
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"exact1.go", "exact2.go"}, exactDup)
+			err := setup.CreateDuplicateFiles([]string{"exact1.go", "exact2.go"}, exactDup)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("structural1.go", structuralDup1)
+			err = setup.CreateFileWithContent("structural1.go", structuralDup1)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("structural2.go", structuralDup2)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err = setup.CreateFileWithContent("structural2.go", structuralDup2)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with combined detection methods
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash,art-dupl", "--threshold", "5")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--detection-methods", "hash,art-dupl", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
