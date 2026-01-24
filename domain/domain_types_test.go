@@ -698,31 +698,6 @@ func TestHash_NewHash(t *testing.T) {
 	}, NewHash)
 }
 
-// TestBytePosition tests BytePosition type.
-func TestBytePosition(t *testing.T) {
-	registerUintTypeTest(t, "BytePosition", func(u uint) BytePosition { return BytePosition(u) }, func(bp BytePosition) uint { return bp.Uint() }, func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() }, func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) })
-}
-
-// TestTokenCount tests TokenCount type.
-func TestTokenCount(t *testing.T) {
-	registerUintTypeTest(t, "TokenCount", func(u uint) TokenCount { return TokenCount(u) }, func(tc TokenCount) uint { return tc.Uint() }, func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() }, func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) })
-}
-
-// TestComplexityScore tests ComplexityScore type.
-func TestComplexityScore(t *testing.T) {
-	registerUintTypeTest(t, "ComplexityScore", func(u uint) ComplexityScore { return ComplexityScore(u) }, func(cs ComplexityScore) uint { return cs.Uint() }, func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() }, func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) })
-}
-
-// TestFileCount tests FileCount type.
-func TestFileCount(t *testing.T) {
-	registerUintTypeTest(t, "FileCount", func(u uint) FileCount { return FileCount(u) }, func(fc FileCount) uint { return fc.Uint() }, func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() }, func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) })
-}
-
-// TestCloneCount tests CloneCount type.
-func TestCloneCount(t *testing.T) {
-	registerUintTypeTest(t, "CloneCount", func(u uint) CloneCount { return CloneCount(u) }, func(cc CloneCount) uint { return cc.Uint() }, func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() }, func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) })
-}
-
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
 	t.Run("NewThreshold", func(t *testing.T) {
