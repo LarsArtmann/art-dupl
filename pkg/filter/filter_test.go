@@ -14,6 +14,36 @@ func contains[T comparable](slice []T, item T) bool {
 	return slices.Contains(slice, item)
 }
 
+// runTestCases is a generic helper for running table-driven tests.
+func runTestCases[T any, R comparable](t *testing.T, tests []T, nameFunc func(T) string, testFunc func(T) R, expectFunc func(T) R) {
+	t.Helper()
+	for _, tt := range tests {
+		tt := tt // capture range variable
+		t.Run(nameFunc(tt), func(t *testing.T) {
+			t.Helper()
+			result := testFunc(tt)
+			if result != expectFunc(tt) {
+				t.Errorf("Expected %v, got %v", expectFunc(tt), result)
+			}
+		})
+	}
+}
+
+// Test case types for explicit typing
+type fileContentTest struct {
+	name     string
+	filePath string
+	content  string
+	expected bool
+}
+
+type containsTest struct {
+	name   string
+	slice  []string
+	item   string
+	expect bool
+}
+
 func TestNewFilter(t *testing.T) {
 	t.Parallel()
 
@@ -355,12 +385,7 @@ type User struct {
 func TestIsTemplGenerated(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name     string
-		filePath string
-		content  string
-		expected bool
-	}{
+	tests := []fileContentTest{
 		{
 			name:     "templ generated file",
 			filePath: "components/header_templ.go",
@@ -396,26 +421,18 @@ func Helper() string {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := isTemplGenerated(tt.filePath, tt.content)
-			if result != tt.expected {
-				t.Errorf("Expected %v, got %v", tt.expected, result)
-			}
-		})
-	}
+	runTestCases(t, tests,
+		func(tt fileContentTest) string { return tt.name },
+		func(tt fileContentTest) bool { return isTemplGenerated(tt.filePath, tt.content) },
+		func(tt fileContentTest) bool { return tt.expected },
+	)
 }
 
 func TestStringContains(t *testing.T) {
 	t.Parallel()
 
 	// Test our contains helper function
-	tests := []struct {
-		name   string
-		slice  []string
-		item   string
-		expect bool
-	}{
+	tests := []containsTest{
 		{
 			name:   "contains item",
 			slice:  []string{"a", "b", "c"},
@@ -436,14 +453,11 @@ func TestStringContains(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := contains(tt.slice, tt.item)
-			if result != tt.expect {
-				t.Errorf("Expected %v, got %v", tt.expect, result)
-			}
-		})
-	}
+	runTestCases(t, tests,
+		func(tt containsTest) string { return tt.name },
+		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
+		func(tt containsTest) bool { return tt.expect },
+	)
 }
 
 func TestPatternMatching(t *testing.T) {
