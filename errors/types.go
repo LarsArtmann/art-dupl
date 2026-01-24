@@ -211,14 +211,15 @@ func WrapIO(err error, file, operation string) error {
 	return NewIOError(file, operation, err)
 }
 
-// WrapConfig wraps an error as a ConfigError.
-func WrapConfig(err error, context string) error {
+// wrapWithMessage wraps an error with context using a specific error type and constructor.
+// It appends the original error message to the context.
+func wrapWithMessage(err error, errorType ErrorType, context string, constructor func(string, error) *DuplError) error {
 	if err == nil {
 		return nil
 	}
 
-	// Don't wrap if already a ConfigError
-	if Is(err, ConfigError) {
+	// Don't wrap if already the same error type
+	if Is(err, errorType) {
 		return err
 	}
 
@@ -226,25 +227,17 @@ func WrapConfig(err error, context string) error {
 	if err != nil {
 		msg += ": " + err.Error()
 	}
-	return NewConfigError(msg, err)
+	return constructor(msg, err)
+}
+
+// WrapConfig wraps an error as a ConfigError.
+func WrapConfig(err error, context string) error {
+	return wrapWithMessage(err, ConfigError, context, NewConfigError)
 }
 
 // WrapValidation wraps an error as a ValidationError.
 func WrapValidation(err error, context string) error {
-	if err == nil {
-		return nil
-	}
-
-	// Don't wrap if already a ValidationError
-	if Is(err, ValidationError) {
-		return err
-	}
-
-	msg := context
-	if err != nil {
-		msg += ": " + err.Error()
-	}
-	return NewValidationError(msg, err)
+	return wrapWithMessage(err, ValidationError, context, NewValidationError)
 }
 
 // WrapFile wraps an error as a FileError with operation context.
