@@ -38,6 +38,22 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 	return tree
 }
 
+// benchmarkFindTran is a helper for benchmarking findTran functions.
+func benchmarkFindTran(b *testing.B, stateCount, transPerState int, fn func(*state, Token) *tran) {
+	tree := generateTreeWithTransitions(stateCount, transPerState)
+
+	if len(tree.root.trans) == 0 {
+		b.Skip("No transitions to benchmark")
+	}
+
+	target := tree.root.trans[0]
+	token := tree.data[target.start]
+
+	for b.Loop() {
+		fn(tree.root, token)
+	}
+}
+
 // BenchmarkFindTranSmall benchmarks findTran with a small number of transitions.
 func BenchmarkFindTranSmall(b *testing.B) {
 	tree := New()
@@ -58,66 +74,30 @@ func BenchmarkFindTranSmall(b *testing.B) {
 
 // BenchmarkFindTranMedium benchmarks findTran with a medium number of transitions.
 func BenchmarkFindTranMedium(b *testing.B) {
-	tree := generateTreeWithTransitions(50, 10)
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	target := tree.root.trans[0]
-	token := tree.data[target.start]
-
-	for b.Loop() {
-		tree.root.findTran(token)
-	}
+	benchmarkFindTran(b, 50, 10, func(s *state, t Token) *tran {
+		return s.findTran(t)
+	})
 }
 
 // BenchmarkFindTranLarge benchmarks findTran with a large number of transitions.
 func BenchmarkFindTranLarge(b *testing.B) {
-	tree := generateTreeWithTransitions(100, 50)
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	target := tree.root.trans[0]
-	token := tree.data[target.start]
-
-	for b.Loop() {
-		tree.root.findTran(token)
-	}
+	benchmarkFindTran(b, 100, 50, func(s *state, t Token) *tran {
+		return s.findTran(t)
+	})
 }
 
 // BenchmarkFindTranVeryLarge benchmarks findTran with a very large number of transitions.
 func BenchmarkFindTranVeryLarge(b *testing.B) {
-	tree := generateTreeWithTransitions(200, 100)
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	target := tree.root.trans[0]
-	token := tree.data[target.start]
-
-	for b.Loop() {
-		tree.root.findTran(token)
-	}
+	benchmarkFindTran(b, 200, 100, func(s *state, t Token) *tran {
+		return s.findTran(t)
+	})
 }
 
 // BenchmarkFindTranFallback benchmarks the fallback (linear) implementation.
 func BenchmarkFindTranFallback(b *testing.B) {
-	tree := generateTreeWithTransitions(100, 50)
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	target := tree.root.trans[0]
-	token := tree.data[target.start]
-
-	for b.Loop() {
-		tree.root.findTranFallback(token)
-	}
+	benchmarkFindTran(b, 100, 50, func(s *state, t Token) *tran {
+		return s.findTranFallback(t)
+	})
 }
 
 // BenchmarkFindTranBatch benchmarks batch transition searching.
