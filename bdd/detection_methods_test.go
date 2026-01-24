@@ -11,18 +11,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
-// BDD Test Suite for Detection Methods
-//
-// These tests verify the different detection methods available in art-dupl:
-// - Hash-based detection (fast, exact duplicates)
-// - Art-dupl detection (structural duplicates)
-// - Multi-detection mode (combined results)
-//
-// The scenarios cover:
-// - Individual detection method behavior
-// - Combined detection results
-// - Detection method selection via CLI
-
 func TestDetectionMethods(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "art-dupl Detection Methods BDD Suite")
@@ -85,17 +73,12 @@ func duplicate() string {
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with hash detection and JSON output
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash", "--json", "--threshold", "5")
+			// Run with hash detection and JSON output - separate stdout from stderr
+			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--detection-methods", "hash", "--json", "--threshold", "5")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
-			// Parse JSON
+			// Parse JSON from stdout (not corrupted by stderr)
 			var result map[string]any
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -104,6 +87,13 @@ func duplicate() string {
 			Expect(result).To(HaveKey("detection_method"))
 			Expect(result).To(HaveKey("clone_groups"))
 			Expect(result).To(HaveKey("summary"))
+			summary := result["summary"].(map[string]any)
+			Expect(summary).To(HaveKey("total_clones"))
+			Expect(summary).To(HaveKey("total_clone_groups"))
+
+			// Verify detection method
+			detectionMethod := result["detection_method"]
+			Expect(detectionMethod).To(Equal("hash"))
 		})
 	})
 
@@ -152,7 +142,7 @@ func processProduct(name string, price int) error {
 			Expect(outputStr).To(ContainSubstring("product.go"))
 		})
 
-		It("should be the default detection method", func() {
+		It("should be default detection method", func() {
 			// Create test files
 			code := `package main
 
@@ -226,24 +216,19 @@ func structuralB(value string) error {
 			// Create test files
 			code := `package main
 
-func detect() error {
-	return nil
+func test() string {
+	return "test"
 }`
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"combine1.go", "combine2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{"combine1.go", "combine2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with combined detection and JSON
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "hash,art-dupl", "--json", "--threshold", "5")
+			// Run with combined detection methods and JSON output - separate stdout
+			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--detection-methods", "hash,art-dupl", "--json", "--threshold", "5")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
-			// Parse JSON
+			// Parse JSON from stdout
 			var result map[string]any
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
@@ -251,6 +236,14 @@ func detect() error {
 			// Should have combined results
 			Expect(result).To(HaveKey("clone_groups"))
 			Expect(result).To(HaveKey("summary"))
+			summary := result["summary"].(map[string]any)
+			Expect(summary).To(HaveKey("total_clones"))
+			Expect(summary).To(HaveKey("total_clone_groups"))
+
+			// Verify both methods were used
+			Expect(result).To(HaveKey("detection_methods"))
+			detectionMethods := result["detection_methods"]
+			Expect(detectionMethods).To(Equal("hash,art-dupl"))
 		})
 	})
 
@@ -262,20 +255,16 @@ func detect() error {
 func test() {}
 `
 
-			err := fileProcessor.WriteDuplicateFiles([]string{"invalid1.go", "invalid2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-detection_methods-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
+			err := setup.CreateDuplicateFiles([]string{"invalid1.go", "invalid2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid detection method
-			cmd = exec.Command("./art-dupl-detection_methods-test", tempDir, "--detection-methods", "invalid_method")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--detection-methods", "invalid_method")
+			Expect(err).To(HaveOccurred())
 
-			// Should handle error gracefully
-			Expect(output).ToNot(BeEmpty())
+			// Should have error message
+			outputStr := string(output)
+			Expect(outputStr).ToNot(BeEmpty())
 		})
 	})
 })
