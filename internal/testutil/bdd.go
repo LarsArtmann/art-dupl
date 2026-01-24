@@ -3,6 +3,7 @@ package testutil
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -191,4 +192,79 @@ func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) str
 	}
 
 	return string(output)
+}
+
+// CreateSubdirectories creates multiple directories in test temporary directory.
+// Each directory name is a relative path that will be created under the temp directory.
+func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	for _, path := range paths {
+		fullPath := filepath.Join(s.TmpDir, path)
+		if err := os.MkdirAll(fullPath, 0o755); err != nil {
+			return fmt.Errorf("failed to create directory %s: %w", path, err)
+		}
+	}
+	return nil
+}
+
+// CreateFileWithContent creates a file with specific content at a given subpath.
+// The subpath is relative to the test temporary directory.
+func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	fullPath := filepath.Join(s.TmpDir, subpath)
+	dir := filepath.Dir(fullPath)
+
+	// Ensure directory exists
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", dir, err)
+	}
+
+	// Write file
+	if err := os.WriteFile(fullPath, []byte(content), 0o644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", subpath, err)
+	}
+	return nil
+}
+
+// RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
+// Returns both outputs and any error that occurred.
+func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create stdout pipe: %w", err)
+	}
+	stderrPipe, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create stderr pipe: %w", err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil, nil, fmt.Errorf("failed to start command: %w", err)
+	}
+
+	stdout, err = io.ReadAll(stdoutPipe)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read stdout: %w", err)
+	}
+	stderr, err = io.ReadAll(stderrPipe)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read stderr: %w", err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		return stdout, stderr, fmt.Errorf("command failed: %w", err)
+	}
+
+	return stdout, stderr, nil
 }
