@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -13,7 +12,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
 // BDD Test Suite for art-dupl
@@ -383,22 +381,16 @@ func unique() {
 })
 
 var _ = Describe("Integration Scenarios", func() {
-	var (
-		tempDir       string
-		fileProcessor *utils.FileProcessor
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = os.MkdirTemp("", "art-dupl-integration-bdd-*")
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
-
-		// Initialize file processor
-		fileProcessor = utils.NewFileProcessor(tempDir)
 	})
 
 	AfterEach(func() {
-		_ = os.RemoveAll(tempDir)
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("CI/CD Pipeline Integration", func() {
@@ -431,24 +423,18 @@ func (s *Service) processInternal(data string) error {
 	return nil
 }`
 
-			// Use unified file processor with service replacements
+			// Use setup's file creation methods with service replacements
 			userServiceCode := strings.ReplaceAll(serviceCode, "Service", "UserService")
 			orderServiceCode := strings.ReplaceAll(serviceCode, "Service", "OrderService")
 
-			err := fileProcessor.WriteTextFile("service1.go", userServiceCode)
+			err := setup.CreateFileWithContent("service1.go", userServiceCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = fileProcessor.WriteTextFile("service2.go", orderServiceCode)
+			err = setup.CreateFileWithContent("service2.go", orderServiceCode)
 			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
 			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
-			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
-			output, err := cmd.Output()                                                       // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--json", "--threshold", "15") //nolint:gosec //G204 Test code, controlled input
+			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response
@@ -484,14 +470,14 @@ func processData(data string, count int) error {
 	if count <= 0 {
 		return fmt.Errorf("invalid count")
 	}
-	
+
 	// Process data in loop
 	for i := 0; i < count; i++ {
 		if err := processItem(data, i); err != nil {
 			return fmt.Errorf("failed at item %d: %w", i, err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -500,27 +486,19 @@ func processItem(data string, index int) error {
 	return nil
 }`
 
-			// Create multiple duplicate files using unified processor
+			// Create multiple duplicate files using setup's helper
 			var filenames []string
 			for i := range numFiles {
 				filename := fmt.Sprintf("file%d.go", i)
 				filenames = append(filenames, filename)
 			}
 
-			err := fileProcessor.WriteDuplicateFiles(filenames, duplicateCode)
+			err := setup.CreateDuplicateFiles(filenames, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command("go", "build", "-o", "./art-dupl-bdd-test", "../cmd/art-dupl/main.go")
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-			defer func() { _ = os.Remove("./art-dupl-bdd-test") }()
 
 			// Measure execution time
 			start := time.Now()
-			cmd = exec.Command("./art-dupl-bdd-test", tempDir, "--threshold", "20") //nolint:gosec //G204 Test code, controlled input
-			var output []byte
-			output, err = cmd.CombinedOutput()
+			output, err := setup.RunArtDupl("--threshold", "20")
 			duration := time.Since(start)
 
 			// Verify it completes in reasonable time
