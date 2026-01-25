@@ -13,6 +13,7 @@ type stats struct {
 	ReadFile
 	w         io.Writer
 	threshold int
+	format    string
 	statsData *StatsData
 }
 

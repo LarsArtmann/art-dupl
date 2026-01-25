@@ -47,6 +47,7 @@ source <(./art-dupl completion zsh)
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
 - **Multiple output formats**: text, HTML, JSON, plumbing
+- **Statistics subcommand** (`art-dupl stats`) for project overview
 - **Professional CLI** with auto-completion and version info
 - **Enhanced help** with styling and examples
 
@@ -71,14 +72,37 @@ Use with:
 ## CLI Flags
 
 ```
--config string     Configuration file path
--files             Read file names from stdin
--html              HTML output with code fragments
--json              JSON output (new)
--plumbing          Machine-readable output
+-config string           Configuration file path
+-files                   Read file names from stdin
+-html                    HTML output with code fragments
+-json                    JSON output (new)
+-plumbing                Machine-readable output
+-t, -threshold           Minimum token size (default 15)
+-vendor                  Include vendor directory
+-v, -verbose             Verbose logging
+-filter-generated        Smart filtering of generated code
+-include-sqlc            Include sqlc.dev generated files
+-include-templ           Include templ.guide generated files
+-include-pattern value   File patterns to always include
+-exclude-pattern value   File patterns to exclude
+-profile                 Enable performance profiling
+-timeout duration        Maximum execution time (default 30m)
+-detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
+```
+
+### Subcommands
+
+**stats** - Show aggregated duplication statistics
+```bash
+art-dupl stats [flags] [paths...]
+```
+
+Supports all root command flags plus:
+```
 -t, -threshold     Minimum token size (default 15)
--vendor            Include vendor directory
--v, -verbose       Verbose logging
+-m, -detection-methods  Detection methods to use
+--top N            Number of top files to show (future)
+--format           Output format: text, json, csv (future)
 ```
 
 ## Examples
@@ -102,6 +126,67 @@ find . -name '*_test.go' | dupl -files
 
 # Analyze specific paths
 ./dupl ./src ./lib -t 50
+```
+
+### Statistics
+
+The `stats` subcommand provides aggregated duplication statistics for quick project overviews:
+
+```bash
+# Show statistics for current directory
+./art-dupl stats
+
+# Show statistics for specific paths
+./art-dupl stats ./src ./lib
+
+# Show statistics with custom threshold
+./art-dupl stats -t 50 ./src
+
+# Compare projects using stats output
+./art-dupl stats project1/ > stats1.txt
+./art-dupl stats project2/ > stats2.txt
+```
+
+**Statistics include:**
+- Files scanned and clone groups found
+- Total duplicate lines and tokens
+- Average clone size and complexity score
+- Impact score (tokens × instances)
+- Clone size distribution (1-5, 6-10, 11-20, 21-50, 51-100, 100+ lines)
+- Top files with most duplication
+
+Example output:
+```
+Code Duplication Statistics
+============================
+
+Configuration:
+  Threshold: 15 tokens
+  Detection Methods: art-dupl
+
+Overview:
+  Files Scanned: 114
+  Clone Groups: 156
+  Total Clones: 423
+
+Duplicate Code:
+  Total Duplicate Lines: 1247
+  Total Duplicate Tokens: 893
+  Average Clone Size: 3 lines
+  Complexity Score: 2.71
+  Impact Score: 18234
+
+Clone Size Distribution:
+  1-5 lines: 89 clones
+  6-10 lines: 45 clones
+  11-20 lines: 23 clones
+  21-50 lines: 12 clones
+  100+ lines: 2 clones
+
+Top Files by Duplicate Lines:
+  234 lines in src/handlers/user.go
+  189 lines in src/models/data.go
+  ...
 ```
 
 ## Output Formats

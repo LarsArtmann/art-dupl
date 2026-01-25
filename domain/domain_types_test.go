@@ -224,6 +224,44 @@ func createUintTestCase[T comparable](
 	}
 }
 
+// newUintTypeAdapter creates a UintTypeAdapter for simple uint wrapper types.
+// This helper centralizes the lambda definitions, further reducing boilerplate.
+func newUintTypeAdapter[T comparable](
+	newFunc func(uint) T,
+	uintFunc func(T) uint,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) UintTypeAdapter[T] {
+	return UintTypeAdapter[T]{
+		New:          newFunc,
+		Uint:         uintFunc,
+		MarshalJSON:  marshalFunc,
+		UnmarshalJSON: unmarshalFunc,
+	}
+}
+
+// UintTypeAdapter provides a generic adapter for uint-based types with standard methods.
+// This type enables further boilerplate reduction by providing type-agnostic functions.
+type UintTypeAdapter[T comparable] struct {
+	// New converts a uint to the type
+	New func(uint) T
+	// Uint extracts the uint value from the type
+	Uint func(T) uint
+	// MarshalJSON serializes the type to JSON
+	MarshalJSON func(T) ([]byte, error)
+	// UnmarshalJSON deserializes JSON to the type
+	UnmarshalJSON func(*T, []byte) error
+}
+
+// createGenericUintTestCase creates a complete test case struct using an adapter.
+// This is the most concise form, using an adapter to avoid repetitive lambda definitions.
+func createGenericUintTestCase[T comparable](typeName string, adapter UintTypeAdapter[T]) struct {
+	name string
+	test func(*testing.T)
+} {
+	return createUintTestCase(typeName, adapter.New, adapter.Uint, adapter.MarshalJSON, adapter.UnmarshalJSON)
+}
+
 // TestUintTypes consolidates tests for all simple uint wrapper types.
 // This approach eliminates duplicate test functions by using the registerUintTypeTest helper.
 //
@@ -247,31 +285,46 @@ func TestUintTypes(t *testing.T) {
 		name string
 		test func(*testing.T)
 	}{
-		createUintTestCase("BytePosition",
-			func(u uint) BytePosition { return BytePosition(u) },
-			func(bp BytePosition) uint { return bp.Uint() },
-			func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
-			func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) }),
-		createUintTestCase("TokenCount",
-			func(u uint) TokenCount { return TokenCount(u) },
-			func(tc TokenCount) uint { return tc.Uint() },
-			func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
-			func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) }),
-		createUintTestCase("ComplexityScore",
-			func(u uint) ComplexityScore { return ComplexityScore(u) },
-			func(cs ComplexityScore) uint { return cs.Uint() },
-			func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
-			func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) }),
-		createUintTestCase("FileCount",
-			func(u uint) FileCount { return FileCount(u) },
-			func(fc FileCount) uint { return fc.Uint() },
-			func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
-			func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) }),
-		createUintTestCase("CloneCount",
-			func(u uint) CloneCount { return CloneCount(u) },
-			func(cc CloneCount) uint { return cc.Uint() },
-			func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
-			func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) }),
+		createGenericUintTestCase("BytePosition",
+			newUintTypeAdapter(
+				func(u uint) BytePosition { return BytePosition(u) },
+				func(bp BytePosition) uint { return bp.Uint() },
+				func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
+				func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) },
+			),
+		),
+		createGenericUintTestCase("TokenCount",
+			newUintTypeAdapter(
+				func(u uint) TokenCount { return TokenCount(u) },
+				func(tc TokenCount) uint { return tc.Uint() },
+				func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
+				func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) },
+			),
+		),
+		createGenericUintTestCase("ComplexityScore",
+			newUintTypeAdapter(
+				func(u uint) ComplexityScore { return ComplexityScore(u) },
+				func(cs ComplexityScore) uint { return cs.Uint() },
+				func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
+				func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) },
+			),
+		),
+		createGenericUintTestCase("FileCount",
+			newUintTypeAdapter(
+				func(u uint) FileCount { return FileCount(u) },
+				func(fc FileCount) uint { return fc.Uint() },
+				func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
+				func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) },
+			),
+		),
+		createGenericUintTestCase("CloneCount",
+			newUintTypeAdapter(
+				func(u uint) CloneCount { return CloneCount(u) },
+				func(cc CloneCount) uint { return cc.Uint() },
+				func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
+				func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) },
+			),
+		),
 	}
 
 	for _, tc := range tests {

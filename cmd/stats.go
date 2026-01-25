@@ -32,9 +32,11 @@ Statistics include:
 - Top files with most duplicates
 
 Examples:
-  art-dupl stats              # Show stats for current directory
-  art-dupl stats ./src        # Show stats for specific path
-  art-dupl stats -t 20 .      # Show stats with higher threshold`,
+  art-dupl stats                    # Show stats for current directory (text format)
+  art-dupl stats -f json .          # Show stats in JSON format
+  art-dupl stats ./src ./lib        # Show stats for specific paths
+  art-dupl stats -t 20 .            # Show stats with higher threshold
+  art-dupl stats -f csv -t 50 .     # Show stats in CSV format`,
 		Args: cobra.ArbitraryArgs,
 		RunE: runStats,
 	}
@@ -55,6 +57,7 @@ Examples:
 	cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (templ files are filtered by default unless this flag is set)")
 	cmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
+	cmd.Flags().StringP("format", "f", "text", "output format: text, json (default: text)")
 
 	return cmd
 }
@@ -74,6 +77,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	includeTempl, _ := cmd.Flags().GetBool("include-templ")
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
+	format, _ := cmd.Flags().GetString("format")
 
 	var fileConfig *config.Config
 	var err error
@@ -160,6 +164,11 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Set file count
 	if sp, ok := p.(interface{ SetFilesCount(int) }); ok {
 		sp.SetFilesCount(filesCount)
+	}
+
+	// Set format
+	if sp, ok := p.(interface{ SetFormat(string) }); ok {
+		sp.SetFormat(format)
 	}
 
 	// Convert detection methods to comma-separated string
