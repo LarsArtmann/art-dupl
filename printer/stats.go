@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
@@ -120,6 +121,15 @@ func (p *stats) PrintFooter() error {
 
 // printStats prints the collected statistics.
 func (p *stats) printStats() {
+	if p.format == "json" {
+		p.printJSON()
+	} else {
+		p.printText()
+	}
+}
+
+// printText prints statistics in text format.
+func (p *stats) printText() {
 	fmt.Fprintf(p.w, "Code Duplication Statistics\n")
 	fmt.Fprintf(p.w, "============================\n\n")
 
@@ -153,6 +163,100 @@ func (p *stats) printStats() {
 	if len(p.statsData.FileDuplication) > 0 {
 		fmt.Fprintf(p.w, "Top Files by Duplicate Lines:\n")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
+	}
+}
+
+// printJSON prints statistics in JSON format.
+func (p *stats) printJSON() {
+	import (
+		"encoding/json"
+	)
+
+	// Create a struct for JSON output
+	jsonData := struct {
+		Configuration struct {
+			Threshold         int    `json:"threshold"`
+			DetectionMethods  string `json:"detectionMethods"`
+		} `json:"configuration"`
+		Overview struct {
+			FilesScanned    int `json:"filesScanned"`
+			CloneGroups     int `json:"cloneGroups"`
+			TotalClones     int `json:"totalClones"`
+		} `json:"overview"`
+		DuplicateCode struct {
+			TotalLines       int     `json:"totalDuplicateLines"`
+			TotalTokens      int     `json:"totalDuplicateTokens"`
+			AverageCloneSize int     `json:"averageCloneSize"`
+			ComplexityScore  float64 `json:"complexityScore"`
+			ImpactScore      int     `json:"impactScore"`
+		} `json:"duplicateCode"`
+		SizeDistribution map[string]int `json:"sizeDistribution"`
+		TopFiles         []struct {
+			Filename string `json:"filename"`
+			Lines    int    `json:"duplicateLines"`
+		} `json:"topFiles"`
+	}{}
+
+	// Fill configuration
+	jsonData.Configuration.Threshold = p.threshold
+	jsonData.Configuration.DetectionMethods = p.statsData.DetectionMethods
+
+	// Fill overview
+	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned
+	jsonData.Overview.CloneGroups = p.statsData.TotalCloneGroups
+	jsonData.Overview.TotalClones = p.statsData.TotalClones
+
+	// Fill duplicate code metrics
+	jsonData.DuplicateCode.TotalLines = p.statsData.TotalDuplicateLines
+	jsonData.DuplicateCode.TotalTokens = p.statsData.TotalTokens
+	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
+	jsonData.DuplicateCode.ComplexityScore = p.statsData.ComplexityScore
+	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
+
+	// Fill size distribution
+	jsonData.SizeDistribution = p.statsData.SizeDistribution
+
+	// Fill top files
+	if len(p.statsData.FileDuplication) > 0 {
+		// Convert map to slice and sort by duplicate lines (descending)
+		type fileStat struct {
+			filename string
+			lines    int
+		}
+		files := make([]fileStat, 0, len(p.statsData.FileDuplication))
+		for filename, lines := range p.statsData.FileDuplication {
+			files = append(files, fileStat{filename, lines})
+		}
+
+		// Sort by lines descending
+		for i := 0; i < len(files)-1; i++ {
+			for j := i + 1; j < len(files); j++ {
+				if files[i].lines < files[j].lines {
+					files[i], files[j] = files[j], files[i]
+				}
+			}
+		}
+
+		// Take top 10
+		limit := len(files)
+		if limit > 10 {
+			limit = 10
+		}
+		jsonData.TopFiles = make([]struct {
+			Filename string `json:"filename"`
+			Lines    int    `json:"duplicateLines"`
+		}, limit)
+		for i := 0; i < limit; i++ {
+			jsonData.TopFiles[i].Filename = files[i].filename
+			jsonData.TopFiles[i].Lines = files[i].lines
+		}
+	}
+
+	encoder := json.NewEncoder(p.w)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(jsonData); err != nil {
+		// In a real implementation, we'd handle this error properly
+		fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
 	}
 }
 
@@ -227,4 +331,9 @@ func (p *stats) GetStatsData() *StatsData {
 // SetDetectionMethods sets the detection methods used.
 func (p *stats) SetDetectionMethods(methods string) {
 	p.statsData.DetectionMethods = methods
+}
+
+// SetFormat sets the output format.
+func (p *stats) SetFormat(format string) {
+	p.format = format
 }
