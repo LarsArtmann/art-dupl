@@ -100,11 +100,22 @@ func createIssueMatch(prefix string, filename string, line int) syntax.Match {
 	}
 }
 
+// findIssuesGeneric is a generic helper for finding issues and creating matches.
+// It avoids code duplication between FindTodos and FindLegacy methods.
+func findIssuesGeneric[T any](
+	data []*syntax.Node,
+	finder func(string, []*syntax.Node) []T,
+	matchType string,
+	lineExtractor func(T) int,
+) <-chan syntax.Match {
+	return findIssuesInFile(data, finder, func(issue T, filename string) syntax.Match {
+		return createIssueMatch(matchType, filename, lineExtractor(issue))
+	})
+}
+
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesInFile(data, td.findTodosInFile, func(todo TodoIssue, filename string) syntax.Match {
-		return createIssueMatch("TODO", filename, todo.Line)
-	})
+	return findIssuesGeneric(data, td.findTodosInFile, "TODO", func(t TodoIssue) int { return t.Line })
 }
 
 // findTodosInFile parses the file and finds TODO comments.
@@ -187,9 +198,7 @@ func NewLegacyDetector() *LegacyDetector {
 
 // FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesInFile(data, ld.findLegacyInFile, func(legacy LegacyIssue, filename string) syntax.Match {
-		return createIssueMatch("LEGACY", filename, legacy.Line)
-	})
+	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY", func(l LegacyIssue) int { return l.Line })
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.
