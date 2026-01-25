@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"context"
 	"os"
 	"strings"
 	"testing"
@@ -40,7 +41,7 @@ func TestRun_giganticSlice(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = Run([]string{file.Name()}, 150)
+	_, err = Run(context.Background(), []string{file.Name()}, 150)
 	if err != nil {
 		t.Fatal(err)
 	}

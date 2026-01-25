@@ -144,7 +144,7 @@ func TestStatsCommandErrorCases(t *testing.T) {
 				Dir:  repoRoot,
 			}
 
-			_, err := cmd.CombinedOutput()
+			_, err = cmd.CombinedOutput()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
 			}
