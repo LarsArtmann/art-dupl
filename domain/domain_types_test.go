@@ -344,9 +344,79 @@ func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFunc
 	registerJSONTestSuite(t, typeName, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
 }
 
+// createStringTypeTestSuite creates a complete test registration for string-based types.
+// This helper eliminates repetitive test boilerplate by consolidating:
+// - Standard type tests (constructor, methods)
+// - JSON marshaling tests
+// - JSON unmarshaling tests
+// - Round-trip tests
+func createStringTypeTestSuite[T comparable](
+	typeName string,
+	testFuncs []func(*testing.T),
+	marshalTests []jsonTest[T],
+	unmarshalTests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
+	roundTripValue T,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) func(*testing.T) {
+	return func(t *testing.T) {
+		t.Helper()
+		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+	}
+}
+
+// createUintTypeTestSuite creates a complete test registration for uint-based types.
+// This helper eliminates repetitive test boilerplate for numeric types.
+func createUintTypeTestSuite[T comparable](
+	typeName string,
+	testFuncs []func(*testing.T),
+	marshalTests []jsonTest[T],
+	unmarshalTests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
+	roundTripValue T,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) func(*testing.T) {
+	return func(t *testing.T) {
+		t.Helper()
+		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+	}
+}
+
+// createFloatTypeTestSuite creates a complete test registration for float-based types.
+// This helper eliminates repetitive test boilerplate for floating-point types.
+func createFloatTypeTestSuite[T comparable](
+	typeName string,
+	testFuncs []func(*testing.T),
+	marshalTests []jsonTest[T],
+	unmarshalTests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
+	roundTripValue T,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) func(*testing.T) {
+	return func(t *testing.T) {
+		t.Helper()
+		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+	}
+}
+
 // TestCloneID tests CloneID type.
 func TestCloneID(t *testing.T) {
-	registerTypeTestSuite(t, "CloneID",
+	createStringTypeTestSuite("CloneID",
 		[]func(*testing.T){TestCloneID_NewCloneID, TestCloneID_String},
 		[]jsonTest[CloneID]{
 			{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
@@ -365,7 +435,7 @@ func TestCloneID(t *testing.T) {
 		CloneID("clone-456"),
 		func(id CloneID) ([]byte, error) { return id.MarshalJSON() },
 		func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) },
-	)
+	)(t)
 }
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
@@ -405,7 +475,7 @@ func TestLineNumber_Uint(t *testing.T) {
 
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
-	registerTypeTestSuite(t, "LineNumber",
+	createUintTypeTestSuite("LineNumber",
 		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
 		[]jsonTest[LineNumber]{
 			{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
@@ -424,7 +494,7 @@ func TestLineNumber(t *testing.T) {
 		LineNumber(123),
 		func(line LineNumber) ([]byte, error) { return line.MarshalJSON() },
 		func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) },
-	)
+	)(t)
 }
 
 // TestConfidence_NewConfidence tests the NewConfidence constructor.
@@ -514,7 +584,7 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence tests Confidence type.
 func TestConfidence(t *testing.T) {
-	registerTypeTestSuite(t, "Confidence",
+	createFloatTypeTestSuite("Confidence",
 		[]func(*testing.T){TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String},
 		[]jsonTest[Confidence]{
 			{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
@@ -537,7 +607,7 @@ func TestConfidence(t *testing.T) {
 		Confidence(0.75),
 		func(c Confidence) ([]byte, error) { return c.MarshalJSON() },
 		func(c *Confidence, data []byte) error { return c.UnmarshalJSON(data) },
-	)
+	)(t)
 }
 
 // TestProcessingTime_NewProcessingTime tests the NewProcessingTime constructor.
@@ -630,7 +700,7 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
-	registerTypeTestSuite(t, "ProcessingTime",
+	createUintTypeTestSuite("ProcessingTime",
 		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
 		[]jsonTest[ProcessingTime]{
 			{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
@@ -649,7 +719,7 @@ func TestProcessingTime(t *testing.T) {
 		ProcessingTime(5000),
 		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
 		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
-	)
+	)(t)
 }
 
 // emptyStringErrorTest returns a test case that verifies empty string input causes an error.
@@ -736,7 +806,7 @@ func TestThreshold_Uint(t *testing.T) {
 
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
-	registerTypeTestSuite(t, "Threshold",
+	createUintTypeTestSuite("Threshold",
 		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
 		[]jsonTest[Threshold]{
 			{name: "valid threshold", input: Threshold(15), want: `15`, wantErr: false},
@@ -755,5 +825,5 @@ func TestThreshold(t *testing.T) {
 		Threshold(30),
 		func(t Threshold) ([]byte, error) { return t.MarshalJSON() },
 		func(t *Threshold, data []byte) error { return t.UnmarshalJSON(data) },
-	)
+	)(t)
 }
