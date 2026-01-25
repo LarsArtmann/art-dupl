@@ -21,6 +21,23 @@ Detects and filters templ-generated files by:
 
 ## Usage
 
+### Auto-Detection (Recommended)
+
+The `--filter-generated` flag automatically detects and filters sqlc files:
+
+```bash
+# Run from project root - sqlc.yaml detected and filtered
+art-dupl --filter-generated ./src
+
+# Run from subdirectory - parent sqlc.yaml detected and filtered
+art-dupl --filter-generated ./db
+
+# Works with multiple paths
+art-dupl --filter-generated ./internal ./db
+```
+
+**Note:** Auto-detection searches parent directories (up to 10 levels) for `sqlc.yaml` or `sqlc.yml` files. This means analyzing subdirectories like `./db` will still detect sqlc configuration in the project root.
+
 ### Basic Filtering
 
 Filter out all auto-generated code (sqlc and templ):
@@ -31,16 +48,22 @@ art-dupl --filter-generated ./src
 
 ### Selective Filtering
 
-Filter only templ files, but keep sqlc:
+**Override auto-detection**: Keep sqlc files (disable auto-filtering):
 
 ```bash
 art-dupl --filter-generated --include-sqlc ./src
 ```
 
-Filter only sqlc files, but keep templ:
+**Keep templ files**: Include templ generated files (override default filtering):
 
 ```bash
-art-dupl --filter-generated --include-templ ./src
+art-dupl --include-templ ./src
+```
+
+**Keep both**: Include both sqlc and templ files:
+
+```bash
+art-dupl --filter-generated --include-sqlc --include-templ ./src
 ```
 
 ### Include Patterns
@@ -124,9 +147,10 @@ Patterns with path separators match path suffixes (e.g., `vendor/*` matches any 
 
 ## How It Works
 
-1. **Filename check**: Quick check against known generator file patterns
-2. **Content analysis**: Reads file content for generator-specific patterns (comments, code signatures)
-3. **Pattern matching**: Applies include/exclude patterns with precedence:
+1. **Auto-detection**: Searches for `sqlc.yaml` or `sqlc.yml` in provided paths AND parent directories (up to 10 levels up)
+2. **Filename check**: Quick check against known generator file patterns
+3. **Content analysis**: Reads file content for generator-specific patterns (comments, code signatures)
+4. **Pattern matching**: Applies include/exclude patterns with precedence:
    - Include patterns: Always keep these files (highest precedence)
    - Exclude patterns: Always skip these files
    - Auto-generated detection: Filter if matches known generator patterns
