@@ -230,6 +230,51 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 	}
 }
 
+// createUintTypeTestFromName generates a test case for a uint-based type by type name.
+// This helper further reduces boilerplate by using reflection to create the necessary functions.
+func createUintTypeTestFromName(typeName string) struct {
+	name string
+	test func(*testing.T)
+} {
+	return struct {
+		name string
+		test func(*testing.T)
+	}{
+		name: typeName,
+		test: func(t *testing.T) {
+			switch typeName {
+			case "BytePosition":
+				registerUintTypeTest(t, typeName, func(u uint) BytePosition { return BytePosition(u) },
+					func(bp BytePosition) uint { return bp.Uint() },
+					func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
+					func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) })
+			case "TokenCount":
+				registerUintTypeTest(t, typeName, func(u uint) TokenCount { return TokenCount(u) },
+					func(tc TokenCount) uint { return tc.Uint() },
+					func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
+					func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) })
+			case "ComplexityScore":
+				registerUintTypeTest(t, typeName, func(u uint) ComplexityScore { return ComplexityScore(u) },
+					func(cs ComplexityScore) uint { return cs.Uint() },
+					func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
+					func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) })
+			case "FileCount":
+				registerUintTypeTest(t, typeName, func(u uint) FileCount { return FileCount(u) },
+					func(fc FileCount) uint { return fc.Uint() },
+					func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
+					func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) })
+			case "CloneCount":
+				registerUintTypeTest(t, typeName, func(u uint) CloneCount { return CloneCount(u) },
+					func(cc CloneCount) uint { return cc.Uint() },
+					func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
+					func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) })
+			default:
+				t.Fatalf("Unknown uint type: %s", typeName)
+			}
+		},
+	}
+}
+
 // TestUintTypes consolidates tests for all simple uint wrapper types.
 // Uses the createUintTypeTest helper to reduce boilerplate and eliminate code duplication.
 func TestUintTypes(t *testing.T) {
@@ -239,33 +284,17 @@ func TestUintTypes(t *testing.T) {
 		test func(*testing.T)
 	}
 	
-	// Define test cases using createUintTypeTest helper to eliminate duplication
-	tests := []testCase{
-		createUintTypeTest("BytePosition",
-			func(u uint) BytePosition { return BytePosition(u) },
-			func(bp BytePosition) uint { return bp.Uint() },
-			func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
-			func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) }),
-		createUintTypeTest("TokenCount",
-			func(u uint) TokenCount { return TokenCount(u) },
-			func(tc TokenCount) uint { return tc.Uint() },
-			func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
-			func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) }),
-		createUintTypeTest("ComplexityScore",
-			func(u uint) ComplexityScore { return ComplexityScore(u) },
-			func(cs ComplexityScore) uint { return cs.Uint() },
-			func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
-			func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) }),
-		createUintTypeTest("FileCount",
-			func(u uint) FileCount { return FileCount(u) },
-			func(fc FileCount) uint { return fc.Uint() },
-			func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
-			func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) }),
-		createUintTypeTest("CloneCount",
-			func(u uint) CloneCount { return CloneCount(u) },
-			func(cc CloneCount) uint { return cc.Uint() },
-			func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
-			func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) }),
+	// Define test cases using createUintTypeTestFromName helper to eliminate duplication
+	uintTypeNames := []string{
+		"BytePosition",
+		"TokenCount",
+		"ComplexityScore",
+		"FileCount",
+		"CloneCount",
+	}
+	var tests []testCase
+	for _, typeName := range uintTypeNames {
+		tests = append(tests, createUintTypeTestFromName(typeName))
 	}
 
 	for _, tc := range tests {
