@@ -93,25 +93,32 @@ func initStyles() styleConfig {
 		baseStyle = baseStyle.Bold(true)
 	}
 
-	// Create styles for different elements
+	// Create styles for different elements (store in variables first)
+	headerStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
+	sectionStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00E676")).Bold(true)
+	metricStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#738ADB"))
+	successStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00C853"))
+	warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
+	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#E53E3"))
+
 	config := styleConfig{
-		base: &baseStyle,
-		header: lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true),
-		section: lipgloss.NewStyle().Foreground(lipgloss.Color("#00E676")).Bold(true),
-		metric: lipgloss.NewStyle().Foreground(lipgloss.Color("#738ADB")),
-		success: lipgloss.NewStyle().Foreground(lipgloss.Color("#00C853")),
-		warning: lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")),
-		error: lipgloss.NewStyle().Foreground(lipgloss.Color("#E53E3")),
+		base:    baseStyle,
+		header:  headerStyle,
+		section: sectionStyle,
+		metric:  metricStyle,
+		success: successStyle,
+		warning: warningStyle,
+		error:   errorStyle,
 	}
 
 	// Disable all colors if NO_COLOR is set
 	if noColor {
-		*config.header = lipgloss.NewStyle()
-		*config.section = lipgloss.NewStyle()
-		*config.metric = lipgloss.NewStyle()
-		*config.success = lipgloss.NewStyle()
-		*config.warning = lipgloss.NewStyle()
-		*config.error = lipgloss.NewStyle()
+		config.header = lipgloss.NewStyle()
+		config.section = lipgloss.NewStyle()
+		config.metric = lipgloss.NewStyle()
+		config.success = lipgloss.NewStyle()
+		config.warning = lipgloss.NewStyle()
+		config.error = lipgloss.NewStyle()
 	}
 
 	return config

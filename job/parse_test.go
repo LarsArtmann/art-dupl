@@ -1,6 +1,7 @@
 package job
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	ctx := context.Background()
 	setup := testutil.NewTestFileSetup(t)
 
 	testContent := `package main
@@ -31,7 +33,7 @@ func helper() {
 	fchan <- goFile
 	close(fchan)
 
-	schan, _ := Parse(fchan)
+	schan, _ := Parse(ctx, fchan)
 
 	select {
 	case seq := <-schan:
@@ -44,11 +46,12 @@ func helper() {
 }
 
 func TestParseErrorHandling(t *testing.T) {
+	ctx := context.Background()
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent_file.go"
 	close(fchan)
 
-	schan, _ := Parse(fchan)
+	schan, _ := Parse(ctx, fchan)
 
 	select {
 	case seq := <-schan:
@@ -60,6 +63,7 @@ func TestParseErrorHandling(t *testing.T) {
 }
 
 func TestParseMultipleFiles(t *testing.T) {
+	ctx := context.Background()
 	setup := testutil.NewTestFileSetup(t)
 
 	files := map[string]string{
@@ -90,7 +94,7 @@ func function1() {
 	}
 	close(fchan)
 
-	schan, _ := Parse(fchan)
+	schan, _ := Parse(ctx, fchan)
 
 	// Should receive sequences for both files
 	count := 0

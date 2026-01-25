@@ -73,6 +73,7 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 }
 
 func TestBuildTreeMultipleSequences(t *testing.T) {
+	ctx := context.Background()
 	// Create multiple sequences
 	sequence1 := make([]*syntax.Node, 2)
 	sequence1[0] = &syntax.Node{Type: 1}
@@ -88,7 +89,7 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 	schan <- sequence2
 	close(schan)
 
-	tree, data, done := BuildTree(schan)
+	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing
 	select {

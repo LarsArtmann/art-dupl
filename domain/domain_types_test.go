@@ -615,10 +615,7 @@ func TestConfidence_NewConfidence(t *testing.T) {
 
 // TestConfidence_Float64 tests the Float64 method.
 func TestConfidence_Float64(t *testing.T) {
-	conf := Confidence(0.85)
-	if got := conf.Float64(); got != 0.85 {
-		t.Errorf("Float64() = %v, want %v", got, 0.85)
-	}
+	testFloat64Method(t, Confidence(0.85), 0.85)
 }
 
 // TestConfidence_String tests the String method.
