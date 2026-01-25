@@ -147,6 +147,11 @@ func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*S
 	}
 }
 
+// setupTreeWith1000Tokens creates a tree with 1000 random tokens.
+func setupTreeWith1000Tokens() *STree {
+	return generateTreeWithRandomTokens(1000)
+}
+
 // BenchmarkConstruction benchmarks full suffix tree construction.
 func BenchmarkConstruction(b *testing.B) {
 	sizes := []int{10, 100, 1000, 10000}
@@ -205,9 +210,7 @@ func BenchmarkFindTranOptimized(b *testing.B) {
 
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
-	benchmarkTreeOperation(b, func() *STree {
-		return generateTreeWithRandomTokens(1000)
-	}, func(tree *STree) {
+	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
 		tree.canonize(tree.root, 0, 100)
 	})
 }
@@ -263,9 +266,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
-	benchmarkTreeOperation(b, func() *STree {
-		return generateTreeWithRandomTokens(1000)
-	}, func(tree *STree) {
+	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
 		tree.testAndSplit(tree.root, 0, 100)
 	})
 }
