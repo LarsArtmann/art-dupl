@@ -50,12 +50,18 @@ func runFileContentTestCases(t *testing.T, tests []fileContentTest, detectionFun
 	)
 }
 
+// runSimpleTestCases is a generic helper for running simple test cases with a single function.
+func runSimpleTestCases[T any, R comparable](t *testing.T, tests []T, testFunc func(T) R, nameFunc func(T) string, expectFunc func(T) R) {
+	t.Helper()
+	runTestCases(t, tests, nameFunc, testFunc, expectFunc)
+}
+
 // runMatchPatternTestCases is a helper for running match pattern test cases.
 func runMatchPatternTestCases(t *testing.T, tests []matchPatternTest) {
 	t.Helper()
-	runTestCases(t, tests,
-		matchPatternTest.GetName,
+	runSimpleTestCases(t, tests,
 		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
+		matchPatternTest.GetName,
 		matchPatternTest.GetExpected,
 	)
 }
@@ -73,9 +79,9 @@ func (t containsTest) GetExpected() bool { return t.expect }
 // runContainsTestCases is a helper for running contains test cases.
 func runContainsTestCases(t *testing.T, tests []containsTest) {
 	t.Helper()
-	runTestCases(t, tests,
-		containsTest.GetName,
+	runSimpleTestCases(t, tests,
 		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
+		containsTest.GetName,
 		containsTest.GetExpected,
 	)
 }
