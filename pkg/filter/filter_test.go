@@ -40,6 +40,16 @@ type fileContentTest struct {
 func (t fileContentTest) GetName() string  { return t.name }
 func (t fileContentTest) GetExpected() bool { return t.expected }
 
+// runFileContentTestCases is a helper for running file content test cases.
+func runFileContentTestCases(t *testing.T, tests []fileContentTest, detectionFunc func(string, string) bool) {
+	t.Helper()
+	runTestCases(t, tests,
+		fileContentTest.GetName,
+		func(tt fileContentTest) bool { return detectionFunc(tt.filePath, tt.content) },
+		fileContentTest.GetExpected,
+	)
+}
+
 type containsTest struct {
 	name   string
 	slice  []string
@@ -375,11 +385,7 @@ type User struct {
 		},
 	}
 
-	runTestCases(t, tests,
-		fileContentTest.GetName,
-		func(tt fileContentTest) bool { return isSQLCGenerated(tt.filePath, tt.content) },
-		fileContentTest.GetExpected,
-	)
+	runFileContentTestCases(t, tests, isSQLCGenerated)
 }
 
 func TestIsTemplGenerated(t *testing.T) {
@@ -421,11 +427,7 @@ func Helper() string {
 		},
 	}
 
-	runTestCases(t, tests,
-		fileContentTest.GetName,
-		func(tt fileContentTest) bool { return isTemplGenerated(tt.filePath, tt.content) },
-		fileContentTest.GetExpected,
-	)
+	runFileContentTestCases(t, tests, isTemplGenerated)
 }
 
 func TestStringContains(t *testing.T) {
