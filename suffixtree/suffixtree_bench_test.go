@@ -26,6 +26,14 @@ func (t *testToken) Val() int {
 	return t.val
 }
 
+// generateTreeWithRandomTokens creates a tree with the specified number of random tokens.
+func generateTreeWithRandomTokens(tokenCount int) *STree {
+	tree := New()
+	tokens := generateRandomTokens(tokenCount)
+	tree.Update(tokens...)
+	return tree
+}
+
 // generateTreeWithTransitions creates a tree with states having
 // a specified number of transitions for benchmarking.
 func generateTreeWithTransitions(stateCount, transPerState int) *STree {
@@ -198,10 +206,7 @@ func BenchmarkFindTranOptimized(b *testing.B) {
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
 	benchmarkTreeOperation(b, func() *STree {
-		tree := New()
-		tokens := generateRandomTokens(1000)
-		tree.Update(tokens...)
-		return tree
+		return generateTreeWithRandomTokens(1000)
 	}, func(tree *STree) {
 		tree.canonize(tree.root, 0, 100)
 	})
@@ -259,10 +264,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
 	benchmarkTreeOperation(b, func() *STree {
-		tree := New()
-		tokens := generateRandomTokens(1000)
-		tree.Update(tokens...)
-		return tree
+		return generateTreeWithRandomTokens(1000)
 	}, func(tree *STree) {
 		tree.testAndSplit(tree.root, 0, 100)
 	})
