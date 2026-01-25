@@ -226,6 +226,22 @@ func createUintTestCase[T comparable](
 
 // TestUintTypes consolidates tests for all simple uint wrapper types.
 // This approach eliminates duplicate test functions by using the registerUintTypeTest helper.
+//
+// NOTE: dupl may report duplication in the test case definitions below (lines 237-261).
+// This duplication is INTENTIONAL and NECESSARY for type safety in Go. Each lambda function
+// captures type-specific behavior that cannot be automatically derived without:
+//   1. Code generation (which would add build complexity)
+//   2. Reflection (which would compromise type safety and runtime performance)
+//   3. Higher-kinded types (not supported by Go)
+//
+// The `createUintTestCase` helper already eliminates the boilerplate of defining separate
+// test functions for each type. The remaining repetition is the minimal amount required
+// to maintain strong type safety while avoiding the complexity of code generation.
+//
+// Alternative approaches considered and rejected:
+// - Reflection: Would fail type checks at runtime instead of compile time, and adds overhead
+// - Code generation (go:generate): Would add build complexity and reduce code clarity
+// - Accepting the duplication as is: Best balance of type safety, clarity, and maintainability
 func TestUintTypes(t *testing.T) {
 	tests := []struct {
 		name string
