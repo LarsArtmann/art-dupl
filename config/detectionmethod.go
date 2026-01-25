@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+// isValidStringType validates a string type against a set of valid values.
+func isValidStringType[T ~string](val T, validValues map[T]bool) bool {
+	return validValues[val]
+}
+
 // unmarshalStringType unmarshals JSON into a string type with validation.
 func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string) (T, error) {
 	var str string
@@ -53,6 +58,13 @@ const (
 	DetectionMethodLegacy DetectionMethod = "legacy"
 )
 
+var validDetectionMethods = map[DetectionMethod]bool{
+	DetectionMethodHash:      true,
+	DetectionMethodArtDupl:   true,
+	DetectionMethodTodos:     true,
+	DetectionMethodLegacy:    true,
+}
+
 // String implements fmt.Stringer.
 func (dm DetectionMethod) String() string {
 	return string(dm)
@@ -60,12 +72,7 @@ func (dm DetectionMethod) String() string {
 
 // IsValid validates detection method.
 func (dm DetectionMethod) IsValid() bool {
-	switch dm {
-	case DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy:
-		return true
-	default:
-		return false
-	}
+	return isValidStringType(dm, validDetectionMethods)
 }
 
 // MarshalJSON implements json.Marshaler.
@@ -94,6 +101,14 @@ const (
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
 )
 
+var validOutputFormats = map[OutputFormat]bool{
+	OutputFormatText:       true,
+	OutputFormatHTML:       true,
+	OutputFormatJSON:       true,
+	OutputFormatPlumbing:   true,
+	OutputFormatSimpleJSON: true,
+}
+
 // String implements fmt.Stringer.
 func (of OutputFormat) String() string {
 	return string(of)
@@ -101,12 +116,7 @@ func (of OutputFormat) String() string {
 
 // IsValid validates output format.
 func (of OutputFormat) IsValid() bool {
-	switch of {
-	case OutputFormatText, OutputFormatHTML, OutputFormatJSON, OutputFormatPlumbing, OutputFormatSimpleJSON:
-		return true
-	default:
-		return false
-	}
+	return isValidStringType(of, validOutputFormats)
 }
 
 // MarshalJSON implements json.Marshaler.
@@ -134,6 +144,13 @@ const (
 	SortByTotalTokens SortCriteria = "total-tokens"
 )
 
+var validSortCriteria = map[SortCriteria]bool{
+	SortBySize:        true,
+	SortByOccurrence:  true,
+	SortByHash:        true,
+	SortByTotalTokens: true,
+}
+
 // String implements fmt.Stringer.
 func (sc SortCriteria) String() string {
 	return string(sc)
@@ -141,12 +158,7 @@ func (sc SortCriteria) String() string {
 
 // IsValid validates sort criteria.
 func (sc SortCriteria) IsValid() bool {
-	switch sc {
-	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
-		return true
-	default:
-		return false
-	}
+	return isValidStringType(sc, validSortCriteria)
 }
 
 // MarshalJSON implements json.Marshaler.
