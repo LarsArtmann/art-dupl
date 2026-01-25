@@ -392,6 +392,37 @@ func createUintTypeTestSuite[T comparable](
 	}
 }
 
+// createStandardUintJSONTests generates standard JSON test cases for uint-based types.
+// This helper reduces boilerplate by providing common test patterns for numeric types.
+// ValidValue is used for marshal and unmarshal valid tests, RoundTripValue is used for round-trip testing.
+func createStandardUintJSONTests[T comparable](
+	validValue T,
+	validJSON string,
+) (marshalTests []jsonTest[T], unmarshalTests []struct {
+	name      string
+	input     string
+	want      T
+	wantError bool
+}, roundTripValue T) {
+	var zero T
+	marshalTests = []jsonTest[T]{
+		{name: "valid value", input: validValue, want: validJSON, wantErr: false},
+		{name: "zero should error", input: zero, want: "", wantErr: true},
+	}
+	unmarshalTests = []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	}{
+		{name: "valid JSON", input: validJSON, want: validValue, wantError: false},
+		{name: "zero should error", input: `0`, want: zero, wantError: true},
+		{name: "invalid JSON", input: `not-json`, want: zero, wantError: true},
+	}
+	roundTripValue = validValue
+	return
+}
+
 // createFloatTypeTestSuite creates a complete test registration for float-based types.
 // This helper eliminates repetitive test boilerplate for floating-point types.
 func createFloatTypeTestSuite[T comparable](
@@ -475,23 +506,12 @@ func TestLineNumber_Uint(t *testing.T) {
 
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
+	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(LineNumber(10), "10")
 	createUintTypeTestSuite("LineNumber",
 		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
-		[]jsonTest[LineNumber]{
-			{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
-			{name: "zero line number should error", input: LineNumber(0), want: "", wantErr: true},
-		},
-		[]struct {
-			name      string
-			input     string
-			want      LineNumber
-			wantError bool
-		}{
-			{name: "valid JSON", input: `42`, want: LineNumber(42), wantError: false},
-			{name: "zero should error", input: `0`, want: LineNumber(0), wantError: true},
-			{name: "invalid JSON", input: `not-json`, want: LineNumber(0), wantError: true},
-		},
-		LineNumber(123),
+		marshalTests,
+		unmarshalTests,
+		roundTripValue,
 		func(line LineNumber) ([]byte, error) { return line.MarshalJSON() },
 		func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) },
 	)(t)
@@ -700,23 +720,12 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
+	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(ProcessingTime(500), "500")
 	createUintTypeTestSuite("ProcessingTime",
 		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
-		[]jsonTest[ProcessingTime]{
-			{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
-			{name: "zero should error", input: ProcessingTime(0), want: "", wantErr: true},
-		},
-		[]struct {
-			name      string
-			input     string
-			want      ProcessingTime
-			wantError bool
-		}{
-			{name: "valid JSON", input: `500`, want: ProcessingTime(500), wantError: false},
-			{name: "zero should error", input: `0`, want: ProcessingTime(0), wantError: true},
-			{name: "invalid JSON", input: `not-json`, want: ProcessingTime(0), wantError: true},
-		},
-		ProcessingTime(5000),
+		marshalTests,
+		unmarshalTests,
+		roundTripValue,
 		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
 		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
 	)(t)
@@ -806,23 +815,12 @@ func TestThreshold_Uint(t *testing.T) {
 
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
+	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(Threshold(15), "15")
 	createUintTypeTestSuite("Threshold",
 		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
-		[]jsonTest[Threshold]{
-			{name: "valid threshold", input: Threshold(15), want: `15`, wantErr: false},
-			{name: "zero should error", input: Threshold(0), want: "", wantErr: true},
-		},
-		[]struct {
-			name      string
-			input     string
-			want      Threshold
-			wantError bool
-		}{
-			{name: "valid JSON", input: `50`, want: Threshold(50), wantError: false},
-			{name: "zero should error", input: `0`, want: Threshold(0), wantError: true},
-			{name: "invalid JSON", input: `not-json`, want: Threshold(0), wantError: true},
-		},
-		Threshold(30),
+		marshalTests,
+		unmarshalTests,
+		roundTripValue,
 		func(t Threshold) ([]byte, error) { return t.MarshalJSON() },
 		func(t *Threshold, data []byte) error { return t.UnmarshalJSON(data) },
 	)(t)
