@@ -649,69 +649,63 @@ func TestProcessingTime_Uint(t *testing.T) {
 // TestProcessingTime_String tests the String method.
 func TestProcessingTime_String(t *testing.T) {
 	tests := []struct {
-		name string
-		pt   ProcessingTime
-		want string
+		name  string
+		value ProcessingTime
+		want  string
 	}{
 		{
-			name: "milliseconds (< 1000ms)",
-			pt:   ProcessingTime(500),
-			want: "500ms",
+			name:  "milliseconds (< 1000ms)",
+			value: ProcessingTime(500),
+			want:  "500ms",
 		},
 		{
-			name: "seconds (< 60s)",
-			pt:   ProcessingTime(5000),
-			want: "5s",
+			name:  "seconds (< 60s)",
+			value: ProcessingTime(5000),
+			want:  "5s",
 		},
 		{
-			name: "minutes (< 60m)",
-			pt:   ProcessingTime(180000), // 3 minutes
-			want: "3m",
+			name:  "minutes (< 60m)",
+			value: ProcessingTime(180000), // 3 minutes
+			want:  "3m",
 		},
 		{
-			name: "hours",
-			pt:   ProcessingTime(7200000), // 2 hours
-			want: "2h",
+			name:  "hours",
+			value: ProcessingTime(7200000), // 2 hours
+			want:  "2h",
 		},
 		{
-			name: "edge case: 999ms",
-			pt:   ProcessingTime(999),
-			want: "999ms",
+			name:  "edge case: 999ms",
+			value: ProcessingTime(999),
+			want:  "999ms",
 		},
 		{
-			name: "edge case: 1000ms (1 second)",
-			pt:   ProcessingTime(1000),
-			want: "1s",
+			name:  "edge case: 1000ms (1 second)",
+			value: ProcessingTime(1000),
+			want:  "1s",
 		},
 		{
-			name: "edge case: 59 seconds",
-			pt:   ProcessingTime(59000),
-			want: "59s",
+			name:  "edge case: 59 seconds",
+			value: ProcessingTime(59000),
+			want:  "59s",
 		},
 		{
-			name: "edge case: 60 seconds (1 minute)",
-			pt:   ProcessingTime(60000),
-			want: "1m",
+			name:  "edge case: 60 seconds (1 minute)",
+			value: ProcessingTime(60000),
+			want:  "1m",
 		},
 		{
-			name: "edge case: 59 minutes",
-			pt:   ProcessingTime(3540000),
-			want: "59m",
+			name:  "edge case: 59 minutes",
+			value: ProcessingTime(3540000),
+			want:  "59m",
 		},
 		{
-			name: "edge case: 60 minutes (1 hour)",
-			pt:   ProcessingTime(3600000),
-			want: "1h",
+			name:  "edge case: 60 minutes (1 hour)",
+			value: ProcessingTime(3600000),
+			want:  "1h",
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pt.String(); got != tt.want {
-				t.Errorf("String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	runStringMethodTests(t, tests, func(pt ProcessingTime) string { return pt.String() })
 }
 
 // TestProcessingTime tests ProcessingTime type.
