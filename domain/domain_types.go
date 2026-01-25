@@ -45,8 +45,6 @@ func marshalStringID(s string, typeName string, validationMsg string) ([]byte, e
 	return json.Marshal(s)
 }
 
-// unmarshalStringID is a helper function for unmarshaling string-based ID types.
-// It handles the common pattern of unmarshaling JSON to string and validating emptiness.
 // unmarshalWithValidation is a generic helper for unmarshaling JSON with custom validation.
 // It unmarshals data to type T, validates it using the provided validator function,
 // and assigns the result if validation passes.
