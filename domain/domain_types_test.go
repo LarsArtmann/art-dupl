@@ -739,6 +739,32 @@ func emptyStringErrorTest[T comparable]() constructorTest[T] {
 	}
 }
 
+// testMethodWithValue creates a test for a method that returns a value.
+// This helper eliminates boilerplate for testing simple methods like Uint(), Float64(), String().
+func testMethodWithValue[T any, R comparable](t *testing.T, methodName string, instance T, method func(T) R, want R) {
+	t.Helper()
+	if got := method(instance); got != want {
+		t.Errorf("%s() = %v, want %v", methodName, got, want)
+	}
+}
+
+// runStringMethodTests runs table-driven tests for a String method.
+// This helper eliminates boilerplate for testing String() methods with multiple cases.
+func runStringMethodTests[T any](t *testing.T, tests []struct {
+	name string
+	value T
+	want string
+}, stringFunc func(T) string) {
+	t.Helper()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := stringFunc(tt.value); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
 // This helper reduces boilerplate when creating tests for types constructed
 // from strings with validation logic.

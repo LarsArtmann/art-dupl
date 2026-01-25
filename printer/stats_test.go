@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -380,3 +381,128 @@ func TestStatsAverageCloneSize(t *testing.T) {
 		})
 	}
 }
+
+func TestStatsJSONOutput(t *testing.T) {
+	var buf bytes.Buffer
+	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+
+	// Add some test data
+	statsPrinter.SetDetectionMethods("art-dupl,hash")
+	statsPrinter.SetFilesCount(10)
+
+	// Add one clone group with duplicates
+	dups := [][]*syntax.Node{
+		{
+			&syntax.Node{Filename: "file1.go", Pos: 1, End: 3, Type: 1},
+			&syntax.Node{Filename: "file1.go", Pos: 2, End: 4, Type: 2},
+		},
+		{
+			&syntax.Node{Filename: "file2.go", Pos: 10, End: 12, Type: 1},
+			&syntax.Node{Filename: "file2.go", Pos: 11, End: 13, Type: 2},
+		},
+	}
+
+	if err := statsPrinter.PrintClones(dups); err != nil {
+		t.Fatalf("PrintClones failed: %v", err)
+	}
+
+	// Set format to JSON
+	statsPrinter.format = FormatJSON
+
+	if err := statsPrinter.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	output := buf.String()
+
+	// Verify JSON is valid
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("Output is not valid JSON: %v\nOutput: %s", err, output)
+	}
+
+	// Verify structure exists
+	config, ok := result["configuration"].(map[string]interface{})
+	if !ok {
+		t.Fatal("Missing 'configuration' section in JSON")
+	}
+	if config["threshold"] != float64(15) {
+		t.Errorf("threshold = %v, want 15", config["threshold"])
+	}
+	if config["detectionMethods"] != "art-dupl,hash" {
+		t.Errorf("detectionMethods = %v, want 'art-dupl,hash'", config["detectionMethods"])
+	}
+
+	overview, ok := result["overview"].(map[string]interface{})
+	if !ok {
+		t.Fatal("Missing 'overview' section in JSON")
+	}
+	if overview["filesScanned"] != float64(10) {
+		t.Errorf("filesScanned = %v, want 10", overview["filesScanned"])
+	}
+	if overview["cloneGroups"] != float64(1) {
+		t.Errorf("cloneGroups = %v, want 1", overview["cloneGroups"])
+	}
+	if overview["totalClones"] != float64(2) {
+		t.Errorf("totalClones = %v, want 2", overview["totalClones"])
+	}
+
+	dupCode, ok := result["duplicateCode"].(map[string]interface{})
+	if !ok {
+		t.Fatal("Missing 'duplicateCode' section in JSON")
+	}
+	if dupCode["totalDuplicateLines"] == 0 {
+		t.Error("totalDuplicateLines should be > 0")
+	}
+	if dupCode["totalDuplicateTokens"] == 0 {
+		t.Error("totalDuplicateTokens should be > 0")
+	}
+	if dupCode["averageCloneSize"] == 0 {
+		t.Error("averageCloneSize should be > 0")
+	}
+	if dupCode["complexityScore"] != 2.0 { // 2 clones / 1 group
+		t.Errorf("complexityScore = %v, want 2.0", dupCode["complexityScore"])
+	}
+
+	sizeDist, ok := result["sizeDistribution"].(map[string]interface{})
+	if !ok || len(sizeDist) == 0 {
+		t.Error("Missing or empty 'sizeDistribution' section")
+	}
+
+	topFiles, ok := result["topFiles"].([]interface{})
+	if !ok || len(topFiles) == 0 {
+		t.Error("Missing or empty 'topFiles' section")
+	}
+}
+
+func TestStatsTextOutput(t *testing.T) {
+	var buf bytes.Buffer
+	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter.SetFilesCount(5)
+	statsPrinter.SetDetectionMethods("art-dupl")
+
+	// Set format to text
+	statsPrinter.format = FormatText
+
+	if err := statsPrinter.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	output := buf.String()
+
+	// Verify key sections are present
+	expectedSections := []string{
+		"Code Duplication Statistics",
+		"Configuration:",
+		"Overview:",
+		"Files Scanned: 5",
+		"Duplicate Code:",
+	}
+
+	for _, section := range expectedSections {
+		if !strings.Contains(output, section) {
+			t.Errorf("Output missing section: %q", section)
+		}
+	}
+}
+

@@ -14,7 +14,7 @@ type stats struct {
 	ReadFile
 	w         io.Writer
 	threshold int
-	format    string
+	format    Format
 	statsData *StatsData
 }
 
@@ -121,11 +121,19 @@ func (p *stats) PrintFooter() error {
 
 // printStats prints the collected statistics.
 func (p *stats) printStats() {
-	if p.format == "json" {
+	switch p.format {
+	case FormatJSON:
 		p.printJSON()
-	} else {
+	case FormatCSV:
+		p.printCSV()
+	case FormatText:
 		p.printText()
 	}
+}
+
+// printCSV prints statistics in CSV format (not yet implemented).
+func (p *stats) printCSV() {
+	fmt.Fprintf(p.w, "CSV format is not yet implemented. Use --format text or --format json.\n")
 }
 
 // printText prints statistics in text format.
@@ -330,6 +338,6 @@ func (p *stats) SetDetectionMethods(methods string) {
 }
 
 // SetFormat sets the output format.
-func (p *stats) SetFormat(format string) {
+func (p *stats) SetFormat(format Format) {
 	p.format = format
 }

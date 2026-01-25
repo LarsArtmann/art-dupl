@@ -77,10 +77,15 @@ func runStats(cmd *cobra.Command, args []string) error {
 	includeTempl, _ := cmd.Flags().GetBool("include-templ")
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
-	format, _ := cmd.Flags().GetString("format")
+	formatStr, _ := cmd.Flags().GetString("format")
+
+	// Parse and validate format
+	format, err := printer.ParseFormat(formatStr)
+	if err != nil {
+		return duplerrors.WrapValidation(err, "invalid format value")
+	}
 
 	var fileConfig *config.Config
-	var err error
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
@@ -167,7 +172,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	// Set format
-	if sp, ok := p.(interface{ SetFormat(string) }); ok {
+	if sp, ok := p.(interface{ SetFormat(printer.Format) }); ok {
 		sp.SetFormat(format)
 	}
 

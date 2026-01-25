@@ -99,11 +99,12 @@ art-dupl stats [flags] [paths...]
 
 Supports all root command flags plus:
 ```
--t, -threshold     Minimum token size (default 15)
+-t, -threshold          Minimum token size (default 15)
 -m, -detection-methods  Detection methods to use
---top N            Number of top files to show (future)
---format           Output format: text, json, csv (future)
+--format                Output format: text, json (default: text)
 ```
+
+**Format validation**: The `--format` flag only accepts "text" or "json". Providing an invalid format will result in an error.
 
 ## Examples
 
@@ -138,6 +139,9 @@ The `stats` subcommand provides aggregated duplication statistics for quick proj
 
 # Show statistics for specific paths
 ./art-dupl stats ./src ./lib
+
+# Show statistics in JSON format (for post-processing)
+./art-dupl stats --format json ./src | jq '.overview.totalClones'
 
 # Show statistics with custom threshold
 ./art-dupl stats -t 50 ./src
