@@ -220,6 +220,13 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	}
 }
 
+// TestCase represents a test case with a name and test function.
+// This struct eliminates duplicate anonymous struct definitions across test helper functions.
+type TestCase struct {
+	name string
+	test func(*testing.T)
+}
+
 // createUintTypeTest generates a test case for a uint-based type.
 // This helper eliminates repetitive boilerplate by auto-generating the standard test functions:
 // - Constructor (Type(uint))
@@ -233,14 +240,8 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 //   - uintFunc: Method that extracts uint from the type
 //   - marshalFunc: Method that marshals the type to JSON
 //   - unmarshalFunc: Method that unmarshals JSON to the type
-func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) struct {
-	name string
-	test func(*testing.T)
-} {
-	return struct {
-		name string
-		test func(*testing.T)
-	}{
+func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) TestCase {
+	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
 			registerUintTypeTest(t, typeName, newFunc, uintFunc, marshalFunc, unmarshalFunc)
@@ -312,14 +313,8 @@ func registerUintTypeByName(t *testing.T, typeName string) {
 
 // createUintTypeTestFromName generates a test case for a uint-based type by type name.
 // This helper further reduces boilerplate by using reflection to create the necessary functions.
-func createUintTypeTestFromName(typeName string) struct {
-	name string
-	test func(*testing.T)
-} {
-	return struct {
-		name string
-		test func(*testing.T)
-	}{
+func createUintTypeTestFromName(typeName string) TestCase {
+	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
 			registerUintTypeByName(t, typeName)
@@ -331,20 +326,7 @@ func createUintTypeTestFromName(typeName string) struct {
 // Uses the createUintTypeTest helper to reduce boilerplate and eliminate code duplication.
 func TestUintTypes(t *testing.T) {
 	// Define test case structure
-	type testCase struct {
-		name string
-		test func(*testing.T)
-	}
-	
-	// Define test cases using createUintTypeTestFromName helper to eliminate duplication
-	uintTypeNames := []string{
-		"BytePosition",
-		"TokenCount",
-		"ComplexityScore",
-		"FileCount",
-		"CloneCount",
-	}
-	var tests []testCase
+	var tests []TestCase
 	for _, typeName := range uintTypeNames {
 		tests = append(tests, createUintTypeTestFromName(typeName))
 	}
