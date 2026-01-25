@@ -33,10 +33,11 @@ Statistics include:
 
 Examples:
   art-dupl stats                    # Show stats for current directory (text format)
-  art-dupl stats -f json .          # Show stats in JSON format
+  art-dupl stats --format json .    # Show stats in JSON format (machine-readable)
   art-dupl stats ./src ./lib        # Show stats for specific paths
   art-dupl stats -t 20 .            # Show stats with higher threshold
-  art-dupl stats -f csv -t 50 .     # Show stats in CSV format`,
+  art-dupl stats -t 50 --format json . | jq '.overview.totalClones'
+                                      # Get total clones from JSON with jq`,
 		Args: cobra.ArbitraryArgs,
 		RunE: runStats,
 	}

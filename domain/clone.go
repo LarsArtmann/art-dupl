@@ -251,6 +251,22 @@ func (a Analysis) IsValid() error {
 	return nil
 }
 
+// validationRule represents a single validation rule.
+type validationRule struct {
+	valid bool
+	msg   string
+}
+
+// validateRules checks all validation rules and returns the first error encountered.
+func validateRules(rules []validationRule) error {
+	for _, rule := range rules {
+		if !rule.valid {
+			return errors.New(rule.msg)
+		}
+	}
+	return nil
+}
+
 // AnalysisStats represents analysis statistics.
 type AnalysisStats struct {
 	FilesAnalyzed    uint    `json:"filesAnalyzed"`
@@ -263,24 +279,13 @@ type AnalysisStats struct {
 
 // isValidAnalysisStats validates analysis stats.
 func isValidAnalysisStats(as AnalysisStats) error {
-	type validationRule struct {
-		valid bool
-		msg   string
-	}
-
 	rules := []validationRule{
 		{as.FilesAnalyzed > 0, "files analyzed cannot be zero"},
 		{as.ProcessingTime > 0, "processing time cannot be zero"},
 		{as.ComplexityScore >= 0, "complexity score cannot be negative"},
 		{as.DuplicationRatio >= 0, "duplication ratio cannot be negative"},
 	}
-
-	for _, rule := range rules {
-		if !rule.valid {
-			return errors.New(rule.msg)
-		}
-	}
-	return nil
+	return validateRules(rules)
 }
 
 // IsValid validates analysis stats.
@@ -326,24 +331,13 @@ type SourceFile struct {
 
 // isValidSourceFile validates source file.
 func isValidSourceFile(sf SourceFile) error {
-	type validationRule struct {
-		valid bool
-		msg   string
-	}
-
 	rules := []validationRule{
 		{sf.Path != "", "source file path cannot be empty"},
 		{sf.Name != "", "source file name cannot be empty"},
 		{sf.Size > 0, "source file size cannot be zero"},
 		{sf.Hash != "", "source file hash cannot be empty"},
 	}
-
-	for _, rule := range rules {
-		if !rule.valid {
-			return errors.New(rule.msg)
-		}
-	}
-	return nil
+	return validateRules(rules)
 }
 
 // IsValid validates source file.
