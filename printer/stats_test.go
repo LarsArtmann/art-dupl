@@ -521,3 +521,183 @@ func TestStatsTextOutput(t *testing.T) {
 		}
 	}
 }
+
+func TestStatsCSVOutput(t *testing.T) {
+	var buf bytes.Buffer
+
+	sp := NewStats(&buf, mockReadFile("package main\nfunc foo(){return 0}\nfunc main(){}"), 1).(*stats)
+	sp.SetFormat(FormatCSV)
+	sp.SetFilesCount(3)
+	sp.SetDetectionMethods("art-dupl")
+	
+	// Create some clones
+	dups1 := [][]*syntax.Node{
+		{{Filename: "file1.go", Pos: 2, End: 3}, {Filename: "file1.go", Pos: 2, End: 3}},
+		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
+	}
+	
+	if err := sp.PrintClones(dups1); err != nil {
+		t.Fatalf("PrintClones failed: %v", err)
+	}
+
+	if err := sp.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	output := buf.String()
+
+	// Verify CSV structure
+	expectedHeaders := []string{
+		"Metric,Value",
+		"Threshold,",
+		"Detection Methods,",
+		"Files Scanned,",
+		"Clone Groups,",
+		"Total Clones,",
+		"Total Duplicate Lines,",
+		"Health Score,",
+	}
+
+	for _, header := range expectedHeaders {
+		if !strings.Contains(output, header) {
+			t.Errorf("CSV output missing header: %q", header)
+		}
+	}
+
+	// Verify CSV has proper structure (lines separated by commas)
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	if len(lines) < 10 {
+		t.Errorf("CSV output should have at least 10 lines, got %d", len(lines))
+	}
+
+	// Check that each non-empty line has at least one comma
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if i > 0 && trimmed != "" && !strings.Contains(line, ",") {
+			t.Errorf("CSV line %d doesn't contain comma: %q", i, line)
+		}
+	}
+
+	// Verify Health Score is present
+	if !strings.Contains(output, "Health Score,A") && !strings.Contains(output, "Health Score,") {
+		t.Error("CSV output should contain Health Score")
+	}
+}
+
+func TestHealthScoreCalculation(t *testing.T) {
+	tests := []struct {
+		name             string
+		duplicationRatio float64
+		complexityScore  float64
+		impactScore      int
+		expectedGrade    string
+	}{
+		{"Perfect health", 0.0, 0.0, 0, "A"},
+		{"Excellent health", 2.0, 1.0, 500, "B"}, // Weighted score: 4.45% = B
+		{"Good health", 5.0, 2.0, 1000, "C"},     // Weighted score: 10.75% = C
+		{"Moderate health", 8.0, 3.0, 2000, "F"}, // Weighted score: 15.3% = F (threshold is < 15 for D)
+		{"Poor health", 12.0, 4.0, 3000, "F"},    // Weighted score: 21.7% = F
+		{"Critical health", 20.0, 5.0, 5000, "F"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
+			
+			// Set up stats data
+			sp.statsData.TotalDuplicateLines = int(tt.duplicationRatio * 10) // Simulating
+			sp.statsData.TotalEstimatedLines = 1000
+			sp.statsData.DuplicationRatio = tt.duplicationRatio // Set directly for health calculation
+			sp.statsData.ComplexityScore = tt.complexityScore
+			sp.statsData.ImpactScore = tt.impactScore
+			
+			grade := sp.calculateHealthScore()
+			
+			if grade != tt.expectedGrade {
+				t.Errorf("calculateHealthScore() = %q, want %q for inputs (ratio=%.1f%%, complexity=%.2f, impact=%d)",
+					grade, tt.expectedGrade, tt.duplicationRatio, tt.complexityScore, tt.impactScore)
+			}
+		})
+	}
+}
+
+func TestPrintRecommendations(t *testing.T) {
+	tests := []struct {
+		name             string
+		healthScore      string
+		totalCloneGroups int
+		averageCloneSize int
+		complexityScore  float64
+		shouldContain    []string
+		shouldNotContain []string
+	}{
+		{
+			name:             "Grade A recommendations",
+			healthScore:      "A",
+			totalCloneGroups: 1,
+			averageCloneSize: 5,
+			complexityScore:  1.0,
+			shouldContain:    []string{"Excellent", "Keep up the good work"},
+			shouldNotContain: []string{"action needed", "Critical"},
+		},
+		{
+			name:             "Grade C recommendations with metrics",
+			healthScore:      "C",
+			totalCloneGroups: 15,
+			averageCloneSize: 60,
+			complexityScore:  3.5,
+			shouldContain:    []string{"Moderate", "50+ lines", "15 clone groups"},
+			shouldNotContain: []string{"Excellent", "Critical"},
+		},
+		{
+			name:             "Grade F critical recommendations",
+			healthScore:      "F",
+			totalCloneGroups: 30,
+			averageCloneSize: 80,
+			complexityScore:  6.0,
+			shouldContain:    []string{"Critical", "immediate action", "Halt new feature"},
+			shouldNotContain: []string{"Excellent", "minor"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
+			
+			// Set up stats data
+			sp.statsData.HealthScore = tt.healthScore
+			sp.statsData.TotalCloneGroups = tt.totalCloneGroups
+			sp.statsData.AverageCloneSize = tt.averageCloneSize
+			sp.statsData.ComplexityScore = tt.complexityScore
+			sp.statsData.TotalFilesScanned = 10
+			sp.statsData.TotalDuplicateLines = 500
+			sp.statsData.TotalEstimatedLines = 1000
+			
+			// Call printRecommendations
+			sp.printRecommendations()
+			
+			output := buf.String()
+			
+			// Check that all expected strings are present
+			for _, expected := range tt.shouldContain {
+				if !strings.Contains(output, expected) {
+					t.Errorf("Recommendations output missing expected text: %q\nGot: %s", expected, output)
+				}
+			}
+			
+			// Check that unexpected strings are NOT present
+			for _, notExpected := range tt.shouldNotContain {
+				if strings.Contains(output, notExpected) {
+					t.Errorf("Recommendations output should not contain: %q\nGot: %s", notExpected, output)
+				}
+			}
+			
+			// Verify next steps section is present
+			if !strings.Contains(output, "Next Steps:") {
+				t.Error("Recommendations should include 'Next Steps:' section")
+			}
+		})
+	}
+}
