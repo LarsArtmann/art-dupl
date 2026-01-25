@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/charmbracelet/lipgloss"
 )
 
 // stats provides aggregated statistics about code duplication.
@@ -20,13 +17,6 @@ type stats struct {
 	threshold int
 	format    Format
 	statsData *StatsData
-	base       lipgloss.Style
-	header     lipgloss.Style
-	section    lipgloss.Style
-	metric     lipgloss.Style
-	success     lipgloss.Style
-	warning     lipgloss.Style
-	error       lipgloss.Style
 }
 
 // StatsData holds all aggregated statistics.
@@ -51,9 +41,6 @@ type StatsData struct {
 
 // NewStats creates a new stats printer.
 func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
-	// Initialize styles (check for NO_COLOR environment variable)
-	styles := initStyles()
-
 	return &stats{
 		w:         w,
 		ReadFile:  fread,
@@ -62,67 +49,7 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 			FileDuplication:  make(map[string]int),
 			SizeDistribution: make(map[string]int),
 		},
-		base:       styles.base,
-		header:     styles.header,
-		section:    styles.section,
-		metric:     styles.metric,
-		success:     styles.success,
-		warning:     styles.warning,
-		error:       styles.error,
 	}
-}
-
-// styleConfig holds all lipgloss styles.
-type styleConfig struct {
-	base       lipgloss.Style
-	header     lipgloss.Style
-	section    lipgloss.Style
-	metric     lipgloss.Style
-	success     lipgloss.Style
-	warning     lipgloss.Style
-	error       lipgloss.Style
-}
-
-// initStyles initializes lipgloss styles, respecting NO_COLOR environment variable.
-func initStyles() styleConfig {
-	// Check for NO_COLOR environment variable
-	noColor := os.Getenv("NO_COLOR") != ""
-
-	// Create base style
-	baseStyle := lipgloss.NewStyle()
-	if !noColor {
-		baseStyle = baseStyle.Bold(true)
-	}
-
-	// Create styles for different elements (store in variables first)
-	headerStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
-	sectionStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00E676")).Bold(true)
-	metricStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#738ADB"))
-	successStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00C853"))
-	warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
-	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#E53E3"))
-
-	config := styleConfig{
-		base:    baseStyle,
-		header:  headerStyle,
-		section: sectionStyle,
-		metric:  metricStyle,
-		success: successStyle,
-		warning: warningStyle,
-		error:   errorStyle,
-	}
-
-	// Disable all colors if NO_COLOR is set
-	if noColor {
-		config.header = lipgloss.NewStyle()
-		config.section = lipgloss.NewStyle()
-		config.metric = lipgloss.NewStyle()
-		config.success = lipgloss.NewStyle()
-		config.warning = lipgloss.NewStyle()
-		config.error = lipgloss.NewStyle()
-	}
-
-	return config
 }
 
 // SetFilesCount sets the total number of files scanned.
@@ -261,109 +188,56 @@ func (p *stats) printCSV() {
 
 // printText prints statistics in text format.
 func (p *stats) printText() {
-	// Render header with styles
-	fmt.Fprintf(p.w, "\n")
-	fmt.Fprintf(p.w, "%s\n", p.header.Render("Code Duplication Statistics"))
-	fmt.Fprintf(p.w, "%s\n", p.base.Render(strings.Repeat("=", 36)))
-	fmt.Fprintf(p.w, "\n")
+	fmt.Fprintf(p.w, "Code Duplication Statistics\n")
+	fmt.Fprintf(p.w, "============================\n\n")
 
-	// Configuration section
-	fmt.Fprintf(p.w, "%s\n", p.section.Render("Configuration:"))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Threshold:"), p.base.Render(fmt.Sprintf("%d tokens", p.threshold)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Detection Methods:"), p.base.Render(p.statsData.DetectionMethods))
+	fmt.Fprintf(p.w, "Configuration:\n")
+	fmt.Fprintf(p.w, "  Threshold: %d tokens\n", p.threshold)
+	fmt.Fprintf(p.w, "  Detection Methods: %s\n", p.statsData.DetectionMethods)
 	if p.statsData.Timestamp != "" {
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Timestamp:"), p.base.Render(p.statsData.Timestamp))
+		fmt.Fprintf(p.w, "  Timestamp: %s\n", p.statsData.Timestamp)
 	}
 	if p.statsData.AnalysisDuration != "" {
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Analysis Time:"), p.base.Render(p.statsData.AnalysisDuration))
+		fmt.Fprintf(p.w, "  Analysis Time: %s\n", p.statsData.AnalysisDuration)
 	}
 	fmt.Fprintf(p.w, "\n")
 
-	// Overview section
-	fmt.Fprintf(p.w, "%s\n", p.section.Render("Overview:"))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Scanned:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalFilesScanned)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Clone Groups:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalCloneGroups)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Clones:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalClones)))
+	fmt.Fprintf(p.w, "Overview:\n")
+	fmt.Fprintf(p.w, "  Files Scanned: %d\n", p.statsData.TotalFilesScanned)
+	fmt.Fprintf(p.w, "  Clone Groups: %d\n", p.statsData.TotalCloneGroups)
+	fmt.Fprintf(p.w, "  Total Clones: %d\n", p.statsData.TotalClones)
 	fmt.Fprintf(p.w, "\n")
 
-	// Duplicate Code section
-	fmt.Fprintf(p.w, "%s\n", p.section.Render("Duplicate Code:"))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Lines:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalDuplicateLines)))
+	fmt.Fprintf(p.w, "Duplicate Code:\n")
+	fmt.Fprintf(p.w, "  Total Duplicate Lines: %d\n", p.statsData.TotalDuplicateLines)
 	if p.statsData.TotalEstimatedLines > 0 {
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Estimated Total Lines:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalEstimatedLines)))
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Duplication Ratio:"), p.base.Render(fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio)))
+		fmt.Fprintf(p.w, "  Estimated Total Lines: %d\n", p.statsData.TotalEstimatedLines)
+		fmt.Fprintf(p.w, "  Duplication Ratio: %.1f%%\n", p.statsData.DuplicationRatio)
 	}
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Tokens:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalTokens)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Average Clone Size:"), p.base.Render(fmt.Sprintf("%d lines", p.statsData.AverageCloneSize)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Complexity Score:"), p.base.Render(fmt.Sprintf("%.2f", p.statsData.ComplexityScore)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Impact Score:"), p.base.Render(fmt.Sprintf("%d", p.statsData.ImpactScore)))
+	fmt.Fprintf(p.w, "  Total Duplicate Tokens: %d\n", p.statsData.TotalTokens)
+	fmt.Fprintf(p.w, "  Average Clone Size: %d lines\n", p.statsData.AverageCloneSize)
+	fmt.Fprintf(p.w, "  Complexity Score: %.2f\n", p.statsData.ComplexityScore)
+	fmt.Fprintf(p.w, "  Impact Score: %d\n", p.statsData.ImpactScore)
 	if p.statsData.HealthScore != "" {
-		// Colorize health score based on grade
-		healthStyle := p.healthScoreStyle(p.statsData.HealthScore)
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Health Score:"), healthStyle.Render(p.statsData.HealthScore))
+		fmt.Fprintf(p.w, "  Health Score: %s\n", p.statsData.HealthScore)
 	}
 	fmt.Fprintf(p.w, "\n")
 
 	// Print size distribution
 	if len(p.statsData.SizeDistribution) > 0 {
-		fmt.Fprintf(p.w, "%s\n", p.section.Render("Clone Size Distribution:"))
-		printSizeDistribution(p.w, p.statsData.SizeDistribution, p.base, p.metric)
+		fmt.Fprintf(p.w, "Clone Size Distribution:\n")
+		printSizeDistribution(p.w, p.statsData.SizeDistribution)
 		fmt.Fprintf(p.w, "\n")
 	}
 
 	// Print top files with most duplicates
 	if len(p.statsData.FileDuplication) > 0 {
-		fmt.Fprintf(p.w, "%s\n", p.section.Render("Top Files by Duplicate Lines:"))
-		printTopFiles(p.w, p.statsData.FileDuplication, 10, p.base, p.metric)
+		fmt.Fprintf(p.w, "Top Files by Duplicate Lines:\n")
+		printTopFiles(p.w, p.statsData.FileDuplication, 10)
 	}
 }
 
-// healthScoreStyle returns appropriate style for health score grade.
-func (p *stats) healthScoreStyle(grade string) lipgloss.Style {
-	switch grade {
-	case "A":
-		return p.success
-	case "B":
-		return p.success
-	case "C":
-		return p.warning
-	case "D":
-// printRecommendations prints actionable recommendations based on health score and metrics.
-func (p *stats) printRecommendations(healthScore string, duplicationRatio float64) {
-	fmt.Fprintf(p.w, "%s\n", p.section.Render("Recommendations:"))
-
-	switch healthScore {
-	case "A":
-		fmt.Fprintf(p.w, "  %s\n", p.success.Render("✓ Excellent! Your code has minimal duplication (<3%)."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Keep up the good work to maintain code quality."))
-	case "B":
-		fmt.Fprintf(p.w, "  %s\n", p.success.Render("✓ Good! Your code has low duplication (3-6%)."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider refactoring clones >20 lines for further improvement."))
-	case "C":
-		fmt.Fprintf(p.w, "  %s\n", p.warning.Render("⚠ Fair! Your code has moderate duplication (6-10%)."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Focus on reducing larger clones (>30 lines) first."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Review code design for potential improvements."))
-	case "D":
-		fmt.Fprintf(p.w, "  %s\n", p.warning.Render("⚠ Poor! Your code has high duplication (10-15%)."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Immediate refactoring recommended for maintainability."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider increasing detection threshold to focus on larger clones."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Prioritize eliminating clones in core modules."))
-	case "F":
-		fmt.Fprintf(p.w, "  %s\n", p.error.Render("✗ Critical! Your code has very high duplication (>15%)."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Refactoring strongly recommended to improve maintainability."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Focus on eliminating the most duplicated code blocks."))
-		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider architectural changes to reduce duplication."))
-	}
-
-// Print duplicate complexity warning
-
-		return p.warning
-	case "F":
-		return p.error
-	default:
-		return p.base
-	}
-}
+// printJSON prints statistics in JSON format.
 func (p *stats) printJSON() {
 	// Create a struct for JSON output
 	jsonData := struct {
@@ -490,8 +364,8 @@ func (p *stats) getSizeRange(lines int) string {
 	}
 }
 
-// printSizeDistribution prints the size distribution with styling.
-func printSizeDistribution(w io.Writer, distribution map[string]int, baseStyle, metricStyle lipgloss.Style) {
+// printSizeDistribution prints the size distribution.
+func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	ranges := make([]string, 0, len(distribution))
 	for r := range distribution {
 		ranges = append(ranges, r)
@@ -499,12 +373,12 @@ func printSizeDistribution(w io.Writer, distribution map[string]int, baseStyle, 
 	sort.Strings(ranges)
 
 	for _, r := range ranges {
-		fmt.Fprintf(w, "  %s %s\n", metricStyle.Render(r+":"), baseStyle.Render(fmt.Sprintf("%d clones", distribution[r])))
+		fmt.Fprintf(w, "  %s: %d clones\n", r, distribution[r])
 	}
 }
 
-// printTopFiles prints the top N files with most duplicate lines and styling.
-func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int, baseStyle, metricStyle lipgloss.Style) {
+// printTopFiles prints the top N files with most duplicate lines.
+func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 	// Convert to slice for sorting
 	type fileStat struct {
 		filename string
@@ -524,11 +398,11 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int, baseSt
 	limit := min(len(files), topN)
 
 	for i := range limit {
-		fmt.Fprintf(w, "  %s %s\n", metricStyle.Render(fmt.Sprintf("%d lines", files[i].lines)), baseStyle.Render(files[i].filename))
+		fmt.Fprintf(w, "  %d lines in %s\n", files[i].lines, files[i].filename)
 	}
 
 	if len(files) > topN {
-		fmt.Fprintf(w, "  %s\n", baseStyle.Render(fmt.Sprintf("... and %d more files", len(files)-topN)))
+		fmt.Fprintf(w, "  ... and %d more files\n", len(files)-topN)
 	}
 }
 
