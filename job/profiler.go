@@ -16,6 +16,7 @@ type ProfileResult struct {
 	PauseTotalMS float64       // Total GC pause time in ms
 	Duration     time.Duration // Total execution time
 	NumGoroutine int           // Number of goroutines
+	Timestamp   time.Time     // Start timestamp for duration calculation
 }
 
 // Profile captures performance metrics at a point in time.
@@ -49,14 +50,15 @@ func ProfileDiff(start, end ProfileResult) ProfileResult {
 // StartProfile returns a profile with start time.
 func StartProfile() ProfileResult {
 	p := Profile()
-	p.Duration = 0 // Will be calculated in EndProfile
+	p.Timestamp = time.Now()
+	p.Duration = 0
 	return p
 }
 
 // EndProfile completes a profile and calculates duration.
 func EndProfile(start ProfileResult) ProfileResult {
 	end := Profile()
-	end.Duration = time.Since(time.Time{}) // Simplified for now
+	end.Duration = time.Since(start.Timestamp)
 	return end
 }
 

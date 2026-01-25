@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/spf13/cobra"
+	"github.com/LarsArtmann/art-dupl/job"
 )
 
 // NewStatsCommand creates the stats command.
@@ -158,22 +159,29 @@ func runStats(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
+	// Start profiling for timing
+	startProfile := job.StartProfile()
+
 	// Run analysis
 	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
 
+	// End profiling
+	endProfile := job.EndProfile(startProfile)
+	duration := endProfile.Duration
+
 	// Create stats printer
 	p := printer.NewStats(os.Stdout, os.ReadFile, mergedConfig.Threshold)
 
 	// Set file count
-	if sp, ok := p.(interface{ SetFilesCount(int) }); ok {
+	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetFilesCount(filesCount)
 	}
 
 	// Set format
-	if sp, ok := p.(interface{ SetFormat(printer.Format) }); ok {
+	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetFormat(format)
 	}
 
@@ -188,8 +196,22 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	// Set detection methods
-	if sp, ok := p.(interface{ SetDetectionMethods(string) }); ok {
+	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetDetectionMethods(detectionMethodStr)
+	}
+
+	// Set analysis timestamp and duration
+	if sp, ok := p.(printer.StatsPrinter); ok {
+		sp.SetTimestamp(time.Now().UTC().Format(time.RFC3339))
+	}
+	if sp, ok := p.(printer.StatsPrinter); ok {
+		sp.SetAnalysisDuration(duration)
+	}
+
+	// Estimate total lines (rough estimate: 100 lines per file as baseline)
+	if sp, ok := p.(printer.StatsPrinter); ok {
+		estimatedLines := filesCount * 100
+		sp.SetTotalEstimatedLines(estimatedLines)
 	}
 
 	// Build groups from matches

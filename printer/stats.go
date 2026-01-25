@@ -67,6 +67,11 @@ func (p *stats) SetTotalEstimatedLines(lines int) {
 	p.statsData.TotalEstimatedLines = lines
 }
 
+// SetTimestamp sets the analysis timestamp.
+func (p *stats) SetTimestamp(timestamp string) {
+	p.statsData.Timestamp = timestamp
+}
+
 // PrintHeader prints the stats header.
 func (p *stats) PrintHeader() error {
 	return nil
@@ -129,10 +134,39 @@ func (p *stats) PrintFooter() error {
 		p.statsData.ComplexityScore = float64(p.statsData.TotalClones) / float64(p.statsData.TotalCloneGroups)
 	}
 
+	// Calculate duplication ratio (percentage)
+	if p.statsData.TotalEstimatedLines > 0 {
+		p.statsData.DuplicationRatio = float64(p.statsData.TotalDuplicateLines) / float64(p.statsData.TotalEstimatedLines) * 100
+	}
+
+	// Calculate health score based on duplication ratio
+	p.statsData.HealthScore = p.calculateHealthScore()
+
 	// Print statistics
 	p.printStats()
 
 	return nil
+}
+
+// calculateHealthScore calculates an A-F grade based on duplication metrics.
+func (p *stats) calculateHealthScore() string {
+	if p.statsData.DuplicationRatio == 0 {
+		return "A"
+	}
+
+	ratio := p.statsData.DuplicationRatio
+	switch {
+	case ratio < 3:
+		return "A"
+	case ratio < 6:
+		return "B"
+	case ratio < 10:
+		return "C"
+	case ratio < 15:
+		return "D"
+	default:
+		return "F"
+	}
 }
 
 // printStats prints the collected statistics.
@@ -160,6 +194,12 @@ func (p *stats) printText() {
 	fmt.Fprintf(p.w, "Configuration:\n")
 	fmt.Fprintf(p.w, "  Threshold: %d tokens\n", p.threshold)
 	fmt.Fprintf(p.w, "  Detection Methods: %s\n", p.statsData.DetectionMethods)
+	if p.statsData.Timestamp != "" {
+		fmt.Fprintf(p.w, "  Timestamp: %s\n", p.statsData.Timestamp)
+	}
+	if p.statsData.AnalysisDuration != "" {
+		fmt.Fprintf(p.w, "  Analysis Time: %s\n", p.statsData.AnalysisDuration)
+	}
 	fmt.Fprintf(p.w, "\n")
 
 	fmt.Fprintf(p.w, "Overview:\n")
@@ -170,10 +210,17 @@ func (p *stats) printText() {
 
 	fmt.Fprintf(p.w, "Duplicate Code:\n")
 	fmt.Fprintf(p.w, "  Total Duplicate Lines: %d\n", p.statsData.TotalDuplicateLines)
+	if p.statsData.TotalEstimatedLines > 0 {
+		fmt.Fprintf(p.w, "  Estimated Total Lines: %d\n", p.statsData.TotalEstimatedLines)
+		fmt.Fprintf(p.w, "  Duplication Ratio: %.1f%%\n", p.statsData.DuplicationRatio)
+	}
 	fmt.Fprintf(p.w, "  Total Duplicate Tokens: %d\n", p.statsData.TotalTokens)
 	fmt.Fprintf(p.w, "  Average Clone Size: %d lines\n", p.statsData.AverageCloneSize)
 	fmt.Fprintf(p.w, "  Complexity Score: %.2f\n", p.statsData.ComplexityScore)
 	fmt.Fprintf(p.w, "  Impact Score: %d\n", p.statsData.ImpactScore)
+	if p.statsData.HealthScore != "" {
+		fmt.Fprintf(p.w, "  Health Score: %s\n", p.statsData.HealthScore)
+	}
 	fmt.Fprintf(p.w, "\n")
 
 	// Print size distribution
@@ -204,12 +251,19 @@ func (p *stats) printJSON() {
 			TotalClones  int `json:"totalClones"`
 		} `json:"overview"`
 		DuplicateCode struct {
-			TotalLines       int     `json:"totalDuplicateLines"`
+			TotalLines        int     `json:"totalDuplicateLines"`
+			EstimatedLines   int     `json:"estimatedTotalLines,omitempty"`
 			TotalTokens      int     `json:"totalDuplicateTokens"`
 			AverageCloneSize int     `json:"averageCloneSize"`
 			ComplexityScore  float64 `json:"complexityScore"`
 			ImpactScore      int     `json:"impactScore"`
+			DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
 		} `json:"duplicateCode"`
+		Metrics struct {
+			HealthScore     string `json:"healthScore,omitempty"`
+			AnalysisTime   string `json:"analysisTime,omitempty"`
+			Timestamp       string `json:"timestamp,omitempty"`
+		} `json:"metrics"`
 		SizeDistribution map[string]int `json:"sizeDistribution"`
 		TopFiles         []struct {
 			Filename string `json:"filename"`
@@ -232,6 +286,21 @@ func (p *stats) printJSON() {
 	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
 	jsonData.DuplicateCode.ComplexityScore = p.statsData.ComplexityScore
 	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
+	if p.statsData.TotalEstimatedLines > 0 {
+		jsonData.DuplicateCode.EstimatedLines = p.statsData.TotalEstimatedLines
+		jsonData.DuplicateCode.DuplicationRatio = p.statsData.DuplicationRatio
+	}
+
+	// Fill metrics
+	if p.statsData.HealthScore != "" {
+		jsonData.Metrics.HealthScore = p.statsData.HealthScore
+	}
+	if p.statsData.AnalysisDuration != "" {
+		jsonData.Metrics.AnalysisTime = p.statsData.AnalysisDuration
+	}
+	if p.statsData.Timestamp != "" {
+		jsonData.Metrics.Timestamp = p.statsData.Timestamp
+	}
 
 	// Fill size distribution
 	jsonData.SizeDistribution = p.statsData.SizeDistribution
@@ -338,7 +407,7 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 }
 
 // GetStatsData returns the collected statistics data.
-func (p *stats) GetStatsData() *StatsData {
+func (p *stats) GetStatsData() interface{} {
 	return p.statsData
 }
 
