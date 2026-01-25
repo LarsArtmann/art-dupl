@@ -134,12 +134,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
-	if allFlag {
-		return runAllModes(mergedConfig, sortBy, outputDir)
-	}
-
 	// Get context from Cobra (includes Fang's signal handling)
 	ctx := cmd.Context()
+
+	if allFlag {
+		return runAllModes(ctx, mergedConfig, sortBy, outputDir)
+	}
 	// Add timeout context if specified
 	if mergedConfig.Timeout > 0 {
 		var cancel context.CancelFunc
@@ -147,7 +147,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		defer cancel()
 		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
 	}
-	duplChan, filesCount, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths)
+	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
@@ -342,7 +342,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		}
 	}
 
-	t, data, filesCount, err := buildSuffixTree(ctx, paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
+	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if err != nil {
 		return nil, 0, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
