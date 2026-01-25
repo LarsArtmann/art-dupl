@@ -366,35 +366,13 @@ func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFunc
 	registerJSONTestSuite(t, typeName, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
 }
 
-// createStringTypeTestSuite creates a complete test registration for string-based types.
+// createTypeTestSuite creates a complete test registration for types with JSON support.
 // This helper eliminates repetitive test boilerplate by consolidating:
 // - Standard type tests (constructor, methods)
 // - JSON marshaling tests
 // - JSON unmarshaling tests
 // - Round-trip tests
-func createStringTypeTestSuite[T comparable](
-	typeName string,
-	testFuncs []func(*testing.T),
-	marshalTests []jsonTest[T],
-	unmarshalTests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
-	roundTripValue T,
-	marshalFunc func(T) ([]byte, error),
-	unmarshalFunc func(*T, []byte) error,
-) func(*testing.T) {
-	return func(t *testing.T) {
-		t.Helper()
-		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
-	}
-}
-
-// createUintTypeTestSuite creates a complete test registration for uint-based types.
-// This helper eliminates repetitive test boilerplate for numeric types.
-func createUintTypeTestSuite[T comparable](
+func createTypeTestSuite[T comparable](
 	typeName string,
 	testFuncs []func(*testing.T),
 	marshalTests []jsonTest[T],
@@ -445,31 +423,9 @@ func createStandardUintJSONTests[T comparable](
 	return
 }
 
-// createFloatTypeTestSuite creates a complete test registration for float-based types.
-// This helper eliminates repetitive test boilerplate for floating-point types.
-func createFloatTypeTestSuite[T comparable](
-	typeName string,
-	testFuncs []func(*testing.T),
-	marshalTests []jsonTest[T],
-	unmarshalTests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
-	roundTripValue T,
-	marshalFunc func(T) ([]byte, error),
-	unmarshalFunc func(*T, []byte) error,
-) func(*testing.T) {
-	return func(t *testing.T) {
-		t.Helper()
-		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
-	}
-}
-
 // TestCloneID tests CloneID type.
 func TestCloneID(t *testing.T) {
-	createStringTypeTestSuite("CloneID",
+	createTypeTestSuite("CloneID",
 		[]func(*testing.T){TestCloneID_NewCloneID, TestCloneID_String},
 		[]jsonTest[CloneID]{
 			{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
@@ -529,7 +485,7 @@ func TestLineNumber_Uint(t *testing.T) {
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
 	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(LineNumber(10), "10")
-	createUintTypeTestSuite("LineNumber",
+	createTypeTestSuite("LineNumber",
 		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
 		marshalTests,
 		unmarshalTests,
@@ -626,7 +582,7 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence tests Confidence type.
 func TestConfidence(t *testing.T) {
-	createFloatTypeTestSuite("Confidence",
+	createTypeTestSuite("Confidence",
 		[]func(*testing.T){TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String},
 		[]jsonTest[Confidence]{
 			{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
@@ -743,7 +699,7 @@ func TestProcessingTime_String(t *testing.T) {
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
 	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(ProcessingTime(500), "500")
-	createUintTypeTestSuite("ProcessingTime",
+	createTypeTestSuite("ProcessingTime",
 		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
 		marshalTests,
 		unmarshalTests,
@@ -838,7 +794,7 @@ func TestThreshold_Uint(t *testing.T) {
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
 	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(Threshold(15), "15")
-	createUintTypeTestSuite("Threshold",
+	createTypeTestSuite("Threshold",
 		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
 		marshalTests,
 		unmarshalTests,
