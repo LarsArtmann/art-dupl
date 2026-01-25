@@ -220,6 +220,15 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	}
 }
 
+// uintTypeNames defines all uint-based type names for testing
+var uintTypeNames = []string{
+	"BytePosition",
+	"TokenCount",
+	"ComplexityScore",
+	"FileCount",
+	"CloneCount",
+}
+
 // TestCase represents a test case with a name and test function.
 // This struct eliminates duplicate anonymous struct definitions across test helper functions.
 type TestCase struct {
@@ -251,10 +260,12 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 
 // registerTestForType is a generic helper that eliminates code duplication by handling the common pattern.
 // This function encapsulates the repetitive logic for testing uint-based types.
-func registerTestForType[T any](t *testing.T, typeName string, constructor func(uint) T, 
+// It delegates to createUintTypeTest to maintain consistency.
+func registerTestForType[T comparable](t *testing.T, typeName string, constructor func(uint) T, 
 	getUint func(T) uint, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
 	t.Helper()
-	registerUintTypeTest(t, typeName, constructor, getUint, marshal, unmarshal)
+	testCase := createUintTypeTest(typeName, constructor, getUint, marshal, unmarshal)
+	testCase.test(t)
 }
 
 // UintWrapper defines the common interface for uint-based types.
