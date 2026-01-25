@@ -200,7 +200,7 @@ type UintWrapper interface {
 
 // createUintTestCaseGeneric creates a test case for a uint-based wrapper type using type inference.
 // This helper reduces boilerplate by leveraging the UintWrapper interface and type methods directly.
-func createUintTestCaseGeneric[T UintWrapper](
+func createUintTestCaseGeneric[T interface{ UintWrapper; comparable }](
 	typeName string,
 	newFunc func(uint) T,
 ) struct {
@@ -213,8 +213,6 @@ func createUintTestCaseGeneric[T UintWrapper](
 	}{
 		name: typeName,
 		test: func(t *testing.T) {
-			// Create instance for method extraction
-			instance := newFunc(42)
 			registerUintTypeTest(
 				t,
 				typeName,
