@@ -21,6 +21,16 @@ func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVa
 	return typed, nil
 }
 
+// unmarshalStringTypeToPointer unmarshals JSON into a pointer to a string type with validation.
+func unmarshalStringTypeToPointer[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string, target *T) error {
+	val, err := unmarshalStringType[T](data, isValid, defaultVal, typeName)
+	if err != nil {
+		return err
+	}
+	*target = val
+	return nil
+}
+
 // DetectionMethod represents the detection method type.
 type DetectionMethod string
 
@@ -60,16 +70,12 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	val, err := unmarshalStringType[DetectionMethod](data,
+	return unmarshalStringTypeToPointer(data,
 		func(s DetectionMethod) bool { return s.IsValid() },
 		DetectionMethodArtDupl,
 		"detection method",
+		dm,
 	)
-	if err != nil {
-		return err
-	}
-	*dm = val
-	return nil
 }
 
 // OutputFormat represents the output format type.
@@ -108,16 +114,12 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	val, err := unmarshalStringType[OutputFormat](data,
+	return unmarshalStringTypeToPointer(data,
 		func(s OutputFormat) bool { return s.IsValid() },
 		OutputFormatText,
 		"output format",
+		of,
 	)
-	if err != nil {
-		return err
-	}
-	*of = val
-	return nil
 }
 
 // SortCriteria represents the sort criteria type.
@@ -155,16 +157,12 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	val, err := unmarshalStringType[SortCriteria](data,
+	return unmarshalStringTypeToPointer(data,
 		func(s SortCriteria) bool { return s.IsValid() },
 		SortBySize,
 		"sort criteria",
+		sc,
 	)
-	if err != nil {
-		return err
-	}
-	*sc = val
-	return nil
 }
 
 // AllOutputFormats returns all supported output formats.
