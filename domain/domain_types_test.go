@@ -202,63 +202,66 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	}
 }
 
+// createUintTypeTest generates a test case for a uint-based type.
+// This helper eliminates repetitive boilerplate by auto-generating the standard test functions:
+// - Constructor (Type(uint))
+// - Uint() method
+// - MarshalJSON() method
+// - UnmarshalJSON() method
+//
+// Parameters:
+//   - typeName: Name of the type being tested (e.g., "BytePosition")
+//   - newFunc: Constructor function that creates the type from uint
+//   - uintFunc: Method that extracts uint from the type
+//   - marshalFunc: Method that marshals the type to JSON
+//   - unmarshalFunc: Method that unmarshals JSON to the type
+func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) struct {
+	name string
+	test func(*testing.T)
+} {
+	return struct {
+		name string
+		test func(*testing.T)
+	}{
+		name: typeName,
+		test: func(t *testing.T) {
+			registerUintTypeTest(t, typeName, newFunc, uintFunc, marshalFunc, unmarshalFunc)
+		},
+	}
+}
+
 // TestUintTypes consolidates tests for all simple uint wrapper types.
-// Uses the registerUintTypeTest helper to reduce boilerplate and eliminate code duplication.
+// Uses the createUintTypeTest helper to reduce boilerplate and eliminate code duplication.
 func TestUintTypes(t *testing.T) {
 	tests := []struct {
 		name string
 		test func(*testing.T)
 	}{
-		{
-			name: "BytePosition",
-			test: func(t *testing.T) {
-				registerUintTypeTest(t, "BytePosition",
-					func(u uint) BytePosition { return BytePosition(u) },
-					func(bp BytePosition) uint { return bp.Uint() },
-					func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
-					func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) })
-			},
-		},
-		{
-			name: "TokenCount",
-			test: func(t *testing.T) {
-				registerUintTypeTest(t, "TokenCount",
-					func(u uint) TokenCount { return TokenCount(u) },
-					func(tc TokenCount) uint { return tc.Uint() },
-					func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
-					func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) })
-			},
-		},
-		{
-			name: "ComplexityScore",
-			test: func(t *testing.T) {
-				registerUintTypeTest(t, "ComplexityScore",
-					func(u uint) ComplexityScore { return ComplexityScore(u) },
-					func(cs ComplexityScore) uint { return cs.Uint() },
-					func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
-					func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) })
-			},
-		},
-		{
-			name: "FileCount",
-			test: func(t *testing.T) {
-				registerUintTypeTest(t, "FileCount",
-					func(u uint) FileCount { return FileCount(u) },
-					func(fc FileCount) uint { return fc.Uint() },
-					func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
-					func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) })
-			},
-		},
-		{
-			name: "CloneCount",
-			test: func(t *testing.T) {
-				registerUintTypeTest(t, "CloneCount",
-					func(u uint) CloneCount { return CloneCount(u) },
-					func(cc CloneCount) uint { return cc.Uint() },
-					func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
-					func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) })
-			},
-		},
+		createUintTypeTest("BytePosition",
+			func(u uint) BytePosition { return BytePosition(u) },
+			func(bp BytePosition) uint { return bp.Uint() },
+			func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
+			func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) }),
+		createUintTypeTest("TokenCount",
+			func(u uint) TokenCount { return TokenCount(u) },
+			func(tc TokenCount) uint { return tc.Uint() },
+			func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
+			func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) }),
+		createUintTypeTest("ComplexityScore",
+			func(u uint) ComplexityScore { return ComplexityScore(u) },
+			func(cs ComplexityScore) uint { return cs.Uint() },
+			func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
+			func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) }),
+		createUintTypeTest("FileCount",
+			func(u uint) FileCount { return FileCount(u) },
+			func(fc FileCount) uint { return fc.Uint() },
+			func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
+			func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) }),
+		createUintTypeTest("CloneCount",
+			func(u uint) CloneCount { return CloneCount(u) },
+			func(cc CloneCount) uint { return cc.Uint() },
+			func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
+			func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) }),
 	}
 
 	for _, tc := range tests {
