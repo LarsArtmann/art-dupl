@@ -796,20 +796,16 @@ func TestAnalysisID_NewAnalysisID(t *testing.T) {
 
 // TestFilepath_NewFilepath tests the NewFilepath constructor.
 func TestFilepath_NewFilepath(t *testing.T) {
-	registerStringConstructorTest(t, "NewFilepath", []constructorTest[Filepath]{
-		{name: "valid filepath", input: "/path/to/file.go", want: Filepath("/path/to/file.go"), wantError: false},
-		{name: "relative path", input: "./file.go", want: Filepath("./file.go"), wantError: false},
-		emptyStringErrorTest[Filepath](),
-	}, NewFilepath)
+	registerBasicStringConstructorTest(t, "NewFilepath", "/path/to/file.go", Filepath("/path/to/file.go"), NewFilepath,
+		constructorTest[Filepath]{name: "relative path", input: "./file.go", want: Filepath("./file.go"), wantError: false},
+	)
 }
 
 // TestHash_NewHash tests the NewHash constructor.
 func TestHash_NewHash(t *testing.T) {
-	registerStringConstructorTest(t, "NewHash", []constructorTest[Hash]{
-		{name: "valid SHA256 hash", input: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", want: Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"), wantError: false},
-		{name: "short hash", input: "abc123", want: Hash("abc123"), wantError: false},
-		emptyStringErrorTest[Hash](),
-	}, NewHash)
+	registerBasicStringConstructorTest(t, "NewHash", "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"), NewHash,
+		constructorTest[Hash]{name: "short hash", input: "abc123", want: Hash("abc123"), wantError: false},
+	)
 }
 
 // TestThreshold_NewThreshold tests the NewThreshold constructor.
