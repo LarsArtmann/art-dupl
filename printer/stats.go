@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -25,12 +26,17 @@ type StatsData struct {
 	TotalClones          int
 	TotalDuplicateLines  int
 	TotalTokens          int
+	TotalEstimatedLines  int // Estimated total lines for duplication percentage
 	AverageCloneSize     int
 	ComplexityScore      float64
 	ImpactScore         int
+	DuplicationRatio   float64 // Percentage of duplicated code
+	AnalysisDuration   string   // Time taken for analysis
+	HealthScore        string   // A-F grade based on metrics
 	FileDuplication      map[string]int // filename -> duplicate line count
 	SizeDistribution     map[string]int // size range -> count
 	DetectionMethods     string
+	Timestamp          string // ISO 8601 timestamp
 }
 
 // NewStats creates a new stats printer.
@@ -49,6 +55,16 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 // SetFilesCount sets the total number of files scanned.
 func (p *stats) SetFilesCount(count int) {
 	p.statsData.TotalFilesScanned = count
+}
+
+// SetAnalysisDuration sets the analysis duration.
+func (p *stats) SetAnalysisDuration(duration time.Duration) {
+	p.statsData.AnalysisDuration = duration.String()
+}
+
+// SetTotalEstimatedLines sets the estimated total lines of code.
+func (p *stats) SetTotalEstimatedLines(lines int) {
+	p.statsData.TotalEstimatedLines = lines
 }
 
 // PrintHeader prints the stats header.

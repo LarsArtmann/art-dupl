@@ -138,18 +138,16 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return runAllModes(mergedConfig, sortBy, outputDir)
 	}
 
+	// Get context from Cobra (includes Fang's signal handling)
+	ctx := cmd.Context()
 	// Add timeout context if specified
-	ctx := context.Background()
 	if mergedConfig.Timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, time.Duration(mergedConfig.Timeout)*time.Second)
 		defer cancel()
 		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
-		// Note: Timeout context is configured but not yet passed through the analysis pipeline
-		// This would require refactoring executeAnalysis to accept and propagate context
 	}
-	// For now, timeout config is stored but not fully implemented in analysis
-	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
+	duplChan, filesCount, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
