@@ -102,7 +102,7 @@ func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) (
 }
 
 // constructorTest is a helper for testing constructors that may return errors.
-type constructorTest[T comparable] struct {
+type constructorTest[T any] struct {
 	name      string
 	input     any
 	want      T
@@ -110,7 +110,7 @@ type constructorTest[T comparable] struct {
 }
 
 // runConstructorTests runs a series of constructor tests with error checking.
-func runConstructorTests[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], newFunc func(any) (T, error)) {
+func runConstructorTests[T any](t *testing.T, constructorName string, tests []constructorTest[T], newFunc func(any) (T, error)) {
 	t.Helper()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -129,6 +129,16 @@ func runConstructorTests[T comparable](t *testing.T, constructorName string, tes
 				if gotErr != nil {
 					t.Errorf("%s() unexpected error: %v", constructorName, gotErr)
 					return
+				}
+				// Special handling for uint-based types
+				switch v := any(got).(type) {
+				case interface{ Uint() uint }:
+					if wantWrapper, ok := any(tt.want).(interface{ Uint() uint }); ok {
+						if v.Uint() != wantWrapper.Uint() {
+							t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
+						}
+						return
+					}
 				}
 				if got != tt.want {
 					t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
@@ -507,29 +517,10 @@ func TestCloneID(t *testing.T) {
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 func TestLineNumber_NewLineNumber(t *testing.T) {
-	tests := []constructorTest[LineNumber]{
-		{
-			name:      "valid line number",
-			input:     uint(1),
-			want:      LineNumber(1),
-			wantError: false,
-		},
-		{
-			name:      "another valid line number",
-			input:     uint(42),
-			want:      LineNumber(42),
-			wantError: false,
-		},
-		{
-			name:      "zero should error",
-			input:     uint(0),
-			want:      0,
-			wantError: true,
-		},
-	}
-	runConstructorTests(t, "NewLineNumber", tests, func(input any) (LineNumber, error) {
-		return NewLineNumber(input.(uint))
-	})
+	registerBasicUintConstructorTest(t, "NewLineNumber", 
+		uint(1), uint(42), 
+		LineNumber(1), LineNumber(42),
+		NewLineNumber)
 }
 
 // TestLineNumber_Uint tests the Uint method.
@@ -832,6 +823,23 @@ func runStringMethodTests[T any](t *testing.T, tests []struct {
 	}
 }
 
+// registerBasicUintConstructorTest creates and runs basic tests for a uint-based constructor.
+// It automatically includes valid test cases and a zero error test.
+// Additional custom tests can be provided via the extraTests parameter.
+// This helper reduces boilerplate for simple uint constructors with standard validation.
+func registerBasicUintConstructorTest[T any](t *testing.T, constructorName string, validValue1, validValue2 uint, expectedValue1, expectedValue2 T, constructorFunc func(uint) (T, error), extraTests ...constructorTest[T]) {
+	t.Helper()
+	tests := []constructorTest[T]{
+		{name: "valid " + constructorName, input: validValue1, want: expectedValue1, wantError: false},
+		{name: "another valid " + constructorName, input: validValue2, want: expectedValue2, wantError: false},
+		{name: "zero should error", input: uint(0), want: *new(T), wantError: true},
+	}
+	tests = append(tests, extraTests...)
+	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
+		return constructorFunc(input.(uint))
+	})
+}
+
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
 // This helper reduces boilerplate when creating tests for types constructed
 // from strings with validation logic.
@@ -882,13 +890,10 @@ func TestHash_NewHash(t *testing.T) {
 
 // TestThreshold_NewThreshold tests the NewThreshold constructor.
 func TestThreshold_NewThreshold(t *testing.T) {
-	tests := []constructorTest[Threshold]{
-		{name: "valid threshold", input: uint(15), want: Threshold(15), wantError: false},
-		{name: "zero should error", input: uint(0), want: 0, wantError: true},
-	}
-	runConstructorTests(t, "NewThreshold", tests, func(input any) (Threshold, error) {
-		return NewThreshold(input.(uint))
-	})
+	registerBasicUintConstructorTest(t, "NewThreshold", 
+		uint(15), uint(30), 
+		Threshold(15), Threshold(30),
+		NewThreshold)
 }
 
 // TestThreshold_Uint tests the Uint method.
