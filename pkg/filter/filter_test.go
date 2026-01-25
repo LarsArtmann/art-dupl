@@ -50,6 +50,16 @@ func runFileContentTestCases(t *testing.T, tests []fileContentTest, detectionFun
 	)
 }
 
+// runMatchPatternTestCases is a helper for running match pattern test cases.
+func runMatchPatternTestCases(t *testing.T, tests []matchPatternTest) {
+	t.Helper()
+	runTestCases(t, tests,
+		matchPatternTest.GetName,
+		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
+		matchPatternTest.GetExpected,
+	)
+}
+
 type containsTest struct {
 	name   string
 	slice  []string
@@ -186,11 +196,7 @@ func TestMatchPattern(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests,
-		matchPatternTest.GetName,
-		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
-		matchPatternTest.GetExpected,
-	)
+	runMatchPatternTestCases(t, tests)
 }
 
 // Property-based tests for filter logic
