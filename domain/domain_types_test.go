@@ -30,6 +30,17 @@ func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintT
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
 				got := tt.newFunc(tc.input)
+				// For types implementing UintWrapper, compare using Uint() to get value comparison
+				// rather than pointer comparison
+				if uintWrapper, ok := any(got).(interface{ Uint() uint }); ok {
+					if wantWrapper, ok := any(tc.want).(interface{ Uint() uint }); ok {
+						if uintWrapper.Uint() != wantWrapper.Uint() {
+							t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
+						}
+						return
+					}
+				}
+				// Fallback for non-UintWrapper types
 				if got != tc.want {
 					t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
 				}
@@ -51,7 +62,9 @@ func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintT
 		if err := tt.jsonUnmarshal(&result, data); err != nil {
 			t.Fatalf("UnmarshalJSON() error: %v", err)
 		}
-		if result != original {
+		// Compare using the uint function to get value comparison
+		// rather than pointer comparison (for pointer types)
+		if tt.uintFunc(result) != tt.uintFunc(original) {
 			t.Errorf("Round trip failed: %v != %v", result, original)
 		}
 	})
@@ -200,10 +213,8 @@ type UintWrapper interface {
 
 // createUintTestCaseGeneric creates a test case for a uint-based wrapper type using type inference.
 // This helper reduces boilerplate by leveraging the UintWrapper interface and type methods directly.
-func createUintTestCaseGeneric[T interface{ UintWrapper; comparable }](
-	typeName string,
-	newFunc func(uint) T,
-) struct {
+// It now handles both value types (e.g., BytePosition) and pointer types (e.g., *BytePosition).
+func createUintTestCaseGeneric[T interface{ UintWrapper; comparable }](typeName string, newFunc func(uint) T) struct {
 	name string
 	test func(*testing.T)
 } {
@@ -219,12 +230,19 @@ func createUintTestCaseGeneric[T interface{ UintWrapper; comparable }](
 				newFunc,
 				func(pw T) uint { return pw.Uint() },
 				func(pw T) ([]byte, error) { return pw.MarshalJSON() },
-				func(pw *T, data []byte) error {
-					// Get the pointer value and call UnmarshalJSON
-					return (*pw).UnmarshalJSON(data)
-				},
+				func(pw *T, data []byte) error { return pw.UnmarshalJSON(data) },
 			)
 		},
+	}
+}
+
+// uintPtrFactory creates a pointer factory for a uint-based wrapper type.
+// This helper eliminates the boilerplate of creating pointer-based constructors
+// for uint wrapper types by providing a generic conversion function.
+func uintPtrFactory[T interface{ ~uint }](typeName string) func(uint) *T {
+	return func(u uint) *T {
+		v := T(u)
+		return &v
 	}
 }
 
@@ -235,26 +253,11 @@ func TestUintTypes(t *testing.T) {
 		name string
 		test func(*testing.T)
 	}{
-		createUintTestCaseGeneric("BytePosition", func(u uint) *BytePosition {
-			bp := BytePosition(u)
-			return &bp
-		}),
-		createUintTestCaseGeneric("TokenCount", func(u uint) *TokenCount {
-			tc := TokenCount(u)
-			return &tc
-		}),
-		createUintTestCaseGeneric("ComplexityScore", func(u uint) *ComplexityScore {
-			cs := ComplexityScore(u)
-			return &cs
-		}),
-		createUintTestCaseGeneric("FileCount", func(u uint) *FileCount {
-			fc := FileCount(u)
-			return &fc
-		}),
-		createUintTestCaseGeneric("CloneCount", func(u uint) *CloneCount {
-			cc := CloneCount(u)
-			return &cc
-		}),
+		createUintTestCaseGeneric("BytePosition", func(u uint) BytePosition { return BytePosition(u) }),
+		createUintTestCaseGeneric("TokenCount", func(u uint) TokenCount { return TokenCount(u) }),
+		createUintTestCaseGeneric("ComplexityScore", func(u uint) ComplexityScore { return ComplexityScore(u) }),
+		createUintTestCaseGeneric("FileCount", func(u uint) FileCount { return FileCount(u) }),
+		createUintTestCaseGeneric("CloneCount", func(u uint) CloneCount { return CloneCount(u) }),
 	}
 
 	for _, tc := range tests {
