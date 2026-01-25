@@ -330,11 +330,24 @@ func registerStandardTypeTest(t *testing.T, typeName string, testFuncs ...func(*
 	}
 }
 
+// registerTypeTestSuite creates and runs a complete test suite for types with JSON support.
+// This helper combines standard type tests with JSON marshaling/unmarshaling tests.
+// It reduces boilerplate by consolidating registerStandardTypeTest and registerJSONTestSuite calls.
+func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFuncs []func(*testing.T), marshalTests []jsonTest[T], unmarshalTests []struct {
+	name      string
+	input     string
+	want      T
+	wantError bool
+}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+	t.Helper()
+	registerStandardTypeTest(t, typeName, testFuncs...)
+	registerJSONTestSuite(t, typeName, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+}
+
 // TestCloneID tests CloneID type.
 func TestCloneID(t *testing.T) {
-	registerStandardTypeTest(t, "CloneID", TestCloneID_NewCloneID, TestCloneID_String)
-
-	registerJSONTestSuite(t, "CloneID",
+	registerTypeTestSuite(t, "CloneID",
+		[]func(*testing.T){TestCloneID_NewCloneID, TestCloneID_String},
 		[]jsonTest[CloneID]{
 			{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
 			{name: "empty ID should error", input: CloneID(""), want: "", wantErr: true},
@@ -392,9 +405,8 @@ func TestLineNumber_Uint(t *testing.T) {
 
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
-	registerStandardTypeTest(t, "LineNumber", TestLineNumber_NewLineNumber, TestLineNumber_Uint)
-
-	registerJSONTestSuite(t, "LineNumber",
+	registerTypeTestSuite(t, "LineNumber",
+		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
 		[]jsonTest[LineNumber]{
 			{name: "valid line number", input: LineNumber(10), want: `10`, wantErr: false},
 			{name: "zero line number should error", input: LineNumber(0), want: "", wantErr: true},
@@ -502,9 +514,8 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence tests Confidence type.
 func TestConfidence(t *testing.T) {
-	registerStandardTypeTest(t, "Confidence", TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String)
-
-	registerJSONTestSuite(t, "Confidence",
+	registerTypeTestSuite(t, "Confidence",
+		[]func(*testing.T){TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String},
 		[]jsonTest[Confidence]{
 			{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
 			{name: "valid confidence 1.0", input: Confidence(1.0), want: `1`, wantErr: false},
@@ -619,9 +630,8 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
-	registerStandardTypeTest(t, "ProcessingTime", TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String)
-
-	registerJSONTestSuite(t, "ProcessingTime",
+	registerTypeTestSuite(t, "ProcessingTime",
+		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
 		[]jsonTest[ProcessingTime]{
 			{name: "valid processing time", input: ProcessingTime(500), want: `500`, wantErr: false},
 			{name: "zero should error", input: ProcessingTime(0), want: "", wantErr: true},
@@ -705,8 +715,8 @@ func TestHash_NewHash(t *testing.T) {
 	}, NewHash)
 }
 
-// TestThreshold tests Threshold type.
-func TestThreshold(t *testing.T) {
+// TestThreshold_NewThreshold tests the NewThreshold constructor.
+func TestThreshold_NewThreshold(t *testing.T) {
 	tests := []constructorTest[Threshold]{
 		{name: "valid threshold", input: uint(15), want: Threshold(15), wantError: false},
 		{name: "zero should error", input: uint(0), want: 0, wantError: true},
@@ -714,15 +724,20 @@ func TestThreshold(t *testing.T) {
 	runConstructorTests(t, "NewThreshold", tests, func(input any) (Threshold, error) {
 		return NewThreshold(input.(uint))
 	})
+}
 
-	t.Run("Uint", func(t *testing.T) {
-		th := Threshold(30)
-		if got := th.Uint(); got != 30 {
-			t.Errorf("Uint() = %v, want %v", got, 30)
-		}
-	})
+// TestThreshold_Uint tests the Uint method.
+func TestThreshold_Uint(t *testing.T) {
+	th := Threshold(30)
+	if got := th.Uint(); got != 30 {
+		t.Errorf("Uint() = %v, want %v", got, 30)
+	}
+}
 
-	registerJSONTestSuite(t, "Threshold",
+// TestThreshold tests Threshold type.
+func TestThreshold(t *testing.T) {
+	registerTypeTestSuite(t, "Threshold",
+		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
 		[]jsonTest[Threshold]{
 			{name: "valid threshold", input: Threshold(15), want: `15`, wantErr: false},
 			{name: "zero should error", input: Threshold(0), want: "", wantErr: true},
