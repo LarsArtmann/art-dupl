@@ -147,6 +147,19 @@ func TestStatsDataAggregation(t *testing.T) {
 	}
 }
 
+// createCloneNodeGroup creates a group of clone nodes with specified files
+func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
+	var dups [][]*syntax.Node
+	for _, filename := range filenames {
+		nodes := []*syntax.Node{
+			&syntax.Node{Filename: filename, Pos: 1, End: 3, Type: 1},
+			&syntax.Node{Filename: filename, Pos: 2, End: 4, Type: 2},
+		}
+		dups = append(dups, nodes)
+	}
+	return dups
+}
+
 func TestStatsComplexityScore(t *testing.T) {
 	var buf bytes.Buffer
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
@@ -154,20 +167,7 @@ func TestStatsComplexityScore(t *testing.T) {
 
 	// Simulate: 3 clone groups, 9 total clones = complexity 3.0
 	for i := 0; i < 3; i++ {
-		dups := [][]*syntax.Node{
-			{
-				&syntax.Node{Filename: "file1.go", Pos: 1, End: 3, Type: 1},
-				&syntax.Node{Filename: "file1.go", Pos: 2, End: 4, Type: 2},
-			},
-			{
-				&syntax.Node{Filename: "file2.go", Pos: 1, End: 3, Type: 1},
-				&syntax.Node{Filename: "file2.go", Pos: 2, End: 4, Type: 2},
-			},
-			{
-				&syntax.Node{Filename: "file3.go", Pos: 1, End: 3, Type: 1},
-				&syntax.Node{Filename: "file3.go", Pos: 2, End: 4, Type: 2},
-			},
-		}
+		dups := createCloneNodeGroup([]string{"file1.go", "file2.go", "file3.go"})
 
 		if err := statsPrinter.PrintClones(dups); err != nil {
 			t.Fatalf("PrintClones failed: %v", err)
