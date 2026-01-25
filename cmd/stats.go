@@ -36,6 +36,7 @@ Statistics include:
 Examples:
   art-dupl stats                    # Show stats for current directory (text format)
   art-dupl stats --format json .    # Show stats in JSON format (machine-readable)
+  art-dupl stats --format csv .     # Show stats in CSV format (spreadsheets)
   art-dupl stats ./src ./lib        # Show stats for specific paths
   art-dupl stats -t 20 .            # Show stats with higher threshold
   art-dupl stats -t 50 --format json . | jq '.overview.totalClones'
@@ -60,7 +61,7 @@ Examples:
 	cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (templ files are filtered by default unless this flag is set)")
 	cmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
-	cmd.Flags().String("format", "text", "output format: text, json (default: text)")
+	cmd.Flags().String("format", "text", "output format: text, json, csv (default: text)")
 
 	return cmd
 }

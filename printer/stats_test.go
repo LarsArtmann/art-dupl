@@ -290,7 +290,8 @@ func TestPrintSizeDistribution(t *testing.T) {
 	printSizeDistribution(&buf, distribution)
 
 	output := buf.String()
-	expectedRanges := []string{"1-5 lines: 10", "6-10 lines: 5", "11-20 lines: 3"}
+	// Expected format: "  1-5 lines      :   10 clones [████████████████████] 55.6%"
+	expectedRanges := []string{"1-5 lines", "10 clones", "6-10 lines", "5 clones", "11-20 lines", "3 clones"}
 
 	for _, expected := range expectedRanges {
 		if !strings.Contains(output, expected) {
@@ -298,9 +299,16 @@ func TestPrintSizeDistribution(t *testing.T) {
 		}
 	}
 
+	// Check that output contains bars
+	if !strings.Contains(output, "█") {
+		t.Error("Output doesn't contain ASCII bars")
+	}
+
 	// Check that output is sorted (1-5 should come before 6-10)
-	if found := strings.Contains(output, "1-5"); !found {
-		t.Error("Output doesn't contain sorted '1-5 lines'")
+	idx1 := strings.Index(output, "1-5 lines")
+	idx2 := strings.Index(output, "6-10 lines")
+	if idx1 == -1 || idx2 == -1 || idx1 > idx2 {
+		t.Error("Output is not properly sorted")
 	}
 }
 
