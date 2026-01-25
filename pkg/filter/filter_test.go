@@ -37,6 +37,9 @@ type fileContentTest struct {
 	expected bool
 }
 
+func (t fileContentTest) GetName() string  { return t.name }
+func (t fileContentTest) GetExpected() bool { return t.expected }
+
 type containsTest struct {
 	name   string
 	slice  []string
@@ -44,12 +47,18 @@ type containsTest struct {
 	expect bool
 }
 
+func (t containsTest) GetName() string  { return t.name }
+func (t containsTest) GetExpected() bool { return t.expect }
+
 type matchPatternTest struct {
 	name     string
 	path     string
 	pattern  string
 	expected bool
 }
+
+func (t matchPatternTest) GetName() string  { return t.name }
+func (t matchPatternTest) GetExpected() bool { return t.expected }
 
 func TestNewFilter(t *testing.T) {
 	t.Parallel()
@@ -168,9 +177,9 @@ func TestMatchPattern(t *testing.T) {
 	}
 
 	runTestCases(t, tests,
-		func(tt matchPatternTest) string { return tt.name },
+		matchPatternTest.GetName,
 		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
-		func(tt matchPatternTest) bool { return tt.expected },
+		matchPatternTest.GetExpected,
 	)
 }
 
@@ -367,9 +376,9 @@ type User struct {
 	}
 
 	runTestCases(t, tests,
-		func(tt fileContentTest) string { return tt.name },
+		fileContentTest.GetName,
 		func(tt fileContentTest) bool { return isSQLCGenerated(tt.filePath, tt.content) },
-		func(tt fileContentTest) bool { return tt.expected },
+		fileContentTest.GetExpected,
 	)
 }
 
@@ -413,9 +422,9 @@ func Helper() string {
 	}
 
 	runTestCases(t, tests,
-		func(tt fileContentTest) string { return tt.name },
+		fileContentTest.GetName,
 		func(tt fileContentTest) bool { return isTemplGenerated(tt.filePath, tt.content) },
-		func(tt fileContentTest) bool { return tt.expected },
+		fileContentTest.GetExpected,
 	)
 }
 
@@ -445,9 +454,9 @@ func TestStringContains(t *testing.T) {
 	}
 
 	runTestCases(t, tests,
-		func(tt containsTest) string { return tt.name },
+		containsTest.GetName,
 		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
-		func(tt containsTest) bool { return tt.expect },
+		containsTest.GetExpected,
 	)
 }
 
