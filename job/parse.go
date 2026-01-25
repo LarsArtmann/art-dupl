@@ -1,18 +1,27 @@
 package job
 
 import (
+	"context"
+
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
+func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan int) {
 	// parse AST
 	achan := make(chan *syntax.Node)
 	countChan := make(chan int, 1)
 	go func() {
 		fileCount := 0
 		for file := range fchan {
+			select {
+			case <-ctx.Done():
+				countChan <- fileCount
+				close(achan)
+				return
+			default:
+			}
 			fileCount++
 			ast, err := golang.Parse(file)
 			if err != nil {
@@ -29,6 +38,12 @@ func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
 	schan := make(chan []*syntax.Node)
 	go func() {
 		for ast := range achan {
+			select {
+			case <-ctx.Done():
+				close(schan)
+				return
+			default:
+			}
 			seq := syntax.Serialize(ast)
 			schan <- seq
 		}

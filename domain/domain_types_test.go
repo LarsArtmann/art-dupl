@@ -281,7 +281,7 @@ type UintConstructor[T interface{ Uint() uint }] func(uint) T
 // registerUintTypeTestGeneric is a generic helper that eliminates code duplication
 // by handling the common pattern for uint-based types that implement UintWrapper.
 // This function encapsulates the repetitive logic for testing uint wrapper types.
-func registerUintTypeTestGeneric[T interface{ Uint() uint }](t *testing.T, typeName string, constructor func(uint) T) {
+func registerUintTypeTestGeneric[T interface{ Uint() uint; comparable }](t *testing.T, typeName string, constructor func(uint) T) {
 	t.Helper()
 	registerTestForType(t, typeName,
 		constructor,
@@ -293,13 +293,7 @@ func registerUintTypeTestGeneric[T interface{ Uint() uint }](t *testing.T, typeN
 			}
 			return nil, fmt.Errorf("type %T does not implement MarshalJSON", v)
 		},
-		func(v *T, data []byte) error {
-			// UnmarshalJSON is defined on the pointer receiver
-			if unmarshaler, ok := any(v).(interface{ UnmarshalJSON([]byte) error }); ok {
-				return unmarshaler.UnmarshalJSON(data)
-			}
-			return fmt.Errorf("type %T does not implement UnmarshalJSON", v)
-		})
+		jsonUnmarshalFuncPtr[T]())
 }
 
 // registerUintTypeByName registers a test for a uint-based type by name.

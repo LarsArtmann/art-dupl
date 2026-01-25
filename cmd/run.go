@@ -196,15 +196,15 @@ func createPrinter(outputFormat config.OutputFormat, threshold int) func(io.Writ
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter, includeVendor bool) (*suffixtree.STree, []*syntax.Node, int, error) {
+func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter, includeVendor bool) (*suffixtree.STree, []*syntax.Node, int, error) {
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Building suffix tree")
 	} else {
 		fmt.Fprint(os.Stderr, "    📖 Parsing files and building analysis tree...")
 	}
 
-	schan, filesCountChan := job.Parse(filesFeedWithOptions(paths, filesFromStdin, filterParam, includeVendor))
-	t, data, done := job.BuildTree(schan)
+	schan, filesCountChan := job.Parse(ctx, filesFeedWithOptions(paths, filesFromStdin, filterParam, includeVendor))
+	t, data, done := job.BuildTree(ctx, schan)
 	<-done
 
 	filesCount := <-filesCountChan
@@ -354,6 +354,11 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		defer close(duplChan)
 		matches := multiDetector.FindDuplOver(cfg.Threshold)
 		for match := range matches {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
 			duplChan <- match
 		}
 	}()
@@ -428,7 +433,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	fmt.Fprintf(os.Stderr, "📂 Running all detection methods and generating all output formats in %s...\n", outputDir)
 
 	// Run analysis once
-	duplChan, filesCount, err := executeAnalysis(cfg, cfg.Paths)
+	duplChan, filesCount, err := executeAnalysis(ctx, cfg, cfg.Paths)
 	if err != nil {
 		return fmt.Errorf("analysis failed for paths %v: %w", cfg.Paths, err)
 	}
