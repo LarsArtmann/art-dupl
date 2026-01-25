@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -66,6 +67,7 @@ Examples:
 
 // runStats implements the stats command.
 func runStats(cmd *cobra.Command, args []string) error {
+	ctx := cmd.Context()
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
 	verbose, _ := cmd.Flags().GetBool("verbose")
@@ -159,11 +161,19 @@ func runStats(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
+	// Add timeout context if specified
+	if mergedConfig.Timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(mergedConfig.Timeout)*time.Second)
+		defer cancel()
+		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
+	}
+
 	// Start profiling for timing
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
+	duplChan, filesCount, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}

@@ -74,17 +74,7 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 	})
 }
 
-// registerUintTypeTest creates and runs the standard test suite for uint-based types.
-// This is a convenience wrapper around testUintTypeSuite that takes individual function parameters.
-func registerUintTypeTest[T any](t *testing.T, typeName string, newFunc func(uint) T, uintFunc func(T) uint, jsonMarshal func(T) ([]byte, error), jsonUnmarshal func(*T, []byte) error) {
-	t.Helper()
-	testUintTypeSuite(t, typeName, testUintType[T]{
-		newFunc:       newFunc,
-		uintFunc:      uintFunc,
-		jsonMarshal:   jsonMarshal,
-		jsonUnmarshal: jsonUnmarshal,
-	})
-}
+
 
 // testJSONRoundTrip is a helper for testing JSON marshaling and unmarshaling.
 func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
@@ -253,10 +243,17 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
-			registerUintTypeTest(t, typeName, newFunc, uintFunc, marshalFunc, unmarshalFunc)
+			testUintTypeSuite(t, typeName, testUintType[T]{
+				newFunc:       newFunc,
+				uintFunc:      uintFunc,
+				jsonMarshal:   marshalFunc,
+				jsonUnmarshal: unmarshalFunc,
+			})
 		},
 	}
 }
+
+
 
 // registerTestForType is a generic helper that eliminates code duplication by handling the common pattern.
 // This function encapsulates the repetitive logic for testing uint-based types.

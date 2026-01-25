@@ -1,6 +1,7 @@
 package job
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 )
 
 func TestBuildTree(t *testing.T) {
+	ctx := context.Background()
 	// Create a simple sequence of nodes
 	nodes := make([]*syntax.Node, 3)
 	for i := range nodes {
@@ -20,7 +22,7 @@ func TestBuildTree(t *testing.T) {
 	close(schan)
 
 	// Test BuildTree
-	tree, data, done := BuildTree(schan)
+	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing to complete
 	select {
@@ -43,11 +45,12 @@ func TestBuildTree(t *testing.T) {
 }
 
 func TestBuildTreeEmptyInput(t *testing.T) {
+	ctx := context.Background()
 	// Test with empty channel
 	schan := make(chan []*syntax.Node)
 	close(schan)
 
-	tree, data, done := BuildTree(schan)
+	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing
 	select {

@@ -2,6 +2,7 @@
 package lib
 
 import (
+	"context"
 	"os"
 	"sort"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-func Run(files []string, threshold int) ([]printer.Issue, error) {
+func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, error) {
 	fchan := make(chan string, 1024)
 	go func() {
 		for _, f := range files {
@@ -19,8 +20,8 @@ func Run(files []string, threshold int) ([]printer.Issue, error) {
 		}
 		close(fchan)
 	}()
-	schan, _ := job.Parse(fchan)
-	t, data, done := job.BuildTree(schan)
+	schan, _ := job.Parse(ctx, fchan)
+	t, data, done := job.BuildTree(ctx, schan)
 	<-done
 
 	// finish stream

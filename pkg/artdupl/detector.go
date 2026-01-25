@@ -175,8 +175,8 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 	}()
 
 	// Parse files and build syntax tree
-	syntaxChan, fileCountChan := job.Parse(fileChan)
-	tree, data, done := job.BuildTree(syntaxChan)
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan)
+	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	// Wait for tree building to complete
 	select {
