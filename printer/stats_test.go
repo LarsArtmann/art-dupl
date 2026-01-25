@@ -42,7 +42,8 @@ func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 	if err := statsPrinter.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
-	return statsPrinter.GetStatsData()
+	data := statsPrinter.GetStatsData()
+	return data.(*StatsData)
 }
 
 func TestStatsDataAggregation(t *testing.T) {
@@ -142,7 +143,7 @@ func TestStatsDataAggregation(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			tt.checkStats(t, statsPrinter.GetStatsData())
+			tt.checkStats(t, statsPrinter.GetStatsData().(*StatsData))
 		})
 	}
 }
@@ -178,7 +179,7 @@ func TestStatsComplexityScore(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData()
+	statsData := statsPrinter.GetStatsData().(*StatsData)
 	expectedComplexity := 9.0 / 3.0 // 9 clones / 3 groups
 	if statsData.ComplexityScore != expectedComplexity {
 		t.Errorf("ComplexityScore = %.2f, want %.2f", statsData.ComplexityScore, expectedComplexity)
@@ -234,7 +235,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData()
+	statsData := statsPrinter.GetStatsData().(*StatsData)
 	if len(statsData.FileDuplication) == 0 {
 		t.Fatal("FileDuplication map is empty")
 	}
@@ -370,7 +371,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 		{"zero clones", 0, 0, 0},
 	}
 
-	for _, tt := range tests {
+		for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
@@ -381,7 +382,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			statsData := statsPrinter.GetStatsData()
+			statsData := statsPrinter.GetStatsData().(*StatsData)
 			if statsData.AverageCloneSize != tt.expectedAverage {
 				t.Errorf("AverageCloneSize = %d, want %d", statsData.AverageCloneSize, tt.expectedAverage)
 			}
