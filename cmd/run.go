@@ -147,7 +147,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		defer cancel()
 		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
 	}
-	duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
+	duplChan, filesCount, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
@@ -285,7 +285,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 }
 
 // executeAnalysis runs the core duplicate analysis logic.
-func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int, error) {
+func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (chan syntax.Match, int, error) {
 	var startProfile job.ProfileResult
 	if cfg.Profile {
 		startProfile = job.StartProfile()
@@ -342,7 +342,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		}
 	}
 
-	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
+	t, data, filesCount, err := buildSuffixTree(ctx, paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if err != nil {
 		return nil, 0, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
