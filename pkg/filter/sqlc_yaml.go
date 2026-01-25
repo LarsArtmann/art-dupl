@@ -113,6 +113,11 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 		return nil, err
 	}
 
+	// Warn if multiple config files found
+	if len(configPaths) > 1 {
+		logger.Default.Warn("multiple sqlc config files found", "count", len(configPaths))
+	}
+
 	var outputDirs []string
 	for configPath, projectRoot := range configPaths {
 		config, err := ParseSQLCConfig(configPath)
