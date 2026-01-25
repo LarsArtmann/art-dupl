@@ -9,7 +9,7 @@ import (
 )
 
 // testUintType is a helper for testing uint-based types with New*, Uint(), and RoundTrip methods.
-type testUintType[T comparable] struct {
+type testUintType[T any] struct {
 	newFunc       func(uint) T
 	uintFunc      func(T) uint
 	jsonMarshal   func(T) ([]byte, error)
@@ -17,7 +17,7 @@ type testUintType[T comparable] struct {
 }
 
 // testUintTypeSuite runs the standard test suite for uint-based types.
-func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintType[T]) {
+func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T]) {
 	t.Helper()
 	t.Run("New"+typeName, func(t *testing.T) {
 		tests := []struct {
@@ -73,7 +73,7 @@ func testUintTypeSuite[T comparable](t *testing.T, typeName string, tt testUintT
 
 // registerUintTypeTest creates and runs the standard test suite for uint-based types.
 // This is a convenience wrapper around testUintTypeSuite that takes individual function parameters.
-func registerUintTypeTest[T comparable](t *testing.T, typeName string, newFunc func(uint) T, uintFunc func(T) uint, jsonMarshal func(T) ([]byte, error), jsonUnmarshal func(*T, []byte) error) {
+func registerUintTypeTest[T any](t *testing.T, typeName string, newFunc func(uint) T, uintFunc func(T) uint, jsonMarshal func(T) ([]byte, error), jsonUnmarshal func(*T, []byte) error) {
 	t.Helper()
 	testUintTypeSuite(t, typeName, testUintType[T]{
 		newFunc:       newFunc,
@@ -233,7 +233,7 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 
 // registerTestForType is a generic helper that eliminates code duplication by handling the common pattern.
 // This function encapsulates the repetitive logic for testing uint-based types.
-func registerTestForType[T comparable](t *testing.T, typeName string, constructor func(uint) T, 
+func registerTestForType[T any](t *testing.T, typeName string, constructor func(uint) T, 
 	getUint func(T) uint, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
 	t.Helper()
 	registerUintTypeTest(t, typeName, constructor, getUint, marshal, unmarshal)
@@ -246,12 +246,12 @@ type UintWrapper interface {
 }
 
 // UintConstructor defines a constructor function for uint-based types.
-type UintConstructor[T UintWrapper] func(uint) T
+type UintConstructor[T interface{ Uint() uint }] func(uint) T
 
 // registerUintTypeTestGeneric is a generic helper that eliminates code duplication
 // by handling the common pattern for uint-based types that implement UintWrapper.
 // This function encapsulates the repetitive logic for testing uint wrapper types.
-func registerUintTypeTestGeneric[T UintWrapper](t *testing.T, typeName string, constructor UintConstructor[T]) {
+func registerUintTypeTestGeneric[T interface{ Uint() uint }](t *testing.T, typeName string, constructor func(uint) T) {
 	t.Helper()
 	registerTestForType(t, typeName, 
 		constructor,
