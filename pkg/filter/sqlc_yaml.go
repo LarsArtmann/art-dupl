@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
@@ -35,10 +36,13 @@ type SQLCGoConfig struct {
 }
 
 // FindSQLCConfigs searches for sqlc.yaml or sqlc.yml files in the given paths.
+// Searches both the provided paths and their parent directories (up to 3 levels up).
+// Returns a map of config file path to project root directory.
 func FindSQLCConfigs(paths []string) (map[string]string, error) {
 	configs := make(map[string]string) // Map of config path to project root
 
 	for _, path := range paths {
+		// Search in the provided path
 		err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -64,6 +68,23 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 		})
 		if err != nil {
 			return nil, errors.WrapFile(err, path, "walking path")
+		}
+
+		// Also search parent directories for sqlc config
+		// This handles cases where user analyzes subdirectory like ./db
+		// while sqlc.yaml is in project root
+		parentPath, err := utils.FindProjectRoot(path, []string{"sqlc.yaml", "sqlc.yml"})
+		if err == nil && parentPath != "" {
+			// Check if we already found config in this parent
+			configPath := filepath.Join(parentPath, "sqlc.yaml")
+			if _, err := os.Stat(configPath); err == nil {
+				configs[configPath] = parentPath
+			}
+			// Try sqlc.yml if sqlc.yaml doesn't exist
+			configPath = filepath.Join(parentPath, "sqlc.yml")
+			if _, err := os.Stat(configPath); err == nil {
+				configs[configPath] = parentPath
+			}
 		}
 	}
 
