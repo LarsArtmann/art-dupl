@@ -482,14 +482,49 @@ func TestLineNumber_Uint(t *testing.T) {
 	}
 }
 
+// createStandardUintTypeTest creates a complete test suite for a uint-based type.
+// This helper eliminates the remaining boilerplate by consolidating:
+// - Standard test functions (constructor, Uint method)
+// - JSON test generation via createStandardUintJSONTests
+// - Type test suite registration
+//
+// Parameters:
+//   - typeName: Name of the type being tested (e.g., "LineNumber")
+//   - testFuncs: Slice of test functions to include (e.g., TestLineNumber_NewLineNumber, TestLineNumber_Uint)
+//   - validValue: A valid value of the type for JSON tests
+//   - validJSON: The JSON representation of validValue (e.g., "10")
+//   - marshalFunc: Function to marshal the type to JSON
+//   - unmarshalFunc: Function to unmarshal JSON to the type
+func createStandardUintTypeTest[T comparable](
+	typeName string,
+	testFuncs []func(*testing.T),
+	validValue T,
+	validJSON string,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) func(*testing.T) {
+	return func(t *testing.T) {
+		t.Helper()
+		marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(validValue, validJSON)
+		createTypeTestSuite(
+			typeName,
+			testFuncs,
+			marshalTests,
+			unmarshalTests,
+			roundTripValue,
+			marshalFunc,
+			unmarshalFunc,
+		)(t)
+	}
+}
+
 // TestLineNumber tests LineNumber type.
 func TestLineNumber(t *testing.T) {
-	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(LineNumber(10), "10")
-	createTypeTestSuite("LineNumber",
+	createStandardUintTypeTest(
+		"LineNumber",
 		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
-		marshalTests,
-		unmarshalTests,
-		roundTripValue,
+		LineNumber(10),
+		"10",
 		func(line LineNumber) ([]byte, error) { return line.MarshalJSON() },
 		func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) },
 	)(t)
@@ -698,12 +733,11 @@ func TestProcessingTime_String(t *testing.T) {
 
 // TestProcessingTime tests ProcessingTime type.
 func TestProcessingTime(t *testing.T) {
-	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(ProcessingTime(500), "500")
-	createTypeTestSuite("ProcessingTime",
+	createStandardUintTypeTest(
+		"ProcessingTime",
 		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
-		marshalTests,
-		unmarshalTests,
-		roundTripValue,
+		ProcessingTime(500),
+		"500",
 		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
 		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
 	)(t)
@@ -793,12 +827,11 @@ func TestThreshold_Uint(t *testing.T) {
 
 // TestThreshold tests Threshold type.
 func TestThreshold(t *testing.T) {
-	marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(Threshold(15), "15")
-	createTypeTestSuite("Threshold",
+	createStandardUintTypeTest(
+		"Threshold",
 		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
-		marshalTests,
-		unmarshalTests,
-		roundTripValue,
+		Threshold(15),
+		"15",
 		func(t Threshold) ([]byte, error) { return t.MarshalJSON() },
 		func(t *Threshold, data []byte) error { return t.UnmarshalJSON(data) },
 	)(t)
