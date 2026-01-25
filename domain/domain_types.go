@@ -47,31 +47,29 @@ func marshalStringID(s string, typeName string, validationMsg string) ([]byte, e
 
 // unmarshalStringID is a helper function for unmarshaling string-based ID types.
 // It handles the common pattern of unmarshaling JSON to string and validating emptiness.
-func unmarshalStringID(data []byte, typeName string, validationMsg string, assign func(string)) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+// unmarshalWithValidation is a generic helper for unmarshaling JSON with custom validation.
+// It unmarshals data to type T, validates it using the provided validator function,
+// and assigns the result if validation passes.
+func unmarshalWithValidation[T any](data []byte, typeName string, validationMsg string, validator func(T) bool, assign func(T)) error {
+	var value T
+	if err := json.Unmarshal(data, &value); err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
 	}
-	if s == "" {
+	if !validator(value) {
 		return errors.NewValidationError(validationMsg, nil)
 	}
-	assign(s)
+	assign(value)
 	return nil
 }
 
-// unmarshalUintNonZero is a helper function for unmarshaling uint-based types
-// that must not be zero. It handles the common pattern of unmarshaling JSON to uint
-// and validating that the value is non-zero.
+// unmarshalStringID is a helper for unmarshaling string IDs that must not be empty.
+func unmarshalStringID(data []byte, typeName string, validationMsg string, assign func(string)) error {
+	return unmarshalWithValidation(data, typeName, validationMsg, func(s string) bool { return s != "" }, assign)
+}
+
+// unmarshalUintNonZero is a helper for unmarshaling uint-based types that must not be zero.
 func unmarshalUintNonZero(data []byte, typeName string, validationMsg string, assign func(uint)) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
-	}
-	if n == 0 {
-		return errors.NewValidationError(validationMsg, nil)
-	}
-	assign(n)
-	return nil
+	return unmarshalWithValidation(data, typeName, validationMsg, func(n uint) bool { return n != 0 }, assign)
 }
 
 // unmarshalUint is a helper function for unmarshaling uint-based types
