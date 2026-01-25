@@ -168,10 +168,6 @@ func (p *stats) printText() {
 
 // printJSON prints statistics in JSON format.
 func (p *stats) printJSON() {
-	import (
-		"encoding/json"
-	)
-
 	// Create a struct for JSON output
 	jsonData := struct {
 		Configuration struct {

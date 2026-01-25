@@ -189,28 +189,20 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	}
 }
 
-// createUintTypeTestRegistration creates a test registration function for a uint-based type.
-// This helper eliminates repetitive closure boilerplate in test tables.
-func createUintTypeTestRegistration[T comparable](
-	typeName string,
-	newFunc func(uint) T,
-	uintFunc func(T) uint,
-	jsonMarshal func(T) ([]byte, error),
-	jsonUnmarshal func(*T, []byte) error,
-) func(*testing.T) {
-	return func(t *testing.T) {
-		registerUintTypeTest(t, typeName, newFunc, uintFunc, jsonMarshal, jsonUnmarshal)
-	}
+// UintWrapper defines the interface for types that wrap uint and provide JSON marshaling.
+// This interface enables generic test registration for uint-based types without boilerplate.
+// Note: All methods use pointer receivers since UnmarshalJSON requires a pointer receiver.
+type UintWrapper interface {
+	Uint() uint
+	MarshalJSON() ([]byte, error)
+	UnmarshalJSON([]byte) error
 }
 
-// createUintTestCase creates a complete test case struct for a uint-based type.
-// This helper eliminates the repetitive boilerplate of manually structuring test case entries.
-func createUintTestCase[T comparable](
+// createUintTestCaseGeneric creates a test case for a uint-based wrapper type using type inference.
+// This helper reduces boilerplate by leveraging the UintWrapper interface and type methods directly.
+func createUintTestCaseGeneric[T UintWrapper](
 	typeName string,
 	newFunc func(uint) T,
-	uintFunc func(T) uint,
-	jsonMarshal func(T) ([]byte, error),
-	jsonUnmarshal func(*T, []byte) error,
 ) struct {
 	name string
 	test func(*testing.T)
@@ -220,58 +212,51 @@ func createUintTestCase[T comparable](
 		test func(*testing.T)
 	}{
 		name: typeName,
-		test: createUintTypeTestRegistration(typeName, newFunc, uintFunc, jsonMarshal, jsonUnmarshal),
+		test: func(t *testing.T) {
+			// Create instance for method extraction
+			instance := newFunc(42)
+			registerUintTypeTest(
+				t,
+				typeName,
+				newFunc,
+				func(pw T) uint { return pw.Uint() },
+				func(pw T) ([]byte, error) { return pw.MarshalJSON() },
+				func(pw *T, data []byte) error {
+					// Get the pointer value and call UnmarshalJSON
+					return (*pw).UnmarshalJSON(data)
+				},
+			)
+		},
 	}
 }
 
 // TestUintTypes consolidates tests for all simple uint wrapper types.
-// This approach eliminates duplicate test functions by using the registerUintTypeTest helper.
-//
-// NOTE: dupl may report duplication in the test case definitions below (lines 237-261).
-// This duplication is INTENTIONAL and NECESSARY for type safety in Go. Each lambda function
-// captures type-specific behavior that cannot be automatically derived without:
-//   1. Code generation (which would add build complexity)
-//   2. Reflection (which would compromise type safety and runtime performance)
-//   3. Higher-kinded types (not supported by Go)
-//
-// The `createUintTestCase` helper already eliminates the boilerplate of defining separate
-// test functions for each type. The remaining repetition is the minimal amount required
-// to maintain strong type safety while avoiding the complexity of code generation.
-//
-// Alternative approaches considered and rejected:
-// - Reflection: Would fail type checks at runtime instead of compile time, and adds overhead
-// - Code generation (go:generate): Would add build complexity and reduce code clarity
-// - Accepting the duplication as is: Best balance of type safety, clarity, and maintainability
+// Uses the createUintTestCaseGeneric helper to reduce boilerplate and eliminate code duplication.
 func TestUintTypes(t *testing.T) {
 	tests := []struct {
 		name string
 		test func(*testing.T)
 	}{
-		createUintTestCase("BytePosition",
-			func(u uint) BytePosition { return BytePosition(u) },
-			func(bp BytePosition) uint { return bp.Uint() },
-			func(bp BytePosition) ([]byte, error) { return bp.MarshalJSON() },
-			func(bp *BytePosition, data []byte) error { return bp.UnmarshalJSON(data) }),
-		createUintTestCase("TokenCount",
-			func(u uint) TokenCount { return TokenCount(u) },
-			func(tc TokenCount) uint { return tc.Uint() },
-			func(tc TokenCount) ([]byte, error) { return tc.MarshalJSON() },
-			func(tc *TokenCount, data []byte) error { return tc.UnmarshalJSON(data) }),
-		createUintTestCase("ComplexityScore",
-			func(u uint) ComplexityScore { return ComplexityScore(u) },
-			func(cs ComplexityScore) uint { return cs.Uint() },
-			func(cs ComplexityScore) ([]byte, error) { return cs.MarshalJSON() },
-			func(cs *ComplexityScore, data []byte) error { return cs.UnmarshalJSON(data) }),
-		createUintTestCase("FileCount",
-			func(u uint) FileCount { return FileCount(u) },
-			func(fc FileCount) uint { return fc.Uint() },
-			func(fc FileCount) ([]byte, error) { return fc.MarshalJSON() },
-			func(fc *FileCount, data []byte) error { return fc.UnmarshalJSON(data) }),
-		createUintTestCase("CloneCount",
-			func(u uint) CloneCount { return CloneCount(u) },
-			func(cc CloneCount) uint { return cc.Uint() },
-			func(cc CloneCount) ([]byte, error) { return cc.MarshalJSON() },
-			func(cc *CloneCount, data []byte) error { return cc.UnmarshalJSON(data) }),
+		createUintTestCaseGeneric("BytePosition", func(u uint) *BytePosition {
+			bp := BytePosition(u)
+			return &bp
+		}),
+		createUintTestCaseGeneric("TokenCount", func(u uint) *TokenCount {
+			tc := TokenCount(u)
+			return &tc
+		}),
+		createUintTestCaseGeneric("ComplexityScore", func(u uint) *ComplexityScore {
+			cs := ComplexityScore(u)
+			return &cs
+		}),
+		createUintTestCaseGeneric("FileCount", func(u uint) *FileCount {
+			fc := FileCount(u)
+			return &fc
+		}),
+		createUintTestCaseGeneric("CloneCount", func(u uint) *CloneCount {
+			cc := CloneCount(u)
+			return &cc
+		}),
 	}
 
 	for _, tc := range tests {

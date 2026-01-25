@@ -57,7 +57,7 @@ Examples:
 	cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (templ files are filtered by default unless this flag is set)")
 	cmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
-	cmd.Flags().StringP("format", "f", "text", "output format: text, json (default: text)")
+	cmd.Flags().String("format", "text", "output format: text, json (default: text)")
 
 	return cmd
 }
