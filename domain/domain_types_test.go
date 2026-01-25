@@ -42,7 +42,10 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 					}
 				}
 				// Fallback for non-UintWrapper types
-				if got != tc.want {
+				// Use reflection or type assertion to compare
+				gotValue := fmt.Sprintf("%v", got)
+				wantValue := fmt.Sprintf("%v", tc.want)
+				if gotValue != wantValue {
 					t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
 				}
 			})
@@ -139,10 +142,14 @@ func runConstructorTests[T any](t *testing.T, constructorName string, tests []co
 						}
 						return
 					}
-				}
-				if got != tt.want {
-					t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
-				}
+					default:
+						// Use string comparison for incomparable types
+						gotValue := fmt.Sprintf("%v", got)
+						wantValue := fmt.Sprintf("%v", tt.want)
+						if gotValue != wantValue {
+							t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
+						}
+					}
 			}
 		})
 	}
@@ -510,8 +517,8 @@ func TestCloneID(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
 		},
 		CloneID("clone-456"),
-		jsonMarshalFunc[CloneID](CloneID("")),
-		jsonUnmarshalFunc[CloneID](CloneID("")),
+		func(v CloneID) ([]byte, error) { return v.MarshalJSON() },
+		jsonUnmarshalFuncPtr[CloneID](),
 	)(t)
 }
 
@@ -575,7 +582,7 @@ func TestLineNumber(t *testing.T) {
 		LineNumber(10),
 		"10",
 		jsonMarshalFunc[LineNumber](LineNumber(0)),
-		jsonUnmarshalFunc[LineNumber](LineNumber(0)),
+		jsonUnmarshalFuncPtr[LineNumber](),
 	)(t)
 }
 
@@ -687,8 +694,8 @@ func TestConfidence(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
 		},
 		Confidence(0.75),
-		jsonMarshalFunc[Confidence](Confidence(0)),
-		jsonUnmarshalFunc[Confidence](Confidence(0)),
+		func(v Confidence) ([]byte, error) { return v.MarshalJSON() },
+		jsonUnmarshalFuncPtr[Confidence](),
 	)(t)
 }
 
@@ -782,7 +789,7 @@ func TestProcessingTime(t *testing.T) {
 		ProcessingTime(500),
 		"500",
 		jsonMarshalFunc(ProcessingTime(0)),
-		jsonUnmarshalFunc(&ProcessingTime(0)),
+		jsonUnmarshalFuncPtr[ProcessingTime](),
 	)(t)
 }
 
@@ -792,13 +799,15 @@ func jsonMarshalFunc[T interface{ MarshalJSON() ([]byte, error) }](_ T) func(T) 
 	return func(v T) ([]byte, error) { return v.MarshalJSON() }
 }
 
-// jsonUnmarshalFunc returns an unmarshal function for types with UnmarshalJSON method.
+// jsonUnmarshalFuncPtr returns an unmarshal function for types with pointer receiver UnmarshalJSON method.
 // This helper reduces boilerplate in test functions.
-func jsonUnmarshalFunc[T interface{ UnmarshalJSON([]byte) error }](t T) func(*T, []byte) error {
-	// Create a pointer to a zero value of type T
-	var zero T
-	_ = zero // silence unused warning
-	return func(v *T, data []byte) error { return v.UnmarshalJSON(data) }
+func jsonUnmarshalFuncPtr[T any]() func(*T, []byte) error {
+	return func(v *T, data []byte) error {
+		if unmarshaler, ok := any(v).(interface{ UnmarshalJSON([]byte) error }); ok {
+			return unmarshaler.UnmarshalJSON(data)
+		}
+		return fmt.Errorf("type %T does not implement UnmarshalJSON", v)
+	}
 }
 
 // emptyStringErrorTest returns a test case that verifies empty string input causes an error.
@@ -927,6 +936,6 @@ func TestThreshold(t *testing.T) {
 		Threshold(15),
 		"15",
 		jsonMarshalFunc(Threshold(0)),
-		jsonUnmarshalFunc(&Threshold(0)),
+		jsonUnmarshalFuncPtr[Threshold](),
 	)(t)
 }
