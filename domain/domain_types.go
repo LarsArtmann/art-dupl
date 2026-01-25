@@ -75,12 +75,7 @@ func unmarshalUintNonZero(data []byte, typeName string, validationMsg string, as
 // unmarshalUint is a helper function for unmarshaling uint-based types
 // that allow zero values. It handles the common pattern of unmarshaling JSON to uint.
 func unmarshalUint(data []byte, typeName string, assign func(uint)) error {
-	var n uint
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
-	}
-	assign(n)
-	return nil
+	return unmarshalWithValidation(data, typeName, "", func(uint) bool { return true }, assign)
 }
 
 // marshalUint is a helper function for marshaling uint-based types.
