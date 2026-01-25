@@ -93,11 +93,13 @@ Use with:
 ### Subcommands
 
 **stats** - Show aggregated duplication statistics
+
 ```bash
 art-dupl stats [flags] [paths...]
 ```
 
 Supports all root command flags plus:
+
 ```
 -t, -threshold          Minimum token size (default 15)
 -m, -detection-methods  Detection methods to use
@@ -152,6 +154,7 @@ The `stats` subcommand provides aggregated duplication statistics for quick proj
 ```
 
 **Statistics include:**
+
 - Files scanned and clone groups found
 - Total duplicate lines and tokens
 - Average clone size and complexity score
@@ -160,6 +163,7 @@ The `stats` subcommand provides aggregated duplication statistics for quick proj
 - Top files with most duplication
 
 Example output:
+
 ```
 Code Duplication Statistics
 ============================

@@ -15,10 +15,10 @@ func TestStatsCommandIntegration(t *testing.T) {
 	}
 
 	tests := []struct {
-		name           string
-		args           []string
+		name             string
+		args             []string
 		expectedInOutput []string
-		wantErr        bool
+		wantErr          bool
 	}{
 		{
 			name: "stats on current directory",

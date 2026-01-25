@@ -47,14 +47,14 @@ func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 
 func TestStatsDataAggregation(t *testing.T) {
 	tests := []struct {
-		name        string
-		duplicates  [][][]*syntax.Node
-		filesCount  int
-		threshold   int
-		checkStats  func(t *testing.T, stats *StatsData)
+		name       string
+		duplicates [][][]*syntax.Node
+		filesCount int
+		threshold  int
+		checkStats func(t *testing.T, stats *StatsData)
 	}{
 		{
-			name: "empty clones",
+			name:       "empty clones",
 			duplicates: [][][]*syntax.Node{},
 			filesCount: 0,
 			threshold:  15,
@@ -152,8 +152,8 @@ func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 	var dups [][]*syntax.Node
 	for _, filename := range filenames {
 		nodes := []*syntax.Node{
-			&syntax.Node{Filename: filename, Pos: 1, End: 3, Type: 1},
-			&syntax.Node{Filename: filename, Pos: 2, End: 4, Type: 2},
+			{Filename: filename, Pos: 1, End: 3, Type: 1},
+			{Filename: filename, Pos: 2, End: 4, Type: 2},
 		}
 		dups = append(dups, nodes)
 	}
@@ -166,7 +166,7 @@ func TestStatsComplexityScore(t *testing.T) {
 	statsPrinter.SetFilesCount(5)
 
 	// Simulate: 3 clone groups, 9 total clones = complexity 3.0
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		dups := createCloneNodeGroup([]string{"file1.go", "file2.go", "file3.go"})
 
 		if err := statsPrinter.PrintClones(dups); err != nil {
@@ -298,7 +298,7 @@ func TestPrintSizeDistribution(t *testing.T) {
 	}
 
 	// Check that output is sorted (1-5 should come before 6-10)
-	if idx := strings.Index(output, "1-5"); idx == -1 {
+	if found := strings.Contains(output, "1-5"); !found {
 		t.Error("Output doesn't contain sorted '1-5 lines'")
 	}
 }
@@ -423,13 +423,13 @@ func TestStatsJSONOutput(t *testing.T) {
 	output := buf.String()
 
 	// Verify JSON is valid
-	var result map[string]interface{}
+	var result map[string]any
 	if err := json.Unmarshal([]byte(output), &result); err != nil {
 		t.Fatalf("Output is not valid JSON: %v\nOutput: %s", err, output)
 	}
 
 	// Verify structure exists
-	config, ok := result["configuration"].(map[string]interface{})
+	config, ok := result["configuration"].(map[string]any)
 	if !ok {
 		t.Fatal("Missing 'configuration' section in JSON")
 	}
@@ -440,7 +440,7 @@ func TestStatsJSONOutput(t *testing.T) {
 		t.Errorf("detectionMethods = %v, want 'art-dupl,hash'", config["detectionMethods"])
 	}
 
-	overview, ok := result["overview"].(map[string]interface{})
+	overview, ok := result["overview"].(map[string]any)
 	if !ok {
 		t.Fatal("Missing 'overview' section in JSON")
 	}
@@ -454,7 +454,7 @@ func TestStatsJSONOutput(t *testing.T) {
 		t.Errorf("totalClones = %v, want 2", overview["totalClones"])
 	}
 
-	dupCode, ok := result["duplicateCode"].(map[string]interface{})
+	dupCode, ok := result["duplicateCode"].(map[string]any)
 	if !ok {
 		t.Fatal("Missing 'duplicateCode' section in JSON")
 	}
@@ -471,12 +471,12 @@ func TestStatsJSONOutput(t *testing.T) {
 		t.Errorf("complexityScore = %v, want 2.0", dupCode["complexityScore"])
 	}
 
-	sizeDist, ok := result["sizeDistribution"].(map[string]interface{})
+	sizeDist, ok := result["sizeDistribution"].(map[string]any)
 	if !ok || len(sizeDist) == 0 {
 		t.Error("Missing or empty 'sizeDistribution' section")
 	}
 
-	topFiles, ok := result["topFiles"].([]interface{})
+	topFiles, ok := result["topFiles"].([]any)
 	if !ok || len(topFiles) == 0 {
 		t.Error("Missing or empty 'topFiles' section")
 	}
@@ -512,4 +512,3 @@ func TestStatsTextOutput(t *testing.T) {
 		}
 	}
 }
-

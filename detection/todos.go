@@ -93,7 +93,7 @@ func findIssuesInFile[T any](
 
 // createIssueMatch creates a syntax.Match for an issue type that has a line number.
 // This is used by FindTodos and FindLegacy to avoid duplicating the match creation logic.
-func createIssueMatch(prefix string, filename string, line int) syntax.Match {
+func createIssueMatch(prefix, filename string, line int) syntax.Match {
 	return syntax.Match{
 		Hash:  fmt.Sprintf("%s-%s-%d", prefix, filename, line),
 		Frags: [][]*syntax.Node{{}}, // Empty frag since issues aren't code fragments

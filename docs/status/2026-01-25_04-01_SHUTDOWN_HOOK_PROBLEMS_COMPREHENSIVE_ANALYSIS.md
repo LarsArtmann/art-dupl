@@ -33,6 +33,7 @@ if err := fang.Execute(context.Background(), rootCmd, options...); err != nil {
 ```
 
 **Issue**:
+
 - Fang creates a `signal.NotifyContext` when `WithNotifySignal` is used
 - This context is passed to Cobra via `root.ExecuteContext(ctx)`
 - However, `run.go` functions never use this context
@@ -62,6 +63,7 @@ duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 ```
 
 **Issue**:
+
 - Timeout context is created locally with `WithTimeout`
 - The context variable `ctx` is NEVER passed to `executeAnalysis`
 - Comment explicitly admits this is not yet implemented
@@ -78,23 +80,29 @@ duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
 #### Function Signature Issues
 
 1. **`cmd/run.go:290`** - `executeAnalysis`:
+
    ```go
    func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int, error)
    ```
+
    - Missing `ctx context.Context` parameter
    - Cannot be cancelled from outside
 
 2. **`cmd/run.go:201`** - `buildSuffixTree`:
+
    ```go
    func buildSuffixTree(paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter, includeVendor bool) (*suffixtree.STree, []*syntax.Node, int, error)
    ```
+
    - Missing `ctx context.Context` parameter
    - Cannot be cancelled during tree building
 
 3. **`job/parse.go:9`** - `Parse`:
+
    ```go
    func Parse(fchan chan string) (chan []*syntax.Node, chan int)
    ```
+
    - Missing `ctx context.Context` parameter
    - File parsing cannot be cancelled
 
@@ -102,6 +110,7 @@ duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
    ```go
    func BuildTree(schan chan []*syntax.Node) (t *suffixtree.STree, d *[]*syntax.Node, done chan bool)
    ```
+
    - Missing `ctx context.Context` parameter
    - Tree building cannot be cancelled
 
@@ -151,6 +160,7 @@ func Parse(fchan chan string) (chan []*syntax.Node, chan int) {
 ```
 
 **Issues**:
+
 - No `select` with `ctx.Done()` check in file parsing loop
 - No `select` with `ctx.Done()` check in serialization loop
 - Will continue processing all files even after cancellation
@@ -177,6 +187,7 @@ func BuildTree(schan chan []*syntax.Node) (t *suffixtree.STree, d *[]*syntax.Nod
 ```
 
 **Issues**:
+
 - No `select` with `ctx.Done()` check in tree building loop
 - No `select` with `ctx.Done()` check in node update loop
 - Will continue building tree even after cancellation
@@ -257,6 +268,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 ```
 
 **Issues**:
+
 - CLI uses `detection.MultiDetector` directly instead of `artdupl.Detector` SDK
 - MultiDetector doesn't support context (different code path)
 - No context checks in match processing loop
@@ -276,6 +288,7 @@ The shutdown hook problems stem from a fundamental architectural disconnect:
 5. **SDK has proper context support** but CLI bypasses it
 
 This creates a scenario where:
+
 - User presses Ctrl+C → Fang creates context cancellation → Nothing in the code checks it → Operations continue
 - User sets timeout → Context is created but never passed → Operations continue forever
 
@@ -286,6 +299,7 @@ This creates a scenario where:
 ### User Experience Impact
 
 **High Severity Issues**:
+
 1. ❌ Ctrl+C does NOT stop the analysis - operations run to completion
 2. ❌ Timeout flag (`--timeout`) is completely non-functional
 3. ❌ User cannot cancel long-running operations on large codebases
@@ -295,6 +309,7 @@ This creates a scenario where:
 ### System Impact
 
 **Resource Management Issues**:
+
 1. ❌ No way to free resources on user cancellation
 2. ❌ May waste CPU/memory on unwanted operations
 3. ❌ No graceful shutdown - abrupt termination only
@@ -303,6 +318,7 @@ This creates a scenario where:
 ### Code Quality Impact
 
 **Maintainability Issues**:
+
 1. ❌ Dead code (timeout context created but never used)
 2. ❌ Confusing comments admitting incomplete implementation
 3. ❌ Inconsistent patterns between SDK and CLI
@@ -321,6 +337,7 @@ This creates a scenario where:
    - `BuildTree(ctx context.Context, schan chan []*syntax.Node)`
 
 2. **Pass context through the call chain**:
+
    ```go
    // In run.go
    ctx := cmd.Context() // Get context from Cobra (Fang's signal context)
@@ -337,6 +354,7 @@ This creates a scenario where:
 ### Phase 2: Cancellation Checks (Implementation)
 
 1. **Add context checks in job/parse.go**:
+
    ```go
    for file := range fchan {
        select {
@@ -351,6 +369,7 @@ This creates a scenario where:
    ```
 
 2. **Add context checks in job/buildtree.go**:
+
    ```go
    for seq := range schan {
        select {
@@ -387,6 +406,7 @@ This creates a scenario where:
    - Verify graceful shutdown
 
 3. **Add BDD scenarios**:
+
    ```gherkin
    Scenario: User cancels analysis with Ctrl+C
      Given I start analysis of large codebase
@@ -414,15 +434,15 @@ This creates a scenario where:
 
 ## Implementation Priority
 
-| Priority | Issue | Complexity | Impact | Estimate |
-|----------|-------|------------|--------|----------|
-| P0 | Context propagation | Medium | HIGH | 2-3 hours |
-| P0 | Cancellation checks in job functions | Low | HIGH | 1 hour |
-| P0 | Fix timeout context passing | Low | HIGH | 30 minutes |
-| P1 | Integration tests | Medium | MEDIUM | 2-3 hours |
-| P1 | BDD scenarios | Low | MEDIUM | 1-2 hours |
-| P2 | Documentation updates | Low | LOW | 1 hour |
-| P2 | Consider using SDK detector path | High | MEDIUM | 4-6 hours |
+| Priority | Issue                                | Complexity | Impact | Estimate   |
+| -------- | ------------------------------------ | ---------- | ------ | ---------- |
+| P0       | Context propagation                  | Medium     | HIGH   | 2-3 hours  |
+| P0       | Cancellation checks in job functions | Low        | HIGH   | 1 hour     |
+| P0       | Fix timeout context passing          | Low        | HIGH   | 30 minutes |
+| P1       | Integration tests                    | Medium     | MEDIUM | 2-3 hours  |
+| P1       | BDD scenarios                        | Low        | MEDIUM | 1-2 hours  |
+| P2       | Documentation updates                | Low        | LOW    | 1 hour     |
+| P2       | Consider using SDK detector path     | High       | MEDIUM | 4-6 hours  |
 
 **Total Estimate**: 12-16 hours for complete fix
 
@@ -433,6 +453,7 @@ This creates a scenario where:
 ### Manual Testing Steps
 
 1. **Test Ctrl+C cancellation**:
+
    ```bash
    # Start analysis of large codebase
    ./art-dupl ./large-project
@@ -441,6 +462,7 @@ This creates a scenario where:
    ```
 
 2. **Test timeout functionality**:
+
    ```bash
    # Set short timeout
    ./art-dupl --timeout 5s ./large-project
@@ -517,6 +539,7 @@ The shutdown hook implementation has fundamental architectural problems that com
 5. ✅ Adding comprehensive tests for cancellation scenarios
 
 The good news is that:
+
 - The SDK (`pkg/artdupl/detector.go`) already has excellent context support
 - The patterns are already present in the codebase
 - The fix is well-understood and straightforward
@@ -526,4 +549,4 @@ The good news is that:
 
 ---
 
-*Report generated on 2026-01-25 at 04:01 CET*
+_Report generated on 2026-01-25 at 04:01 CET_

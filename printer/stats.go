@@ -21,22 +21,22 @@ type stats struct {
 
 // StatsData holds all aggregated statistics.
 type StatsData struct {
-	TotalFilesScanned    int
-	TotalCloneGroups     int
-	TotalClones          int
-	TotalDuplicateLines  int
-	TotalTokens          int
-	TotalEstimatedLines  int // Estimated total lines for duplication percentage
-	AverageCloneSize     int
-	ComplexityScore      float64
+	TotalFilesScanned   int
+	TotalCloneGroups    int
+	TotalClones         int
+	TotalDuplicateLines int
+	TotalTokens         int
+	TotalEstimatedLines int // Estimated total lines for duplication percentage
+	AverageCloneSize    int
+	ComplexityScore     float64
 	ImpactScore         int
-	DuplicationRatio   float64 // Percentage of duplicated code
-	AnalysisDuration   string   // Time taken for analysis
-	HealthScore        string   // A-F grade based on metrics
-	FileDuplication      map[string]int // filename -> duplicate line count
-	SizeDistribution     map[string]int // size range -> count
-	DetectionMethods     string
-	Timestamp          string // ISO 8601 timestamp
+	DuplicationRatio    float64        // Percentage of duplicated code
+	AnalysisDuration    string         // Time taken for analysis
+	HealthScore         string         // A-F grade based on metrics
+	FileDuplication     map[string]int // filename -> duplicate line count
+	SizeDistribution    map[string]int // size range -> count
+	DetectionMethods    string
+	Timestamp           string // ISO 8601 timestamp
 }
 
 // NewStats creates a new stats printer.
@@ -195,13 +195,13 @@ func (p *stats) printJSON() {
 	// Create a struct for JSON output
 	jsonData := struct {
 		Configuration struct {
-			Threshold         int    `json:"threshold"`
-			DetectionMethods  string `json:"detectionMethods"`
+			Threshold        int    `json:"threshold"`
+			DetectionMethods string `json:"detectionMethods"`
 		} `json:"configuration"`
 		Overview struct {
-			FilesScanned    int `json:"filesScanned"`
-			CloneGroups     int `json:"cloneGroups"`
-			TotalClones     int `json:"totalClones"`
+			FilesScanned int `json:"filesScanned"`
+			CloneGroups  int `json:"cloneGroups"`
+			TotalClones  int `json:"totalClones"`
 		} `json:"overview"`
 		DuplicateCode struct {
 			TotalLines       int     `json:"totalDuplicateLines"`
@@ -258,15 +258,12 @@ func (p *stats) printJSON() {
 		}
 
 		// Take top 10
-		limit := len(files)
-		if limit > 10 {
-			limit = 10
-		}
+		limit := min(len(files), 10)
 		jsonData.TopFiles = make([]struct {
 			Filename string `json:"filename"`
 			Lines    int    `json:"duplicateLines"`
 		}, limit)
-		for i := 0; i < limit; i++ {
+		for i := range limit {
 			jsonData.TopFiles[i].Filename = files[i].filename
 			jsonData.TopFiles[i].Lines = files[i].lines
 		}
@@ -329,12 +326,9 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 	})
 
 	// Print top N
-	limit := len(files)
-	if limit > topN {
-		limit = topN
-	}
+	limit := min(len(files), topN)
 
-	for i := 0; i < limit; i++ {
+	for i := range limit {
 		fmt.Fprintf(w, "  %d lines in %s\n", files[i].lines, files[i].filename)
 	}
 

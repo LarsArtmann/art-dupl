@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"fmt"
 	stderrors "errors"
+	"fmt"
 	"testing"
 
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
@@ -142,14 +142,14 @@ func runConstructorTests[T any](t *testing.T, constructorName string, tests []co
 						}
 						return
 					}
-					default:
-						// Use string comparison for incomparable types
-						gotValue := fmt.Sprintf("%v", got)
-						wantValue := fmt.Sprintf("%v", tt.want)
-						if gotValue != wantValue {
-							t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
-						}
+				default:
+					// Use string comparison for incomparable types
+					gotValue := fmt.Sprintf("%v", got)
+					wantValue := fmt.Sprintf("%v", tt.want)
+					if gotValue != wantValue {
+						t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
 					}
+				}
 			}
 		})
 	}
@@ -261,8 +261,9 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 // registerTestForType is a generic helper that eliminates code duplication by handling the common pattern.
 // This function encapsulates the repetitive logic for testing uint-based types.
 // It delegates to createUintTypeTest to maintain consistency.
-func registerTestForType[T comparable](t *testing.T, typeName string, constructor func(uint) T, 
-	getUint func(T) uint, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
+func registerTestForType[T comparable](t *testing.T, typeName string, constructor func(uint) T,
+	getUint func(T) uint, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error,
+) {
 	t.Helper()
 	testCase := createUintTypeTest(typeName, constructor, getUint, marshal, unmarshal)
 	testCase.test(t)
@@ -282,17 +283,17 @@ type UintConstructor[T interface{ Uint() uint }] func(uint) T
 // This function encapsulates the repetitive logic for testing uint wrapper types.
 func registerUintTypeTestGeneric[T interface{ Uint() uint }](t *testing.T, typeName string, constructor func(uint) T) {
 	t.Helper()
-	registerTestForType(t, typeName, 
+	registerTestForType(t, typeName,
 		constructor,
 		func(v T) uint { return v.Uint() },
-		func(v T) ([]byte, error) { 
+		func(v T) ([]byte, error) {
 			// MarshalJSON is defined on the value receiver
 			if marshaler, ok := any(v).(interface{ MarshalJSON() ([]byte, error) }); ok {
 				return marshaler.MarshalJSON()
 			}
 			return nil, fmt.Errorf("type %T does not implement MarshalJSON", v)
 		},
-		func(v *T, data []byte) error { 
+		func(v *T, data []byte) error {
 			// UnmarshalJSON is defined on the pointer receiver
 			if unmarshaler, ok := any(v).(interface{ UnmarshalJSON([]byte) error }); ok {
 				return unmarshaler.UnmarshalJSON(data)
@@ -305,7 +306,7 @@ func registerUintTypeTestGeneric[T interface{ Uint() uint }](t *testing.T, typeN
 // This helper eliminates the repetitive switch statement by using the generic helper.
 func registerUintTypeByName(t *testing.T, typeName string) {
 	t.Helper()
-	
+
 	switch typeName {
 	case "BytePosition":
 		registerUintTypeTestGeneric[BytePosition](t, typeName, NewBytePosition)
@@ -395,7 +396,8 @@ func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalT
 	input     string
 	want      T
 	wantError bool
-}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error,
+) {
 	t.Helper()
 
 	t.Run(typeName+"_MarshalJSON", func(t *testing.T) {
@@ -428,7 +430,8 @@ func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFunc
 	input     string
 	want      T
 	wantError bool
-}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) {
+}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error,
+) {
 	t.Helper()
 	registerStandardTypeTest(t, typeName, testFuncs...)
 	registerJSONTestSuite(t, typeName, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
@@ -471,7 +474,8 @@ func createStandardUintJSONTests[T comparable](
 	input     string
 	want      T
 	wantError bool
-}, roundTripValue T) {
+}, roundTripValue T,
+) {
 	var zero T
 	marshalTests = []jsonTest[T]{
 		{name: "valid value", input: validValue, want: validJSON, wantErr: false},
@@ -488,7 +492,7 @@ func createStandardUintJSONTests[T comparable](
 		{name: "invalid JSON", input: `not-json`, want: zero, wantError: true},
 	}
 	roundTripValue = validValue
-	return
+	return marshalTests, unmarshalTests, roundTripValue
 }
 
 // TestCloneID tests CloneID type.
@@ -517,8 +521,8 @@ func TestCloneID(t *testing.T) {
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 func TestLineNumber_NewLineNumber(t *testing.T) {
-	registerBasicUintConstructorTest(t, "NewLineNumber", 
-		uint(1), uint(42), 
+	registerBasicUintConstructorTest(t, "NewLineNumber",
+		uint(1), uint(42),
 		LineNumber(1), LineNumber(42),
 		NewLineNumber)
 }
@@ -826,10 +830,11 @@ func testMethodWithValue[T any, R comparable](t *testing.T, methodName string, i
 // runStringMethodTests runs table-driven tests for a String method.
 // This helper eliminates boilerplate for testing String() methods with multiple cases.
 func runStringMethodTests[T any](t *testing.T, tests []struct {
-	name string
+	name  string
 	value T
-	want string
-}, stringFunc func(T) string) {
+	want  string
+}, stringFunc func(T) string,
+) {
 	t.Helper()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -871,7 +876,7 @@ func registerStringConstructorTest[T comparable](t *testing.T, constructorName s
 // It automatically includes a valid test case and an empty string error test.
 // Additional custom tests can be provided via the extraTests parameter.
 // This helper further reduces boilerplate for simple constructors with standard validation.
-func registerBasicStringConstructorTest[T comparable](t *testing.T, constructorName string, sampleValue string, expectedValue T, constructorFunc func(string) (T, error), extraTests ...constructorTest[T]) {
+func registerBasicStringConstructorTest[T comparable](t *testing.T, constructorName, sampleValue string, expectedValue T, constructorFunc func(string) (T, error), extraTests ...constructorTest[T]) {
 	t.Helper()
 	tests := []constructorTest[T]{
 		{name: "valid " + constructorName, input: sampleValue, want: expectedValue, wantError: false},
@@ -907,8 +912,8 @@ func TestHash_NewHash(t *testing.T) {
 
 // TestThreshold_NewThreshold tests the NewThreshold constructor.
 func TestThreshold_NewThreshold(t *testing.T) {
-	registerBasicUintConstructorTest(t, "NewThreshold", 
-		uint(15), uint(30), 
+	registerBasicUintConstructorTest(t, "NewThreshold",
+		uint(15), uint(30),
 		Threshold(15), Threshold(30),
 		NewThreshold)
 }

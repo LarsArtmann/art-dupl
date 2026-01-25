@@ -15,10 +15,9 @@ func contains[T comparable](slice []T, item T) bool {
 }
 
 // runTestCases is a generic helper for running table-driven tests.
-func runTestCases[T any, R comparable](t *testing.T, tests []T, nameFunc func(T) string, testFunc func(T) R, expectFunc func(T) R) {
+func runTestCases[T any, R comparable](t *testing.T, tests []T, nameFunc func(T) string, testFunc, expectFunc func(T) R) {
 	t.Helper()
 	for _, tt := range tests {
-		tt := tt // capture range variable
 		t.Run(nameFunc(tt), func(t *testing.T) {
 			t.Helper()
 			result := testFunc(tt)
@@ -29,7 +28,7 @@ func runTestCases[T any, R comparable](t *testing.T, tests []T, nameFunc func(T)
 	}
 }
 
-// Test case types for explicit typing
+// Test case types for explicit typing.
 type fileContentTest struct {
 	name     string
 	filePath string
@@ -37,7 +36,7 @@ type fileContentTest struct {
 	expected bool
 }
 
-func (t fileContentTest) GetName() string  { return t.name }
+func (t fileContentTest) GetName() string   { return t.name }
 func (t fileContentTest) GetExpected() bool { return t.expected }
 
 // runFileContentTestCases is a helper for running file content test cases.
@@ -56,13 +55,26 @@ func runSimpleTestCases[T any, R comparable](t *testing.T, tests []T, testFunc f
 	runTestCases(t, tests, nameFunc, testFunc, expectFunc)
 }
 
+// runGenericTestCases is a generic helper for running test cases that use GetName and GetExpected methods.
+type testCaseInterface[T any, R comparable] interface {
+	GetName() string
+	GetExpected() R
+}
+
+func runGenericTestCases[T testCaseInterface[T, R], R comparable](t *testing.T, tests []T, testFunc func(T) R) {
+	t.Helper()
+	runSimpleTestCases(t, tests,
+		testFunc,
+		func(tt T) string { return tt.GetName() },
+		func(tt T) R { return tt.GetExpected() },
+	)
+}
+
 // runMatchPatternTestCases is a helper for running match pattern test cases.
 func runMatchPatternTestCases(t *testing.T, tests []matchPatternTest) {
 	t.Helper()
-	runSimpleTestCases(t, tests,
+	runGenericTestCases(t, tests,
 		func(tt matchPatternTest) bool { return matchPattern(tt.path, tt.pattern) },
-		matchPatternTest.GetName,
-		matchPatternTest.GetExpected,
 	)
 }
 
@@ -73,16 +85,14 @@ type containsTest struct {
 	expect bool
 }
 
-func (t containsTest) GetName() string  { return t.name }
+func (t containsTest) GetName() string   { return t.name }
 func (t containsTest) GetExpected() bool { return t.expect }
 
 // runContainsTestCases is a helper for running contains test cases.
 func runContainsTestCases(t *testing.T, tests []containsTest) {
 	t.Helper()
-	runSimpleTestCases(t, tests,
+	runGenericTestCases(t, tests,
 		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
-		containsTest.GetName,
-		containsTest.GetExpected,
 	)
 }
 
@@ -93,7 +103,7 @@ type matchPatternTest struct {
 	expected bool
 }
 
-func (t matchPatternTest) GetName() string  { return t.name }
+func (t matchPatternTest) GetName() string   { return t.name }
 func (t matchPatternTest) GetExpected() bool { return t.expected }
 
 func TestNewFilter(t *testing.T) {

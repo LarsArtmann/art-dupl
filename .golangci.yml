@@ -92,7 +92,7 @@ linters:
     # depguard        # Import blocklist/allowlist (complementary to gomodguard) - DISABLED FOR NOW
     - dupl # Code duplication detection
     - dupword # Duplicate word detection
-    - modernize # Modern Go features
+    # modernize # Modern Go features - DISABLED: Not available in this version
     - nosprintfhostport # Detect fmt.Sprintf misuse for host:port URLs
 
     # 🏗️ ADDITIONAL ARCHITECTURE & STRUCTURE ENFORCEMENT
@@ -121,7 +121,6 @@ linters:
     # - tagliatelle # Struct tag validation - DISABLED: Too strict
     - testableexamples # Example testability
     # - unqueryvet # SELECT * in SQL queries detection - DISABLED
-    - unqueryvet # SELECT * in SQL queries detection
     # - usetesting # Testing package usage - DISABLED: Too strict for internal testing
     - wastedassign # Wasted assignment detection
     - zerologlint # Zerolog usage validation
