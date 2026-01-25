@@ -115,5 +115,5 @@ func FindProjectRoot(startPath string, markers []string) (string, error) {
 		current = parent
 	}
 
-	return "", errors.NewFileNotFoundError(startPath, fmt.Sprintf("project root not found (searched for %v)", markers))
+	return "", errors.NewFileError(startPath, fmt.Sprintf("project root not found (searched for %v)", markers), nil)
 }
