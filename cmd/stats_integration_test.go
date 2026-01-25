@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -67,7 +68,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 			name: "stats help",
 			args: []string{binaryPath, "stats", "--help"},
 			expectedInOutput: []string{
-				"Show aggregated duplication statistics",
+				"stats displays aggregated statistics about code duplication",
 				"art-dupl stats",
 			},
 			wantErr: false,
@@ -76,9 +77,16 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Find repo root for relative paths
+			repoRoot, err := findRepoRoot()
+			if err != nil {
+				t.Fatalf("Failed to find repo root: %v", err)
+			}
+
 			cmd := &Command{
 				Path: tt.args[0],
 				Args: tt.args,
+				Dir:  repoRoot,
 			}
 
 			output, err := cmd.CombinedOutput()
@@ -124,9 +132,16 @@ func TestStatsCommandErrorCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Find repo root for relative paths
+			repoRoot, err := findRepoRoot()
+			if err != nil {
+				t.Fatalf("Failed to find repo root: %v", err)
+			}
+
 			cmd := &Command{
 				Path: tt.args[0],
 				Args: tt.args,
+				Dir:  repoRoot,
 			}
 
 			_, err := cmd.CombinedOutput()
@@ -143,10 +158,17 @@ func TestStatsOutputFormat(t *testing.T) {
 		t.Fatalf("Failed to build binary: %v", err)
 	}
 
+	// Find repo root for relative paths
+	repoRoot, err := findRepoRoot()
+	if err != nil {
+		t.Fatalf("Failed to find repo root: %v", err)
+	}
+
 	// Test that stats output has structured format
 	cmd := &Command{
 		Path: binaryPath,
 		Args: []string{binaryPath, "stats", "./printer"},
+		Dir:  repoRoot,
 	}
 
 	output, err := cmd.CombinedOutput()
@@ -270,14 +292,24 @@ type Command struct {
 
 // CombinedOutput runs the command and returns its combined stdout and stderr.
 func (c *Command) CombinedOutput() ([]byte, error) {
-	// This is a simplified version for the test
-	// In a real test, you'd use exec.Command
-	return nil, nil
+	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
+	if c.Dir != "" {
+		cmd.Dir = c.Dir
+	}
+	if len(c.Env) > 0 {
+		cmd.Env = c.Env
+	}
+	return cmd.CombinedOutput()
 }
 
 // Run runs the command.
 func (c *Command) Run() error {
-	// This is a simplified version for the test
-	// In a real test, you'd use exec.Command
-	return nil
+	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
+	if c.Dir != "" {
+		cmd.Dir = c.Dir
+	}
+	if len(c.Env) > 0 {
+		cmd.Env = c.Env
+	}
+	return cmd.Run()
 }
