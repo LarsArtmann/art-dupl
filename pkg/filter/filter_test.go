@@ -70,6 +70,16 @@ type containsTest struct {
 func (t containsTest) GetName() string  { return t.name }
 func (t containsTest) GetExpected() bool { return t.expect }
 
+// runContainsTestCases is a helper for running contains test cases.
+func runContainsTestCases(t *testing.T, tests []containsTest) {
+	t.Helper()
+	runTestCases(t, tests,
+		containsTest.GetName,
+		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
+		containsTest.GetExpected,
+	)
+}
+
 type matchPatternTest struct {
 	name     string
 	path     string
@@ -461,11 +471,7 @@ func TestStringContains(t *testing.T) {
 		},
 	}
 
-	runTestCases(t, tests,
-		containsTest.GetName,
-		func(tt containsTest) bool { return contains(tt.slice, tt.item) },
-		containsTest.GetExpected,
-	)
+	runContainsTestCases(t, tests)
 }
 
 func TestPatternMatching(t *testing.T) {
