@@ -342,7 +342,7 @@ func executeAnalysis(cfg *config.Config, paths []string) (chan syntax.Match, int
 		}
 	}
 
-	t, data, filesCount, err := buildSuffixTree(paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
+	t, data, filesCount, err := buildSuffixTree(ctx, paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if err != nil {
 		return nil, 0, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
@@ -412,7 +412,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 }
 
 // runAllModes runs all detection methods and generates all output formats.
-func runAllModes(cfg *config.Config, sortBy, outputDir string) error {
+func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir string) error {
 	// Set detection methods to all available methods
 	cfg.DetectionMethods = config.AllDetectionMethods()
 

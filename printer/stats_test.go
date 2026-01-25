@@ -19,6 +19,24 @@ func main() {
 }`)
 }
 
+// createNodeSlice creates a slice of syntax.Node with sequential positions and types.
+// startPos is the starting position (inclusive), endPos is the ending position (inclusive)
+func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
+	var nodes []*syntax.Node
+	for i := 0; i <= endPos-startPos; i++ {
+		pos := startPos + i
+		end := pos + 1
+		typ := i + 1
+		nodes = append(nodes, &syntax.Node{
+			Filename: filename,
+			Pos:      pos,
+			End:      end,
+			Type:     typ,
+		})
+	}
+	return nodes
+}
+
 func TestStatsDataAggregation(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -166,24 +184,9 @@ func TestStatsImpactScore(t *testing.T) {
 
 	// Clone group with 4 tokens, appears 3 times
 	dups := [][]*syntax.Node{
-		{
-			&syntax.Node{Filename: "file1.go", Pos: 1, End: 2, Type: 1},
-			&syntax.Node{Filename: "file1.go", Pos: 2, End: 3, Type: 2},
-			&syntax.Node{Filename: "file1.go", Pos: 3, End: 4, Type: 3},
-			&syntax.Node{Filename: "file1.go", Pos: 4, End: 5, Type: 4},
-		},
-		{
-			&syntax.Node{Filename: "file2.go", Pos: 10, End: 11, Type: 1},
-			&syntax.Node{Filename: "file2.go", Pos: 11, End: 12, Type: 2},
-			&syntax.Node{Filename: "file2.go", Pos: 12, End: 13, Type: 3},
-			&syntax.Node{Filename: "file2.go", Pos: 13, End: 14, Type: 4},
-		},
-		{
-			&syntax.Node{Filename: "file3.go", Pos: 20, End: 21, Type: 1},
-			&syntax.Node{Filename: "file3.go", Pos: 21, End: 22, Type: 2},
-			&syntax.Node{Filename: "file3.go", Pos: 22, End: 23, Type: 3},
-			&syntax.Node{Filename: "file3.go", Pos: 23, End: 24, Type: 4},
-		},
+		createNodeSlice("file1.go", 1, 4),
+		createNodeSlice("file2.go", 10, 13),
+		createNodeSlice("file3.go", 20, 23),
 	}
 
 	if err := statsPrinter.PrintClones(dups); err != nil {
