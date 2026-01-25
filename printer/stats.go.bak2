@@ -318,23 +318,6 @@ func (p *stats) printText() {
 	}
 }
 
-// healthScoreStyle returns appropriate style for health score grade.
-func (p *stats) healthScoreStyle(grade string) lipgloss.Style {
-	switch grade {
-	case "A":
-		return p.success
-	case "B":
-		return p.success
-	case "C":
-		return p.warning
-	case "D":
-		return p.warning
-	case "F":
-		return p.error
-	default:
-		return p.base
-	}
-}
 func (p *stats) printJSON() {
 	// Create a struct for JSON output
 	jsonData := struct {
