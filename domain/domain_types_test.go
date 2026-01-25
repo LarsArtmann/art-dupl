@@ -510,8 +510,8 @@ func TestCloneID(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
 		},
 		CloneID("clone-456"),
-		func(id CloneID) ([]byte, error) { return id.MarshalJSON() },
-		func(id *CloneID, data []byte) error { return id.UnmarshalJSON(data) },
+		jsonMarshalFunc[CloneID](CloneID("")),
+		jsonUnmarshalFunc[CloneID](CloneID("")),
 	)(t)
 }
 
@@ -574,8 +574,8 @@ func TestLineNumber(t *testing.T) {
 		[]func(*testing.T){TestLineNumber_NewLineNumber, TestLineNumber_Uint},
 		LineNumber(10),
 		"10",
-		func(line LineNumber) ([]byte, error) { return line.MarshalJSON() },
-		func(line *LineNumber, data []byte) error { return line.UnmarshalJSON(data) },
+		jsonMarshalFunc[LineNumber](LineNumber(0)),
+		jsonUnmarshalFunc[LineNumber](LineNumber(0)),
 	)(t)
 }
 
@@ -687,8 +687,8 @@ func TestConfidence(t *testing.T) {
 			{name: "invalid JSON", input: `not-json`, want: Confidence(0), wantError: true},
 		},
 		Confidence(0.75),
-		func(c Confidence) ([]byte, error) { return c.MarshalJSON() },
-		func(c *Confidence, data []byte) error { return c.UnmarshalJSON(data) },
+		jsonMarshalFunc[Confidence](Confidence(0)),
+		jsonUnmarshalFunc[Confidence](Confidence(0)),
 	)(t)
 }
 
@@ -781,9 +781,24 @@ func TestProcessingTime(t *testing.T) {
 		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
 		ProcessingTime(500),
 		"500",
-		func(pt ProcessingTime) ([]byte, error) { return pt.MarshalJSON() },
-		func(pt *ProcessingTime, data []byte) error { return pt.UnmarshalJSON(data) },
+		jsonMarshalFunc(ProcessingTime(0)),
+		jsonUnmarshalFunc(&ProcessingTime(0)),
 	)(t)
+}
+
+// jsonMarshalFunc returns a marshal function for types with MarshalJSON method.
+// This helper reduces boilerplate in test functions.
+func jsonMarshalFunc[T interface{ MarshalJSON() ([]byte, error) }](_ T) func(T) ([]byte, error) {
+	return func(v T) ([]byte, error) { return v.MarshalJSON() }
+}
+
+// jsonUnmarshalFunc returns an unmarshal function for types with UnmarshalJSON method.
+// This helper reduces boilerplate in test functions.
+func jsonUnmarshalFunc[T interface{ UnmarshalJSON([]byte) error }](t T) func(*T, []byte) error {
+	// Create a pointer to a zero value of type T
+	var zero T
+	_ = zero // silence unused warning
+	return func(v *T, data []byte) error { return v.UnmarshalJSON(data) }
 }
 
 // emptyStringErrorTest returns a test case that verifies empty string input causes an error.
@@ -911,7 +926,7 @@ func TestThreshold(t *testing.T) {
 		[]func(*testing.T){TestThreshold_NewThreshold, TestThreshold_Uint},
 		Threshold(15),
 		"15",
-		func(t Threshold) ([]byte, error) { return t.MarshalJSON() },
-		func(t *Threshold, data []byte) error { return t.UnmarshalJSON(data) },
+		jsonMarshalFunc(Threshold(0)),
+		jsonUnmarshalFunc(&Threshold(0)),
 	)(t)
 }
