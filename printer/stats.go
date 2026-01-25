@@ -328,6 +328,35 @@ func (p *stats) healthScoreStyle(grade string) lipgloss.Style {
 	case "C":
 		return p.warning
 	case "D":
+// printRecommendations prints actionable recommendations based on health score and metrics.
+func (p *stats) printRecommendations(healthScore string, duplicationRatio float64) {
+	fmt.Fprintf(p.w, "%s\n", p.section.Render("Recommendations:"))
+
+	switch healthScore {
+	case "A":
+		fmt.Fprintf(p.w, "  %s\n", p.success.Render("✓ Excellent! Your code has minimal duplication (<3%)."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Keep up the good work to maintain code quality."))
+	case "B":
+		fmt.Fprintf(p.w, "  %s\n", p.success.Render("✓ Good! Your code has low duplication (3-6%)."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider refactoring clones >20 lines for further improvement."))
+	case "C":
+		fmt.Fprintf(p.w, "  %s\n", p.warning.Render("⚠ Fair! Your code has moderate duplication (6-10%)."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Focus on reducing larger clones (>30 lines) first."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Review code design for potential improvements."))
+	case "D":
+		fmt.Fprintf(p.w, "  %s\n", p.warning.Render("⚠ Poor! Your code has high duplication (10-15%)."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Immediate refactoring recommended for maintainability."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider increasing detection threshold to focus on larger clones."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Prioritize eliminating clones in core modules."))
+	case "F":
+		fmt.Fprintf(p.w, "  %s\n", p.error.Render("✗ Critical! Your code has very high duplication (>15%)."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Refactoring strongly recommended to improve maintainability."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Focus on eliminating the most duplicated code blocks."))
+		fmt.Fprintf(p.w, "  %s\n", p.metric.Render("Consider architectural changes to reduce duplication."))
+	}
+
+// Print duplicate complexity warning
+
 		return p.warning
 	case "F":
 		return p.error

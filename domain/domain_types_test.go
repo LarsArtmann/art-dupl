@@ -74,8 +74,6 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 	})
 }
 
-
-
 // testJSONRoundTrip is a helper for testing JSON marshaling and unmarshaling.
 func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
 	t.Helper()
@@ -253,8 +251,6 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 	}
 }
 
-
-
 // registerTestForType is a generic helper that eliminates code duplication by handling the common pattern.
 // This function encapsulates the repetitive logic for testing uint-based types.
 // It delegates to createUintTypeTest to maintain consistency.
@@ -278,7 +274,10 @@ type UintConstructor[T interface{ Uint() uint }] func(uint) T
 // registerUintTypeTestGeneric is a generic helper that eliminates code duplication
 // by handling the common pattern for uint-based types that implement UintWrapper.
 // This function encapsulates the repetitive logic for testing uint wrapper types.
-func registerUintTypeTestGeneric[T interface{ Uint() uint; comparable }](t *testing.T, typeName string, constructor func(uint) T) {
+func registerUintTypeTestGeneric[T interface {
+	Uint() uint
+	comparable
+}](t *testing.T, typeName string, constructor func(uint) T) {
 	t.Helper()
 	registerTestForType(t, typeName,
 		constructor,

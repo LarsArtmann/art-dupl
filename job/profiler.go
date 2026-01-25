@@ -16,7 +16,7 @@ type ProfileResult struct {
 	PauseTotalMS float64       // Total GC pause time in ms
 	Duration     time.Duration // Total execution time
 	NumGoroutine int           // Number of goroutines
-	Timestamp   time.Time     // Start timestamp for duration calculation
+	Timestamp    time.Time     // Start timestamp for duration calculation
 }
 
 // Profile captures performance metrics at a point in time.

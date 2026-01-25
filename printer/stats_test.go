@@ -371,7 +371,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 		{"zero clones", 0, 0, 0},
 	}
 
-		for _, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)

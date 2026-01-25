@@ -9,10 +9,10 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/spf13/cobra"
-	"github.com/LarsArtmann/art-dupl/job"
 )
 
 // NewStatsCommand creates the stats command.
