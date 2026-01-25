@@ -37,6 +37,14 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 	return nodes
 }
 
+// printFooterAndGetData is a helper function to call PrintFooter and return stats data
+func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
+	if err := statsPrinter.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+	return statsPrinter.GetStatsData()
+}
+
 func TestStatsDataAggregation(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -193,11 +201,7 @@ func TestStatsImpactScore(t *testing.T) {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	if err := statsPrinter.PrintFooter(); err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
-
-	statsData := statsPrinter.GetStatsData()
+	statsData := printFooterAndGetData(t, statsPrinter)
 	// Impact score formula: sum(node_count_of_each_clone) × number_of_clones
 	// Each clone has 4 nodes, so tokensInGroup = 4 + 4 + 4 = 12
 	// len(dups) = 3 (number of clones)
