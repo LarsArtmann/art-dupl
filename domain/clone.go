@@ -111,11 +111,11 @@ type Clone struct {
 	EndPos     BytePosition    `json:"endPos"`
 	Confidence Confidence      `json:"confidence"`
 	Complexity ComplexityScore `json:"complexity"`
-	// 16B string headers (at end to minimize padding)
-	Filename Filepath            `json:"filename"`
-	Fragment string              `json:"fragment"`
-	Hash     Hash                `json:"hash"`
-	Status   FileProcessingState `json:"status"`
+	// StringIDs (4B each, interned for memory efficiency)
+	Filename   StringID        `json:"filename"`
+	Fragment   StringID        `json:"fragment"`
+	Hash       StringID        `json:"hash"`
+	Status     FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone data.
@@ -139,6 +139,36 @@ func (c Clone) IsValid() error {
 	}
 
 	return nil
+}
+
+// FilenameString returns the filename as a string by looking up the StringID.
+func (c Clone) FilenameString() string {
+	return GlobalPool().Lookup(c.Filename)
+}
+
+// FragmentString returns the fragment as a string by looking up the StringID.
+func (c Clone) FragmentString() string {
+	return GlobalPool().Lookup(c.Fragment)
+}
+
+// HashString returns the hash as a string by looking up the StringID.
+func (c Clone) HashString() string {
+	return GlobalPool().Lookup(c.Hash)
+}
+
+// SetFilename interns a filename string and sets the FilenameID.
+func (c *Clone) SetFilename(filename string) {
+	c.Filename = GlobalPool().Intern(filename)
+}
+
+// SetFragment interns a fragment string and sets the FragmentID.
+func (c *Clone) SetFragment(fragment string) {
+	c.Fragment = GlobalPool().Intern(fragment)
+}
+
+// SetHash interns a hash string and sets the HashID.
+func (c *Clone) SetHash(hash string) {
+	c.Hash = GlobalPool().Intern(hash)
 }
 
 // CloneGroup represents a group of clones.
@@ -394,10 +424,8 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	if fragment != "" {
 		hashStr = fmt.Sprintf("%x", sha256.Sum256([]byte(fragment)))
 	}
-	hash, _ := NewHash(hashStr)
 
 	// Create domain types from primitive values
-	fp, _ := NewFilepath(filename)
 	startLn, _ := NewLineNumber(uint(lineStart)) //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
 	endLn, _ := NewLineNumber(uint(lineEnd))     //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
 	startPos := NewBytePosition(uint(node.Pos))  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
@@ -405,18 +433,23 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	conf, _ := NewConfidence(1.0)                // Calculate actual confidence
 	complexity := NewComplexityScore(calculateComplexity(node))
 
-	return Clone{
-		Filename:   fp,
+	// Create clone with interned strings
+	clone := Clone{
 		StartLine:  startLn,
 		EndLine:    endLn,
 		StartPos:   startPos,
 		EndPos:     endPos,
-		Fragment:   fragment,
-		Hash:       hash,
 		Confidence: conf,
 		Complexity: complexity,
 		Status:     FileProcessingStateCompleted,
 	}
+	
+	// Intern strings for memory efficiency
+	clone.SetFilename(filename)
+	clone.SetFragment(fragment)
+	clone.SetHash(hashStr)
+	
+	return clone
 }
 
 // CalculateSeverity determines clone severity based on size and complexity.

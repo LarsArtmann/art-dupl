@@ -27,6 +27,36 @@ func (sid StringID) Uint32() uint32 {
 	return uint32(sid)
 }
 
+// MarshalJSON implements json.Marshaler for StringID.
+// Serializes as the underlying string value from the global pool.
+func (sid StringID) MarshalJSON() ([]byte, error) {
+	if !sid.IsValid() {
+		return []byte("null"), nil
+	}
+	str := GlobalPool().Lookup(sid)
+	if str == "" {
+		return []byte("null"), nil
+	}
+	return []byte("\"" + str + "\""), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler for StringID.
+// Deserializes by interning the string value.
+func (sid *StringID) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		*sid = 0
+		return nil
+	}
+	// Remove quotes
+	str := string(data[1 : len(data)-1])
+	if str == "" {
+		*sid = 0
+		return nil
+	}
+	*sid = GlobalPool().Intern(str)
+	return nil
+}
+
 // StringInternPool provides thread-safe string interning.
 // Eliminates duplicate string storage by sharing common strings.
 // Uses sync.RWMutex for efficient concurrent read access.
