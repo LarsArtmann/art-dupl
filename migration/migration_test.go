@@ -71,13 +71,23 @@ var _ = Describe("Migration Path", func() {
 
 	Context("When creating migration reports", func() {
 		It("should generate comprehensive migration report", func() {
+			// Create clones with proper StringID initialization
+			clone1 := domain.Clone{}
+			clone1.SetFilename("test.go")
+			
+			clone2 := domain.Clone{}
+			clone2.SetFilename("test.go")
+			
+			clone3 := domain.Clone{}
+			clone3.SetFilename("test2.go")
+
 			before := domain.Analysis{
 				Threshold: 10,
 				CloneGroups: []domain.CloneGroup{
 					{
 						Size: 100,
 						Clones: []domain.Clone{
-							{Filename: "test.go"},
+							clone1,
 						},
 						Severity: domain.CloneSeverityMedium,
 					},
@@ -96,14 +106,14 @@ var _ = Describe("Migration Path", func() {
 					{
 						Size: 100,
 						Clones: []domain.Clone{
-							{Filename: "test.go"},
+							clone2,
 						},
 						Severity: domain.CloneSeverityHigh, // Changed
 					},
 					{
 						Size: 50,
 						Clones: []domain.Clone{
-							{Filename: "test2.go"},
+							clone3,
 						},
 						Severity: domain.CloneSeverityLow, // New
 					},

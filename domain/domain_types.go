@@ -168,18 +168,25 @@ func (fp *Filepath) UnmarshalJSON(data []byte) error {
 
 // LineNumber represents a line number in a source file.
 // Line numbers start at 1 (not 0) in most editors.
-type LineNumber uint
+// Optimized: uint16 provides 0-65,535 range (sufficient for any source file).
+type LineNumber uint16
 
-// NewLineNumber creates a validated LineNumber from a uint.
+// NewLineNumber creates a validated LineNumber from a uint16.
 // Returns error if the line number is 0 (invalid).
-func NewLineNumber(n uint) (LineNumber, error) {
+func NewLineNumber(n uint16) (LineNumber, error) {
 	if n == 0 {
 		return 0, errors.NewValidationError("line number cannot be 0", nil)
 	}
 	return LineNumber(n), nil
 }
 
-// Uint returns the underlying uint value.
+// Uint16 returns the underlying uint16 value.
+func (ln LineNumber) Uint16() uint16 {
+	return uint16(ln)
+}
+
+// Uint returns the underlying uint value (for backward compatibility).
+// Deprecated: Use Uint16() instead for type safety.
 func (ln LineNumber) Uint() uint {
 	return uint(ln)
 }
@@ -189,39 +196,55 @@ func (ln LineNumber) MarshalJSON() ([]byte, error) {
 	if ln == 0 {
 		return nil, errors.NewValidationError("line number cannot be 0", nil)
 	}
-	return json.Marshal(uint(ln))
+	return json.Marshal(uint16(ln))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for LineNumber.
 func (ln *LineNumber) UnmarshalJSON(data []byte) error {
-	return unmarshalUintNonZero(data, "LineNumber", "line number cannot be 0", func(n uint) {
-		*ln = LineNumber(n)
-	})
+	var n uint16
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal LineNumber: %w", err)
+	}
+	if n == 0 {
+		return errors.NewValidationError("line number cannot be 0", nil)
+	}
+	*ln = LineNumber(n)
+	return nil
 }
 
 // BytePosition represents a byte position in a file.
-type BytePosition uint
+// Optimized: uint32 provides 0-4GB range (sufficient for file positions).
+type BytePosition uint32
 
-// NewBytePosition creates a validated BytePosition from a uint.
-func NewBytePosition(pos uint) BytePosition {
+// NewBytePosition creates a validated BytePosition from a uint32.
+func NewBytePosition(pos uint32) BytePosition {
 	return BytePosition(pos)
 }
 
-// Uint returns the underlying uint value.
+// Uint32 returns the underlying uint32 value.
+func (bp BytePosition) Uint32() uint32 {
+	return uint32(bp)
+}
+
+// Uint returns the underlying uint value (for backward compatibility).
+// Deprecated: Use Uint32() instead for type safety.
 func (bp BytePosition) Uint() uint {
 	return uint(bp)
 }
 
 // MarshalJSON implements json.Marshaler for BytePosition.
 func (bp BytePosition) MarshalJSON() ([]byte, error) {
-	return marshalUint(uint(bp))
+	return json.Marshal(uint32(bp))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for BytePosition.
 func (bp *BytePosition) UnmarshalJSON(data []byte) error {
-	return unmarshalUint(data, "BytePosition", func(n uint) {
-		*bp = BytePosition(n)
-	})
+	var n uint32
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal BytePosition: %w", err)
+	}
+	*bp = BytePosition(n)
+	return nil
 }
 
 // TokenCount represents a count of tokens in code.
@@ -302,28 +325,38 @@ func (conf *Confidence) UnmarshalJSON(data []byte) error {
 }
 
 // ComplexityScore represents a complexity metric.
-type ComplexityScore uint
+// Optimized: uint16 provides 0-65,535 range (sufficient for code complexity).
+type ComplexityScore uint16
 
-// NewComplexityScore creates a validated ComplexityScore from a uint.
-func NewComplexityScore(score uint) ComplexityScore {
+// NewComplexityScore creates a validated ComplexityScore from a uint16.
+func NewComplexityScore(score uint16) ComplexityScore {
 	return ComplexityScore(score)
 }
 
-// Uint returns the underlying uint value.
+// Uint16 returns the underlying uint16 value.
+func (cs ComplexityScore) Uint16() uint16 {
+	return uint16(cs)
+}
+
+// Uint returns the underlying uint value (for backward compatibility).
+// Deprecated: Use Uint16() instead for type safety.
 func (cs ComplexityScore) Uint() uint {
 	return uint(cs)
 }
 
 // MarshalJSON implements json.Marshaler for ComplexityScore.
 func (cs ComplexityScore) MarshalJSON() ([]byte, error) {
-	return marshalUint(uint(cs))
+	return json.Marshal(uint16(cs))
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ComplexityScore.
 func (cs *ComplexityScore) UnmarshalJSON(data []byte) error {
-	return unmarshalUint(data, "ComplexityScore", func(n uint) {
-		*cs = ComplexityScore(n)
-	})
+	var n uint16
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal ComplexityScore: %w", err)
+	}
+	*cs = ComplexityScore(n)
+	return nil
 }
 
 // Hash represents a hash value (typically SHA256).

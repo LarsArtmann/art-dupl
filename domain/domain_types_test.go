@@ -299,11 +299,19 @@ func registerUintTypeByName(t *testing.T, typeName string) {
 
 	switch typeName {
 	case "BytePosition":
-		registerUintTypeTestGeneric[BytePosition](t, typeName, NewBytePosition)
+		// Adapter to convert func(uint32) BytePosition to func(uint) BytePosition
+		adapter := func(n uint) BytePosition {
+			return NewBytePosition(uint32(n))
+		}
+		registerUintTypeTestGeneric[BytePosition](t, typeName, adapter)
 	case "TokenCount":
 		registerUintTypeTestGeneric[TokenCount](t, typeName, NewTokenCount)
 	case "ComplexityScore":
-		registerUintTypeTestGeneric[ComplexityScore](t, typeName, NewComplexityScore)
+		// Adapter to convert func(uint16) ComplexityScore to func(uint) ComplexityScore
+		adapter := func(n uint) ComplexityScore {
+			return NewComplexityScore(uint16(n))
+		}
+		registerUintTypeTestGeneric[ComplexityScore](t, typeName, adapter)
 	case "FileCount":
 		registerUintTypeTestGeneric[FileCount](t, typeName, NewFileCount)
 	case "CloneCount":
@@ -446,10 +454,14 @@ func createStandardUintJSONTests[T comparable](
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 func TestLineNumber_NewLineNumber(t *testing.T) {
+	// Adapter to convert func(uint16) (LineNumber, error) to func(uint) (LineNumber, error)
+	adapter := func(n uint) (LineNumber, error) {
+		return NewLineNumber(uint16(n))
+	}
 	registerBasicUintConstructorTest(t, "NewLineNumber",
 		uint(1), uint(42),
 		LineNumber(1), LineNumber(42),
-		NewLineNumber)
+		adapter)
 }
 
 // TestLineNumber_Uint tests the Uint method.

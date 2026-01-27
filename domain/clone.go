@@ -109,7 +109,6 @@ type Clone struct {
 	EndLine    LineNumber      `json:"endLine"`
 	StartPos   BytePosition    `json:"startPos"`
 	EndPos     BytePosition    `json:"endPos"`
-	Confidence Confidence      `json:"confidence"`
 	Complexity ComplexityScore `json:"complexity"`
 	// StringIDs (4B each, interned for memory efficiency)
 	Filename   StringID        `json:"filename"`
@@ -426,12 +425,11 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	}
 
 	// Create domain types from primitive values
-	startLn, _ := NewLineNumber(uint(lineStart)) //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
-	endLn, _ := NewLineNumber(uint(lineEnd))     //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
-	startPos := NewBytePosition(uint(node.Pos))  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
-	endPos := NewBytePosition(uint(node.End))    //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
-	conf, _ := NewConfidence(1.0)                // Calculate actual confidence
-	complexity := NewComplexityScore(calculateComplexity(node))
+	startLn, _ := NewLineNumber(uint16(lineStart)) //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
+	endLn, _ := NewLineNumber(uint16(lineEnd))     //nolint:gosec //G115 lineEnd >= 1 guaranteed by initialize default
+	startPos := NewBytePosition(uint32(node.Pos))  //nolint:gosec //G115 node.Pos validated >= 0 in fragment extraction
+	endPos := NewBytePosition(uint32(node.End))    //nolint:gosec //G115 node.End validated >= 0 in fragment extraction
+	complexity := NewComplexityScore(uint16(calculateComplexity(node)))
 
 	// Create clone with interned strings
 	clone := Clone{
@@ -439,7 +437,6 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		EndLine:    endLn,
 		StartPos:   startPos,
 		EndPos:     endPos,
-		Confidence: conf,
 		Complexity: complexity,
 		Status:     FileProcessingStateCompleted,
 	}
