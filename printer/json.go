@@ -19,6 +19,7 @@ type JSONOutput struct {
 	Threshold       int          `json:"threshold"`
 	FilesAnalyzed   int          `json:"files_analyzed"`
 	DetectionMethod string       `json:"detection_method,omitempty"`
+	DetectionMethods string      `json:"detection_methods,omitempty"`
 	CloneGroups     []CloneGroup `json:"clone_groups"`
 	Summary         Summary      `json:"summary"`
 }
@@ -187,17 +188,23 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 	SortCloneGroups(p.cloneGroups, sortBy)
 
 	output := JSONOutput{
-		Version:         "1.0",
-		Timestamp:       time.Now().UTC(),
-		Threshold:       threshold,
-		FilesAnalyzed:   p.filesCount,
-		DetectionMethod: detectionMethod,
-		CloneGroups:     p.cloneGroups,
+		Version:       "1.0",
+		Timestamp:     time.Now().UTC(),
+		Threshold:     threshold,
+		FilesAnalyzed: p.filesCount,
+		CloneGroups:   p.cloneGroups,
 		Summary: Summary{
 			TotalCloneGroups: len(p.cloneGroups),
 			TotalClones:      p.totalClones,
 			ComplexityScore:  float64(p.totalClones) / float64(len(p.cloneGroups)+1),
 		},
+	}
+
+	// Use DetectionMethods (plural) for combined detection, DetectionMethod (singular) for single
+	if strings.Contains(detectionMethod, ",") {
+		output.DetectionMethods = detectionMethod
+	} else {
+		output.DetectionMethod = detectionMethod
 	}
 
 	encoder := json.NewEncoder(p.w)

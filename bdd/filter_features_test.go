@@ -129,14 +129,14 @@ func Body() templ.Component {
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run default (templ should be filtered)
-			cmd = exec.Command("./art-dupl-filter_features-test", setup.TmpDir, "--threshold", "10")
+			// Run with --filter-generated flag (templ should be filtered)
+			cmd = exec.Command("./art-dupl-filter_features-test", setup.TmpDir, "--threshold", "10", "--filter-generated")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
 			Expect(outputStr).To(ContainSubstring("handler"))
-			// templ files should be filtered by default
+			// templ files should be filtered when --filter-generated is set
 			Expect(outputStr).ToNot(ContainSubstring("templ"))
 		})
 
