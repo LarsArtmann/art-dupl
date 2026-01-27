@@ -96,8 +96,11 @@ func (am AnalysisMode) IsValid() bool {
 }
 
 // Clone represents a code clone with strong typing.
+//
+// Note: Clone intentionally omits an ID field. Identity is determined by the
+// combination of Filename, StartLine, EndLine, and Hash. This eliminates
+// unnecessary storage overhead and avoids cargo-cult "entities need IDs" patterns.
 type Clone struct {
-	ID         CloneID             `json:"id"`
 	Filename   Filepath            `json:"filename"`
 	StartLine  LineNumber          `json:"startLine"`
 	EndLine    LineNumber          `json:"endLine"`
@@ -145,9 +148,6 @@ type CloneGroup struct {
 
 // IsValid validates clone group.
 func (cg CloneGroup) IsValid() error {
-	if cg.ID == "" {
-		return errors.New("clone group ID cannot be empty")
-	}
 	if len(cg.Clones) == 0 {
 		return errors.New("clone group must have at least one clone")
 	}
@@ -161,7 +161,7 @@ func (cg CloneGroup) IsValid() error {
 	// Validate all clones in group
 	for i, clone := range cg.Clones {
 		if err := clone.IsValid(); err != nil {
-			return fmt.Errorf("clone %d in group %s is invalid: %w", i, cg.ID, err)
+			return fmt.Errorf("clone %d in group is invalid: %w", i, err)
 		}
 	}
 	return nil
@@ -226,9 +226,6 @@ type Analysis struct {
 
 // IsValid validates analysis.
 func (a Analysis) IsValid() error {
-	if a.ID == "" {
-		return errors.New("analysis ID cannot be empty")
-	}
 	if !a.State.IsValid() {
 		return fmt.Errorf("invalid analysis state: %s", a.State)
 	}
@@ -245,7 +242,7 @@ func (a Analysis) IsValid() error {
 	// Validate all clone groups
 	for i, group := range a.CloneGroups {
 		if err := group.IsValid(); err != nil {
-			return fmt.Errorf("clone group %d in analysis %s is invalid: %w", i, a.ID, err)
+			return fmt.Errorf("clone group %d in analysis is invalid: %w", i, err)
 		}
 	}
 	return nil
@@ -371,9 +368,6 @@ func (do DetectionOptions) IsValid() error {
 
 // NodeToClone converts syntax nodes to domain Clone.
 func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
-	// Generate unique ID for clone
-	cloneID, _ := NewCloneID(fmt.Sprintf("%s-%d-%d", filename, node.Pos, node.End))
-
 	// Calculate line numbers from file content
 	lineStart, lineEnd := 1, 1 // defaults
 	if fileContent != nil {
@@ -407,7 +401,6 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	complexity := NewComplexityScore(calculateComplexity(node))
 
 	return Clone{
-		ID:         cloneID,
 		Filename:   fp,
 		StartLine:  startLn,
 		EndLine:    endLn,

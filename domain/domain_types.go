@@ -82,35 +82,6 @@ func marshalUint(n uint) ([]byte, error) {
 	return json.Marshal(n)
 }
 
-// CloneID represents a unique identifier for a code clone.
-type CloneID string
-
-// NewCloneID creates a validated CloneID from a string.
-// Returns error if the ID is empty.
-func NewCloneID(id string) (CloneID, error) {
-	if id == "" {
-		return "", errors.NewValidationError("clone ID cannot be empty", nil)
-	}
-	return CloneID(id), nil
-}
-
-// String returns the string representation of CloneID.
-func (id CloneID) String() string {
-	return string(id)
-}
-
-// MarshalJSON implements json.Marshaler for CloneID.
-func (id CloneID) MarshalJSON() ([]byte, error) {
-	return marshalStringID(string(id), "CloneID", "clone ID cannot be empty")
-}
-
-// UnmarshalJSON implements json.Unmarshaler for CloneID.
-func (id *CloneID) UnmarshalJSON(data []byte) error {
-	return unmarshalStringID(data, "CloneID", "clone ID cannot be empty", func(s string) {
-		*id = CloneID(s)
-	})
-}
-
 // CloneGroupID represents a unique identifier for a clone group.
 type CloneGroupID string
 

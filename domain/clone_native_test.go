@@ -11,7 +11,6 @@ func TestDomainCloneValidation(t *testing.T) {
 
 	t.Run("should accept valid clones", func(t *testing.T) {
 		clone := domain.Clone{
-			ID:         "clone-1",
 			Filename:   "test.go",
 			StartLine:  10,
 			EndLine:    20,
@@ -28,18 +27,6 @@ func TestDomainCloneValidation(t *testing.T) {
 			t.Errorf("Expected valid clone, got error: %v", err)
 		}
 	})
-
-	t.Run("should reject clones with empty ID", func(t *testing.T) {
-		clone := domain.Clone{
-			Filename:  "test.go",
-			StartLine: 10,
-			EndLine:   20,
-		}
-
-		if err := clone.IsValid(); err == nil {
-			t.Error("Expected error for empty clone ID, got nil")
-		}
-	})
 }
 
 func TestDomainCloneGroupValidation(t *testing.T) {
@@ -47,12 +34,10 @@ func TestDomainCloneGroupValidation(t *testing.T) {
 
 	t.Run("should accept valid clone groups", func(t *testing.T) {
 		group := domain.CloneGroup{
-			ID:   "group-1",
 			Hash: "abc123",
 			Size: 100,
 			Clones: []domain.Clone{
 				{
-					ID:        "clone-1",
 					Filename:  "test1.go",
 					StartLine: 10,
 					EndLine:   20,

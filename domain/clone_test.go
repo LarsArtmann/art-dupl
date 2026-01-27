@@ -16,7 +16,6 @@ var _ = Describe("Domain: Clone", func() {
 	Context("When validating clones", func() {
 		It("should accept valid clones", func() {
 			clone := domain.Clone{
-				ID:         "clone-1",
 				Filename:   "test.go",
 				StartLine:  10,
 				EndLine:    20,
@@ -32,19 +31,8 @@ var _ = Describe("Domain: Clone", func() {
 			Expect(clone.IsValid()).To(Succeed())
 		})
 
-		It("should reject clones with empty ID", func() {
-			clone := domain.Clone{
-				Filename:  "test.go",
-				StartLine: 10,
-				EndLine:   20,
-			}
-
-			Expect(clone.IsValid()).To(MatchError(ContainSubstring("clone ID cannot be empty")))
-		})
-
 		It("should reject clones with invalid position", func() {
 			clone := domain.Clone{
-				ID:        "clone-1",
 				Filename:  "test.go",
 				StartLine: 10,
 				EndLine:   20,
@@ -57,7 +45,6 @@ var _ = Describe("Domain: Clone", func() {
 
 		It("should reject clones with invalid confidence", func() {
 			clone := domain.Clone{
-				ID:         "clone-1",
 				Filename:   "test.go",
 				Confidence: 1.5, // Invalid: > 1.0
 			}
@@ -90,19 +77,16 @@ var _ = Describe("Domain: CloneGroup", func() {
 	Context("When validating clone groups", func() {
 		It("should accept valid clone groups", func() {
 			group := domain.CloneGroup{
-				ID:   "group-1",
 				Hash: "abc123",
 				Size: 100,
 				Clones: []domain.Clone{
 					{
-						ID:        "clone-1",
 						Filename:  "test1.go",
 						StartLine: 10,
 						EndLine:   20,
 						Status:    domain.FileProcessingStateCompleted,
 					},
 					{
-						ID:        "clone-2",
 						Filename:  "test2.go",
 						StartLine: 15,
 						EndLine:   25,
@@ -118,7 +102,6 @@ var _ = Describe("Domain: CloneGroup", func() {
 
 		It("should reject groups with empty clones", func() {
 			group := domain.CloneGroup{
-				ID:       "group-1",
 				Hash:     "abc123",
 				Size:     100,
 				Clones:   []domain.Clone{},
@@ -130,12 +113,10 @@ var _ = Describe("Domain: CloneGroup", func() {
 
 		It("should reject groups with invalid severity", func() {
 			group := domain.CloneGroup{
-				ID:   "group-1",
 				Hash: "abc123",
 				Size: 100,
 				Clones: []domain.Clone{
 					{
-						ID:        "clone-1",
 						Filename:  "test.go",
 						StartLine: 10,
 						EndLine:   20,
@@ -150,15 +131,14 @@ var _ = Describe("Domain: CloneGroup", func() {
 
 		It("should propagate clone validation errors", func() {
 			group := domain.CloneGroup{
-				ID:   "group-1",
 				Hash: "abc123",
 				Size: 100,
 				Clones: []domain.Clone{
 					{
-						// Invalid: empty ID
+						// Invalid: end line < start line
 						Filename:  "test.go",
-						StartLine: 10,
-						EndLine:   20,
+						StartLine: 20,
+						EndLine:   10,
 						Status:    domain.FileProcessingStateCompleted,
 					},
 				},
@@ -167,7 +147,7 @@ var _ = Describe("Domain: CloneGroup", func() {
 
 			Expect(group.IsValid()).To(MatchError(And(
 				ContainSubstring("clone 0"),
-				ContainSubstring("ID cannot be empty"),
+				ContainSubstring("end line must be >= start line"),
 			)))
 		})
 	})
@@ -177,19 +157,16 @@ var _ = Describe("Domain: Analysis", func() {
 	Context("When validating analysis", func() {
 		It("should accept valid analysis", func() {
 			analysis := domain.Analysis{
-				ID:        "analysis-1",
 				State:     domain.DetectionStateCompleted,
 				Mode:      domain.AnalysisModeFull,
 				Threshold: 10,
 				CreatedAt: time.Now().Format(time.RFC3339),
 				CloneGroups: []domain.CloneGroup{
 					{
-						ID:   "group-1",
 						Hash: "abc123",
 						Size: 100,
 						Clones: []domain.Clone{
 							{
-								ID:        "clone-1",
 								Filename:  "test.go",
 								StartLine: 10,
 								EndLine:   20,
@@ -213,20 +190,8 @@ var _ = Describe("Domain: Analysis", func() {
 			Expect(analysis.IsValid()).To(Succeed())
 		})
 
-		It("should reject analysis with empty ID", func() {
-			analysis := domain.Analysis{
-				State:     domain.DetectionStateCompleted,
-				Mode:      domain.AnalysisModeFull,
-				Threshold: 10,
-				CreatedAt: time.Now().Format(time.RFC3339),
-			}
-
-			Expect(analysis.IsValid()).To(MatchError(ContainSubstring("analysis ID cannot be empty")))
-		})
-
 		It("should reject analysis with zero threshold", func() {
 			analysis := domain.Analysis{
-				ID:        "analysis-1",
 				State:     domain.DetectionStateCompleted,
 				Mode:      domain.AnalysisModeFull,
 				Threshold: 0, // Invalid

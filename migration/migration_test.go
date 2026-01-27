@@ -72,14 +72,12 @@ var _ = Describe("Migration Path", func() {
 	Context("When creating migration reports", func() {
 		It("should generate comprehensive migration report", func() {
 			before := domain.Analysis{
-				ID:        "analysis-1",
 				Threshold: 10,
 				CloneGroups: []domain.CloneGroup{
 					{
-						ID:   "group-1",
 						Size: 100,
 						Clones: []domain.Clone{
-							{ID: "clone-1", Filename: "test.go"},
+							{Filename: "test.go"},
 						},
 						Severity: domain.CloneSeverityMedium,
 					},
@@ -93,22 +91,19 @@ var _ = Describe("Migration Path", func() {
 			}
 
 			after := domain.Analysis{
-				ID:        "analysis-2",
 				Threshold: 10,
 				CloneGroups: []domain.CloneGroup{
 					{
-						ID:   "group-1",
 						Size: 100,
 						Clones: []domain.Clone{
-							{ID: "clone-1", Filename: "test.go"},
+							{Filename: "test.go"},
 						},
 						Severity: domain.CloneSeverityHigh, // Changed
 					},
 					{
-						ID:   "group-2",
 						Size: 50,
 						Clones: []domain.Clone{
-							{ID: "clone-2", Filename: "test2.go"},
+							{Filename: "test2.go"},
 						},
 						Severity: domain.CloneSeverityLow, // New
 					},
@@ -136,7 +131,6 @@ var _ = Describe("Migration Path", func() {
 	Context("When validating migration", func() {
 		It("should accept valid migration", func() {
 			analysis := domain.Analysis{
-				ID:        "test-analysis",
 				Threshold: 10,
 				State:     domain.DetectionStateCompleted,
 				CreatedAt: time.Now().Format(time.RFC3339),
@@ -146,9 +140,8 @@ var _ = Describe("Migration Path", func() {
 			result := migrationPath.ValidateMigration(analysis)
 
 			Expect(result.IsOk()).To(BeTrue())
-			analysis, err := result.Unwrap()
+			_, err := result.Unwrap()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(analysis.ID).To(Equal("test-analysis"))
 		})
 
 		It("should reject invalid migration", func() {
@@ -171,11 +164,9 @@ var _ = Describe("Migration Path", func() {
 				MigrationID: "test-migration",
 				CreatedAt:   "2023-01-01T00:00:00Z",
 				BeforeState: domain.Analysis{
-					ID:        "before",
 					Threshold: 10,
 				},
 				AfterState: domain.Analysis{
-					ID:        "after",
 					Threshold: 15,
 				},
 				Differences: migration.AnalysisDifferences{

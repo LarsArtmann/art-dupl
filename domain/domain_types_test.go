@@ -338,48 +338,7 @@ func TestUintTypes(t *testing.T) {
 	}
 }
 
-// TestCloneID_NewCloneID tests the NewCloneID constructor.
-func TestCloneID_NewCloneID(t *testing.T) {
-	tests := []constructorTest[CloneID]{
-		{
-			name:      "valid clone ID",
-			input:     "clone-123",
-			want:      CloneID("clone-123"),
-			wantError: false,
-		},
-		{
-			name:      "empty string should error",
-			input:     "",
-			want:      "",
-			wantError: true,
-		},
-		{
-			name:      "ID with special characters",
-			input:     "clone-123_abc",
-			want:      CloneID("clone-123_abc"),
-			wantError: false,
-		},
-		{
-			name:      "ID with spaces",
-			input:     "clone 123",
-			want:      CloneID("clone 123"),
-			wantError: false,
-		},
-	}
-	runConstructorTests(t, "NewCloneID", tests, func(input any) (CloneID, error) {
-		return NewCloneID(input.(string))
-	})
-}
-
-// TestCloneID_String tests the String method.
-func TestCloneID_String(t *testing.T) {
-	id := CloneID("test-id")
-	if got := id.String(); got != "test-id" {
-		t.Errorf("String() = %v, want %v", got, "test-id")
-	}
-}
-
-// registerJSONTestSuite creates and runs a complete test suite for JSON marshaling/unmarshaling.
+// TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 // This helper reduces boilerplate when creating tests for types with JSON support.
 func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalTests []jsonTest[T], unmarshalTests []struct {
 	name      string
@@ -483,30 +442,6 @@ func createStandardUintJSONTests[T comparable](
 	}
 	roundTripValue = validValue
 	return marshalTests, unmarshalTests, roundTripValue
-}
-
-// TestCloneID tests CloneID type.
-func TestCloneID(t *testing.T) {
-	createTypeTestSuite("CloneID",
-		[]func(*testing.T){TestCloneID_NewCloneID, TestCloneID_String},
-		[]jsonTest[CloneID]{
-			{name: "valid clone ID", input: CloneID("clone-123"), want: `"clone-123"`, wantErr: false},
-			{name: "empty ID should error", input: CloneID(""), want: "", wantErr: true},
-		},
-		[]struct {
-			name      string
-			input     string
-			want      CloneID
-			wantError bool
-		}{
-			{name: "valid JSON", input: `"clone-123"`, want: CloneID("clone-123"), wantError: false},
-			{name: "empty JSON string should error", input: `""`, want: CloneID(""), wantError: true},
-			{name: "invalid JSON", input: `not-json`, want: CloneID(""), wantError: true},
-		},
-		CloneID("clone-456"),
-		func(v CloneID) ([]byte, error) { return v.MarshalJSON() },
-		jsonUnmarshalFuncPtr[CloneID](),
-	)(t)
 }
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
