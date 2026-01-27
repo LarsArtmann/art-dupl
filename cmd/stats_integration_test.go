@@ -290,8 +290,8 @@ type Command struct {
 	Dir  string
 }
 
-// CombinedOutput runs the command and returns its combined stdout and stderr.
-func (c *Command) CombinedOutput() ([]byte, error) {
+// buildCmd creates and configures the exec.Command.
+func (c *Command) buildCmd() *exec.Cmd {
 	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
 	if c.Dir != "" {
 		cmd.Dir = c.Dir
@@ -299,17 +299,15 @@ func (c *Command) CombinedOutput() ([]byte, error) {
 	if len(c.Env) > 0 {
 		cmd.Env = c.Env
 	}
-	return cmd.CombinedOutput()
+	return cmd
+}
+
+// CombinedOutput runs the command and returns its combined stdout and stderr.
+func (c *Command) CombinedOutput() ([]byte, error) {
+	return c.buildCmd().CombinedOutput()
 }
 
 // Run runs the command.
 func (c *Command) Run() error {
-	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
-	if c.Dir != "" {
-		cmd.Dir = c.Dir
-	}
-	if len(c.Env) > 0 {
-		cmd.Env = c.Env
-	}
-	return cmd.Run()
+	return c.buildCmd().Run()
 }
