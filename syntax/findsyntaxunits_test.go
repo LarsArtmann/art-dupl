@@ -13,7 +13,7 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 	// Create a sequence of nodes with different ownership patterns
 	nodes := make([]*Node, 10)
 	for i := range nodes {
-		nodes[i] = &Node{Type: i, Owns: 0}
+		nodes[i] = &Node{Type: int32(i), Owns: 0}
 	}
 
 	// Set ownership pattern: first node owns 3, others own 0
@@ -25,7 +25,7 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 
 	// Add the same sequence at a different position but with different ownership
 	for i := 10; i < 20; i++ {
-		data[i] = &Node{Type: i - 10, Owns: 0}
+		data[i] = &Node{Type: int32(i - 10), Owns: 0}
 	}
 	data[10].Owns = 2 // Different ownership at same relative position
 
@@ -50,7 +50,7 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	// Create identical sequences with proper ownership
 	nodes1 := make([]*Node, 10)
 	for i := range nodes1 {
-		nodes1[i] = &Node{Type: i, Owns: 0}
+		nodes1[i] = &Node{Type: int32(i), Owns: 0}
 	}
 	// Set up a proper ownership structure: leaf nodes own 0, parent nodes own children count
 	nodes1[0].Owns = 4 // First node owns 4 children
@@ -58,7 +58,7 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 
 	nodes2 := make([]*Node, 10)
 	for i := range nodes2 {
-		nodes2[i] = &Node{Type: i, Owns: 0}
+		nodes2[i] = &Node{Type: int32(i), Owns: 0}
 	}
 	// Same ownership structure
 	nodes2[0].Owns = 4
@@ -94,7 +94,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) { //nolint:funlen // Comprehensi
 			setup: func() []*Node {
 				data := make([]*Node, 5)
 				for i := range data {
-					data[i] = &Node{Type: i, Owns: 1}
+					data[i] = &Node{Type: int32(i), Owns: 1}
 				}
 				return data
 			},
@@ -110,7 +110,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) { //nolint:funlen // Comprehensi
 			setup: func() []*Node {
 				data := make([]*Node, 10)
 				for i := range data {
-					data[i] = &Node{Type: i, Owns: 0}
+					data[i] = &Node{Type: int32(i), Owns: 0}
 				}
 				// Create a proper ownership structure
 				data[0].Owns = 4
@@ -129,7 +129,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) { //nolint:funlen // Comprehensi
 			setup: func() []*Node {
 				data := make([]*Node, 5)
 				for i := range data {
-					data[i] = &Node{Type: i, Owns: 0}
+					data[i] = &Node{Type: int32(i), Owns: 0}
 				}
 				return data
 			},

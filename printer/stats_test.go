@@ -29,9 +29,9 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 		typ := i + 1
 		nodes = append(nodes, &syntax.Node{
 			Filename: filename,
-			Pos:      pos,
-			End:      end,
-			Type:     typ,
+			Pos:      int32(pos),
+			End:      int32(end),
+			Type:     int32(typ),
 		})
 	}
 	return nodes

@@ -14,8 +14,8 @@ func Unique(group [][]*syntax.Node) [][]*syntax.Node {
 			file = make(map[int]struct{})
 			fileMap[node.Filename] = file
 		}
-		if _, ok := file[node.Pos]; !ok {
-			file[node.Pos] = struct{}{}
+		if _, ok := file[int(node.Pos)]; !ok {
+			file[int(node.Pos)] = struct{}{}
 			newGroup = append(newGroup, seq)
 		}
 	}

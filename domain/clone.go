@@ -376,7 +376,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Calculate line numbers from file content
 	lineStart, lineEnd := 1, 1 // defaults
 	if fileContent != nil {
-		lineStart, lineEnd = position.ByteRangeToLines(fileContent, node.Pos, node.End)
+		lineStart, lineEnd = position.ByteRangeToLines(fileContent, int(node.Pos), int(node.End))
 	}
 
 	// Extract fragment from file content
@@ -384,7 +384,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	if fileContent != nil {
 		start := node.Pos
 		end := node.End
-		if start >= 0 && end <= len(fileContent) && start < end {
+		if start >= 0 && int(end) <= len(fileContent) && start < end {
 			fragment = string(fileContent[start:end])
 		}
 	}

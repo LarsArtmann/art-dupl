@@ -171,8 +171,8 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTo
 		nodes[i] = &syntax.Node{
 			Type:     golang.FuncDecl,
 			Filename: filename,
-			Pos:      startPos + (i * 2),
-			End:      startPos + (i * 2) + 1,
+			Pos:      int32(startPos + (i * 2)),
+			End:      int32(startPos + (i * 2) + 1),
 		}
 	}
 

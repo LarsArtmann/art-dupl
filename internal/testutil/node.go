@@ -8,10 +8,10 @@ import (
 // CreateMockNode creates a simple mock AST node for testing.
 func CreateMockNode(nodeType int, filename string, pos, end int) *syntax.Node {
 	return &syntax.Node{
-		Type:     nodeType,
+		Type:     int32(nodeType),
 		Filename: filename,
-		Pos:      pos,
-		End:      end,
+		Pos:      int32(pos),
+		End:      int32(end),
 	}
 }
 

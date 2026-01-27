@@ -11,7 +11,7 @@ import (
 // Returns 0 if the group is empty or has no fragments.
 func GetCloneSize(group [][]*syntax.Node) int {
 	if len(group) > 0 && len(group[0]) > 0 {
-		return group[0][0].Owns
+		return int(group[0][0].Owns)
 	}
 	return 0
 }

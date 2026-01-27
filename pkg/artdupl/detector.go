@@ -391,10 +391,10 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 
 	clone := &Clone{
 		Filename:  firstNode.Filename,
-		StartLine: firstNode.Pos,
-		EndLine:   lastNode.End,
-		StartPos:  firstNode.Pos,
-		EndPos:    lastNode.End,
+		StartLine: int(firstNode.Pos),
+		EndLine:   int(lastNode.End),
+		StartPos:  int(firstNode.Pos),
+		EndPos:    int(lastNode.End),
 		Size:      len(frag),
 	}
 
@@ -424,12 +424,12 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	start := frag[0].Pos - 1 // Convert to 0-based
 	end := frag[len(frag)-1].End
 
-	if start < 0 || end >= len(lines) {
+	if start < 0 || int(end) >= len(lines) {
 		return "[content unavailable]"
 	}
 
 	var fragmentLines []string
-	for i := start; i <= end && i < len(lines); i++ {
+	for i := int(start); i <= int(end) && i < len(lines); i++ {
 		fragmentLines = append(fragmentLines, lines[i])
 	}
 

@@ -166,10 +166,10 @@ func createFragments(count int) [][]*syntax.Node {
 	fragments := make([][]*syntax.Node, count)
 	for i := range count {
 		node := &syntax.Node{
-			Type:     i,
+			Type:     int32(i),
 			Filename: fmt.Sprintf("file%c.go", 'a'+i),
-			Pos:      i * 10,
-			End:      i*10 + 5,
+			Pos:      int32(i * 10),
+			End:      int32(i*10 + 5),
 			Owns:     5,
 		}
 		fragments[i] = []*syntax.Node{node}
@@ -184,10 +184,10 @@ func createFragmentsWithDuplicates(uniqueCount, totalCount int) [][]*syntax.Node
 		// Create duplicates by reusing uniqueCount positions
 		uniqueIndex := i % uniqueCount
 		node := &syntax.Node{
-			Type:     uniqueIndex,
+			Type:     int32(uniqueIndex),
 			Filename: fmt.Sprintf("file%c.go", 'a'+uniqueIndex),
-			Pos:      uniqueIndex * 10,
-			End:      uniqueIndex*10 + 5,
+			Pos:      int32(uniqueIndex * 10),
+			End:      int32(uniqueIndex*10 + 5),
 			Owns:     5,
 		}
 		fragments[i] = []*syntax.Node{node}
@@ -201,8 +201,8 @@ func createFragmentsWithSize(size int) [][]*syntax.Node {
 		Type:     1,
 		Filename: "test.go",
 		Pos:      0,
-		End:      size,
-		Owns:     size,
+		End:      int32(size),
+		Owns:     int32(size),
 	}
 	return [][]*syntax.Node{{node}}
 }

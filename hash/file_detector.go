@@ -142,7 +142,7 @@ func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, thresh
 				node := &syntax.Node{
 					Filename: fileHash.Filename,
 					Pos:      0,
-					End:      fileHash.Size,
+					End:      int32(fileHash.Size),
 					Type:     1, // Use a generic type
 				}
 

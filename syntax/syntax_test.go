@@ -40,7 +40,7 @@ func compareSeries(t *testing.T, stream []*Node, owns []int) {
 		return
 	}
 	for i, item := range stream {
-		if item.Owns != owns[i] {
+		if item.Owns != int32(owns[i]) {
 			t.Errorf("got %d, want %d", item.Owns, owns[i])
 		}
 	}
@@ -108,7 +108,7 @@ func str2nodes(str string) []*Node {
 	chars := []rune(str)
 	nodes := make([]*Node, (len(chars)+1)/3)
 	for i := 0; i < len(chars)-1; i += 3 {
-		nodes[i/3] = &Node{Type: int(chars[i]), Owns: int(chars[i+1] - '0')}
+		nodes[i/3] = &Node{Type: int32(chars[i]), Owns: int32(chars[i+1] - '0')}
 	}
 	return nodes
 }
@@ -161,7 +161,7 @@ func FuzzSerialize(f *testing.F) {
 		}
 
 		// Verify root owns the correct number of descendants
-		if len(stream) > 0 && root.Owns != len(stream)-1 {
+		if len(stream) > 0 && root.Owns != int32(len(stream)-1) {
 			t.Errorf("Root Owns mismatch: got %d, want %d", root.Owns, len(stream)-1)
 		}
 	})
@@ -175,28 +175,28 @@ func createTestNodeTree(input string) *Node {
 
 	// Create a tree based on input length and content
 	root := NewNode()
-	root.Type = len(input) % 100
+	root.Type = int32(len(input) % 100)
 	root.Filename = testFilename
 	root.Pos = 0
-	root.End = len(input)
+	root.End = int32(len(input))
 
 	// Add children based on input characteristics
 	childCount := len(input) % 20
 	for i := range childCount {
 		child := NewNode()
-		child.Type = int(input[i%len(input)]) % 50
+		child.Type = int32(int(input[i%len(input)]) % 50)
 		child.Filename = testFilename
-		child.Pos = i
-		child.End = i + 1
+		child.Pos = int32(i)
+		child.End = int32(i + 1)
 		root.AddChildren(child)
 
 		// Add grandchildren
 		if i%2 == 0 && i+1 < childCount {
 			grandchild := NewNode()
-			grandchild.Type = int(input[(i+1)%len(input)]) % 30
+			grandchild.Type = int32(int(input[(i+1)%len(input)]) % 30)
 			grandchild.Filename = testFilename
-			grandchild.Pos = i + 1
-			grandchild.End = i + 2
+			grandchild.Pos = int32(i + 1)
+			grandchild.End = int32(i + 2)
 			child.AddChildren(grandchild)
 		}
 	}

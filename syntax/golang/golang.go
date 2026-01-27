@@ -99,7 +99,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocognit,
 	o = syntax.NewNode()
 	o.Filename = t.filename
 	st, end := node.Pos(), node.End()
-	o.Pos, o.End = t.fileset.File(st).Offset(st), t.fileset.File(end).Offset(end)
+	o.Pos, o.End = int32(t.fileset.File(st).Offset(st)), int32(t.fileset.File(end).Offset(end))
 
 	switch n := node.(type) {
 	case *ast.ArrayType:

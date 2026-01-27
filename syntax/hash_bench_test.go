@@ -12,10 +12,10 @@ func GenerateNodes(count int) []*Node {
 	nodes := make([]*Node, count)
 	for i := range nodes {
 		nodes[i] = &Node{
-			Type:     i % 256, // Test various types
+			Type:     int32(i % 256), // Test various types
 			Filename: fmt.Sprintf("file_%d.go", i%10),
-			Pos:      i,
-			End:      i + 1,
+			Pos:      int32(i),
+			End:      int32(i + 1),
 		}
 	}
 	return nodes

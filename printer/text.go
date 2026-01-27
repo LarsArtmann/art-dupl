@@ -100,7 +100,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 		}
 
 		cl := clone{filename: nstart.Filename}
-		cl.lineStart, cl.lineEnd = position.ByteRangeToLines(file, nstart.Pos, nend.End)
+		cl.lineStart, cl.lineEnd = position.ByteRangeToLines(file, int(nstart.Pos), int(nend.End))
 		clones[i] = cl
 	}
 	return clones, nil

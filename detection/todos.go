@@ -215,7 +215,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
 					issues = append(issues, LegacyIssue{
 						Filename: filename,
-						Line:     node.Pos,
+						Line:     int(node.Pos),
 						Type:     pattern.Type,
 						Message:  fmt.Sprintf("%s: %s", pattern.Message, funcName),
 						Severity: pattern.Severity,

@@ -39,14 +39,14 @@ func findLineBeg(file []byte, index int) int {
 
 func extractContent(fileInfo *FileInfo, nstart, nend *syntax.Node) []byte {
 	var content []byte
-	start := findLineBeg(fileInfo.Content, nstart.Pos)
+	start := findLineBeg(fileInfo.Content, int(nstart.Pos))
 
 	fileLen := len(fileInfo.Content)
 	if start > fileLen {
 		start = fileLen
 	}
-	startPos := min(nstart.Pos, fileLen)
-	endPos := min(nend.End, fileLen)
+	startPos := min(int(nstart.Pos), fileLen)
+	endPos := min(int(nend.End), fileLen)
 
 	if startPos < endPos {
 		if start < startPos {

@@ -13,7 +13,7 @@ func TestBuildTree(t *testing.T) {
 	// Create a simple sequence of nodes
 	nodes := make([]*syntax.Node, 3)
 	for i := range nodes {
-		nodes[i] = &syntax.Node{Type: i}
+		nodes[i] = &syntax.Node{Type: int32(i)}
 	}
 
 	// Create channel with test data
