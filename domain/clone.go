@@ -97,20 +97,25 @@ func (am AnalysisMode) IsValid() bool {
 
 // Clone represents a code clone with strong typing.
 //
+// Memory Layout Optimized: 8B fields grouped together, 16B fields at end
+// to minimize padding and improve cache locality.
+//
 // Note: Clone intentionally omits an ID field. Identity is determined by the
 // combination of Filename, StartLine, EndLine, and Hash. This eliminates
 // unnecessary storage overhead and avoids cargo-cult "entities need IDs" patterns.
 type Clone struct {
-	Filename   Filepath            `json:"filename"`
-	StartLine  LineNumber          `json:"startLine"`
-	EndLine    LineNumber          `json:"endLine"`
-	StartPos   BytePosition        `json:"startPos"`
-	EndPos     BytePosition        `json:"endPos"`
-	Fragment   string              `json:"fragment"`
-	Hash       Hash                `json:"hash"`
-	Confidence Confidence          `json:"confidence"`
-	Complexity ComplexityScore     `json:"complexity"`
-	Status     FileProcessingState `json:"status"`
+	// 8B fields (grouped for cache efficiency)
+	StartLine  LineNumber      `json:"startLine"`
+	EndLine    LineNumber      `json:"endLine"`
+	StartPos   BytePosition    `json:"startPos"`
+	EndPos     BytePosition    `json:"endPos"`
+	Confidence Confidence      `json:"confidence"`
+	Complexity ComplexityScore `json:"complexity"`
+	// 16B string headers (at end to minimize padding)
+	Filename Filepath            `json:"filename"`
+	Fragment string              `json:"fragment"`
+	Hash     Hash                `json:"hash"`
+	Status   FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone data.
