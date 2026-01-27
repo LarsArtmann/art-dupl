@@ -296,16 +296,16 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (c
 	var filterParam *filter.Filter
 	var filterOptions []filter.FilterOption
 
-	// ALWAYS filter templ files by default (unless --include-templ is set)
-	if !cfg.IncludeTempl {
-		filterOptions = append(filterOptions, filter.FilterTempl)
-	}
-
 	// Auto-detect sqlc.yaml files and enable sqlc filtering if found
 	// This provides "out of the box" support for sqlc generated code
-	sqlcOutputDirs, err := filter.GetSQLOutputDirs(paths)
-	if err != nil && cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "warning: failed to detect sqlc config: %v\n", err)
+	// NOTE: Only scan for sqlc.yaml if filtering will actually be used
+	sqlcOutputDirs := []string{}
+	if cfg.FilterGenerated || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 {
+		var err error
+		sqlcOutputDirs, err = filter.GetSQLOutputDirs(paths)
+		if err != nil && cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "warning: failed to detect sqlc config: %v\n", err)
+		}
 	}
 
 	// Enable sqlc filtering if sqlc.yaml is detected AND --include-sqlc is not set
@@ -328,6 +328,15 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (c
 		}
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Extended auto-generated code filtering enabled (sqlc)\n")
+		}
+	}
+
+	// Filter templ files only if --filter-generated is explicitly set
+	// Changed from always-on filtering to opt-in for better performance
+	if cfg.FilterGenerated && !cfg.IncludeTempl {
+		filterOptions = append(filterOptions, filter.FilterTempl)
+		if cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
 		}
 	}
 
