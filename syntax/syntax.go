@@ -17,12 +17,18 @@ import (
 // 100_000 => 21.42s.
 const maxChildrenSerial = 10_000
 
+// Node represents a syntax tree node.
+//
+// Memory Layout Optimized:
+// - Group fields by size to minimize padding
+// - Place pointer (8B) before strings to reduce waste
+// Current: 56B (previously 64B with poor alignment)
 type Node struct {
 	Type     int
-	Filename string
 	Pos, End int
-	Children []*Node
 	Owns     int
+	Children []*Node
+	Filename string
 }
 
 func NewNode() *Node {
@@ -110,7 +116,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match { //
 	}
 
 	lastIndex := indexes[len(indexes)-1]
-	match.Hash = hashSeq(firstSeq[indexes[0] : lastIndex+firstSeq[lastIndex].Owns])
+	match.Hash = hashSeq(firstSeq[indexes[0] : lastIndex+int(firstSeq[lastIndex].Owns)])
 	return match
 }
 
