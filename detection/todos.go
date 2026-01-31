@@ -1,16 +1,12 @@
 package detection
 
 //
-// TODO: TYPE SAFETY ISSUE - TodoIssue and LegacyIssue use primitive types
-// instead of domain types:
-// - Line uses int instead of domain.LineNumber
-// - Severity uses string instead of domain.CloneSeverity
-// - Filename uses string instead of domain.Filepath
+// DOMAIN TYPES STATUS:
+// ✅ Added domain package import
+// ✅ Updated TodoIssue to use domain types
+// ✅ Updated LegacyIssue to use domain types
 //
-// Consider creating domain.Issue type hierarchy for consistent type safety
-// across all detection methods.
-//
-// Also: The detection methods (todos, legacy) have similar structure to
+// Note: Detection methods (todos, legacy) have similar structure to
 // clone detection but don't share a common interface. Consider defining
 // a Detector interface that all detection methods implement.
 
@@ -21,25 +17,26 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // TodoIssue represents a TODO comment found in code.
 type TodoIssue struct {
-	Filename string   `json:"filename"`
-	Line     int      `json:"line"`
-	Text     string   `json:"text"`
-	Type     string   `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
-	Tags     []string `json:"tags,omitempty"` // @username, date, etc.
+	Filename domain.Filepath  `json:"filename"`
+	Line     domain.LineNumber `json:"line"`
+	Text     string           `json:"text"`
+	Type     string           `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
+	Tags     []string         `json:"tags,omitempty"` // @username, date, etc.
 }
 
 // LegacyIssue represents a legacy code pattern.
 type LegacyIssue struct {
-	Filename string `json:"filename"`
-	Line     int    `json:"line"`
-	Type     string `json:"type"` // deprecated function, old pattern, etc.
-	Message  string `json:"message"`
-	Severity string `json:"severity"` // low, medium, high
+	Filename domain.Filepath `json:"filename"`
+	Line     domain.LineNumber `json:"line"`
+	Type     string           `json:"type"` // deprecated function, old pattern, etc.
+	Message  string           `json:"message"`
+	Severity domain.CloneSeverity `json:"severity"` // low, medium, high
 }
 
 // TodoDetector finds TODO comments in Go source code.
