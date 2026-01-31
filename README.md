@@ -222,6 +222,23 @@ make check # Run linting
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
+## Migration Guide
+
+See [MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) for comprehensive guide on migrating from primitive types to domain types.
+
+This guide covers:
+
+- Why migrate to domain types
+- Migration strategy (incremental, backward compatible)
+- Common patterns with before/after examples
+- Type mapping table
+- Package-specific migration guides
+- Testing your migration
+- Common pitfalls and how to avoid them
+- Rollback strategy
+- FAQ for common questions
+
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
