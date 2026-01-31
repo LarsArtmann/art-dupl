@@ -1,3 +1,82 @@
+// art-dupl is a fast, type-safe code duplication detector for Go projects.
+//
+// FEATURES:
+// - Fast suffix tree algorithm for syntax-level clone detection
+// - Type-safe domain model with validation at construction
+// - Multiple detection methods: syntax-level, hash-based, TODO comments, legacy patterns
+// - Multiple output formats: text, HTML, JSON, plumbing
+// - Comprehensive statistics: duplication ratio, health score, complexity metrics
+// - SIMD-optimized performance for large codebases
+//
+// ARCHITECTURE:
+// - domain/: Value objects and entities (LineNumber, Threshold, Clone, CloneGroup, Analysis)
+// - syntax/: Unified AST representation for language-agnostic processing
+// - suffixtree/: Suffix tree data structure for efficient duplicate searching
+// - detection/: Multi-method detection coordination (art-dupl, hash, todos, legacy)
+// - config/: Configuration management with type-safe enums
+// - errors/: Rich error types with context and wrapping
+// - printer/: Output formatting with multiple formats
+// - types/: Functional programming primitives (Result[T], Option[T])
+//
+// TYPE SAFETY:
+// - Domain types prevent accidental type mismatches (e.g., LineNumber vs int)
+// - Validation enforced at construction (domain.NewThreshold(), etc.)
+// - Typed marshaling functions for JSON (SafeMarshalConfig, SafeMarshalClone, etc.)
+// - Result[T] and Option[T] for functional error handling
+//
+// PERFORMANCE:
+// - O(n) suffix tree construction where n = sequence length
+// - O(n) duplicate search with typical code
+// - SIMD-optimized transition search for >8 transitions
+// - Memory-optimized node layout (40B per node, 37.5% reduction)
+// - String interning for duplicate strings (StringInternPool)
+//
+// USAGE:
+//
+//	// As CLI
+//	$ art-dupl ./... --threshold 15 --format json
+//
+//	// As SDK (Go API)
+//	import "github.com/LarsArtmann/art-dupl/pkg/artdupl"
+//
+//	opts := &artdupl.Options{
+//	    Threshold: 15,
+//	    DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodArtDupl},
+//	}
+//
+//	detector, err := artdupl.NewDetector(opts)
+//	if err != nil { ... }
+//
+//	ctx := context.Background()
+//	result, err := detector.FindClones(ctx, []string{"./"})
+//	if err != nil { ... }
+//
+//	fmt.Printf("Found %d clone groups\n", len(result.CloneGroups))
+//
+// GETTING STARTED:
+// - See README.md for detailed documentation
+// - See docs/ directory for architecture decisions
+// - See examples/ directory for usage examples
+// - See domain/domain_types.go for available domain types
+//
+// PACKAGE ORGANIZATION:
+// - domain/: Core domain model (value objects, entities, enums)
+// - syntax/: Unified AST representation and processing
+// - suffixtree/: Suffix tree data structure and search
+// - detection/: Multi-method detection coordination
+// - config/: Configuration and validation
+// - errors/: Error types and error handling utilities
+// - printer/: Output formatting and statistics
+// - types/: Result[T] and Option[T] functional primitives
+// - cmd/: CLI application
+// - pkg/artdupl/: SDK for programmatic use
+//
+// CONTRIBUTING:
+// - See CONTRIBUTING.md for guidelines
+// - Run tests with: go test ./...
+// - Run benchmarks with: go test -bench ./...
+//
+// LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
 go 1.25.6
