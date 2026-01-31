@@ -1,3 +1,41 @@
+// Package suffixtree implements suffix tree data structure for clone detection.
+//
+// A suffix tree is a compressed trie data structure that allows efficient
+// searching for duplicate sequences in the syntax tree.
+//
+// Core Types:
+// - STree: Main suffix tree structure
+// - state: Suffix tree state (node) with transitions
+// - tran: Transition from one state to another (edge)
+// - Match: Represents a duplicate sequence found in tree
+// - Token: Interface for syntax tree tokens (syntax.Node)
+//
+// Algorithm:
+// - Build suffix tree incrementally as syntax tree is parsed
+// - Each Update() call adds new nodes at the end
+// - FindDuplOver() searches for all sequences >= threshold
+// - Finds all duplicate sequences efficiently using tree structure
+//
+// Performance:
+// - O(n*m) worst case where n = sequence length, m = average depth
+// - Typically O(n) for typical code with limited nesting
+// - Memory: O(n*k) where n = sequence length, k = average branching factor
+//
+// SIMD Optimization:
+// - findTranSIMD() provides vectorized transition search
+// - Enabled when internal/simd.Available() && transitions > 8
+// - See findtran_simd.go for detailed benchmarks and rationale
+//
+// Usage:
+//	tree := suffixtree.New()
+//	for _, node := range syntaxNodes {
+//	    tree.Update(node)
+//	}
+//	matches := tree.FindDuplOver(threshold)
+//	for match := range matches {
+//	    // Process duplicate match
+//	}
+//
 package suffixtree
 
 import (

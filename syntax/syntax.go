@@ -1,3 +1,37 @@
+// Package syntax provides unified AST representation for code duplication detection.
+//
+// This package bridges the gap between language-specific AST parsers
+// (golang/ast for Go code) and the language-agnostic suffix tree
+// used by the detection algorithm.
+//
+// Core Types:
+// - Node: Unified syntax tree node representing any language construct
+// - Match: Represents a clone match with fragments (group of nodes)
+// - Frags: Slice of node sequences (each fragment is a sequence of nodes)
+//
+// Design:
+// - Language-agnostic: Works with any language that provides a parser
+// - Type-safe: Uses int32 for types (see golang/constants for mapping)
+// - Memory-optimized: Careful field ordering for cache efficiency
+// - Position-aware: Tracks byte positions and line numbers for all nodes
+//
+// Usage Flow:
+// 1. Parse source files -> language-specific AST (go/ast, etc.)
+// 2. Transform AST -> unified syntax.Node tree (see syntax/golang/)
+// 3. Build suffix tree from Node sequence (suffixtree.Update())
+// 4. Find duplicates using suffix tree (FindDuplOver())
+// 5. Convert matches to complete syntax units (FindSyntaxUnits())
+//
+// Key Functions:
+// - FindSyntaxUnits(): Converts suffix tree matches to complete syntax units
+// - hashSeq(): Creates hash of node sequence for duplicate detection
+// - isCyclic/spansMultipleFiles(): Validation helpers
+//
+// Performance:
+// - maxChildrenSerial constant prevents goroutine stack overflow
+// - Node struct is 40B (37.5% reduction from 64B) via int32 fields
+// - See MEMORY_LAYOUT_OPTIMIZATION_PLAN.md for details
+//
 package syntax
 
 import (

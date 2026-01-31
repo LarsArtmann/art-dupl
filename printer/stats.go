@@ -1,3 +1,54 @@
+// Package printer provides output formatting and statistics for duplicate detection.
+//
+// This package implements multiple output formats and statistical analysis
+// of detected code duplicates.
+//
+// Output Formats:
+// - TextPrinter: Human-readable text output
+// - JSONPrinter: Structured JSON output
+// - HTMLPrinter: HTML report with syntax highlighting
+// - PlumbingPrinter: Machine-readable output for scripting
+// - StatsPrinter: Comprehensive statistics and health analysis
+//
+// Design:
+// - Printer interface: Common API for all formats
+// - Format-specific implementations in separate files
+// - Statistics aggregation in stats.go/stats_data.go
+//
+// Key Components:
+// - Formatting: Syntax highlighting, indentation, alignment
+// - Statistics: Duplicate ratio, health score, complexity metrics
+// - Sorting: Multiple sort criteria (size, occurrence, hash, tokens)
+// - Filtering: Include/exclude patterns, vendor filtering
+//
+// Configuration:
+// - SortBy criteria: Size, Occurrence, Hash, TotalTokens
+// - OutputFormat selection: Text, HTML, JSON, Plumbing, Simple JSON
+// - Threshold settings: Minimum size for duplicates
+// - Verbosity: Detailed output for debugging
+//
+// Performance:
+// - Streaming output for large projects
+// - Efficient memory usage for statistics
+// - Lazy evaluation where possible
+//
+// StatsData fields:
+// - Count metrics: TotalFilesScanned, TotalCloneGroups, TotalClones
+// - Size metrics: TotalTokens, TotalDuplicateLines, AverageCloneSize
+// - Complexity metrics: ComplexityScore, ImpactScore
+// - Quality metrics: DuplicationRatio, HealthScore
+// - Time metrics: AnalysisDuration, Timestamp
+// - Aggregation metrics: FileDuplication, SizeDistribution
+// - Metadata: DetectionMethods
+//
+// Domain Types Status:
+// ✅ Added domain package import
+// ✅ threshold uses int for backward compatibility
+// ✅ StatsData could use domain types in future
+//
+// For type-safe threshold access:
+//	cfg := config.DefaultConfig()
+//	domainThreshold := cfg.GetThresholdAsDomain()
 package printer
 
 import (

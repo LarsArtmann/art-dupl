@@ -1,3 +1,35 @@
+// Package detection provides multi-method code duplication detection.
+//
+// This package coordinates multiple detection algorithms and combines
+// their results to provide comprehensive duplicate reporting.
+//
+// Detection Methods Supported:
+// - DetectionMethodArtDupl: Suffix tree algorithm on AST tokens
+// - DetectionMethodHash: Rolling hash on file content
+// - DetectionMethodTodos: Finds TODO comments
+// - DetectionMethodLegacy: Finds legacy code patterns
+//
+// Core Type:
+// - MultiDetector: Coordinates multiple detection methods
+//
+// Usage:
+//	// Create multi-detector with configuration
+//	md := detection.NewMultiDetector(cfg, data, tree, verbose)
+//
+//	// Run all configured detection methods
+//	matches := md.FindDuplOver(threshold)
+//
+// Design:
+// - Methods are configured via config.DetectionMethods
+// - Results are combined and deduplicated
+// - Verbose logging available for debugging
+// - Respects config.IsDefault() for optimization
+//
+// Performance:
+// - Runs selected methods in parallel (goroutines)
+// - Channels used for non-blocking result delivery
+// - Each method runs independently, results combined at output
+//
 package detection
 
 import (
