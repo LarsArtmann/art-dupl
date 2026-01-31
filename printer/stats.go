@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -59,10 +60,13 @@ type StatsData struct {
 }
 
 // NewStats creates a new stats printer.
+//
+// Note: Accepts `threshold int` for backward compatibility.
+// For type-safe version, use domain.Threshold at call site.
 func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 	// Initialize styles
 	styles := initStyles()
-	
+
 	return &stats{
 		w:         w,
 		ReadFile:  fread,
