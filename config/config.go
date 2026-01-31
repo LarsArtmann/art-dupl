@@ -28,6 +28,14 @@ func (dm DetectionMethods) IsEmpty() bool {
 }
 
 // Config represents the dupl configuration with strong typing.
+//
+// TODO: TYPE SAFETY ISSUE - Several fields use primitive types instead of domain types:
+// - Threshold uses int instead of domain.Threshold
+// - Timeout uses int instead of domain.ProcessingTime or time.Duration
+// - SortBy uses SortCriteria (good!) but could be domain type
+//
+// Consider creating a domain.Config type that wraps this with proper validation
+// and type safety at the domain boundary.
 type Config struct {
 	// Threshold sets the minimum token sequence size to consider as duplicate
 	Threshold int `json:"threshold,omitempty"`

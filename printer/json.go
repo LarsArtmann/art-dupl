@@ -1,7 +1,8 @@
 package printer
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"fmt"
 	"io"
 	"sort"
@@ -207,10 +208,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 		output.DetectionMethod = detectionMethod
 	}
 
-	encoder := json.NewEncoder(p.w)
-	encoder.SetIndent("", "  ")
-
-	err := encoder.Encode(&output)
+	err := json.MarshalWrite(p.w, &output, jsontext.WithIndent("  "))
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "JSON output", err) //nolint:wrapcheck // Error already wraps cause
 	}
@@ -244,10 +242,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		}
 	}
 
-	encoder := json.NewEncoder(p.w)
-	encoder.SetIndent("", "  ")
-
-	err := encoder.Encode(simpleOutput)
+	err := json.MarshalWrite(p.w, simpleOutput, jsontext.WithIndent("  "))
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "simple JSON output", err) //nolint:wrapcheck // Error already wraps cause
 	}

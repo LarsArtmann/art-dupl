@@ -1,7 +1,8 @@
 package printer
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"fmt"
 	"io"
 	"os"
@@ -14,6 +15,15 @@ import (
 )
 
 // stats provides aggregated statistics about code duplication.
+//
+// TODO: TYPE SAFETY ISSUE - Uses primitive types instead of domain types:
+// - threshold uses int instead of domain.Threshold
+// - StatsData fields use int/float64 instead of domain types (TokenCount, ComplexityScore, etc.)
+//
+// Also: This file is 639 lines - getting large. Consider splitting:
+// - stats_data.go for StatsData type and methods
+// - stats_format.go for formatting logic
+// - stats_calc.go for calculation logic
 type stats struct {
 	ReadFile
 	w         io.Writer
@@ -532,9 +542,7 @@ func (p *stats) printJSON() {
 		}
 	}
 
-	encoder := json.NewEncoder(p.w)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(jsonData); err != nil {
+	if err := json.MarshalWrite(p.w, jsonData, jsontext.WithIndent("  ")); err != nil {
 		// In a real implementation, we'd handle this error properly
 		fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
 	}

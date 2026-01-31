@@ -3,6 +3,22 @@ package artdupl
 import "errors"
 
 // SDK-specific error types.
+//
+// TODO: SPLIT-BRAIN ALERT! These errors duplicate errors package functionality.
+// The errors package (errors/types.go) already provides rich error types with
+// context (DuplError, EnumValidationError, etc.).
+//
+// We have TWO error handling strategies:
+// 1. errors package: Rich errors with type, message, file, line, cause, stack
+// 2. artdupl/errors.go: Simple errors.New() errors
+//
+// This creates inconsistency in error handling across the codebase.
+// Options:
+// - Option A: Use errors package everywhere, remove these
+// - Option B: Keep these as SDK-specific but wrap with errors package
+// - Option C: Define in domain package as domain errors
+//
+// Recommendation: Option A - consolidate on errors package for consistency.
 var (
 	// Configuration errors.
 	ErrNilOptions         = errors.New("options cannot be nil")

@@ -1,5 +1,19 @@
 package detection
 
+//
+// TODO: TYPE SAFETY ISSUE - TodoIssue and LegacyIssue use primitive types
+// instead of domain types:
+// - Line uses int instead of domain.LineNumber
+// - Severity uses string instead of domain.CloneSeverity
+// - Filename uses string instead of domain.Filepath
+//
+// Consider creating domain.Issue type hierarchy for consistent type safety
+// across all detection methods.
+//
+// Also: The detection methods (todos, legacy) have similar structure to
+// clone detection but don't share a common interface. Consider defining
+// a Detector interface that all detection methods implement.
+
 import (
 	"fmt"
 	"go/parser"

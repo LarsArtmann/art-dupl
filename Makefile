@@ -6,10 +6,10 @@ clean:
 	rm -rf dist/ cover.out
 
 test: clean
-	go test -v -cover ./...
+	GOEXPERIMENT=jsonv2 go test -v -cover ./...
 
 check:
-	golangci-lint run
+	GOEXPERIMENT=jsonv2 golangci-lint run
 
 build:
-	 go build -ldflags "-s -w" -trimpath
+	GOEXPERIMENT=jsonv2 go build -ldflags "-s -w" -trimpath

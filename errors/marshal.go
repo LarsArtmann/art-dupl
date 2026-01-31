@@ -1,7 +1,22 @@
 package errors
 
+//
+// TODO: TYPE SAFETY ENHANCEMENT - Consider adding typed marshaling functions
+// that work with specific types instead of `any`. This would provide:
+// - Compile-time type safety
+// - Better IDE autocomplete
+// - Reduced reflection overhead
+//
+// Example:
+//   func SafeMarshalConfig(cfg *config.Config) ([]byte, error)
+//   func SafeMarshalClone(c *domain.Clone) ([]byte, error)
+//
+// Also: Consider using generics for type-safe marshaling:
+//   func SafeMarshalTyped[T any](v T, context string) ([]byte, error)
+
 import (
-	"encoding/json"
+	"encoding/json/v2"
+	"encoding/json/jsontext"
 	"fmt"
 )
 
@@ -49,7 +64,7 @@ func SafeMarshal(v any, context string) ([]byte, error) {
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
-	data, err := json.MarshalIndent(v, prefix, indent)
+	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
 	if err != nil {
 		return nil, HandleMarshalingError("marshal indent", context, err)
 	}

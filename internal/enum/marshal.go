@@ -1,7 +1,7 @@
 package enum
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"reflect"
 	"slices"
@@ -160,8 +160,9 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, error) {
 	// Validate using IsValid method
 	if !value.IsValid() {
-		validationErr := fmt.Errorf("enum value %q is invalid (must pass validation)", value)
-		return nil, fmt.Errorf("marshaling %s failed for value %v: %w", typeName, value, errors.NewValidationError("failed to marshal "+typeName+": "+validationErr.Error(), validationErr))
+		// Return null for invalid values to allow omitempty to work
+		// This handles zero values that should be omitted from JSON output
+		return []byte("null"), nil
 	}
 
 	return json.Marshal(value.String())

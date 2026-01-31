@@ -1,7 +1,7 @@
 package config
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"strings"
 )
@@ -37,9 +37,12 @@ func unmarshalStringTypeToPointer[T ~string](data []byte, isValid func(T) bool, 
 }
 
 // marshalStringType marshals a string type to JSON with validation.
+// For invalid values (typically zero values with omitempty), returns null to allow omission.
 func marshalStringType[T ~string](val T, isValid func(T) bool, typeName string) ([]byte, error) {
 	if !isValid(val) {
-		return nil, fmt.Errorf("invalid %s: %s", typeName, val)
+		// Return null for invalid values to allow omitempty to work
+		// This handles zero values that should be omitted from JSON output
+		return []byte("null"), nil
 	}
 	return json.Marshal(string(val))
 }

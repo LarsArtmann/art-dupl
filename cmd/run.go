@@ -1,5 +1,24 @@
 package cmd
 
+//
+// TODO: ARCHITECTURE ISSUE - This file is 513 lines and handles too many concerns:
+// - CLI flag parsing and validation
+// - Config merging and validation
+// - File crawling and filtering
+// - Analysis orchestration
+// - Output formatting
+// - "All modes" execution
+//
+// Consider splitting into multiple files:
+// - cmd/run_flags.go: Flag parsing and config setup
+// - cmd/run_analysis.go: Analysis execution (executeAnalysis, buildSuffixTree)
+// - cmd/run_output.go: Output handling (printDupls, createPrinter)
+// - cmd/run_crawl.go: File crawling (crawlPaths, filesFeedWithOptions)
+// - cmd/run_all_modes.go: All modes execution (runAllModes)
+//
+// Also: TYPE SAFETY ISSUE - Uses primitive types throughout instead of domain types.
+// Consider creating a domain.RunContext type that encapsulates all runtime state.
+
 import (
 	"bufio"
 	"context"

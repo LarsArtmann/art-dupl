@@ -1,5 +1,29 @@
 package artdupl
 
+//
+// TODO: ARCHITECTURE ISSUE - This file is 530 lines and violates single responsibility principle.
+// It handles:
+// - Detector lifecycle (NewDetector, Close)
+// - Analysis orchestration (FindClones, FindClonesStream)
+// - Pipeline construction (buildAnalysisPipeline)
+// - Detection execution (runDetection, streamDetectionResults)
+// - Result conversion (convertToCloneGroup, convertFragmentToClone, buildResult)
+// - File validation (validateFile, validateInputs)
+// - Content extraction (extractFragmentContent)
+// - Progress reporting (reportProgress)
+// - Configuration conversion (convertOptionsToConfig, hashConfig)
+//
+// Consider splitting into:
+// - detector.go: Core detector struct and public API
+// - detector_pipeline.go: Pipeline construction and execution
+// - detector_conversion.go: Result conversion and formatting
+// - detector_validation.go: Input validation
+// - detector_utils.go: Helper functions (hashConfig, reportProgress)
+//
+// Also: TYPE SAFETY ISSUE - Uses primitive types throughout instead of domain types.
+// The conversion from syntax.Node to Clone loses type safety by using int instead of
+// domain.LineNumber, domain.BytePosition, etc.
+
 import (
 	"context"
 	"fmt"

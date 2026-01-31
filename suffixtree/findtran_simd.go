@@ -1,5 +1,15 @@
 package suffixtree
 
+//
+// TODO: ARCHITECTURE DECISION - SIMD optimization is conditionally compiled
+// but the fallback implementation is always available. Consider:
+// - Adding build tags to exclude SIMD code on unsupported platforms
+// - Adding benchmarks to verify SIMD actually improves performance
+// - Documenting which platforms support SIMD and which don't
+//
+// Also: The SIMD threshold (8 transitions) is a magic number.
+// Consider making this configurable or deriving it from benchmarks.
+
 import (
 	"github.com/LarsArtmann/art-dupl/internal/simd"
 )

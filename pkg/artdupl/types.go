@@ -8,6 +8,19 @@ import (
 )
 
 // DetectionMethod represents different code duplication detection algorithms.
+//
+// TODO: SPLIT-BRAIN ALERT! This duplicates config.DetectionMethod.
+// We have TWO sources of truth for detection methods:
+// - config.DetectionMethod (config/detectionmethod.go)
+// - artdupl.DetectionMethod (this file)
+//
+// This creates maintenance burden and potential for divergence.
+// Options:
+// - Option A: Use config.DetectionMethod everywhere, remove this type
+// - Option B: Define in domain package, use everywhere
+// - Option C: Keep separate but add conversion utilities
+//
+// Recommendation: Option A - config package should own configuration enums.
 type DetectionMethod string
 
 const (

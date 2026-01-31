@@ -401,6 +401,16 @@ func (do DetectionOptions) IsValid() error {
 }
 
 // NodeToClone converts syntax nodes to domain Clone.
+//
+// TODO: TYPE SAFETY ISSUE - This function accepts primitive types (string, []byte)
+// but creates domain types internally. Consider:
+// - Accept domain.Filepath instead of string for filename
+// - Return (Clone, error) instead of Clone to handle validation failures
+// - Use domain types throughout the conversion pipeline
+//
+// Also: This function does multiple things (line calculation, fragment extraction,
+// hash generation, complexity calculation). Consider breaking into smaller functions
+// for better testability.
 func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	// Calculate line numbers from file content
 	lineStart, lineEnd := 1, 1 // defaults
