@@ -46,21 +46,3 @@ var (
 	ErrMemoryLimit = errors.New("memory limit exceeded")
 	ErrInternal    = errors.New("internal error")
 )
-
-// validateDetectionMethods checks if all detection methods are supported.
-func validateDetectionMethods(methods []DetectionMethod) error {
-	if len(methods) == 0 {
-		return ErrNoDetectionMethods
-	}
-
-	for _, method := range methods {
-		switch method {
-		case MethodArtDupl, MethodHash, MethodAll:
-			// Valid methods
-		default:
-			return ErrUnsupportedMethod
-		}
-	}
-
-	return nil
-}

@@ -10,6 +10,8 @@ import (
 
 // DetectionMethod is an alias to config.DetectionMethod for convenience.
 // This ensures type consistency across the codebase.
+//
+// Note: This is now fully unified with config package - no duplicate types.
 type DetectionMethod = config.DetectionMethod
 
 const (
