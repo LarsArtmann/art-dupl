@@ -1,8 +1,7 @@
 package printer
 
 import (
-	"encoding/json/v2"
-	"encoding/json/jsontext"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -542,7 +541,7 @@ func (p *stats) printJSON() {
 		}
 	}
 
-	if err := json.MarshalWrite(p.w, jsonData, jsontext.WithIndent("  ")); err != nil {
+	if err := json.MarshalIndent(jsonData, "", "  "); err != nil {
 		// In a real implementation, we'd handle this error properly
 		fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
 	}

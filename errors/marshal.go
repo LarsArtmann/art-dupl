@@ -15,8 +15,7 @@ package errors
 //   func SafeMarshalTyped[T any](v T, context string) ([]byte, error)
 
 import (
-	"encoding/json/v2"
-	"encoding/json/jsontext"
+	"encoding/json"
 	"fmt"
 )
 
@@ -64,7 +63,7 @@ func SafeMarshal(v any, context string) ([]byte, error) {
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
-	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
+	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, HandleMarshalingError("marshal indent", context, err)
 	}

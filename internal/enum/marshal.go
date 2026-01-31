@@ -1,7 +1,7 @@
 package enum
 
 import (
-	"encoding/json/v2"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"slices"

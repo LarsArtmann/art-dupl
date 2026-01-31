@@ -4,34 +4,26 @@ import (
 	"context"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
-// DetectionMethod represents different code duplication detection algorithms.
-//
-// TODO: SPLIT-BRAIN ALERT! This duplicates config.DetectionMethod.
-// We have TWO sources of truth for detection methods:
-// - config.DetectionMethod (config/detectionmethod.go)
-// - artdupl.DetectionMethod (this file)
-//
-// This creates maintenance burden and potential for divergence.
-// Options:
-// - Option A: Use config.DetectionMethod everywhere, remove this type
-// - Option B: Define in domain package, use everywhere
-// - Option C: Keep separate but add conversion utilities
-//
-// Recommendation: Option A - config package should own configuration enums.
-type DetectionMethod string
+// DetectionMethod is an alias to config.DetectionMethod for convenience.
+// This ensures type consistency across the codebase.
+type DetectionMethod = config.DetectionMethod
 
 const (
 	// MethodArtDupl uses suffix tree algorithm on AST tokens.
-	MethodArtDupl DetectionMethod = "art-dupl"
+	MethodArtDupl = config.DetectionMethodArtDupl
 
 	// MethodHash uses rolling hash on file content.
-	MethodHash DetectionMethod = "hash"
+	MethodHash = config.DetectionMethodHash
 
-	// MethodAll uses both detection methods.
-	MethodAll DetectionMethod = "all"
+	// MethodTodos finds TODO comments.
+	MethodTodos = config.DetectionMethodTodos
+
+	// MethodLegacy finds legacy code patterns.
+	MethodLegacy = config.DetectionMethodLegacy
 )
 
 // Detector is the main interface for code duplication detection.
