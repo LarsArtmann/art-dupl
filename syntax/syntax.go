@@ -35,7 +35,6 @@
 package syntax
 
 import (
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
@@ -190,19 +189,6 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 		i += int(n.Owns) + 1
 	}
 	return indexes
-}
-
-// FindSyntaxUnitsWithDomainThreshold is the type-safe version of FindSyntaxUnits.
-// It accepts domain.Threshold which is validated at construction time.
-//
-// Usage:
-//	threshold, err := domain.NewThreshold(15)
-//	if err != nil {
-//	    return err
-//	}
-//	match := FindSyntaxUnitsWithDomainThreshold(data, match, threshold)
-func FindSyntaxUnitsWithDomainThreshold(data []*Node, m suffixtree.Match, threshold domain.Threshold) Match {
-	return FindSyntaxUnits(data, m, int(threshold.Uint()))
 }
 
 // isCyclic finds out whether there is a repetive pattern in the found clone. If positive,
