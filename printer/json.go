@@ -207,9 +207,12 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 		output.DetectionMethod = detectionMethod
 	}
 
-	err := json.MarshalIndent(&output, "", "  ")
+	data, err := json.MarshalIndent(&output, "", "  ")
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "JSON output", err) //nolint:wrapcheck // Error already wraps cause
+	}
+	if _, err := p.w.Write(data); err != nil {
+		return errors.WrapIO(err, "JSON output", "write")
 	}
 	return nil
 }
@@ -241,9 +244,12 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		}
 	}
 
-	err := json.MarshalIndent(simpleOutput, "", "  ")
+	data, err := json.MarshalIndent(simpleOutput, "", "  ")
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "simple JSON output", err) //nolint:wrapcheck // Error already wraps cause
+	}
+	if _, err := p.w.Write(data); err != nil {
+		return errors.WrapIO(err, "simple JSON output", "write")
 	}
 	return nil
 }

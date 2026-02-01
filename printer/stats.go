@@ -60,7 +60,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -88,26 +87,6 @@ type stats struct {
 	success   lipgloss.Style
 	warning   lipgloss.Style
 	error     lipgloss.Style
-}
-
-// StatsData holds all aggregated statistics.
-type StatsData struct {
-	TotalFilesScanned   int
-	TotalCloneGroups    int
-	TotalClones         int
-	TotalDuplicateLines int
-	TotalTokens         int
-	TotalEstimatedLines int // Estimated total lines for duplication percentage
-	AverageCloneSize    int
-	ComplexityScore     float64
-	ImpactScore         int
-	DuplicationRatio    float64        // Percentage of duplicated code
-	AnalysisDuration    string         // Time taken for analysis
-	HealthScore         string         // A-F grade based on metrics
-	FileDuplication     map[string]int // filename -> duplicate line count
-	SizeDistribution    map[string]int // size range -> count
-	DetectionMethods    string
-	Timestamp           string // ISO 8601 timestamp
 }
 
 // NewStats creates a new stats printer.
@@ -596,9 +575,13 @@ func (p *stats) printJSON() {
 		}
 	}
 
-	if err := json.MarshalIndent(jsonData, "", "  "); err != nil {
-		// In a real implementation, we'd handle this error properly
+	data, err := json.MarshalIndent(jsonData, "", "  ")
+	if err != nil {
 		fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
+	} else {
+		if _, err := p.w.Write(data); err != nil {
+			fmt.Fprintf(p.w, "Error writing JSON: %v\n", err)
+		}
 	}
 }
 
