@@ -129,15 +129,6 @@ func benchmarkTreeOperationWithSearch(b *testing.B, setup func() *STree, operati
 	}
 }
 
-// BenchmarkFindTranBatch benchmarks batch transition searching.
-func BenchmarkFindTranBatch(b *testing.B) {
-	benchmarkTreeOperationWithSearch(b, func() *STree {
-		return generateTreeWithTransitions(100, 50)
-	}, func(tree *STree, tokens []Token) {
-		tree.root.findTranBatch(tokens)
-	})
-}
-
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.
 func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*STree)) {
 	tree := setup()
@@ -188,25 +179,6 @@ func BenchmarkConstructionParallel(b *testing.B) {
 	}
 }
 
-// BenchmarkOptimizeTree benchmarks tree optimization.
-func BenchmarkOptimizeTree(b *testing.B) {
-	benchmarkTreeOperation(b, func() *STree {
-		return generateTreeWithTransitions(100, 50)
-	}, func(tree *STree) {
-		tree.OptimizeTree()
-	})
-}
-
-// BenchmarkFindTranOptimized benchmarks findTran after tree optimization.
-func BenchmarkFindTranOptimized(b *testing.B) {
-	benchmarkFindTran(b, 0, 0, func() *STree {
-		tree := generateTreeWithTransitions(100, 50)
-		tree.OptimizeTree()
-		return tree
-	}, func(s *state, t Token) *tran {
-		return s.findTranFast(t)
-	})
-}
 
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
