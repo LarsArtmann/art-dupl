@@ -1,27 +1,19 @@
 package errors
 
+// SafeMarshal provides safe marshaling with consistent error handling.
+// For type-safe marshaling of specific types, use the typed functions
+// in their respective packages:
+//   - config.SafeMarshalConfig() for config.Config
+//   - domain.SafeMarshalClone() for domain.Clone
+//   - domain.SafeMarshalCloneGroup() for domain.CloneGroup
+//   - domain.SafeMarshalAnalysis() for domain.Analysis
 //
-// DOMAIN TYPES STATUS:
-// ✅ Added SafeMarshalConfig for config.Config
-// ✅ Added SafeMarshalClone for domain.Clone
-// ✅ Added SafeMarshalCloneGroup for domain.CloneGroup
-// ✅ Added SafeMarshalAnalysis for domain.Analysis
-//
-// TYPE SAFETY ENHANCEMENT: Typed marshaling functions provide:
-// - Compile-time type safety (can't pass wrong type)
-// - Better IDE autocomplete (specific functions)
-// - Reduced reflection overhead (less interface{})
-// - Self-documenting code (clear intent)
-//
-// Also: Consider using generics for type-safe marshaling:
-//   func SafeMarshalTyped[T any](v T, context string) ([]byte, error)
+// This prevents import cycles and follows the principle that each package
+// handles its own marshaling logic.
 
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // MarshalError is a specialized error for JSON marshaling failures.
@@ -84,69 +76,3 @@ func SafeUnmarshal(data []byte, v any, context string) error {
 	return nil
 }
 
-// SafeMarshalConfig provides type-safe marshaling for config.Config.
-//
-// Usage:
-//	cfg := config.DefaultConfig()
-//	data, err := SafeMarshalConfig(cfg, "config loading")
-//	if err != nil { ... }
-func SafeMarshalConfig(cfg *config.Config) ([]byte, error) {
-	if cfg == nil {
-		return nil, NewValidationError("config cannot be nil", nil)
-	}
-	data, err := json.Marshal(cfg)
-	if err != nil {
-		return HandleMarshalingError("marshal", "config.Config", err)
-	}
-	return data, nil
-}
-
-// SafeMarshalClone provides type-safe marshaling for domain.Clone.
-//
-// Usage:
-//	clone := domain.Clone{...}
-//	data, err := SafeMarshalClone(&clone, "clone marshaling")
-//	if err != nil { ... }
-func SafeMarshalClone(c *domain.Clone) ([]byte, error) {
-	if c == nil {
-		return nil, NewValidationError("clone cannot be nil", nil)
-	}
-	data, err := json.Marshal(c)
-	if err != nil {
-		return HandleMarshalingError("marshal", "domain.Clone", err)
-	}
-	return data, nil
-}
-
-// SafeMarshalCloneGroup provides type-safe marshaling for domain.CloneGroup.
-//
-// Usage:
-//	group := domain.CloneGroup{...}
-//	data, err := SafeMarshalCloneGroup(&group, "clone group marshaling")
-//	if err != nil { ... }
-func SafeMarshalCloneGroup(g *domain.CloneGroup) ([]byte, error) {
-	if g == nil {
-		return nil, NewValidationError("clone group cannot be nil", nil)
-	}
-	data, err := json.Marshal(g)
-	if err != nil {
-		return HandleMarshalingError("marshal", "domain.CloneGroup", err)
-	}
-	return data, nil
-}
-// SafeMarshalAnalysis provides type-safe marshaling for domain.Analysis.
-//
-// Usage:
-//	analysis := domain.Analysis{...}
-//	data, err := SafeMarshalAnalysis(&analysis, "analysis marshaling")
-//	if err != nil { ... }
-func SafeMarshalAnalysis(a *domain.Analysis) ([]byte, error) {
-	if a == nil {
-		return nil, NewValidationError("analysis cannot be nil", nil)
-	}
-	data, err := json.Marshal(a)
-	if err != nil {
-		return HandleMarshalingError("marshal", "domain.Analysis", err)
-	}
-	return data, nil
-}

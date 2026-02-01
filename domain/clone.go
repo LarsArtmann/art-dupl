@@ -2,10 +2,12 @@ package domain
 
 import (
 	"crypto/sha256"
-	"errors"
+	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"strings"
 
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -123,12 +125,12 @@ type Clone struct {
 func (c Clone) IsValid() error {
 	// Cross-field validation: end must be >= start
 	if c.EndLine < c.StartLine {
-		return errors.New("clone end line must be >= start line")
+		return stderrors.New("clone end line must be >= start line")
 	}
 	// Only validate positions if both are set (non-zero)
 	if c.StartPos > 0 || c.EndPos > 0 {
 		if c.StartPos >= c.EndPos {
-			return errors.New("clone end position must be > start position")
+			return stderrors.New("clone end position must be > start position")
 		}
 	}
 
@@ -183,7 +185,7 @@ type CloneGroup struct {
 // IsValid validates clone group.
 func (cg CloneGroup) IsValid() error {
 	if len(cg.Clones) == 0 {
-		return errors.New("clone group must have at least one clone")
+		return stderrors.New("clone group must have at least one clone")
 	}
 	if !cg.Severity.IsValid() {
 		return fmt.Errorf("invalid clone severity: %s", cg.Severity)
@@ -267,10 +269,10 @@ func (a Analysis) IsValid() error {
 		return fmt.Errorf("invalid analysis mode: %s", a.Mode)
 	}
 	if a.Threshold == 0 {
-		return errors.New("analysis threshold cannot be zero")
+		return stderrors.New("analysis threshold cannot be zero")
 	}
 	if a.CreatedAt == "" {
-		return errors.New("analysis created at cannot be empty")
+		return stderrors.New("analysis created at cannot be empty")
 	}
 
 	// Validate all clone groups
@@ -292,7 +294,7 @@ type validationRule struct {
 func validateRules(rules []validationRule) error {
 	for _, rule := range rules {
 		if !rule.valid {
-			return errors.New(rule.msg)
+			return stderrors.New(rule.msg)
 		}
 	}
 	return nil
@@ -338,13 +340,13 @@ type Repository struct {
 // IsValid validates repository.
 func (r Repository) IsValid() error {
 	if r.Path == "" {
-		return errors.New("repository path cannot be empty")
+		return stderrors.New("repository path cannot be empty")
 	}
 	if r.Name == "" {
-		return errors.New("repository name cannot be empty")
+		return stderrors.New("repository name cannot be empty")
 	}
 	if r.Language == "" {
-		return errors.New("repository language cannot be empty")
+		return stderrors.New("repository language cannot be empty")
 	}
 	return nil
 }
@@ -389,13 +391,13 @@ type DetectionOptions struct {
 // IsValid validates detection options.
 func (do DetectionOptions) IsValid() error {
 	if do.Threshold == 0 {
-		return errors.New("threshold must be > 0")
+		return stderrors.New("threshold must be > 0")
 	}
 	if !do.Mode.IsValid() {
 		return fmt.Errorf("invalid analysis mode: %s", do.Mode)
 	}
 	if len(do.Paths) == 0 {
-		return errors.New("at least one path must be specified")
+		return stderrors.New("at least one path must be specified")
 	}
 	return nil
 }
@@ -492,4 +494,76 @@ func calculateComplexity(node *syntax.Node) uint {
 	}
 
 	return complexity
+}
+
+// SafeMarshalClone provides type-safe marshaling for domain.Clone.
+func SafeMarshalClone(c *Clone) ([]byte, error) {
+	if c == nil {
+		return nil, duplerrors.NewValidationError("clone cannot be nil", nil)
+	}
+	data, err := json.Marshal(c)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal clone", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalCloneIndent provides type-safe indented marshaling for domain.Clone.
+func SafeMarshalCloneIndent(c *Clone, prefix, indent string) ([]byte, error) {
+	if c == nil {
+		return nil, duplerrors.NewValidationError("clone cannot be nil", nil)
+	}
+	data, err := json.MarshalIndent(c, prefix, indent)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal clone with indent", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalCloneGroup provides type-safe marshaling for domain.CloneGroup.
+func SafeMarshalCloneGroup(g *CloneGroup) ([]byte, error) {
+	if g == nil {
+		return nil, duplerrors.NewValidationError("clone group cannot be nil", nil)
+	}
+	data, err := json.Marshal(g)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal clone group", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalCloneGroupIndent provides type-safe indented marshaling for domain.CloneGroup.
+func SafeMarshalCloneGroupIndent(g *CloneGroup, prefix, indent string) ([]byte, error) {
+	if g == nil {
+		return nil, duplerrors.NewValidationError("clone group cannot be nil", nil)
+	}
+	data, err := json.MarshalIndent(g, prefix, indent)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal clone group with indent", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalAnalysis provides type-safe marshaling for domain.Analysis.
+func SafeMarshalAnalysis(a *Analysis) ([]byte, error) {
+	if a == nil {
+		return nil, duplerrors.NewValidationError("analysis cannot be nil", nil)
+	}
+	data, err := json.Marshal(a)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal analysis", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalAnalysisIndent provides type-safe indented marshaling for domain.Analysis.
+func SafeMarshalAnalysisIndent(a *Analysis, prefix, indent string) ([]byte, error) {
+	if a == nil {
+		return nil, duplerrors.NewValidationError("analysis cannot be nil", nil)
+	}
+	data, err := json.MarshalIndent(a, prefix, indent)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal analysis with indent", err)
+	}
+	return data, nil
 }

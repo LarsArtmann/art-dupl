@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -183,9 +184,9 @@ func SaveConfig(config *Config, filename string) error {
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 
-	data, err := errors.SafeMarshalIndent(config, "", "  ", "config")
+	data, err := SafeMarshalConfigIndent(config, "", "  ")
 	if err != nil {
-		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
+		return err
 	}
 
 	err = os.WriteFile(filename, data, 0o644) //nolint:gosec //G306 Config file needs to be readable by user
@@ -347,4 +348,28 @@ func mergeFileConfig(result, cfg *Config) {
 
 func mergeCLIConfig(result, cfg *Config) {
 	mergeConfig(result, cfg, true)
+}
+
+// SafeMarshalConfig provides type-safe marshaling for config.Config.
+func SafeMarshalConfig(cfg *Config) ([]byte, error) {
+	if cfg == nil {
+		return nil, errors.NewValidationError("config cannot be nil", nil)
+	}
+	data, err := json.Marshal(cfg)
+	if err != nil {
+		return nil, errors.NewConfigError("failed to marshal config", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalConfigIndent provides type-safe indented marshaling for config.Config.
+func SafeMarshalConfigIndent(cfg *Config, prefix, indent string) ([]byte, error) {
+	if cfg == nil {
+		return nil, errors.NewValidationError("config cannot be nil", nil)
+	}
+	data, err := json.MarshalIndent(cfg, prefix, indent)
+	if err != nil {
+		return nil, errors.NewConfigError("failed to marshal config with indent", err)
+	}
+	return data, nil
 }
