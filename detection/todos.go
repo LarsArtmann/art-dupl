@@ -126,7 +126,7 @@ func findIssuesGeneric[T any](
 
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, td.findTodosInFile, "TODO", func(t TodoIssue) int { return t.Line })
+	return findIssuesGeneric(data, td.findTodosInFile, "TODO", func(t TodoIssue) int { return int(t.Line.Uint16()) })
 }
 
 // findTodosInFile parses the file and finds TODO comments.
@@ -169,9 +169,10 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						todoText = strings.TrimSpace(matches[2])
 					}
 
+					lineNum, _ := domain.NewLineNumber(uint16(line)) //nolint:gosec //G115 line >= 1 guaranteed by parser
 					todos = append(todos, TodoIssue{
-						Filename: filename,
-						Line:     line,
+						Filename: domain.Filepath(filename),
+						Line:     lineNum,
 						Text:     todoText,
 						Type:     todoType,
 						Tags:     tags,
@@ -209,7 +210,7 @@ func NewLegacyDetector() *LegacyDetector {
 
 // FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY", func(l LegacyIssue) int { return l.Line })
+	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY", func(l LegacyIssue) int { return int(l.Line.Uint16()) })
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.
@@ -224,12 +225,13 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 				// This is simplified - in a real implementation,
 				// we'd need to check if this node represents a call to the deprecated function
 				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
+					lineNum, _ := domain.NewLineNumber(uint16(node.Pos)) //nolint:gosec //G115 node.Pos may be 0, valid for legacy detection
 					issues = append(issues, LegacyIssue{
-						Filename: filename,
-						Line:     int(node.Pos),
+						Filename: domain.Filepath(filename),
+						Line:     lineNum,
 						Type:     pattern.Type,
 						Message:  fmt.Sprintf("%s: %s", pattern.Message, funcName),
-						Severity: pattern.Severity,
+						Severity: domain.CloneSeverity(pattern.Severity),
 					})
 				}
 			}
