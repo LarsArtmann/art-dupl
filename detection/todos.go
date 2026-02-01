@@ -169,9 +169,18 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						todoText = strings.TrimSpace(matches[2])
 					}
 
-					lineNum, _ := domain.NewLineNumber(uint16(line)) //nolint:gosec //G115 line >= 1 guaranteed by parser
+					lineNum, err := domain.NewLineNumber(uint16(line))
+					if err != nil {
+						// Parser should ensure line >= 1, but if invalid, skip this entry
+						continue
+					}
+					file, err := domain.NewFilepath(filename)
+					if err != nil {
+						// Invalid filename, skip this entry
+						continue
+					}
 					todos = append(todos, TodoIssue{
-						Filename: domain.Filepath(filename),
+						Filename: file,
 						Line:     lineNum,
 						Text:     todoText,
 						Type:     todoType,
@@ -225,9 +234,18 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 				// This is simplified - in a real implementation,
 				// we'd need to check if this node represents a call to the deprecated function
 				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
-					lineNum, _ := domain.NewLineNumber(uint16(node.Pos)) //nolint:gosec //G115 node.Pos may be 0, valid for legacy detection
+					lineNum, err := domain.NewLineNumber(uint16(node.Pos))
+					if err != nil {
+						// Invalid line number, skip this entry
+						continue
+					}
+					file, err := domain.NewFilepath(filename)
+					if err != nil {
+						// Invalid filename, skip this entry
+						continue
+					}
 					issues = append(issues, LegacyIssue{
-						Filename: domain.Filepath(filename),
+						Filename: file,
 						Line:     lineNum,
 						Type:     pattern.Type,
 						Message:  fmt.Sprintf("%s: %s", pattern.Message, funcName),

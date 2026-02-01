@@ -130,15 +130,14 @@ func DefaultConfig() *Config {
 //
 // Usage:
 //	cfg := config.DefaultConfig()
-//	domainThreshold := cfg.GetThresholdAsDomain()
-//	if err := validateThreshold(domainThreshold) { ... }
-func (c *Config) GetThresholdAsDomain() domain.Threshold {
+//	domainThreshold, err := cfg.GetThresholdAsDomain()
+//	if err != nil { ... }
+func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 	threshold, err := domain.NewThreshold(uint(c.Threshold))
 	if err != nil {
-		// Should not happen as config validation ensures threshold is valid
-		return domain.Threshold(c.Threshold)
+		return 0, errors.NewConfigError("invalid threshold in config", err)
 	}
-	return threshold
+	return threshold, nil
 }
 
 // SetThresholdFromDomain sets threshold from domain.Threshold with validation.
