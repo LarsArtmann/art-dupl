@@ -19,13 +19,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 func main() {
-	fmt.Println("=== Domain Types Usage Examples ===\n")
+	fmt.Println("=== Domain Types Usage Examples ===")
+	fmt.Println()
 
 	// Example 1: Creating and validating value objects
 	createValueObjects()
@@ -79,18 +80,12 @@ func createValueObjects() {
 	fmt.Printf("✓ Filepath created: %s\n", path)
 
 	// ✅ CORRECT: Creating TokenCount with validation
-	tokens, err := domain.NewTokenCount(100)
-	if err != nil {
-		log.Fatalf("Failed to create token count: %v", err)
-	}
+	tokens := domain.NewTokenCount(100)
 	fmt.Printf("✓ TokenCount created: %d (Uint: %d)\n",
 		tokens, tokens.Uint())
 
 	// ✅ CORRECT: Creating BytePosition with validation
-	pos, err := domain.NewBytePosition(50)
-	if err != nil {
-		log.Fatalf("Failed to create byte position: %v", err)
-	}
+	pos := domain.NewBytePosition(50)
 	fmt.Printf("✓ BytePosition created: %d (Uint32: %d)\n",
 		pos, pos.Uint32())
 
@@ -150,11 +145,11 @@ func jsonMarshalingExamples() {
 
 	// ✅ CORRECT: JSON marshaling with domain types
 	clone := domain.Clone{
-		Filename:  domain.Filepath("/path/to/file.go"),
+		Filename:  domain.GlobalPool().Intern("/path/to/file.go"),
 		StartLine:  domain.LineNumber(10),
 		EndLine:    domain.LineNumber(20),
-		Fragment:    domain.FragmentString("code fragment"),
-		Hash:       domain.HashString("abc123"),
+		Fragment:    domain.GlobalPool().Intern("code fragment"),
+		Hash:       domain.GlobalPool().Intern("abc123"),
 	}
 
 	data, err := json.MarshalIndent(clone, "", "  ")
@@ -222,8 +217,8 @@ func commonPatterns() {
 	//
 	// ✅ BEST: Use domain type methods
 	t, _ := domain.NewThreshold(15)
-	fmt.Printf("✓ Pattern 5: Domain type methods - Uint: %d, String: %s\n",
-		t.Uint(), t.String())
+	fmt.Printf("✓ Pattern 5: Domain type methods - Uint: %d\n",
+		t.Uint())
 
 	// Pattern 6: Constants for common values
 	//
@@ -243,12 +238,13 @@ func errorHandlingExamples() {
 	fmt.Println("--------------------------------------")
 
 	// ✅ BEST: Handle construction errors explicitly
-	threshold, err := domain.NewThreshold(-1)
+	threshold, err := domain.NewThreshold(15) // Use valid value instead of -1
 	if err != nil {
 		fmt.Printf("✓ Validation error caught: %v\n", err)
 		// Can recover or use default value
 		threshold, _ = domain.NewThreshold(15)
 	}
+	fmt.Printf("✓ Valid threshold: %d\n", threshold.Uint())
 
 	// ✅ BEST: Check validation before using
 	path, err := domain.NewFilepath("")

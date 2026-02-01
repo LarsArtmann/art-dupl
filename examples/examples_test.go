@@ -48,7 +48,8 @@ func TestExamplesTypes(t *testing.T) { //nolint:cyclop,funlen // Comprehensive t
 	methods := []artdupl.DetectionMethod{
 		artdupl.MethodArtDupl,
 		artdupl.MethodHash,
-		artdupl.MethodAll,
+		artdupl.MethodTodos,
+		artdupl.MethodLegacy,
 	}
 
 	for _, method := range methods {
