@@ -179,5 +179,5 @@ func ValidateOptions(opts *Options) error {
 		return ErrInvalidTimeout
 	}
 
-	return validateDetectionMethods(opts.DetectionMethods)
+	return config.ValidateDetectionMethods(opts.DetectionMethods)
 }

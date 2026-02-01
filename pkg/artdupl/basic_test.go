@@ -11,7 +11,8 @@ func TestDetectionMethod_Values_Basic(t *testing.T) {
 	methods := []DetectionMethod{
 		MethodArtDupl,
 		MethodHash,
-		MethodAll,
+		MethodTodos,
+		MethodLegacy,
 	}
 
 	for _, method := range methods {

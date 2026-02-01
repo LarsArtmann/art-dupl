@@ -245,10 +245,6 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
-	case MethodAll:
-		// For now, use art-dupl method when MethodAll is specified
-		// TODO: Implement multi-detection method support
-		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	default:
 		return nil, ErrUnsupportedMethod
 	}
@@ -294,10 +290,6 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
-	case MethodAll:
-		// For now, use art-dupl method when MethodAll is specified
-		// TODO: Implement multi-detection method support
-		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
 	default:
 		return ErrUnsupportedMethod
 	}
