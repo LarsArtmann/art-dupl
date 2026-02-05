@@ -82,6 +82,17 @@ func marshalUint(n uint) ([]byte, error) {
 	return json.Marshal(n)
 }
 
+// unmarshalUintGeneric is a generic helper function for unmarshaling unsigned integer types.
+// It handles the common pattern of unmarshaling JSON to unsigned integers.
+func unmarshalUintGeneric[T uint16 | uint32](data []byte, typeName string, assign func(T)) error {
+	var n T
+	if err := json.Unmarshal(data, &n); err != nil {
+		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
+	}
+	assign(n)
+	return nil
+}
+
 // CloneGroupID represents a unique identifier for a clone group.
 type CloneGroupID string
 
@@ -239,12 +250,9 @@ func (bp BytePosition) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for BytePosition.
 func (bp *BytePosition) UnmarshalJSON(data []byte) error {
-	var n uint32
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal BytePosition: %w", err)
-	}
-	*bp = BytePosition(n)
-	return nil
+	return unmarshalUintGeneric(data, "BytePosition", func(n uint32) {
+		*bp = BytePosition(n)
+	})
 }
 
 // TokenCount represents a count of tokens in code.
@@ -351,12 +359,9 @@ func (cs ComplexityScore) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for ComplexityScore.
 func (cs *ComplexityScore) UnmarshalJSON(data []byte) error {
-	var n uint16
-	if err := json.Unmarshal(data, &n); err != nil {
-		return fmt.Errorf("failed to unmarshal ComplexityScore: %w", err)
-	}
-	*cs = ComplexityScore(n)
-	return nil
+	return unmarshalUintGeneric(data, "ComplexityScore", func(n uint16) {
+		*cs = ComplexityScore(n)
+	})
 }
 
 // Hash represents a hash value (typically SHA256).
