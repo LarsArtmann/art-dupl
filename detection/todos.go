@@ -127,7 +127,7 @@ func findIssuesGeneric[T any](
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	return findIssuesGeneric(data, td.findTodosInFile, "TODO", func(t TodoIssue) int {
-		return extractLine(t, func(i TodoIssue) domain.LineNumber { return i.Line })
+		return int(t.Line.Uint16())
 	})
 }
 
@@ -222,7 +222,7 @@ func NewLegacyDetector() *LegacyDetector {
 // FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
 	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY", func(l LegacyIssue) int {
-		return extractLine(l, func(i LegacyIssue) domain.LineNumber { return i.Line })
+		return int(l.Line.Uint16())
 	})
 }
 
