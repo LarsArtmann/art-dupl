@@ -521,33 +521,3 @@ func SafeMarshalIndent[T any](v *T, prefix, indent string) ([]byte, error) {
 	}
 	return data, nil
 }
-
-// SafeMarshalClone provides type-safe marshaling for domain.Clone.
-func SafeMarshalClone(c *Clone) ([]byte, error) {
-	return SafeMarshal(c)
-}
-
-// SafeMarshalCloneIndent provides type-safe indented marshaling for domain.Clone.
-func SafeMarshalCloneIndent(c *Clone, prefix, indent string) ([]byte, error) {
-	return SafeMarshalIndent(c, prefix, indent)
-}
-
-// SafeMarshalCloneGroup provides type-safe marshaling for domain.CloneGroup.
-func SafeMarshalCloneGroup(g *CloneGroup) ([]byte, error) {
-	return SafeMarshal(g)
-}
-
-// SafeMarshalCloneGroupIndent provides type-safe indented marshaling for domain.CloneGroup.
-func SafeMarshalCloneGroupIndent(g *CloneGroup, prefix, indent string) ([]byte, error) {
-	return SafeMarshalIndent(g, prefix, indent)
-}
-
-// SafeMarshalAnalysis provides type-safe marshaling for domain.Analysis.
-func SafeMarshalAnalysis(a *Analysis) ([]byte, error) {
-	return SafeMarshal(a)
-}
-
-// SafeMarshalAnalysisIndent provides type-safe indented marshaling for domain.Analysis.
-func SafeMarshalAnalysisIndent(a *Analysis, prefix, indent string) ([]byte, error) {
-	return SafeMarshalIndent(a, prefix, indent)
-}

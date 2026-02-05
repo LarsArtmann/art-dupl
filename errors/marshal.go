@@ -1,15 +1,9 @@
 package errors
 
 // SafeMarshal provides safe marshaling with consistent error handling.
-// For type-safe marshaling of specific types, use the typed functions
-// in their respective packages:
-//   - config.SafeMarshalConfig() for config.Config
-//   - domain.SafeMarshalClone() for domain.Clone
-//   - domain.SafeMarshalCloneGroup() for domain.CloneGroup
-//   - domain.SafeMarshalAnalysis() for domain.Analysis
-//
-// This prevents import cycles and follows the principle that each package
-// handles its own marshaling logic.
+// This is a generic JSON marshaling utility that handles common error cases
+// with descriptive error messages. For type-specific marshaling functions,
+// consider using the typed functions in their respective packages.
 
 import (
 	"encoding/json"
