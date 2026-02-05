@@ -1,4 +1,5 @@
 # JSON Migration & Stats Enhancement Status Report
+
 **Date**: 2026-01-31_11-12
 **Branch**: fork
 **Status**: ✅ CORE TASKS COMPLETED - Ready for Production
@@ -8,6 +9,7 @@
 ## 📋 Executive Summary
 
 Successfully completed both primary objectives:
+
 1. ✅ **Added JSON output support for stats command** with `-o` shorthand flag
 2. ✅ **Migrated entire codebase from encoding/json to encoding/json/v2**
 
@@ -20,13 +22,16 @@ All core functionality verified working. One pre-existing BDD test failure (unre
 ### 1. JSON Support for Stats Command
 
 #### Changes Made:
+
 - **File**: `cmd/stats.go` (Line 64)
 - **Change**: Added `-o` as shorthand for `--format` flag
+
 ```go
 cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 ```
 
 #### Verification:
+
 ```bash
 # All three formats verified working:
 ./art-dupl stats -o json   # ✅ Works
@@ -38,6 +43,7 @@ cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (defa
 #### Output Examples:
 
 **JSON Format** (`-o json`):
+
 ```json
 {
   "configuration": {
@@ -76,6 +82,7 @@ cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (defa
 ```
 
 **CSV Format** (`-o csv`):
+
 ```csv
 Metric,Value
 Threshold,50
@@ -89,6 +96,7 @@ Total Clones,2
 ```
 
 **Text Format** (`-o text` - default):
+
 ```
 Code Duplication Statistics
 ============================
@@ -105,6 +113,7 @@ Configuration:
 #### API Migration Pattern
 
 **Before (encoding/json v1)**:
+
 ```go
 encoder := json.NewEncoder(w)
 encoder.SetIndent("", "  ")
@@ -115,6 +124,7 @@ json.MarshalIndent(data, "", "  ")
 ```
 
 **After (encoding/json/v2)**:
+
 ```go
 // Direct write with options
 json.MarshalWrite(w, data, jsontext.WithIndent("  "))
@@ -126,9 +136,11 @@ json.Marshal(data, jsontext.WithIndent("  "))
 #### Files Migrated:
 
 **1. printer/stats.go**
+
 - **Import**: `encoding/json/v2` + `encoding/json/jsontext`
 - **Function**: `printJSON()` (Line 535-541)
 - **Change**: Replaced `json.NewEncoder()` with `json.MarshalWrite()`
+
 ```go
 // Before:
 encoder := json.NewEncoder(p.w)
@@ -140,10 +152,12 @@ json.MarshalWrite(p.w, jsonData, jsontext.WithIndent("  "))
 ```
 
 **2. printer/json.go**
+
 - **Import**: `encoding/json/v2` + `encoding/json/jsontext`
 - **Function**: `OutputJSON()` (Lines 210-217)
 - **Function**: `OutputSimpleJSON()` (Lines 247-254)
 - **Changes**: Both functions migrated to v2 API
+
 ```go
 // Before:
 encoder := json.NewEncoder(p.w)
@@ -155,14 +169,17 @@ json.MarshalWrite(p.w, &output, jsontext.WithIndent("  "))
 ```
 
 **3. domain/domain_types.go**
+
 - **Import**: Updated to `encoding/json/v2`
 - **Impact**: All domain types now use v2 for JSON serialization
 - **Types Affected**: All domain value objects (CloneGroupID, AnalysisID, Filepath, LineNumber, etc.)
 
 **4. errors/marshal.go**
+
 - **Import**: Added `encoding/json/jsontext`
 - **Function**: `SafeMarshalIndent()` (Lines 50-57)
 - **Change**: Replaced `json.MarshalIndent()` with options-based API
+
 ```go
 // Before:
 data, err := json.MarshalIndent(v, prefix, indent)
@@ -172,9 +189,11 @@ data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithInd
 ```
 
 **5. config/detectionmethod.go**
+
 - **Import**: Updated to `encoding/json/v2`
 - **Function**: `marshalStringType()` (Lines 39-45)
 - **Critical Fix**: Modified to return `null` for invalid enum values (enables omitempty)
+
 ```go
 // Before:
 if !isValid(val) {
@@ -188,6 +207,7 @@ if !isValid(val) {
 ```
 
 **6. internal/enum/marshal.go**
+
 - **Import**: Updated to `encoding/json/v2`
 - **Function**: `MarshalJSON()` (Lines 65-74)
 - **Function**: `MarshalJSONForInterface()` (Lines 160-168)
@@ -200,6 +220,7 @@ if !isValid(val) {
 **File**: `Makefile`
 
 **Changes**:
+
 ```makefile
 # Before:
 test: clean
@@ -235,11 +256,13 @@ build:
 **Location**: `bdd/all_format_generation_test.go:241`
 
 **Investigation**:
+
 - Tested with original code (git stash) - test was already failing
 - Failure unrelated to encoding/json changes
 - Appears to be in file detection logic, not JSON output
 
 **Error Message**:
+
 ```
 Expected
     <bool>: false
@@ -255,6 +278,7 @@ to be true
 ### Linter Warnings (Non-blocking)
 
 **Cyclomatic Complexity Warnings**:
+
 1. `calculateHealthScore()` - Complexity: 12 (max: 10)
    - Location: `printer/stats.go:221`
    - Cause: Multiple switch cases + weighted calculation
@@ -266,11 +290,13 @@ to be true
 3. Several test functions with complexity > 10
 
 **Errcheck Warnings** (19 instances):
+
 - Location: `printer/printCSV()`
 - Cause: Unchecked error returns from `fmt.Fprintf()`
 - Impact: Low (CSV output to stdout, errors unlikely)
 
 **Embedded Struct Warning**:
+
 - Location: `printer/stats.go:19`
 - Cause: `ReadFile` field lacks empty line separator
 - Impact: Low (formatting only)
@@ -280,10 +306,12 @@ to be true
 ## 🚫 NOT STARTED ITEMS
 
 ### Items from Original Task List
+
 - **NONE** - All primary objectives completed
 - All items in "not started" category were future/backlog items
 
 ### Future Enhancements (Not started, as expected)
+
 1. JSON schema validation for config files
 2. Streaming JSON output for large result sets
 3. Pretty-printed JSON option
@@ -297,25 +325,27 @@ to be true
 
 ### Key Differences Between JSON v1 and v2
 
-| Aspect | encoding/json (v1) | encoding/json/v2 |
-|--------|---------------------|------------------|
-| **Import** | `encoding/json` | `encoding/json/v2` + `encoding/json/jsontext` |
-| **Indentation** | `json.MarshalIndent(data, "", "  ")` | `json.Marshal(data, jsontext.WithIndent("  "))` |
-| **Encoder** | `json.NewEncoder(w).Encode(data)` | `json.MarshalWrite(w, data, opts...)` |
-| **Validation** | Accepts invalid UTF-8, duplicate keys | Rejects with errors |
-| **Nil slices** | Marshals as `null` | Marshals as `[]` |
-| **Nil maps** | Marshals as `null` | Marshals as `{}` |
-| **Byte arrays** | Array of numbers | Base64-encoded string |
-| **Options** | No options system | Options-based API |
+| Aspect          | encoding/json (v1)                    | encoding/json/v2                                |
+| --------------- | ------------------------------------- | ----------------------------------------------- |
+| **Import**      | `encoding/json`                       | `encoding/json/v2` + `encoding/json/jsontext`   |
+| **Indentation** | `json.MarshalIndent(data, "", "  ")`  | `json.Marshal(data, jsontext.WithIndent("  "))` |
+| **Encoder**     | `json.NewEncoder(w).Encode(data)`     | `json.MarshalWrite(w, data, opts...)`           |
+| **Validation**  | Accepts invalid UTF-8, duplicate keys | Rejects with errors                             |
+| **Nil slices**  | Marshals as `null`                    | Marshals as `[]`                                |
+| **Nil maps**    | Marshals as `null`                    | Marshals as `{}`                                |
+| **Byte arrays** | Array of numbers                      | Base64-encoded string                           |
+| **Options**     | No options system                     | Options-based API                               |
 
 ### Performance Characteristics
 
 **From Go 1.25 release notes**:
+
 - **Marshal**: At parity with v1
 - **Unmarshal**: **2.7x to 10.2x faster** than v1
 - **Memory**: More efficient with streaming interfaces
 
 **Empirical observations**:
+
 - No noticeable performance degradation in stats output
 - JSON parsing with `jq` works as expected
 - File I/O performance unchanged
@@ -329,6 +359,7 @@ to be true
 **Command**: `GOEXPERIMENT=jsonv2 go test -v ./...`
 
 **Results**:
+
 ```
 ✅ PASS: config (100% - 7/7 tests)
 ✅ PASS: printer (100% - all stats tests pass)
@@ -340,6 +371,7 @@ to be true
 ```
 
 **Failure Details**:
+
 - **Test**: `TestAllFormatGeneration.should generate separate files for each detection method`
 - **Cause**: File detection logic (pre-existing issue)
 - **Blocked**: False - unrelated to JSON migration
@@ -347,26 +379,31 @@ to be true
 ### Manual Verification Tests
 
 **1. JSON Output Verification**:
+
 ```bash
 ./art-dupl stats -t 50 -o json | jq '.'  # ✅ Parses correctly
 ```
 
 **2. CSV Output Verification**:
+
 ```bash
 ./art-dupl stats -t 50 -o csv > stats.csv  # ✅ Valid CSV
 ```
 
 **3. Text Output Verification**:
+
 ```bash
 ./art-dupl stats -t 50 -o text  # ✅ Displayed correctly
 ```
 
 **4. Main Command JSON**:
+
 ```bash
 ./art-dupl -t 50 --json . | jq '.clone_groups | length'  # ✅ Returns correct count
 ```
 
 **5. Build Verification**:
+
 ```bash
 GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
 ```
@@ -378,6 +415,7 @@ GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
 ### encoding/json/v2 Migration Lessons
 
 1. **Zero Value Handling**: Enums must return `null` for invalid values to enable `omitempty` behavior
+
    ```go
    // Wrong: returns error, breaks omitempty
    if !isValid(val) { return nil, fmt.Errorf(...) }
@@ -387,6 +425,7 @@ GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
    ```
 
 2. **Options-Based API**: v2 uses composable options instead of separate functions
+
    ```go
    // Combine multiple options
    json.Marshal(data,
@@ -396,6 +435,7 @@ GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
    ```
 
 3. **Stream I/O Optimization**: Use `MarshalWrite()` instead of `Marshal()` + `io.Write()`
+
    ```go
    // Efficient: one write operation
    json.MarshalWrite(w, data, opts...)
@@ -426,6 +466,7 @@ GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
 ### Immediate (Priority: 🔴 Critical)
 
 **1. Fix Pre-existing BDD Test** (20 min)
+
 - Investigate file detection logic in `all_format_generation_test.go`
 - Understand expected vs. actual file generation
 - Fix and verify test passes
@@ -505,6 +546,7 @@ GOEXPERIMENT=jsonv2 go build ./cmd/art-dupl  # ✅ Compiles without errors
 ## 📁 FILES CHANGED
 
 ### Modified Files (7)
+
 ```
 M  Makefile                        # Added GOEXPERIMENT=jsonv2
 M  cmd/stats.go                    # Added -o shorthand flag
@@ -517,9 +559,11 @@ M  printer/stats.go              # Migrated to json/v2
 ```
 
 ### New Files (0)
+
 - None (all changes were modifications)
 
 ### Deleted Files (0)
+
 - None
 
 ---
@@ -571,43 +615,47 @@ M  printer/stats.go              # Migrated to json/v2
 
 ### Objective Achievement
 
-| Objective | Status | Notes |
-|-----------|--------|-------|
-| Add JSON support for stats command | ✅ 100% | -o flag working for all formats |
-| Migrate all JSON to encoding/json/v2 | ✅ 100% | All 6 files migrated successfully |
-| Maintain test coverage | ✅ 99% | 1 pre-existing failure (unrelated) |
-| Zero regressions | ✅ 100% | All features verified working |
-| Documentation updated | ⚠️ Partial | Build docs updated, migration guide pending |
+| Objective                            | Status     | Notes                                       |
+| ------------------------------------ | ---------- | ------------------------------------------- |
+| Add JSON support for stats command   | ✅ 100%    | -o flag working for all formats             |
+| Migrate all JSON to encoding/json/v2 | ✅ 100%    | All 6 files migrated successfully           |
+| Maintain test coverage               | ✅ 99%     | 1 pre-existing failure (unrelated)          |
+| Zero regressions                     | ✅ 100%    | All features verified working               |
+| Documentation updated                | ⚠️ Partial | Build docs updated, migration guide pending |
 
 ### Code Quality Metrics
 
-| Metric | Before | After | Change |
-|--------|--------|-------|---------|
-| Test Pass Rate | 98.1% | 99% | +0.9% |
-| Linter Warnings | 0 | 26 | +26 (new jsonv2 patterns) |
-| Cyclomatic Complexity | 2 > 10 | 4 > 10 | +2 functions |
-| Build Time | ~2s | ~2s | No change |
-| Binary Size | ~2.5MB | ~2.5MB | No change |
+| Metric                | Before | After  | Change                    |
+| --------------------- | ------ | ------ | ------------------------- |
+| Test Pass Rate        | 98.1%  | 99%    | +0.9%                     |
+| Linter Warnings       | 0      | 26     | +26 (new jsonv2 patterns) |
+| Cyclomatic Complexity | 2 > 10 | 4 > 10 | +2 functions              |
+| Build Time            | ~2s    | ~2s    | No change                 |
+| Binary Size           | ~2.5MB | ~2.5MB | No change                 |
 
 ---
 
 ## 📝 CHANGELOG ENTRY
 
 ### Added
+
 - JSON output format support for stats command
 - `-o` shorthand flag for `--format` in stats command
 - `GOEXPERIMENT=jsonv2` build flag support in Makefile
 
 ### Changed
+
 - Migrated from `encoding/json` to `encoding/json/v2` across 7 files
 - Updated JSON marshaling API calls to use v2 options-based approach
 - Modified enum marshaling to return `null` for invalid values (supports omitempty)
 
 ### Fixed
+
 - Corrected enum marshaling to properly support omitempty tags
 - Improved JSON build process with experiment flag
 
 ### Technical Notes
+
 - Requires Go 1.25 or later
 - Requires `GOEXPERIMENT=jsonv2` to build and run
 - `encoding/json/v2` is experimental, may change in future Go releases
@@ -617,11 +665,14 @@ M  printer/stats.go              # Migrated to json/v2
 ## 📞 SUPPORT & CONTACT
 
 ### Issues
+
 Report any jsonv2-related issues to:
+
 - GitHub Issues: https://github.com/LarsArtmann/art-dupl/issues
 - Tag: `json-v2-migration`
 
 ### Documentation
+
 - Full migration guide: `docs/JSON_V2_MIGRATION.md` (pending)
 - API Reference: https://pkg.go.dev/encoding/json/v2
 - Go Blog: https://go.dev/blog/jsonv2-exp

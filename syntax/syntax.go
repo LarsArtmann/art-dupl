@@ -31,7 +31,6 @@
 // - maxChildrenSerial constant prevents goroutine stack overflow
 // - Node struct is 40B (37.5% reduction from 64B) via int32 fields
 // - See MEMORY_LAYOUT_OPTIMIZATION_PLAN.md for details
-//
 package syntax
 
 import (
@@ -59,10 +58,10 @@ const maxChildrenSerial = 10_000
 // - string header at end (16B)
 // Total: 40B (37.5% reduction from 64B)
 type Node struct {
-	Type int32
-	Pos  int32
-	End  int32
-	Owns int32
+	Type     int32
+	Pos      int32
+	End      int32
+	Owns     int32
 	Children []*Node
 	Filename string
 }

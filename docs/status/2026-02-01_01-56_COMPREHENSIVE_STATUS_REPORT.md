@@ -23,14 +23,14 @@ This report documents a comprehensive refactoring initiative focused on resolvin
 
 ### Metrics
 
-| Category | Before | After | Change |
-|-----------|---------|--------|--------|
-| Import Cycle Errors | 3 | 0 | ✅ -100% |
-| Critical Type Safety Issues | 3 | 0 | ✅ -100% |
-| Build Errors | 10+ | 0 | ✅ -100% |
-| Test Failures (Core) | Multiple | 0 | ✅ 100% pass |
-| Files Modified | 0 | 10 | +10 packages |
-| Lines Changed | 0 | ~150 | +~90 net |
+| Category                    | Before   | After | Change       |
+| --------------------------- | -------- | ----- | ------------ |
+| Import Cycle Errors         | 3        | 0     | ✅ -100%     |
+| Critical Type Safety Issues | 3        | 0     | ✅ -100%     |
+| Build Errors                | 10+      | 0     | ✅ -100%     |
+| Test Failures (Core)        | Multiple | 0     | ✅ 100% pass |
+| Files Modified              | 0        | 10    | +10 packages |
+| Lines Changed               | 0        | ~150  | +~90 net     |
 
 ---
 
@@ -41,6 +41,7 @@ This report documents a comprehensive refactoring initiative focused on resolvin
 **Status:** COMPLETE - All circular dependencies eliminated
 
 **Problem Identified:**
+
 ```
 config → errors → config (cycle!)
 domain → errors → config → domain (cycle!)
@@ -49,11 +50,13 @@ adapter → domain → syntax → domain (cycle!)
 
 **Root Cause Analysis:**
 The `errors/marshal.go` package contained typed marshaling functions for both `config` and `domain` types:
+
 - `errors.SafeMarshalConfig(*config.Config)` - required importing `config`
 - `errors.SafeMarshalClone(*domain.Clone)` - required importing `domain`
 - `errors.SafeMarshalAnalysis(*domain.Analysis)` - required importing `domain`
 
 This created unavoidable circular dependencies:
+
 - `config` needs error handling from `errors`
 - `errors` needs to marshal `config` types → imports `config`
 - `domain` needs error handling from `errors`
@@ -63,6 +66,7 @@ This created unavoidable circular dependencies:
 Followed single responsibility principle - each package handles its own marshaling:
 
 **config/config.go** - Added:
+
 ```go
 // SafeMarshalConfig provides type-safe marshaling for config.Config.
 func SafeMarshalConfig(cfg *Config) ([]byte, error) {
@@ -90,6 +94,7 @@ func SafeMarshalConfigIndent(cfg *Config, prefix, indent string) ([]byte, error)
 ```
 
 **domain/clone.go** - Added:
+
 ```go
 // SafeMarshalClone provides type-safe marshaling for domain.Clone.
 func SafeMarshalClone(c *Clone) ([]byte, error) {
@@ -108,6 +113,7 @@ func SafeMarshalClone(c *Clone) ([]byte, error) {
 ```
 
 **errors/marshal.go** - Updated:
+
 ```go
 // SafeMarshal provides safe marshaling with consistent error handling.
 // For type-safe marshaling of specific types, use the typed functions
@@ -122,6 +128,7 @@ func SafeMarshalClone(c *Clone) ([]byte, error) {
 ```
 
 **Files Changed:**
+
 - `config/config.go`: +29 lines, -1 line (added marshaling functions)
 - `domain/clone.go`: +98 lines, -6 lines (added marshaling functions, fixed imports)
 - `errors/marshal.go`: -92 lines (removed cross-package functions)
@@ -129,6 +136,7 @@ func SafeMarshalClone(c *Clone) ([]byte, error) {
 **Commit:** `fix(cycles): resolve import cycles by moving marshaling functions to respective packages`
 
 **Verification:**
+
 ```bash
 $ go build ./...
 # SUCCESS - No import cycle errors
@@ -138,6 +146,7 @@ $ go test ./...
 ```
 
 **Benefits Achieved:**
+
 - ✅ Clean import structure with zero circular dependencies
 - ✅ Single responsibility: each package handles its own marshaling
 - ✅ Type safety maintained: typed marshaling functions still available
@@ -153,6 +162,7 @@ $ go test ./...
 #### A2.1. detection/todos.go - 7 Errors Fixed
 
 **Error 1 & 2:** Line 129, 212 - `domain.LineNumber` to `int` conversion
+
 ```go
 // BEFORE (error):
 return findIssuesGeneric(data, td.findTodosInFile, "TODO",
@@ -164,6 +174,7 @@ return findIssuesGeneric(data, td.findTodosInFile, "TODO",
 ```
 
 **Error 3 & 4:** Line 173, 228 - `string` to `domain.Filepath` conversion
+
 ```go
 // BEFORE (error):
 todos = append(todos, TodoIssue{
@@ -186,6 +197,7 @@ todos = append(todos, TodoIssue{
 ```
 
 **Error 5 & 6:** Line 174, 229 - `int` to `domain.LineNumber` conversion
+
 ```go
 // BEFORE (error):
 lineNum, _ := domain.NewLineNumber(uint16(line))  // ❌ Error ignored with underscore
@@ -207,6 +219,7 @@ todos = append(todos, TodoIssue{
 ```
 
 **Error 7:** Line 232 - `string` to `domain.CloneSeverity` conversion
+
 ```go
 // BEFORE (error):
 issues = append(issues, LegacyIssue{
@@ -224,6 +237,7 @@ issues = append(issues, LegacyIssue{
 #### A2.2. pkg/artdupl - 3 Errors Fixed
 
 **Error 1:** types.go - Undefined `validateDetectionMethods()`
+
 ```go
 // BEFORE (error):
 func ValidateOptions(opts *Options) error {
@@ -239,6 +253,7 @@ func ValidateOptions(opts *Options) error {
 ```
 
 **Error 2 & 3:** detector.go - Non-existent `MethodAll` references
+
 ```go
 // BEFORE (error):
 switch d.method {
@@ -282,6 +297,7 @@ methods := []artdupl.DetectionMethod{
 #### A2.4. printer Package - 3 Errors Fixed
 
 **Error 1:** stats.go - Duplicate `StatsData` type
+
 ```go
 // BEFORE (error):
 // Duplicate definition - StatsData also defined elsewhere in package
@@ -297,6 +313,7 @@ type StatsData struct {
 ```
 
 **Error 2 & 3:** stats.go and json.go - JSON marshaling return values
+
 ```go
 // BEFORE (error):
 err := json.MarshalIndent(&output, "", "  ")
@@ -332,6 +349,7 @@ func FindSyntaxUnitsWithDomainThreshold(data []*Node, m suffixtree.Match,
 ```
 
 **Files Changed:**
+
 - `detection/todos.go`: +9 lines, -7 lines (type conversions)
 - `pkg/artdupl/types.go`: +2 lines, -1 line (use config function)
 - `pkg/artdupl/detector.go`: -8 lines (remove MethodAll cases)
@@ -341,12 +359,14 @@ func FindSyntaxUnitsWithDomainThreshold(data []*Node, m suffixtree.Match,
 - `syntax/syntax.go`: -14 lines (remove unused function)
 
 **Commits:**
+
 - `fix(detection/todos): resolve type conversion errors with domain types`
 - `fix(pkg/artdupl): remove undefined MethodAll and fix validation`
 - `fix(printer): fix JSON marshaling errors and remove duplicate StatsData`
 - `refactor(syntax): remove FindSyntaxUnitsWithDomainThreshold to fix import cycle`
 
 **Verification:**
+
 ```bash
 $ go build ./detection/... ./pkg/... ./printer/... ./syntax/...
 # SUCCESS - All packages compile
@@ -364,6 +384,7 @@ $ go test ./detection/... ./pkg/... ./printer/... ./syntax/... -short
 #### A3.1. detection/todos.go - 2 Critical Fixes
 
 **Critical Issue 1:** Lines 172, 228 - Missing error handling from constructors
+
 ```go
 // BEFORE (CRITICAL BUG):
 lineNum, _ := domain.NewLineNumber(uint16(line))  // ❌ Error silently ignored
@@ -392,12 +413,14 @@ todos = append(todos, TodoIssue{
 ```
 
 **Impact:**
+
 - **Before:** Invalid line numbers or filenames could be silently accepted, potentially causing panics or data corruption
 - **After:** Invalid entries are skipped gracefully, maintaining data integrity
 
 #### A3.2. config/config.go - 1 Critical Fix
 
 **Critical Issue:** GetThresholdAsDomain() falls back to direct casting
+
 ```go
 // BEFORE (CRITICAL BUG):
 func (c *Config) GetThresholdAsDomain() domain.Threshold {
@@ -429,18 +452,21 @@ func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 ```
 
 **Impact:**
+
 - **Before:** Invalid threshold could leak through domain boundary, violating type safety
 - **After:** Invalid thresholds are properly rejected at domain boundary with clear error
 
 **Breaking Change:** Method signature changed from `domain.Threshold` to `(domain.Threshold, error)`
 
 **Files Changed:**
+
 - `detection/todos.go`: +27 lines, -10 lines (error handling added)
 - `config/config.go`: Modified GetThresholdAsDomain signature
 
 **Commit:** `fix(types): resolve critical type safety issues in detection and config`
 
 **Verification:**
+
 ```bash
 $ go build ./detection/... ./config/...
 # SUCCESS
@@ -461,6 +487,7 @@ _, err := cfg.GetThresholdAsDomain()
 #### A4.1. examples/domain_types_usage.go - 9 Errors Fixed
 
 **Error 1:** Line 22 - Unused import
+
 ```go
 // BEFORE (error):
 import (
@@ -482,6 +509,7 @@ import (
 ```
 
 **Error 2:** Line 82 - NewTokenCount() doesn't return error
+
 ```go
 // BEFORE (error):
 tokens, err := domain.NewTokenCount(100)  // ❌ Function returns only TokenCount, not error
@@ -496,6 +524,7 @@ fmt.Printf("✓ TokenCount created: %d (Uint: %d)\n", tokens, tokens.Uint())
 ```
 
 **Error 3:** Line 90 - NewBytePosition() doesn't return error
+
 ```go
 // BEFORE (error):
 pos, err := domain.NewBytePosition(50)  // ❌ Function returns only BytePosition, not error
@@ -510,6 +539,7 @@ fmt.Printf("✓ BytePosition created: %d (Uint32: %d)\n", pos, pos.Uint32())
 ```
 
 **Error 4:** Line 153 - Filepath type mismatch in Clone struct
+
 ```go
 // BEFORE (error):
 clone := domain.Clone{
@@ -527,6 +557,7 @@ clone := domain.Clone{
 ```
 
 **Error 5 & 6:** Lines 156-157 - Non-existent types
+
 ```go
 // BEFORE (error):
 clone := domain.Clone{
@@ -542,6 +573,7 @@ clone := domain.Clone{
 ```
 
 **Error 7:** Line 226 - Threshold.String() doesn't exist
+
 ```go
 // BEFORE (error):
 t, _ := domain.NewThreshold(15)
@@ -555,6 +587,7 @@ fmt.Printf("✓ Pattern 5: Domain type methods - Uint: %d\n",
 ```
 
 **Error 8:** Line 246 - Negative threshold overflow
+
 ```go
 // BEFORE (error):
 threshold, err := domain.NewThreshold(-1)  // ❌ -1 overflows uint, becomes huge value
@@ -573,6 +606,7 @@ fmt.Printf("✓ Valid threshold: %d\n", threshold.Uint())  // ✅ Actually use t
 ```
 
 **Error 9:** Line 271 - Missing strings import
+
 ```go
 // BEFORE (error):
 func printSeparator() {
@@ -587,6 +621,7 @@ func printSeparator() {
 ```
 
 **Error 10:** Line 28 - Redundant newline
+
 ```go
 // BEFORE (error):
 func main() {
@@ -620,12 +655,14 @@ methods := []artdupl.DetectionMethod{
 ```
 
 **Files Changed:**
+
 - `examples/domain_types_usage.go`: +14 lines, -17 lines (all 9 errors fixed)
 - `examples/examples_test.go`: +3 lines, -1 line (remove MethodAll)
 
 **Commit:** `fix(examples): correct domain type usage and remove MethodAll`
 
 **Verification:**
+
 ```bash
 $ go build ./examples/...
 # SUCCESS
@@ -642,6 +679,7 @@ ok  	github.com/LarsArtmann/art-dupl/examples	0.275s
 **Status:** COMPLETE - Removed 3 broken benchmark tests
 
 #### A5.1. BenchmarkFindTranBatch - Removed
+
 ```go
 // BEFORE (error):
 func BenchmarkFindTranBatch(b *testing.B) {
@@ -658,6 +696,7 @@ func BenchmarkFindTranBatch(b *testing.B) {
 ```
 
 #### A5.2. BenchmarkOptimizeTree - Removed
+
 ```go
 // BEFORE (error):
 func BenchmarkOptimizeTree(b *testing.B) {
@@ -674,6 +713,7 @@ func BenchmarkOptimizeTree(b *testing.B) {
 ```
 
 #### A5.3. BenchmarkFindTranOptimized - Removed
+
 ```go
 // BEFORE (error):
 func BenchmarkFindTranOptimized(b *testing.B) {
@@ -692,11 +732,13 @@ func BenchmarkFindTranOptimized(b *testing.B) {
 ```
 
 **Files Changed:**
+
 - `suffixtree/suffixtree_bench_test.go`: -28 lines (3 benchmark functions removed)
 
 **Commit:** `fix(suffixtree): remove benchmark tests for non-existent methods`
 
 **Verification:**
+
 ```bash
 $ go build ./suffixtree/...
 # SUCCESS
@@ -712,6 +754,7 @@ $ go test ./suffixtree/... -bench=. 2>&1 | head -20
 **Status:** COMPLETE - Comprehensive codebase search performed
 
 **Search Scope:**
+
 - **Files searched:** All Go files in art-dupl codebase
 - **Patterns looked for:**
   - Direct type casting without validation: `domain.Type(value)` without `NewType()`
@@ -730,6 +773,7 @@ All critical issues were found and fixed as part of A3 above.
 #### A6.2. Warning Issues Documented (11)
 
 **Location 1:** examples/domain_types_usage.go - Lines 122, 123-124
+
 ```go
 // Warning: Direct type casting in example code
 type CloneLocation struct {
@@ -738,9 +782,11 @@ type CloneLocation struct {
     End:      domain.LineNumber(20),             // ⚠️ Not using NewLineNumber()
 }
 ```
+
 **Status:** ACCEPTABLE - This is example/demonstration code, showing both good and bad patterns for educational purposes.
 
 **Location 2:** examples/domain_types_usage.go - Lines 149-150, 202, 203, 210-212
+
 ```go
 // Warning: Direct type casting in slice literals
 thresholds := []domain.Threshold{
@@ -749,18 +795,22 @@ thresholds := []domain.Threshold{
     domain.Threshold(20),   // ⚠️ Direct casting
 }
 ```
+
 **Status:** ACCEPTABLE - Example code demonstrating patterns, not production code.
 
 **Location 3-8:** examples/domain_types_usage.go - Lines 186, 192-193, 219, 227, 245
+
 ```go
 // Warning: Ignored errors from constructors
 threshold, _ := domain.NewThreshold(15)  // ⚠️ Error ignored with underscore
 t1, _ := domain.NewThreshold(15)       // ⚠️ Error ignored
 t2, _ := domain.NewThreshold(20)       // ⚠️ Error ignored
 ```
+
 **Status:** ACCEPTABLE - In examples, we know these values are valid (15, 20), so ignoring errors is fine.
 
 **Location 9-11:** Multiple files - Using .Uint() instead of type-specific methods
+
 ```go
 // examples/domain_types_usage.go:61
 // config/config.go:152
@@ -773,11 +823,13 @@ line.Uint()  // ⚠️ Could be LineNumber or Threshold
 line.Uint16()  // ✅ Clearly LineNumber
 token.Uint()    // ✅ Clearly TokenCount
 ```
+
 **Status:** LOW PRIORITY - Code works correctly, just less clear. Could add linter rule.
 
 #### A6.3. Info Issues Documented (3)
 
 **Location 1:** syntax/syntax.go - Lines 111-120
+
 ```go
 // TODO: TYPE SAFETY ISSUE - This function uses int for positions and thresholds
 // but the domain package has strongly-typed LineNumber, BytePosition, TokenCount, Threshold.
@@ -787,16 +839,20 @@ token.Uint()    // ✅ Clearly TokenCount
 // - Validate threshold at domain boundary
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 ```
+
 **Status:** DOCUMENTED - Already noted as TODO in code. Low priority, documented recommendation for future refactoring.
 
 **Location 2:** cmd/run.go - Lines 19-20
+
 ```go
 // Also: TYPE SAFETY ISSUE - Uses primitive types throughout instead of domain types.
 // Consider creating a domain.RunContext type that encapsulates all runtime state.
 ```
+
 **Status:** DOCUMENTED - Already noted as TODO in code. Low priority, documented recommendation.
 
 **Location 3:** domain/clone.go - Line 242
+
 ```go
 // Direct type casting before validation
 severity := CloneSeverity(str)  // Direct cast, but validated next line
@@ -804,15 +860,16 @@ if !severity.IsValid() {  // Validation happens immediately
     return fmt.Errorf("invalid clone severity: %s", str)
 }
 ```
+
 **Status:** ACCEPTABLE PATTERN - Direct casting followed by immediate validation is acceptable in UnmarshalJSON implementations.
 
 #### A6.4. Summary of Findings
 
-| Severity | Count | Status |
-|----------|-------|--------|
-| CRITICAL | 3 | ✅ ALL FIXED |
-| WARNING  | 11 | 📝 Documented, acceptable in context |
-| INFO     | 3 | 📄 Documented, documented recommendations |
+| Severity | Count | Status                                    |
+| -------- | ----- | ----------------------------------------- |
+| CRITICAL | 3     | ✅ ALL FIXED                              |
+| WARNING  | 11    | 📝 Documented, acceptable in context      |
+| INFO     | 3     | 📄 Documented, documented recommendations |
 
 **Commit:** Part of comprehensive analysis documented in A3 commit
 
@@ -825,6 +882,7 @@ if !severity.IsValid() {  // Validation happens immediately
 #### A7.1. Domain Model Inventory
 
 **Value Objects (from domain_types.go):**
+
 ```go
 // String-based types (require non-empty validation)
 type CloneGroupID string
@@ -849,6 +907,7 @@ type Confidence float64
 ```
 
 **Entity Types (from clone.go):**
+
 ```go
 // Core domain entities
 type Clone struct { ... }           // 569 lines, comprehensive clone data
@@ -866,6 +925,7 @@ type FileProcessingState string
 ```
 
 **Enum Types (from clone.go):**
+
 ```go
 type CloneSeverity string  // low, medium, high, critical
 type AnalysisMode string   // full, quick, deep
@@ -876,6 +936,7 @@ type FileProcessingState string  // pending, processing, completed, failed
 #### A7.2. Current Architecture Strengths
 
 **1. Type Safety at Construction:**
+
 ```go
 // All domain types validated at construction time
 threshold, err := domain.NewThreshold(15)
@@ -886,11 +947,13 @@ if err != nil {
 ```
 
 **2. Immutability:**
+
 - All domain types are value objects
 - No setter methods that could violate invariants
 - Once created, objects cannot become invalid
 
 **3. String Interning for Memory Efficiency:**
+
 ```go
 // StringInternPool reduces memory for duplicate strings
 type StringID uint32  // 4 bytes vs ~40 bytes for filename
@@ -900,6 +963,7 @@ filename := pool.Lookup(id)  // Retrieve original string
 ```
 
 **4. Typed Marshaling Functions:**
+
 ```go
 // Type-safe JSON marshaling per package
 data, err := config.SafeMarshalConfig(cfg)
@@ -909,6 +973,7 @@ data, err := domain.SafeMarshalAnalysis(&analysis)
 ```
 
 **5. Clear Package Boundaries:**
+
 ```
 config/     → Configuration management (no dependencies on domain)
 domain/     → Value objects and entities (self-contained)
@@ -924,6 +989,7 @@ errors/       → Error types (no dependency on config/domain)
 **Short-Term Improvements:**
 
 1. **Refactor syntax.FindSyntaxUnits():**
+
 ```go
 // Current:
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match
@@ -932,11 +998,13 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match
 func FindSyntaxUnits(data []*Node, m suffixtree.Match,
     threshold domain.Threshold) Match  // Use domain type
 ```
+
 - Validate threshold at domain boundary
 - Return domain types where appropriate
 - Maintain type safety throughout stack
 
 2. **Create domain.RunContext:**
+
 ```go
 // Encapsulate runtime state from cmd/run.go
 type RunContext struct {
@@ -956,6 +1024,7 @@ func NewRunContext(config *Config) (RunContext, error) {
     return ctx, nil
 }
 ```
+
 - Type-safe access to runtime values
 - Consistent with domain-driven design
 - Prevents primitive type leakage
@@ -963,6 +1032,7 @@ func NewRunContext(config *Config) (RunContext, error) {
 **Long-Term Improvements:**
 
 1. **Linter Rule for Type Safety:**
+
 ```go
 // Custom linter to detect:
 domain.Filepath("string")           // ❌ Direct casting
@@ -976,12 +1046,14 @@ line, err := domain.NewLineNumber(100)       // ✅ Constructor
 ```
 
 2. **Performance Profiling & Optimization:**
+
 - Profile clone detection on large codebases
 - Identify hot paths and memory bottlenecks
 - Benchmark string pool vs direct strings
 - Data-driven optimization decisions
 
 3. **Integration Tests for Package Boundaries:**
+
 ```go
 // Ensure no import cycles emerge
 func TestNoImportCycles(t *testing.T) {
@@ -997,6 +1069,7 @@ func TestNoImportCycles(t *testing.T) {
 ```
 
 **Files Reviewed:**
+
 - `domain/domain_types.go` (520 lines) - All value objects analyzed
 - `domain/clone.go` (569 lines) - All entities analyzed
 - `go.mod` (50+ lines) - All dependencies reviewed
@@ -1011,6 +1084,7 @@ func TestNoImportCycles(t *testing.T) {
 #### A8.1. JSON Libraries
 
 **Research Questions:**
+
 1. Is `encoding/json` sufficient for art-dupl's needs?
 2. Would `fastjson` provide significant performance benefits?
 3. Should we adopt `fastjson` despite external dependency?
@@ -1020,6 +1094,7 @@ func TestNoImportCycles(t *testing.T) {
 **1. encoding/json (Standard Library)** ✅ CURRENT CHOICE
 
 **Pros:**
+
 - Zero external dependencies
 - Standard library, well-maintained
 - Sufficient for art-dupl's data structures
@@ -1027,10 +1102,12 @@ func TestNoImportCycles(t *testing.T) {
 - Familiar API for all Go developers
 
 **Cons:**
+
 - Not as fast as specialized JSON parsers (up to 15x slower than fastjson)
 - No built-in schema validation
 
 **Benchmark Performance:**
+
 ```
 Encoding: ~100-200 ns/op for typical Clone structs
 Decoding: ~150-250 ns/op for typical JSON
@@ -1043,18 +1120,21 @@ Decoding: ~150-250 ns/op for typical JSON
 **2. fastjson (valyala/fastjson)** - RESEARCHED, NOT RECOMMENDED
 
 **Pros:**
+
 - Up to 15x faster than encoding/json
 - Schema validation included
 - Streaming parsing support
 - Low memory allocations
 
 **Cons:**
+
 - External dependency
 - Different API (not compatible with encoding/json)
 - More complex error handling
 - Trade-off: performance vs simplicity
 
 **Benchmark Performance:**
+
 ```
 Encoding: ~10-20 ns/op (10-15x faster than standard)
 Decoding: ~15-25 ns/op (10-15x faster than standard)
@@ -1063,6 +1143,7 @@ Decoding: ~15-25 ns/op (10-15x faster than standard)
 **Verdict:** ❌ NOT NEEDED - Only consider if profiling shows JSON as bottleneck.
 
 **Recommendation:**
+
 - Profile clone detection with realistic data
 - Measure actual JSON processing time percentage
 - If JSON is <10% of total time, optimization not worth it
@@ -1073,6 +1154,7 @@ Decoding: ~15-25 ns/op (10-15x faster than standard)
 **3. JSON Schema Validation (google/jsonschema-go)** - RESEARCHED, NOT RECOMMENDED
 
 **Pros:**
+
 - Comprehensive JSON Schema specification support
 - Schema creation from Go structs
 - JSON validation against schema
@@ -1080,6 +1162,7 @@ Decoding: ~15-25 ns/op (10-15x faster than standard)
 - High benchmark score: 82.8
 
 **Cons:**
+
 - External dependency
 - Schema validation overhead
 - Complex API for simple use cases
@@ -1089,6 +1172,7 @@ Decoding: ~15-25 ns/op (10-15x faster than standard)
 
 **Use Case Consideration:**
 Only adopt if:
+
 - Accepting JSON from external sources that need validation
 - Complex validation rules beyond domain type constructors
 - Requirement for JSON Schema export
@@ -1098,6 +1182,7 @@ Only adopt if:
 #### A8.2. Validation Libraries
 
 **Research Questions:**
+
 1. Is current constructor-based validation sufficient?
 2. Would `go-playground/validator` provide benefits?
 3. Should we adopt struct-tag based validation?
@@ -1107,6 +1192,7 @@ Only adopt if:
 **1. Current Constructor-Based Validation** ✅ EXCELLENT CHOICE
 
 **Current Approach:**
+
 ```go
 // Constructor function validates at construction time
 func NewThreshold(t uint) (Threshold, error) {
@@ -1125,6 +1211,7 @@ if err != nil {  // Must handle error, can't ignore
 ```
 
 **Pros:**
+
 - ✅ Type-safe: compiler enforces error handling
 - ✅ Clear API: validation rules in one place
 - ✅ No reflection overhead
@@ -1133,6 +1220,7 @@ if err != nil {  // Must handle error, can't ignore
 - ✅ Self-documenting: validation logic visible in code
 
 **Cons:**
+
 - ✅ Limited to simple validation rules
 - ✅ No cross-field validation (by design)
 - ✅ No struct-tag based declarative rules
@@ -1144,6 +1232,7 @@ if err != nil {  // Must handle error, can't ignore
 **2. go-playground/validator** - RESEARCHED, NOT RECOMMENDED
 
 **Features:**
+
 - Struct-tag based validation
 - Cross-field validation
 - Slice/map/array diving validation
@@ -1151,6 +1240,7 @@ if err != nil {  // Must handle error, can't ignore
 - 70+ built-in validation tags
 
 **Example:**
+
 ```go
 type Config struct {
     Threshold uint `validate:"required,min=1,max=1000"`
@@ -1162,6 +1252,7 @@ validate.Struct(config)  // Returns error
 ```
 
 **Benchmark Performance:**
+
 ```
 Field validation: 27.88 ns/op
 Struct validation: 70.25 ns/op
@@ -1170,12 +1261,14 @@ Array diving: 155.6 ns/op
 ```
 
 **Pros:**
+
 - Rich validation features
 - Declarative validation rules
 - Cross-field validation
 - Good performance (39 benchmark score)
 
 **Cons:**
+
 - External dependency
 - Less type-safe than constructors
 - Reflection overhead
@@ -1186,6 +1279,7 @@ Array diving: 155.6 ns/op
 
 **Use Case Consideration:**
 Only adopt if:
+
 - Need for complex cross-field validation rules
 - Configuration from external sources (not current use case)
 - User input validation (not current use case)
@@ -1195,6 +1289,7 @@ Only adopt if:
 #### A8.3. Error Handling Libraries
 
 **Research Questions:**
+
 1. Is current `errors` package sufficient?
 2. Would `samber/oops` provide benefits?
 3. Should we adopt structured error handling?
@@ -1204,6 +1299,7 @@ Only adopt if:
 **1. Current errors Package** ✅ EXCELLENT CHOICE
 
 **Current Design:**
+
 ```go
 // Custom error types with context
 type Error interface {
@@ -1237,6 +1333,7 @@ if err := os.WriteFile(path, data, 0644); err != nil {
 ```
 
 **Pros:**
+
 - ✅ Custom error types for categorization
 - ✅ Error wrapping with context
 - ✅ No external dependencies
@@ -1245,6 +1342,7 @@ if err := os.WriteFile(path, data, 0644); err != nil {
 - ✅ Consistent error patterns
 
 **Cons:**
+
 - No stack traces
 - No error codes for programmatic handling
 - No hints or user context
@@ -1257,6 +1355,7 @@ if err := os.WriteFile(path, data, 0644); err != nil {
 **2. samber/oops** - RESEARCHED, CONDITIONALLY RECOMMENDED
 
 **Features:**
+
 - Rich error context (tags, codes, hints)
 - Stack trace capture
 - Error wrapping with builder pattern
@@ -1266,6 +1365,7 @@ if err := os.WriteFile(path, data, 0644); err != nil {
 - Assertions
 
 **Example:**
+
 ```go
 // Simple error with context
 err := oops.
@@ -1294,6 +1394,7 @@ return oops.
 ```
 
 **Pros:**
+
 - Rich error context (tags, codes, hints, users, tenants)
 - Automatic stack trace capture
 - Fluent builder API
@@ -1303,6 +1404,7 @@ return oops.
 - Panic recovery and assertions
 
 **Cons:**
+
 - External dependency
 - More complex API than current errors package
 - Learning curve
@@ -1311,6 +1413,7 @@ return oops.
 **Verdict:** ⚠️ CONSIDER FOR PRODUCTION
 
 **Recommendation:**
+
 - **Keep current errors package** for development and internal use
 - **Consider samber/oops** if:
   - Production deployment with complex error tracking needs
@@ -1320,6 +1423,7 @@ return oops.
 - **Gradual adoption** - Start with critical paths only
 
 **Migration Path:**
+
 ```go
 // Phase 1: Keep both, use oops in critical paths
 // Phase 2: Migrate all error handling to oops
@@ -1331,6 +1435,7 @@ return oops.
 **3. Ergo (newmo-oss/ergo)** - RESEARCHED, NOT RECOMMENDED
 
 **Features:**
+
 - Structured error handling
 - Contextual attributes
 - Error codes
@@ -1343,17 +1448,18 @@ return oops.
 
 #### A8.4. Summary of Library Recommendations
 
-| Category | Current Choice | Recommended Change | Priority |
-|----------|----------------|-------------------|----------|
-| JSON | encoding/json | Keep current | LOW |
-| Validation | Constructor-based | Keep current | LOW |
-| Error Handling | Custom errors package | Consider samber/oops for production | LOW |
-| Schema Validation | None needed | Not recommended | N/A |
-| High-Performance JSON | Not needed | Profile first, consider if bottleneck | MEDIUM |
+| Category              | Current Choice        | Recommended Change                    | Priority |
+| --------------------- | --------------------- | ------------------------------------- | -------- |
+| JSON                  | encoding/json         | Keep current                          | LOW      |
+| Validation            | Constructor-based     | Keep current                          | LOW      |
+| Error Handling        | Custom errors package | Consider samber/oops for production   | LOW      |
+| Schema Validation     | None needed           | Not recommended                       | N/A      |
+| High-Performance JSON | Not needed            | Profile first, consider if bottleneck | MEDIUM   |
 
 **Overall Verdict:** ✅ Current architecture is excellent - no new dependencies needed for current use cases.
 
 **Decision Framework:**
+
 1. **Profile first** - Measure before optimizing
 2. **Evidence-based** - Use data to make decisions
 3. **Pragmatic** - Only add dependencies if justified by real needs
@@ -1429,6 +1535,7 @@ return oops.
 **Commit:** `docs: add comprehensive code quality improvements documentation`
 
 **Document Statistics:**
+
 - Total lines: 340
 - Sections: 10 major sections
 - Code examples: 30+
@@ -1458,22 +1565,26 @@ acb946b fix(detection/todos): resolve type conversion errors with domain types
 **Commit Quality Analysis:**
 
 ✅ **Atomic Commits:**
+
 - Each commit addresses one specific issue
 - No mixed concerns in single commit
 - Easy to review and understand
 - Easy to revert if needed
 
 ✅ **Clear Messages:**
+
 - Follow conventional commit format: `type(scope): description`
 - Clear indication of what was changed and why
 - Consistent across all commits
 
 ✅ **Descriptive:**
+
 - Each commit message explains the change
 - Includes context about the fix
 - Mentions files or packages affected
 
 ✅ **Proper Attribution:**
+
 - Includes "Generated with Crush" attribution
 - Consistent with project conventions
 
@@ -1491,25 +1602,26 @@ To github.com:LarsArtmann/art-dupl.git
 
 **Files Changed Summary:**
 
-| File | Lines Added | Lines Removed | Net Change |
-|-------|-------------|---------------|-------------|
-| config/config.go | +29 | -1 | +28 |
-| domain/clone.go | +98 | -6 | +92 |
-| errors/marshal.go | -92 | +0 | -92 |
-| detection/todos.go | +27 | -10 | +17 |
-| pkg/artdupl/types.go | +2 | -1 | +1 |
-| pkg/artdupl/detector.go | -8 | +0 | -8 |
-| pkg/artdupl/basic_test.go | +3 | -1 | +2 |
-| printer/stats.go | +14 | -25 | -11 |
-| printer/json.go | +10 | -2 | +8 |
-| syntax/syntax.go | -14 | +0 | -14 |
-| examples/domain_types_usage.go | +14 | -17 | -3 |
-| examples/examples_test.go | +3 | -1 | +2 |
-| suffixtree/suffixtree_bench_test.go | -28 | +0 | -28 |
-| docs/code-quality-improvements-2026-01-31.md | +340 | +0 | +340 |
-| **TOTAL** | **+458** | **-66** | **+392** |
+| File                                         | Lines Added | Lines Removed | Net Change |
+| -------------------------------------------- | ----------- | ------------- | ---------- |
+| config/config.go                             | +29         | -1            | +28        |
+| domain/clone.go                              | +98         | -6            | +92        |
+| errors/marshal.go                            | -92         | +0            | -92        |
+| detection/todos.go                           | +27         | -10           | +17        |
+| pkg/artdupl/types.go                         | +2          | -1            | +1         |
+| pkg/artdupl/detector.go                      | -8          | +0            | -8         |
+| pkg/artdupl/basic_test.go                    | +3          | -1            | +2         |
+| printer/stats.go                             | +14         | -25           | -11        |
+| printer/json.go                              | +10         | -2            | +8         |
+| syntax/syntax.go                             | -14         | +0            | -14        |
+| examples/domain_types_usage.go               | +14         | -17           | -3         |
+| examples/examples_test.go                    | +3          | -1            | +2         |
+| suffixtree/suffixtree_bench_test.go          | -28         | +0            | -28        |
+| docs/code-quality-improvements-2026-01-31.md | +340        | +0            | +340       |
+| **TOTAL**                                    | **+458**    | **-66**       | **+392**   |
 
 **Branch Status:**
+
 - Current branch: fork
 - Upstream: origin/fork
 - Status: Up to date
@@ -1588,6 +1700,7 @@ $ go test ./... -cover -short | grep -E "^ok.*coverage:"
 ```
 
 **Summary:**
+
 - ✅ **Zero build errors** across all packages
 - ✅ **Zero test failures** in core packages (11 packages)
 - ✅ **Zero import cycles** - clean dependency graph
@@ -1640,6 +1753,7 @@ $ go test ./... -cover -short | grep -E "^ok.*coverage:"
    - **Alternative:** Add linter rule to enforce
 
 **Decision:**
+
 - ✅ Acceptable as-is for current codebase
 - 📝 Documented in analysis for future consideration
 - 🎯 Could be improved with linter rule or code review checklist
@@ -1652,11 +1766,13 @@ $ go test ./... -cover -short | grep -E "^ok.*coverage:"
 
 **Issue:**
 Multiple locations use generic `.Uint()` method instead of type-specific methods:
+
 - `examples/domain_types_usage.go`: 5 instances
 - `config/config.go`: 1 instance
 - `domain/domain_types_test.go`: 6 instances
 
 **Pattern:**
+
 ```go
 // Less clear (current):
 line.Uint()   // What type is this?
@@ -1669,12 +1785,14 @@ threshold.Uint() // Clearly Threshold
 ```
 
 **Impact:**
+
 - Code works correctly
 - No functional issues
 - Less self-documenting
 - Could be confusing in code review
 
 **Recommendations:**
+
 1. **Low Priority:** Update to type-specific methods for clarity
 2. **Alternative:** Add linter rule to enforce type-specific methods
 3. **Alternative:** Remove generic `.Uint()` method, only keep type-specific
@@ -1688,6 +1806,7 @@ threshold.Uint() // Clearly Threshold
 **Status:** DOCUMENTED - Already noted as TODO in code
 
 **Existing TODO (lines 111-120):**
+
 ```go
 // TODO: TYPE SAFETY ISSUE - This function uses int for positions and thresholds
 // but the domain package has strongly-typed LineNumber, BytePosition, TokenCount, Threshold.
@@ -1699,6 +1818,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match
 ```
 
 **Current Signature:**
+
 ```go
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
     // Implementation uses primitive types
@@ -1706,6 +1826,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 ```
 
 **Recommended Signature:**
+
 ```go
 func FindSyntaxUnits(data []*Node, m suffixtree.Match,
     threshold domain.Threshold) Match {
@@ -1715,11 +1836,13 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match,
 ```
 
 **Barriers:**
+
 1. **Breaking Change:** Would require updates across multiple call sites
 2. **Performance:** Domain types may have validation overhead
 3. **Complexity:** Need to integrate with suffixtree.Match interface
 
 **Recommendations:**
+
 1. **Short-term:** Keep as-is, document recommendation
 2. **Long-term:** Refactor to use domain types after profiling
 3. **Alternative:** Add typed wrapper function for new code:
@@ -1739,12 +1862,14 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match,
 **Status:** DOCUMENTED - Already noted as TODO in code
 
 **Existing TODO (lines 19-20):**
+
 ```go
 // Also: TYPE SAFETY ISSUE - Uses primitive types throughout instead of domain types.
 // Consider creating a domain.RunContext type that encapsulates all runtime state.
 ```
 
 **Current Pattern:**
+
 ```go
 type RunConfig struct {
     Threshold    int           // ❌ Should be domain.Threshold
@@ -1756,6 +1881,7 @@ type RunConfig struct {
 ```
 
 **Recommended Pattern:**
+
 ```go
 // Create domain type for runtime context
 type RunContext struct {
@@ -1780,17 +1906,20 @@ func NewRunContext(cfg *Config) (RunContext, error) {
 ```
 
 **Benefits:**
+
 1. Type safety across runtime configuration
 2. Validation at construction
 3. Single source of truth for runtime state
 4. Consistent with domain-driven design
 
 **Barriers:**
+
 1. **Breaking Change:** Requires updates across CLI and SDK
 2. **Refactoring:** Extensive changes to cmd/ package
 3. **Integration:** Need to align with existing config package
 
 **Recommendations:**
+
 1. **Short-term:** Keep as-is, document recommendation
 2. **Long-term:** Gradual migration to domain.RunContext
 3. **Alternative:** Add type-safe wrappers for new features first
@@ -1807,11 +1936,13 @@ func NewRunContext(cfg *Config) (RunContext, error) {
 
 **Goal:**
 Create custom linter rule using golang.org/x/tools to detect:
+
 - Direct type casting of domain types without constructors
 - Error handling violations (ignoring errors from constructors)
 - Type-specific method usage violations
 
 **Proposed Rule:**
+
 ```go
 // Custom linter: checktypedomain
 
@@ -1828,6 +1959,7 @@ file, err := domain.NewFilepath("string")  // ✅ Correct pattern
 ```
 
 **Implementation Steps:**
+
 1. Create `linter/checktypedomain` package
 2. Implement `analysis.Analyzer` interface
 3. Detect direct type casting patterns via AST inspection
@@ -1837,6 +1969,7 @@ file, err := domain.NewFilepath("string")  // ✅ Correct pattern
 **Estimated Effort:** MEDIUM (1-2 days for experienced Go developer)
 
 **Dependencies:**
+
 - golang.org/x/tools
 - golang.org/x/go/analysis
 - Integration with golangci-lint
@@ -1853,6 +1986,7 @@ file, err := domain.NewFilepath("string")  // ✅ Correct pattern
 Profile art-dupl on realistic workloads to identify bottlenecks and validate library decisions.
 
 **Profiling Plan:**
+
 ```bash
 # 1. CPU Profiling
 go test -bench=. -cpuprofile=cpu.prof ./detection/...
@@ -1896,6 +2030,7 @@ go tool pprof mem.prof
 **Estimated Effort:** MEDIUM (2-3 days for comprehensive profiling)
 
 **Required Data:**
+
 - Large codebase for realistic testing (10k+ files)
 - Multiple runs for statistical significance
 - Comparison baselines (with/without features)
@@ -1938,6 +2073,7 @@ Evaluate if `samber/oops` should be adopted for production deployment.
    - Gather team feedback
 
 **Decision Framework:**
+
 ```go
 // Current errors package - sufficient if:
 // - Development environment
@@ -1953,6 +2089,7 @@ Evaluate if `samber/oops` should be adopted for production deployment.
 ```
 
 **Migration Path (if adopted):**
+
 ```go
 // Phase 1: Coexistence
 // - Keep errors package
@@ -1984,6 +2121,7 @@ Evaluate if `samber/oops` should be adopted for production deployment.
 Evaluate if `go-playground/validator` is needed for complex validation scenarios.
 
 **Current Capabilities:**
+
 ```go
 // Constructor-based validation works well for:
 ✅ Single-field validation (threshold > 0)
@@ -1995,6 +2133,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 **Potential Use Cases for Struct-Tag Validation:**
 
 1. **Configuration from External Sources:**
+
    ```go
    // If accepting JSON/YAML from files or environment
    type ExternalConfig struct {
@@ -2006,6 +2145,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
    ```
 
 2. **Cross-Field Validation:**
+
    ```go
    // Validation requiring field interaction
    type DetectionOptions struct {
@@ -2026,6 +2166,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
    ```
 
 **Decision Framework:**
+
 ```go
 // Keep constructor-based validation if:
 ✅ All validation is simple (single-field rules)
@@ -2043,6 +2184,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 ```
 
 **Recommendation:**
+
 - **Keep constructor-based validation** for current needs
 - **Consider validator** only if:
   - External configuration ingestion is needed
@@ -2094,16 +2236,19 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 **Previous Session Issues (Already Fixed):**
 
 ❌ **Not committing after each change** - FIXED in this session!
+
 - Previous: Multiple changes before committing
 - Current: 9 atomic commits, one per fix
 - Result: Clean git history, easy to review/revert
 
 ❌ **Not searching for similar issues** - FIXED in this session!
+
 - Previous: Fixed issue in one location, missed others
 - Current: Comprehensive agent-based search of entire codebase
 - Result: Found all 17 issues, fixed all critical ones
 
 ❌ **Not analyzing architecture before changes** - FIXED in this session!
+
 - Previous: Made changes without full understanding
 - Current: Architecture review before recommendations
 - Result: Recommendations aligned with existing design
@@ -2115,6 +2260,7 @@ Evaluate if `go-playground/validator` is needed for complex validation scenarios
 ### E1. Automated Type Safety Checks (HIGH IMPACT) 📈
 
 **Current Approach:**
+
 - Manual code review
 - Agent-based search (comprehensive but manual)
 - No automated enforcement
@@ -2143,6 +2289,7 @@ val, _ := domain.NewType(...) # ⚠️ Warning: "error ignored, add comment expl
 **Implementation Options:**
 
 **Option 1: Custom golangci-lint Linter** (RECOMMENDED)
+
 ```go
 // linter/checktypedomain/checktypedomain.go
 package checktypedomain
@@ -2168,6 +2315,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 ```
 
 **Benefits:**
+
 - ✅ Compile-time enforcement of type safety
 - ✅ Immediate feedback in PRs and CI
 - ✅ Prevents future type safety issues
@@ -2182,6 +2330,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 ### E2. CI Integration for Import Cycle Prevention (HIGH IMPACT) 📈
 
 **Current Approach:**
+
 - Manual testing with `go build ./...`
 - No automated detection of import cycles
 - No CI gate for circular dependencies
@@ -2213,6 +2362,7 @@ jobs:
 ```
 
 **Benefits:**
+
 - ✅ Prevent regression of import cycles
 - ✅ Immediate feedback in PRs
 - ✅ No manual verification needed
@@ -2250,6 +2400,7 @@ threshold.Uint() // Clearly Threshold
 ```
 
 **Benefits:**
+
 - ✅ Self-documenting code
 - ✅ Prevents type confusion
 - ✅ Better IDE autocomplete
@@ -2258,11 +2409,13 @@ threshold.Uint() // Clearly Threshold
 **Approaches:**
 
 **Option 1: Remove generic methods** (BREAKING CHANGE)
+
 - Remove `.Uint()` from all types
 - Keep only type-specific methods
 - Update all call sites
 
 **Option 2: Add linter rule** (NON-BREAKING)
+
 - Prefer type-specific methods over generic `.Uint()`
 - Allow generic method in special cases
 - Gradual migration path
@@ -2275,6 +2428,7 @@ threshold.Uint() // Clearly Threshold
 ### E4. Performance Benchmarking (HIGH IMPACT) 📈
 
 **Current Approach:**
+
 - Theoretical library research (fastjson, etc.)
 - No profiling of actual workloads
 - No data-driven optimization decisions
@@ -2322,6 +2476,7 @@ go tool pprof mem.prof
    - Optimization targets?
 
 **Benefits:**
+
 - ✅ Data-driven optimization decisions
 - ✅ Evidence-based library adoption
 - ✅ Real performance improvements
@@ -2335,6 +2490,7 @@ go tool pprof mem.prof
 ### E5. Error Context Enrichment (MEDIUM IMPACT) 📈
 
 **Current State:**
+
 - Basic error wrapping with messages
 - No stack traces
 - No error codes
@@ -2374,6 +2530,7 @@ func DetectClones(ctx context.Context, opts *Options) (*Analysis, error) {
 ```
 
 **Benefits:**
+
 - ✅ Stack traces for production debugging
 - ✅ Error codes for programmatic handling
 - ✅ Rich context (tags, hints, users, tenants)
@@ -2406,13 +2563,14 @@ func DetectClones(ctx context.Context, opts *Options) (*Analysis, error) {
 ### E6. Documentation of Best Practices (HIGH IMPACT) 📈
 
 **Current State:**
+
 - Some direct type casting in examples (intentional for demo)
 - No comprehensive guide for domain type usage
 - Contributors must infer patterns from code
 
 **Proposed Documentation:**
 
-```markdown
+````markdown
 # Domain Type Usage Guide
 
 ## Core Principles
@@ -2430,6 +2588,7 @@ if err != nil {
 // ❌ WRONG: Never direct cast
 threshold := domain.Threshold(15)  // Bypasses validation!
 ```
+````
 
 ### 2. Handle All Constructor Errors
 
@@ -2659,7 +2818,8 @@ const validThreshold = 15
 threshold, _ := domain.NewThreshold(validThreshold)
 // Error ignored because value is known valid
 ```
-```
+
+````
 
 **Benefits:**
 - ✅ Clear guidance for contributors
@@ -2694,9 +2854,10 @@ threshold, _ := domain.NewThreshold(validThreshold)
    // File paths repeated across many clones
    /path/to/file.go appears in 100+ clones
    // → Pool it: GlobalPool().Intern("/path/to/file.go")
-   ```
+````
 
 2. **Memory Efficiency Matters**
+
    ```go
    // Clone sets with thousands of entries
    // Each filename: ~40 bytes
@@ -2735,6 +2896,7 @@ methodID := domain.GlobalPool().Intern("detectClones")
 ### Use Direct Strings when:
 
 1. **Unique Values**
+
    ```go
    // Error messages - always unique
    msg := "file not found: /path/to/file.go"
@@ -2742,6 +2904,7 @@ methodID := domain.GlobalPool().Intern("detectClones")
    ```
 
 2. **Short-Lived Strings**
+
    ```go
    // Temporary strings in functions
    tmp := fmt.Sprintf("processing %s", file)
@@ -2750,6 +2913,7 @@ methodID := domain.GlobalPool().Intern("detectClones")
    ```
 
 3. **User Input or External Data**
+
    ```go
    // User-provided strings (no duplication expected)
    userInput := "custom message"
@@ -2757,6 +2921,7 @@ methodID := domain.GlobalPool().Intern("detectClones")
    ```
 
 4. **Simplicity Matters More than Memory**
+
    ```go
    // Simple values with no duplication
    const defaultFormat = "text"
@@ -2822,33 +2987,35 @@ str := pool.Lookup(id)    // Hashmap lookup: O(1) average
 
 ### Memory vs CPU
 
-| Scenario | String Pool | Direct Strings | Recommendation |
-|----------|-------------|----------------|----------------|
-| 1000 clones, 100 unique files | ✅ 10% less memory |  | **Use pool** |
-| 1000 clones, 1000 unique files | ❌ More memory + overhead |  | **Use strings** |
-| 1000 clones, 2 unique files | ✅ 95% less memory |  | **Use pool** |
-| 1000 clones, 500 unique files | ✅ 50% less memory |  | **Use pool** |
+| Scenario                       | String Pool               | Direct Strings | Recommendation  |
+| ------------------------------ | ------------------------- | -------------- | --------------- |
+| 1000 clones, 100 unique files  | ✅ 10% less memory        |                | **Use pool**    |
+| 1000 clones, 1000 unique files | ❌ More memory + overhead |                | **Use strings** |
+| 1000 clones, 2 unique files    | ✅ 95% less memory        |                | **Use pool**    |
+| 1000 clones, 500 unique files  | ✅ 50% less memory        |                | **Use pool**    |
 
 ### Simplicity vs Efficiency
 
-| Priority | Recommendation |
-|----------|---------------|
-| Prototype/MVP | Use direct strings |
-| Performance critical | Use string pool |
-| Production | Profile first, then decide |
-| Development | Use direct strings (simpler) |
+| Priority             | Recommendation               |
+| -------------------- | ---------------------------- |
+| Prototype/MVP        | Use direct strings           |
+| Performance critical | Use string pool              |
+| Production           | Profile first, then decide   |
+| Development          | Use direct strings (simpler) |
 
 ## Usage Guidelines
 
 ### Rule of Thumb:
 
 **Pool if:**
+
 - Same string appears in >10 clones
 - String is long (>10 chars)
 - Memory is a concern
 - String comparison is frequent
 
 **Don't pool if:**
+
 - String appears once or twice
 - String is short (<10 chars)
 - Simplicity is priority
@@ -2897,7 +3064,7 @@ func (p *StringInternPool) GetMetrics() StringPoolMetrics {
 - **Medium codebases (1k-10k files):** Pool beneficial
 - **Large codebases (>10k files):** Pool essential
 
-```
+````
 
 **Benefits:**
 - ✅ Clear understanding of string pooling benefits
@@ -2932,9 +3099,10 @@ func (p *StringInternPool) GetMetrics() StringPoolMetrics {
     echo "Checking for import cycles..."
     go build ./...
     echo "✅ No import cycles detected"
-```
+````
 
 **Benefits:**
+
 - Prevents future import cycle regressions
 - Automatic PR quality gate
 - Reduces manual verification
@@ -2942,22 +3110,26 @@ func (p *StringInternPool) GetMetrics() StringPoolMetrics {
 ---
 
 #### 2. Create Domain Type Usage Guide 🎯
+
 **Status:** READY TO START
 **Impact:** HIGH - Prevents future issues
 **Effort:** LOW (2-4 hours)
 **Description:**
+
 - Comprehensive guide for domain type usage
 - Anti-patterns with examples
 - Code examples for all types
 - Best practices and common pitfalls
 
 **Implementation:**
+
 - Create `docs/domain-type-usage-guide.md`
 - Include all sections from E6 above
 - Add examples for each domain type
 - Document anti-patterns
 
 **Benefits:**
+
 - Clear guidance for contributors
 - Prevents type safety issues
 - Self-documenting codebase
@@ -2965,15 +3137,18 @@ func (p *StringInternPool) GetMetrics() StringPoolMetrics {
 ---
 
 #### 3. Profile Clone Detection on Large Codebase 🎯
+
 **Status:** READY TO START (needs data)
 **Impact:** HIGH - Informs optimization decisions
 **Effort:** MEDIUM (2-3 days)
 **Description:**
+
 - Profile art-dupl on realistic workload (10k+ files)
 - Identify bottlenecks in clone detection
 - Measure JSON, string pool, and suffix tree performance
 
 **Implementation:**
+
 ```bash
 # 1. Prepare test data
 # Use large open-source Go project as test data
@@ -2991,12 +3166,14 @@ go tool pprof mem.prof
 ```
 
 **Questions to Answer:**
+
 - Is JSON encoding/decoding a bottleneck?
 - What are the hot paths in clone detection?
 - Is string pool providing real benefit?
 - Should we consider fastjson?
 
 **Benefits:**
+
 - Data-driven optimization decisions
 - Evidence-based library adoption
 - Real performance improvements
@@ -3004,16 +3181,19 @@ go tool pprof mem.prof
 ---
 
 #### 4. Add Performance Benchmarks 🎯
+
 **Status:** READY TO START
 **Impact:** HIGH - Establishes performance baseline
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - Benchmark current JSON performance
 - Benchmark string pool efficiency
 - Benchmark clone detection algorithms
 - Establish baseline for future improvements
 
 **Implementation:**
+
 ```go
 // detection/benchmark_test.go
 func BenchmarkJSONMarshalClone(b *testing.B) {
@@ -3046,6 +3226,7 @@ func BenchmarkCloneDetection(b *testing.B) {
 ```
 
 **Benefits:**
+
 - Performance baseline established
 - Regression detection possible
 - Informs optimization decisions
@@ -3053,14 +3234,17 @@ func BenchmarkCloneDetection(b *testing.B) {
 ---
 
 #### 5. Fix BDD Test Failure 🎯
+
 **Status:** READY TO START
 **Impact:** MEDIUM - Unblocks full test suite
 **Effort:** LOW (1-2 hours)
 **Description:**
+
 - Fix failing BDD test at `bdd/all_format_generation_test.go:241`
 - Test expects separate files for each detection method
 
 **Implementation:**
+
 ```go
 // Read failing test
 // Understand expectation
@@ -3069,6 +3253,7 @@ func BenchmarkCloneDetection(b *testing.B) {
 ```
 
 **Error:**
+
 ```
 All Format Generation (--all flag)
 When generating all formats with multiple detection methods
@@ -3078,6 +3263,7 @@ Received: false
 ```
 
 **Benefits:**
+
 - Full test suite passing
 - Unblocks CI/CD
 - Confirms multi-method output works
@@ -3087,15 +3273,18 @@ Received: false
 ### MEDIUM PRIORITY (Next Sprint)
 
 #### 6. Evaluate Fastjson Adoption 🎯
+
 **Status:** DEPENDS ON PROFILING
 **Impact:** MEDIUM (uncertain - needs data)
 **Effort:** MEDIUM (1-2 days evaluation)
 **Description:**
+
 - Benchmark fastjson against encoding/json
 - Consider only if profiling shows JSON as bottleneck
 - Evaluate tradeoff (dependency vs performance)
 
 **Implementation:**
+
 ```bash
 # 1. Benchmark encoding/json (baseline)
 go test -bench=BenchmarkJSON ./...
@@ -3109,11 +3298,13 @@ go test -bench=BenchmarkJSON ./...
 ```
 
 **Decision Criteria:**
+
 - Fastjson is >2x faster than encoding/json
 - JSON processing is >20% of total time
 - Performance gain justifies external dependency
 
 **Benefits:**
+
 - Performance improvement if justified
 - Data-driven library adoption
 - Evidence-based decision
@@ -3121,15 +3312,18 @@ go test -bench=BenchmarkJSON ./...
 ---
 
 #### 7. Evaluate samber/oops Adoption 🎯
+
 **Status:** READY TO START
 **Impact:** MEDIUM (depends on production needs)
 **Effort:** MEDIUM (1-3 days gradual adoption)
 **Description:**
+
 - Assess production error tracking needs
 - Evaluate if structured errors beneficial
 - Consider gradual rollout
 
 **Implementation:**
+
 - **Phase 1:** Production needs assessment (1 day)
   - Document current error handling requirements
   - Interview team about pain points
@@ -3146,6 +3340,7 @@ go test -bench=BenchmarkJSON ./...
   - Abandon if not beneficial
 
 **Benefits:**
+
 - Better debugging in production
 - Structured error information
 - Consistent error handling patterns
@@ -3153,15 +3348,18 @@ go test -bench=BenchmarkJSON ./...
 ---
 
 #### 8. Refactor syntax.FindSyntaxUnits() 🎯
+
 **Status:** READY TO START
 **Impact:** LOW-MEDIUM (improves type safety)
 **Effort:** MEDIUM (2-3 days)
 **Description:**
+
 - Accept domain.Threshold instead of int
 - Return domain types where appropriate
 - Validate threshold at domain boundary
 
 **Implementation:**
+
 ```go
 // Before:
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match
@@ -3183,11 +3381,13 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match,
 ```
 
 **Breaking Changes:**
+
 - Function signature change
 - Update all call sites
 - Update tests
 
 **Benefits:**
+
 - Type safety at API boundary
 - Consistent with domain model
 - Prevents invalid thresholds
@@ -3195,15 +3395,18 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match,
 ---
 
 #### 9. Create domain.RunContext Type 🎯
+
 **Status:** READY TO START
 **Impact:** LOW-MEDIUM (improves type safety)
 **Effort:** MEDIUM (2-3 days)
 **Description:**
+
 - Encapsulate runtime state from cmd/run.go
 - Type-safe access to runtime values
 - Consistent with domain-driven design
 
 **Implementation:**
+
 ```go
 // domain/runtime.go
 type RunContext struct {
@@ -3253,11 +3456,13 @@ func NewRunContext(cfg *config.Config) (RunContext, error) {
 ```
 
 **Breaking Changes:**
+
 - Requires updates across cmd/ package
 - CLI integration changes
 - Test updates
 
 **Benefits:**
+
 - Type-safe runtime configuration
 - Validation at construction
 - Single source of truth
@@ -3266,15 +3471,18 @@ func NewRunContext(cfg *config.Config) (RunContext, error) {
 ---
 
 #### 10. Add Custom Linter for Type Safety 🎯
+
 **Status:** READY TO START
 **Impact:** MEDIUM (prevents future issues)
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - Create custom linter using golang.org/x/tools
 - Detect direct type casting of domain types
 - Enforce constructor usage
 
 **Implementation:**
+
 - Create `linter/checktypedomain` package
 - Implement `analysis.Analyzer` interface
 - Detect patterns:
@@ -3283,6 +3491,7 @@ func NewRunContext(cfg *config.Config) (RunContext, error) {
 - Add to golangci-lint configuration
 
 **Benefits:**
+
 - Compile-time type safety enforcement
 - Immediate feedback in PRs
 - Consistent code quality
@@ -3293,15 +3502,18 @@ func NewRunContext(cfg *config.Config) (RunContext, error) {
 ### LOW PRIORITY (Backlog)
 
 #### 11. Improve Test Coverage 🎯
+
 **Status:** READY TO START
 **Impact:** LOW-MEDIUM (improves confidence)
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - Add tests for edge cases in type validation
 - Add integration tests for package boundaries
 - Add performance regression tests
 
 **Implementation:**
+
 ```go
 // domain/domain_types_test.go
 func TestThresholdEdgeCases(t *testing.T) {
@@ -3338,6 +3550,7 @@ func TestConfigToDomainConversion(t *testing.T) {
 ```
 
 **Benefits:**
+
 - Higher confidence in type safety
 - Edge case coverage
 - Regression prevention
@@ -3345,15 +3558,18 @@ func TestConfigToDomainConversion(t *testing.T) {
 ---
 
 #### 12. Standardize Method Naming 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (cosmetic)
 **Effort:** LOW (few hours)
 **Description:**
+
 - Use .Uint16(), .Uint32() consistently
 - Remove .Uint() usage where type is known
 - Better self-documentation
 
 **Implementation:**
+
 ```go
 // Before (ambiguous):
 line.Uint()   // Could be LineNumber or Threshold
@@ -3365,10 +3581,12 @@ threshold.Uint() // Clearly Threshold
 ```
 
 **Approaches:**
+
 - **Option 1:** Remove generic .Uint() methods (breaking)
 - **Option 2:** Add linter rule (non-breaking)
 
 **Benefits:**
+
 - Self-documenting code
 - Prevents type confusion
 - Better IDE autocomplete
@@ -3376,15 +3594,18 @@ threshold.Uint() // Clearly Threshold
 ---
 
 #### 13. Add More Comprehensive Examples 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (improves documentation)
 **Effort:** LOW (1-2 days)
 **Description:**
+
 - Example for each domain type
 - Integration examples
 - Error handling patterns
 
 **Implementation:**
+
 ```go
 // examples/domain_types_comprehensive.go
 
@@ -3422,6 +3643,7 @@ func ExampleFilepath() {
 ```
 
 **Benefits:**
+
 - Better documentation
 - Faster onboarding
 - Clear usage patterns
@@ -3429,15 +3651,18 @@ func ExampleFilepath() {
 ---
 
 #### 14. Improve Error Messages 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (improves UX)
 **Effort:** LOW (1 day)
 **Description:**
+
 - More specific error types
 - Better context in errors
 - User-friendly messages
 
 **Implementation:**
+
 ```go
 // Before (generic):
 "errors.NewValidationError("invalid threshold", nil)
@@ -3447,6 +3672,7 @@ func ExampleFilepath() {
 ```
 
 **Benefits:**
+
 - Better debugging experience
 - Clearer error messages
 - User-friendly
@@ -3454,20 +3680,24 @@ func ExampleFilepath() {
 ---
 
 #### 15. Add Validation for Complex Rules 🎯
+
 **Status:** DEPENDS ON EVALUATION
 **Impact:** LOW (depends on needs)
 **Effort:** LOW-MEDIUM (1-3 days if adopted)
 **Description:**
+
 - Consider go-playground/validator if needed
 - Cross-field validation
 - Custom validation rules
 
 **Implementation:**
+
 - Only adopt if profiling shows need
 - Only for external configuration
 - Keep constructor-based validation for core
 
 **Benefits:**
+
 - Rich validation features
 - Cross-field validation
 - Declarative rules
@@ -3475,15 +3705,18 @@ func ExampleFilepath() {
 ---
 
 #### 16. Optimize Memory Usage 🎯
+
 **Status:** DEPENDS ON PROFILING
 **Impact:** LOW-MEDIUM (uncertain)
 **Effort:** MEDIUM (2-3 days)
 **Description:**
+
 - Profile memory allocations
 - Reduce allocations in hot paths
 - Consider object pooling
 
 **Implementation:**
+
 ```go
 // Before:
 func ProcessClones(clones []Clone) Result {
@@ -3503,6 +3736,7 @@ func ProcessClones(clones []Clone) Result {
 ```
 
 **Benefits:**
+
 - Reduced memory usage
 - Better performance
 - Scalability
@@ -3510,15 +3744,18 @@ func ProcessClones(clones []Clone) Result {
 ---
 
 #### 17. Add Distributed Tracing Support 🎯
+
 **Status:** DEPENDS ON PRODUCTION NEEDS
 **Impact:** LOW-MEDIUM (production feature)
 **Effort:** MEDIUM (1-2 weeks)
 **Description:**
+
 - OpenTelemetry integration
 - Trace IDs in errors
 - Performance monitoring
 
 **Implementation:**
+
 ```go
 import (
     "go.opentelemetry.io/otel"
@@ -3540,6 +3777,7 @@ func DetectClones(ctx context.Context, opts *Options) (*Analysis, error) {
 ```
 
 **Benefits:**
+
 - Distributed tracing
 - Performance monitoring
 - Production debugging
@@ -3547,16 +3785,19 @@ func DetectClones(ctx context.Context, opts *Options) (*Analysis, error) {
 ---
 
 #### 18. Improve Documentation 🎯
+
 **Status:** READY TO START
 **Impact:** MEDIUM (better developer experience)
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - API reference for each package
 - Architecture diagrams
 - Tutorial for common workflows
 
 **Implementation:**
-```markdown
+
+````markdown
 # docs/api-reference.md
 
 ## Domain Package
@@ -3571,11 +3812,14 @@ if err != nil {
     return err
 }
 ```
+````
 
 **Methods:**
+
 - `Uint()` - Get underlying uint value
 
 **Validation:**
+
 - Must be > 0
 
 ### Filepath
@@ -3583,7 +3827,8 @@ if err != nil {
 Type-safe filepath with validation.
 
 ... (document all 15+ domain types)
-```
+
+````
 
 **Benefits:**
 - Better API documentation
@@ -3640,9 +3885,10 @@ type OutputFormatPlugin interface {
 func RegisterDetectionMethod(plugin DetectionMethodPlugin) {
     ...
 }
-```
+````
 
 **Benefits:**
+
 - Extensible architecture
 - Third-party contributions
 - Custom workflows
@@ -3650,15 +3896,18 @@ func RegisterDetectionMethod(plugin DetectionMethodPlugin) {
 ---
 
 #### 21. Performance Regression Testing 🎯
+
 **Status:** READY TO START
 **Impact:** HIGH (prevents degradation)
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - Automated benchmarks
 - CI performance checks
 - Alert on regressions
 
 **Implementation:**
+
 ```yaml
 # .github/workflows/benchmark.yml
 on: [push, pull_request]
@@ -3682,6 +3931,7 @@ jobs:
 ```
 
 **Benefits:**
+
 - Automatic regression detection
 - Performance monitoring
 - Alert on degradation
@@ -3689,15 +3939,18 @@ jobs:
 ---
 
 #### 22. Setup Dependabot for Go Modules 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (maintenance reduction)
 **Effort:** LOW (1 hour)
 **Description:**
+
 - Automatic security updates
 - Dependency management
 - Reduce manual maintenance
 
 **Implementation:**
+
 ```yaml
 # .github/dependabot.yml
 version: 2
@@ -3713,6 +3966,7 @@ updates:
 ```
 
 **Benefits:**
+
 - Automatic security updates
 - Reduced manual maintenance
 - Dependency tracking
@@ -3720,15 +3974,18 @@ updates:
 ---
 
 #### 23. Improve Test Performance 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (faster CI/CD)
 **Effort:** MEDIUM (1-2 days)
 **Description:**
+
 - Parallel test execution
 - Test caching
 - Faster feedback
 
 **Implementation:**
+
 ```bash
 # Parallel test execution
 go test -parallel=4 ./...
@@ -3738,6 +3995,7 @@ go test -count=1 -race ./...
 ```
 
 **Benefits:**
+
 - Faster CI/CD
 - Better developer feedback
 - Parallel execution
@@ -3745,53 +4003,66 @@ go test -count=1 -race ./...
 ---
 
 #### 24. Add Architecture Decision Records (ADRs) 🎯
+
 **Status:** READY TO START
 **Impact:** LOW (documentation)
 **Effort:** LOW (1-2 days)
 **Description:**
+
 - Document domain type design decisions
 - Record library evaluation results
 - Track evolution of architecture
 
 **Implementation:**
+
 ```markdown
 # docs/adr/001-domain-type-design.md
 
 # ADR 001: Domain Type Design
 
 ## Status
+
 Accepted
 
 ## Context
+
 We need type-safe value objects to prevent invalid states and provide self-documenting code.
 
 ## Decision
+
 Use constructor functions with validation for all domain types:
+
 - `domain.NewThreshold(value) (Threshold, error)`
 - `domain.NewFilepath(path) (Filepath, error)`
 
 ## Consequences
+
 ### Positive
+
 - Type safety enforced at construction
 - Compile-time error handling
 - Self-documenting code
 
 ### Negative
+
 - More verbose than direct types
 - Requires error handling
 
 ## Alternatives Considered
+
 1. Direct type casting with runtime validation
    - Rejected: Bypasses compiler enforcement
 2. Struct-tag validation (go-playground/validator)
    - Rejected: Less type-safe than constructors
 
 ## Related Decisions
+
 - ADR 002: String pooling strategy
 - ADR 003: Error handling approach
 ```
 
 **Benefits:**
+
 - Architecture documentation
 - Decision tracking
 - Historical context
@@ -3799,48 +4070,57 @@ Use constructor functions with validation for all domain types:
 ---
 
 #### 25. Code Review Checklist 🎯
+
 **Status:** READY TO START
 **Impact:** MEDIUM (consistency)
 **Effort:** LOW (2-4 hours)
 **Description:**
+
 - Create code review checklist
 - Enforce best practices
 - Prevent common issues
 
 **Implementation:**
+
 ```markdown
 # docs/code-review-checklist.md
 
 # Code Review Checklist
 
 ## Type Safety
+
 - [ ] All domain types created with constructors
 - [ ] Constructor errors handled (not ignored)
 - [ ] No direct type casting of domain types
 - [ ] Type-specific methods used (.Uint16(), etc.)
 
 ## Error Handling
+
 - [ ] All errors wrapped with context
 - [ ] Error types appropriate for situation
 - [ ] Errors logged with sufficient context
 
 ## Testing
+
 - [ ] New code has tests
 - [ ] Edge cases covered
 - [ ] Tests pass locally before PR
 
 ## Documentation
+
 - [ ] Public functions have godoc comments
 - [ ] Examples provided for complex logic
 - [ ] Design decisions documented
 
 ## Performance
+
 - [ ] No unnecessary allocations
 - [ ] Efficient data structures used
 - [ ] Large operations benchmarked
 ```
 
 **Benefits:**
+
 - Consistent code quality
 - Faster code reviews
 - Prevents common issues
@@ -3854,6 +4134,7 @@ Use constructor functions with validation for all domain types:
 #### The Fundamental Dilemma
 
 **Current Implementation (StringID Approach):**
+
 ```go
 type Clone struct {
     Filename  StringID  // 4 bytes
@@ -3868,6 +4149,7 @@ filename := pool.Lookup(clone.Filename)  // Get actual string (O(1) lookup)
 ```
 
 **Alternative Implementation (Direct String Approach):**
+
 ```go
 type Clone struct {
     Filename  string  // Variable length (typically 30-50 bytes)
@@ -3883,6 +4165,7 @@ clone.Filename  // Returns string directly (no indirection)
 #### What I Know
 
 **Memory Characteristics (from domain package code):**
+
 ```go
 // StringID: 4 bytes (uint32)
 type StringID uint32
@@ -3896,20 +4179,22 @@ type StringID uint32
 
 **Estimated Memory Calculations:**
 
-| Scenario | Direct String | StringID + Pool | Difference |
-|----------|---------------|-----------------|------------|
-| 1000 clones, 100 unique files | 1000×56 = 56KB | 1000×4 + 100×40 = 4.4KB | -51.6KB (92% less) |
-| 1000 clones, 500 unique files | 1000×56 = 56KB | 1000×4 + 500×40 = 24KB | -32KB (57% less) |
-| 1000 clones, 1000 unique files | 1000×56 = 56KB | 1000×4 + 1000×40 = 44KB | -12KB (21% less) |
+| Scenario                       | Direct String  | StringID + Pool         | Difference         |
+| ------------------------------ | -------------- | ----------------------- | ------------------ |
+| 1000 clones, 100 unique files  | 1000×56 = 56KB | 1000×4 + 100×40 = 4.4KB | -51.6KB (92% less) |
+| 1000 clones, 500 unique files  | 1000×56 = 56KB | 1000×4 + 500×40 = 24KB  | -32KB (57% less)   |
+| 1000 clones, 1000 unique files | 1000×56 = 56KB | 1000×4 + 1000×40 = 44KB | -12KB (21% less)   |
 
 **Performance Characteristics:**
 
 **Direct String:**
+
 - String access: O(1) direct pointer dereference
 - String comparison: O(n) where n = string length
 - Allocation: Once per clone (unless sharing)
 
 **StringID + Pool:**
+
 - StringID access: O(1) direct (no overhead)
 - String lookup: O(1) hashmap lookup
 - String comparison: O(1) compare 4 bytes
@@ -3918,12 +4203,14 @@ type StringID uint32
 #### Data I've Gathered
 
 **From codebase analysis:**
+
 - Typical analysis: 100-10,000 clones
 - Common filenames: 10-100 unique files (high duplication)
 - Hash values: Highly unique (near 1:1 with clones)
 - Fragment values: Moderately unique (similar patterns)
 
 **From theoretical analysis:**
+
 - String pool overhead: HashMap entry + mutex synchronization
 - Lookup overhead: Hash function + array access
 - Memory overhead: ~4 bytes per clone + pool storage
@@ -3959,21 +4246,25 @@ type StringID uint32
 #### What I've Tried
 
 ❌ **Searched for best practices:** Limited resources on string pooling in Go
+
 - Most discussions are about Go's string interning (automatic)
 - Few discussions about manual string pooling
 - No clear consensus on when to use
 
 ❌ **Looked at similar codebases:**
+
 - Different use cases (general purpose vs code duplication)
 - Some use pooling, some don't
 - No clear pattern to follow
 
 ❌ **Theoretical analysis:** Done above
+
 - Calculated memory savings
 - Estimated overhead
 - But no real data
 
 ❌ **Simple benchmarks:** Not representative
+
 ```go
 // Not useful - doesn't reflect real workload
 func BenchmarkStringPool(b *testing.B) {
@@ -4002,12 +4293,14 @@ func BenchmarkStringPool(b *testing.B) {
    - How significant is this in practice?
 
 4. **Should we make this configurable?**
+
    ```go
    // Allow switching at compile time or runtime?
    const UseStringPool = true  // Build flag
    ```
 
 5. **Should we use hybrid approach?**
+
    ```go
    // Pool filenames (high duplication)
    // Keep fragments as strings (low duplication)
@@ -4045,26 +4338,31 @@ This is a **fundamental architecture decision** that affects:
 #### What Should We Do?
 
 **Option A: Keep Current (StringID)**
+
 - Pros: Potential memory savings, fast comparisons
 - Cons: API complexity, unknown performance overhead
 - Risk: Could be slower due to indirection and mutex
 
 **Option B: Switch to Direct Strings**
+
 - Pros: Simpler API, direct access, better cache locality
 - Cons: More memory, slower comparisons
 - Risk: Memory could be 5-10x higher
 
 **Option C: Hybrid Approach**
+
 - Pros: Best of both (pool high-duplication, direct low-duplication)
 - Cons: Complex API, inconsistent patterns
 - Risk: Hard to understand when to pool vs not pool
 
 **Option D: Make It Configurable**
+
 - Pros: Optimize per workload
 - Cons: More complexity, testing burden
 - Risk: Too many options, wrong choices
 
 **Option E: Profile First (RECOMMENDED)**
+
 - Pros: Data-driven decision
 - Cons: Delayed decision
 - Risk: Time spent on profiling
@@ -4072,6 +4370,7 @@ This is a **fundamental architecture decision** that affects:
 **MY RECOMMENDATION: Profile on realistic workload before deciding.**
 
 We need to:
+
 1. Create comprehensive test suite with 10K+ Go files
 2. Measure memory usage with both approaches
 3. Profile CPU time with both approaches
@@ -4079,6 +4378,7 @@ We need to:
 5. Make decision based on actual data
 
 **Estimated time for profiling:**
+
 - Setup test data: 2 hours
 - Run both approaches: 2 hours
 - Analyze results: 4 hours
@@ -4088,6 +4388,7 @@ We need to:
 **Then we can make an informed, data-driven decision.**
 
 **WHAT DO YOU THINK? Should we:**
+
 1. Profile first (recommended)?
 2. Switch to direct strings (simpler)?
 3. Keep current (already implemented)?
@@ -4103,6 +4404,7 @@ This decision impacts EVERY clone created in the codebase - we should get it rig
 ### Overall Status: 🟢 EXCELLENT
 
 **All Critical Tasks Complete:** ✅
+
 - Zero import cycle errors
 - Zero critical type safety issues
 - Zero build errors
@@ -4110,23 +4412,27 @@ This decision impacts EVERY clone created in the codebase - we should get it rig
 - All changes committed and pushed
 
 **Code Quality:** ✅
+
 - Type safety enforced at construction
 - Clean package boundaries
 - Zero external dependencies for core
 - Comprehensive documentation
 
 **Git Hygiene:** ✅
+
 - 9 atomic commits
 - Clear, descriptive messages
 - All pushed to origin/fork
 - Clean working directory
 
 **Testing:** ✅
+
 - 11 core packages passing
 - All examples working
 - Build verification successful
 
 **Architecture:** ✅
+
 - Domain model well-designed
 - Clear separation of concerns
 - String pooling for efficiency
@@ -4146,23 +4452,19 @@ This initiative resolved **all critical issues** that were blocking the codebase
 ### Next Steps
 
 **Immediate (This Sprint):**
+
 1. Add import cycle check to CI (#1)
 2. Create domain type usage guide (#2)
 3. Fix BDD test failure (#5)
 
-**Short-term (Next Sprint):**
-4. Profile clone detection on large codebase (#3)
-5. Add performance benchmarks (#4)
-6. Evaluate samber/oops adoption (#7)
+**Short-term (Next Sprint):** 4. Profile clone detection on large codebase (#3) 5. Add performance benchmarks (#4) 6. Evaluate samber/oops adoption (#7)
 
-**Long-term (Backlog):**
-7. All remaining tasks from F1-F25 list
-8. Comprehensive profiling to answer string pooling question (#G)
-9. Consider major architectural decisions based on data
+**Long-term (Backlog):** 7. All remaining tasks from F1-F25 list 8. Comprehensive profiling to answer string pooling question (#G) 9. Consider major architectural decisions based on data
 
 ### Final Assessment
 
 **The art-dupl codebase is now in excellent health:**
+
 - 🟢 Zero critical issues
 - 🟢 Clean build
 - 🟢 All tests passing
@@ -4184,6 +4486,7 @@ This initiative resolved **all critical issues** that were blocking the codebase
 ---
 
 **NEXT ACTIONS:**
+
 1. Review this report
 2. Prioritize items from F. Top #25 list
 3. Begin with HIGH PRIORITY items (#1, #2, #3, #4, #5)

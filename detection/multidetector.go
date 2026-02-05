@@ -13,6 +13,7 @@
 // - MultiDetector: Coordinates multiple detection methods
 //
 // Usage:
+//
 //	// Create multi-detector with configuration
 //	md := detection.NewMultiDetector(cfg, data, tree, verbose)
 //
@@ -29,7 +30,6 @@
 // - Runs selected methods in parallel (goroutines)
 // - Channels used for non-blocking result delivery
 // - Each method runs independently, results combined at output
-//
 package detection
 
 import (

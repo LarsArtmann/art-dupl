@@ -111,10 +111,10 @@ type Clone struct {
 	EndPos     BytePosition    `json:"endPos"`
 	Complexity ComplexityScore `json:"complexity"`
 	// StringIDs (4B each, interned for memory efficiency)
-	Filename   StringID        `json:"filename"`
-	Fragment   StringID        `json:"fragment"`
-	Hash       StringID        `json:"hash"`
-	Status     FileProcessingState `json:"status"`
+	Filename StringID            `json:"filename"`
+	Fragment StringID            `json:"fragment"`
+	Hash     StringID            `json:"hash"`
+	Status   FileProcessingState `json:"status"`
 }
 
 // IsValid validates clone data.
@@ -450,12 +450,12 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		Complexity: complexity,
 		Status:     FileProcessingStateCompleted,
 	}
-	
+
 	// Intern strings for memory efficiency
 	clone.SetFilename(filename)
 	clone.SetFragment(fragment)
 	clone.SetHash(hashStr)
-	
+
 	return clone
 }
 

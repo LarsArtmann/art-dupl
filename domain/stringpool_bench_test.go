@@ -9,10 +9,10 @@ import (
 // BenchmarkStringPool_SingleGoroutine measures baseline performance
 func BenchmarkStringPool_SingleGoroutine(b *testing.B) {
 	pool := NewStringInternPool(1000)
-	
+
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	for i := 0; i < b.N; i++ {
 		id := pool.Intern(fmt.Sprintf("file%d.go", i%100))
 		_ = pool.Lookup(id)
@@ -22,16 +22,16 @@ func BenchmarkStringPool_SingleGoroutine(b *testing.B) {
 // BenchmarkStringPool_ConcurrentReads measures read contention
 func BenchmarkStringPool_ConcurrentReads(b *testing.B) {
 	pool := NewStringInternPool(100)
-	
+
 	// Pre-populate the pool
 	ids := make([]StringID, 100)
 	for i := 0; i < 100; i++ {
 		ids[i] = pool.Intern(fmt.Sprintf("file%d.go", i))
 	}
-	
+
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	b.RunParallel(func(pb *testing.PB) {
 		i := 0
 		for pb.Next() {
@@ -45,10 +45,10 @@ func BenchmarkStringPool_ConcurrentReads(b *testing.B) {
 // BenchmarkStringPool_ConcurrentWrites measures write contention
 func BenchmarkStringPool_ConcurrentWrites(b *testing.B) {
 	pool := NewStringInternPool(10000)
-	
+
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	b.RunParallel(func(pb *testing.PB) {
 		i := 0
 		for pb.Next() {
@@ -61,16 +61,16 @@ func BenchmarkStringPool_ConcurrentWrites(b *testing.B) {
 // BenchmarkStringPool_ConcurrentMixed measures realistic mixed workload
 func BenchmarkStringPool_ConcurrentMixed(b *testing.B) {
 	pool := NewStringInternPool(1000)
-	
+
 	// Pre-populate some strings
 	commonIDs := make([]StringID, 100)
 	for i := 0; i < 100; i++ {
 		commonIDs[i] = pool.Intern(fmt.Sprintf("common%d.go", i))
 	}
-	
+
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	b.RunParallel(func(pb *testing.PB) {
 		i := 0
 		for pb.Next() {
@@ -89,7 +89,7 @@ func BenchmarkStringPool_ConcurrentMixed(b *testing.B) {
 func BenchmarkStringPool_GlobalPool(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	b.RunParallel(func(pb *testing.PB) {
 		i := 0
 		for pb.Next() {
@@ -103,11 +103,11 @@ func BenchmarkStringPool_GlobalPool(b *testing.B) {
 // BenchmarkStringPool_HighContention worst-case scenario
 func BenchmarkStringPool_HighContention(b *testing.B) {
 	pool := NewStringInternPool(10)
-	
+
 	// Only 10 unique strings, all goroutines hammer the same locks
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			id := pool.Intern("same_file.go")
@@ -119,15 +119,15 @@ func BenchmarkStringPool_HighContention(b *testing.B) {
 // BenchmarkStringPool_Stats measures stats collection overhead
 func BenchmarkStringPool_Stats(b *testing.B) {
 	pool := NewStringInternPool(1000)
-	
+
 	// Pre-populate
 	for i := 0; i < 1000; i++ {
 		_ = pool.Intern(fmt.Sprintf("file%d.go", i))
 	}
-	
+
 	b.ResetTimer()
 	b.ReportAllocs()
-	
+
 	for i := 0; i < b.N; i++ {
 		_ = pool.Stats()
 	}
@@ -136,14 +136,14 @@ func BenchmarkStringPool_Stats(b *testing.B) {
 // Measure lock contention with a custom stress test
 func TestStringPool_LockContention(t *testing.T) {
 	pool := NewStringInternPool(10000)
-	
+
 	var wg sync.WaitGroup
 	const goroutines = 100
 	const operations = 10000
-	
+
 	// Track blocking time (requires runtime.MutexProfile)
 	// This test is for manual profiling: go test -run TestStringPool_LockContention -cpuprofile=cpu.prof
-	
+
 	for g := 0; g < goroutines; g++ {
 		wg.Add(1)
 		go func(id int) {
@@ -158,6 +158,6 @@ func TestStringPool_LockContention(t *testing.T) {
 			}
 		}(g)
 	}
-	
+
 	wg.Wait()
 }

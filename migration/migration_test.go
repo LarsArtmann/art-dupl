@@ -74,10 +74,10 @@ var _ = Describe("Migration Path", func() {
 			// Create clones with proper StringID initialization
 			clone1 := domain.Clone{}
 			clone1.SetFilename("test.go")
-			
+
 			clone2 := domain.Clone{}
 			clone2.SetFilename("test.go")
-			
+
 			clone3 := domain.Clone{}
 			clone3.SetFilename("test2.go")
 

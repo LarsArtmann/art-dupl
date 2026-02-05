@@ -14,14 +14,14 @@ import (
 
 // JSONOutput represents the structured JSON output.
 type JSONOutput struct {
-	Version         string       `json:"version"`
-	Timestamp       time.Time    `json:"timestamp"`
-	Threshold       int          `json:"threshold"`
-	FilesAnalyzed   int          `json:"files_analyzed"`
-	DetectionMethod string       `json:"detection_method,omitempty"`
-	DetectionMethods string      `json:"detection_methods,omitempty"`
-	CloneGroups     []CloneGroup `json:"clone_groups"`
-	Summary         Summary      `json:"summary"`
+	Version          string       `json:"version"`
+	Timestamp        time.Time    `json:"timestamp"`
+	Threshold        int          `json:"threshold"`
+	FilesAnalyzed    int          `json:"files_analyzed"`
+	DetectionMethod  string       `json:"detection_method,omitempty"`
+	DetectionMethods string       `json:"detection_methods,omitempty"`
+	CloneGroups      []CloneGroup `json:"clone_groups"`
+	Summary          Summary      `json:"summary"`
 }
 
 // CloneGroup represents a group of duplicate code fragments.

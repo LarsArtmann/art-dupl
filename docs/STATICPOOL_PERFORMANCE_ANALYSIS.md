@@ -8,15 +8,16 @@
 
 ### Real-World Performance (Apple M2)
 
-| Benchmark | ns/op | B/op | allocs/op | Notes |
-|-----------|-------|------|-----------|-------|
-| **NodeToClone pattern** | **635.9** | **0** | **0** | **Production code path** |
-| GlobalPool realistic (90% reads) | 482.4 | 27 | 1 | Simulates actual usage |
-| Realistic dupl load | 1736 | 0 | 0 | End-to-end file scanning |
-| Concurrent reads | 69.28 | 0 | 0 | Read-only workload |
-| High contention | 139.2 | 0 | 0 | Worst-case scenario |
+| Benchmark                        | ns/op     | B/op  | allocs/op | Notes                    |
+| -------------------------------- | --------- | ----- | --------- | ------------------------ |
+| **NodeToClone pattern**          | **635.9** | **0** | **0**     | **Production code path** |
+| GlobalPool realistic (90% reads) | 482.4     | 27    | 1         | Simulates actual usage   |
+| Realistic dupl load              | 1736      | 0     | 0         | End-to-end file scanning |
+| Concurrent reads                 | 69.28     | 0     | 0         | Read-only workload       |
+| High contention                  | 139.2     | 0     | 0         | Worst-case scenario      |
 
 ### Critical Finding
+
 - **NodeToClone (actual production path)**: 635.9 ns/op with zero allocations
 - **Sub-microsecond performance**: Already fast enough for production
 - **Zero allocations in hot path**: Optimal for GC pressure
@@ -28,11 +29,13 @@
 ### CPU Profile Results (8.92s total)
 
 **Actual Blocking Time:**
+
 ```
 internal/sync.(*Mutex).lockSlow: 0.02s (0.22% of total)
 ```
 
 **Lock Operation Breakdown:**
+
 ```
 sync.(*RWMutex).RLock:  1.58s cum (17.71%) - includes fast path
 sync.(*RWMutex).RUnlock: 1.36s cum (15.25%) - includes fast path
@@ -46,6 +49,7 @@ sync/atomic.(*Int32).Add: 2.53s cum (28.36%) - atomic operations (non-blocking)
 ✅ **28.36% in atomic operations** - Low-level CPU primitives (fast)
 
 **The RWMutex is working as designed:**
+
 - Multiple concurrent readers acquire RLock without blocking
 - Read operations complete in nanoseconds
 - Write operations are infrequent (only when new files encountered)
@@ -57,12 +61,14 @@ sync/atomic.(*Int32).Add: 2.53s cum (28.36%) - atomic operations (non-blocking)
 ### Read/Write Ratio (Realistic)
 
 **Benchmark: GlobalPoolRealistic**
+
 ```
 90% reads (existing strings): Fast path - RLock, map lookup, RUnlock
 10% writes (new strings):    Slow path - RLock, upgrade to Lock, append
 ```
 
 **Production Pattern (NodeToClone):**
+
 ```
 1. SetFilename:  Intern filename (write - once per file)
 2. SetFragment:  Intern fragment (write - once per clone)
@@ -77,6 +83,7 @@ sync/atomic.(*Int32).Add: 2.53s cum (28.36%) - atomic operations (non-blocking)
 ### Why RWMutex is Optimal
 
 For read-heavy workloads with 3:1 to 5:1 ratios:
+
 - RWMutex allows concurrent readers
 - Writers only block new readers (not existing ones)
 - Fast path (existing strings) = RLock + map lookup + RUnlock
@@ -87,12 +94,14 @@ For read-heavy workloads with 3:1 to 5:1 ratios:
 ## Immutable Pattern Trade-offs
 
 ### Claimed Benefits
+
 - **2.5× speedup**: 27ns vs 66ns lookups (from theoretical analysis)
 - **No lock contention**: Copy-on-write with atomic pointer swaps
 
 ### Actual Costs (Reality Check)
 
 #### Implementation Complexity
+
 ```go
 // Current (simple, working):
 func (p *StringInternPool) Lookup(id StringID) string {
@@ -116,6 +125,7 @@ func (p *ImmutableStringInternPool) Lookup(id StringID) string {
 ```
 
 #### Hidden Costs
+
 1. **Memory churn**: Old versions accumulate until GC
 2. **GC pressure**: More frequent collections
 3. **Amdahl's Law**: 0.22% contention cannot yield > 0.22% improvement
@@ -123,6 +133,7 @@ func (p *ImmutableStringInternPool) Lookup(id StringID) string {
 5. **Maintenance burden**: Complex code is harder to debug
 
 #### Performance Reality
+
 - **Current lookups**: 69ns (already extremely fast)
 - **Immutable lookups**: 27ns (theoretical best case)
 - **Actual improvement**: 42ns (0.000042ms) per lookup
@@ -132,17 +143,17 @@ func (p *ImmutableStringInternPool) Lookup(id StringID) string {
 
 ## Decision Matrix
 
-| Factor | Current RWMutex | Immutable Pattern |
-|--------|----------------|-------------------|
-| **Read latency** | 69ns | 27ns (theoretical) |
-| **Write latency** | 1073ns | ~500ns (copy-on-write) |
-| **Actual blocking** | **0.22%** | **0%** (theoretical) |
-| **Memory churn** | 0 | Moderate (old versions) |
-| **GC pressure** | Low | Moderate to High |
-| **Implementation** | ✅ Simple (80 lines) | ❌ Complex (300+ lines) |
-| **Maintenance** | ✅ Easy | ❌ Hard |
-| **Risk** | ✅ Low | ❌ High |
-| **Real-world speedup** | baseline | **< 0.1%** (negligible) |
+| Factor                 | Current RWMutex      | Immutable Pattern       |
+| ---------------------- | -------------------- | ----------------------- |
+| **Read latency**       | 69ns                 | 27ns (theoretical)      |
+| **Write latency**      | 1073ns               | ~500ns (copy-on-write)  |
+| **Actual blocking**    | **0.22%**            | **0%** (theoretical)    |
+| **Memory churn**       | 0                    | Moderate (old versions) |
+| **GC pressure**        | Low                  | Moderate to High        |
+| **Implementation**     | ✅ Simple (80 lines) | ❌ Complex (300+ lines) |
+| **Maintenance**        | ✅ Easy              | ❌ Hard                 |
+| **Risk**               | ✅ Low               | ❌ High                 |
+| **Real-world speedup** | baseline             | **< 0.1%** (negligible) |
 
 ---
 
@@ -151,12 +162,14 @@ func (p *ImmutableStringInternPool) Lookup(id StringID) string {
 ### Macro-level Analysis
 
 **Typical dupl run on large project:**
+
 - 10,000 files scanned
 - 50,000 clones detected
 - Each clone: 3 string lookups (filename, fragment, hash)
 - Total lookups: 150,000
 
 **Performance difference:**
+
 ```
 Current:  150,000 × 69ns = 10.35ms
 Immutable: 150,000 × 27ns = 4.05ms
@@ -164,6 +177,7 @@ Savings: 6.3ms per run (0.0063 seconds)
 ```
 
 **Total runtime for typical dupl scan:**
+
 ```
 File I/O:        ~2,000ms (2 seconds)
 AST parsing:     ~1,500ms (1.5 seconds)
@@ -183,6 +197,7 @@ Total:           ~4,310ms
 ### DO NOT IMPLEMENT ImmutableStringInternPool
 
 **Rationale:**
+
 1. ✅ Current implementation is already optimal
 2. ✅ 0.22% actual blocking is negligible
 3. ✅ 635ns NodeToClone performance is excellent
@@ -194,6 +209,7 @@ Total:           ~4,310ms
 ### Instead: Document Current Performance
 
 Create monitoring in production:
+
 ```go
 // In GlobalPool() or metrics collection:
 func logPoolStats() {
@@ -214,6 +230,7 @@ This provides visibility without complexity.
 If we need more performance, these would have higher ROI:
 
 ### 1. Per-Goroutine Cache (3.3× speedup potential)
+
 ```go
 // Each goroutine caches last N lookups
 // Eliminates atomic operations entirely
@@ -221,6 +238,7 @@ If we need more performance, these would have higher ROI:
 ```
 
 ### 2. Pre-sized Pool Growth
+
 ```go
 // Pre-allocate slice capacity to avoid growth
 // Current: append() may trigger reallocation
@@ -228,12 +246,14 @@ If we need more performance, these would have higher ROI:
 ```
 
 ### 3. Batch Intern Operations
+
 ```go
 // Intern multiple strings in single transaction
 // Redances mutex operations
 ```
 
 **Estimated effort/speedup ratio:**
+
 - Per-goroutine cache: Medium effort, 10-15% real-world speedup
 - Immutable pool: High effort, < 0.1% real-world speedup
 
@@ -246,6 +266,7 @@ If we need more performance, these would have higher ROI:
 **Answer:** No, it is NOT worth the trade-off.
 
 **Evidence:**
+
 - ✅ Benchmarked current implementation across 7 different workload patterns
 - ✅ CPU profile shows only 0.22% actual lock contention
 - ✅ NodeToClone (production path) runs at 635ns with zero allocations

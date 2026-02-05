@@ -15,12 +15,12 @@ This document presents a comprehensive performance comparison between two Go cod
 
 ### Key Findings (Updated After Optimizations)
 
-| Metric | golangci/dupl | art-dupl (After Optimization) | Difference |
-|--------|---------------|-----------------------------|------------|
-| **Execution Time** | 16.7s | **13.5s** | **+23.7% faster** |
-| **Memory Usage** | 654 MB | ~600 MB | -8.3% less |
-| **Binary Size** | 2.69 MB | 5.52 MB | +105% larger |
-| **Clone Groups Found** | 1,047 | 1,045 | ~0.2% fewer |
+| Metric                 | golangci/dupl | art-dupl (After Optimization) | Difference        |
+| ---------------------- | ------------- | ----------------------------- | ----------------- |
+| **Execution Time**     | 16.7s         | **13.5s**                     | **+23.7% faster** |
+| **Memory Usage**       | 654 MB        | ~600 MB                       | -8.3% less        |
+| **Binary Size**        | 2.69 MB       | 5.52 MB                       | +105% larger      |
+| **Clone Groups Found** | 1,047         | 1,045                         | ~0.2% fewer       |
 
 **Bottom Line:** After performance optimization, **art-dupl is now 23.7% faster** than golangci/dupl on a heavily loaded system, uses 8% less memory, and has identical clone detection accuracy (99.8%). The 2x larger binary size is due to additional features (filtering, multiple outputs, stats, configuration).
 
@@ -30,12 +30,12 @@ This document presents a comprehensive performance comparison between two Go cod
 
 ### Previous Results (Before Optimization)
 
-| Metric | art-dupl (Before) | golangci/dupl | Difference |
-|--------|-------------------|---------------|------------|
-| **Execution Time** | ~18s (est.) | 6.56s | +174% slower |
-| **Memory Usage** | 629 MB | 654 MB | -3.8% less |
-| **Binary Size** | 5.52 MB | 2.69 MB | +105% larger |
-| **Clone Groups Found** | 1,045 | 1,047 | ~0.2% fewer |
+| Metric                 | art-dupl (Before) | golangci/dupl | Difference   |
+| ---------------------- | ----------------- | ------------- | ------------ |
+| **Execution Time**     | ~18s (est.)       | 6.56s         | +174% slower |
+| **Memory Usage**       | 629 MB            | 654 MB        | -3.8% less   |
+| **Binary Size**        | 5.52 MB           | 2.69 MB       | +105% larger |
+| **Clone Groups Found** | 1,045             | 1,047         | ~0.2% fewer  |
 
 **The initial ~174% performance penalty was due to unnecessary file I/O and always-on filtering infrastructure. All issues have been identified and optimized.**
 
@@ -73,48 +73,52 @@ go build -ldflags "-s -w" -trimpath
 
 ### Execution Time
 
-| Tool | Iteration 1 | Iteration 2 | Iteration 3 | Iteration 4 | Iteration 5 | **Average** |
-|------|------------|------------|------------|------------|------------|-------------|
-| art-dupl | 9.27s | 7.53s | 6.82s | 8.33s | 7.37s | **7.86s** |
-| golangci/dupl | 5.40s | 8.03s | 7.15s | 5.42s | 6.78s | **6.56s** |
+| Tool          | Iteration 1 | Iteration 2 | Iteration 3 | Iteration 4 | Iteration 5 | **Average** |
+| ------------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+| art-dupl      | 9.27s       | 7.53s       | 6.82s       | 8.33s       | 7.37s       | **7.86s**   |
+| golangci/dupl | 5.40s       | 8.03s       | 7.15s       | 5.42s       | 6.78s       | **6.56s**   |
 
 **Observations:**
+
 - Both tools show consistent performance across iterations
 - art-dupl is consistently slower (19.8% average)
 - golangci/dupl has faster minimum time (5.40s vs 6.82s)
 
 ### Memory Usage
 
-| Tool | Iteration 1 | Iteration 2 | Iteration 3 | Iteration 4 | Iteration 5 | **Average** |
-|------|------------|------------|------------|------------|------------|-------------|
-| art-dupl | 616.94 MB | 652.77 MB | 611.16 MB | 640.91 MB | 624.41 MB | **629.23 MB** |
-| golangci/dupl | 658.59 MB | 670.50 MB | 636.59 MB | 653.30 MB | 653.12 MB | **654.42 MB** |
+| Tool          | Iteration 1 | Iteration 2 | Iteration 3 | Iteration 4 | Iteration 5 | **Average**   |
+| ------------- | ----------- | ----------- | ----------- | ----------- | ----------- | ------------- |
+| art-dupl      | 616.94 MB   | 652.77 MB   | 611.16 MB   | 640.91 MB   | 624.41 MB   | **629.23 MB** |
+| golangci/dupl | 658.59 MB   | 670.50 MB   | 636.59 MB   | 653.30 MB   | 653.12 MB   | **654.42 MB** |
 
 **Observations:**
+
 - art-dupl uses 3.8% less memory on average
 - Memory usage is stable for both tools
 - Peak memory difference: ~60 MB less for art-dupl
 
 ### Binary Size
 
-| Tool | Size | Comparison |
-|------|------|------------|
-| art-dupl | 5.52 MB | +105% (2.05x) larger |
-| golangci/dupl | 2.69 MB | baseline |
+| Tool          | Size    | Comparison           |
+| ------------- | ------- | -------------------- |
+| art-dupl      | 5.52 MB | +105% (2.05x) larger |
+| golangci/dupl | 2.69 MB | baseline             |
 
 **Observations:**
+
 - art-dupl binary is more than double the size
 - This suggests additional dependencies or code features
 - Trade-off: features vs. binary size
 
 ### Clone Detection Accuracy
 
-| Tool | Clone Groups Found | Files Analyzed |
-|------|-------------------|----------------|
-| art-dupl | 1,045 | N/A |
-| golangci/dupl | 1,047 | N/A |
+| Tool          | Clone Groups Found | Files Analyzed |
+| ------------- | ------------------ | -------------- |
+| art-dupl      | 1,045              | N/A            |
+| golangci/dupl | 1,047              | N/A            |
 
 **Observations:**
+
 - Near-identical clone detection results (99.8% overlap)
 - Both tools found ~1,046 clone groups
 - 2 clone group difference likely due to edge cases or noise filtering
@@ -187,18 +191,18 @@ The near-identical clone detection results (1,045 vs 1,047) indicate:
 
 ## Feature Comparison
 
-| Feature | art-dupl | golangci/dupl |
-|---------|----------|---------------|
-| **Core Clone Detection** | ✅ | ✅ |
-| **Multiple Output Formats** | ✅ (Text, HTML, JSON, CSV, Plumbing) | ✅ (Text, HTML, Plumbing) |
-| **Stats Command** | ✅ (Health scoring, metrics) | ❌ |
-| **Configuration File** | ✅ | ❌ |
-| **Smart Filtering** | ✅ (sqlc, templ auto-detection) | ❌ |
-| **Hash Detection** | ✅ (Multiple methods) | ❌ |
-| **Size-based Sorting** | ✅ (Size, occurrence, hash, total-tokens) | ❌ |
-| **Verbose Mode** | ✅ | ✅ |
-| **Threshold Control** | ✅ | ✅ |
-| **Vendor Exclusion** | ✅ | ✅ |
+| Feature                     | art-dupl                                  | golangci/dupl             |
+| --------------------------- | ----------------------------------------- | ------------------------- |
+| **Core Clone Detection**    | ✅                                        | ✅                        |
+| **Multiple Output Formats** | ✅ (Text, HTML, JSON, CSV, Plumbing)      | ✅ (Text, HTML, Plumbing) |
+| **Stats Command**           | ✅ (Health scoring, metrics)              | ❌                        |
+| **Configuration File**      | ✅                                        | ❌                        |
+| **Smart Filtering**         | ✅ (sqlc, templ auto-detection)           | ❌                        |
+| **Hash Detection**          | ✅ (Multiple methods)                     | ❌                        |
+| **Size-based Sorting**      | ✅ (Size, occurrence, hash, total-tokens) | ❌                        |
+| **Verbose Mode**            | ✅                                        | ✅                        |
+| **Threshold Control**       | ✅                                        | ✅                        |
+| **Vendor Exclusion**        | ✅                                        | ✅                        |
 
 ---
 
@@ -270,20 +274,21 @@ art-dupl represents a **feature-rich evolution** of golangci/dupl with the follo
 
 ### Decision Matrix
 
-| Priority | Recommended Tool |
-|----------|------------------|
-| **Speed** | golangci/dupl |
-| **Memory** | art-dupl |
-| **Features** | art-dupl |
-| **Binary Size** | golangci/dupl |
-| **Integration** | art-dupl |
-| **Simplicity** | golangci/dupl |
+| Priority        | Recommended Tool |
+| --------------- | ---------------- |
+| **Speed**       | golangci/dupl    |
+| **Memory**      | art-dupl         |
+| **Features**    | art-dupl         |
+| **Binary Size** | golangci/dupl    |
+| **Integration** | art-dupl         |
+| **Simplicity**  | golangci/dupl    |
 
 ### Final Verdict
 
 **For most use cases requiring more than basic clone detection, art-dupl is the superior choice.**
 
 The 20% performance penalty is a reasonable trade-off for:
+
 - Health scoring and metrics
 - Multiple output formats
 - Smart code generation filtering
@@ -311,6 +316,7 @@ The benchmark was run using the following script:
 ### Individual Run Details
 
 **art-dupl:**
+
 ```
 Iteration 1: 9.27s (616.94 MB)
 Iteration 2: 7.53s (652.77 MB)
@@ -320,6 +326,7 @@ Iteration 5: 7.37s (624.41 MB)
 ```
 
 **golangci/dupl:**
+
 ```
 Iteration 1: 5.40s (658.59 MB)
 Iteration 2: 8.03s (670.50 MB)

@@ -11,8 +11,8 @@
 // - Common patterns and best practices
 //
 // Run with:
-//	go run examples/*.go
 //
+//	go run examples/*.go
 package examples
 
 import (
@@ -146,10 +146,10 @@ func jsonMarshalingExamples() {
 	// ✅ CORRECT: JSON marshaling with domain types
 	clone := domain.Clone{
 		Filename:  domain.GlobalPool().Intern("/path/to/file.go"),
-		StartLine:  domain.LineNumber(10),
-		EndLine:    domain.LineNumber(20),
-		Fragment:    domain.GlobalPool().Intern("code fragment"),
-		Hash:       domain.GlobalPool().Intern("abc123"),
+		StartLine: domain.LineNumber(10),
+		EndLine:   domain.LineNumber(20),
+		Fragment:  domain.GlobalPool().Intern("code fragment"),
+		Hash:      domain.GlobalPool().Intern("abc123"),
 	}
 
 	data, err := json.MarshalIndent(clone, "", "  ")

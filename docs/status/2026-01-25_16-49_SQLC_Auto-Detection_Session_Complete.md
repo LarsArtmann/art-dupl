@@ -43,6 +43,7 @@ Successfully investigated, implemented, verified, and documented SQLC auto-detec
 **Goal:** Understand the reported issue
 
 **Actions:**
+
 - Analyzed user question: "why don't we find sqlc anymore?"
 - Reviewed existing `FindSQLCConfigs()` implementation
 - Identified design limitation: only searched in provided paths, not parent directories
@@ -50,6 +51,7 @@ Successfully investigated, implemented, verified, and documented SQLC auto-detec
 - Used debug output to trace execution flow
 
 **Findings:**
+
 ```
 Problem:
 - Run: art-dupl ./db
@@ -64,6 +66,7 @@ Root Cause:
 ```
 
 **Deliverables:**
+
 - Investigation report: `docs/status/2026-01-25_15-21_SQLC_Auto-Detection_Investigation.md`
 - Test cases demonstrating the issue
 - Debug trace showing the problem
@@ -75,6 +78,7 @@ Root Cause:
 **Goal:** Create execution plan following best practices
 
 **Actions:**
+
 - Searched for existing utilities to reuse (DRY principle)
 - Found `findRepoRoot()` in test code (`cmd/stats_integration_test.go:260`)
 - Researched Go standard library path handling patterns
@@ -82,6 +86,7 @@ Root Cause:
 - Prioritized tasks by impact vs. effort
 
 **Plan Created:**
+
 ```
 Priority 1 (Critical):
 1. Extract FindProjectRoot() utility to internal/utils
@@ -98,6 +103,7 @@ Priority 3 (Nice-to-have):
 ```
 
 **Deliverables:**
+
 - Execution plan with 7 steps
 - Work vs. impact priority matrix
 - Research findings (existing code reuse opportunities)
@@ -109,6 +115,7 @@ Priority 3 (Nice-to-have):
 **Goal:** Implement parent directory search for SQLC auto-detection
 
 **Actions:**
+
 - Extracted `FindProjectRoot()` from test code to `internal/utils/file.go`
 - Refactored `FindSQLCConfigs()` to search both provided paths AND parent directories
 - Added logic to search up to 10 levels (prevents infinite loops)
@@ -116,6 +123,7 @@ Priority 3 (Nice-to-have):
 - Used standard library `filepath` package for all path operations
 
 **Implementation Details:**
+
 ```go
 // Added to internal/utils/file.go
 func FindProjectRoot(startPath string, markers []string) (string, error) {
@@ -176,6 +184,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 ```
 
 **Deliverables:**
+
 - `internal/utils/file.go` (+36 lines, FindProjectRoot utility)
 - `pkg/filter/sqlc_yaml.go` (+21 lines, parent directory search)
 - Production-ready code with type-safe error handling
@@ -187,6 +196,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 **Goal:** Ensure implementation works correctly with comprehensive tests
 
 **Actions:**
+
 - Added 8 unit tests for `FindProjectRoot()` in `internal/utils/file_test.go`
 - Added integration test for subdirectory scenario in `internal/filtertest/integration_filter_test.go`
 - Created manual test scenarios with real `sqlc.yaml` files
@@ -194,6 +204,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 - Ran all existing filter tests to ensure no regressions
 
 **Unit Tests (`internal/utils/file_test.go`):**
+
 ```go
 TestFindProjectRoot/finds_project_root_with_go.mod
 TestFindProjectRoot/finds_project_root_with_.git
@@ -206,11 +217,13 @@ TestFindProjectRoot/handles_absolute_paths
 ```
 
 **Integration Test (`internal/filtertest/integration_filter_test.go`):**
+
 ```go
 TestSmartFilteringIntegration/subdirectory_analysis_with_sqlc.yaml_in_parent
 ```
 
 **Test Results:**
+
 ```
 ✅ pkg/filter - 100% pass
 ✅ internal/utils - 100% pass (8/8 tests)
@@ -219,6 +232,7 @@ TestSmartFilteringIntegration/subdirectory_analysis_with_sqlc.yaml_in_parent
 ```
 
 **Deliverables:**
+
 - `internal/utils/file_test.go` (NEW, 150 lines, 8 tests)
 - `internal/filtertest/integration_filter_test.go` (+78 lines)
 - All tests passing ✅
@@ -230,12 +244,14 @@ TestSmartFilteringIntegration/subdirectory_analysis_with_sqlc.yaml_in_parent
 **Goal:** Update all documentation to reflect new behavior
 
 **Actions:**
+
 - Updated help text for `--filter-generated`, `--include-sqlc`, `--include-templ` flags
 - Updated `SMART_FILTERING.md` with parent directory behavior
 - Clarified auto-detection works for subdirectory analysis
 - Added usage examples for common scenarios
 
 **Help Text Changes (`cmd/flags.go`):**
+
 ```go
 // Before:
 rootCmd.Flags().Bool("filter-generated", false,
@@ -247,7 +263,8 @@ rootCmd.Flags().Bool("filter-generated", false,
 ```
 
 **Documentation Updates (`docs/SMART_FILTERING.md`):**
-```markdown
+
+````markdown
 ## Usage
 
 ### Auto-Detection (Recommended)
@@ -264,9 +281,11 @@ art-dupl --filter-generated ./db
 # Works with multiple paths
 art-dupl --filter-generated ./internal ./db
 ```
+````
 
 **Note:** Auto-detection searches parent directories (up to 10 levels) for `sqlc.yaml` or `sqlc.yml` files.
-```
+
+````
 
 **Deliverables:**
 - `cmd/flags.go` (±3 lines, clarified help text)
@@ -298,9 +317,10 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 
     // ... rest of implementation
 }
-```
+````
 
 **Deliverables:**
+
 - `pkg/filter/sqlc_yaml.go` (+5 lines, multiple config warning)
 - Better user experience for complex projects
 
@@ -311,6 +331,7 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 **Goal:** Verify implementation works end-to-end
 
 **Actions:**
+
 - Built production binary: `go build -o art-dupl ./cmd/art-dupl`
 - Created test scenarios with real `sqlc.yaml` files
 - Tested parent directory detection (config in `./`, analyzing `./db/`)
@@ -321,6 +342,7 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 **Test Scenarios:**
 
 **Scenario 1: Parent Config (New Feature)**
+
 ```
 Directory:
 /tmp/test-sqlc/
@@ -338,6 +360,7 @@ Result:
 ```
 
 **Scenario 2: Subdirectory Config (Already Working)**
+
 ```
 Directory:
 /tmp/test-nested/
@@ -356,6 +379,7 @@ Result:
 ```
 
 **Verification Results:**
+
 ```
 ✅ Build succeeds
 ✅ Binary works correctly
@@ -365,6 +389,7 @@ Result:
 ```
 
 **Deliverables:**
+
 - Working production binary
 - All test scenarios verified
 - Clean production code (no debug output)
@@ -378,12 +403,14 @@ Result:
 **User Question:** "I want it to work even if I run art-dupl in a project even if sqlc.{yml,yaml} is 1 folder down."
 
 **Investigation:**
+
 - Analyzed `filepath.Walk()` behavior
 - Reviewed existing `FindSQLCConfigs()` implementation
 - Created test case with `sqlc.yaml` in `./db/`
 - Verified behavior with manual testing
 
 **Findings:**
+
 ```
 Analysis of filepath.Walk():
 - Recursively walks entire directory tree
@@ -397,6 +424,7 @@ Conclusion:
 ```
 
 **Verification Steps:**
+
 1. Created test project: `/tmp/test-nested/` with `./db/sqlc.yaml`
 2. Ran: `./art-dupl . --filter-generated`
 3. Verified: Auto-detection message appears ✅
@@ -406,6 +434,7 @@ Conclusion:
 **Result:** ✅ FEATURE ALREADY WORKS - No code changes needed
 
 **Deliverables:**
+
 - Verification report: `docs/status/2026-01-25_16-38_SQLC_Nested_Config_Verification.md`
 - Explanation of why it works (filepath.Walk() behavior)
 - Usage examples for nested configs
@@ -418,6 +447,7 @@ Conclusion:
 **Goal:** Write comprehensive session report
 
 **Actions:**
+
 - Compiled all work from all phases
 - Documented achievements and learnings
 - Created timeline of work
@@ -426,6 +456,7 @@ Conclusion:
 - Verified all commits pushed
 
 **Deliverables:**
+
 - This comprehensive session report
 - All status reports organized and complete
 
@@ -436,18 +467,21 @@ Conclusion:
 ### Architecture Improvements
 
 #### Type Safety
+
 - Reused existing `errors.NewFileError()` type
 - Leveraged domain types from `domain/domain_types.go`
 - No new error types needed
 - Consistent error handling patterns
 
 #### Code Reuse
+
 - Extracted `FindProjectRoot()` from test code (avoided reinvention)
 - Used existing `logger.Default.Warn()` infrastructure
 - Reused `filepath` package standard library functions
 - Followed DRY principle (Don't Repeat Yourself)
 
 #### Standard Library Usage
+
 - `filepath.Abs()` - Normalize paths before traversal
 - `filepath.Dir()` - Navigate to parent directories
 - `filepath.Join()` - Safe path concatenation
@@ -460,6 +494,7 @@ Conclusion:
 ### Implementation Patterns
 
 #### Parent Directory Search
+
 ```go
 // Max depth limit prevents infinite loops
 maxDepth := 10
@@ -472,6 +507,7 @@ if parent == current || parent == "" {
 ```
 
 #### Marker File Detection
+
 ```go
 // Supports multiple markers in order of preference
 markers := []string{"sqlc.yaml", "sqlc.yml", "go.mod", ".git"}
@@ -490,20 +526,20 @@ for _, marker := range markers {
 
 ### New Files Created
 
-| Package | File | Lines | Purpose |
-|---------|------|-------|---------|
-| `internal/utils` | `file_test.go` | 150 | 8 unit tests for FindProjectRoot |
-| `docs/status` | `2026-01-25_16-38_SQLC_Nested_Config_Verification.md` | 722 | Verification of nested config support |
+| Package          | File                                                  | Lines | Purpose                               |
+| ---------------- | ----------------------------------------------------- | ----- | ------------------------------------- |
+| `internal/utils` | `file_test.go`                                        | 150   | 8 unit tests for FindProjectRoot      |
+| `docs/status`    | `2026-01-25_16-38_SQLC_Nested_Config_Verification.md` | 722   | Verification of nested config support |
 
 ### Files Modified
 
-| Package | File | Changes | Purpose |
-|---------|------|----------|---------|
-| `internal/utils` | `file.go` | +36 | FindProjectRoot utility |
-| `pkg/filter` | `sqlc_yaml.go` | +26 | Parent search + multiple config warning |
-| `internal/filtertest` | `integration_filter_test.go` | +78 | Subdirectory test |
-| `cmd` | `flags.go` | ±3 | Updated help text |
-| `docs` | `SMART_FILTERING.md` | +30, -6 | Parent directory behavior |
+| Package               | File                         | Changes | Purpose                                 |
+| --------------------- | ---------------------------- | ------- | --------------------------------------- |
+| `internal/utils`      | `file.go`                    | +36     | FindProjectRoot utility                 |
+| `pkg/filter`          | `sqlc_yaml.go`               | +26     | Parent search + multiple config warning |
+| `internal/filtertest` | `integration_filter_test.go` | +78     | Subdirectory test                       |
+| `cmd`                 | `flags.go`                   | ±3      | Updated help text                       |
+| `docs`                | `SMART_FILTERING.md`         | +30, -6 | Parent directory behavior               |
 
 ### Total Changes
 
@@ -712,6 +748,7 @@ $ art-dupl .
 ### Usage Examples
 
 **Scenario 1: Parent Directory Search (New Feature)**
+
 ```bash
 # Analyze subdirectory with parent config
 cd project-root
@@ -725,6 +762,7 @@ art-dupl ./db --filter-generated
 ```
 
 **Scenario 2: Nested Config (Already Working)**
+
 ```bash
 # Analyze project with nested config
 cd project-root
@@ -738,6 +776,7 @@ art-dupl . --filter-generated
 ```
 
 **Scenario 3: Override Auto-Detection**
+
 ```bash
 # Keep SQLC files (don't filter)
 art-dupl . --filter-generated --include-sqlc
@@ -865,6 +904,7 @@ func SafeFileOperations(baseDir string) error {
 ```
 
 **Benefits:**
+
 - Prevents path traversal attacks
 - Leverages Go 1.24+ standard library
 - Security best practice for user-provided paths
@@ -894,6 +934,7 @@ func GetCachedSQLOutputDirs(paths []string) ([]string, error) {
 ```
 
 **Benefits:**
+
 - Avoids repeated file I/O
 - Faster for multiple analysis runs
 - Minimal memory overhead
@@ -920,6 +961,7 @@ func PrintStats(stats DetectionStats) {
 ```
 
 **Benefits:**
+
 - Helps users understand filtering behavior
 - Easier debugging of configuration issues
 - Better observability
@@ -950,6 +992,7 @@ func FindGoModuleRoot(path string) (string, error) {
 ```
 
 **Benefits:**
+
 - Better support for monorepo scenarios
 - Respects Go module boundaries
 - More accurate project detection
@@ -963,6 +1006,7 @@ func FindGoModuleRoot(path string) (string, error) {
 Successfully implemented and verified SQLC auto-detection enhancements for art-dupl.
 
 **Achievements:**
+
 1. ✅ Implemented parent directory search (NEW feature)
 2. ✅ Verified nested config support (ALREADY WORKING)
 3. ✅ Added comprehensive tests (9 tests, 100% pass)
@@ -974,11 +1018,13 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 ### User Value
 
 **Before:**
+
 - ❌ Subdirectory analysis: No auto-detection
 - ❌ Poor user experience
 - ❌ Manual flag needed
 
 **After:**
+
 - ✅ Subdirectory analysis: Auto-detection works
 - ✅ Better user experience
 - ✅ Works out-of-the-box
@@ -990,22 +1036,25 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 **Tests:** 100% Passing  
 **Build:** Success  
 **Documentation:** Complete  
-**Remote:** All pushed  
+**Remote:** All pushed
 
 ---
 
 ## Related Documentation
 
 ### Implementation Details
+
 - **Report 1:** `docs/status/2026-01-25_15-21_SQLC_Auto-Detection_Investigation.md`
 - **Report 2:** `docs/status/2026-01-25_16-13_SQLC_Auto-Detection_Complete.md`
 - **Report 3:** `docs/status/2026-01-25_16-38_SQLC_Nested_Config_Verification.md`
 
 ### Feature Documentation
+
 - **Guide:** `docs/SMART_FILTERING.md`
 - **Help Text:** `cmd/flags.go`
 
 ### Source Code
+
 - **Utility:** `internal/utils/file.go`
 - **Filter:** `pkg/filter/sqlc_yaml.go`
 - **Tests:** `internal/utils/file_test.go`, `internal/filtertest/integration_filter_test.go`
@@ -1015,12 +1064,14 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 ## Acknowledgments
 
 ### Research Sources
+
 - Go standard library documentation (`path/filepath` package)
 - Established Go project patterns (Docker, Kubernetes, Prometheus)
 - Go 1.24+ security features (`os.Root`, `os.OpenRoot()`)
 - Existing codebase review (`findRepoRoot()` in tests)
 
 ### Principles Applied
+
 - DRY (Don't Repeat Yourself)
 - YAGNI (You Aren't Gonna Need It)
 - SOLID (Single Responsibility, Open/Closed)
@@ -1028,6 +1079,7 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 - Incremental Development (small, focused commits)
 
 ### Tools Used
+
 - Go standard library (`filepath`, `os`, `strings`)
 - Testing framework (`github.com/stretchr/testify`)
 - YAML parser (`gopkg.in/yaml.v3`)
@@ -1039,6 +1091,7 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 ## Session Metrics
 
 ### Time Investment
+
 - **Total Duration:** ~2.5 hours
 - **Investigation:** 45 minutes
 - **Planning:** 15 minutes
@@ -1049,6 +1102,7 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 - **Final Documentation:** 15 minutes
 
 ### Code Metrics
+
 - **Lines Added:** ~320 (code + tests + docs)
 - **Files Modified:** 6
 - **Files Created:** 3
@@ -1057,6 +1111,7 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 - **Status Reports:** 3
 
 ### Quality Metrics
+
 - **Test Pass Rate:** 100%
 - **Build Status:** Success
 - **Lint Status:** No errors
@@ -1068,6 +1123,7 @@ Successfully implemented and verified SQLC auto-detection enhancements for art-d
 ## Final Status
 
 ### Branch Status
+
 ```
 On branch fork
 Your branch is up to date with 'origin/fork'.
@@ -1075,6 +1131,7 @@ nothing to commit, working tree clean
 ```
 
 ### Remote Status
+
 ```
 $ git push origin fork
 To github.com:LarsArtmann/art-dupl.git
@@ -1082,6 +1139,7 @@ To github.com:LarsArtmann/art-dupl.git
 ```
 
 ### Production Readiness
+
 ```
 ✅ All tests passing (100%)
 ✅ Build succeeds
@@ -1096,12 +1154,14 @@ To github.com:LarsArtmann/art-dupl.git
 ## Next Steps
 
 ### For Users
+
 1. **Pull latest changes:** `git pull origin fork`
 2. **Test in your environment:** Verify behavior with your project structure
 3. **Provide feedback:** Report any issues or unexpected behavior
 4. **Review documentation:** Check `docs/SMART_FILTERING.md` for usage examples
 
 ### For Maintainers
+
 1. **Review code:** Check `pkg/filter/sqlc_yaml.go` and `internal/utils/file.go`
 2. **Consider future enhancements:** Security, performance, diagnostics (see Future Enhancements section)
 3. **Monitor issues:** Watch for user reports related to SQLC filtering
@@ -1114,6 +1174,7 @@ To github.com:LarsArtmann/art-dupl.git
 ### A: Test Scenarios
 
 **Scenario 1: Parent Directory Config**
+
 ```
 Directory:
 project/
@@ -1132,6 +1193,7 @@ Expected:
 ```
 
 **Scenario 2: Subdirectory Config**
+
 ```
 Directory:
 project/
@@ -1153,26 +1215,32 @@ Expected:
 ### B: API Reference
 
 **FindProjectRoot()**
+
 ```go
 func FindProjectRoot(startPath string, markers []string) (string, error)
 ```
+
 - Searches parent directories for marker files
 - Max depth: 10 levels
 - Markers: Any list (e.g., `["go.mod", ".git"]`)
 - Returns: Project root directory or error
 
 **FindSQLCConfigs()**
+
 ```go
 func FindSQLCConfigs(paths []string) (map[string]string, error)
 ```
+
 - Searches both provided paths AND parent directories
 - Looks for `sqlc.yaml` or `sqlc.yml`
 - Returns: Map of config path to project root
 
 **GetSQLOutputDirs()**
+
 ```go
 func GetSQLOutputDirs(paths []string) ([]string, error)
 ```
+
 - Finds and parses all sqlc config files
 - Warns if multiple configs found
 - Returns: List of output directories
@@ -1180,6 +1248,7 @@ func GetSQLOutputDirs(paths []string) ([]string, error)
 ### C: Error Handling
 
 **Error Types Used:**
+
 - `errors.NewFileError()` - For file-related errors
 - `errors.WrapFile()` - For file operation errors with context
 - All errors use standard error interface

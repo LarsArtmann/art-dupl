@@ -238,7 +238,6 @@ This guide covers:
 - Rollback strategy
 - FAQ for common questions
 
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -270,6 +269,7 @@ art-dupl is organized into focused packages following clean architecture princip
 ### Type Safety Approach
 
 Three-layer type safety:
+
 1. Domain Types (strong safety)
 2. Helper Functions (safe access)
 3. Backward Compatible API
@@ -279,6 +279,7 @@ See go.mod for detailed module documentation.
 ## License
 
 MIT
+
 ## Architecture Overview
 
 art-dupl is organized into focused packages following clean architecture principles:
@@ -354,6 +355,7 @@ art-dupl is organized into focused packages following clean architecture princip
 art-dupl uses a layered approach to type safety:
 
 1. **Domain Types** (Strong Safety)
+
    ```go
    // Enforced at construction time
    threshold, err := domain.NewThreshold(15)
@@ -364,6 +366,7 @@ art-dupl uses a layered approach to type safety:
    ```
 
 2. **Helper Functions** (Safe Access)
+
    ```go
    // Typed access without breaking changes
    cfg := config.DefaultConfig()
@@ -374,6 +377,7 @@ art-dupl uses a layered approach to type safety:
    ```
 
 3. **Backward Compatible** (Incremental Migration)
+
    ```go
    // Old API still works
    match := syntax.FindSyntaxUnits(data, match, 15)

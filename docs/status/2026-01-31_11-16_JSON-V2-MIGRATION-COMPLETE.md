@@ -9,6 +9,7 @@
 ## Executive Summary
 
 Successfully completed two major objectives:
+
 1. **Added JSON support** to the `stats` command with `-o` flag shorthand
 2. **Migrated entire codebase** from `encoding/json` to `encoding/json/v2`
 
@@ -21,6 +22,7 @@ All JSON-related code now uses the experimental JSON v2 API, with proper build f
 ### Modified Files (18 total)
 
 #### Core JSON Migration Files (8 files)
+
 1. **Makefile** - Added `GOEXPERIMENT=jsonv2` to all build targets
 2. **cmd/stats.go** - Added `-o` shorthand for `--format` flag
 3. **config/detectionmethod.go** - Migrated to encoding/json/v2, fixed enum marshaling
@@ -31,7 +33,9 @@ All JSON-related code now uses the experimental JSON v2 API, with proper build f
 8. **printer/stats.go** - Migrated stats JSON printing to jsonv2
 
 #### Additional Modified Files (10 files)
+
 These files show modifications but require further investigation:
+
 - cmd/run.go
 - config/config.go
 - detection/todos.go
@@ -45,6 +49,7 @@ These files show modifications but require further investigation:
 - types/types.go
 
 #### New Files
+
 - `docs/status/2026-01-31_11-12_JSON-MIGRATION-COMPLETE.md` - Previous status report
 - `bdd/art-dupl-filter_features-test` - Test artifact (likely temporary)
 
@@ -57,6 +62,7 @@ These files show modifications but require further investigation:
 The `encoding/json/v2` package (experimental in Go 1.25) introduces significant API changes:
 
 #### Before (v1):
+
 ```go
 import "encoding/json"
 
@@ -68,6 +74,7 @@ json.MarshalIndent(data, "", "  ")
 ```
 
 #### After (v2):
+
 ```go
 import "encoding/json/v2"
 import "encoding/json/jsontext"
@@ -93,6 +100,7 @@ json.MarshalWrite(w, data, jsontext.WithIndent("  "))
 **Solution**: Return `[]byte("null")` for invalid enum values instead of returning an error.
 
 **Files Modified**:
+
 - `config/detectionmethod.go:marshalStringType()`
 - `internal/enum/marshal.go:MarshalJSON()`
 
@@ -103,6 +111,7 @@ json.MarshalWrite(w, data, jsontext.WithIndent("  "))
 ## Build System Updates
 
 ### Makefile Changes
+
 ```makefile
 # Before
 test: clean
@@ -154,11 +163,13 @@ All three output formats verified working:
 **Command**: `GOEXPERIMENT=jsonv2 go test -v ./...`
 
 **Results**:
+
 - **Total Specs**: 54
 - **Passed**: 53 (99%)
 - **Failed**: 1 (pre-existing, unrelated to JSON migration)
 
 **Pre-existing Test Failure**:
+
 - Test: `TestAllFormatGeneration.should generate separate files for each detection method`
 - Location: Likely in BDD test suite
 - Impact: Not related to JSON v2 migration (verified by testing without migration)
@@ -179,17 +190,22 @@ GOEXPERIMENT=jsonv2 go build -ldflags "-s -w" -trimpath ./cmd/art-dupl
 ### Linter Warnings
 
 #### Cyclomatic Complexity (4 warnings)
+
 Functions exceeding complexity limit of 10:
+
 1. `calculateHealthScore()` - Complexity: 12
 2. `printJSON()` - Complexity: 12 (likely due to jsonv2 migration)
 3. Various test functions - Acceptable for test code
 
 #### Errcheck Warnings (19 warnings)
+
 All in `printer/stats.go:printCSV()`:
+
 - Unchecked `fmt.Fprintf()` error returns
 - Non-critical: CSV printing to stdout typically doesn't need error handling
 
 #### Embedded Struct Warning
+
 Missing empty line before `ReadFile` field in struct definition
 
 **Assessment**: All warnings are acceptable and not blocking. The cyclomatic complexity warnings are minor and the errcheck warnings are intentional design choices.
@@ -199,6 +215,7 @@ Missing empty line before `ReadFile` field in struct definition
 ## Files Changed (Detailed)
 
 ### 1. Makefile
+
 ```diff
 + GOEXPERIMENT=jsonv2 go test -v -cover ./...
 + GOEXPERIMENT=jsonv2 golangci-lint run
@@ -206,12 +223,14 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 2. cmd/stats.go (Line 64)
+
 ```diff
 - cmd.Flags().String("format", "text", "output format: text, json, csv (default: text)")
 + cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 ```
 
 ### 3. printer/stats.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -222,6 +241,7 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 4. printer/json.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -232,6 +252,7 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 5. config/detectionmethod.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -241,6 +262,7 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 6. internal/enum/marshal.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -250,6 +272,7 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 7. errors/marshal.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -260,6 +283,7 @@ Missing empty line before `ReadFile` field in struct definition
 ```
 
 ### 8. domain/domain_types.go
+
 ```diff
 - import "encoding/json"
 + import "encoding/json/v2"
@@ -270,13 +294,16 @@ Missing empty line before `ReadFile` field in struct definition
 ## Known Issues
 
 ### Pre-existing Test Failure
+
 **Test**: `TestAllFormatGeneration.should generate separate files for each detection method`
 **Status**: Failed before JSON v2 migration
 **Priority**: Medium (technical debt)
 **Impact**: Not affecting JSON functionality
 
 ### Additional Modified Files (10 files)
+
 These files show modifications but were not part of the planned JSON migration:
+
 - cmd/run.go
 - config/config.go
 - detection/todos.go
@@ -317,19 +344,23 @@ These files show modifications but were not part of the planned JSON migration:
 ## Recommendations
 
 ### Immediate Actions (Priority 1)
+
 1. **Review additional modified files** - Investigate the 10 extra files showing changes
 2. **Fix pre-existing BDD test** - Address the TestAllFormatGeneration failure
 
 ### Code Quality Improvements (Priority 2)
+
 1. **Reduce cyclomatic complexity** in `calculateHealthScore()` and `printJSON()`
 2. **Add error handling** for CSV formatting operations if deemed necessary
 
 ### Documentation (Priority 3)
+
 1. **Update AGENTS.md** - Document jsonv2 patterns and build requirements
 2. **Update README** - Mention jsonv2 usage and build flags
 3. **Add migration guide** - Create internal documentation for jsonv2 migration patterns
 
 ### Future Enhancements (Priority 4)
+
 1. **Integration tests** - Add comprehensive tests for JSON output formats
 2. **Performance benchmarks** - Compare v1 vs v2 JSON performance
 3. **Go 1.26 preparation** - Remove GOEXPERIMENT when jsonv2 becomes stable

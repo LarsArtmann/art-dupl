@@ -11,10 +11,10 @@ func BenchmarkCloneMemory(b *testing.B) {
 	clone.SetFilename("test.go")
 	clone.SetFragment("func main() {}")
 	clone.SetHash("abc123")
-	
+
 	b.ReportAllocs()
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		// Create a copy to measure allocation
 		_ = clone
@@ -25,7 +25,7 @@ func BenchmarkCloneMemory(b *testing.B) {
 func BenchmarkCloneCreation(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		clone := Clone{}
 		clone.SetFilename("test.go")
@@ -44,10 +44,10 @@ func BenchmarkCloneSliceMemory(b *testing.B) {
 		clones[i].SetFragment("func main() {}")
 		clones[i].SetHash("abc123")
 	}
-	
+
 	b.ReportAllocs()
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		// Create a copy of the slice
 		_ = clones

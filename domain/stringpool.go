@@ -67,9 +67,9 @@ func (sid *StringID) UnmarshalJSON(data []byte) error {
 // - Typical savings: 20-40% for filenames with duplication
 type StringInternPool struct {
 	mu      sync.RWMutex
-	strings  []string
-	index    map[string]StringID
-	nextID   StringID
+	strings []string
+	index   map[string]StringID
+	nextID  StringID
 }
 
 // NewStringInternPool creates a new string interning pool.
@@ -156,7 +156,7 @@ func (p *StringInternPool) Stats() PoolStats {
 type PoolStats struct {
 	TotalStrings    int `json:"totalStrings"`
 	TotalIDs        int `json:"totalIds"`
-	UniqueFilenames  int `json:"uniqueFilenames"`
+	UniqueFilenames int `json:"uniqueFilenames"`
 }
 
 // GlobalPool is the default shared pool for filename interning.

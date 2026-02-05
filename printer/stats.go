@@ -47,6 +47,7 @@
 // ✅ StatsData could use domain types in future
 //
 // For type-safe threshold access:
+//
 //	cfg := config.DefaultConfig()
 //	domainThreshold := cfg.GetThresholdAsDomain()
 package printer
@@ -130,7 +131,7 @@ type styleConfig struct {
 func initStyles() styleConfig {
 	// Check for NO_COLOR environment variable
 	noColor := os.Getenv("NO_COLOR") != ""
-	
+
 	// Create styles
 	headerStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
 	sectionStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00E676")).Bold(true)
@@ -138,7 +139,7 @@ func initStyles() styleConfig {
 	successStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00C853"))
 	warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
 	errorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#E53E3"))
-	
+
 	// Disable all colors if NO_COLOR is set
 	if noColor {
 		return styleConfig{
@@ -151,7 +152,7 @@ func initStyles() styleConfig {
 			error:   lipgloss.NewStyle(),
 		}
 	}
-	
+
 	return styleConfig{
 		base:    lipgloss.NewStyle().Bold(true),
 		header:  headerStyle,
@@ -317,20 +318,20 @@ func (p *stats) printStats() {
 func (p *stats) printCSV() {
 	// Write CSV header
 	fmt.Fprintf(p.w, "Metric,Value\n")
-	
+
 	// Configuration
 	fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
 	fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
 	fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
 	fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
 	fmt.Fprintf(p.w, "\n")
-	
+
 	// Overview
 	fmt.Fprintf(p.w, "Files Scanned,%d\n", p.statsData.TotalFilesScanned)
 	fmt.Fprintf(p.w, "Clone Groups,%d\n", p.statsData.TotalCloneGroups)
 	fmt.Fprintf(p.w, "Total Clones,%d\n", p.statsData.TotalClones)
 	fmt.Fprintf(p.w, "\n")
-	
+
 	// Duplicate Code
 	fmt.Fprintf(p.w, "Total Duplicate Lines,%d\n", p.statsData.TotalDuplicateLines)
 	fmt.Fprintf(p.w, "Estimated Total Lines,%d\n", p.statsData.TotalEstimatedLines)
@@ -395,7 +396,7 @@ func (p *stats) printText() {
 		fmt.Fprintf(p.w, "%s\n", p.section.Render("Top Files by Duplicate Lines:"))
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
 	}
-	
+
 	// Print actionable recommendations
 	fmt.Fprintf(p.w, "\n%s\n", p.header.Render("Recommendations:"))
 	p.printRecommendations()
@@ -435,22 +436,22 @@ func (p *stats) printRecommendations() {
 	default:
 		fmt.Fprintf(p.w, "%s\n", p.base.Render("No recommendations available."))
 	}
-	
+
 	// Additional recommendations based on specific metrics
 	fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Next Steps:"))
-	
+
 	if p.statsData.TotalCloneGroups > 10 {
 		fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf("You have %d clone groups - focus on the largest ones first", p.statsData.TotalCloneGroups)))
 	}
-	
+
 	if p.statsData.AverageCloneSize > 50 {
 		fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf("Average clone size is %d lines - prioritize extracting large blocks", p.statsData.AverageCloneSize)))
 	}
-	
+
 	if p.statsData.ComplexityScore > 3.0 {
 		fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf("Complexity score of %.2f suggests multiple clones per group - consider patterns", p.statsData.ComplexityScore)))
 	}
-	
+
 	fmt.Fprintf(p.w, "  • %s\n", p.base.Render("Run with --threshold 50 to focus on large duplications only"))
 	fmt.Fprintf(p.w, "  • %s\n", p.base.Render("Use --format json for machine-readable output"))
 	fmt.Fprintf(p.w, "  • %s\n", p.base.Render("Integrate into CI/CD pipeline for continuous monitoring"))
@@ -610,7 +611,7 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 		ranges = append(ranges, r)
 	}
 	sort.Strings(ranges)
-	
+
 	// Find max count for scaling bars
 	maxCount := 0
 	total := 0
@@ -620,7 +621,7 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 		}
 		total += count
 	}
-	
+
 	// Print distribution with bars
 	for _, r := range ranges {
 		count := distribution[r]
@@ -628,14 +629,14 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 		if total > 0 {
 			percentage = float64(count) / float64(total) * 100
 		}
-		
+
 		// Create bar (max width 20 characters)
 		barWidth := 0
 		if maxCount > 0 {
 			barWidth = int(float64(count) / float64(maxCount) * 20)
 		}
 		bar := strings.Repeat("█", barWidth)
-		
+
 		fmt.Fprintf(w, "  %-15s: %4d clones [%s] %.1f%%\n", r, count, bar, percentage)
 	}
 }

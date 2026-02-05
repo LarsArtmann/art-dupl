@@ -529,13 +529,13 @@ func TestStatsCSVOutput(t *testing.T) {
 	sp.SetFormat(FormatCSV)
 	sp.SetFilesCount(3)
 	sp.SetDetectionMethods("art-dupl")
-	
+
 	// Create some clones
 	dups1 := [][]*syntax.Node{
 		{{Filename: "file1.go", Pos: 2, End: 3}, {Filename: "file1.go", Pos: 2, End: 3}},
 		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
 	}
-	
+
 	if err := sp.PrintClones(dups1); err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -604,16 +604,16 @@ func TestHealthScoreCalculation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
-			
+
 			// Set up stats data
 			sp.statsData.TotalDuplicateLines = int(tt.duplicationRatio * 10) // Simulating
 			sp.statsData.TotalEstimatedLines = 1000
 			sp.statsData.DuplicationRatio = tt.duplicationRatio // Set directly for health calculation
 			sp.statsData.ComplexityScore = tt.complexityScore
 			sp.statsData.ImpactScore = tt.impactScore
-			
+
 			grade := sp.calculateHealthScore()
-			
+
 			if grade != tt.expectedGrade {
 				t.Errorf("calculateHealthScore() = %q, want %q for inputs (ratio=%.1f%%, complexity=%.2f, impact=%d)",
 					grade, tt.expectedGrade, tt.duplicationRatio, tt.complexityScore, tt.impactScore)
@@ -665,7 +665,7 @@ func TestPrintRecommendations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
-			
+
 			// Set up stats data
 			sp.statsData.HealthScore = tt.healthScore
 			sp.statsData.TotalCloneGroups = tt.totalCloneGroups
@@ -674,26 +674,26 @@ func TestPrintRecommendations(t *testing.T) {
 			sp.statsData.TotalFilesScanned = 10
 			sp.statsData.TotalDuplicateLines = 500
 			sp.statsData.TotalEstimatedLines = 1000
-			
+
 			// Call printRecommendations
 			sp.printRecommendations()
-			
+
 			output := buf.String()
-			
+
 			// Check that all expected strings are present
 			for _, expected := range tt.shouldContain {
 				if !strings.Contains(output, expected) {
 					t.Errorf("Recommendations output missing expected text: %q\nGot: %s", expected, output)
 				}
 			}
-			
+
 			// Check that unexpected strings are NOT present
 			for _, notExpected := range tt.shouldNotContain {
 				if strings.Contains(output, notExpected) {
 					t.Errorf("Recommendations output should not contain: %q\nGot: %s", notExpected, output)
 				}
 			}
-			
+
 			// Verify next steps section is present
 			if !strings.Contains(output, "Next Steps:") {
 				t.Error("Recommendations should include 'Next Steps:' section")

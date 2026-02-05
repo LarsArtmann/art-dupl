@@ -11,6 +11,7 @@
 Successfully implemented memory layout optimizations for core data structures, achieving **10-15% memory reduction** per instance with improved cache locality.
 
 ### Key Achievements
+
 - ✅ Removed unnecessary CloneID field (saves 16B + heap per Clone)
 - ✅ Optimized Clone struct layout (reduces padding from 24B to 0B)
 - ✅ Optimized Node struct layout (reduces size from 64B to 56B)
@@ -25,6 +26,7 @@ Successfully implemented memory layout optimizations for core data structures, a
 **Rationale**: CloneID was cargo-cult - exists because "entities need IDs" but not actually used.
 
 **Changes**:
+
 - Removed `CloneID` type from `domain/domain_types.go`
 - Removed `ID` field from `domain.Clone` struct
 - Removed ID generation from `NodeToClone()` function
@@ -32,11 +34,13 @@ Successfully implemented memory layout optimizations for core data structures, a
 - Updated all test fixtures to remove ID references
 
 **Impact**:
+
 - Memory savings: **16B + heap allocation** per Clone
 - Breaking change: JSON serialization no longer includes `id` field
 - Identity now determined by: Filename, StartLine, EndLine, and Hash
 
 **Files Modified**:
+
 - `domain/clone.go` - Removed ID field and generation
 - `domain/domain_types.go` - Removed CloneID type
 - `domain/domain_types_test.go` - Removed CloneID tests
@@ -49,6 +53,7 @@ Successfully implemented memory layout optimizations for core data structures, a
 ### 2. Clone Struct Layout Optimization (COMPLETED)
 
 **Before**:
+
 ```go
 type Clone struct {
     Filename   Filepath            (16B)
@@ -66,6 +71,7 @@ type Clone struct {
 ```
 
 **After**:
+
 ```go
 type Clone struct {
     // 8B fields grouped (48B, no padding)
@@ -85,11 +91,13 @@ type Clone struct {
 ```
 
 **Impact**:
+
 - Size reduction: **20B** (15.2%)
 - Padding waste: 24B → 0B (100% reduction)
 - Cache locality: Better for numeric field access
 
 **Performance Benefits**:
+
 - Reduced memory bandwidth for Clone iteration
 - Better cache line utilization (112B fits better in cache lines)
 - Aligned access patterns for validation logic
@@ -99,6 +107,7 @@ type Clone struct {
 ### 3. Node Struct Layout Optimization (COMPLETED)
 
 **Before**:
+
 ```go
 type Node struct {
     Type     int    (8B)
@@ -111,6 +120,7 @@ type Node struct {
 ```
 
 **After**:
+
 ```go
 type Node struct {
     Type     int    (8B)
@@ -123,10 +133,12 @@ type Node struct {
 ```
 
 **Impact**:
+
 - Size reduction: **8B** (12.5%)
 - Padding waste: 8B → 0B (100% reduction)
 
 **Performance Benefits**:
+
 - Better memory locality during AST traversal
 - Reduced pointer chasing (fields reorganized)
 - Improved cache utilization for Serialize/FindSyntaxUnits
@@ -138,6 +150,7 @@ type Node struct {
 **Implementation**: `domain/stringpool.go`
 
 **Features**:
+
 - `StringID` type: Compact 4B representation (vs 16B string header)
 - `StringInternPool`: Thread-safe using `sync.RWMutex`
 - `Intern()`: Returns existing ID if string cached
@@ -145,17 +158,20 @@ type Node struct {
 - `GlobalPool()`: Singleton for shared filename interning
 
 **Memory Impact (Potential)**:
+
 - Without interning: Each Clone has 4×16B = 64B for strings + heap
 - With interning: Each Clone has 4×4B = 16B for IDs + shared strings
 - Savings for 100 Clones with 50 unique filenames: **4.8KB** (75% reduction)
 
 **Performance Features**:
+
 - RWMutex allows concurrent reads without blocking
 - Write lock only for new strings
 - Zero allocation for duplicate strings
 - O(1) lookup time using hash map
 
 **Note**: Infrastructure ready, not yet integrated into Clone/Node types due to:
+
 - Extensive refactoring required (Filepath, Hash, Status types)
 - Breaking change to serialization
 - Requires careful migration strategy
@@ -165,19 +181,22 @@ type Node struct {
 ## Memory Impact Analysis
 
 ### Per-Clone Savings
-| Component | Before | After | Savings | % Reduction |
-|-----------|--------|-------|---------|-------------|
-| CloneID field | 16B + heap | 0B | 16B + heap | 100% |
-| Clone struct padding | 24B | 0B | 24B | 100% |
-| **Total** | **40B+** | **112B** | **~40B+** | **~36%** |
+
+| Component            | Before     | After    | Savings    | % Reduction |
+| -------------------- | ---------- | -------- | ---------- | ----------- |
+| CloneID field        | 16B + heap | 0B       | 16B + heap | 100%        |
+| Clone struct padding | 24B        | 0B       | 24B        | 100%        |
+| **Total**            | **40B+**   | **112B** | **~40B+**  | **~36%**    |
 
 ### Per-Node Savings
-| Component | Before | After | Savings | % Reduction |
-|-----------|--------|-------|---------|-------------|
-| Node struct padding | 8B | 0B | 8B | 100% |
-| Node struct size | 64B | 56B | 8B | 12.5% |
+
+| Component           | Before | After | Savings | % Reduction |
+| ------------------- | ------ | ----- | ------- | ----------- |
+| Node struct padding | 8B     | 0B    | 8B      | 100%        |
+| Node struct size    | 64B    | 56B   | 8B      | 12.5%       |
 
 ### Project-Wide Impact (Estimated)
+
 - **Typical run**: 10,000 Clones × 5,000 Nodes
 - **Clone savings**: 10,000 × 40B = 400KB reduction
 - **Node savings**: 5,000 × 8B = 40KB reduction
@@ -189,11 +208,13 @@ type Node struct {
 ## Performance Impact
 
 ### Cache Locality Improvements
+
 1. **Clone struct**: Numeric fields grouped, better for validation access
 2. **Node struct**: Pointer before string, reduced padding overhead
 3. **Sequential access**: Serialize/FindSyntaxUnits benefit from layout
 
 ### Measurable Improvements (Expected)
+
 - Reduced cache misses during Clone iteration
 - Better cache line utilization (less padding waste)
 - Improved memory bandwidth efficiency
@@ -203,12 +224,14 @@ type Node struct {
 ## Testing Status
 
 ### Tests Passed
+
 - ✅ All domain package tests (Clone, CloneGroup, Analysis validation)
 - ✅ All syntax package tests (Serialize, FindSyntaxUnits, Cyclic detection)
 - ✅ All migration package tests
 - ✅ JSON serialization still works (minus `id` field)
 
 ### Test Coverage
+
 - `domain`: Comprehensive validation tests
 - `syntax`: Edge case coverage, fuzz testing
 - `migration`: Round-trip serialization tests
@@ -218,6 +241,7 @@ type Node struct {
 ## Breaking Changes
 
 ### API Changes
+
 1. **JSON Serialization**: `id` field no longer included in Clone objects
    - **Mitigation**: Use combination of `filename`, `startLine`, `endLine`, `hash` for identity
    - **Migration**: Update consumers to use composite key
@@ -231,6 +255,7 @@ type Node struct {
 ## Future Work
 
 ### High Priority
+
 1. **Integrate String Interning**: Apply pool to Clone.Filename and Node.Filename
    - **Impact**: Additional 20-40% memory reduction
    - **Effort**: Moderate (requires type updates)
@@ -242,6 +267,7 @@ type Node struct {
    - **Risk**: Complex changes to suffix tree algorithms
 
 ### Medium Priority
+
 3. **SIMD Preparation**: Create Structure-of-Arrays for Node fields
    - **Impact**: Enables future SIMD optimization (Go 1.28+)
    - **Effort**: High (significant refactoring)
@@ -257,16 +283,19 @@ type Node struct {
 ## Recommendations
 
 ### Immediate
+
 1. ✅ **Deploy current optimizations** - All tested and ready
 2. ⚠️ **Monitor production** - Track memory usage and performance
 3. ⚠️ **Update documentation** - Document breaking JSON API change
 
 ### Short-term (Next Sprint)
+
 4. **Integrate string interning** - Apply to high-impact fields (Filename)
 5. **Add benchmarks** - Quantify performance improvements
 6. **Profile hot paths** - Focus optimization on Serialize/FindSyntaxUnits
 
 ### Long-term (Future Sprints)
+
 7. **Suffix tree optimization** - Implement StateIndex pattern
 8. **SIMD preparation** - Create SoA data structures
 9. **Memory profiling** - Continuous optimization feedback loop
@@ -276,12 +305,14 @@ type Node struct {
 ## Git History
 
 ### Commits
+
 1. `b6f4a4a` - refactor: remove CloneID from domain model
 2. `72ac9d6` - perf: optimize Clone struct memory layout
 3. `32dce12` - perf: optimize Node struct memory layout
 4. `1319c23` - feat: implement string interning pool for memory optimization
 
 ### Files Modified
+
 - `domain/clone.go` - Clone struct and NodeToClone function
 - `domain/domain_types.go` - CloneID type removal
 - `domain/domain_types_test.go` - Test updates
@@ -298,6 +329,7 @@ type Node struct {
 ## Conclusion
 
 Successfully completed Phase 1 of memory layout optimization:
+
 - **Memory reduction**: 10-15% per Clone/Node instance
 - **Cache efficiency**: Eliminated all padding waste
 - **Code quality**: Removed unnecessary CloneID complexity

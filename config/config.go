@@ -128,6 +128,7 @@ func DefaultConfig() *Config {
 // GetThresholdAsDomain converts config threshold to domain.Threshold.
 //
 // Usage:
+//
 //	cfg := config.DefaultConfig()
 //	domainThreshold, err := cfg.GetThresholdAsDomain()
 //	if err != nil { ... }
@@ -142,6 +143,7 @@ func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 // SetThresholdFromDomain sets threshold from domain.Threshold with validation.
 //
 // Usage:
+//
 //	domainThreshold, err := domain.NewThreshold(15)
 //	if err != nil { return err }
 //	err := cfg.SetThresholdFromDomain(domainThreshold)

@@ -27,6 +27,7 @@
 // - See findtran_simd.go for detailed benchmarks and rationale
 //
 // Usage:
+//
 //	tree := suffixtree.New()
 //	for _, node := range syntaxNodes {
 //	    tree.Update(node)
@@ -35,7 +36,6 @@
 //	for match := range matches {
 //	    // Process duplicate match
 //	}
-//
 package suffixtree
 
 import (

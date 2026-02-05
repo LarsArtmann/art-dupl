@@ -11,10 +11,10 @@ func BenchmarkSliceLookup(b *testing.B) {
 	for i := range pool {
 		pool[i] = fmt.Sprintf("file_%d.go", i)
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = pool[i%1000]  // Slice access
+		_ = pool[i%1000] // Slice access
 	}
 }
 
@@ -24,10 +24,10 @@ func BenchmarkMapLookup(b *testing.B) {
 	for i := uint32(0); i < 1000; i++ {
 		pool[i] = fmt.Sprintf("file_%d.go", i)
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = pool[uint32(i%1000)]  // Map access
+		_ = pool[uint32(i%1000)] // Map access
 	}
 }
 
@@ -35,7 +35,7 @@ func BenchmarkMapLookup(b *testing.B) {
 func BenchmarkSliceMemory(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		_ = make([]string, 1000, 1000)  // 1000 string slots
+		_ = make([]string, 1000, 1000) // 1000 string slots
 	}
 }
 
@@ -43,7 +43,7 @@ func BenchmarkSliceMemory(b *testing.B) {
 func BenchmarkMapMemory(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		_ = make(map[uint32]string, 1000)  // 1000 map slots
+		_ = make(map[uint32]string, 1000) // 1000 map slots
 	}
 }
 
@@ -57,16 +57,16 @@ func TestSliceMapEquivalence(t *testing.T) {
 		slice[i] = s
 		index[s] = uint32(i)
 	}
-	
+
 	// Test round-trip
 	testString := "string_5"
-	id := index[testString]                    // string → ID
-	retrieved := slice[id]                     // ID → string
-	
+	id := index[testString] // string → ID
+	retrieved := slice[id]  // ID → string
+
 	if retrieved != testString {
 		t.Errorf("Round-trip failed: expected %s, got %s", testString, retrieved)
 	}
-	
+
 	// Test all strings
 	for i := 0; i < 10; i++ {
 		s := fmt.Sprintf("string_%d", i)
@@ -82,23 +82,23 @@ func TestMapMapEquivalence(t *testing.T) {
 	// Double map approach
 	strToID := make(map[string]uint32)
 	idToStr := make(map[uint32]string)
-	
+
 	for i := 0; i < 10; i++ {
 		s := fmt.Sprintf("string_%d", i)
 		id := uint32(i)
 		strToID[s] = id
 		idToStr[id] = s
 	}
-	
+
 	// Test round-trip
 	testString := "string_5"
-	id := strToID[testString]                  // string → ID
-	retrieved := idToStr[id]                   // ID → string
-	
+	id := strToID[testString] // string → ID
+	retrieved := idToStr[id]  // ID → string
+
 	if retrieved != testString {
 		t.Errorf("Round-trip failed: expected %s, got %s", testString, retrieved)
 	}
-	
+
 	// Test all strings
 	for i := 0; i < 10; i++ {
 		s := fmt.Sprintf("string_%d", i)
@@ -118,30 +118,30 @@ func BenchmarkRoundTripSliceMap(b *testing.B) {
 		slice[i] = s
 		index[s] = uint32(i)
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s := fmt.Sprintf("file_%d.go", i%1000)
-		id := index[s]      // string → ID
-		_ = slice[id]       // ID → string
+		id := index[s] // string → ID
+		_ = slice[id]  // ID → string
 	}
 }
 
 func BenchmarkRoundTripMapMap(b *testing.B) {
 	strToID := make(map[string]uint32, 1000)
 	idToStr := make(map[uint32]string, 1000)
-	
+
 	for i := 0; i < 1000; i++ {
 		s := fmt.Sprintf("file_%d.go", i)
 		id := uint32(i)
 		strToID[s] = id
 		idToStr[id] = s
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s := fmt.Sprintf("file_%d.go", i%1000)
-		id := strToID[s]    // string → ID
-		_ = idToStr[id]     // ID → string
+		id := strToID[s] // string → ID
+		_ = idToStr[id]  // ID → string
 	}
 }

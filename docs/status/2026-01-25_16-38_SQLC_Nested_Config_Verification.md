@@ -20,6 +20,7 @@ The feature **ALREADY WORKS** for detecting `sqlc.yaml` files in subdirectories 
 > "I want it to work even if I run art-dupl in a project even if sqlc.{yml,yaml} is 1 folder down."
 
 **Interpretation:**
+
 - Run: `art-dupl .` from project root
 - Config: `sqlc.yaml` or `sqlc.yml` is in subdirectory (e.g., `./db/sqlc.yaml`)
 - Expected: Auto-detect and filter SQLC files
@@ -57,6 +58,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 ### Example Scenario
 
 **Directory Structure:**
+
 ```
 project/
   .              ← Run 'art-dupl .' from here
@@ -69,12 +71,14 @@ project/
 ```
 
 **Execution:**
+
 ```bash
 $ cd project
 $ art-dupl . --filter-generated
 ```
 
 **What Happens:**
+
 1. `FindSQLCConfigs(["."])` is called
 2. `filepath.Walk(".")` walks:
    - `.` (current dir)
@@ -92,6 +96,7 @@ $ art-dupl . --filter-generated
    - `./main.go` → Doesn't match SQLC patterns → NOT FILTERED ✓
 
 **Result:**
+
 - SQLC files are correctly filtered
 - Regular files are analyzed
 - Works as expected ✅
@@ -143,6 +148,7 @@ EOF
 ### Test Execution
 
 **Without Filter:**
+
 ```bash
 $ ./art-dupl /tmp/test-nested --threshold 5
 found 1 clones:
@@ -152,6 +158,7 @@ Found total 0 clone groups.
 ```
 
 **With Filter (Auto-Detection):**
+
 ```bash
 $ ./art-dupl /tmp/test-nested --threshold 5 --filter-generated
 found 1 clones:
@@ -163,6 +170,7 @@ Found total 0 clone groups.
 **Result:** ✅ `models.go` is NOT in output (filtered correctly)
 
 **With Verbose:**
+
 ```bash
 $ ./art-dupl /tmp/test-nested --threshold 5 --filter-generated --verbose
 🔍 Auto-detected sqlc.yaml, filtering sqlc generated code
@@ -183,14 +191,17 @@ Found total 0 clone groups.
 ### filepath.Walk() Behavior
 
 The standard library `filepath.Walk()` function:
+
 - **Recursively walks** through the file tree rooted at root
 - **Visits every file and directory** in the tree
 - **Does not stop at first level** - continues through all subdirectories
 
 **From Go Documentation:**
+
 > Walk walks the file tree rooted at root, calling fn for each file or directory in the tree, including root.
 
 This means:
+
 ```
 Walk(".") will visit:
   ./
@@ -204,6 +215,7 @@ Walk(".") will visit:
 ### Implementation Leverages This
 
 Our implementation at `pkg/filter/sqlc_yaml.go:46`:
+
 ```go
 err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
     // This callback is called for EVERY file and directory
@@ -225,6 +237,7 @@ err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) er
 ### What I Thought You Wanted
 
 I initially thought you wanted:
+
 - "Search subdirectories of the path provided to art-dupl"
 
 Which would require implementing additional directory traversal logic.
@@ -232,6 +245,7 @@ Which would require implementing additional directory traversal logic.
 ### What You Actually Wanted
 
 You want:
+
 - "Run art-dupl . from project root and have it find sqlc.yaml in ./db/"
 
 Which **ALREADY WORKS** because `filepath.Walk()` recursively searches all subdirectories.
@@ -241,6 +255,7 @@ Which **ALREADY WORKS** because `filepath.Walk()` recursively searches all subdi
 The existing implementation using `filepath.Walk()` at line 46 of `pkg/filter/sqlc_yaml.go` already handles this scenario.
 
 **Previous Commit:**
+
 ```commit
 0f809a4 feat(filter): add parent directory search to FindSQLCConfigs
 
@@ -255,6 +270,7 @@ But for nested configs (sqlc.yaml in ./db/), the walk functionality already work
 ## Test Results
 
 ### Unit Tests
+
 ```bash
 $ go test ./pkg/filter -v
 PASS
@@ -262,6 +278,7 @@ ok  	github.com/LarsArtmann/art-dupl/pkg/filter
 ```
 
 ### Integration Tests
+
 ```bash
 $ go test ./internal/filtertest -v
 PASS
@@ -269,6 +286,7 @@ ok  	github.com/LarsArtmann/art-dupl/internal/filtertest
 ```
 
 ### Manual Testing (Nested Config)
+
 ```bash
 # Create test with sqlc.yaml in ./db/
 mkdir -p /tmp/test-nested/db && cat > /tmp/test-nested/db/sqlc.yaml << 'EOF'
@@ -360,11 +378,13 @@ The SQLC auto-detection feature **ALREADY SUPPORTS** detecting `sqlc.yaml` files
 ### User Experience
 
 **Command:**
+
 ```bash
 art-dupl . --filter-generated
 ```
 
 **Behavior:**
+
 - ✅ Finds `sqlc.yaml` in ANY subdirectory (./db/, ./internal/db/, etc.)
 - ✅ Extracts output directory correctly
 - ✅ Filters SQLC generated files
@@ -420,7 +440,8 @@ The walk functionality already handles your scenario correctly!
 The current documentation already explains that auto-detection works:
 
 **SMART_FILTERING.md:**
-```markdown
+
+````markdown
 ## Usage
 
 ### Auto-Detection (Recommended)
@@ -434,9 +455,11 @@ art-dupl --filter-generated ./src
 # Run from subdirectory - parent sqlc.yaml detected and filtered
 art-dupl --filter-generated ./db
 ```
+````
 
 **Note:** Auto-detection searches parent directories (up to 10 levels) for `sqlc.yaml` or `sqlc.yml` files.
-```
+
+````
 
 **Should Also Mention:**
 - Auto-detection also searches subdirectories (via `filepath.Walk()`)
@@ -468,7 +491,7 @@ art-dupl . --filter-generated
    - /path/to/project/db
 ✅ models.go and querier.go are filtered
 ✅ main.go is analyzed
-```
+````
 
 ### Scenario 2: Config in Root (Common)
 
@@ -549,6 +572,7 @@ err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) er
 ```
 
 **Key Behaviors:**
+
 1. **Recursive traversal** - Visits files at any depth
 2. **Callback per file** - Called for every file/directory
 3. **Depth-first or breadth-first** - Not specified by Go, but consistent
@@ -557,6 +581,7 @@ err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) er
 ### Why This Handles Nested Configs
 
 When you run `art-dupl .`:
+
 1. Walk starts at `.`
 2. Visits `.` (current directory)
 3. Visits `./db/` (subdirectory)
@@ -578,6 +603,7 @@ The `sqlc.yaml` in `./db/` is discovered and included in the results.
 **Scenario:** Run `art-dupl ./db` when `sqlc.yaml` is in `./`
 
 **Implementation:**
+
 ```go
 parentPath, err := utils.FindProjectRoot(path, []string{"sqlc.yaml", "sqlc.yml"})
 // Searches up the directory tree
@@ -590,6 +616,7 @@ parentPath, err := utils.FindProjectRoot(path, []string{"sqlc.yaml", "sqlc.yml"}
 **Scenario:** Run `art-dupl .` when `sqlc.yaml` is in `./db/`
 
 **Implementation:**
+
 ```go
 err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
     // Walks down the directory tree
@@ -605,6 +632,7 @@ err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) er
 2. **Searches** parent directories up to 10 levels
 
 **Result:**
+
 - ✅ Finds `./db/sqlc.yaml` when running `art-dupl .`
 - ✅ Finds `./sqlc.yaml` when running `art-dupl ./db`
 - ✅ Finds `../sqlc.yaml` when running `art-dupl .`
@@ -634,9 +662,11 @@ All steps completed successfully ✅
 ### User Requirement Met: ✅ YES
 
 **Your Request:**
+
 > "I want it to work even if I run art-dupl in a project even if sqlc.{yml,yaml} is 1 folder down."
 
 **Status:**
+
 - ✅ **WORKING** - Nested `sqlc.yaml` files are detected and SQLC files are filtered
 - ✅ **NO CODE CHANGES NEEDED** - Existing `filepath.Walk()` implementation handles this
 - ✅ **ALL TESTS PASS** - Verified with comprehensive testing
@@ -651,6 +681,7 @@ The standard library `filepath.Walk()` function recursively traverses the entire
 The feature is working correctly as designed. No further code changes are required to support nested `sqlc.yaml` files.
 
 **Usage:**
+
 ```bash
 # From project root - detects sqlc.yaml in ANY subdirectory
 art-dupl . --filter-generated
@@ -716,11 +747,13 @@ art-dupl . --filter-generated
 ## Acknowledgments
 
 **Research:**
+
 - Go standard library `filepath.Walk()` documentation
 - Existing code review for `FindSQLCConfigs()` implementation
 - Testing with real directory structures
 
 **Principles Applied:**
+
 - Trust standard library implementations
 - Verify with tests before changing code
 - Document findings clearly

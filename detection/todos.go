@@ -23,19 +23,19 @@ import (
 
 // TodoIssue represents a TODO comment found in code.
 type TodoIssue struct {
-	Filename domain.Filepath  `json:"filename"`
+	Filename domain.Filepath   `json:"filename"`
 	Line     domain.LineNumber `json:"line"`
-	Text     string           `json:"text"`
-	Type     string           `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
-	Tags     []string         `json:"tags,omitempty"` // @username, date, etc.
+	Text     string            `json:"text"`
+	Type     string            `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
+	Tags     []string          `json:"tags,omitempty"` // @username, date, etc.
 }
 
 // LegacyIssue represents a legacy code pattern.
 type LegacyIssue struct {
-	Filename domain.Filepath `json:"filename"`
-	Line     domain.LineNumber `json:"line"`
-	Type     string           `json:"type"` // deprecated function, old pattern, etc.
-	Message  string           `json:"message"`
+	Filename domain.Filepath      `json:"filename"`
+	Line     domain.LineNumber    `json:"line"`
+	Type     string               `json:"type"` // deprecated function, old pattern, etc.
+	Message  string               `json:"message"`
 	Severity domain.CloneSeverity `json:"severity"` // low, medium, high
 }
 

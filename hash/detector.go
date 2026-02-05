@@ -19,6 +19,7 @@
 // - Combined: Use both for comprehensive coverage
 //
 // Usage:
+//
 //	detector := hash.NewHashDetector(threshold)
 //	matches := detector.FindDuplOver(syntaxNodes, threshold)
 //	for match := range matches {
@@ -34,7 +35,6 @@
 // - Only detects exact file duplicates
 // - Cannot detect duplicate code fragments within files
 // - Use with syntax detection for comprehensive coverage
-//
 package hash
 
 import (

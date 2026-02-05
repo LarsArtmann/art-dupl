@@ -107,6 +107,7 @@ duplChan, filesCount, err := executeAnalysis(mergedConfig, mergedConfig.Paths)
    - File parsing cannot be cancelled
 
 4. **`job/buildtree.go:8`** - `BuildTree`:
+
    ```go
    func BuildTree(schan chan []*syntax.Node) (t *suffixtree.STree, d *[]*syntax.Node, done chan bool)
    ```

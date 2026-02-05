@@ -25,23 +25,23 @@ const (
 type FilterReason string
 
 const (
-	ReasonSQLC         FilterReason = "sqlc"
-	ReasonTempl        FilterReason = "templ"
+	ReasonSQLC           FilterReason = "sqlc"
+	ReasonTempl          FilterReason = "templ"
 	ReasonIncludePattern FilterReason = "include-pattern"
 	ReasonExcludePattern FilterReason = "exclude-pattern"
-	ReasonNotFiltered  FilterReason = "not-filtered"
+	ReasonNotFiltered    FilterReason = "not-filtered"
 )
 
 // Metrics tracks filter statistics for analysis and debugging.
 type Metrics struct {
 	mu sync.RWMutex
-	
+
 	// TotalFilesChecked is the total number of files the filter evaluated
 	TotalFilesChecked int
-	
+
 	// FilteredByReason tracks how many files were filtered for each reason
 	FilteredByReason map[FilterReason]int
-	
+
 	// FilteredFiles maps reason to list of files filtered for that reason
 	FilteredFiles map[FilterReason][]string
 }
@@ -77,16 +77,16 @@ func (m *Metrics) GetStats() FilterStats {
 	if m == nil {
 		return FilterStats{}
 	}
-	
+
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	
+
 	// Create copies of the maps to avoid concurrent access issues
 	filteredByReason := make(map[FilterReason]int)
 	for k, v := range m.FilteredByReason {
 		filteredByReason[k] = v
 	}
-	
+
 	return FilterStats{
 		TotalFilesChecked: m.TotalFilesChecked,
 		FilteredByReason:  filteredByReason,
@@ -109,7 +109,6 @@ func (fs FilterStats) TotalFiltered() int {
 	}
 	return total
 }
-
 
 // Filter provides smart filtering of auto-generated Go code.
 type Filter struct {
@@ -269,7 +268,7 @@ func (f *Filter) getFilenameBasedReason(filePath string) FilterReason {
 				return ReasonSQLC
 			}
 		}
-		
+
 		// Also check for *.sql.go pattern (SQLC generates files like articles.sql.go, users.sql.go, etc.)
 		if strings.HasSuffix(filename, ".sql.go") {
 			return ReasonSQLC
@@ -350,7 +349,7 @@ func isSQLCGenerated(filePath, content string) bool {
 			break
 		}
 	}
-	
+
 	// Also check for *.sql.go pattern (SQLC generates files like articles.sql.go, users.sql.go, etc.)
 	if !isSQLCFile && strings.HasSuffix(filename, ".sql.go") {
 		isSQLCFile = true

@@ -31,9 +31,9 @@ package printer
 // - Use printer.JSONPrinter for formatted JSON output
 type StatsData struct {
 	// Count metrics
-	TotalFilesScanned   int `json:"total_files_scanned"`
-	TotalCloneGroups    int `json:"total_clone_groups"`
-	TotalClones         int `json:"total_clones"`
+	TotalFilesScanned int `json:"total_files_scanned"`
+	TotalCloneGroups  int `json:"total_clone_groups"`
+	TotalClones       int `json:"total_clones"`
 
 	// Size metrics
 	TotalDuplicateLines int `json:"total_duplicate_lines"`
@@ -42,21 +42,21 @@ type StatsData struct {
 	AverageCloneSize    int `json:"average_clone_size"`
 
 	// Complexity and impact metrics
-	ComplexityScore     float64 `json:"complexity_score"`
-	ImpactScore         int     `json:"impact_score"`
-	DuplicationRatio    float64 `json:"duplication_ratio"` // Percentage of duplicated code
+	ComplexityScore  float64 `json:"complexity_score"`
+	ImpactScore      int     `json:"impact_score"`
+	DuplicationRatio float64 `json:"duplication_ratio"` // Percentage of duplicated code
 
 	// Quality metrics
-	HealthScore         string `json:"health_score"` // A-F grade based on metrics
+	HealthScore string `json:"health_score"` // A-F grade based on metrics
 
 	// Time metrics
-	AnalysisDuration    string `json:"analysis_duration"` // Time taken for analysis
-	Timestamp           string `json:"timestamp"` // ISO 8601 timestamp
+	AnalysisDuration string `json:"analysis_duration"` // Time taken for analysis
+	Timestamp        string `json:"timestamp"`         // ISO 8601 timestamp
 
 	// Aggregation metrics
-	FileDuplication     map[string]int `json:"file_duplication"` // filename -> duplicate line count
-	SizeDistribution    map[string]int `json:"size_distribution"` // size range -> count
+	FileDuplication  map[string]int `json:"file_duplication"`  // filename -> duplicate line count
+	SizeDistribution map[string]int `json:"size_distribution"` // size range -> count
 
 	// Metadata
-	DetectionMethods    string `json:"detection_methods"` // Comma-separated detection methods used
+	DetectionMethods string `json:"detection_methods"` // Comma-separated detection methods used
 }

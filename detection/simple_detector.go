@@ -54,11 +54,12 @@ import (
 // without requiring changes to existing code.
 //
 // Methods:
-// - FindDuplOver(threshold int) <-chan syntax.Match
-//   Finds all clones/sequences with size >= threshold
-//   Returns channel for streaming results
+//   - FindDuplOver(threshold int) <-chan syntax.Match
+//     Finds all clones/sequences with size >= threshold
+//     Returns channel for streaming results
 //
 // Usage:
+//
 //	// Can use any detector implementing this interface
 //	var detector SimpleDetector
 //	if useMultiDetector {

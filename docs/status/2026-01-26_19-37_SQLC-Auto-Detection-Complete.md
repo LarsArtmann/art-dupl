@@ -28,12 +28,14 @@ found 2 clones:
 ### Root Cause
 
 Filename pattern matching was too restrictive. The filter only checked for exact matches:
+
 - `models.go`
 - `querier.go`
 - `query.sql.go`
 - `batch.go`
 
 But SQLC generates files with patterns like:
+
 - `articles.sql.go`
 - `users.sql.go`
 - `products.sql.go`
@@ -58,6 +60,7 @@ if !isSQLCFile && strings.HasSuffix(filename, ".sql.go") {
 **File:** `pkg/filter/filter.go`
 
 **Changes:**
+
 - Added `*.sql.go` pattern matching in `isSQLCGenerated()`
 - Added `*.sql.go` pattern matching in `isGeneratedByFilename()`
 - Added comprehensive filter reason tracking
@@ -68,6 +71,7 @@ if !isSQLCFile && strings.HasSuffix(filename, ".sql.go") {
 ### 2. Filter Metrics System
 
 **New Types:**
+
 ```go
 type FilterReason string  // Enum: sqlc, templ, include-pattern, exclude-pattern, not-filtered
 type Metrics struct       // Thread-safe metrics collector
@@ -75,12 +79,14 @@ type FilterStats struct   // Immutable statistics snapshot
 ```
 
 **Features:**
+
 - Tracks total files checked
 - Counts files filtered by each reason
 - Thread-safe with `sync.RWMutex`
 - Nil-safe design (works even if metrics disabled)
 
 **New Methods:**
+
 - `Filter.GetMetrics()` - Returns metrics tracker
 - `Filter.GetStats()` - Returns statistics snapshot
 - `Metrics.Record(path, reason)` - Records filter decision
@@ -91,6 +97,7 @@ type FilterStats struct   // Immutable statistics snapshot
 **New Test File:** `internal/filtertest/user_scenario_test.go`
 
 **Tests Added:**
+
 1. `TestUserScenario_RealSQLCProject` - Exact user scenario
    - Creates sqlc.yaml in project root
    - Generates SQLC files (articles.sql.go, users.sql.go)
@@ -152,6 +159,7 @@ ok      github.com/LarsArtmann/art-dupl/internal/filtertest
 Created test project matching user's exact structure:
 
 **Test Project Structure:**
+
 ```
 project/
 ├── sqlc.yaml
@@ -180,6 +188,7 @@ Found total 1 clone groups.
 ```
 
 **Verification:**
+
 - ✅ SQLC files (`.sql.go`) correctly filtered out
 - ✅ Regular file clones detected
 - ✅ No false positives from generated code
@@ -209,12 +218,14 @@ shouldFilter := fltr.ShouldFilter("internal/storage/queries/articles.sql.go")
 ### User Impact
 
 **Before Fix:**
+
 - 21 clone groups reported
 - Many from SQLC generated files (articles.sql.go, users.sql.go, etc.)
 - Users had to manually configure exclusion patterns
 - Cluttered reports with false positives
 
 **After Fix:**
+
 - Only real code clones reported
 - Zero configuration required
 - Clean, actionable duplicate code reports
@@ -230,6 +241,7 @@ shouldFilter := fltr.ShouldFilter("internal/storage/queries/articles.sql.go")
 ### Backward Compatibility
 
 ✅ **100% Backward Compatible:**
+
 - All existing tests pass without modification
 - New patterns are purely additive
 - Existing API unchanged
@@ -279,7 +291,7 @@ func (m *Metrics) Record(filePath string, reason FilterReason) {
     if m == nil {
         return  // Nil-safe
     }
-    
+
     m.mu.Lock()
     defer m.mu.Unlock()
     // ... update metrics
@@ -308,6 +320,7 @@ feat(filter): comprehensive SQLC auto-detection and filter metrics
 ```
 
 **Files Changed:**
+
 - `pkg/filter/filter.go` (+150 lines, -10 lines)
 - `pkg/filter/filter_test.go` (+464 lines, -0 lines)
 - `internal/filtertest/user_scenario_test.go` (+200 lines, -0 lines)
@@ -400,6 +413,7 @@ art-dupl -t 50 --include-sqlc
 **Location:** `docs/status/2026-01-26_19-37_SQLC-Auto-Detection-Complete.md`
 
 **Contents:**
+
 - Problem statement and root cause
 - Solution details with code examples
 - Verification results
@@ -478,12 +492,14 @@ Your specific issue is now **resolved**. When you run `art-dupl -t 50` in your p
 ### Next Steps
 
 1. **Update your binary:**
+
    ```bash
    cd /Users/larsartmann/projects/art-dupl
    make build  # or go build in cmd/art-dupl/
    ```
 
 2. **Test in your project:**
+
    ```bash
    cd /path/to/your/golang-master
    art-dupl -t 50 --verbose
@@ -498,19 +514,19 @@ Your specific issue is now **resolved**. When you run `art-dupl -t 50` in your p
 
 ## Sign-Off
 
-| Aspect | Status |
-|--------|--------|
-| Implementation | ✅ Complete |
-| Testing | ✅ 47/47 Passing |
-| Documentation | ✅ Complete |
-| Manual Verification | ✅ Passed |
-| Performance Impact | ✅ Minimal |
-| Backward Compatibility | ✅ 100% |
-| User Ready | ✅ Yes |
+| Aspect                 | Status           |
+| ---------------------- | ---------------- |
+| Implementation         | ✅ Complete      |
+| Testing                | ✅ 47/47 Passing |
+| Documentation          | ✅ Complete      |
+| Manual Verification    | ✅ Passed        |
+| Performance Impact     | ✅ Minimal       |
+| Backward Compatibility | ✅ 100%          |
+| User Ready             | ✅ Yes           |
 
 **Status:** ✅ **READY FOR PRODUCTION USE**
 
 ---
 
-*Report Generated:* Mon Jan 26 19:37:44 CET 2026  
-*Report File:* docs/status/2026-01-26_19-37_SQLC-Auto-Detection-Complete.md
+_Report Generated:_ Mon Jan 26 19:37:44 CET 2026  
+_Report File:_ docs/status/2026-01-26_19-37_SQLC-Auto-Detection-Complete.md

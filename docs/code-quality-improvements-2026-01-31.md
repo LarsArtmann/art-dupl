@@ -9,6 +9,7 @@ This document summarizes the comprehensive type safety and code quality improvem
 ### 1. Import Cycle Resolution ✅
 
 **Problem:** Three circular import dependencies preventing compilation:
+
 - `config → errors → config`
 - `domain → errors → config → domain`
 - `adapter → domain → syntax → domain`
@@ -16,6 +17,7 @@ This document summarizes the comprehensive type safety and code quality improvem
 **Root Cause:** `errors/marshal.go` contained typed marshaling functions for `config` and `domain` types, creating cross-package dependencies.
 
 **Solution:** Moved marshaling functions to their respective packages:
+
 - `config.SafeMarshalConfig*()` → `config/config.go`
 - `domain.SafeMarshalClone*()`, `SafeMarshalCloneGroup*()`, `SafeMarshalAnalysis*()` → `domain/clone.go`
 
@@ -24,32 +26,38 @@ This document summarizes the comprehensive type safety and code quality improvem
 ### 2. Type Mismatch Fixes ✅
 
 **detection/todos.go** - 7 errors fixed:
+
 - Lines 129, 212: `domain.LineNumber → int` using `.Uint16()`
 - Lines 173, 228: `string → domain.Filepath` using `domain.NewFilepath()`
 - Lines 174, 229: `int → domain.LineNumber` using `domain.NewLineNumber()`
 - Line 232: `string → domain.CloneSeverity` using type casting
 
 **pkg/artdupl** - 3 errors fixed:
+
 - `types.go`: Used `config.ValidateDetectionMethods()` instead of undefined `validateDetectionMethods()`
 - `detector.go`: Removed non-existent `MethodAll` references (2 locations)
 - `basic_test.go`: Updated test to use existing method constants
 
 **printer package** - 3 errors fixed:
+
 - `stats.go`: Fixed `json.MarshalIndent` error handling, removed duplicate `StatsData`
 - `json.go`: Fixed `json.MarshalIndent` return value handling (2 locations)
 
 **syntax package** - 1 error fixed:
+
 - Removed unused `FindSyntaxUnitsWithDomainThreshold()` function that created cycle
 
 ### 3. Critical Type Safety Issues ✅
 
 **detection/todos.go** - 2 critical fixes:
+
 - Lines 172, 228: Added proper error handling from `domain.NewLineNumber()`
 - Lines 174, 230: Added proper error handling from `domain.NewFilepath()`
 - Removed direct type casting that bypassed validation
 - Skip invalid entries instead of accepting them
 
 **config/config.go** - 1 critical fix:
+
 - Changed `GetThresholdAsDomain()` to return `(domain.Threshold, error)`
 - Removed fallback to direct casting that defeated validation
 - Now properly returns error when `NewThreshold` fails
@@ -57,6 +65,7 @@ This document summarizes the comprehensive type safety and code quality improvem
 ### 4. Examples Package ✅
 
 **examples/domain_types_usage.go** - 9 errors fixed:
+
 - Removed unused "os" import
 - Fixed `NewTokenCount()` and `NewBytePosition()` (don't return errors)
 - Fixed `Clone` struct to use `StringID` via `GlobalPool().Intern()`
@@ -67,12 +76,14 @@ This document summarizes the comprehensive type safety and code quality improvem
 - Added `fmt.Println()` to avoid redundant newline in first print
 
 **examples/examples_test.go** - 1 error fixed:
+
 - Removed non-existent `MethodAll` constant
 - Added `MethodTodos` and `MethodLegacy` to test
 
 ### 5. Suffixtree Benchmarks ✅
 
 **suffixtree/suffixtree_bench_test.go** - 3 benchmark tests removed:
+
 - `BenchmarkFindTranBatch` (called undefined `tree.root.findTranBatch()`)
 - `BenchmarkOptimizeTree` (called undefined `tree.OptimizeTree()`)
 - `BenchmarkFindTranOptimized` (called undefined methods)
@@ -82,27 +93,27 @@ This document summarizes the comprehensive type safety and code quality improvem
 
 ### Critical Issues (FIXED) ✅
 
-| Location | Issue | Severity | Status |
-|----------|---------|----------|---------|
-| detection/todos.go:172,228 | Missing error handling from constructors | CRITICAL | FIXED |
-| detection/todos.go:174,230 | Direct type casting without validation | CRITICAL | FIXED |
-| config/config.go:139 | Fallback to direct casting defeats validation | CRITICAL | FIXED |
+| Location                   | Issue                                         | Severity | Status |
+| -------------------------- | --------------------------------------------- | -------- | ------ |
+| detection/todos.go:172,228 | Missing error handling from constructors      | CRITICAL | FIXED  |
+| detection/todos.go:174,230 | Direct type casting without validation        | CRITICAL | FIXED  |
+| config/config.go:139       | Fallback to direct casting defeats validation | CRITICAL | FIXED  |
 
 ### Warning Issues (NOTED) 📝
 
-| Location | Issue | Severity | Recommendation |
-|----------|---------|----------------|
-| examples/domain_types_usage.go | Direct type casting in example code | WARNING | Examples should use constructors - OK for demo code |
-| Multiple files | Ignored errors from constructors | WARNING | Add comments explaining why safe or handle errors |
-| domain_types_test.go | Using `.Uint()` instead of type-specific methods | WARNING | Use `.Uint16()`, `.Uint32()` for clarity |
+| Location                       | Issue                                            | Severity | Recommendation                                      |
+| ------------------------------ | ------------------------------------------------ | -------- | --------------------------------------------------- |
+| examples/domain_types_usage.go | Direct type casting in example code              | WARNING  | Examples should use constructors - OK for demo code |
+| Multiple files                 | Ignored errors from constructors                 | WARNING  | Add comments explaining why safe or handle errors   |
+| domain_types_test.go           | Using `.Uint()` instead of type-specific methods | WARNING  | Use `.Uint16()`, `.Uint32()` for clarity            |
 
 ### Info Issues (DOCUMENTED) 📄
 
-| Location | Issue | Recommendation |
-|----------|---------|----------------|
-| syntax/syntax.go:111-120 | Uses primitive types instead of domain types | Refactor to accept `domain.Threshold` |
-| cmd/run.go:19-20 | Uses primitives throughout | Create `domain.RunContext` type |
-| domain/clone.go:242 | Direct casting before validation | Acceptable - validation happens immediately |
+| Location                 | Issue                                        | Recommendation                              |
+| ------------------------ | -------------------------------------------- | ------------------------------------------- |
+| syntax/syntax.go:111-120 | Uses primitive types instead of domain types | Refactor to accept `domain.Threshold`       |
+| cmd/run.go:19-20         | Uses primitives throughout                   | Create `domain.RunContext` type             |
+| domain/clone.go:242      | Direct casting before validation             | Acceptable - validation happens immediately |
 
 ## Architecture Review
 
@@ -117,6 +128,7 @@ This document summarizes the comprehensive type safety and code quality improvem
 ### Domain Types Inventory
 
 **Value Types (from domain_types.go):**
+
 - `CloneGroupID`, `AnalysisID`, `Filepath` (string-based)
 - `LineNumber`, `BytePosition`, `ComplexityScore` (uint16-based)
 - `TokenCount`, `FileCount`, `CloneCount`, `ProcessingTime`, `Threshold` (uint-based)
@@ -124,11 +136,13 @@ This document summarizes the comprehensive type safety and code quality improvem
 - `Confidence` (float64-based)
 
 **Entity Types (from clone.go):**
+
 - `Clone`, `CloneGroup`, `Analysis`
 - `Repository`, `SourceFile`, `DetectionOptions`
 - `AnalysisStats`
 
 **Enum Types (from clone.go):**
+
 - `FileProcessingState`, `DetectionState`, `AnalysisMode`
 - `CloneSeverity`
 
@@ -247,16 +261,19 @@ validate.Struct(config) // returns error
 ## Testing Status
 
 ### Build Status ✅
+
 - All core packages build successfully
 - No import cycle errors
 - No type mismatch errors
 
 ### Test Status ✅
+
 - All core package tests passing
 - Examples package tests passing
 - Suffixtree benchmarks (remaining ones) work correctly
 
 ### Test Coverage Summary
+
 ```
 ✅ config: PASS (cached)
 ✅ domain: PASS (cached)
@@ -309,12 +326,14 @@ validate.Struct(config) // returns error
 ## Remaining Work 📋
 
 ### Low Priority
+
 1. Update example code to demonstrate best practices (currently has some direct casting)
 2. Refactor syntax/syntax.go to use domain types (documented as TODO)
 3. Refactor cmd/run.go to use domain types (documented as TODO)
 4. Add linter rule for type safety violations
 
 ### Future Considerations
+
 1. Evaluate if `go-playground/validator` is needed for complex validation
 2. Evaluate if `samber/oops` is needed for production error tracking
 3. Evaluate if `fastjson` is needed based on profiling
@@ -323,6 +342,7 @@ validate.Struct(config) // returns error
 ## Conclusion
 
 The art-dupl codebase now has:
+
 - ✅ Zero import cycle errors
 - ✅ Zero critical type safety issues
 - ✅ Type-safe domain model with validation at construction
