@@ -2,12 +2,10 @@ package domain
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	stderrors "errors"
 	"fmt"
 	"strings"
 
-	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -494,30 +492,4 @@ func calculateComplexity(node *syntax.Node) uint {
 	}
 
 	return complexity
-}
-
-// SafeMarshal provides type-safe JSON marshaling with nil check and custom error handling.
-// Returns a validation error if the input is nil, or a config error if marshaling fails.
-func SafeMarshal[T any](v *T) ([]byte, error) {
-	if v == nil {
-		return nil, duplerrors.NewValidationError("value cannot be nil", nil)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal value", err)
-	}
-	return data, nil
-}
-
-// SafeMarshalIndent provides type-safe indented JSON marshaling with nil check and custom error handling.
-// Returns a validation error if the input is nil, or a config error if marshaling fails.
-func SafeMarshalIndent[T any](v *T, prefix, indent string) ([]byte, error) {
-	if v == nil {
-		return nil, duplerrors.NewValidationError("value cannot be nil", nil)
-	}
-	data, err := json.MarshalIndent(v, prefix, indent)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal value with indent", err)
-	}
-	return data, nil
 }

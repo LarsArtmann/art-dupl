@@ -52,11 +52,37 @@ func SafeMarshal(v any, context string) ([]byte, error) {
 	return data, nil
 }
 
+// SafeMarshalNilSafe provides safe marshaling with nil check.
+// Returns a validation error if the input is nil.
+func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
+	if v == nil {
+		return nil, NewValidationError(nilErrorMessage, nil)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, NewConfigError("failed to marshal value", err)
+	}
+	return data, nil
+}
+
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, HandleMarshalingError("marshal indent", context, err)
+	}
+	return data, nil
+}
+
+// SafeMarshalIndentNilSafe provides safe indented marshaling with nil check.
+// Returns a validation error if the input is nil.
+func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]byte, error) {
+	if v == nil {
+		return nil, NewValidationError(nilErrorMessage, nil)
+	}
+	data, err := json.MarshalIndent(v, prefix, indent)
+	if err != nil {
+		return nil, NewConfigError("failed to marshal value with indent", err)
 	}
 	return data, nil
 }
