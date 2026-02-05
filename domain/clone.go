@@ -496,74 +496,58 @@ func calculateComplexity(node *syntax.Node) uint {
 	return complexity
 }
 
-// SafeMarshalClone provides type-safe marshaling for domain.Clone.
-func SafeMarshalClone(c *Clone) ([]byte, error) {
-	if c == nil {
-		return nil, duplerrors.NewValidationError("clone cannot be nil", nil)
+// SafeMarshal provides type-safe JSON marshaling with nil check and custom error handling.
+// Returns a validation error if the input is nil, or a config error if marshaling fails.
+func SafeMarshal[T any](v *T) ([]byte, error) {
+	if v == nil {
+		return nil, duplerrors.NewValidationError("value cannot be nil", nil)
 	}
-	data, err := json.Marshal(c)
+	data, err := json.Marshal(v)
 	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal clone", err)
+		return nil, duplerrors.NewConfigError("failed to marshal value", err)
 	}
 	return data, nil
+}
+
+// SafeMarshalIndent provides type-safe indented JSON marshaling with nil check and custom error handling.
+// Returns a validation error if the input is nil, or a config error if marshaling fails.
+func SafeMarshalIndent[T any](v *T, prefix, indent string) ([]byte, error) {
+	if v == nil {
+		return nil, duplerrors.NewValidationError("value cannot be nil", nil)
+	}
+	data, err := json.MarshalIndent(v, prefix, indent)
+	if err != nil {
+		return nil, duplerrors.NewConfigError("failed to marshal value with indent", err)
+	}
+	return data, nil
+}
+
+// SafeMarshalClone provides type-safe marshaling for domain.Clone.
+func SafeMarshalClone(c *Clone) ([]byte, error) {
+	return SafeMarshal(c)
 }
 
 // SafeMarshalCloneIndent provides type-safe indented marshaling for domain.Clone.
 func SafeMarshalCloneIndent(c *Clone, prefix, indent string) ([]byte, error) {
-	if c == nil {
-		return nil, duplerrors.NewValidationError("clone cannot be nil", nil)
-	}
-	data, err := json.MarshalIndent(c, prefix, indent)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal clone with indent", err)
-	}
-	return data, nil
+	return SafeMarshalIndent(c, prefix, indent)
 }
 
 // SafeMarshalCloneGroup provides type-safe marshaling for domain.CloneGroup.
 func SafeMarshalCloneGroup(g *CloneGroup) ([]byte, error) {
-	if g == nil {
-		return nil, duplerrors.NewValidationError("clone group cannot be nil", nil)
-	}
-	data, err := json.Marshal(g)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal clone group", err)
-	}
-	return data, nil
+	return SafeMarshal(g)
 }
 
 // SafeMarshalCloneGroupIndent provides type-safe indented marshaling for domain.CloneGroup.
 func SafeMarshalCloneGroupIndent(g *CloneGroup, prefix, indent string) ([]byte, error) {
-	if g == nil {
-		return nil, duplerrors.NewValidationError("clone group cannot be nil", nil)
-	}
-	data, err := json.MarshalIndent(g, prefix, indent)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal clone group with indent", err)
-	}
-	return data, nil
+	return SafeMarshalIndent(g, prefix, indent)
 }
 
 // SafeMarshalAnalysis provides type-safe marshaling for domain.Analysis.
 func SafeMarshalAnalysis(a *Analysis) ([]byte, error) {
-	if a == nil {
-		return nil, duplerrors.NewValidationError("analysis cannot be nil", nil)
-	}
-	data, err := json.Marshal(a)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal analysis", err)
-	}
-	return data, nil
+	return SafeMarshal(a)
 }
 
 // SafeMarshalAnalysisIndent provides type-safe indented marshaling for domain.Analysis.
 func SafeMarshalAnalysisIndent(a *Analysis, prefix, indent string) ([]byte, error) {
-	if a == nil {
-		return nil, duplerrors.NewValidationError("analysis cannot be nil", nil)
-	}
-	data, err := json.MarshalIndent(a, prefix, indent)
-	if err != nil {
-		return nil, duplerrors.NewConfigError("failed to marshal analysis with indent", err)
-	}
-	return data, nil
+	return SafeMarshalIndent(a, prefix, indent)
 }
