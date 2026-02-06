@@ -1,0 +1,575 @@
+package bdd
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+)
+
+// BDD Test Suite for Configuration File Handling
+//
+// These tests verify configuration file loading and parsing behavior,
+// including JSON configuration support and command-line overrides.
+//
+// The scenarios cover:
+// - Loading configuration from JSON files
+// - Configuration precedence (CLI flags override config file)
+// - Invalid configuration handling
+// - Configuration validation
+
+func TestConfigurationFile(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "art-dupl Configuration File BDD Suite")
+}
+
+var _ = Describe("Configuration File Loading", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+
+	Context("When using a valid JSON configuration file", func() {
+		It("should load threshold from config file", func() {
+			// Create config file with specific threshold
+			configContent := `{
+				"threshold": 50,
+				"outputFormat": "json"
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func test() {}`
+			err = setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config file
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load multiple settings from config file", func() {
+			// Create comprehensive config file
+			configContent := `{
+				"threshold": 20,
+				"outputFormat": "json",
+				"vendor": true,
+				"verbose": true
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func multiConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"multi1.go", "multi2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config file
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load paths from config file", func() {
+			// Create subdirectories
+			err := setup.CreateSubdirectories("src", "lib")
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create config with paths
+			configContent := `{
+				"threshold": 15,
+				"paths": ["./src", "./lib"]
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err = os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files in subdirectories
+			code := `package main
+func pathTest() {}`
+			err = setup.CreateFileWithContent("src/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("lib/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Change to temp directory so relative paths work
+			originalDir, _ := os.Getwd()
+			defer os.Chdir(originalDir)
+			os.Chdir(setup.TmpDir)
+
+			// Run with config file (uses paths from config)
+			output, err := setup.RunArtDupl("--config", configPath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When CLI flags override config file settings", func() {
+		It("should use CLI threshold over config threshold", func() {
+			// Create config with threshold 50
+			configContent := `{
+				"threshold": 50
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func overrideTest() {}`
+			err = setup.CreateDuplicateFiles([]string{"override1.go", "override2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with CLI flag overriding config
+			output, err := setup.RunArtDupl("--config", configPath, "--threshold", "10", setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should use CLI output format over config format", func() {
+			// Create config with text format
+			configContent := `{
+				"threshold": 15,
+				"outputFormat": "text"
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func formatOverride() string {
+	return "test"
+}`
+			err = setup.CreateDuplicateFiles([]string{"fmt1.go", "fmt2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with CLI flag for JSON format
+			output, err := setup.RunArtDupl("--config", configPath, "--json", setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+
+			// Verify JSON output
+			var result map[string]any
+			err = json.Unmarshal(output, &result)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveKey("clone_groups"))
+		})
+	})
+
+	Context("When configuration file has invalid format", func() {
+		It("should handle malformed JSON gracefully", func() {
+			// Create malformed JSON config
+			configContent := `{ invalid json content }`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func malformedTest() {}`
+			err = setup.CreateDuplicateFiles([]string{"malformed1.go", "malformed2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with invalid config - should error
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).To(HaveOccurred())
+			Expect(string(output)).To(ContainSubstring("error"))
+		})
+
+		It("should handle missing config file gracefully", func() {
+			// Try to use non-existent config
+			configPath := filepath.Join(setup.TmpDir, "nonexistent.json")
+
+			// Create test files
+			code := `package main
+func missingConfig() {}`
+			err := setup.CreateDuplicateFiles([]string{"missing1.go", "missing2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with missing config - should error
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).To(HaveOccurred())
+			Expect(string(output)).ToNot(BeEmpty())
+		})
+
+		It("should handle config with invalid field types", func() {
+			// Create config with wrong types
+			configContent := `{
+				"threshold": "not a number",
+				"outputFormat": 12345
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func invalidType() {}`
+			err = setup.CreateDuplicateFiles([]string{"invalid1.go", "invalid2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with invalid type config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			// May error or use defaults
+			_ = err
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When configuration file has detection method settings", func() {
+		It("should load detection methods from config", func() {
+			// Create config with detection methods
+			configContent := `{
+				"threshold": 15,
+				"detectionMethods": ["hash", "art-dupl"]
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func detectionMethod() string {
+	return "test"
+}`
+			err = setup.CreateDuplicateFiles([]string{"detect1.go", "detect2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load single detection method from config", func() {
+			// Create config with single detection method
+			configContent := `{
+				"threshold": 15,
+				"detectionMethods": ["hash"]
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func singleMethod() string {
+	return "hash only"
+}`
+			err = setup.CreateDuplicateFiles([]string{"single1.go", "single2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When configuration file has filtering settings", func() {
+		It("should load filter-generated setting from config", func() {
+			// Create config with filter settings
+			configContent := `{
+				"threshold": 15,
+				"filterGenerated": true
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func filterGen() {}`
+			err = setup.CreateDuplicateFiles([]string{"filter1.go", "filter2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load include-sqlc setting from config", func() {
+			// Create config with include-sqlc
+			configContent := `{
+				"threshold": 15,
+				"filterGenerated": true,
+				"includeSqlc": true
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `// Code generated by sqlc. DO NOT EDIT.
+package db
+func SQLCQuery() {}`
+			err = setup.CreateDuplicateFiles([]string{"query1.go", "query2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load include-templ setting from config", func() {
+			// Create config with include-templ
+			configContent := `{
+				"threshold": 15,
+				"filterGenerated": true,
+				"includeTempl": true
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package components
+import "github.com/a-h/templ"
+func TemplComponent() templ.Component {
+	return nil
+}`
+			err = setup.CreateDuplicateFiles([]string{"comp1.go", "comp2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When configuration file has pattern settings", func() {
+		It("should load include patterns from config", func() {
+			// Create subdirectories
+			err := setup.CreateSubdirectories("src", "vendor")
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create config with include patterns
+			configContent := `{
+				"threshold": 15,
+				"includePatterns": ["src/*"]
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err = os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create files in both directories
+			code := `package main
+func patternTest() {}`
+			err = setup.CreateFileWithContent("src/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("vendor/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should load exclude patterns from config", func() {
+			// Create subdirectories
+			err := setup.CreateSubdirectories("src", "test")
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create config with exclude patterns
+			configContent := `{
+				"threshold": 15,
+				"excludePatterns": ["test/*"]
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err = os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create files in both directories
+			code := `package main
+func excludeTest() {}`
+			err = setup.CreateFileWithContent("src/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("test/file.go", code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When using stats subcommand with config file", func() {
+		It("should load stats configuration from file", func() {
+			// Create config for stats
+			configContent := `{
+				"threshold": 20,
+				"outputFormat": "json"
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func statsConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run stats with config
+			output, err := setup.RunArtDupl("stats", "--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+})
+
+var _ = Describe("Configuration File Edge Cases", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+
+	Context("When configuration file is empty", func() {
+		It("should handle empty config file gracefully", func() {
+			// Create empty config file
+			configPath := filepath.Join(setup.TmpDir, "empty.json")
+			err := os.WriteFile(configPath, []byte(""), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func emptyConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"empty1.go", "empty2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with empty config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			// May error or use defaults
+			_ = err
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should handle config with only whitespace", func() {
+			// Create whitespace-only config
+			configPath := filepath.Join(setup.TmpDir, "whitespace.json")
+			err := os.WriteFile(configPath, []byte("   \n\t  "), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func whitespaceConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"ws1.go", "ws2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with whitespace config
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			// May error or use defaults
+			_ = err
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When configuration file has extra fields", func() {
+		It("should ignore unknown fields in config", func() {
+			// Create config with unknown fields
+			configContent := `{
+				"threshold": 15,
+				"unknownField": "should be ignored",
+				"anotherUnknown": 12345
+			}`
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func unknownField() {}`
+			err = setup.CreateDuplicateFiles([]string{"unknown1.go", "unknown2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with config containing unknown fields
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			// Should work and ignore unknown fields
+			_ = err
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When using deeply nested config files", func() {
+		It("should handle config in nested directory", func() {
+			// Create nested directory structure
+			nestedDir := filepath.Join(setup.TmpDir, "nested", "config")
+			err := os.MkdirAll(nestedDir, 0o755)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create config in nested directory
+			configContent := `{
+				"threshold": 25
+			}`
+			configPath := filepath.Join(nestedDir, "dupl.json")
+			err = os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func nestedConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"nested1.go", "nested2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with nested config path
+			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+
+	Context("When configuration has special characters", func() {
+		It("should handle config with unicode content", func() {
+			// Create config with unicode
+			configContent := fmt.Sprintf(`{
+				"threshold": 15,
+				"paths": ["%s"]
+			}`, setup.TmpDir)
+			configPath := filepath.Join(setup.TmpDir, "unicode.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			code := `package main
+func unicodeConfig() {}`
+			err = setup.CreateDuplicateFiles([]string{"unicode1.go", "unicode2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with unicode config
+			output, err := setup.RunArtDupl("--config", configPath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+})

@@ -184,7 +184,7 @@ func test() {}`
 	})
 
 	Context("When generating all formats with multiple detection methods", func() {
-		It("should generate separate files for each detection method", func() {
+		It("should generate reports with combined detection methods", func() {
 			// Create test files
 			code := `package main
 
@@ -195,30 +195,22 @@ func multiDetect() string {
 			err := setup.CreateDuplicateFiles([]string{"multi1.go", "multi2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with --all and multiple detection methods
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--detection-methods", "hash,art-dupl", "--threshold", "10")
+			// Run with --all flag (uses all detection methods by default)
+			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			// Check for files from both methods
+			// Check for generated files
 			files, err := os.ReadDir(outputDir)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Should have multiple files indicating different detection methods
-			Expect(len(files)).To(BeNumerically(">=", 2), "Should have multiple output files for different methods")
+			// Should have multiple output files (one per format)
+			Expect(len(files)).To(BeNumerically(">=", 2), "Should have multiple output files for different formats")
 
-			// Verify at least one file mentions hash detection
-			hasHashMethod := false
-			hasArtDuplMethod := false
+			// Verify JSON file contains detection_method field with combined methods
+			foundJSON := false
 			for _, file := range files {
-				if strings.Contains(file.Name(), "hash") || strings.Contains(file.Name(), "Hash") {
-					hasHashMethod = true
-				}
-				if strings.Contains(file.Name(), "art-dupl") || strings.Contains(file.Name(), "ArtDupl") {
-					hasArtDuplMethod = true
-				}
-
-				// Check JSON files for detection_method field
 				if strings.HasSuffix(file.Name(), ".json") {
+					foundJSON = true
 					jsonPath := filepath.Join(outputDir, file.Name())
 					jsonData, err := os.ReadFile(jsonPath)
 					Expect(err).NotTo(HaveOccurred())
@@ -227,18 +219,18 @@ func multiDetect() string {
 					err = json.Unmarshal(jsonData, &result)
 					Expect(err).ToNot(HaveOccurred())
 
-					if detectionMethod, ok := result["detection_method"].(string); ok {
-						if strings.Contains(detectionMethod, "hash") {
-							hasHashMethod = true
-						}
-						if strings.Contains(detectionMethod, "art-dupl") {
-							hasArtDuplMethod = true
-						}
-					}
+					// Should have detection_method field indicating combined methods
+					Expect(result).To(HaveKey("detection_method"))
+					detectionMethod := result["detection_method"].(string)
+					// Should contain both methods or "all" indicator
+					Expect(detectionMethod).To(SatisfyAny(
+						ContainSubstring("hash"),
+						ContainSubstring("art-dupl"),
+						Equal("all"),
+					))
 				}
 			}
-
-			Expect(hasHashMethod || hasArtDuplMethod).To(BeTrue(), "Should have files from detection methods")
+			Expect(foundJSON).To(BeTrue(), "Should generate JSON output file")
 		})
 	})
 

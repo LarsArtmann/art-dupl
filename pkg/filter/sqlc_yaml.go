@@ -39,56 +39,76 @@ type SQLCGoConfig struct {
 // Searches both the provided paths and their parent directories (up to 3 levels up).
 // Returns a map of config file path to project root directory.
 func FindSQLCConfigs(paths []string) (map[string]string, error) {
-	configs := make(map[string]string) // Map of config path to project root
+	configs := make(map[string]string)
 
 	for _, path := range paths {
-		// Search in the provided path
-		err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			// Stop at depth to avoid walking too deep
-			if info.IsDir() {
-				// Skip hidden directories and common non-source directories
-				name := info.Name()
-				if strings.HasPrefix(name, ".") || name == "node_modules" || name == "vendor" {
-					return filepath.SkipDir
-				}
-				return nil
-			}
-
-			// Check for sqlc.yaml or sqlc.yml
-			filename := filepath.Base(filePath)
-			if filename == "sqlc.yaml" || filename == "sqlc.yml" {
-				configs[filePath] = filepath.Dir(filePath)
-			}
-
-			return nil
-		})
-		if err != nil {
-			return nil, errors.WrapFile(err, path, "walking path")
-		}
-
-		// Also search parent directories for sqlc config
-		// This handles cases where user analyzes subdirectory like ./db
-		// while sqlc.yaml is in project root
-		parentPath, err := utils.FindProjectRoot(path, []string{"sqlc.yaml", "sqlc.yml"})
-		if err == nil && parentPath != "" {
-			// Check if we already found config in this parent
-			configPath := filepath.Join(parentPath, "sqlc.yaml")
-			if _, err := os.Stat(configPath); err == nil {
-				configs[configPath] = parentPath
-			}
-			// Try sqlc.yml if sqlc.yaml doesn't exist
-			configPath = filepath.Join(parentPath, "sqlc.yml")
-			if _, err := os.Stat(configPath); err == nil {
-				configs[configPath] = parentPath
-			}
+		if err := findSQLCConfigsInPath(path, configs); err != nil {
+			return nil, err
 		}
 	}
 
 	return configs, nil
+}
+
+// findSQLCConfigsInPath searches for sqlc configs in a single path.
+func findSQLCConfigsInPath(path string, configs map[string]string) error {
+	if err := walkPathForSQLCConfigs(path, configs); err != nil {
+		return errors.WrapFile(err, path, "walking path")
+	}
+
+	findSQLCConfigsInParent(path, configs)
+	return nil
+}
+
+// walkPathForSQLCConfigs walks a path to find sqlc config files.
+func walkPathForSQLCConfigs(path string, configs map[string]string) error {
+	return filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return handleDirectoryWalk(info.Name())
+		}
+
+		recordSQLCConfig(filePath, configs)
+		return nil
+	})
+}
+
+// handleDirectoryWalk determines whether to skip a directory during walk.
+func handleDirectoryWalk(name string) error {
+	if strings.HasPrefix(name, ".") || name == "node_modules" || name == "vendor" {
+		return filepath.SkipDir
+	}
+	return nil
+}
+
+// recordSQLCConfig records a sqlc config file if it matches.
+func recordSQLCConfig(filePath string, configs map[string]string) {
+	filename := filepath.Base(filePath)
+	if filename == "sqlc.yaml" || filename == "sqlc.yml" {
+		configs[filePath] = filepath.Dir(filePath)
+	}
+}
+
+// findSQLCConfigsInParent searches parent directories for sqlc config.
+func findSQLCConfigsInParent(path string, configs map[string]string) {
+	parentPath, err := utils.FindProjectRoot(path, []string{"sqlc.yaml", "sqlc.yml"})
+	if err != nil || parentPath == "" {
+		return
+	}
+
+	tryAddSQLCConfig(parentPath, "sqlc.yaml", configs)
+	tryAddSQLCConfig(parentPath, "sqlc.yml", configs)
+}
+
+// tryAddSQLCConfig adds a config to the map if the file exists.
+func tryAddSQLCConfig(parentPath, filename string, configs map[string]string) {
+	configPath := filepath.Join(parentPath, filename)
+	if _, err := os.Stat(configPath); err == nil {
+		configs[configPath] = parentPath
+	}
 }
 
 // ParseSQLCConfig reads and parses a sqlc.yaml file.
