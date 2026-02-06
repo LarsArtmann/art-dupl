@@ -1,0 +1,427 @@
+package bdd
+
+import (
+	"strings"
+	"testing"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+)
+
+// BDD Test Suite for Plumbing Output and Multiple Paths
+//
+// These tests verify:
+// - Plumbing output format (machine-readable)
+// - Multiple path arguments
+// - Edge cases with paths
+
+func TestPlumbingAndPaths(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "art-dupl Plumbing and Paths BDD Suite")
+}
+
+var _ = Describe("Plumbing Output Format", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+
+	Context("When using plumbing output", func() {
+		It("should produce machine-readable output", func() {
+			duplicateCode := `package main
+
+import "fmt"
+
+func process() {
+	for i := 0; i < 10; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with plumbing output
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Each line should follow plumbing format: filename:startline,endline
+			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
+			for _, line := range lines {
+				if line == "" {
+					continue
+				}
+				// Should contain filename and line numbers
+				Expect(line).To(MatchRegexp(`\.go:\d+,\d+$`))
+			}
+		})
+
+		It("should be parseable by shell scripts", func() {
+			duplicateCode := `package main
+func duplicate() { println(1) }`
+
+			err := setup.CreateDuplicateFiles([]string{"pkg/file1.go", "pkg/file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Each line should be parseable with cut/awk
+			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
+			for _, line := range lines {
+				if line == "" {
+					continue
+				}
+				// Format: path/to/file.go:start,end
+				parts := strings.Split(line, ":")
+				Expect(len(parts)).To(Equal(2))
+				Expect(parts[0]).To(MatchRegexp(`\.go$`))
+				Expect(parts[1]).To(MatchRegexp(`\d+,\d+$`))
+			}
+		})
+
+		It("should not include headers or formatting", func() {
+			duplicateCode := `package main
+func duplicate() { println(1) }`
+
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should not contain HTML or text formatting
+			Expect(outputStr).ToNot(ContainSubstring("<!DOCTYPE"))
+			Expect(outputStr).ToNot(ContainSubstring("found"))
+			Expect(outputStr).ToNot(ContainSubstring("clone"))
+		})
+	})
+
+	Context("When combining plumbing with other options", func() {
+		It("should respect threshold in plumbing output", func() {
+			smallCode := `package main
+func small() { println(1) }`
+			largeCode := `package main
+
+import "fmt"
+
+func large() {
+	for i := 0; i < 100; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			// Create small duplicates
+			err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallCode)
+			Expect(err).NotTo(HaveOccurred())
+			// Create large duplicates
+			err = setup.CreateDuplicateFiles([]string{"large1.go", "large2.go"}, largeCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with high threshold
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "50")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should only show large files
+			Expect(outputStr).To(ContainSubstring("large"))
+			Expect(outputStr).ToNot(ContainSubstring("small"))
+		})
+
+		It("should work with sorting options", func() {
+			duplicateCode := `package main
+func duplicate() { println(1) }`
+
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with plumbing and sort
+			output, err := setup.RunArtDupl("--plumbing", "--sort", "size", "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+
+			// Should still be valid plumbing format
+			lines := strings.Split(strings.TrimSpace(string(output)), "\n")
+			for _, line := range lines {
+				if line == "" {
+					continue
+				}
+				Expect(line).To(MatchRegexp(`\.go:\d+,\d+$`))
+			}
+		})
+	})
+})
+
+var _ = Describe("Multiple Path Arguments", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+
+	Context("When analyzing multiple directories", func() {
+		It("should find duplicates across all paths", func() {
+			// Create subdirectories
+			err := setup.CreateSubdirectories("pkg1", "pkg2", "pkg3")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+
+import "fmt"
+
+func common() {
+	for i := 0; i < 10; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			// Create duplicates in different directories
+			err = setup.CreateFileWithContent("pkg1/file1.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("pkg2/file2.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("pkg3/file3.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with multiple paths
+			output, err := setup.RunArtDupl(
+				setup.GetFilePath("pkg1"),
+				setup.GetFilePath("pkg2"),
+				setup.GetFilePath("pkg3"),
+				"--threshold", "5",
+			)
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should find files from all paths
+			Expect(outputStr).To(ContainSubstring("pkg1"))
+			Expect(outputStr).To(ContainSubstring("pkg2"))
+			Expect(outputStr).To(ContainSubstring("pkg3"))
+		})
+
+		It("should handle mix of directories and single files", func() {
+			err := setup.CreateSubdirectories("pkg")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+func common() { println(1) }`
+
+			// Create file in directory
+			err = setup.CreateFileWithContent("pkg/file1.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			// Create standalone file
+			err = setup.CreateTestFile("standalone.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with mixed paths
+			output, err := setup.RunArtDupl(
+				setup.GetFilePath("pkg"),
+				setup.GetFilePath("standalone.go"),
+				"--threshold", "3",
+			)
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should find both
+			Expect(outputStr).To(ContainSubstring("pkg"))
+			Expect(outputStr).To(ContainSubstring("standalone.go"))
+		})
+
+		It("should not find duplicates within excluded paths", func() {
+			err := setup.CreateSubdirectories("include", "exclude")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+func common() { println(1) }`
+
+			// Create duplicates in both directories
+			err = setup.CreateFileWithContent("include/file1.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("include/file2.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("exclude/file3.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("exclude/file4.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run only on include directory
+			output, err := setup.RunArtDupl(
+				setup.GetFilePath("include"),
+				"--threshold", "3",
+			)
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should only show include directory
+			Expect(outputStr).To(ContainSubstring("include"))
+			Expect(outputStr).ToNot(ContainSubstring("exclude"))
+		})
+	})
+
+	Context("When using exclude patterns with multiple paths", func() {
+		It("should exclude patterns across all paths", func() {
+			err := setup.CreateSubdirectories("pkg1", "pkg2")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+func common() { println(1) }`
+			testCode := `package main
+func testCommon() { println(1) }`
+
+			// Create regular files
+			err = setup.CreateFileWithContent("pkg1/file.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("pkg2/file.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			// Create test files
+			err = setup.CreateFileWithContent("pkg1/file_test.go", testCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("pkg2/file_test.go", testCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with exclude pattern
+			output, err := setup.RunArtDupl(
+				setup.GetFilePath("pkg1"),
+				setup.GetFilePath("pkg2"),
+				"--exclude-pattern", "*_test.go",
+				"--threshold", "3",
+			)
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should show regular files but not test files
+			Expect(outputStr).To(ContainSubstring("file.go"))
+			Expect(outputStr).ToNot(ContainSubstring("_test.go"))
+		})
+	})
+})
+
+var _ = Describe("Path Edge Cases", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		var err error
+		setup, err = testutil.NewBDDTestSetupForGinkgo()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+
+	Context("When handling special path scenarios", func() {
+		It("should handle nested directories correctly", func() {
+			// Create deeply nested structure
+			err := setup.CreateSubdirectories("a/b/c/d")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+func deep() { println(1) }`
+
+			err = setup.CreateFileWithContent("a/b/c/d/file1.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("a/b/c/d/file2.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run on parent directory
+			output, err := setup.RunArtDupl(setup.GetFilePath("a"), "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			// Should find nested files
+			Expect(outputStr).To(ContainSubstring("a/b/c/d"))
+		})
+
+		It("should handle paths with special characters", func() {
+			// Create directory with hyphen
+			err := setup.CreateSubdirectories("my-pkg")
+			Expect(err).NotTo(HaveOccurred())
+
+			duplicateCode := `package main
+func hyphen() { println(1) }`
+
+			err = setup.CreateFileWithContent("my-pkg/file1.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateFileWithContent("my-pkg/file2.go", duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl(setup.GetFilePath("my-pkg"), "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			Expect(outputStr).To(ContainSubstring("my-pkg"))
+		})
+
+		It("should handle current directory", func() {
+			duplicateCode := `package main
+func current() { println(1) }`
+
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run on current directory (tmp dir)
+			output, err := setup.RunArtDupl(".", "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+			outputStr := string(output)
+
+			Expect(outputStr).To(ContainSubstring("file1.go"))
+			Expect(outputStr).To(ContainSubstring("file2.go"))
+		})
+
+		It("should handle absolute paths", func() {
+			duplicateCode := `package main
+func absolute() { println(1) }`
+
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with absolute path
+			output, err := setup.RunArtDupl(setup.TmpDir, "--threshold", "3")
+			Expect(err).ToNot(HaveOccurred())
+
+			// Should find duplicates
+			Expect(string(output)).To(ContainSubstring("file1.go"))
+		})
+	})
+
+	Context("When no Go files exist in path", func() {
+		It("should handle empty directory gracefully", func() {
+			output, err := setup.RunArtDupl("--threshold", "5")
+			Expect(err).ToNot(HaveOccurred())
+
+			// Should complete without error
+			Expect(output).ToNot(BeNil())
+		})
+
+		It("should handle directory with non-Go files", func() {
+			// Create some non-Go files
+			err := setup.CreateTestFile("README.md", "# Project")
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("config.json", `{}`)
+			Expect(err).NotTo(HaveOccurred())
+
+			output, err := setup.RunArtDupl("--threshold", "5")
+			Expect(err).ToNot(HaveOccurred())
+
+			// Should complete without error
+			Expect(output).ToNot(BeNil())
+		})
+	})
+})
