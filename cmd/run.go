@@ -26,7 +26,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"time"
 
@@ -338,21 +337,18 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (c
 		}
 	}
 
-	// If --filter-generated is set, also filter sqlc files (unless --include-sqlc is set)
-	if cfg.FilterGenerated && !cfg.IncludeSQLC {
-		// sqlc filtering may already be enabled by auto-detection, avoid duplicate
-		alreadyFilteringSQLC := slices.Contains(filterOptions, filter.FilterSQLC)
-		if !alreadyFilteringSQLC {
-			filterOptions = append(filterOptions, filter.FilterSQLC)
-		}
+	// Filter sqlc files by default (filename-based detection is very fast)
+	// User can opt-out with --include-sqlc
+	if !cfg.IncludeSQLC {
+		filterOptions = append(filterOptions, filter.FilterSQLC)
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Extended auto-generated code filtering enabled (sqlc)\n")
+			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (sqlc)\n")
 		}
 	}
 
-	// Filter templ files only if --filter-generated is explicitly set
-	// Changed from always-on filtering to opt-in for better performance
-	if cfg.FilterGenerated && !cfg.IncludeTempl {
+	// Filter templ files by default (filename-based detection is very fast)
+	// User can opt-out with --include-templ
+	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, filter.FilterTempl)
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
