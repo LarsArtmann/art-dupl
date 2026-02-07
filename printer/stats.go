@@ -515,11 +515,11 @@ func (p *stats) printJSON() {
 			DetectionMethods string `json:"detectionMethods"`
 		} `json:"configuration"`
 		Overview struct {
-			FilesScanned   int            `json:"filesScanned"`
-			FilesFiltered  int            `json:"filesFiltered,omitempty"`
+			FilesScanned    int            `json:"filesScanned"`
+			FilesFiltered   int            `json:"filesFiltered,omitempty"`
 			FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
-			CloneGroups    int            `json:"cloneGroups"`
-			TotalClones    int            `json:"totalClones"`
+			CloneGroups     int            `json:"cloneGroups"`
+			TotalClones     int            `json:"totalClones"`
 		} `json:"overview"`
 		DuplicateCode struct {
 			TotalLines       int     `json:"totalDuplicateLines"`

@@ -262,7 +262,7 @@ func errorHandlingExamples() {
 	fmt.Println()
 }
 
-// Helper function to print section separator
+// Helper function to print section separator.
 func printSeparator() {
 	fmt.Println(strings.Repeat("=", 50))
 }

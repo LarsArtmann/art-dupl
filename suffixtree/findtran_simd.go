@@ -83,7 +83,7 @@ func (s *state) findTranFallback(c Token) *tran {
 // Expected improvements:
 // - 2-3x faster for states with >8 transitions
 // - Reduced branch mispredictions through vectorized comparisons
-// - Better cache utilization for large transition sets
+// - Better cache utilization for large transition sets.
 func (s *state) findTranSIMD(c Token) *tran {
 	// SIMD implementation would go here
 	// Currently falls back to linear search as Go doesn't have stable SIMD yet

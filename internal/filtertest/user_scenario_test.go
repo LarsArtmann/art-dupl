@@ -13,7 +13,7 @@ import (
 // TestUserScenario_RealSQLCProject tests the exact scenario from the user's issue:
 // - sqlc.yaml in project root
 // - SQLC generates files like articles.sql.go, users.sql.go
-// - Running art-dupl should filter these SQLC files automatically
+// - Running art-dupl should filter these SQLC files automatically.
 func TestUserScenario_RealSQLCProject(t *testing.T) {
 	// Create temporary directory structure
 	tmpDir := t.TempDir()
@@ -184,7 +184,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 		"mock_repository.go should NOT be filtered (regular Go file)")
 }
 
-// TestSQLCOutputDirectoryFiltering tests that files in SQLC output directories are filtered
+// TestSQLCOutputDirectoryFiltering tests that files in SQLC output directories are filtered.
 func TestSQLCOutputDirectoryFiltering(t *testing.T) {
 	tmpDir := t.TempDir()
 
@@ -237,7 +237,7 @@ type User struct {
 		"users.sql.go in SQLC output directory should be filtered")
 }
 
-// TestParentDirectorySQLCDetection tests finding sqlc.yaml in parent directories
+// TestParentDirectorySQLCDetection tests finding sqlc.yaml in parent directories.
 func TestParentDirectorySQLCDetection(t *testing.T) {
 	tmpDir := t.TempDir()
 

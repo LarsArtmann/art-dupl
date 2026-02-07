@@ -76,7 +76,7 @@ func hashSeqFallback(nodes []*Node, buf []byte) {
 // Expected improvements:
 // - 2-3x faster byte extraction for large inputs (>10,000 nodes)
 // - Reduced cache misses through vectorized operations
-// - Better CPU utilization on SIMD-capable hardware
+// - Better CPU utilization on SIMD-capable hardware.
 func hashSeqSIMD(nodes []*Node, buf []byte) {
 	// TODO: Implement SIMD-optimized byte extraction when available
 	//
@@ -110,7 +110,7 @@ func hashSeqSIMD(nodes []*Node, buf []byte) {
 // - O(n) time complexity where n is total nodes across all sequences
 // - O(1) additional space per sequence (reuses pooled buffers)
 // - Uses SIMD-optimized operations when available
-// - Processes sequences in parallel using goroutines
+// - Processes sequences in parallel using goroutines.
 func BatchHash(sequences [][]*Node) []string {
 	if len(sequences) == 0 {
 		return nil

@@ -56,7 +56,7 @@ const maxChildrenSerial = 10_000
 // - int32 fields grouped for cache efficiency (4B each, 16B total)
 // - pointer field (8B)
 // - string header at end (16B)
-// Total: 40B (37.5% reduction from 64B)
+// Total: 40B (37.5% reduction from 64B).
 type Node struct {
 	Type     int32
 	Pos      int32

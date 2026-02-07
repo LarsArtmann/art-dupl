@@ -246,7 +246,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 		uniq := unique(groups[k])
 		if len(uniq) > 1 {
 			if err := p.PrintClones(uniq, printer.SortByHash); err != nil {
-				return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to process clones for hash %s", k))
+				return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to process clones for hash "+k)
 			}
 		}
 	}

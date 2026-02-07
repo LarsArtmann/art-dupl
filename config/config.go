@@ -39,7 +39,7 @@ func (dm DetectionMethods) IsEmpty() bool {
 // use the helper functions below to convert to/from domain types:
 //
 //	// Get typed threshold
-//	threshold := cfg.GetThresholdAsDomain()
+//	:= cfg.GetThresholdAsDomain()
 //
 //	// Set threshold with validation
 //	err := cfg.SetThresholdFromDomain(domainThreshold)

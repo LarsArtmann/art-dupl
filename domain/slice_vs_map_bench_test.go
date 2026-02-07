@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// BenchmarkSliceLookup measures slice index access
+// BenchmarkSliceLookup measures slice index access.
 func BenchmarkSliceLookup(b *testing.B) {
 	pool := make([]string, 1000)
 	for i := range pool {
@@ -13,46 +13,46 @@ func BenchmarkSliceLookup(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		_ = pool[i%1000] // Slice access
 	}
 }
 
-// BenchmarkMapLookup measures map access with uint32 key
+// BenchmarkMapLookup measures map access with uint32 key.
 func BenchmarkMapLookup(b *testing.B) {
 	pool := make(map[uint32]string, 1000)
-	for i := uint32(0); i < 1000; i++ {
+	for i := range uint32(1000) {
 		pool[i] = fmt.Sprintf("file_%d.go", i)
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		_ = pool[uint32(i%1000)] // Map access
 	}
 }
 
-// BenchmarkSliceMemory measures memory overhead
+// BenchmarkSliceMemory measures memory overhead.
 func BenchmarkSliceMemory(b *testing.B) {
 	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_ = make([]string, 1000, 1000) // 1000 string slots
 	}
 }
 
-// BenchmarkMapMemory measures memory overhead
+// BenchmarkMapMemory measures memory overhead.
 func BenchmarkMapMemory(b *testing.B) {
 	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_ = make(map[uint32]string, 1000) // 1000 map slots
 	}
 }
 
-// TestSliceMapEquivalence tests both approaches work
+// TestSliceMapEquivalence tests both approaches work.
 func TestSliceMapEquivalence(t *testing.T) {
 	// Slice + Map approach
 	slice := make([]string, 10)
 	index := make(map[string]uint32)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		s := fmt.Sprintf("string_%d", i)
 		slice[i] = s
 		index[s] = uint32(i)
@@ -68,7 +68,7 @@ func TestSliceMapEquivalence(t *testing.T) {
 	}
 
 	// Test all strings
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		s := fmt.Sprintf("string_%d", i)
 		id := index[s]
 		if slice[id] != s {
@@ -77,13 +77,13 @@ func TestSliceMapEquivalence(t *testing.T) {
 	}
 }
 
-// TestMapMapEquivalence tests double map approach
+// TestMapMapEquivalence tests double map approach.
 func TestMapMapEquivalence(t *testing.T) {
 	// Double map approach
 	strToID := make(map[string]uint32)
 	idToStr := make(map[uint32]string)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		s := fmt.Sprintf("string_%d", i)
 		id := uint32(i)
 		strToID[s] = id
@@ -100,7 +100,7 @@ func TestMapMapEquivalence(t *testing.T) {
 	}
 
 	// Test all strings
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		s := fmt.Sprintf("string_%d", i)
 		id := strToID[s]
 		if idToStr[id] != s {
@@ -109,18 +109,18 @@ func TestMapMapEquivalence(t *testing.T) {
 	}
 }
 
-// Benchmark round-trip performance
+// Benchmark round-trip performance.
 func BenchmarkRoundTripSliceMap(b *testing.B) {
 	slice := make([]string, 1000)
 	index := make(map[string]uint32)
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		s := fmt.Sprintf("file_%d.go", i)
 		slice[i] = s
 		index[s] = uint32(i)
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		s := fmt.Sprintf("file_%d.go", i%1000)
 		id := index[s] // string → ID
 		_ = slice[id]  // ID → string
@@ -131,7 +131,7 @@ func BenchmarkRoundTripMapMap(b *testing.B) {
 	strToID := make(map[string]uint32, 1000)
 	idToStr := make(map[uint32]string, 1000)
 
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		s := fmt.Sprintf("file_%d.go", i)
 		id := uint32(i)
 		strToID[s] = id
@@ -139,7 +139,7 @@ func BenchmarkRoundTripMapMap(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		s := fmt.Sprintf("file_%d.go", i%1000)
 		id := strToID[s] // string → ID
 		_ = idToStr[id]  // ID → string

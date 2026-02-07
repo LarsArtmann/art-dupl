@@ -92,7 +92,7 @@ func (s *simdHasher) Hash(data []byte) []byte {
 	// Example approach using future simd/archsimd:
 	//
 	// // Load data into SIMD vectors
-	// vectors := simd.LoadBytes(data)
+	// := simd.LoadBytes(data)
 	//
 	// // Process in parallel chunks
 	// for i := range vectors {

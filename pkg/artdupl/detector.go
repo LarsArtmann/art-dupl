@@ -227,7 +227,7 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 }
 
 // runDetection executes the configured detection methods.
-func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) { //nolint:cyclop // Detection execution with multiple method paths
+func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
 	var allGroups []*CloneGroup

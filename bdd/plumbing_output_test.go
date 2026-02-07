@@ -454,7 +454,7 @@ func stdinPlumb() {}`
 	})
 })
 
-// Helper function to validate plumbing line format
+// Helper function to validate plumbing line format.
 func validatePlumbingLine(line string) error {
 	line = strings.TrimSpace(line)
 	if line == "" {
@@ -484,7 +484,7 @@ func validatePlumbingLine(line string) error {
 	return nil
 }
 
-// Helper function to parse plumbing output
+// Helper function to parse plumbing output.
 func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 	var entries []PlumbingEntry
 	lines := strings.Split(strings.TrimSpace(output), "\n")
@@ -505,16 +505,16 @@ func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 	return entries, nil
 }
 
-// PlumbingEntry represents a parsed plumbing output line
+// PlumbingEntry represents a parsed plumbing output line.
 type PlumbingEntry struct {
-	Filename string
+	Filename  string
 	StartLine int
 	StartCol  int
 	EndLine   int
 	EndCol    int
 }
 
-// parsePlumbingLine parses a single plumbing output line
+// parsePlumbingLine parses a single plumbing output line.
 func parsePlumbingLine(line string) (PlumbingEntry, error) {
 	entry := PlumbingEntry{}
 
@@ -617,7 +617,7 @@ func parseableClone() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should have entries
-			Expect(len(entries)).To(BeNumerically(">=", 1))
+			Expect(entries).ToNot(BeEmpty())
 
 			// Each entry should have valid filename
 			for _, entry := range entries {

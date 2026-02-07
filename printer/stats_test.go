@@ -704,11 +704,11 @@ func TestPrintRecommendations(t *testing.T) {
 
 func TestSetFilterStats(t *testing.T) {
 	tests := []struct {
-		name            string
-		filesFiltered   int
-		breakdown       map[string]int
-		wantFiltered    int
-		wantBreakdown   map[string]int
+		name          string
+		filesFiltered int
+		breakdown     map[string]int
+		wantFiltered  int
+		wantBreakdown map[string]int
 	}{
 		{
 			name:          "no filters applied",

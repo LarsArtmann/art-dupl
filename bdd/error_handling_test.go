@@ -1,6 +1,5 @@
 package bdd
 
-//nolint:errcheck // Test cleanup code - error returns not critical
 import (
 	"os"
 	"path/filepath"
@@ -200,7 +199,7 @@ var _ = Describe("Error Handling", func() {
 			output, err := setup.RunArtDupl("--config", configFile, ".")
 			// Should handle gracefully (may use defaults or show error)
 			outputStr := string(output)
-			Expect(len(outputStr)).To(BeNumerically(">", 0))
+			Expect(outputStr).ToNot(BeEmpty())
 		})
 	})
 

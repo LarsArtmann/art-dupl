@@ -186,16 +186,16 @@ func (mp *MigrationPath) validateMigration(before, after domain.Analysis) []Vali
 func (mp *MigrationPath) validateAnalysisState(analysis domain.Analysis, state string) ValidationResult {
 	if err := analysis.IsValid(); err != nil {
 		return ValidationResult{
-			Check:    fmt.Sprintf("%s-state-valid", state),
+			Check:    state + "-state-valid",
 			Status:   "failed",
 			Message:  fmt.Sprintf("%s state invalid: %v", capitalize(state), err),
 			Severity: "error",
 		}
 	}
 	return ValidationResult{
-		Check:    fmt.Sprintf("%s-state-valid", state),
+		Check:    state + "-state-valid",
 		Status:   "passed",
-		Message:  fmt.Sprintf("%s state is valid", capitalize(state)),
+		Message:  capitalize(state) + " state is valid",
 		Severity: "info",
 	}
 }

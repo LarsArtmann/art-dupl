@@ -7,7 +7,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
-// GenerateNodes creates test nodes for benchmarking
+// GenerateNodes creates test nodes for benchmarking.
 func GenerateNodes(count int) []*Node {
 	nodes := make([]*Node, count)
 	for i := range nodes {

@@ -24,8 +24,8 @@ func main() {
 
 		// Add context-aware suggestions based on error type
 		errStr := err.Error()
-		switch {
-		case errStr == "flag: help requested":
+		switch errStr {
+		case "flag: help requested":
 			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
 				if _, writeErr := fmt.Fprintln(w, styles.Text.Render("💡 Use examples below to get started:")); writeErr == nil {
 					examples := []string{

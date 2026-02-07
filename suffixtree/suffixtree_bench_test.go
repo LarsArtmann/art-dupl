@@ -152,7 +152,7 @@ func BenchmarkConstruction(b *testing.B) {
 			tokens := generateRandomTokens(size)
 
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				tree := New()
 				tree.Update(tokens...)
 			}
@@ -196,7 +196,7 @@ func BenchmarkUpdate(b *testing.B) {
 			tokens := generateRandomTokens(batchSize)
 
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				tree.Update(tokens...)
 			}
 		})

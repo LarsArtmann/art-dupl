@@ -14,7 +14,6 @@ type plumbing struct {
 	w io.Writer
 }
 
-//nolint:ireturn // Printer interface is appropriate return type for factory function
 func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 	return &plumbing{ReadFile: fread, w: w}
 }

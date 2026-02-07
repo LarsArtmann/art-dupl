@@ -7,7 +7,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// TestStringID_IntegrationMinimal tests minimal StringID integration
+// TestStringID_IntegrationMinimal tests minimal StringID integration.
 func TestStringID_IntegrationMinimal(t *testing.T) {
 	// Test basic accessor methods work
 	clone := domain.Clone{}

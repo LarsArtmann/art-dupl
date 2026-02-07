@@ -64,7 +64,7 @@ func (sid *StringID) UnmarshalJSON(data []byte) error {
 // Memory Impact:
 // - Without interning: Each Clone has 16B string header + heap allocation
 // - With interning: Each Clone has 4B StringID + shared string storage
-// - Typical savings: 20-40% for filenames with duplication
+// - Typical savings: 20-40% for filenames with duplication.
 type StringInternPool struct {
 	mu      sync.RWMutex
 	strings []string

@@ -208,7 +208,7 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 	}
 }
 
-// uintTypeNames defines all uint-based type names for testing
+// uintTypeNames defines all uint-based type names for testing.
 var uintTypeNames = []string{
 	"BytePosition",
 	"TokenCount",
@@ -399,7 +399,7 @@ func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFunc
 // - Standard type tests (constructor, methods)
 // - JSON marshaling tests
 // - JSON unmarshaling tests
-// - Round-trip tests
+// - Round-trip tests.
 func createTypeTestSuite[T comparable](
 	typeName string,
 	testFuncs []func(*testing.T),

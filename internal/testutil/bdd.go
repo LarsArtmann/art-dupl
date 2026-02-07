@@ -160,7 +160,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 
 // RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
 // The subcommand name should be the first argument, followed by flags and the directory.
-// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10")
+// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10").
 func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()

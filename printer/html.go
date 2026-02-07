@@ -21,7 +21,6 @@ type htmlprinter struct {
 	dupls     [][][]*syntax.Node
 }
 
-//nolint:ireturn // Printer interface is appropriate return type for factory function
 func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
 	thresh := 15
 	if len(threshold) > 0 {

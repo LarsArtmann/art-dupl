@@ -36,12 +36,12 @@ func (r Result[T]) IsErr() bool {
 }
 
 // Unwrap returns value and error.
-func (r Result[T]) Unwrap() (T, error) { //nolint:ireturn // Generic type T is correct return
+func (r Result[T]) Unwrap() (T, error) {
 	return r.Value, r.Error
 }
 
 // Or returns value or default if error.
-func (r Result[T]) Or(defaultValue T) T { //nolint:ireturn // Generic type T is correct return
+func (r Result[T]) Or(defaultValue T) T {
 	if r.Error != nil {
 		return defaultValue
 	}
@@ -49,7 +49,7 @@ func (r Result[T]) Or(defaultValue T) T { //nolint:ireturn // Generic type T is 
 }
 
 // OrPanic returns value or panics if error.
-func (r Result[T]) OrPanic() T { //nolint:ireturn // Generic type T is correct return
+func (r Result[T]) OrPanic() T {
 	if r.Error != nil {
 		panic(r.Error)
 	}
@@ -116,12 +116,12 @@ func (o Option[T]) IsNone() bool {
 }
 
 // Unwrap returns value or zero if none.
-func (o Option[T]) Unwrap() T { //nolint:ireturn // Generic type T is correct return
+func (o Option[T]) Unwrap() T {
 	return o.value
 }
 
 // Or returns value or default if none.
-func (o Option[T]) Or(defaultValue T) T { //nolint:ireturn // Generic type T is correct return
+func (o Option[T]) Or(defaultValue T) T {
 	if o.some {
 		return o.value
 	}

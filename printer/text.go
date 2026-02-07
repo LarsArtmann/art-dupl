@@ -19,7 +19,6 @@ type text struct {
 	cloneGroups [][]clone
 }
 
-//nolint:ireturn // Printer interface is appropriate return type for factory function
 func NewText(w io.Writer, fread ReadFile) Printer {
 	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
 }

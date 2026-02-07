@@ -268,6 +268,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 func extractLine[T any](issue T, lineField func(T) domain.LineNumber) int {
 	return int(lineField(issue).Uint16())
 }
+
 // getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
 	return []LegacyPattern{

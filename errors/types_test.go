@@ -135,7 +135,7 @@ func TestWrap(t *testing.T) {
 	t.Run("Wrap does not double-wrap DuplError", func(t *testing.T) {
 		duplErr := NewInternalError("original", nil)
 		wrapped := Wrap(duplErr, ConfigError, "wrapping")
-		if wrapped != duplErr {
+		if !errors.Is(wrapped, duplErr) {
 			t.Error("Should not re-wrap DuplError")
 		}
 	})
@@ -168,7 +168,7 @@ func TestWrapIO(t *testing.T) {
 	t.Run("WrapIO does not double-wrap", func(t *testing.T) {
 		ioErr := NewIOError("test.go", "original", nil)
 		wrapped := WrapIO(ioErr, "test.go", "new operation")
-		if wrapped != ioErr {
+		if !errors.Is(wrapped, ioErr) {
 			t.Error("Should not re-wrap IOError")
 		}
 	})

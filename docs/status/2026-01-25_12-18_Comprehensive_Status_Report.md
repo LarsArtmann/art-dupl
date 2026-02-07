@@ -431,6 +431,7 @@
    - Issue: Go tools lock file during editing
 
 5. **Here-Documents**
+
    ```bash
    sed -i '' '470a\
    new code line 1\

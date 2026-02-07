@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// BenchmarkStringPool_RealisticDuplLoad simulates actual dupl usage patterns
+// BenchmarkStringPool_RealisticDuplLoad simulates actual dupl usage patterns.
 func BenchmarkStringPool_RealisticDuplLoad(b *testing.B) {
 	pool := NewStringInternPool(5000)
 
@@ -18,14 +18,14 @@ func BenchmarkStringPool_RealisticDuplLoad(b *testing.B) {
 	b.ReportAllocs()
 
 	// Simulate the actual dupl workflow
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		// Scan phase: Intern filenames (writes, but limited)
 		if i < len(files) {
 			_ = pool.Intern(files[i])
 		}
 
 		// Analysis phase: Repeated lookups of same strings (reads, dominant)
-		for j := 0; j < 10; j++ { // Each file accessed multiple times
+		for j := range 10 { // Each file accessed multiple times
 			fileIdx := (i + j) % len(files)
 			id := pool.Intern(files[fileIdx]) // Fast path: already interned
 			_ = pool.Lookup(id)
@@ -37,7 +37,7 @@ func BenchmarkStringPool_RealisticDuplLoad(b *testing.B) {
 	}
 }
 
-// BenchmarkStringPool_GlobalPoolRealistic uses the actual global pool
+// BenchmarkStringPool_GlobalPoolRealistic uses the actual global pool.
 func BenchmarkStringPool_GlobalPoolRealistic(b *testing.B) {
 	// Pre-populate with common patterns
 	commonFiles := []string{
@@ -74,14 +74,14 @@ func BenchmarkStringPool_GlobalPoolRealistic(b *testing.B) {
 	})
 }
 
-// Test the actual NodeToClone usage pattern
+// Test the actual NodeToClone usage pattern.
 func BenchmarkStringPool_NodeToClonePattern(b *testing.B) {
 	files := generateRealisticFileList(500)
 
 	b.ResetTimer()
 	b.ReportAllocs()
 
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		// This is what actually happens in NodeToClone
 		clone := Clone{}
 		clone.SetFilename(files[i%len(files)])
@@ -95,11 +95,11 @@ func BenchmarkStringPool_NodeToClonePattern(b *testing.B) {
 	}
 }
 
-// Generate realistic file names for a Go project
+// Generate realistic file names for a Go project.
 func generateRealisticFileList(count int) []string {
 	files := make([]string, count)
 
-	for i := 0; i < count; i++ {
+	for i := range count {
 		// Simulate realistic project structure
 		packages := []string{
 			"cmd", "pkg", "internal", "api", "web", "scripts",
@@ -123,14 +123,14 @@ func generateRealisticFileList(count int) []string {
 
 	// Add lots of duplicate patterns (realistic!)
 	dupCount := count / 4
-	for i := 0; i < dupCount; i++ {
+	for i := range dupCount {
 		files[i] = files[dupCount+i%100] // Reuse filenames
 	}
 
 	return files
 }
 
-// Generate realistic code fragments
+// Generate realistic code fragments.
 func generateRealisticCodeFragments() []string {
 	return []string{
 		`func main() { fmt.Println("Hello, World!") }`,
@@ -146,7 +146,7 @@ func generateRealisticCodeFragments() []string {
 	}
 }
 
-// BenchmarkStringPool_ContentionProfile is for manual profiling
+// BenchmarkStringPool_ContentionProfile is for manual profiling.
 func BenchmarkStringPool_ContentionProfile(b *testing.B) {
 	// Run this with: go test -bench=BenchmarkStringPool_ContentionProfile -cpuprofile=cpu.prof -mutexprofile=mutex.prof
 

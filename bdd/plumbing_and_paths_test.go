@@ -85,7 +85,7 @@ func duplicate() { println(1) }`
 				}
 				// Format: path/to/file.go:start,end
 				parts := strings.Split(line, ":")
-				Expect(len(parts)).To(Equal(2))
+				Expect(parts).To(HaveLen(2))
 				Expect(parts[0]).To(MatchRegexp(`\.go$`))
 				Expect(parts[1]).To(MatchRegexp(`\d+,\d+$`))
 			}

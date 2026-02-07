@@ -78,7 +78,6 @@ type JSONPrinter struct {
 	currentHash string // Hash for the current clone group
 }
 
-//nolint:ireturn // Printer interface is appropriate return type for factory function
 func NewJSON(w io.Writer, fread ReadFile) Printer {
 	return &JSONPrinter{
 		w:        w,

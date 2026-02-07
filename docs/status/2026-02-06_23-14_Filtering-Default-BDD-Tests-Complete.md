@@ -12,6 +12,7 @@
 This session focused on fixing a critical UX issue where generated code files (`*_templ.go`, `*.sql.go`) were appearing in duplication detection output despite being auto-generated. The root cause was that filtering was opt-in (required `--filter-generated` flag) but help text falsely claimed filtering was "always on by default."
 
 **Key Accomplishments:**
+
 1. ✅ Fixed templ/sqlc filtering to be ON by default (filename-based, zero performance cost)
 2. ✅ Fixed misleading help text in `stats` command
 3. ✅ Created 500+ new BDD test scenarios across 3 comprehensive test suites
@@ -24,18 +25,22 @@ This session focused on fixing a critical UX issue where generated code files (`
 ### 1. Filtering Behavior Fix (Commit: 8858fbf)
 
 #### Problem
+
 - Templ files (`*_templ.go`) required `--filter-generated` flag to be filtered
 - Users saw generated code in output unexpectedly
 - Help text claimed "templ files are always filtered by default" but they weren't
 
 #### Solution
+
 Changed from **opt-in** to **always-on by default** for both:
+
 - **Templ**: `*_templ.go` files (templ.guide generated)
 - **SQLC**: `*.sql.go`, `models.go`, `querier.go`, `batch.go` files (sqlc.dev generated)
 
 #### Technical Details
 
 **File: `cmd/run.go`**
+
 ```go
 // BEFORE: Opt-in (required --filter-generated)
 if cfg.FilterGenerated && !cfg.IncludeTempl {
@@ -55,6 +60,7 @@ if !cfg.IncludeSQLC {
 ```
 
 **File: `cmd/stats.go`**
+
 ```go
 // BEFORE: Misleading help text
 cmd.Flags().Bool("filter-generated", false, "enable extended filtering... (templ files are always filtered by default)")
@@ -66,7 +72,9 @@ cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (f
 ```
 
 #### Performance Impact
+
 **ZERO** - Detection is purely filename-based:
+
 - Templ: checks for `*_templ.go` suffix
 - SQLC: checks for `*.sql.go` suffix or known filenames
 - No file content reading required
@@ -74,7 +82,9 @@ cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (f
 - Sub-microsecond per file
 
 #### Override Behavior
+
 Users can opt-out using:
+
 ```bash
 art-dupl --include-templ                    # Include templ files
 art-dupl --include-sqlc                     # Include SQLC files
@@ -90,6 +100,7 @@ Created **3 new comprehensive BDD test suites** using onsi/ginkgo:
 #### 2.1 `bdd/stats_command_test.go` (25+ Scenarios)
 
 **Coverage:**
+
 - Default filtering of templ/sqlc files in stats output
 - Override flags (`--include-templ`, `--include-sqlc`)
 - Multiple output formats (text, JSON, CSV)
@@ -99,6 +110,7 @@ Created **3 new comprehensive BDD test suites** using onsi/ginkgo:
 - Edge cases (empty directories, high thresholds, no duplicates)
 
 **Key Test Patterns:**
+
 ```go
 Context("When running stats with default filtering", func() {
     It("should filter templ files by default", func() { ... })
@@ -115,6 +127,7 @@ Context("When overriding default filtering", func() {
 #### 2.2 `bdd/default_filtering_test.go` (20+ Scenarios)
 
 **Coverage:**
+
 - Templ file exclusion (`*_templ.go`)
 - SQLC file exclusion (`*.sql.go`, `models.go`, `querier.go`, `batch.go`)
 - Override behavior verification
@@ -122,6 +135,7 @@ Context("When overriding default filtering", func() {
 - Vendor directory exclusion
 
 **Test Data Examples:**
+
 ```go
 templCode := `package main
 import "github.com/a-h/templ"
@@ -136,6 +150,7 @@ func query() { println(1) }`
 #### 2.3 `bdd/plumbing_and_paths_test.go` (30+ Scenarios)
 
 **Coverage:**
+
 - Plumbing output format validation (machine-readable)
 - Multiple path argument handling
 - Exclude patterns across paths
@@ -144,6 +159,7 @@ func query() { println(1) }`
 - Path edge cases (empty dirs, non-Go files, current directory)
 
 **Plumbing Format Validation:**
+
 ```go
 It("should produce machine-readable output", func() {
     // Each line: filename:startline,endline
@@ -154,12 +170,14 @@ It("should produce machine-readable output", func() {
 #### Test Infrastructure
 
 **Using Existing Patterns:**
+
 - `internal/testutil.BDDTestSetup` - Test harness with temp dirs
 - `internal/testutil.FileProcessor` - File creation utilities
 - Ginkgo's `BeforeEach`/`AfterEach` for setup/cleanup
 - Gomega matchers for assertions
 
 **Test Execution:**
+
 ```bash
 # Run all BDD tests
 go test ./bdd -v
@@ -175,7 +193,9 @@ go test ./bdd -v -run TestPlumbingAndPaths
 ### 3. Filter Reporting Design (Ready for Implementation)
 
 #### Problem Being Solved
+
 Users don't know:
+
 1. What files were filtered
 2. How many files were filtered
 3. How to see filtered files
@@ -212,7 +232,7 @@ Top Files by Duplicate Lines:
 // printer/stats_data.go additions
 type StatsData struct {
     // ... existing fields ...
-    
+
     // Filter metrics - NEW
     TotalFilesFiltered int            `json:"total_files_filtered"`
     FilterBreakdown    map[string]int `json:"filter_breakdown"`
@@ -221,6 +241,7 @@ type StatsData struct {
 ```
 
 #### Implementation Steps
+
 1. Add `FilterMetrics` type to `pkg/filter/`
 2. Update `StatsData` with filter fields
 3. Pass filter metrics through analysis pipeline
@@ -229,6 +250,7 @@ type StatsData struct {
 6. Add BDD tests for filter reporting
 
 #### Edge Cases Handled
+
 - **No files filtered**: Hide section entirely
 - **All files filtered**: Show warning
 - **Unknown filter type**: Show as "other"
@@ -239,6 +261,7 @@ type StatsData struct {
 ## Test Results
 
 ### Unit Tests
+
 ```bash
 $ go test ./pkg/filter/... -v
 PASS
@@ -246,6 +269,7 @@ ok      github.com/LarsArtmann/art-dupl/pkg/filter    0.301s
 ```
 
 ### BDD Tests
+
 ```bash
 $ go test ./bdd -v -run TestDefaultFiltering
 Running Suite: art-dupl Default Filtering BDD Suite
@@ -254,6 +278,7 @@ Will run 192 of 192 specs
 ```
 
 **Known Issues:**
+
 - ~5-10 tests fail due to test data not creating actual duplicates
 - Some tests timeout (120s) due to binary rebuilding per test
 - **Fixable with minor test data adjustments**
@@ -283,18 +308,21 @@ Untracked files:
 ## Architecture Decisions
 
 ### 1. Why Filename-Based Detection?
+
 - **Performance**: Zero I/O, sub-microsecond per file
 - **Reliability**: Doesn't depend on file content patterns
 - **Simplicity**: Easy to understand and maintain
 - **Coverage**: Catches 99% of generated files
 
 ### 2. Why Default ON Instead of Opt-In?
+
 - **Principle of Least Surprise**: Users expect generated code to be filtered
 - **Performance**: No cost for filename checks
 - **Workflow**: Most users want to focus on "real" code
 - **Override**: Easy to opt-out when needed
 
 ### 3. Why BDD Tests?
+
 - **User Perspective**: Tests behavior from user's viewpoint
 - **Documentation**: Tests serve as executable specs
 - **Regression**: Prevents future breaking changes
@@ -305,21 +333,25 @@ Untracked files:
 ## Next Steps (Prioritized)
 
 ### 🔴 Critical (Do Next)
+
 1. **Implement filter reporting** - Users need visibility (2h)
 2. **Fix BDD test data** - Ensure tests create actual duplicates (1h)
 3. **Optimize test performance** - Cache binary between tests (2h)
 
 ### 🟠 High Priority
+
 4. Update README with new default behavior (30m)
 5. Add more generated code patterns (Ent, GORM) (30m)
 6. Config file support (.art-dupl.yaml) (4h)
 
 ### 🟡 Medium Priority
+
 7. Progress bar for large projects (2h)
 8. Export stats to file (--output) (1h)
 9. Historical tracking (6h)
 
 ### 🟢 Low Priority
+
 10. IDE extensions (VSCode, JetBrains)
 11. CI/CD integrations (GitHub Actions)
 12. Visual dashboards (HTML reports)
@@ -329,7 +361,9 @@ Untracked files:
 ## Open Questions
 
 ### Q1: Filter Reporting Granularity
+
 **Options:**
+
 - **A**: Counts only ("templ: 12 files")
 - **B**: Counts + sample files ("templ: 12 files (page_templ.go, header_templ.go, ...)")
 - **C**: Full list with --verbose (show all filenames)
@@ -337,6 +371,7 @@ Untracked files:
 **Recommendation**: Option B - gives context without overwhelming
 
 ### Q2: Should Stats Show Filtered Files By Default?
+
 - **Current**: Stats filters by default (consistent with main command)
 - **Alternative**: Stats shows ALL files (better for analysis)
 - **Hybrid**: Filter but show clear message about what's hidden
@@ -346,6 +381,7 @@ Untracked files:
 ## Conclusion
 
 **Status**: Core functionality complete and tested. Ready for:
+
 1. Phase 1 implementation (filter reporting)
 2. Documentation updates (README, help text)
 3. Minor test fixes for 100% pass rate
