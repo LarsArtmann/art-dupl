@@ -128,9 +128,9 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]str
 	args := []string{dir}
 	for flag, value := range flags {
 		if value != "" {
-			args = append(args, fmt.Sprintf("--%s", flag), value)
+			args = append(args, "--"+flag, value)
 		} else {
-			args = append(args, fmt.Sprintf("--%s", flag))
+			args = append(args, "--"+flag)
 		}
 	}
 
@@ -147,14 +147,39 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 	args := []string{"--files"}
 	for flag, value := range flags {
 		if value != "" {
-			args = append(args, fmt.Sprintf("--%s", flag), value)
+			args = append(args, "--"+flag, value)
 		} else {
-			args = append(args, fmt.Sprintf("--%s", flag))
+			args = append(args, "--"+flag)
 		}
 	}
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
 	cmd.Stdin = strings.NewReader(stdin)
+	return cmd.CombinedOutput()
+}
+
+// RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
+// The subcommand name should be the first argument, followed by flags and the directory.
+// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10")
+func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	// Append the temp directory at the end if not already specified
+	hasDir := false
+	for _, arg := range args {
+		if arg == s.TmpDir {
+			hasDir = true
+			break
+		}
+	}
+
+	if !hasDir {
+		args = append(args, s.TmpDir)
+	}
+
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
 	return cmd.CombinedOutput()
 }
 

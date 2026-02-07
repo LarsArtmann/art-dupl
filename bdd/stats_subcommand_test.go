@@ -59,7 +59,7 @@ func processData(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats subcommand
-			output, err := setup.RunArtDupl("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -81,7 +81,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -103,7 +103,7 @@ func duplicate() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON format - separate stdout from stderr
-			cmd := exec.Command(setup.BinaryPath, "stats", setup.TmpDir, "--format", "json", "--threshold", "10")
+			cmd := exec.Command(setup.BinaryPath, "stats", "--format", "json", "--threshold", "10", setup.TmpDir)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -166,7 +166,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with CSV format - separate stdout
-			cmd := exec.Command(setup.BinaryPath, "stats", setup.TmpDir, "--format", "csv", "--threshold", "10")
+			cmd := exec.Command(setup.BinaryPath, "stats", "--format", "csv", "--threshold", "10", setup.TmpDir)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -186,7 +186,7 @@ func small() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with high threshold
-			output, err := setup.RunArtDupl("stats", "--threshold", "100")
+			output, err := setup.RunSubcommand("stats", "--threshold", "100")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -205,7 +205,7 @@ func vendorTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats without vendor flag
-			output, err := setup.RunArtDupl("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should complete successfully
@@ -220,7 +220,7 @@ func vendorCode() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with vendor flag
-			output, err := setup.RunArtDupl("stats", "--vendor", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--vendor", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should complete successfully
@@ -245,7 +245,7 @@ func pkgFunc() {}`
 
 			// Run stats on specific path
 			specificPath := setup.GetFilePath("pkg1")
-			output, err := setup.RunArtDupl("stats", specificPath, "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10", specificPath)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -265,7 +265,7 @@ func hashTest() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with hash detection
-			output, err := setup.RunArtDupl("stats", "--detection-methods", "hash", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--detection-methods", "hash", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -282,7 +282,7 @@ func artDuplTest() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with art-dupl detection
-			output, err := setup.RunArtDupl("stats", "--detection-methods", "art-dupl", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--detection-methods", "art-dupl", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -299,7 +299,7 @@ func filterTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with filter-generated
-			output, err := setup.RunArtDupl("stats", "--filter-generated", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--filter-generated", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -315,7 +315,7 @@ func SQLCFunc() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with include-sqlc
-			output, err := setup.RunArtDupl("stats", "--include-sqlc", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--include-sqlc", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -326,7 +326,7 @@ func SQLCFunc() {}`
 	Context("When running stats on empty directories", func() {
 		It("should handle empty directory gracefully", func() {
 			// Run stats on empty temp directory
-			output, err := setup.RunArtDupl("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should produce output even for empty directory
@@ -339,7 +339,7 @@ func SQLCFunc() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -357,7 +357,7 @@ func verboseTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with verbose flag
-			output, err := setup.RunArtDupl("stats", "-v", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "-v", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(output).ToNot(BeNil())
@@ -371,7 +371,7 @@ func verboseTest2() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with multiple verbose flags
-			output, err := setup.RunArtDupl("stats", "-vv", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "-vv", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(output).ToNot(BeNil())
@@ -395,7 +395,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 	Context("When running stats with invalid inputs", func() {
 		It("should handle non-existent path gracefully", func() {
 			// Run stats on non-existent path
-			output, err := setup.RunArtDupl("stats", "/nonexistent/path")
+			output, err := setup.RunSubcommand("stats", "/nonexistent/path")
 			// May error but should not panic
 			_ = err
 			Expect(string(output)).ToNot(BeEmpty())
@@ -409,7 +409,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid format
-			output, err := setup.RunArtDupl("stats", "--format", "invalid_format", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--format", "invalid_format", "--threshold", "10")
 			// Should either error or use default
 			_ = err
 			Expect(output).ToNot(BeNil())
