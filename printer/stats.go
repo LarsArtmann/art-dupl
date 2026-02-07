@@ -58,6 +58,7 @@ import (
 	"io"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -74,9 +75,10 @@ import (
 // Also: This file is 639 lines - getting large. Consider splitting:
 // - stats_data.go for StatsData type and methods
 // - stats_format.go for formatting logic
-// - stats_calc.go for calculation logic
+// - stats_calc.go for calculation logic.
 type stats struct {
 	ReadFile
+
 	w         io.Writer
 	threshold int
 	format    Format
@@ -167,6 +169,13 @@ func initStyles() styleConfig {
 // SetFilesCount sets the total number of files scanned.
 func (p *stats) SetFilesCount(count int) {
 	p.statsData.TotalFilesScanned = count
+}
+
+// SetFilterStats sets the filter statistics from the filter package.
+// This allows the stats printer to report how many files were filtered and why.
+func (p *stats) SetFilterStats(filesFiltered int, breakdown map[string]int) {
+	p.statsData.FilesFiltered = filesFiltered
+	p.statsData.FilterBreakdown = breakdown
 }
 
 // SetAnalysisDuration sets the analysis duration.
@@ -328,6 +337,9 @@ func (p *stats) printCSV() {
 
 	// Overview
 	fmt.Fprintf(p.w, "Files Scanned,%d\n", p.statsData.TotalFilesScanned)
+	if p.statsData.FilesFiltered > 0 {
+		fmt.Fprintf(p.w, "Files Filtered,%d\n", p.statsData.FilesFiltered)
+	}
 	fmt.Fprintf(p.w, "Clone Groups,%d\n", p.statsData.TotalCloneGroups)
 	fmt.Fprintf(p.w, "Total Clones,%d\n", p.statsData.TotalClones)
 	fmt.Fprintf(p.w, "\n")
@@ -363,22 +375,41 @@ func (p *stats) printText() {
 
 	// Print overview
 	fmt.Fprintf(p.w, "%s\n", p.section.Render("Overview:"))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Scanned:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalFilesScanned)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Clone Groups:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalCloneGroups)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Clones:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalClones)))
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Scanned:"), p.base.Render(strconv.Itoa(p.statsData.TotalFilesScanned)))
+
+	// Print filter information if files were filtered
+	if p.statsData.FilesFiltered > 0 {
+		filterPercent := float64(p.statsData.FilesFiltered) / float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
+		filterText := fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent)
+		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Filtered:"), p.base.Render(filterText))
+
+		// Print filter breakdown
+		if len(p.statsData.FilterBreakdown) > 0 {
+			fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filtering Breakdown:"))
+			for reason, count := range p.statsData.FilterBreakdown {
+				fmt.Fprintf(p.w, "  %s %s: %s\n",
+					p.metric.Render("•"),
+					p.base.Render(reason),
+					p.base.Render(fmt.Sprintf("%d files", count)))
+			}
+		}
+	}
+
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Clone Groups:"), p.base.Render(strconv.Itoa(p.statsData.TotalCloneGroups)))
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Clones:"), p.base.Render(strconv.Itoa(p.statsData.TotalClones)))
 	fmt.Fprintf(p.w, "\n")
 
 	// Print duplicate code metrics
 	fmt.Fprintf(p.w, "%s\n", p.section.Render("Duplicate Code:"))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Lines:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalDuplicateLines)))
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalDuplicateLines)))
 	if p.statsData.TotalEstimatedLines > 0 {
-		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Estimated Total Lines:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalEstimatedLines)))
+		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Estimated Total Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalEstimatedLines)))
 		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Duplication Ratio:"), p.healthScoreStyle(p.statsData.HealthScore).Render(fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio)))
 	}
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Tokens:"), p.base.Render(fmt.Sprintf("%d", p.statsData.TotalTokens)))
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Tokens:"), p.base.Render(strconv.Itoa(p.statsData.TotalTokens)))
 	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Average Clone Size:"), p.base.Render(fmt.Sprintf("%d lines", p.statsData.AverageCloneSize)))
 	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Complexity Score:"), p.base.Render(fmt.Sprintf("%.2f", p.statsData.ComplexityScore)))
-	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Impact Score:"), p.base.Render(fmt.Sprintf("%d", p.statsData.ImpactScore)))
+	fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Impact Score:"), p.base.Render(strconv.Itoa(p.statsData.ImpactScore)))
 	if p.statsData.HealthScore != "" {
 		fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Health Score:"), p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore))
 	}
@@ -484,9 +515,11 @@ func (p *stats) printJSON() {
 			DetectionMethods string `json:"detectionMethods"`
 		} `json:"configuration"`
 		Overview struct {
-			FilesScanned int `json:"filesScanned"`
-			CloneGroups  int `json:"cloneGroups"`
-			TotalClones  int `json:"totalClones"`
+			FilesScanned   int            `json:"filesScanned"`
+			FilesFiltered  int            `json:"filesFiltered,omitempty"`
+			FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
+			CloneGroups    int            `json:"cloneGroups"`
+			TotalClones    int            `json:"totalClones"`
 		} `json:"overview"`
 		DuplicateCode struct {
 			TotalLines       int     `json:"totalDuplicateLines"`
@@ -517,6 +550,14 @@ func (p *stats) printJSON() {
 	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned
 	jsonData.Overview.CloneGroups = p.statsData.TotalCloneGroups
 	jsonData.Overview.TotalClones = p.statsData.TotalClones
+
+	// Fill filter info if available
+	if p.statsData.FilesFiltered > 0 {
+		jsonData.Overview.FilesFiltered = p.statsData.FilesFiltered
+		if len(p.statsData.FilterBreakdown) > 0 {
+			jsonData.Overview.FilterBreakdown = p.statsData.FilterBreakdown
+		}
+	}
 
 	// Fill duplicate code metrics
 	jsonData.DuplicateCode.TotalLines = p.statsData.TotalDuplicateLines
@@ -556,7 +597,7 @@ func (p *stats) printJSON() {
 		}
 
 		// Sort by lines descending
-		for i := 0; i < len(files)-1; i++ {
+		for i := range len(files) - 1 {
 			for j := i + 1; j < len(files); j++ {
 				if files[i].lines < files[j].lines {
 					files[i], files[j] = files[j], files[i]
