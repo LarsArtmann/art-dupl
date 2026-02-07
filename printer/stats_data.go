@@ -19,6 +19,7 @@ package printer
 // - Quality metrics: DuplicationRatio, HealthScore
 // - Time metrics: AnalysisDuration, Timestamp
 // - Aggregation metrics: FileDuplication, SizeDistribution
+// - Filter metrics: FilesFiltered, FilterBreakdown (NEW)
 // - Metadata: DetectionMethods
 //
 // Domain Types Status:
@@ -28,7 +29,7 @@ package printer
 //
 // JSON Marshaling:
 // - All fields are JSON tagged for easy marshaling
-// - Use printer.JSONPrinter for formatted JSON output
+// - Use printer.JSONPrinter for formatted JSON output.
 type StatsData struct {
 	// Count metrics
 	TotalFilesScanned int `json:"total_files_scanned"`
@@ -56,6 +57,10 @@ type StatsData struct {
 	// Aggregation metrics
 	FileDuplication  map[string]int `json:"file_duplication"`  // filename -> duplicate line count
 	SizeDistribution map[string]int `json:"size_distribution"` // size range -> count
+
+	// Filter metrics (NEW)
+	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out
+	FilterBreakdown map[string]int `json:"filter_breakdown,omitempty"` // Reason -> count (e.g., "templ" -> 12)
 
 	// Metadata
 	DetectionMethods string `json:"detection_methods"` // Comma-separated detection methods used

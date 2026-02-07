@@ -20,7 +20,7 @@ func main() {
 }
 
 // createNodeSlice creates a slice of syntax.Node with sequential positions and types.
-// startPos is the starting position (inclusive), endPos is the ending position (inclusive)
+// startPos is the starting position (inclusive), endPos is the ending position (inclusive).
 func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 	var nodes []*syntax.Node
 	for i := 0; i <= endPos-startPos; i++ {
@@ -37,7 +37,7 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 	return nodes
 }
 
-// printFooterAndGetData is a helper function to call PrintFooter and return stats data
+// printFooterAndGetData is a helper function to call PrintFooter and return stats data.
 func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 	if err := statsPrinter.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
@@ -148,7 +148,7 @@ func TestStatsDataAggregation(t *testing.T) {
 	}
 }
 
-// createCloneNodeGroup creates a group of clone nodes with specified files
+// createCloneNodeGroup creates a group of clone nodes with specified files.
 func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 	var dups [][]*syntax.Node
 	for _, filename := range filenames {
@@ -699,5 +699,96 @@ func TestPrintRecommendations(t *testing.T) {
 				t.Error("Recommendations should include 'Next Steps:' section")
 			}
 		})
+	}
+}
+
+func TestSetFilterStats(t *testing.T) {
+	tests := []struct {
+		name            string
+		filesFiltered   int
+		breakdown       map[string]int
+		wantFiltered    int
+		wantBreakdown   map[string]int
+	}{
+		{
+			name:          "no filters applied",
+			filesFiltered: 0,
+			breakdown:     nil,
+			wantFiltered:  0,
+			wantBreakdown: nil,
+		},
+		{
+			name:          "templ files filtered",
+			filesFiltered: 12,
+			breakdown:     map[string]int{"templ": 12},
+			wantFiltered:  12,
+			wantBreakdown: map[string]int{"templ": 12},
+		},
+		{
+			name:          "multiple filter types",
+			filesFiltered: 45,
+			breakdown:     map[string]int{"templ": 12, "sqlc": 8, "vendor": 25},
+			wantFiltered:  45,
+			wantBreakdown: map[string]int{"templ": 12, "sqlc": 8, "vendor": 25},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := &bytes.Buffer{}
+			sp := NewStats(buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+
+			sp.SetFilterStats(tt.filesFiltered, tt.breakdown)
+
+			data := sp.GetStatsData().(*StatsData)
+
+			if data.FilesFiltered != tt.wantFiltered {
+				t.Errorf("FilesFiltered = %d, want %d", data.FilesFiltered, tt.wantFiltered)
+			}
+
+			if tt.wantBreakdown == nil {
+				if data.FilterBreakdown != nil {
+					t.Errorf("FilterBreakdown = %v, want nil", data.FilterBreakdown)
+				}
+			} else {
+				if len(data.FilterBreakdown) != len(tt.wantBreakdown) {
+					t.Errorf("FilterBreakdown length = %d, want %d", len(data.FilterBreakdown), len(tt.wantBreakdown))
+				}
+				for key, want := range tt.wantBreakdown {
+					if got := data.FilterBreakdown[key]; got != want {
+						t.Errorf("FilterBreakdown[%q] = %d, want %d", key, got, want)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestFilterStatsInJSONOutput(t *testing.T) {
+	buf := &bytes.Buffer{}
+	sp := NewStats(buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+
+	// Set up stats with filter information
+	sp.SetFilesCount(100)
+	sp.SetFilterStats(25, map[string]int{"templ": 10, "sqlc": 8, "vendor": 7})
+	sp.statsData.TotalCloneGroups = 5
+	sp.statsData.TotalClones = 10
+	sp.statsData.DetectionMethods = "art-dupl"
+
+	// Print footer to generate output
+	if err := sp.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter failed: %v", err)
+	}
+
+	// Verify the data was stored correctly
+	data := sp.GetStatsData().(*StatsData)
+	if data.FilesFiltered != 25 {
+		t.Errorf("FilesFiltered = %d, want 25", data.FilesFiltered)
+	}
+	if len(data.FilterBreakdown) != 3 {
+		t.Errorf("FilterBreakdown length = %d, want 3", len(data.FilterBreakdown))
+	}
+	if data.FilterBreakdown["templ"] != 10 {
+		t.Errorf("FilterBreakdown[templ] = %d, want 10", data.FilterBreakdown["templ"])
 	}
 }
