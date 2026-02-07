@@ -19,4 +19,5 @@ cover.out
 # Output directories for reports
 reports/
 my-reports/
---output-dir/
+# BDD test binaries
+bdd/art-dupl-*
