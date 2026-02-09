@@ -501,14 +501,17 @@ import (
 ### Package Dependencies
 
 **Runtime dependencies**:
+
 - `github.com/charmbracelet/fang`: Professional CLI framework
 - `github.com/spf13/cobra`: Command-line interface
 
 **Testing dependencies**:
+
 - `github.com/onsi/ginkgo/v2`: BDD testing framework
 - `github.com/onsi/gomega`: Gomega matchers for Ginkgo
 
 **Development dependencies**:
+
 - `github.com/golangci/golangci-lint`: Linter (development only)
 
 ### Package Organization
@@ -631,6 +634,7 @@ The `docs/` directory contains comprehensive documentation:
 ### Multi-Method Detection
 
 The detection architecture supports multiple algorithms:
+
 1. **Suffix Tree (art-dupl)**: Original algorithm on AST tokens
 2. **Hash-based**: Rolling hash on file content for faster detection
 3. **Combinations**: Run both for comprehensive analysis
@@ -640,6 +644,7 @@ Each method runs independently via goroutines, results combined and deduplicated
 ### Domain Types
 
 Strong typing throughout the codebase:
+
 - `domain.Clone`: Type-safe clone representation
 - `domain.CloneGroup`: Grouped clones with metadata
 - `domain.StringPool`: Efficient string deduplication
@@ -648,6 +653,7 @@ Strong typing throughout the codebase:
 ### Printer Adapter Pattern
 
 The `adapter/` package provides abstraction over output formats:
+
 - Interface-based design for extensibility
 - Format-specific implementations (text, HTML, JSON, plumbing, stats)
 - Sorting and filtering capabilities built-in
@@ -655,6 +661,7 @@ The `adapter/` package provides abstraction over output formats:
 ### Configuration System
 
 Multi-layered configuration:
+
 1. Default configuration
 2. JSON config file (optional)
 3. CLI flags (override all)
@@ -666,6 +673,7 @@ Configuration merging and validation ensures consistency.
 ### Memory File Instructions
 
 Check `~/.config/crush/AGENTS.md` for general agent instructions that apply to all projects, including:
+
 - Development standards and quality mandates
 - Testing requirements (100% automated)
 - Commit workflow standards
@@ -677,6 +685,7 @@ Project-specific AGENTS.md (this file) takes precedence over general instruction
 ### Continuous Improvement
 
 This project follows strict quality standards:
+
 - Zero tolerance for technical debt
 - Fix issues on sight
 - Refactor immediately when code exceeds 300 lines or 30 lines per function
@@ -686,6 +695,7 @@ This project follows strict quality standards:
 ### Build System
 
 **CRITICAL**: Always prefer justfile commands over Makefile commands:
+
 - Justfile: `just build`, `just test`, `just check`, etc.
 - Makefile: Only use if justfile unavailable
 - Makefile uses `GOEXPERIMENT=jsonv2` for JSON v2 support
