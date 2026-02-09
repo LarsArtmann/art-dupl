@@ -1,58 +1,144 @@
-# AGENTS.md - dupl Repository Guide
+# AGENTS.md - art-dupl Repository Guide
 
-This document provides essential information for AI agents working on the **dupl** repository - a Go tool for finding code clones using suffix tree algorithms.
+This document provides essential information for AI agents working on the **art-dupl** repository - a Go tool for finding code clones using suffix tree algorithms with multi-method detection support.
 
 ## Project Overview
 
-**dupl** is a code duplication detection tool specifically for Go source files. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. The tool uses suffix tree algorithms to efficiently identify duplicate code patterns.
+**art-dupl** is a modern code duplication detection tool for Go source files. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. The tool supports multiple detection algorithms, professional CLI with Fang framework, and comprehensive output formats.
+
+### Key Features
+
+- **Multi-method detection**: Suffix tree algorithm (art-dupl) and hash-based detection
+- **Professional CLI**: Built with Fang framework (Cobra) with auto-completion and version info
+- **Multiple output formats**: Text, HTML, JSON, plumbing, and CSV (for stats)
+- **Statistics subcommand**: Aggregated duplication metrics and project overview
+- **Smart filtering**: SQLC and templ generated code filtering with pattern matching
+- **Configuration files**: JSON-based configuration for team consistency
+- **Sorting options**: By size, occurrence, or hash
+- **BDD tests**: Ginkgo/Gomega behavior-driven development test suite
 
 ### Core Architecture
 
-- **Main Package**: Entry point and CLI interface in `main.go`
-- **suffixtree**: Core suffix tree implementation for clone detection
-- **syntax**: AST handling, serialization, and node processing
-- **job**: Orchestrates file parsing and tree building
-- **printer**: Output formatting (text, HTML, plumbing formats)
-- **lib**: Utility functions and test helpers
+#### Primary Packages
+
+- **cmd/**: CLI command definitions (root, stats, version)
+- **config/**: Configuration management and validation
+- **cli/**: CLI runtime, validation, and sorting logic
+- **detection/**: Multi-method detection coordination (art-dupl, hash, todos, legacy)
+- **suffixtree/**: Core suffix tree implementation for AST-based detection
+- **syntax/**: AST handling, serialization, and node processing
+- **hash/**: Rolling hash-based detection implementation
+- **job/**: Orchestrates file parsing and tree building with profiling
+- **printer/**: Output formatting (text, HTML, JSON, plumbing, stats)
+- **adapter/**: Adapter pattern for printer abstraction
+
+#### Supporting Packages
+
+- **domain/**: Domain types and models (Clone, CloneGroup, StringPool)
+- **types/**: Type definitions and shared types
+- **errors/**: Error handling with typed error wrappers
+- **pkg/**: Utility packages (artdupl, position, logger, filter)
+- **internal/**: Internal utilities (testutil, enum, utils, simd)
+- **migration/**: Migration utilities for version compatibility
+- **lib/**: Legacy utility functions (being phased out)
 
 ## Development Commands
 
-### Essential Commands
+### Essential Commands (Prefer Justfile)
+
+**IMPORTANT**: According to project standards, always prefer justfile commands (95% of cases). Only use make commands if justfile is unavailable.
 
 ```bash
 # Build the project
-make build
-# or
-go build -ldflags "-s -w" -trimpath
+just build
+# Output: dist/art-dupl
 
-# Run tests
-make test
-# or
-go test -v -cover ./...
+# Run all development tasks (clean, check, test, build)
+just default
+# or just:
+just
+
+# Run tests with coverage
+just test
 
 # Run linting
-make check
-# or
-golangci-lint run
+just check
 
 # Clean build artifacts
-make clean
+just clean
 
-# Run all development tasks
-make  # Runs clean, check, test, build in sequence
+# Format code
+just fmt
+
+# Run all checks (format, lint, test)
+just ci
+
+# Install locally
+just install-local
+```
+
+### Advanced Testing Commands
+
+```bash
+# Run tests with race detector
+just test-race
+
+# Generate coverage report
+just coverage
+# Output: coverage.html
+
+# Run benchmarks
+just bench
+
+# Check coverage meets 80% threshold
+just check-coverage
+
+# Run fuzz tests
+just test-fuzz
+
+# Run fuzz tests with longer duration
+just test-fuzz-long
+
+# Run unit tests only (exclude integration/bdd)
+just test-unit
+
+# Run integration tests only
+just test-integration
+
+# Run benchmarks with allocations reporting
+just bench-allocs
+```
+
+### Alternative Makefile Commands
+
+Makefile uses `GOEXPERIMENT=jsonv2` flag for JSON v2 support:
+
+```bash
+make build    # Build with JSONv2 experiment
+make test     # Test with JSONv2 experiment
+make check    # Lint with JSONv2 experiment
+make clean    # Clean build artifacts
 ```
 
 ### Building the CLI Tool
 
 ```bash
-# Build for current platform
-go build
+# Build with justfile (recommended)
+just build
+# Output: dist/art-dupl
 
-# Build with production flags
-go build -ldflags "-s -w" -trimpath
+# Install locally with justfile (recommended)
+just install-local
+# Output: $GOPATH/bin/art-dupl
+
+# Manual build (if justfile unavailable)
+go build -ldflags "-s -w" -trimpath -o art-dupl ./cmd/art-dupl
 
 # Run the tool
-./dupl [flags] [paths]
+./art-dupl [flags] [paths]
+
+# Or if installed
+art-dupl [flags] [paths]
 ```
 
 ## Code Patterns and Conventions
@@ -64,6 +150,7 @@ go build -ldflags "-s -w" -trimpath
 - Error handling with explicit returns, no panics for expected errors
 - Package-level constants for configuration values
 - Clear separation between public and private APIs
+- Dependency injection with `samber/do` for complex dependencies
 
 ### Naming Conventions
 
@@ -72,8 +159,16 @@ go build -ldflags "-s -w" -trimpath
 - Private functions use camelCase
 - Constants use UPPER_SNAKE_CASE
 - Error variables follow the `Err` prefix pattern
+- Interface names often use -er suffix (e.g., `StatsPrinter`)
 
 ### Project-Specific Patterns
+
+#### Multi-Method Detection
+
+- Detection coordinated by `detection.MultiDetector`
+- Each detection method runs independently via goroutines
+- Results combined and deduplicated through channels
+- Detection methods configurable via `config.DetectionMethods`
 
 #### Suffix Tree Implementation
 
@@ -81,6 +176,7 @@ go build -ldflags "-s -w" -trimpath
 - Node-based tree structure with transition maps
 - Stream processing for handling large codebases
 - Threshold-based filtering to eliminate noise
+- SIMD optimizations for performance (via internal/simd)
 
 #### AST Processing
 
@@ -94,36 +190,95 @@ go build -ldflags "-s -w" -trimpath
 - Goroutine-based pipeline processing (parse → serialize → build tree)
 - Channel-based communication between stages
 - Explicit synchronization with done channels
+- Multiple detection methods run in parallel when configured
+
+#### Domain Types
+
+- Domain models in `domain/` package with typed IDs
+- StringPool for efficient string deduplication
+- Clone and CloneGroup types for type-safe clone representation
+- Strong typing prevents impossible states
+
+#### Printer Adapter Pattern
+
+- `adapter/` package provides abstraction over printer implementations
+- Interface-based design for multiple output formats
+- Format-specific printers (text, HTML, JSON, plumbing, stats)
+- Sortable output with configurable sorting options
 
 ## Testing Approach
 
 ### Test Structure
 
 - Tests follow Go conventions with `_test.go` files
-- Use standard `testing` package
+- Use standard `testing` package for unit tests
+- **BDD tests** use Ginkgo/Gomega framework in `bdd/` directory
 - Table-driven tests for multiple scenarios
-- Performance testing for large inputs
+- Performance testing with benchmarks (`_bench_test.go`)
+- Fuzz testing for robustness (`fuzz/` directory)
 
 ### Test Categories
 
-- Unit tests for core algorithms (suffixtree package)
-- Integration tests for end-to-end workflows
-- Performance tests with large synthetic data
-- Template-based test data generation
+- **BDD tests**: Behavior-driven development tests in `bdd/` package using Ginkgo/Gomega
+  - User workflow scenarios
+  - CLI command integration tests
+  - Configuration file tests
+  - Filter feature tests
+  - Sorting tests
+  - Stats subcommand tests
+  - Plumbing and output tests
+- **Unit tests**: Core algorithms (suffixtree, syntax, hash packages)
+- **Integration tests**: End-to-end workflows in `internal/configtest/` and `internal/filtertest/`
+- **Performance tests**: Benchmarks with large synthetic data
+- **Fuzz tests**: Property-based testing for edge cases
 
 ### Running Tests
 
 ```bash
 # All tests with coverage
+just test
+# or
 go test -v -cover ./...
+
+# BDD tests specifically
+go test -v ./bdd
 
 # Specific package tests
 go test -v ./suffixtree
 go test -v ./syntax
+go test -v ./detection
 
 # Run with race detector
+just test-race
+# or
 go test -race ./...
+
+# Run fuzz tests
+just test-fuzz
+
+# Run benchmarks
+just bench
+
+# Coverage report
+just coverage
+# Output: coverage.html
+
+# Check coverage threshold
+just check-coverage
 ```
+
+### BDD Test Utilities
+
+The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
+
+- `BDDTestSetup`: Full test environment setup
+- `NewBDDTestSetupForGinkgo()`: Setup for Ginkgo tests
+- `CreateTestFiles()`: Create test Go files
+- `CreateDuplicateFiles()`: Create files with duplicate code
+- `RunArtDupl()`: Execute art-dupl with flags
+- `RunArtDuplOnDir()`: Execute on specific directory
+- `RunArtDuplWithStdin()`: Execute with stdin input
+- `Cleanup()`: Clean up test artifacts
 
 ## Build and CI
 
@@ -132,20 +287,32 @@ go test -race ./...
 - Uses Go modules with `go.mod`
 - Cross-platform builds supported (Linux, macOS, Windows)
 - CGO disabled for static binaries
-- Build flags for optimized production binaries
+- Build flags for optimized production binaries (`-ldflags "-s -w" -trimpath`)
+- JSONv2 experiment enabled via `GOEXPERIMENT=jsonv2` for Makefile builds
+- Justfile builds output to `dist/art-dupl` by default
 
 ### CI Pipeline
 
-- GitHub Actions with matrix testing (multiple Go versions and OS)
-- Golangci-lint for code quality checks
+- GitHub Actions in `.github/workflows/`:
+  - `build.yml`: Matrix testing (multiple Go versions and OS)
+  - `checks.yml`: Code quality checks
+  - `performance.yml`: Performance regression testing
+- Golangci-lint for code quality checks (configuration in `.golangci.yml`)
 - Dependency management verification
 - Tests run on oldstable and stable Go versions
+- BDD tests included in CI
 
 ### Dependency Management
 
-- Minimal dependencies (only standard library and Go tools)
-- Golangci-lint is the only external development dependency
-- Version pinning through go.mod
+- **Core runtime dependencies**:
+  - `github.com/charmbracelet/fang`: Professional CLI framework
+  - `github.com/spf13/cobra`: Command-line interface library
+  - `github.com/onsi/ginkgo/v2`: BDD testing framework
+  - `github.com/onsi/gomega`: Gomega matchers for Ginkgo
+- **Development dependencies**:
+  - `github.com/golangci/golangci-lint`: Linter (development only)
+- Version pinning through go.mod and go.sum
+- Minimal external dependencies preferred
 
 ## Important Gotchas
 
@@ -154,25 +321,58 @@ go test -race ./...
 - Large composite literals are serialized to prevent stack overflow
 - Maximum children limit prevents excessive memory usage
 - Stream processing keeps memory usage bounded
+- SIMD optimizations available for improved performance (via internal/simd)
+- Hash-based detection is faster than suffix tree for some scenarios
+- Multiple detection methods can be run together (adds overhead)
 
 ### File Processing
 
 - Only processes `.go` files by default
 - Vendor directory excluded by default (use `-vendor` flag)
 - Can accept file paths from stdin with `-files` flag
+- **Smart filtering** for generated code:
+  - SQLC files auto-detected via `sqlc.yaml` in parent directories
+  - Templ files filtered by default (use `-include-templ` to include)
+  - Custom patterns via `-include-pattern` and `-exclude-pattern`
+  - `-filter-generated` enables smart detection for both SQLC and Templ
+
+### Detection Methods
+
+- **art-dupl** (default): Suffix tree algorithm on AST tokens
+- **hash**: Rolling hash on file content (faster, different tradeoffs)
+- **hash,art-dupl**: Run both for comprehensive analysis
+- Methods configured via `-detection-methods` or `-m` flag
+- Multiple methods run in parallel via goroutines
 
 ### Output Formats
 
-- Default: Text output with file paths and line numbers
-- HTML: Includes actual duplicate code fragments
-- Plumbing: Machine-readable format for script integration
-- Mutually exclusive output formats (can't combine HTML and plumbing)
+- **Default**: Text output with file paths and line numbers
+- **HTML**: Includes actual duplicate code fragments with syntax highlighting
+- **JSON**: Structured output with statistics and clone groups (JSONv2)
+- **Plumbing**: Machine-readable format for script integration
+- **Stats**: Multiple formats (text, JSON, CSV) via stats subcommand
+- Output directory support via `-all` flag with `--output-dir`
+
+### Sorting Options
+
+- **size**: Shows largest clones first (highest token count) - default
+- **occurrence**: Shows most widespread clones first (most files)
+- **hash**: Alphabetical order by hash value
+- Configured via `-sort` flag
 
 ### Threshold Configuration
 
 - Default minimum token sequence size: 15
 - Adjustable with `-threshold` or `-t` flag
 - Higher values reduce false positives but may miss smaller clones
+- Apply threshold per detection method
+
+### Configuration Files
+
+- JSON configuration files supported via `-config` or `-c` flag
+- Default config file search: `dupl.json` in current directory
+- Configuration merges with CLI flags (flags take precedence)
+- Supports threshold, output format, paths, filtering, and detection methods
 
 ## CLI Usage Patterns
 
@@ -180,29 +380,96 @@ go test -race ./...
 
 ```bash
 # Scan current directory
-./dupl
+art-dupl
 
 # Scan with higher threshold
-./dupl -t 100
+art-dupl -t 100
 
 # Scan specific paths
-./dupl ./src ./lib
+art-dupl ./src ./lib
 
 # Generate HTML report
-./dupl -html -t 50 > report.html
+art-dupl -html -t 50 > report.html
+
+# JSON output for CI/CD
+art-dupl --json -t 20 ./src | jq
+
+# Generate all formats to directory
+art-dupl --all --output-dir ./reports ./src
+
+# Most widespread clones first
+art-dupl --plumbing --sort occurrence ./src
+
+# Use hash-based detection (faster)
+art-dupl -m hash ./src
+
+# Run both detection methods
+art-dupl -m "hash,art-dupl" ./src
 
 # Scan test files only
-find . -name '*_test.go' | ./dupl -files
+find . -name '*_test.go' | art-dupl --files
 
 # Include vendor directory
-./dupl -vendor
+art-dupl --vendor
+
+# Filter generated code (SQLC, templ)
+art-dupl --filter-generated ./src
+
+# Include templ files explicitly
+art-dupl --include-templ ./src
+
+# Custom include patterns
+art-dupl --include-pattern "vendor/*" --include-pattern "gen/*" ./src
+
+# Configuration file
+art-dupl -c dupl.json
+```
+
+### Stats Subcommand
+
+```bash
+# Show statistics for current directory
+art-dupl stats
+
+# Stats in JSON format
+art-dupl stats --format json ./src
+
+# Stats in CSV format for spreadsheets
+art-dupl stats --format csv ./src
+
+# Stats with higher threshold
+art-dupl stats -t 20 .
+
+# Stats for specific paths
+art-dupl stats ./src ./lib
+
+# Extract total clones from JSON
+art-dupl stats --format json . | jq '.overview.totalClones'
 ```
 
 ### Debug Mode
 
-- Use `-v` or `-verbose` for verbose logging
+- Use `-v` or `--verbose` for verbose logging
+- Use `-vv` for extra verbosity
 - Shows tree building and clone detection progress
 - Helpful for understanding processing flow
+- Can enable profiling with `-profile` flag (hidden)
+
+### Shell Completion
+
+```bash
+# Bash completion
+source <(art-dupl completion bash)
+
+# Zsh completion
+source <(art-dupl completion zsh)
+
+# Fish completion
+art-dupl completion fish | source
+
+# PowerShell completion
+art-dupl completion powershell | Out-String | Invoke-Expression
+```
 
 ## Module Structure
 
@@ -212,41 +479,214 @@ All imports use the module path: `github.com/LarsArtmann/art-dupl`
 
 ```go
 import (
+    "github.com/LarsArtmann/art-dupl/cmd"
+    "github.com/LarsArtmann/art-dupl/config"
+    "github.com/LarsArtmann/art-dupl/detection"
     "github.com/LarsArtmann/art-dupl/suffixtree"
     "github.com/LarsArtmann/art-dupl/syntax"
+    "github.com/LarsArtmann/art-dupl/hash"
     "github.com/LarsArtmann/art-dupl/job"
     "github.com/LarsArtmann/art-dupl/printer"
+    "github.com/LarsArtmann/art-dupl/domain"
+    "github.com/LarsArtmann/art-dupl/adapter"
+    "github.com/LarsArtmann/art-dupl/types"
+    "github.com/LarsArtmann/art-dupl/errors"
+    "github.com/LarsArtmann/art-dupl/pkg/artdupl"
+    "github.com/LarsArtmann/art-dupl/pkg/logger"
+    "github.com/LarsArtmann/art-dupl/pkg/filter"
+    "github.com/LarsArtmann/art-dupl/pkg/position"
 )
 ```
 
 ### Package Dependencies
 
-- No external runtime dependencies
-- Only Go standard library for core functionality
-- Golangci-lint for development tooling only
+**Runtime dependencies**:
+- `github.com/charmbracelet/fang`: Professional CLI framework
+- `github.com/spf13/cobra`: Command-line interface
+
+**Testing dependencies**:
+- `github.com/onsi/ginkgo/v2`: BDD testing framework
+- `github.com/onsi/gomega`: Gomega matchers for Ginkgo
+
+**Development dependencies**:
+- `github.com/golangci/golangci-lint`: Linter (development only)
+
+### Package Organization
+
+```
+art-dupl/
+├── cmd/              # CLI command definitions
+├── config/           # Configuration management
+├── cli/              # CLI runtime and validation
+├── detection/        # Multi-method detection
+├── suffixtree/       # Suffix tree algorithm
+├── syntax/           # AST processing
+├── hash/             # Hash-based detection
+├── job/              # Analysis orchestration
+├── printer/          # Output formatting
+├── adapter/          # Printer adapter pattern
+├── domain/           # Domain models
+├── types/            # Shared types
+├── errors/           # Error handling
+├── pkg/              # Utility packages
+│   ├── artdupl/
+│   ├── logger/
+│   ├── filter/
+│   └── position/
+├── internal/         # Internal utilities
+│   ├── testutil/
+│   ├── enum/
+│   ├── utils/
+│   └── simd/
+├── migration/        # Migration utilities
+├── lib/              # Legacy utilities
+├── bdd/              # BDD tests
+├── docs/             # Documentation
+└── examples/         # Usage examples
+```
 
 ## Development Guidelines
 
 ### Code Style
 
 - Follow Go conventions and idiomatic patterns
-- Keep functions focused and small
+- Keep functions focused and small (<30 lines preferred)
 - Prefer explicit interfaces over implicit ones
 - Use channels for goroutine communication
 - Error handling should be explicit and consistent
+- Use dependency injection where appropriate (samber/do)
+- Make impossible states unrepresentable via strong types
 
 ### Testing Guidelines
 
-- Write tests for all exported functions
+- **Write BDD tests** for user-facing features using Ginkgo/Gomega
+- Write unit tests for all exported functions
 - Use table-driven tests for multiple scenarios
 - Test edge cases and error conditions
 - Consider performance implications of algorithms
-- Use race detector for concurrent code
+- Use race detector for concurrent code (`just test-race`)
+- Write fuzz tests for functions with complex inputs
+- Maintain high test coverage (>80% preferred)
+
+### Error Handling
+
+- Use typed errors from `errors/` package
+- Wrap errors with context using `duplerrors.Wrap*` functions
+- Distinguish between validation, config, and analysis errors
+- Return errors explicitly, never panic for expected errors
+- Provide context in error messages for debugging
+
+### Configuration
+
+- Use `config.Config` struct for all configuration
+- Support both CLI flags and JSON config files
+- Merge config sources with CLI flags taking precedence
+- Validate configuration before use with `config.ValidateConfig()`
+- Use typed enums for detection methods, output formats, etc.
+
+### Performance
+
+- Measure before optimizing
+- Use benchmarks for performance-critical code
+- Consider SIMD optimizations for hot paths
+- Profile with `-profile` flag when investigating performance
+- Use channels efficiently to avoid memory bloat
+- Stream large inputs to keep memory bounded
 
 ### Contributing
 
-- All changes must pass `make check` (linting)
+- All changes must pass `just check` (linting)
 - All tests must pass with coverage
 - Follow the existing code patterns
 - Consider performance impact of changes
 - Maintain backward compatibility for CLI interface
+- Update documentation for new features
+- Add BDD tests for new user-facing features
+- Run `just ci` before committing (format, lint, test)
+
+## Documentation
+
+### Documentation Structure
+
+The `docs/` directory contains comprehensive documentation:
+
+- **API docs** (`docs/api/`): Generated API documentation
+- **Status reports** (`docs/status/`): Daily/weekly development status reports
+- **Planning docs** (`docs/planning/`): Implementation plans and strategies
+- **Migration guides**: Documentation for breaking changes
+- **Feature docs**: Detailed documentation for major features
+- **Benchmark results**: Performance analysis and comparisons
+
+### Key Documentation Files
+
+- `README.md`: Quick start and basic usage
+- `HOW_TO_USE.md`: Detailed usage examples
+- `MIGRATION_GUIDE.md`: Migration guide for version upgrades
+- `FEATURES.md`: Comprehensive feature list
+- `SDK_DESIGN.md`: SDK design for programmatic access
+- `TESTING.md`: Testing guidelines and practices
+
+## Architecture Highlights
+
+### Multi-Method Detection
+
+The detection architecture supports multiple algorithms:
+1. **Suffix Tree (art-dupl)**: Original algorithm on AST tokens
+2. **Hash-based**: Rolling hash on file content for faster detection
+3. **Combinations**: Run both for comprehensive analysis
+
+Each method runs independently via goroutines, results combined and deduplicated.
+
+### Domain Types
+
+Strong typing throughout the codebase:
+- `domain.Clone`: Type-safe clone representation
+- `domain.CloneGroup`: Grouped clones with metadata
+- `domain.StringPool`: Efficient string deduplication
+- Typed enums for detection methods, output formats, sorting options
+
+### Printer Adapter Pattern
+
+The `adapter/` package provides abstraction over output formats:
+- Interface-based design for extensibility
+- Format-specific implementations (text, HTML, JSON, plumbing, stats)
+- Sorting and filtering capabilities built-in
+
+### Configuration System
+
+Multi-layered configuration:
+1. Default configuration
+2. JSON config file (optional)
+3. CLI flags (override all)
+
+Configuration merging and validation ensures consistency.
+
+## Important Project Notes
+
+### Memory File Instructions
+
+Check `~/.config/crush/AGENTS.md` for general agent instructions that apply to all projects, including:
+- Development standards and quality mandates
+- Testing requirements (100% automated)
+- Commit workflow standards
+- Error handling protocols
+- Tool usage preferences
+
+Project-specific AGENTS.md (this file) takes precedence over general instructions.
+
+### Continuous Improvement
+
+This project follows strict quality standards:
+- Zero tolerance for technical debt
+- Fix issues on sight
+- Refactor immediately when code exceeds 300 lines or 30 lines per function
+- Extract duplicate code after 3 instances
+- Use TODOs liberally, address older TODOs within 1 week
+
+### Build System
+
+**CRITICAL**: Always prefer justfile commands over Makefile commands:
+- Justfile: `just build`, `just test`, `just check`, etc.
+- Makefile: Only use if justfile unavailable
+- Makefile uses `GOEXPERIMENT=jsonv2` for JSON v2 support
+- Justfile builds output to `dist/art-dupl` directory
