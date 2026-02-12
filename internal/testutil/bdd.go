@@ -9,9 +9,18 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/utils"
+)
+
+// sharedBinary holds the path to a pre-built binary shared across all test suites.
+// This avoids concurrent go build commands which can cause hangs.
+var (
+	sharedBinary     string
+	sharedBinaryOnce sync.Once
+	sharedBinaryErr  error
 )
 
 // BDDTestSetup provides complete BDD test infrastructure with temporary directory and binary management.
@@ -36,12 +45,12 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		os.RemoveAll(tmpDir)
+		_ = os.RemoveAll(tmpDir) // cleanup on error path
 		t.Fatalf("Failed to build art-dupl binary: %v\nOutput: %s", err, string(output))
 	}
 
 	t.Cleanup(func() {
-		os.RemoveAll(tmpDir)
+		_ = os.RemoveAll(tmpDir) // test cleanup
 	})
 
 	return &BDDTestSetup{
@@ -55,24 +64,32 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 // NewBDDTestSetupForGinkgo creates a new BDD test setup without requiring *testing.T.
 // Designed for use with Ginkgo's BeforeEach/AfterEach pattern.
 // The caller must call Cleanup() in an AfterEach block.
+// Uses a shared binary to avoid concurrent build hangs.
 func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	tmpDir, err := os.MkdirTemp("", "art-dupl-bdd-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
-	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		os.RemoveAll(tmpDir)
-		return nil, fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", err, string(output))
+	// Build binary once using sync.Once to avoid concurrent builds
+	sharedBinaryOnce.Do(func() {
+		sharedBinary = filepath.Join(os.TempDir(), "art-dupl-bdd-shared")
+		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", sharedBinary, "../cmd/art-dupl/main.go")
+		output, buildErr := cmd.CombinedOutput()
+		if buildErr != nil {
+			sharedBinaryErr = fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", buildErr, string(output))
+		}
+	})
+
+	if sharedBinaryErr != nil {
+		_ = os.RemoveAll(tmpDir) // cleanup on error path
+		return nil, sharedBinaryErr
 	}
 
 	return &BDDTestSetup{
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
-		BinaryPath:    binaryPath,
+		BinaryPath:    sharedBinary,
 	}, nil
 }
 
@@ -179,6 +196,8 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.
+//
+//nolint:funcorder // helper method
 func (s *BDDTestSetup) runCommandAndVerify(execute func() ([]byte, error)) string {
 	if s.T != nil {
 		s.T.Helper()
@@ -241,11 +260,17 @@ func %s() {
 // CreateDuplicateFilesAndRun creates duplicate files with the given content and runs art-dupl.
 // Returns the command output for assertions. This helper reduces boilerplate in BDD tests.
 func (s *BDDTestSetup) CreateDuplicateFilesAndRun(content string, args ...string) ([]byte, error) {
+	return s.CreateNamedDuplicateFilesAndRun([]string{"file1.go", "file2.go"}, content, args...)
+}
+
+// CreateNamedDuplicateFilesAndRun creates duplicate files with specific names and content, then runs art-dupl.
+// Returns the command output for assertions. This helper reduces boilerplate in BDD tests.
+func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(filenames []string, content string, args ...string) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	if err := s.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, content); err != nil {
+	if err := s.CreateDuplicateFiles(filenames, content); err != nil {
 		return nil, err
 	}
 
@@ -326,6 +351,23 @@ func SimpleCodeTemplate(funcName string) string {
 	return fmt.Sprintf(`package main
 func %s() {}`, funcName)
 }
+
+// VendorTestCode is a reusable code sample for vendor directory filtering tests.
+// It contains enough tokens to be detected as a duplicate while being simple and consistent.
+const VendorTestCode = `package main
+
+import "fmt"
+
+func vendorFunc() {
+	for i := 0; i < 10; i++ {
+		fmt.Println(i)
+	}
+}`
+
+// SimpleVendorTestCode is a minimal code sample for vendor directory filtering tests.
+// Use when a smaller code sample is sufficient (threshold of 3-5 tokens).
+const SimpleVendorTestCode = `package main
+func vendorFunc() { println(1) }`
 
 // CreateVendorDuplicateFiles creates duplicate files in a vendor directory with the given vendor path and code content.
 // This is a convenience helper for testing vendor directory filtering behavior.
@@ -446,5 +488,42 @@ func (s *BDDTestSetup) RunVendorTest(includeVendor bool, subcommand string, extr
 	}
 	args = append(args, extraArgs...)
 
+	return s.RunArtDupl(args...)
+}
+
+// RunVendorTestWithOptions runs a vendor directory test with full customization.
+// This helper reduces duplication across BDD tests that verify vendor filtering behavior.
+// Parameters:
+//   - vendorPath: path to vendor directory (e.g., "vendor/example")
+//   - code: the code content to use for duplicate files
+//   - includeVendor: if true, runs with --vendor flag to include vendor directory
+//   - subcommand: optional subcommand to run (e.g., "stats", "" for default)
+//   - extraArgs: additional arguments to pass to art-dupl
+//
+// Returns the command output and any error that occurred.
+func (s *BDDTestSetup) RunVendorTestWithOptions(vendorPath, code string, includeVendor bool, subcommand string, extraArgs ...string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	// Create vendor directory with duplicate files
+	if err := s.CreateVendorDuplicateFiles(vendorPath, code); err != nil {
+		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
+	}
+
+	// Build arguments
+	args := []string{}
+	if subcommand != "" {
+		args = append(args, subcommand)
+	}
+	if includeVendor {
+		args = append(args, "--vendor")
+	}
+	args = append(args, extraArgs...)
+
+	// Use RunSubcommand when there's a subcommand (puts path at end), otherwise RunArtDupl
+	if subcommand != "" {
+		return s.RunSubcommand(args...)
+	}
 	return s.RunArtDupl(args...)
 }

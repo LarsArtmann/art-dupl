@@ -369,14 +369,15 @@ func TestStatsDetectionMethods(t *testing.T) {
 
 func TestStatsAverageCloneSize(t *testing.T) {
 	tests := []struct {
-		name            string
-		totalLines      int
-		totalClones     int
-		expectedAverage int
+		name             string
+		totalLines       int
+		totalClones      int
+		totalCloneGroups int
+		expectedAverage  int
 	}{
-		{"normal case", 100, 5, 20},
-		{"single clone", 10, 1, 10},
-		{"zero clones", 0, 0, 0},
+		{"normal case", 100, 5, 5, 20},
+		{"single clone", 10, 1, 1, 10},
+		{"zero clones", 0, 0, 0, 0},
 	}
 
 	for _, tt := range tests {
@@ -385,6 +386,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 			statsPrinter.statsData.TotalDuplicateLines = tt.totalLines
 			statsPrinter.statsData.TotalClones = tt.totalClones
+			statsPrinter.statsData.TotalCloneGroups = tt.totalCloneGroups
 
 			if err := statsPrinter.PrintFooter(); err != nil {
 				t.Fatalf("PrintFooter failed: %v", err)

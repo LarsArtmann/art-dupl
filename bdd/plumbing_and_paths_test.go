@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,11 +17,6 @@ import (
 // - Plumbing output format (machine-readable)
 // - Multiple path arguments
 // - Edge cases with paths
-
-func TestPlumbingAndPaths(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Plumbing and Paths BDD Suite")
-}
 
 var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
@@ -57,14 +51,14 @@ func process() {
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
-			// Each line should follow plumbing format: filename:startline,endline
+			// Each line should follow plumbing format: filename:startline-endline
 			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
 			for line := range lines {
 				if line == "" {
 					continue
 				}
 				// Should contain filename and line numbers
-				Expect(line).To(MatchRegexp(`\.go:\d+,\d+$`))
+				Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
 			}
 		})
 
@@ -85,11 +79,11 @@ func duplicate() { println(1) }`
 				if line == "" {
 					continue
 				}
-				// Format: path/to/file.go:start,end
+				// Format: path/to/file.go:start-end
 				parts := strings.Split(line, ":")
 				Expect(parts).To(HaveLen(2))
 				Expect(parts[0]).To(MatchRegexp(`\.go$`))
-				Expect(parts[1]).To(MatchRegexp(`\d+,\d+$`))
+				Expect(parts[1]).To(MatchRegexp(`\d+-\d+$`))
 			}
 		})
 
@@ -132,8 +126,9 @@ func large() {
 			err = setup.CreateDuplicateFiles([]string{"large1.go", "large2.go"}, largeCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with high threshold
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "50")
+			// Run with threshold that filters small but shows large
+			// small: ~12 tokens, large: ~28 tokens
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "15")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -159,7 +154,7 @@ func duplicate() { println(1) }`
 				if line == "" {
 					continue
 				}
-				Expect(line).To(MatchRegexp(`\.go:\d+,\d+$`))
+				Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
 			}
 		})
 	})
@@ -263,8 +258,8 @@ func common() { println(1) }`
 			err = setup.CreateFileWithContent("exclude/file4.go", duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run only on include directory
-			output, err := setup.RunArtDupl(
+			// Run only on include directory (use RunArtDuplOnDir to avoid double-path issue)
+			output, err := setup.RunArtDuplOnDir(
 				setup.GetFilePath("include"),
 				"--threshold", "3",
 			)

@@ -1,8 +1,6 @@
 package bdd
 
 import (
-	"testing"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -17,11 +15,6 @@ import (
 // Generated code types covered:
 // - Templ: *_templ.go files (templ.guide)
 // - SQLC: *.sql.go, models.go, querier.go, batch.go files (sqlc.dev)
-
-func TestDefaultFiltering(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Default Filtering BDD Suite")
-}
 
 // assertGeneratedFileFiltered is a helper to verify generated files are filtered out.
 // It creates duplicate regular files, a generated file, runs art-dupl, and verifies
@@ -137,7 +130,10 @@ import "github.com/a-h/templ"
 func Component() templ.Component { return nil }
 func common() { println(1) }`
 
-			err := setup.CreateTestFile("regular.go", regularCode)
+			// Create TWO regular files with duplicate code (required for clone detection)
+			err := setup.CreateTestFile("regular1.go", regularCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("regular2.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("header_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -150,8 +146,8 @@ func common() { println(1) }`
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
-			// Should only show regular file
-			Expect(outputStr).To(ContainSubstring("regular.go"))
+			// Should only show regular files (duplicates between them)
+			Expect(outputStr).To(ContainSubstring("regular"))
 			Expect(outputStr).ToNot(ContainSubstring("header_templ.go"))
 			Expect(outputStr).ToNot(ContainSubstring("footer_templ.go"))
 			Expect(outputStr).ToNot(ContainSubstring("layout_templ.go"))
@@ -259,7 +255,7 @@ func query() { println(1) }`
 		})
 	})
 
-	Context("When both templ and sqlc files are present", func() {
+Context("When both templ and sqlc files are present", func() {
 		It("should filter both by default", func() {
 			regularCode := `package main
 func process() { println(1) }`
@@ -271,7 +267,10 @@ func process() { println(1) }`
 package db
 func process() { println(1) }`
 
-			err := setup.CreateTestFile("regular.go", regularCode)
+			// Create TWO regular files with duplicate code (required for clone detection)
+			err := setup.CreateTestFile("regular1.go", regularCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("regular2.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("page_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -282,8 +281,8 @@ func process() { println(1) }`
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
-			// Should only show regular file
-			Expect(outputStr).To(ContainSubstring("regular.go"))
+			// Should only show regular files (duplicates between them)
+			Expect(outputStr).To(ContainSubstring("regular"))
 			Expect(outputStr).ToNot(ContainSubstring("page_templ.go"))
 			Expect(outputStr).ToNot(ContainSubstring("queries.sql.go"))
 		})
@@ -320,10 +319,7 @@ func process() { println(1) }`
 
 	Context("When vendor directory is present", func() {
 		It("should exclude vendor directory by default", func() {
-			regularCode := `package main
-func vendorFunc() { println(1) }`
-
-			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", regularCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", testutil.SimpleVendorTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--threshold", "3")
@@ -335,19 +331,15 @@ func vendorFunc() { println(1) }`
 		})
 
 		It("should include vendor when --vendor flag is used", func() {
-			regularCode := `package main
-func vendorFunc() { println(1) }`
-
-			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", regularCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with --vendor flag
-			output, err := setup.RunArtDupl("--vendor", "--threshold", "3")
+			output, err := setup.RunVendorTestWithOptions(
+				"vendor/github.com/example",
+				testutil.SimpleVendorTestCode,
+				true,
+				"",
+				"--threshold", "3",
+			)
 			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now show vendor files
-			Expect(outputStr).To(ContainSubstring("vendor"))
+			Expect(string(output)).To(ContainSubstring("vendor"))
 		})
 	})
 })

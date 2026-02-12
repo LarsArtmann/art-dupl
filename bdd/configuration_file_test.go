@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,11 +22,6 @@ import (
 // - Configuration precedence (CLI flags override config file)
 // - Invalid configuration handling
 // - Configuration validation
-
-func TestConfigurationFile(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Configuration File BDD Suite")
-}
 
 // newBDDTestSetup creates a new BDDTestSetup and registers cleanup for Ginkgo tests
 func newBDDTestSetup() *testutil.BDDTestSetup {
@@ -102,8 +96,8 @@ func pathTest() {}`
 
 			// Change to temp directory so relative paths work
 			originalDir, _ := os.Getwd()
-			defer os.Chdir(originalDir)
-			os.Chdir(setup.TmpDir)
+			defer func() { _ = os.Chdir(originalDir) }() // test cleanup
+			_ = os.Chdir(setup.TmpDir)                 // test setup
 
 			// Run with config file (uses paths from config)
 			output, err := setup.RunArtDupl("--config", configPath)
@@ -133,7 +127,18 @@ func overrideTest() {}`
 func formatOverride() string {
 	return "test"
 }`
-			output, err := runWithConfig(configContent, code, []string{"fmt1.go", "fmt2.go"})
+
+			// Create config file manually
+			configPath := filepath.Join(setup.TmpDir, "dupl.json")
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create test files
+			err = setup.CreateDuplicateFiles([]string{"fmt1.go", "fmt2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run with --json flag to override config
+			output, err := setup.RunArtDupl("--config", configPath, "--json", setup.TmpDir)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify JSON output
@@ -294,7 +299,7 @@ func statsConfig() {}`
 		err = setup.CreateDuplicateFiles(fileNames, code)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("stats", "--config", configPath, setup.TmpDir)
+		output, err := setup.RunSubcommand("stats", "--config", configPath)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(output).ToNot(BeNil())
 	}

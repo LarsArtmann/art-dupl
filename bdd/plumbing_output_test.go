@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/types"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
@@ -24,11 +24,6 @@ import (
 // - Plumbing format validation
 // - Integration with CI/CD pipelines
 
-func TestPlumbingOutput(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Plumbing Output BDD Suite")
-}
-
 var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -42,24 +37,31 @@ var _ = Describe("Plumbing Output Format", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
-	// runPlumbingTest is a helper that creates duplicate files and runs art-dupl with plumbing output.
-	// It returns the output for custom assertions.
-	runPlumbingTest := func(filenames []string, code, threshold string) ([]byte, error) {
+	// runPlumbingTestWithFlags is a generic helper that creates duplicate files and runs art-dupl
+	// with plumbing output and any additional flags. It returns the output for custom assertions.
+	runPlumbingTestWithFlags := func(filenames []string, code, threshold string, extraFlags ...string) ([]byte, error) {
 		err := setup.CreateDuplicateFiles(filenames, code)
 		if err != nil {
 			return nil, err
 		}
-		return setup.RunArtDupl("--plumbing", "--threshold", threshold)
+		args := append([]string{"--plumbing", "--threshold", threshold}, extraFlags...)
+		return setup.RunArtDupl(args...)
 	}
 
 	// runPlumbingTestWithDetection is a helper that creates duplicate files and runs art-dupl with
 	// plumbing output and a specific detection method. It returns the output for custom assertions.
 	runPlumbingTestWithDetection := func(filenames []string, code, threshold, detectionMethod string) ([]byte, error) {
-		err := setup.CreateDuplicateFiles(filenames, code)
-		if err != nil {
-			return nil, err
+		return runPlumbingTestWithFlags(filenames, code, threshold, "--detection-methods", detectionMethod)
+	}
+
+	// assertOutputContainsAny asserts that the output contains at least one of the expected substrings.
+	assertOutputContainsAny := func(output []byte, expected []string) {
+		outputStr := string(output)
+		matchers := make([]types.GomegaMatcher, len(expected))
+		for i, exp := range expected {
+			matchers[i] = ContainSubstring(exp)
 		}
-		return setup.RunArtDupl("--plumbing", "--detection-methods", detectionMethod, "--threshold", threshold)
+		Expect(outputStr).To(SatisfyAny(matchers...))
 	}
 
 	Context("When using plumbing output for basic analysis", func() {
@@ -75,28 +77,20 @@ func processData(data string) error {
 	return nil
 }`
 
-			output, err := runPlumbingTest([]string{"plumb1.go", "plumb2.go"}, code, "10")
+			output, err := runPlumbingTestWithFlags([]string{"plumb1.go", "plumb2.go"}, code, "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(SatisfyAny(
-				ContainSubstring(":"),
-				ContainSubstring("\t"),
-			))
+			assertOutputContainsAny(output, []string{":", "\t"})
 		})
 
 		It("should include file paths in plumbing output", func() {
 			code := `package main
 func pathTest() {}`
 
-			output, err := runPlumbingTest([]string{"path1.go", "path2.go"}, code, "5")
+			output, err := runPlumbingTestWithFlags([]string{"path1.go", "path2.go"}, code, "5")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(SatisfyAny(
-				ContainSubstring("path1.go"),
-				ContainSubstring("path2.go"),
-			))
+			assertOutputContainsAny(output, []string{"path1.go", "path2.go"})
 		})
 
 		It("should include line numbers in plumbing output", func() {
@@ -195,44 +189,19 @@ func combinedPlumb() string {
 	})
 
 	Context("When using plumbing with sorting options", func() {
-		It("should work with size sorting", func() {
-			code := `package main
-func sizeSortPlumb() {}`
+		DescribeTable("should work with different sort types",
+			func(filenames []string, funcName, sortType string) {
+				code := fmt.Sprintf(`package main
+func %s() {}`, funcName)
 
-			err := setup.CreateDuplicateFiles([]string{"size1.go", "size2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and size sort
-			output, err := setup.RunArtDupl("--plumbing", "--sort", "size", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with occurrence sorting", func() {
-			code := `package main
-func occSortPlumb() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"occ1.go", "occ2.go", "occ3.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and occurrence sort
-			output, err := setup.RunArtDupl("--plumbing", "--sort", "occurrence", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with hash sorting", func() {
-			code := `package main
-func hashSortPlumb() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"hashsort1.go", "hashsort2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and hash sort
-			output, err := setup.RunArtDupl("--plumbing", "--sort", "hash", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
+				output, err := runPlumbingTestWithFlags(filenames, code, "5", "--sort", sortType)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(output).ToNot(BeNil())
+			},
+			Entry("size sorting", []string{"size1.go", "size2.go"}, "sizeSortPlumb", "size"),
+			Entry("occurrence sorting", []string{"occ1.go", "occ2.go", "occ3.go"}, "occSortPlumb", "occurrence"),
+			Entry("hash sorting", []string{"hashsort1.go", "hashsort2.go"}, "hashSortPlumb", "hash"),
+		)
 	})
 
 	Context("When using plumbing with file filtering", func() {
@@ -390,8 +359,7 @@ func statsPlumb() {}`
 			err := setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Stats command doesn't have plumbing format but should work
-			output, err := setup.RunArtDupl("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})

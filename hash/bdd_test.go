@@ -12,7 +12,7 @@ import (
 // These tests verify file-level exact duplicate detection using SHA-256 hashing
 
 // TestBasicHashDetectionShouldFindExactDuplicates tests that identical files are detected.
-func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) { //nolint:cyclop,funlen // BDD-style test with multiple test scenarios
+func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) { // BDD-style test with multiple test scenarios
 	// GIVEN: Two identical files
 	setup := testutil.NewTestFileSetup(t)
 

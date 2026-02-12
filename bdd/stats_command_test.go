@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"fmt"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,11 +17,6 @@ import (
 // - Stats output formats (text, JSON, CSV)
 // - Filter override flags (--include-sqlc, --include-templ)
 // - Stats accuracy and metrics calculation
-
-func TestStatsCommand(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Stats Command BDD Suite")
-}
 
 // testCodeTemplates for reuse across tests to avoid duplication.
 const (
@@ -74,7 +68,7 @@ func assertGeneratedFilesFiltered(
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl("stats", "--threshold", "5")
+	output, err := setup.RunSubcommand("stats", "--threshold", "5")
 	Expect(err).ToNot(HaveOccurred())
 	outputStr := string(output)
 
@@ -98,7 +92,7 @@ func assertGeneratedFilesIncluded(
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl("stats", includeFlag, "--threshold", "5")
+	output, err := setup.RunSubcommand("stats", includeFlag, "--threshold", "5")
 	Expect(err).ToNot(HaveOccurred())
 	outputStr := string(output)
 
@@ -146,7 +140,7 @@ func Component() templ.Component { return nil }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with verbose flag
-			output, err := setup.RunArtDupl("stats", "--verbose", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--verbose", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -183,7 +177,7 @@ func Component() templ.Component { return nil }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with both include flags
-			output, err := setup.RunArtDupl("stats", "--include-templ", "--include-sqlc", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--include-templ", "--include-sqlc", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -209,7 +203,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON format
-			output, err := setup.RunArtDupl("stats", "--format", "json", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON
@@ -232,7 +226,7 @@ func main() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with CSV format
-			output, err := setup.RunArtDupl("stats", "--format", "csv")
+			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -249,7 +243,7 @@ func main() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats without format flag
-			output, err := setup.RunArtDupl("stats")
+			output, err := setup.RunSubcommand("stats")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -279,7 +273,7 @@ func processData() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats", "--format", "json", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
@@ -295,7 +289,11 @@ func processData() {
 		It("should calculate health score correctly", func() {
 			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "duplicate")
 
-			output, err := setup.CreateDuplicateFilesAndRun(duplicateCode, "stats", "--threshold", "5")
+			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run stats
+			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -319,7 +317,7 @@ func b() { println(2) }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -354,11 +352,8 @@ func common() {
 			err = setup.CreateFileWithContent("pkg2/file4.go", duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run stats on both directories
-			output, err := setup.RunArtDupl("stats",
-				setup.GetFilePath("pkg1"),
-				setup.GetFilePath("pkg2"),
-				"--threshold", "5")
+			// Run stats on the entire temp directory (which contains both pkg1 and pkg2)
+			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -382,7 +377,7 @@ func unique2() { println("unique2") }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats")
+			output, err := setup.RunSubcommand("stats")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -394,21 +389,11 @@ func unique2() { println("unique2") }`
 
 	Context("When filtering vendor directory", func() {
 		It("should exclude vendor directory by default", func() {
-			duplicateCode := `package main
-
-import "fmt"
-
-func vendorFunc() {
-	for i := 0; i < 10; i++ {
-		fmt.Println(i)
-	}
-}`
-
-			err := setup.CreateVendorDuplicateFiles("vendor/example", duplicateCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/example", testutil.VendorTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunArtDupl("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -417,26 +402,15 @@ func vendorFunc() {
 		})
 
 		It("should include vendor when --vendor flag is specified", func() {
-			duplicateCode := `package main
-
-import "fmt"
-
-func vendorFunc() {
-	for i := 0; i < 10; i++ {
-		fmt.Println(i)
-	}
-}`
-
-			err := setup.CreateVendorDuplicateFiles("vendor/example", duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with --vendor
-			output, err := setup.RunArtDupl("stats", "--vendor", "--threshold", "5")
+			output, err := setup.RunVendorTestWithOptions(
+				"vendor/example",
+				testutil.VendorTestCode,
+				true,
+				"stats",
+				"--threshold", "5",
+			)
 			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now show vendor files
-			Expect(outputStr).To(ContainSubstring("vendor"))
+			Expect(string(output)).To(ContainSubstring("vendor"))
 		})
 	})
 })
@@ -457,7 +431,7 @@ var _ = Describe("Stats Command Edge Cases", func() {
 	Context("When handling empty or minimal projects", func() {
 		It("should handle empty directory gracefully", func() {
 			// Run stats on empty directory (pass tmpDir explicitly)
-			output, err := setup.RunArtDupl("stats", setup.TmpDir)
+			output, err := setup.RunSubcommand("stats", setup.TmpDir)
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -473,7 +447,7 @@ func main() {}`
 			err := setup.CreateTestFile("main.go", code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("stats", setup.TmpDir)
+			output, err := setup.RunSubcommand("stats", setup.TmpDir)
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
@@ -492,7 +466,7 @@ func small() { println(1) }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with very high threshold (pass tmpDir explicitly)
-			output, err := setup.RunArtDupl("stats", "--threshold", "1000", setup.TmpDir)
+			output, err := setup.RunSubcommand("stats", "--threshold", "1000")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 

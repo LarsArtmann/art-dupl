@@ -182,7 +182,7 @@ func BenchmarkConstructionParallel(b *testing.B) {
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
 	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
-		tree.canonize(tree.root, 0, 100)
+		_, _, _ = tree.canonize(tree.root, 0, 100) // benchmark
 	})
 }
 

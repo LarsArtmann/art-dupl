@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
@@ -598,9 +599,7 @@ func TestConfidence_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.conf.String(); got != tt.want {
-				t.Errorf("String() = %v, want %v", got, tt.want)
-			}
+			testutil.AssertEqual(t, tt.conf.String(), tt.want, "Confidence.String()")
 		})
 	}
 }

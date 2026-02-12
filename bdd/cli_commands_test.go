@@ -1,10 +1,11 @@
 package bdd
 
 import (
-	"testing"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/types"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
@@ -20,36 +21,60 @@ import (
 // - Flag documentation and validation
 // - Command-line interface behavior
 
-func TestCLICommands(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl CLI Commands BDD Suite")
+// assertCommandOutput is a helper to verify command output matches expected patterns
+func assertCommandOutput(setup *testutil.BDDTestSetup, args []string, matchers ...types.GomegaMatcher) {
+	output, err := setup.RunArtDupl(args...)
+	Expect(err).ToNot(HaveOccurred())
+
+	outputStr := string(output)
+	Expect(outputStr).To(SatisfyAny(matchers...))
+}
+
+// assertHelpOutput verifies help output contains expected patterns
+func assertHelpOutput(setup *testutil.BDDTestSetup, matchers ...types.GomegaMatcher) {
+	outputStr := getHelpOutput(setup)
+	Expect(outputStr).To(SatisfyAny(matchers...))
+}
+
+// setupBDDTest creates and configures a BDDTestSetup for Ginkgo tests.
+// Returns the setup instance and cleanup function for use in BeforeEach/AfterEach.
+func setupBDDTest() (*testutil.BDDTestSetup, func()) {
+	setup, err := testutil.NewBDDTestSetupForGinkgo()
+	Expect(err).NotTo(HaveOccurred())
+
+	cleanup := func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	}
+
+	return setup, cleanup
+}
+
+// getHelpOutput runs art-dupl --help and returns the output string
+func getHelpOutput(setup *testutil.BDDTestSetup) string {
+	output, err := setup.RunArtDupl("--help")
+	Expect(err).ToNot(HaveOccurred())
+	return string(output)
 }
 
 var _ = Describe("Version Command", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When running version command", func() {
 		It("should display version information", func() {
-			output, err := setup.RunArtDupl("--version")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Version output should contain "art-dupl" or version number
-			Expect(outputStr).To(SatisfyAny(
+			assertCommandOutput(setup, []string{"--version"},
 				ContainSubstring("art-dupl"),
 				ContainSubstring("version"),
 				MatchRegexp(`\d+\.\d+`),
-			))
+			)
 		})
 
 		It("should display version with -v shorthand", func() {
@@ -63,64 +88,45 @@ var _ = Describe("Version Command", func() {
 
 	Context("When checking version format", func() {
 		It("should follow semantic versioning format", func() {
-			output, err := setup.RunArtDupl("--version")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Should contain version-like pattern (e.g., 1.0.0, v1.0.0, 0.1.0-alpha)
-			Expect(outputStr).To(SatisfyAny(
+			assertCommandOutput(setup, []string{"--version"},
 				MatchRegexp(`v?\d+\.\d+\.?\d*`),
 				ContainSubstring("version"),
-			))
+			)
 		})
 	})
 })
 
 var _ = Describe("Help Command", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When running help command", func() {
 		It("should display usage information", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Help should contain usage information
-			Expect(outputStr).To(SatisfyAny(
+			assertCommandOutput(setup, []string{"--help"},
 				ContainSubstring("Usage:"),
 				ContainSubstring("usage:"),
 				ContainSubstring("art-dupl"),
-			))
+			)
 		})
 
 		It("should list available flags", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Should contain common flags
-			Expect(outputStr).To(SatisfyAny(
+			assertHelpOutput(setup,
 				ContainSubstring("--threshold"),
 				ContainSubstring("--json"),
 				ContainSubstring("--html"),
-			))
+			)
 		})
 
 		It("should describe available commands", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
+			outputStr := getHelpOutput(setup)
 			// Should mention stats subcommand or Available Commands
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("stats"),
@@ -156,15 +162,14 @@ var _ = Describe("Help Command", func() {
 
 var _ = Describe("CLI Flag Validation", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When using invalid flags", func() {
@@ -205,79 +210,43 @@ var _ = Describe("CLI Flag Validation", func() {
 
 var _ = Describe("Verbose Flag Behavior", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When using verbose flags", func() {
-		It("should work with single verbose flag", func() {
-			code := `package main
-func verbose1() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"verbose1.go", "verbose2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("-v", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with multiple verbose flags", func() {
-			code := `package main
-func verbose2() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"verbose3.go", "verbose4.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("-vv", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with triple verbose flag", func() {
-			code := `package main
-func verbose3() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"verbose5.go", "verbose6.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("-vvv", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with verbose long flag", func() {
-			code := `package main
-func verbose4() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"verbose7.go", "verbose8.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--verbose", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
+		DescribeTable("should work with various verbose flag formats",
+			func(funcName string, files []string, flags ...string) {
+				code := fmt.Sprintf(`package main
+func %s() {}`, funcName)
+				output, err := setup.CreateNamedDuplicateFilesAndRun(files, code, flags...)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(output).ToNot(BeNil())
+			},
+			Entry("single verbose flag", "verbose1", []string{"verbose1.go", "verbose2.go"}, "-v", "--threshold", "5"),
+			Entry("multiple verbose flags", "verbose2", []string{"verbose3.go", "verbose4.go"}, "-vv", "--threshold", "5"),
+			Entry("triple verbose flag", "verbose3", []string{"verbose5.go", "verbose6.go"}, "-vvv", "--threshold", "5"),
+			Entry("verbose long flag", "verbose4", []string{"verbose7.go", "verbose8.go"}, "--verbose", "--threshold", "5"),
+		)
 	})
 })
 
 var _ = Describe("CLI Error Handling", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When no arguments provided", func() {
@@ -328,15 +297,14 @@ func multiDir() {}`
 
 var _ = Describe("CLI Completion Commands", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When requesting shell completion", func() {
@@ -395,35 +363,26 @@ var _ = Describe("CLI Completion Commands", func() {
 
 var _ = Describe("CLI Documentation Quality", func() {
 	var setup *testutil.BDDTestSetup
+	var cleanup func()
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup, cleanup = setupBDDTest()
 	})
 
 	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		cleanup()
 	})
 
 	Context("When reviewing help documentation", func() {
 		It("should describe detection methods in help", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Should mention detection methods
-			Expect(outputStr).To(SatisfyAny(
+			assertCommandOutput(setup, []string{"--help"},
 				ContainSubstring("detection"),
 				ContainSubstring("method"),
-			))
+			)
 		})
 
 		It("should describe output formats in help", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
+			outputStr := getHelpOutput(setup)
 			// Should mention output formats
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("json"),
@@ -433,10 +392,7 @@ var _ = Describe("CLI Documentation Quality", func() {
 		})
 
 		It("should describe sorting options in help", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
+			outputStr := getHelpOutput(setup)
 			// Should mention sorting
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("sort"),
@@ -444,10 +400,7 @@ var _ = Describe("CLI Documentation Quality", func() {
 		})
 
 		It("should provide examples in help", func() {
-			output, err := setup.RunArtDupl("--help")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
+			outputStr := getHelpOutput(setup)
 			// Should have examples section or usage examples
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("Example"),

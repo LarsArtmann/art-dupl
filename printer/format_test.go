@@ -1,6 +1,10 @@
 package printer
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+)
 
 func TestFormatIsValid(t *testing.T) {
 	tests := []struct {
@@ -18,9 +22,7 @@ func TestFormatIsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.format.IsValid(); got != tt.expected {
-				t.Errorf("Format.IsValid() = %v, want %v", got, tt.expected)
-			}
+			testutil.AssertEqual(t, tt.format.IsValid(), tt.expected, "Format.IsValid()")
 		})
 	}
 }

@@ -3,18 +3,12 @@ package bdd
 import (
 	"encoding/json"
 	"os/exec"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
-
-func TestDetectionMethods(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Detection Methods BDD Suite")
-}
 
 var _ = Describe("Detection Methods", func() {
 	var setup *testutil.BDDTestSetup
@@ -241,8 +235,8 @@ func test() string {
 			Expect(summary).To(HaveKey("total_clone_groups"))
 
 			// Verify both methods were used
-			Expect(result).To(HaveKey("detection_methods"))
-			detectionMethods := result["detection_methods"]
+			Expect(result).To(HaveKey("detection_method"))
+			detectionMethods := result["detection_method"]
 			Expect(detectionMethods).To(Equal("hash,art-dupl"))
 		})
 	})

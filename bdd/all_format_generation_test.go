@@ -5,29 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
-
-// BDD Test Suite for All Format Generation
-//
-// These tests verify the batch generation feature (--all flag)
-// which generates all output formats for all detection methods.
-//
-// The scenarios cover:
-// - Generating all output formats
-// - Custom output directory configuration
-// - Multiple detection methods in batch mode
-// - Output file organization
-
-func TestAllFormatGeneration(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl All Format Generation BDD Suite")
-}
 
 var _ = Describe("All Format Generation (--all flag)", func() {
 	var (

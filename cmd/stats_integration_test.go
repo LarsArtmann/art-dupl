@@ -241,7 +241,7 @@ func buildBinary(outputPath string) error {
 
 	// Save current directory and restore later
 	originalDir, _ := os.Getwd()
-	defer os.Chdir(originalDir)
+	defer func() { _ = os.Chdir(originalDir) }() // test cleanup
 
 	if err := os.Chdir(repoRoot); err != nil {
 		return err
@@ -291,6 +291,8 @@ type Command struct {
 }
 
 // buildCmd creates and configures the exec.Command.
+//
+//nolint:funcorder // helper method
 func (c *Command) buildCmd() *exec.Cmd {
 	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
 	if c.Dir != "" {

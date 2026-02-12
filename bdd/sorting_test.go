@@ -3,7 +3,6 @@ package bdd
 import (
 	"fmt"
 	"strings"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -21,11 +20,6 @@ import (
 // - Occurrence sorting (most widespread clones first)
 // - Hash sorting (alphabetical order)
 // - Default sorting behavior
-
-func TestSorting(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Sorting BDD Suite")
-}
 
 var _ = Describe("Sorting Functionality", func() {
 	var setup *testutil.BDDTestSetup

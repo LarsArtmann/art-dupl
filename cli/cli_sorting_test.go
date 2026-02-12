@@ -17,6 +17,20 @@ type sortingTestCase struct {
 	expectedOrder []string // Hashes in expected order
 }
 
+// makeSortingTestCase creates a test case with 3 matches in the order hash2, hash1, hash3
+// where hash1 should be first in the sorted result.
+func makeSortingTestCase(name string, fragCounts []int, fragCreator func(int) [][]*syntax.Node, expectedOrder []string) sortingTestCase {
+	return sortingTestCase{
+		name: name,
+		matches: []syntax.Match{
+			{Hash: "hash2", Frags: fragCreator(fragCounts[0])},
+			{Hash: "hash1", Frags: fragCreator(fragCounts[1])},
+			{Hash: "hash3", Frags: fragCreator(fragCounts[2])},
+		},
+		expectedOrder: expectedOrder,
+	}
+}
+
 // TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.
 func TestOccurrenceSorting(t *testing.T) {
 	tests := []sortingTestCase{

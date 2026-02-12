@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -22,11 +21,6 @@ import (
 // - Including specific patterns
 // - Excluding specific patterns
 // - Pattern precedence rules
-
-func TestFilterFeatures(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "art-dupl Filter Features BDD Suite")
-}
 
 var _ = Describe("Filter Features", func() {
 	var setup *testutil.BDDTestSetup
