@@ -416,3 +416,35 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 
 	return stdout, stderr, nil
 }
+
+// RunVendorTest runs a vendor directory exclusion/inclusion test with the given configuration.
+// This helper reduces duplication across BDD tests that verify vendor filtering behavior.
+// Parameters:
+//   - includeVendor: if true, runs with --vendor flag to include vendor directory
+//   - subcommand: optional subcommand to run (e.g., "stats", "" for default)
+//   - extraArgs: additional arguments to pass to art-dupl
+//
+// Returns the command output and any error that occurred.
+func (s *BDDTestSetup) RunVendorTest(includeVendor bool, subcommand string, extraArgs ...string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	// Create vendor directory with duplicate files
+	code := fmt.Sprintf(CommonDuplicateCodeTemplate, "vendorTestFunc")
+	if err := s.CreateVendorDuplicateFiles("vendor/example", code); err != nil {
+		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
+	}
+
+	// Build arguments
+	args := []string{}
+	if subcommand != "" {
+		args = append(args, subcommand)
+	}
+	if includeVendor {
+		args = append(args, "--vendor")
+	}
+	args = append(args, extraArgs...)
+
+	return s.RunArtDupl(args...)
+}
