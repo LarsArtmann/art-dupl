@@ -52,6 +52,16 @@ var _ = Describe("Plumbing Output Format", func() {
 		return setup.RunArtDupl("--plumbing", "--threshold", threshold)
 	}
 
+	// runPlumbingTestWithDetection is a helper that creates duplicate files and runs art-dupl with
+	// plumbing output and a specific detection method. It returns the output for custom assertions.
+	runPlumbingTestWithDetection := func(filenames []string, code, threshold, detectionMethod string) ([]byte, error) {
+		err := setup.CreateDuplicateFiles(filenames, code)
+		if err != nil {
+			return nil, err
+		}
+		return setup.RunArtDupl("--plumbing", "--detection-methods", detectionMethod, "--threshold", threshold)
+	}
+
 	Context("When using plumbing output for basic analysis", func() {
 		It("should produce machine-readable output", func() {
 			code := `package main
@@ -171,11 +181,7 @@ func artDuplPlumb(name string) error {
 	return nil
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"art1.go", "art2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and art-dupl detection
-			output, err := setup.RunArtDupl("--plumbing", "--detection-methods", "art-dupl", "--threshold", "10")
+			output, err := runPlumbingTestWithDetection([]string{"art1.go", "art2.go"}, code, "10", "art-dupl")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -186,11 +192,7 @@ func combinedPlumb() string {
 	return "combined"
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"combined1.go", "combined2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and combined detection
-			output, err := setup.RunArtDupl("--plumbing", "--detection-methods", "hash,art-dupl", "--threshold", "10")
+			output, err := runPlumbingTestWithDetection([]string{"combined1.go", "combined2.go"}, code, "10", "hash,art-dupl")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
