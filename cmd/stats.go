@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -197,14 +196,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	// Convert detection methods to comma-separated string
-	detectionMethodStr := ""
-	if len(mergedConfig.DetectionMethods) > 0 {
-		methods := make([]string, len(mergedConfig.DetectionMethods))
-		for i, dm := range mergedConfig.DetectionMethods {
-			methods[i] = dm.String()
-		}
-		detectionMethodStr = strings.Join(methods, ",")
-	}
+	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
 	// Set detection methods
 	if sp, ok := p.(printer.StatsPrinter); ok {

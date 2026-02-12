@@ -177,16 +177,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	// Convert detection methods to comma-separated string
-	detectionMethodStr := ""
-	if len(mergedConfig.DetectionMethods) > 0 {
-		methods := make([]string, len(mergedConfig.DetectionMethods))
-		for i, dm := range mergedConfig.DetectionMethods {
-			methods[i] = dm.String()
-		}
-		detectionMethodStr = strings.Join(methods, ",")
-	}
+	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
-	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, mergedConfig.OutputFormat, detectionMethodStr); err != nil {
+	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, detectionMethodStr); err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to print duplicates (sortBy: %s, threshold: %d)", sortBy, mergedConfig.Threshold))
 	}
 
@@ -238,6 +231,8 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 }
 
 // filesFeedWithOptions creates a channel of file paths with options.
+// TODO: REFACTOR DUPLICATION - Lines 249-252 duplicate the filter check pattern from lines 273-275, 287-289 in crawlPaths.
+// Extract common filter logic to:  func shouldIncludeFile(filter *filter.Filter, path string) bool
 func filesFeedWithOptions(paths []string, fromStdin bool, filter *filter.Filter, includeVendor bool) chan string {
 	if fromStdin {
 		fchan := make(chan string)
@@ -247,7 +242,7 @@ func filesFeedWithOptions(paths []string, fromStdin bool, filter *filter.Filter,
 				f := s.Text()
 				path := strings.TrimPrefix(f, "./")
 				// Apply filter if enabled
-				if filter != nil && filter.ShouldFilter(path) {
+				if !shouldIncludeFile(filter, path) {
 					continue
 				}
 				fchan <- path
@@ -271,7 +266,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 			}
 			if !info.IsDir() {
 				// Apply filter to single file
-				if filter != nil && filter.ShouldFilter(path) {
+				if !shouldIncludeFile(filter, path) {
 					continue
 				}
 				fchan <- path
@@ -285,7 +280,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 				}
 				if !info.IsDir() && strings.HasSuffix(info.Name(), ".go") {
 					// Apply filter to file
-					if filter != nil && filter.ShouldFilter(path) {
+					if !shouldIncludeFile(filter, path) {
 						return nil
 					}
 					fchan <- path
@@ -313,29 +308,6 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (c
 	// Create filter based on config
 	var filterParam *filter.Filter
 	var filterOptions []filter.FilterOption
-
-	// Auto-detect sqlc.yaml files and enable sqlc filtering if found
-	// This provides "out of the box" support for sqlc generated code
-	// NOTE: Only scan for sqlc.yaml if filtering will actually be used
-	sqlcOutputDirs := []string{}
-	if cfg.FilterGenerated || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 {
-		var err error
-		sqlcOutputDirs, err = filter.GetSQLOutputDirs(paths)
-		if err != nil && cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "warning: failed to detect sqlc config: %v\n", err)
-		}
-	}
-
-	// Enable sqlc filtering if sqlc.yaml is detected AND --include-sqlc is not set
-	if len(sqlcOutputDirs) > 0 && !cfg.IncludeSQLC {
-		filterOptions = append(filterOptions, filter.FilterSQLC)
-		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Auto-detected sqlc.yaml, filtering sqlc generated code\n")
-			for _, dir := range sqlcOutputDirs {
-				fmt.Fprintf(os.Stderr, "   - %s\n", dir)
-			}
-		}
-	}
 
 	// Filter sqlc files by default (filename-based detection is very fast)
 	// User can opt-out with --include-sqlc
@@ -396,7 +368,7 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string) (c
 }
 
 // printDupls prints duplicates using the specified printer.
-func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, outputFormat config.OutputFormat, detectionMethod string) error {
+func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.SortBy, threshold int, detectionMethod string) error {
 	// Build groups from matches
 	groups := printer.BuildCloneGroups(duplChan)
 
@@ -463,6 +435,10 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	}
 
 	// Convert channel to slice for reuse
+	// TODO: INEFFICIENCY - Lines 465-466 convert channel to slice, then lines 501-508 convert back to channel.
+	// This defeats the purpose of streaming. Consider either:
+	// 1. Keep streaming to each output file sequentially
+	// 2. Store results once and write multiple times without reconversion
 	matches := collectMatches(duplChan)
 
 	// Generate all output formats
@@ -470,14 +446,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	sortByEnum := printer.SortBy(sortBy)
 
 	// Convert detection methods to comma-separated string
-	detectionMethodStr := ""
-	if len(cfg.DetectionMethods) > 0 {
-		methods := make([]string, len(cfg.DetectionMethods))
-		for i, dm := range cfg.DetectionMethods {
-			methods[i] = dm.String()
-		}
-		detectionMethodStr = strings.Join(methods, ",")
-	}
+	detectionMethodStr := detectionMethodsToString(cfg.DetectionMethods)
 
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
@@ -486,6 +455,9 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", filename, err)
 		}
+		// TODO: DEFER ANTI-PATTERN - Lines 489-493 use defer with closure to check close error.
+		// Better pattern: use named return value or check err immediately after loop
+		// Also: Each iteration opens and closes file independently - could be optimized
 		defer func() {
 			if err := file.Close(); err != nil {
 				fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, err)
@@ -507,7 +479,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			}
 		}()
 
-		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, cfg.OutputFormat, detectionMethodStr); err != nil {
+		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
 			return fmt.Errorf("failed to print %s format: %w", format, err)
 		}
 

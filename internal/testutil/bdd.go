@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -167,13 +168,7 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 	}
 
 	// Append the temp directory at the end if not already specified
-	hasDir := false
-	for _, arg := range args {
-		if arg == s.TmpDir {
-			hasDir = true
-			break
-		}
-	}
+	hasDir := slices.Contains(args, s.TmpDir)
 
 	if !hasDir {
 		args = append(args, s.TmpDir)

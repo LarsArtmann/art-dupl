@@ -56,8 +56,8 @@ func process() {
 			outputStr := string(output)
 
 			// Each line should follow plumbing format: filename:startline,endline
-			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
-			for _, line := range lines {
+			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
+			for line := range lines {
 				if line == "" {
 					continue
 				}
@@ -78,8 +78,8 @@ func duplicate() { println(1) }`
 			outputStr := string(output)
 
 			// Each line should be parseable with cut/awk
-			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
-			for _, line := range lines {
+			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
+			for line := range lines {
 				if line == "" {
 					continue
 				}
@@ -152,8 +152,8 @@ func duplicate() { println(1) }`
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should still be valid plumbing format
-			lines := strings.Split(strings.TrimSpace(string(output)), "\n")
-			for _, line := range lines {
+			lines := strings.SplitSeq(strings.TrimSpace(string(output)), "\n")
+			for line := range lines {
 				if line == "" {
 					continue
 				}

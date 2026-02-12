@@ -68,14 +68,44 @@ import (
 
 // stats provides aggregated statistics about code duplication.
 //
+// TODO: ARCHITECTURE ISSUES - This file exceeds 350 lines (currently 727 lines)
+// and handles multiple concerns, violating Single Responsibility Principle:
+// - Statistics collection and aggregation (PrintClones, SetFilesCount)
+// - Health score calculation (calculateHealthScore)
+// - Multiple format output (printJSON, printCSV, printText)
+// - Style management (initStyles, healthScoreStyle)
+// - Size distribution analysis (printSizeDistribution, getSizeRange)
+// - Top files ranking (printTopFiles)
+// - Recommendation generation (printRecommendations)
+//
+// REFACTORING PLAN (When disk space allows):
+// Split into focused files:
+// - stats_collector.go: Statistics collection (PrintClones, SetX methods)
+// - stats_health.go: Health score calculation (calculateHealthScore)
+// - stats_formatter.go: Format-specific output (printJSON, printCSV, printText)
+// - stats_visualization.go: Visualization helpers (printSizeDistribution, printTopFiles)
+// - stats_recommendations.go: Recommendation logic (printRecommendations)
+// - stats_styles.go: Style management (initStyles, healthScoreStyle)
+//
 // TODO: TYPE SAFETY ISSUE - Uses primitive types instead of domain types:
 // - threshold uses int instead of domain.Threshold
 // - StatsData fields use int/float64 instead of domain types (TokenCount, ComplexityScore, etc.)
+// - HealthScore is string instead of domain.HealthGrade (would need new domain type)
 //
-// Also: This file is 639 lines - getting large. Consider splitting:
-// - stats_data.go for StatsData type and methods
-// - stats_format.go for formatting logic
-// - stats_calc.go for calculation logic.
+// TODO: Magic numbers in health score calculation should be constants:
+// - Line 285: 10.0 (max complexity score)
+// - Line 291: 10000.0 (max impact score)
+// - Line 296: 0.6, 0.25, 0.15 (weights)
+// - Lines 301-310: Threshold values (3, 6, 10, 15)
+//
+// TODO: Consider extracting health score logic to separate service:
+// - HealthScorer interface with Calculate(duplication, complexity, impact) HealthGrade
+// - Different implementations for different scoring strategies
+// - Makes algorithm pluggable and testable
+//
+// TODO: Inefficient map copying in printJSON (lines 598-606):
+// - Use Go 1.21+ maps.Clone when available or a better algorithm
+// - Current bubble sort implementation is O(n²), should use sort.Slice
 type stats struct {
 	ReadFile
 
@@ -712,7 +742,7 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 }
 
 // GetStatsData returns the collected statistics data.
-func (p *stats) GetStatsData() interface{} {
+func (p *stats) GetStatsData() any {
 	return p.statsData
 }
 

@@ -34,6 +34,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -227,6 +228,10 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 }
 
 // runDetection executes the configured detection methods.
+// TODO: REFACTOR - Lines 252-275 duplicate logic from streamDetectionResults (lines 297-310).
+// Extract common match collection/grouping logic into a shared function like:
+//
+//	func (d *detector) collectMatchesIntoGroups(matchesChan <-chan syntax.Match) (map[string][][]*syntax.Node, error)
 func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
@@ -250,19 +255,9 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 	}
 
 	// Collect and process matches
-	groups := make(map[string][][]*syntax.Node)
-
-	for match := range matchesChan {
-		// Check for cancellation
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
-		default:
-		}
-
-		if len(match.Frags) > 0 {
-			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
-		}
+	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
+	if err != nil {
+		return nil, err
 	}
 
 	// Convert to CloneGroup format
@@ -294,19 +289,9 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 		return ErrUnsupportedMethod
 	}
 
-	groups := make(map[string][][]*syntax.Node)
-
-	for match := range matchesChan {
-		// Check for cancellation
-		select {
-		case <-ctx.Done():
-			return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
-		default:
-		}
-
-		if len(match.Frags) > 0 {
-			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
-		}
+	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
+	if err != nil {
+		return err
 	}
 
 	// Stream results
@@ -327,6 +312,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 }
 
 // runSuffixTreeDetection executes suffix tree-based detection.
+// TODO: FIX - Unused parameter 'ctx' causes gopls warning. Either use it for cancellation or remove it.
 func (d *detector) runSuffixTreeDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
 	tree := d.buildSuffixTree(data)
 	suffixMatches := tree.FindDuplOver(threshold)
@@ -351,9 +337,11 @@ func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node,
 	return d.runSuffixTreeDetection(ctx, data, threshold)
 }
 
-// runHashDetection executes hash-based detection method.
+// runHashDetection executes hash-based detection method using SHA-256 file hashing.
+// This implements file-level duplicate detection by comparing file contents.
 func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
-	return d.runSuffixTreeDetection(ctx, data, threshold)
+	hashDetector := hash.NewHashDetector(threshold)
+	return hashDetector.FindDuplOver(data, threshold)
 }
 
 // buildSuffixTree creates a suffix tree from the provided data.
@@ -396,6 +384,11 @@ func (d *detector) convertToCloneGroup(hash string, frags [][]*syntax.Node, meth
 }
 
 // convertFragmentToClone converts a syntax fragment to SDK Clone format.
+// TODO: TYPE SAFETY - Lines 408-414 use primitive int types instead of domain types.
+// Current code uses: StartLine: int(firstNode.Pos), EndLine: int(lastNode.End)
+// Should use: StartLine: domain.LineNumber(firstNode.Pos), EndLine: domain.LineNumber(lastNode.End)
+// Similarly for byte positions: domain.BytePosition instead of int
+// This requires changing Clone struct to use domain types from domain/domain_types.go
 func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	if len(frag) == 0 {
 		return &Clone{}
@@ -423,6 +416,9 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 }
 
 // extractFragmentContent extracts the actual source code for a fragment.
+// TODO: TYPE SAFETY - Lines 440-443 mix int and position.Pos types without clear conversion.
+// The frag[0].Pos is position.Pos type but being treated as int for array indexing.
+// Consider explicit conversion: int(start) where start = domain.LineNumber(frag[0].Pos)
 func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	if len(frag) == 0 {
 		return ""
@@ -522,7 +518,34 @@ func (d *detector) reportProgress(percentage float64, stage, currentFile string)
 	}
 }
 
+// collectMatchesIntoGroups collects matches from a channel and groups them by hash.
+func collectMatchesIntoGroups(ctx context.Context, matchesChan <-chan syntax.Match) (map[string][][]*syntax.Node, error) {
+	groups := make(map[string][][]*syntax.Node)
+
+	for match := range matchesChan {
+		// Check for cancellation
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
+		if len(match.Frags) > 0 {
+			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+		}
+	}
+
+	return groups, nil
+}
+
 // hashConfig creates a hash of the configuration for metadata.
+// TODO: IMPLEMENT PROPER HASHING - Current implementation uses simple string formatting (line 528) instead of cryptographic hash.
+// Should use crypto/sha256 or similar for proper fingerprinting.
+// Example implementation:
+//
+//	h := sha256.New()
+//	fmt.Fprintf(h, "%d%v", opts.Threshold, opts.DetectionMethods)
+//	return hex.EncodeToString(h.Sum(nil))
 func (d *detector) hashConfig(opts *Options) string {
 	// Simple hash - in real implementation use proper hashing
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)

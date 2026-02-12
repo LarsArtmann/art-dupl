@@ -10,6 +10,15 @@
 //
 // All types in this package are value objects: immutable and validated.
 //
+// TODO: ARCHITECTURE - This file is 525 lines and exceeds 350 line limit.
+// While each type definition is small and consistent, the aggregation is large.
+// Consider splitting into focused files:
+// - domain/types_id.go: ID types (CloneGroupID, AnalysisID)
+// - domain/types_file.go: File-related types (Filepath, LineNumber, BytePosition)
+// - domain/types_metric.go: Metric types (TokenCount, FileCount, CloneCount, Threshold)
+// - domain/types_metadata.go: Metadata types (Hash, ComplexityScore, Confidence, ProcessingTime)
+// - domain/helpers.go: Marshaling/unmarshaling helper functions
+//
 // Usage Examples:
 //
 //	// Instead of:
@@ -38,7 +47,7 @@ import (
 
 // marshalStringID is a helper function for marshaling string-based ID types.
 // It handles the common pattern of validating non-empty strings and marshaling to JSON.
-func marshalStringID(s, typeName, validationMsg string) ([]byte, error) {
+func marshalStringID(s, validationMsg string) ([]byte, error) {
 	if s == "" {
 		return nil, errors.NewValidationError(validationMsg, nil)
 	}
@@ -111,7 +120,7 @@ func (id CloneGroupID) String() string {
 
 // MarshalJSON implements json.Marshaler for CloneGroupID.
 func (id CloneGroupID) MarshalJSON() ([]byte, error) {
-	return marshalStringID(string(id), "CloneGroupID", "clone group ID cannot be empty")
+	return marshalStringID(string(id), "clone group ID cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneGroupID.
@@ -139,7 +148,7 @@ func (id AnalysisID) String() string {
 
 // MarshalJSON implements json.Marshaler for AnalysisID.
 func (id AnalysisID) MarshalJSON() ([]byte, error) {
-	return marshalStringID(string(id), "AnalysisID", "analysis ID cannot be empty")
+	return marshalStringID(string(id), "analysis ID cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for AnalysisID.
@@ -167,7 +176,7 @@ func (fp Filepath) String() string {
 
 // MarshalJSON implements json.Marshaler for Filepath.
 func (fp Filepath) MarshalJSON() ([]byte, error) {
-	return marshalStringID(string(fp), "Filepath", "filepath cannot be empty")
+	return marshalStringID(string(fp), "filepath cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Filepath.
@@ -198,6 +207,8 @@ func (ln LineNumber) Uint16() uint16 {
 
 // Uint returns the underlying uint value (for backward compatibility).
 // Deprecated: Use Uint16() instead for type safety.
+// TODO: CLEANUP - Deprecated method (line 199). Consider removing after migration period.
+// Track usage across codebase and plan removal timeline.
 func (ln LineNumber) Uint() uint {
 	return uint(ln)
 }
@@ -239,6 +250,8 @@ func (bp BytePosition) Uint32() uint32 {
 
 // Uint returns the underlying uint value (for backward compatibility).
 // Deprecated: Use Uint32() instead for type safety.
+// TODO: CLEANUP - Deprecated method (line 241). Consider removing after migration period.
+// Track usage across codebase and plan removal timeline.
 func (bp BytePosition) Uint() uint {
 	return uint(bp)
 }
@@ -348,6 +361,8 @@ func (cs ComplexityScore) Uint16() uint16 {
 
 // Uint returns the underlying uint value (for backward compatibility).
 // Deprecated: Use Uint16() instead for type safety.
+// TODO: CLEANUP - Deprecated method (line 350). Consider removing after migration period.
+// Track usage across codebase and plan removal timeline.
 func (cs ComplexityScore) Uint() uint {
 	return uint(cs)
 }
@@ -382,7 +397,7 @@ func (h Hash) String() string {
 
 // MarshalJSON implements json.Marshaler for Hash.
 func (h Hash) MarshalJSON() ([]byte, error) {
-	return marshalStringID(string(h), "Hash", "hash cannot be empty")
+	return marshalStringID(string(h), "hash cannot be empty")
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Hash.

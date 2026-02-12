@@ -3,6 +3,7 @@ package filtertest
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
@@ -222,13 +223,7 @@ type User struct {
 	require.NoError(t, err)
 
 	expectedOutputDir := filepath.Join(tmpDir, "db/sqlc")
-	found := false
-	for _, dir := range outputDirs {
-		if dir == expectedOutputDir {
-			found = true
-			break
-		}
-	}
+	found := slices.Contains(outputDirs, expectedOutputDir)
 	assert.True(t, found, "Should find nested SQLC output directory: %s", expectedOutputDir)
 
 	// Test filter recognizes SQLC files by both name and content

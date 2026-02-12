@@ -1,3 +1,14 @@
+// Package domain provides core domain types for clone detection.
+//
+// TODO: ARCHITECTURE - This file is 495 lines and exceeds 350 line limit.
+// Should be split into focused files for better maintainability:
+// - domain/types_enums.go: Enum types (FileProcessingState, DetectionState, AnalysisMode, CloneSeverity)
+// - domain/clone.go: Clone and CloneGroup domain objects with validation
+// - domain/analysis.go: Analysis and AnalysisStats types
+// - domain/repository.go: Repository and SourceFile types
+// - domain/options.go: DetectionOptions and configuration types
+// - domain/conversion.go: NodeToClone, CalculateSeverity, calculateComplexity
+// - domain/validation.go: Validation helpers (validationRule, validateRules, isValid*)
 package domain
 
 import (
@@ -283,6 +294,10 @@ func (a Analysis) IsValid() error {
 }
 
 // validationRule represents a single validation rule.
+// TODO: REFACTOR - Lines 285-299 are internal validation helpers that are used across multiple types.
+// Consider moving to domain/validation.go or making them more generic.
+// Current pattern: validationRule struct + validateRules function + isValid* functions for each type.
+// Could consolidate into a more generic validation framework.
 type validationRule struct {
 	valid bool
 	msg   string
@@ -460,6 +475,9 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 }
 
 // CalculateSeverity determines clone severity based on size and complexity.
+// TODO: MOVE TO SEPARATE FILE - Lines 462-495 contain conversion/calculations functions
+// (CalculateSeverity, calculateComplexity) that are not domain types.
+// Move to domain/conversion.go or domain/severity.go for better separation of concerns.
 func CalculateSeverity(size, complexity uint) CloneSeverity {
 	if complexity > 50 || size > 200 {
 		return CloneSeverityCritical
@@ -474,6 +492,14 @@ func CalculateSeverity(size, complexity uint) CloneSeverity {
 }
 
 // calculateComplexity calculates a basic complexity metric for a node.
+// TODO: IMPROVE ALGORITHM - Current implementation (lines 477-494) is very basic:
+// - Only counts nodes and adds small increments based on type
+// - Recursive implementation could be expensive for deep trees
+// - Node.Type == 0 magic number without documentation
+// Consider using established complexity metrics like:
+// - McCabe cyclomatic complexity
+// - Nesting depth
+// - Cognitive complexity
 func calculateComplexity(node *syntax.Node) uint {
 	// Simple complexity based on node count and depth
 	complexity := uint(1) // Base complexity

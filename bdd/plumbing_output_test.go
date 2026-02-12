@@ -315,8 +315,8 @@ func ciCdFunction() error {
 
 			outputStr := string(output)
 			// Each line should be parseable
-			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
-			for _, line := range lines {
+			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
+			for line := range lines {
 				if strings.TrimSpace(line) != "" {
 					// Line should contain file path information
 					Expect(line).To(ContainSubstring(".go"))
@@ -375,10 +375,10 @@ func delimiterTest() {}`
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
+			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
 
 			// All non-empty lines should have consistent structure
-			for _, line := range lines {
+			for line := range lines {
 				if strings.TrimSpace(line) != "" {
 					// Should contain .go extension (file path)
 					Expect(line).To(ContainSubstring(".go"))
@@ -487,9 +487,9 @@ func validatePlumbingLine(line string) error {
 // Helper function to parse plumbing output.
 func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 	var entries []PlumbingEntry
-	lines := strings.Split(strings.TrimSpace(output), "\n")
+	lines := strings.SplitSeq(strings.TrimSpace(output), "\n")
 
-	for _, line := range lines {
+	for line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -638,9 +638,9 @@ func absPathTest() {}`
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			lines := strings.Split(strings.TrimSpace(outputStr), "\n")
+			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
 
-			for _, line := range lines {
+			for line := range lines {
 				if strings.TrimSpace(line) == "" {
 					continue
 				}
