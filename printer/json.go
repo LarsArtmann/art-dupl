@@ -14,14 +14,13 @@ import (
 
 // JSONOutput represents the structured JSON output.
 type JSONOutput struct {
-	Version          string       `json:"version"`
-	Timestamp        time.Time    `json:"timestamp"`
-	Threshold        int          `json:"threshold"`
-	FilesAnalyzed    int          `json:"files_analyzed"`
-	DetectionMethod  string       `json:"detection_method,omitempty"`
-	DetectionMethods string       `json:"detection_methods,omitempty"`
-	CloneGroups      []CloneGroup `json:"clone_groups"`
-	Summary          Summary      `json:"summary"`
+	Version         string       `json:"version"`
+	Timestamp       time.Time    `json:"timestamp"`
+	Threshold       int          `json:"threshold"`
+	FilesAnalyzed   int          `json:"files_analyzed"`
+	DetectionMethod string       `json:"detection_method,omitempty"`
+	CloneGroups     []CloneGroup `json:"clone_groups"`
+	Summary         Summary      `json:"summary"`
 }
 
 // CloneGroup represents a group of duplicate code fragments.
@@ -199,12 +198,8 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 		},
 	}
 
-	// Use DetectionMethods (plural) for combined detection, DetectionMethod (singular) for single
-	if strings.Contains(detectionMethod, ",") {
-		output.DetectionMethods = detectionMethod
-	} else {
-		output.DetectionMethod = detectionMethod
-	}
+	// Always use detection_method (singular) for consistency
+	output.DetectionMethod = detectionMethod
 
 	data, err := json.MarshalIndent(&output, "", "  ")
 	if err != nil {

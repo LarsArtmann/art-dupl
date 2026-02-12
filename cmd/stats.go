@@ -8,6 +8,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -162,18 +163,15 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	// Add timeout context if specified
-	if mergedConfig.Timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, time.Duration(mergedConfig.Timeout)*time.Second)
-		defer cancel()
-		fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", mergedConfig.Timeout)
-	}
+	var cancel context.CancelFunc
+	ctx, cancel = utils.ApplyTimeout(ctx, mergedConfig.Timeout)
+	defer cancel()
 
 	// Start profiling for timing
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, filesCount, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths)
+	duplChan, parseStats, filterStats, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths, config.OutputFormat(format))
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
 	}
@@ -187,7 +185,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	// Set file count
 	if sp, ok := p.(printer.StatsPrinter); ok {
-		sp.SetFilesCount(filesCount)
+		sp.SetFilesCount(parseStats.FilesCount)
 	}
 
 	// Set format
@@ -211,10 +209,23 @@ func runStats(cmd *cobra.Command, args []string) error {
 		sp.SetAnalysisDuration(duration)
 	}
 
-	// Estimate total lines (rough estimate: 100 lines per file as baseline)
+	// Set actual total lines from parsing
 	if sp, ok := p.(printer.StatsPrinter); ok {
-		estimatedLines := filesCount * 100
-		sp.SetTotalEstimatedLines(estimatedLines)
+		sp.SetTotalEstimatedLines(parseStats.LinesCount)
+	}
+
+	// Set filter statistics
+	if sp, ok := p.(printer.StatsPrinter); ok {
+		totalFiltered := filterStats.TotalFiltered()
+		if totalFiltered > 0 {
+			breakdown := make(map[string]int)
+			for reason, count := range filterStats.FilteredByReason {
+				if reason != "not_filtered" {
+					breakdown[string(reason)] = count
+				}
+			}
+			sp.SetFilterStats(totalFiltered, breakdown)
+		}
 	}
 
 	// Build groups from matches

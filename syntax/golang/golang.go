@@ -62,16 +62,23 @@ const (
 
 // Parse the given file and return uniform syntax tree.
 func Parse(filename string) (*syntax.Node, error) {
+	node, _, err := ParseWithLineCount(filename)
+	return node, err
+}
+
+// ParseWithLineCount parses the given file and returns the syntax tree along with the line count.
+func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
-		return nil, err //nolint:wrapcheck // Parse errors are already clear
+		return nil, 0, err //nolint:wrapcheck // Parse errors are already clear
 	}
 	t := &transformer{
 		fileset:  fset,
 		filename: filename,
 	}
-	return t.trans(file), nil
+	lineCount := fset.File(file.Pos()).LineCount()
+	return t.trans(file), lineCount, nil
 }
 
 type transformer struct {

@@ -30,6 +30,11 @@ type TodoIssue struct {
 	Tags     []string          `json:"tags,omitempty"` // @username, date, etc.
 }
 
+// GetLine returns the line number for this issue (implements LineExtractor interface).
+func (t TodoIssue) GetLine() domain.LineNumber {
+	return t.Line
+}
+
 // LegacyIssue represents a legacy code pattern.
 type LegacyIssue struct {
 	Filename domain.Filepath      `json:"filename"`
@@ -37,6 +42,11 @@ type LegacyIssue struct {
 	Type     string               `json:"type"` // deprecated function, old pattern, etc.
 	Message  string               `json:"message"`
 	Severity domain.CloneSeverity `json:"severity"` // low, medium, high
+}
+
+// GetLine returns the line number for this issue (implements LineExtractor interface).
+func (l LegacyIssue) GetLine() domain.LineNumber {
+	return l.Line
 }
 
 // TodoDetector finds TODO comments in Go source code.
@@ -111,24 +121,29 @@ func createIssueMatch(prefix, filename string, line int) syntax.Match {
 	}
 }
 
+// LineExtractor is an interface for issue types that have a line number.
+// This allows findIssuesGeneric to work with any issue type without needing
+// a separate line extraction function.
+type LineExtractor interface {
+	GetLine() domain.LineNumber
+}
+
 // findIssuesGeneric is a generic helper for finding issues and creating matches.
 // It avoids code duplication between FindTodos and FindLegacy methods.
-func findIssuesGeneric[T any](
+// T must implement LineExtractor interface for line number access.
+func findIssuesGeneric[T LineExtractor](
 	data []*syntax.Node,
 	finder func(string, []*syntax.Node) []T,
 	matchType string,
-	lineExtractor func(T) int,
 ) <-chan syntax.Match {
 	return findIssuesInFile(data, finder, func(issue T, filename string) syntax.Match {
-		return createIssueMatch(matchType, filename, lineExtractor(issue))
+		return createIssueMatch(matchType, filename, int(issue.GetLine().Uint16()))
 	})
 }
 
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, td.findTodosInFile, "TODO", func(t TodoIssue) int {
-		return int(t.Line.Uint16())
-	})
+	return findIssuesGeneric(data, td.findTodosInFile, "TODO")
 }
 
 // findTodosInFile parses the file and finds TODO comments.
@@ -221,9 +236,7 @@ func NewLegacyDetector() *LegacyDetector {
 
 // FindLegacy finds all legacy patterns in provided nodes.
 func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY", func(l LegacyIssue) int {
-		return int(l.Line.Uint16())
-	})
+	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY")
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.
@@ -263,11 +276,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 	return issues
 }
 
-// extractLine is a helper to extract line number from any issue type with domain.LineNumber.
-// This avoids duplicating the same anonymous function pattern across multiple Find* methods.
-func extractLine[T any](issue T, lineField func(T) domain.LineNumber) int {
-	return int(lineField(issue).Uint16())
-}
+
 
 // getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
