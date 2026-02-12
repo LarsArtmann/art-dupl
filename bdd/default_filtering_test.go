@@ -213,17 +213,14 @@ func validate() { println(1) }`
 			modelsCode := `package db
 func validate() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"service1.go", "service2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("models.go", modelsCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			Expect(outputStr).To(ContainSubstring("service1.go"))
-			Expect(outputStr).ToNot(ContainSubstring("models.go"))
+			assertGeneratedFileFiltered(
+				setup,
+				[]string{"service1.go", "service2.go"},
+				regularCode,
+				"models.go",
+				modelsCode,
+				"3",
+			)
 		})
 
 		It("should exclude querier.go files by default", func() {
@@ -232,17 +229,14 @@ func query() { println(1) }`
 			querierCode := `package db
 func query() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"service1.go", "service2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("querier.go", querierCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			Expect(outputStr).To(ContainSubstring("service1.go"))
-			Expect(outputStr).ToNot(ContainSubstring("querier.go"))
+			assertGeneratedFileFiltered(
+				setup,
+				[]string{"service1.go", "service2.go"},
+				regularCode,
+				"querier.go",
+				querierCode,
+				"3",
+			)
 		})
 
 		It("should exclude batch.go files by default", func() {
@@ -251,17 +245,14 @@ func batch() { println(1) }`
 			batchCode := `package db
 func batch() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"service1.go", "service2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("batch.go", batchCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			Expect(outputStr).To(ContainSubstring("service1.go"))
-			Expect(outputStr).ToNot(ContainSubstring("batch.go"))
+			assertGeneratedFileFiltered(
+				setup,
+				[]string{"service1.go", "service2.go"},
+				regularCode,
+				"batch.go",
+				batchCode,
+				"3",
+			)
 		})
 
 		It("should include SQLC files when --include-sqlc is used", func() {
