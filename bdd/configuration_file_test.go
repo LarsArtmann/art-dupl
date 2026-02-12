@@ -121,46 +121,26 @@ func pathTest() {}`
 
 	Context("When CLI flags override config file settings", func() {
 		It("should use CLI threshold over config threshold", func() {
-			// Create config with threshold 50
 			configContent := `{
 				"threshold": 50
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func overrideTest() {}`
-			err = setup.CreateDuplicateFiles([]string{"override1.go", "override2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with CLI flag overriding config
-			output, err := setup.RunArtDupl("--config", configPath, "--threshold", "10", setup.TmpDir)
+			output, err := runWithConfig(configContent, code, []string{"override1.go", "override2.go"})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
 
 		It("should use CLI output format over config format", func() {
-			// Create config with text format
 			configContent := `{
 				"threshold": 15,
 				"outputFormat": "text"
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func formatOverride() string {
 	return "test"
 }`
-			err = setup.CreateDuplicateFiles([]string{"fmt1.go", "fmt2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with CLI flag for JSON format
-			output, err := setup.RunArtDupl("--config", configPath, "--json", setup.TmpDir)
+			output, err := runWithConfig(configContent, code, []string{"fmt1.go", "fmt2.go"})
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify JSON output
@@ -173,59 +153,34 @@ func formatOverride() string {
 
 	Context("When configuration file has invalid format", func() {
 		It("should handle malformed JSON gracefully", func() {
-			// Create malformed JSON config
 			configContent := `{ invalid json content }`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func malformedTest() {}`
-			err = setup.CreateDuplicateFiles([]string{"malformed1.go", "malformed2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with invalid config - should error
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfig(configContent, code, []string{"malformed1.go", "malformed2.go"})
 			Expect(err).To(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("error"))
 		})
 
 		It("should handle missing config file gracefully", func() {
-			// Try to use non-existent config
 			configPath := filepath.Join(setup.TmpDir, "nonexistent.json")
-
-			// Create test files
 			code := `package main
 func missingConfig() {}`
 			err := setup.CreateDuplicateFiles([]string{"missing1.go", "missing2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with missing config - should error
 			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
 			Expect(err).To(HaveOccurred())
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 
 		It("should handle config with invalid field types", func() {
-			// Create config with wrong types
 			configContent := `{
 				"threshold": "not a number",
 				"outputFormat": 12345
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func invalidType() {}`
-			err = setup.CreateDuplicateFiles([]string{"invalid1.go", "invalid2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with invalid type config
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
-			// May error or use defaults
+			output, err := runWithConfig(configContent, code, []string{"invalid1.go", "invalid2.go"})
 			_ = err
 			Expect(output).ToNot(BeNil())
 		})
