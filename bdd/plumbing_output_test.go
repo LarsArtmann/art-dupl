@@ -240,18 +240,12 @@ func hashSortPlumb() {}`
 	Context("When using plumbing with file filtering", func() {
 		It("should work with vendor exclusion", func() {
 			code := testutil.SimpleCodeTemplate("vendorPlumb")
-
-			output, err := setup.CreateAndRunDupl([]string{"main1.go", "main2.go"}, code, "--plumbing", "--threshold", testutil.ThresholdSmall)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			_ = setup.CreateAndRunDuplExpectSuccess([]string{"main1.go", "main2.go"}, code, "--plumbing", "--threshold", testutil.ThresholdSmall)
 		})
 
 		It("should work with filter-generated flag", func() {
 			code := testutil.SimpleCodeTemplate("filterGenPlumb")
-
-			output, err := setup.CreateAndRunDupl([]string{"filter1.go", "filter2.go"}, code, "--plumbing", "--filter-generated", "--threshold", testutil.ThresholdSmall)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			_ = setup.CreateAndRunDuplExpectSuccess([]string{"filter1.go", "filter2.go"}, code, "--plumbing", "--filter-generated", "--threshold", testutil.ThresholdSmall)
 		})
 
 		It("should work with include patterns", func() {

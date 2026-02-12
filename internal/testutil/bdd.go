@@ -355,6 +355,31 @@ func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath string, code string
 	return nil
 }
 
+// CreateAndRunDuplExpectSuccess creates duplicate files, runs art-dupl, and asserts success.
+// This helper reduces boilerplate by combining CreateAndRunDupl with common assertions.
+// Returns the output for further assertions. Panics on error (suitable for Ginkgo tests).
+func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(filenames []string, content string, args ...string) []byte {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	output, err := s.CreateAndRunDupl(filenames, content, args...)
+	if err != nil {
+		if s.T != nil {
+			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
+		}
+		panic(fmt.Sprintf("art-dupl command failed: %v\nOutput: %s", err, string(output)))
+	}
+	if output == nil {
+		if s.T != nil {
+			s.T.Fatal("art-dupl output is nil")
+		}
+		panic("art-dupl output is nil")
+	}
+
+	return output
+}
+
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {

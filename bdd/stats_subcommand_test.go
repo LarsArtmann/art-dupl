@@ -198,18 +198,12 @@ func small() {}`
 	Context("When running stats with vendor directory", func() {
 		It("should exclude vendor by default", func() {
 			code := testutil.SimpleCodeTemplate("vendorTest")
-
-			output, err := setup.CreateAndRunDupl([]string{"main1.go", "main2.go"}, code, "stats", "--threshold", testutil.ThresholdMedium)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			_ = setup.CreateAndRunDuplExpectSuccess([]string{"main1.go", "main2.go"}, code, "stats", "--threshold", testutil.ThresholdMedium)
 		})
 
 		It("should include vendor when --vendor flag is specified", func() {
 			code := testutil.SimpleCodeTemplate("vendorCode")
-
-			output, err := setup.CreateAndRunDupl([]string{"vendor1.go", "vendor2.go"}, code, "stats", "--vendor", "--threshold", testutil.ThresholdMedium)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			_ = setup.CreateAndRunDuplExpectSuccess([]string{"vendor1.go", "vendor2.go"}, code, "stats", "--vendor", "--threshold", testutil.ThresholdMedium)
 		})
 	})
 
