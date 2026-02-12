@@ -1,0 +1,250 @@
+package printer
+
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+)
+
+// printStats prints the collected statistics.
+func (p *stats) printStats() {
+	switch p.format {
+	case FormatJSON:
+		p.printJSON()
+	case FormatCSV:
+		p.printCSV()
+	case FormatText:
+		p.printText()
+	}
+}
+
+// printCSV prints statistics in CSV format.
+func (p *stats) printCSV() {
+	// Write CSV header
+	_, _ = fmt.Fprintf(p.w, "Metric,Value\n")
+
+	// Configuration
+	_, _ = fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
+	_, _ = fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
+	_, _ = fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
+	_, _ = fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
+	_, _ = fmt.Fprintf(p.w, "\n")
+
+	// Overview
+	_, _ = fmt.Fprintf(p.w, "Files Scanned,%d\n", p.statsData.TotalFilesScanned)
+	if p.statsData.FilesFiltered > 0 {
+		_, _ = fmt.Fprintf(p.w, "Files Filtered,%d\n", p.statsData.FilesFiltered)
+	}
+	_, _ = fmt.Fprintf(p.w, "Clone Groups,%d\n", p.statsData.TotalCloneGroups)
+	_, _ = fmt.Fprintf(p.w, "Total Clones,%d\n", p.statsData.TotalClones)
+	_, _ = fmt.Fprintf(p.w, "\n")
+
+	// Duplicate Code
+	_, _ = fmt.Fprintf(p.w, "Total Duplicate Lines,%d\n", p.statsData.TotalDuplicateLines)
+	_, _ = fmt.Fprintf(p.w, "Estimated Total Lines,%d\n", p.statsData.TotalEstimatedLines)
+	_, _ = fmt.Fprintf(p.w, "Duplication Ratio,%.1f%%\n", p.statsData.DuplicationRatio)
+	_, _ = fmt.Fprintf(p.w, "Total Duplicate Tokens,%d\n", p.statsData.TotalTokens)
+	_, _ = fmt.Fprintf(p.w, "Average Clone Size,%d\n", p.statsData.AverageCloneSize)
+	_, _ = fmt.Fprintf(p.w, "Complexity Score,%.2f\n", p.statsData.ComplexityScore)
+	_, _ = fmt.Fprintf(p.w, "Impact Score,%d\n", p.statsData.ImpactScore)
+	_, _ = fmt.Fprintf(p.w, "Health Score,%s\n", p.statsData.HealthScore)
+}
+
+// printText prints statistics in text format.
+func (p *stats) printText() {
+	// Print header
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.header.Render("Code Duplication Statistics"))
+	_, _ = fmt.Fprintf(p.w, "%s\n\n", p.base.Render("============================"))
+
+	// Print configuration
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Configuration:"))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Threshold:"), p.base.Render(fmt.Sprintf("%d tokens", p.threshold)))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Detection Methods:"), p.base.Render(p.statsData.DetectionMethods))
+	if p.statsData.Timestamp != "" {
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Timestamp:"), p.base.Render(p.statsData.Timestamp))
+	}
+	if p.statsData.AnalysisDuration != "" {
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Analysis Time:"), p.base.Render(p.statsData.AnalysisDuration))
+	}
+	_, _ = fmt.Fprintf(p.w, "\n")
+
+	// Print overview
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Overview:"))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Scanned:"), p.base.Render(strconv.Itoa(p.statsData.TotalFilesScanned)))
+
+	// Print filter information if files were filtered
+	if p.statsData.FilesFiltered > 0 {
+		filterPercent := float64(p.statsData.FilesFiltered) / float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
+		filterText := fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent)
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Filtered:"), p.base.Render(filterText))
+
+		// Print filter breakdown
+		if len(p.statsData.FilterBreakdown) > 0 {
+			_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filtering Breakdown:"))
+			for reason, count := range p.statsData.FilterBreakdown {
+				_, _ = fmt.Fprintf(p.w, "  %s %s: %s\n",
+					p.metric.Render("•"),
+					p.base.Render(reason),
+					p.base.Render(fmt.Sprintf("%d files", count)))
+			}
+		}
+	}
+
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Clone Groups:"), p.base.Render(strconv.Itoa(p.statsData.TotalCloneGroups)))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Clones:"), p.base.Render(strconv.Itoa(p.statsData.TotalClones)))
+	_, _ = fmt.Fprintf(p.w, "\n")
+
+	// Print duplicate code metrics
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Duplicate Code:"))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalDuplicateLines)))
+	if p.statsData.TotalEstimatedLines > 0 {
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Estimated Total Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalEstimatedLines)))
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Duplication Ratio:"), p.healthScoreStyle(p.statsData.HealthScore).Render(fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio)))
+	}
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Tokens:"), p.base.Render(strconv.Itoa(p.statsData.TotalTokens)))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Average Clone Size:"), p.base.Render(fmt.Sprintf("%d lines", p.statsData.AverageCloneSize)))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Complexity Score:"), p.base.Render(fmt.Sprintf("%.2f", p.statsData.ComplexityScore)))
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Impact Score:"), p.base.Render(strconv.Itoa(p.statsData.ImpactScore)))
+	if p.statsData.HealthScore != "" {
+		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Health Score:"), p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore))
+	}
+	_, _ = fmt.Fprintf(p.w, "\n")
+
+	// Print size distribution
+	if len(p.statsData.SizeDistribution) > 0 {
+		_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Clone Size Distribution:"))
+		printSizeDistribution(p.w, p.statsData.SizeDistribution)
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
+	// Print top files with most duplicates
+	if len(p.statsData.FileDuplication) > 0 {
+		_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Top Files by Duplicate Lines:"))
+		printTopFiles(p.w, p.statsData.FileDuplication, 10)
+	}
+
+	// Print actionable recommendations
+	_, _ = fmt.Fprintf(p.w, "\n%s\n", p.header.Render("Recommendations:"))
+	p.printRecommendations()
+}
+
+// printJSON prints statistics in JSON format.
+func (p *stats) printJSON() {
+	// Create a struct for JSON output
+	jsonData := struct {
+		Configuration struct {
+			Threshold        int    `json:"threshold"`
+			DetectionMethods string `json:"detectionMethods"`
+		} `json:"configuration"`
+		Overview struct {
+			FilesScanned    int            `json:"filesScanned"`
+			FilesFiltered   int            `json:"filesFiltered,omitempty"`
+			FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
+			CloneGroups     int            `json:"cloneGroups"`
+			TotalClones     int            `json:"totalClones"`
+		} `json:"overview"`
+		DuplicateCode struct {
+			TotalLines       int     `json:"totalDuplicateLines"`
+			EstimatedLines   int     `json:"estimatedTotalLines,omitempty"`
+			TotalTokens      int     `json:"totalDuplicateTokens"`
+			AverageCloneSize int     `json:"averageCloneSize"`
+			ComplexityScore  float64 `json:"complexityScore"`
+			ImpactScore      int     `json:"impactScore"`
+			DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
+		} `json:"duplicateCode"`
+		Metrics struct {
+			HealthScore  string `json:"healthScore,omitempty"`
+			AnalysisTime string `json:"analysisTime,omitempty"`
+			Timestamp    string `json:"timestamp,omitempty"`
+		} `json:"metrics"`
+		SizeDistribution map[string]int `json:"sizeDistribution"`
+		TopFiles         []struct {
+			Filename string `json:"filename"`
+			Lines    int    `json:"duplicateLines"`
+		} `json:"topFiles"`
+	}{}
+
+	// Fill configuration
+	jsonData.Configuration.Threshold = p.threshold
+	jsonData.Configuration.DetectionMethods = p.statsData.DetectionMethods
+
+	// Fill overview
+	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned
+	jsonData.Overview.CloneGroups = p.statsData.TotalCloneGroups
+	jsonData.Overview.TotalClones = p.statsData.TotalClones
+
+	// Fill filter info if available
+	if p.statsData.FilesFiltered > 0 {
+		jsonData.Overview.FilesFiltered = p.statsData.FilesFiltered
+		if len(p.statsData.FilterBreakdown) > 0 {
+			jsonData.Overview.FilterBreakdown = p.statsData.FilterBreakdown
+		}
+	}
+
+	// Fill duplicate code metrics
+	jsonData.DuplicateCode.TotalLines = p.statsData.TotalDuplicateLines
+	jsonData.DuplicateCode.TotalTokens = p.statsData.TotalTokens
+	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
+	jsonData.DuplicateCode.ComplexityScore = p.statsData.ComplexityScore
+	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
+	if p.statsData.TotalEstimatedLines > 0 {
+		jsonData.DuplicateCode.EstimatedLines = p.statsData.TotalEstimatedLines
+		jsonData.DuplicateCode.DuplicationRatio = p.statsData.DuplicationRatio
+	}
+
+	// Fill metrics
+	if p.statsData.HealthScore != "" {
+		jsonData.Metrics.HealthScore = p.statsData.HealthScore
+	}
+	if p.statsData.AnalysisDuration != "" {
+		jsonData.Metrics.AnalysisTime = p.statsData.AnalysisDuration
+	}
+	if p.statsData.Timestamp != "" {
+		jsonData.Metrics.Timestamp = p.statsData.Timestamp
+	}
+
+	// Fill size distribution
+	jsonData.SizeDistribution = p.statsData.SizeDistribution
+
+	// Fill top files
+	if len(p.statsData.FileDuplication) > 0 {
+		// Convert map to slice and sort by duplicate lines (descending)
+		type fileStat struct {
+			filename string
+			lines    int
+		}
+		files := make([]fileStat, 0, len(p.statsData.FileDuplication))
+		for filename, lines := range p.statsData.FileDuplication {
+			files = append(files, fileStat{filename, lines})
+		}
+
+		// Sort by lines descending
+		for i := range len(files) - 1 {
+			for j := i + 1; j < len(files); j++ {
+				if files[i].lines < files[j].lines {
+					files[i], files[j] = files[j], files[i]
+				}
+			}
+		}
+
+		// Take top 10
+		limit := min(len(files), 10)
+		jsonData.TopFiles = make([]struct {
+			Filename string `json:"filename"`
+			Lines    int    `json:"duplicateLines"`
+		}, limit)
+		for i := range limit {
+			jsonData.TopFiles[i].Filename = files[i].filename
+			jsonData.TopFiles[i].Lines = files[i].lines
+		}
+	}
+
+	data, err := json.MarshalIndent(jsonData, "", "  ")
+	if err != nil {
+		_, _ = fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
+	} else {
+		if _, err := p.w.Write(data); err != nil {
+			_, _ = fmt.Fprintf(p.w, "Error writing JSON: %v\n", err)
+		}
+	}
+}
