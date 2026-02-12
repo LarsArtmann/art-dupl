@@ -283,6 +283,24 @@ func (s *BDDTestSetup) RunWithConfigFile(configFileName, configContent, code str
 	return s.RunArtDupl("--config", configPath, s.TmpDir)
 }
 
+// Common test thresholds for BDD tests
+const (
+	// ThresholdSmall is used for tests with minimal code (5 tokens)
+	ThresholdSmall = "5"
+	// ThresholdMedium is used for tests with moderate code (10 tokens)
+	ThresholdMedium = "10"
+	// ThresholdLarge is used for tests with larger code (20 tokens)
+	ThresholdLarge = "20"
+)
+
+// SimpleCodeTemplate generates a simple Go code template with a unique function name.
+// This is useful for creating test files that need distinct function names to avoid
+// false positives across different test cases.
+func SimpleCodeTemplate(funcName string) string {
+	return fmt.Sprintf(`package main
+func %s() {}`, funcName)
+}
+
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
