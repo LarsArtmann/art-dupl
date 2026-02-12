@@ -42,49 +42,45 @@ var _ = Describe("Configuration File Loading", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
+	// runWithConfig creates a config file, test files, and runs art-dupl
+	runWithConfig := func(configContent, code string, fileNames []string) ([]byte, error) {
+		configPath := filepath.Join(setup.TmpDir, "dupl.json")
+		err := os.WriteFile(configPath, []byte(configContent), 0o644)
+		if err != nil {
+			return nil, err
+		}
+
+		err = setup.CreateDuplicateFiles(fileNames, code)
+		if err != nil {
+			return nil, err
+		}
+
+		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
+	}
+
 	Context("When using a valid JSON configuration file", func() {
 		It("should load threshold from config file", func() {
-			// Create config file with specific threshold
 			configContent := `{
 				"threshold": 50,
 				"outputFormat": "json"
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func test() {}`
-			err = setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with config file
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfig(configContent, code, []string{"test1.go", "test2.go"})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
 
 		It("should load multiple settings from config file", func() {
-			// Create comprehensive config file
 			configContent := `{
 				"threshold": 20,
 				"outputFormat": "json",
 				"vendor": true,
 				"verbose": true
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func multiConfig() {}`
-			err = setup.CreateDuplicateFiles([]string{"multi1.go", "multi2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with config file
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfig(configContent, code, []string{"multi1.go", "multi2.go"})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -234,22 +230,6 @@ func invalidType() {}`
 			Expect(output).ToNot(BeNil())
 		})
 	})
-
-	// runWithConfig creates a config file, test files, and runs art-dupl
-	runWithConfig := func(configContent, code string, fileNames []string) ([]byte, error) {
-		configPath := filepath.Join(setup.TmpDir, "dupl.json")
-		err := os.WriteFile(configPath, []byte(configContent), 0o644)
-		if err != nil {
-			return nil, err
-		}
-
-		err = setup.CreateDuplicateFiles(fileNames, code)
-		if err != nil {
-			return nil, err
-		}
-
-		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
-	}
 
 	Context("When configuration file has detection method settings", func() {
 		It("should load detection methods from config", func() {
