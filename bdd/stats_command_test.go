@@ -467,10 +467,6 @@ func unique2() { println("unique2") }`
 
 	Context("When filtering vendor directory", func() {
 		It("should exclude vendor directory by default", func() {
-			// Create vendor directory with duplicates
-			err := setup.CreateSubdirectories("vendor/example")
-			Expect(err).NotTo(HaveOccurred())
-
 			duplicateCode := `package main
 
 import "fmt"
@@ -481,10 +477,7 @@ func vendorFunc() {
 	}
 }`
 
-			// Create duplicate files in vendor
-			err = setup.CreateFileWithContent("vendor/example/lib1.go", duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("vendor/example/lib2.go", duplicateCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/example", duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
@@ -497,10 +490,6 @@ func vendorFunc() {
 		})
 
 		It("should include vendor when --vendor flag is specified", func() {
-			// Create vendor directory with duplicates
-			err := setup.CreateSubdirectories("vendor/example")
-			Expect(err).NotTo(HaveOccurred())
-
 			duplicateCode := `package main
 
 import "fmt"
@@ -511,10 +500,7 @@ func vendorFunc() {
 	}
 }`
 
-			// Create duplicate files in vendor
-			err = setup.CreateFileWithContent("vendor/example/lib1.go", duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("vendor/example/lib2.go", duplicateCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/example", duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with --vendor

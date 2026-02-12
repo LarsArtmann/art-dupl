@@ -301,6 +301,34 @@ func SimpleCodeTemplate(funcName string) string {
 func %s() {}`, funcName)
 }
 
+// CreateVendorDuplicateFiles creates duplicate files in a vendor directory with the given vendor path and code content.
+// This is a convenience helper for testing vendor directory filtering behavior.
+// Returns an error if directory creation or file writing fails.
+func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath string, code string) error {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	// Create the vendor directory structure
+	if err := s.CreateSubdirectories(vendorPath); err != nil {
+		return fmt.Errorf("failed to create vendor directory %s: %w", vendorPath, err)
+	}
+
+	// Create duplicate files in the vendor directory
+	lib1Path := filepath.Join(vendorPath, "lib1.go")
+	lib2Path := filepath.Join(vendorPath, "lib2.go")
+
+	if err := s.CreateFileWithContent(lib1Path, code); err != nil {
+		return fmt.Errorf("failed to create vendor file %s: %w", lib1Path, err)
+	}
+
+	if err := s.CreateFileWithContent(lib2Path, code); err != nil {
+		return fmt.Errorf("failed to create vendor file %s: %w", lib2Path, err)
+	}
+
+	return nil
+}
+
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {

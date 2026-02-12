@@ -323,17 +323,10 @@ func process() { println(1) }`
 
 	Context("When vendor directory is present", func() {
 		It("should exclude vendor directory by default", func() {
-			// Create vendor directory with duplicates
-			err := setup.CreateSubdirectories("vendor/github.com/example")
-			Expect(err).NotTo(HaveOccurred())
-
 			regularCode := `package main
 func vendorFunc() { println(1) }`
 
-			// Create duplicate files in vendor
-			err = setup.CreateFileWithContent("vendor/github.com/example/lib1.go", regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("vendor/github.com/example/lib2.go", regularCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", regularCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--threshold", "3")
@@ -345,15 +338,10 @@ func vendorFunc() { println(1) }`
 		})
 
 		It("should include vendor when --vendor flag is used", func() {
-			err := setup.CreateSubdirectories("vendor/github.com/example")
-			Expect(err).NotTo(HaveOccurred())
-
 			regularCode := `package main
 func vendorFunc() { println(1) }`
 
-			err = setup.CreateFileWithContent("vendor/github.com/example/lib1.go", regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("vendor/github.com/example/lib2.go", regularCode)
+			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", regularCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --vendor flag
