@@ -46,6 +46,28 @@ func assertGeneratedFilesFiltered(
 	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
 }
 
+// assertGeneratedFilesIncluded creates test files and verifies generated files are included when flag is set.
+func assertGeneratedFilesIncluded(
+	setup *testutil.BDDTestSetup,
+	regularCode string,
+	generatedFilename string,
+	generatedCode string,
+	includeFlag string,
+) {
+	GinkgoHelper()
+
+	err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
+	Expect(err).NotTo(HaveOccurred())
+	err = setup.CreateTestFile(generatedFilename, generatedCode)
+	Expect(err).NotTo(HaveOccurred())
+
+	output, err := setup.RunArtDupl("stats", includeFlag, "--threshold", "5")
+	Expect(err).ToNot(HaveOccurred())
+	outputStr := string(output)
+
+	Expect(outputStr).To(ContainSubstring(generatedFilename))
+}
+
 var _ = Describe("Stats Command", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -156,18 +178,7 @@ func process() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with --include-templ
-			output, err := setup.RunArtDupl("stats", "--include-templ", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now show templ file
-			Expect(outputStr).To(ContainSubstring("page_templ.go"))
+			assertGeneratedFilesIncluded(setup, regularCode, "page_templ.go", templCode, "--include-templ")
 		})
 
 		It("should include sqlc files when --include-sqlc is specified", func() {
@@ -189,18 +200,7 @@ func query() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with --include-sqlc
-			output, err := setup.RunArtDupl("stats", "--include-sqlc", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now show sqlc file
-			Expect(outputStr).To(ContainSubstring("queries.sql.go"))
+			assertGeneratedFilesIncluded(setup, regularCode, "queries.sql.go", sqlcCode, "--include-sqlc")
 		})
 
 		It("should include both when both flags are specified", func() {
