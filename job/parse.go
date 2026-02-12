@@ -2,35 +2,58 @@ package job
 
 import (
 	"context"
+	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
+	"github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
-func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan int) {
+// ParseStats holds statistics from the parsing phase.
+type ParseStats struct {
+	FilesCount int
+	LinesCount int
+}
+
+func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
-	countChan := make(chan int, 1)
+	statsChan := make(chan ParseStats, 1)
 	go func() {
 		fileCount := 0
+		lineCount := 0
 		for file := range fchan {
 			select {
 			case <-ctx.Done():
-				countChan <- fileCount
+				statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 				close(achan)
 				return
 			default:
 			}
 			fileCount++
-			ast, err := golang.Parse(file)
+
+			var ast *syntax.Node
+			var lines int
+			var err error
+
+			// Dispatch to appropriate parser based on file extension
+			switch filepath.Ext(file) {
+			case ".templ":
+				ast, lines, err = templ.ParseWithLineCount(file)
+			default:
+				// Default to Go parser for .go files and any other files that reach here
+				ast, lines, err = golang.ParseWithLineCount(file)
+			}
+
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 				continue
 			}
+			lineCount += lines
 			achan <- ast
 		}
-		countChan <- fileCount
+		statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
 		close(achan)
 	}()
 
@@ -49,5 +72,5 @@ func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan in
 		}
 		close(schan)
 	}()
-	return schan, countChan
+	return schan, statsChan
 }
