@@ -42,9 +42,9 @@ var _ = Describe("Configuration File Loading", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
-	// runWithConfig creates a config file, test files, and runs art-dupl
-	runWithConfig := func(configContent, code string, fileNames []string) ([]byte, error) {
-		configPath := filepath.Join(setup.TmpDir, "dupl.json")
+	// runWithConfigFile creates a config file with custom filename, test files, and runs art-dupl
+	runWithConfigFile := func(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
+		configPath := filepath.Join(setup.TmpDir, configFileName)
 		err := os.WriteFile(configPath, []byte(configContent), 0o644)
 		if err != nil {
 			return nil, err
@@ -56,6 +56,11 @@ var _ = Describe("Configuration File Loading", func() {
 		}
 
 		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
+	}
+
+	// runWithConfig creates a config file, test files, and runs art-dupl
+	runWithConfig := func(configContent, code string, fileNames []string) ([]byte, error) {
+		return runWithConfigFile("dupl.json", configContent, code, fileNames)
 	}
 
 	Context("When using a valid JSON configuration file", func() {
@@ -356,40 +361,36 @@ var _ = Describe("Configuration File Edge Cases", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
+	// runWithConfigFile creates a config file with custom filename, test files, and runs art-dupl
+	runWithConfigFile := func(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
+		configPath := filepath.Join(setup.TmpDir, configFileName)
+		err := os.WriteFile(configPath, []byte(configContent), 0o644)
+		if err != nil {
+			return nil, err
+		}
+
+		err = setup.CreateDuplicateFiles(fileNames, code)
+		if err != nil {
+			return nil, err
+		}
+
+		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
+	}
+
 	Context("When configuration file is empty", func() {
 		It("should handle empty config file gracefully", func() {
-			// Create empty config file
-			configPath := filepath.Join(setup.TmpDir, "empty.json")
-			err := os.WriteFile(configPath, []byte(""), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func emptyConfig() {}`
-			err = setup.CreateDuplicateFiles([]string{"empty1.go", "empty2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with empty config
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfigFile("empty.json", "", code, []string{"empty1.go", "empty2.go"})
 			// May error or use defaults
 			_ = err
 			Expect(output).ToNot(BeNil())
 		})
 
 		It("should handle config with only whitespace", func() {
-			// Create whitespace-only config
-			configPath := filepath.Join(setup.TmpDir, "whitespace.json")
-			err := os.WriteFile(configPath, []byte("   \n\t  "), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func whitespaceConfig() {}`
-			err = setup.CreateDuplicateFiles([]string{"ws1.go", "ws2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with whitespace config
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfigFile("whitespace.json", "   \n\t  ", code, []string{"ws1.go", "ws2.go"})
 			// May error or use defaults
 			_ = err
 			Expect(output).ToNot(BeNil())
@@ -398,24 +399,14 @@ func whitespaceConfig() {}`
 
 	Context("When configuration file has extra fields", func() {
 		It("should ignore unknown fields in config", func() {
-			// Create config with unknown fields
 			configContent := `{
 				"threshold": 15,
 				"unknownField": "should be ignored",
 				"anotherUnknown": 12345
 			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
 			code := `package main
 func unknownField() {}`
-			err = setup.CreateDuplicateFiles([]string{"unknown1.go", "unknown2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with config containing unknown fields
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+			output, err := runWithConfigFile("dupl.json", configContent, code, []string{"unknown1.go", "unknown2.go"})
 			// Should work and ignore unknown fields
 			_ = err
 			Expect(output).ToNot(BeNil())
