@@ -263,6 +263,26 @@ func (s *BDDTestSetup) CreateAndRunDupl(filenames []string, content string, args
 	return s.RunArtDupl(args...)
 }
 
+// RunWithConfigFile creates a config file with custom filename, test files, and runs art-dupl.
+// This is a convenience helper for config file tests that combines file creation and execution.
+// Returns the command output and any error that occurred.
+func (s *BDDTestSetup) RunWithConfigFile(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	configPath := filepath.Join(s.TmpDir, configFileName)
+	if err := os.WriteFile(configPath, []byte(configContent), 0o644); err != nil {
+		return nil, fmt.Errorf("failed to write config file: %w", err)
+	}
+
+	if err := s.CreateDuplicateFiles(fileNames, code); err != nil {
+		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
+	}
+
+	return s.RunArtDupl("--config", configPath, s.TmpDir)
+}
+
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {

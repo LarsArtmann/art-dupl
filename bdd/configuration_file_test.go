@@ -42,25 +42,9 @@ var _ = Describe("Configuration File Loading", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
-	// runWithConfigFile creates a config file with custom filename, test files, and runs art-dupl
-	runWithConfigFile := func(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
-		configPath := filepath.Join(setup.TmpDir, configFileName)
-		err := os.WriteFile(configPath, []byte(configContent), 0o644)
-		if err != nil {
-			return nil, err
-		}
-
-		err = setup.CreateDuplicateFiles(fileNames, code)
-		if err != nil {
-			return nil, err
-		}
-
-		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
-	}
-
 	// runWithConfig creates a config file, test files, and runs art-dupl
 	runWithConfig := func(configContent, code string, fileNames []string) ([]byte, error) {
-		return runWithConfigFile("dupl.json", configContent, code, fileNames)
+		return setup.RunWithConfigFile("dupl.json", configContent, code, fileNames)
 	}
 
 	Context("When using a valid JSON configuration file", func() {
@@ -361,27 +345,11 @@ var _ = Describe("Configuration File Edge Cases", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
-	// runWithConfigFile creates a config file with custom filename, test files, and runs art-dupl
-	runWithConfigFile := func(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
-		configPath := filepath.Join(setup.TmpDir, configFileName)
-		err := os.WriteFile(configPath, []byte(configContent), 0o644)
-		if err != nil {
-			return nil, err
-		}
-
-		err = setup.CreateDuplicateFiles(fileNames, code)
-		if err != nil {
-			return nil, err
-		}
-
-		return setup.RunArtDupl("--config", configPath, setup.TmpDir)
-	}
-
 	Context("When configuration file is empty", func() {
 		It("should handle empty config file gracefully", func() {
 			code := `package main
 func emptyConfig() {}`
-			output, err := runWithConfigFile("empty.json", "", code, []string{"empty1.go", "empty2.go"})
+			output, err := setup.RunWithConfigFile("empty.json", "", code, []string{"empty1.go", "empty2.go"})
 			// May error or use defaults
 			_ = err
 			Expect(output).ToNot(BeNil())
@@ -390,7 +358,7 @@ func emptyConfig() {}`
 		It("should handle config with only whitespace", func() {
 			code := `package main
 func whitespaceConfig() {}`
-			output, err := runWithConfigFile("whitespace.json", "   \n\t  ", code, []string{"ws1.go", "ws2.go"})
+			output, err := setup.RunWithConfigFile("whitespace.json", "   \n\t  ", code, []string{"ws1.go", "ws2.go"})
 			// May error or use defaults
 			_ = err
 			Expect(output).ToNot(BeNil())
@@ -406,7 +374,7 @@ func whitespaceConfig() {}`
 			}`
 			code := `package main
 func unknownField() {}`
-			output, err := runWithConfigFile("dupl.json", configContent, code, []string{"unknown1.go", "unknown2.go"})
+			output, err := setup.RunWithConfigFile("dupl.json", configContent, code, []string{"unknown1.go", "unknown2.go"})
 			// Should work and ignore unknown fields
 			_ = err
 			Expect(output).ToNot(BeNil())
