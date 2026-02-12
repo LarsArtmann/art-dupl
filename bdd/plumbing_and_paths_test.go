@@ -356,35 +356,26 @@ func %s() { println(1) }`, funcName)
 			testSubdirectoryDuplicates("my-pkg", "hyphen", "my-pkg", "my-pkg")
 		})
 
-		It("should handle current directory", func() {
+		// Helper function for testing duplicate detection in root directory
+		testRootDuplicates := func(runPath string) {
 			duplicateCode := `package main
-func current() { println(1) }`
+func root() { println(1) }`
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run on current directory (tmp dir)
-			output, err := setup.RunArtDupl(".", "--threshold", "3")
+			output, err := setup.RunArtDupl(runPath, "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
 
-			Expect(outputStr).To(ContainSubstring("file1.go"))
-			Expect(outputStr).To(ContainSubstring("file2.go"))
+			Expect(string(output)).To(ContainSubstring("file1.go"))
+		}
+
+		It("should handle current directory", func() {
+			testRootDuplicates(".")
 		})
 
 		It("should handle absolute paths", func() {
-			duplicateCode := `package main
-func absolute() { println(1) }`
-
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with absolute path
-			output, err := setup.RunArtDupl(setup.TmpDir, "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-
-			// Should find duplicates
-			Expect(string(output)).To(ContainSubstring("file1.go"))
+			testRootDuplicates(setup.TmpDir)
 		})
 	})
 
