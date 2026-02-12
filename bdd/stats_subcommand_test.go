@@ -233,22 +233,25 @@ func pkgFunc() {}`
 		})
 	})
 
+	// testDetectionMethod is a helper function to test a specific detection method
+	func testDetectionMethod(detectionMethod, testCode string, filenames []string) {
+		err := setup.CreateDuplicateFiles(filenames, testCode)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunSubcommand("stats", "--detection-methods", detectionMethod, "--threshold", "10")
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(output)
+		Expect(outputStr).ToNot(BeEmpty())
+	}
+
 	Context("When running stats with detection methods", func() {
 		It("should work with hash detection method", func() {
 			code := `package main
 func hashTest() string {
 	return "hash"
 }`
-
-			err := setup.CreateDuplicateFiles([]string{"hash1.go", "hash2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with hash detection
-			output, err := setup.RunSubcommand("stats", "--detection-methods", "hash", "--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).ToNot(BeEmpty())
+			testDetectionMethod("hash", code, []string{"hash1.go", "hash2.go"})
 		})
 
 		It("should work with art-dupl detection method", func() {
@@ -256,16 +259,7 @@ func hashTest() string {
 func artDuplTest() string {
 	return "art-dupl"
 }`
-
-			err := setup.CreateDuplicateFiles([]string{"art1.go", "art2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with art-dupl detection
-			output, err := setup.RunSubcommand("stats", "--detection-methods", "art-dupl", "--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).ToNot(BeEmpty())
+			testDetectionMethod("art-dupl", code, []string{"art1.go", "art2.go"})
 		})
 	})
 
