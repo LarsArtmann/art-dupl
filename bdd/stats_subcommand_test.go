@@ -197,18 +197,11 @@ func small() {}`
 
 	Context("When running stats with vendor directory", func() {
 		It("should exclude vendor by default", func() {
-			// This test verifies the default behavior
 			code := `package main
 func vendorTest() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"main1.go", "main2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats without vendor flag
-			output, err := setup.RunSubcommand("stats", "--threshold", "10")
+			output, err := setup.CreateAndRunDupl([]string{"main1.go", "main2.go"}, code, "stats", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
-
-			// Should complete successfully
 			Expect(output).ToNot(BeNil())
 		})
 
@@ -216,14 +209,8 @@ func vendorTest() {}`
 			code := `package main
 func vendorCode() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"vendor1.go", "vendor2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with vendor flag
-			output, err := setup.RunSubcommand("stats", "--vendor", "--threshold", "10")
+			output, err := setup.CreateAndRunDupl([]string{"vendor1.go", "vendor2.go"}, code, "stats", "--vendor", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
-
-			// Should complete successfully
 			Expect(output).ToNot(BeNil())
 		})
 	})

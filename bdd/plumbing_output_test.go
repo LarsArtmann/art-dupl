@@ -253,11 +253,7 @@ func hashSortPlumb() {}`
 			code := `package main
 func vendorPlumb() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"main1.go", "main2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing (vendor excluded by default)
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.CreateAndRunDupl([]string{"main1.go", "main2.go"}, code, "--plumbing", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -266,11 +262,7 @@ func vendorPlumb() {}`
 			code := `package main
 func filterGenPlumb() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"filter1.go", "filter2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and filter-generated
-			output, err := setup.RunArtDupl("--plumbing", "--filter-generated", "--threshold", "5")
+			output, err := setup.CreateAndRunDupl([]string{"filter1.go", "filter2.go"}, code, "--plumbing", "--filter-generated", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})

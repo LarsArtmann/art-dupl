@@ -248,6 +248,21 @@ func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
 	return nil
 }
 
+// CreateAndRunDupl creates duplicate files with the given content and runs art-dupl with specified arguments.
+// This is a convenience helper that combines CreateDuplicateFiles and RunArtDupl.
+// Returns the command output and any error that occurred.
+func (s *BDDTestSetup) CreateAndRunDupl(filenames []string, content string, args ...string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	if err := s.CreateDuplicateFiles(filenames, content); err != nil {
+		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
+	}
+
+	return s.RunArtDupl(args...)
+}
+
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
