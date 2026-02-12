@@ -23,6 +23,36 @@ func TestDefaultFiltering(t *testing.T) {
 	RunSpecs(t, "art-dupl Default Filtering BDD Suite")
 }
 
+// assertGeneratedFileFiltered is a helper to verify generated files are filtered out.
+// It creates duplicate regular files, a generated file, runs art-dupl, and verifies
+// that regular files appear in output while the generated file does not.
+func assertGeneratedFileFiltered(
+	setup *testutil.BDDTestSetup,
+	regularFiles []string,
+	regularCode string,
+	generatedFile string,
+	generatedCode string,
+	threshold string,
+) string {
+	err := setup.CreateDuplicateFiles(regularFiles, regularCode)
+	Expect(err).NotTo(HaveOccurred())
+	err = setup.CreateTestFile(generatedFile, generatedCode)
+	Expect(err).NotTo(HaveOccurred())
+
+	output, err := setup.RunArtDupl("--threshold", threshold)
+	Expect(err).ToNot(HaveOccurred())
+	outputStr := string(output)
+
+	// Should find duplicates in regular files
+	for _, file := range regularFiles {
+		Expect(outputStr).To(ContainSubstring(file))
+	}
+	// Should NOT include generated file
+	Expect(outputStr).ToNot(ContainSubstring(generatedFile))
+
+	return outputStr
+}
+
 var _ = Describe("Default Filtering Behavior", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -38,7 +68,6 @@ var _ = Describe("Default Filtering Behavior", func() {
 
 	Context("When analyzing code with templ generated files", func() {
 		It("should exclude *_templ.go files by default", func() {
-			// Create regular Go files with duplicates
 			regularCode := `package main
 
 import "fmt"
@@ -48,7 +77,6 @@ func process() {
 		fmt.Println(i)
 	}
 }`
-			// Create templ file with same duplicate code
 			templCode := `package main
 
 import "github.com/a-h/templ"
@@ -63,21 +91,14 @@ func process() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"handler1.go", "handler2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run art-dupl without any filter flags
-			output, err := setup.RunArtDupl("--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should find duplicates in regular files
-			Expect(outputStr).To(ContainSubstring("handler1.go"))
-			Expect(outputStr).To(ContainSubstring("handler2.go"))
-			// Should NOT include templ file
-			Expect(outputStr).ToNot(ContainSubstring("page_templ.go"))
+			assertGeneratedFileFiltered(
+				setup,
+				[]string{"handler1.go", "handler2.go"},
+				regularCode,
+				"page_templ.go",
+				templCode,
+				"5",
+			)
 		})
 
 		It("should exclude multiple templ files by default", func() {
@@ -152,20 +173,14 @@ func query() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"service1.go", "service2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should show regular files
-			Expect(outputStr).To(ContainSubstring("service1.go"))
-			Expect(outputStr).To(ContainSubstring("service2.go"))
-			// Should NOT include sqlc file
-			Expect(outputStr).ToNot(ContainSubstring("queries.sql.go"))
+			assertGeneratedFileFiltered(
+				setup,
+				[]string{"service1.go", "service2.go"},
+				regularCode,
+				"queries.sql.go",
+				sqlcCode,
+				"5",
+			)
 		})
 
 		It("should exclude models.go files by default", func() {
