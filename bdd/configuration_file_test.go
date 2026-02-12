@@ -254,61 +254,38 @@ func TemplComponent() templ.Component {
 		})
 	})
 
+	// runPatternTest is a helper to run pattern-based config tests
+	runPatternTest := func(dir1, dir2, patternType, patternValue, funcName string) {
+		err := setup.CreateSubdirectories(dir1, dir2)
+		Expect(err).NotTo(HaveOccurred())
+
+		configContent := fmt.Sprintf(`{
+			"threshold": 15,
+			"%s": ["%s"]
+		}`, patternType, patternValue)
+		configPath := filepath.Join(setup.TmpDir, "dupl.json")
+		err = os.WriteFile(configPath, []byte(configContent), 0o644)
+		Expect(err).NotTo(HaveOccurred())
+
+		code := fmt.Sprintf(`package main
+func %s() {}`, funcName)
+		err = setup.CreateFileWithContent(filepath.Join(dir1, "file.go"), code)
+		Expect(err).NotTo(HaveOccurred())
+		err = setup.CreateFileWithContent(filepath.Join(dir2, "file.go"), code)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(output).ToNot(BeNil())
+	}
+
 	Context("When configuration file has pattern settings", func() {
 		It("should load include patterns from config", func() {
-			// Create subdirectories
-			err := setup.CreateSubdirectories("src", "vendor")
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create config with include patterns
-			configContent := `{
-				"threshold": 15,
-				"includePatterns": ["src/*"]
-			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err = os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create files in both directories
-			code := `package main
-func patternTest() {}`
-			err = setup.CreateFileWithContent("src/file.go", code)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("vendor/file.go", code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with config
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			runPatternTest("src", "vendor", "includePatterns", "src/*", "patternTest")
 		})
 
 		It("should load exclude patterns from config", func() {
-			// Create subdirectories
-			err := setup.CreateSubdirectories("src", "test")
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create config with exclude patterns
-			configContent := `{
-				"threshold": 15,
-				"excludePatterns": ["test/*"]
-			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err = os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create files in both directories
-			code := `package main
-func excludeTest() {}`
-			err = setup.CreateFileWithContent("src/file.go", code)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("test/file.go", code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with config
-			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			runPatternTest("src", "test", "excludePatterns", "test/*", "excludeTest")
 		})
 	})
 
