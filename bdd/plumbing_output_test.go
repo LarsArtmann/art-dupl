@@ -42,9 +42,18 @@ var _ = Describe("Plumbing Output Format", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
+	// runPlumbingTest is a helper that creates duplicate files and runs art-dupl with plumbing output.
+	// It returns the output for custom assertions.
+	runPlumbingTest := func(filenames []string, code, threshold string) ([]byte, error) {
+		err := setup.CreateDuplicateFiles(filenames, code)
+		if err != nil {
+			return nil, err
+		}
+		return setup.RunArtDupl("--plumbing", "--threshold", threshold)
+	}
+
 	Context("When using plumbing output for basic analysis", func() {
 		It("should produce machine-readable output", func() {
-			// Create test files with duplicates
 			code := `package main
 
 import "fmt"
@@ -56,15 +65,10 @@ func processData(data string) error {
 	return nil
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"plumb1.go", "plumb2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
+			output, err := runPlumbingTest([]string{"plumb1.go", "plumb2.go"}, code, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			// Plumbing format should have tab-separated or colon-separated values
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring(":"),
 				ContainSubstring("\t"),
@@ -72,19 +76,13 @@ func processData(data string) error {
 		})
 
 		It("should include file paths in plumbing output", func() {
-			// Create test files
 			code := `package main
 func pathTest() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"path1.go", "path2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := runPlumbingTest([]string{"path1.go", "path2.go"}, code, "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			// Should contain file paths
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("path1.go"),
 				ContainSubstring("path2.go"),
@@ -92,7 +90,6 @@ func pathTest() {}`
 		})
 
 		It("should include line numbers in plumbing output", func() {
-			// Create test files with duplicates at specific lines
 			code := `package main
 
 import "fmt"
@@ -103,16 +100,10 @@ func lineNumberTest() {
 	fmt.Println("line 3")
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"line1.go", "line2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
+			output, err := runPlumbingTest([]string{"line1.go", "line2.go"}, code, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			// Plumbing format should contain numeric line information
-			// (either as separate fields or in path:line format)
 			Expect(outputStr).ToNot(BeEmpty())
 		})
 	})
