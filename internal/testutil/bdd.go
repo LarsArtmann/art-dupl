@@ -226,6 +226,32 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 	return nil
 }
 
+// CommonDuplicateCodeTemplate is a reusable code template for creating duplicate test files.
+// Use with CreateDuplicateFilesAndRun to reduce test duplication.
+const CommonDuplicateCodeTemplate = `package main
+
+import "fmt"
+
+func %s() {
+	for i := 0; i < 10; i++ {
+		fmt.Println(i)
+	}
+}`
+
+// CreateDuplicateFilesAndRun creates duplicate files with the given content and runs art-dupl.
+// Returns the command output for assertions. This helper reduces boilerplate in BDD tests.
+func (s *BDDTestSetup) CreateDuplicateFilesAndRun(content string, args ...string) ([]byte, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	if err := s.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, content); err != nil {
+		return nil, err
+	}
+
+	return s.RunArtDupl(args...)
+}
+
 // CreateFileWithContent creates a file with specific content at a given subpath.
 // The subpath is relative to the test temporary directory.
 func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {

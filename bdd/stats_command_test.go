@@ -293,22 +293,9 @@ func processData() {
 		})
 
 		It("should calculate health score correctly", func() {
-			// Create files with moderate duplication
-			duplicateCode := `package main
+			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "duplicate")
 
-import "fmt"
-
-func duplicate() {
-	for i := 0; i < 10; i++ {
-		fmt.Println(i)
-	}
-}`
-
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats
-			output, err := setup.RunArtDupl("stats", "--threshold", "5")
+			output, err := setup.CreateDuplicateFilesAndRun(duplicateCode, "stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
