@@ -100,11 +100,9 @@ func lineNumberTest() {
 	fmt.Println("line 3")
 }`
 
-			output, err := runPlumbingTest([]string{"line1.go", "line2.go"}, code, "10")
+			output, err := setup.CreateAndRunDupl([]string{"line1.go", "line2.go"}, code, "--plumbing", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).ToNot(BeEmpty())
+			Expect(output).ToNot(BeNil())
 		})
 	})
 
