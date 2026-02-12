@@ -293,26 +293,6 @@ func (a Analysis) IsValid() error {
 	return nil
 }
 
-// validationRule represents a single validation rule.
-// TODO: REFACTOR - Lines 285-299 are internal validation helpers that are used across multiple types.
-// Consider moving to domain/validation.go or making them more generic.
-// Current pattern: validationRule struct + validateRules function + isValid* functions for each type.
-// Could consolidate into a more generic validation framework.
-type validationRule struct {
-	valid bool
-	msg   string
-}
-
-// validateRules checks all validation rules and returns the first error encountered.
-func validateRules(rules []validationRule) error {
-	for _, rule := range rules {
-		if !rule.valid {
-			return stderrors.New(rule.msg)
-		}
-	}
-	return nil
-}
-
 // AnalysisStats represents analysis statistics.
 type AnalysisStats struct {
 	FilesAnalyzed    uint    `json:"filesAnalyzed"`
@@ -323,20 +303,14 @@ type AnalysisStats struct {
 	ProcessingTime   uint    `json:"processingTime"`
 }
 
-// isValidAnalysisStats validates analysis stats.
-func isValidAnalysisStats(as AnalysisStats) error {
-	rules := []validationRule{
-		{as.FilesAnalyzed > 0, "files analyzed cannot be zero"},
-		{as.ProcessingTime > 0, "processing time cannot be zero"},
-		{as.ComplexityScore >= 0, "complexity score cannot be negative"},
-		{as.DuplicationRatio >= 0, "duplication ratio cannot be negative"},
-	}
-	return validateRules(rules)
-}
-
 // IsValid validates analysis stats.
 func (as AnalysisStats) IsValid() error {
-	return isValidAnalysisStats(as)
+	return validateFields(
+		validationRule{as.FilesAnalyzed > 0, "files analyzed cannot be zero"},
+		validationRule{as.ProcessingTime > 0, "processing time cannot be zero"},
+		validationRule{as.ComplexityScore >= 0, "complexity score cannot be negative"},
+		validationRule{as.DuplicationRatio >= 0, "duplication ratio cannot be negative"},
+	)
 }
 
 // Repository represents source code repository.
@@ -375,20 +349,14 @@ type SourceFile struct {
 	Dependencies []string `json:"dependencies,omitempty"`
 }
 
-// isValidSourceFile validates source file.
-func isValidSourceFile(sf SourceFile) error {
-	rules := []validationRule{
-		{sf.Path != "", "source file path cannot be empty"},
-		{sf.Name != "", "source file name cannot be empty"},
-		{sf.Size > 0, "source file size cannot be zero"},
-		{sf.Hash != "", "source file hash cannot be empty"},
-	}
-	return validateRules(rules)
-}
-
 // IsValid validates source file.
 func (sf SourceFile) IsValid() error {
-	return isValidSourceFile(sf)
+	return validateFields(
+		validationRule{sf.Path != "", "source file path cannot be empty"},
+		validationRule{sf.Name != "", "source file name cannot be empty"},
+		validationRule{sf.Size > 0, "source file size cannot be zero"},
+		validationRule{sf.Hash != "", "source file hash cannot be empty"},
+	)
 }
 
 // DetectionOptions represents configuration for detection.
