@@ -279,6 +279,26 @@ func %s() {}`, funcName)
 		Expect(output).ToNot(BeNil())
 	}
 
+	// runStatsConfigTest is a helper to run stats subcommand tests with config
+	runStatsConfigTest := func(threshold int, fileNames []string) {
+		configContent := fmt.Sprintf(`{
+			"threshold": %d,
+			"outputFormat": "json"
+		}`, threshold)
+		configPath := filepath.Join(setup.TmpDir, "dupl.json")
+		err := os.WriteFile(configPath, []byte(configContent), 0o644)
+		Expect(err).NotTo(HaveOccurred())
+
+		code := `package main
+func statsConfig() {}`
+		err = setup.CreateDuplicateFiles(fileNames, code)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl("stats", "--config", configPath, setup.TmpDir)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(output).ToNot(BeNil())
+	}
+
 	Context("When configuration file has pattern settings", func() {
 		It("should load include patterns from config", func() {
 			runPatternTest("src", "vendor", "includePatterns", "src/*", "patternTest")
@@ -291,25 +311,7 @@ func %s() {}`, funcName)
 
 	Context("When using stats subcommand with config file", func() {
 		It("should load stats configuration from file", func() {
-			// Create config for stats
-			configContent := `{
-				"threshold": 20,
-				"outputFormat": "json"
-			}`
-			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err := os.WriteFile(configPath, []byte(configContent), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create test files
-			code := `package main
-func statsConfig() {}`
-			err = setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run stats with config
-			output, err := setup.RunArtDupl("stats", "--config", configPath, setup.TmpDir)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			runStatsConfigTest(20, []string{"stats1.go", "stats2.go"})
 		})
 	})
 })
