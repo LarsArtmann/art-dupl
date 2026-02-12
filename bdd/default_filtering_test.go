@@ -355,6 +355,35 @@ func vendorFunc() { println(1) }`
 	})
 })
 
+// testCodeSamples contains code samples used in filtering tests.
+const (
+	testRegularCode = `package main
+func process() { println(1) }`
+	testTemplCode = `package main
+import "github.com/a-h/templ"
+func Component() templ.Component { return nil }
+func process() { println(1) }`
+)
+
+// assertTemplFilteredWithFormat verifies that templ files are filtered out
+// when using a specific output format. It creates duplicate regular files,
+// a templ file, runs art-dupl with the specified format flag, and verifies
+// that the templ file does not appear in the output.
+func assertTemplFilteredWithFormat(
+	setup *testutil.BDDTestSetup,
+	outputFormatFlag string,
+) {
+	err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, testRegularCode)
+	Expect(err).NotTo(HaveOccurred())
+	err = setup.CreateTestFile("page_templ.go", testTemplCode)
+	Expect(err).NotTo(HaveOccurred())
+
+	output, err := setup.RunArtDupl(outputFormatFlag, "--threshold", "3")
+	Expect(err).ToNot(HaveOccurred())
+
+	Expect(string(output)).ToNot(ContainSubstring("page_templ.go"))
+}
+
 var _ = Describe("Filtering in Different Output Formats", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -370,70 +399,19 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 
 	Context("When using JSON output", func() {
 		It("should not include templ files in JSON output by default", func() {
-			regularCode := `package main
-func process() { println(1) }`
-			templCode := `package main
-import "github.com/a-h/templ"
-func Component() templ.Component { return nil }
-func process() { println(1) }`
-
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with JSON output
-			stdout, _, err := setup.RunArtDuplAndCapture("--json", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-
-			// Should not contain templ file
-			Expect(string(stdout)).ToNot(ContainSubstring("page_templ.go"))
+			assertTemplFilteredWithFormat(setup, "--json")
 		})
 	})
 
 	Context("When using HTML output", func() {
 		It("should not include templ files in HTML output by default", func() {
-			regularCode := `package main
-func process() { println(1) }`
-			templCode := `package main
-import "github.com/a-h/templ"
-func Component() templ.Component { return nil }
-func process() { println(1) }`
-
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with HTML output
-			output, err := setup.RunArtDupl("--html", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-
-			// Should not contain templ file
-			Expect(string(output)).ToNot(ContainSubstring("page_templ.go"))
+			assertTemplFilteredWithFormat(setup, "--html")
 		})
 	})
 
 	Context("When using plumbing output", func() {
 		It("should not include templ files in plumbing output by default", func() {
-			regularCode := `package main
-func process() { println(1) }`
-			templCode := `package main
-import "github.com/a-h/templ"
-func Component() templ.Component { return nil }
-func process() { println(1) }`
-
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-
-			// Should not contain templ file
-			Expect(string(output)).ToNot(ContainSubstring("page_templ.go"))
+			assertTemplFilteredWithFormat(setup, "--plumbing")
 		})
 	})
 })
