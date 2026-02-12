@@ -160,11 +160,7 @@ func hashPlumb() string {
 	return "hash test"
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"hash1.go", "hash2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with plumbing and hash detection
-			output, err := setup.RunArtDupl("--plumbing", "--detection-methods", "hash", "--threshold", "10")
+			output, err := runPlumbingTestWithDetection([]string{"hash1.go", "hash2.go"}, code, "10", "hash")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
