@@ -10,13 +10,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// sortingTestCase represents a test case for sorting algorithms.
+type sortingTestCase struct {
+	name          string
+	matches       []syntax.Match
+	expectedOrder []string // Hashes in expected order
+}
+
 // TestOccurrenceSorting tests that occurrence sorting uses unique counts, not total counts.
 func TestOccurrenceSorting(t *testing.T) {
-	tests := []struct {
-		name          string
-		matches       []syntax.Match
-		expectedOrder []string // Hashes in expected order
-	}{
+	tests := []sortingTestCase{
 		{
 			name: "simple descending by unique count",
 			matches: []syntax.Match{
@@ -105,11 +108,7 @@ func TestOccurrenceSorting(t *testing.T) {
 
 // TestSizeSorting tests that size sorting works correctly.
 func TestSizeSorting(t *testing.T) {
-	tests := []struct {
-		name          string
-		matches       []syntax.Match
-		expectedOrder []string
-	}{
+	tests := []sortingTestCase{
 		{
 			name: "descending by size",
 			matches: []syntax.Match{

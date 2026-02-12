@@ -53,6 +53,33 @@ func assertGeneratedFileFiltered(
 	return outputStr
 }
 
+// assertGeneratedFileIncluded is a helper to verify generated files are included when
+// a specific flag is used. It creates duplicate regular files, a generated file, runs
+// art-dupl with the include flag, and verifies that the generated file appears in output.
+func assertGeneratedFileIncluded(
+	setup *testutil.BDDTestSetup,
+	regularFiles []string,
+	regularCode string,
+	generatedFile string,
+	generatedCode string,
+	includeFlag string,
+	threshold string,
+) string {
+	err := setup.CreateDuplicateFiles(regularFiles, regularCode)
+	Expect(err).NotTo(HaveOccurred())
+	err = setup.CreateTestFile(generatedFile, generatedCode)
+	Expect(err).NotTo(HaveOccurred())
+
+	output, err := setup.RunArtDupl(includeFlag, "--threshold", threshold)
+	Expect(err).ToNot(HaveOccurred())
+	outputStr := string(output)
+
+	// Should now include generated file
+	Expect(outputStr).To(ContainSubstring(generatedFile))
+
+	return outputStr
+}
+
 var _ = Describe("Default Filtering Behavior", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -138,18 +165,15 @@ import "github.com/a-h/templ"
 func Component() templ.Component { return nil }
 func process() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("page_templ.go", templCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with --include-templ
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now include templ file
-			Expect(outputStr).To(ContainSubstring("page_templ.go"))
+			assertGeneratedFileIncluded(
+				setup,
+				[]string{"regular1.go", "regular2.go"},
+				regularCode,
+				"page_templ.go",
+				templCode,
+				"--include-templ",
+				"3",
+			)
 		})
 	})
 
@@ -247,18 +271,15 @@ func query() { println(1) }`
 package db
 func query() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"service1.go", "service2.go"}, regularCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run with --include-sqlc
-			output, err := setup.RunArtDupl("--include-sqlc", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// Should now include sqlc file
-			Expect(outputStr).To(ContainSubstring("queries.sql.go"))
+			assertGeneratedFileIncluded(
+				setup,
+				[]string{"service1.go", "service2.go"},
+				regularCode,
+				"queries.sql.go",
+				sqlcCode,
+				"--include-sqlc",
+				"3",
+			)
 		})
 	})
 
