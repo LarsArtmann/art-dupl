@@ -1,6 +1,8 @@
 package bdd
 
 import (
+	"fmt"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -327,46 +329,31 @@ var _ = Describe("Path Edge Cases", func() {
 	})
 
 	Context("When handling special path scenarios", func() {
-		It("should handle nested directories correctly", func() {
-			// Create deeply nested structure
-			err := setup.CreateSubdirectories("a/b/c/d")
+		// Helper function for testing duplicate detection in subdirectories
+		testSubdirectoryDuplicates := func(subDir, funcName, runPath, expectedSubstr string) {
+			err := setup.CreateSubdirectories(subDir)
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := `package main
-func deep() { println(1) }`
+			duplicateCode := fmt.Sprintf(`package main
+func %s() { println(1) }`, funcName)
 
-			err = setup.CreateFileWithContent("a/b/c/d/file1.go", duplicateCode)
+			err = setup.CreateFileWithContent(filepath.Join(subDir, "file1.go"), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("a/b/c/d/file2.go", duplicateCode)
+			err = setup.CreateFileWithContent(filepath.Join(subDir, "file2.go"), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run on parent directory
-			output, err := setup.RunArtDupl(setup.GetFilePath("a"), "--threshold", "3")
+			output, err := setup.RunArtDupl(setup.GetFilePath(runPath), "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
 
-			// Should find nested files
-			Expect(outputStr).To(ContainSubstring("a/b/c/d"))
+			Expect(string(output)).To(ContainSubstring(expectedSubstr))
+		}
+
+		It("should handle nested directories correctly", func() {
+			testSubdirectoryDuplicates("a/b/c/d", "deep", "a", "a/b/c/d")
 		})
 
 		It("should handle paths with special characters", func() {
-			// Create directory with hyphen
-			err := setup.CreateSubdirectories("my-pkg")
-			Expect(err).NotTo(HaveOccurred())
-
-			duplicateCode := `package main
-func hyphen() { println(1) }`
-
-			err = setup.CreateFileWithContent("my-pkg/file1.go", duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent("my-pkg/file2.go", duplicateCode)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl(setup.GetFilePath("my-pkg"), "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			Expect(outputStr).To(ContainSubstring("my-pkg"))
+			testSubdirectoryDuplicates("my-pkg", "hyphen", "my-pkg", "my-pkg")
 		})
 
 		It("should handle current directory", func() {
