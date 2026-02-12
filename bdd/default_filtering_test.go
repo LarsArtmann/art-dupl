@@ -208,49 +208,34 @@ func query() {
 		})
 
 		It("should exclude models.go files by default", func() {
-			regularCode := `package main
-func validate() { println(1) }`
-			modelsCode := `package db
-func validate() { println(1) }`
-
 			assertGeneratedFileFiltered(
 				setup,
 				[]string{"service1.go", "service2.go"},
-				regularCode,
+				"package main\nfunc validate() { println(1) }",
 				"models.go",
-				modelsCode,
+				"package db\nfunc validate() { println(1) }",
 				"3",
 			)
 		})
 
 		It("should exclude querier.go files by default", func() {
-			regularCode := `package main
-func query() { println(1) }`
-			querierCode := `package db
-func query() { println(1) }`
-
 			assertGeneratedFileFiltered(
 				setup,
 				[]string{"service1.go", "service2.go"},
-				regularCode,
+				"package main\nfunc query() { println(1) }",
 				"querier.go",
-				querierCode,
+				"package db\nfunc query() { println(1) }",
 				"3",
 			)
 		})
 
 		It("should exclude batch.go files by default", func() {
-			regularCode := `package main
-func batch() { println(1) }`
-			batchCode := `package db
-func batch() { println(1) }`
-
 			assertGeneratedFileFiltered(
 				setup,
 				[]string{"service1.go", "service2.go"},
-				regularCode,
+				"package main\nfunc batch() { println(1) }",
 				"batch.go",
-				batchCode,
+				"package db\nfunc batch() { println(1) }",
 				"3",
 			)
 		})
