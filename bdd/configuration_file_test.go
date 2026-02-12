@@ -29,17 +29,21 @@ func TestConfigurationFile(t *testing.T) {
 	RunSpecs(t, "art-dupl Configuration File BDD Suite")
 }
 
+// newBDDTestSetup creates a new BDDTestSetup and registers cleanup for Ginkgo tests
+func newBDDTestSetup() *testutil.BDDTestSetup {
+	setup, err := testutil.NewBDDTestSetupForGinkgo()
+	Expect(err).NotTo(HaveOccurred())
+	DeferCleanup(func() {
+		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+	})
+	return setup
+}
+
 var _ = Describe("Configuration File Loading", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = newBDDTestSetup()
 	})
 
 	// runWithConfig creates a config file, test files, and runs art-dupl
@@ -336,13 +340,7 @@ var _ = Describe("Configuration File Edge Cases", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = newBDDTestSetup()
 	})
 
 	Context("When configuration file is empty", func() {
