@@ -223,11 +223,7 @@ func wrapWithMessage(err error, errorType ErrorType, context string, constructor
 		return err
 	}
 
-	msg := context
-	if err != nil {
-		msg += ": " + err.Error()
-	}
-	return constructor(msg, err)
+	return constructor(context+": "+err.Error(), err)
 }
 
 // WrapConfig wraps an error as a ConfigError.
