@@ -169,8 +169,31 @@ var (
 // GlobalPool returns the shared string interning pool.
 // Thread-safe singleton pattern.
 func GlobalPool() *StringInternPool {
+	// Fast path: pool already initialized (including test injection)
+	if globalPool != nil {
+		return globalPool
+	}
 	globalPoolOnce.Do(func() {
-		globalPool = NewStringInternPool(1000) // Expect up to 1000 unique filenames
+		// Double-check in case of race
+		if globalPool == nil {
+			globalPool = NewStringInternPool(1000) // Expect up to 1000 unique filenames
+		}
 	})
 	return globalPool
+}
+
+// SetGlobalPoolForTesting sets a custom global pool for testing purposes.
+// Returns a cleanup function to restore the original state.
+// Must be called from a non-concurrent test context.
+func SetGlobalPoolForTesting(pool *StringInternPool) func() {
+	originalPool := globalPool
+	originalOnce := globalPoolOnce
+
+	globalPool = pool
+	globalPoolOnce = sync.Once{}
+
+	return func() {
+		globalPool = originalPool
+		globalPoolOnce = originalOnce
+	}
 }

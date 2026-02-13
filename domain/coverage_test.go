@@ -578,9 +578,8 @@ func TestStringID_MarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Temporarily use test pool for MarshalJSON
-			originalPool := globalPool
-			globalPool = pool
-			defer func() { globalPool = originalPool }()
+			cleanup := SetGlobalPoolForTesting(pool)
+			defer cleanup()
 
 			got, err := tt.sid.MarshalJSON()
 			if (err != nil) != tt.wantErr {
@@ -610,9 +609,8 @@ func TestStringID_UnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Use test pool for UnmarshalJSON
-			originalPool := globalPool
-			globalPool = pool
-			defer func() { globalPool = originalPool }()
+			cleanup := SetGlobalPoolForTesting(pool)
+			defer cleanup()
 
 			var sid StringID
 			err := sid.UnmarshalJSON([]byte(tt.input))
