@@ -47,11 +47,11 @@ const (
 	SelfClosingTag
 	Doctype
 
-	// Style/Script elements (structural, not content)
+	// Style/Script elements (structural, not content).
 	StyleElement
 	ScriptElement
 
-	// Flow control
+	// Flow control.
 	ComponentIfStatement
 	ComponentForStatement
 	ComponentSwitchStatement

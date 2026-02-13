@@ -340,7 +340,7 @@ const (
 	ThresholdSmall = "5"
 	// ThresholdMedium is used for tests with moderate code (10 tokens).
 	ThresholdMedium = "10"
-	// ThresholdLarge is used for tests with larger code (20 tokens)
+	// ThresholdLarge is used for tests with larger code (20 tokens).
 	ThresholdLarge = "20"
 )
 
