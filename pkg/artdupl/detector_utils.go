@@ -47,24 +47,3 @@ func convertOptionsToConfig(opts *Options) *config.Config {
 	return cfg
 }
 
-// detectionMethodsToString converts detection methods to a comma-separated string.
-func detectionMethodsToString(methods config.DetectionMethods) string {
-	if len(methods) == 0 {
-		return ""
-	}
-
-	strs := make([]string, len(methods))
-	for i, m := range methods {
-		strs[i] = string(m)
-	}
-	return strings.Join(strs, ",")
-}
-
-// collectMatches collects all matches from a channel into a slice.
-func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
-	var matches []syntax.Match
-	for match := range matchChan {
-		matches = append(matches, match)
-	}
-	return matches
-}

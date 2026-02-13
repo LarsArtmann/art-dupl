@@ -1,4 +1,6 @@
-// Package examples demonstrates usage of domain types in art-dupl.
+//go:build ignore
+
+// Package main demonstrates usage of domain types in art-dupl.
 //
 // This file provides comprehensive examples for using domain types
 // correctly and effectively.
@@ -12,10 +14,10 @@
 //
 // Run with:
 //
-//	go run examples/*.go
+//	go run examples/domain_types_usage.go
 //
 //nolint:forbidigo // example file uses fmt.Print* for demonstration output
-package examples
+package main
 
 import (
 	"encoding/json"
