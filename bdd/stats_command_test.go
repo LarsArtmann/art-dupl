@@ -129,7 +129,7 @@ var _ = Describe("Stats Command", func() {
 
 		It("should show filtered file count in verbose output", func() {
 			regularCode := `package main
-func main() {}`
+FuncMainString`
 			templCode := `package main
 import "github.com/a-h/templ"
 func Component() templ.Component { return nil }`
@@ -220,7 +220,7 @@ func duplicate() {
 
 		It("should produce CSV output", func() {
 			regularCode := `package main
-func main() {}`
+FuncMainString`
 
 			err := setup.CreateTestFile("file.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -237,7 +237,7 @@ func main() {}`
 
 		It("should produce human-readable text output by default", func() {
 			regularCode := `package main
-func main() {}`
+FuncMainString`
 
 			err := setup.CreateTestFile("file.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -442,7 +442,7 @@ var _ = Describe("Stats Command Edge Cases", func() {
 
 		It("should handle single file with no duplicates", func() {
 			code := `package main
-func main() {}`
+FuncMainString`
 
 			err := setup.CreateTestFile("main.go", code)
 			Expect(err).NotTo(HaveOccurred())

@@ -120,7 +120,7 @@ func duplicate() {}`
 			// Create test files
 			code := `package main
 
-func test() {}`
+FuncTestString`
 
 			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
@@ -146,7 +146,7 @@ func test() {}`
 			// Create test files
 			code := `package main
 
-func test() {}`
+FuncTestString`
 
 			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
