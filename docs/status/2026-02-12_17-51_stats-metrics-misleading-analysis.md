@@ -26,6 +26,7 @@ sp.SetTotalEstimatedLines(estimatedLines)
 **Problem:** Assumes every file has exactly 100 lines. This is a crude placeholder that makes the duplication ratio meaningless.
 
 **Impact:**
+
 - A 500-line file with 10 clones reports better duplication than reality
 - A 50-line file with 5 clones reports worse than reality
 - Users cannot trust the duplication percentage at all
@@ -48,6 +49,7 @@ for _, dup := range dups {
 **Problem:** Counts ALL instances, not unique code patterns. If the same 20-line code appears in 3 files, reports **60 lines**, not 20.
 
 **Impact:**
+
 - Users think there's 60 lines of duplicated code
 - Actually only 20 unique lines are duplicated 3x
 - Inflates perceived duplication by 2-5x in typical projects
@@ -65,10 +67,12 @@ p.statsData.DuplicationRatio = float64(p.statsData.TotalDuplicateLines) / float6
 ```
 
 **Problem:** Combines two flawed inputs:
+
 1. Double-counted duplicate lines (numerator)
 2. Arbitrary estimated lines (denominator)
 
 **Impact:**
+
 - Reported "15%" could actually be 5% or 45%
 - Impossible for users to know true duplication level
 - Makes trend tracking unreliable
@@ -100,6 +104,7 @@ p.statsData.ImpactScore += tokensInGroup * len(dups)
 ```
 
 **Problem:**
+
 - Formula grows quadratically: `tokens × instances`
 - Arbitrary 10,000 max cap (`printer/stats.go:321`)
 - No clear meaning to users
@@ -125,6 +130,7 @@ p.statsData.ComplexityScore = float64(p.statsData.TotalClones) / float64(p.stats
 **Location:** `printer/stats.go:302-342`
 
 **Arbitrary Magic Numbers:**
+
 - Max complexity: `10.0`
 - Max impact: `10000.0`
 - Weights: `0.6` (duplication), `0.25` (complexity), `0.15` (impact)
@@ -148,12 +154,12 @@ p.statsData.SizeDistribution[sizeRange]++
 
 ## Documentation Gaps
 
-| Gap | Current State | User Impact |
-|-----|---------------|-------------|
-| No unique vs instance distinction | "Total Clones" = all instances | Users expect unique patterns |
-| No error margins | Displays single numbers | Users trust as accurate |
-| No Health Score explanation | Magic formula hidden | Users don't understand grades |
-| No Estimated Lines disclaimer | Crude `files × 100` | Users assume actual line count |
+| Gap                               | Current State                  | User Impact                    |
+| --------------------------------- | ------------------------------ | ------------------------------ |
+| No unique vs instance distinction | "Total Clones" = all instances | Users expect unique patterns   |
+| No error margins                  | Displays single numbers        | Users trust as accurate        |
+| No Health Score explanation       | Magic formula hidden           | Users don't understand grades  |
+| No Estimated Lines disclaimer     | Crude `files × 100`            | Users assume actual line count |
 
 ---
 
@@ -175,21 +181,21 @@ This suggests partially implemented filter statistics feature.
 
 ### Immediate Actions (High Priority)
 
-| Action | Impact | Effort |
-|--------|--------|--------|
-| 1. Fix Estimated Lines | Actually count lines in scanned files | Medium |
-| 2. Add Unique Duplicate Lines | Count each pattern once | Medium |
-| 3. Add disclaimer for estimated metrics | Prevents false confidence | Low |
-| 4. Document Health Score formula | User understanding | Low |
+| Action                                  | Impact                                | Effort |
+| --------------------------------------- | ------------------------------------- | ------ |
+| 1. Fix Estimated Lines                  | Actually count lines in scanned files | Medium |
+| 2. Add Unique Duplicate Lines           | Count each pattern once               | Medium |
+| 3. Add disclaimer for estimated metrics | Prevents false confidence             | Low    |
+| 4. Document Health Score formula        | User understanding                    | Low    |
 
 ### Future Improvements (Medium Priority)
 
-| Action | Description |
-|--------|-------------|
-| Rename Complexity Score | → `AverageInstancesPerGroup` or similar |
-| Add Unique Clone Patterns metric | Distinct from Total Clones |
-| Make Health Score configurable | Allow project-specific thresholds |
-| Add confidence intervals | Show error ranges for estimates |
+| Action                           | Description                             |
+| -------------------------------- | --------------------------------------- |
+| Rename Complexity Score          | → `AverageInstancesPerGroup` or similar |
+| Add Unique Clone Patterns metric | Distinct from Total Clones              |
+| Make Health Score configurable   | Allow project-specific thresholds       |
+| Add confidence intervals         | Show error ranges for estimates         |
 
 ---
 
@@ -209,6 +215,7 @@ From `printer/stats.go` comments:
 > TODO: ARCHITECTURE ISSUES - This file exceeds 350 lines (currently 727 lines) and handles multiple concerns, violating Single Responsibility Principle
 
 Suggested refactoring into:
+
 - `stats_collector.go` - Statistics collection
 - `stats_health.go` - Health score calculation
 - `stats_formatter.go` - Format-specific output
@@ -226,4 +233,4 @@ The `art-dupl stats` command has fundamental issues with its core metrics. The *
 
 ---
 
-*Report generated by Crush AI Assistant*
+_Report generated by Crush AI Assistant_

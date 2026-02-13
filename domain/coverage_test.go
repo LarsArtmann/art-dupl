@@ -7,6 +7,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// testFilename is a reusable test filename constant.
+const testFilename = "test.go"
+
 // mustNewLineNumber creates a LineNumber for tests, panicking on error.
 func mustNewLineNumber(n uint16) LineNumber {
 	ln, err := NewLineNumber(n)
@@ -896,7 +899,7 @@ func TestNodeToClone(t *testing.T) {
 			Pos:  0,
 			End:  12,
 		}
-		filename := "test.go"
+		filename := testFilename
 		fileContent := []byte("func main() {}")
 
 		clone := NodeToClone(node, filename, fileContent)
@@ -918,7 +921,7 @@ func TestNodeToClone(t *testing.T) {
 			Pos:  0,
 			End:  12,
 		}
-		filename := "test.go"
+		filename := testFilename
 
 		clone := NodeToClone(node, filename, nil)
 
@@ -941,7 +944,7 @@ func TestNodeToClone(t *testing.T) {
 				{Type: 3, Pos: 5, End: 10, Children: []*syntax.Node{{Type: 4, Pos: 6, End: 9}}},
 			},
 		}
-		filename := "test.go"
+		filename := testFilename
 		fileContent := []byte("func main() {}")
 
 		clone := NodeToClone(node, filename, fileContent)
@@ -955,11 +958,11 @@ func TestNodeToClone(t *testing.T) {
 // TestCloneStringMethods tests Clone string accessor methods.
 func TestCloneStringMethods(t *testing.T) {
 	clone := Clone{}
-	clone.SetFilename("test.go")
+	clone.SetFilename(testFilename)
 	clone.SetFragment("func main() {}")
 	clone.SetHash("abc123")
 
-	if got := clone.FilenameString(); got != "test.go" {
+	if got := clone.FilenameString(); got != testFilename {
 		t.Errorf("FilenameString() = %v, want 'test.go'", got)
 	}
 	if got := clone.FragmentString(); got != "func main() {}" {

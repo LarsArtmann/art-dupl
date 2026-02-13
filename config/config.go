@@ -133,7 +133,7 @@ func DefaultConfig() *Config {
 //	domainThreshold, err := cfg.GetThresholdAsDomain()
 //	if err != nil { ... }
 func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
-	threshold, err := domain.NewThreshold(uint(c.Threshold))
+	threshold, err := domain.NewThreshold(uint(c.Threshold)) //nolint:gosec //G115 Threshold values are bounded (0-1000)
 	if err != nil {
 		return 0, errors.NewConfigError("invalid threshold in config", err)
 	}
@@ -149,7 +149,7 @@ func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 //	err := cfg.SetThresholdFromDomain(domainThreshold)
 func (c *Config) SetThresholdFromDomain(threshold domain.Threshold) error {
 	// No validation needed - domain.Threshold already validated
-	c.Threshold = int(threshold.Uint())
+	c.Threshold = int(threshold.Uint()) //nolint:gosec //G115 Threshold values are bounded (0-1000)
 	return nil
 }
 

@@ -8,6 +8,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// simpleMainCode is a reusable code template for simple main function tests.
+const simpleMainCode = `package main
+
+func main() {
+	println("hello")
+}
+`
+
 // TestParse tests the Parse function with valid Go code.
 func TestParse(t *testing.T) {
 	t.Parallel()
@@ -16,12 +24,7 @@ func TestParse(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test.go")
 
-	code := `package main
-
-func main() {
-	println("hello")
-}
-`
+	code := simpleMainCode
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
@@ -52,12 +55,7 @@ func TestParseWithLineCount(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test.go")
 
-	code := `package main
-
-func main() {
-	println("hello")
-}
-`
+	code := simpleMainCode
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
@@ -509,12 +507,7 @@ func TestParse_CallExpr(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "call.go")
 
-	code := `package main
-
-func main() {
-	println("hello")
-}
-`
+	code := simpleMainCode
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
@@ -856,10 +849,7 @@ func checkNoImportSpec(t *testing.T, node *syntax.Node) {
 	// ImportSpec nodes shouldn't exist (imports are skipped)
 	// However, we can't directly check for ImportSpec since it's not in our types
 	// Just verify we have func declarations
-	if node.Type == GenDecl {
-		// Check that GenDecl children aren't import specs
-		// We don't have ImportSpec in our nodetypes, so imports should be filtered
-	}
+	_ = node // Currently no-op - GenDecl check would go here if ImportSpec type existed
 }
 
 // TestParse_IncDecStmt tests that increment/decrement statements are parsed correctly.
@@ -1274,12 +1264,7 @@ func TestNodePositions(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "positions.go")
 
-	code := `package main
-
-func main() {
-	println("hello")
-}
-`
+	code := simpleMainCode
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}

@@ -82,7 +82,7 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for streaming with %d files", len(files)))
+		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for streaming with %d files", len(files))) //nolint:wrapcheck // Error already wrapped by WrapValidation
 	}
 
 	// Create output channel

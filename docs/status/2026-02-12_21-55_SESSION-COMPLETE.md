@@ -10,13 +10,13 @@
 
 The art-dupl project is in **excellent condition**. A major refactoring and feature session has been **fully committed and pushed**. All builds pass, all tests pass (including BDD), and the codebase is stable.
 
-| Metric | Value |
-|--------|-------|
-| Git Status | Clean (no uncommitted changes) |
-| Build | SUCCESS (CGO_ENABLED=1 required) |
-| Tests | ALL PASS (25 packages + BDD) |
-| Recent Commits | 15 commits (see below) |
-| Health Score | 85% |
+| Metric         | Value                            |
+| -------------- | -------------------------------- |
+| Git Status     | Clean (no uncommitted changes)   |
+| Build          | SUCCESS (CGO_ENABLED=1 required) |
+| Tests          | ALL PASS (25 packages + BDD)     |
+| Recent Commits | 15 commits (see below)           |
+| Health Score   | 85%                              |
 
 ---
 
@@ -37,14 +37,14 @@ ec5c4e9 feat: add .templ file support with tree-sitter
 
 ### Key Improvements
 
-| Category | Details |
-|----------|---------|
-| **Templ Support** | Full `.templ` file parsing with tree-sitter |
+| Category             | Details                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Templ Support**    | Full `.templ` file parsing with tree-sitter                                                                      |
 | **File Refactoring** | `cmd/run.go`, `printer/stats.go`, `domain/domain_types.go`, `pkg/artdupl/detector.go` split into focused modules |
-| **Stats Accuracy** | Actual line counts instead of estimates, filter statistics integration |
-| **Plumbing Output** | Simplified for better machine readability |
-| **Utilities** | `ApplyTimeout` helper, `LineExtractor` interface |
-| **Tests** | All tests updated for refactored codebase |
+| **Stats Accuracy**   | Actual line counts instead of estimates, filter statistics integration                                           |
+| **Plumbing Output**  | Simplified for better machine readability                                                                        |
+| **Utilities**        | `ApplyTimeout` helper, `LineExtractor` interface                                                                 |
+| **Tests**            | All tests updated for refactored codebase                                                                        |
 
 ---
 
@@ -67,6 +67,7 @@ ec5c4e9 feat: add .templ file support with tree-sitter
 **gopls shows 116+ "duplicate declaration" errors** in `domain/` folder.
 
 These are **false positives** caused by stale gopls cache/watching:
+
 - `go build ./...` passes with zero errors
 - `go test ./...` passes with zero errors
 - This is a known gopls issue, not actual code problems
@@ -79,25 +80,26 @@ To fix: Restart LSP server in your editor.
 
 ### Quick Wins (~30 min)
 
-| Task | Effort | Impact |
-|------|--------|--------|
-| Document `.templ` support in README | Low | Medium |
-| Complete `--profile` flag | Low | Medium |
-| Complete `--timeout` flag | Low | Medium |
-| Fix lint warnings (178 remaining) | Medium | Low |
+| Task                                | Effort | Impact |
+| ----------------------------------- | ------ | ------ |
+| Document `.templ` support in README | Low    | Medium |
+| Complete `--profile` flag           | Low    | Medium |
+| Complete `--timeout` flag           | Low    | Medium |
+| Fix lint warnings (178 remaining)   | Medium | Low    |
 
 ### Medium Priority
 
-| Task | Effort | Impact |
-|------|--------|--------|
-| Split large test files (875 lines max) | Medium | Medium |
-| Add unique duplicate lines metric | Medium | High |
-| Add `.templ` BDD tests | Medium | Medium |
+| Task                                      | Effort | Impact |
+| ----------------------------------------- | ------ | ------ |
+| Split large test files (875 lines max)    | Medium | Medium |
+| Add unique duplicate lines metric         | Medium | High   |
+| Add `.templ` BDD tests                    | Medium | Medium |
 | Extract vendor/SQLC helpers from testutil | Medium | Medium |
 
 ### Lint Status
 
 178 lint issues remain (deferred/acceptable):
+
 - **wrapcheck**: 36 (external error wrapping - requires nolint directives)
 - **gosec**: 36 (security checks, mostly test code)
 - **gochecknoglobals**: 16 (config maps, sync vars)
@@ -136,14 +138,14 @@ All 4 tests pass
 
 ## Project Health Scores
 
-| Metric | Previous | Current | Change |
-|--------|----------|---------|--------|
-| Feature Completeness | 85% | 90% | +5% |
-| Code Quality | 70% | 82% | +12% |
-| Test Coverage | 75% | 80% | +5% |
-| Documentation | 80% | 78% | -2% |
-| Architecture | 65% | 88% | +23% |
-| **Overall** | **75%** | **85%** | **+10%** |
+| Metric               | Previous | Current | Change   |
+| -------------------- | -------- | ------- | -------- |
+| Feature Completeness | 85%      | 90%     | +5%      |
+| Code Quality         | 70%      | 82%     | +12%     |
+| Test Coverage        | 75%      | 80%     | +5%      |
+| Documentation        | 80%      | 78%     | -2%      |
+| Architecture         | 65%      | 88%     | +23%     |
+| **Overall**          | **75%**  | **85%** | **+10%** |
 
 ---
 
@@ -171,5 +173,5 @@ All work has been committed and pushed. No pending changes.
 
 **Status:** PROJECT STABLE - All work committed and pushed.
 
-*Generated by Crush AI Assistant*
-*Report ID: 2026-02-12_21-55_SESSION_COMPLETE*
+_Generated by Crush AI Assistant_
+_Report ID: 2026-02-12_21-55_SESSION_COMPLETE_

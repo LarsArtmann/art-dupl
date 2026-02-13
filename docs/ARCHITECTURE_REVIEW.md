@@ -11,6 +11,7 @@
 The art-dupl codebase demonstrates **excellent domain-driven design** with a strong type system, good separation of concerns, and comprehensive error handling. However, several files violate the 350-line limit, and there are opportunities for improved type safety, reduced duplication, and better architectural organization.
 
 ### Key Strengths
+
 - ✅ Excellent domain type system with strong typing (domain/domain_types.go)
 - ✅ Well-organized error handling with typed errors (errors/types.go)
 - ✅ Good use of enums throughout the codebase
@@ -18,6 +19,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - ✅ Memory-optimized types (uint16 for LineNumber, uint32 for BytePosition)
 
 ### Critical Issues
+
 - ❌ **6 files exceed 350-line limit** (needs immediate attention)
 - ❌ **Hash-based detection not implemented** (delegates to suffix tree)
 - ❌ **Type safety violations** in conversion functions
@@ -28,19 +30,21 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 
 ## 1. Files Exceeding 350-Line Limit
 
-| File | Lines | Issue | Priority |
-|-------|--------|--------|----------|
-| printer/stats.go | 727 | Multi-responsibility: collection, health scoring, formatting, visualization, recommendations | **HIGH** |
-| pkg/artdupl/detector.go | 546 | Multi-responsibility: lifecycle, orchestration, pipeline, detection, conversion, validation, content extraction, progress | **HIGH** |
-| cmd/run.go | 528 | Multi-responsibility: CLI handling, analysis orchestration, output formatting, file crawling, all-modes execution | **HIGH** |
-| domain/domain_types.go | 525 | Large aggregation of type definitions (well-structured but too large) | **MEDIUM** |
-| domain/clone.go | 495 | Multi-responsibility: enums, Clone/CloneGroup, Analysis, Repository, conversion functions | **MEDIUM** |
-| pkg/filter/filter.go | 461 | Multi-responsibility: enums, metrics, Filter struct, detection logic, pattern matching | **MEDIUM** |
+| File                    | Lines | Issue                                                                                                                     | Priority   |
+| ----------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| printer/stats.go        | 727   | Multi-responsibility: collection, health scoring, formatting, visualization, recommendations                              | **HIGH**   |
+| pkg/artdupl/detector.go | 546   | Multi-responsibility: lifecycle, orchestration, pipeline, detection, conversion, validation, content extraction, progress | **HIGH**   |
+| cmd/run.go              | 528   | Multi-responsibility: CLI handling, analysis orchestration, output formatting, file crawling, all-modes execution         | **HIGH**   |
+| domain/domain_types.go  | 525   | Large aggregation of type definitions (well-structured but too large)                                                     | **MEDIUM** |
+| domain/clone.go         | 495   | Multi-responsibility: enums, Clone/CloneGroup, Analysis, Repository, conversion functions                                 | **MEDIUM** |
+| pkg/filter/filter.go    | 461   | Multi-responsibility: enums, metrics, Filter struct, detection logic, pattern matching                                    | **MEDIUM** |
 
 ### Detailed Recommendations
 
 #### printer/stats.go (727 lines)
+
 **Current structure:**
+
 - Statistics collection and formatting
 - Health score calculation
 - Size distribution and file ranking
@@ -49,6 +53,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - Style management
 
 **Suggested split:**
+
 - `printer/stats_collector.go`: Statistics collection
 - `printer/stats_health.go`: Health score calculation
 - `printer/stats_formatter.go`: Format-specific output
@@ -57,7 +62,9 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - `printer/stats_styles.go`: Style management
 
 #### pkg/artdupl/detector.go (546 lines)
+
 **Current structure:**
+
 - Detector lifecycle (NewDetector, Close)
 - Analysis orchestration (FindClones, FindClonesStream)
 - Pipeline construction (buildAnalysisPipeline)
@@ -69,6 +76,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - Configuration conversion (convertOptionsToConfig, hashConfig)
 
 **Suggested split:**
+
 - `pkg/artdupl/detector.go`: Core detector struct and public API
 - `pkg/artdupl/detector_pipeline.go`: Pipeline construction and execution
 - `pkg/artdupl/detector_conversion.go`: Result conversion and formatting
@@ -76,7 +84,9 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - `pkg/artdupl/detector_utils.go`: Helper functions (hashConfig, reportProgress)
 
 #### cmd/run.go (528 lines)
+
 **Current structure:**
+
 - Flag parsing and config setup
 - Analysis execution
 - Output handling (printDupls, createPrinter)
@@ -84,6 +94,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - All modes execution (runAllModes)
 
 **Suggested split:**
+
 - `cmd/run_flags.go`: Flag parsing and config setup
 - `cmd/run_analysis.go`: Analysis execution
 - `cmd/run_output.go`: Output handling
@@ -91,11 +102,14 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - `cmd/run_all_modes.go`: All modes execution
 
 #### domain/domain_types.go (525 lines)
+
 **Current structure:**
+
 - 13 domain type definitions (CloneGroupID, AnalysisID, Filepath, LineNumber, BytePosition, TokenCount, Confidence, ComplexityScore, Hash, FileCount, CloneCount, ProcessingTime, Threshold)
 - Helper functions for marshaling/unmarshaling
 
 **Suggested split:**
+
 - `domain/types_id.go`: ID types (CloneGroupID, AnalysisID)
 - `domain/types_file.go`: File-related types (Filepath, LineNumber, BytePosition)
 - `domain/types_metric.go`: Metric types (TokenCount, FileCount, CloneCount, Threshold)
@@ -103,7 +117,9 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - `domain/helpers.go`: Marshaling/unmarshaling helper functions
 
 #### domain/clone.go (495 lines)
+
 **Current structure:**
+
 - Enum types (FileProcessingState, DetectionState, AnalysisMode, CloneSeverity)
 - Clone and CloneGroup domain objects
 - Analysis and AnalysisStats
@@ -113,6 +129,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - Validation helpers
 
 **Suggested split:**
+
 - `domain/types_enums.go`: Enum types
 - `domain/clone.go`: Clone and CloneGroup domain objects
 - `domain/analysis.go`: Analysis and AnalysisStats
@@ -122,7 +139,9 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - `domain/validation.go`: Validation helpers
 
 #### pkg/filter/filter.go (461 lines)
+
 **Current structure:**
+
 - Enum types (FilterOption, FilterReason)
 - Metrics and FilterStats
 - Filter struct and main filtering logic
@@ -130,6 +149,7 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 - Pattern matching utilities
 
 **Suggested split:**
+
 - `filter/types.go`: Enum types and FilterStats
 - `filter/metrics.go`: Metrics type with thread-safe tracking
 - `filter/filter.go`: Filter struct and main filtering logic
@@ -143,9 +163,11 @@ The art-dupl codebase demonstrates **excellent domain-driven design** with a str
 ### 2.1 Primitive Types vs Domain Types
 
 #### Issue: SDK Conversion Functions Use Primitives
+
 **Location:** `pkg/artdupl/detector.go:398-423`
 
 **Problem:**
+
 ```go
 func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
     // ...
@@ -161,12 +183,14 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 ```
 
 **Impact:**
+
 - Loses type safety guarantees provided by domain types
 - Allows invalid values (e.g., negative line numbers)
 - Violates DDD principle of using domain types throughout
 
 **Recommendation:**
 Change Clone struct to use domain types:
+
 ```go
 type Clone struct {
     Filename  domain.Filepath    `json:"filename"`
@@ -177,9 +201,11 @@ type Clone struct {
 ```
 
 #### Issue: StatsData Uses Primitives
+
 **Location:** `printer/stats_data.go`
 
 **Problem:**
+
 ```go
 type StatsData struct {
     TotalFiles    int                    // Should be domain.FileCount
@@ -191,11 +217,13 @@ type StatsData struct {
 ```
 
 **Impact:**
+
 - Type safety lost in statistics reporting
 - No validation on values (e.g., negative counts)
 - HealthScore as string instead of typed enum
 
 **Recommendation:**
+
 1. Create `domain.HealthGrade` enum (A, B, C, D, F)
 2. Use domain types throughout StatsData
 3. Add validation at construction time
@@ -203,9 +231,11 @@ type StatsData struct {
 ### 2.2 Deprecated Methods (Technical Debt)
 
 #### Issue: Uint() Methods for Type Conversion
+
 **Location:** `domain/domain_types.go:199-203, 241-244, 350-353`
 
 **Problem:**
+
 ```go
 // Uint returns the underlying uint value (for backward compatibility).
 // Deprecated: Use Uint16() instead for type safety.
@@ -215,11 +245,13 @@ func (ln LineNumber) Uint() uint {
 ```
 
 **Impact:**
+
 - Technical debt that weakens type safety
 - Allows callers to bypass strongly-typed accessors
 - No migration plan for removal
 
 **Recommendation:**
+
 1. Audit usage of `.Uint()` across codebase
 2. Replace all calls with `.Uint16()` or `.Uint32()`
 3. Mark with deprecation comment and timeline for removal
@@ -236,6 +268,7 @@ func (ln LineNumber) Uint() uint {
 **Problem:** SQLC filtering logic appears twice, adding `FilterSQLC` to filterOptions both times.
 
 **First instance (lines 319-338):**
+
 ```go
 if len(sqlcOutputDirs) > 0 && !cfg.IncludeSQLC {
     filterOptions = append(filterOptions, filter.FilterSQLC)
@@ -244,6 +277,7 @@ if len(sqlcOutputDirs) > 0 && !cfg.IncludeSQLC {
 ```
 
 **Second instance (lines 340-347):**
+
 ```go
 if !cfg.IncludeSQLC {
     filterOptions = append(filterOptions, filter.FilterSQLC)
@@ -252,11 +286,13 @@ if !cfg.IncludeSQLC {
 ```
 
 **Impact:**
+
 - Redundant filter option added
 - Confusing logic flow
 - Potential performance impact (duplicate checks)
 
 **Recommendation:**
+
 ```go
 // Combined logic
 if !cfg.IncludeSQLC {
@@ -278,6 +314,7 @@ if !cfg.IncludeSQLC {
 
 **Recommendation:**
 Extract to shared function:
+
 ```go
 func detectionMethodsToString(methods config.DetectionMethods) string {
     if len(methods) == 0 {
@@ -299,6 +336,7 @@ func detectionMethodsToString(methods config.DetectionMethods) string {
 
 **Recommendation:**
 Extract to shared function:
+
 ```go
 func collectMatchesIntoGroups(matchesChan <-chan syntax.Match) map[string][][]*syntax.Node {
     groups := make(map[string][][]*syntax.Node)
@@ -319,6 +357,7 @@ func collectMatchesIntoGroups(matchesChan <-chan syntax.Match) map[string][][]*s
 
 **Recommendation:**
 Extract to shared function:
+
 ```go
 func shouldIncludeFile(filter *filter.Filter, path string) bool {
     return filter == nil || !filter.ShouldFilter(path)
@@ -333,6 +372,7 @@ func shouldIncludeFile(filter *filter.Filter, path string) bool {
 
 **Recommendation:**
 Extract to package-level constant:
+
 ```go
 const sqlcFilePatterns = []string{
     "models.go",
@@ -347,16 +387,19 @@ const sqlcFilePatterns = []string{
 **Location:** `printer/stats_data.go` vs `printer/stats.go`
 
 **Problem:**
+
 - `StatsData` in `printer/stats_data.go` has its own type system using primitives
 - Separated from domain types in `domain/domain_types.go`
 - Creates two separate type systems for similar concepts
 
 **Impact:**
+
 - Type inconsistency across the codebase
 - Loss of type safety in statistics
 - No unified validation strategy
 
 **Recommendation:**
+
 1. Create domain types for statistics metrics
 2. Migrate `StatsData` to use domain types
 3. Consolidate type systems
@@ -368,6 +411,7 @@ const sqlcFilePatterns = []string{
 ### 4.1 Analysis Mode
 
 **Current:** Boolean flags in `config.Config`:
+
 ```go
 type Config struct {
     Verbose           bool
@@ -383,6 +427,7 @@ type Config struct {
 **Observation:** These are mostly fine as boolean flags. However, consider:
 
 **Potential Enhancement:** For `FilterGenerated`, which combines multiple filters:
+
 ```go
 type FilterMode string
 
@@ -399,6 +444,7 @@ const (
 ### 4.2 Output Format
 
 **Current:** Already uses enums correctly:
+
 ```go
 type OutputFormat string
 
@@ -420,6 +466,7 @@ const (
 ### 5.1 Strengths
 
 **Typed Errors:** `errors/types.go` provides excellent typed error handling:
+
 ```go
 type ErrorType string
 
@@ -432,6 +479,7 @@ const (
 ```
 
 **Wrapper Functions:** Comprehensive error wrapping:
+
 ```go
 func Wrap(err error, errType ErrorType, context string) DuplError
 func WrapConfig(err error, context string) DuplError
@@ -447,6 +495,7 @@ func WrapValidation(err error, context string) DuplError
 **Location:** `domain/domain_types.go:41`
 
 **Problem:**
+
 ```go
 func marshalStringID(s, typeName, validationMsg string) ([]byte, error) {
     if s == "" {
@@ -458,6 +507,7 @@ func marshalStringID(s, typeName, validationMsg string) ([]byte, error) {
 
 **Recommendation:**
 Either use `typeName` for better error messages or remove the parameter:
+
 ```go
 func marshalStringID(s, validationMsg string) ([]byte, error) {
     if s == "" {
@@ -474,24 +524,30 @@ func marshalStringID(s, validationMsg string) ([]byte, error) {
 ### 6.1 Excellent Optimizations
 
 **LineNumber (uint16):**
+
 ```go
 type LineNumber uint16
 // Optimized: uint16 provides 0-65,535 range (sufficient for any source file)
 ```
+
 ✅ Correct - No source file has >65,535 lines
 
 **BytePosition (uint32):**
+
 ```go
 type BytePosition uint32
 // Optimized: uint32 provides 0-4GB range (sufficient for file positions)
 ```
+
 ✅ Correct - No source file exceeds 4GB
 
 **ComplexityScore (uint16):**
+
 ```go
 type ComplexityScore uint16
 // Optimized: uint16 provides 0-65,535 range (sufficient for code complexity)
 ```
+
 ✅ Correct - No realistic code complexity exceeds 65,535
 
 ### 6.2 Areas for Improvement
@@ -501,6 +557,7 @@ type ComplexityScore uint16
 **Location:** `domain/domain_types.go:258-261`
 
 **Current:**
+
 ```go
 type TokenCount uint
 ```
@@ -517,6 +574,7 @@ Current implementation is acceptable. `uint` provides sufficient range for token
 ### 7.1 Unused Code
 
 #### Unused Function: isGeneratedByFilename
+
 **Location:** `pkg/filter/filter.go:329-332`
 
 **Status:** Never called, marked as "legacy, kept for compatibility"
@@ -524,6 +582,7 @@ Current implementation is acceptable. `uint` provides sufficient range for token
 **Recommendation:** Either remove entirely or document intended use case clearly.
 
 #### Unused Parameter: ctx in runSuffixTreeDetection
+
 **Location:** `pkg/artdupl/detector.go:330`
 
 **Problem:** Parameter exists but never used for cancellation checking.
@@ -533,9 +592,11 @@ Current implementation is acceptable. `uint` provides sufficient range for token
 ### 7.2 Inefficiencies
 
 #### Issue: Channel Conversion in runAllModes
+
 **Location:** `cmd/run.go:465-508`
 
 **Problem:**
+
 ```go
 // Line 465: Convert channel to slice
 matches := collectMatches(duplChan)
@@ -554,6 +615,7 @@ go func() {
 
 **Recommendation:**
 Option 1: Keep streaming to each output file sequentially
+
 ```go
 for _, format := range formats {
     // Create new printer
@@ -566,6 +628,7 @@ for _, format := range formats {
 ```
 
 Option 2: Store results once and write multiple times without reconversion
+
 ```go
 // Store in printer-ready format
 cloneGroups := printer.BuildCloneGroups(duplChan)
@@ -575,9 +638,11 @@ for _, format := range formats {
 ```
 
 #### Issue: Manual Map Copying
+
 **Location:** `pkg/filter/filter.go:97-100`
 
 **Problem:**
+
 ```go
 filteredByReason := make(map[FilterReason]int)
 for k, v := range m.FilteredByReason {
@@ -586,6 +651,7 @@ for k, v := range m.FilteredByReason {
 ```
 
 **Recommendation:** Use `maps.Copy` (Go 1.21+):
+
 ```go
 filteredByReason := maps.Clone(m.FilteredByReason)
 ```
@@ -593,9 +659,11 @@ filteredByReason := maps.Clone(m.FilteredByReason)
 ### 7.3 Algorithm Improvements
 
 #### Issue: Complexity Calculation is Too Basic
+
 **Location:** `domain/clone.go:477-494`
 
 **Problem:**
+
 ```go
 func calculateComplexity(node *syntax.Node) uint {
     complexity := uint(1)
@@ -613,17 +681,20 @@ func calculateComplexity(node *syntax.Node) uint {
 ```
 
 **Issues:**
+
 - Recursive implementation could be expensive for deep trees
 - Magic number `0` without documentation
 - Very basic metric, not aligned with industry standards
 
 **Recommendation:**
 Consider established complexity metrics:
+
 - **McCabe Cyclomatic Complexity:** Counts decision points
 - **Nesting Depth:** Maximum nesting level
 - **Cognitive Complexity:** Accounts for nesting and logic flow
 
 Example:
+
 ```go
 func calculateCognitiveComplexity(node *syntax.Node) uint {
     // Use established algorithm from cognitive complexity research
@@ -636,9 +707,11 @@ func calculateCognitiveComplexity(node *syntax.Node) uint {
 ```
 
 #### Issue: Hash-Based Detection Not Implemented
+
 **Location:** `pkg/artdupl/detector.go:354-357`
 
 **Problem:**
+
 ```go
 func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
     return d.runSuffixTreeDetection(ctx, data, threshold)  // INCORRECT
@@ -649,6 +722,7 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 
 **Recommendation:**
 Implement actual rolling hash detection:
+
 ```go
 func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
     resultChan := make(chan syntax.Match)
@@ -674,6 +748,7 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 ### 8.1 printer/stats.go
 
 **Concerns:** 727 lines handling too many responsibilities:
+
 - Data collection
 - Health calculation
 - Formatting (text, JSON, CSV)
@@ -688,6 +763,7 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 ### 8.2 cmd/run.go
 
 **Concerns:** 528 lines mixing:
+
 - Flag parsing
 - Config management
 - File crawling
@@ -709,6 +785,7 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 **Test Structure:** Good behavior-driven development approach.
 
 **Areas for Improvement:**
+
 1. Add unit tests for helper functions in large files
 2. Test conversion functions (NodeToClone, convertFragmentToClone)
 3. Test validation functions more thoroughly
@@ -721,21 +798,25 @@ func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, th
 ### 10.1 Observations
 
 **File Reading:**
+
 ```go
 // cmd/run.go:285
 content, err := os.ReadFile(filePath) //nolint:gosec //G304 filePath is from controlled source
 ```
+
 ✅ Properly reviewed and annotated
 
 **Path Validation:** File crawling validates paths before processing.
 
 **Output Directory Creation:**
+
 ```go
 // cmd/run.go:453
 if err := os.MkdirAll(outputDir, 0o750); err != nil {
     return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
 }
 ```
+
 ✅ Proper permissions (0o750 = rwxr-x---)
 
 **Assessment:** Security practices are well-implemented.
@@ -747,11 +828,13 @@ if err := os.MkdirAll(outputDir, 0o750); err != nil {
 ### 11.1 Strengths
 
 **Memory Efficiency:**
+
 - StringPool for string interning ✅
 - Optimized uint sizes (uint16, uint32) ✅
 - Streaming APIs (FindClonesStream) ✅
 
 **Concurrency:**
+
 - Goroutine-based pipeline processing ✅
 - Thread-safe Metrics with RWMutex ✅
 - Proper channel usage ✅
@@ -759,10 +842,12 @@ if err := os.MkdirAll(outputDir, 0o750); err != nil {
 ### 11.2 Areas for Improvement
 
 **Algorithm Complexity:**
+
 - Complexity calculation needs improvement (Section 7.3)
 - Hash detection not implemented (Section 7.3)
 
 **Memory Usage:**
+
 - Channel conversion inefficiency (Section 7.2)
 - Consider memory profiling for large codebases
 
@@ -840,18 +925,21 @@ The art-dupl codebase demonstrates **strong engineering fundamentals** with exce
 **Overall Assessment:** B+ (Good with clear improvement path)
 
 **Key Strengths:**
+
 - Excellent domain type system
 - Strong error handling with typed errors
 - Memory-efficient implementation
 - Good use of enums throughout
 
 **Key Weaknesses:**
+
 - Large files violating SRP
 - Type safety gaps in conversion layer
 - Duplicate logic across files
 - Incomplete feature implementation (hash detection)
 
 **Recommended Approach:**
+
 1. Address immediate issues first (file splitting, hash detection)
 2. Improve type safety systematically
 3. Eliminate duplications through extraction
@@ -876,6 +964,7 @@ The art-dupl codebase demonstrates **strong engineering fundamentals** with exce
 ## Appendix B: Type System Coverage
 
 **Domain Types (Excellent Coverage):**
+
 - ✅ IDs: CloneGroupID, AnalysisID
 - ✅ File: Filepath, LineNumber, BytePosition
 - ✅ Metrics: TokenCount, FileCount, CloneCount, Threshold
@@ -883,6 +972,7 @@ The art-dupl codebase demonstrates **strong engineering fundamentals** with exce
 - ✅ Enums: FileProcessingState, DetectionState, AnalysisMode, CloneSeverity
 
 **Missing Domain Types:**
+
 - ❌ HealthGrade (currently string in StatsData)
 - ⚠️ Clone severity thresholds (currently hardcoded in CalculateSeverity)
 

@@ -154,19 +154,12 @@ func common() { println(1) }`
 		})
 
 		It("should include templ files when --include-templ is used", func() {
-			regularCode := `package main
-func process() { println(1) }`
-			templCode := `package main
-import "github.com/a-h/templ"
-func Component() templ.Component { return nil }
-func process() { println(1) }`
-
 			assertGeneratedFileIncluded(
 				setup,
 				[]string{"regular1.go", "regular2.go"},
-				regularCode,
+				testRegularCode,
 				"page_templ.go",
-				templCode,
+				testTemplCode,
 				"--include-templ",
 				"3",
 			)

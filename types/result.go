@@ -36,7 +36,7 @@ func (r Result[T]) IsErr() bool {
 
 // Unwrap returns value and error.
 func (r Result[T]) Unwrap() (T, error) {
-	return mo.Result[T](r).Get()
+	return mo.Result[T](r).Get() //nolint:wrapcheck // Error from mo.Result is already wrapped at creation
 }
 
 // Value returns the value (for backward compatibility with tests).
@@ -49,7 +49,7 @@ func (r Result[T]) Value() T {
 // Err returns the error (for backward compatibility with tests).
 // Returns nil if ok.
 func (r Result[T]) Err() error {
-	return mo.Result[T](r).Error()
+	return mo.Result[T](r).Error() //nolint:wrapcheck // Error from mo.Result is already wrapped at creation
 }
 
 // Or returns value or default if error.

@@ -11,13 +11,13 @@ The art-dupl project is in **stable condition** with a clean build and all tests
 
 ### Key Metrics
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Build** | ✅ Passing | Clean |
-| **Tests** | ✅ All passing | 32 packages |
-| **Coverage** | ~60% average | Acceptable |
-| **LOC** | 32,050 | - |
-| **Linter Issues** | 136 | Needs attention |
+| Metric            | Value          | Status          |
+| ----------------- | -------------- | --------------- |
+| **Build**         | ✅ Passing     | Clean           |
+| **Tests**         | ✅ All passing | 32 packages     |
+| **Coverage**      | ~60% average   | Acceptable      |
+| **LOC**           | 32,050         | -               |
+| **Linter Issues** | 136            | Needs attention |
 
 ---
 
@@ -25,19 +25,19 @@ The art-dupl project is in **stable condition** with a clean build and all tests
 
 ### Current Linter Issues (136 total)
 
-| Linter | Count | Severity | Category |
-|--------|-------|----------|----------|
-| **gosec** | 36 | Medium | Security (mostly false positives) |
-| **funlen** | 22 | Low | Code style |
-| **ireturn** | 20 | Low | Interface returns |
-| **gochecknoglobals** | 16 | Low | Global variables |
-| **cyclop** | 11 | Medium | Cyclomatic complexity |
-| **goconst** | 8 | Low | Repeated strings |
-| **wrapcheck** | 7 | Low | Error wrapping |
-| **gocognit** | 6 | Medium | Cognitive complexity |
-| **nolintlint** | 6 | Low | Nolint directive issues |
-| **errcheck** | 3 | Medium | Unchecked errors |
-| **staticcheck** | 1 | Low | Static analysis |
+| Linter               | Count | Severity | Category                          |
+| -------------------- | ----- | -------- | --------------------------------- |
+| **gosec**            | 36    | Medium   | Security (mostly false positives) |
+| **funlen**           | 22    | Low      | Code style                        |
+| **ireturn**          | 20    | Low      | Interface returns                 |
+| **gochecknoglobals** | 16    | Low      | Global variables                  |
+| **cyclop**           | 11    | Medium   | Cyclomatic complexity             |
+| **goconst**          | 8     | Low      | Repeated strings                  |
+| **wrapcheck**        | 7     | Low      | Error wrapping                    |
+| **gocognit**         | 6     | Medium   | Cognitive complexity              |
+| **nolintlint**       | 6     | Low      | Nolint directive issues           |
+| **errcheck**         | 3     | Medium   | Unchecked errors                  |
+| **staticcheck**      | 1     | Low      | Static analysis                   |
 
 ### Priority Recommendations
 
@@ -60,33 +60,33 @@ The art-dupl project is in **stable condition** with a clean build and all tests
 
 ### High Coverage Packages (>80%)
 
-| Package | Coverage | Notes |
-|---------|----------|-------|
-| `syntax/golang` | 98.7% | Excellent |
-| `domain` | 94.8% | Excellent |
-| `hash` | 94.7% | Excellent |
-| `pkg/logger` | 87.5% | Excellent |
-| `suffixtree` | 89.6% | Excellent |
-| `syntax/templ` | 81.4% | Good |
+| Package         | Coverage | Notes     |
+| --------------- | -------- | --------- |
+| `syntax/golang` | 98.7%    | Excellent |
+| `domain`        | 94.8%    | Excellent |
+| `hash`          | 94.7%    | Excellent |
+| `pkg/logger`    | 87.5%    | Excellent |
+| `suffixtree`    | 89.6%    | Excellent |
+| `syntax/templ`  | 81.4%    | Good      |
 
 ### Low Coverage Packages (<50%)
 
-| Package | Coverage | Priority |
-|---------|----------|----------|
-| `adapter` | 0.0% | Add tests |
-| `cmd/art-dupl` | 0.0% | CLI entry point |
-| `internal/simd` | 0.0% | Performance code |
-| `internal/testutil` | 0.0% | Test helpers |
-| `internal/treesitter/templ` | 0.0% | Tree-sitter binding |
-| `migration` | 0.0% | Migration utilities |
-| `types` | 0.0% | Needs tests |
-| `testutils` | 24.1% | Utility helpers |
-| `detection` | 24.0% | Core detection logic |
-| `internal/utils` | 38.8% | Utility functions |
-| `pkg/position` | 46.9% | Position helpers |
-| `errors` | 50.6% | Error types |
-| `pkg/artdupl` | 54.0% | Detector wrapper |
-| `pkg/filter` | 56.4% | Filtering logic |
+| Package                     | Coverage | Priority             |
+| --------------------------- | -------- | -------------------- |
+| `adapter`                   | 0.0%     | Add tests            |
+| `cmd/art-dupl`              | 0.0%     | CLI entry point      |
+| `internal/simd`             | 0.0%     | Performance code     |
+| `internal/testutil`         | 0.0%     | Test helpers         |
+| `internal/treesitter/templ` | 0.0%     | Tree-sitter binding  |
+| `migration`                 | 0.0%     | Migration utilities  |
+| `types`                     | 0.0%     | Needs tests          |
+| `testutils`                 | 24.1%    | Utility helpers      |
+| `detection`                 | 24.0%    | Core detection logic |
+| `internal/utils`            | 38.8%    | Utility functions    |
+| `pkg/position`              | 46.9%    | Position helpers     |
+| `errors`                    | 50.6%    | Error types          |
+| `pkg/artdupl`               | 54.0%    | Detector wrapper     |
+| `pkg/filter`                | 56.4%    | Filtering logic      |
 
 ---
 
@@ -120,37 +120,37 @@ The 20 ireturn warnings fall into these categories:
 
 ### Factory Pattern Returns (9 issues) - Legitimate
 
-| File | Function | Returns |
-|------|----------|---------|
-| `printer/html.go` | `NewHTML()` | `Printer` |
-| `printer/json.go` | `NewJSON()` | `Printer` |
-| `printer/plumbing.go` | `NewPlumbing()` | `Printer` |
-| `printer/stats.go` | `NewStats()` | `Printer` |
-| `printer/text.go` | `NewText()` | `Printer` |
+| File                      | Function        | Returns    |
+| ------------------------- | --------------- | ---------- |
+| `printer/html.go`         | `NewHTML()`     | `Printer`  |
+| `printer/json.go`         | `NewJSON()`     | `Printer`  |
+| `printer/plumbing.go`     | `NewPlumbing()` | `Printer`  |
+| `printer/stats.go`        | `NewStats()`    | `Printer`  |
+| `printer/text.go`         | `NewText()`     | `Printer`  |
 | `pkg/artdupl/detector.go` | `NewDetector()` | `Detector` |
-| `pkg/logger/logger.go` | `NewLogger()` | `Logger` |
-| `internal/simd/simd.go` | `NewHasher()` | `Hasher` |
+| `pkg/logger/logger.go`    | `NewLogger()`   | `Logger`   |
+| `internal/simd/simd.go`   | `NewHasher()`   | `Hasher`   |
 
 **Verdict:** ✅ Correct design pattern - hide implementation details
 
 ### Generic Type Parameters (9 issues) - Go Limitation
 
-| File | Function | Type Param |
-|------|----------|------------|
-| `types/result.go` | `Unwrap()` | `T` |
-| `types/result.go` | `Or()` | `T` |
-| `types/result.go` | `OrPanic()` | `T` |
-| `config/detectionmethod.go` | `unmarshalStringType()` | `T ~string` |
+| File                          | Function                        | Type Param     |
+| ----------------------------- | ------------------------------- | -------------- |
+| `types/result.go`             | `Unwrap()`                      | `T`            |
+| `types/result.go`             | `Or()`                          | `T`            |
+| `types/result.go`             | `OrPanic()`                     | `T`            |
+| `config/detectionmethod.go`   | `unmarshalStringType()`         | `T ~string`    |
 | `domain/domain_types_test.go` | `createStandardUintJSONTests()` | `T comparable` |
-| `internal/enum/marshal.go` | `ParseEnum()` | `T ~string` |
+| `internal/enum/marshal.go`    | `ParseEnum()`                   | `T ~string`    |
 
 **Verdict:** ✅ Unavoidable with Go generics
 
 ### Domain Interfaces (2 issues) - Review Recommended
 
-| File | Function | Returns |
-|------|----------|---------|
-| `suffixtree/suffixtree.go` | `At()` | `Token` |
+| File                           | Function        | Returns |
+| ------------------------------ | --------------- | ------- |
+| `suffixtree/suffixtree.go`     | `At()`          | `Token` |
 | `suffixtree/suffixtree.go:185` | Iterator method | `Token` |
 
 **Verdict:** ⚠️ Could potentially return concrete type
@@ -180,11 +180,11 @@ The 20 ireturn warnings fall into these categories:
 
 ## Technical Debt Summary
 
-| Category | Count | Effort | Impact |
-|----------|-------|--------|--------|
-| Linter warnings | 136 | 4h | Medium |
-| Low test coverage | 14 packages | 8h | High |
-| Missing docs | - | 2h | Low |
+| Category          | Count       | Effort | Impact |
+| ----------------- | ----------- | ------ | ------ |
+| Linter warnings   | 136         | 4h     | Medium |
+| Low test coverage | 14 packages | 8h     | High   |
+| Missing docs      | -           | 2h     | Low    |
 
 ---
 
@@ -258,12 +258,12 @@ types                              0.0%
 linters-settings:
   ireturn:
     allow:
-      - Printer    # Factory pattern
-      - Logger     # Factory pattern
-      - Detector   # Factory pattern
-      - Hasher     # Abstraction over SIMD impls
-      - Token      # Domain interface
-      - generic    # Generic type params (Go limitation)
+      - Printer # Factory pattern
+      - Logger # Factory pattern
+      - Detector # Factory pattern
+      - Hasher # Abstraction over SIMD impls
+      - Token # Domain interface
+      - generic # Generic type params (Go limitation)
 ```
 
 ### D. File Statistics
@@ -283,6 +283,7 @@ linters-settings:
 #### gosec Issues (36 total)
 
 Most common patterns:
+
 - **G101**: Hardcoded credentials (test fixtures, not real secrets)
 - **G104**: Unchecked errors (mostly in test code)
 - **G115**: Integer overflow potential (review needed)
@@ -290,6 +291,7 @@ Most common patterns:
 #### funlen Issues (22 total)
 
 Functions exceeding 60 lines:
+
 - `job/parse.go`: File parsing logic
 - `suffixtree/suffixtree.go`: Core algorithm
 - `printer/*.go`: Output formatters
@@ -299,6 +301,7 @@ Recommendation: Extract helper functions where appropriate.
 #### cyclop Issues (11 total)
 
 Complex functions with cyclomatic complexity > 10:
+
 - Detection coordination logic
 - AST processing functions
 - Configuration parsing
@@ -306,6 +309,7 @@ Complex functions with cyclomatic complexity > 10:
 ### G. Dependency Analysis
 
 **Core Dependencies:**
+
 ```
 github.com/charmbracelet/fang      - CLI framework
 github.com/spf13/cobra             - Command interface
@@ -316,6 +320,7 @@ github.com/zeebo/xxh3              - Fast hashing
 ```
 
 **Dependency Health:**
+
 - All dependencies up to date
 - No known vulnerabilities
 - Minimal external footprint
@@ -323,11 +328,13 @@ github.com/zeebo/xxh3              - Fast hashing
 ### H. Performance Considerations
 
 **XXH3 Hash Implementation:**
+
 - ~20x faster than SHA-256
 - Used in `hash/` package for content fingerprinting
 - SIMD optimizations available via `internal/simd`
 
 **Memory Profile:**
+
 - Stream processing prevents memory bloat
 - StringPool deduplicates AST tokens
 - Maximum children limit prevents stack overflow
@@ -335,6 +342,7 @@ github.com/zeebo/xxh3              - Fast hashing
 ### I. Architecture Notes
 
 **Package Layering:**
+
 ```
 cmd/         → Entry point (depends on all)
 cli/         → CLI runtime
@@ -345,6 +353,7 @@ domain/      → Domain types (no external deps)
 ```
 
 **Key Design Patterns:**
+
 - Factory pattern: `printer/`, `pkg/artdupl/`, `pkg/logger/`
 - Adapter pattern: `adapter/` for printer abstraction
 - Strategy pattern: Multiple detection methods

@@ -62,7 +62,7 @@ func findSQLCConfigsInPath(path string, configs map[string]string) error {
 
 // walkPathForSQLCConfigs walks a path to find sqlc config files.
 func walkPathForSQLCConfigs(path string, configs map[string]string) error {
-	return filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,10 @@ func walkPathForSQLCConfigs(path string, configs map[string]string) error {
 
 		recordSQLCConfig(filePath, configs)
 		return nil
-	})
+	}); err != nil {
+		return errors.WrapFile(err, path, "walking for sqlc configs") //nolint:wrapcheck // Error already wrapped by WrapFile
+	}
+	return nil
 }
 
 // handleDirectoryWalk determines whether to skip a directory during walk.

@@ -161,7 +161,11 @@ func (pt ProcessingTime) MarshalJSON() ([]byte, error) {
 	if pt == 0 {
 		return nil, errors.NewValidationError("processing time cannot be 0", nil)
 	}
-	return json.Marshal(uint(pt))
+	data, err := json.Marshal(uint(pt))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal ProcessingTime: %w", err)
+	}
+	return data, nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ProcessingTime.

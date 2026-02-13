@@ -69,10 +69,7 @@ func processData(data string) error {
 
 		It("should show files analyzed count", func() {
 			// Create multiple test files
-			code := `package main
-func test() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"a.go", "b.go", "c.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{"a.go", "b.go", "c.go"}, simpleTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats

@@ -924,7 +924,11 @@ func main() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
-	defer detector.Close()
+	t.Cleanup(func() {
+		if err := detector.Close(); err != nil {
+			t.Logf("Failed to close detector: %v", err)
+		}
+	})
 
 	result, err := detector.FindClones(context.Background(), []string{filename})
 	// Single file with no duplicates is expected to work
@@ -976,7 +980,11 @@ func duplicate() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
-	defer detector.Close()
+	t.Cleanup(func() {
+		if err := detector.Close(); err != nil {
+			t.Logf("Failed to close detector: %v", err)
+		}
+	})
 
 	result, err := detector.FindClones(context.Background(), []string{file1, file2})
 	if err != nil {
@@ -1011,7 +1019,11 @@ func main() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
-	defer detector.Close()
+	t.Cleanup(func() {
+		if err := detector.Close(); err != nil {
+			t.Logf("Failed to close detector: %v", err)
+		}
+	})
 
 	_, err = detector.FindClones(ctx, []string{filename})
 	if err == nil {
@@ -1134,7 +1146,11 @@ func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
-	defer detector.Close()
+	t.Cleanup(func() {
+		if err := detector.Close(); err != nil {
+			t.Logf("Failed to close detector: %v", err)
+		}
+	})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
@@ -1216,7 +1232,11 @@ func TestDetector_Reuse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
-	defer detector.Close()
+	t.Cleanup(func() {
+		if err := detector.Close(); err != nil {
+			t.Logf("Failed to close detector: %v", err)
+		}
+	})
 
 	// First call - empty files should error
 	_, err = detector.FindClones(context.Background(), []string{})

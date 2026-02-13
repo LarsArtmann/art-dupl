@@ -11,6 +11,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+// testCodeSamples contains code samples used in plumbing tests.
+const (
+	duplicateTestCode = `package main
+func duplicate() { println(1) }`
+	commonTestCode = `package main
+func common() { println(1) }`
+)
+
 // BDD Test Suite for Plumbing Output and Multiple Paths
 //
 // These tests verify:
@@ -33,15 +41,7 @@ var _ = Describe("Plumbing Output Format", func() {
 
 	Context("When using plumbing output", func() {
 		It("should produce machine-readable output", func() {
-			duplicateCode := `package main
-
-import "fmt"
-
-func process() {
-	for i := 0; i < 10; i++ {
-		fmt.Println(i)
-	}
-}`
+			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -63,8 +63,7 @@ func process() {
 		})
 
 		It("should be parseable by shell scripts", func() {
-			duplicateCode := `package main
-func duplicate() { println(1) }`
+			duplicateCode := duplicateTestCode
 
 			err := setup.CreateDuplicateFiles([]string{"pkg/file1.go", "pkg/file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -88,8 +87,7 @@ func duplicate() { println(1) }`
 		})
 
 		It("should not include headers or formatting", func() {
-			duplicateCode := `package main
-func duplicate() { println(1) }`
+			duplicateCode := duplicateTestCode
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -138,8 +136,7 @@ func large() {
 		})
 
 		It("should work with sorting options", func() {
-			duplicateCode := `package main
-func duplicate() { println(1) }`
+			duplicateCode := duplicateTestCode
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -179,15 +176,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 			err := setup.CreateSubdirectories("pkg1", "pkg2", "pkg3")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := `package main
-
-import "fmt"
-
-func common() {
-	for i := 0; i < 10; i++ {
-		fmt.Println(i)
-	}
-}`
+			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
 
 			// Create duplicates in different directories
 			err = setup.CreateFileWithContent("pkg1/file1.go", duplicateCode)
@@ -217,8 +206,7 @@ func common() {
 			err := setup.CreateSubdirectories("pkg")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := `package main
-func common() { println(1) }`
+			duplicateCode := commonTestCode
 
 			// Create file in directory
 			err = setup.CreateFileWithContent("pkg/file1.go", duplicateCode)
@@ -245,8 +233,7 @@ func common() { println(1) }`
 			err := setup.CreateSubdirectories("include", "exclude")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := `package main
-func common() { println(1) }`
+			duplicateCode := commonTestCode
 
 			// Create duplicates in both directories
 			err = setup.CreateFileWithContent("include/file1.go", duplicateCode)
@@ -277,8 +264,7 @@ func common() { println(1) }`
 			err := setup.CreateSubdirectories("pkg1", "pkg2")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := `package main
-func common() { println(1) }`
+			duplicateCode := commonTestCode
 			testCode := `package main
 func testCommon() { println(1) }`
 

@@ -21,17 +21,20 @@ Major progress made on fixing BDD test failures and type safety issues. Successf
 **Files Fixed**:
 
 #### `cmd/run.go:226`
+
 - Changed: `filesCount := <-filesCountChan`
 - To: `parseStats := <-filesCountChan`
 - Return: `parseStats.FilesCount` instead of `filesCount`
 - **Impact**: Fixed compilation error in main command path
 
 #### `cmd/stats.go:188`
+
 - Changed: `sp.SetFilesCount(filesCount)`
 - To: `sp.SetFilesCount(filesCount.FilesCount)`
 - **Impact**: Stats subcommand now uses correct file count
 
 #### `cmd/stats.go:214`
+
 - Changed: `estimatedLines := filesCount * 100`
 - To: `sp.SetTotalEstimatedLines(filesCount.LinesCount)`
 - **Impact**: Now uses actual line count from parsing instead of rough estimate
@@ -43,6 +46,7 @@ Major progress made on fixing BDD test failures and type safety issues. Successf
 **Solution**: Added `outputFormat` parameter to `buildSuffixTree()` function.
 
 **Implementation**:
+
 ```go
 func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdin bool,
                      filterParam *filter.Filter, includeVendor bool,
@@ -66,13 +70,17 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 ### 3. BDD Test Fixes
 
 #### `bdd/configuration_file_test.go` (21/21 PASSING)
+
 **Test Fixed**: "should use CLI output format over config format"
+
 - Changed from `runWithConfig()` helper to direct `RunArtDupl()` call
 - Added explicit `--json` flag to override config's text format
 - **Issue**: JSON key expectation verified as `clone_groups` (correct)
 
 #### `bdd/plumbing_output_test.go` (21/21 PASSING)
+
 **Test Fixed**: "should handle stats command with plumbing consideration"
+
 - Changed from `CreateAndRunDupl()` to `CreateDuplicateFiles()` + `RunSubcommand()`
 - **Root Cause**: `CreateAndRunDupl()` calls `RunArtDupl("stats", ...)` which treats "stats" as directory
 - **Fix**: Use `RunSubcommand("stats", ...)` which properly handles subcommand syntax
@@ -82,16 +90,19 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 **Major Change**: Simplified plumbing output format for better machine-readability.
 
 **Before**:
+
 ```
 /path/file1.go:1-9: duplicate of /path/file2.go:1-9
 ```
 
 **After**:
+
 ```
 /path/file1.go:1,9
 ```
 
 **Changes in `printer/plumbing.go`**:
+
 - Removed "duplicate of" text
 - Changed format from `%s:%d-%d: duplicate of %s:%d-%d` to `%s:%d,%d`
 - Simplified to one line per clone instead of pairs
@@ -104,15 +115,15 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 
 ### BDD Test Suite: 185/192 PASSING (96.4%)
 
-| Test File | Status | Passing | Failing |
-|-----------|--------|----------|---------|
-| `configuration_file_test.go` | ✅ | 21/21 | 0 |
-| `plumbing_output_test.go` | ✅ | 21/21 | 0 |
-| `plumbing_and_paths_test.go` | ⚠️ | 13/15 | 2 |
-| `stats_subcommand_test.go` | ✅ | 21/21 | 0 |
-| `stats_command_test.go` | ✅ | 19/19 | 0 |
-| `default_filtering_test.go` | ❓ | ? | ? |
-| Other BDD files | ❓ | ? | ? |
+| Test File                    | Status | Passing | Failing |
+| ---------------------------- | ------ | ------- | ------- |
+| `configuration_file_test.go` | ✅     | 21/21   | 0       |
+| `plumbing_output_test.go`    | ✅     | 21/21   | 0       |
+| `plumbing_and_paths_test.go` | ⚠️     | 13/15   | 2       |
+| `stats_subcommand_test.go`   | ✅     | 21/21   | 0       |
+| `stats_command_test.go`      | ✅     | 19/19   | 0       |
+| `default_filtering_test.go`  | ❓     | ?       | ?       |
+| Other BDD files              | ❓     | ?       | ?       |
 
 ---
 
@@ -126,6 +137,7 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 **Actual**: Output contains `/var/folders/.../exclude/file3.go`
 
 **Root Cause**: Emoji message appearing in combined output:
+
 ```
 📖 Parsing files and building analysis tree... ✅
 found 4 clones:
@@ -136,6 +148,7 @@ found 4 clones:
 **Question**: Why does emoji appear when output format should suppress it?
 
 **Investigation Needed**:
+
 - What is default output format when no flags are specified?
 - Are there multiple code paths printing emoji messages?
 - Does `setup.RunArtDupl()` use default flags properly?
@@ -151,6 +164,7 @@ found 4 clones:
 **Root Cause**: Test expects content that may not exist with new format.
 
 **Investigation Needed**:
+
 - Check if test code creates `large*.go` files
 - Verify threshold setting allows these files
 - Check if plumbing format change affects test logic
@@ -161,23 +175,23 @@ found 4 clones:
 
 ### File Splitting (6 files exceed 350-line limit)
 
-| File | Lines | Target | Priority | Status |
-|------|-------|--------|-----------|--------|
-| `printer/stats.go` | 757 | 6 files | HIGH | ❌ Not Started |
-| `pkg/artdupl/detector.go` | 569 | 5 files | HIGH | ❌ Not Started |
-| `domain/domain_types.go` | 540 | 5 files | HIGH | ❌ Not Started |
-| `domain/clone.go` | 521 | 4 files | HIGH | ❌ Not Started |
-| `cmd/run.go` | 500 | 5 files | MEDIUM | ❌ Not Started |
-| `pkg/filter/filter.go` | 462 | 5 files | MEDIUM | ❌ Not Started |
+| File                      | Lines | Target  | Priority | Status         |
+| ------------------------- | ----- | ------- | -------- | -------------- |
+| `printer/stats.go`        | 757   | 6 files | HIGH     | ❌ Not Started |
+| `pkg/artdupl/detector.go` | 569   | 5 files | HIGH     | ❌ Not Started |
+| `domain/domain_types.go`  | 540   | 5 files | HIGH     | ❌ Not Started |
+| `domain/clone.go`         | 521   | 4 files | HIGH     | ❌ Not Started |
+| `cmd/run.go`              | 500   | 5 files | MEDIUM   | ❌ Not Started |
+| `pkg/filter/filter.go`    | 462   | 5 files | MEDIUM   | ❌ Not Started |
 
 ### Diagnostics (~12 issues)
 
-| File | Line | Issue | Type | Status |
-|------|------|-------|------|--------|
-| `pkg/filter/filter.go` | 99 | Use `maps.Copy` instead of loop | Modernization | ❌ Not Started |
-| `domain/domain_types.go` | 41 | Unused parameter `typeName` | Cleanup | ❌ Not Started |
-| `domain/domain_types_test.go` | 155, 375 | Unused parameters | Cleanup | ❌ Not Started |
-| `domain/domain_types_test.go` | 306, 308, 314, 316, 318, 518 | Unnecessary type arguments | Cleanup | ❌ Not Started |
+| File                          | Line                         | Issue                           | Type          | Status         |
+| ----------------------------- | ---------------------------- | ------------------------------- | ------------- | -------------- |
+| `pkg/filter/filter.go`        | 99                           | Use `maps.Copy` instead of loop | Modernization | ❌ Not Started |
+| `domain/domain_types.go`      | 41                           | Unused parameter `typeName`     | Cleanup       | ❌ Not Started |
+| `domain/domain_types_test.go` | 155, 375                     | Unused parameters               | Cleanup       | ❌ Not Started |
+| `domain/domain_types_test.go` | 306, 308, 314, 316, 318, 518 | Unnecessary type arguments      | Cleanup       | ❌ Not Started |
 
 ---
 
@@ -188,11 +202,13 @@ found 4 clones:
 **Current State**: Partially implemented but not working correctly.
 
 **Issues**:
+
 - Emoji appears in `CombinedOutput()` (stderr + stdout)
 - Default output format may not be `OutputFormatText`
 - Test helper functions may not pass output format correctly
 
 **Next Steps**:
+
 1. Determine default output format behavior
 2. Add debug logging to verify `outputFormat` value
 3. Check for alternative emoji printing paths
@@ -203,16 +219,19 @@ found 4 clones:
 **Problem**: Three different test helpers with unclear usage patterns.
 
 **Available Helpers**:
+
 - `RunArtDupl(args...)` - For main command, needs directory as first arg
 - `RunSubcommand(args...)` - For subcommands, appends TmpDir automatically
 - `CreateAndRunDupl(files, code, args...)` - Convenience but uses `RunArtDupl`
 
 **Issues**:
+
 - Easy to confuse which helper to use
 - `CreateAndRunDupl()` internally uses wrong helper for subcommands
 - No documentation or examples showing correct usage
 
 **Recommendation**:
+
 1. Document each helper in `internal/testutil/bdd.go`
 2. Add usage examples in comments
 3. Consider deprecating confusing helpers
@@ -223,11 +242,13 @@ found 4 clones:
 **Issue**: Plumbing format change without updating all affected tests.
 
 **Impact**:
+
 - 2 tests failing due to format expectations
 - Potential impact on user scripts
 - No migration guide
 
 **Recommendations**:
+
 1. Complete test fixes for new format
 2. Update documentation with format examples
 3. Add MIGRATION_GUIDE.md entry
@@ -256,9 +277,11 @@ found 4 clones:
    - Update test for new plumbing format if needed
 
 4. **Run Full BDD Test Suite**
+
    ```bash
    go test -v ./bdd -timeout 120s
    ```
+
    - Get complete picture of all test failures
    - Document any additional issues found
 
@@ -330,6 +353,7 @@ found 4 clones:
     - Add examples to README
 
 17. **Verify no regressions**
+
     ```bash
     just check    # Linting
     just test     # All tests
@@ -346,16 +370,19 @@ found 4 clones:
 ## 📊 Metrics
 
 ### Test Coverage
+
 - **BDD Tests**: 185/192 passing (96.4%)
 - **Target**: 192/192 (100%)
 - **Remaining**: 7 tests (2 known failures, 5 unknown)
 
 ### Code Quality
+
 - **Type Safety**: 3 issues fixed, ~6 remaining
 - **Line Limits**: 6 files exceed 350 lines
 - **Diagnostics**: ~12 issues total
 
 ### Progress Against Original Goals
+
 - ✅ **Priority 1: Fix BDD Test Failures** - 96.4% complete
 - ❌ **Priority 2: Start File Splitting** - 0% complete
 - ❌ **Priority 3: Address Diagnostics** - 0% complete
@@ -397,7 +424,9 @@ found 4 clones:
 ## 📝 Notes
 
 ### ParseStats Struct Change
+
 The `job.Parse()` function now returns `ParseStats` struct instead of `int`:
+
 ```go
 type ParseStats struct {
     FilesCount int
@@ -406,22 +435,28 @@ type ParseStats struct {
 ```
 
 This provides more detailed statistics but required updates in:
+
 - `cmd/run.go` - Main command path
 - `cmd/stats.go` - Stats subcommand
 
 ### Plumbing Format Change
+
 New format is significantly simpler:
+
 - **Old**: Pair-based output showing relationships
 - **New**: List-based output (one line per clone)
 
 This is a **breaking change** for any scripts parsing old format.
 
 ### Emoji Suppression Logic
+
 Emojis only print when:
+
 1. Verbose mode is disabled (`!verbose`)
 2. Output format is Text (`outputFormat == config.OutputFormatText`)
 
 If emojis appear in tests, either:
+
 - Default format is not Text
 - Another code path prints emojis
 - Test helper doesn't pass format correctly

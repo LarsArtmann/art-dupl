@@ -25,20 +25,20 @@ Both commits were pushed to `origin/fork`.
 
 ### By Category
 
-| Category | Count | Priority |
-|----------|-------|----------|
-| gosec | 36 | Low (security audits) |
-| funlen | 22 | Medium (test functions) |
-| gochecknoglobals | 16 | Low (intentional globals) |
-| cyclop | 11 | Medium (complexity) |
-| ireturn | 12 | Low (interface returns) |
-| wrapcheck | 7 | Medium (error wrapping) |
-| goconst | 8 | Low (duplicate strings) |
-| gocognit | 6 | Medium (cognitive complexity) |
-| govet | 2 | High (copylocks) |
-| errcheck | 3 | High (unchecked errors) |
-| nolintlint | 3 | Low (unused directives) |
-| staticcheck | 1 | High (empty branch) |
+| Category         | Count | Priority                      |
+| ---------------- | ----- | ----------------------------- |
+| gosec            | 36    | Low (security audits)         |
+| funlen           | 22    | Medium (test functions)       |
+| gochecknoglobals | 16    | Low (intentional globals)     |
+| cyclop           | 11    | Medium (complexity)           |
+| ireturn          | 12    | Low (interface returns)       |
+| wrapcheck        | 7     | Medium (error wrapping)       |
+| goconst          | 8     | Low (duplicate strings)       |
+| gocognit         | 6     | Medium (cognitive complexity) |
+| govet            | 2     | High (copylocks)              |
+| errcheck         | 3     | High (unchecked errors)       |
+| nolintlint       | 3     | Low (unused directives)       |
+| staticcheck      | 1     | High (empty branch)           |
 
 ### High Priority Issues (8 total)
 
@@ -66,6 +66,7 @@ Both commits were pushed to `origin/fork`.
 ### Code Quality Improvements Made
 
 Previous sessions completed:
+
 - File splitting (all files under 350 lines)
 - Removed low-quality smoke tests from detection package
 - Removed unused helper functions across codebase

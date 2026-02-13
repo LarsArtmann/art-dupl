@@ -11,10 +11,10 @@
 
 ### Supported Languages
 
-|| Language | Extension | Status | Description |
-| -------- | --------- | ------ | ----------- |
-| **Go**   | `.go`     | FULLY_FUNCTIONAL | Primary language with full AST analysis |
-| **Templ**| `.templ`  | FULLY_FUNCTIONAL | Templ template files via tree-sitter parsing (use `-include-templ` flag) |
+|           | Language | Extension        | Status                                                                   | Description |
+| --------- | -------- | ---------------- | ------------------------------------------------------------------------ | ----------- |
+| **Go**    | `.go`    | FULLY_FUNCTIONAL | Primary language with full AST analysis                                  |
+| **Templ** | `.templ` | FULLY_FUNCTIONAL | Templ template files via tree-sitter parsing (use `-include-templ` flag) |
 
 ### Detection Methods
 
@@ -36,32 +36,32 @@
 
 ### Statistics Subcommand
 
-| Feature                  | Status           | Description                                                    |
-| ------------------------ | ---------------- | -------------------------------------------------------------- |
-| **Text Stats**           | FULLY_FUNCTIONAL | Human-readable statistics summary (default)                    |
-| **JSON Stats**           | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                    |
-| **CSV Stats**            | FULLY_FUNCTIONAL | Spreadsheet-compatible format for reporting                    |
-| **Clone Metrics**        | FULLY_FUNCTIONAL | Total clones, files affected, duplication percentage           |
-| **Estimated Lines**      | FULLY_FUNCTIONAL | Actual line count from parsed files (not estimated)            |
-| **Spread Analysis**      | FULLY_FUNCTIONAL | Complexity scores showing how widely clones are spread         |
+| Feature             | Status           | Description                                            |
+| ------------------- | ---------------- | ------------------------------------------------------ |
+| **Text Stats**      | FULLY_FUNCTIONAL | Human-readable statistics summary (default)            |
+| **JSON Stats**      | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration            |
+| **CSV Stats**       | FULLY_FUNCTIONAL | Spreadsheet-compatible format for reporting            |
+| **Clone Metrics**   | FULLY_FUNCTIONAL | Total clones, files affected, duplication percentage   |
+| **Estimated Lines** | FULLY_FUNCTIONAL | Actual line count from parsed files (not estimated)    |
+| **Spread Analysis** | FULLY_FUNCTIONAL | Complexity scores showing how widely clones are spread |
 
 ### Smart Filtering
 
-| Feature                   | Status           | Description                                                    |
-| ------------------------- | ---------------- | -------------------------------------------------------------- |
-| **SQLC Detection**        | FULLY_FUNCTIONAL | Auto-detects and filters SQLC generated code                   |
-| **Templ Filtering**       | FULLY_FUNCTIONAL | Filters .templ files by default (use `-include-templ` to include) |
-| **Custom Include/Exclude**| FULLY_FUNCTIONAL | Pattern-based filtering with glob syntax                       |
-| **Filter-Generated Flag** | FULLY_FUNCTIONAL | Single flag to filter both SQLC and Templ generated code       |
+| Feature                    | Status           | Description                                                       |
+| -------------------------- | ---------------- | ----------------------------------------------------------------- |
+| **SQLC Detection**         | FULLY_FUNCTIONAL | Auto-detects and filters SQLC generated code                      |
+| **Templ Filtering**        | FULLY_FUNCTIONAL | Filters .templ files by default (use `-include-templ` to include) |
+| **Custom Include/Exclude** | FULLY_FUNCTIONAL | Pattern-based filtering with glob syntax                          |
+| **Filter-Generated Flag**  | FULLY_FUNCTIONAL | Single flag to filter both SQLC and Templ generated code          |
 
 ### Sorting Options
 
-| Feature                  | Status               | Description                                                                                                          |
-| ------------------------ | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Size Sorting**         | FULLY_FUNCTIONAL     | Sort clone groups by token count (largest first)                                                                     |
-| **Occurrence Sorting**   | FULLY_FUNCTIONAL     | Sort clone groups by number of files (most widespread first)                                                         |
-| **Hash Sorting**         | FULLY_FUNCTIONAL     | Sort clone groups by hash value (alphabetical)                                                                       |
-| **Total Tokens Sorting** | FULLY_FUNCTIONAL     | Sort clone groups by total token count (highest total first) |
+| Feature                  | Status           | Description                                                  |
+| ------------------------ | ---------------- | ------------------------------------------------------------ |
+| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first)             |
+| **Occurrence Sorting**   | FULLY_FUNCTIONAL | Sort clone groups by number of files (most widespread first) |
+| **Hash Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical)               |
+| **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort clone groups by total token count (highest total first) |
 
 ## 🔧 Configuration Features
 
@@ -105,12 +105,12 @@
 
 ## 🚫 Known Limitations
 
-| Limitation         | Impact | Status                                             |
-| ------------------ | ------ | -------------------------------------------------- |
-| **Go & Templ Only**| High   | Only analyzes Go (.go) and Templ (.templ) files    |
-| **Large Files**    | Medium | May have performance issues with very large files  |
-| **Memory Usage**   | Medium | Can consume significant memory for large codebases |
-| **Hash Collision** | Low    | Theoretical possibility of SHA1 collisions         |
+| Limitation          | Impact | Status                                             |
+| ------------------- | ------ | -------------------------------------------------- |
+| **Go & Templ Only** | High   | Only analyzes Go (.go) and Templ (.templ) files    |
+| **Large Files**     | Medium | May have performance issues with very large files  |
+| **Memory Usage**    | Medium | Can consume significant memory for large codebases |
+| **Hash Collision**  | Low    | Theoretical possibility of SHA1 collisions         |
 
 ## 🔮 Experimental Features
 

@@ -65,7 +65,11 @@ func UnmarshalJSON[T ~string](dest *T, data []byte, typeName string, defaultValu
 func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 	// Validate that current value is in valid list
 	if slices.Contains(validValues, value) {
-		return json.Marshal(string(value))
+		data, err := json.Marshal(string(value))
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal enum value %q: %w", value, err)
+		}
+		return data, nil
 	}
 
 	// If we get here, the value is invalid
@@ -165,7 +169,11 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 		return []byte("null"), nil
 	}
 
-	return json.Marshal(value.String())
+	data, err := json.Marshal(value.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal %s enum value %q: %w", typeName, value.String(), err)
+	}
+	return data, nil
 }
 
 // ValidateEnum checks if an enum value is in the list of valid values.

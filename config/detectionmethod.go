@@ -44,7 +44,11 @@ func marshalStringType[T ~string](val T, isValid func(T) bool, typeName string) 
 		// This handles zero values that should be omitted from JSON output
 		return []byte("null"), nil
 	}
-	return json.Marshal(string(val))
+	data, err := json.Marshal(string(val))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal %s: %w", typeName, err)
+	}
+	return data, nil
 }
 
 // DetectionMethod represents the detection method type.

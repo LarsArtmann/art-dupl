@@ -12,6 +12,7 @@
 The art-dupl project is a production-ready Go code duplication detection tool with multi-method detection (suffix tree and hash-based), professional CLI built with Fang framework, and comprehensive output formats. The project maintains strong code quality standards with ~57 test files covering ~78 source files.
 
 **Project Health:** ✅ **PRODUCTION READY**
+
 - Build: ✅ All packages compile successfully
 - Unit Tests: ✅ All passing
 - BDD Tests: ⚠️ 37/192 specs failing (pre-existing issues)
@@ -19,6 +20,7 @@ The art-dupl project is a production-ready Go code duplication detection tool wi
 - Linter Status: ⚠️ ~10 diagnostics (hints/info, no errors)
 
 **Recent Achievements:**
+
 - Completed comprehensive architecture refactoring session (Feb 12, 2026)
 - Fixed broken hash-based detection implementation
 - Eliminated 6 major code duplications
@@ -26,6 +28,7 @@ The art-dupl project is a production-ready Go code duplication detection tool wi
 - Added comprehensive BDD test suite with Ginkgo/Gomega
 
 **Key Features:**
+
 - Multi-method detection: suffix tree (art-dupl) and hash-based
 - Professional CLI: Fang framework with auto-completion
 - Multiple outputs: Text, HTML, JSON, plumbing, stats
@@ -42,6 +45,7 @@ The art-dupl project is a production-ready Go code duplication detection tool wi
 art-dupl is a modern code duplication detection tool for Go source files that analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. The tool supports multiple detection algorithms and provides comprehensive reporting capabilities.
 
 **Core Values:**
+
 - **Accuracy:** Advanced algorithms minimize false positives
 - **Performance:** Efficient processing of large codebases
 - **Flexibility:** Multiple detection methods and output formats
@@ -53,17 +57,20 @@ art-dupl is a modern code duplication detection tool for Go source files that an
 **Language:** Go 1.25+ (uses modern features like `maps.Clone`)
 
 **Core Dependencies:**
+
 - `github.com/charmbracelet/fang` - Professional CLI framework
 - `github.com/spf13/cobra` - Command-line interface
 - `github.com/onsi/ginkgo/v2` - BDD testing framework
 - `github.com/onsi/gomega` - Gomega matchers
 
 **Build Tools:**
+
 - Justfile for development commands (preferred)
 - Makefile with `GOEXPERIMENT=jsonv2` for JSON v2 support
 - golangci-lint for code quality
 
 **Testing:**
+
 - Standard Go `testing` package for unit tests
 - Ginkgo/Gomega for BDD tests
 - Fuzz testing for edge cases
@@ -72,6 +79,7 @@ art-dupl is a modern code duplication detection tool for Go source files that an
 ### 1.3 Architecture Highlights
 
 **Package Structure:**
+
 ```
 art-dupl/
 ├── cmd/              # CLI command definitions (root, stats, version)
@@ -96,6 +104,7 @@ art-dupl/
 ```
 
 **Key Architectural Patterns:**
+
 - **Multi-Method Detection:** Independent detection methods run via goroutines, results combined and deduplicated
 - **Domain Types:** Strong typing with `StringPool` for efficient string deduplication
 - **Printer Adapter Pattern:** Interface-based design for multiple output formats
@@ -108,35 +117,36 @@ art-dupl/
 
 ### 2.1 Code Metrics
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| Source Files | 78 | ✅ |
-| Test Files | 57 | ✅ |
-| Test Coverage | High (>80%) | ✅ |
-| Build Status | All packages compile | ✅ |
-| Linter Diagnostics | ~10 hints/info | ⚠️ |
-| Files > 350 lines | 6 files | ⚠️ |
-| Unit Tests Passing | 100% | ✅ |
-| BDD Tests Passing | 155/192 (81%) | ⚠️ |
+| Metric             | Value                | Status |
+| ------------------ | -------------------- | ------ |
+| Source Files       | 78                   | ✅     |
+| Test Files         | 57                   | ✅     |
+| Test Coverage      | High (>80%)          | ✅     |
+| Build Status       | All packages compile | ✅     |
+| Linter Diagnostics | ~10 hints/info       | ⚠️     |
+| Files > 350 lines  | 6 files              | ⚠️     |
+| Unit Tests Passing | 100%                 | ✅     |
+| BDD Tests Passing  | 155/192 (81%)        | ⚠️     |
 
 ### 2.2 Files Exceeding Size Limits
 
 **350+ Line Files (6 total):**
 
-| File | Lines | Priority | Recommended Split |
-|------|-------|----------|-------------------|
-| `printer/stats.go` | 757 | **HIGH** | 6 files |
-| `pkg/artdupl/detector.go` | 569 | **HIGH** | 5 files |
-| `cmd/run.go` | 500 | **HIGH** | 5 files |
-| `domain/domain_types.go` | 540 | **MEDIUM** | 5 files |
-| `domain/clone.go` | 521 | **MEDIUM** | 4 files |
-| `pkg/filter/filter.go` | 462 | **MEDIUM** | 5 files |
+| File                      | Lines | Priority   | Recommended Split |
+| ------------------------- | ----- | ---------- | ----------------- |
+| `printer/stats.go`        | 757   | **HIGH**   | 6 files           |
+| `pkg/artdupl/detector.go` | 569   | **HIGH**   | 5 files           |
+| `cmd/run.go`              | 500   | **HIGH**   | 5 files           |
+| `domain/domain_types.go`  | 540   | **MEDIUM** | 5 files           |
+| `domain/clone.go`         | 521   | **MEDIUM** | 4 files           |
+| `pkg/filter/filter.go`    | 462   | **MEDIUM** | 5 files           |
 
 **Note:** `*_test.go` files excluded (test files can be larger)
 
 ### 2.3 Code Duplications Identified
 
 **Recent Session (Feb 12, 2026):**
+
 - ✅ Fixed: 6 code duplications removed
   - Detection methods to string conversion (3 locations)
   - Match collection logic (2 locations)
@@ -146,6 +156,7 @@ art-dupl/
   - Unused `isGeneratedByFilename` function
 
 **Remaining Duplications:**
+
 - Error wrapping patterns (multiple locations)
 - Logging patterns (some duplication)
 - Validation patterns (similar logic across packages)
@@ -154,12 +165,14 @@ art-dupl/
 ### 2.4 Type Safety
 
 **Strengths:**
+
 - ✅ Domain types with strong typing (Clone, CloneGroup, StringPool)
 - ✅ Type-safe enums for detection methods, output formats, sorting options
 - ✅ Typed error wrappers in `errors/` package
 - ✅ StringID pattern for type-safe identifiers
 
 **Areas for Improvement:**
+
 - ⚠️ Some conversion functions lack proper validation
 - ⚠️ Unused parameters remain (2 instances)
 - ⚠️ Unnecessary type arguments (5 instances)
@@ -170,6 +183,7 @@ art-dupl/
 **Current Status:** ~10 hints/info, 0 errors
 
 **Categories:**
+
 - Unused parameters: 2
 - Unnecessary type arguments: 5
 - Unused functions: 2
@@ -182,12 +196,14 @@ art-dupl/
 ### 3.1 Test Structure
 
 **Unit Tests:**
+
 - Standard Go `testing` package
 - Table-driven tests for multiple scenarios
 - Property-based fuzz testing for edge cases
 - Performance benchmarks for hot paths
 
 **BDD Tests:**
+
 - Ginkgo/Gomega framework in `bdd/` directory
 - User workflow scenarios
 - CLI command integration tests
@@ -198,12 +214,14 @@ art-dupl/
 - Plumbing and output tests
 
 **Test Utilities:**
+
 - `internal/testutil/bdd.go`: Comprehensive helpers for BDD tests
 - `internal/testutil/`: Various test utilities across codebase
 
 ### 3.2 Test Results
 
 **Unit Tests:** ✅ **ALL PASSING**
+
 - `domain` package: 100% pass
 - `pkg/filter` package: 100% pass
 - `pkg/artdupl` package: 100% pass
@@ -211,6 +229,7 @@ art-dupl/
 - All other packages: Build and pass
 
 **BDD Tests:** ⚠️ **155 PASS, 37 FAIL**
+
 - Total specs: 192
 - Pass rate: 80.7%
 - Failure patterns:
@@ -225,6 +244,7 @@ art-dupl/
 **Coverage Status:** High coverage maintained (>80%)
 
 **Coverage Enforcements:**
+
 - `just check-coverage` command validates 80% threshold
 - CI/CD pipeline includes coverage checks
 - Coverage reports available via `just coverage` command
@@ -236,6 +256,7 @@ art-dupl/
 ### 4.1 Build System
 
 **Preferred: Justfile (95% of cases)**
+
 ```bash
 just build        # Build to dist/art-dupl
 just test         # Run all tests
@@ -247,6 +268,7 @@ just install-local # Install to $GOPATH/bin/art-dupl
 ```
 
 **Alternative: Makefile**
+
 ```bash
 make build    # Build with GOEXPERIMENT=jsonv2
 make test     # Test with JSONv2 experiment
@@ -259,6 +281,7 @@ make clean    # Clean build artifacts
 **Current Status:** ✅ **ALL PACKAGES BUILD SUCCESSFULLY**
 
 **Build Output:**
+
 - Binary: `dist/art-dupl` (justfile)
 - Optimization: `-ldflags "-s -w" -trimpath`
 - Platform: Cross-platform support (Linux, macOS, Windows)
@@ -267,11 +290,13 @@ make clean    # Clean build artifacts
 ### 4.3 CI/CD Pipeline
 
 **GitHub Actions Workflows:**
+
 - `build.yml`: Matrix testing (multiple Go versions and OS)
 - `checks.yml`: Code quality checks
 - `performance.yml`: Performance regression testing
 
 **Quality Gates:**
+
 - golangci-lint for code quality
 - Dependency management verification
 - Tests run on oldstable and stable Go versions
@@ -283,25 +308,26 @@ make clean    # Clean build artifacts
 
 ### 5.1 Core Features
 
-| Feature | Status | Implementation |
-|---------|--------|----------------|
-| Suffix Tree Detection | ✅ Complete | `suffixtree/` package |
-| Hash-Based Detection | ✅ Complete | `hash/` package |
-| Multi-Method Detection | ✅ Complete | `detection/` package |
-| Professional CLI | ✅ Complete | Fang framework |
-| Text Output | ✅ Complete | `printer/text.go` |
-| HTML Output | ✅ Complete | `printer/html.go` |
-| JSON Output | ✅ Complete | `printer/json.go` (JSONv2) |
-| Plumbing Output | ✅ Complete | `printer/plumbing.go` |
-| Stats Subcommand | ✅ Complete | `cmd/stats.go` |
-| Smart Filtering | ✅ Complete | SQLC, templ, patterns |
-| Configuration Files | ✅ Complete | JSON-based |
-| Sorting Options | ✅ Complete | size, occurrence, hash |
-| Shell Completion | ✅ Complete | Bash, Zsh, Fish, PowerShell |
+| Feature                | Status      | Implementation              |
+| ---------------------- | ----------- | --------------------------- |
+| Suffix Tree Detection  | ✅ Complete | `suffixtree/` package       |
+| Hash-Based Detection   | ✅ Complete | `hash/` package             |
+| Multi-Method Detection | ✅ Complete | `detection/` package        |
+| Professional CLI       | ✅ Complete | Fang framework              |
+| Text Output            | ✅ Complete | `printer/text.go`           |
+| HTML Output            | ✅ Complete | `printer/html.go`           |
+| JSON Output            | ✅ Complete | `printer/json.go` (JSONv2)  |
+| Plumbing Output        | ✅ Complete | `printer/plumbing.go`       |
+| Stats Subcommand       | ✅ Complete | `cmd/stats.go`              |
+| Smart Filtering        | ✅ Complete | SQLC, templ, patterns       |
+| Configuration Files    | ✅ Complete | JSON-based                  |
+| Sorting Options        | ✅ Complete | size, occurrence, hash      |
+| Shell Completion       | ✅ Complete | Bash, Zsh, Fish, PowerShell |
 
 ### 5.2 Output Formats
 
 **Supported Formats:**
+
 - **Text:** Default output with file paths and line numbers
 - **HTML:** Includes actual duplicate code fragments with syntax highlighting
 - **JSON:** Structured output with statistics and clone groups (JSONv2)
@@ -312,6 +338,7 @@ make clean    # Clean build artifacts
 ### 5.3 Detection Methods
 
 **Supported Methods:**
+
 - **art-dupl (default):** Suffix tree algorithm on AST tokens
 - **hash:** Rolling hash on file content (faster, different tradeoffs)
 - **Combinations:** Run both for comprehensive analysis
@@ -320,6 +347,7 @@ make clean    # Clean build artifacts
 ### 5.4 Filtering
 
 **Smart Filtering:**
+
 - SQLC files auto-detected via `sqlc.yaml` in parent directories
 - Templ files filtered by default (use `-include-templ` to include)
 - Custom patterns via `-include-pattern` and `-exclude-pattern`
@@ -333,6 +361,7 @@ make clean    # Clean build artifacts
 ### 6.1 Architecture Refactoring Session (Feb 12, 2026)
 
 **Completed Tasks (9/10):**
+
 1. ✅ Fixed hash-based detection implementation (was delegating to suffix tree)
 2. ✅ Removed duplicate SQLC filtering logic
 3. ✅ Extracted detection methods to string conversion
@@ -345,6 +374,7 @@ make clean    # Clean build artifacts
 10. ⚠️ File size reduction (6 files > 350 lines) - documented but not split
 
 **Impact:**
+
 - ~90 lines of duplicate code removed
 - Hash-based detection now works correctly
 - Modernized Go codebase
@@ -354,6 +384,7 @@ make clean    # Clean build artifacts
 ### 6.2 Previous Sessions (Jan 24 - Feb 11, 2026)
 
 **Major Achievements:**
+
 - SIMD optimizations for performance
 - StringID type implementation
 - Enum consolidation
@@ -371,6 +402,7 @@ make clean    # Clean build artifacts
 ### 7.1 Critical Issues
 
 **BDD Test Failures (37 specs):**
+
 - **Status:** ⚠️ BLOCKING FULL TEST SUITE VALIDATION
 - **Pattern:** Exit status 1 with nil stderr
 - **Affected Areas:** Stats command, plumbing output, filtering
@@ -380,28 +412,33 @@ make clean    # Clean build artifacts
 ### 7.2 Technical Debt
 
 **File Size Violations (6 files):**
+
 - Need splitting to respect 350-line limit
 - Documented with recommendations in `docs/ARCHITECTURE_REVIEW.md`
 
 **Type Safety Issues:**
+
 - Some conversion functions lack proper validation
 - Unused parameters remain
 - Unnecessary type arguments
 - `any` and `interface{}` usage not always justified
 
 **Code Duplications:**
+
 - Error wrapping patterns
 - Logging patterns
 - Validation patterns
 - Map/slice iteration patterns
 
 **Diagnostics:**
+
 - ~10 hints/info warnings remaining
 - Mostly unused parameters and unnecessary type arguments
 
 ### 7.3 Documentation Debt
 
 **Needs Improvement:**
+
 - Architecture diagrams
 - API reference documentation
 - Package-level documentation
@@ -415,6 +452,7 @@ make clean    # Clean build artifacts
 ### 8.1 Immediate Actions (This Week)
 
 **Priority 1: Fix BDD Test Failures**
+
 - Investigate root cause of 37 failing specs
 - Focus on stats command exit status 1 errors
 - Fix plumbing output format expectations
@@ -422,6 +460,7 @@ make clean    # Clean build artifacts
 - Validate all BDD tests pass
 
 **Priority 2: Start File Splitting**
+
 - Begin with `printer/stats.go` (757 lines → 6 files)
 - Continue with other large files in priority order
 - Ensure imports and exports are correct
@@ -429,6 +468,7 @@ make clean    # Clean build artifacts
 - Verify no breaking changes
 
 **Priority 3: Address Diagnostics**
+
 - Remove unused parameters
 - Remove unnecessary type arguments
 - Use `maps.Copy` where appropriate
@@ -469,6 +509,7 @@ make clean    # Clean build artifacts
 **Overall Health:** 🟢 **GOOD (85/100)**
 
 **Breakdown:**
+
 - Code Quality: 90/100 ✅
 - Test Coverage: 85/100 ✅ (BDD failures lower score)
 - Build Status: 100/100 ✅
@@ -478,6 +519,7 @@ make clean    # Clean build artifacts
 - Maintainability: 80/100 ⚠️ (large files, some debt)
 
 **Key Metrics:**
+
 - Build Success Rate: 100%
 - Unit Test Pass Rate: 100%
 - BDD Test Pass Rate: 80.7%
@@ -492,6 +534,7 @@ make clean    # Clean build artifacts
 The art-dupl project is in a **healthy, production-ready state** with strong foundations. The codebase demonstrates excellent Go practices with comprehensive testing, strong typing, and modern tooling. Recent refactoring efforts have significantly improved code quality by eliminating duplications and modernizing the codebase.
 
 **Key Strengths:**
+
 - Multi-method detection with professional CLI
 - High test coverage and comprehensive test suite
 - Strong typing and domain modeling
@@ -499,6 +542,7 @@ The art-dupl project is in a **healthy, production-ready state** with strong fou
 - Modern Go idioms and tooling
 
 **Main Focus Areas:**
+
 1. Fix BDD test failures (blocking full validation)
 2. Complete file splitting (respect 350-line limit)
 3. Address type safety issues and diagnostics
@@ -538,35 +582,38 @@ just ci                 # Run all checks (fmt, lint, test)
 
 ### File Locations
 
-| Component | Location |
-|-----------|----------|
-| CLI Entry Point | `cmd/art-dupl/main.go` |
-| Root Command | `cmd/root.go` |
-| Stats Command | `cmd/stats.go` |
-| Version Command | `cmd/version.go` |
-| Core Detection | `suffixtree/`, `hash/`, `detection/` |
-| Configuration | `config/` |
-| Output Formatting | `printer/` |
-| Domain Types | `domain/` |
-| Utilities | `pkg/` |
-| BDD Tests | `bdd/` |
-| Documentation | `docs/` |
+| Component         | Location                             |
+| ----------------- | ------------------------------------ |
+| CLI Entry Point   | `cmd/art-dupl/main.go`               |
+| Root Command      | `cmd/root.go`                        |
+| Stats Command     | `cmd/stats.go`                       |
+| Version Command   | `cmd/version.go`                     |
+| Core Detection    | `suffixtree/`, `hash/`, `detection/` |
+| Configuration     | `config/`                            |
+| Output Formatting | `printer/`                           |
+| Domain Types      | `domain/`                            |
+| Utilities         | `pkg/`                               |
+| BDD Tests         | `bdd/`                               |
+| Documentation     | `docs/`                              |
 
 ### Package Dependencies
 
 **Runtime:**
+
 - `github.com/charmbracelet/fang`
 - `github.com/spf13/cobra`
 
 **Testing:**
+
 - `github.com/onsi/ginkgo/v2`
 - `github.com/onsi/gomega`
 
 **Development:**
+
 - `github.com/golangci/golangci-lint`
 
 ---
 
-*End of Comprehensive Project Status Report*
-*Generated: February 12, 2026 at 14:40 CET*
-*Next Review Date: February 19, 2026*
+_End of Comprehensive Project Status Report_
+_Generated: February 12, 2026 at 14:40 CET_
+_Next Review Date: February 19, 2026_

@@ -53,30 +53,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Feature Overview
 
-| Feature | Status |
-|---------|--------|
-| Go file analysis | ✅ Full |
-| .templ file analysis | ✅ Full |
-| Hash-based detection | ✅ Full |
-| Suffix-tree detection | ✅ Full |
-| Multi-method detection | ✅ Full |
-| Text output | ✅ Full |
-| HTML output | ✅ Full |
-| JSON output | ✅ Full |
-| Plumbing output | ✅ Full |
-| Stats subcommand | ✅ Full |
-| Configuration files | ✅ Full |
-| Smart filtering (SQLC/templ) | ✅ Full |
-| Sorting (size/occurrence/hash) | ✅ Full |
-| BDD test suite | ✅ Comprehensive |
+| Feature                        | Status           |
+| ------------------------------ | ---------------- |
+| Go file analysis               | ✅ Full          |
+| .templ file analysis           | ✅ Full          |
+| Hash-based detection           | ✅ Full          |
+| Suffix-tree detection          | ✅ Full          |
+| Multi-method detection         | ✅ Full          |
+| Text output                    | ✅ Full          |
+| HTML output                    | ✅ Full          |
+| JSON output                    | ✅ Full          |
+| Plumbing output                | ✅ Full          |
+| Stats subcommand               | ✅ Full          |
+| Configuration files            | ✅ Full          |
+| Smart filtering (SQLC/templ)   | ✅ Full          |
+| Sorting (size/occurrence/hash) | ✅ Full          |
+| BDD test suite                 | ✅ Comprehensive |
 
 ## Supported Languages
 
 | Language | Extension | Support Level |
-|----------|-----------|---------------|
+| -------- | --------- | ------------- |
 | Go       | `.go`     | Full analysis |
 | Templ    | `.templ`  | Full analysis |
 
 ---
 
-*This changelog was generated based on git commit history.*
+_This changelog was generated based on git commit history._
