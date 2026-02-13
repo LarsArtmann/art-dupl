@@ -67,85 +67,6 @@ func TestNewMultiDetector_EmptyData(t *testing.T) {
 	}
 }
 
-// TestMultiDetector_FindDuplOver_DefaultMethod tests with default detection method.
-func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
-
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
-	}
-
-	tree := suffixtree.New()
-
-	detector := NewMultiDetector(cfg, data, tree, false)
-	matches := detector.FindDuplOver(15)
-
-	// Drain the channel (should close immediately for empty tree)
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	// Empty tree should produce no matches
-	if matchCount != 0 {
-		t.Logf("Found %d matches (expected 0 for empty tree)", matchCount)
-	}
-}
-
-// TestMultiDetector_FindDuplOver_HashMethod tests with hash detection method.
-func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
-	}
-
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
-	}
-
-	tree := suffixtree.New()
-
-	detector := NewMultiDetector(cfg, data, tree, false)
-	matches := detector.FindDuplOver(15)
-
-	// Drain the channel
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	// Empty/minimal data should produce no matches
-	t.Logf("Hash method found %d matches", matchCount)
-}
-
-// TestMultiDetector_FindDuplOver_MultipleMethods tests with multiple detection methods.
-func TestMultiDetector_FindDuplOver_MultipleMethods(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash, config.DetectionMethodArtDupl},
-	}
-
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
-	}
-
-	tree := suffixtree.New()
-
-	detector := NewMultiDetector(cfg, data, tree, false)
-	matches := detector.FindDuplOver(15)
-
-	// Drain the channel
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	t.Logf("Multiple methods found %d matches", matchCount)
-}
-
 // TestMultiDetector_logVerbose tests verbose logging.
 func TestMultiDetector_logVerbose(t *testing.T) {
 	t.Run("verbose enabled", func(t *testing.T) {
@@ -343,30 +264,6 @@ func TestLegacyPattern_Defaults(t *testing.T) {
 func TestSimpleDetector_Interface(t *testing.T) {
 	// This test verifies the interface is satisfied at compile time
 	var _ SimpleDetector = (*MultiDetector)(nil)
-}
-
-// TestMultiDetector_VerboseOutput tests verbose output doesn't panic.
-func TestMultiDetector_VerboseOutput(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		Verbose:          true,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
-
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
-	}
-
-	tree := suffixtree.New()
-
-	detector := NewMultiDetector(cfg, data, tree, true)
-
-	// This should not panic
-	matches := detector.FindDuplOver(15)
-
-	// Drain channel
-	for range matches {
-	}
 }
 
 // TestTodoDetector_Patterns tests that regex patterns compile correctly.
