@@ -61,6 +61,7 @@ func TestStatsDataAggregation(t *testing.T) {
 			filesCount: 0,
 			threshold:  15,
 			checkStats: func(t *testing.T, stats *StatsData) {
+				t.Helper()
 				if stats.TotalCloneGroups != 0 {
 					t.Errorf("TotalCloneGroups = %d, want 0", stats.TotalCloneGroups)
 				}

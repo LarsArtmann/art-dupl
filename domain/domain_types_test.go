@@ -242,6 +242,7 @@ func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uin
 	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
+			t.Helper()
 			testUintTypeSuite(t, typeName, testUintType[T]{
 				newFunc:       newFunc,
 				uintFunc:      uintFunc,
@@ -328,6 +329,7 @@ func createUintTypeTestFromName(typeName string) TestCase {
 	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
+			t.Helper()
 			registerUintTypeByName(t, typeName)
 		},
 	}
