@@ -186,7 +186,7 @@ func SaveConfig(config *Config, filename string) error {
 
 	data, err := errors.SafeMarshalIndent(config, "", "  ", "config")
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
 	err = os.WriteFile(filename, data, 0o644) //nolint:gosec //G306 Config file needs to be readable by user

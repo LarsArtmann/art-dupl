@@ -95,22 +95,22 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 
 // Cleanup removes the temporary directory and all its contents.
 func (s *BDDTestSetup) Cleanup() error {
-	return os.RemoveAll(s.TmpDir)
+	return os.RemoveAll(s.TmpDir) //nolint:wrapcheck // Test cleanup - pass through os.RemoveAll error
 }
 
 // CreateDuplicateFiles creates multiple files with identical content.
 func (s *BDDTestSetup) CreateDuplicateFiles(filenames []string, content string) error {
-	return s.FileProcessor.WriteDuplicateFiles(filenames, content)
+	return s.FileProcessor.WriteDuplicateFiles(filenames, content) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateTestFile creates a single test file with given content.
 func (s *BDDTestSetup) CreateTestFile(filename, content string) error {
-	return s.FileProcessor.WriteTextFile(filename, content)
+	return s.FileProcessor.WriteTextFile(filename, content) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateTestFiles creates multiple test files from a map.
 func (s *BDDTestSetup) CreateTestFiles(files map[string]string) error {
-	return s.FileProcessor.WriteTestFiles(files)
+	return s.FileProcessor.WriteTestFiles(files) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // GetFilePath returns full path for a file in test directory.
@@ -129,7 +129,7 @@ func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, erro
 		s.T.Helper()
 	}
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...)
-	return cmd.CombinedOutput()
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithFlags executes art-dupl binary with flag map and returns combined output.
@@ -153,7 +153,7 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]str
 	}
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
-	return cmd.CombinedOutput()
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithStdin executes art-dupl with stdin input.

@@ -66,7 +66,7 @@ func (ln LineNumber) MarshalJSON() ([]byte, error) {
 	if ln == 0 {
 		return nil, errors.NewValidationError("line number cannot be 0", nil)
 	}
-	return json.Marshal(uint16(ln))
+	return json.Marshal(uint16(ln)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for LineNumber.

@@ -94,7 +94,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
+			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile)) //nolint:wrapcheck // Error already wrapped by WrapConfig
 		}
 	}
 
@@ -283,5 +283,5 @@ func unique(dups [][]*syntax.Node) [][]*syntax.Node {
 
 // parseDuration parses a duration string using time package.
 func parseDuration(s string) (time.Duration, error) {
-	return time.ParseDuration(s)
+	return time.ParseDuration(s) //nolint:wrapcheck // Simple pass-through for time.ParseDuration
 }

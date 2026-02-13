@@ -13,7 +13,7 @@ func marshalStringID(s, validationMsg string) ([]byte, error) {
 	if s == "" {
 		return nil, errors.NewValidationError(validationMsg, nil)
 	}
-	return json.Marshal(s)
+	return json.Marshal(s) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // unmarshalWithValidation is a generic helper for unmarshaling JSON with custom validation.
@@ -50,7 +50,7 @@ func unmarshalUint(data []byte, typeName string, assign func(uint)) error {
 // marshalUint is a helper function for marshaling uint-based types.
 // It handles the common pattern of marshaling uint-wrapped types to JSON.
 func marshalUint(n uint) ([]byte, error) {
-	return json.Marshal(n)
+	return json.Marshal(n) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // unmarshalUintGeneric is a generic helper function for unmarshaling unsigned integer types.

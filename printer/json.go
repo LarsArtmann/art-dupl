@@ -206,7 +206,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 		return errors.HandleMarshalingError("encode", "JSON output", err) //nolint:wrapcheck // Error already wraps cause
 	}
 	if _, err := p.w.Write(data); err != nil {
-		return errors.WrapIO(err, "JSON output", "write")
+		return errors.WrapIO(err, "JSON output", "write") //nolint:wrapcheck // Error already wrapped by WrapIO
 	}
 	return nil
 }
@@ -243,7 +243,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		return errors.HandleMarshalingError("encode", "simple JSON output", err) //nolint:wrapcheck // Error already wraps cause
 	}
 	if _, err := p.w.Write(data); err != nil {
-		return errors.WrapIO(err, "simple JSON output", "write")
+		return errors.WrapIO(err, "simple JSON output", "write") //nolint:wrapcheck // Error already wrapped by WrapIO
 	}
 	return nil
 }

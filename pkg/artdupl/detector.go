@@ -28,7 +28,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	// Validate options
 	if err := ValidateOptions(opts); err != nil {
-		return nil, errors.WrapConfig(err, "invalid options")
+		return nil, errors.WrapConfig(err, "invalid options") //nolint:wrapcheck // Error already wrapped by WrapConfig
 	}
 
 	// Set default file reader if not provided
@@ -57,7 +57,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for %d files", len(files)))
+		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for %d files", len(files))) //nolint:wrapcheck // Error already wrapped by WrapValidation
 	}
 
 	// Process files and build analysis pipeline

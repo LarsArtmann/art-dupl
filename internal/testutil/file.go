@@ -27,17 +27,17 @@ func NewTestFileSetup(t *testing.T) *TestFileSetup {
 
 // CreateTestFile creates a single test Go file with given content.
 func (s *TestFileSetup) CreateTestFile(filename, content string) error {
-	return s.FileProcessor.WriteTextFile(filename, content)
+	return s.FileProcessor.WriteTextFile(filename, content) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateTestFiles creates multiple test Go files from a map.
 func (s *TestFileSetup) CreateTestFiles(files map[string]string) error {
-	return s.FileProcessor.WriteTestFiles(files)
+	return s.FileProcessor.WriteTestFiles(files) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateDuplicateFiles creates files with identical content.
 func (s *TestFileSetup) CreateDuplicateFiles(filenames []string, content string) error {
-	return s.FileProcessor.WriteDuplicateFiles(filenames, content)
+	return s.FileProcessor.WriteDuplicateFiles(filenames, content) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // GetFilePath returns the full path for a file in the test directory.

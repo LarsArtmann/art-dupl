@@ -197,7 +197,7 @@ func collectMatchesIntoGroups(ctx context.Context, matchesChan <-chan syntax.Mat
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return nil, ctx.Err() //nolint:wrapcheck // Standard context cancellation
 		default:
 		}
 

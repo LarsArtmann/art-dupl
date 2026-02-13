@@ -53,7 +53,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 // findSQLCConfigsInPath searches for sqlc configs in a single path.
 func findSQLCConfigsInPath(path string, configs map[string]string) error {
 	if err := walkPathForSQLCConfigs(path, configs); err != nil {
-		return errors.WrapFile(err, path, "walking path")
+		return errors.WrapFile(err, path, "walking path") //nolint:wrapcheck // Error already wrapped by WrapFile
 	}
 
 	findSQLCConfigsInParent(path, configs)
@@ -64,7 +64,7 @@ func findSQLCConfigsInPath(path string, configs map[string]string) error {
 func walkPathForSQLCConfigs(path string, configs map[string]string) error {
 	return filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			return err //nolint:wrapcheck // Pass through filepath.Walk error
 		}
 
 		if info.IsDir() {
@@ -115,7 +115,7 @@ func tryAddSQLCConfig(parentPath, filename string, configs map[string]string) {
 func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, errors.WrapFile(err, configPath, "reading sqlc config")
+		return nil, errors.WrapFile(err, configPath, "reading sqlc config") //nolint:wrapcheck // Error already wrapped by WrapFile
 	}
 
 	var config SQLCConfig

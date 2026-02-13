@@ -42,10 +42,10 @@ var _ = Describe("Plumbing Output Format", func() {
 	runPlumbingTestWithFlags := func(filenames []string, code, threshold string, extraFlags ...string) ([]byte, error) {
 		err := setup.CreateDuplicateFiles(filenames, code)
 		if err != nil {
-			return nil, err
+			return nil, err //nolint:wrapcheck // Test helper - pass through error
 		}
 		args := append([]string{"--plumbing", "--threshold", threshold}, extraFlags...)
-		return setup.RunArtDupl(args...)
+		return setup.RunArtDupl(args...) //nolint:wrapcheck // Test helper - pass through exec error
 	}
 
 	// runPlumbingTestWithDetection is a helper that creates duplicate files and runs art-dupl with

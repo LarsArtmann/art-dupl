@@ -15,7 +15,7 @@ func isValidStringType[T ~string](val T, validValues map[T]bool) bool {
 func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string) (T, error) {
 	var str string
 	if err := json.Unmarshal(data, &str); err != nil {
-		return defaultVal, err
+		return defaultVal, fmt.Errorf("unmarshaling %s: %w", typeName, err)
 	}
 
 	typed := T(str)

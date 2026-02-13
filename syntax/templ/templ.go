@@ -156,7 +156,7 @@ func Parse(filename string) (*syntax.Node, error) {
 func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 	content, err := os.ReadFile(filename)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, err //nolint:wrapcheck // Pass through os.ReadFile error
 	}
 
 	return ParseBytes(filename, content)
@@ -170,7 +170,7 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 	// Set the templ language
 	lang := tree_sitter.NewLanguage(tree_sitter_templ.Language())
 	if err := parser.SetLanguage(lang); err != nil {
-		return nil, 0, err
+		return nil, 0, err //nolint:wrapcheck // Pass through parser.SetLanguage error
 	}
 
 	// Parse the content
