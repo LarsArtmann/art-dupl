@@ -258,7 +258,7 @@ func hello() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid sort option - should default to size
-			output, err := setup.RunArtDuplWithFlags(map[string]string{
+			output, _ := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "5",
 				"sort":      "invalid",
 			})
