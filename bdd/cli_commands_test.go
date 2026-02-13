@@ -21,7 +21,7 @@ import (
 // - Flag documentation and validation
 // - Command-line interface behavior
 
-// assertCommandOutput is a helper to verify command output matches expected patterns
+// assertCommandOutput is a helper to verify command output matches expected patterns.
 func assertCommandOutput(setup *testutil.BDDTestSetup, args []string, matchers ...types.GomegaMatcher) {
 	output, err := setup.RunArtDupl(args...)
 	Expect(err).ToNot(HaveOccurred())
@@ -30,7 +30,7 @@ func assertCommandOutput(setup *testutil.BDDTestSetup, args []string, matchers .
 	Expect(outputStr).To(SatisfyAny(matchers...))
 }
 
-// assertHelpOutput verifies help output contains expected patterns
+// assertHelpOutput verifies help output contains expected patterns.
 func assertHelpOutput(setup *testutil.BDDTestSetup, matchers ...types.GomegaMatcher) {
 	outputStr := getHelpOutput(setup)
 	Expect(outputStr).To(SatisfyAny(matchers...))
@@ -49,7 +49,7 @@ func setupBDDTest() (*testutil.BDDTestSetup, func()) {
 	return setup, cleanup
 }
 
-// getHelpOutput runs art-dupl --help and returns the output string
+// getHelpOutput runs art-dupl --help and returns the output string.
 func getHelpOutput(setup *testutil.BDDTestSetup) string {
 	output, err := setup.RunArtDupl("--help")
 	Expect(err).ToNot(HaveOccurred())
