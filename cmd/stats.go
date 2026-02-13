@@ -11,7 +11,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
-	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/spf13/cobra"
 )
 
@@ -246,7 +245,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, k := range keys {
-		uniq := unique(groups[k])
+	uniq := utils.Unique(groups[k])
 		if len(uniq) > 1 {
 			if err := p.PrintClones(uniq, printer.SortByHash); err != nil {
 				return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to process clones for hash "+k)
@@ -259,26 +258,6 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-// unique returns unique nodes by filename and position.
-func unique(dups [][]*syntax.Node) [][]*syntax.Node {
-	seen := make(map[string]bool)
-	result := make([][]*syntax.Node, 0, len(dups))
-
-	for _, dup := range dups {
-		if len(dup) == 0 {
-			continue
-		}
-
-		key := fmt.Sprintf("%s:%d-%d", dup[0].Filename, dup[0].Pos, dup[len(dup)-1].End)
-		if !seen[key] {
-			seen[key] = true
-			result = append(result, dup)
-		}
-	}
-
-	return result
 }
 
 // parseDuration parses a duration string using time package.
