@@ -110,6 +110,7 @@ func TestNewFilter(t *testing.T) {
 	t.Parallel()
 
 	t.Run("creates disabled filter", func(t *testing.T) {
+		t.Parallel()
 		f := NewFilter(false, nil)
 		if f.enabled {
 			t.Error("Expected disabled filter")
@@ -120,6 +121,7 @@ func TestNewFilter(t *testing.T) {
 	})
 
 	t.Run("creates enabled filter with options", func(t *testing.T) {
+		t.Parallel()
 		f := NewFilter(true, []FilterOption{FilterSQLC, FilterTempl})
 		if !f.enabled {
 			t.Error("Expected enabled filter")
