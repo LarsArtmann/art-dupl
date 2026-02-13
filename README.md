@@ -44,6 +44,7 @@ source <(./art-dupl completion zsh)
 ## Key Features
 
 - **Structural clone detection** using suffix tree algorithms
+- **Multi-language support**: Go files and `.templ` templates (templ.guide)
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
 - **Multiple output formats**: text, HTML, JSON, plumbing
@@ -81,13 +82,24 @@ Use with:
 -vendor                  Include vendor directory
 -v, -verbose             Verbose logging
 -filter-generated        Smart filtering of generated code
--include-sqlc            Include sqlc.dev generated files
--include-templ           Include templ.guide generated files
+-include-sqlc            Include sqlc.dev generated files (filtered by default)
+-include-templ           Analyze .templ template files (templ.guide)
 -include-pattern value   File patterns to always include
 -exclude-pattern value   File patterns to exclude
 -profile                 Enable performance profiling
 -timeout duration        Maximum execution time (default 30m)
 -detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
+```
+
+### Supported Languages
+
+| Language | Extension | Support Level |
+|----------|-----------|---------------|
+| Go       | `.go`     | Full analysis |
+| Templ    | `.templ`  | Full analysis |
+
+**Note:** `.templ` files (from [templ.guide](https://templ.guide)) are fully analyzed for code clones.
+By default, templ files are filtered as generated code. Use `-include-templ` to analyze them.
 ```
 
 ### Subcommands
@@ -218,67 +230,9 @@ make test  # Run all tests
 make check # Run linting
 ```
 
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
 ## Migration Guide
 
 See [MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) for comprehensive guide on migrating from primitive types to domain types.
-
-This guide covers:
-
-- Why migrate to domain types
-- Migration strategy (incremental, backward compatible)
-- Common patterns with before/after examples
-- Type mapping table
-- Package-specific migration guides
-- Testing your migration
-- Common pitfalls and how to avoid them
-- Rollback strategy
-- FAQ for common questions
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License
-
-MIT
-
-## Architecture Overview
-
-art-dupl is organized into focused packages following clean architecture principles:
-
-### Core Packages
-
-- **domain/** - Domain model and value objects
-- **syntax/** - Unified AST representation
-- **suffixtree/** - Suffix tree data structure
-- **detection/** - Multi-method detection coordination
-- **config/** - Configuration and validation
-
-### Supporting Packages
-
-- **errors/** - Rich error types with context
-- **printer/** - Output formatting and statistics
-- **types/** - Functional programming primitives
-- **cmd/** - CLI application
-- **pkg/artdupl/** - SDK for programmatic use
-
-### Type Safety Approach
-
-Three-layer type safety:
-
-1. Domain Types (strong safety)
-2. Helper Functions (safe access)
-3. Backward Compatible API
-
-See go.mod for detailed module documentation.
-
-## License
-
-MIT
 
 ## Architecture Overview
 
@@ -296,6 +250,7 @@ art-dupl is organized into focused packages following clean architecture princip
 - **syntax/** - Unified AST representation
   - Language-agnostic `Node` type representing any language construct
   - Transformations for Go AST (`syntax/golang/`)
+  - Transformations for Templ templates (`syntax/templ/`)
   - Functions for finding complete syntax units
   - Hash computation for duplicate detection
 
