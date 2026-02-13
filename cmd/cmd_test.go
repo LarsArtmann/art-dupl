@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -304,7 +305,7 @@ func TestWriteFormatFile(t *testing.T) {
 		format := config.OutputFormatText
 		sortByEnum := printer.SortBySize
 
-		err := writeFormatFile(nil, cfg, matches, parseStats, format, filename, sortByEnum, "art-dupl")
+		err := writeFormatFile(context.TODO(), cfg, matches, parseStats, format, filename, sortByEnum, "art-dupl")
 		if err != nil {
 			t.Fatalf("writeFormatFile() error = %v", err)
 		}
