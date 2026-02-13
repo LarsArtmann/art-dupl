@@ -1,11 +1,10 @@
 package syntax
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/internal/simd"
+	"github.com/zeebo/xxh3"
 )
 
 // hashPool is a sync.Pool for reusing byte slices in hashSeq operations.
@@ -18,13 +17,13 @@ var hashPool = sync.Pool{
 	},
 }
 
-// hashSeq computes a SHA-256 hash of a sequence of nodes.
+// hashSeq computes an XXH3 hash of a sequence of nodes.
 // This is the main hashing operation in the duplicate detection pipeline.
 //
 // Performance characteristics:
 // - O(n) time complexity where n is the number of nodes
 // - O(1) additional space (reuses pooled buffers)
-// - Uses SIMD-optimized operations when available
+// - Uses SIMD-optimized XXH3 hashing (~20x faster than SHA-256)
 //
 // This function is called frequently during clone detection and has been
 // identified as a primary performance bottleneck (96.33% of allocations).
@@ -58,10 +57,28 @@ func hashSeq(nodes []*Node) string {
 		hashSeqFallback(nodes, buf)
 	}
 
-	// Compute SHA-256 hash
-	h := sha256.New()
-	h.Write(buf)
-	return hex.EncodeToString(h.Sum(nil))
+	// Compute hash using XXH3
+	//
+	// PERFORMANCE: XXH3 is ~20x faster than crypto/sha256 and includes
+	// native ARM64 NEON SIMD optimizations. DO NOT replace with cryptographic
+	// hash functions (SHA-256, etc.) - this hash is for deduplication only,
+	// not security. See: https://github.com/zeebo/xxh3
+	//
+	//nolint:gosec // G401,G505: Intentionally using non-cryptographic hash for performance
+	hash := xxh3.Hash(buf)
+	return formatHash(hash)
+}
+
+// formatHash converts a uint64 hash to a hex string.
+// This is faster than fmt.Sprintf or encoding/hex for fixed-size uint64.
+func formatHash(h uint64) string {
+	const hexchars = "0123456789abcdef"
+	buf := make([]byte, 16)
+	for i := 15; i >= 0; i-- {
+		buf[i] = hexchars[h&0xf]
+		h >>= 4
+	}
+	return string(buf)
 }
 
 // hashSeqFallback implements the standard (non-SIMD) hashing approach.

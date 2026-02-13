@@ -659,11 +659,11 @@ func TestProgressCallback(t *testing.T) {
 	}
 
 	opts := &Options{
-		Threshold:         15,
-		DetectionMethods:  []DetectionMethod{MethodArtDupl},
-		ProgressCallback:  callback,
-		MaxWorkers:        4,
-		Timeout:           time.Minute,
+		Threshold:        15,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+		ProgressCallback: callback,
+		MaxWorkers:       4,
+		Timeout:          time.Minute,
 	}
 
 	err := ValidateOptions(opts)

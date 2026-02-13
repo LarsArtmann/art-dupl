@@ -19,9 +19,9 @@ func mustNewLineNumber(n uint16) LineNumber {
 // TestAnalysis_IsValid tests Analysis.IsValid method.
 func TestAnalysis_IsValid(t *testing.T) {
 	tests := []struct {
-		name    string
+		name     string
 		analysis Analysis
-		wantErr bool
+		wantErr  bool
 	}{
 		{
 			name: "valid analysis",
@@ -185,51 +185,51 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "valid clone",
 			clone: Clone{
-				StartLine:  mustNewLineNumber(10),
-				EndLine:    mustNewLineNumber(20),
-				StartPos:   NewBytePosition(100),
-				EndPos:     NewBytePosition(200),
-				Status:     FileProcessingStateCompleted,
+				StartLine: mustNewLineNumber(10),
+				EndLine:   mustNewLineNumber(20),
+				StartPos:  NewBytePosition(100),
+				EndPos:    NewBytePosition(200),
+				Status:    FileProcessingStateCompleted,
 			},
 			wantErr: false,
 		},
 		{
 			name: "end line before start line",
 			clone: Clone{
-				StartLine:  mustNewLineNumber(20),
-				EndLine:    mustNewLineNumber(10),
-				Status:     FileProcessingStateCompleted,
+				StartLine: mustNewLineNumber(20),
+				EndLine:   mustNewLineNumber(10),
+				Status:    FileProcessingStateCompleted,
 			},
 			wantErr: true,
 		},
 		{
 			name: "end pos before start pos",
 			clone: Clone{
-				StartLine:  mustNewLineNumber(10),
-				EndLine:    mustNewLineNumber(20),
-				StartPos:   NewBytePosition(200),
-				EndPos:     NewBytePosition(100),
-				Status:     FileProcessingStateCompleted,
+				StartLine: mustNewLineNumber(10),
+				EndLine:   mustNewLineNumber(20),
+				StartPos:  NewBytePosition(200),
+				EndPos:    NewBytePosition(100),
+				Status:    FileProcessingStateCompleted,
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid status",
 			clone: Clone{
-				StartLine:  mustNewLineNumber(10),
-				EndLine:    mustNewLineNumber(20),
-				Status:     FileProcessingState("invalid"),
+				StartLine: mustNewLineNumber(10),
+				EndLine:   mustNewLineNumber(20),
+				Status:    FileProcessingState("invalid"),
 			},
 			wantErr: true,
 		},
 		{
 			name: "zero positions are valid",
 			clone: Clone{
-				StartLine:  mustNewLineNumber(10),
-				EndLine:    mustNewLineNumber(20),
-				StartPos:   0,
-				EndPos:     0,
-				Status:     FileProcessingStateCompleted,
+				StartLine: mustNewLineNumber(10),
+				EndLine:   mustNewLineNumber(20),
+				StartPos:  0,
+				EndPos:    0,
+				Status:    FileProcessingStateCompleted,
 			},
 			wantErr: false,
 		},
@@ -248,9 +248,9 @@ func TestClone_IsValid(t *testing.T) {
 // TestCloneGroup_IsValid tests CloneGroup.IsValid method.
 func TestCloneGroup_IsValid(t *testing.T) {
 	validClone := Clone{
-		StartLine:  mustNewLineNumber(10),
-		EndLine:    mustNewLineNumber(20),
-		Status:     FileProcessingStateCompleted,
+		StartLine: mustNewLineNumber(10),
+		EndLine:   mustNewLineNumber(20),
+		Status:    FileProcessingStateCompleted,
 	}
 
 	tests := []struct {
@@ -316,9 +316,9 @@ func TestCloneGroup_IsValid(t *testing.T) {
 				ID: "group-6",
 				Clones: []Clone{
 					{
-						StartLine:  mustNewLineNumber(20),
-						EndLine:    mustNewLineNumber(10), // Invalid: end before start
-						Status:     FileProcessingStateCompleted,
+						StartLine: mustNewLineNumber(20),
+						EndLine:   mustNewLineNumber(10), // Invalid: end before start
+						Status:    FileProcessingStateCompleted,
 					},
 				},
 				Severity: CloneSeverityMedium,
@@ -472,50 +472,50 @@ func TestSourceFile_IsValid(t *testing.T) {
 		{
 			name: "valid source file",
 			file: SourceFile{
-				Path:     "/path/to/file.go",
-				Name:     "file.go",
-				Size:     1024,
-				Hash:     "abc123",
+				Path: "/path/to/file.go",
+				Name: "file.go",
+				Size: 1024,
+				Hash: "abc123",
 			},
 			wantErr: false,
 		},
 		{
 			name: "empty path",
 			file: SourceFile{
-				Path:     "",
-				Name:     "file.go",
-				Size:     1024,
-				Hash:     "abc123",
+				Path: "",
+				Name: "file.go",
+				Size: 1024,
+				Hash: "abc123",
 			},
 			wantErr: true,
 		},
 		{
 			name: "empty name",
 			file: SourceFile{
-				Path:     "/path/to/file.go",
-				Name:     "",
-				Size:     1024,
-				Hash:     "abc123",
+				Path: "/path/to/file.go",
+				Name: "",
+				Size: 1024,
+				Hash: "abc123",
 			},
 			wantErr: true,
 		},
 		{
 			name: "zero size",
 			file: SourceFile{
-				Path:     "/path/to/file.go",
-				Name:     "file.go",
-				Size:     0,
-				Hash:     "abc123",
+				Path: "/path/to/file.go",
+				Name: "file.go",
+				Size: 0,
+				Hash: "abc123",
 			},
 			wantErr: true,
 		},
 		{
 			name: "empty hash",
 			file: SourceFile{
-				Path:     "/path/to/file.go",
-				Name:     "file.go",
-				Size:     1024,
-				Hash:     "",
+				Path: "/path/to/file.go",
+				Name: "file.go",
+				Size: 1024,
+				Hash: "",
 			},
 			wantErr: true,
 		},
@@ -774,10 +774,10 @@ func TestAnalysisMode_Methods(t *testing.T) {
 
 func TestCloneSeverity_Methods(t *testing.T) {
 	tests := []struct {
-		name    string
+		name     string
 		severity CloneSeverity
-		str     string
-		isValid bool
+		str      string
+		isValid  bool
 	}{
 		{"low", CloneSeverityLow, "low", true},
 		{"medium", CloneSeverityMedium, "medium", true},
@@ -892,9 +892,9 @@ func TestCalculateSeverity(t *testing.T) {
 func TestNodeToClone(t *testing.T) {
 	t.Run("with valid file content", func(t *testing.T) {
 		node := &syntax.Node{
-			Type:  1,
-			Pos:   0,
-			End:   12,
+			Type: 1,
+			Pos:  0,
+			End:  12,
 		}
 		filename := "test.go"
 		fileContent := []byte("func main() {}")
@@ -914,9 +914,9 @@ func TestNodeToClone(t *testing.T) {
 
 	t.Run("with nil file content", func(t *testing.T) {
 		node := &syntax.Node{
-			Type:  1,
-			Pos:   0,
-			End:   12,
+			Type: 1,
+			Pos:  0,
+			End:  12,
 		}
 		filename := "test.go"
 
@@ -1243,11 +1243,11 @@ func TestCloneGroupJSONRoundTrip(t *testing.T) {
 		Status:   FileProcessingStateCompleted,
 		Clones: []Clone{
 			{
-				StartLine:  mustNewLineNumber(10),
-				EndLine:    mustNewLineNumber(20),
-				StartPos:   NewBytePosition(100),
-				EndPos:     NewBytePosition(200),
-				Status:     FileProcessingStateCompleted,
+				StartLine: mustNewLineNumber(10),
+				EndLine:   mustNewLineNumber(20),
+				StartPos:  NewBytePosition(100),
+				EndPos:    NewBytePosition(200),
+				Status:    FileProcessingStateCompleted,
 			},
 		},
 	}

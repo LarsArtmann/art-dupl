@@ -1,12 +1,11 @@
 package hash
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/zeebo/xxh3"
 )
 
 // FileHash represents a hash of a complete file.
@@ -73,7 +72,12 @@ func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 	return files
 }
 
-// hashFiles calculates SHA-256 hash for each file content.
+// hashFiles calculates XXH3 hash for each file content.
+//
+// PERFORMANCE: XXH3 is ~20x faster than crypto/sha256 and includes
+// native ARM64 NEON SIMD optimizations. DO NOT replace with cryptographic
+// hash functions (SHA-256, etc.) - this hash is for deduplication only,
+// not security. See: https://github.com/zeebo/xxh3
 func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 	var fileHashes []FileHash
 
@@ -84,14 +88,13 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 			continue // Skip files that can't be read
 		}
 
-		// Calculate SHA-256 hash
-		hasher := sha256.New()
-		if _, err := hasher.Write(content); err != nil {
-			continue
-		}
+		// Calculate XXH3 hash
+		//
+		//nolint:gosec // G401,G505: Intentionally using non-cryptographic hash for performance
+		hash := xxh3.Hash(content)
 
 		fileHash := FileHash{
-			Hash:     hex.EncodeToString(hasher.Sum(nil)),
+			Hash:     formatFileHash(hash),
 			Filename: filename,
 			Size:     len(content),
 			Content:  content,
@@ -101,6 +104,18 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 	}
 
 	return fileHashes, nil
+}
+
+// formatFileHash converts a uint64 hash to a hex string.
+// This is faster than fmt.Sprintf or encoding/hex for fixed-size uint64.
+func formatFileHash(h uint64) string {
+	const hexchars = "0123456789abcdef"
+	buf := make([]byte, 16)
+	for i := 15; i >= 0; i-- {
+		buf[i] = hexchars[h&0xf]
+		h >>= 4
+	}
+	return string(buf)
 }
 
 // groupByHash groups files by identical hash values.

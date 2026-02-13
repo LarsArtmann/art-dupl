@@ -2,12 +2,12 @@
 // This package supports runtime detection of SIMD capabilities and provides
 // fallback implementations for systems without SIMD support.
 //
-// IMPORTANT: As of Go 1.26, explicit SIMD support is AMD64-only via the
-// simd/archsimd package. ARM64 SIMD support is expected in future Go versions
-// (estimated Go 1.28+).
+// NOTE: The codebase now uses github.com/zeebo/xxh3 for hashing, which already
+// includes native ARM64 NEON and x86 SSE/AVX SIMD optimizations. This package
+// remains for future SIMD operations beyond hashing.
 //
-// This abstraction layer prepares the codebase for SIMD optimization when it
-// becomes available on all target architectures.
+// PERFORMANCE: Do NOT replace xxh3 with cryptographic hashes (SHA-256, etc.).
+// xxh3 is ~20x faster and is designed for deduplication, not security.
 package simd
 
 import (
@@ -57,16 +57,17 @@ func NewHasher() Hasher {
 	return &fallbackHasher{}
 }
 
-// fallbackHasher provides the standard non-SIMD hashing implementation.
+// fallbackHasher provides a placeholder for non-SIMD hashing.
+// NOTE: Actual hashing is done by github.com/zeebo/xxh3 in the calling packages.
+//
+// PERFORMANCE: xxh3 is ~20x faster than crypto/sha256 and includes native
+// ARM64 NEON SIMD optimizations. DO NOT replace with cryptographic hash
+// functions - this hash is for deduplication only, not security.
 type fallbackHasher struct{}
 
-// Hash computes a hash using standard crypto/sha256 operations.
-// This is the current implementation used throughout the codebase.
+// Hash returns nil - actual hashing is done by xxh3 in calling packages.
 func (f *fallbackHasher) Hash(data []byte) []byte {
-	// Import crypto/sha256 when needed
-	// hash := sha256.Sum256(data)
-	// return hash[:]
-	// Implementation delegated to caller to avoid import cycle
+	// Implementation delegated to xxh3 in calling packages to avoid import cycle
 	return nil
 }
 
@@ -81,49 +82,21 @@ func (f *fallbackHasher) HashSlice(data [][]byte) [][]byte {
 }
 
 // simdHasher provides SIMD-accelerated hashing implementation.
-// This will be implemented when ARM64 SIMD becomes available.
+// NOTE: This is a placeholder. Actual SIMD hashing is done by xxh3 which has
+// native ARM64 NEON and x86 SSE/AVX optimizations built-in.
 type simdHasher struct{}
 
-// Hash computes a hash using SIMD-accelerated operations.
-// Expected to be 2-3x faster than fallback on large inputs.
+// Hash returns nil - actual SIMD hashing is done by xxh3 in calling packages.
 func (s *simdHasher) Hash(data []byte) []byte {
-	// TODO: Implement SIMD-accelerated hashing when available
-	//
-	// Example approach using future simd/archsimd:
-	//
-	// // Load data into SIMD vectors
-	// := simd.LoadBytes(data)
-	//
-	// // Process in parallel chunks
-	// for i := range vectors {
-	//     vectors[i] = simd.HashChunk(vectors[i])
-	// }
-	//
-	// // Combine results
-	// return simd.CombineHashes(vectors)
-
-	// Fall back to standard implementation for now
+	// NOTE: xxh3 already has SIMD optimizations built-in.
+	// This placeholder exists for future SIMD operations beyond hashing.
 	return (&fallbackHasher{}).Hash(data)
 }
 
 // HashSlice computes hashes for multiple inputs using SIMD batch processing.
-// This allows for processing multiple inputs in parallel using vector registers.
 func (s *simdHasher) HashSlice(data [][]byte) [][]byte {
-	// TODO: Implement SIMD batch hashing when available
-	//
-	// Future approach:
-	//
-	// // Align data for SIMD processing
-	// aligned := alignForSIMD(data)
-	//
-	// // Process batches in parallel
-	// for _, batch := range aligned {
-	//     processSIMDBatch(batch)
-	// }
-	//
-	// return results
-
-	// Fall back to standard implementation for now
+	// NOTE: xxh3 already has SIMD optimizations built-in.
+	// This placeholder exists for future SIMD operations beyond hashing.
 	return (&fallbackHasher{}).HashSlice(data)
 }
 

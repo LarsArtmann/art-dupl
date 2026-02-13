@@ -1,11 +1,9 @@
 package domain
 
 import (
-	"crypto/sha256"
-	"fmt"
-
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/zeebo/xxh3"
 )
 
 // NodeToClone converts syntax nodes to domain Clone.
@@ -26,7 +24,13 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 
 	hashStr := ""
 	if fragment != "" {
-		hashStr = fmt.Sprintf("%x", sha256.Sum256([]byte(fragment)))
+		// PERFORMANCE: XXH3 is ~20x faster than crypto/sha256 and includes
+		// native ARM64 NEON SIMD optimizations. DO NOT replace with cryptographic
+		// hash functions (SHA-256, etc.) - this hash is for deduplication only,
+		// not security. See: https://github.com/zeebo/xxh3
+		//
+		//nolint:gosec // G401,G505: Intentionally using non-cryptographic hash for performance
+		hashStr = formatDomainHash(xxh3.Hash([]byte(fragment)))
 	}
 
 	startLn, _ := NewLineNumber(uint16(lineStart)) //nolint:gosec //G115 lineStart >= 1 guaranteed by initialize default
@@ -80,4 +84,16 @@ func calculateComplexity(node *syntax.Node) uint {
 	}
 
 	return complexity
+}
+
+// formatDomainHash converts a uint64 hash to a hex string.
+// This is faster than fmt.Sprintf or encoding/hex for fixed-size uint64.
+func formatDomainHash(h uint64) string {
+	const hexchars = "0123456789abcdef"
+	buf := make([]byte, 16)
+	for i := 15; i >= 0; i-- {
+		buf[i] = hexchars[h&0xf]
+		h >>= 4
+	}
+	return string(buf)
 }

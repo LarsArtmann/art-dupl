@@ -44,4 +44,3 @@ func convertOptionsToConfig(opts *Options) *config.Config {
 
 	return cfg
 }
-
