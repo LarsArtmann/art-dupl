@@ -64,7 +64,7 @@ func findSQLCConfigsInPath(path string, configs map[string]string) error {
 func walkPathForSQLCConfigs(path string, configs map[string]string) error {
 	return filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err //nolint:wrapcheck // Pass through filepath.Walk error
+			return err
 		}
 
 		if info.IsDir() {

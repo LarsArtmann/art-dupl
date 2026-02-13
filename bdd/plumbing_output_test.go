@@ -45,7 +45,7 @@ var _ = Describe("Plumbing Output Format", func() {
 			return nil, err //nolint:wrapcheck // Test helper - pass through error
 		}
 		args := append([]string{"--plumbing", "--threshold", threshold}, extraFlags...)
-		return setup.RunArtDupl(args...) //nolint:wrapcheck // Test helper - pass through exec error
+		return setup.RunArtDupl(args...)
 	}
 
 	// runPlumbingTestWithDetection is a helper that creates duplicate files and runs art-dupl with
