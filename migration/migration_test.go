@@ -65,7 +65,7 @@ var _ = Describe("Migration Path", func() {
 
 			result := migration.MigrateConfig(oldConfig)
 			Expect(result.IsErr()).To(BeTrue())
-			Expect(result.Error.Error()).To(ContainSubstring("threshold"))
+			Expect(result.Err().Error()).To(ContainSubstring("threshold"))
 		})
 	})
 
@@ -164,7 +164,7 @@ var _ = Describe("Migration Path", func() {
 			result := migrationPath.ValidateMigration(analysis)
 
 			Expect(result.IsErr()).To(BeTrue())
-			Expect(result.Error.Error()).To(ContainSubstring("invalid analysis"))
+			Expect(result.Err().Error()).To(ContainSubstring("invalid analysis"))
 		})
 	})
 

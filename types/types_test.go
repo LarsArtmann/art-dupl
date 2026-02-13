@@ -25,7 +25,7 @@ var _ = Describe("Type Safety: Result[T]", func() {
 		It("should support generic types", func() {
 			result := types.Ok(42)
 			Expect(result.IsOk()).To(BeTrue())
-			Expect(result.Value).To(Equal(42))
+			Expect(result.Value()).To(Equal(42))
 		})
 	})
 
@@ -45,8 +45,8 @@ var _ = Describe("Type Safety: Result[T]", func() {
 			result := types.Errf[string]("validation failed: %s", "missing field")
 
 			Expect(result.IsOk()).To(BeFalse())
-			Expect(result.Error).To(HaveOccurred())
-			Expect(result.Error.Error()).To(ContainSubstring("validation failed"))
+			Expect(result.Err()).To(HaveOccurred())
+			Expect(result.Err().Error()).To(ContainSubstring("validation failed"))
 		})
 	})
 
@@ -57,7 +57,7 @@ var _ = Describe("Type Safety: Result[T]", func() {
 			})
 
 			Expect(result.IsOk()).To(BeTrue())
-			Expect(result.Value).To(Equal("value-5"))
+			Expect(result.Value()).To(Equal("value-5"))
 		})
 
 		It("should propagate errors through map", func() {
@@ -67,7 +67,7 @@ var _ = Describe("Type Safety: Result[T]", func() {
 			})
 
 			Expect(result.IsErr()).To(BeTrue())
-			Expect(result.Error).To(Equal(err))
+			Expect(result.Err()).To(Equal(err))
 		})
 	})
 
@@ -121,7 +121,7 @@ var _ = Describe("Type Safety: Option[T]", func() {
 			result := opt.ToResult("no value provided")
 
 			Expect(result.IsOk()).To(BeTrue())
-			Expect(result.Value).To(Equal("value"))
+			Expect(result.Value()).To(Equal("value"))
 		})
 
 		It("should create error result from none", func() {
@@ -129,7 +129,7 @@ var _ = Describe("Type Safety: Option[T]", func() {
 			result := opt.ToResult("no value provided")
 
 			Expect(result.IsErr()).To(BeTrue())
-			Expect(result.Error.Error()).To(ContainSubstring("no value provided"))
+			Expect(result.Err().Error()).To(ContainSubstring("no value provided"))
 		})
 	})
 
