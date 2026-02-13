@@ -334,11 +334,11 @@ func (s *BDDTestSetup) RunWithConfigFile(configFileName, configContent, code str
 	return s.RunArtDupl("--config", configPath, s.TmpDir)
 }
 
-// Common test thresholds for BDD tests
+// Common test thresholds for BDD tests.
 const (
-	// ThresholdSmall is used for tests with minimal code (5 tokens)
+	// ThresholdSmall is used for tests with minimal code (5 tokens).
 	ThresholdSmall = "5"
-	// ThresholdMedium is used for tests with moderate code (10 tokens)
+	// ThresholdMedium is used for tests with moderate code (10 tokens).
 	ThresholdMedium = "10"
 	// ThresholdLarge is used for tests with larger code (20 tokens)
 	ThresholdLarge = "20"

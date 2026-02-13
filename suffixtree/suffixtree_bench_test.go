@@ -49,6 +49,7 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 // benchmarkFindTran is a helper for benchmarking findTran functions.
 // If setup is nil, uses default tree generation with stateCount and transPerState.
 func benchmarkFindTran(b *testing.B, stateCount, transPerState int, setup func() *STree, fn func(*state, Token) *tran) {
+	b.Helper()
 	var tree *STree
 	if setup != nil {
 		tree = setup()
@@ -131,6 +132,7 @@ func benchmarkTreeOperationWithSearch(b *testing.B, setup func() *STree, operati
 
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.
 func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*STree)) {
+	b.Helper()
 	tree := setup()
 
 	for b.Loop() {
@@ -226,11 +228,10 @@ func BenchmarkAt(b *testing.B) {
 func BenchmarkMemoryUsage(b *testing.B) {
 	b.ReportAllocs()
 
-	tree := New()
 	tokens := generateRandomTokens(10000)
 
 	for b.Loop() {
-		tree = New()
+		tree := New()
 		tree.Update(tokens...)
 	}
 }

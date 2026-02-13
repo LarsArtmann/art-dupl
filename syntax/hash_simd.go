@@ -13,7 +13,8 @@ import (
 var hashPool = sync.Pool{
 	New: func() any {
 		// Pre-allocate for common sizes (up to 10,000 nodes)
-		return make([]byte, 0, 10_000)
+		buf := make([]byte, 0, 10_000)
+		return &buf
 	},
 }
 
@@ -34,11 +35,12 @@ func hashSeq(nodes []*Node) string {
 
 	// Prepare byte array for hashing
 	// Extract byte slice from pool to reduce allocations
-	buf := hashPool.Get().([]byte)
+	bufPtr := hashPool.Get().(*[]byte)
+	buf := *bufPtr
 	defer func() {
 		// Reset and return buffer to pool
-		buf = buf[:0]
-		hashPool.Put(buf)
+		*bufPtr = buf[:0]
+		hashPool.Put(bufPtr)
 	}()
 
 	// Ensure buffer has sufficient capacity

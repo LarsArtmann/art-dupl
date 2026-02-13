@@ -108,7 +108,7 @@ func str2nodes(str string) []*Node {
 	chars := []rune(str)
 	nodes := make([]*Node, (len(chars)+1)/3)
 	for i := 0; i < len(chars)-1; i += 3 {
-		nodes[i/3] = &Node{Type: int32(chars[i]), Owns: int32(chars[i+1] - '0')}
+		nodes[i/3] = &Node{Type: chars[i], Owns: int32(chars[i+1] - '0')}
 	}
 	return nodes
 }

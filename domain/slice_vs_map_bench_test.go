@@ -35,7 +35,7 @@ func BenchmarkMapLookup(b *testing.B) {
 func BenchmarkSliceMemory(b *testing.B) {
 	b.ReportAllocs()
 	for range b.N {
-		_ = make([]string, 1000, 1000) // 1000 string slots
+		_ = make([]string, 1000) // 1000 string slots
 	}
 }
 

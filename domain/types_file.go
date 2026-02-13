@@ -55,6 +55,7 @@ func (ln LineNumber) Uint16() uint16 {
 }
 
 // Uint returns the underlying uint value (for backward compatibility).
+//
 // Deprecated: Use Uint16() instead for type safety.
 func (ln LineNumber) Uint() uint {
 	return uint(ln)
@@ -96,6 +97,7 @@ func (bp BytePosition) Uint32() uint32 {
 }
 
 // Uint returns the underlying uint value (for backward compatibility).
+//
 // Deprecated: Use Uint32() instead for type safety.
 func (bp BytePosition) Uint() uint {
 	return uint(bp)

@@ -2,6 +2,7 @@ package artdupl
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -38,9 +39,7 @@ func convertOptionsToConfig(opts *Options) *config.Config {
 
 	// Convert detection methods
 	cfg.DetectionMethods = make(config.DetectionMethods, len(opts.DetectionMethods))
-	for i, method := range opts.DetectionMethods {
-		cfg.DetectionMethods[i] = config.DetectionMethod(method)
-	}
+	copy(cfg.DetectionMethods, opts.DetectionMethods)
 
 	cfg.IncludeVendor = opts.IncludeVendor
 	cfg.IgnoreFiles = opts.IgnoreFiles
@@ -54,11 +53,11 @@ func detectionMethodsToString(methods config.DetectionMethods) string {
 		return ""
 	}
 
-	result := string(methods[0])
-	for i := 1; i < len(methods); i++ {
-		result += "," + string(methods[i])
+	strs := make([]string, len(methods))
+	for i, m := range methods {
+		strs[i] = string(m)
 	}
-	return result
+	return strings.Join(strs, ",")
 }
 
 // collectMatches collects all matches from a channel into a slice.

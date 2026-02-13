@@ -190,7 +190,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid config
-			output, err := setup.RunArtDupl("--config", configFile, ".")
+			output, _ := setup.RunArtDupl("--config", configFile, ".")
 			// Should handle gracefully (may use defaults or show error)
 			outputStr := string(output)
 			Expect(outputStr).ToNot(BeEmpty())
@@ -236,7 +236,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on directory
-			output, err := setup.RunArtDupl(tempDir)
+			output, _ := setup.RunArtDupl(tempDir)
 			// Restore permissions before cleanup
 			_ = os.Chmod(testFile, 0o644)
 
@@ -265,7 +265,7 @@ var _ = Describe("Error Handling", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl on parent directory
-			output, err := setup.RunArtDupl(parentDir)
+			output, _ := setup.RunArtDupl(parentDir)
 			// Restore permissions before cleanup
 			_ = os.Chmod(subDir, 0o755)
 

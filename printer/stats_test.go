@@ -39,6 +39,7 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.
 func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
+	t.Helper()
 	if err := statsPrinter.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}

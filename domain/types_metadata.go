@@ -75,6 +75,7 @@ func (cs ComplexityScore) Uint16() uint16 {
 }
 
 // Uint returns the underlying uint value (for backward compatibility).
+//
 // Deprecated: Use Uint16() instead for type safety.
 func (cs ComplexityScore) Uint() uint {
 	return uint(cs)
