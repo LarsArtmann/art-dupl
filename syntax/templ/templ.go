@@ -31,16 +31,16 @@ import (
 // - Flow control affects template structure
 // - Attributes capture element properties (not values)
 //
-// We skip: text content, identifiers, literal values
+// We skip: text content, identifiers, literal values.
 const (
 	BadNode = iota
 
-	// Core declarations
+	// Core declarations.
 	ComponentDeclaration
 	CSSDeclaration
 	ScriptDeclaration
 
-	// HTML structure
+	// HTML structure.
 	Element
 	TagStart
 	TagEnd
@@ -235,7 +235,7 @@ func (t *transformer) transform(node *tree_sitter.Node) *syntax.Node {
 
 	// Process children (only named children for cleaner AST)
 	childCount := node.NamedChildCount()
-	for i := uint(0); i < childCount; i++ {
+	for i := range childCount {
 		child := node.NamedChild(i)
 		if child == nil {
 			continue

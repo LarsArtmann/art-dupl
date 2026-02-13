@@ -736,7 +736,7 @@ func jsonMarshalFunc[T interface{ MarshalJSON() ([]byte, error) }](_ T) func(T) 
 // This helper reduces boilerplate in test functions.
 func jsonUnmarshalFuncPtr[T any]() func(*T, []byte) error {
 	return func(v *T, data []byte) error {
-		if unmarshaler, ok := any(v).(interface{ UnmarshalJSON([]byte) error }); ok {
+		if unmarshaler, ok := any(v).(interface{ UnmarshalJSON(data []byte) error }); ok {
 			return unmarshaler.UnmarshalJSON(data)
 		}
 		return fmt.Errorf("type %T does not implement UnmarshalJSON", v)
