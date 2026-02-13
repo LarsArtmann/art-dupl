@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -64,7 +65,7 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	tmpDir, err := os.MkdirTemp("", "art-dupl-bdd-*")
 	if err != nil {
-		return nil, NewBDDError("create temp directory", err)
+	return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
 	// Build binary once using sync.Once to avoid concurrent builds
@@ -73,7 +74,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", sharedBinary, "../cmd/art-dupl/main.go")
 		output, buildErr := cmd.CombinedOutput()
 		if buildErr != nil {
-			sharedBinaryErr = NewBDDError("build binary", buildErr).WithOutput(string(output))
+			sharedBinaryErr = fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", buildErr, string(output))
 		}
 	})
 
