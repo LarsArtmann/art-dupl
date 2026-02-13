@@ -2,23 +2,14 @@ package artdupl
 
 import "errors"
 
-// SDK-specific error types.
+// SDK-specific sentinel errors for simple error comparison via errors.Is().
 //
-// TODO: SPLIT-BRAIN ALERT! These errors duplicate errors package functionality.
-// The errors package (errors/types.go) already provides rich error types with
-// context (DuplError, EnumValidationError, etc.).
-//
-// We have TWO error handling strategies:
-// 1. errors package: Rich errors with type, message, file, line, cause, stack
-// 2. artdupl/errors.go: Simple errors.New() errors
-//
-// This creates inconsistency in error handling across the codebase.
-// Options:
-// - Option A: Use errors package everywhere, remove these
-// - Option B: Keep these as SDK-specific but wrap with errors package
-// - Option C: Define in domain package as domain errors
-//
-// Recommendation: Option A - consolidate on errors package for consistency.
+// Design Note: These errors are intentionally separate from the internal errors
+// package (errors/types.go) which provides rich error types with context.
+// SDK users need simple sentinel errors for comparison, while internal code
+// uses rich errors for debugging. This dual approach is by design:
+//   - SDK errors: Simple sentinel errors for user-facing error comparison
+//   - Internal errors: Rich DuplError types with file, line, stack trace
 var (
 	// Configuration errors.
 	ErrNilOptions         = errors.New("options cannot be nil")

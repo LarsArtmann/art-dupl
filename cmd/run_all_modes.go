@@ -65,13 +65,8 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 	return matches
 }
 
-// parseStats holds parsing statistics for output generation.
-type parseStats interface {
-	GetFilesCount() int
-}
-
 // writeFormatFile writes a single output format to a file.
-func writeFormatFile(_ context.Context, cfg *config.Config, matches []syntax.Match, parseStats interface{ GetFilesCount() int }, format config.OutputFormat, filename string, sortByEnum printer.SortBy, detectionMethodStr string) error {
+func writeFormatFile(_ context.Context, cfg *config.Config, matches []syntax.Match, parseStats job.ParseStats, format config.OutputFormat, filename string, sortByEnum printer.SortBy, detectionMethodStr string) error {
 	//nolint:gosec //G304 filename is constructed from controlled config output dir and format
 	file, err := os.Create(filename)
 	if err != nil {
@@ -86,7 +81,7 @@ func writeFormatFile(_ context.Context, cfg *config.Config, matches []syntax.Mat
 	p := createPrinter(format, cfg.Threshold)(file, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		jsonPrinter.SetFilesCount(parseStats.GetFilesCount())
+		jsonPrinter.SetFilesCount(parseStats.FilesCount)
 	}
 
 	// Create channel from matches for this printer
