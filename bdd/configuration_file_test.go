@@ -52,7 +52,7 @@ var _ = Describe("Configuration File Loading", func() {
 				"outputFormat": "json"
 			}`
 			code := `package main
-FuncTestString`
+func test() {}`
 			output, err := runWithConfig(configContent, code, []string{"test1.go", "test2.go"})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())

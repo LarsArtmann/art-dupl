@@ -64,7 +64,7 @@ func process() {
 
 		It("should be parseable by shell scripts", func() {
 			duplicateCode := `package main
-FuncDuplicateString`
+func duplicate() { println(1) }`
 
 			err := setup.CreateDuplicateFiles([]string{"pkg/file1.go", "pkg/file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -89,7 +89,7 @@ FuncDuplicateString`
 
 		It("should not include headers or formatting", func() {
 			duplicateCode := `package main
-FuncDuplicateString`
+func duplicate() { println(1) }`
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -139,7 +139,7 @@ func large() {
 
 		It("should work with sorting options", func() {
 			duplicateCode := `package main
-FuncDuplicateString`
+func duplicate() { println(1) }`
 
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -218,7 +218,7 @@ func common() {
 			Expect(err).NotTo(HaveOccurred())
 
 			duplicateCode := `package main
-FuncCommonString`
+func common() { println(1) }`
 
 			// Create file in directory
 			err = setup.CreateFileWithContent("pkg/file1.go", duplicateCode)
@@ -246,7 +246,7 @@ FuncCommonString`
 			Expect(err).NotTo(HaveOccurred())
 
 			duplicateCode := `package main
-FuncCommonString`
+func common() { println(1) }`
 
 			// Create duplicates in both directories
 			err = setup.CreateFileWithContent("include/file1.go", duplicateCode)
@@ -278,7 +278,7 @@ FuncCommonString`
 			Expect(err).NotTo(HaveOccurred())
 
 			duplicateCode := `package main
-FuncCommonString`
+func common() { println(1) }`
 			testCode := `package main
 func testCommon() { println(1) }`
 

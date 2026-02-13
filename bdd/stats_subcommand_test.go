@@ -70,7 +70,7 @@ func processData(data string) error {
 		It("should show files analyzed count", func() {
 			// Create multiple test files
 			code := `package main
-FuncTestString`
+func test() {}`
 
 			err := setup.CreateDuplicateFiles([]string{"a.go", "b.go", "c.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
@@ -154,7 +154,7 @@ func processUser(name string) error {
 		It("should produce CSV output", func() {
 			// Create test files
 			code := `package main
-FuncTestString`
+func test() {}`
 
 			err := setup.CreateDuplicateFiles([]string{"csv1.go", "csv2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
@@ -374,7 +374,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 
 		It("should handle invalid format option", func() {
 			code := `package main
-FuncTestString`
+func test() {}`
 
 			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
