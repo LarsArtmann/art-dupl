@@ -48,6 +48,8 @@ func (p *stats) printCSV() {
 	_, _ = fmt.Fprintf(p.w, "Complexity Score,%.2f\n", p.statsData.ComplexityScore)
 	_, _ = fmt.Fprintf(p.w, "Impact Score,%d\n", p.statsData.ImpactScore)
 	_, _ = fmt.Fprintf(p.w, "Health Score,%s\n", p.statsData.HealthScore)
+	_, _ = fmt.Fprintf(p.w, "\n")
+	_, _ = fmt.Fprintf(p.w, "Note,Metrics count unique duplicate patterns not total occurrences\n")
 }
 
 // printText prints statistics in text format.
@@ -126,6 +128,11 @@ func (p *stats) printText() {
 	// Print actionable recommendations
 	_, _ = fmt.Fprintf(p.w, "\n%s\n", p.header.Render("Recommendations:"))
 	p.printRecommendations()
+
+	// Print methodology note
+	_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Note:"))
+	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render("Metrics count unique duplicate patterns, not total occurrences."))
+	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render("A clone group with 3 instances counts once for line calculations."))
 }
 
 // printJSON prints statistics in JSON format.
@@ -157,6 +164,7 @@ func (p *stats) printJSON() {
 			AnalysisTime string `json:"analysisTime,omitempty"`
 			Timestamp    string `json:"timestamp,omitempty"`
 		} `json:"metrics"`
+		Note             string `json:"note"`
 		SizeDistribution map[string]int `json:"sizeDistribution"`
 		TopFiles         []struct {
 			Filename string `json:"filename"`
@@ -205,6 +213,9 @@ func (p *stats) printJSON() {
 
 	// Fill size distribution
 	jsonData.SizeDistribution = p.statsData.SizeDistribution
+
+	// Add methodology note
+	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."
 
 	// Fill top files
 	if len(p.statsData.FileDuplication) > 0 {

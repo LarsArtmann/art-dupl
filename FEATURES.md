@@ -1,13 +1,20 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2025-12-15  
-> **Version:** Analysis of main branch
+> **Last Updated:** 2026-02-12  
+> **Version:** Analysis of fork branch
 
 ## Overview
 
 **art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values.
 
 ## 🚀 Core Features
+
+### Supported Languages
+
+|| Language | Extension | Status | Description |
+| -------- | --------- | ------ | ----------- |
+| **Go**   | `.go`     | FULLY_FUNCTIONAL | Primary language with full AST analysis |
+| **Templ**| `.templ`  | FULLY_FUNCTIONAL | Templ template files via tree-sitter parsing (use `-include-templ` flag) |
 
 ### Detection Methods
 
@@ -26,6 +33,26 @@
 | **JSON Output**              | FULLY_FUNCTIONAL | Structured data with metadata, statistics, and summary information      |
 | **Plumbing Output**          | FULLY_FUNCTIONAL | Machine-readable format for script integration and CI/CD                |
 | **Batch Generation (--all)** | FULLY_FUNCTIONAL | Generate all output formats for all detection methods at once           |
+
+### Statistics Subcommand
+
+| Feature                  | Status           | Description                                                    |
+| ------------------------ | ---------------- | -------------------------------------------------------------- |
+| **Text Stats**           | FULLY_FUNCTIONAL | Human-readable statistics summary (default)                    |
+| **JSON Stats**           | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                    |
+| **CSV Stats**            | FULLY_FUNCTIONAL | Spreadsheet-compatible format for reporting                    |
+| **Clone Metrics**        | FULLY_FUNCTIONAL | Total clones, files affected, duplication percentage           |
+| **Estimated Lines**      | FULLY_FUNCTIONAL | Actual line count from parsed files (not estimated)            |
+| **Spread Analysis**      | FULLY_FUNCTIONAL | Complexity scores showing how widely clones are spread         |
+
+### Smart Filtering
+
+| Feature                   | Status           | Description                                                    |
+| ------------------------- | ---------------- | -------------------------------------------------------------- |
+| **SQLC Detection**        | FULLY_FUNCTIONAL | Auto-detects and filters SQLC generated code                   |
+| **Templ Filtering**       | FULLY_FUNCTIONAL | Filters .templ files by default (use `-include-templ` to include) |
+| **Custom Include/Exclude**| FULLY_FUNCTIONAL | Pattern-based filtering with glob syntax                       |
+| **Filter-Generated Flag** | FULLY_FUNCTIONAL | Single flag to filter both SQLC and Templ generated code       |
 
 ### Sorting Options
 
@@ -80,7 +107,7 @@
 
 | Limitation         | Impact | Status                                             |
 | ------------------ | ------ | -------------------------------------------------- |
-| **Go Only**        | High   | Only analyzes Go source files (.go extension)      |
+| **Go & Templ Only**| High   | Only analyzes Go (.go) and Templ (.templ) files    |
 | **Large Files**    | Medium | May have performance issues with very large files  |
 | **Memory Usage**   | Medium | Can consume significant memory for large codebases |
 | **Hash Collision** | Low    | Theoretical possibility of SHA1 collisions         |
@@ -228,4 +255,4 @@ The tool successfully combines the simplicity of the original dupl tool with mod
 
 ---
 
-_This documentation reflects the state of the main branch as of 2025-12-15. For the latest information, check the repository directly._
+_This documentation reflects the state of the fork branch as of 2026-02-12. For the latest information, check the repository directly._

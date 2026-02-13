@@ -29,7 +29,7 @@ func (se StringEnum) String() string {
 //	func (e *MyEnum) UnmarshalJSON(data []byte) error {
 //		return enum.UnmarshalJSON(e, data, MyEnumType, MyEnumValue1)
 //	}
-func UnmarshalJSON[T StringEnum](dest *T, data []byte, typeName string, defaultValue T, validValues ...T) error {
+func UnmarshalJSON[T ~StringEnum](dest *T, data []byte, typeName string, defaultValue T, validValues ...T) error {
 	str := string(data)
 	// Remove quotes if present
 	str = strings.TrimSpace(str)
@@ -62,7 +62,7 @@ func UnmarshalJSON[T StringEnum](dest *T, data []byte, typeName string, defaultV
 //	func (e MyEnum) MarshalJSON() ([]byte, error) {
 //		return enum.MarshalJSON(e, MyEnumValue1, MyEnumValue2)
 //	}
-func MarshalJSON[T StringEnum](value T, validValues ...T) ([]byte, error) {
+func MarshalJSON[T ~StringEnum](value T, validValues ...T) ([]byte, error) {
 	// Validate that current value is in valid list
 	if slices.Contains(validValues, value) {
 		return json.Marshal(string(value))
@@ -74,7 +74,7 @@ func MarshalJSON[T StringEnum](value T, validValues ...T) ([]byte, error) {
 }
 
 // UnmarshalJSONFromStrings unmarshals JSON using a string slice for validation.
-func UnmarshalJSONFromStrings[T StringEnum](dest *T, data []byte, typeName string, defaultValue T, validStrings []string) error {
+func UnmarshalJSONFromStrings[T ~StringEnum](dest *T, data []byte, typeName string, defaultValue T, validStrings []string) error {
 	str := string(data)
 	str = strings.TrimSpace(str)
 	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
@@ -98,7 +98,7 @@ func UnmarshalJSONFromStrings[T StringEnum](dest *T, data []byte, typeName strin
 }
 
 // ParseEnum parses a string into an enum type with validation.
-func ParseEnum[T StringEnum](str string, defaultValue T, validValues ...T) T {
+func ParseEnum[T ~StringEnum](str string, defaultValue T, validValues ...T) T {
 	str = strings.TrimSpace(str)
 	if str == "" {
 		return defaultValue
@@ -112,7 +112,7 @@ func ParseEnum[T StringEnum](str string, defaultValue T, validValues ...T) T {
 }
 
 // EnumToStringSlice converts enum values to string slice.
-func EnumToStringSlice[T StringEnum](enums ...T) []string {
+func EnumToStringSlice[T ~StringEnum](enums ...T) []string {
 	result := make([]string, 0, len(enums))
 	for _, e := range enums {
 		result = append(result, string(e))
@@ -169,12 +169,12 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 }
 
 // ValidateEnum checks if an enum value is in the list of valid values.
-func ValidateEnum[T StringEnum](value T, validValues ...T) bool {
+func ValidateEnum[T ~StringEnum](value T, validValues ...T) bool {
 	return slices.Contains(validValues, value)
 }
 
 // EnumNames returns string names of enum values.
-func EnumNames[T StringEnum](enums ...T) []string {
+func EnumNames[T ~StringEnum](enums ...T) []string {
 	names := make([]string, 0, len(enums))
 	for _, e := range enums {
 		names = append(names, string(e))
