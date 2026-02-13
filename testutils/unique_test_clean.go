@@ -54,6 +54,7 @@ func TestUniqueFunction_Clean(t *testing.T) {
 
 // testUniquenessHelper tests that UniqueTestHelper generates unique strings.
 func testUniquenessHelper(t *testing.T, count int) {
+	t.Helper()
 	uniqueSet := make(map[string]bool)
 
 	for range count {
