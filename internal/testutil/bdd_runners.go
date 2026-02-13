@@ -87,8 +87,6 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.
-//
-//nolint:funcorder // helper method
 func (s *BDDTestSetup) runCommandAndVerify(execute func() ([]byte, error)) string {
 	if s.T != nil {
 		s.T.Helper()

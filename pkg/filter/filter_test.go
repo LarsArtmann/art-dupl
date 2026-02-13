@@ -152,7 +152,7 @@ func TestNewFilter(t *testing.T) {
 // patternSetter is a function type for setting patterns on a Filter.
 type patternSetter func(*Filter, []string)
 
-// Common test pattern constants to avoid duplication
+// Common test pattern constants to avoid duplication.
 var (
 	testIncludePatterns = []string{"vendor/*", "generated/keep.go"}
 	testExcludePatterns = []string{"test/*", "*.pb.go"}
@@ -376,7 +376,7 @@ func createTempFile(t *testing.T, name, content string) string {
 	return filePath
 }
 
-// assertFilterBehavior creates a temp file and asserts the filter behavior
+// assertFilterBehavior creates a temp file and asserts the filter behavior.
 func assertFilterBehavior(t *testing.T, name, content string, opts []FilterOption, shouldFilter bool) {
 	t.Helper()
 	tmpFile := createTempFile(t, name, content)

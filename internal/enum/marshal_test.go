@@ -306,7 +306,7 @@ func TestEnumNames(t *testing.T) {
 	}
 }
 
-// validatableTestEnum for testing EnumType interface
+// validatableTestEnum for testing EnumType interface.
 type validatableTestEnum StringEnum
 
 const (
