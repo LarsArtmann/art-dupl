@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -45,37 +46,9 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
-		//nolint:gosec //G304 filename is constructed from controlled config output dir and format
-		file, err := os.Create(filename)
-		if err != nil {
-			return fmt.Errorf("failed to create output file %q: %w", filename, err)
+		if err := writeFormatFile(ctx, cfg, matches, parseStats, format, filename, sortByEnum, detectionMethodStr); err != nil {
+			return err
 		}
-		// TODO: DEFER ANTI-PATTERN - defer in loop. Consider refactoring to check error immediately
-		defer func() {
-			if err := file.Close(); err != nil {
-				fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, err)
-			}
-		}()
-
-		p := createPrinter(format, cfg.Threshold)(file, os.ReadFile)
-
-		if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-			jsonPrinter.SetFilesCount(parseStats.FilesCount)
-		}
-
-		// Create channel from matches for this printer
-		matchChan := make(chan syntax.Match)
-		go func() {
-			defer close(matchChan)
-			for _, match := range matches {
-				matchChan <- match
-			}
-		}()
-
-		if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
-			return fmt.Errorf("failed to print %s format: %w", format, err)
-		}
-
 		fmt.Fprintf(os.Stderr, "  ✅ Generated %s\n", filename)
 	}
 
@@ -90,4 +63,44 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 		matches = append(matches, match)
 	}
 	return matches
+}
+
+// parseStats holds parsing statistics for output generation.
+type parseStats interface {
+	GetFilesCount() int
+}
+
+// writeFormatFile writes a single output format to a file.
+func writeFormatFile(_ context.Context, cfg *config.Config, matches []syntax.Match, parseStats interface{ GetFilesCount() int }, format config.OutputFormat, filename string, sortByEnum printer.SortBy, detectionMethodStr string) error {
+	//nolint:gosec //G304 filename is constructed from controlled config output dir and format
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("failed to create output file %q: %w", filename, err)
+	}
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
+		}
+	}()
+
+	p := createPrinter(format, cfg.Threshold)(file, os.ReadFile)
+
+	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		jsonPrinter.SetFilesCount(parseStats.GetFilesCount())
+	}
+
+	// Create channel from matches for this printer
+	matchChan := make(chan syntax.Match)
+	go func() {
+		defer close(matchChan)
+		for _, match := range matches {
+			matchChan <- match
+		}
+	}()
+
+	if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
+		return fmt.Errorf("failed to print %s format: %w", format, err)
+	}
+
+	return nil
 }
