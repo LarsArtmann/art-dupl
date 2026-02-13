@@ -58,7 +58,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
+		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods)) //nolint:wrapcheck // Error already wrapped by WrapValidation
 	}
 	appConfig.DetectionMethods = parsedMethods
 
@@ -90,7 +90,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := time.ParseDuration(timeoutStr)
 		if err != nil {
-			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
+			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr)) //nolint:wrapcheck // Error already wrapped by WrapValidation
 		}
 		appConfig.Timeout = int(duration.Seconds())
 	}
@@ -119,7 +119,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
+		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths)) //nolint:wrapcheck // Error already wrapped by WrapValidation
 	}
 
 	// Get context from Cobra (includes Fang's signal handling)

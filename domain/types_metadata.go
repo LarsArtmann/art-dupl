@@ -41,7 +41,7 @@ func (conf Confidence) MarshalJSON() ([]byte, error) {
 			nil,
 		)
 	}
-	return json.Marshal(float64(conf))
+	return json.Marshal(float64(conf)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Confidence.
@@ -83,7 +83,7 @@ func (cs ComplexityScore) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for ComplexityScore.
 func (cs ComplexityScore) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint16(cs))
+	return json.Marshal(uint16(cs)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ComplexityScore.

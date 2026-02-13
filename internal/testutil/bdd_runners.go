@@ -64,7 +64,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
 	cmd.Stdin = strings.NewReader(stdin)
-	return cmd.CombinedOutput()
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
@@ -83,7 +83,7 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 	}
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
-	return cmd.CombinedOutput()
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.

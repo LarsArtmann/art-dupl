@@ -105,7 +105,7 @@ func (bp BytePosition) Uint() uint {
 
 // MarshalJSON implements json.Marshaler for BytePosition.
 func (bp BytePosition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint32(bp))
+	return json.Marshal(uint32(bp)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for BytePosition.
