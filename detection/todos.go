@@ -276,8 +276,6 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 	return issues
 }
 
-
-
 // getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
 	return []LegacyPattern{

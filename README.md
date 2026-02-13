@@ -94,13 +94,14 @@ Use with:
 ### Supported Languages
 
 | Language | Extension | Support Level |
-|----------|-----------|---------------|
+| -------- | --------- | ------------- |
 | Go       | `.go`     | Full analysis |
 | Templ    | `.templ`  | Full analysis |
 
 **Note:** `.templ` files (from [templ.guide](https://templ.guide)) are fully analyzed for code clones.
 By default, templ files are filtered as generated code. Use `-include-templ` to analyze them.
-```
+
+````
 
 ### Subcommands
 
@@ -108,7 +109,7 @@ By default, templ files are filtered as generated code. Use `-include-templ` to 
 
 ```bash
 art-dupl stats [flags] [paths...]
-```
+````
 
 Supports all root command flags plus:
 

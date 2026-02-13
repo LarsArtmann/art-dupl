@@ -16,8 +16,8 @@ import (
 	"os"
 	"strings"
 
-	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 	tree_sitter_templ "github.com/LarsArtmann/art-dupl/internal/treesitter/templ"
+	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -58,22 +58,22 @@ const (
 	ComponentSwitchExpressionCase
 	ComponentSwitchDefaultCase
 
-	// Attributes (structural)
+	// Attributes (structural).
 	Attribute
 	SpreadAttributes
 	ConditionalAttributeIfStatement
 
-	// Expressions and blocks
+	// Expressions and blocks.
 	Expression
 	ComponentBlock
 	ComponentRender
 	ComponentChildrenExpression
 	RawGoBlock
 
-	// Imports
+	// Imports.
 	ComponentImport
 
-	// File root
+	// File root.
 	File
 )
 
@@ -81,29 +81,29 @@ const (
 // Only includes node types that are meaningful for clone detection.
 var nodeTypeMap = map[string]int32{
 	// Core declarations - high value
-	"component_declaration":   ComponentDeclaration,
-	"css_declaration":         CSSDeclaration,
-	"script_declaration":      ScriptDeclaration,
+	"component_declaration": ComponentDeclaration,
+	"css_declaration":       CSSDeclaration,
+	"script_declaration":    ScriptDeclaration,
 
 	// HTML structure - high value
-	"element":           Element,
-	"tag_start":         TagStart,
-	"tag_end":           TagEnd,
-	"self_closing_tag":  SelfClosingTag,
-	"doctype":           Doctype,
+	"element":          Element,
+	"tag_start":        TagStart,
+	"tag_end":          TagEnd,
+	"self_closing_tag": SelfClosingTag,
+	"doctype":          Doctype,
 
 	// Style/Script elements
 	"style_element":  StyleElement,
 	"script_element": ScriptElement,
 
 	// Flow control - high value
-	"component_if_statement":    ComponentIfStatement,
-	"component_for_statement":   ComponentForStatement,
-	"component_switch_statement":  ComponentSwitchStatement,
+	"component_if_statement":     ComponentIfStatement,
+	"component_for_statement":    ComponentForStatement,
+	"component_switch_statement": ComponentSwitchStatement,
 
 	// Attributes - structural only
-	"attribute":                       Attribute,
-	"spread_attributes":               SpreadAttributes,
+	"attribute":                          Attribute,
+	"spread_attributes":                  SpreadAttributes,
 	"conditional_attribute_if_statement": ConditionalAttributeIfStatement,
 
 	// Expressions and blocks
@@ -122,28 +122,28 @@ var nodeTypeMap = map[string]int32{
 // that don't contribute meaningfully to clone detection.
 var skipNodeTypes = map[string]bool{
 	// Content nodes - skip to focus on structure
-	"element_text":         true,
-	"style_element_text":   true,
-	"script_element_text":  true,
-	"script_block_text":    true,
-	"element_comment":      true,
+	"element_text":        true,
+	"style_element_text":  true,
+	"script_element_text": true,
+	"script_block_text":   true,
+	"element_comment":     true,
 
 	// Identifier/name nodes - skip to avoid name-based false positives
-	"element_identifier":     true,
-	"attribute_name":         true,
-	"package_identifier":     true,
-	"identifier":             true,
-	"_component_identifier":  true,
-	"_css_identifier":        true,
-	"_script_identifier":     true,
+	"element_identifier":    true,
+	"attribute_name":        true,
+	"package_identifier":    true,
+	"identifier":            true,
+	"_component_identifier": true,
+	"_css_identifier":       true,
+	"_script_identifier":    true,
 
 	// Value nodes - skip to avoid content-based false positives
-	"attribute_value":            true,
-	"quoted_attribute_value":     true,
+	"attribute_value":               true,
+	"quoted_attribute_value":        true,
 	"dynamic_class_attribute_value": true,
-	"css_property_value":         true,
-	"css_property_name":          true,
-	"css_property":               true,
+	"css_property_value":            true,
+	"css_property_name":             true,
+	"css_property":                  true,
 }
 
 // Parse parses the given templ file and returns the unified syntax tree.

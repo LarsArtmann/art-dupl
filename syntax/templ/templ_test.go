@@ -155,7 +155,7 @@ templ hello() {
 	<div>Hello</div>
 }
 `
-	if err := os.WriteFile(tmpFile, []byte(content), 0644); err != nil {
+	if err := os.WriteFile(tmpFile, []byte(content), 0o644); err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 

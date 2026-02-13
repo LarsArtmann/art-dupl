@@ -312,7 +312,7 @@ func TestWriteFormatFile(t *testing.T) {
 	})
 }
 
-// Printer interface mock for testing
+// Printer interface mock for testing.
 type mockPrinter struct {
 	headerCalled bool
 	footerCalled bool

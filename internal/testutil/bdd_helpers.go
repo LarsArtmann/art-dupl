@@ -149,7 +149,7 @@ func vendorFunc() { println(1) }`
 // CreateVendorDuplicateFiles creates duplicate files in a vendor directory with the given vendor path and code content.
 // This is a convenience helper for testing vendor directory filtering behavior.
 // Returns an error if directory creation or file writing fails.
-func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath string, code string) error {
+func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error {
 	if s.T != nil {
 		s.T.Helper()
 	}

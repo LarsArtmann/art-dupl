@@ -23,7 +23,7 @@ import (
 // - Invalid configuration handling
 // - Configuration validation
 
-// newBDDTestSetup creates a new BDDTestSetup and registers cleanup for Ginkgo tests
+// newBDDTestSetup creates a new BDDTestSetup and registers cleanup for Ginkgo tests.
 func newBDDTestSetup() *testutil.BDDTestSetup {
 	setup, err := testutil.NewBDDTestSetupForGinkgo()
 	Expect(err).NotTo(HaveOccurred())
@@ -97,7 +97,7 @@ func pathTest() {}`
 			// Change to temp directory so relative paths work
 			originalDir, _ := os.Getwd()
 			defer func() { _ = os.Chdir(originalDir) }() // test cleanup
-			_ = os.Chdir(setup.TmpDir)                 // test setup
+			_ = os.Chdir(setup.TmpDir)                   // test setup
 
 			// Run with config file (uses paths from config)
 			output, err := setup.RunArtDupl("--config", configPath)
@@ -214,7 +214,7 @@ func singleMethod() string {
 		})
 	})
 
-		// runConfigTest is a helper to run config tests with standard validation
+	// runConfigTest is a helper to run config tests with standard validation
 	runConfigTest := func(configContent, code string, fileNames []string) {
 		output, err := runWithConfig(configContent, code, fileNames)
 		Expect(err).ToNot(HaveOccurred())

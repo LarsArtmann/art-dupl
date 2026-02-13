@@ -65,7 +65,7 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	tmpDir, err := os.MkdirTemp("", "art-dupl-bdd-*")
 	if err != nil {
-	return nil, fmt.Errorf("failed to create temporary directory: %w", err)
+		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
 	// Build binary once using sync.Once to avoid concurrent builds

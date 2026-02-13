@@ -409,7 +409,7 @@ func TestFindIssuesInFile_EmptyData(t *testing.T) {
 	finder := func(filename string, nodes []*syntax.Node) []string {
 		return nil
 	}
-	matchCreator := func(issue string, filename string) syntax.Match {
+	matchCreator := func(issue, filename string) syntax.Match {
 		return syntax.Match{Hash: issue}
 	}
 

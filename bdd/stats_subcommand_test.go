@@ -312,7 +312,7 @@ func %s() {}`, funcName)
 	})
 })
 
-// testWithStats is a helper function to test stats subcommand with various options
+// testWithStats is a helper function to test stats subcommand with various options.
 func testWithStats(setup *testutil.BDDTestSetup, testCode string, filenames []string, flags ...string) {
 	err := setup.CreateDuplicateFiles(filenames, testCode)
 	Expect(err).NotTo(HaveOccurred())
@@ -330,7 +330,7 @@ func testWithStats(setup *testutil.BDDTestSetup, testCode string, filenames []st
 	Expect(outputStr).ToNot(BeEmpty())
 }
 
-// containsThreshold checks if flags already contain threshold argument
+// containsThreshold checks if flags already contain threshold argument.
 func containsThreshold(flags []string) bool {
 	for _, flag := range flags {
 		if flag == "--threshold" || flag == "-t" {
@@ -340,12 +340,12 @@ func containsThreshold(flags []string) bool {
 	return false
 }
 
-// testDetectionMethod is a helper function to test a specific detection method
+// testDetectionMethod is a helper function to test a specific detection method.
 func testDetectionMethod(setup *testutil.BDDTestSetup, detectionMethod, testCode string, filenames []string) {
 	testWithStats(setup, testCode, filenames, "--detection-methods", detectionMethod)
 }
 
-// testWithFilterFlag is a helper function to test filter flag functionality
+// testWithFilterFlag is a helper function to test filter flag functionality.
 func testWithFilterFlag(setup *testutil.BDDTestSetup, testCode string, filenames []string, flag string) {
 	testWithStats(setup, testCode, filenames, flag)
 }

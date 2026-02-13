@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // testUintType is a helper for testing uint-based types with New*, Uint(), and RoundTrip methods.

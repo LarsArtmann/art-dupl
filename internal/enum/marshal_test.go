@@ -353,7 +353,7 @@ func TestMarshalJSONForInterface(t *testing.T) {
 	}
 }
 
-// Test round-trip JSON marshaling/unmarshalling
+// Test round-trip JSON marshaling/unmarshalling.
 func TestJSONRoundTrip(t *testing.T) {
 	type config struct {
 		Mode testEnum `json:"mode"`

@@ -255,7 +255,7 @@ func query() { println(1) }`
 		})
 	})
 
-Context("When both templ and sqlc files are present", func() {
+	Context("When both templ and sqlc files are present", func() {
 		It("should filter both by default", func() {
 			regularCode := `package main
 func process() { println(1) }`

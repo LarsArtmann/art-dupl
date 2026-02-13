@@ -164,7 +164,7 @@ func (p *stats) printJSON() {
 			AnalysisTime string `json:"analysisTime,omitempty"`
 			Timestamp    string `json:"timestamp,omitempty"`
 		} `json:"metrics"`
-		Note             string `json:"note"`
+		Note             string         `json:"note"`
 		SizeDistribution map[string]int `json:"sizeDistribution"`
 		TopFiles         []struct {
 			Filename string `json:"filename"`

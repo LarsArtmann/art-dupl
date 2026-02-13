@@ -1,4 +1,3 @@
-//nolint:forbidigo // example file uses fmt.Print* for demonstration output
 // Package examples demonstrates usage of domain types in art-dupl.
 //
 // This file provides comprehensive examples for using domain types
@@ -14,6 +13,8 @@
 // Run with:
 //
 //	go run examples/*.go
+//
+//nolint:forbidigo // example file uses fmt.Print* for demonstration output
 package examples
 
 import (

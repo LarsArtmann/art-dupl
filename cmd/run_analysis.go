@@ -51,7 +51,6 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, ou
 	// Initialize empty filter stats (will be populated if filter is enabled)
 	var filterStats filter.FilterStats
 
-
 	// Create filter based on config
 	var filterParam *filter.Filter
 	var filterOptions []filter.FilterOption
