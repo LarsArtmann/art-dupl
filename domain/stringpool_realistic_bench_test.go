@@ -18,7 +18,8 @@ func BenchmarkStringPool_RealisticDuplLoad(b *testing.B) {
 	b.ReportAllocs()
 
 	// Simulate the actual dupl workflow
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		// Scan phase: Intern filenames (writes, but limited)
 		if i < len(files) {
 			_ = pool.Intern(files[i])
@@ -34,6 +35,7 @@ func BenchmarkStringPool_RealisticDuplLoad(b *testing.B) {
 		// Fragment storage: Intern code fragments (writes, but limited)
 		fragIdx := i % len(fragments)
 		_ = pool.Intern(fragments[fragIdx])
+		i++
 	}
 }
 
@@ -81,7 +83,8 @@ func BenchmarkStringPool_NodeToClonePattern(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		// This is what actually happens in NodeToClone
 		clone := Clone{}
 		clone.SetFilename(files[i%len(files)])
@@ -92,6 +95,7 @@ func BenchmarkStringPool_NodeToClonePattern(b *testing.B) {
 		_ = clone.FilenameString()
 		_ = clone.FragmentString()
 		_ = clone.HashString()
+		i++
 	}
 }
 

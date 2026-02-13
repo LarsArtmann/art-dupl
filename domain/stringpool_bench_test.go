@@ -13,9 +13,11 @@ func BenchmarkStringPool_SingleGoroutine(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		id := pool.Intern(fmt.Sprintf("file%d.go", i%100))
 		_ = pool.Lookup(id)
+		i++
 	}
 }
 
@@ -128,7 +130,7 @@ func BenchmarkStringPool_Stats(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 
-	for range b.N {
+	for b.Loop() {
 		_ = pool.Stats()
 	}
 }

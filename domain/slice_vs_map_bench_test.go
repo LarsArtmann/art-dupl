@@ -13,8 +13,10 @@ func BenchmarkSliceLookup(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		_ = pool[i%1000] // Slice access
+		i++
 	}
 }
 
@@ -26,15 +28,17 @@ func BenchmarkMapLookup(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		_ = pool[uint32(i%1000)] // Map access
+		i++
 	}
 }
 
 // BenchmarkSliceMemory measures memory overhead.
 func BenchmarkSliceMemory(b *testing.B) {
 	b.ReportAllocs()
-	for range b.N {
+	for b.Loop() {
 		_ = make([]string, 1000) // 1000 string slots
 	}
 }
@@ -42,7 +46,7 @@ func BenchmarkSliceMemory(b *testing.B) {
 // BenchmarkMapMemory measures memory overhead.
 func BenchmarkMapMemory(b *testing.B) {
 	b.ReportAllocs()
-	for range b.N {
+	for b.Loop() {
 		_ = make(map[uint32]string, 1000) // 1000 map slots
 	}
 }
@@ -120,10 +124,12 @@ func BenchmarkRoundTripSliceMap(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		s := fmt.Sprintf("file_%d.go", i%1000)
 		id := index[s] // string → ID
 		_ = slice[id]  // ID → string
+		i++
 	}
 }
 
@@ -139,9 +145,11 @@ func BenchmarkRoundTripMapMap(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := range b.N {
+	var i int
+	for b.Loop() {
 		s := fmt.Sprintf("file_%d.go", i%1000)
 		id := strToID[s] // string → ID
 		_ = idToStr[id]  // ID → string
+		i++
 	}
 }

@@ -15,7 +15,7 @@ func BenchmarkCloneMemory(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for range b.N {
+	for b.Loop() {
 		// Create a copy to measure allocation
 		_ = clone
 	}
@@ -26,7 +26,7 @@ func BenchmarkCloneCreation(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for range b.N {
+	for b.Loop() {
 		clone := Clone{}
 		clone.SetFilename("test.go")
 		clone.SetFragment("func main() {}")
@@ -48,7 +48,7 @@ func BenchmarkCloneSliceMemory(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for range b.N {
+	for b.Loop() {
 		// Create a copy of the slice
 		_ = clones
 	}
