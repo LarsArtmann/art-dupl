@@ -278,6 +278,78 @@ linters-settings:
 2. Analyzed ireturn linter warnings
 3. Documented linter categories and priorities
 
+### F. Linter Issue Details
+
+#### gosec Issues (36 total)
+
+Most common patterns:
+- **G101**: Hardcoded credentials (test fixtures, not real secrets)
+- **G104**: Unchecked errors (mostly in test code)
+- **G115**: Integer overflow potential (review needed)
+
+#### funlen Issues (22 total)
+
+Functions exceeding 60 lines:
+- `job/parse.go`: File parsing logic
+- `suffixtree/suffixtree.go`: Core algorithm
+- `printer/*.go`: Output formatters
+
+Recommendation: Extract helper functions where appropriate.
+
+#### cyclop Issues (11 total)
+
+Complex functions with cyclomatic complexity > 10:
+- Detection coordination logic
+- AST processing functions
+- Configuration parsing
+
+### G. Dependency Analysis
+
+**Core Dependencies:**
+```
+github.com/charmbracelet/fang      - CLI framework
+github.com/spf13/cobra             - Command interface
+github.com/samber/mo               - Result/Option types
+github.com/onsi/ginkgo/v2          - BDD testing
+github.com/onsi/gomega             - Matchers
+github.com/zeebo/xxh3              - Fast hashing
+```
+
+**Dependency Health:**
+- All dependencies up to date
+- No known vulnerabilities
+- Minimal external footprint
+
+### H. Performance Considerations
+
+**XXH3 Hash Implementation:**
+- ~20x faster than SHA-256
+- Used in `hash/` package for content fingerprinting
+- SIMD optimizations available via `internal/simd`
+
+**Memory Profile:**
+- Stream processing prevents memory bloat
+- StringPool deduplicates AST tokens
+- Maximum children limit prevents stack overflow
+
+### I. Architecture Notes
+
+**Package Layering:**
+```
+cmd/         → Entry point (depends on all)
+cli/         → CLI runtime
+detection/   → Detection coordination
+suffixtree/  → Core algorithm
+syntax/      → AST processing
+domain/      → Domain types (no external deps)
+```
+
+**Key Design Patterns:**
+- Factory pattern: `printer/`, `pkg/artdupl/`, `pkg/logger/`
+- Adapter pattern: `adapter/` for printer abstraction
+- Strategy pattern: Multiple detection methods
+
 ---
 
 _Report generated: 2026-02-13 23:46_
+_Appendix updated: 2026-02-13 23:46_
