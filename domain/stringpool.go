@@ -163,7 +163,7 @@ type PoolStats struct {
 // Initialized lazily on first use.
 var (
 	globalPool     *StringInternPool
-	globalPoolOnce sync.Once
+	globalPoolOnce = &sync.Once{}
 )
 
 // GlobalPool returns the shared string interning pool.
@@ -190,7 +190,7 @@ func SetGlobalPoolForTesting(pool *StringInternPool) func() {
 	originalOnce := globalPoolOnce
 
 	globalPool = pool
-	globalPoolOnce = sync.Once{}
+	globalPoolOnce = &sync.Once{}
 
 	return func() {
 		globalPool = originalPool
