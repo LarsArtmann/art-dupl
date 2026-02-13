@@ -17,7 +17,7 @@ func generateRandomSuffix() string {
 	const suffixLength = 3
 	suffix := make([]byte, suffixLength)
 	for i := range suffixLength {
-		suffix[i] = byte('a' + rand.Intn(26)) //nolint:gosec //G404 Test data only, cryptographic security not required
+		suffix[i] = byte('a' + rand.Intn(26)) // #nosec G404 -- Test data only, cryptographic security not required
 	}
 	return string(suffix)
 }

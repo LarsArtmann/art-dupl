@@ -83,7 +83,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 
 	for _, filename := range files {
 		// Read file content
-		content, err := os.ReadFile(filename) //nolint:gosec //G304 Filename comes from user-provided paths, verified by caller
+		content, err := os.ReadFile(filename) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 		if err != nil {
 			continue // Skip files that can't be read
 		}
@@ -157,7 +157,7 @@ func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, thresh
 				node := &syntax.Node{
 					Filename: fileHash.Filename,
 					Pos:      0,
-					End:      int32(fileHash.Size),
+					End:      int32(fileHash.Size), // #nosec G115 -- File sizes bounded by int32 in practice
 					Type:     1, // Use a generic type
 				}
 

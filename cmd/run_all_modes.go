@@ -67,7 +67,7 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 
 // writeFormatFile writes a single output format to a file.
 func writeFormatFile(_ context.Context, cfg *config.Config, matches []syntax.Match, parseStats job.ParseStats, format config.OutputFormat, filename string, sortByEnum printer.SortBy, detectionMethodStr string) error {
-	//nolint:gosec //G304 filename is constructed from controlled config output dir and format
+	// #nosec G304 -- filename is constructed from controlled config output dir and format
 	file, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create output file %q: %w", filename, err)

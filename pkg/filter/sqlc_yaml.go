@@ -116,7 +116,7 @@ func tryAddSQLCConfig(parentPath, filename string, configs map[string]string) {
 
 // ParseSQLCConfig reads and parses a sqlc.yaml file.
 func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
-	data, err := os.ReadFile(configPath)
+	data, err := os.ReadFile(configPath) // #nosec G304 -- configPath is from controlled source (project directory)
 	if err != nil {
 		return nil, errors.WrapFile(err, configPath, "reading sqlc config") //nolint:wrapcheck // Error already wrapped by WrapFile
 	}

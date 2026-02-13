@@ -133,7 +133,7 @@ func DefaultConfig() *Config {
 //	domainThreshold, err := cfg.GetThresholdAsDomain()
 //	if err != nil { ... }
 func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
-	threshold, err := domain.NewThreshold(uint(c.Threshold)) //nolint:gosec //G115 Threshold values are bounded (0-1000)
+	threshold, err := domain.NewThreshold(uint(c.Threshold)) // #nosec G115 -- Threshold values are bounded (0-1000)
 	if err != nil {
 		return 0, errors.NewConfigError("invalid threshold in config", err)
 	}
@@ -149,7 +149,7 @@ func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 //	err := cfg.SetThresholdFromDomain(domainThreshold)
 func (c *Config) SetThresholdFromDomain(threshold domain.Threshold) error {
 	// No validation needed - domain.Threshold already validated
-	c.Threshold = int(threshold.Uint()) //nolint:gosec //G115 Threshold values are bounded (0-1000)
+	c.Threshold = int(threshold.Uint()) // #nosec G115 -- Threshold values are bounded (0-1000)
 	return nil
 }
 
@@ -159,7 +159,7 @@ func LoadConfig(filename string) (*Config, error) {
 		return nil, errors.NewConfigError("config file not found: "+filename, nil)
 	}
 
-	//nolint:gosec // G304: filename is controlled config path, not user input
+	// #nosec G304 -- filename is controlled config path, not user input
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, errors.NewIOError(filename, "failed to read config file", err)
@@ -180,7 +180,7 @@ func LoadConfig(filename string) (*Config, error) {
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(filename)
-	if err := os.MkdirAll(dir, 0o755); err != nil { //nolint:gosec //G301 Config directory needs readable permission
+	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- Config directory needs readable permission
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 
@@ -189,7 +189,7 @@ func SaveConfig(config *Config, filename string) error {
 		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
-	err = os.WriteFile(filename, data, 0o644) //nolint:gosec //G306 Config file needs to be readable by user
+	err = os.WriteFile(filename, data, 0o644) // #nosec G306 -- Config file needs to be readable by user
 	if err != nil {
 		return errors.NewIOError(filename, "failed to write config file", err)
 	}

@@ -154,7 +154,7 @@ func Parse(filename string) (*syntax.Node, error) {
 
 // ParseWithLineCount parses the given templ file and returns the syntax tree along with the line count.
 func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
-	content, err := os.ReadFile(filename) //nolint:gosec //G304 filename comes from controlled file system walk
+	content, err := os.ReadFile(filename) // #nosec G304 -- filename comes from controlled file system walk
 	if err != nil {
 		return nil, 0, err //nolint:wrapcheck // Pass through os.ReadFile error
 	}
@@ -222,8 +222,8 @@ func (t *transformer) transform(node *tree_sitter.Node) *syntax.Node {
 	o.Filename = t.filename
 
 	// Set positions
-	o.Pos = int32(node.StartByte()) //nolint:gosec //G115 File sizes bounded by int32 in practice
-	o.End = int32(node.EndByte())   //nolint:gosec //G115 File sizes bounded by int32 in practice
+	o.Pos = int32(node.StartByte()) // #nosec G115 -- File sizes bounded by int32 in practice
+	o.End = int32(node.EndByte())   // #nosec G115 -- File sizes bounded by int32 in practice
 
 	// Map the kind to our type constant
 	if typ, ok := nodeTypeMap[kind]; ok {

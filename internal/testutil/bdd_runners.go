@@ -19,7 +19,7 @@ func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, erro
 	if s.T != nil {
 		s.T.Helper()
 	}
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...)
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...) // #nosec G204 -- Test helper running project binary
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
@@ -43,7 +43,7 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]str
 		}
 	}
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
@@ -62,7 +62,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 		}
 	}
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
 	cmd.Stdin = strings.NewReader(stdin)
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
@@ -82,7 +82,7 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 		args = append(args, s.TmpDir)
 	}
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 

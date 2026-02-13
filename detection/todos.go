@@ -186,7 +186,7 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						todoText = strings.TrimSpace(matches[2])
 					}
 
-					lineNum, err := domain.NewLineNumber(uint16(line))
+					lineNum, err := domain.NewLineNumber(uint16(line)) // #nosec G115 -- Line numbers from parser are within uint16 range
 					if err != nil {
 						// Parser should ensure line >= 1, but if invalid, skip this entry
 						continue
@@ -251,7 +251,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 				// This is simplified - in a real implementation,
 				// we'd need to check if this node represents a call to the deprecated function
 				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
-					lineNum, err := domain.NewLineNumber(uint16(node.Pos))
+					lineNum, err := domain.NewLineNumber(uint16(node.Pos)) // #nosec G115 -- Node positions are within uint16 range
 					if err != nil {
 						// Invalid line number, skip this entry
 						continue

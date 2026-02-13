@@ -17,7 +17,7 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 	// Try to read file content
 	var fileContent []byte
 	if filename != "" {
-		//nolint:gosec // G304: filename is controlled input from syntax tree, not user input
+		// #nosec G304 -- filename is controlled input from syntax tree, not user input
 		if content, err := os.ReadFile(filename); err == nil {
 			fileContent = content
 		}
@@ -39,7 +39,7 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 		// Calculate size based on first node
 		startNode := nodeGroup[0]
 		endNode := nodeGroup[len(nodeGroup)-1]
-		size := uint(max(0, endNode.End-startNode.Pos)) //nolint:gosec //G115 size is always non-negative in valid clones
+		size := uint(max(0, endNode.End-startNode.Pos)) // #nosec G115 -- size is always non-negative in valid clones
 		totalSize += size
 
 		// Convert each node to domain clone

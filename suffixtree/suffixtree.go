@@ -184,7 +184,7 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 
 func (t *STree) At(p Pos) Token {
 	// Safe conversion: len(t.data) will not overflow Pos in practice
-	if p < 0 || p >= Pos(len(t.data)) { //nolint:gosec //G115 Data size won't exceed MaxInt32
+	if p < 0 || p >= Pos(len(t.data)) { // #nosec G115 -- Data size won't exceed MaxInt32
 		return nil
 	}
 	return t.data[p]
@@ -250,7 +250,7 @@ func (t *tran) len() int {
 func (t *tran) ActEnd() Pos {
 	if t.end == infinity {
 		// Safe conversion: tree data size won't overflow Pos in practice
-		return Pos(len(t.state.tree.data)) - 1 //nolint:gosec //G115 Data size won't exceed MaxInt32
+		return Pos(len(t.state.tree.data)) - 1 // #nosec G115 -- Data size won't exceed MaxInt32
 	}
 	return t.end
 }

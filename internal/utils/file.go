@@ -32,7 +32,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
-	if err := os.MkdirAll(dir, 0o755); err != nil { //nolint:gosec //G301 Test data needs readable directory permission
+	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- Test data needs readable directory permission
 		return errors.NewIOError(dir, "failed to create directory", err)
 	}
 
@@ -57,7 +57,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 		fullPath = filepath.Join(fp.baseDir, filename)
 	}
 
-	data, err := os.ReadFile(fullPath) //nolint:gosec //G304 Path is constructed from base directory and validated filename
+	data, err := os.ReadFile(fullPath) // #nosec G304 -- Path is constructed from base directory and validated filename
 	if err != nil {
 		return nil, errors.NewIOError(fullPath, "failed to read file", err)
 	}

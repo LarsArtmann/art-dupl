@@ -137,7 +137,7 @@ func AlignSlice(data []byte) []byte {
 //   - The type T is appropriate for the data
 //   - Alignment requirements are met
 func UnsafeBytes[T any](data []byte) *T {
-	return (*T)(unsafe.Pointer(&data[0]))
+	return (*T)(unsafe.Pointer(&data[0])) // #nosec G103 -- SIMD helper requires unsafe pointer operations
 }
 
 // UnsafeSlice casts a byte slice to a slice of a specific type.
@@ -146,7 +146,7 @@ func UnsafeBytes[T any](data []byte) *T {
 // WARNING: This function uses unsafe operations and must be used carefully.
 func UnsafeSlice[T any](data []byte) []T {
 	var t T
-	header := (*[1 << 30]T)(unsafe.Pointer(&data[0]))
+	header := (*[1 << 30]T)(unsafe.Pointer(&data[0])) // #nosec G103 -- SIMD helper requires unsafe pointer operations
 	n := len(data) / int(unsafe.Sizeof(t))
 	return header[:n:n]
 }

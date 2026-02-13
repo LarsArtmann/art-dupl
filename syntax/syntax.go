@@ -100,7 +100,7 @@ func serial(n *Node, stream *[]*Node) int {
 
 		count += serial(child, stream)
 	}
-	n.Owns = int32(count) //nolint:gosec //G115 Child count bounded by maxChildrenSerial
+	n.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildrenSerial
 	return int(n.Owns) + 1
 }
 

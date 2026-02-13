@@ -77,7 +77,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	if len(s.trans) == 0 {
 		pl := newPosList()
 		// Safe conversion: ensure start is non-negative
-		start := max(Pos(0), parent.end+1-Pos(length)) //nolint:gosec //G115 Positions are valid in tree context
+		start := max(Pos(0), parent.end+1-Pos(length)) // #nosec G115 -- Positions are valid in tree context
 		pl.add(start)
 		ch := 0
 		// Bounds check: ensure start-1 is within data slice bounds
@@ -98,7 +98,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	if length >= threshold && len(cl.lists) > 1 {
 		// Safe conversion: ensure length fits in int32
 		if length <= math.MaxInt32 {
-			m := Match{cl.getAll(), Pos(length)} //nolint:gosec //G115 Bounds checked above
+			m := Match{cl.getAll(), Pos(length)} // #nosec G115 -- Bounds checked above
 			ch <- m
 		}
 	}
