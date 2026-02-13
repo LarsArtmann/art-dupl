@@ -29,7 +29,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		// hash functions (SHA-256, etc.) - this hash is for deduplication only,
 		// not security. See: https://github.com/zeebo/xxh3
 		//
-		//nolint:gosec // G401,G505: Intentionally using non-cryptographic hash for performance
+
 		hashStr = formatDomainHash(xxh3.Hash([]byte(fragment)))
 	}
 

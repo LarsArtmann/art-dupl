@@ -162,7 +162,7 @@ func TestUnique(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-		result := utils.Unique(tt.input)
+			result := utils.Unique(tt.input)
 			if len(result) != tt.expected {
 				t.Errorf("unique() returned %d groups, want %d", len(result), tt.expected)
 			}

@@ -1069,7 +1069,7 @@ func TestUnmarshalStringID(t *testing.T) {
 	})
 
 	t.Run("empty string", func(t *testing.T) {
-		var result string //nolint:unused // Needed for callback signature
+		var result string
 		err := unmarshalStringID([]byte(`""`), "TestType", "TestType cannot be empty", func(s string) {
 			result = s
 		})
@@ -1080,7 +1080,7 @@ func TestUnmarshalStringID(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		var result string //nolint:unused // Needed for callback signature
+		var result string
 		err := unmarshalStringID([]byte(`invalid`), "TestType", "TestType cannot be empty", func(s string) {
 			result = s
 		})
@@ -1116,7 +1116,7 @@ func TestUnmarshalUint(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		var result uint //nolint:unused // Needed for callback signature
+		var result uint
 		err := unmarshalUint([]byte("invalid"), "TestType", func(n uint) {
 			result = n
 		})
@@ -1142,7 +1142,7 @@ func TestUnmarshalUintNonZero(t *testing.T) {
 	})
 
 	t.Run("zero value", func(t *testing.T) {
-		var result uint //nolint:unused // Needed for callback signature
+		var result uint
 		err := unmarshalUintNonZero([]byte("0"), "TestType", "TestType cannot be zero", func(n uint) {
 			result = n
 		})
@@ -1181,7 +1181,7 @@ func TestUnmarshalUintGeneric(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		var result uint16 //nolint:unused // Needed for callback signature
+		var result uint16
 		err := unmarshalUintGeneric[uint16]([]byte("invalid"), "TestType", func(n uint16) {
 			result = n
 		})

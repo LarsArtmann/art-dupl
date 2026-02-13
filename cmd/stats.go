@@ -245,7 +245,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, k := range keys {
-	uniq := utils.Unique(groups[k])
+		uniq := utils.Unique(groups[k])
 		if len(uniq) > 1 {
 			if err := p.PrintClones(uniq, printer.SortByHash); err != nil {
 				return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to process clones for hash "+k)

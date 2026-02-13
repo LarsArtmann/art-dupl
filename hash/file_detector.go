@@ -90,7 +90,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 
 		// Calculate XXH3 hash
 		//
-		//nolint:gosec // G401,G505: Intentionally using non-cryptographic hash for performance
+
 		hash := xxh3.Hash(content)
 
 		fileHash := FileHash{

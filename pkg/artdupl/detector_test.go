@@ -899,7 +899,7 @@ func createTestGoFile(t *testing.T, content string) string {
 	t.Helper()
 	tmpDir := t.TempDir()
 	filename := filepath.Join(tmpDir, "test.go")
-	err := os.WriteFile(filename, []byte(content), 0644)
+	err := os.WriteFile(filename, []byte(content), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
@@ -960,11 +960,11 @@ func duplicate() {
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
 
-	err := os.WriteFile(file1, []byte(duplicateCode), 0644)
+	err := os.WriteFile(file1, []byte(duplicateCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create file1: %v", err)
 	}
-	err = os.WriteFile(file2, []byte(duplicateCode), 0644)
+	err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create file2: %v", err)
 	}
