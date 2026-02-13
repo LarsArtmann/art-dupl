@@ -2,10 +2,8 @@ package artdupl
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // reportProgress reports analysis progress if callback is provided.

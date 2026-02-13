@@ -15,7 +15,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().Bool("html", false, "output results as HTML with syntax-highlighted code fragments")
 	rootCmd.Flags().BoolP("json", "j", false, "output structured JSON format with metadata and statistics")
 	rootCmd.Flags().BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
-	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical) (default: size)")
+	rootCmd.Flags().StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical), total-tokens (highest total token count) (default: size)")
 	rootCmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
 	rootCmd.Flags().BoolP("all", "a", false, "generate all output formats for all detection methods")
 	rootCmd.Flags().StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")

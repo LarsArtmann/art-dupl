@@ -393,36 +393,6 @@ func stdinPlumb() {}`
 	})
 })
 
-// Helper function to validate plumbing line format.
-func validatePlumbingLine(line string) error {
-	line = strings.TrimSpace(line)
-	if line == "" {
-		return nil
-	}
-
-	// Basic validation: should contain a .go file path
-	if !strings.Contains(line, ".go") {
-		return fmt.Errorf("line does not contain .go file path: %s", line)
-	}
-
-	// Should have position information (colon followed by numbers)
-	parts := strings.Split(line, ":")
-	if len(parts) < 2 {
-		return fmt.Errorf("line does not have position information: %s", line)
-	}
-
-	// Try to parse position as number or range
-	position := parts[len(parts)-1]
-	if _, err := strconv.Atoi(position); err != nil {
-		// Might be a range like "1,10"
-		if !strings.Contains(position, ",") {
-			return fmt.Errorf("invalid position format: %s", position)
-		}
-	}
-
-	return nil
-}
-
 // Helper function to parse plumbing output.
 func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 	var entries []PlumbingEntry

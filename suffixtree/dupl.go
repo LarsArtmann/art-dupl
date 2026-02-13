@@ -80,7 +80,8 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 		start := max(Pos(0), parent.end+1-Pos(length)) //nolint:gosec //G115 Positions are valid in tree context
 		pl.add(start)
 		ch := 0
-		if start > 0 {
+		// Bounds check: ensure start-1 is within data slice bounds
+		if start > 0 && int(start-1) < len(s.tree.data) {
 			ch = s.tree.data[start-1].Val()
 		}
 		cl.lists[ch] = pl

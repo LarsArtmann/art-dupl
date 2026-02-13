@@ -127,19 +127,6 @@ func (s *simdHasher) HashSlice(data [][]byte) [][]byte {
 	return (&fallbackHasher{}).HashSlice(data)
 }
 
-// alignForSIMD ensures data is properly aligned for SIMD operations.
-// SIMD instructions typically require 16, 32, or 64-byte alignment.
-func alignForSIMD(data [][]byte) [][]byte {
-	// TODO: Implement SIMD alignment when needed
-	//
-	// Key considerations:
-	// - Pad to SIMD register width (16, 32, or 64 bytes)
-	// - Ensure cache-line alignment for better performance
-	// - Consider memory locality for batch processing
-
-	return data
-}
-
 // VectorSize returns the optimal vector size for SIMD operations on this system.
 // This helps callers prepare data appropriately.
 func VectorSize() int {

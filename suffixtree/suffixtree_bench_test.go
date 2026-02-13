@@ -109,27 +109,6 @@ func BenchmarkFindTranFallback(b *testing.B) {
 	})
 }
 
-// benchmarkTreeOperationWithSearch is a helper for benchmarking tree operations that need
-// search tokens generated from the tree.
-func benchmarkTreeOperationWithSearch(b *testing.B, setup func() *STree, operation func(*STree, []Token)) {
-	tree := setup()
-
-	if len(tree.root.trans) == 0 {
-		b.Skip("No transitions to benchmark")
-	}
-
-	// Generate tokens to search for
-	tokens := make([]Token, 10)
-	for i := range tokens {
-		idx := i % len(tree.root.trans)
-		tokens[i] = tree.data[tree.root.trans[idx].start]
-	}
-
-	for b.Loop() {
-		operation(tree, tokens)
-	}
-}
-
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.
 func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*STree)) {
 	b.Helper()

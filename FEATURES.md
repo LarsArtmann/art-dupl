@@ -61,7 +61,7 @@
 | **Size Sorting**         | FULLY_FUNCTIONAL     | Sort clone groups by token count (largest first)                                                                     |
 | **Occurrence Sorting**   | FULLY_FUNCTIONAL     | Sort clone groups by number of files (most widespread first)                                                         |
 | **Hash Sorting**         | FULLY_FUNCTIONAL     | Sort clone groups by hash value (alphabetical)                                                                       |
-| **Total Tokens Sorting** | PARTIALLY_FUNCTIONAL | Implementation exists but not exposed in config (SortClonesByTotalTokens function exists but not in AllSortCriteria) |
+| **Total Tokens Sorting** | FULLY_FUNCTIONAL     | Sort clone groups by total token count (highest total first) |
 
 ## 🔧 Configuration Features
 
