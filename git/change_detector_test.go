@@ -178,9 +178,9 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetChangedFiles failed: %v", err)
 		}
-		// Should work with empty string defaulting to HEAD
-		if changes == nil {
-			t.Error("Expected non-nil changes slice")
+		// Should work with empty string defaulting to HEAD - no changes expected
+		if len(changes) != 0 {
+			t.Errorf("Expected 0 changes, got %d", len(changes))
 		}
 	})
 }
@@ -382,17 +382,18 @@ func TestChangeDetector_GetCurrentBranch(t *testing.T) {
 		}
 	})
 
-	t.Run("in git repo", func(t *testing.T) {
+	t.Run("in git repo with commits", func(t *testing.T) {
 		repoDir := setupGitRepo(t)
-		detector := NewChangeDetector(repoDir)
+		createAndCommitFile(t, repoDir, "initial.go", "package main")
 
+		detector := NewChangeDetector(repoDir)
 		branch, err := detector.GetCurrentBranch()
 		if err != nil {
 			t.Fatalf("GetCurrentBranch failed: %v", err)
 		}
-		// Default branch name varies (main, master, etc.)
-		if branch == "" {
-			t.Error("Expected non-empty branch name")
+		// Should return "main" (we init with -b main)
+		if branch != "main" {
+			t.Errorf("Expected branch 'main', got %q", branch)
 		}
 	})
 }
