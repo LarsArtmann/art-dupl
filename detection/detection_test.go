@@ -339,3 +339,126 @@ func TestFindIssuesGeneric_EmptyData(t *testing.T) {
 		t.Errorf("Expected 0 matches for empty data, got %d", matchCount)
 	}
 }
+
+// TestMultiDetector_FindDuplOver_DefaultMethod tests with default art-dupl method.
+func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
+	cfg := &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{
+		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+	}
+
+	detector := NewMultiDetector(cfg, data, tree, false)
+
+	// Should return a channel
+	matches := detector.FindDuplOver(15)
+	if matches == nil {
+		t.Error("FindDuplOver() returned nil channel")
+	}
+
+	// Drain the channel
+	for range matches {
+	}
+}
+
+// TestMultiDetector_FindDuplOver_HashMethod tests with hash detection method.
+func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
+	cfg := &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{
+		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+	}
+
+	detector := NewMultiDetector(cfg, data, tree, false)
+
+	// Should return a channel
+	matches := detector.FindDuplOver(15)
+	if matches == nil {
+		t.Error("FindDuplOver() returned nil channel")
+	}
+
+	// Drain the channel
+	for range matches {
+	}
+}
+
+// TestMultiDetector_FindDuplOver_BothMethods tests with both detection methods.
+func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
+	cfg := &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash},
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{
+		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+	}
+
+	detector := NewMultiDetector(cfg, data, tree, false)
+
+	// Should return a channel
+	matches := detector.FindDuplOver(15)
+	if matches == nil {
+		t.Error("FindDuplOver() returned nil channel")
+	}
+
+	// Drain the channel
+	for range matches {
+	}
+}
+
+// TestMultiDetector_FindDuplOver_Verbose tests verbose mode.
+func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
+	cfg := &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{
+		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+	}
+
+	detector := NewMultiDetector(cfg, data, tree, true) // verbose = true
+
+	// Should return a channel
+	matches := detector.FindDuplOver(15)
+	if matches == nil {
+		t.Error("FindDuplOver() returned nil channel")
+	}
+
+	// Drain the channel
+	for range matches {
+	}
+}
+
+// TestMultiDetector_FindDuplOver_EmptyData tests with empty data.
+func TestMultiDetector_FindDuplOver_EmptyData(t *testing.T) {
+	cfg := &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{}
+
+	detector := NewMultiDetector(cfg, data, tree, false)
+
+	// Should return a channel
+	matches := detector.FindDuplOver(15)
+	if matches == nil {
+		t.Error("FindDuplOver() returned nil channel")
+	}
+
+	// Drain the channel
+	for range matches {
+	}
+}
