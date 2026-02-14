@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -230,104 +231,52 @@ type Reader interface {
 	}
 }
 
-// TestParse_ForStmt tests that for statements are parsed correctly.
-func TestParse_ForStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "for.go")
-
-	code := `package main
+// TestParse_ControlStatements tests control flow statement parsing.
+func TestParse_ControlStatements(t *testing.T) {
+	tests := []struct {
+		name     string
+		code     string
+		nodeType int
+	}{
+		{
+			name: "ForStmt",
+			code: `package main
 
 func main() {
 	for i := 0; i < 10; i++ {
 		println(i)
 	}
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, ForStmt)
-	if !found {
-		t.Error("Parse() did not find ForStmt in parsed AST")
-	}
-}
-
-// TestParse_RangeStmt tests that range statements are parsed correctly.
-func TestParse_RangeStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "range.go")
-
-	code := `package main
+`,
+			nodeType: ForStmt,
+		},
+		{
+			name: "RangeStmt",
+			code: `package main
 
 func main() {
 	for _, v := range []int{1, 2, 3} {
 		println(v)
 	}
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, RangeStmt)
-	if !found {
-		t.Error("Parse() did not find RangeStmt in parsed AST")
-	}
-}
-
-// TestParse_IfStmt tests that if statements are parsed correctly.
-func TestParse_IfStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "if.go")
-
-	code := `package main
+`,
+			nodeType: RangeStmt,
+		},
+		{
+			name: "IfStmt",
+			code: `package main
 
 func main() {
 	if true {
 		println("yes")
 	}
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, IfStmt)
-	if !found {
-		t.Error("Parse() did not find IfStmt in parsed AST")
-	}
-}
-
-// TestParse_SwitchStmt tests that switch statements are parsed correctly.
-func TestParse_SwitchStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "switch.go")
-
-	code := `package main
+`,
+			nodeType: IfStmt,
+		},
+		{
+			name: "SwitchStmt",
+			code: `package main
 
 func main() {
 	switch 1 {
@@ -337,30 +286,12 @@ func main() {
 		println("other")
 	}
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, SwitchStmt)
-	if !found {
-		t.Error("Parse() did not find SwitchStmt in parsed AST")
-	}
-}
-
-// TestParse_SelectStmt tests that select statements are parsed correctly.
-func TestParse_SelectStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "select.go")
-
-	code := `package main
+`,
+			nodeType: SwitchStmt,
+		},
+		{
+			name: "SelectStmt",
+			code: `package main
 
 func main() {
 	select {
@@ -370,82 +301,54 @@ func main() {
 		println("default")
 	}
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, SelectStmt)
-	if !found {
-		t.Error("Parse() did not find SelectStmt in parsed AST")
-	}
-}
-
-// TestParse_DeferStmt tests that defer statements are parsed correctly.
-func TestParse_DeferStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "defer.go")
-
-	code := `package main
+`,
+			nodeType: SelectStmt,
+		},
+		{
+			name: "DeferStmt",
+			code: `package main
 
 func main() {
 	defer println("deferred")
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, DeferStmt)
-	if !found {
-		t.Error("Parse() did not find DeferStmt in parsed AST")
-	}
-}
-
-// TestParse_GoStmt tests that go statements are parsed correctly.
-func TestParse_GoStmt(t *testing.T) {
-	t.Parallel()
-
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "go.go")
-
-	code := `package main
+`,
+			nodeType: DeferStmt,
+		},
+		{
+			name: "GoStmt",
+			code: `package main
 
 func main() {
 	go println("goroutine")
 }
-`
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
+`,
+			nodeType: GoStmt,
+		},
 	}
 
-	node, err := Parse(tmpFile)
-	if err != nil {
-		t.Fatalf("Parse() error = %v", err)
-	}
-
-	found := findNodeType(node, GoStmt)
-	if !found {
-		t.Error("Parse() did not find GoStmt in parsed AST")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			testParseNodeType(t, tt.name, tt.code, tt.nodeType)
+		})
 	}
 }
 
-// TestParse_ReturnStmt tests that return statements are parsed correctly.
+// TestParse_ReturnStmt tests return statement parsing.
 func TestParse_ReturnStmt(t *testing.T) {
 	t.Parallel()
+	code := `package main
 
+func foo() int {
+	return 42
+}
+`
+	testParseNodeType(t, "return", code, ReturnStmt)
+}
+
+// TestParse_ReturnStmt tests that return statements are parsed correctly.
+func TestParse_ReturnStmt_Table(t *testing.T) {
+	t.Parallel()
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "return.go")
 
@@ -1296,4 +1199,84 @@ func findNodeType(node *syntax.Node, nodeType int) bool {
 		}
 	}
 	return false
+}
+
+// testParseNodeType is a helper for testing that specific node types are parsed correctly.
+// It creates a temporary file with the given code and verifies that findNodeType returns true.
+func testParseNodeType(t *testing.T, name string, code string, nodeType int) {
+	t.Helper()
+
+	tmpDir := t.TempDir()
+	tmpFile := filepath.Join(tmpDir, name+".go")
+
+	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	node, err := Parse(tmpFile)
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+
+	if !findNodeType(node, nodeType) {
+		t.Errorf("Parse() did not find %s in parsed AST", nodeTypeName(nodeType))
+	}
+}
+
+// nodeTypeName returns a human-readable name for a node type.
+func nodeTypeName(nodeType int) string {
+	names := map[int]string{
+		File:           "File",
+		FuncDecl:       "FuncDecl",
+		FuncLit:        "FuncLit",
+		GenDecl:        "GenDecl",
+		ValueSpec:      "ValueSpec",
+		TypeSpec:       "TypeSpec",
+		BlockStmt:      "BlockStmt",
+		IfStmt:         "IfStmt",
+		SwitchStmt:     "SwitchStmt",
+		TypeSwitchStmt: "TypeSwitchStmt",
+		CaseClause:     "CaseClause",
+		CommClause:     "CommClause",
+		SelectStmt:     "SelectStmt",
+		ForStmt:        "ForStmt",
+		RangeStmt:      "RangeStmt",
+		ReturnStmt:     "ReturnStmt",
+		AssignStmt:     "AssignStmt",
+		GoStmt:         "GoStmt",
+		DeferStmt:      "DeferStmt",
+		SendStmt:       "SendStmt",
+		IncDecStmt:     "IncDecStmt",
+		ExprStmt:       "ExprStmt",
+		CallExpr:       "CallExpr",
+		UnaryExpr:      "UnaryExpr",
+		BinaryExpr:     "BinaryExpr",
+		ParenExpr:      "ParenExpr",
+		SelectorExpr:   "SelectorExpr",
+		IndexExpr:      "IndexExpr",
+		SliceExpr:      "SliceExpr",
+		TypeAssertExpr: "TypeAssertExpr",
+		StarExpr:       "StarExpr",
+		StructType:     "StructType",
+		ArrayType:      "ArrayType",
+		MapType:        "MapType",
+		ChanType:       "ChanType",
+		FuncType:       "FuncType",
+		InterfaceType:  "InterfaceType",
+		CompositeLit:   "CompositeLit",
+		KeyValueExpr:   "KeyValueExpr",
+		Ident:          "Ident",
+		BasicLit:       "BasicLit",
+		Field:          "Field",
+		FieldList:      "FieldList",
+		LabeledStmt:    "LabeledStmt",
+		BranchStmt:     "BranchStmt",
+		DeclStmt:       "DeclStmt",
+		EmptyStmt:      "EmptyStmt",
+	}
+
+	if name, ok := names[nodeType]; ok {
+		return name
+	}
+	return fmt.Sprintf("NodeType(%d)", nodeType)
 }
