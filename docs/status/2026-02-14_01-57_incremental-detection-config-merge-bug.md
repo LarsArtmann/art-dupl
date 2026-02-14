@@ -16,23 +16,23 @@ The incremental detection feature implementation is **99% complete** but blocked
 
 ### What's Working ✅
 
-| Component | Status | Location |
-|-----------|--------|----------|
-| CLI flags defined | ✅ Complete | `cmd/flags.go:30-34` |
-| Flag reading in runCmd | ✅ Complete | `cmd/run_flags.go:44-48` |
-| Config struct fields | ✅ Complete | `config/config.go:103-116` |
-| IncrementalParser implementation | ✅ Complete | `job/incremental.go` |
-| FileCache implementation | ✅ Complete | `cache/file_cache.go` |
-| Git change detector | ✅ Complete | `git/change_detector.go` |
-| BDD tests written | ✅ Complete | `bdd/incremental_detection_test.go` |
-| Verbose flag fix | ✅ Complete | `cmd/run_flags.go:19-20` |
+| Component                        | Status      | Location                            |
+| -------------------------------- | ----------- | ----------------------------------- |
+| CLI flags defined                | ✅ Complete | `cmd/flags.go:30-34`                |
+| Flag reading in runCmd           | ✅ Complete | `cmd/run_flags.go:44-48`            |
+| Config struct fields             | ✅ Complete | `config/config.go:103-116`          |
+| IncrementalParser implementation | ✅ Complete | `job/incremental.go`                |
+| FileCache implementation         | ✅ Complete | `cache/file_cache.go`               |
+| Git change detector              | ✅ Complete | `git/change_detector.go`            |
+| BDD tests written                | ✅ Complete | `bdd/incremental_detection_test.go` |
+| Verbose flag fix                 | ✅ Complete | `cmd/run_flags.go:19-20`            |
 
 ### What's Broken ❌
 
-| Issue | Severity | Root Cause | Fix |
-|-------|----------|------------|-----|
+| Issue                                   | Severity    | Root Cause                                          | Fix                       |
+| --------------------------------------- | ----------- | --------------------------------------------------- | ------------------------- |
 | Config merge missing incremental fields | 🔴 Critical | `mergeConfig()` doesn't handle 4 incremental fields | Add 4 missing merge cases |
-| 8 BDD tests failing | 🔴 Critical | Above bug causes cache not to be created | Fix above bug first |
+| 8 BDD tests failing                     | 🔴 Critical | Above bug causes cache not to be created            | Fix above bug first       |
 
 ---
 
@@ -54,6 +54,7 @@ In `config/config_merge.go`, the `mergeConfig()` function handles 19 config fiel
 ### Impact
 
 When `--incremental --cache-dir /tmp/test-cache` flags are passed:
+
 1. `run_flags.go:45-48` correctly reads the flag values
 2. `run_flags.go:123-134` correctly sets them on `appConfig`
 3. `run_flags.go:140` calls `MergeConfigs()` which **DROPS** these 4 fields
@@ -94,11 +95,11 @@ All 8 failures stem from the same root cause: config not being merged properly.
 
 ## Files Modified This Session
 
-| File | Change |
-|------|--------|
-| `cmd/run_flags.go:19-20` | Fixed verbose flag reading (GetBool → GetCount) |
-| `cmd/run_analysis.go:31-33` | Added debug output for incremental mode |
-| `job/incremental.go:23-28` | Added debug logging for parser creation |
+| File                        | Change                                          |
+| --------------------------- | ----------------------------------------------- |
+| `cmd/run_flags.go:19-20`    | Fixed verbose flag reading (GetBool → GetCount) |
+| `cmd/run_analysis.go:31-33` | Added debug output for incremental mode         |
+| `job/incremental.go:23-28`  | Added debug logging for parser creation         |
 
 ### Uncommitted Changes
 
@@ -191,14 +192,14 @@ CLI Flags → runCmd() → appConfig → MergeConfigs() → mergedConfig
 
 ## Session Timeline
 
-| Time | Event |
-|------|-------|
-| Previous session | Implemented full incremental detection system |
+| Time             | Event                                             |
+| ---------------- | ------------------------------------------------- |
+| Previous session | Implemented full incremental detection system     |
 | Previous session | 8 BDD tests failing - cache directory not created |
-| Current session | Added debug logging to track config flow |
-| Current session | Fixed verbose flag bug (GetBool → GetCount) |
-| Current session | Identified config merge bug - 4 fields missing |
-| Current session | Status report created |
+| Current session  | Added debug logging to track config flow          |
+| Current session  | Fixed verbose flag bug (GetBool → GetCount)       |
+| Current session  | Identified config merge bug - 4 fields missing    |
+| Current session  | Status report created                             |
 
 ---
 

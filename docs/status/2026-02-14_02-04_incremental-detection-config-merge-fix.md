@@ -11,6 +11,7 @@ Fixed critical bug in `config/config_merge.go` where 4 incremental mode fields w
 ## Root Cause
 
 The `mergeConfig()` function was missing merge cases for:
+
 - `Incremental` (bool)
 - `Since` (string)
 - `CacheDir` (string)
@@ -52,6 +53,7 @@ if !skipZeroValues || cfg.ClearCache {
 ## Remaining Work
 
 4 BDD tests still failing in `bdd/incremental_detection_test.go`:
+
 1. Line 91: "should detect duplicates correctly on first run"
 2. Line 269: "should clear cache before running"
 3. Line 285: "should work with plumbing output format"
@@ -61,10 +63,10 @@ These appear to be output format assertion issues - tests expect substring "foun
 
 ## Files Modified
 
-| File | Change |
-|------|--------|
+| File                             | Change                      |
+| -------------------------------- | --------------------------- |
 | `config/config_merge.go:109-128` | Added 4 missing merge cases |
-| `docs/status/2026-02-14_01-57_*` | Previous status report |
+| `docs/status/2026-02-14_01-57_*` | Previous status report      |
 
 ## Next Steps
 
