@@ -6,11 +6,15 @@ import (
 	"os"
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+// DefaultCacheDir re-exports the default cache directory for consumers.
+const DefaultCacheDir = cache.DefaultCacheDir
 
 // IncrementalStats holds statistics from incremental parsing.
 type IncrementalStats struct {
