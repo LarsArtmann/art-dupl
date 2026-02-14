@@ -233,6 +233,8 @@ type Reader interface {
 
 // TestParse_ControlStatements tests control flow statement parsing.
 func TestParse_ControlStatements(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		code     string
