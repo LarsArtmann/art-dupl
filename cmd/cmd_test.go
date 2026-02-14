@@ -16,6 +16,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const testDuplicateCode = `package test
+
+func DuplicateFunction() int {
+	x := 1
+	y := 2
+	z := x + y
+	return z * 2
+}
+`
+
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -648,15 +658,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create test files with intentional duplicates
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -718,15 +720,7 @@ func DuplicateFunction() int {
 	t.Run("json output format", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -752,15 +746,7 @@ func DuplicateFunction() int {
 	t.Run("plumbing output format", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -786,15 +772,7 @@ func DuplicateFunction() int {
 	t.Run("html output format", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -866,15 +844,7 @@ func TestRunStats_Integration(t *testing.T) {
 	t.Run("basic stats execution", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -899,15 +869,7 @@ func DuplicateFunction() int {
 	t.Run("stats with json format", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -932,15 +894,7 @@ func DuplicateFunction() int {
 	t.Run("stats with csv format", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -1002,15 +956,7 @@ func TestRunAllModes_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 		outputDir := filepath.Join(tmpDir, "reports")
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
@@ -1047,15 +993,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 	t.Run("basic analysis", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := `package test
-
-func DuplicateFunction() int {
-	x := 1
-	y := 2
-	z := x + y
-	return z * 2
-}
-`
+		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {

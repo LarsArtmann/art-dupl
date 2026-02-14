@@ -8,6 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // TestNewMultiDetector tests MultiDetector constructor.
@@ -19,7 +20,7 @@ func TestNewMultiDetector(t *testing.T) {
 	}
 
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1},
+		{Filename: "test.go", Type: int32(golang.File)},
 	}
 
 	tree := suffixtree.New()
@@ -350,7 +351,7 @@ func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
@@ -375,7 +376,7 @@ func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
@@ -400,7 +401,7 @@ func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
@@ -425,7 +426,7 @@ func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1, Pos: 1, End: 10},
+		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	detector := NewMultiDetector(cfg, data, tree, true) // verbose = true
@@ -499,7 +500,7 @@ func RegularFunc() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	todos := detector.findTodosInFile(testFile, nodes)
@@ -541,7 +542,7 @@ func DatedFunc() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	todos := detector.findTodosInFile(testFile, nodes)
@@ -584,7 +585,7 @@ func AnotherFunc() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	todos := detector.findTodosInFile(testFile, nodes)
@@ -598,7 +599,7 @@ func AnotherFunc() {}
 func TestTodoDetector_FindTodosInFile_InvalidFile(t *testing.T) {
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: "/nonexistent/path/file.go", Type: syntax.File, Pos: 1, End: 100},
+		{Filename: "/nonexistent/path/file.go", Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	// Should return nil (no panic) for invalid file
@@ -631,7 +632,7 @@ func BlockFixmeFunc() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	todos := detector.findTodosInFile(testFile, nodes)
@@ -667,7 +668,7 @@ func LegacyFunc() {
 
 	detector := NewLegacyDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	issues := detector.findLegacyInFile(testFile, nodes)
@@ -705,7 +706,7 @@ func ModernFunc() {
 
 	detector := NewLegacyDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
 	}
 
 	issues := detector.findLegacyInFile(testFile, nodes)
@@ -752,7 +753,7 @@ func Test() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: syntax.File, Pos: 1, End: 10},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	// Use FindTodos which internally calls findIssuesInFile
@@ -784,7 +785,7 @@ func Test() {}
 
 	detector := NewTodoDetector()
 	nodes := []*syntax.Node{
-		{Filename: testFile, Type: syntax.File, Pos: 1, End: 10},
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
 	// FindTodos uses findIssuesGeneric internally
