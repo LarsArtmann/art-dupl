@@ -667,6 +667,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -686,6 +687,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--sort", "invalid", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -701,6 +703,7 @@ func DuplicateFunction() int {
 		tmpDir := t.TempDir()
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--detection-methods", "invalid-method", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -734,6 +737,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--json", "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -767,6 +771,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--plumbing", "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -800,6 +805,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--html", "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -819,6 +825,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -842,6 +849,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--vendor", "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -1013,6 +1021,7 @@ func DuplicateFunction() int {
 		}
 
 		cmd := NewRootCommand()
+		AddFlags(cmd)
 		cmd.SetArgs([]string{"--all", "--output-dir", outputDir, "--threshold", "10", tmpDir})
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -1023,8 +1032,8 @@ func DuplicateFunction() int {
 			t.Errorf("runAllModes() error = %v", err)
 		}
 
-		// Check that report files were created
-		formats := []string{"text", "html", "json", "plumbing"}
+		// Check that report files were created for all output formats
+		formats := []string{"text", "html", "json", "plumbing", "simple-json"}
 		for _, format := range formats {
 			reportFile := filepath.Join(outputDir, "report."+format)
 			if _, statErr := os.Stat(reportFile); os.IsNotExist(statErr) {
