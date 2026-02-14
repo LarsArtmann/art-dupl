@@ -53,7 +53,7 @@ func FindSQLCConfigs(paths []string) (map[string]string, error) {
 // findSQLCConfigsInPath searches for sqlc configs in a single path.
 func findSQLCConfigsInPath(path string, configs map[string]string) error {
 	if err := walkPathForSQLCConfigs(path, configs); err != nil {
-		return errors.WrapFile(err, path, "walking path") //nolint:wrapcheck // Error already wrapped by WrapFile
+		return errors.WrapFile(err, path, "walking path")
 	}
 
 	findSQLCConfigsInParent(path, configs)
@@ -74,7 +74,7 @@ func walkPathForSQLCConfigs(path string, configs map[string]string) error {
 		recordSQLCConfig(filePath, configs)
 		return nil
 	}); err != nil {
-		return errors.WrapFile(err, path, "walking for sqlc configs") //nolint:wrapcheck // Error already wrapped by WrapFile
+		return errors.WrapFile(err, path, "walking for sqlc configs")
 	}
 	return nil
 }
@@ -118,12 +118,12 @@ func tryAddSQLCConfig(parentPath, filename string, configs map[string]string) {
 func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
 	data, err := os.ReadFile(configPath) // #nosec G304 -- configPath is from controlled source (project directory)
 	if err != nil {
-		return nil, errors.WrapFile(err, configPath, "reading sqlc config") //nolint:wrapcheck // Error already wrapped by WrapFile
+		return nil, errors.WrapFile(err, configPath, "reading sqlc config")
 	}
 
 	var config SQLCConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, errors.WrapConfig(err, "parsing sqlc config") //nolint:wrapcheck // Error already wrapped by WrapConfig
+		return nil, errors.WrapConfig(err, "parsing sqlc config")
 	}
 
 	return &config, nil

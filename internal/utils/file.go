@@ -91,7 +91,7 @@ func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string)
 func FindProjectRoot(startPath string, markers []string) (string, error) {
 	absPath, err := filepath.Abs(startPath)
 	if err != nil {
-		return "", errors.WrapFile(err, startPath, "getting absolute path") //nolint:wrapcheck // Error already wrapped by WrapFile
+		return "", errors.WrapFile(err, startPath, "getting absolute path")
 	}
 
 	current := absPath

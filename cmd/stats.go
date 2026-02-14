@@ -88,14 +88,14 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Parse and validate format
 	format, err := printer.ParseFormat(formatStr)
 	if err != nil {
-		return duplerrors.WrapValidation(err, "invalid format value") //nolint:wrapcheck // Error already wrapped by WrapValidation
+		return duplerrors.WrapValidation(err, "invalid format value")
 	}
 
 	var fileConfig *config.Config
 	if configFile != "" {
 		fileConfig, err = config.LoadConfig(configFile)
 		if err != nil {
-			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile)) //nolint:wrapcheck // Error already wrapped by WrapConfig
+			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
 		}
 	}
 
@@ -108,7 +108,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods)) //nolint:wrapcheck // Error already wrapped by WrapValidation
+		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
 	}
 	appConfig.DetectionMethods = parsedMethods
 
@@ -131,7 +131,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := parseDuration(timeoutStr)
 		if err != nil {
-			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr)) //nolint:wrapcheck // Error already wrapped by WrapValidation
+			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
 		}
 		appConfig.Timeout = int(duration.Seconds())
 	}
@@ -160,7 +160,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths)) //nolint:wrapcheck // Error already wrapped by WrapValidation
+		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
 
 	// Add timeout context if specified

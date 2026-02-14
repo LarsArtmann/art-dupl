@@ -285,7 +285,7 @@ func (fc *FileCache) saveMetadata() error {
 	}
 
 	if err := os.WriteFile(metadataPath, data, 0o600); err != nil {
-		return errors.WrapFile(err, metadataPath, "write") //nolint:wrapcheck // WrapFile is the error wrapper
+		return errors.WrapFile(err, metadataPath, "write")
 	}
 	return nil
 }

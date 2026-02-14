@@ -113,9 +113,14 @@ linters:
         - Detector
         - Token
     wrapcheck:
-      ignore-sig:
+      ignore-sigs:
         - errors.Wrap
+        - errors.Wrapf
         - errors.WrapFile
+        - fmt.Errorf(
+        - errors.New(
+        - stderrors.New(
+        - domain.NewValidationError(
 
   exclusions:
     rules:
