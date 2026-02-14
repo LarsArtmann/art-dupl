@@ -116,7 +116,7 @@ func serial(n *Node, stream *[]*Node) int {
 //
 // Also: This function is complex (cyclop lint suppression). Consider breaking into smaller
 // functions for better testability and readability.
-func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match { //nolint:cyclop // Syntax unit matching with multiple validation paths
+func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
 		return Match{}
 	}
@@ -192,7 +192,7 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 
 // isCyclic finds out whether there is a repetive pattern in the found clone. If positive,
 // it return false to point out that the clone would be redundant.
-func isCyclic(indexes []int, nodes []*Node) bool { //nolint:cyclop // Cyclic pattern detection with multiple iteration paths
+func isCyclic(indexes []int, nodes []*Node) bool {
 	cnt := len(indexes)
 	if cnt <= 1 {
 		return false

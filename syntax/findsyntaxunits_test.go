@@ -81,7 +81,7 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	}
 }
 
-func TestFindSyntaxUnitsEdgeCases(t *testing.T) { //nolint:funlen // Comprehensive edge case testing
+func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 	tests := []struct {
 		name       string
 		setup      func() []*Node

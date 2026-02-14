@@ -102,5 +102,5 @@ func (l *NoOpLogger) Error(msg string, args ...any) {}
 
 // Default returns a no-op logger by default.
 //
-//nolint:gochecknoglobals,ireturn // Default logger instance for convenience
+//nolint:gochecknoglobals // Default logger instance for convenience
 var Default Logger = &NoOpLogger{}

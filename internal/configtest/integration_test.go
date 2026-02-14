@@ -6,7 +6,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
-func TestConfigurationIntegration(t *testing.T) { //nolint:cyclop // Integration test with multiple configuration scenarios
+func TestConfigurationIntegration(t *testing.T) {
 	// Test configuration file loading
 	fileConfig := &config.Config{
 		Threshold:         30,

@@ -43,7 +43,7 @@ func TestExamplesPackage(t *testing.T) {
 }
 
 // TestExamplesTypes tests type definitions.
-func TestExamplesTypes(t *testing.T) { //nolint:cyclop,funlen // Comprehensive type validation test with multiple assertions
+func TestExamplesTypes(t *testing.T) {
 	// Test detection method constants
 	methods := []artdupl.DetectionMethod{
 		artdupl.MethodArtDupl,
