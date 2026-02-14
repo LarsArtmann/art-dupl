@@ -20,7 +20,7 @@ func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, erro
 		s.T.Helper()
 	}
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()                                                                       //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithFlags executes art-dupl binary with flag map and returns combined output.
@@ -44,7 +44,7 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]str
 	}
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()                                             //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithStdin executes art-dupl with stdin input.
@@ -83,7 +83,7 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 	}
 
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()                                             //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.

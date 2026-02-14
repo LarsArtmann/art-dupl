@@ -131,7 +131,7 @@ linters:
           - gosec
 
       # Exclude migration utilities from typecheck (uses optional dependency)
-      - path: 'migration/'
+      - path: "migration/"
         linters:
           - typecheck
 

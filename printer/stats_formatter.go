@@ -212,7 +212,7 @@ func (p *stats) printJSON() {
 }
 
 // buildJSONData constructs the JSON output structure.
-func (p *stats) buildJSONData() interface{} {
+func (p *stats) buildJSONData() any {
 	var jsonData jsonStatsOutput
 
 	// Fill configuration

@@ -186,8 +186,8 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 	}
 
 	var changes []ChangeInfo
-	lines := bytes.Split(bytes.TrimSpace(output), []byte("\n"))
-	for _, line := range lines {
+	lines := bytes.SplitSeq(bytes.TrimSpace(output), []byte("\n"))
+	for line := range lines {
 		if len(line) > 0 {
 			changes = append(changes, ChangeInfo{
 				Path:   string(line),
@@ -257,9 +257,9 @@ func (d *ChangeDetector) isGitRepo() bool {
 // parseDiffOutput parses git diff --name-status output.
 func (d *ChangeDetector) parseDiffOutput(output []byte) []ChangeInfo {
 	var changes []ChangeInfo
-	lines := bytes.Split(bytes.TrimSpace(output), []byte("\n"))
+	lines := bytes.SplitSeq(bytes.TrimSpace(output), []byte("\n"))
 
-	for _, line := range lines {
+	for line := range lines {
 		if len(line) == 0 {
 			continue
 		}

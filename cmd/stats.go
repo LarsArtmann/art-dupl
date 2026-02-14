@@ -66,6 +66,7 @@ Examples:
 }
 
 // runStats implements the stats command.
+//
 //nolint:gocognit,gocyclo,cyclop,funlen,maintidx // Stats command requires handling many CLI flags and configuration options
 func runStats(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
