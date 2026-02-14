@@ -125,6 +125,7 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 		s.T.Helper()
 	}
 
+	// #nosec G204 -- Test helper running project binary
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
 	stdoutPipe, err := cmd.StdoutPipe()
 	if err != nil {

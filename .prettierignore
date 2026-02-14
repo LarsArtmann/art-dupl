@@ -1,0 +1,12 @@
+# Tree-sitter generated files (read-only, not Go code)
+internal/treesitter/
+
+# Generated files
+*.generated.go
+*.gen.go
+
+# Vendor directory
+vendor/
+
+# Build artifacts
+dist/

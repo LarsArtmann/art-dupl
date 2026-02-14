@@ -85,4 +85,43 @@ linters:
     - errcheck
     - nilnesserr
     - zerologlint
-issues: {}
+
+  settings:
+    cyclop:
+      max-complexity: 15
+    funlen:
+      lines: 80
+      statements: 50
+    gocognit:
+      min-complexity: 35
+    gocyclo:
+      min-complexity: 15
+    goconst:
+      min-len: 5
+      min-occurrences: 4
+    dupl:
+      threshold: 100
+
+  exclusions:
+    rules:
+      # Exclude test files from complexity/length checks
+      - path: '_test\.go'
+        linters:
+          - funlen
+          - cyclop
+          - gocognit
+          - gocyclo
+          - maintidx
+          - dupl
+          - gosec
+
+      # Exclude migration utilities from typecheck (uses optional dependency)
+      - path: 'migration/'
+        linters:
+          - typecheck
+
+issues:
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+  # Maximum count of issues with the same text
+  max-same-issues: 0

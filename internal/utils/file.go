@@ -32,7 +32,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
-	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- Test data needs readable directory permission
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return errors.NewIOError(dir, "failed to create directory", err)
 	}
 

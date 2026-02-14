@@ -40,6 +40,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 
+	// Incremental analysis flags
+	incremental, _ := cmd.Flags().GetBool("incremental")
+	since, _ := cmd.Flags().GetString("since")
+	cacheDir, _ := cmd.Flags().GetString("cache-dir")
+	clearCache, _ := cmd.Flags().GetBool("clear-cache")
+
 	var fileConfig *config.Config
 	var err error
 	if configFile != "" {
@@ -110,6 +116,20 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 	if len(excludePatterns) > 0 {
 		appConfig.ExcludePatterns = excludePatterns
+	}
+
+	// Set incremental analysis configuration
+	if incremental {
+		appConfig.Incremental = true
+	}
+	if since != "" {
+		appConfig.Since = since
+	}
+	if cacheDir != "" {
+		appConfig.CacheDir = cacheDir
+	}
+	if clearCache {
+		appConfig.ClearCache = true
 	}
 
 	if len(args) > 0 {

@@ -27,6 +27,12 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	rootCmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 
+	// Add incremental analysis flags
+	rootCmd.Flags().Bool("incremental", false, "enable incremental analysis (only analyze changed files)")
+	rootCmd.Flags().String("since", "", "git reference for incremental mode (e.g., HEAD~1, main, commit-hash)")
+	rootCmd.Flags().String("cache-dir", "", "cache directory for AST caching (default: .cache/art-dupl)")
+	rootCmd.Flags().Bool("clear-cache", false, "clear cache before running")
+
 	// Add hidden flags for advanced features
 	rootCmd.Flags().Bool("profile", false, "enable performance profiling")
 	rootCmd.Flags().String("timeout", "30m", "maximum execution time (default: 30m)")

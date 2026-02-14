@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/types"
+	"github.com/samber/mo"
 )
 
 // MigrationPath handles conversion between old and new type systems.
@@ -61,11 +61,11 @@ func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone
 }
 
 // ValidateMigration checks if migration is valid.
-func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) types.Result[domain.Analysis] {
+func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) mo.Result[domain.Analysis] {
 	if err := analysis.IsValid(); err != nil {
-		return types.Errf[domain.Analysis]("invalid analysis for migration: %v", err)
+		return mo.Errf[domain.Analysis]("invalid analysis for migration: %v", err)
 	}
-	return types.Ok(analysis)
+	return mo.Ok(analysis)
 }
 
 // CreateMigrationReport generates a migration report.
@@ -230,14 +230,14 @@ func generateMigrationID() string {
 }
 
 // MigrateConfig handles configuration migration.
-func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOptions] {
+func MigrateConfig(oldConfig map[string]any) mo.Result[domain.DetectionOptions] {
 	options := domain.DetectionOptions{}
 
 	// Extract threshold
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = uint(threshold)
 	} else {
-		return types.Errf[domain.DetectionOptions]("missing or invalid threshold in config")
+		return mo.Errf[domain.DetectionOptions]("missing or invalid threshold in config")
 	}
 
 	// Extract paths
@@ -250,7 +250,7 @@ func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOption
 	}
 
 	if len(options.Paths) == 0 {
-		return types.Errf[domain.DetectionOptions]("no paths found in config")
+		return mo.Errf[domain.DetectionOptions]("no paths found in config")
 	}
 
 	// Set defaults
@@ -261,8 +261,8 @@ func MigrateConfig(oldConfig map[string]any) types.Result[domain.DetectionOption
 
 	// Validate final options
 	if err := options.IsValid(); err != nil {
-		return types.Errf[domain.DetectionOptions]("invalid migrated config: %v", err)
+		return mo.Errf[domain.DetectionOptions]("invalid migrated config: %v", err)
 	}
 
-	return types.Ok(options)
+	return mo.Ok(options)
 }

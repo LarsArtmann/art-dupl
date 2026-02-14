@@ -17,21 +17,44 @@ import (
 )
 
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdin bool, filterParam *filter.Filter, includeVendor bool, outputFormat config.OutputFormat) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
-	if verbose {
+func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, filterParam *filter.Filter, outputFormat config.OutputFormat) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+	if cfg.Verbose {
 		fmt.Fprintln(os.Stderr, "Building suffix tree")
 	} else if outputFormat == config.OutputFormatText {
 		fmt.Fprint(os.Stderr, "    📖 Parsing files and building analysis tree...")
 	}
 
-	schan, filesCountChan := job.Parse(ctx, filesFeedWithOptions(paths, filesFromStdin, filterParam, includeVendor))
+	var schan chan []*syntax.Node
+	var parseStats job.ParseStats
+
+	if cfg.Incremental {
+		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache)
+		var incStatsChan chan job.IncrementalStats
+		schan, incStatsChan = incParser.ParseIncremental(ctx, filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor))
+		t, data, done := job.BuildTree(ctx, schan)
+		<-done
+		incStats := <-incStatsChan
+		parseStats = job.ParseStats{FilesCount: incStats.FilesCount, LinesCount: incStats.LinesCount}
+		t.Update(&syntax.Node{Type: -1})
+
+		if cfg.Verbose {
+			fmt.Fprintln(os.Stderr, "Searching for clones")
+		} else if outputFormat == config.OutputFormatText {
+			fmt.Fprintln(os.Stderr, " ✅")
+		}
+
+		return t, *data, parseStats, nil
+	}
+
+	// Standard parsing without cache
+	var statsChan chan job.ParseStats
+	schan, statsChan = job.Parse(ctx, filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor))
 	t, data, done := job.BuildTree(ctx, schan)
 	<-done
-
-	parseStats := <-filesCountChan
+	parseStats = <-statsChan
 	t.Update(&syntax.Node{Type: -1})
 
-	if verbose {
+	if cfg.Verbose {
 		fmt.Fprintln(os.Stderr, "Searching for clones")
 	} else if outputFormat == config.OutputFormatText {
 		fmt.Fprintln(os.Stderr, " ✅")
@@ -40,19 +63,8 @@ func buildSuffixTree(ctx context.Context, paths []string, verbose, filesFromStdi
 	return t, *data, parseStats, nil
 }
 
-// executeAnalysis runs the core duplicate analysis logic.
-func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, outputFormat config.OutputFormat) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
-	var startProfile job.ProfileResult
-	if cfg.Profile {
-		startProfile = job.StartProfile()
-		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
-	}
-
-	// Initialize empty filter stats (will be populated if filter is enabled)
-	var filterStats filter.FilterStats
-
-	// Create filter based on config
-	var filterParam *filter.Filter
+// setupFilter creates a filter based on config settings.
+func setupFilter(cfg *config.Config) *filter.Filter {
 	var filterOptions []filter.FilterOption
 
 	// Filter sqlc files by default (filename-based detection is very fast)
@@ -75,21 +87,36 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, ou
 
 	// Create the filter if there are any options or include/exclude patterns
 	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 {
-		filterParam = filter.NewFilter(true, filterOptions)
+		filterParam := filter.NewFilter(true, filterOptions)
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
 		filterParam.WithExcludePatterns(cfg.ExcludePatterns)
 
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ files filtered by default)\n")
 		}
+		return filterParam
+	}
+	return nil
+}
+
+// executeAnalysis runs the core duplicate analysis logic.
+func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, outputFormat config.OutputFormat) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
+	var startProfile job.ProfileResult
+	if cfg.Profile {
+		startProfile = job.StartProfile()
+		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
-	t, data, parseStats, err := buildSuffixTree(ctx, paths, cfg.Verbose, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor, outputFormat)
+	// Create filter based on config
+	filterParam := setupFilter(cfg)
+
+	t, data, parseStats, err := buildSuffixTree(ctx, paths, cfg, filterParam, outputFormat)
 	if err != nil {
-		return nil, job.ParseStats{}, filterStats, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
+		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
 	}
 
 	// Get filter statistics if filter was enabled
+	var filterStats filter.FilterStats
 	if filterParam != nil {
 		filterStats = filterParam.GetStats()
 	}

@@ -15,7 +15,7 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 
 	for _, path := range paths {
 		fullPath := filepath.Join(s.TmpDir, path)
-		if err := os.MkdirAll(fullPath, 0o755); err != nil { // #nosec G301 -- Test helper directory creation
+		if err := os.MkdirAll(fullPath, 0o750); err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", path, err)
 		}
 	}
@@ -33,12 +33,12 @@ func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
 	dir := filepath.Dir(fullPath)
 
 	// Ensure directory exists
-	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- Test helper directory creation
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return fmt.Errorf("failed to create directory %s: %w", dir, err)
 	}
 
 	// Write file
-	if err := os.WriteFile(fullPath, []byte(content), 0o644); err != nil { // #nosec G306 -- Test helper file creation
+	if err := os.WriteFile(fullPath, []byte(content), 0o600); err != nil {
 		return fmt.Errorf("failed to write file %s: %w", subpath, err)
 	}
 	return nil
@@ -100,7 +100,7 @@ func (s *BDDTestSetup) RunWithConfigFile(configFileName, configContent, code str
 	}
 
 	configPath := filepath.Join(s.TmpDir, configFileName)
-	if err := os.WriteFile(configPath, []byte(configContent), 0o644); err != nil { // #nosec G306 -- Test helper file creation
+	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
 		return nil, fmt.Errorf("failed to write config file: %w", err)
 	}
 

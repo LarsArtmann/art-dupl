@@ -99,6 +99,21 @@ type Config struct {
 
 	// ExcludePatterns specifies additional file patterns to exclude
 	ExcludePatterns []string `json:"excludePatterns,omitempty"`
+
+	// Incremental enables incremental analysis (only analyze changed files)
+	Incremental bool `json:"incremental,omitempty"`
+
+	// Since specifies the git reference for incremental analysis
+	// Can be a commit hash, branch name, tag, or relative reference (e.g., "HEAD~1")
+	// If empty and Incremental is true, uses HEAD (all uncommitted changes)
+	Since string `json:"since,omitempty"`
+
+	// CacheDir specifies the cache directory for AST caching
+	// If empty, uses default .cache/art-dupl
+	CacheDir string `json:"cacheDir,omitempty"`
+
+	// ClearCache clears the cache before running (useful for forced full rebuild)
+	ClearCache bool `json:"clearCache,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.
@@ -122,6 +137,10 @@ func DefaultConfig() *Config {
 		IncludeTempl:      false,
 		IncludePatterns:   []string{},
 		ExcludePatterns:   []string{},
+		Incremental:       false,
+		Since:             "",
+		CacheDir:          "",
+		ClearCache:        false,
 	}
 }
 
@@ -180,7 +199,7 @@ func LoadConfig(filename string) (*Config, error) {
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(filename)
-	if err := os.MkdirAll(dir, 0o755); err != nil { // #nosec G301 -- Config directory needs readable permission
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 
@@ -189,7 +208,7 @@ func SaveConfig(config *Config, filename string) error {
 		return err //nolint:wrapcheck // Error already wrapped by SafeMarshalIndent
 	}
 
-	err = os.WriteFile(filename, data, 0o644) // #nosec G306 -- Config file needs to be readable by user
+	err = os.WriteFile(filename, data, 0o600)
 	if err != nil {
 		return errors.NewIOError(filename, "failed to write config file", err)
 	}

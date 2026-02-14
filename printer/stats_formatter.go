@@ -135,10 +135,48 @@ func (p *stats) printText() {
 	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render("A clone group with 3 instances counts once for line calculations."))
 }
 
+// topFileStat holds file duplication statistics for sorting.
+type topFileStat struct {
+	filename string
+	lines    int
+}
+
+// sortTopFiles returns the top N files sorted by duplicate lines.
+func sortTopFiles(fileDuplication map[string]int, limit int) []topFileStat {
+	files := make([]topFileStat, 0, len(fileDuplication))
+	for filename, lines := range fileDuplication {
+		files = append(files, topFileStat{filename, lines})
+	}
+
+	// Sort by lines descending
+	for i := range len(files) - 1 {
+		for j := i + 1; j < len(files); j++ {
+			if files[i].lines < files[j].lines {
+				files[i], files[j] = files[j], files[i]
+			}
+		}
+	}
+
+	return files[:min(len(files), limit)]
+}
+
 // printJSON prints statistics in JSON format.
 func (p *stats) printJSON() {
-	// Create a struct for JSON output
-	jsonData := struct {
+	jsonData := p.buildJSONData()
+
+	data, err := json.MarshalIndent(jsonData, "", "  ")
+	if err != nil {
+		_, _ = fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
+	} else {
+		if _, err := p.w.Write(data); err != nil {
+			_, _ = fmt.Fprintf(p.w, "Error writing JSON: %v\n", err)
+		}
+	}
+}
+
+// buildJSONData constructs the JSON output structure.
+func (p *stats) buildJSONData() interface{} {
+	type jsonOutput struct {
 		Configuration struct {
 			Threshold        int    `json:"threshold"`
 			DetectionMethods string `json:"detectionMethods"`
@@ -170,7 +208,9 @@ func (p *stats) printJSON() {
 			Filename string `json:"filename"`
 			Lines    int    `json:"duplicateLines"`
 		} `json:"topFiles"`
-	}{}
+	}
+
+	var jsonData jsonOutput
 
 	// Fill configuration
 	jsonData.Configuration.Threshold = p.threshold
@@ -219,43 +259,16 @@ func (p *stats) printJSON() {
 
 	// Fill top files
 	if len(p.statsData.FileDuplication) > 0 {
-		// Convert map to slice and sort by duplicate lines (descending)
-		type fileStat struct {
-			filename string
-			lines    int
-		}
-		files := make([]fileStat, 0, len(p.statsData.FileDuplication))
-		for filename, lines := range p.statsData.FileDuplication {
-			files = append(files, fileStat{filename, lines})
-		}
-
-		// Sort by lines descending
-		for i := range len(files) - 1 {
-			for j := i + 1; j < len(files); j++ {
-				if files[i].lines < files[j].lines {
-					files[i], files[j] = files[j], files[i]
-				}
-			}
-		}
-
-		// Take top 10
-		limit := min(len(files), 10)
+		files := sortTopFiles(p.statsData.FileDuplication, 10)
 		jsonData.TopFiles = make([]struct {
 			Filename string `json:"filename"`
 			Lines    int    `json:"duplicateLines"`
-		}, limit)
-		for i := range limit {
+		}, len(files))
+		for i := range files {
 			jsonData.TopFiles[i].Filename = files[i].filename
 			jsonData.TopFiles[i].Lines = files[i].lines
 		}
 	}
 
-	data, err := json.MarshalIndent(jsonData, "", "  ")
-	if err != nil {
-		_, _ = fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
-	} else {
-		if _, err := p.w.Write(data); err != nil {
-			_, _ = fmt.Fprintf(p.w, "Error writing JSON: %v\n", err)
-		}
-	}
+	return jsonData
 }

@@ -79,7 +79,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.26.0
+go 1.25.6
 
 require (
 	github.com/charmbracelet/fang v0.4.4

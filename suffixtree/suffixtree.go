@@ -184,7 +184,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 
 func (t *STree) At(p Pos) Token {
 	// Safe conversion: len(t.data) will not overflow Pos in practice
-	if p < 0 || p >= Pos(len(t.data)) { // #nosec G115 -- Data size won't exceed MaxInt32
+	// #nosec G115 -- Data size won't exceed MaxInt32
+	if p < 0 || p >= Pos(len(t.data)) {
 		return nil
 	}
 	return t.data[p]
