@@ -218,7 +218,10 @@ func BenchmarkMemoryUsage(b *testing.B) {
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
 	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
-		tree.testAndSplit(tree.root, 0, 100)
+		// Use valid parameters within bounds
+		if len(tree.data) > 10 {
+			tree.testAndSplit(tree.root, 0, 10)
+		}
 	})
 }
 

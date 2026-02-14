@@ -94,10 +94,11 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 	}
 
 	// Create the filter if there are any options or include/exclude patterns
-	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 {
+	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 || len(cfg.IgnoreFiles) > 0 {
 		filterParam := filter.NewFilter(true, filterOptions)
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
-		filterParam.WithExcludePatterns(cfg.ExcludePatterns)
+		// IgnoreFiles are treated as exclude patterns
+		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
 
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ files filtered by default)\n")
