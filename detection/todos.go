@@ -147,6 +147,7 @@ func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 }
 
 // findTodosInFile parses the file and finds TODO comments.
+//nolint:gocognit // TODO parsing requires handling multiple comment formats and pattern matching
 func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) []TodoIssue {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)

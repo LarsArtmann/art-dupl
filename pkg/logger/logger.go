@@ -101,4 +101,6 @@ func (l *NoOpLogger) Warn(msg string, args ...any)  {}
 func (l *NoOpLogger) Error(msg string, args ...any) {}
 
 // Default returns a no-op logger by default.
+//
+//nolint:gochecknoglobals,ireturn // Default logger instance for convenience
 var Default Logger = &NoOpLogger{}

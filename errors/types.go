@@ -20,6 +20,7 @@ const (
 	AnalysisError   ErrorType = "analysis"
 	FileError       ErrorType = "file"
 	TimeoutError    ErrorType = "timeout"
+	CacheError      ErrorType = "cache"
 )
 
 // DuplError is the main error type with rich context.

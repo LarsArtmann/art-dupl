@@ -285,7 +285,7 @@ func (fc *FileCache) saveMetadata() error {
 	}
 
 	if err := os.WriteFile(metadataPath, data, 0o600); err != nil {
-		return errors.WrapFile(err, metadataPath, "write")
+		return errors.WrapFile(err, metadataPath, "write") //nolint:wrapcheck // WrapFile is the error wrapper
 	}
 	return nil
 }
@@ -304,6 +304,7 @@ func CacheKey(content []byte) string {
 	return hex.EncodeToString(h[:])
 }
 
+//nolint:gochecknoinits // Required for gob registration of types used in cache serialization
 func init() {
 	// Register types for gob encoding
 	gob.Register(&syntax.Node{})

@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/fang"
 )
 
+//nolint:gocognit // Main function orchestrates CLI setup with enhanced error handling and context-aware suggestions
 func main() {
 	// Create root command
 	rootCmd := cmd.NewRootCommand()

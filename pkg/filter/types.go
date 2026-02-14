@@ -31,6 +31,8 @@ const (
 )
 
 // sqlcFilePatterns contains the standard filename patterns for sqlc.dev generated files.
+//
+//nolint:gochecknoglobals // Lookup table for sqlc file pattern matching
 var sqlcFilePatterns = []string{
 	"models.go",
 	"querier.go",

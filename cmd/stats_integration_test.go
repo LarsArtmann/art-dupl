@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -294,7 +295,7 @@ type Command struct {
 //
 //nolint:funcorder // helper method
 func (c *Command) buildCmd() *exec.Cmd {
-	cmd := exec.Command(c.Path, c.Args[1:]...) // Args[0] is the binary path
+	cmd := exec.CommandContext(context.Background(), c.Path, c.Args[1:]...) // Args[0] is the binary path
 	if c.Dir != "" {
 		cmd.Dir = c.Dir
 	}

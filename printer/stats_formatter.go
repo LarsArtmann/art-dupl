@@ -6,6 +6,43 @@ import (
 	"strconv"
 )
 
+// jsonStatsOutput represents the JSON output structure for statistics.
+type jsonStatsOutput struct {
+	Configuration struct {
+		Threshold        int    `json:"threshold"`
+		DetectionMethods string `json:"detectionMethods"`
+	} `json:"configuration"`
+	Overview struct {
+		FilesScanned    int            `json:"filesScanned"`
+		FilesFiltered   int            `json:"filesFiltered,omitempty"`
+		FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
+		CloneGroups     int            `json:"cloneGroups"`
+		TotalClones     int            `json:"totalClones"`
+	} `json:"overview"`
+	DuplicateCode struct {
+		TotalLines       int     `json:"totalDuplicateLines"`
+		EstimatedLines   int     `json:"estimatedTotalLines,omitempty"`
+		TotalTokens      int     `json:"totalDuplicateTokens"`
+		AverageCloneSize int     `json:"averageCloneSize"`
+		ComplexityScore  float64 `json:"complexityScore"`
+		ImpactScore      int     `json:"impactScore"`
+		DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
+	} `json:"duplicateCode"`
+	Metrics struct {
+		HealthScore  string `json:"healthScore,omitempty"`
+		AnalysisTime string `json:"analysisTime,omitempty"`
+		Timestamp    string `json:"timestamp,omitempty"`
+	} `json:"metrics"`
+	Note             string         `json:"note"`
+	SizeDistribution map[string]int `json:"sizeDistribution"`
+	TopFiles         []jsonTopFile  `json:"topFiles"`
+}
+
+type jsonTopFile struct {
+	Filename string `json:"filename"`
+	Lines    int    `json:"duplicateLines"`
+}
+
 // printStats prints the collected statistics.
 func (p *stats) printStats() {
 	switch p.format {
@@ -176,41 +213,7 @@ func (p *stats) printJSON() {
 
 // buildJSONData constructs the JSON output structure.
 func (p *stats) buildJSONData() interface{} {
-	type jsonOutput struct {
-		Configuration struct {
-			Threshold        int    `json:"threshold"`
-			DetectionMethods string `json:"detectionMethods"`
-		} `json:"configuration"`
-		Overview struct {
-			FilesScanned    int            `json:"filesScanned"`
-			FilesFiltered   int            `json:"filesFiltered,omitempty"`
-			FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
-			CloneGroups     int            `json:"cloneGroups"`
-			TotalClones     int            `json:"totalClones"`
-		} `json:"overview"`
-		DuplicateCode struct {
-			TotalLines       int     `json:"totalDuplicateLines"`
-			EstimatedLines   int     `json:"estimatedTotalLines,omitempty"`
-			TotalTokens      int     `json:"totalDuplicateTokens"`
-			AverageCloneSize int     `json:"averageCloneSize"`
-			ComplexityScore  float64 `json:"complexityScore"`
-			ImpactScore      int     `json:"impactScore"`
-			DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
-		} `json:"duplicateCode"`
-		Metrics struct {
-			HealthScore  string `json:"healthScore,omitempty"`
-			AnalysisTime string `json:"analysisTime,omitempty"`
-			Timestamp    string `json:"timestamp,omitempty"`
-		} `json:"metrics"`
-		Note             string         `json:"note"`
-		SizeDistribution map[string]int `json:"sizeDistribution"`
-		TopFiles         []struct {
-			Filename string `json:"filename"`
-			Lines    int    `json:"duplicateLines"`
-		} `json:"topFiles"`
-	}
-
-	var jsonData jsonOutput
+	var jsonData jsonStatsOutput
 
 	// Fill configuration
 	jsonData.Configuration.Threshold = p.threshold
@@ -260,13 +263,12 @@ func (p *stats) buildJSONData() interface{} {
 	// Fill top files
 	if len(p.statsData.FileDuplication) > 0 {
 		files := sortTopFiles(p.statsData.FileDuplication, 10)
-		jsonData.TopFiles = make([]struct {
-			Filename string `json:"filename"`
-			Lines    int    `json:"duplicateLines"`
-		}, len(files))
+		jsonData.TopFiles = make([]jsonTopFile, len(files))
 		for i := range files {
-			jsonData.TopFiles[i].Filename = files[i].filename
-			jsonData.TopFiles[i].Lines = files[i].lines
+			jsonData.TopFiles[i] = jsonTopFile{
+				Filename: files[i].filename,
+				Lines:    files[i].lines,
+			}
 		}
 	}
 

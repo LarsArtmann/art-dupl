@@ -79,6 +79,8 @@ const (
 
 // nodeTypeMap maps tree-sitter node kind strings to our type constants.
 // Only includes node types that are meaningful for clone detection.
+//
+//nolint:gochecknoglobals // Lookup table for templ node type mapping
 var nodeTypeMap = map[string]int32{
 	// Core declarations - high value
 	"component_declaration": ComponentDeclaration,
@@ -120,6 +122,8 @@ var nodeTypeMap = map[string]int32{
 // skipNodeTypes are node types that should be skipped entirely.
 // These are typically content nodes or very granular structural nodes
 // that don't contribute meaningfully to clone detection.
+//
+//nolint:gochecknoglobals // Lookup table for nodes to skip during traversal
 var skipNodeTypes = map[string]bool{
 	// Content nodes - skip to focus on structure
 	"element_text":        true,

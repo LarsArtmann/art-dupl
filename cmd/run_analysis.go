@@ -27,7 +27,15 @@ func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, fi
 	var schan chan []*syntax.Node
 	var parseStats job.ParseStats
 
+	// Debug output for incremental mode detection
+	if cfg.Verbose {
+		fmt.Fprintf(os.Stderr, "🔍 buildSuffixTree: incremental=%v, cacheDir=%q\n", cfg.Incremental, cfg.CacheDir)
+	}
+
 	if cfg.Incremental {
+		if cfg.Verbose {
+			fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
+		}
 		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache)
 		var incStatsChan chan job.IncrementalStats
 		schan, incStatsChan = incParser.ParseIncremental(ctx, filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor))

@@ -210,6 +210,8 @@ func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte
 }
 
 // uintTypeNames defines all uint-based type names for testing.
+//
+//nolint:gochecknoglobals // Test lookup table for type name validation
 var uintTypeNames = []string{
 	"BytePosition",
 	"TokenCount",

@@ -65,6 +65,7 @@ const (
 	DetectionMethodLegacy DetectionMethod = "legacy"
 )
 
+//nolint:gochecknoglobals // Lookup table for valid detection methods, initialized once at package load
 var validDetectionMethods = map[DetectionMethod]bool{
 	DetectionMethodHash:    true,
 	DetectionMethodArtDupl: true,
@@ -108,6 +109,7 @@ const (
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
 )
 
+//nolint:gochecknoglobals // Lookup table for valid output formats, initialized once at package load
 var validOutputFormats = map[OutputFormat]bool{
 	OutputFormatText:       true,
 	OutputFormatHTML:       true,
@@ -151,6 +153,7 @@ const (
 	SortByTotalTokens SortCriteria = "total-tokens"
 )
 
+//nolint:gochecknoglobals // Lookup table for valid sort criteria
 var validSortCriteria = map[SortCriteria]bool{
 	SortBySize:        true,
 	SortByOccurrence:  true,

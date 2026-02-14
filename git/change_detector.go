@@ -16,6 +16,7 @@ package git
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -71,7 +72,7 @@ func (d *ChangeDetector) GetChangedFiles(since string) ([]ChangeInfo, error) {
 	// Get changed files using git diff
 	// --name-status shows status (A/M/D/R)
 	// --diff-filter=ACMR excludes deleted files (we can't analyze deleted files)
-	cmd := exec.Command("git", "diff", "--name-status", "--diff-filter=ACMR", since)
+	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--diff-filter=ACMR", since)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -110,7 +111,7 @@ func (d *ChangeDetector) GetStagedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.Command("git", "diff", "--name-status", "--cached", "--diff-filter=ACMR")
+	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--cached", "--diff-filter=ACMR")
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -127,7 +128,7 @@ func (d *ChangeDetector) GetUnstagedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.Command("git", "diff", "--name-status", "--diff-filter=ACMR")
+	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--diff-filter=ACMR")
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -176,7 +177,7 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.Command("git", "ls-files", "--others", "--exclude-standard")
+	cmd := exec.CommandContext(context.Background(), "git", "ls-files", "--others", "--exclude-standard")
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -208,7 +209,7 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 		mainBranch = "main"
 	}
 
-	cmd := exec.Command("git", "merge-base", "HEAD", mainBranch)
+	cmd := exec.CommandContext(context.Background(), "git", "merge-base", "HEAD", mainBranch)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -229,7 +230,7 @@ func (d *ChangeDetector) GetCurrentBranch() (string, error) {
 		return "", ErrNotGitRepo
 	}
 
-	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	cmd := exec.CommandContext(context.Background(), "git", "rev-parse", "--abbrev-ref", "HEAD")
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -242,7 +243,7 @@ func (d *ChangeDetector) GetCurrentBranch() (string, error) {
 
 // isGitRepo checks if the working directory is inside a git repository.
 func (d *ChangeDetector) isGitRepo() bool {
-	cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
+	cmd := exec.CommandContext(context.Background(), "git", "rev-parse", "--is-inside-work-tree")
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()

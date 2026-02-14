@@ -13,10 +13,12 @@ import (
 )
 
 // runCmd implements Cobra command execution.
+//nolint:gocyclo,cyclop // Command execution requires handling many CLI flags and configuration options
 func runCmd(cmd *cobra.Command, args []string) error {
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
-	verbose, _ := cmd.Flags().GetBool("verbose")
+	verboseCount, _ := cmd.Flags().GetCount("verbose")
+	verbose := verboseCount > 0
 	threshold, _ := cmd.Flags().GetInt("threshold")
 	files, _ := cmd.Flags().GetBool("files")
 	html, _ := cmd.Flags().GetBool("html")

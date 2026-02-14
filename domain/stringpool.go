@@ -161,6 +161,8 @@ type PoolStats struct {
 
 // GlobalPool is the default shared pool for filename interning.
 // Initialized lazily on first use.
+//
+//nolint:gochecknoglobals // Thread-safe singleton pattern for shared string pool
 var (
 	globalPool     *StringInternPool
 	globalPoolOnce = &sync.Once{}

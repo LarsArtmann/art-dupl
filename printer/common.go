@@ -71,7 +71,7 @@ func toWhitespace(str []byte) []byte {
 	return out
 }
 
-func deindent(block []byte) []byte { //nolint:cyclop // String manipulation with multiple parsing paths
+func deindent(block []byte) []byte {
 	const maxVal = 99
 	min := maxVal
 	re := regexp.MustCompile(`(^|\n)(\t*)\S`)

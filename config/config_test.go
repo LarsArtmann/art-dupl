@@ -39,7 +39,7 @@ func TestDefaultConfig(t *testing.T) {
 	}
 }
 
-func TestLoadConfig(t *testing.T) { //nolint:cyclop // Comprehensive test with multiple validation paths
+func TestLoadConfig(t *testing.T) {
 	tmpDir, cleanup := createTempDir(t)
 	defer cleanup()
 
@@ -54,7 +54,7 @@ func TestLoadConfig(t *testing.T) { //nolint:cyclop // Comprehensive test with m
 		"maxChildrenSerial": 20000
 	}`
 
-	err := os.WriteFile(configFile, []byte(configContent), 0o644) //nolint:gosec //G306 Test config needs readable permission
+	err := os.WriteFile(configFile, []byte(configContent), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config file: %v", err)
 	}
@@ -135,7 +135,7 @@ func TestSaveConfig(t *testing.T) {
 	}
 }
 
-func TestValidateConfig(t *testing.T) { //nolint:funlen // Comprehensive test with multiple scenarios
+func TestValidateConfig(t *testing.T) {
 	tests := []struct {
 		name    string
 		config  *Config
@@ -297,7 +297,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 	}
 }
 
-func TestDetectionMethods(t *testing.T) { //nolint:cyclop // Comprehensive test with multiple method validation paths
+func TestDetectionMethods(t *testing.T) {
 	t.Parallel()
 	// Test String method
 	dm := DetectionMethodHash

@@ -106,7 +106,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 }
 
 // OutputText generates text output with sorting.
-func (p *text) OutputText(threshold int, sortBy SortBy) error { //nolint:cyclop // Text output with multiple sorting strategies
+func (p *text) OutputText(threshold int, sortBy SortBy) error {
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)

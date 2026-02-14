@@ -14,6 +14,8 @@ import (
 
 // sharedBinary holds the path to a pre-built binary shared across all test suites.
 // This avoids concurrent go build commands which can cause hangs.
+//
+//nolint:gochecknoglobals // Shared binary path for test efficiency
 var (
 	sharedBinary     string
 	sharedBinaryOnce sync.Once

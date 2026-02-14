@@ -101,6 +101,21 @@ linters:
       min-occurrences: 4
     dupl:
       threshold: 100
+    ireturn:
+      allow:
+        - anon
+        - error
+        - empty
+        - stdlib
+        - generic
+        - Printer
+        - Hasher
+        - Detector
+        - Token
+    wrapcheck:
+      ignore-sig:
+        - errors.Wrap
+        - errors.WrapFile
 
   exclusions:
     rules:
