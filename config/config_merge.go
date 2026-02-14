@@ -13,7 +13,9 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 // mergeConfig merges source config into result config.
 // If skipZeroValues is true, fields with zero/empty values are skipped.
 // This provides a single source of truth for config merging.
-func mergeConfig(result, cfg *Config, skipZeroValues bool) { //nolint:cyclop // Config merging with multiple optional fields
+//
+//nolint:funlen,gocognit,gocyclo,cyclop // Config merging requires handling each field independently
+func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if cfg == nil {
 		return
 	}
@@ -106,6 +108,26 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) { //nolint:cyclop // 
 	// ExcludePatterns ([]string)
 	if !skipZeroValues || len(cfg.ExcludePatterns) > 0 {
 		result.ExcludePatterns = cfg.ExcludePatterns
+	}
+
+	// Incremental (bool)
+	if !skipZeroValues || cfg.Incremental {
+		result.Incremental = cfg.Incremental
+	}
+
+	// Since (string)
+	if !skipZeroValues || cfg.Since != "" {
+		result.Since = cfg.Since
+	}
+
+	// CacheDir (string)
+	if !skipZeroValues || cfg.CacheDir != "" {
+		result.CacheDir = cfg.CacheDir
+	}
+
+	// ClearCache (bool)
+	if !skipZeroValues || cfg.ClearCache {
+		result.ClearCache = cfg.ClearCache
 	}
 }
 

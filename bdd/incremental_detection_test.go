@@ -265,8 +265,10 @@ func ModifiedTest() {
 			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "--plumbing", "-t", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			// Should produce plumbing output
-			Expect(string(output)).To(ContainSubstring("dupl:"))
+			// Should produce plumbing output (format: filename:lineStart-lineEnd)
+			outputStr := string(output)
+			Expect(outputStr).To(ContainSubstring("plumb1.go:"))
+			Expect(outputStr).To(ContainSubstring("plumb2.go:"))
 		})
 
 		It("should work with different thresholds", func() {
@@ -297,19 +299,19 @@ func ModifiedTest() {
 		})
 	})
 
-	Context("When using stats subcommand with incremental cache", func() {
-		It("should work independently of cache state", func() {
+	Context("When using stats subcommand after incremental run", func() {
+		It("should work independently of previous cache state", func() {
 			err := setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, incrementalTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
-			// Create cache first
+			// Create cache first with incremental run
 			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			// Stats should work regardless of cache state
-			output, err := setup.RunSubcommand("stats", "--cache-dir", cacheDir, "-t", "10")
+			// Stats should work (stats doesn't use incremental cache - it always does fresh analysis)
+			output, err := setup.RunSubcommand("stats", "-t", "10")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})

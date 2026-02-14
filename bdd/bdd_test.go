@@ -213,9 +213,6 @@ func (v *Validator) lessCommon(id int) error {
 			Expect(err).ToNot(HaveOccurred())
 			outputStr := string(output)
 
-			// Debug: print the output
-			fmt.Printf("\n=== DEBUG: Output ===\n%s\n=== END DEBUG ===\n", outputStr) //nolint:forbidigo // Debug output
-
 			// Verify both clone groups are found
 			widespreadIndex := strings.Index(outputStr, "widespread1.go")
 			lessCommonIndex := strings.Index(outputStr, "less1.go")

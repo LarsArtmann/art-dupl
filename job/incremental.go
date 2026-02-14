@@ -21,6 +21,7 @@ type IncrementalParser struct {
 
 // NewIncrementalParser creates a new IncrementalParser.
 func NewIncrementalParser(cacheDir string, clearCache bool) *IncrementalParser {
+	logger.Default.Info("creating incremental parser", "cacheDir", cacheDir, "clearCache", clearCache)
 	return &IncrementalParser{
 		cache:      cache.NewFileCache(cacheDir),
 		clearCache: clearCache,
@@ -102,8 +103,12 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 	// Check cache first
 	if cachedNodes, hit := ip.cache.Get(contentHash); hit {
-		// Cache hit - use cached nodes
-		// Note: we don't have line count for cached files, estimate from content
+		// Cache hit - use cached nodes but update filename to current file
+		// This is critical because cached nodes retain the filename of the first file
+		// that was cached with this content hash
+		for _, node := range cachedNodes {
+			node.Filename = file
+		}
 		lines := countLines(content)
 		return cachedNodes, lines, true
 	}
@@ -130,6 +135,8 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	// Cache the result
 	if cacheErr := ip.cache.Set(contentHash, nodes); cacheErr != nil {
 		logger.Default.Error("failed to cache file", "file", file, "err", cacheErr)
+	} else {
+		logger.Default.Info("cached file AST", "file", file, "hash", contentHash)
 	}
 
 	return nodes, lines, false
