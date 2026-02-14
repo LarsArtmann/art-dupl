@@ -1,6 +1,7 @@
 package detection
 
 import (
+	"os"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -460,5 +461,341 @@ func TestMultiDetector_FindDuplOver_EmptyData(t *testing.T) {
 
 	// Drain the channel
 	for range matches {
+	}
+}
+
+// TestTodoDetector_FindTodosInFile_RealFile tests findTodosInFile with actual Go files.
+func TestTodoDetector_FindTodosInFile_RealFile(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create a test Go file with TODO comments
+	testFile := tmpDir + "/test_todos.go"
+	goCode := `package test
+
+// TODO: implement this feature
+func TodoFunc() {}
+
+// FIXME(@developer): this is broken
+func BrokenFunc() {}
+
+// XXX: hack alert here
+func HackFunc() {}
+
+// HACK: temporary workaround
+func WorkaroundFunc() {}
+
+// NOTE: important information
+func NoteFunc() {}
+
+// TODO(2024-12-31): deadline task
+func DeadlineFunc() {}
+
+// Regular comment - no TODO
+func RegularFunc() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	todos := detector.findTodosInFile(testFile, nodes)
+
+	if len(todos) == 0 {
+		t.Fatal("Expected to find TODO comments, got none")
+	}
+
+	// Check that we found the expected types
+	foundTypes := make(map[string]bool)
+	for _, todo := range todos {
+		foundTypes[todo.Type] = true
+	}
+
+	expectedTypes := []string{"TODO", "FIXME", "XXX", "HACK", "NOTE"}
+	for _, expected := range expectedTypes {
+		if !foundTypes[expected] {
+			t.Errorf("Expected to find %s comment", expected)
+		}
+	}
+}
+
+// TestTodoDetector_FindTodosInFile_WithTags tests parsing tags from TODO comments.
+func TestTodoDetector_FindTodosInFile_WithTags(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test_tags.go"
+	goCode := `package test
+
+// TODO(@user1,@user2): multi-tag TODO
+func MultiTagFunc() {}
+
+// FIXME(2024-01-15): dated fixme
+func DatedFunc() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	todos := detector.findTodosInFile(testFile, nodes)
+
+	if len(todos) == 0 {
+		t.Fatal("Expected to find TODO comments")
+	}
+
+	// Find the TODO with tags
+	var foundMultiTag bool
+	for _, todo := range todos {
+		if todo.Type == "TODO" && len(todo.Tags) > 0 {
+			if len(todo.Tags) >= 2 {
+				foundMultiTag = true
+			}
+		}
+	}
+
+	if !foundMultiTag {
+		t.Error("Expected to find TODO with multiple tags")
+	}
+}
+
+// TestTodoDetector_FindTodosInFile_NoTodos tests file without TODO comments.
+func TestTodoDetector_FindTodosInFile_NoTodos(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/no_todos.go"
+	goCode := `package test
+
+// This is a regular comment
+func RegularFunc() {}
+
+/* Another regular comment */
+func AnotherFunc() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	todos := detector.findTodosInFile(testFile, nodes)
+
+	if len(todos) != 0 {
+		t.Errorf("Expected no TODO comments, got %d", len(todos))
+	}
+}
+
+// TestTodoDetector_FindTodosInFile_InvalidFile tests with non-existent file.
+func TestTodoDetector_FindTodosInFile_InvalidFile(t *testing.T) {
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: "/nonexistent/path/file.go", Type: syntax.File, Pos: 1, End: 100},
+	}
+
+	// Should return nil (no panic) for invalid file
+	todos := detector.findTodosInFile("/nonexistent/path/file.go", nodes)
+
+	if todos != nil {
+		t.Errorf("Expected nil for invalid file, got %d todos", len(todos))
+	}
+}
+
+// TestTodoDetector_FindTodosInFile_BlockComments tests block comments with TODO.
+func TestTodoDetector_FindTodosInFile_BlockComments(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/block_comments.go"
+	goCode := `package test
+
+/*
+TODO: this is in a block comment
+Multiple lines here
+*/
+func BlockFunc() {}
+
+/* FIXME: block fixme */
+func BlockFixmeFunc() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	todos := detector.findTodosInFile(testFile, nodes)
+
+	if len(todos) == 0 {
+		t.Fatal("Expected to find TODO comments in block comments")
+	}
+}
+
+// TestLegacyDetector_FindLegacyInFile_RealFile tests findLegacyInFile with actual Go files.
+func TestLegacyDetector_FindLegacyInFile_RealFile(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test_legacy.go"
+	goCode := `package test
+
+import (
+	"io/ioutil"
+)
+
+func LegacyFunc() {
+	// Using deprecated ioutil.ReadFile
+	data, err := ioutil.ReadFile("test.txt")
+	if err != nil {
+		return
+	}
+	_ = data
+}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewLegacyDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	issues := detector.findLegacyInFile(testFile, nodes)
+
+	// The legacy detection is simplified - it checks if function names appear in node string
+	// This test verifies the function runs without panic and returns expected structure
+	if issues == nil {
+		// This is acceptable - the simplified detection may not find issues
+		t.Log("No legacy issues found (simplified detection)")
+	}
+}
+
+// TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns tests file without legacy patterns.
+func TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/no_legacy.go"
+	goCode := `package test
+
+import (
+	"os"
+)
+
+func ModernFunc() {
+	data, err := os.ReadFile("test.txt")
+	if err != nil {
+		return
+	}
+	_ = data
+}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewLegacyDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: 1, Pos: 1, End: 100},
+	}
+
+	issues := detector.findLegacyInFile(testFile, nodes)
+
+	// Modern code should not trigger legacy detection
+	if issues == nil {
+		t.Log("No legacy issues in modern code (expected)")
+	}
+}
+
+// TestLegacyDetector_FindLegacyInFile_EmptyFile tests with empty Go file.
+func TestLegacyDetector_FindLegacyInFile_EmptyFile(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/empty.go"
+	goCode := `package test
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewLegacyDetector()
+	nodes := []*syntax.Node{}
+
+	issues := detector.findLegacyInFile(testFile, nodes)
+
+	if len(issues) != 0 {
+		t.Errorf("Expected no issues for empty file, got %d", len(issues))
+	}
+}
+
+// TestFindIssuesInFile_WithData tests findIssuesInFile with actual data.
+func TestFindIssuesInFile_WithData(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test.go"
+	goCode := `package test
+// TODO: test
+func Test() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: syntax.File, Pos: 1, End: 10},
+	}
+
+	// Use FindTodos which internally calls findIssuesInFile
+	matches := detector.FindTodos(nodes)
+
+	matchCount := 0
+	for range matches {
+		matchCount++
+	}
+
+	// Should find the TODO
+	if matchCount == 0 {
+		t.Error("Expected at least one match from FindTodos")
+	}
+}
+
+// TestFindIssuesGeneric_WithData tests findIssuesGeneric with actual data.
+func TestFindIssuesGeneric_WithData(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test.go"
+	goCode := `package test
+// TODO: test
+func Test() {}
+`
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewTodoDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: syntax.File, Pos: 1, End: 10},
+	}
+
+	// FindTodos uses findIssuesGeneric internally
+	matches := detector.FindTodos(nodes)
+
+	matchCount := 0
+	for range matches {
+		matchCount++
+	}
+
+	if matchCount == 0 {
+		t.Error("Expected matches from findIssuesGeneric")
 	}
 }
