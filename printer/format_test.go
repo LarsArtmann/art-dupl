@@ -62,7 +62,7 @@ func TestParseFormatErrorMessage(t *testing.T) {
 		t.Fatal("ParseFormat() expected error, got nil")
 	}
 
-	expectedMsg := `invalid output format "invalid": must be one of (text|json|csv)`
+	expectedMsg := `invalid output format "invalid": must be one of (text|json|csv|html|plumbing|simple-json)`
 	if err.Error() != expectedMsg {
 		t.Errorf("ParseFormat() error = %q, want %q", err.Error(), expectedMsg)
 	}

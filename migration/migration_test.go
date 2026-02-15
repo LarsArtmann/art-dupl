@@ -27,13 +27,13 @@ var _ = Describe("Migration Path", func() {
 
 			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{
 				Threshold: 10,
-				Paths:     []string{"./src"},
+				Paths:     []domain.Filepath{"./src"},
 			})
 
 			analysis := migrationPath.FromSyntaxToNodes(nodes, 10)
 
 			Expect(analysis.IsValid()).To(Succeed())
-			Expect(analysis.Threshold).To(Equal(uint(10)))
+			Expect(analysis.Threshold).To(Equal(domain.Threshold(10)))
 			Expect(analysis.State).To(Equal(domain.DetectionStateCompleted))
 			Expect(analysis.CloneGroups).To(HaveLen(1))
 			Expect(analysis.CloneGroups[0].Clones).To(HaveLen(1))
@@ -52,8 +52,8 @@ var _ = Describe("Migration Path", func() {
 
 			options, err := result.Get()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(options.Threshold).To(Equal(uint(15)))
-			Expect(options.Paths).To(Equal([]string{"./src", "./lib"}))
+			Expect(options.Threshold).To(Equal(domain.Threshold(15)))
+			Expect(options.Paths).To(Equal([]domain.Filepath{"./src", "./lib"}))
 			Expect(options.IsValid()).To(Succeed())
 		})
 

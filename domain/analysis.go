@@ -7,10 +7,10 @@ import (
 
 // Analysis represents main analysis domain object.
 type Analysis struct {
-	ID          string            `json:"id"`
+	ID          AnalysisID         `json:"id"`
 	State       DetectionState    `json:"state"`
 	Mode        AnalysisMode      `json:"mode"`
-	Threshold   uint              `json:"threshold"`
+	Threshold   Threshold         `json:"threshold"`
 	CloneGroups []CloneGroup      `json:"cloneGroups"`
 	Stats       AnalysisStats     `json:"stats"`
 	Metadata    map[string]string `json:"metadata"`
@@ -42,12 +42,12 @@ func (a Analysis) IsValid() error {
 
 // AnalysisStats represents analysis statistics.
 type AnalysisStats struct {
-	FilesAnalyzed    uint    `json:"filesAnalyzed"`
-	TotalClones      uint    `json:"totalClones"`
-	TotalTokenSize   uint    `json:"totalTokenSize"`
-	ComplexityScore  float64 `json:"complexityScore"`
-	DuplicationRatio float64 `json:"duplicationRatio"`
-	ProcessingTime   uint    `json:"processingTime"`
+	FilesAnalyzed    FileCount      `json:"filesAnalyzed"`
+	TotalClones      CloneCount     `json:"totalClones"`
+	TotalTokenSize   TokenCount     `json:"totalTokenSize"`
+	ComplexityScore  float64        `json:"complexityScore"`
+	DuplicationRatio float64        `json:"duplicationRatio"`
+	ProcessingTime   ProcessingTime `json:"processingTime"`
 }
 
 func (as AnalysisStats) IsValid() error {

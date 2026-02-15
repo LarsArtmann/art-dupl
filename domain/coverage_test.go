@@ -353,7 +353,7 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 			options: DetectionOptions{
 				Threshold:    15,
 				Mode:         AnalysisModeFull,
-				Paths:        []string{"./src"},
+				Paths:        []Filepath{"./src"},
 				OutputFormat: "text",
 			},
 			wantErr: false,
@@ -363,7 +363,7 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 			options: DetectionOptions{
 				Threshold:    0,
 				Mode:         AnalysisModeFull,
-				Paths:        []string{"./src"},
+				Paths:        []Filepath{"./src"},
 				OutputFormat: "text",
 			},
 			wantErr: true,
@@ -373,7 +373,7 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 			options: DetectionOptions{
 				Threshold:    15,
 				Mode:         AnalysisMode("invalid"),
-				Paths:        []string{"./src"},
+				Paths:        []Filepath{"./src"},
 				OutputFormat: "text",
 			},
 			wantErr: true,
@@ -383,7 +383,7 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 			options: DetectionOptions{
 				Threshold:    15,
 				Mode:         AnalysisModeFull,
-				Paths:        []string{},
+				Paths:        []Filepath{},
 				OutputFormat: "text",
 			},
 			wantErr: true,

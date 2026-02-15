@@ -53,10 +53,10 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 	severity := domain.CalculateSeverity(totalSize, totalSize/10) // Approximate complexity
 
 	return domain.CloneGroup{
-		ID:       groupID,
+		ID:       domain.CloneGroupID(groupID),
 		Clones:   clones,
 		Size:     totalSize,
-		Hash:     generateGroupHash(clones),
+		Hash:     domain.Hash(generateGroupHash(clones)),
 		Severity: severity,
 		Status:   domain.FileProcessingStateCompleted,
 	}
@@ -73,18 +73,18 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 	}
 
 	return domain.Analysis{
-		ID:          generateAnalysisID(),
+		ID:          domain.AnalysisID(generateAnalysisID()),
 		State:       domain.DetectionStateCompleted,
 		Mode:        domain.AnalysisModeFull,
-		Threshold:   threshold,
+		Threshold:   domain.Threshold(threshold),
 		CloneGroups: cloneGroups,
 		Stats: domain.AnalysisStats{
-			FilesAnalyzed:    countUniqueFiles(cloneGroups),
-			TotalClones:      totalClones,
-			TotalTokenSize:   totalComplexity,
+			FilesAnalyzed:    domain.FileCount(countUniqueFiles(cloneGroups)),
+			TotalClones:      domain.CloneCount(totalClones),
+			TotalTokenSize:   domain.TokenCount(totalComplexity),
 			ComplexityScore:  float64(totalComplexity) / float64(len(cloneGroups)+1),
 			DuplicationRatio: calculateDuplicationRatio(cloneGroups),
-			ProcessingTime:   1000, // Calculate actual time
+			ProcessingTime:   domain.ProcessingTime(1000), // Calculate actual time
 		},
 		CreatedAt: currentTime(),
 	}

@@ -362,8 +362,8 @@ func TestOutputFormats(t *testing.T) {
 	t.Parallel()
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
-	if len(formats) != 5 {
-		t.Errorf("Expected 5 formats, got %d", len(formats))
+	if len(formats) != 6 {
+		t.Errorf("Expected 6 formats, got %d", len(formats))
 	}
 
 	// Test AllSortCriteria
@@ -406,4 +406,92 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	if parsedOF != of {
 		t.Error("Expected parsed output format to match original")
 	}
+}
+
+func TestSemanticField(t *testing.T) {
+	t.Parallel()
+
+	// Test default value is false
+	cfg := DefaultConfig()
+	if cfg.Semantic != false {
+		t.Errorf("Expected default Semantic false, got %v", cfg.Semantic)
+	}
+
+	// Test Semantic can be loaded from config file
+	t.Run("LoadFromConfigFile", func(t *testing.T) {
+		tmpDir, cleanup := createTempDir(t)
+		defer cleanup()
+
+		configFile := filepath.Join(tmpDir, "semantic-config.json")
+		configContent := `{
+			"threshold": 15,
+			"semantic": true
+		}`
+
+		err := os.WriteFile(configFile, []byte(configContent), 0o644)
+		if err != nil {
+			t.Fatalf("Failed to write config file: %v", err)
+		}
+
+		loaded, err := LoadConfig(configFile)
+		if err != nil {
+			t.Fatalf("Failed to load config: %v", err)
+		}
+
+		if loaded.Semantic != true {
+			t.Errorf("Expected Semantic true, got %v", loaded.Semantic)
+		}
+	})
+
+	// Test Semantic is preserved in save/load round trip
+	t.Run("SaveLoadRoundTrip", func(t *testing.T) {
+		tmpDir, cleanup := createTempDir(t)
+		defer cleanup()
+
+		configFile := filepath.Join(tmpDir, "roundtrip-config.json")
+		cfg := &Config{
+			Threshold:         20,
+			OutputFormat:      "json",
+			Semantic:          true,
+			DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+			MaxChildrenSerial: 10000,
+		}
+
+		err := SaveConfig(cfg, configFile)
+		if err != nil {
+			t.Fatalf("Failed to save config: %v", err)
+		}
+
+		loaded, err := LoadConfig(configFile)
+		if err != nil {
+			t.Fatalf("Failed to load saved config: %v", err)
+		}
+
+		if loaded.Semantic != cfg.Semantic {
+			t.Errorf("Expected Semantic %v, got %v", cfg.Semantic, loaded.Semantic)
+		}
+	})
+
+	// Test Semantic is merged correctly (CLI zero values don't override file values for booleans)
+	t.Run("MergeConfigs", func(t *testing.T) {
+		fileConfig := &Config{
+			Threshold:         15,
+			Semantic:          true,
+			MaxChildrenSerial: 10000,
+			DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+		}
+
+		cliConfig := &Config{
+			Threshold: 20,
+			// Semantic not set (zero value = false)
+			// CLI skips zero values for booleans, so file value should be preserved
+		}
+
+		merged := MergeConfigs(fileConfig, cliConfig)
+
+		// File value should be preserved since CLI has zero value
+		if merged.Semantic != true {
+			t.Errorf("Expected merged Semantic true (file value preserved), got %v", merged.Semantic)
+		}
+	})
 }

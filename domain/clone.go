@@ -51,9 +51,9 @@ func (c *Clone) SetHash(hash string)         { c.Hash = GlobalPool().Intern(hash
 
 // CloneGroup represents a group of clones.
 type CloneGroup struct {
-	ID       string              `json:"id"`
+	ID       CloneGroupID        `json:"id"`
 	Clones   []Clone             `json:"clones"`
-	Hash     string              `json:"hash"`
+	Hash     Hash                `json:"hash"`
 	Size     uint                `json:"size"`
 	Severity CloneSeverity       `json:"severity"`
 	Status   FileProcessingState `json:"status"`

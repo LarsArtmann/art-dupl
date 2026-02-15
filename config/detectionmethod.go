@@ -105,6 +105,7 @@ const (
 	OutputFormatText       OutputFormat = "text"
 	OutputFormatHTML       OutputFormat = "html"
 	OutputFormatJSON       OutputFormat = "json"
+	OutputFormatCSV        OutputFormat = "csv"
 	OutputFormatPlumbing   OutputFormat = "plumbing"
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
 )
@@ -114,6 +115,7 @@ var validOutputFormats = map[OutputFormat]bool{
 	OutputFormatText:       true,
 	OutputFormatHTML:       true,
 	OutputFormatJSON:       true,
+	OutputFormatCSV:        true,
 	OutputFormatPlumbing:   true,
 	OutputFormatSimpleJSON: true,
 }
@@ -192,6 +194,7 @@ func AllOutputFormats() []OutputFormat {
 		OutputFormatText,
 		OutputFormatHTML,
 		OutputFormatJSON,
+		OutputFormatCSV,
 		OutputFormatPlumbing,
 		OutputFormatSimpleJSON,
 	}
