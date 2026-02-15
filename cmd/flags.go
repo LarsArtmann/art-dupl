@@ -38,4 +38,7 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().String("timeout", "30m", "maximum execution time (default: 30m)")
 	_ = rootCmd.Flags().MarkHidden("profile")
 	_ = rootCmd.Flags().MarkHidden("timeout")
+
+	// Add semantic-aware detection flag
+	rootCmd.Flags().Bool("semantic", false, "enable semantic-aware duplicate detection (reduces false positives by including identifier names in matching)")
 }

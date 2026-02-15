@@ -9,6 +9,7 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/spf13/cobra"
 )
 
@@ -48,6 +49,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	since, _ := cmd.Flags().GetString("since")
 	cacheDir, _ := cmd.Flags().GetString("cache-dir")
 	clearCache, _ := cmd.Flags().GetBool("clear-cache")
+
+	// Semantic-aware detection flag
+	semantic, _ := cmd.Flags().GetBool("semantic")
 
 	var fileConfig *config.Config
 	var err error
@@ -134,12 +138,18 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if clearCache {
 		appConfig.ClearCache = true
 	}
+	if semantic {
+		appConfig.Semantic = true
+	}
 
 	if len(args) > 0 {
 		appConfig.Paths = args
 	}
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
+
+	// Wire semantic detection to golang package global
+	golang.SemanticHashEnabled = mergedConfig.Semantic
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
