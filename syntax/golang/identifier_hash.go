@@ -84,8 +84,6 @@ func encodeSemanticType(baseType int32, identifierName string) int32 {
 	}
 
 	nameHash := hashIdentifierFast(identifierName)
-	// Lower 8 bits: base type (0-255)
-	// Upper 24 bits: name hash
 	return (nameHash << 8) | (baseType & 0xFF)
 }
 

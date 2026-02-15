@@ -28,6 +28,47 @@ func NewFileDetector(threshold int) *FileDetector {
 	}
 }
 
+// FileDuplicate represents a group of files with identical content.
+type FileDuplicate struct {
+	Hash  string
+	Files []FileHash
+}
+
+// FindFileDuplicates finds exact file duplicates by hashing file contents.
+// This is a convenience function that takes file paths directly without requiring syntax nodes.
+// Files smaller than the threshold (in bytes) are ignored.
+func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
+	fd := NewFileDetector(threshold)
+
+	// Hash all files
+	fileHashes, _ := fd.hashFiles(files)
+
+	// Group by hash
+	hashGroups := fd.groupByHash(fileHashes)
+
+	// Convert to FileDuplicate slice
+	var duplicates []FileDuplicate
+	for hash, group := range hashGroups {
+		if len(group) >= 2 {
+			// Filter by size threshold
+			validFiles := make([]FileHash, 0)
+			for _, fh := range group {
+				if fh.Size >= threshold {
+					validFiles = append(validFiles, fh)
+				}
+			}
+			if len(validFiles) >= 2 {
+				duplicates = append(duplicates, FileDuplicate{
+					Hash:  hash,
+					Files: validFiles,
+				})
+			}
+		}
+	}
+
+	return duplicates
+}
+
 // FindDuplOver finds exact file duplicates using SHA-256 hashing.
 func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)

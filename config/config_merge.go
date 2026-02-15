@@ -129,6 +129,11 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if !skipZeroValues || cfg.ClearCache {
 		result.ClearCache = cfg.ClearCache
 	}
+
+	// Semantic (bool)
+	if !skipZeroValues || cfg.Semantic {
+		result.Semantic = cfg.Semantic
+	}
 }
 
 func mergeFileConfig(result, cfg *Config) {
