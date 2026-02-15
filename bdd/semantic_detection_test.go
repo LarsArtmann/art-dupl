@@ -169,26 +169,26 @@ func TestSameFunction(t *testing.T) {
 
 	Context("When using config file with semantic setting", func() {
 		It("should respect semantic: true in config file", func() {
-			// Create test files with structural duplicates but different names
+			// Create test files with ALL different identifiers
 			code1 := `package main
 
 func processUser() {
-	data := getUser()
-	result := transformUser(data)
-	saveUserResult(result)
+	userData := getUser()
+	userResult := transformUser(userData)
+	saveUserResult(userResult)
 }`
 
 			code2 := `package main
 
 func processOrder() {
-	data := getOrder()
-	result := transformOrder(data)
-	saveOrderResult(result)
+	orderData := getOrder()
+	orderResult := transformOrder(orderData)
+	saveOrderResult(orderResult)
 }`
 
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user.go"), []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile("user.go", []byte(code1), 0644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order.go"), []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile("order.go", []byte(code2), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create config file with semantic: true
@@ -197,16 +197,16 @@ func processOrder() {
 				"threshold": 5
 			}`
 			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err = setup.FileProcessor.WriteFile(configPath, []byte(configContent), 0644)
+			err = setup.FileProcessor.WriteFile("dupl.json", []byte(configContent), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with config file
 			cmd := exec.Command(setup.BinaryPath, "-c", configPath, setup.TmpDir)
 			output, err := cmd.CombinedOutput()
+			outputStr := string(output)
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			// Should NOT flag as duplicates due to semantic detection (different function names)
+			// Should NOT flag as duplicates due to semantic detection (ALL identifiers differ)
 			Expect(outputStr).ToNot(ContainSubstring("user.go"))
 			Expect(outputStr).ToNot(ContainSubstring("order.go"))
 		})
@@ -264,9 +264,9 @@ func TestOrderHandler(t *testing.T) {
 	})
 }`
 
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_handler_test.go"), []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile("user_handler_test.go", []byte(code1), 0644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_handler_test.go"), []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile("order_handler_test.go", []byte(code2), 0644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITHOUT --semantic: should detect as duplicate

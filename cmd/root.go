@@ -52,6 +52,9 @@ Examples:
   art-dupl --include-templ ./src
   art-dupl --include-pattern "vendor/*" ./src
 
+  # Semantic-aware detection (group by identifier names)
+  art-dupl --semantic ./src
+
   # Read file list from stdin
   find . -name "*.go" | art-dupl --files
 

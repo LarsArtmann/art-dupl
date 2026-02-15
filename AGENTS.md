@@ -344,6 +344,15 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - Methods configured via `-detection-methods` or `-m` flag
 - Multiple methods run in parallel via goroutines
 
+### Semantic Detection
+
+- **--semantic**: Content-aware matching based on identifier names
+- Default behavior: Clones matched by AST structure only (e.g., `a.String()` = `b.Error()`)
+- With `--semantic`: Clones matched by both structure AND identifier semantics
+- Example: `a.String()` will NOT match `b.Error()` (different method names)
+- Useful for finding logically similar code patterns with different naming
+- Implementation: FNV-1a hash of identifiers encoded into AST node types
+
 ### Output Formats
 
 - **Default**: Text output with file paths and line numbers

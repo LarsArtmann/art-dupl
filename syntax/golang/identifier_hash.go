@@ -1,54 +1,18 @@
 package golang
 
-import (
-	"hash"
-	"hash/fnv"
-	"sync"
-)
-
 // SemanticHashEnabled controls whether semantic identifiers are included in type hashes.
 // When false (default), only AST node types are used (current behavior).
 // When true, identifier names are hashed into the type field for semantic matching.
 var SemanticHashEnabled bool
 
-// identifierHashPool provides pooled hashers for identifier name hashing.
-// FNV-1a is ~3x faster than xxh3 for short strings (<20 chars typical for identifiers).
-var identifierHashPool = sync.Pool{
-	New: func() any {
-		return fnv.New32a()
-	},
-}
-
-// hashIdentifier computes a 24-bit hash of an identifier name.
+// hashIdentifierFast computes a 24-bit FNV-1a hash of an identifier name.
 // The result fits in the upper 24 bits of int32 when shifted, allowing
 // the lower 8 bits to store the base AST node type.
 //
 // Algorithm: FNV-1a (fast for short strings, good distribution)
 // Collisions: ~0.0001% for 10,000 unique names (acceptable for deduplication)
 //
-// Performance: ~15ns per call, pooled hasher reduces allocations.
-func hashIdentifier(name string) int32 {
-	if name == "" {
-		return 0
-	}
-
-	// Get pooled hasher
-	h := identifierHashPool.Get().(hash.Hash32)
-	defer identifierHashPool.Put(h)
-	h.Reset()
-
-	// FNV-1a hash
-	h.Write([]byte(name))
-	hash := h.Sum32()
-
-	// Truncate to 24 bits (max 0x00FFFFFF)
-	// This leaves room for 8 bits of base type
-	return int32(hash & 0x00FFFFFF)
-}
-
-// hashIdentifierFast is a non-pooled version for single-use cases.
-// It's faster than the pooled version for single calls but slower for batch use.
-// Use this when calling from transform.go where each identifier is processed once.
+// Performance: ~15ns per call.
 func hashIdentifierFast(name string) int32 {
 	if name == "" {
 		return 0

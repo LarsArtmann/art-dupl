@@ -73,11 +73,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	// Build binary once using sync.Once to avoid concurrent builds
 	sharedBinaryOnce.Do(func() {
 		sharedBinary = filepath.Join(os.TempDir(), "art-dupl-bdd-shared")
-		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", sharedBinary, "../cmd/art-dupl/main.go") // #nosec G204 -- Test helper building project binary
-		output, buildErr := cmd.CombinedOutput()
-		if buildErr != nil {
-			sharedBinaryErr = fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", buildErr, string(output))
-		}
+		sharedBinaryErr = buildSharedBinary(sharedBinary)
 	})
 
 	if sharedBinaryErr != nil {
@@ -85,11 +81,30 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		return nil, sharedBinaryErr
 	}
 
+	// Check if binary still exists (may have been cleaned up by OS)
+	if _, err := os.Stat(sharedBinary); err != nil {
+		// Binary missing, rebuild it
+		if buildErr := buildSharedBinary(sharedBinary); buildErr != nil {
+			_ = os.RemoveAll(tmpDir)
+			return nil, buildErr
+		}
+	}
+
 	return &BDDTestSetup{
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
 		BinaryPath:    sharedBinary,
 	}, nil
+}
+
+// buildSharedBinary builds the art-dupl binary at the given path.
+func buildSharedBinary(binaryPath string) error {
+	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go") // #nosec G204 -- Test helper building project binary
+	output, buildErr := cmd.CombinedOutput()
+	if buildErr != nil {
+		return fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", buildErr, string(output))
+	}
+	return nil
 }
 
 // Cleanup removes the temporary directory and all its contents.

@@ -29,6 +29,9 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 # JSON output (new in this fork)
 ./art-dupl -json -t 20
 
+# Semantic-aware detection (match by identifier names)
+./art-dupl --semantic ./src
+
 # Check version
 ./art-dupl --version
 
@@ -44,6 +47,7 @@ source <(./art-dupl completion zsh)
 ## Key Features
 
 - **Structural clone detection** using suffix tree algorithms
+- **Semantic-aware detection** for content-aware duplicate matching
 - **Multi-language support**: Go files and `.templ` templates (templ.guide)
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
@@ -89,6 +93,7 @@ Use with:
 -profile                 Enable performance profiling
 -timeout duration        Maximum execution time (default 30m)
 -detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
+--semantic               Enable semantic-aware detection (match by identifier names, not just structure)
 ```
 
 ### Supported Languages
