@@ -156,7 +156,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		o.AddChildren(t.trans(n.Call))
 
 	case *ast.Ident:
-		o.Type = Ident
+		o.Type = encodeSemanticType(Ident, n.Name)
 
 	case *ast.IfStmt:
 		o.Type = IfStmt
@@ -210,7 +210,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.SelectorExpr:
-		o.Type = SelectorExpr
+		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name)
 		o.AddChildren(t.trans(n.X), t.trans(n.Sel))
 
 	case *ast.SendStmt:

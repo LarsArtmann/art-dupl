@@ -114,6 +114,16 @@ type Config struct {
 
 	// ClearCache clears the cache before running (useful for forced full rebuild)
 	ClearCache bool `json:"clearCache,omitempty"`
+
+	// Semantic enables semantic-aware duplicate detection
+	// When true, identifier names are included in the type hash, reducing false positives
+	// from structurally similar but semantically different code (e.g., Ginkgo tests with
+	// different method names).
+	//
+	// Example: Expect(x).To(Equal(y)) vs Expect(z).To(Equal(w))
+	// - Semantic=false: Both match as duplicates (same structure)
+	// - Semantic=true: Only matches if method names are the same
+	Semantic bool `json:"semantic,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.
@@ -141,6 +151,7 @@ func DefaultConfig() *Config {
 		Since:             "",
 		CacheDir:          "",
 		ClearCache:        false,
+		Semantic:          false, // Default: off for backward compatibility
 	}
 }
 
