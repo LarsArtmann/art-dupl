@@ -22,6 +22,10 @@ func (c Clone) LineEnd() int {
 	return c.lineEnd
 }
 
+func (c Clone) Fragment() []byte {
+	return c.fragment
+}
+
 type Issue struct {
 	From, To Clone
 }

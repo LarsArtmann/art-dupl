@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -93,13 +92,14 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
-		file, err := fread(nstart.Filename)
+		// Use unified file processor to get file info
+		fileInfo, err := ProcessNodeRange(fread, nstart, nend)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read file %s for clone info: %w", nstart.Filename, err)
 		}
 
-		cl := clone{filename: nstart.Filename}
-		cl.lineStart, cl.lineEnd = position.ByteRangeToLines(file, int(nstart.Pos), int(nend.End))
+		cl := clone{filename: fileInfo.Filename, lineStart: fileInfo.LineStart, lineEnd: fileInfo.LineEnd}
+		cl.fragment = extractContent(fileInfo, nstart, nend)
 		clones[i] = cl
 	}
 	return clones, nil
