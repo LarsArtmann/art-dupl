@@ -276,7 +276,7 @@ func (v *Validator) lessCommon(id int) error {
 
 			// Should contain HTML structure (actual HTML printer output)
 			Expect(outputStr).To(ContainSubstring("<!DOCTYPE html>"))
-			Expect(outputStr).To(ContainSubstring("<title>Duplicates</title>"))
+			Expect(outputStr).To(ContainSubstring("<title>Code Duplication Report</title>"))
 			Expect(outputStr).To(ContainSubstring("</style>"))
 		})
 	})
