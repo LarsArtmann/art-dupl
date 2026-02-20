@@ -68,9 +68,9 @@ func TestOrderService_GetByID(t *testing.T) {
 	}
 }`
 
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(code1), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITHOUT --semantic flag (default behavior)
@@ -119,9 +119,9 @@ func TestOrderService_GetByID(tb *testing.T) {
 	}
 }`
 
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(code1), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITH --semantic flag
@@ -186,9 +186,9 @@ func processOrder() {
 	saveOrderResult(orderResult)
 }`
 
-			err := setup.FileProcessor.WriteFile("user.go", []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile("user.go", []byte(code1), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile("order.go", []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile("order.go", []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create config file with semantic: true
@@ -197,7 +197,7 @@ func processOrder() {
 				"threshold": 5
 			}`
 			configPath := filepath.Join(setup.TmpDir, "dupl.json")
-			err = setup.FileProcessor.WriteFile("dupl.json", []byte(configContent), 0644)
+			err = setup.FileProcessor.WriteFile("dupl.json", []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with config file
@@ -264,9 +264,9 @@ func TestOrderHandler(t *testing.T) {
 	})
 }`
 
-			err := setup.FileProcessor.WriteFile("user_handler_test.go", []byte(code1), 0644)
+			err := setup.FileProcessor.WriteFile("user_handler_test.go", []byte(code1), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile("order_handler_test.go", []byte(code2), 0644)
+			err = setup.FileProcessor.WriteFile("order_handler_test.go", []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITHOUT --semantic: should detect as duplicate

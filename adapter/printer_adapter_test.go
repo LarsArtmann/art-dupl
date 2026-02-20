@@ -358,7 +358,7 @@ func TestCalculateDuplicationRatio(t *testing.T) {
 		{
 			name: "multiple groups",
 			groups: []domain.CloneGroup{
-				{Clones: []domain.Clone{{}, {}}}, // 1 duplicate
+				{Clones: []domain.Clone{{}, {}}},     // 1 duplicate
 				{Clones: []domain.Clone{{}, {}, {}}}, // 2 duplicates
 			},
 			expected: 3.0 / 5.0, // 3 duplicates / 5 total

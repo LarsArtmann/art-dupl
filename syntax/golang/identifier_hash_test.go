@@ -97,7 +97,7 @@ func TestEncodeSemanticType_BitManipulation(t *testing.T) {
 	SemanticHashEnabled = true
 	defer func() { SemanticHashEnabled = original }()
 
-	baseType := int32(42)   // Some base type in lower 8 bits
+	baseType := int32(42) // Some base type in lower 8 bits
 	identifierName := "test"
 
 	result := encodeSemanticType(baseType, identifierName)
@@ -155,9 +155,9 @@ func TestDecodeBaseType(t *testing.T) {
 	}{
 		{"zero", 0, 0},
 		{"max 8-bit", 0xFF, 0xFF},
-		{"with upper bits", 0x12345678, 0x78},  // Lower 8 bits
+		{"with upper bits", 0x12345678, 0x78},          // Lower 8 bits
 		{"with upper bits 2", int32(0x7FFFFF12), 0x12}, // Lower 8 bits (int32 safe)
-		{"type 42", 0x00FF002A, 0x2A},           // 42 in lower bits
+		{"type 42", 0x00FF002A, 0x2A},                  // 42 in lower bits
 	}
 
 	for _, tt := range tests {
@@ -178,9 +178,9 @@ func TestDecodeSemanticHash(t *testing.T) {
 		expected int32
 	}{
 		{"zero", 0, 0},
-		{"only lower bits", 0xFF, 0},               // Upper 24 bits are 0
-		{"only upper bits", 0x01000000, 0x010000},      // Upper 24 bits shifted right by 8
-		{"both parts", 0x12345678, 0x123456},       // Upper 24 bits
+		{"only lower bits", 0xFF, 0},                     // Upper 24 bits are 0
+		{"only upper bits", 0x01000000, 0x010000},        // Upper 24 bits shifted right by 8
+		{"both parts", 0x12345678, 0x123456},             // Upper 24 bits
 		{"max 24-bit", int32(0x007FFFFF) << 8, 0x7FFFFF}, // Max positive 24-bit value in int32
 	}
 

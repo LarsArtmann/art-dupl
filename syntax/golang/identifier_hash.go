@@ -53,7 +53,7 @@ func encodeSemanticType(baseType int32, identifierName string) int32 {
 
 // encodeSemanticTypeHash combines a base node type with a pre-computed hash.
 // Use this when the hash is already computed to avoid recomputation.
-func encodeSemanticTypeHash(baseType int32, nameHash int32) int32 {
+func encodeSemanticTypeHash(baseType, nameHash int32) int32 {
 	if !SemanticHashEnabled || nameHash == 0 {
 		return baseType
 	}

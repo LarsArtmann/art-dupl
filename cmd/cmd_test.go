@@ -1004,15 +1004,14 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		}
 
 		cfg := &config.Config{
-			Threshold:         10,
-			DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
-			IncludeTempl:      true,
-			IncludeSQLC:       true,
+			Threshold:        10,
+			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
+			IncludeTempl:     true,
+			IncludeSQLC:      true,
 		}
 
 		ctx := context.Background()
 		duplChan, parseStats, filterStats, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
-
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}
@@ -1039,16 +1038,15 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		}
 
 		cfg := &config.Config{
-			Threshold:         10,
-			Profile:           true,
-			DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
-			IncludeTempl:      true,
-			IncludeSQLC:       true,
+			Threshold:        10,
+			Profile:          true,
+			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
+			IncludeTempl:     true,
+			IncludeSQLC:      true,
 		}
 
 		ctx := context.Background()
 		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
-
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}
@@ -1081,7 +1079,6 @@ func Example() int {
 
 		ctx := context.Background()
 		tree, data, parseStats, err := buildSuffixTree(ctx, []string{tmpDir}, cfg, nil, config.OutputFormatText)
-
 		if err != nil {
 			t.Fatalf("buildSuffixTree() error = %v", err)
 		}
@@ -1113,7 +1110,6 @@ func Example() int {
 
 		ctx := context.Background()
 		tree, _, _, err := buildSuffixTree(ctx, []string{tmpDir}, cfg, nil, config.OutputFormatText)
-
 		if err != nil {
 			t.Fatalf("buildSuffixTree() error = %v", err)
 		}

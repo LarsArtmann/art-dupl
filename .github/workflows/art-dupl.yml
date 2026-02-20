@@ -2,79 +2,79 @@ name: art-dupl CI
 
 on:
   push:
-    branches: [ main, fork, master ]
+    branches: [main, fork, master]
   pull_request:
-    branches: [ main, fork, master ]
+    branches: [main, fork, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.26'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
 
-    - name: Build
-      run: go build -v ./cmd/art-dupl
+      - name: Build
+        run: go build -v ./cmd/art-dupl
 
-    - name: Test
-      run: go test -v ./...
+      - name: Test
+        run: go test -v ./...
 
-    - name: Race Test
-      run: go test -race -v ./...
+      - name: Race Test
+        run: go test -race -v ./...
 
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.26'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
 
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v6
-      with:
-        version: latest
-        args: --timeout=5m
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
 
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.26'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
 
-    - name: Generate Coverage
-      run: |
-        go test -coverprofile=coverage.out ./...
-        go tool cover -func=coverage.out | grep total
+      - name: Generate Coverage
+        run: |
+          go test -coverprofile=coverage.out ./...
+          go tool cover -func=coverage.out | grep total
 
-    - name: Upload Coverage
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: coverage.out
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.out
 
   self-analysis:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.26'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
 
-    - name: Build art-dupl
-      run: go build -o art-dupl ./cmd/art-dupl
+      - name: Build art-dupl
+        run: go build -o art-dupl ./cmd/art-dupl
 
-    - name: Run Self-Analysis
-      run: ./art-dupl stats -t 50 .
+      - name: Run Self-Analysis
+        run: ./art-dupl stats -t 50 .

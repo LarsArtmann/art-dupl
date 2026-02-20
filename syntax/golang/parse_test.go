@@ -1205,7 +1205,7 @@ func findNodeType(node *syntax.Node, nodeType int) bool {
 
 // testParseNodeType is a helper for testing that specific node types are parsed correctly.
 // It creates a temporary file with the given code and verifies that findNodeType returns true.
-func testParseNodeType(t *testing.T, name string, code string, nodeType int) {
+func testParseNodeType(t *testing.T, name, code string, nodeType int) {
 	t.Helper()
 
 	tmpDir := t.TempDir()

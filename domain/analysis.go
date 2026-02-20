@@ -7,7 +7,7 @@ import (
 
 // Analysis represents main analysis domain object.
 type Analysis struct {
-	ID          AnalysisID         `json:"id"`
+	ID          AnalysisID        `json:"id"`
 	State       DetectionState    `json:"state"`
 	Mode        AnalysisMode      `json:"mode"`
 	Threshold   Threshold         `json:"threshold"`

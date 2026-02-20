@@ -25,6 +25,7 @@ It("should map Critical to 0", func() {
 ```
 
 Both serialize to identical token sequences:
+
 ```
 CallExpr → SelectorExpr → Ident → CallExpr → ...
 ```
@@ -45,12 +46,12 @@ func hashSeqFallback(nodes []*Node, buf []byte) {
 }
 ```
 
-| Preserved | Ignored |
-|-----------|---------|
+| Preserved         | Ignored          |
+| ----------------- | ---------------- |
 | Node type (int32) | Identifier names |
-| Tree structure | Literal values |
-| Byte positions | Method names |
-| Child count | Call chains |
+| Tree structure    | Literal values   |
+| Byte positions    | Method names     |
+| Child count       | Call chains      |
 
 ### Why This Design?
 
@@ -69,6 +70,7 @@ Original intent: detect refactored code where variable names changed but logic i
 **Concept**: Hash selector/method names into the token type, not just the AST node type.
 
 **Implementation** (`syntax/golang/transform.go`):
+
 ```go
 case *ast.SelectorExpr:
     o.Type = SelectorExpr
@@ -87,11 +89,13 @@ case *ast.CallExpr:
 ```
 
 **Pros**:
+
 - ~20 lines of code
 - Immediately fixes Ginkgo test false positives
 - Minimal performance impact
 
 **Cons**:
+
 - Renamed variables won't match (may miss some clones)
 - Slightly larger suffix tree
 
@@ -102,6 +106,7 @@ case *ast.CallExpr:
 **Concept**: After structural match, verify semantic similarity.
 
 **Implementation** (new file `syntax/semantic_filter.go`):
+
 ```go
 type SemanticFilter struct {
     GenericMethods map[string]bool
@@ -110,9 +115,9 @@ type SemanticFilter struct {
 func (sf *SemanticFilter) IsValidDuplicate(fragA, fragB []*Node) bool {
     callsA := extractMethodNames(fragA)
     callsB := extractMethodNames(fragB)
-    
+
     shared := intersection(callsA, callsB)
-    
+
     // Require at least one shared non-generic method
     for _, s := range shared {
         if !sf.GenericMethods[s] {
@@ -124,16 +129,19 @@ func (sf *SemanticFilter) IsValidDuplicate(fragA, fragB []*Node) bool {
 ```
 
 **Default Generic Methods**:
+
 - `Expect`, `To`, `Equal`, `Should` (Ginkgo/Gomega)
 - `if`, `return`, `error` (control flow)
 - `fmt`, `log` (standard library)
 
 **Pros**:
+
 - Catches structural false positives
 - Configurable per-project
 - No changes to core algorithm
 
 **Cons**:
+
 - Post-processing overhead
 - Requires tuning generic method list
 
@@ -146,7 +154,7 @@ func (sf *SemanticFilter) IsValidDuplicate(fragA, fragB []*Node) bool {
 ```go
 type Config struct {
     // ... existing fields ...
-    
+
     // SemanticThreshold (0.0-1.0):
     // 0.0 = disabled (structural only)
     // 0.8 = require 80% semantic overlap (recommended)
@@ -156,11 +164,13 @@ type Config struct {
 ```
 
 **Algorithm**: Jaccard similarity on identifier sets
+
 ```
 similarity = |identifiers_A ∩ identifiers_B| / |identifiers_A ∪ identifiers_B|
 ```
 
 **Usage**:
+
 ```bash
 # Strict filtering
 art-dupl --semantic-threshold 0.8 ./src
@@ -184,6 +194,7 @@ type Node struct {
 ```
 
 Two matches are duplicates only if:
+
 1. Same structural pattern
 2. Same call chain fingerprint (or very similar)
 
@@ -196,11 +207,11 @@ Two matches are duplicates only if:
 
 **Phased Implementation**:
 
-| Phase | Option | Effort | Impact |
-|-------|--------|--------|--------|
-| 1 | Include identifiers in tokens | ~20 lines | High - fixes most false positives |
-| 2 | Post-match heuristic filter | ~100 lines | Medium - catches edge cases |
-| 3 | Config-driven threshold | ~50 lines | Low - user control |
+| Phase | Option                        | Effort     | Impact                            |
+| ----- | ----------------------------- | ---------- | --------------------------------- |
+| 1     | Include identifiers in tokens | ~20 lines  | High - fixes most false positives |
+| 2     | Post-match heuristic filter   | ~100 lines | Medium - catches edge cases       |
+| 3     | Config-driven threshold       | ~50 lines  | Low - user control                |
 
 **Start with Phase 1** - it's the simplest change with highest impact.
 
@@ -208,13 +219,13 @@ Two matches are duplicates only if:
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `syntax/golang/transform.go` | Hash identifiers into node types |
-| `syntax/node.go` | (Optional) Add SemanticHash field |
-| `syntax/semantic_filter.go` | NEW: Heuristic filtering |
-| `config/config.go` | Add SemanticThreshold field |
-| `cli/flags.go` | Add --semantic-threshold flag |
+| File                         | Change                            |
+| ---------------------------- | --------------------------------- |
+| `syntax/golang/transform.go` | Hash identifiers into node types  |
+| `syntax/node.go`             | (Optional) Add SemanticHash field |
+| `syntax/semantic_filter.go`  | NEW: Heuristic filtering          |
+| `config/config.go`           | Add SemanticThreshold field       |
+| `cli/flags.go`               | Add --semantic-threshold flag     |
 
 ---
 

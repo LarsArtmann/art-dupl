@@ -2,14 +2,14 @@
 
 ## Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Go Files | 192 |
-| Total Lines of Code | ~38,000 |
-| Current Packages | 25+ |
-| Estimated Modules | 6-8 |
+| Metric               | Value           |
+| -------------------- | --------------- |
+| Total Go Files       | 192             |
+| Total Lines of Code  | ~38,000         |
+| Current Packages     | 25+             |
+| Estimated Modules    | 6-8             |
 | **Estimated Effort** | **20-40 hours** |
-| Risk Level | Medium |
+| Risk Level           | Medium          |
 
 ---
 
@@ -17,28 +17,28 @@
 
 ### Package Size Distribution
 
-| Package | Files | Lines | Category |
-|---------|-------|-------|----------|
-| bdd | 18 | 6,448 | Tests |
-| domain | 22 | 3,961 | Core |
-| pkg/ | 19 | 4,290 | SDK |
-| cmd | 13 | 2,562 | CLI |
-| syntax | 15 | 3,556 | Algorithm |
-| internal | 22 | 3,146 | Internal |
-| printer | 28 | 3,450 | Output |
-| detection | 5 | 1,400 | Core |
-| errors | 5 | 878 | Core |
-| git | 2 | 977 | Utility |
-| cache | 2 | 809 | Core |
-| examples | 3 | 772 | Docs |
-| suffixtree | 6 | 1,137 | Algorithm |
-| config | 5 | 1,233 | Config |
-| job | 7 | 693 | Core |
-| hash | 3 | 467 | Algorithm |
-| migration | 3 | 482 | Utility |
-| cli | 6 | 589 | CLI |
-| adapter | 3 | 573 | Adapter |
-| lib | 2 | 179 | Legacy |
+| Package    | Files | Lines | Category  |
+| ---------- | ----- | ----- | --------- |
+| bdd        | 18    | 6,448 | Tests     |
+| domain     | 22    | 3,961 | Core      |
+| pkg/       | 19    | 4,290 | SDK       |
+| cmd        | 13    | 2,562 | CLI       |
+| syntax     | 15    | 3,556 | Algorithm |
+| internal   | 22    | 3,146 | Internal  |
+| printer    | 28    | 3,450 | Output    |
+| detection  | 5     | 1,400 | Core      |
+| errors     | 5     | 878   | Core      |
+| git        | 2     | 977   | Utility   |
+| cache      | 2     | 809   | Core      |
+| examples   | 3     | 772   | Docs      |
+| suffixtree | 6     | 1,137 | Algorithm |
+| config     | 5     | 1,233 | Config    |
+| job        | 7     | 693   | Core      |
+| hash       | 3     | 467   | Algorithm |
+| migration  | 3     | 482   | Utility   |
+| cli        | 6     | 589   | CLI       |
+| adapter    | 3     | 573   | Adapter   |
+| lib        | 2     | 179   | Legacy    |
 
 ### Dependency Graph (Simplified)
 
@@ -196,47 +196,47 @@ art-dupl/
 
 ### Phase 1: Analysis & Planning (4-6 hours)
 
-| Task | Hours | Complexity |
-|------|-------|------------|
-| Map all package dependencies | 1-2 | Medium |
-| Identify circular dependencies | 1 | Low |
-| Design module boundaries | 2-3 | High |
-| Create migration plan | 1 | Medium |
+| Task                           | Hours | Complexity |
+| ------------------------------ | ----- | ---------- |
+| Map all package dependencies   | 1-2   | Medium     |
+| Identify circular dependencies | 1     | Low        |
+| Design module boundaries       | 2-3   | High       |
+| Create migration plan          | 1     | Medium     |
 
 ### Phase 2: Module Setup (4-6 hours)
 
-| Task | Hours | Complexity |
-|------|-------|------------|
-| Create go.work file | 0.5 | Low |
-| Create module go.mod files | 1 | Low |
-| Set up replace directives | 1 | Medium |
-| Configure CI for modules | 2-3 | Medium |
+| Task                       | Hours | Complexity |
+| -------------------------- | ----- | ---------- |
+| Create go.work file        | 0.5   | Low        |
+| Create module go.mod files | 1     | Low        |
+| Set up replace directives  | 1     | Medium     |
+| Configure CI for modules   | 2-3   | Medium     |
 
 ### Phase 3: Code Migration (8-12 hours)
 
-| Task | Hours | Complexity |
-|------|-------|------------|
-| Move packages to modules | 3-4 | Medium |
-| Update import paths | 3-4 | High |
-| Resolve circular dependencies | 2-4 | High |
+| Task                          | Hours | Complexity |
+| ----------------------------- | ----- | ---------- |
+| Move packages to modules      | 3-4   | Medium     |
+| Update import paths           | 3-4   | High       |
+| Resolve circular dependencies | 2-4   | High       |
 
 ### Phase 4: Testing & Validation (4-6 hours)
 
-| Task | Hours | Complexity |
-|------|-------|------------|
-| Update test imports | 1-2 | Medium |
-| Fix broken tests | 2-3 | Medium |
-| Verify all builds | 1 | Low |
+| Task                | Hours | Complexity |
+| ------------------- | ----- | ---------- |
+| Update test imports | 1-2   | Medium     |
+| Fix broken tests    | 2-3   | Medium     |
+| Verify all builds   | 1     | Low        |
 
 ### Phase 5: Documentation & Polish (2-4 hours)
 
-| Task | Hours | Complexity |
-|------|-------|------------|
-| Update README | 0.5 | Low |
-| Update AGENTS.md | 0.5 | Low |
-| Create migration guide | 1-2 | Medium |
-| Update justfile/makefile | 0.5 | Low |
-| Clean up old files | 0.5 | Low |
+| Task                     | Hours | Complexity |
+| ------------------------ | ----- | ---------- |
+| Update README            | 0.5   | Low        |
+| Update AGENTS.md         | 0.5   | Low        |
+| Create migration guide   | 1-2   | Medium     |
+| Update justfile/makefile | 0.5   | Low        |
+| Clean up old files       | 0.5   | Low        |
 
 ---
 
@@ -244,26 +244,26 @@ art-dupl/
 
 ### High Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Circular dependencies | Blocks migration | Break dependency cycles first |
-| Import path changes | Breaks all code | Use find/replace carefully |
-| CI/CD changes | Deployment issues | Test CI thoroughly |
+| Risk                  | Impact            | Mitigation                    |
+| --------------------- | ----------------- | ----------------------------- |
+| Circular dependencies | Blocks migration  | Break dependency cycles first |
+| Import path changes   | Breaks all code   | Use find/replace carefully    |
+| CI/CD changes         | Deployment issues | Test CI thoroughly            |
 
 ### Medium Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Test breakage | Delayed completion | Run tests after each change |
-| Version conflicts | Build failures | Pin versions explicitly |
-| Documentation drift | User confusion | Update docs immediately |
+| Risk                | Impact             | Mitigation                  |
+| ------------------- | ------------------ | --------------------------- |
+| Test breakage       | Delayed completion | Run tests after each change |
+| Version conflicts   | Build failures     | Pin versions explicitly     |
+| Documentation drift | User confusion     | Update docs immediately     |
 
 ### Low Risk
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| IDE configuration | Developer experience | Update .vscode, etc. |
-| Git history clarity | Code review | Use clear commit messages |
+| Risk                | Impact               | Mitigation                |
+| ------------------- | -------------------- | ------------------------- |
+| IDE configuration   | Developer experience | Update .vscode, etc.      |
+| Git history clarity | Code review          | Use clear commit messages |
 
 ---
 
@@ -272,12 +272,14 @@ art-dupl/
 ### Option A: Full Monorepo Migration (20-40 hours)
 
 **Pros:**
+
 - Clean module boundaries
 - Independent versioning
 - Better code organization
 - Reusable components
 
 **Cons:**
+
 - Significant effort
 - Risk of breakage
 - Learning curve for team
@@ -287,11 +289,13 @@ art-dupl/
 Create a simple go.work without moving packages:
 
 **Pros:**
+
 - Quick to implement
 - Low risk
 - Enables local development
 
 **Cons:**
+
 - Still single module
 - Less architectural benefit
 
@@ -300,10 +304,12 @@ Create a simple go.work without moving packages:
 Keep current structure, add go.work only when needed.
 
 **Pros:**
+
 - No effort required
 - Zero risk
 
 **Cons:**
+
 - Technical debt remains
 - Limited scalability
 
@@ -311,14 +317,14 @@ Keep current structure, add go.work only when needed.
 
 ## Decision Matrix
 
-| Criteria | Option A | Option B | Option C |
-|----------|----------|----------|----------|
-| Effort | High (20-40h) | Medium (8-12h) | None |
-| Risk | Medium | Low | None |
-| Benefit | High | Medium | Low |
-| Scalability | Excellent | Good | Limited |
-| Maintainability | Excellent | Good | Fair |
-| Team Adoption | Requires training | Easy | No change |
+| Criteria        | Option A          | Option B       | Option C  |
+| --------------- | ----------------- | -------------- | --------- |
+| Effort          | High (20-40h)     | Medium (8-12h) | None      |
+| Risk            | Medium            | Low            | None      |
+| Benefit         | High              | Medium         | Low       |
+| Scalability     | Excellent         | Good           | Limited   |
+| Maintainability | Excellent         | Good           | Fair      |
+| Team Adoption   | Requires training | Easy           | No change |
 
 ---
 

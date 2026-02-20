@@ -150,7 +150,7 @@ func TestAlignSlice(t *testing.T) {
 	tests := []struct {
 		name     string
 		data     []byte
-		wantLen  int // expected length after alignment
+		wantLen  int  // expected length after alignment
 		wantCopy bool // whether the result should be a copy
 	}{
 		{"empty slice", []byte{}, 0, false},

@@ -18,9 +18,9 @@ Successfully integrated art-dupl's `IncrementalParser` into auto-deduplicate via
 
 **File:** `lib/lib.go`
 
-| Addition | Lines | Description |
-|----------|-------|-------------|
-| `IncrementalStats` struct | 15-21 | Statistics struct with FilesCount, LinesCount, CacheHits, CacheMisses |
+| Addition                    | Lines | Description                                                           |
+| --------------------------- | ----- | --------------------------------------------------------------------- |
+| `IncrementalStats` struct   | 15-21 | Statistics struct with FilesCount, LinesCount, CacheHits, CacheMisses |
 | `RunIncremental()` function | 53-99 | New library function using `job.NewIncrementalParser` for AST caching |
 
 **Pattern followed:** Mirrors existing `Run()` function but uses `IncrementalParser.ParseIncremental()` instead of `Parse()`.
@@ -34,15 +34,16 @@ func RunIncremental(ctx context.Context, files []string, threshold int, cacheDir
 
 **Files Modified:** 5 files, +44 lines, -9 lines
 
-| File | Changes |
-|------|---------|
-| `internal/config/config.go` | Added `ArtDuplConfig` struct with Incremental, CacheDir, ClearCache fields |
-| `internal/services/duplicate_service.go` | Added artDuplConfig field, updated NewDuplicateService signature, added incremental logic |
-| `internal/commands/base.go` | Added Config field to CommandServices, updated NewDuplicateService call |
-| `internal/commands/detect/command.go` | Updated NewDuplicateService call to pass config |
-| `internal/infrastructure/di/container_samber.go` | Updated DI provider to inject config |
+| File                                             | Changes                                                                                   |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `internal/config/config.go`                      | Added `ArtDuplConfig` struct with Incremental, CacheDir, ClearCache fields                |
+| `internal/services/duplicate_service.go`         | Added artDuplConfig field, updated NewDuplicateService signature, added incremental logic |
+| `internal/commands/base.go`                      | Added Config field to CommandServices, updated NewDuplicateService call                   |
+| `internal/commands/detect/command.go`            | Updated NewDuplicateService call to pass config                                           |
+| `internal/infrastructure/di/container_samber.go` | Updated DI provider to inject config                                                      |
 
 **Configuration added:**
+
 ```go
 type ArtDuplConfig struct {
     Incremental bool   `json:"incremental"`   // Enable AST caching (default: true)
@@ -56,6 +57,7 @@ type ArtDuplConfig struct {
 ## Architecture Decision
 
 **Option A chosen** (add `RunIncremental()` to lib.go) because:
+
 - Clean API extension following existing `lib.Run()` pattern
 - Minimal code change (~45 lines)
 - Both projects benefit from the library feature
@@ -66,6 +68,7 @@ type ArtDuplConfig struct {
 ## Test Results
 
 ### art-dupl
+
 ```
 === RUN   TestRun_giganticSlice
 --- PASS: TestRun_giganticSlice (50.73s)
@@ -74,6 +77,7 @@ ok      github.com/LarsArtmann/art-dupl/lib
 ```
 
 ### auto-deduplicate
+
 ```
 ok      auto-deduplicate/internal/services        5.956s
 ok      auto-deduplicate/internal/commands/detect 0.347s
@@ -86,9 +90,9 @@ ok      auto-deduplicate/internal/infrastructure/di 0.995s
 
 ## Build Status
 
-| Project | Status |
-|---------|--------|
-| art-dupl | ✅ Build success |
+| Project          | Status           |
+| ---------------- | ---------------- |
+| art-dupl         | ✅ Build success |
 | auto-deduplicate | ✅ Build success |
 
 ---
@@ -96,6 +100,7 @@ ok      auto-deduplicate/internal/infrastructure/di 0.995s
 ## Technical Details
 
 ### Data Flow
+
 ```
 config.ArtDuplConfig (auto-deduplicate)
     ↓
@@ -115,7 +120,9 @@ AST nodes cached in .cache/art-dupl/files/
 ```
 
 ### Cache Statistics
+
 The `IncrementalStats` returned includes:
+
 - `FilesCount`: Total files processed
 - `LinesCount`: Total lines processed
 - `CacheHits`: Files loaded from cache (fast!)
@@ -125,18 +132,19 @@ The `IncrementalStats` returned includes:
 
 ## What's NOT Done
 
-| Item | Priority | Notes |
-|------|----------|-------|
-| CLI flags (`--incremental`, `--cache-dir`, `--clear-cache`) | High | Users must edit config files currently |
-| E2E verification | Medium | Need to run twice and observe cache hits |
-| Documentation | Medium | Config options not documented yet |
-| Integration tests | Low | Automated test for incremental behavior |
+| Item                                                        | Priority | Notes                                    |
+| ----------------------------------------------------------- | -------- | ---------------------------------------- |
+| CLI flags (`--incremental`, `--cache-dir`, `--clear-cache`) | High     | Users must edit config files currently   |
+| E2E verification                                            | Medium   | Need to run twice and observe cache hits |
+| Documentation                                               | Medium   | Config options not documented yet        |
+| Integration tests                                           | Low      | Automated test for incremental behavior  |
 
 ---
 
 ## Open Question
 
 **Default behavior:** Currently `Incremental: true` by default. Should this be:
+
 1. Keep default-on (current) - Zero-config speedup
 2. Change to opt-in - Explicit user control
 3. Add visible `--incremental` flag defaulting to true
@@ -146,9 +154,11 @@ The `IncrementalStats` returned includes:
 ## Files Changed
 
 ### art-dupl
+
 - `lib/lib.go` - Added IncrementalStats and RunIncremental()
 
 ### auto-deduplicate
+
 - `internal/config/config.go` - Added ArtDuplConfig
 - `internal/services/duplicate_service.go` - Updated service with incremental support
 - `internal/commands/base.go` - Added Config to CommandServices

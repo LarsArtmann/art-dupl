@@ -200,5 +200,3 @@ func TestSafeUnmarshal(t *testing.T) {
 		}
 	})
 }
-
-

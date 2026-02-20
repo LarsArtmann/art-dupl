@@ -3,7 +3,7 @@
 **Report Date:** February 16, 2026, 03:46 UTC  
 **Branch:** fork  
 **Commit:** d5abd55  
-**Author:** Lars Artmann  
+**Author:** Lars Artmann
 
 ---
 
@@ -11,13 +11,13 @@
 
 The art-dupl project is a **production-ready** Go tool for code duplication detection with comprehensive feature coverage. Recent completion of the XXH3 hashing optimization provides ~20x performance improvement over the previous SHA-256 implementation.
 
-| Metric | Score | Status |
-|--------|-------|--------|
-| **Overall Completion** | 90% | Production Ready |
-| **Core Features** | 100% | Complete |
-| **Code Quality** | 85% | Good |
-| **Test Coverage** | 75% | Adequate |
-| **Documentation** | 80% | Good |
+| Metric                 | Score | Status           |
+| ---------------------- | ----- | ---------------- |
+| **Overall Completion** | 90%   | Production Ready |
+| **Core Features**      | 100%  | Complete         |
+| **Code Quality**       | 85%   | Good             |
+| **Test Coverage**      | 75%   | Adequate         |
+| **Documentation**      | 80%   | Good             |
 
 ---
 
@@ -28,11 +28,13 @@ The art-dupl project is a **production-ready** Go tool for code duplication dete
 **Performance Improvement:** ~20x faster hashing with native ARM64 NEON SIMD
 
 **Changes Made:**
+
 - Replaced `crypto/sha256` with `github.com/zeebo/xxh3` in 3 critical locations
 - Added clear `//nolint:gosec` comments to prevent linter "fixes"
 - Hash format changed from 64-char SHA-256 to 16-char XXH3 (uint64)
 
 **Files Modified:**
+
 - `syntax/hash_simd.go` - Core AST sequence hashing
 - `domain/conversion.go` - Node-to-clone conversion hashing
 - `hash/file_detector.go` - File content hashing
@@ -40,6 +42,7 @@ The art-dupl project is a **production-ready** Go tool for code duplication dete
 - `go.mod` - Added xxh3 dependency
 
 **Benchmark Results:**
+
 ```
 BenchmarkHashSeqSmall-8      27M ops/sec    46 ns/op    16 B/op    1 alloc/op
 BenchmarkHashSeqMedium-8      1.8M ops/sec  650 ns/op    16 B/op    1 alloc/op
@@ -52,53 +55,53 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### Core Features (100%)
 
-| Feature | Package | Status | Evidence |
-|---------|---------|--------|----------|
-| Suffix Tree Detection | `suffixtree/` | ✅ Complete | Full AST-based clone detection |
-| Hash-Based Detection | `hash/` | ✅ Complete | Rolling hash algorithm |
-| Multi-Detection Mode | `detection/` | ✅ Complete | Runs both methods simultaneously |
-| TODO Comment Detection | `detection/todos.go` | ✅ Complete | Regex-based pattern matching |
-| Semantic Detection | `syntax/golang/` | ✅ Complete | Identifier-aware hashing |
+| Feature                | Package              | Status      | Evidence                         |
+| ---------------------- | -------------------- | ----------- | -------------------------------- |
+| Suffix Tree Detection  | `suffixtree/`        | ✅ Complete | Full AST-based clone detection   |
+| Hash-Based Detection   | `hash/`              | ✅ Complete | Rolling hash algorithm           |
+| Multi-Detection Mode   | `detection/`         | ✅ Complete | Runs both methods simultaneously |
+| TODO Comment Detection | `detection/todos.go` | ✅ Complete | Regex-based pattern matching     |
+| Semantic Detection     | `syntax/golang/`     | ✅ Complete | Identifier-aware hashing         |
 
 ### Output Formats (100%)
 
-| Format | Package | Status | Notes |
-|--------|---------|--------|-------|
-| Text Output | `printer/text.go` | ✅ Complete | Human-readable default |
-| HTML Output | `printer/html.go` | ✅ Complete | Syntax-highlighted reports |
-| JSON Output | `printer/json.go` | ✅ Complete | Machine-readable with metadata |
-| Plumbing Output | `printer/plumbing.go` | ✅ Complete | CI/CD integration |
-| CSV Stats | `printer/stats.go` | ✅ Complete | Spreadsheet-compatible |
-| Batch Generation | `cmd/run_all_modes.go` | ✅ Complete | All formats at once |
+| Format           | Package                | Status      | Notes                          |
+| ---------------- | ---------------------- | ----------- | ------------------------------ |
+| Text Output      | `printer/text.go`      | ✅ Complete | Human-readable default         |
+| HTML Output      | `printer/html.go`      | ✅ Complete | Syntax-highlighted reports     |
+| JSON Output      | `printer/json.go`      | ✅ Complete | Machine-readable with metadata |
+| Plumbing Output  | `printer/plumbing.go`  | ✅ Complete | CI/CD integration              |
+| CSV Stats        | `printer/stats.go`     | ✅ Complete | Spreadsheet-compatible         |
+| Batch Generation | `cmd/run_all_modes.go` | ✅ Complete | All formats at once            |
 
 ### Professional CLI (100%)
 
-| Feature | Status | Evidence |
-|---------|--------|----------|
+| Feature                | Status      | Evidence                       |
+| ---------------------- | ----------- | ------------------------------ |
 | Fang/Cobra Integration | ✅ Complete | `cmd/root.go`, `cli/` packages |
-| Shell Completion | ✅ Complete | bash, zsh, fish, powershell |
-| Man Page Generation | ✅ Complete | `cmd/version.go` |
-| Configuration System | ✅ Complete | JSON config with validation |
-| Styled Help Output | ✅ Complete | Auto-detecting color themes |
+| Shell Completion       | ✅ Complete | bash, zsh, fish, powershell    |
+| Man Page Generation    | ✅ Complete | `cmd/version.go`               |
+| Configuration System   | ✅ Complete | JSON config with validation    |
+| Styled Help Output     | ✅ Complete | Auto-detecting color themes    |
 
 ### Smart Filtering (100%)
 
-| Filter | Status | Evidence |
-|--------|--------|----------|
-| SQLC Detection | ✅ Complete | Auto-detects `sqlc.yaml` |
-| Templ Filtering | ✅ Complete | `--include-templ` flag |
-| Go-Enum Filtering | ✅ Complete | `*_enum.go` pattern |
-| Custom Patterns | ✅ Complete | Glob-based include/exclude |
+| Filter            | Status      | Evidence                   |
+| ----------------- | ----------- | -------------------------- |
+| SQLC Detection    | ✅ Complete | Auto-detects `sqlc.yaml`   |
+| Templ Filtering   | ✅ Complete | `--include-templ` flag     |
+| Go-Enum Filtering | ✅ Complete | `*_enum.go` pattern        |
+| Custom Patterns   | ✅ Complete | Glob-based include/exclude |
 
 ### Testing Infrastructure (100%)
 
-| Test Type | Count | Status |
-|-----------|-------|--------|
-| Unit Tests | 192 files | ✅ Complete |
-| BDD Tests | `bdd/` | ✅ Ginkgo/Gomega |
-| Integration Tests | `internal/*test/` | ✅ Complete |
-| Fuzz Tests | `fuzz/` | ✅ Property-based |
-| Benchmarks | `*_bench_test.go` | ✅ Performance |
+| Test Type         | Count             | Status            |
+| ----------------- | ----------------- | ----------------- |
+| Unit Tests        | 192 files         | ✅ Complete       |
+| BDD Tests         | `bdd/`            | ✅ Ginkgo/Gomega  |
+| Integration Tests | `internal/*test/` | ✅ Complete       |
+| Fuzz Tests        | `fuzz/`           | ✅ Property-based |
+| Benchmarks        | `*_bench_test.go` | ✅ Performance    |
 
 ---
 
@@ -106,29 +109,29 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### Performance Features (60%)
 
-| Feature | Status | Evidence | Gap |
-|---------|--------|----------|-----|
-| XXH3 SIMD Hashing | ✅ Done | Just implemented | - |
-| Profile Flag | 🟡 Partial | `--profile` exists | No implementation |
-| Timeout Flag | 🟡 Partial | `--timeout` exists | No implementation |
-| Concurrent Processing | ❌ Missing | - | Sequential only |
+| Feature               | Status     | Evidence           | Gap               |
+| --------------------- | ---------- | ------------------ | ----------------- |
+| XXH3 SIMD Hashing     | ✅ Done    | Just implemented   | -                 |
+| Profile Flag          | 🟡 Partial | `--profile` exists | No implementation |
+| Timeout Flag          | 🟡 Partial | `--timeout` exists | No implementation |
+| Concurrent Processing | ❌ Missing | -                  | Sequential only   |
 
 ### Documentation (70%)
 
-| Type | Status | Evidence |
-|------|--------|----------|
+| Type               | Status      | Evidence                  |
+| ------------------ | ----------- | ------------------------- |
 | User Documentation | ✅ Complete | README, USAGE, HOW_TO_USE |
-| CLI Help | ✅ Complete | Rich styled help |
-| Code Comments | 🟡 Partial | Good but inconsistent |
-| API Documentation | ❌ Missing | No generated docs |
+| CLI Help           | ✅ Complete | Rich styled help          |
+| Code Comments      | 🟡 Partial  | Good but inconsistent     |
+| API Documentation  | ❌ Missing  | No generated docs         |
 
 ### Code Quality (75%)
 
-| Aspect | Status | Issues |
-|--------|--------|--------|
-| Test Coverage | 🟡 Partial | ~75%, target 80%+ |
+| Aspect           | Status     | Issues                        |
+| ---------------- | ---------- | ----------------------------- |
+| Test Coverage    | 🟡 Partial | ~75%, target 80%+             |
 | Global Variables | 🟡 Partial | `SemanticHashEnabled` remains |
-| Linter Clean | 🟡 Partial | 9 minor issues |
+| Linter Clean     | 🟡 Partial | 9 minor issues                |
 
 ---
 
@@ -136,27 +139,27 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### High Priority
 
-| Item | Complexity | Value |
-|------|------------|-------|
-| Concurrent File Processing | High | Major performance gain |
-| API Documentation Generation | Medium | SDK adoption |
-| IDE Plugin Integration | High | Developer workflow |
+| Item                         | Complexity | Value                  |
+| ---------------------------- | ---------- | ---------------------- |
+| Concurrent File Processing   | High       | Major performance gain |
+| API Documentation Generation | Medium     | SDK adoption           |
+| IDE Plugin Integration       | High       | Developer workflow     |
 
 ### Medium Priority
 
-| Item | Complexity | Value |
-|------|------------|-------|
-| Web UI for Reports | High | Better visualization |
-| TypeScript/JavaScript Support | High | Broader adoption |
-| Historical Trend Analysis | Medium | Track over time |
+| Item                          | Complexity | Value                |
+| ----------------------------- | ---------- | -------------------- |
+| Web UI for Reports            | High       | Better visualization |
+| TypeScript/JavaScript Support | High       | Broader adoption     |
+| Historical Trend Analysis     | Medium     | Track over time      |
 
 ### Low Priority
 
-| Item | Complexity | Value |
-|------|------------|-------|
-| Plugin System | High | Extensibility |
-| Machine Learning Detection | High | AI-powered |
-| SaaS Offering | High | Commercial potential |
+| Item                       | Complexity | Value                |
+| -------------------------- | ---------- | -------------------- |
+| Plugin System              | High       | Extensibility        |
+| Machine Learning Detection | High       | AI-powered           |
+| SaaS Offering              | High       | Commercial potential |
 
 ---
 
@@ -164,24 +167,24 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 
 ### Compilation Errors (4 Issues)
 
-| File | Line | Error | Priority |
-|------|------|-------|----------|
-| `domain/coverage_test.go` | 581 | `undefined: SetGlobalPoolForTesting` | 🔴 HIGH |
-| `domain/coverage_test.go` | 612 | `undefined: SetGlobalPoolForTesting` | 🔴 HIGH |
-| `pkg/artdupl/detector_utils.go` | 5 | `could not import strings` | 🔴 HIGH |
-| `pkg/artdupl/detector_utils.go` | 8 | `unused import: syntax` | 🟡 MEDIUM |
+| File                            | Line | Error                                | Priority  |
+| ------------------------------- | ---- | ------------------------------------ | --------- |
+| `domain/coverage_test.go`       | 581  | `undefined: SetGlobalPoolForTesting` | 🔴 HIGH   |
+| `domain/coverage_test.go`       | 612  | `undefined: SetGlobalPoolForTesting` | 🔴 HIGH   |
+| `pkg/artdupl/detector_utils.go` | 5    | `could not import strings`           | 🔴 HIGH   |
+| `pkg/artdupl/detector_utils.go` | 8    | `unused import: syntax`              | 🟡 MEDIUM |
 
 **Note:** These are pre-existing issues unrelated to recent xxh3 work. Tests still pass.
 
 ### Linter Issues (9 Minor)
 
-| File | Issue | Severity |
-|------|-------|----------|
-| `cache/file_cache_test.go` | Unchecked errors (3x) | 🟡 Low |
-| `cmd/run_analysis.go:159` | Missing CSV case | 🟡 Medium |
-| `syntax/golang/identifier_hash.go:6` | Global variable | 🟡 Medium |
-| `syntax/golang/identifier_hash.go:34` | Integer overflow G115 | 🟡 Low |
-| `cache/file_cache_test.go` | Use integer range (4x) | 🟢 Info |
+| File                                  | Issue                  | Severity  |
+| ------------------------------------- | ---------------------- | --------- |
+| `cache/file_cache_test.go`            | Unchecked errors (3x)  | 🟡 Low    |
+| `cmd/run_analysis.go:159`             | Missing CSV case       | 🟡 Medium |
+| `syntax/golang/identifier_hash.go:6`  | Global variable        | 🟡 Medium |
+| `syntax/golang/identifier_hash.go:34` | Integer overflow G115  | 🟡 Low    |
+| `cache/file_cache_test.go`            | Use integer range (4x) | 🟢 Info   |
 
 ---
 
@@ -286,6 +289,7 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 **Context:** The `--semantic` flag and `SemanticHashEnabled` global variable exist, but intended behavior is unclear.
 
 **Unknowns:**
+
 - Is this runtime toggle or config option?
 - Is it per-file or global?
 - Is it production-ready or experimental?
@@ -295,6 +299,7 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 ### Question #2: Project Split Strategy
 
 **Context:** PROJECT_SPLIT_EXECUTIVE_REPORT.md proposes splitting into 5 modules:
+
 - go-clones-cli
 - go-clones-core
 - go-clones-printer
@@ -308,6 +313,7 @@ BenchmarkHashSeqLarge-8       100K ops/sec   12 µs/op    16 B/op    1 alloc/op
 **Context:** Current implementation is sequential.
 
 **Options:**
+
 - Worker pool with fixed goroutines
 - Unbounded parallelism with semaphore
 - Pipeline architecture (parse → serialize → detect)
@@ -353,35 +359,35 @@ BenchmarkBatchHash/Batch100-8       31,293 ops    44,626 ns/op   13 KB/op  302 a
 
 ### Production Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| github.com/charmbracelet/fang | latest | Professional CLI framework |
-| github.com/spf13/cobra | latest | CLI commands |
-| github.com/zeebo/xxh3 | v1.1.0 | Fast hashing with SIMD |
-| github.com/onsi/ginkgo/v2 | latest | BDD testing |
-| github.com/onsi/gomega | latest | Test matchers |
+| Package                       | Version | Purpose                    |
+| ----------------------------- | ------- | -------------------------- |
+| github.com/charmbracelet/fang | latest  | Professional CLI framework |
+| github.com/spf13/cobra        | latest  | CLI commands               |
+| github.com/zeebo/xxh3         | v1.1.0  | Fast hashing with SIMD     |
+| github.com/onsi/ginkgo/v2     | latest  | BDD testing                |
+| github.com/onsi/gomega        | latest  | Test matchers              |
 
 ### Development Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| github.com/golangci/golangci-lint | latest | Linting |
+| Package                           | Version | Purpose |
+| --------------------------------- | ------- | ------- |
+| github.com/golangci/golangci-lint | latest  | Linting |
 
 ---
 
 ## METRICS SUMMARY
 
-| Category | Metric | Value | Target |
-|----------|--------|-------|--------|
-| **Code** | Go Files | 192 | - |
-| **Code** | Lines of Code | ~25,000 | - |
-| **Code** | Packages | 25+ | - |
-| **Quality** | Test Coverage | 75% | 80% |
-| **Quality** | Linter Issues | 9 | 0 |
-| **Quality** | Compilation Errors | 4 | 0 |
-| **Features** | Core Features | 100% | 100% |
-| **Features** | Output Formats | 100% | 100% |
-| **Performance** | Hash Speed | ~10 GB/s | - |
+| Category        | Metric             | Value    | Target |
+| --------------- | ------------------ | -------- | ------ |
+| **Code**        | Go Files           | 192      | -      |
+| **Code**        | Lines of Code      | ~25,000  | -      |
+| **Code**        | Packages           | 25+      | -      |
+| **Quality**     | Test Coverage      | 75%      | 80%    |
+| **Quality**     | Linter Issues      | 9        | 0      |
+| **Quality**     | Compilation Errors | 4        | 0      |
+| **Features**    | Core Features      | 100%     | 100%   |
+| **Features**    | Output Formats     | 100%     | 100%   |
+| **Performance** | Hash Speed         | ~10 GB/s | -      |
 
 ---
 
@@ -395,6 +401,7 @@ The art-dupl project is **production-ready** with 90% completion. The recent XXH
 4. **Documentation** (API docs)
 
 **Immediate Next Steps:**
+
 1. Fix compilation errors in domain/coverage_test.go
 2. Fix import issues in pkg/artdupl/detector_utils.go
 3. Clarify Semantic Detection feature requirements
@@ -404,5 +411,5 @@ The art-dupl project is **production-ready** with 90% completion. The recent XXH
 
 ---
 
-*Report generated by Crush AI Assistant*  
-*Assisted-by: Crush via Crush <crush@charm.land>*
+_Report generated by Crush AI Assistant_  
+_Assisted-by: Crush via Crush <crush@charm.land>_

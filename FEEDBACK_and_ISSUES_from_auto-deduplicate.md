@@ -20,6 +20,7 @@ auto-deduplicate is being refactored to delegate all duplicate detection to art-
 **Status**: NEEDS ENHANCEMENT
 
 **What auto-deduplicate needs**:
+
 ```go
 type ProgressReporter interface {
     Update(current, total int, message string) error
@@ -29,17 +30,20 @@ type ProgressReporter interface {
 ```
 
 **Current art-dupl provides**:
+
 ```go
 // pkg/artdupl/types.go
 ProgressCallback func(*Progress) error
 ```
 
 **Gap**: The `Progress` struct in art-dupl has the fields but:
+
 - No standardized way to integrate with external progress systems (e.g., progress bars, UI)
 - No completion signal separate from updates
 - No reset capability for multi-phase operations
 
 **Recommendation**: Consider adding:
+
 ```go
 type ProgressCallback interface {
     OnProgress(p *Progress) error
@@ -53,11 +57,13 @@ type ProgressCallback interface {
 **Status**: NEEDS FEATURE
 
 **What auto-deduplicate implemented**:
+
 - `ProjectFingerprinter` - Computes content hash of all project files
 - Cache keys that include fingerprint to auto-invalidate on code changes
 - Staleness validation for cached results
 
 **Current art-dupl provides**:
+
 - `lib.RunIncremental()` with AST caching per-file
 - No project-level fingerprinting
 - No automatic cache invalidation based on content changes
@@ -65,6 +71,7 @@ type ProgressCallback interface {
 **Gap**: The incremental cache in art-dupl is file-based, but for cross-project consistency, a content-based fingerprint would be valuable.
 
 **Recommendation**: Add project-level fingerprinting to `pkg/artdupl`:
+
 ```go
 type Fingerprinter interface {
     Compute(ctx context.Context, root string) (string, error)
@@ -77,16 +84,19 @@ type Fingerprinter interface {
 **Status**: NEEDS FEATURE
 
 **What auto-deduplicate needs**:
+
 - Cache full detection results with configurable TTL
 - Staleness checks (file existence, modification time validation)
 - Cache statistics (hits, misses)
 
 **Current art-dupl provides**:
+
 - Per-file AST caching only
 - No result-level caching
 - No TTL support
 
 **Recommendation**: Consider adding result caching to the SDK:
+
 ```go
 type CacheOptions struct {
     Enabled    bool
@@ -107,11 +117,13 @@ type CachedResult struct {
 **Status**: POTENTIAL ENHANCEMENT
 
 **What auto-deduplicate implemented**:
+
 - Generic file hash detection (any file type, not just Go)
 - Configurable file filters (include/exclude patterns)
 - .gitignore integration
 
 **Current art-dupl provides**:
+
 - Go AST-based detection only
 - Limited to .go files
 
@@ -122,21 +134,25 @@ type CachedResult struct {
 **Status**: EXISTS BUT LIMITED
 
 **What auto-deduplicate needs**:
+
 - Streaming results for large projects
 - Backpressure handling
 - Cancellation propagation
 
 **Current art-dupl provides**:
+
 ```go
 FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error)
 ```
 
 **Gap**: The streaming exists but:
+
 - Channel buffer size is hardcoded (10)
 - No backpressure signaling
 - No partial results on error
 
 **Recommendation**: Add configurable streaming options:
+
 ```go
 type StreamOptions struct {
     BufferSize    int
@@ -150,6 +166,7 @@ type StreamOptions struct {
 **Status**: EXISTS - GOOD
 
 **What auto-deduplicate uses**:
+
 ```go
 DetectionMethods []DetectionMethod
 ```
@@ -167,6 +184,7 @@ DetectionMethods []DetectionMethod
 The `errors` package in art-dupl has typed errors, but they're not easily accessible from `pkg/artdupl`. Auto-deduplicate had to create its own error handling.
 
 **Recommendation**: Export error types from `pkg/artdupl/errors.go`:
+
 ```go
 var (
     ErrNoClonesFound = errors.New("no clones found")
@@ -178,12 +196,14 @@ var (
 ### 2. File Filtering Not Configurable at SDK Level
 
 Auto-deduplicate needs to filter files by:
+
 - .gitignore patterns
 - Size limits
 - Include/exclude glob patterns
 - Generated file detection
 
 **Recommendation**: Add `FileFilter` interface to SDK:
+
 ```go
 type FileFilter interface {
     ShouldProcess(path string, info os.FileInfo) bool
@@ -233,11 +253,11 @@ issues, stats, _ := lib.RunIncremental(ctx, files, threshold, cacheDir, false)
 
 ### Type Mapping
 
-| auto-deduplicate | art-dupl |
-|-----------------|----------|
-| `interfaces.Duplicate` | `printer.Issue` or `artdupl.CloneGroup` |
+| auto-deduplicate           | art-dupl                                 |
+| -------------------------- | ---------------------------------------- |
+| `interfaces.Duplicate`     | `printer.Issue` or `artdupl.CloneGroup`  |
 | `interfaces.FileDuplicate` | `artdupl.CloneGroup` (with `MethodHash`) |
-| `interfaces.FileHash` | `artdupl.Clone` |
+| `interfaces.FileHash`      | `artdupl.Clone`                          |
 
 ---
 

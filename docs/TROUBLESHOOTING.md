@@ -7,6 +7,7 @@
 #### Issue: `go install` fails with "module not found"
 
 **Solution:**
+
 ```bash
 # Ensure Go 1.26+ is installed
 go version
@@ -18,6 +19,7 @@ go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
 #### Issue: Binary not found in PATH
 
 **Solution:**
+
 ```bash
 # Add Go bin to PATH
 export PATH=$PATH:$(go env GOPATH)/bin
@@ -33,6 +35,7 @@ export PATH=$PATH:$(go env GOPATH)/bin
 **Cause:** art-dupl only processes `.go` and `.templ` files by default.
 
 **Solution:**
+
 ```bash
 # Check file extensions
 ls -la *.go
@@ -44,6 +47,7 @@ art-dupl --vendor ./...
 #### Issue: High memory usage on large codebases
 
 **Solution:**
+
 ```bash
 # Use threshold to filter small clones
 art-dupl -t 100 ./...
@@ -55,6 +59,7 @@ art-dupl ./pkg ./cmd
 #### Issue: "too many open files"
 
 **Solution:**
+
 ```bash
 # Increase file descriptor limit
 ulimit -n 4096
@@ -68,6 +73,7 @@ find . -name '*.go' | art-dupl --files
 #### Issue: Config file not loading
 
 **Solution:**
+
 ```bash
 # Check config file syntax
 art-dupl --config dupl.json ./...
@@ -79,6 +85,7 @@ jq . dupl.json
 #### Issue: SQLC files not being filtered
 
 **Solution:**
+
 ```bash
 # Enable filtering
 art-dupl --filter-generated ./...
@@ -92,6 +99,7 @@ art-dupl --exclude-pattern "*_gen.go" ./...
 #### Issue: Slow analysis
 
 **Solutions:**
+
 1. Use hash detection (faster): `art-dupl -m hash ./...`
 2. Increase threshold: `art-dupl -t 50 ./...`
 3. Exclude vendor: `art-dupl --vendor=false ./...`
@@ -100,6 +108,7 @@ art-dupl --exclude-pattern "*_gen.go" ./...
 #### Issue: Out of memory
 
 **Solutions:**
+
 1. Reduce concurrency: `GOMAXPROCS=2 art-dupl ./...`
 2. Process smaller batches
 3. Use --threshold flag with higher value
