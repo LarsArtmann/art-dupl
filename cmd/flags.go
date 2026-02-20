@@ -41,4 +41,7 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	// Add semantic-aware detection flag
 	rootCmd.Flags().Bool("semantic", false, "enable semantic-aware duplicate detection (reduces false positives by including identifier names in matching)")
+
+	// Add concurrent processing flag
+	rootCmd.Flags().Int("workers", 0, "number of concurrent workers for file parsing (0 = auto-detect based on CPU cores)")
 }

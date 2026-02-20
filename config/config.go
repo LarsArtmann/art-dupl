@@ -124,6 +124,11 @@ type Config struct {
 	// - Semantic=false: Both match as duplicates (same structure)
 	// - Semantic=true: Only matches if method names are the same
 	Semantic bool `json:"semantic,omitempty"`
+
+	// Workers specifies the number of concurrent workers for file parsing.
+	// 0 or negative means use runtime.GOMAXPROCS(0).
+	// 1 means sequential processing (same as Parse()).
+	Workers int `json:"workers,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.

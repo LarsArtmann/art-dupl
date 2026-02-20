@@ -53,6 +53,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Semantic-aware detection flag
 	semantic, _ := cmd.Flags().GetBool("semantic")
 
+	// Concurrent processing flag
+	workers, _ := cmd.Flags().GetInt("workers")
+
 	var fileConfig *config.Config
 	var err error
 	if configFile != "" {
@@ -140,6 +143,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 	if semantic {
 		appConfig.Semantic = true
+	}
+	if workers != 0 {
+		appConfig.Workers = workers
 	}
 
 	if len(args) > 0 {

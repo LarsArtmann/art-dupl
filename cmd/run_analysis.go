@@ -56,7 +56,12 @@ func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, fi
 
 	// Standard parsing without cache
 	var statsChan chan job.ParseStats
-	schan, statsChan = job.Parse(ctx, filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor))
+	filesChan := filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
+	if cfg.Workers > 1 {
+		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers)
+	} else {
+		schan, statsChan = job.Parse(ctx, filesChan)
+	}
 	t, data, done := job.BuildTree(ctx, schan)
 	<-done
 	parseStats = <-statsChan
