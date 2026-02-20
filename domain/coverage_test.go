@@ -7,18 +7,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// testFilename is a reusable test filename constant.
-const testFilename = "test.go"
-
-// mustNewLineNumber creates a LineNumber for tests, panicking on error.
-func mustNewLineNumber(n uint16) LineNumber {
-	ln, err := NewLineNumber(n)
-	if err != nil {
-		panic(err)
-	}
-	return ln
-}
-
 // TestAnalysis_IsValid tests Analysis.IsValid method.
 func TestAnalysis_IsValid(t *testing.T) {
 	tests := []struct {
@@ -188,8 +176,8 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "valid clone",
 			clone: Clone{
-				StartLine: mustNewLineNumber(10),
-				EndLine:   mustNewLineNumber(20),
+				StartLine: MustNewLineNumber(10),
+				EndLine:   MustNewLineNumber(20),
 				StartPos:  NewBytePosition(100),
 				EndPos:    NewBytePosition(200),
 				Status:    FileProcessingStateCompleted,
@@ -199,8 +187,8 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "end line before start line",
 			clone: Clone{
-				StartLine: mustNewLineNumber(20),
-				EndLine:   mustNewLineNumber(10),
+				StartLine: MustNewLineNumber(20),
+				EndLine:   MustNewLineNumber(10),
 				Status:    FileProcessingStateCompleted,
 			},
 			wantErr: true,
@@ -208,8 +196,8 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "end pos before start pos",
 			clone: Clone{
-				StartLine: mustNewLineNumber(10),
-				EndLine:   mustNewLineNumber(20),
+				StartLine: MustNewLineNumber(10),
+				EndLine:   MustNewLineNumber(20),
 				StartPos:  NewBytePosition(200),
 				EndPos:    NewBytePosition(100),
 				Status:    FileProcessingStateCompleted,
@@ -219,8 +207,8 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "invalid status",
 			clone: Clone{
-				StartLine: mustNewLineNumber(10),
-				EndLine:   mustNewLineNumber(20),
+				StartLine: MustNewLineNumber(10),
+				EndLine:   MustNewLineNumber(20),
 				Status:    FileProcessingState("invalid"),
 			},
 			wantErr: true,
@@ -228,8 +216,8 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			name: "zero positions are valid",
 			clone: Clone{
-				StartLine: mustNewLineNumber(10),
-				EndLine:   mustNewLineNumber(20),
+				StartLine: MustNewLineNumber(10),
+				EndLine:   MustNewLineNumber(20),
 				StartPos:  0,
 				EndPos:    0,
 				Status:    FileProcessingStateCompleted,
@@ -251,8 +239,8 @@ func TestClone_IsValid(t *testing.T) {
 // TestCloneGroup_IsValid tests CloneGroup.IsValid method.
 func TestCloneGroup_IsValid(t *testing.T) {
 	validClone := Clone{
-		StartLine: mustNewLineNumber(10),
-		EndLine:   mustNewLineNumber(20),
+		StartLine: MustNewLineNumber(10),
+		EndLine:   MustNewLineNumber(20),
 		Status:    FileProcessingStateCompleted,
 	}
 
@@ -319,8 +307,8 @@ func TestCloneGroup_IsValid(t *testing.T) {
 				ID: "group-6",
 				Clones: []Clone{
 					{
-						StartLine: mustNewLineNumber(20),
-						EndLine:   mustNewLineNumber(10), // Invalid: end before start
+						StartLine: MustNewLineNumber(20),
+						EndLine:   MustNewLineNumber(10), // Invalid: end before start
 						Status:    FileProcessingStateCompleted,
 					},
 				},
@@ -899,7 +887,7 @@ func TestNodeToClone(t *testing.T) {
 			Pos:  0,
 			End:  12,
 		}
-		filename := testFilename
+		filename := TestFilename
 		fileContent := []byte("func main() {}")
 
 		clone := NodeToClone(node, filename, fileContent)
@@ -921,7 +909,7 @@ func TestNodeToClone(t *testing.T) {
 			Pos:  0,
 			End:  12,
 		}
-		filename := testFilename
+		filename := TestFilename
 
 		clone := NodeToClone(node, filename, nil)
 
@@ -944,7 +932,7 @@ func TestNodeToClone(t *testing.T) {
 				{Type: 3, Pos: 5, End: 10, Children: []*syntax.Node{{Type: 4, Pos: 6, End: 9}}},
 			},
 		}
-		filename := testFilename
+		filename := TestFilename
 		fileContent := []byte("func main() {}")
 
 		clone := NodeToClone(node, filename, fileContent)
@@ -958,11 +946,11 @@ func TestNodeToClone(t *testing.T) {
 // TestCloneStringMethods tests Clone string accessor methods.
 func TestCloneStringMethods(t *testing.T) {
 	clone := Clone{}
-	clone.SetFilename(testFilename)
+	clone.SetFilename(TestFilename)
 	clone.SetFragment("func main() {}")
 	clone.SetHash("abc123")
 
-	if got := clone.FilenameString(); got != testFilename {
+	if got := clone.FilenameString(); got != TestFilename {
 		t.Errorf("FilenameString() = %v, want 'test.go'", got)
 	}
 	if got := clone.FragmentString(); got != "func main() {}" {
@@ -1246,8 +1234,8 @@ func TestCloneGroupJSONRoundTrip(t *testing.T) {
 		Status:   FileProcessingStateCompleted,
 		Clones: []Clone{
 			{
-				StartLine: mustNewLineNumber(10),
-				EndLine:   mustNewLineNumber(20),
+				StartLine: MustNewLineNumber(10),
+				EndLine:   MustNewLineNumber(20),
 				StartPos:  NewBytePosition(100),
 				EndPos:    NewBytePosition(200),
 				Status:    FileProcessingStateCompleted,
