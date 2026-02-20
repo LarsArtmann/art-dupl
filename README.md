@@ -23,14 +23,20 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 # Higher threshold (larger clones only)
 ./art-dupl -t 100
 
-# HTML report
+# HTML report with dark theme
 ./art-dupl -html > report.html
 
-# JSON output (new in this fork)
+# JSON output for CI/CD
 ./art-dupl -json -t 20
 
 # Semantic-aware detection (match by identifier names)
 ./art-dupl --semantic ./src
+
+# Parallel parsing for faster analysis (auto-detect CPU cores)
+./art-dupl --workers 0 ./src
+
+# Use 8 workers for file parsing
+./art-dupl --workers 8 ./src
 
 # Check version
 ./art-dupl --version
@@ -94,6 +100,7 @@ Use with:
 -timeout duration        Maximum execution time (default 30m)
 -detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
 --semantic               Enable semantic-aware detection (match by identifier names, not just structure)
+--workers int            Number of concurrent workers (0 = auto-detect CPU cores)
 ```
 
 ### Supported Languages
