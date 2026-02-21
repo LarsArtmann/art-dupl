@@ -21,3 +21,4 @@ reports/
 my-reports/
 # BDD test binaries
 bdd/art-dupl-*
+bdd/art-dupl
