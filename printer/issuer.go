@@ -48,11 +48,13 @@ func (p *Issuer) MakeIssues(dups [][]*syntax.Node) ([]Issue, error) {
 
 	var issues []Issue
 
-	for i, cl := range clones {
-		nextCl := clones[(i+1)%len(clones)]
+	// Pair each clone with the first (reference) clone.
+	// This avoids bidirectional pairs (A→B and B→A) which represent the same issue.
+	// For n clones, we generate n-1 pairs: clone[0]→clone[1], clone[0]→clone[2], etc.
+	for i := 1; i < len(clones); i++ {
 		issues = append(issues, Issue{
-			From: Clone(cl),
-			To:   Clone(nextCl),
+			From: Clone(clones[0]),
+			To:   Clone(clones[i]),
 		})
 	}
 
