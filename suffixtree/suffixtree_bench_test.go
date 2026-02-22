@@ -110,18 +110,13 @@ func BenchmarkFindTranFallback(b *testing.B) {
 }
 
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.
-func benchmarkTreeOperation(b *testing.B, setup func() *STree, operation func(*STree)) {
+func benchmarkTreeOperation(b *testing.B, tokenCount int, operation func(*STree)) {
 	b.Helper()
-	tree := setup()
+	tree := generateTreeWithRandomTokens(tokenCount)
 
 	for b.Loop() {
 		operation(tree)
 	}
-}
-
-// setupTreeWith1000Tokens creates a tree with 1000 random tokens.
-func setupTreeWith1000Tokens() *STree {
-	return generateTreeWithRandomTokens(1000)
 }
 
 // BenchmarkConstruction benchmarks full suffix tree construction.
@@ -162,7 +157,7 @@ func BenchmarkConstructionParallel(b *testing.B) {
 
 // BenchmarkCanonize benchmarks the canonize operation.
 func BenchmarkCanonize(b *testing.B) {
-	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
+	benchmarkTreeOperation(b, 1000, func(tree *STree) {
 		_, _, _ = tree.canonize(tree.root, 0, 100) // benchmark
 	})
 }
@@ -217,7 +212,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 
 // BenchmarkTestAndSplit benchmarks the testAndSplit operation.
 func BenchmarkTestAndSplit(b *testing.B) {
-	benchmarkTreeOperation(b, setupTreeWith1000Tokens, func(tree *STree) {
+	benchmarkTreeOperation(b, 1000, func(tree *STree) {
 		// Use valid parameters within bounds
 		if len(tree.data) > 10 {
 			tree.testAndSplit(tree.root, 0, 10)

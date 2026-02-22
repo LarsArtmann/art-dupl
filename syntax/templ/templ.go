@@ -1,15 +1,8 @@
 // Package templ provides AST parsing for templ files using tree-sitter.
+// It transforms templ template syntax into unified syntax.Node for clone detection.
 //
-// This package transforms templ template syntax into the unified syntax.Node
-// representation used by art-dupl for clone detection.
-//
-// Templ is a typed HTML template language for Go that compiles to _templ.go files.
-// For clone detection, we focus on structural elements rather than content:
-// - Component declarations, CSS declarations, script declarations
-// - HTML elements, flow control (if/for/switch)
-// - Attributes (structural, not values)
-//
-// We skip: text content, attribute values, identifiers (names)
+// We focus on structural elements: declarations, HTML elements, flow control, attributes.
+// We skip: text content, attribute values, identifiers.
 package templ
 
 import (
@@ -23,15 +16,7 @@ import (
 )
 
 // Node type constants for templ syntax.
-// These map to tree-sitter-templ node types that are meaningful for clone detection.
-//
-// Meaningful types capture structure without content:
-// - Component/CSS/Script declarations define reusable blocks
-// - Elements represent HTML structure
-// - Flow control affects template structure
-// - Attributes capture element properties (not values)
-//
-// We skip: text content, identifiers, literal values.
+// Meaningful types capture structure without content.
 const (
 	BadNode = iota
 
@@ -77,8 +62,7 @@ const (
 	File
 )
 
-// nodeTypeMap maps tree-sitter node kind strings to our type constants.
-// Only includes node types that are meaningful for clone detection.
+// nodeTypeMap maps tree-sitter node kinds to our type constants.
 //
 //nolint:gochecknoglobals // Lookup table for templ node type mapping
 var nodeTypeMap = map[string]int32{
@@ -120,8 +104,6 @@ var nodeTypeMap = map[string]int32{
 }
 
 // skipNodeTypes are node types that should be skipped entirely.
-// These are typically content nodes or very granular structural nodes
-// that don't contribute meaningfully to clone detection.
 //
 //nolint:gochecknoglobals // Lookup table for nodes to skip during traversal
 var skipNodeTypes = map[string]bool{
