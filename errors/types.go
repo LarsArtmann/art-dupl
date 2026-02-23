@@ -94,13 +94,17 @@ func NewIOError(file, msg string, cause error) *DuplError {
 }
 
 // NewValidationError creates a new validation error.
-func NewValidationError(msg string, cause error) *DuplError { return newError(ValidationError, msg, cause) }
+func NewValidationError(msg string, cause error) *DuplError {
+	return newError(ValidationError, msg, cause)
+}
 
 // NewInternalError creates a new internal error.
 func NewInternalError(msg string, cause error) *DuplError { return newError(InternalError, msg, cause) }
 
 // NewDetectionError creates a new detection error.
-func NewDetectionError(msg string, cause error) *DuplError { return newError(DetectionError, msg, cause) }
+func NewDetectionError(msg string, cause error) *DuplError {
+	return newError(DetectionError, msg, cause)
+}
 
 // NewAnalysisError creates a new analysis error.
 func NewAnalysisError(msg string, cause error) *DuplError { return newError(AnalysisError, msg, cause) }
