@@ -366,7 +366,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	done := make(chan bool, numOps*3)
 
 	// Concurrent writes
-	for i := 0; i < numOps; i++ {
+	for i := range numOps {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			nodes := []*syntax.Node{{Type: int32(i), Filename: "test.go"}}
@@ -376,7 +376,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	}
 
 	// Concurrent reads
-	for i := 0; i < numOps; i++ {
+	for i := range numOps {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			fc.Get(hash)
@@ -385,7 +385,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	}
 
 	// Concurrent Has checks
-	for i := 0; i < numOps; i++ {
+	for i := range numOps {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			fc.Has(hash)
@@ -394,7 +394,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	}
 
 	// Wait for all operations
-	for i := 0; i < numOps*3; i++ {
+	for range numOps * 3 {
 		<-done
 	}
 }

@@ -102,7 +102,7 @@ func ParseParallel(ctx context.Context, fchan chan string, workers int) (chan []
 	var wg sync.WaitGroup
 	fileQueue := make(chan string, workers*2)
 
-	for i := 0; i < workers; i++ {
+	for range workers {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

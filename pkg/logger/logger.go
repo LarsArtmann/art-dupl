@@ -35,7 +35,7 @@ func DefaultConfig() *Config {
 
 // NewLogger creates a new logger with the given configuration.
 //
-//nolint:ireturn // Factory pattern - intentionally returns interface for abstraction
+
 func NewLogger(cfg *Config) Logger {
 	if cfg == nil {
 		cfg = DefaultConfig()

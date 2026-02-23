@@ -28,6 +28,24 @@ var _ = Describe("Templ Clone Detection", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
+	// runTemplOutputTest creates two .templ files with duplicate structures and
+	// verifies the output format includes the expected file references.
+	// This helper parameterizes the common pattern used across output format tests.
+	runTemplOutputTest := func(templCode1, templCode2, filename1, filename2, formatFlag, threshold string, expectedSubstrings []string) {
+		err := setup.CreateTestFile(filename1, templCode1)
+		Expect(err).NotTo(HaveOccurred())
+		err = setup.CreateTestFile(filename2, templCode2)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunArtDupl("--include-templ", formatFlag, "--threshold", threshold)
+		Expect(err).ToNot(HaveOccurred())
+		outputStr := string(output)
+
+		for _, substr := range expectedSubstrings {
+			Expect(outputStr).To(ContainSubstring(substr))
+		}
+	}
+
 	Context("When analyzing .templ source files", func() {
 		It("should detect duplicate components in .templ files", func() {
 			// Create two .templ files with identical component structures
@@ -244,19 +262,12 @@ templ Submit(label string) {
 		{ label }
 	</button>
 }`
-			err := setup.CreateTestFile("button.templ", templCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("submit.templ", templCode2)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--include-templ", "--json", "--threshold", "3")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// JSON output should be valid and contain the .templ files
-			Expect(outputStr).To(ContainSubstring("button.templ"))
-			Expect(outputStr).To(ContainSubstring("submit.templ"))
-			Expect(outputStr).To(ContainSubstring(`"clone_groups"`))
+			runTemplOutputTest(
+				templCode, templCode2,
+				"button.templ", "submit.templ",
+				"--json", "3",
+				[]string{"button.templ", "submit.templ", `"clone_groups"`},
+			)
 		})
 
 		It("should produce HTML output including .templ files", func() {
@@ -270,19 +281,12 @@ templ InputField(name string) {
 templ TextField(id string) {
 	<input type="text" name={ id } />
 }`
-			err := setup.CreateTestFile("input.templ", templCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("text.templ", templCode2)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunArtDupl("--include-templ", "--html", "--threshold", "2")
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
-
-			// HTML output should contain the .templ files
-			Expect(outputStr).To(ContainSubstring("<!DOCTYPE html>"))
-			Expect(outputStr).To(ContainSubstring("input.templ"))
-			Expect(outputStr).To(ContainSubstring("text.templ"))
+			runTemplOutputTest(
+				templCode, templCode2,
+				"input.templ", "text.templ",
+				"--html", "2",
+				[]string{"<!DOCTYPE html>", "input.templ", "text.templ"},
+			)
 		})
 	})
 

@@ -26,6 +26,63 @@ func DuplicateFunction() int {
 }
 `
 
+// runOutputFormatTest runs a test for a specific output format flag.
+func runOutputFormatTest(t *testing.T, formatFlag string) {
+	t.Helper()
+
+	tmpDir := t.TempDir()
+
+	duplicateCode := testDuplicateCode
+	file1 := filepath.Join(tmpDir, "file1.go")
+	file2 := filepath.Join(tmpDir, "file2.go")
+	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	cmd := NewRootCommand()
+	AddFlags(cmd)
+	cmd.SetArgs([]string{formatFlag, "--threshold", "10", tmpDir})
+	buf := &bytes.Buffer{}
+	cmd.SetOut(buf)
+	cmd.SetErr(buf)
+
+	err := cmd.Execute()
+	if err != nil {
+		t.Errorf("runCmd() error = %v", err)
+	}
+}
+
+// runStatsFormatTest runs a stats test for a specific format.
+func runStatsFormatTest(t *testing.T, format string) {
+	t.Helper()
+
+	tmpDir := t.TempDir()
+
+	duplicateCode := testDuplicateCode
+	file1 := filepath.Join(tmpDir, "file1.go")
+	file2 := filepath.Join(tmpDir, "file2.go")
+	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	cmd := NewStatsCommand()
+	cmd.SetArgs([]string{"--format", format, "--threshold", "10", tmpDir})
+	buf := &bytes.Buffer{}
+	cmd.SetOut(buf)
+	cmd.SetErr(buf)
+
+	err := cmd.Execute()
+	if err != nil {
+		t.Errorf("runStats() error = %v", err)
+	}
+}
+
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -718,81 +775,15 @@ func TestRunCmd_Integration(t *testing.T) {
 	})
 
 	t.Run("json output format", func(t *testing.T) {
-		tmpDir := t.TempDir()
-
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		cmd := NewRootCommand()
-		AddFlags(cmd)
-		cmd.SetArgs([]string{"--json", "--threshold", "10", tmpDir})
-		buf := &bytes.Buffer{}
-		cmd.SetOut(buf)
-		cmd.SetErr(buf)
-
-		err := cmd.Execute()
-		if err != nil {
-			t.Errorf("runCmd() error = %v", err)
-		}
+		runOutputFormatTest(t, "--json")
 	})
 
 	t.Run("plumbing output format", func(t *testing.T) {
-		tmpDir := t.TempDir()
-
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		cmd := NewRootCommand()
-		AddFlags(cmd)
-		cmd.SetArgs([]string{"--plumbing", "--threshold", "10", tmpDir})
-		buf := &bytes.Buffer{}
-		cmd.SetOut(buf)
-		cmd.SetErr(buf)
-
-		err := cmd.Execute()
-		if err != nil {
-			t.Errorf("runCmd() error = %v", err)
-		}
+		runOutputFormatTest(t, "--plumbing")
 	})
 
 	t.Run("html output format", func(t *testing.T) {
-		tmpDir := t.TempDir()
-
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		cmd := NewRootCommand()
-		AddFlags(cmd)
-		cmd.SetArgs([]string{"--html", "--threshold", "10", tmpDir})
-		buf := &bytes.Buffer{}
-		cmd.SetOut(buf)
-		cmd.SetErr(buf)
-
-		err := cmd.Execute()
-		if err != nil {
-			t.Errorf("runCmd() error = %v", err)
-		}
+		runOutputFormatTest(t, "--html")
 	})
 
 	t.Run("verbose output", func(t *testing.T) {
@@ -867,53 +858,11 @@ func TestRunStats_Integration(t *testing.T) {
 	})
 
 	t.Run("stats with json format", func(t *testing.T) {
-		tmpDir := t.TempDir()
-
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		cmd := NewStatsCommand()
-		cmd.SetArgs([]string{"--format", "json", "--threshold", "10", tmpDir})
-		buf := &bytes.Buffer{}
-		cmd.SetOut(buf)
-		cmd.SetErr(buf)
-
-		err := cmd.Execute()
-		if err != nil {
-			t.Errorf("runStats() error = %v", err)
-		}
+		runStatsFormatTest(t, "json")
 	})
 
 	t.Run("stats with csv format", func(t *testing.T) {
-		tmpDir := t.TempDir()
-
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		cmd := NewStatsCommand()
-		cmd.SetArgs([]string{"--format", "csv", "--threshold", "10", tmpDir})
-		buf := &bytes.Buffer{}
-		cmd.SetOut(buf)
-		cmd.SetErr(buf)
-
-		err := cmd.Execute()
-		if err != nil {
-			t.Errorf("runStats() error = %v", err)
-		}
+		runStatsFormatTest(t, "csv")
 	})
 
 	t.Run("stats invalid format returns error", func(t *testing.T) {

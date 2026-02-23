@@ -738,8 +738,10 @@ func TestLegacyDetector_FindLegacyInFile_EmptyFile(t *testing.T) {
 	}
 }
 
-// TestFindIssuesInFile_WithData tests findIssuesInFile with actual data.
-func TestFindIssuesInFile_WithData(t *testing.T) {
+// setupTodoTest creates a temporary test file with a TODO comment and returns
+// the detector and nodes for testing.
+func setupTodoTest(t *testing.T) (*TodoDetector, []*syntax.Node, string) {
+	t.Helper()
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/test.go"
@@ -756,7 +758,12 @@ func Test() {}
 		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 10},
 	}
 
-	// Use FindTodos which internally calls findIssuesInFile
+	return detector, nodes, testFile
+}
+
+// assertTodoMatches checks that the detector finds at least one TODO match.
+func assertTodoMatches(t *testing.T, detector *TodoDetector, nodes []*syntax.Node, errMsg string) {
+	t.Helper()
 	matches := detector.FindTodos(nodes)
 
 	matchCount := 0
@@ -764,39 +771,19 @@ func Test() {}
 		matchCount++
 	}
 
-	// Should find the TODO
 	if matchCount == 0 {
-		t.Error("Expected at least one match from FindTodos")
+		t.Error(errMsg)
 	}
+}
+
+// TestFindIssuesInFile_WithData tests findIssuesInFile with actual data.
+func TestFindIssuesInFile_WithData(t *testing.T) {
+	detector, nodes, _ := setupTodoTest(t)
+	assertTodoMatches(t, detector, nodes, "Expected at least one match from FindTodos")
 }
 
 // TestFindIssuesGeneric_WithData tests findIssuesGeneric with actual data.
 func TestFindIssuesGeneric_WithData(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	testFile := tmpDir + "/test.go"
-	goCode := `package test
-// TODO: test
-func Test() {}
-`
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 10},
-	}
-
-	// FindTodos uses findIssuesGeneric internally
-	matches := detector.FindTodos(nodes)
-
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	if matchCount == 0 {
-		t.Error("Expected matches from findIssuesGeneric")
-	}
+	detector, nodes, _ := setupTodoTest(t)
+	assertTodoMatches(t, detector, nodes, "Expected matches from findIssuesGeneric")
 }

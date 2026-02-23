@@ -337,7 +337,7 @@ func BenchmarkHashIdentifierFast(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		for _, id := range identifiers {
 			_ = hashIdentifierFast(id)
 		}
@@ -352,7 +352,7 @@ func BenchmarkEncodeSemanticType(b *testing.B) {
 	baseType := int32(42)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_ = encodeSemanticType(baseType, "identifierName")
 	}
 }

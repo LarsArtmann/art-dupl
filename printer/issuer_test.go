@@ -6,7 +6,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// createIssuerTestNodes creates nodes with proper positions for issuer tests
+// createIssuerTestNodes creates nodes with proper positions for issuer tests.
 func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 	result := make([][]*syntax.Node, len(filenames))
 	for i, filename := range filenames {
@@ -17,7 +17,7 @@ func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 	return result
 }
 
-// createIssuerReadFile creates a ReadFile that returns content matching positions
+// createIssuerReadFile creates a ReadFile that returns content matching positions.
 func createIssuerReadFile() ReadFile {
 	// Return content that's at least as long as the largest End position
 	content := "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\n"

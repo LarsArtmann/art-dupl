@@ -29,7 +29,7 @@ func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
 	return &htmlprinter{w: w, ReadFile: fread, threshold: thresh, dupls: make([][][]*syntax.Node, 0)}
 }
 
-// htmlTemplate is the modernized HTML template with dark theme
+// htmlTemplate is the modernized HTML template with dark theme.
 const htmlTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>

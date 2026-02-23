@@ -30,12 +30,10 @@ func TestNewHasher(t *testing.T) {
 	}
 }
 
-func TestFallbackHasher_Hash(t *testing.T) {
-	hasher := &fallbackHasher{}
-
+func testHasherHash(t *testing.T, hasher Hasher, name string) {
 	tests := []struct {
-		name string
-		data []byte
+		testName string
+		data     []byte
 	}{
 		{"empty slice", []byte{}},
 		{"single byte", []byte{0x01}},
@@ -45,13 +43,17 @@ func TestFallbackHasher_Hash(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.testName, func(t *testing.T) {
 			result := hasher.Hash(tt.data)
 			if result != nil {
-				t.Errorf("fallbackHasher.Hash() = %v, want nil", result)
+				t.Errorf("%s.Hash() = %v, want nil", name, result)
 			}
 		})
 	}
+}
+
+func TestFallbackHasher_Hash(t *testing.T) {
+	testHasherHash(t, &fallbackHasher{}, "fallbackHasher")
 }
 
 func TestFallbackHasher_HashSlice(t *testing.T) {
@@ -91,27 +93,7 @@ func TestFallbackHasher_HashSlice(t *testing.T) {
 
 func TestSimdHasher_Hash(t *testing.T) {
 	// simdHasher delegates to fallbackHasher
-	hasher := &simdHasher{}
-
-	tests := []struct {
-		name string
-		data []byte
-	}{
-		{"empty slice", []byte{}},
-		{"single byte", []byte{0x01}},
-		{"small data", []byte("hello")},
-		{"large data", make([]byte, 1024)},
-		{"nil slice", nil},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := hasher.Hash(tt.data)
-			if result != nil {
-				t.Errorf("simdHasher.Hash() = %v, want nil", result)
-			}
-		})
-	}
+	testHasherHash(t, &simdHasher{}, "simdHasher")
 }
 
 func TestSimdHasher_HashSlice(t *testing.T) {
