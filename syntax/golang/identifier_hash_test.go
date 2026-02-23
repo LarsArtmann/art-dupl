@@ -329,6 +329,119 @@ func TestSemanticHashEnabled_Default(t *testing.T) {
 	SemanticHashEnabled = currentValue
 }
 
+func TestCombineIdentifierHashes(t *testing.T) {
+	tests := []struct {
+		name     string
+		hash1    int32
+		hash2    int32
+		wantZero bool
+	}{
+		{"both zero", 0, 0, true},
+		{"hash1 zero", 0, 0x123456, false},
+		{"hash2 zero", 0x123456, 0, false},
+		{"both non-zero", 0x123456, 0x789ABC, false},
+		{"same hash", 0x123456, 0x123456, true}, // XOR of same = 0
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := combineIdentifierHashes(tt.hash1, tt.hash2)
+			if tt.wantZero && result != 0 {
+				t.Errorf("combineIdentifierHashes(%x, %x) = %x, want 0", tt.hash1, tt.hash2, result)
+			}
+			if !tt.wantZero && result == 0 {
+				t.Errorf("combineIdentifierHashes(%x, %x) = 0, want non-zero", tt.hash1, tt.hash2)
+			}
+			// Verify result is in 24-bit range
+			if result < 0 || result > 0x00FFFFFF {
+				t.Errorf("combineIdentifierHashes(%x, %x) = %x, out of 24-bit range", tt.hash1, tt.hash2, result)
+			}
+		})
+	}
+}
+
+func TestEncodeSemanticTypeMulti(t *testing.T) {
+	original := SemanticHashEnabled
+	SemanticHashEnabled = true
+	defer func() { SemanticHashEnabled = original }()
+
+	baseType := int32(FuncDecl)
+
+	tests := []struct {
+		name        string
+		identifiers []string
+		wantBase    bool
+	}{
+		{"empty identifiers", []string{}, true},
+		{"single identifier", []string{"IsValid"}, false},
+		{"receiver and function", []string{"CrushMode", "IsValid"}, false},
+		{"empty string in slice", []string{"", "IsValid"}, false},
+		{"all empty strings", []string{"", ""}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := encodeSemanticTypeMulti(baseType, tt.identifiers...)
+
+			// Verify base type is preserved in lower 8 bits
+			extractedBase := DecodeBaseType(result)
+			if extractedBase != baseType {
+				t.Errorf("base type not preserved: got %d, want %d", extractedBase, baseType)
+			}
+
+			if tt.wantBase {
+				// Should return just the base type (no semantic hash)
+				if result != baseType {
+					t.Errorf("encodeSemanticTypeMulti(%v) = %d, want %d (no semantic hash)", tt.identifiers, result, baseType)
+				}
+			} else {
+				// Should have semantic hash in upper bits
+				semanticHash := DecodeSemanticHash(result)
+				if semanticHash == 0 {
+					t.Errorf("encodeSemanticTypeMulti(%v) returned zero semantic hash", tt.identifiers)
+				}
+			}
+		})
+	}
+}
+
+func TestEncodeSemanticTypeMulti_DifferentCombinations(t *testing.T) {
+	original := SemanticHashEnabled
+	SemanticHashEnabled = true
+	defer func() { SemanticHashEnabled = original }()
+
+	baseType := int32(FuncDecl)
+
+	// Different receiver + function combinations should produce different hashes
+	hash1 := encodeSemanticTypeMulti(baseType, "CrushMode", "IsValid")
+	hash2 := encodeSemanticTypeMulti(baseType, "SafetyMode", "IsValid")
+	hash3 := encodeSemanticTypeMulti(baseType, "CrushMode", "IsEnabled")
+	hash4 := encodeSemanticTypeMulti(baseType, "SafetyMode", "IsEnabled")
+
+	if hash1 == hash2 {
+		t.Error("different receivers with same function should produce different hashes")
+	}
+	if hash1 == hash3 {
+		t.Error("same receiver with different functions should produce different hashes")
+	}
+	if hash1 == hash4 {
+		t.Error("completely different receiver+function should produce different hashes")
+	}
+}
+
+func TestEncodeSemanticTypeMulti_Disabled(t *testing.T) {
+	original := SemanticHashEnabled
+	SemanticHashEnabled = false
+	defer func() { SemanticHashEnabled = original }()
+
+	baseType := int32(FuncDecl)
+	result := encodeSemanticTypeMulti(baseType, "CrushMode", "IsValid")
+
+	if result != baseType {
+		t.Errorf("encodeSemanticTypeMulti with SemanticHashEnabled=false = %d, want %d", result, baseType)
+	}
+}
+
 func BenchmarkHashIdentifierFast(b *testing.B) {
 	identifiers := []string{
 		"String", "Error", "Format", "Parse",

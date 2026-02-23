@@ -131,7 +131,12 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.FuncDecl:
-		o.Type = FuncDecl
+		// Semantic hashing: combine receiver type and function name
+		// This makes methods on different types semantically distinct,
+		// reducing false positives for template patterns like enums.
+		receiverType := extractReceiverTypeName(n.Recv)
+		funcName := n.Name.Name
+		o.Type = encodeSemanticTypeMulti(FuncDecl, receiverType, funcName)
 		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 		t.addWithNilCheck(o, n.Body)
@@ -244,7 +249,8 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		t.addWithNilCheck(o, n.Type)
 
 	case *ast.TypeSpec:
-		o.Type = TypeSpec
+		// Semantic hashing: encode type name to differentiate type declarations
+		o.Type = encodeSemanticType(TypeSpec, n.Name.Name)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 
 	case *ast.TypeSwitchStmt:
@@ -271,4 +277,34 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 	}
 
 	return o
+}
+
+// extractReceiverTypeName extracts the type name from a method receiver.
+// Returns empty string if there's no receiver or if the type cannot be determined.
+// Handles both value receivers (t Type) and pointer receivers (t *Type).
+func extractReceiverTypeName(recv *ast.FieldList) string {
+	if recv == nil || len(recv.List) == 0 {
+		return ""
+	}
+
+	// Get the first field in the receiver (there's typically only one)
+	field := recv.List[0]
+	if field.Type == nil {
+		return ""
+	}
+
+	// Handle pointer receiver: *Type
+	if starExpr, ok := field.Type.(*ast.StarExpr); ok {
+		if ident, ok := starExpr.X.(*ast.Ident); ok {
+			return ident.Name
+		}
+		return ""
+	}
+
+	// Handle value receiver: Type
+	if ident, ok := field.Type.(*ast.Ident); ok {
+		return ident.Name
+	}
+
+	return ""
 }

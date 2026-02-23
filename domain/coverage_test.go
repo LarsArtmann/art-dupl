@@ -7,6 +7,23 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// stringerValidator is a type constraint for types with String() and IsValid() methods.
+type stringerValidator interface {
+	String() string
+	IsValid() bool
+}
+
+// testEnumMethods tests String() and IsValid() methods for enum types.
+func testEnumMethods[T stringerValidator](t *testing.T, val T, wantStr string, wantValid bool) {
+	t.Helper()
+	if got := val.String(); got != wantStr {
+		t.Errorf("String() = %v, want %v", got, wantStr)
+	}
+	if got := val.IsValid(); got != wantValid {
+		t.Errorf("IsValid() = %v, want %v", got, wantValid)
+	}
+}
+
 // TestAnalysis_IsValid tests Analysis.IsValid method.
 func TestAnalysis_IsValid(t *testing.T) {
 	tests := []struct {
@@ -702,12 +719,7 @@ func TestFileProcessingState_Methods(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.state.String(); got != tt.str {
-				t.Errorf("String() = %v, want %v", got, tt.str)
-			}
-			if got := tt.state.IsValid(); got != tt.isValid {
-				t.Errorf("IsValid() = %v, want %v", got, tt.isValid)
-			}
+			testEnumMethods(t, tt.state, tt.str, tt.isValid)
 		})
 	}
 }
@@ -728,12 +740,7 @@ func TestDetectionState_Methods(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.state.String(); got != tt.str {
-				t.Errorf("String() = %v, want %v", got, tt.str)
-			}
-			if got := tt.state.IsValid(); got != tt.isValid {
-				t.Errorf("IsValid() = %v, want %v", got, tt.isValid)
-			}
+			testEnumMethods(t, tt.state, tt.str, tt.isValid)
 		})
 	}
 }
@@ -753,12 +760,7 @@ func TestAnalysisMode_Methods(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.mode.String(); got != tt.str {
-				t.Errorf("String() = %v, want %v", got, tt.str)
-			}
-			if got := tt.mode.IsValid(); got != tt.isValid {
-				t.Errorf("IsValid() = %v, want %v", got, tt.isValid)
-			}
+			testEnumMethods(t, tt.mode, tt.str, tt.isValid)
 		})
 	}
 }
@@ -779,12 +781,7 @@ func TestCloneSeverity_Methods(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.severity.String(); got != tt.str {
-				t.Errorf("String() = %v, want %v", got, tt.str)
-			}
-			if got := tt.severity.IsValid(); got != tt.isValid {
-				t.Errorf("IsValid() = %v, want %v", got, tt.isValid)
-			}
+			testEnumMethods(t, tt.severity, tt.str, tt.isValid)
 		})
 	}
 }

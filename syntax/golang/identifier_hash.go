@@ -69,3 +69,39 @@ func DecodeBaseType(t int32) int32 {
 func DecodeSemanticHash(t int32) int32 {
 	return (t >> 8) & 0x00FFFFFF
 }
+
+// combineIdentifierHashes combines two identifier hashes into one 24-bit hash.
+// Uses XOR mixing for good distribution while staying within 24 bits.
+// This allows encoding both receiver type and function name in a single semantic hash.
+func combineIdentifierHashes(hash1, hash2 int32) int32 {
+	if hash1 == 0 {
+		return hash2
+	}
+	if hash2 == 0 {
+		return hash1
+	}
+	// XOR the hashes and keep in 24-bit range
+	return (hash1 ^ hash2) & 0x00FFFFFF
+}
+
+// encodeSemanticTypeMulti combines a base node type with multiple identifier hashes.
+// This is useful for nodes like FuncDecl where both receiver type and function name matter.
+func encodeSemanticTypeMulti(baseType int32, identifiers ...string) int32 {
+	if !SemanticHashEnabled || len(identifiers) == 0 {
+		return baseType
+	}
+
+	var combinedHash int32
+	for _, id := range identifiers {
+		if id != "" {
+			hash := hashIdentifierFast(id)
+			combinedHash = combineIdentifierHashes(combinedHash, hash)
+		}
+	}
+
+	if combinedHash == 0 {
+		return baseType
+	}
+
+	return (combinedHash << 8) | (baseType & 0xFF)
+}
