@@ -81,30 +81,38 @@ Create `dupl.json`:
 Use with:
 
 ```bash
-./dupl -config dupl.json
+./art-dupl -config dupl.json
 ```
 
 ## CLI Flags
 
 ```
--config string           Configuration file path
--files                   Read file names from stdin
--html                    HTML output with code fragments
--json                    JSON output (new)
--plumbing                Machine-readable output
--t, -threshold           Minimum token size (default 15)
--vendor                  Include vendor directory
--v, -verbose             Verbose logging
--filter-generated        Smart filtering of generated code
--include-sqlc            Include sqlc.dev generated files (filtered by default)
--include-templ           Analyze .templ template files (templ.guide)
--include-pattern value   File patterns to always include
--exclude-pattern value   File patterns to exclude
--profile                 Enable performance profiling
--timeout duration        Maximum execution time (default 30m)
--detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
---semantic              Enable semantic-aware detection (match by identifier names)
---workers int            Number of concurrent workers (0 = auto-detect CPU cores)
+-a, --all                    Generate all output formats for all detection methods
+    --cache-dir              Cache directory for AST caching (default: .cache/art-dupl)
+    --clear-cache            Clear cache before running
+-c, --config                 Path to configuration file (JSON format)
+-m, --detection-methods      Detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)
+    --exclude-pattern        Additional file patterns to exclude
+-f, --files                  Read file names from stdin, one per line
+    --filter-generated       Enable filtering of sqlc.dev and templ.guide generated code
+-h, --help                   Help for art-dupl
+    --html                   Output results as HTML with syntax-highlighted code fragments
+    --include-pattern        File patterns to always include (takes precedence over filter)
+    --include-sqlc           Include sqlc.dev generated files (override auto-detection)
+    --include-templ          Include templ.guide generated files (override default filtering)
+    --incremental            Enable incremental analysis (only analyze changed files)
+-j, --json                   Output structured JSON format with metadata and statistics
+-o, --output-dir             Output directory for generated files (used with --all)
+-p, --plumbing               Output machine-readable plumbing format for script integration
+    --semantic               Enable semantic-aware detection (match by identifier names)
+    --since                  Git reference for incremental mode (e.g., HEAD~1, main)
+-s, --sort                   Sort clone groups: size, occurrence, hash, total-tokens (default: size)
+    --structural             Use structural-only matching [deprecated: this is now default]
+-t, --threshold              Minimum token sequence size (default: 15)
+    --vendor                 Include vendor directory in analysis
+-v, --verbose                Enable verbose logging (repeat for more verbosity)
+    --version                Version for art-dupl
+    --workers                Number of concurrent workers (0 = auto-detect CPU cores)
 ```
 
 ### Supported Languages
@@ -115,9 +123,7 @@ Use with:
 | Templ    | `.templ`  | Full analysis |
 
 **Note:** `.templ` files (from [templ.guide](https://templ.guide)) are fully analyzed for code clones.
-By default, templ files are filtered as generated code. Use `-include-templ` to analyze them.
-
-````
+By default, templ files are filtered as generated code. Use `--include-templ` to analyze them.
 
 ### Subcommands
 
@@ -125,17 +131,19 @@ By default, templ files are filtered as generated code. Use `-include-templ` to 
 
 ```bash
 art-dupl stats [flags] [paths...]
-````
+```
 
 Supports all root command flags plus:
 
 ```
--t, -threshold          Minimum token size (default 15)
--m, -detection-methods  Detection methods to use
---format                Output format: text, json (default: text)
+-t, --threshold          Minimum token size (default: 15)
+-m, --detection-methods  Detection methods to use
+    --format             Output format: text, json, csv (default: text)
+    --semantic           Enable semantic-aware detection
+    --structural         Use structural-only matching [deprecated]
 ```
 
-**Format validation**: The `--format` flag only accepts "text" or "json". Providing an invalid format will result in an error.
+**Format validation**: The `--format` flag accepts "text", "json", or "csv".
 
 ## Examples
 
@@ -143,7 +151,7 @@ Supports all root command flags plus:
 
 ```bash
 # Fail build if too many duplicates
-TOTAL_CLONES=$(dupl -json . | jq '.summary.total_clones')
+TOTAL_CLONES=$(art-dupl -json . | jq '.summary.total_clones')
 if [ "$TOTAL_CLONES" -gt 100 ]; then
   echo "Too many code duplicates: $TOTAL_CLONES"
   exit 1
@@ -154,10 +162,10 @@ fi
 
 ```bash
 # Find test file duplicates
-find . -name '*_test.go' | dupl -files
+find . -name '*_test.go' | art-dupl -files
 
 # Analyze specific paths
-./dupl ./src ./lib -t 50
+./art-dupl ./src ./lib -t 50
 ```
 
 ### Statistics

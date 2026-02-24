@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/spf13/cobra"
 )
 
@@ -62,6 +63,10 @@ Examples:
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 
+	// Add semantic-aware detection flags
+	cmd.Flags().Bool("semantic", false, "enable semantic-aware detection (includes identifier names in matching to reduce false positives)")
+	cmd.Flags().Bool("structural", false, "use structural-only matching (disables semantic detection, may increase false positives) [deprecated: this is now the default behavior]")
+
 	return cmd
 }
 
@@ -84,6 +89,18 @@ func runStats(cmd *cobra.Command, args []string) error {
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 	formatStr, _ := cmd.Flags().GetString("format")
+	semantic, _ := cmd.Flags().GetBool("semantic")
+	structural, _ := cmd.Flags().GetBool("structural")
+
+	// Validate conflicting flags
+	if semantic && structural {
+		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; --semantic enables semantic detection, which is off by default", nil)
+	}
+
+	// Warn about deprecated --structural flag
+	if structural {
+		fmt.Fprintf(os.Stderr, "Warning: --structural flag is deprecated. Structural matching is now the default behavior. This flag will be removed in a future version.\n")
+	}
 
 	// Parse and validate format
 	format, err := printer.ParseFormat(formatStr)
@@ -152,6 +169,12 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if len(excludePatterns) > 0 {
 		appConfig.ExcludePatterns = excludePatterns
 	}
+	if semantic {
+		appConfig.Semantic = true
+	}
+	if structural {
+		appConfig.Semantic = false
+	}
 
 	if len(args) > 0 {
 		appConfig.Paths = args
@@ -162,6 +185,9 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if err = config.ValidateConfig(mergedConfig); err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
 	}
+
+	// Wire semantic detection to golang package global
+	golang.SemanticHashEnabled = mergedConfig.Semantic
 
 	// Add timeout context if specified
 	var cancel context.CancelFunc

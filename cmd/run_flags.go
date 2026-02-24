@@ -157,7 +157,6 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 	if structural {
 		appConfig.Semantic = false
-		appConfig.SemanticExplicitlyDisabled = true
 	}
 	if workers != 0 {
 		appConfig.Workers = workers
