@@ -127,10 +127,6 @@ type Config struct {
 	// - Semantic=false (default): Matches based on structure only (more potential matches)
 	Semantic bool `json:"semantic,omitempty"`
 
-	// SemanticExplicitlyDisabled is set when user explicitly uses --structural flag.
-	// This allows the merge logic to distinguish between "not set" and "explicitly false".
-	SemanticExplicitlyDisabled bool `json:"-"` // Internal field, not serialized
-
 	// Workers specifies the number of concurrent workers for file parsing.
 	// 0 or negative means use runtime.GOMAXPROCS(0).
 	// 1 means sequential processing (same as Parse()).
