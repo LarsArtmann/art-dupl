@@ -286,4 +286,63 @@ func TestOrderHandler(t *testing.T) {
 			Expect(semanticStr).ToNot(ContainSubstring("order_handler_test.go"))
 		})
 	})
+
+	Context("When enum pattern methods have same structure but different receiver types", func() {
+		It("should NOT flag methods on different types as duplicates with --semantic", func() {
+			// This is the exact pattern from auto-deduplicate that caused false positives
+			code1 := `package enums
+
+type CrushMode string
+
+func (cm CrushMode) IsValid() bool {
+	return cm != ""
+}
+
+func (cm CrushMode) IsEnabled() bool {
+	return cm != "disabled"
+}
+
+func ParseCrushMode(s string) CrushMode {
+	return CrushMode(s)
+}`
+
+			code2 := `package enums
+
+type SafetyMode string
+
+func (sm SafetyMode) IsValid() bool {
+	return sm != ""
+}
+
+func (sm SafetyMode) IsEnabled() bool {
+	return sm != "disabled"
+}
+
+func ParseSafetyMode(s string) SafetyMode {
+	return SafetyMode(s)
+}`
+
+			err := setup.FileProcessor.WriteFile("crush_mode.go", []byte(code1), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.FileProcessor.WriteFile("safety_mode.go", []byte(code2), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run WITHOUT --semantic: should detect as duplicate (structural match)
+			cmdNoSemantic := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10")
+			outputNoSemantic, err := cmdNoSemantic.CombinedOutput()
+			Expect(err).ToNot(HaveOccurred())
+			noSemanticStr := string(outputNoSemantic)
+			Expect(noSemanticStr).To(ContainSubstring("crush_mode.go"))
+			Expect(noSemanticStr).To(ContainSubstring("safety_mode.go"))
+
+			// Run WITH --semantic: should NOT detect as duplicate
+			// Because receiver types (CrushMode vs SafetyMode) and function names (ParseCrushMode vs ParseSafetyMode) differ
+			cmdSemantic := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10", "--semantic")
+			outputSemantic, err := cmdSemantic.CombinedOutput()
+			Expect(err).ToNot(HaveOccurred())
+			semanticStr := string(outputSemantic)
+			Expect(semanticStr).ToNot(ContainSubstring("crush_mode.go"))
+			Expect(semanticStr).ToNot(ContainSubstring("safety_mode.go"))
+		})
+	})
 })

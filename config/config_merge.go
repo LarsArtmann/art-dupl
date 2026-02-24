@@ -130,8 +130,8 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.ClearCache = cfg.ClearCache
 	}
 
-	// Semantic (bool)
-	if !skipZeroValues || cfg.Semantic {
+	// Semantic (bool) - always apply from CLI (allows explicit false with --structural)
+	if !skipZeroValues || cfg.Semantic || cfg.SemanticExplicitlyDisabled {
 		result.Semantic = cfg.Semantic
 	}
 }

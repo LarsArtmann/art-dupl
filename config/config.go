@@ -115,15 +115,21 @@ type Config struct {
 	// ClearCache clears the cache before running (useful for forced full rebuild)
 	ClearCache bool `json:"clearCache,omitempty"`
 
-	// Semantic enables semantic-aware duplicate detection
+	// Semantic enables semantic-aware duplicate detection.
 	// When true, identifier names are included in the type hash, reducing false positives
-	// from structurally similar but semantically different code (e.g., Ginkgo tests with
-	// different method names).
+	// from structurally similar but semantically different code.
+	//
+	// This is the DEFAULT and recommended mode for most use cases.
+	// Set to false only if you specifically want structural-only matching.
 	//
 	// Example: Expect(x).To(Equal(y)) vs Expect(z).To(Equal(w))
-	// - Semantic=false: Both match as duplicates (same structure)
-	// - Semantic=true: Only matches if method names are the same
+	// - Semantic=true (default): Only matches if method names are the same
+	// - Semantic=false: Matches based on structure only (more false positives)
 	Semantic bool `json:"semantic,omitempty"`
+
+	// SemanticExplicitlyDisabled is set when user explicitly uses --structural flag.
+	// This allows the merge logic to distinguish between "not set" and "explicitly false".
+	SemanticExplicitlyDisabled bool `json:"-"` // Internal field, not serialized
 
 	// Workers specifies the number of concurrent workers for file parsing.
 	// 0 or negative means use runtime.GOMAXPROCS(0).
@@ -156,7 +162,7 @@ func DefaultConfig() *Config {
 		Since:             "",
 		CacheDir:          "",
 		ClearCache:        false,
-		Semantic:          false, // Default: off for backward compatibility
+		Semantic:          true, // Default: on for better accuracy (reduces false positives)
 	}
 }
 

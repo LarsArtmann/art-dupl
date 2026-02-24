@@ -309,7 +309,7 @@ func TestCollisionBehavior(t *testing.T) {
 }
 
 func TestSemanticHashEnabled_Default(t *testing.T) {
-	// Verify default is false for backward compatibility
+	// Verify default is true for better accuracy (fewer false positives)
 	// Note: This test checks the global state, so we save and restore
 	// the current value in case other tests modified it
 	currentValue := SemanticHashEnabled
