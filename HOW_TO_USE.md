@@ -332,7 +332,11 @@ The HTML report provides:
 #### Too Many False Positives
 
 ```bash
-# Increase threshold
+# Use --semantic flag to reduce false positives by matching identifier names
+# This helps for patterns like enum methods (CrushMode.IsValid vs SafetyMode.IsValid)
+./art-dupl --semantic -t 40
+
+# Or increase threshold for structural matching (default behavior)
 ./art-dupl -t 40
 
 # Or ignore certain patterns

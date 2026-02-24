@@ -50,7 +50,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	cacheDir, _ := cmd.Flags().GetString("cache-dir")
 	clearCache, _ := cmd.Flags().GetBool("clear-cache")
 
-	// Structural matching flag (disables semantic detection)
+	// Semantic detection flags
+	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
 
 	// Concurrent processing flag
@@ -140,6 +141,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 	if clearCache {
 		appConfig.ClearCache = true
+	}
+	if semantic {
+		appConfig.Semantic = true
 	}
 	if structural {
 		appConfig.Semantic = false

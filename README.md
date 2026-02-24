@@ -29,7 +29,8 @@ git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make bui
 # JSON output for CI/CD
 ./art-dupl -json -t 20
 
-# Semantic-aware detection (match by identifier names)
+# Semantic-aware detection (opt-in with --semantic flag)
+# Matches by identifier names to reduce false positives
 ./art-dupl --semantic ./src
 
 # Parallel parsing for faster analysis (auto-detect CPU cores)
@@ -53,7 +54,10 @@ source <(./art-dupl completion zsh)
 ## Key Features
 
 - **Structural clone detection** using suffix tree algorithms
-- **Semantic-aware detection** for content-aware duplicate matching
+- **Semantic-aware detection** (opt-in with `--semantic` flag) for content-aware duplicate matching
+  - Distinguishes methods by receiver type (e.g., `CrushMode.IsValid` vs `SafetyMode.IsValid`)
+  - Matches by identifier names, not just AST structure
+  - Default: structural-only matching for backward compatibility
 - **Multi-language support**: Go files and `.templ` templates (templ.guide)
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
@@ -99,7 +103,7 @@ Use with:
 -profile                 Enable performance profiling
 -timeout duration        Maximum execution time (default 30m)
 -detection-methods       Detection methods: hash, art-dupl (default: art-dupl)
---semantic               Enable semantic-aware detection (match by identifier names, not just structure)
+--semantic              Enable semantic-aware detection (match by identifier names)
 --workers int            Number of concurrent workers (0 = auto-detect CPU cores)
 ```
 

@@ -16,10 +16,10 @@ import (
 // which reduces false positives by including identifier names in matching.
 //
 // The scenarios cover:
-// - Structural duplicates detected without semantic flag
-// - Semantic-aware detection prevents false positives
+// - Semantic-aware detection (default) prevents false positives
+// - Structural-only matching with --structural flag
 // - Config file support for semantic detection
-// - Backward compatibility (default: off)
+// - Default behavior: semantic detection ON
 
 var _ = Describe("Semantic Detection", func() {
 	var setup *testutil.BDDTestSetup
@@ -34,10 +34,10 @@ var _ = Describe("Semantic Detection", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
-	Context("When semantic detection is disabled (default)", func() {
+	Context("When semantic detection is disabled (--structural flag)", func() {
 		It("should detect structural duplicates even with different method names", func() {
 			// Create two files with identical AST structure but different method names
-			// These should be flagged as duplicates WITHOUT --semantic
+			// These should be flagged as duplicates WITH --structural
 			code1 := `package main
 
 import "testing"
@@ -73,8 +73,8 @@ func TestOrderService_GetByID(t *testing.T) {
 			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run WITHOUT --semantic flag (default behavior)
-			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10")
+			// Run WITH --structural flag (structural-only matching)
+			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10", "--structural")
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -88,7 +88,7 @@ func TestOrderService_GetByID(t *testing.T) {
 	Context("When semantic detection is enabled", func() {
 		It("should NOT flag structurally identical code with different method names", func() {
 			// Create two files with identical AST structure but ALL different identifiers
-			// These should NOT be flagged as duplicates WITH --semantic
+			// These should NOT be flagged as duplicates WITH --semantic flag
 			code1 := `package main
 
 import "testing"
@@ -269,7 +269,7 @@ func TestOrderHandler(t *testing.T) {
 			err = setup.FileProcessor.WriteFile("order_handler_test.go", []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run WITHOUT --semantic: should detect as duplicate
+			// Run WITHOUT --semantic (default: structural matching): should detect as duplicate
 			cmdNoSemantic := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "15")
 			outputNoSemantic, err := cmdNoSemantic.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
@@ -327,7 +327,7 @@ func ParseSafetyMode(s string) SafetyMode {
 			err = setup.FileProcessor.WriteFile("safety_mode.go", []byte(code2), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run WITHOUT --semantic: should detect as duplicate (structural match)
+			// Run WITHOUT --semantic (default: structural matching): should detect as duplicate
 			cmdNoSemantic := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10")
 			outputNoSemantic, err := cmdNoSemantic.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())

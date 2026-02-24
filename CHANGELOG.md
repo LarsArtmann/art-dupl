@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Semantic detection now OFF by default**: Restores backward compatibility with structural-only matching
+  - Use `--semantic` flag to enable semantic-aware detection (matches by identifier names)
+  - Methods with different receiver types are distinguished when semantic is enabled (e.g., `CrushMode.IsValid` vs `SafetyMode.IsValid`)
+  - Extended semantic hashing to `FuncDecl` (receiver type + method name) and `TypeSpec` (type name)
+  - `--structural` flag deprecated (now the default behavior)
+
 ### Added
 
 - **Templ file support**: Full analysis of `.templ` template files (templ.guide) using tree-sitter integration with CGO bindings
@@ -16,7 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Configuration file support**: JSON-based configuration for team consistency (`dupl.json`)
 - **Multiple output formats**: Text, HTML, JSON, and plumbing formats
 - **Statistics subcommand**: Aggregated duplication metrics with multiple output formats (`art-dupl stats`)
-- **Sorting options**: By size, occurrence, or hash
+- **Semantic-aware detection**: Content-aware matching with `--semantic` flag to opt-in
+  - FuncDecl: Combines receiver type name + function name into node hash
+  - TypeSpec: Encodes type name into node hash
+  - Ident/SelectorExpr: Already supported (identifier references, method calls)
 - **Professional CLI**: Built with Fang/Cobra framework with auto-completion and version info
 - **Custom pattern filtering**: Include/exclude patterns for fine-grained file control
 - **Streaming detection**: Non-blocking results for large projects via channels

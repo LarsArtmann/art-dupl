@@ -56,10 +56,10 @@ func TestProfileDiff(t *testing.T) {
 		t.Errorf("ProfileDiff duration should be >= 0, got %v", diff.Duration)
 	}
 
-	// NumGC difference should be >= 0
-	//nolint:staticcheck // NumGC is uint32, check is for documentation
-	if diff.NumGC < 0 {
-		t.Errorf("ProfileDiff NumGC should be >= 0, got %d", diff.NumGC)
+	// NumGC in diff represents the GC count increase
+	// Since it's uint32, it's always >= 0, but we verify it's reasonable (< 1000 GCs)
+	if diff.NumGC > 1000 {
+		t.Errorf("ProfileDiff NumGC seems too high, got %d", diff.NumGC)
 	}
 }
 
