@@ -11,7 +11,7 @@ go install github.com/LarsArtmann/art-dupl@latest
 Or build from source:
 
 ```bash
-git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && make build
+git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && just build
 ```
 
 ## Quick Start
