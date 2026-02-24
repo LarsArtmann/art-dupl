@@ -54,6 +54,16 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
 
+	// Validate conflicting flags
+	if semantic && structural {
+		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; --semantic enables semantic detection, which is off by default", nil)
+	}
+
+	// Warn about deprecated --structural flag
+	if structural {
+		fmt.Fprintf(os.Stderr, "Warning: --structural flag is deprecated. Structural matching is now the default behavior. This flag will be removed in a future version.\n")
+	}
+
 	// Concurrent processing flag
 	workers, _ := cmd.Flags().GetInt("workers")
 
