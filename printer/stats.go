@@ -175,3 +175,43 @@ func (p *stats) PrintFooter() error {
 
 	return nil
 }
+
+// printLine prints a base-styled line with indentation.
+func (p *stats) printLine(format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render(fmt.Sprintf(format, args...)))
+}
+
+// printSection prints a section header.
+func (p *stats) printSection(title string) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render(title))
+}
+
+// printMetric prints a metric label and value.
+func (p *stats) printMetric(label, value string) {
+	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render(label+":"), p.base.Render(value))
+}
+
+// printSuccess prints a success-styled message.
+func (p *stats) printSuccess(format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.success.Render(fmt.Sprintf(format, args...)))
+}
+
+// printWarning prints a warning-styled message.
+func (p *stats) printWarning(format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.warning.Render(fmt.Sprintf(format, args...)))
+}
+
+// printError prints an error-styled message.
+func (p *stats) printError(format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.error.Render(fmt.Sprintf(format, args...)))
+}
+
+// printHeader prints a header-styled title.
+func (p *stats) printHeader(title string) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", p.header.Render(title))
+}
+
+// printBullet prints a bullet point with base styling.
+func (p *stats) printBullet(format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf(format, args...)))
+}
