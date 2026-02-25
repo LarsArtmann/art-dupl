@@ -183,6 +183,11 @@ func (fc *FileCache) Clear() error {
 		return errors.NewIOError(filesDir, "failed to clear cache", err)
 	}
 
+	// Recreate the files directory so subsequent Set() calls work
+	if err := os.MkdirAll(filesDir, 0o750); err != nil {
+		return errors.NewIOError(filesDir, "failed to recreate cache directory", err)
+	}
+
 	fc.metadata = Metadata{
 		Version:   CacheVersion,
 		CreatedAt: time.Now(),
