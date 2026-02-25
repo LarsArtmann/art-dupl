@@ -55,9 +55,9 @@ type StatsData struct {
 	Timestamp        string `json:"timestamp"`         // ISO 8601 timestamp
 
 	// Aggregation metrics
-	FileDuplication    map[string]int `json:"file_duplication"`    // filename -> duplicate line count
-	SizeDistribution   map[string]int `json:"size_distribution"`   // size range -> count (lines)
-	TokenDistribution  map[string]int `json:"token_distribution"`  // token range -> count
+	FileDuplication   map[string]int `json:"file_duplication"`   // filename -> duplicate line count
+	SizeDistribution  map[string]int `json:"size_distribution"`  // size range -> count (lines)
+	TokenDistribution map[string]int `json:"token_distribution"` // token range -> count
 
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out

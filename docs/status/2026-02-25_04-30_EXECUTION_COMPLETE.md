@@ -11,6 +11,7 @@
 ### 1. Policy Violation Fixes (2 tasks)
 
 #### Removed stretchr/testify (Banned per HOW_TO_GOLANG.md)
+
 - ✅ Converted `internal/utils/file_test.go` to standard Go testing
 - ✅ Converted `internal/filtertest/integration_filter_test.go`
 - ✅ Converted `internal/filtertest/user_scenario_test.go`
@@ -19,6 +20,7 @@
 **Commit:** `cf21777`
 
 #### Replaced gopkg.in/yaml.v3 with github.com/go-faster/yaml
+
 - ✅ Updated `pkg/filter/sqlc_yaml.go` import
 - ✅ Added go-faster/yaml to dependencies
 - ✅ yaml.v3 now only indirect via test deps
@@ -30,12 +32,14 @@
 ### 2. Code Quality Fixes (2 tasks)
 
 #### Fixed git/change_detector.go unused imports
+
 - ✅ Already resolved during file splitting (821027b)
 - File now at 285 lines (was 361)
 
 **Commit:** `821027b`
 
 #### Fixed cyclop issue in job/parse.go
+
 - ✅ Reduced complexity from 17 to under 15
 - Extracted 7 helper functions:
   - `normalizeWorkerCount()`
@@ -53,12 +57,14 @@
 ### 3. File Splitting (2 tasks)
 
 #### Split git/change_detector.go (361 → 285 lines)
+
 - ✅ Created `git/errors.go` (34 lines)
 - ✅ Created `git/helpers.go` (51 lines)
 
 **Commit:** `821027b`
 
 #### Split bdd/semantic_detection_test.go (348 → 177 lines)
+
 - ✅ Created `bdd/semantic_testdata.go` (187 lines)
 
 **Commit:** `3d432be`
@@ -67,26 +73,26 @@
 
 ## 📊 SUMMARY
 
-| Metric | Value |
-|--------|-------|
-| **Tasks Completed** | 6 of 10 |
-| **Commits Made** | 6 |
-| **Files Split** | 3 (2 large files → 5 focused files) |
-| **Lines Reduced** | 247 lines |
-| **Policy Violations Fixed** | 2 |
-| **Linting Issues Fixed** | 2 |
-| **Test Status** | ✅ All 33 packages passing |
+| Metric                      | Value                               |
+| --------------------------- | ----------------------------------- |
+| **Tasks Completed**         | 6 of 10                             |
+| **Commits Made**            | 6                                   |
+| **Files Split**             | 3 (2 large files → 5 focused files) |
+| **Lines Reduced**           | 247 lines                           |
+| **Policy Violations Fixed** | 2                                   |
+| **Linting Issues Fixed**    | 2                                   |
+| **Test Status**             | ✅ All 33 packages passing          |
 
 ---
 
 ## 🔄 REMAINING TASKS (4 of 10)
 
-| # | Task | Priority | Status |
-|---|------|----------|--------|
-| 7 | Split syntax/templ/templ.go (622 lines) | 🟡 Medium | Not Started |
-| 8 | Add test for --semantic --structural conflict | 🟡 Medium | Not Started |
-| 9 | Extract common flag setup | 🟢 Low | Not Started |
-| 10 | Convert SemanticHashEnabled global to DI | 🟢 Low | Not Started |
+| #   | Task                                          | Priority  | Status      |
+| --- | --------------------------------------------- | --------- | ----------- |
+| 7   | Split syntax/templ/templ.go (622 lines)       | 🟡 Medium | Not Started |
+| 8   | Add test for --semantic --structural conflict | 🟡 Medium | Not Started |
+| 9   | Extract common flag setup                     | 🟢 Low    | Not Started |
+| 10  | Convert SemanticHashEnabled global to DI      | 🟢 Low    | Not Started |
 
 ---
 
@@ -111,7 +117,7 @@ f131724 docs(status): add execution progress report
 ✅ **All Tests Passing** - 33/33 packages green  
 ✅ **Reduced File Sizes** - 3 files split, 247 lines removed  
 ✅ **Improved Code Quality** - Cyclomatic complexity reduced  
-✅ **Better Architecture** - Separation of concerns improved  
+✅ **Better Architecture** - Separation of concerns improved
 
 ---
 
@@ -124,5 +130,5 @@ f131724 docs(status): add execution progress report
 
 ---
 
-*Generated: 2026-02-25 04:30*  
-*Status: Execution Complete - 60% of TODO list finished*
+_Generated: 2026-02-25 04:30_  
+_Status: Execution Complete - 60% of TODO list finished_
