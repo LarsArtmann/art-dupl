@@ -213,6 +213,15 @@ func LoadConfig(filename string) (*Config, error) {
 	return config, nil
 }
 
+// LoadOptionalConfig loads configuration from file if filename is not empty.
+// Returns nil if filename is empty, allowing optional config file usage.
+func LoadOptionalConfig(filename string) (*Config, error) {
+	if filename == "" {
+		return nil, nil
+	}
+	return LoadConfig(filename)
+}
+
 // SaveConfig saves configuration to file.
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists

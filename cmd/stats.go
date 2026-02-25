@@ -109,12 +109,9 @@ func runStats(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, "invalid format value")
 	}
 
-	var fileConfig *config.Config
-	if configFile != "" {
-		fileConfig, err = config.LoadConfig(configFile)
-		if err != nil {
-			return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
-		}
+	fileConfig, err := config.LoadOptionalConfig(configFile)
+	if err != nil {
+		return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
 	}
 
 	appConfig := &config.Config{}

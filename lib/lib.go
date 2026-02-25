@@ -9,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -38,6 +39,12 @@ func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, e
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
 
+	duplChan := findSyntaxUnitsChan(t, data, threshold)
+	return makeIssues(duplChan)
+}
+
+// findSyntaxUnitsChan processes matches from the suffix tree into syntax units.
+func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold int) <-chan syntax.Match {
 	mchan := t.FindDuplOver(threshold)
 	duplChan := make(chan syntax.Match)
 	go func() {
@@ -49,8 +56,7 @@ func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, e
 		}
 		close(duplChan)
 	}()
-
-	return makeIssues(duplChan)
+	return duplChan
 }
 
 // RunIncremental runs duplicate detection with AST caching for incremental performance.
@@ -75,18 +81,7 @@ func RunIncremental(ctx context.Context, files []string, threshold int, cacheDir
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
 
-	mchan := t.FindDuplOver(threshold)
-	duplChan := make(chan syntax.Match)
-	go func() {
-		for m := range mchan {
-			match := syntax.FindSyntaxUnits(*data, m, threshold)
-			if len(match.Frags) > 0 {
-				duplChan <- match
-			}
-		}
-		close(duplChan)
-	}()
-
+	duplChan := findSyntaxUnitsChan(t, data, threshold)
 	issues, err := makeIssues(duplChan)
 	if err != nil {
 		return nil, IncrementalStats{}, err

@@ -16,6 +16,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// printSearchStatus outputs the status message after tree building completes.
+func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
+	if cfg.Verbose {
+		fmt.Fprintln(os.Stderr, "Searching for clones")
+	} else if outputFormat == config.OutputFormatText {
+		fmt.Fprintln(os.Stderr, " ✅")
+	}
+}
+
 // buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, filterParam *filter.Filter, outputFormat config.OutputFormat) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	if cfg.Verbose {
@@ -45,11 +54,7 @@ func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, fi
 		parseStats = job.ParseStats{FilesCount: incStats.FilesCount, LinesCount: incStats.LinesCount}
 		t.Update(&syntax.Node{Type: -1})
 
-		if cfg.Verbose {
-			fmt.Fprintln(os.Stderr, "Searching for clones")
-		} else if outputFormat == config.OutputFormatText {
-			fmt.Fprintln(os.Stderr, " ✅")
-		}
+		printSearchStatus(cfg, outputFormat)
 
 		return t, *data, parseStats, nil
 	}
@@ -67,11 +72,7 @@ func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, fi
 	parseStats = <-statsChan
 	t.Update(&syntax.Node{Type: -1})
 
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "Searching for clones")
-	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprintln(os.Stderr, " ✅")
-	}
+	printSearchStatus(cfg, outputFormat)
 
 	return t, *data, parseStats, nil
 }

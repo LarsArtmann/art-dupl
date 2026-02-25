@@ -9,6 +9,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// testCloneGroup creates a CloneGroup with clones for the given filenames.
+func testCloneGroup(filenames ...string) domain.CloneGroup {
+	clones := make([]domain.Clone, len(filenames))
+	for i, f := range filenames {
+		clones[i] = domain.Clone{Filename: domain.GlobalPool().Intern(f)}
+	}
+	return domain.CloneGroup{Clones: clones}
+}
+
 // testNode creates a sample syntax node for testing.
 func testNode() *syntax.Node {
 	return &syntax.Node{
@@ -401,18 +410,8 @@ func TestCountUniqueFiles(t *testing.T) {
 
 	t.Run("multiple unique files", func(t *testing.T) {
 		groups := []domain.CloneGroup{
-			{
-				Clones: []domain.Clone{
-					{Filename: domain.GlobalPool().Intern("file1.go")},
-					{Filename: domain.GlobalPool().Intern("file2.go")},
-				},
-			},
-			{
-				Clones: []domain.Clone{
-					{Filename: domain.GlobalPool().Intern("file1.go")}, // Duplicate
-					{Filename: domain.GlobalPool().Intern("file3.go")},
-				},
-			},
+			testCloneGroup("file1.go", "file2.go"),
+			testCloneGroup("file1.go", "file3.go"), // file1.go is duplicate
 		}
 
 		count := countUniqueFiles(groups)

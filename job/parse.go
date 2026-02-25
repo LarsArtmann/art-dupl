@@ -69,19 +69,7 @@ func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan Pa
 
 	// serialize
 	schan := make(chan []*syntax.Node)
-	go func() {
-		for ast := range achan {
-			select {
-			case <-ctx.Done():
-				close(schan)
-				return
-			default:
-			}
-			seq := syntax.Serialize(ast)
-			schan <- seq
-		}
-		close(schan)
-	}()
+	go serializeAST(ctx, achan, schan)
 	return schan, statsChan
 }
 

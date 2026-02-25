@@ -6,6 +6,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
+// makeTestNodes creates a slice of nodes with sequential types and specified ownership.
+func makeTestNodes(count int, owns int32) []*Node {
+	data := make([]*Node, count)
+	for i := range data {
+		data[i] = &Node{Type: int32(i), Owns: owns}
+	}
+	return data
+}
+
 func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 	// Test case: Different ownership structures at same positions
 	// should result in the last index being removed
@@ -92,11 +101,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 		{
 			name: "empty positions",
 			setup: func() []*Node {
-				data := make([]*Node, 5)
-				for i := range data {
-					data[i] = &Node{Type: int32(i), Owns: 1}
-				}
-				return data
+				return makeTestNodes(5, 1)
 			},
 			match: suffixtree.Match{
 				Ps:  []suffixtree.Pos{},
@@ -127,11 +132,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 		{
 			name: "high threshold",
 			setup: func() []*Node {
-				data := make([]*Node, 5)
-				for i := range data {
-					data[i] = &Node{Type: int32(i), Owns: 0}
-				}
-				return data
+				return makeTestNodes(5, 0)
 			},
 			match: suffixtree.Match{
 				Ps:  []suffixtree.Pos{0},

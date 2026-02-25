@@ -6,6 +6,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// assertToFilename checks that issue.To filenames match expected values.
+func assertToFilename(t *testing.T, issues []Issue, expected []string) {
+	t.Helper()
+	for i, issue := range issues {
+		if issue.To.Filename() != expected[i] {
+			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expected[i])
+		}
+	}
+}
+
 // createIssuerTestNodes creates nodes with proper positions for issuer tests.
 func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 	result := make([][]*syntax.Node, len(filenames))
@@ -65,12 +75,7 @@ func TestMakeIssues_ThreeClones(t *testing.T) {
 	}
 
 	// To should be b.go and c.go (sorted)
-	expectedTo := []string{"b.go", "c.go"}
-	for i, issue := range issues {
-		if issue.To.Filename() != expectedTo[i] {
-			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expectedTo[i])
-		}
-	}
+	assertToFilename(t, issues, []string{"b.go", "c.go"})
 }
 
 func TestMakeIssues_SingleClone(t *testing.T) {
@@ -106,12 +111,7 @@ func TestMakeIssues_SortedByFilename(t *testing.T) {
 	}
 
 	// To should be "m.go" and "z.go" (sorted order)
-	expectedTo := []string{"m.go", "z.go"}
-	for i, issue := range issues {
-		if issue.To.Filename() != expectedTo[i] {
-			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expectedTo[i])
-		}
-	}
+	assertToFilename(t, issues, []string{"m.go", "z.go"})
 }
 
 func TestMakeIssues_FourClones(t *testing.T) {
@@ -136,10 +136,5 @@ func TestMakeIssues_FourClones(t *testing.T) {
 	}
 
 	// To should be b.go, c.go, and d.go (sorted)
-	expectedTo := []string{"b.go", "c.go", "d.go"}
-	for i, issue := range issues {
-		if issue.To.Filename() != expectedTo[i] {
-			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expectedTo[i])
-		}
-	}
+	assertToFilename(t, issues, []string{"b.go", "c.go", "d.go"})
 }
