@@ -47,10 +47,7 @@ var _ = Describe("Migration Path", func() {
 				"paths":     []string{"./src", "./lib"},
 			}
 
-			result := migration.MigrateConfig(oldConfig)
-			Expect(result.IsOk()).To(BeTrue())
-
-			options, err := result.Get()
+			options, err := migration.MigrateConfig(oldConfig)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(options.Threshold).To(Equal(domain.Threshold(15)))
 			Expect(options.Paths).To(Equal([]domain.Filepath{"./src", "./lib"}))
@@ -63,9 +60,9 @@ var _ = Describe("Migration Path", func() {
 				"paths": []string{"./src"},
 			}
 
-			result := migration.MigrateConfig(oldConfig)
-			Expect(result.IsError()).To(BeTrue())
-			Expect(result.Error().Error()).To(ContainSubstring("threshold"))
+			_, err := migration.MigrateConfig(oldConfig)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("threshold"))
 		})
 	})
 
@@ -147,10 +144,7 @@ var _ = Describe("Migration Path", func() {
 			}
 
 			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{})
-			result := migrationPath.ValidateMigration(analysis)
-
-			Expect(result.IsOk()).To(BeTrue())
-			_, err := result.Get()
+			_, err := migrationPath.ValidateMigration(analysis)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
@@ -161,10 +155,9 @@ var _ = Describe("Migration Path", func() {
 			}
 
 			migrationPath := migration.NewMigrationPath(nil, domain.DetectionOptions{})
-			result := migrationPath.ValidateMigration(analysis)
-
-			Expect(result.IsError()).To(BeTrue())
-			Expect(result.Error().Error()).To(ContainSubstring("invalid analysis"))
+			_, err := migrationPath.ValidateMigration(analysis)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("invalid analysis"))
 		})
 	})
 
