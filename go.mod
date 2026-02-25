@@ -16,13 +16,12 @@
 // - config/: Configuration management with type-safe enums
 // - errors/: Rich error types with context and wrapping
 // - printer/: Output formatting with multiple formats
-// - types/: Functional programming primitives (Result[T], Option[T])
 //
 // TYPE SAFETY:
 // - Domain types prevent accidental type mismatches (e.g., LineNumber vs int)
 // - Validation enforced at construction (domain.NewThreshold(), etc.)
 // - Typed marshaling functions for JSON (SafeMarshalConfig, SafeMarshalClone, etc.)
-// - Result[T] and Option[T] for functional error handling
+// - Idiomatic Go error handling: (T, error) returns with rich error context
 //
 // PERFORMANCE:
 // - O(n) suffix tree construction where n = sequence length
@@ -67,7 +66,6 @@
 // - config/: Configuration and validation
 // - errors/: Error types and error handling utilities
 // - printer/: Output formatting and statistics
-// - types/: Result[T] and Option[T] functional primitives
 // - cmd/: CLI application
 // - pkg/artdupl/: SDK for programmatic use
 //
