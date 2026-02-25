@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -31,7 +30,7 @@ func printDupls(p printer.Printer, duplChan <-chan syntax.Match, sortBy printer.
 	}
 
 	for _, k := range keys {
-		uniq := utils.Unique(groups[k])
+		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
 			if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 				jsonPrinter.SetHash(k)

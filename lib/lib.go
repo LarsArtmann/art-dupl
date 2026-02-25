@@ -7,7 +7,6 @@ import (
 	"sort"
 
 	"github.com/LarsArtmann/art-dupl/cache"
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -117,7 +116,7 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 
 	var issues []printer.Issue
 	for _, k := range keys {
-		uniq := utils.Unique(groups[k])
+		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
 			i, err := p.MakeIssues(uniq)
 			if err != nil {

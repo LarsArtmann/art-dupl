@@ -43,29 +43,23 @@ func TestHandleMarshalingError(t *testing.T) {
 		}
 	})
 
-	t.Run("handles unsupported type", func(t *testing.T) {
-		err := errors.New("json: unsupported type")
-		result := HandleMarshalingError("marshal", "test", err)
-		if result == nil {
-			t.Fatal("Should return error")
-		}
-	})
-
-	t.Run("handles invalid UTF-8", func(t *testing.T) {
-		err := errors.New("json: invalid UTF-8")
-		result := HandleMarshalingError("marshal", "test", err)
-		if result == nil {
-			t.Fatal("Should return error")
-		}
-	})
-
-	t.Run("handles generic error", func(t *testing.T) {
-		err := errors.New("generic json error")
-		result := HandleMarshalingError("marshal", "test", err)
-		if result == nil {
-			t.Fatal("Should return error")
-		}
-	})
+	tests := []struct {
+		name string
+		err  string
+	}{
+		{"unsupported type", "json: unsupported type"},
+		{"invalid UTF-8", "json: invalid UTF-8"},
+		{"generic error", "generic json error"},
+	}
+	for _, tt := range tests {
+		t.Run("handles "+tt.name, func(t *testing.T) {
+			err := errors.New(tt.err)
+			result := HandleMarshalingError("marshal", "test", err)
+			if result == nil {
+				t.Fatal("Should return error")
+			}
+		})
+	}
 }
 
 func TestSafeMarshal(t *testing.T) {

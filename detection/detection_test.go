@@ -642,11 +642,27 @@ func BlockFixmeFunc() {}
 	}
 }
 
+
+// runLegacyDetectionTest creates a file with the given code and runs legacy detection.
+// Returns the issues found by the detector.
+func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue {
+	t.Helper()
+	tmpDir := t.TempDir()
+	testFile := tmpDir + "/" + filename
+	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	detector := NewLegacyDetector()
+	nodes := []*syntax.Node{
+		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
+	}
+
+	return detector.findLegacyInFile(testFile, nodes)
+}
+
 // TestLegacyDetector_FindLegacyInFile_RealFile tests findLegacyInFile with actual Go files.
 func TestLegacyDetector_FindLegacyInFile_RealFile(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	testFile := tmpDir + "/test_legacy.go"
 	goCode := `package test
 
 import (
@@ -660,32 +676,15 @@ func LegacyFunc() {
 		return
 	}
 	_ = data
-}
-`
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	detector := NewLegacyDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
-
-	issues := detector.findLegacyInFile(testFile, nodes)
-
-	// The legacy detection is simplified - it checks if function names appear in node string
-	// This test verifies the function runs without panic and returns expected structure
+}`
+	issues := runLegacyDetectionTest(t, "test_legacy.go", goCode)
 	if issues == nil {
-		// This is acceptable - the simplified detection may not find issues
 		t.Log("No legacy issues found (simplified detection)")
 	}
 }
 
 // TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns tests file without legacy patterns.
 func TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	testFile := tmpDir + "/no_legacy.go"
 	goCode := `package test
 
 import (
@@ -698,20 +697,8 @@ func ModernFunc() {
 		return
 	}
 	_ = data
-}
-`
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
-
-	detector := NewLegacyDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
-
-	issues := detector.findLegacyInFile(testFile, nodes)
-
-	// Modern code should not trigger legacy detection
+}`
+	issues := runLegacyDetectionTest(t, "no_legacy.go", goCode)
 	if issues == nil {
 		t.Log("No legacy issues in modern code (expected)")
 	}

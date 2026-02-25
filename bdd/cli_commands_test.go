@@ -308,41 +308,21 @@ var _ = Describe("CLI Completion Commands", func() {
 	})
 
 	Context("When requesting shell completion", func() {
-		It("should provide bash completion", func() {
-			output, err := setup.RunArtDupl("completion", "bash")
-			// May or may not be available
-			if err == nil {
-				outputStr := string(output)
-				Expect(outputStr).To(SatisfyAny(
-					ContainSubstring("bash"),
-					ContainSubstring("completion"),
-				))
-			}
-		})
-
-		It("should provide zsh completion", func() {
-			output, err := setup.RunArtDupl("completion", "zsh")
-			// May or may not be available
-			if err == nil {
-				outputStr := string(output)
-				Expect(outputStr).To(SatisfyAny(
-					ContainSubstring("zsh"),
-					ContainSubstring("completion"),
-				))
-			}
-		})
-
-		It("should provide fish completion", func() {
-			output, err := setup.RunArtDupl("completion", "fish")
-			// May or may not be available
-			if err == nil {
-				outputStr := string(output)
-				Expect(outputStr).To(SatisfyAny(
-					ContainSubstring("fish"),
-					ContainSubstring("completion"),
-				))
-			}
-		})
+		shells := []string{"bash", "zsh", "fish"}
+		for _, shell := range shells {
+			shell := shell // capture range variable
+			It(fmt.Sprintf("should provide %s completion", shell), func() {
+				output, err := setup.RunArtDupl("completion", shell)
+				// May or may not be available
+				if err == nil {
+					outputStr := string(output)
+					Expect(outputStr).To(SatisfyAny(
+						ContainSubstring(shell),
+						ContainSubstring("completion"),
+					))
+				}
+			})
+		}
 	})
 
 	Context("When requesting man page", func() {

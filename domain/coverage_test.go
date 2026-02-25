@@ -1042,6 +1042,19 @@ func TestMarshalStringID(t *testing.T) {
 	})
 }
 
+// assertUnmarshalStringIDError tests that unmarshalStringID returns an error for the given input.
+func assertUnmarshalStringIDError(t *testing.T, input string, wantErrContains string) {
+	t.Helper()
+	var result string
+	err := unmarshalStringID([]byte(input), "TestType", "TestType cannot be empty", func(s string) {
+		result = s
+	})
+	_ = result // Ensure variable is used
+	if err == nil {
+		t.Errorf("unmarshalStringID() error = nil, want error %q", wantErrContains)
+	}
+}
+
 func TestUnmarshalStringID(t *testing.T) {
 	t.Run("valid string", func(t *testing.T) {
 		var result string
@@ -1057,25 +1070,11 @@ func TestUnmarshalStringID(t *testing.T) {
 	})
 
 	t.Run("empty string", func(t *testing.T) {
-		var result string
-		err := unmarshalStringID([]byte(`""`), "TestType", "TestType cannot be empty", func(s string) {
-			result = s
-		})
-		_ = result // Ensure variable is used
-		if err == nil {
-			t.Error("unmarshalStringID() error = nil, want error for empty string")
-		}
+		assertUnmarshalStringIDError(t, `""`, "empty string")
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		var result string
-		err := unmarshalStringID([]byte(`invalid`), "TestType", "TestType cannot be empty", func(s string) {
-			result = s
-		})
-		_ = result // Ensure variable is used
-		if err == nil {
-			t.Error("unmarshalStringID() error = nil, want error for invalid JSON")
-		}
+		assertUnmarshalStringIDError(t, `invalid`, "invalid JSON")
 	})
 }
 

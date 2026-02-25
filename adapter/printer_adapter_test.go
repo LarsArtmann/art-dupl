@@ -73,23 +73,23 @@ func TestNodeToDomainClone(t *testing.T) {
 		}
 	})
 
-	t.Run("with non-existent file", func(t *testing.T) {
-		node := testNode()
-		clone := NodeToDomainClone(node, "/nonexistent/file.go")
-
-		// Should still work with empty content
-		if clone.Status != domain.FileProcessingStateCompleted {
-			t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, clone.Status)
+	t.Run("edge case filenames", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			filename string
+		}{
+			{"non-existent file", "/nonexistent/file.go"},
+			{"empty filename", ""},
 		}
-	})
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				node := testNode()
+				clone := NodeToDomainClone(node, tt.filename)
 
-	t.Run("empty filename", func(t *testing.T) {
-		node := testNode()
-		clone := NodeToDomainClone(node, "")
-
-		// Should work with empty filename
-		if clone.Status != domain.FileProcessingStateCompleted {
-			t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, clone.Status)
+				if clone.Status != domain.FileProcessingStateCompleted {
+					t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, clone.Status)
+				}
+			})
 		}
 	})
 

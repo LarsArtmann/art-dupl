@@ -3,7 +3,6 @@ package printer
 import (
 	"sort"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -29,7 +28,7 @@ func BuildCloneGroups(duplChan <-chan syntax.Match) map[string][][]*syntax.Node 
 func ComputeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 	uniqueCounts := make(map[string]int)
 	for k, v := range groups {
-		uniqueCounts[k] = utils.CountUniqueFiles(v)
+		uniqueCounts[k] = syntax.CountUniqueFiles(v)
 	}
 	return uniqueCounts
 }

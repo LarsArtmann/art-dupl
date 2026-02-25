@@ -11,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/spf13/cobra"
 )
@@ -276,7 +277,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, k := range keys {
-		uniq := utils.Unique(groups[k])
+		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
 			if err := p.PrintClones(uniq, printer.SortByHash); err != nil {
 				return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to process clones for hash "+k)

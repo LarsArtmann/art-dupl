@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/LarsArtmann/art-dupl/pkg/format"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/zeebo/xxh3"
@@ -30,7 +31,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		// not security. See: https://github.com/zeebo/xxh3
 		//
 
-		hashStr = formatDomainHash(xxh3.Hash([]byte(fragment)))
+		hashStr = format.Hash(xxh3.Hash([]byte(fragment)))
 	}
 
 	startLn, _ := NewLineNumber(uint16(lineStart))                      // #nosec G115 -- lineStart >= 1 guaranteed by initialize default
@@ -86,14 +87,4 @@ func calculateComplexity(node *syntax.Node) uint {
 	return complexity
 }
 
-// formatDomainHash converts a uint64 hash to a hex string.
-// This is faster than fmt.Sprintf or encoding/hex for fixed-size uint64.
-func formatDomainHash(h uint64) string {
-	const hexchars = "0123456789abcdef"
-	buf := make([]byte, 16)
-	for i := 15; i >= 0; i-- {
-		buf[i] = hexchars[h&0xf]
-		h >>= 4
-	}
-	return string(buf)
-}
+

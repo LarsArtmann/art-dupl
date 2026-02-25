@@ -5,7 +5,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -75,7 +74,7 @@ func TestOccurrenceSorting(t *testing.T) {
 			// Pre-compute unique counts for sorting (like printDupls)
 			uniqueCounts := make(map[string]int)
 			for k, v := range groups {
-				uniqueCounts[k] = len(utils.Unique(v))
+				uniqueCounts[k] = len(syntax.Unique(v))
 			}
 
 			// Sort by occurrence (descending unique count)
@@ -96,9 +95,9 @@ func TestOccurrenceSorting(t *testing.T) {
 
 			// Also verify the unique counts are correct
 			for hash, expectedUniqueCount := range map[string]int{
-				"hash1": len(utils.Unique(groups["hash1"])),
-				"hash2": len(utils.Unique(groups["hash2"])),
-				"hash3": len(utils.Unique(groups["hash3"])),
+				"hash1": len(syntax.Unique(groups["hash1"])),
+				"hash2": len(syntax.Unique(groups["hash2"])),
+				"hash3": len(syntax.Unique(groups["hash3"])),
 			} {
 				t.Logf("%s: %d unique out of %d total", hash, expectedUniqueCount, len(groups[hash]))
 			}

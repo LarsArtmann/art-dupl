@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/hash"
-	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -100,7 +99,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 
 	// Convert to CloneGroup format
 	for hash, frags := range groups {
-		uniq := utils.Unique(frags)
+		uniq := syntax.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
 			allGroups = append(allGroups, group)
@@ -134,7 +133,7 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 
 	// Stream results
 	for hash, frags := range groups {
-		uniq := utils.Unique(frags)
+		uniq := syntax.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
 

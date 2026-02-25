@@ -65,6 +65,19 @@ func createAndCommitFile(t *testing.T, repoDir, filename, content string) {
 	}
 }
 
+// assertNoChanges asserts that GetChangedFiles returns 0 changes for the given since value.
+func assertNoChanges(t *testing.T, repoDir, since string) {
+	t.Helper()
+	detector := NewChangeDetector(repoDir)
+	changes, err := detector.GetChangedFiles(since)
+	if err != nil {
+		t.Fatalf("GetChangedFiles failed: %v", err)
+	}
+	if len(changes) != 0 {
+		t.Errorf("Expected 0 changes, got %d", len(changes))
+	}
+}
+
 // TestNewChangeDetector tests ChangeDetector creation.
 func TestNewChangeDetector(t *testing.T) {
 	t.Run("no arguments", func(t *testing.T) {
@@ -135,15 +148,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 	t.Run("no changes", func(t *testing.T) {
 		repoDir := setupGitRepo(t)
 		createAndCommitFile(t, repoDir, "initial.go", "package main")
-
-		detector := NewChangeDetector(repoDir)
-		changes, err := detector.GetChangedFiles("HEAD")
-		if err != nil {
-			t.Fatalf("GetChangedFiles failed: %v", err)
-		}
-		if len(changes) != 0 {
-			t.Errorf("Expected 0 changes, got %d", len(changes))
-		}
+		assertNoChanges(t, repoDir, "HEAD")
 	})
 
 	t.Run("with modified files", func(t *testing.T) {
@@ -172,16 +177,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 	t.Run("empty since defaults to HEAD", func(t *testing.T) {
 		repoDir := setupGitRepo(t)
 		createAndCommitFile(t, repoDir, "initial.go", "package main")
-
-		detector := NewChangeDetector(repoDir)
-		changes, err := detector.GetChangedFiles("")
-		if err != nil {
-			t.Fatalf("GetChangedFiles failed: %v", err)
-		}
-		// Should work with empty string defaulting to HEAD - no changes expected
-		if len(changes) != 0 {
-			t.Errorf("Expected 0 changes, got %d", len(changes))
-		}
+		assertNoChanges(t, repoDir, "")
 	})
 }
 

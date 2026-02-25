@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/LarsArtmann/art-dupl/pkg/format"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/zeebo/xxh3"
 )
@@ -135,7 +136,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 		hash := xxh3.Hash(content)
 
 		fileHash := FileHash{
-			Hash:     formatFileHash(hash),
+			Hash:     format.Hash(hash),
 			Filename: filename,
 			Size:     len(content),
 			Content:  content,
@@ -145,18 +146,6 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 	}
 
 	return fileHashes, nil
-}
-
-// formatFileHash converts a uint64 hash to a hex string.
-// This is faster than fmt.Sprintf or encoding/hex for fixed-size uint64.
-func formatFileHash(h uint64) string {
-	const hexchars = "0123456789abcdef"
-	buf := make([]byte, 16)
-	for i := 15; i >= 0; i-- {
-		buf[i] = hexchars[h&0xf]
-		h >>= 4
-	}
-	return string(buf)
 }
 
 // groupByHash groups files by identical hash values.

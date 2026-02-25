@@ -29,13 +29,18 @@ func (se StringEnum) String() string {
 //	func (e *MyEnum) UnmarshalJSON(data []byte) error {
 //		return enum.UnmarshalJSON(e, data, MyEnumType, MyEnumValue1)
 //	}
-func UnmarshalJSON[T ~string](dest *T, data []byte, typeName string, defaultValue T, validValues ...T) error {
+// parseJSONString extracts and cleans a string from JSON data.
+func parseJSONString(data []byte) string {
 	str := string(data)
-	// Remove quotes if present
 	str = strings.TrimSpace(str)
 	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
 		str = str[1 : len(str)-1]
 	}
+	return str
+}
+
+func UnmarshalJSON[T ~string](dest *T, data []byte, typeName string, defaultValue T, validValues ...T) error {
+	str := parseJSONString(data)
 
 	// Check if empty
 	if str == "" {
@@ -79,11 +84,7 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 
 // UnmarshalJSONFromStrings unmarshals JSON using a string slice for validation.
 func UnmarshalJSONFromStrings[T ~string](dest *T, data []byte, typeName string, defaultValue T, validStrings []string) error {
-	str := string(data)
-	str = strings.TrimSpace(str)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
-	}
+	str := parseJSONString(data)
 
 	if str == "" {
 		*dest = defaultValue
@@ -133,11 +134,7 @@ type EnumType interface {
 // UnmarshalJSONForInterface unmarshals JSON using the EnumType interface.
 // This is useful for enums that implement their own IsValid method.
 func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string) error {
-	str := string(data)
-	str = strings.TrimSpace(str)
-	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
-		str = str[1 : len(str)-1]
-	}
+	str := parseJSONString(data)
 
 	// Get the zero value of type T
 	var zero T

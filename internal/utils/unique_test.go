@@ -2,64 +2,46 @@ package utils
 
 import (
 	"testing"
-
-	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-func TestUnique(t *testing.T) {
+func TestUniqueStringSlice(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    [][]*syntax.Node
-		expected int
+		input    []string
+		expected []string
 	}{
 		{
 			name:     "empty slice",
-			input:    [][]*syntax.Node{},
-			expected: 0,
+			input:    []string{},
+			expected: []string{},
 		},
 		{
-			name: "no duplicates",
-			input: [][]*syntax.Node{
-				{{Filename: "file1.go", Pos: 10}},
-				{{Filename: "file1.go", Pos: 20}},
-				{{Filename: "file2.go", Pos: 30}},
-			},
-			expected: 3,
+			name:     "no duplicates",
+			input:    []string{"a", "b", "c"},
+			expected: []string{"a", "b", "c"},
 		},
 		{
-			name: "with duplicates",
-			input: [][]*syntax.Node{
-				{{Filename: "file1.go", Pos: 10}},
-				{{Filename: "file1.go", Pos: 10}},
-				{{Filename: "file2.go", Pos: 20}},
-			},
-			expected: 2,
+			name:     "with duplicates",
+			input:    []string{"a", "b", "a", "c", "b"},
+			expected: []string{"a", "b", "c"},
 		},
 		{
-			name: "same file different positions",
-			input: [][]*syntax.Node{
-				{{Filename: "file1.go", Pos: 10}},
-				{{Filename: "file1.go", Pos: 20}},
-				{{Filename: "file1.go", Pos: 10}},
-			},
-			expected: 2,
-		},
-		{
-			name: "different files same position",
-			input: [][]*syntax.Node{
-				{{Filename: "file1.go", Pos: 10}},
-				{{Filename: "file2.go", Pos: 10}},
-				{{Filename: "file1.go", Pos: 10}},
-			},
-			expected: 2,
+			name:     "all same",
+			input:    []string{"x", "x", "x"},
+			expected: []string{"x"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := Unique(tt.input)
-			if len(result) != tt.expected {
-				t.Errorf("Unique() returned %d items, expected %d", len(result), tt.expected)
+			result := UniqueStringSlice(tt.input)
+			if len(result) != len(tt.expected) {
+				t.Errorf("UniqueStringSlice() returned %d items, expected %d", len(result), len(tt.expected))
+			}
+			for i, v := range tt.expected {
+				if i >= len(result) || result[i] != v {
+					t.Errorf("UniqueStringSlice()[%d] = %v, expected %v", i, result[i], v)
+				}
 			}
 		})
 	}

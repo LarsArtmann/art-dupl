@@ -65,8 +65,16 @@ var _ = Describe("Plumbing Output Format", func() {
 	}
 
 	Context("When using plumbing output for basic analysis", func() {
-		It("should produce machine-readable output", func() {
-			code := `package main
+		tests := []struct {
+			name       string
+			code       string
+			files      []string
+			threshold  string
+			assertions []string
+		}{
+			{
+				name: "machine-readable output",
+				code: `package main
 
 import "fmt"
 
@@ -75,23 +83,28 @@ func processData(data string) error {
 		return fmt.Errorf("empty data")
 	}
 	return nil
-}`
-
-			output, err := runPlumbingTestWithFlags([]string{"plumb1.go", "plumb2.go"}, code, "10")
-			Expect(err).ToNot(HaveOccurred())
-
-			assertOutputContainsAny(output, []string{":", "\t"})
-		})
-
-		It("should include file paths in plumbing output", func() {
-			code := `package main
-func pathTest() {}`
-
-			output, err := runPlumbingTestWithFlags([]string{"path1.go", "path2.go"}, code, "5")
-			Expect(err).ToNot(HaveOccurred())
-
-			assertOutputContainsAny(output, []string{"path1.go", "path2.go"})
-		})
+}`,
+				files:      []string{"plumb1.go", "plumb2.go"},
+				threshold:  "10",
+				assertions: []string{":", "\t"},
+			},
+			{
+				name:      "file paths in output",
+				code:      `package main
+func pathTest() {}`,
+				files:     []string{"path1.go", "path2.go"},
+				threshold: "5",
+				assertions: []string{"path1.go", "path2.go"},
+			},
+		}
+		for _, tt := range tests {
+			tt := tt
+			It(fmt.Sprintf("should include %s", tt.name), func() {
+				output, err := runPlumbingTestWithFlags(tt.files, tt.code, tt.threshold)
+				Expect(err).ToNot(HaveOccurred())
+				assertOutputContainsAny(output, tt.assertions)
+			})
+		}
 
 		It("should include line numbers in plumbing output", func() {
 			code := `package main
@@ -148,19 +161,24 @@ func large() {
 	})
 
 	Context("When using plumbing with different detection methods", func() {
-		It("should work with hash detection method", func() {
-			code := `package main
+		tests := []struct {
+			name    string
+			code    string
+			files   []string
+			method  string
+		}{
+			{
+				name: "hash",
+				code: `package main
 func hashPlumb() string {
 	return "hash test"
-}`
-
-			output, err := runPlumbingTestWithDetection([]string{"hash1.go", "hash2.go"}, code, "10", "hash")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with art-dupl detection method", func() {
-			code := `package main
+}`,
+				files:  []string{"hash1.go", "hash2.go"},
+				method: "hash",
+			},
+			{
+				name: "art-dupl",
+				code: `package main
 
 import "fmt"
 
@@ -169,23 +187,28 @@ func artDuplPlumb(name string) error {
 		return fmt.Errorf("empty name")
 	}
 	return nil
-}`
-
-			output, err := runPlumbingTestWithDetection([]string{"art1.go", "art2.go"}, code, "10", "art-dupl")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
-
-		It("should work with combined detection methods", func() {
-			code := `package main
+}`,
+				files:  []string{"art1.go", "art2.go"},
+				method: "art-dupl",
+			},
+			{
+				name: "combined",
+				code: `package main
 func combinedPlumb() string {
 	return "combined"
-}`
-
-			output, err := runPlumbingTestWithDetection([]string{"combined1.go", "combined2.go"}, code, "10", "hash,art-dupl")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
-		})
+}`,
+				files:  []string{"combined1.go", "combined2.go"},
+				method: "hash,art-dupl",
+			},
+		}
+		for _, tt := range tests {
+			tt := tt // capture range variable
+			It(fmt.Sprintf("should work with %s detection method", tt.name), func() {
+				output, err := runPlumbingTestWithDetection(tt.files, tt.code, "10", tt.method)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(output).ToNot(BeNil())
+			})
+		}
 	})
 
 	Context("When using plumbing with sorting options", func() {
