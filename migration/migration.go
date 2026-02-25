@@ -9,7 +9,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/samber/mo"
 )
 
 // MigrationPath handles conversion between old and new type systems.
@@ -61,11 +60,12 @@ func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone
 }
 
 // ValidateMigration checks if migration is valid.
-func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) mo.Result[domain.Analysis] {
+// Returns the analysis and nil error on success, or zero value and error on failure.
+func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) (domain.Analysis, error) {
 	if err := analysis.IsValid(); err != nil {
-		return mo.Errf[domain.Analysis]("invalid analysis for migration: %v", err)
+		return domain.Analysis{}, fmt.Errorf("invalid analysis for migration: %w", err)
 	}
-	return mo.Ok(analysis)
+	return analysis, nil
 }
 
 // CreateMigrationReport generates a migration report.
@@ -230,14 +230,15 @@ func generateMigrationID() string {
 }
 
 // MigrateConfig handles configuration migration.
-func MigrateConfig(oldConfig map[string]any) mo.Result[domain.DetectionOptions] {
+// Returns the options and nil error on success, or zero value and error on failure.
+func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	options := domain.DetectionOptions{}
 
 	// Extract threshold
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = domain.Threshold(uint(threshold))
 	} else {
-		return mo.Errf[domain.DetectionOptions]("missing or invalid threshold in config")
+		return domain.DetectionOptions{}, fmt.Errorf("missing or invalid threshold in config")
 	}
 
 	// Extract paths
@@ -250,7 +251,7 @@ func MigrateConfig(oldConfig map[string]any) mo.Result[domain.DetectionOptions] 
 	}
 
 	if len(options.Paths) == 0 {
-		return mo.Errf[domain.DetectionOptions]("no paths found in config")
+		return domain.DetectionOptions{}, fmt.Errorf("no paths found in config")
 	}
 
 	// Set defaults
@@ -261,8 +262,8 @@ func MigrateConfig(oldConfig map[string]any) mo.Result[domain.DetectionOptions] 
 
 	// Validate final options
 	if err := options.IsValid(); err != nil {
-		return mo.Errf[domain.DetectionOptions]("invalid migrated config: %v", err)
+		return domain.DetectionOptions{}, fmt.Errorf("invalid migrated config: %w", err)
 	}
 
-	return mo.Ok(options)
+	return options, nil
 }

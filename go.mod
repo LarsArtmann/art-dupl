@@ -89,7 +89,6 @@ require (
 	github.com/go-faster/yaml v0.4.6
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
-	github.com/samber/mo v1.16.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	github.com/zeebo/xxh3 v1.1.0
