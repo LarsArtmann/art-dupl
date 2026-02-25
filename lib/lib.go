@@ -38,7 +38,18 @@ func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, e
 	// finish stream
 	t.Update(&syntax.Node{Type: -1})
 
-	duplChan := findSyntaxUnitsChan(t, data, threshold)
+	mchan := t.FindDuplOver(threshold)
+	duplChan := make(chan syntax.Match)
+	go func() {
+		for m := range mchan {
+			match := syntax.FindSyntaxUnits(*data, m, threshold)
+			if len(match.Frags) > 0 {
+				duplChan <- match
+			}
+		}
+		close(duplChan)
+	}()
+
 	return makeIssues(duplChan)
 }
 
