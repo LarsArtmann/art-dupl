@@ -19,7 +19,7 @@ import (
 // - Semantic-aware detection (default) prevents false positives
 // - Structural-only matching with --structural flag
 // - Config file support for semantic detection
-// - Default behavior: semantic detection ON (since v2)
+// - Default behavior: semantic detection OFF (opt-in with --semantic)
 
 var _ = Describe("Semantic Detection", func() {
 	var setup *testutil.BDDTestSetup
@@ -137,8 +137,8 @@ var _ = Describe("Semantic Detection", func() {
 			structuralStr := string(outputStructural)
 			Expect(structuralStr).To(ContainSubstring("user_handler_test.go"))
 
-			// Run with default (semantic detection ON): should NOT detect as duplicate
-			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "15")
+			// Run WITH --semantic: should NOT detect as duplicate
+			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "15", "--semantic")
 			outputDefault, err := cmdDefault.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 			defaultStr := string(outputDefault)
@@ -164,9 +164,9 @@ var _ = Describe("Semantic Detection", func() {
 			Expect(structuralStr).To(ContainSubstring("crush_mode.go"))
 			Expect(structuralStr).To(ContainSubstring("safety_mode.go"))
 
-			// Run with default (semantic detection ON): should NOT detect as duplicate
+			// Run WITH --semantic: should NOT detect as duplicate
 			// Because receiver types (CrushMode vs SafetyMode) and function names (ParseCrushMode vs ParseSafetyMode) differ
-			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10")
+			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10", "--semantic")
 			outputDefault, err := cmdDefault.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
 			defaultStr := string(outputDefault)
