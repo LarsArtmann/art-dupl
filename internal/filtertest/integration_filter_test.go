@@ -6,8 +6,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // TestSmartFilteringIntegration is an integration test for smart filtering feature.
@@ -84,7 +82,9 @@ func Authenticate(username, password string) bool {
 
 		// Create all files using testutil
 		err := setup.CreateTestFiles(files)
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatalf("CreateTestFiles failed: %v", err)
+		}
 
 		// Test that filter correctly identifies files
 		fltr := filter.NewFilter(true, []filter.FilterOption{
@@ -92,16 +92,28 @@ func Authenticate(username, password string) bool {
 		})
 
 		// Regular files should NOT be filtered
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("main.go")), "main.go should not be filtered")
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("service/user.go")), "service/user.go should not be filtered")
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("service/auth.go")), "service/auth.go should not be filtered")
+		if fltr.ShouldFilter(setup.GetFilePath("main.go")) {
+			t.Errorf("main.go should not be filtered")
+		}
+		if fltr.ShouldFilter(setup.GetFilePath("service/user.go")) {
+			t.Errorf("service/user.go should not be filtered")
+		}
+		if fltr.ShouldFilter(setup.GetFilePath("service/auth.go")) {
+			t.Errorf("service/auth.go should not be filtered")
+		}
 
 		// sqlc files SHOULD be filtered
-		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("db/models.go")), "db/models.go should be filtered (sqlc)")
-		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("db/querier.go")), "db/querier.go should be filtered (sqlc)")
+		if !fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {
+			t.Errorf("db/models.go should be filtered (sqlc)")
+		}
+		if !fltr.ShouldFilter(setup.GetFilePath("db/querier.go")) {
+			t.Errorf("db/querier.go should be filtered (sqlc)")
+		}
 
 		// templ files SHOULD be filtered
-		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
+		if !fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")) {
+			t.Errorf("components/header_templ.go should be filtered (templ)")
+		}
 	})
 
 	t.Run("include sqlc but filter templ", func(t *testing.T) {
@@ -120,7 +132,9 @@ func Header() templ.Component { return nil }
 		}
 
 		err := setup.CreateTestFiles(files)
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatalf("CreateTestFiles failed: %v", err)
+		}
 
 		// Create filter with sqlc included (not filtered)
 		fltr := filter.NewFilter(true, []filter.FilterOption{
@@ -128,10 +142,14 @@ func Header() templ.Component { return nil }
 		})
 
 		// sqlc should NOT be filtered (not in options)
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("db/models.go")), "db/models.go should not be filtered")
+		if fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {
+			t.Errorf("db/models.go should not be filtered")
+		}
 
 		// templ SHOULD be filtered
-		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")), "components/header_templ.go should be filtered (templ)")
+		if !fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")) {
+			t.Errorf("components/header_templ.go should be filtered (templ)")
+		}
 	})
 
 	t.Run("include pattern takes precedence", func(t *testing.T) {
@@ -148,14 +166,18 @@ type User struct {}
 			filepath.Join("vendor", "models.go"): vendorContent,
 		}
 		err := setup.CreateTestFiles(files)
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatalf("CreateTestFiles failed: %v", err)
+		}
 
 		// Create filter with include pattern for vendor
 		fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterAll})
 		fltr.WithIncludePatterns([]string{"vendor/*"})
 
 		// Vendor file should NOT be filtered due to include pattern
-		assert.False(t, fltr.ShouldFilter(vendorFile), "vendor/models.go should not be filtered (include pattern)")
+		if fltr.ShouldFilter(vendorFile) {
+			t.Errorf("vendor/models.go should not be filtered (include pattern)")
+		}
 	})
 
 	t.Run("subdirectory analysis with sqlc.yaml in parent", func(t *testing.T) {
@@ -206,15 +228,21 @@ func Authenticate(username, password string) bool {
 		}
 
 		err := setup.CreateTestFiles(files)
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatalf("CreateTestFiles failed: %v", err)
+		}
 
 		// Test FindSQLCConfigs from subdirectory path
 		// Simulate running: art-dupl ./db
 		configs, err := filter.FindSQLCConfigs([]string{setup.GetFilePath("db")})
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatalf("FindSQLCConfigs failed: %v", err)
+		}
 
 		// Should find sqlc.yaml in parent directory
-		assert.NotEmpty(t, configs, "should find sqlc.yaml in parent directory")
+		if len(configs) == 0 {
+			t.Errorf("should find sqlc.yaml in parent directory")
+		}
 
 		// Verify the config path
 		foundConfigPath := ""
@@ -227,19 +255,29 @@ func Authenticate(username, password string) bool {
 		expectedConfigPath := setup.GetFilePath("sqlc.yaml")
 		expectedRoot := setup.TmpDir
 
-		assert.Equal(t, expectedConfigPath, foundConfigPath, "should find correct sqlc.yaml path")
-		assert.Equal(t, expectedRoot, configRoot, "should return correct project root")
+		if foundConfigPath != expectedConfigPath {
+			t.Errorf("config path = %v, want %v", foundConfigPath, expectedConfigPath)
+		}
+		if configRoot != expectedRoot {
+			t.Errorf("config root = %v, want %v", configRoot, expectedRoot)
+		}
 
 		// Test filtering from subdirectory perspective
 		fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterSQLC})
 
 		// db/models.go should be filtered (sqlc)
-		assert.True(t, fltr.ShouldFilter(setup.GetFilePath("db/models.go")), "db/models.go should be filtered")
+		if !fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {
+			t.Errorf("db/models.go should be filtered")
+		}
 
 		// db/user.go should NOT be filtered (regular)
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("db/user.go")), "db/user.go should not be filtered")
+		if fltr.ShouldFilter(setup.GetFilePath("db/user.go")) {
+			t.Errorf("db/user.go should not be filtered")
+		}
 
 		// main.go should NOT be filtered (not in subdirectory being analyzed)
-		assert.False(t, fltr.ShouldFilter(setup.GetFilePath("main.go")), "main.go should not be filtered")
+		if fltr.ShouldFilter(setup.GetFilePath("main.go")) {
+			t.Errorf("main.go should not be filtered")
+		}
 	})
 }

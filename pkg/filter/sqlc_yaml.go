@@ -8,7 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
-	"gopkg.in/yaml.v3"
+	"github.com/go-faster/yaml"
 )
 
 // SQLCConfig represents a sqlc.yaml configuration file structure.
