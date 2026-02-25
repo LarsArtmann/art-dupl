@@ -3,6 +3,7 @@ package printer
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"regexp"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
