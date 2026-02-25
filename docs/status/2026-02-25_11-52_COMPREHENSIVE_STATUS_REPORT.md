@@ -20,6 +20,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 ## a) FULLY DONE ✅
 
 ### Core Infrastructure (100%)
+
 - ✅ Professional CLI with Fang/Cobra integration
 - ✅ Complete output format support (text, HTML, JSON, plumbing)
 - ✅ Hash detection method implementation
@@ -30,6 +31,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 - ✅ GitHub Actions CI/CD (4 workflows fixed and standardized)
 
 ### Business Features (100%)
+
 - ✅ Code duplication detection (suffix tree algorithm)
 - ✅ Multiple output formats functional
 - ✅ Configuration file support
@@ -40,6 +42,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 - ✅ Statistics subcommand
 
 ### Architecture Components
+
 - ✅ **domain/** - Type-safe domain model with StringID, StringInternPool
 - ✅ **suffixtree/** - Core suffix tree implementation
 - ✅ **syntax/** - AST handling, serialization (Go + Templ)
@@ -52,6 +55,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 - ✅ **internal/enum/** - Generic enum marshaling
 
 ### Recent Fixes (2026-02-25)
+
 - ✅ Fixed GitHub Actions workflows (4 files updated)
   - build.yml: Added justfile support, standardized branches
   - checks.yml: Split steps, added race detector
@@ -64,6 +68,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 ## b) PARTIALLY DONE 🟡
 
 ### Code Quality
+
 - 🟡 **Test Coverage:** Uneven across packages
   - High: domain (96.9%), adapter (97.7%), errors (90.4%)
   - Medium: detection (83.7%), git (83.0%), cache (86.1%)
@@ -80,10 +85,12 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 - 🟡 **log.Fatal Usage:** Only in examples/ (acceptable for examples)
 
 ### Experimental Features
+
 - 🟡 **Performance Profiling:** --profile flag exists but incomplete
 - 🟡 **Execution Timeout:** --timeout flag exists but incomplete
 
 ### Documentation
+
 - 🟡 **API Documentation:** Limited generated docs
 - 🟡 **Package Documentation:** Some packages lack comprehensive docs
 
@@ -92,18 +99,21 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 ## c) NOT STARTED ❌
 
 ### High Priority
+
 - ❌ **Concurrent Processing:** Currently sequential only
 - ❌ **Additional Language Support:** Only Go and Templ supported
 - ❌ **Clone Similarity Scoring:** Not implemented
 - ❌ **Duplicate Suppression Rules:** Not implemented
 
 ### Medium Priority
+
 - ❌ **Web UI for Reports:** Not started
 - ❌ **IDE Plugin Integration:** Not started
 - ❌ **Historical Trend Analysis:** Not started
 - ❌ **Clone Impact Analysis:** Not started
 
 ### Infrastructure
+
 - ❌ **GitHub Issues:** Not created from TODO items
 - ❌ **README Install Command Update:** May need review
 
@@ -114,6 +124,7 @@ The art-dupl project is a **mature, production-ready code duplication detector**
 **NONE - Project is in good shape!**
 
 Recent issues fixed:
+
 - ~~printer/common.go:107 missing `fmt` import~~ ✅ FIXED
 - ~~GitHub Actions workflows only triggered on `fork` branch~~ ✅ FIXED
 - ~~Performance workflow had broken grep pattern~~ ✅ FIXED
@@ -168,6 +179,7 @@ Recent issues fixed:
 ## f) Top #25 Things We Should Get Done Next! 📋
 
 ### Critical Priority (1-5)
+
 1. **Add comprehensive tests for job/ package** (26.2% coverage)
 2. **Add comprehensive tests for internal/utils** (37.5% coverage)
 3. **Complete --profile flag implementation**
@@ -175,6 +187,7 @@ Recent issues fixed:
 5. **Split domain/coverage_test.go** (1,277 lines)
 
 ### High Priority (6-15)
+
 6. **Add tests for pkg/position** (46.9% coverage)
 7. **Add tests for lib/ package** (44.8% coverage)
 8. **Split pkg/artdupl/detector_test.go** (1,252 lines)
@@ -187,6 +200,7 @@ Recent issues fixed:
 15. **Review and update README install commands**
 
 ### Medium Priority (16-25)
+
 16. **Split domain/domain_types_test.go** (870 lines)
 17. **Split printer/stats_test.go** (832 lines)
 18. **Split pkg/filter/filter_test.go** (822 lines)
@@ -205,16 +219,19 @@ Recent issues fixed:
 **Question:** Should we create a separate `types/` package for generic Result/Option types, or should we use the existing `github.com/samber/mo` library that's already in our dependencies?
 
 **Context:**
+
 - We have `samber/mo` in go.mod (v1.16.0) - a functional programming library with Option, Result, Either types
 - Currently we have strong typing via domain types but no generic Result/Option abstractions
 - Some functions return `(T, error)` patterns that could benefit from Result[T]
 
 **Options:**
+
 1. **Use samber/mo** - Already in deps, well-tested, but adds external dependency
 2. **Create internal/types/** - Our own implementation, more control, no extra dep
 3. **Keep current pattern** - `(T, error)` is idiomatic Go
 
 **Research Needed:**
+
 - Check if samber/mo is actually used anywhere in the codebase
 - Evaluate if Result types would improve error handling in detection pipeline
 - Consider if this aligns with Go idioms vs functional programming preferences
@@ -223,29 +240,29 @@ Recent issues fixed:
 
 ## Test Coverage Summary
 
-| Package | Coverage | Status |
-|---------|----------|--------|
-| adapter | 97.7% | ✅ Excellent |
-| domain | 96.9% | ✅ Excellent |
-| internal/simd | 95.8% | ✅ Excellent |
-| errors | 90.4% | ✅ Excellent |
-| cache | 86.1% | ✅ Good |
-| suffixtree | 89.6% | ✅ Good |
-| git | 83.0% | ✅ Good |
-| detection | 83.7% | ✅ Good |
-| config | 79.7% | 🟡 Acceptable |
-| cli | 70.6% | 🟡 Acceptable |
-| printer | 68.0% | 🟡 Acceptable |
-| syntax | 67.1% | 🟡 Acceptable |
-| hash | 75.0% | 🟡 Acceptable |
-| pkg/artdupl | 54.0% | 🔴 Low |
-| pkg/filter | 55.8% | 🔴 Low |
-| pkg/logger | 87.5% | ✅ Good |
-| pkg/position | 46.9% | 🔴 Low |
-| internal/utils | 37.5% | 🔴 Low |
-| job | 26.2% | 🔴 Very Low |
-| lib | 44.8% | 🔴 Low |
-| migration | 0.0% | 🔴 None |
+| Package        | Coverage | Status        |
+| -------------- | -------- | ------------- |
+| adapter        | 97.7%    | ✅ Excellent  |
+| domain         | 96.9%    | ✅ Excellent  |
+| internal/simd  | 95.8%    | ✅ Excellent  |
+| errors         | 90.4%    | ✅ Excellent  |
+| cache          | 86.1%    | ✅ Good       |
+| suffixtree     | 89.6%    | ✅ Good       |
+| git            | 83.0%    | ✅ Good       |
+| detection      | 83.7%    | ✅ Good       |
+| config         | 79.7%    | 🟡 Acceptable |
+| cli            | 70.6%    | 🟡 Acceptable |
+| printer        | 68.0%    | 🟡 Acceptable |
+| syntax         | 67.1%    | 🟡 Acceptable |
+| hash           | 75.0%    | 🟡 Acceptable |
+| pkg/artdupl    | 54.0%    | 🔴 Low        |
+| pkg/filter     | 55.8%    | 🔴 Low        |
+| pkg/logger     | 87.5%    | ✅ Good       |
+| pkg/position   | 46.9%    | 🔴 Low        |
+| internal/utils | 37.5%    | 🔴 Low        |
+| job            | 26.2%    | 🔴 Very Low   |
+| lib            | 44.8%    | 🔴 Low        |
+| migration      | 0.0%     | 🔴 None       |
 
 ---
 
@@ -258,6 +275,7 @@ Recent issues fixed:
 - **Very Large Files (>500 lines):** 8
 
 ### Largest Files (Needs Splitting)
+
 1. domain/coverage_test.go - 1,277 lines
 2. pkg/artdupl/detector_test.go - 1,252 lines
 3. cmd/cmd_test.go - 1,069 lines
@@ -269,6 +287,7 @@ Recent issues fixed:
 ## Architecture Assessment
 
 ### Strengths ✅
+
 - Strong domain typing with validation at construction
 - Clean separation of concerns
 - Professional CLI with comprehensive features
@@ -277,6 +296,7 @@ Recent issues fixed:
 - Memory-optimized data structures
 
 ### Areas for Improvement 🟡
+
 - Uneven test coverage across packages
 - Some large files that could be split
 - Missing generic Result/Option types
@@ -284,6 +304,7 @@ Recent issues fixed:
 - Limited API documentation
 
 ### Technical Debt 🔴
+
 - job/ package needs test coverage urgently
 - internal/utils needs comprehensive tests
 - Some experimental features incomplete
@@ -293,6 +314,7 @@ Recent issues fixed:
 ## Dependencies Analysis
 
 ### Key Dependencies
+
 - **Fang/Cobra:** Professional CLI framework
 - **Ginkgo/Gomega:** BDD testing
 - **samber/mo:** Functional programming utilities (may be underutilized)
@@ -301,6 +323,7 @@ Recent issues fixed:
 - **yaml:** YAML configuration support
 
 ### Recommendations
+
 - Evaluate if all dependencies are necessary
 - Consider if samber/mo usage should be expanded
 - Check for any outdated dependencies
@@ -310,18 +333,21 @@ Recent issues fixed:
 ## Next Steps Recommendation
 
 ### This Week
+
 1. ✅ Fix build issue (printer/common.go fmt import) - DONE
 2. ✅ Fix CI workflows - DONE
 3. Start: Add tests for job/ package
 4. Start: Add tests for internal/utils
 
 ### Next 2 Weeks
+
 1. Complete job/ and internal/utils test coverage
 2. Implement --profile and --timeout flags
 3. Split largest test files
 4. Generate API documentation
 
 ### Next Month
+
 1. Implement concurrent processing
 2. Add clone similarity scoring
 3. Create GitHub Issues from TODOs
@@ -342,5 +368,5 @@ The project demonstrates mature software engineering practices with strong typin
 
 ---
 
-*Report generated: 2026-02-25 11:52:26*  
-*Status: Awaiting instructions for next steps*
+_Report generated: 2026-02-25 11:52:26_  
+_Status: Awaiting instructions for next steps_

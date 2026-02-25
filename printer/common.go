@@ -107,3 +107,14 @@ Loop:
 func formatCloneLine(filename string, lineStart, lineEnd int, formatStr string) string {
 	return fmt.Sprintf(formatStr, filename, lineStart, lineEnd)
 }
+
+// writeCloneLines writes formatted clone lines to the writer.
+// formatStr uses %s for filename, %d for lineStart, %d for lineEnd.
+func writeCloneLines(w io.Writer, clones []clone, formatStr string) error {
+	for _, cl := range clones {
+		if _, err := fmt.Fprintln(w, formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, formatStr)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
