@@ -33,9 +33,10 @@ type jsonStatsOutput struct {
 		AnalysisTime string `json:"analysisTime,omitempty"`
 		Timestamp    string `json:"timestamp,omitempty"`
 	} `json:"metrics"`
-	Note             string         `json:"note"`
-	SizeDistribution map[string]int `json:"sizeDistribution"`
-	TopFiles         []jsonTopFile  `json:"topFiles"`
+	Note              string         `json:"note"`
+	SizeDistribution  map[string]int `json:"sizeDistribution"`
+	TokenDistribution map[string]int `json:"tokenDistribution"`
+	TopFiles          []jsonTopFile  `json:"topFiles"`
 }
 
 type jsonTopFile struct {
@@ -256,6 +257,9 @@ func (p *stats) buildJSONData() any {
 
 	// Fill size distribution
 	jsonData.SizeDistribution = p.statsData.SizeDistribution
+
+	// Fill token distribution
+	jsonData.TokenDistribution = p.statsData.TokenDistribution
 
 	// Add methodology note
 	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."

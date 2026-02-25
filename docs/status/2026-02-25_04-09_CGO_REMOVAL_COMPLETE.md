@@ -23,31 +23,33 @@ Successfully migrated the templ file parser from CGO-based tree-sitter to pure G
 ### 1. Dependencies
 
 **Added:**
+
 - `github.com/a-h/templ v0.3.977` - Official templ parser (pure Go)
 
 **Removed:**
+
 - `github.com/tree-sitter/go-tree-sitter v0.25.0` - CGO-based parser
 - All tree-sitter C bindings and grammar files
 
 ### 2. Files Modified
 
-| File | Changes | Description |
-|------|---------|-------------|
+| File                    | Changes          | Description                       |
+| ----------------------- | ---------------- | --------------------------------- |
 | `syntax/templ/templ.go` | Complete rewrite | New pure Go parser implementation |
-| `go.mod` | +1 dep, -1 dep | Added templ, removed tree-sitter |
-| `go.sum` | Updated | New dependency checksums |
+| `go.mod`                | +1 dep, -1 dep   | Added templ, removed tree-sitter  |
+| `go.sum`                | Updated          | New dependency checksums          |
 
 ### 3. Files Deleted
 
-| File | Lines | Description |
-|------|-------|-------------|
-| `internal/treesitter/templ/binding.go` | 13 | CGO bindings |
-| `internal/treesitter/templ/src/parser.c` | 98,857 | C parser implementation |
-| `internal/treesitter/templ/src/scanner.c` | 374 | C scanner |
-| `internal/treesitter/templ/src/grammar.json` | 8,751 | Tree-sitter grammar |
-| `internal/treesitter/templ/src/node-types.json` | 4,222 | Node type definitions |
-| `internal/treesitter/templ/src/tree_sitter/*.h` | 631 | Header files |
-| **TOTAL** | **112,848** | **Lines removed** |
+| File                                            | Lines       | Description             |
+| ----------------------------------------------- | ----------- | ----------------------- |
+| `internal/treesitter/templ/binding.go`          | 13          | CGO bindings            |
+| `internal/treesitter/templ/src/parser.c`        | 98,857      | C parser implementation |
+| `internal/treesitter/templ/src/scanner.c`       | 374         | C scanner               |
+| `internal/treesitter/templ/src/grammar.json`    | 8,751       | Tree-sitter grammar     |
+| `internal/treesitter/templ/src/node-types.json` | 4,222       | Node type definitions   |
+| `internal/treesitter/templ/src/tree_sitter/*.h` | 631         | Header files            |
+| **TOTAL**                                       | **112,848** | **Lines removed**       |
 
 ---
 
@@ -69,21 +71,22 @@ tf, err := templparser.ParseString(string(content))
 
 ### Node Type Mapping
 
-| templ/parser/v2 Type | syntax.Node Type | Purpose |
-|---------------------|------------------|---------|
-| `HTMLTemplate` | `ComponentDeclaration` | Template definitions |
-| `CSSTemplate` | `CSSDeclaration` | CSS style definitions |
-| `ScriptTemplate` | `ScriptDeclaration` | JavaScript blocks |
-| `Element` | `Element` | HTML elements |
-| `IfExpression` | `ComponentIfStatement` | Conditional blocks |
-| `ForExpression` | `ComponentForStatement` | Loop blocks |
-| `SwitchExpression` | `ComponentSwitchStatement` | Switch statements |
-| `TemplElementExpression` | `ComponentRender` | Component calls |
-| `Attribute` (various) | `Attribute` | HTML attributes |
+| templ/parser/v2 Type     | syntax.Node Type           | Purpose               |
+| ------------------------ | -------------------------- | --------------------- |
+| `HTMLTemplate`           | `ComponentDeclaration`     | Template definitions  |
+| `CSSTemplate`            | `CSSDeclaration`           | CSS style definitions |
+| `ScriptTemplate`         | `ScriptDeclaration`        | JavaScript blocks     |
+| `Element`                | `Element`                  | HTML elements         |
+| `IfExpression`           | `ComponentIfStatement`     | Conditional blocks    |
+| `ForExpression`          | `ComponentForStatement`    | Loop blocks           |
+| `SwitchExpression`       | `ComponentSwitchStatement` | Switch statements     |
+| `TemplElementExpression` | `ComponentRender`          | Component calls       |
+| `Attribute` (various)    | `Attribute`                | HTML attributes       |
 
 ### Position Tracking
 
 Position tracking now uses the templ parser's `Range` struct which provides:
+
 - `Index` - Byte offset in file
 - `Line` - Line number (0-indexed)
 - `Col` - Column number (0-indexed)
@@ -128,21 +131,25 @@ echo "CGO-free build SUCCESS"
 ## Benefits
 
 ### Performance
+
 - No CGO overhead
 - No C library linking time
 - Faster build times
 
 ### Portability
+
 - Cross-compilation enabled
 - No C toolchain required
 - Works in minimal containers (scratch, distroless)
 
 ### Maintainability
+
 - Pure Go code (620 lines vs 112,848 lines of C)
 - Official templ parser maintained by templ project
 - Simpler debugging (no C/Go boundary)
 
 ### Security
+
 - No CGO = reduced attack surface
 - No C memory management issues
 
@@ -151,11 +158,13 @@ echo "CGO-free build SUCCESS"
 ## Breaking Changes
 
 **NONE for end users** - The public API remains unchanged:
+
 - `templ.Parse(filename)` - Same signature
 - `templ.ParseWithLineCount(filename)` - Same signature
 - `templ.ParseBytes(filename, content)` - Same signature
 
 **Internal changes:**
+
 - `internal/treesitter/` package removed
 - Projects importing tree-sitter directly will need to migrate
 
@@ -192,17 +201,20 @@ import "github.com/a-h/templ/parser/v2"
 ## Future Work
 
 ### Immediate (Next 24h)
+
 - [ ] Update documentation (CHANGELOG.md, FEATURES.md, AGENTS.md)
 - [ ] Run full test suite verification
 - [ ] Create PR for merge to main
 
 ### Short Term (Next Week)
+
 - [ ] Add more comprehensive templ parser tests
 - [ ] Split `syntax/templ/templ.go` (620 lines > 300 threshold)
 - [ ] Add integration tests for real templ projects
 - [ ] Benchmark new parser vs old
 
 ### Long Term
+
 - [ ] Consider adding more templ-specific clone detection features
 - [ ] Optimize parser for large templ files
 
@@ -211,11 +223,13 @@ import "github.com/a-h/templ/parser/v2"
 ## Technical Debt
 
 ### Addressed
+
 - ✅ Removed 112,848 lines of C code
 - ✅ Eliminated CGO dependency
 - ✅ Simplified build process
 
 ### Remaining
+
 - ⚠️ `syntax/templ/templ.go` is 620 lines (exceeds 300 line threshold)
 - ⚠️ Documentation still references tree-sitter in some places
 - ⚠️ Test coverage could be more comprehensive

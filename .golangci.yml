@@ -146,6 +146,23 @@ linters:
         - Hasher
         - Detector
         - Token
+    depguard:
+      rules:
+        Main:
+          files:
+            - $all
+          allow:
+            - $gostd
+            - github.com/LarsArtmann/art-dupl
+            - github.com/charmbracelet
+            - github.com/onsi/ginkgo/v2
+            - github.com/onsi/gomega
+            - github.com/spf13/cobra
+            - github.com/zeebo/xxh3
+            - github.com/stretchr/testify
+            - github.com/samber/mo
+            - gopkg.in/yaml.v3
+            - github.com/a-h/templ
     wrapcheck:
       ignore-sigs:
         - errors.Wrap

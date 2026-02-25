@@ -26,11 +26,11 @@
 
 **File:** `git/change_detector.go` (361 → 285 lines)
 
-| Extracted To | Lines | Content |
-|--------------|-------|---------|
-| `git/errors.go` | 34 | GitError type, error variables |
-| `git/helpers.go` | 51 | IsGitRepo, FindGitRoot, deduplicateChanges |
-| `git/change_detector.go` | 285 | Core ChangeDetector struct |
+| Extracted To             | Lines | Content                                    |
+| ------------------------ | ----- | ------------------------------------------ |
+| `git/errors.go`          | 34    | GitError type, error variables             |
+| `git/helpers.go`         | 51    | IsGitRepo, FindGitRoot, deduplicateChanges |
+| `git/change_detector.go` | 285   | Core ChangeDetector struct                 |
 
 **Commit:** 821027b  
 **Status:** Merged, tests pass
@@ -39,12 +39,13 @@
 
 **File:** `bdd/semantic_detection_test.go` (348 → 177 lines)
 
-| Extracted To | Lines | Content |
-|--------------|-------|---------|
-| `bdd/semantic_testdata.go` | 187 | Test code samples (7 scenarios) |
-| `bdd/semantic_detection_test.go` | 177 | Test logic and assertions |
+| Extracted To                     | Lines | Content                         |
+| -------------------------------- | ----- | ------------------------------- |
+| `bdd/semantic_testdata.go`       | 187   | Test code samples (7 scenarios) |
+| `bdd/semantic_detection_test.go` | 177   | Test logic and assertions       |
 
 **Test Data Scenarios:**
+
 1. structuralTestCode1/2 - Structural matching tests
 2. semanticDifferentCode1/2 - Semantic differentiation
 3. trueDuplicateCode - Identical detection
@@ -64,6 +65,7 @@
 **Location:** `cache/file_cache.go:185-188`
 
 **Impact:**
+
 - Fixes BDD test: "--clear-cache should clear cache before running"
 - Prevents "file does not exist" errors on subsequent Set() calls
 - Proper error handling for directory recreation
@@ -79,14 +81,15 @@
 
 **Discovered Issues:**
 
-| Type | Count | Status | Files |
-|------|-------|--------|-------|
-| depguard | 30+ | 🔴 New | Multiple (import restrictions) |
-| cyclop | 1 | 🟡 Medium | job/parse.go:90 |
+| Type     | Count | Status    | Files                          |
+| -------- | ----- | --------- | ------------------------------ |
+| depguard | 30+   | 🔴 New    | Multiple (import restrictions) |
+| cyclop   | 1     | 🟡 Medium | job/parse.go:90                |
 
 **Note:** The original `noctx` and `errcheck` issues from the status report are not showing up in current linting. The main issues now are depguard (import restrictions) which may be configuration-related.
 
 **Cyclop Issue:**
+
 - Function: `ParseParallel` in job/parse.go:90
 - Complexity: 17 (max allowed: 15)
 - Action needed: Refactor into smaller functions
@@ -97,23 +100,23 @@
 
 ### High Priority (Remaining)
 
-| # | Task | Original Status | Blocker |
-|---|------|-----------------|---------|
-| 1 | Split remaining 29 files >300 lines | Not started | Time constraint |
-| 2 | Fix cyclop issue in job/parse.go | Not started | Needs refactoring |
-| 3 | Address depguard linting issues | Not started | Config or code changes |
-| 4 | Add --semantic --structural conflict test | Not started | - |
-| 5 | Extract common flag setup | Not started | - |
-| 6 | Convert SemanticHashEnabled to DI | Not started | - |
+| #   | Task                                      | Original Status | Blocker                |
+| --- | ----------------------------------------- | --------------- | ---------------------- |
+| 1   | Split remaining 29 files >300 lines       | Not started     | Time constraint        |
+| 2   | Fix cyclop issue in job/parse.go          | Not started     | Needs refactoring      |
+| 3   | Address depguard linting issues           | Not started     | Config or code changes |
+| 4   | Add --semantic --structural conflict test | Not started     | -                      |
+| 5   | Extract common flag setup                 | Not started     | -                      |
+| 6   | Convert SemanticHashEnabled to DI         | Not started     | -                      |
 
 ### Medium Priority
 
-| # | Task | Status |
-|---|------|--------|
-| 7 | Address 56 TODO comments | Not started |
-| 8 | Address 19 FIXME/XXX/HACK comments | Not started |
-| 9 | Add benchmark for semantic detection | Not started |
-| 10 | Update AGENTS.md with new patterns | Not started |
+| #   | Task                                 | Status      |
+| --- | ------------------------------------ | ----------- |
+| 7   | Address 56 TODO comments             | Not started |
+| 8   | Address 19 FIXME/XXX/HACK comments   | Not started |
+| 9   | Add benchmark for semantic detection | Not started |
+| 10  | Update AGENTS.md with new patterns   | Not started |
 
 ---
 
@@ -121,19 +124,19 @@
 
 ### Current Issues
 
-| Issue | Severity | Why | Action |
-|-------|----------|-----|--------|
-| depguard linting errors | 🟡 Medium | Import restrictions causing 30+ errors | Review .golangci.yml config |
-| 29 files still >300 lines | 🔴 High | AGENTS.md rule not fully enforced | Continue splitting |
-| cyclop complexity | 🟡 Medium | ParseParallel function too complex | Refactor |
+| Issue                     | Severity  | Why                                    | Action                      |
+| ------------------------- | --------- | -------------------------------------- | --------------------------- |
+| depguard linting errors   | 🟡 Medium | Import restrictions causing 30+ errors | Review .golangci.yml config |
+| 29 files still >300 lines | 🔴 High   | AGENTS.md rule not fully enforced      | Continue splitting          |
+| cyclop complexity         | 🟡 Medium | ParseParallel function too complex     | Refactor                    |
 
 ### Resolved Issues
 
-| Issue | Resolution | Commit |
-|-------|------------|--------|
-| git/change_detector.go 361 lines | Split into 3 files | 821027b |
-| bdd/semantic_detection_test.go 348 lines | Split test data | 3d432be |
-| cache.Clear() bug | Added MkdirAll | 5009110 |
+| Issue                                    | Resolution         | Commit  |
+| ---------------------------------------- | ------------------ | ------- |
+| git/change_detector.go 361 lines         | Split into 3 files | 821027b |
+| bdd/semantic_detection_test.go 348 lines | Split test data    | 3d432be |
+| cache.Clear() bug                        | Added MkdirAll     | 5009110 |
 
 ---
 
@@ -179,48 +182,48 @@
 
 ### 🔴 Critical - Today
 
-| # | Task | Effort | Impact | Status |
-|---|------|--------|--------|--------|
-| 1 | Fix depguard linting config | 15 min | 🔴 High | NEW |
-| 2 | Fix cyclop in job/parse.go | 30 min | 🟡 Medium | PENDING |
-| 3 | Split syntax/templ/templ.go (622 lines) | 1 hr | 🔴 High | PENDING |
-| 4 | Push current commits | 1 min | 🔴 High | ✅ DONE |
+| #   | Task                                    | Effort | Impact    | Status  |
+| --- | --------------------------------------- | ------ | --------- | ------- |
+| 1   | Fix depguard linting config             | 15 min | 🔴 High   | NEW     |
+| 2   | Fix cyclop in job/parse.go              | 30 min | 🟡 Medium | PENDING |
+| 3   | Split syntax/templ/templ.go (622 lines) | 1 hr   | 🔴 High   | PENDING |
+| 4   | Push current commits                    | 1 min  | 🔴 High   | ✅ DONE |
 
 ### 🟡 High Priority - This Week
 
-| # | Task | Effort | Impact | Status |
-|---|------|--------|--------|--------|
-| 5 | Split cmd/cmd_test.go (1070 lines) | 1 hr | 🟡 Medium | PENDING |
-| 6 | Split pkg/artdupl/detector_test.go (1252 lines) | 1 hr | 🟡 Medium | PENDING |
-| 7 | Add --semantic --structural conflict test | 15 min | 🟡 Medium | PENDING |
-| 8 | Extract common flag setup | 30 min | 🟡 Medium | PENDING |
-| 9 | Convert SemanticHashEnabled to DI | 1 hr | 🟡 Medium | PENDING |
-| 10 | Fix remaining linting issues | 1 hr | 🟡 Medium | PENDING |
+| #   | Task                                            | Effort | Impact    | Status  |
+| --- | ----------------------------------------------- | ------ | --------- | ------- |
+| 5   | Split cmd/cmd_test.go (1070 lines)              | 1 hr   | 🟡 Medium | PENDING |
+| 6   | Split pkg/artdupl/detector_test.go (1252 lines) | 1 hr   | 🟡 Medium | PENDING |
+| 7   | Add --semantic --structural conflict test       | 15 min | 🟡 Medium | PENDING |
+| 8   | Extract common flag setup                       | 30 min | 🟡 Medium | PENDING |
+| 9   | Convert SemanticHashEnabled to DI               | 1 hr   | 🟡 Medium | PENDING |
+| 10  | Fix remaining linting issues                    | 1 hr   | 🟡 Medium | PENDING |
 
 ### 🟢 Medium Priority - Next 2 Weeks
 
-| # | Task | Effort | Impact | Status |
-|---|------|--------|--------|--------|
-| 11 | Split remaining 26 large files | 4 hrs | 🟢 Low | PENDING |
-| 12 | Address 56 TODO comments | 2 hrs | 🟢 Low | PENDING |
-| 13 | Address 19 FIXME/XXX/HACK | 1 hr | 🟢 Low | PENDING |
-| 14 | Add semantic detection benchmarks | 30 min | 🟢 Low | PENDING |
-| 15 | Update AGENTS.md patterns | 30 min | 🟢 Low | PENDING |
-| 16 | Add tests for job/buildtree.go | 1 hr | 🟡 Medium | PENDING |
-| 17 | Add tests for detection/multidetector.go | 1 hr | 🟡 Medium | PENDING |
-| 18 | Complete worker pool wiring | 2 hrs | 🟡 Medium | PENDING |
-| 19 | Remove --structural flag (post-deprecation) | 15 min | 🟢 Low | PENDING |
-| 20 | Add Architecture Decision Records | 4 hrs | 🟢 Low | PENDING |
+| #   | Task                                        | Effort | Impact    | Status  |
+| --- | ------------------------------------------- | ------ | --------- | ------- |
+| 11  | Split remaining 26 large files              | 4 hrs  | 🟢 Low    | PENDING |
+| 12  | Address 56 TODO comments                    | 2 hrs  | 🟢 Low    | PENDING |
+| 13  | Address 19 FIXME/XXX/HACK                   | 1 hr   | 🟢 Low    | PENDING |
+| 14  | Add semantic detection benchmarks           | 30 min | 🟢 Low    | PENDING |
+| 15  | Update AGENTS.md patterns                   | 30 min | 🟢 Low    | PENDING |
+| 16  | Add tests for job/buildtree.go              | 1 hr   | 🟡 Medium | PENDING |
+| 17  | Add tests for detection/multidetector.go    | 1 hr   | 🟡 Medium | PENDING |
+| 18  | Complete worker pool wiring                 | 2 hrs  | 🟡 Medium | PENDING |
+| 19  | Remove --structural flag (post-deprecation) | 15 min | 🟢 Low    | PENDING |
+| 20  | Add Architecture Decision Records           | 4 hrs  | 🟢 Low    | PENDING |
 
 ### 🟢 Low Priority - Next Month
 
-| # | Task | Effort | Impact | Status |
-|---|------|--------|--------|--------|
-| 21 | HTML template enhancements | 2 hrs | 🟢 Low | PENDING |
-| 22 | Advanced sorting options | 1 hr | 🟢 Low | PENDING |
-| 23 | Configuration migration tools | 4 hrs | 🟢 Low | PENDING |
-| 24 | Plugin architecture design | 1 week | 🔴 High | PENDING |
-| 25 | Web interface prototype | 1 week | 🔴 High | PENDING |
+| #   | Task                          | Effort | Impact  | Status  |
+| --- | ----------------------------- | ------ | ------- | ------- |
+| 21  | HTML template enhancements    | 2 hrs  | 🟢 Low  | PENDING |
+| 22  | Advanced sorting options      | 1 hr   | 🟢 Low  | PENDING |
+| 23  | Configuration migration tools | 4 hrs  | 🟢 Low  | PENDING |
+| 24  | Plugin architecture design    | 1 week | 🔴 High | PENDING |
+| 25  | Web interface prototype       | 1 week | 🔴 High | PENDING |
 
 ---
 
@@ -255,11 +258,13 @@ job/incremental.go:8:2: import 'github.com/LarsArtmann/art-dupl/cache' is not al
    Are these intentional architectural boundaries or overly strict defaults?
 
 **What I Need:**
+
 - Clarification on whether these depguard rules are intentional
 - If intentional: guidance on the intended package structure
 - If not: permission to update .golangci.yml to allow current imports
 
 This is blocking because:
+
 1. Cannot get clean linting run
 2. Pre-commit hook may fail
 3. Unclear if code needs restructuring
@@ -269,17 +274,20 @@ This is blocking because:
 ## Session Summary
 
 **Completed:**
+
 - ✅ Split git/change_detector.go (361 → 285 lines)
 - ✅ Split bdd/semantic_detection_test.go (348 → 177 lines)
 - ✅ Fixed cache.Clear() bug
 - ✅ All commits pushed to origin/fork
 
 **Discovered:**
+
 - 🟡 New linting issue: depguard (30+ errors)
 - 🟡 cyclop issue still present (ParseParallel)
 - 🔴 29 files still exceed 300-line limit
 
 **Next Actions:**
+
 1. Resolve depguard configuration question
 2. Continue file splitting (priority: syntax/templ/templ.go)
 3. Fix cyclop issue in job/parse.go
@@ -287,6 +295,7 @@ This is blocking because:
 ---
 
 **Commits This Session:**
+
 ```
 5009110 fix(cache): recreate files directory after Clear()
 3d432be refactor(bdd): split semantic_detection_test.go
@@ -297,5 +306,5 @@ This is blocking because:
 
 ---
 
-*Generated: 2026-02-25 04:01*  
-*Status: Awaiting instructions on depguard handling*
+_Generated: 2026-02-25 04:01_  
+_Status: Awaiting instructions on depguard handling_

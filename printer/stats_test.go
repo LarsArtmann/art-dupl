@@ -283,6 +283,38 @@ func TestGetSizeRange(t *testing.T) {
 	}
 }
 
+func TestGetTokenRange(t *testing.T) {
+	var buf bytes.Buffer
+	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+
+	tests := []struct {
+		tokens   int
+		expected string
+	}{
+		{1, "1-15 tokens"},
+		{15, "1-15 tokens"},
+		{16, "16-30 tokens"},
+		{30, "16-30 tokens"},
+		{31, "31-50 tokens"},
+		{50, "31-50 tokens"},
+		{51, "51-100 tokens"},
+		{100, "51-100 tokens"},
+		{101, "101-200 tokens"},
+		{200, "101-200 tokens"},
+		{201, "200+ tokens"},
+		{1000, "200+ tokens"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.expected, func(t *testing.T) {
+			result := statsPrinter.getTokenRange(tt.tokens)
+			if result != tt.expected {
+				t.Errorf("getTokenRange(%d) = %s, want %s", tt.tokens, result, tt.expected)
+			}
+		})
+	}
+}
+
 func TestPrintSizeDistribution(t *testing.T) {
 	var buf bytes.Buffer
 	distribution := map[string]int{

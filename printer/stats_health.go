@@ -59,3 +59,21 @@ func (p *stats) getSizeRange(lines int) string {
 		return "100+ lines"
 	}
 }
+
+// getTokenRange returns a human-readable range for a token count.
+func (p *stats) getTokenRange(tokens int) string {
+	switch {
+	case tokens <= 15:
+		return "1-15 tokens"
+	case tokens <= 30:
+		return "16-30 tokens"
+	case tokens <= 50:
+		return "31-50 tokens"
+	case tokens <= 100:
+		return "51-100 tokens"
+	case tokens <= 200:
+		return "101-200 tokens"
+	default:
+		return "200+ tokens"
+	}
+}

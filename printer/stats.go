@@ -73,8 +73,9 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 		ReadFile:  fread,
 		threshold: threshold,
 		statsData: &StatsData{
-			FileDuplication:  make(map[string]int),
-			SizeDistribution: make(map[string]int),
+			FileDuplication:   make(map[string]int),
+			SizeDistribution:  make(map[string]int),
+			TokenDistribution: make(map[string]int),
 		},
 		base:    styles.base,
 		header:  styles.header,
@@ -134,6 +135,10 @@ func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 		// Track size distribution
 		sizeRange := p.getSizeRange(lineCount)
 		p.statsData.SizeDistribution[sizeRange]++
+
+		// Track token distribution
+		tokenRange := p.getTokenRange(len(dup))
+		p.statsData.TokenDistribution[tokenRange]++
 	}
 
 	// Add unique line count once per clone group (not once per clone instance)
