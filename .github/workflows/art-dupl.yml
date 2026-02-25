@@ -12,13 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26rc2"
 
       - name: Build
-        run: go build -v ./cmd/art-dupl
+        run: just build
 
       - name: Test
         run: go test -v ./...
@@ -31,26 +34,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26rc2"
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-          args: --timeout=5m
+        run: just check
 
   coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26rc2"
 
       - name: Generate Coverage
         run: |
@@ -68,13 +74,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26rc2"
 
       - name: Build art-dupl
-        run: go build -o art-dupl ./cmd/art-dupl
+        run: just build
 
       - name: Run Self-Analysis
-        run: ./art-dupl stats -t 50 .
+        run: ./dist/art-dupl stats -t 50 .

@@ -2,11 +2,9 @@ name: Main
 
 on:
   push:
-    branches:
-      - fork
+    branches: [main, master, fork]
   pull_request:
-    branches:
-      - fork
+    branches: [main, master, fork]
 
 jobs:
   main:
@@ -18,17 +16,18 @@ jobs:
       CGO_ENABLED: 0
 
     steps:
-      # https://github.com/marketplace/actions/checkout
       - name: Check out code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # https://github.com/marketplace/actions/setup-go-environment
       - name: Set up Go ${{ env.GO_VERSION }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+
+      - name: Install just
+        uses: extractions/setup-just@v2
 
       - name: Check and get dependencies
         run: |
@@ -36,9 +35,17 @@ jobs:
           go mod tidy
           git diff --exit-code go.mod
 
-      # https://golangci-lint.run/usage/install#other-ci
       - name: Install golangci-lint ${{ env.GOLANGCI_LINT_VERSION }}
         run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${GOLANGCI_LINT_VERSION}
 
-      - name: Make
-        run: make
+      - name: Run linter
+        run: just check
+
+      - name: Run tests
+        run: just test
+
+      - name: Run tests with race detector
+        run: just test-race
+
+      - name: Build
+        run: just build
