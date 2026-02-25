@@ -9,12 +9,12 @@
 
 Successfully eliminated **6 production code clone groups** and **reduced test file clones** from 19 to 13 groups at threshold 30. **Achieved zero clones at threshold 50**, meeting the project goal.
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Clone groups (t=50) | 2+ | **0** | 100% |
-| Clone groups (t=30) | 19 | 13 | 32% |
-| Production code clones | 4 | 0 | 100% |
-| Test code clones | 15 | 13 | 13% |
+| Metric                 | Before | After | Improvement |
+| ---------------------- | ------ | ----- | ----------- |
+| Clone groups (t=50)    | 2+     | **0** | 100%        |
+| Clone groups (t=30)    | 19     | 13    | 32%         |
+| Production code clones | 4      | 0     | 100%        |
+| Test code clones       | 15     | 13    | 13%         |
 
 ---
 
@@ -45,6 +45,7 @@ func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold in
 ```
 
 **Files Changed:**
+
 - `lib/lib.go` (lines 43-51, 80-88)
 
 ---
@@ -56,6 +57,7 @@ func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold in
 **Solution:** Replaced inline goroutine with call to existing helper.
 
 **Before:**
+
 ```go
 go func() {
     for ast := range achan {
@@ -73,11 +75,13 @@ go func() {
 ```
 
 **After:**
+
 ```go
 go serializeAST(ctx, achan, schan)
 ```
 
 **Files Changed:**
+
 - `job/parse.go` (lines 72-84, 202-214)
 
 ---
@@ -100,6 +104,7 @@ func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
 ```
 
 **Files Changed:**
+
 - `cmd/run_analysis.go` (lines 48-52, 70-74)
 
 ---
@@ -122,6 +127,7 @@ func LoadOptionalConfig(filename string) (*Config, error) {
 ```
 
 **Files Changed:**
+
 - `config/config.go` (new function)
 - `cmd/run_flags.go` (lines 72-77)
 - `cmd/stats.go` (lines 112-118)
@@ -191,6 +197,7 @@ At threshold 30, 13 clone groups remain. These are primarily in test files and r
 3. **Test setup code** - Similar file creation and cleanup patterns
 
 These are acceptable as:
+
 - They're in test code (lower priority)
 - They represent legitimate test patterns
 - Further extraction would harm test readability
@@ -249,17 +256,17 @@ Coverage: High across all packages
 
 ## Files Modified
 
-| File | Change Type |
-|------|-------------|
-| `lib/lib.go` | Helper extraction |
-| `job/parse.go` | Use existing helper |
-| `cmd/run_analysis.go` | Helper extraction |
-| `cmd/run_flags.go` | Use config helper |
-| `cmd/stats.go` | Use config helper |
-| `config/config.go` | New helper function |
-| `syntax/findsyntaxunits_test.go` | Test helper |
-| `printer/issuer_test.go` | Test helper |
-| `adapter/printer_adapter_test.go` | Test helper |
+| File                              | Change Type         |
+| --------------------------------- | ------------------- |
+| `lib/lib.go`                      | Helper extraction   |
+| `job/parse.go`                    | Use existing helper |
+| `cmd/run_analysis.go`             | Helper extraction   |
+| `cmd/run_flags.go`                | Use config helper   |
+| `cmd/stats.go`                    | Use config helper   |
+| `config/config.go`                | New helper function |
+| `syntax/findsyntaxunits_test.go`  | Test helper         |
+| `printer/issuer_test.go`          | Test helper         |
+| `adapter/printer_adapter_test.go` | Test helper         |
 
 ---
 
