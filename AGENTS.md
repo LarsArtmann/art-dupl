@@ -588,6 +588,57 @@ art-dupl/
 - Return errors explicitly, never panic for expected errors
 - Provide context in error messages for debugging
 
+### Idiomatic Go Patterns (CRITICAL)
+
+**This project uses idiomatic Go - NOT functional programming patterns:**
+
+✅ **DO use idiomatic Go:**
+```go
+// Standard (T, error) returns
+func ParseFile(filename string) (*Node, error) {
+    node, err := parser.Parse(filename)
+    if err != nil {
+        return nil, fmt.Errorf("failed to parse %s: %w", filename, err)
+    }
+    return node, nil
+}
+
+// Explicit error handling
+result, err := ParseFile("test.go")
+if err != nil {
+    return err
+}
+```
+
+❌ **DON'T use functional patterns:**
+```go
+// AVOID: Result[T] types (like samber/mo or Rust)
+func ParseFile(filename string) Result[*Node] { ... }
+
+// AVOID: Option[T] types
+func FindClone(id string) Option[*Clone] { ... }
+
+// AVOID: Railway-oriented programming
+result := ParseFile("test.go").FlatMap(Validate).FlatMap(Process)
+```
+
+**Why idiomatic Go?**
+- Zero overhead (no wrapper allocations)
+- Every Go developer understands it
+- Consistent with standard library
+- Better stack traces for debugging
+- No foreign dependency required
+
+**Domain validation:** Use `IsValid() error` methods, not Result types:
+```go
+func (c Clone) IsValid() error {
+    if c.EndLine < c.StartLine {
+        return errors.New("end line must be >= start line")
+    }
+    return nil
+}
+```
+
 ### Configuration
 
 - Use `config.Config` struct for all configuration

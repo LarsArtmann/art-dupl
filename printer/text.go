@@ -144,7 +144,7 @@ func (p *text) OutputText(threshold int, sortBy SortBy) error {
 					return err //nolint:wrapcheck // fmt errors are clear in context
 				}
 			} else {
-				if _, err := fmt.Fprintln(p.w, formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, "%s:%d,%d")); err != nil {
+				if err := writeCloneLines(p.w, []clone{cl}, "%s:%d,%d"); err != nil {
 					return err //nolint:wrapcheck // fmt errors are clear in context
 				}
 			}
@@ -155,10 +155,5 @@ func (p *text) OutputText(threshold int, sortBy SortBy) error {
 }
 
 func (p *text) printCloneList(clones []clone) error {
-	for _, cl := range clones {
-		if _, err := fmt.Fprintln(p.w, formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, "  %s:%d,%d")); err != nil {
-			return err //nolint:wrapcheck // fmt errors are clear in context
-		}
-	}
-	return nil
+	return writeCloneLines(p.w, clones, "  %s:%d,%d")
 }
