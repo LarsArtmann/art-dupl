@@ -593,6 +593,7 @@ art-dupl/
 **This project uses idiomatic Go - NOT functional programming patterns:**
 
 ✅ **DO use idiomatic Go:**
+
 ```go
 // Standard (T, error) returns
 func ParseFile(filename string) (*Node, error) {
@@ -611,6 +612,7 @@ if err != nil {
 ```
 
 ❌ **DON'T use functional patterns:**
+
 ```go
 // AVOID: Result[T] types (like samber/mo or Rust)
 func ParseFile(filename string) Result[*Node] { ... }
@@ -623,6 +625,7 @@ result := ParseFile("test.go").FlatMap(Validate).FlatMap(Process)
 ```
 
 **Why idiomatic Go?**
+
 - Zero overhead (no wrapper allocations)
 - Every Go developer understands it
 - Consistent with standard library
@@ -630,6 +633,7 @@ result := ParseFile("test.go").FlatMap(Validate).FlatMap(Process)
 - No foreign dependency required
 
 **Domain validation:** Use `IsValid() error` methods, not Result types:
+
 ```go
 func (c Clone) IsValid() error {
     if c.EndLine < c.StartLine {
