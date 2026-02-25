@@ -10,7 +10,7 @@ import (
 // BDD Test Suite for Templ (.templ) File Clone Detection
 //
 // These tests verify that art-dupl can detect code clones in .templ source files
-// using the tree-sitter-templ parser.
+// using the github.com-a-h-templ parser.
 //
 // Note: This is different from filtering *_templ.go generated files.
 // These tests verify actual clone detection IN .templ source files.

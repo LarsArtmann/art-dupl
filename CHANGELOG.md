@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Templ file support**: Full analysis of `.templ` template files (templ.guide) using tree-sitter integration with CGO bindings
+- **Templ file support**: Full analysis of `.templ` template files (templ.guide) using pure Go parser (github.com-a-h-templ/parser/v2)
 - **Multi-language architecture**: Language-agnostic AST representation supporting both Go and Templ
 - **Comprehensive BDD test suite**: Ginkgo/Gomega behavior-driven tests for CLI commands, configuration, filtering, and stats
 - **Smart filtering**: Automatic detection and filtering of SQLC and Templ generated code
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical
 
-- **CGO required**: Build with `CGO_ENABLED=1` for tree-sitter integration
+- **CGO-free builds**: No C dependencies required, pure Go implementation
 - **SIMD optimizations**: Vectorized transition search for improved performance
 - **Memory efficiency**: String interning pool and optimized node struct layout
 - **Test coverage**: Comprehensive unit, integration, and BDD tests
