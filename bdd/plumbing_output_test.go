@@ -89,11 +89,11 @@ func processData(data string) error {
 				assertions: []string{":", "\t"},
 			},
 			{
-				name:      "file paths in output",
-				code:      `package main
+				name: "file paths in output",
+				code: `package main
 func pathTest() {}`,
-				files:     []string{"path1.go", "path2.go"},
-				threshold: "5",
+				files:      []string{"path1.go", "path2.go"},
+				threshold:  "5",
 				assertions: []string{"path1.go", "path2.go"},
 			},
 		}
@@ -162,10 +162,10 @@ func large() {
 
 	Context("When using plumbing with different detection methods", func() {
 		tests := []struct {
-			name    string
-			code    string
-			files   []string
-			method  string
+			name   string
+			code   string
+			files  []string
+			method string
 		}{
 			{
 				name: "hash",

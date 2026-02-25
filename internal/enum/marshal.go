@@ -29,6 +29,7 @@ func (se StringEnum) String() string {
 //	func (e *MyEnum) UnmarshalJSON(data []byte) error {
 //		return enum.UnmarshalJSON(e, data, MyEnumType, MyEnumValue1)
 //	}
+//
 // parseJSONString extracts and cleans a string from JSON data.
 func parseJSONString(data []byte) string {
 	str := string(data)

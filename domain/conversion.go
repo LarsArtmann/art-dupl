@@ -86,5 +86,3 @@ func calculateComplexity(node *syntax.Node) uint {
 
 	return complexity
 }
-
-

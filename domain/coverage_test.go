@@ -1043,7 +1043,7 @@ func TestMarshalStringID(t *testing.T) {
 }
 
 // assertUnmarshalStringIDError tests that unmarshalStringID returns an error for the given input.
-func assertUnmarshalStringIDError(t *testing.T, input string, wantErrContains string) {
+func assertUnmarshalStringIDError(t *testing.T, input, wantErrContains string) {
 	t.Helper()
 	var result string
 	err := unmarshalStringID([]byte(input), "TestType", "TestType cannot be empty", func(s string) {

@@ -12,5 +12,3 @@ func UniqueStringSlice(items []string) []string {
 	}
 	return result
 }
-
-

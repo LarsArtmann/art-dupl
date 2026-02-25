@@ -642,7 +642,6 @@ func BlockFixmeFunc() {}
 	}
 }
 
-
 // runLegacyDetectionTest creates a file with the given code and runs legacy detection.
 // Returns the issues found by the detector.
 func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue {

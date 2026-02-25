@@ -11,9 +11,9 @@
 
 ### Supported Languages
 
-|           | Language | Extension        | Status                                                                   | Description |
-| --------- | -------- | ---------------- | ------------------------------------------------------------------------ | ----------- |
-| **Go**    | `.go`    | FULLY_FUNCTIONAL | Primary language with full AST analysis                                  |
+|           | Language | Extension        | Status                                                              | Description |
+| --------- | -------- | ---------------- | ------------------------------------------------------------------- | ----------- |
+| **Go**    | `.go`    | FULLY_FUNCTIONAL | Primary language with full AST analysis                             |
 | **Templ** | `.templ` | FULLY_FUNCTIONAL | Templ template files via pure Go parser (use `-include-templ` flag) |
 
 ### Detection Methods
