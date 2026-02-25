@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -99,4 +100,10 @@ Loop:
 		}
 	}
 	return block
+}
+
+// formatCloneLine formats a single clone line with the given format string.
+// formatStr should be a fmt.Sprintf format string with %s, %d, %d placeholders.
+func formatCloneLine(filename string, lineStart, lineEnd int, formatStr string) string {
+	return fmt.Sprintf(formatStr, filename, lineStart, lineEnd)
 }

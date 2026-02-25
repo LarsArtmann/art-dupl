@@ -36,7 +36,7 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	}
 	sort.Sort(byNameAndLine(clones))
 	for _, cl := range clones {
-		if _, err := fmt.Fprintf(p.w, "%s:%d-%d\n", cl.filename, cl.lineStart, cl.lineEnd); err != nil {
+		if _, err := fmt.Fprintln(p.w, formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, "%s:%d-%d")); err != nil {
 			return err //nolint:wrapcheck // fmt errors are clear in context
 		}
 	}
