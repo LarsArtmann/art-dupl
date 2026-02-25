@@ -40,10 +40,10 @@ func AddFlags(rootCmd *cobra.Command) {
 	_ = rootCmd.Flags().MarkHidden("timeout")
 
 	// Add semantic-aware detection flags
-	// By default, semantic detection is DISABLED for backward compatibility
-	// Use --semantic to enable and reduce false positives from similar-looking code
-	rootCmd.Flags().Bool("semantic", false, "enable semantic-aware detection (includes identifier names in matching to reduce false positives)")
-	rootCmd.Flags().Bool("structural", false, "use structural-only matching (disables semantic detection, may increase false positives) [deprecated: this is now the default behavior]")
+	// By default, semantic detection is ENABLED for better accuracy (see config.DefaultConfig)
+	// Use --structural to disable and get structural-only matching (may increase false positives)
+	rootCmd.Flags().Bool("semantic", false, "explicitly enable semantic-aware detection (already the default; use only to override config file)")
+	rootCmd.Flags().Bool("structural", false, "disable semantic detection and use structural-only matching (may increase false positives) [opt-out from default]")
 
 	// Add concurrent processing flag
 	rootCmd.Flags().Int("workers", 0, "number of concurrent workers for file parsing (0 = auto-detect based on CPU cores)")

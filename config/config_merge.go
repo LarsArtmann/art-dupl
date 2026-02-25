@@ -130,7 +130,7 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.ClearCache = cfg.ClearCache
 	}
 
-	// Semantic (bool) - apply if set (semantic is opt-in, default false)
+	// Semantic (bool) - apply if set (semantic is now default true)
 	if !skipZeroValues || cfg.Semantic {
 		result.Semantic = cfg.Semantic
 	}

@@ -54,14 +54,14 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
 
-	// Validate conflicting flags
+	// Validate conflicting flags - only an error if both are explicitly set
 	if semantic && structural {
-		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; --semantic enables semantic detection, which is off by default", nil)
+		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; these are mutually exclusive", nil)
 	}
 
-	// Warn about deprecated --structural flag
+	// Warn about --structural flag (opt-out from recommended default)
 	if structural {
-		fmt.Fprintf(os.Stderr, "Warning: --structural flag is deprecated. Structural matching is now the default behavior. This flag will be removed in a future version.\n")
+		fmt.Fprintf(os.Stderr, "Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n")
 	}
 
 	// Concurrent processing flag
@@ -155,9 +155,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if semantic {
 		appConfig.Semantic = true
 	}
-	if structural {
-		appConfig.Semantic = false
-	}
+	// Note: structural handling moved to after merge to properly override the true default
 	if workers != 0 {
 		appConfig.Workers = workers
 	}

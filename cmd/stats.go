@@ -64,8 +64,8 @@ Examples:
 	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 
 	// Add semantic-aware detection flags
-	cmd.Flags().Bool("semantic", false, "enable semantic-aware detection (includes identifier names in matching to reduce false positives)")
-	cmd.Flags().Bool("structural", false, "use structural-only matching (disables semantic detection, may increase false positives) [deprecated: this is now the default behavior]")
+	cmd.Flags().Bool("semantic", false, "explicitly enable semantic-aware detection (already the default; use only to override config file)")
+	cmd.Flags().Bool("structural", false, "disable semantic detection and use structural-only matching (may increase false positives) [opt-out from default]")
 
 	return cmd
 }
@@ -92,14 +92,14 @@ func runStats(cmd *cobra.Command, args []string) error {
 	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
 
-	// Validate conflicting flags
+	// Validate conflicting flags - only an error if both are explicitly set
 	if semantic && structural {
-		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; --semantic enables semantic detection, which is off by default", nil)
+		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; these are mutually exclusive", nil)
 	}
 
-	// Warn about deprecated --structural flag
+	// Warn about --structural flag (opt-out from recommended default)
 	if structural {
-		fmt.Fprintf(os.Stderr, "Warning: --structural flag is deprecated. Structural matching is now the default behavior. This flag will be removed in a future version.\n")
+		fmt.Fprintf(os.Stderr, "Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n")
 	}
 
 	// Parse and validate format
@@ -172,15 +172,18 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if semantic {
 		appConfig.Semantic = true
 	}
-	if structural {
-		appConfig.Semantic = false
-	}
+	// Note: structural handling moved to after merge to properly override the true default
 
 	if len(args) > 0 {
 		appConfig.Paths = args
 	}
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
+
+	// Handle --structural flag to explicitly disable semantic detection (opt-out from default)
+	if structural {
+		mergedConfig.Semantic = false
+	}
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))

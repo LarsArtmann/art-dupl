@@ -12,26 +12,28 @@ The art-dupl project is in a **stable, production-ready state** with 68% overall
 
 ### Key Metrics
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| Overall Completion | 68% (49/72 tasks) | 🟡 Good |
-| Critical Priority | 78% (18/23 tasks) | 🟢 Strong |
-| High Priority | 71% (24/34 tasks) | 🟢 Strong |
-| Medium Priority | 42% (5/12 tasks) | 🟡 Needs Work |
-| Test Files | 80 of 199 Go files | 🟢 40% coverage |
-| Build Status | Passing | 🟢 Stable |
-| Lint Status | Clean | 🟢 Passing |
+| Metric             | Value              | Status          |
+| ------------------ | ------------------ | --------------- |
+| Overall Completion | 68% (49/72 tasks)  | 🟡 Good         |
+| Critical Priority  | 78% (18/23 tasks)  | 🟢 Strong       |
+| High Priority      | 71% (24/34 tasks)  | 🟢 Strong       |
+| Medium Priority    | 42% (5/12 tasks)   | 🟡 Needs Work   |
+| Test Files         | 80 of 199 Go files | 🟢 40% coverage |
+| Build Status       | Passing            | 🟢 Stable       |
+| Lint Status        | Clean              | 🟢 Passing      |
 
 ---
 
 ## Recent Accomplishments (Last 20 Commits)
 
 ### Configuration System Refinement
+
 - **c6383f4**: Removed `SemanticExplicitlyDisabled` field and simplified merge logic
 - **9ffbe9a**: Added flag validation and deprecation warning for semantic detection
 - **0242588**: Reverted Semantic default to `false` for backward compatibility
 
 ### Code Quality Improvements
+
 - **fc0490e**: Comprehensive code deduplication refactoring status documented
 - **3315cdc**: Enabled semantic detection by default with `--structural` flag
 - **db99779**: Implemented semantic hashing for receiver and type declarations
@@ -39,6 +41,7 @@ The art-dupl project is in a **stable, production-ready state** with 68% overall
 - **4697ba9**: Split parse_test.go and applied markdown table formatting
 
 ### Documentation & Status Tracking
+
 - **ed61412**: Applied markdown table formatting to planning and status docs
 - **f2206e4**: Added comprehensive status report with session summary
 - **3f78bb8**: Eliminated bidirectional duplicate pairs in Issuer.MakeIssues
@@ -92,23 +95,23 @@ art-dupl/
 
 ### Resolved Recently
 
-| Issue | Status | Commit |
-|-------|--------|--------|
-| Semantic detection complexity | ✅ Fixed | c6383f4 |
-| Configuration merge logic | ✅ Simplified | c6383f4 |
-| Flag validation | ✅ Added | 9ffbe9a |
-| Backward compatibility | ✅ Restored | 0242588 |
-| Bidirectional duplicates | ✅ Fixed | 3f78bb8 |
+| Issue                         | Status        | Commit  |
+| ----------------------------- | ------------- | ------- |
+| Semantic detection complexity | ✅ Fixed      | c6383f4 |
+| Configuration merge logic     | ✅ Simplified | c6383f4 |
+| Flag validation               | ✅ Added      | 9ffbe9a |
+| Backward compatibility        | ✅ Restored   | 0242588 |
+| Bidirectional duplicates      | ✅ Fixed      | 3f78bb8 |
 
 ### Remaining Debt
 
-| Priority | Issue | Impact | Effort |
-|----------|-------|--------|--------|
-| High | Concurrent file processing | Performance | Medium |
-| High | Complete global var elimination | Maintainability | Medium |
-| Medium | Package-level documentation | DX | Low |
-| Medium | Performance benchmarks formalization | Quality | Low |
-| Low | HTML template enhancements | UX | Low |
+| Priority | Issue                                | Impact          | Effort |
+| -------- | ------------------------------------ | --------------- | ------ |
+| High     | Concurrent file processing           | Performance     | Medium |
+| High     | Complete global var elimination      | Maintainability | Medium |
+| Medium   | Package-level documentation          | DX              | Low    |
+| Medium   | Performance benchmarks formalization | Quality         | Low    |
+| Low      | HTML template enhancements           | UX              | Low    |
 
 ---
 
@@ -176,13 +179,13 @@ type Config struct {
 
 ## Output Formats Status
 
-| Format | Status | Notes |
-|--------|--------|-------|
-| Text | ✅ Complete | Default output, human-readable |
-| HTML | ✅ Complete | Dark theme, VSCode integration |
-| JSON | ✅ Complete | JSONv2 experiment, structured data |
-| Plumbing | ✅ Complete | Machine-readable for scripts |
-| Stats | ✅ Complete | Text, JSON, CSV formats |
+| Format   | Status      | Notes                              |
+| -------- | ----------- | ---------------------------------- |
+| Text     | ✅ Complete | Default output, human-readable     |
+| HTML     | ✅ Complete | Dark theme, VSCode integration     |
+| JSON     | ✅ Complete | JSONv2 experiment, structured data |
+| Plumbing | ✅ Complete | Machine-readable for scripts       |
+| Stats    | ✅ Complete | Text, JSON, CSV formats            |
 
 ### Recent Improvements
 
@@ -196,16 +199,16 @@ type Config struct {
 
 ### Test Coverage by Package
 
-| Package | Test Files | Status |
-|---------|------------|--------|
-| bdd/ | ✅ BDD framework | Comprehensive scenarios |
-| cmd/ | ✅ cmd_test.go | CLI testing |
-| config/ | ✅ config_test.go | Configuration tests |
-| domain/ | ✅ Multiple files | Domain logic covered |
-| printer/ | ✅ Multiple files | Output formatting |
-| suffixtree/ | ✅ dupl_test.go | Core algorithm |
-| syntax/ | ✅ syntax_test.go | AST processing |
-| internal/simd | ✅ simd_test.go | SIMD operations |
+| Package       | Test Files        | Status                  |
+| ------------- | ----------------- | ----------------------- |
+| bdd/          | ✅ BDD framework  | Comprehensive scenarios |
+| cmd/          | ✅ cmd_test.go    | CLI testing             |
+| config/       | ✅ config_test.go | Configuration tests     |
+| domain/       | ✅ Multiple files | Domain logic covered    |
+| printer/      | ✅ Multiple files | Output formatting       |
+| suffixtree/   | ✅ dupl_test.go   | Core algorithm          |
+| syntax/       | ✅ syntax_test.go | AST processing          |
+| internal/simd | ✅ simd_test.go   | SIMD operations         |
 
 ### Test Commands
 
@@ -229,12 +232,12 @@ just bench          # Benchmarks
 ✅ `just test` - Runs all tests  
 ✅ `just check` - Runs linter  
 ✅ `just ci` - Full CI pipeline  
-✅ `just install-local` - Local installation  
+✅ `just install-local` - Local installation
 
 ### Makefile (Alternative)
 
 ✅ Uses `GOEXPERIMENT=jsonv2` for JSON v2 support  
-✅ All targets functional  
+✅ All targets functional
 
 ### Build Output
 
@@ -347,17 +350,17 @@ Commit the modified files with a descriptive message covering the semantic detec
 
 ### Runtime Dependencies
 
-| Package | Version | Status |
-|---------|---------|--------|
-| github.com/charmbracelet/fang | latest | ✅ Stable |
-| github.com/spf13/cobra | latest | ✅ Stable |
+| Package                       | Version | Status    |
+| ----------------------------- | ------- | --------- |
+| github.com/charmbracelet/fang | latest  | ✅ Stable |
+| github.com/spf13/cobra        | latest  | ✅ Stable |
 
 ### Testing Dependencies
 
-| Package | Version | Status |
-|---------|---------|--------|
-| github.com/onsi/ginkgo/v2 | latest | ✅ Stable |
-| github.com/onsi/gomega | latest | ✅ Stable |
+| Package                   | Version | Status    |
+| ------------------------- | ------- | --------- |
+| github.com/onsi/ginkgo/v2 | latest  | ✅ Stable |
+| github.com/onsi/gomega    | latest  | ✅ Stable |
 
 ### Go Version
 
@@ -372,6 +375,7 @@ Commit the modified files with a descriptive message covering the semantic detec
 The art-dupl project is in a **healthy, production-ready state**. Recent work has focused on refining the configuration system and simplifying semantic detection logic. The codebase is well-architected with strong type safety, comprehensive testing, and clean separation of concerns.
 
 **Key Strengths:**
+
 - All core functionality working and stable
 - Professional CLI with excellent UX
 - Comprehensive output format support
@@ -379,6 +383,7 @@ The art-dupl project is in a **healthy, production-ready state**. Recent work ha
 - Good test coverage on critical paths
 
 **Priority Focus Areas:**
+
 1. Increase test coverage to 80%+
 2. Implement concurrent file processing
 3. Complete global state elimination

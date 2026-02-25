@@ -346,11 +346,11 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 
 ### Semantic Detection
 
-- **--semantic**: Content-aware matching based on identifier names
-- Default behavior: Clones matched by AST structure only (e.g., `a.String()` = `b.Error()`)
-- With `--semantic`: Clones matched by both structure AND identifier semantics
-- Example: `a.String()` will NOT match `b.Error()` (different method names)
-- Useful for finding logically similar code patterns with different naming
+- **Default**: Semantic-aware matching based on identifier names (ON by default)
+- Default behavior: Clones matched by both structure AND identifier semantics
+- With `--structural`: Clones matched by AST structure only (e.g., `a.String()` = `b.Error()`)
+- Example: `a.String()` will NOT match `b.Error()` (different method names) by default
+- Useful for reducing false positives from similar-looking but semantically different code
 - Implementation: FNV-1a hash of identifiers encoded into AST node types
 
 ### Output Formats
