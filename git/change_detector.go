@@ -19,9 +19,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
@@ -284,78 +282,4 @@ func (d *ChangeDetector) parseDiffOutput(output []byte) []ChangeInfo {
 	}
 
 	return changes
-}
-
-// deduplicateChanges removes duplicate entries (same path).
-func deduplicateChanges(changes []ChangeInfo) []ChangeInfo {
-	seen := make(map[string]bool)
-	var result []ChangeInfo
-
-	for _, change := range changes {
-		if !seen[change.Path] {
-			seen[change.Path] = true
-			result = append(result, change)
-		}
-	}
-
-	return result
-}
-
-// IsGitRepo checks if a directory is inside a git repository.
-// This is a convenience function that doesn't require creating a ChangeDetector.
-func IsGitRepo(dir string) bool {
-	return NewChangeDetector(dir).isGitRepo()
-}
-
-// FindGitRoot finds the root of the git repository containing the given path.
-// Returns empty string if not in a git repository.
-func FindGitRoot(startPath string) string {
-	absPath, err := filepath.Abs(startPath)
-	if err != nil {
-		return ""
-	}
-
-	current := absPath
-	for {
-		gitDir := filepath.Join(current, ".git")
-		if _, err := os.Stat(gitDir); err == nil {
-			return current
-		}
-
-		parent := filepath.Dir(current)
-		if parent == current || parent == "" {
-			return ""
-		}
-		current = parent
-	}
-}
-
-// Errors returned by the git package.
-var (
-	// ErrNotGitRepo indicates the directory is not inside a git repository.
-	ErrNotGitRepo = &GitError{Op: "check", Err: "not a git repository"}
-
-	// ErrGitNotAvailable indicates git command is not available.
-	ErrGitNotAvailable = &GitError{Op: "exec", Err: "git command not available"}
-
-	// ErrGitCommand indicates a git command failed.
-	ErrGitCommand = &GitError{Op: "command", Err: "git command failed"}
-)
-
-// GitError represents an error from git operations.
-type GitError struct {
-	Op  string
-	Err string
-}
-
-func (e *GitError) Error() string {
-	return fmt.Sprintf("git error: %s: %s", e.Op, e.Err)
-}
-
-func (e *GitError) Is(target error) bool {
-	t, ok := target.(*GitError)
-	if !ok {
-		return false
-	}
-	return e.Op == t.Op || e.Err == t.Err
 }
