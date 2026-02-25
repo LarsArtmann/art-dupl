@@ -48,9 +48,9 @@ func anotherLargeFunction() {
 }`
 
 	// Create mock clone groups with different sizes and characteristics
-	smallClone := createMockCloneGroup(t, "small.go", 10, 2)                  // Small size, 2 tokens
-	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)                // Medium size, 5 tokens
-	largeClone := createMockCloneGroup(t, "large.go", 60, 8)                  // Large size, 8 tokens
+	smallClone := createMockCloneGroup(t, "small.go", 10, 2)                 // Small size, 2 tokens
+	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)               // Medium size, 5 tokens
+	largeClone := createMockCloneGroup(t, "large.go", 60, 8)                 // Large size, 8 tokens
 	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 8) // Same size as largeClone, 8 tokens
 
 	// Create clones with multiple occurrences to test total-tokens
