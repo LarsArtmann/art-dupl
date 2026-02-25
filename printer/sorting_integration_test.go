@@ -48,13 +48,13 @@ func anotherLargeFunction() {
 }`
 
 	// Create mock clone groups with different sizes and characteristics
-	smallClone := createMockCloneGroup(t, "small.go", 10, 20, 2)                  // Small size, 2 tokens
-	mediumClone := createMockCloneGroup(t, "medium.go", 30, 50, 5)                // Medium size, 5 tokens
-	largeClone := createMockCloneGroup(t, "large.go", 60, 90, 8)                  // Large size, 8 tokens
-	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 130, 8) // Same size as largeClone, 8 tokens
+	smallClone := createMockCloneGroup(t, "small.go", 10, 2)                  // Small size, 2 tokens
+	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)                // Medium size, 5 tokens
+	largeClone := createMockCloneGroup(t, "large.go", 60, 8)                  // Large size, 8 tokens
+	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 8) // Same size as largeClone, 8 tokens
 
 	// Create clones with multiple occurrences to test total-tokens
-	multiOccurrenceClone := createMockCloneGroup(t, "multi.go", 200, 220, 3) // 3 tokens
+	multiOccurrenceClone := createMockCloneGroup(t, "multi.go", 200, 3) // 3 tokens
 
 	testCases := []struct {
 		name          string
@@ -162,7 +162,7 @@ func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Prin
 }
 
 // createMockCloneGroup creates a mock clone group with specified characteristics.
-func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTokens int) []*syntax.Node {
+func createMockCloneGroup(t *testing.T, filename string, startPos, numTokens int) []*syntax.Node {
 	t.Helper()
 	// Create nodes that represent the tokens in a clone
 	nodes := make([]*syntax.Node, numTokens)
@@ -181,9 +181,9 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, endPos, numTo
 
 // TestCommonSortingUtilities tests the common sorting functions directly.
 func TestCommonSortingUtilities(t *testing.T) {
-	smallClone := createMockCloneGroup(t, "small.go", 10, 20, 2)
-	mediumClone := createMockCloneGroup(t, "medium.go", 30, 50, 5)
-	largeClone := createMockCloneGroup(t, "large.go", 60, 90, 8)
+	smallClone := createMockCloneGroup(t, "small.go", 10, 2)
+	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)
+	largeClone := createMockCloneGroup(t, "large.go", 60, 8)
 
 	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
 
@@ -222,9 +222,9 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// where each inner slice is a separate occurrence
 		// For testing, we'll simulate sorting multiple groups separately
 
-		group1 := createMockCloneGroup(t, "small.go", 10, 20, 2)  // 2 tokens
-		group2 := createMockCloneGroup(t, "medium.go", 30, 50, 5) // 5 tokens
-		group3 := createMockCloneGroup(t, "large.go", 60, 90, 8)  // 8 tokens
+		group1 := createMockCloneGroup(t, "small.go", 10, 2)  // 2 tokens
+		group2 := createMockCloneGroup(t, "medium.go", 30, 5) // 5 tokens
+		group3 := createMockCloneGroup(t, "large.go", 60, 8)  // 8 tokens
 
 		clones := [][]*syntax.Node{group1, group2, group3}
 		sorted := SortClonesByTotalTokens(clones)

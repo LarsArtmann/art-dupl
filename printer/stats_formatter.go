@@ -93,30 +93,30 @@ func (p *stats) printCSV() {
 // printText prints statistics in text format.
 func (p *stats) printText() {
 	// Print header
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.header.Render("Code Duplication Statistics"))
-	_, _ = fmt.Fprintf(p.w, "%s\n\n", p.base.Render("============================"))
+	p.printHeader("Code Duplication Statistics")
+	p.printLine("============================")
 
 	// Print configuration
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Configuration:"))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Threshold:"), p.base.Render(fmt.Sprintf("%d tokens", p.threshold)))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Detection Methods:"), p.base.Render(p.statsData.DetectionMethods))
+	p.printSection("Configuration:")
+	p.printMetric("Threshold", fmt.Sprintf("%d tokens", p.threshold))
+	p.printMetric("Detection Methods", p.statsData.DetectionMethods)
 	if p.statsData.Timestamp != "" {
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Timestamp:"), p.base.Render(p.statsData.Timestamp))
+		p.printMetric("Timestamp", p.statsData.Timestamp)
 	}
 	if p.statsData.AnalysisDuration != "" {
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Analysis Time:"), p.base.Render(p.statsData.AnalysisDuration))
+		p.printMetric("Analysis Time", p.statsData.AnalysisDuration)
 	}
 	_, _ = fmt.Fprintf(p.w, "\n")
 
 	// Print overview
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Overview:"))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Scanned:"), p.base.Render(strconv.Itoa(p.statsData.TotalFilesScanned)))
+	p.printSection("Overview:")
+	p.printMetric("Files Scanned", strconv.Itoa(p.statsData.TotalFilesScanned))
 
 	// Print filter information if files were filtered
 	if p.statsData.FilesFiltered > 0 {
 		filterPercent := float64(p.statsData.FilesFiltered) / float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
 		filterText := fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent)
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Files Filtered:"), p.base.Render(filterText))
+		p.printMetric("Files Filtered", filterText)
 
 		// Print filter breakdown
 		if len(p.statsData.FilterBreakdown) > 0 {
@@ -130,36 +130,37 @@ func (p *stats) printText() {
 		}
 	}
 
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Clone Groups:"), p.base.Render(strconv.Itoa(p.statsData.TotalCloneGroups)))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Clones:"), p.base.Render(strconv.Itoa(p.statsData.TotalClones)))
+	p.printMetric("Clone Groups", strconv.Itoa(p.statsData.TotalCloneGroups))
+	p.printMetric("Total Clones", strconv.Itoa(p.statsData.TotalClones))
 	_, _ = fmt.Fprintf(p.w, "\n")
 
 	// Print duplicate code metrics
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Duplicate Code:"))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalDuplicateLines)))
+	p.printSection("Duplicate Code:")
+	p.printMetric("Total Duplicate Lines", strconv.Itoa(p.statsData.TotalDuplicateLines))
 	if p.statsData.TotalEstimatedLines > 0 {
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Estimated Total Lines:"), p.base.Render(strconv.Itoa(p.statsData.TotalEstimatedLines)))
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Duplication Ratio:"), p.healthScoreStyle(p.statsData.HealthScore).Render(fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio)))
+		p.printMetric("Estimated Total Lines", strconv.Itoa(p.statsData.TotalEstimatedLines))
+		p.printMetric("Duplication Ratio", fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio))
 	}
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Total Duplicate Tokens:"), p.base.Render(strconv.Itoa(p.statsData.TotalTokens)))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Average Clone Size:"), p.base.Render(fmt.Sprintf("%d lines", p.statsData.AverageCloneSize)))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Complexity Score:"), p.base.Render(fmt.Sprintf("%.2f", p.statsData.ComplexityScore)))
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Impact Score:"), p.base.Render(strconv.Itoa(p.statsData.ImpactScore)))
+	p.printMetric("Total Duplicate Tokens", strconv.Itoa(p.statsData.TotalTokens))
+	p.printMetric("Average Clone Size", fmt.Sprintf("%d lines", p.statsData.AverageCloneSize))
+	p.printMetric("Complexity Score", fmt.Sprintf("%.2f", p.statsData.ComplexityScore))
+	p.printMetric("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
 	if p.statsData.HealthScore != "" {
-		_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render("Health Score:"), p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore))
+		styledHealthScore := p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore)
+		p.printMetric("Health Score", styledHealthScore)
 	}
 	_, _ = fmt.Fprintf(p.w, "\n")
 
 	// Print size distribution
 	if len(p.statsData.SizeDistribution) > 0 {
-		_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Clone Size Distribution:"))
+		p.printSection("Clone Size Distribution:")
 		printSizeDistribution(p.w, p.statsData.SizeDistribution)
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
 	// Print top files with most duplicates
 	if len(p.statsData.FileDuplication) > 0 {
-		_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render("Top Files by Duplicate Lines:"))
+		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
 	}
 
@@ -168,9 +169,9 @@ func (p *stats) printText() {
 	p.printRecommendations()
 
 	// Print methodology note
-	_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Note:"))
-	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render("Metrics count unique duplicate patterns, not total occurrences."))
-	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render("A clone group with 3 instances counts once for line calculations."))
+	p.printSection("Note:")
+	p.printLine("Metrics count unique duplicate patterns, not total occurrences.")
+	p.printLine("A clone group with 3 instances counts once for line calculations.")
 }
 
 // topFileStat holds file duplication statistics for sorting.

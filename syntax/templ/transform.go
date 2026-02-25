@@ -6,6 +6,31 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// createNode creates a new syntax.Node with the given type and position.
+func (t *transformer) createNode(nodeType int32, start, end int64) *syntax.Node {
+	n := syntax.NewNode()
+	n.Type = nodeType
+	n.Filename = t.filename
+	n.Pos = int32(start) // #nosec G115 -- File sizes bounded by int32 in practice
+	n.End = int32(end)   // #nosec G115 -- File sizes bounded by int32 in practice
+	return n
+}
+
+// createNodeFromRange creates a new syntax.Node from a templ Range.
+func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *syntax.Node {
+	return t.createNode(int32(nodeType), r.From.Index, r.To.Index)
+}
+
+// addChildren processes a slice of nodes and adds them as children to the parent.
+func (t *transformer) addChildren(parent *syntax.Node, nodes []templparser.Node) {
+	for _, child := range nodes {
+		childNode := t.transformNode(child)
+		if childNode != nil {
+			parent.AddChildren(childNode)
+		}
+	}
+}
+
 // transformTemplateFile converts a templ TemplateFile to a unified syntax.Node.
 func (t *transformer) transformTemplateFile(tf *templparser.TemplateFile) *syntax.Node {
 	if tf == nil {
@@ -56,21 +81,8 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 	if tmpl == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ComponentDeclaration
-	o.Filename = t.filename
-	o.Pos = int32(tmpl.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(tmpl.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	// Process children
-	for _, child := range tmpl.Children {
-		childNode := t.transformNode(child)
-		if childNode != nil {
-			o.AddChildren(childNode)
-		}
-	}
-
+	o := t.createNodeFromRange(ComponentDeclaration, tmpl.Range)
+	t.addChildren(o, tmpl.Children)
 	return o
 }
 
@@ -79,13 +91,7 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 	if css == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = CSSDeclaration
-	o.Filename = t.filename
-	o.Pos = int32(css.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(css.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
+	o := t.createNodeFromRange(CSSDeclaration, css.Range)
 	// Process CSS properties as children
 	for _, prop := range css.Properties {
 		propNode := t.transformCSSProperty(prop)
@@ -93,7 +99,6 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 			o.AddChildren(propNode)
 		}
 	}
-
 	return o
 }
 
@@ -102,14 +107,7 @@ func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate
 	if script == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ScriptDeclaration
-	o.Filename = t.filename
-	o.Pos = int32(script.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(script.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(ScriptDeclaration, script.Range)
 }
 
 // transformCSSProperty converts a CSSProperty to a syntax.Node.

@@ -11,21 +11,8 @@ func (t *transformer) transformTemplElementExpression(tee *templparser.TemplElem
 	if tee == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ComponentRender
-	o.Filename = t.filename
-	o.Pos = int32(tee.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(tee.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	// Process children (for block-style component calls)
-	for _, child := range tee.Children {
-		childNode := t.transformNode(child)
-		if childNode != nil {
-			o.AddChildren(childNode)
-		}
-	}
-
+	o := t.createNodeFromRange(ComponentRender, tee.Range)
+	t.addChildren(o, tee.Children)
 	return o
 }
 
@@ -34,14 +21,7 @@ func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTempl
 	if cte == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ComponentRender
-	o.Filename = t.filename
-	o.Pos = int32(cte.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(cte.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(ComponentRender, cte.Range)
 }
 
 // transformChildrenExpression converts a ChildrenExpression to a syntax.Node.
@@ -49,14 +29,7 @@ func (t *transformer) transformChildrenExpression(ce *templparser.ChildrenExpres
 	if ce == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ComponentChildrenExpression
-	o.Filename = t.filename
-	o.Pos = 0 // No Range field available
-	o.End = 0
-
-	return o
+	return t.createNode(ComponentChildrenExpression, 0, 0)
 }
 
 // transformScriptElement converts a ScriptElement to a syntax.Node.
@@ -64,21 +37,13 @@ func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syn
 	if se == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ScriptElement
-	o.Filename = t.filename
-	o.Pos = int32(se.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(se.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	// Process attributes
+	o := t.createNodeFromRange(ScriptElement, se.Range)
 	for _, attr := range se.Attributes {
 		attrNode := t.transformAttribute(attr)
 		if attrNode != nil {
 			o.AddChildren(attrNode)
 		}
 	}
-
 	return o
 }
 
@@ -87,14 +52,7 @@ func (t *transformer) transformDocType(dt *templparser.DocType) *syntax.Node {
 	if dt == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = Doctype
-	o.Filename = t.filename
-	o.Pos = int32(dt.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(dt.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(Doctype, dt.Range)
 }
 
 // transformGoCode converts a GoCode to a syntax.Node.
@@ -102,14 +60,7 @@ func (t *transformer) transformGoCode(gc *templparser.GoCode) *syntax.Node {
 	if gc == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = RawGoBlock
-	o.Filename = t.filename
-	o.Pos = int32(gc.Expression.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(gc.Expression.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(RawGoBlock, gc.Expression.Range)
 }
 
 // transformStringExpression converts a StringExpression to a syntax.Node.
@@ -117,14 +68,7 @@ func (t *transformer) transformStringExpression(se *templparser.StringExpression
 	if se == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = Expression
-	o.Filename = t.filename
-	o.Pos = int32(se.Expression.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(se.Expression.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(Expression, se.Expression.Range)
 }
 
 // transformRawElement converts a RawElement to a syntax.Node.
@@ -132,21 +76,13 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 	if re == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = Element
-	o.Filename = t.filename
-	o.Pos = int32(re.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(re.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	// Process attributes
+	o := t.createNodeFromRange(Element, re.Range)
 	for _, attr := range re.Attributes {
 		attrNode := t.transformAttribute(attr)
 		if attrNode != nil {
 			o.AddChildren(attrNode)
 		}
 	}
-
 	return o
 }
 
@@ -155,12 +91,5 @@ func (t *transformer) transformFallthrough(f *templparser.Fallthrough) *syntax.N
 	if f == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = ComponentSwitchExpressionCase
-	o.Filename = t.filename
-	o.Pos = int32(f.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(f.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	return o
+	return t.createNodeFromRange(ComponentSwitchExpressionCase, f.Range)
 }

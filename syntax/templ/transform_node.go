@@ -61,29 +61,14 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 	if el == nil {
 		return nil
 	}
-
-	o := syntax.NewNode()
-	o.Type = Element
-	o.Filename = t.filename
-	o.Pos = int32(el.Range.From.Index) // #nosec G115 -- File sizes bounded by int32 in practice
-	o.End = int32(el.Range.To.Index)   // #nosec G115 -- File sizes bounded by int32 in practice
-
-	// Process attributes
+	o := t.createNodeFromRange(Element, el.Range)
 	for _, attr := range el.Attributes {
 		attrNode := t.transformAttribute(attr)
 		if attrNode != nil {
 			o.AddChildren(attrNode)
 		}
 	}
-
-	// Process children
-	for _, child := range el.Children {
-		childNode := t.transformNode(child)
-		if childNode != nil {
-			o.AddChildren(childNode)
-		}
-	}
-
+	t.addChildren(o, el.Children)
 	return o
 }
 
