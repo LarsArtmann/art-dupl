@@ -294,7 +294,9 @@ func TestFileCache_Stats(t *testing.T) {
 		fc.Get("nonexistent")
 
 		// Set entry
-		fc.Set(contentHash, nodes)
+		if err := fc.Set(contentHash, nodes); err != nil {
+			t.Fatalf("Failed to set cache entry: %v", err)
+		}
 
 		// Cache hit
 		fc.Get(contentHash)
@@ -400,7 +402,9 @@ func TestFileCache_Concurrency(t *testing.T) {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			nodes := []*syntax.Node{{Type: int32(i), Filename: "test.go"}}
-			fc.Set(hash, nodes)
+			if err := fc.Set(hash, nodes); err != nil {
+				t.Errorf("Failed to set cache entry: %v", err)
+			}
 
 			done <- true
 		}(i)

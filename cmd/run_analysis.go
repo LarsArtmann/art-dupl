@@ -315,6 +315,10 @@ func createPrinter(
 		return printer.NewJSON
 	case config.OutputFormatSimpleJSON:
 		return printer.NewJSON
+	case config.OutputFormatCSV:
+		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
+			return printer.NewStats(w, fread, threshold)
+		}
 	case config.OutputFormatText:
 		return printer.NewText
 	default:
