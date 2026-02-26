@@ -41,10 +41,19 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	}
 
 	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go") // #nosec G204 -- Test helper building project binary
+	cmd := exec.CommandContext(
+		context.Background(),
+		"go",
+		"build",
+		"-o",
+		binaryPath,
+		"../cmd/art-dupl/main.go",
+	) // #nosec G204 -- Test helper building project binary
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		_ = os.RemoveAll(tmpDir) // cleanup on error path
+
 		t.Fatalf("Failed to build art-dupl binary: %v\nOutput: %s", err, string(output))
 	}
 
@@ -78,14 +87,17 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 
 	if sharedBinaryErr != nil {
 		_ = os.RemoveAll(tmpDir) // cleanup on error path
+
 		return nil, sharedBinaryErr
 	}
 
 	// Check if binary still exists (may have been cleaned up by OS)
 	if _, err := os.Stat(sharedBinary); err != nil {
 		// Binary missing, rebuild it
-		if buildErr := buildSharedBinary(sharedBinary); buildErr != nil {
+		buildErr := buildSharedBinary(sharedBinary)
+		if buildErr != nil {
 			_ = os.RemoveAll(tmpDir)
+
 			return nil, buildErr
 		}
 	}
@@ -99,32 +111,55 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 
 // buildSharedBinary builds the art-dupl binary at the given path.
 func buildSharedBinary(binaryPath string) error {
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, "../cmd/art-dupl/main.go") // #nosec G204 -- Test helper building project binary
+	cmd := exec.CommandContext(
+		context.Background(),
+		"go",
+		"build",
+		"-o",
+		binaryPath,
+		"../cmd/art-dupl/main.go",
+	) // #nosec G204 -- Test helper building project binary
+
 	output, buildErr := cmd.CombinedOutput()
 	if buildErr != nil {
-		return fmt.Errorf("failed to build art-dupl binary: %w\nOutput: %s", buildErr, string(output))
+		return fmt.Errorf(
+			"failed to build art-dupl binary: %w\nOutput: %s",
+			buildErr,
+			string(output),
+		)
 	}
+
 	return nil
 }
 
 // Cleanup removes the temporary directory and all its contents.
 func (s *BDDTestSetup) Cleanup() error {
-	return os.RemoveAll(s.TmpDir) //nolint:wrapcheck // Test cleanup - pass through os.RemoveAll error
+	return os.RemoveAll(
+		s.TmpDir,
+	) //nolint:wrapcheck // Test cleanup - pass through os.RemoveAll error
 }
 
 // CreateDuplicateFiles creates multiple files with identical content.
 func (s *BDDTestSetup) CreateDuplicateFiles(filenames []string, content string) error {
-	return s.FileProcessor.WriteDuplicateFiles(filenames, content) //nolint:wrapcheck // Test helper - pass through error
+	return s.FileProcessor.WriteDuplicateFiles(
+		filenames,
+		content,
+	) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateTestFile creates a single test file with given content.
 func (s *BDDTestSetup) CreateTestFile(filename, content string) error {
-	return s.FileProcessor.WriteTextFile(filename, content) //nolint:wrapcheck // Test helper - pass through error
+	return s.FileProcessor.WriteTextFile(
+		filename,
+		content,
+	) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // CreateTestFiles creates multiple test files from a map.
 func (s *BDDTestSetup) CreateTestFiles(files map[string]string) error {
-	return s.FileProcessor.WriteTestFiles(files) //nolint:wrapcheck // Test helper - pass through error
+	return s.FileProcessor.WriteTestFiles(
+		files,
+	) //nolint:wrapcheck // Test helper - pass through error
 }
 
 // GetFilePath returns full path for a file in test directory.

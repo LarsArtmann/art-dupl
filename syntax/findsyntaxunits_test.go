@@ -12,6 +12,7 @@ func makeTestNodes(count int, owns int32) []*Node {
 	for i := range data {
 		data[i] = &Node{Type: int32(i), Owns: owns}
 	}
+
 	return data
 }
 
@@ -36,6 +37,7 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 	for i := 10; i < 20; i++ {
 		data[i] = &Node{Type: int32(i - 10), Owns: 0}
 	}
+
 	data[10].Owns = 2 // Different ownership at same relative position
 
 	// Create a match spanning positions with different ownership
@@ -73,7 +75,9 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	nodes2[0].Owns = 4
 	nodes2[5].Owns = 2
 
-	data := append(nodes1, nodes2...) //nolint:makezero,gocritic // Creating combined slice for testing purposes
+	data := append(
+		nodes1,
+		nodes2...) //nolint:makezero,gocritic // Creating combined slice for testing purposes
 	_ = data
 
 	match := suffixtree.Match{
@@ -120,6 +124,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 				// Create a proper ownership structure
 				data[0].Owns = 4
 				data[5].Owns = 2
+
 				return data
 			},
 			match: suffixtree.Match{
@@ -153,6 +158,7 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 				t.Errorf("Expected to find syntax units for %s", test.name)
 				t.Logf("Result: %+v", result)
 			}
+
 			if !test.shouldFind && len(result.Frags) > 0 {
 				t.Errorf("Expected not to find syntax units for %s", test.name)
 			}

@@ -12,6 +12,7 @@ func NewCloneGroupID(id string) (CloneGroupID, error) {
 	if id == "" {
 		return "", errors.NewValidationError("clone group ID cannot be empty", nil)
 	}
+
 	return CloneGroupID(id), nil
 }
 
@@ -27,9 +28,14 @@ func (id CloneGroupID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneGroupID.
 func (id *CloneGroupID) UnmarshalJSON(data []byte) error {
-	return unmarshalStringID(data, "CloneGroupID", "clone group ID cannot be empty", func(s string) {
-		*id = CloneGroupID(s)
-	})
+	return unmarshalStringID(
+		data,
+		"CloneGroupID",
+		"clone group ID cannot be empty",
+		func(s string) {
+			*id = CloneGroupID(s)
+		},
+	)
 }
 
 // AnalysisID represents a unique identifier for an analysis.
@@ -40,6 +46,7 @@ func NewAnalysisID(id string) (AnalysisID, error) {
 	if id == "" {
 		return "", errors.NewValidationError("analysis ID cannot be empty", nil)
 	}
+
 	return AnalysisID(id), nil
 }
 

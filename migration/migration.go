@@ -1,6 +1,7 @@
 package migration
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -18,7 +19,10 @@ type MigrationPath struct {
 }
 
 // NewMigrationPath creates a new migration path.
-func NewMigrationPath(legacyPrinter printer.Printer, options domain.DetectionOptions) *MigrationPath {
+func NewMigrationPath(
+	legacyPrinter printer.Printer,
+	options domain.DetectionOptions,
+) *MigrationPath {
 	return &MigrationPath{
 		legacyPrinter: legacyPrinter,
 		processor:     &options,
@@ -62,9 +66,11 @@ func (mp *MigrationPath) FromPrinterClonesToDomain(printerClones []printer.Clone
 // ValidateMigration checks if migration is valid.
 // Returns the analysis and nil error on success, or zero value and error on failure.
 func (mp *MigrationPath) ValidateMigration(analysis domain.Analysis) (domain.Analysis, error) {
-	if err := analysis.IsValid(); err != nil {
+	err := analysis.IsValid()
+	if err != nil {
 		return domain.Analysis{}, fmt.Errorf("invalid analysis for migration: %w", err)
 	}
+
 	return analysis, nil
 }
 
@@ -183,8 +189,12 @@ func (mp *MigrationPath) validateMigration(before, after domain.Analysis) []Vali
 	return validations
 }
 
-func (mp *MigrationPath) validateAnalysisState(analysis domain.Analysis, state string) ValidationResult {
-	if err := analysis.IsValid(); err != nil {
+func (mp *MigrationPath) validateAnalysisState(
+	analysis domain.Analysis,
+	state string,
+) ValidationResult {
+	err := analysis.IsValid()
+	if err != nil {
 		return ValidationResult{
 			Check:    state + "-state-valid",
 			Status:   "failed",
@@ -192,6 +202,7 @@ func (mp *MigrationPath) validateAnalysisState(analysis domain.Analysis, state s
 			Severity: "error",
 		}
 	}
+
 	return ValidationResult{
 		Check:    state + "-state-valid",
 		Status:   "passed",
@@ -204,6 +215,7 @@ func capitalize(s string) string {
 	if len(s) == 0 {
 		return s
 	}
+
 	return strings.ToUpper(string(s[0])) + s[1:]
 }
 
@@ -211,15 +223,24 @@ func (mp *MigrationPath) generateRecommendations(before, after domain.Analysis) 
 	var recommendations []string
 
 	if after.Stats.DuplicationRatio > before.Stats.DuplicationRatio {
-		recommendations = append(recommendations, "Consider increasing threshold to reduce false positives")
+		recommendations = append(
+			recommendations,
+			"Consider increasing threshold to reduce false positives",
+		)
 	}
 
 	if after.Stats.ComplexityScore > before.Stats.ComplexityScore {
-		recommendations = append(recommendations, "Review newly detected clones for refactoring opportunities")
+		recommendations = append(
+			recommendations,
+			"Review newly detected clones for refactoring opportunities",
+		)
 	}
 
 	if len(after.CloneGroups) > int(float64(len(before.CloneGroups))*1.2) {
-		recommendations = append(recommendations, "Migration detected significantly more clones - verify accuracy")
+		recommendations = append(
+			recommendations,
+			"Migration detected significantly more clones - verify accuracy",
+		)
 	}
 
 	return recommendations
@@ -238,7 +259,7 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = domain.Threshold(uint(threshold))
 	} else {
-		return domain.DetectionOptions{}, fmt.Errorf("missing or invalid threshold in config")
+		return domain.DetectionOptions{}, errors.New("missing or invalid threshold in config")
 	}
 
 	// Extract paths
@@ -251,7 +272,7 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	}
 
 	if len(options.Paths) == 0 {
-		return domain.DetectionOptions{}, fmt.Errorf("no paths found in config")
+		return domain.DetectionOptions{}, errors.New("no paths found in config")
 	}
 
 	// Set defaults
@@ -261,7 +282,8 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	options.OutputFormat = "json"
 
 	// Validate final options
-	if err := options.IsValid(); err != nil {
+	err := options.IsValid()
+	if err != nil {
 		return domain.DetectionOptions{}, fmt.Errorf("invalid migrated config: %w", err)
 	}
 

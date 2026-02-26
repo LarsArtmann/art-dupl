@@ -26,12 +26,15 @@ func TestDuplError(t *testing.T) {
 	if err.Type != ParseError {
 		t.Errorf("Expected ParseError type, got %s", err.Type)
 	}
+
 	if err.File != "test.go" {
 		t.Errorf("Expected 'test.go', got '%s'", err.File)
 	}
+
 	if err.Line != 42 {
 		t.Errorf("Expected 42, got %d", err.Line)
 	}
+
 	if err.Message != "test message" {
 		t.Errorf("Expected 'test message', got '%s'", err.Message)
 	}
@@ -90,6 +93,7 @@ func TestIs(t *testing.T) {
 	if !Is(parseErr, ParseError) {
 		t.Error("Should identify ParseError")
 	}
+
 	if !Is(configErr, ConfigError) {
 		t.Error("Should identify ConfigError")
 	}
@@ -98,6 +102,7 @@ func TestIs(t *testing.T) {
 	if Is(parseErr, ConfigError) {
 		t.Error("Should not match ConfigError")
 	}
+
 	if Is(configErr, ParseError) {
 		t.Error("Should not match ParseError")
 	}
@@ -117,9 +122,11 @@ func TestWrap(t *testing.T) {
 		if wrapped == nil {
 			t.Fatal("Wrapped error should not be nil")
 		}
+
 		if !errors.Is(wrapped, cause) {
 			t.Error("Wrapped error should contain cause")
 		}
+
 		if !Is(wrapped, InternalError) {
 			t.Error("Wrapped error should be InternalError type")
 		}
@@ -134,6 +141,7 @@ func TestWrap(t *testing.T) {
 
 	t.Run("Wrap does not double-wrap DuplError", func(t *testing.T) {
 		duplErr := NewInternalError("original", nil)
+
 		wrapped := Wrap(duplErr, ConfigError, "wrapping")
 		if !errors.Is(wrapped, duplErr) {
 			t.Error("Should not re-wrap DuplError")
@@ -149,6 +157,7 @@ func TestWrapf(t *testing.T) {
 		if wrapped == nil {
 			t.Fatal("Wrapped error should not be nil")
 		}
+
 		if !errors.Is(wrapped, cause) {
 			t.Error("Wrapped error should contain cause")
 		}
@@ -167,6 +176,7 @@ func TestWrapIO(t *testing.T) {
 
 	t.Run("WrapIO does not double-wrap", func(t *testing.T) {
 		ioErr := NewIOError("test.go", "original", nil)
+
 		wrapped := WrapIO(ioErr, "test.go", "new operation")
 		if !errors.Is(wrapped, ioErr) {
 			t.Error("Should not re-wrap IOError")

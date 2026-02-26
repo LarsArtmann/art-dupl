@@ -95,9 +95,11 @@ func Authenticate(username, password string) bool {
 		if fltr.ShouldFilter(setup.GetFilePath("main.go")) {
 			t.Errorf("main.go should not be filtered")
 		}
+
 		if fltr.ShouldFilter(setup.GetFilePath("service/user.go")) {
 			t.Errorf("service/user.go should not be filtered")
 		}
+
 		if fltr.ShouldFilter(setup.GetFilePath("service/auth.go")) {
 			t.Errorf("service/auth.go should not be filtered")
 		}
@@ -106,6 +108,7 @@ func Authenticate(username, password string) bool {
 		if !fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {
 			t.Errorf("db/models.go should be filtered (sqlc)")
 		}
+
 		if !fltr.ShouldFilter(setup.GetFilePath("db/querier.go")) {
 			t.Errorf("db/querier.go should be filtered (sqlc)")
 		}
@@ -165,6 +168,7 @@ type User struct {}
 		files := map[string]string{
 			filepath.Join("vendor", "models.go"): vendorContent,
 		}
+
 		err := setup.CreateTestFiles(files)
 		if err != nil {
 			t.Fatalf("CreateTestFiles failed: %v", err)
@@ -247,6 +251,7 @@ func Authenticate(username, password string) bool {
 		// Verify the config path
 		foundConfigPath := ""
 		configRoot := ""
+
 		for configPath, root := range configs {
 			foundConfigPath = configPath
 			configRoot = root
@@ -258,6 +263,7 @@ func Authenticate(username, password string) bool {
 		if foundConfigPath != expectedConfigPath {
 			t.Errorf("config path = %v, want %v", foundConfigPath, expectedConfigPath)
 		}
+
 		if configRoot != expectedRoot {
 			t.Errorf("config root = %v, want %v", configRoot, expectedRoot)
 		}

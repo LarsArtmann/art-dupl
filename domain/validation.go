@@ -15,6 +15,7 @@ func validateRules(rules []validationRule) error {
 			return stderrors.New(rule.msg)
 		}
 	}
+
 	return nil
 }
 

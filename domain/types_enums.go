@@ -14,7 +14,10 @@ func (fps FileProcessingState) String() string { return string(fps) }
 
 func (fps FileProcessingState) IsValid() bool {
 	switch fps {
-	case FileProcessingStatePending, FileProcessingStateProcessing, FileProcessingStateCompleted, FileProcessingStateFailed:
+	case FileProcessingStatePending,
+		FileProcessingStateProcessing,
+		FileProcessingStateCompleted,
+		FileProcessingStateFailed:
 		return true
 	default:
 		return false

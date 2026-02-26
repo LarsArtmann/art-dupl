@@ -47,8 +47,10 @@ func TestParseFormat(t *testing.T) {
 			got, err := ParseFormat(tt.input)
 			if (err != nil) != tt.wantError {
 				t.Errorf("ParseFormat() error = %v, wantError %v", err, tt.wantError)
+
 				return
 			}
+
 			if got != tt.expected {
 				t.Errorf("ParseFormat() = %v, want %v", got, tt.expected)
 			}
@@ -72,9 +74,11 @@ func TestFormatString(t *testing.T) {
 	if got := FormatText.String(); got != "text" {
 		t.Errorf("FormatText.String() = %q, want %q", got, "text")
 	}
+
 	if got := FormatJSON.String(); got != "json" {
 		t.Errorf("FormatJSON.String() = %q, want %q", got, "json")
 	}
+
 	if got := FormatCSV.String(); got != "csv" {
 		t.Errorf("FormatCSV.String() = %q, want %q", got, "csv")
 	}

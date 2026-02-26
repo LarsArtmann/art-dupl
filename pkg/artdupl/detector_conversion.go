@@ -8,7 +8,11 @@ import (
 )
 
 // convertToCloneGroup converts internal format to SDK CloneGroup format.
-func (d *detector) convertToCloneGroup(hash string, frags [][]*syntax.Node, method DetectionMethod) *CloneGroup {
+func (d *detector) convertToCloneGroup(
+	hash string,
+	frags [][]*syntax.Node,
+	method DetectionMethod,
+) *CloneGroup {
 	clones := make([]*Clone, len(frags))
 	totalSize := 0
 	maxLines := 0
@@ -17,6 +21,7 @@ func (d *detector) convertToCloneGroup(hash string, frags [][]*syntax.Node, meth
 		clone := d.convertFragmentToClone(frag)
 		clones[i] = clone
 		totalSize += clone.Size
+
 		lines := clone.EndLine - clone.StartLine + 1
 		if lines > maxLines {
 			maxLines = lines
@@ -74,6 +79,7 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 	content, err := d.opts.FileReader(frag[0].Filename)
 	if err != nil {
 		d.logger.Warn("Failed to read file %s: %v", frag[0].Filename, err)
+
 		return "[content unavailable]"
 	}
 

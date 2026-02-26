@@ -22,21 +22,26 @@ func (a Analysis) IsValid() error {
 	if !a.State.IsValid() {
 		return fmt.Errorf("invalid analysis state: %s", a.State)
 	}
+
 	if !a.Mode.IsValid() {
 		return fmt.Errorf("invalid analysis mode: %s", a.Mode)
 	}
+
 	if a.Threshold == 0 {
 		return stderrors.New("analysis threshold cannot be zero")
 	}
+
 	if a.CreatedAt == "" {
 		return stderrors.New("analysis created at cannot be empty")
 	}
 
 	for i, group := range a.CloneGroups {
-		if err := group.IsValid(); err != nil {
+		err := group.IsValid()
+		if err != nil {
 			return fmt.Errorf("clone group %d in analysis is invalid: %w", i, err)
 		}
 	}
+
 	return nil
 }
 

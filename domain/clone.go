@@ -30,14 +30,17 @@ func (c Clone) IsValid() error {
 	if c.EndLine < c.StartLine {
 		return stderrors.New("clone end line must be >= start line")
 	}
+
 	if c.StartPos > 0 || c.EndPos > 0 {
 		if c.StartPos >= c.EndPos {
 			return stderrors.New("clone end position must be > start position")
 		}
 	}
+
 	if !c.Status.IsValid() {
 		return fmt.Errorf("invalid clone processing state: %s", c.Status)
 	}
+
 	return nil
 }
 
@@ -63,16 +66,21 @@ func (cg CloneGroup) IsValid() error {
 	if len(cg.Clones) == 0 {
 		return stderrors.New("clone group must have at least one clone")
 	}
+
 	if !cg.Severity.IsValid() {
 		return fmt.Errorf("invalid clone severity: %s", cg.Severity)
 	}
+
 	if !cg.Status.IsValid() {
 		return fmt.Errorf("invalid clone group status: %s", cg.Status)
 	}
+
 	for i, clone := range cg.Clones {
-		if err := clone.IsValid(); err != nil {
+		err := clone.IsValid()
+		if err != nil {
 			return fmt.Errorf("clone %d in group is invalid: %w", i, err)
 		}
 	}
+
 	return nil
 }

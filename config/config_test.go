@@ -10,12 +10,15 @@ import (
 // createTempDir creates a temporary directory for testing and returns a cleanup function.
 func createTempDir(t *testing.T) (string, func()) {
 	t.Helper()
+
 	tmpDir, err := os.MkdirTemp("", "dupl-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
+
 	return tmpDir, func() {
-		if err := os.RemoveAll(tmpDir); err != nil {
+		err := os.RemoveAll(tmpDir)
+		if err != nil {
 			t.Logf("Failed to remove temp dir: %v", err)
 		}
 	}
@@ -23,17 +26,21 @@ func createTempDir(t *testing.T) (string, func()) {
 
 func TestDefaultConfig(t *testing.T) {
 	t.Parallel()
+
 	config := DefaultConfig()
 
 	if config.Threshold != 15 {
 		t.Errorf("Expected default threshold 15, got %d", config.Threshold)
 	}
+
 	if config.IncludeVendor != false {
 		t.Errorf("Expected default IncludeVendor false, got %v", config.IncludeVendor)
 	}
+
 	if config.OutputFormat != "text" {
 		t.Errorf("Expected default OutputFormat text, got %s", config.OutputFormat)
 	}
+
 	if len(config.Paths) != 1 || config.Paths[0] != "." {
 		t.Errorf("Expected default paths [\".\"], got %v", config.Paths)
 	}
@@ -67,21 +74,28 @@ func TestLoadConfig(t *testing.T) {
 	if config.Threshold != 50 {
 		t.Errorf("Expected threshold 50, got %d", config.Threshold)
 	}
+
 	if config.IncludeVendor != true {
 		t.Errorf("Expected IncludeVendor true, got %v", config.IncludeVendor)
 	}
+
 	if config.OutputFormat != "json" {
 		t.Errorf("Expected OutputFormat json, got %s", config.OutputFormat)
 	}
+
 	if config.Verbose != true {
 		t.Errorf("Expected Verbose true, got %v", config.Verbose)
 	}
+
 	if len(config.Paths) != 2 || config.Paths[0] != "./src" || config.Paths[1] != "./lib" {
 		t.Errorf("Expected paths [\"./src\", \"./lib\"], got %v", config.Paths)
 	}
-	if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != "*_test.go" || config.IgnoreFiles[1] != "mock_*.go" {
+
+	if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != "*_test.go" ||
+		config.IgnoreFiles[1] != "mock_*.go" {
 		t.Errorf("Expected ignoreFiles [\"*_test.go\", \"mock_*.go\"], got %v", config.IgnoreFiles)
 	}
+
 	if config.MaxChildrenSerial != 20000 {
 		t.Errorf("Expected MaxChildrenSerial 20000, got %d", config.MaxChildrenSerial)
 	}
@@ -89,6 +103,7 @@ func TestLoadConfig(t *testing.T) {
 
 func TestLoadConfigNotFound(t *testing.T) {
 	t.Parallel()
+
 	_, err := LoadConfig("nonexistent-config.json")
 	if err == nil {
 		t.Error("Expected error for nonexistent config file")
@@ -127,9 +142,11 @@ func TestSaveConfig(t *testing.T) {
 	if loaded.Threshold != config.Threshold {
 		t.Errorf("Saved threshold %d, got %d", config.Threshold, loaded.Threshold)
 	}
+
 	if loaded.IncludeVendor != config.IncludeVendor {
 		t.Errorf("Saved IncludeVendor %v, got %v", config.IncludeVendor, loaded.IncludeVendor)
 	}
+
 	if loaded.OutputFormat != config.OutputFormat {
 		t.Errorf("Saved OutputFormat %s, got %s", config.OutputFormat, loaded.OutputFormat)
 	}
@@ -204,6 +221,7 @@ func TestValidateConfig(t *testing.T) {
 			if tt.isValid && err != nil {
 				t.Errorf("Expected valid config, got error: %v", err)
 			}
+
 			if !tt.isValid && err == nil {
 				t.Error("Expected invalid config, but got no error")
 			}
@@ -234,18 +252,23 @@ func TestMergeConfigs(t *testing.T) {
 	if merged.Threshold != 25 {
 		t.Errorf("Expected merged threshold 25, got %d", merged.Threshold)
 	}
+
 	if merged.IncludeVendor != true {
 		t.Errorf("Expected merged IncludeVendor true, got %v", merged.IncludeVendor)
 	}
+
 	if merged.OutputFormat != "html" {
 		t.Errorf("Expected merged OutputFormat html, got %s", merged.OutputFormat)
 	}
+
 	if merged.Verbose != true {
 		t.Errorf("Expected merged Verbose true, got %v", merged.Verbose)
 	}
+
 	if len(merged.Paths) != 1 || merged.Paths[0] != "./cmd" {
 		t.Errorf("Expected merged paths [\"./cmd\"], got %v", merged.Paths)
 	}
+
 	if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != "*_test.go" {
 		t.Errorf("Expected merged ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
 	}
@@ -309,6 +332,7 @@ func TestDetectionMethods(t *testing.T) {
 	if !DetectionMethodHash.IsValid() {
 		t.Error("Expected hash to be valid")
 	}
+
 	if DetectionMethod("invalid").IsValid() {
 		t.Error("Expected invalid method to be invalid")
 	}
@@ -324,6 +348,7 @@ func TestDetectionMethods(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
+
 	if len(parsed) != 2 {
 		t.Errorf("Expected 2 methods, got %d", len(parsed))
 	}
@@ -333,6 +358,7 @@ func TestDetectionMethods(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error for empty string, got %v", err)
 	}
+
 	if len(parsed) != 1 || parsed[0] != DetectionMethodArtDupl {
 		t.Error("Expected default art-dupl method for empty string")
 	}
@@ -342,6 +368,7 @@ func TestDetectionMethods(t *testing.T) {
 	if !dms.Contains(DetectionMethodHash) {
 		t.Error("Expected Contains to find hash method")
 	}
+
 	if dms.Contains(DetectionMethod("invalid")) {
 		t.Error("Expected Contains to not find invalid method")
 	}
@@ -377,32 +404,38 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	t.Parallel()
 	// Test DetectionMethod JSON marshal/unmarshal
 	dm := DetectionMethodHash
+
 	data, err := dm.MarshalJSON()
 	if err != nil {
 		t.Errorf("Expected no error marshaling, got %v", err)
 	}
 
 	var parsedDM DetectionMethod
+
 	err = json.Unmarshal(data, &parsedDM)
 	if err != nil {
 		t.Errorf("Expected no error unmarshaling, got %v", err)
 	}
+
 	if parsedDM != dm {
 		t.Error("Expected parsed detection method to match original")
 	}
 
 	// Test OutputFormat JSON marshal/unmarshal
 	of := OutputFormatJSON
+
 	data, err = of.MarshalJSON()
 	if err != nil {
 		t.Errorf("Expected no error marshaling output format, got %v", err)
 	}
 
 	var parsedOF OutputFormat
+
 	err = json.Unmarshal(data, &parsedOF)
 	if err != nil {
 		t.Errorf("Expected no error unmarshaling output format, got %v", err)
 	}
+
 	if parsedOF != of {
 		t.Error("Expected parsed output format to match original")
 	}
@@ -491,7 +524,10 @@ func TestSemanticField(t *testing.T) {
 
 		// File value should be preserved since CLI has zero value
 		if merged.Semantic != true {
-			t.Errorf("Expected merged Semantic true (file value preserved), got %v", merged.Semantic)
+			t.Errorf(
+				"Expected merged Semantic true (file value preserved), got %v",
+				merged.Semantic,
+			)
 		}
 	})
 }

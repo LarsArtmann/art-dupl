@@ -9,11 +9,14 @@ import (
 
 func (m Match) String() string {
 	str := "(["
+
 	var strSb11 strings.Builder
 	for _, p := range m.Ps {
-		strSb11.WriteString(fmt.Sprintf("%d, ", p))
+		fmt.Fprintf(&strSb11, "%d, ", p)
 	}
+
 	str += strSb11.String()
+
 	return str[:len(str)-2] + fmt.Sprintf("], %d)", m.Len)
 }
 
@@ -21,13 +24,16 @@ func sliceCmp(sl1, sl2 []Pos) bool {
 	if len(sl1) != len(sl2) {
 		return false
 	}
+
 	sort.Sort(ByPos(sl1))
 	sort.Sort(ByPos(sl2))
+
 	for i := range sl1 {
 		if sl1[i] != sl2[i] {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -62,6 +68,7 @@ All work and no play makes Jack a dull boy$`, 4, []Match{{[]Pos{0, 43}, 42}}},
 	for _, tc := range testCases {
 		tree := New()
 		tree.Update(str2tok(tc.s)...)
+
 		ch := tree.FindDuplOver(tc.threshold)
 		for _, exp := range tc.matches {
 			act, ok := <-ch
@@ -71,6 +78,7 @@ All work and no play makes Jack a dull boy$`, 4, []Match{{[]Pos{0, 43}, 42}}},
 				t.Errorf("got %v, want %v", act, exp)
 			}
 		}
+
 		for act := range ch {
 			t.Errorf("beyond expected match %v for '%s'", act, tc.s)
 		}

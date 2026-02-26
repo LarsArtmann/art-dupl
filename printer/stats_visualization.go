@@ -13,21 +13,25 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	for r := range distribution {
 		ranges = append(ranges, r)
 	}
+
 	sort.Strings(ranges)
 
 	// Find max count for scaling bars
 	maxCount := 0
 	total := 0
+
 	for _, count := range distribution {
 		if count > maxCount {
 			maxCount = count
 		}
+
 		total += count
 	}
 
 	// Print distribution with bars
 	for _, r := range ranges {
 		count := distribution[r]
+
 		percentage := 0.0
 		if total > 0 {
 			percentage = float64(count) / float64(total) * 100
@@ -38,6 +42,7 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 		if maxCount > 0 {
 			barWidth = int(float64(count) / float64(maxCount) * 20)
 		}
+
 		bar := strings.Repeat("█", barWidth)
 
 		_, _ = fmt.Fprintf(w, "  %-15s: %4d clones [%s] %.1f%%\n", r, count, bar, percentage)
@@ -51,6 +56,7 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 		filename string
 		lines    int
 	}
+
 	files := make([]fileStat, 0, len(fileDuplication))
 	for filename, lines := range fileDuplication {
 		files = append(files, fileStat{filename, lines})

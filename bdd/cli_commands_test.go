@@ -22,7 +22,11 @@ import (
 // - Command-line interface behavior
 
 // assertCommandOutput is a helper to verify command output matches expected patterns.
-func assertCommandOutput(setup *testutil.BDDTestSetup, args []string, matchers ...types.GomegaMatcher) {
+func assertCommandOutput(
+	setup *testutil.BDDTestSetup,
+	args []string,
+	matchers ...types.GomegaMatcher,
+) {
 	output, err := setup.RunArtDupl(args...)
 	Expect(err).ToNot(HaveOccurred())
 
@@ -53,12 +57,25 @@ func setupBDDTest() (*testutil.BDDTestSetup, func()) {
 func getHelpOutput(setup *testutil.BDDTestSetup) string {
 	output, err := setup.RunArtDupl("--help")
 	Expect(err).ToNot(HaveOccurred())
+
 	return string(output)
 }
 
+// verifyHelpContent checks that help output contains at least one of the expected substrings
+func verifyHelpContent(setup *testutil.BDDTestSetup, substrings []string) {
+	outputStr := getHelpOutput(setup)
+	var expectations []types.GomegaMatcher
+	for _, substr := range substrings {
+		expectations = append(expectations, ContainSubstring(substr))
+	}
+	Expect(outputStr).To(SatisfyAny(expectations...))
+}
+
 var _ = Describe("Version Command", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -82,6 +99,7 @@ var _ = Describe("Version Command", func() {
 			output, err := setup.RunArtDupl("version")
 			// May error if version is a subcommand or show help
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -97,8 +115,10 @@ var _ = Describe("Version Command", func() {
 })
 
 var _ = Describe("Help Command", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -126,13 +146,7 @@ var _ = Describe("Help Command", func() {
 		})
 
 		It("should describe available commands", func() {
-			outputStr := getHelpOutput(setup)
-			// Should mention stats subcommand or Available Commands
-			Expect(outputStr).To(SatisfyAny(
-				ContainSubstring("stats"),
-				ContainSubstring("Commands:"),
-				ContainSubstring("Available"),
-			))
+			verifyHelpContent(setup, []string{"stats", "Commands:", "Available"})
 		})
 	})
 
@@ -161,8 +175,10 @@ var _ = Describe("Help Command", func() {
 })
 
 var _ = Describe("CLI Flag Validation", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -189,6 +205,7 @@ var _ = Describe("CLI Flag Validation", func() {
 			output, err := setup.RunArtDupl("--threshold", "not-a-number", setup.TmpDir)
 			// Should error or use default
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -196,21 +213,27 @@ var _ = Describe("CLI Flag Validation", func() {
 	Context("When using mutually exclusive flags", func() {
 		It("should handle multiple output formats gracefully", func() {
 			// Create test files
-			err := setup.CreateDuplicateFiles([]string{"fmt1.go", "fmt2.go"}, "package main\nfunc test() {}")
+			err := setup.CreateDuplicateFiles(
+				[]string{"fmt1.go", "fmt2.go"},
+				"package main\nfunc test() {}",
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Try using multiple output formats
 			output, err := setup.RunArtDupl("--json", "--html", "--plumbing", setup.TmpDir)
 			// May error or use priority
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
 })
 
 var _ = Describe("Verbose Flag Behavior", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -221,7 +244,8 @@ var _ = Describe("Verbose Flag Behavior", func() {
 	})
 
 	Context("When using verbose flags", func() {
-		DescribeTable("should work with various verbose flag formats",
+		DescribeTable(
+			"should work with various verbose flag formats",
 			func(funcName string, files []string, flags ...string) {
 				code := fmt.Sprintf(`package main
 func %s() {}`, funcName)
@@ -229,17 +253,47 @@ func %s() {}`, funcName)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(output).ToNot(BeNil())
 			},
-			Entry("single verbose flag", "verbose1", []string{"verbose1.go", "verbose2.go"}, "-v", "--threshold", "5"),
-			Entry("multiple verbose flags", "verbose2", []string{"verbose3.go", "verbose4.go"}, "-vv", "--threshold", "5"),
-			Entry("triple verbose flag", "verbose3", []string{"verbose5.go", "verbose6.go"}, "-vvv", "--threshold", "5"),
-			Entry("verbose long flag", "verbose4", []string{"verbose7.go", "verbose8.go"}, "--verbose", "--threshold", "5"),
+			Entry(
+				"single verbose flag",
+				"verbose1",
+				[]string{"verbose1.go", "verbose2.go"},
+				"-v",
+				"--threshold",
+				"5",
+			),
+			Entry(
+				"multiple verbose flags",
+				"verbose2",
+				[]string{"verbose3.go", "verbose4.go"},
+				"-vv",
+				"--threshold",
+				"5",
+			),
+			Entry(
+				"triple verbose flag",
+				"verbose3",
+				[]string{"verbose5.go", "verbose6.go"},
+				"-vvv",
+				"--threshold",
+				"5",
+			),
+			Entry(
+				"verbose long flag",
+				"verbose4",
+				[]string{"verbose7.go", "verbose8.go"},
+				"--verbose",
+				"--threshold",
+				"5",
+			),
 		)
 	})
 })
 
 var _ = Describe("CLI Error Handling", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -251,10 +305,7 @@ var _ = Describe("CLI Error Handling", func() {
 
 	Context("When no arguments provided", func() {
 		It("should handle empty directory gracefully", func() {
-			// Run on empty temp directory
-			output, err := setup.RunArtDupl("--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(output).ToNot(BeNil())
+			testutil.TestEmptyDirectory(setup, 10)
 		})
 	})
 
@@ -296,8 +347,10 @@ func multiDir() {}`
 })
 
 var _ = Describe("CLI Completion Commands", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -310,7 +363,6 @@ var _ = Describe("CLI Completion Commands", func() {
 	Context("When requesting shell completion", func() {
 		shells := []string{"bash", "zsh", "fish"}
 		for _, shell := range shells {
-			shell := shell // capture range variable
 			It(fmt.Sprintf("should provide %s completion", shell), func() {
 				output, err := setup.RunArtDupl("completion", shell)
 				// May or may not be available
@@ -342,8 +394,10 @@ var _ = Describe("CLI Completion Commands", func() {
 })
 
 var _ = Describe("CLI Documentation Quality", func() {
-	var setup *testutil.BDDTestSetup
-	var cleanup func()
+	var (
+		setup   *testutil.BDDTestSetup
+		cleanup func()
+	)
 
 	BeforeEach(func() {
 		setup, cleanup = setupBDDTest()
@@ -362,13 +416,7 @@ var _ = Describe("CLI Documentation Quality", func() {
 		})
 
 		It("should describe output formats in help", func() {
-			outputStr := getHelpOutput(setup)
-			// Should mention output formats
-			Expect(outputStr).To(SatisfyAny(
-				ContainSubstring("json"),
-				ContainSubstring("html"),
-				ContainSubstring("output"),
-			))
+			verifyHelpContent(setup, []string{"json", "html", "output"})
 		})
 
 		It("should describe sorting options in help", func() {

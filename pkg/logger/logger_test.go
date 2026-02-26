@@ -12,12 +12,15 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.Level != "info" {
 		t.Errorf("Expected level 'info', got '%s'", cfg.Level)
 	}
+
 	if cfg.Output == nil {
 		t.Error("Expected output to be non-nil")
 	}
+
 	if cfg.ReportCaller {
 		t.Error("Expected ReportCaller to be false")
 	}
+
 	if cfg.Prefix != "" {
 		t.Errorf("Expected empty prefix, got '%s'", cfg.Prefix)
 	}
@@ -29,6 +32,7 @@ func TestNewLogger_NilConfig(t *testing.T) {
 	if logger == nil {
 		t.Error("Expected logger to be non-nil")
 	}
+
 	if _, ok := logger.(*charmLogger); !ok {
 		t.Error("Expected *charmLogger type")
 	}
@@ -123,6 +127,7 @@ func TestCharmLogger_WithArgs(t *testing.T) {
 	if !strings.Contains(output, "test message") {
 		t.Errorf("Expected output to contain 'test message', got '%s'", output)
 	}
+
 	if !strings.Contains(output, "key") || !strings.Contains(output, "value") {
 		t.Errorf("Expected output to contain key/value, got '%s'", output)
 	}

@@ -297,7 +297,13 @@ func TestTodoDetector_Patterns(t *testing.T) {
 			matched := len(matches) > 0
 
 			if matched != tc.shouldMatch {
-				t.Errorf("Pattern %s on %q: matched=%v, want=%v", tc.patternName, tc.input, matched, tc.shouldMatch)
+				t.Errorf(
+					"Pattern %s on %q: matched=%v, want=%v",
+					tc.patternName,
+					tc.input,
+					matched,
+					tc.shouldMatch,
+				)
 			}
 		})
 	}
@@ -395,8 +401,11 @@ func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
 // TestMultiDetector_FindDuplOver_BothMethods tests with both detection methods.
 func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash},
+		Threshold: 15,
+		DetectionMethods: config.DetectionMethods{
+			config.DetectionMethodArtDupl,
+			config.DetectionMethodHash,
+		},
 	}
 
 	tree := suffixtree.New()
@@ -471,6 +480,7 @@ func TestTodoDetector_FindTodosInFile_RealFile(t *testing.T) {
 
 	// Create a test Go file with TODO comments
 	testFile := tmpDir + "/test_todos.go"
+
 	goCode := `package test
 
 // TODO: implement this feature
@@ -494,7 +504,8 @@ func DeadlineFunc() {}
 // Regular comment - no TODO
 func RegularFunc() {}
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -528,6 +539,7 @@ func TestTodoDetector_FindTodosInFile_WithTags(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/test_tags.go"
+
 	goCode := `package test
 
 // TODO(@user1,@user2): multi-tag TODO
@@ -536,7 +548,8 @@ func MultiTagFunc() {}
 // FIXME(2024-01-15): dated fixme
 func DatedFunc() {}
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -553,6 +566,7 @@ func DatedFunc() {}
 
 	// Find the TODO with tags
 	var foundMultiTag bool
+
 	for _, todo := range todos {
 		if todo.Type == "TODO" && len(todo.Tags) > 0 {
 			if len(todo.Tags) >= 2 {
@@ -571,6 +585,7 @@ func TestTodoDetector_FindTodosInFile_NoTodos(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/no_todos.go"
+
 	goCode := `package test
 
 // This is a regular comment
@@ -579,7 +594,8 @@ func RegularFunc() {}
 /* Another regular comment */
 func AnotherFunc() {}
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -615,6 +631,7 @@ func TestTodoDetector_FindTodosInFile_BlockComments(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/block_comments.go"
+
 	goCode := `package test
 
 /*
@@ -626,7 +643,8 @@ func BlockFunc() {}
 /* FIXME: block fixme */
 func BlockFixmeFunc() {}
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -647,8 +665,10 @@ func BlockFixmeFunc() {}
 func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue {
 	t.Helper()
 	tmpDir := t.TempDir()
+
 	testFile := tmpDir + "/" + filename
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -676,6 +696,7 @@ func LegacyFunc() {
 	}
 	_ = data
 }`
+
 	issues := runLegacyDetectionTest(t, "test_legacy.go", goCode)
 	if issues == nil {
 		t.Log("No legacy issues found (simplified detection)")
@@ -697,6 +718,7 @@ func ModernFunc() {
 	}
 	_ = data
 }`
+
 	issues := runLegacyDetectionTest(t, "no_legacy.go", goCode)
 	if issues == nil {
 		t.Log("No legacy issues in modern code (expected)")
@@ -708,9 +730,11 @@ func TestLegacyDetector_FindLegacyInFile_EmptyFile(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/empty.go"
+
 	goCode := `package test
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -731,11 +755,13 @@ func setupTodoTest(t *testing.T) (*TodoDetector, []*syntax.Node, string) {
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/test.go"
+
 	goCode := `package test
 // TODO: test
 func Test() {}
 `
-	if err := os.WriteFile(testFile, []byte(goCode), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}
 
@@ -750,6 +776,7 @@ func Test() {}
 // assertTodoMatches checks that the detector finds at least one TODO match.
 func assertTodoMatches(t *testing.T, detector *TodoDetector, nodes []*syntax.Node, errMsg string) {
 	t.Helper()
+
 	matches := detector.FindTodos(nodes)
 
 	matchCount := 0

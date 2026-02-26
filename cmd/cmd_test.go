@@ -15,6 +15,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// createTestNodes creates a test node slice with the specified filename and position
+func createTestNodes(filename string, pos, end int32) []*syntax.Node {
+	return []*syntax.Node{
+		{Filename: filename, Pos: pos, End: end},
+	}
+}
+
 const testDuplicateCode = `package test
 
 func DuplicateFunction() int {
@@ -34,9 +41,11 @@ func runOutputFormatTest(t *testing.T, formatFlag string) {
 	duplicateCode := testDuplicateCode
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
+
 	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
+
 	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
@@ -44,6 +53,7 @@ func runOutputFormatTest(t *testing.T, formatFlag string) {
 	cmd := NewRootCommand()
 	AddFlags(cmd)
 	cmd.SetArgs([]string{formatFlag, "--threshold", "10", tmpDir})
+
 	buf := &bytes.Buffer{}
 	cmd.SetOut(buf)
 	cmd.SetErr(buf)
@@ -63,15 +73,18 @@ func runStatsFormatTest(t *testing.T, format string) {
 	duplicateCode := testDuplicateCode
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
+
 	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
+
 	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
 	cmd := NewStatsCommand()
 	cmd.SetArgs([]string{"--format", format, "--threshold", "10", tmpDir})
+
 	buf := &bytes.Buffer{}
 	cmd.SetOut(buf)
 	cmd.SetErr(buf)
@@ -99,8 +112,11 @@ func TestDetectionMethodsToString(t *testing.T) {
 			expected: "art-dupl",
 		},
 		{
-			name:     "multiple methods",
-			methods:  config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash},
+			name: "multiple methods",
+			methods: config.DetectionMethods{
+				config.DetectionMethodArtDupl,
+				config.DetectionMethodHash,
+			},
 			expected: "art-dupl,hash",
 		},
 	}
@@ -168,6 +184,23 @@ func TestIsSourceFile(t *testing.T) {
 	}
 }
 
+// createTestCase creates a test case for the unique function.
+func createTestCase(name string, input [][]*syntax.Node, expected int) struct {
+	name     string
+	input    [][]*syntax.Node
+	expected int
+} {
+	return struct {
+		name     string
+		input    [][]*syntax.Node
+		expected int
+	}{
+		name:     name,
+		input:    input,
+		expected: expected,
+	}
+}
+
 func TestUnique(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -194,30 +227,14 @@ func TestUnique(t *testing.T) {
 			},
 			expected: 1,
 		},
-		{
-			name: "duplicate entries same position",
-			input: [][]*syntax.Node{
-				{
-					{Filename: "test.go", Pos: 1, End: 10},
-				},
-				{
-					{Filename: "test.go", Pos: 1, End: 10},
-				},
-			},
-			expected: 1,
-		},
-		{
-			name: "different positions",
-			input: [][]*syntax.Node{
-				{
-					{Filename: "test1.go", Pos: 1, End: 10},
-				},
-				{
-					{Filename: "test2.go", Pos: 1, End: 10},
-				},
-			},
-			expected: 2,
-		},
+		createTestCase("duplicate entries same position", [][]*syntax.Node{
+			createTestNodes("test.go", 1, 10),
+			createTestNodes("test.go", 1, 10),
+		}, 1),
+		createTestCase("different positions", [][]*syntax.Node{
+			createTestNodes("test1.go", 1, 10),
+			createTestNodes("test2.go", 1, 10),
+		}, 2),
 		{
 			name: "empty inner slice",
 			input: [][]*syntax.Node{
@@ -245,6 +262,7 @@ func TestVersionFunctions(t *testing.T) {
 	origVersion := Version
 	origCommit := Commit
 	origDate := Date
+
 	defer func() {
 		Version = origVersion
 		Commit = origCommit
@@ -254,6 +272,7 @@ func TestVersionFunctions(t *testing.T) {
 	t.Run("GetVersion with dev", func(t *testing.T) {
 		Version = "dev"
 		Commit = "unknown"
+
 		result := GetVersion()
 		if result != "dev" {
 			t.Errorf("GetVersion() = %q, want %q", result, "dev")
@@ -264,6 +283,7 @@ func TestVersionFunctions(t *testing.T) {
 		Version = "1.0.0"
 		Commit = "abcd1234efgh5678"
 		result := GetVersion()
+
 		expected := "1.0.0-abcd123"
 		if result != expected {
 			t.Errorf("GetVersion() = %q, want %q", result, expected)
@@ -272,6 +292,7 @@ func TestVersionFunctions(t *testing.T) {
 
 	t.Run("GetCommit", func(t *testing.T) {
 		Commit = "test123"
+
 		result := GetCommit()
 		if result != "test123" {
 			t.Errorf("GetCommit() = %q, want %q", result, "test123")
@@ -280,6 +301,7 @@ func TestVersionFunctions(t *testing.T) {
 
 	t.Run("GetBuildDate", func(t *testing.T) {
 		Date = "2024-01-01"
+
 		result := GetBuildDate()
 		if result != "2024-01-01" {
 			t.Errorf("GetBuildDate() = %q, want %q", result, "2024-01-01")
@@ -317,6 +339,7 @@ func TestCreatePrinter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			readFile := func(filename string) ([]byte, error) { return nil, nil }
 
 			fn := createPrinter(tt.format, 15)
@@ -333,6 +356,7 @@ func TestCollectMatches(t *testing.T) {
 	t.Run("empty channel", func(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
+
 		result := collectMatches(ch)
 		if len(result) != 0 {
 			t.Errorf("collectMatches() returned %d matches, want 0", len(result))
@@ -345,7 +369,9 @@ func TestCollectMatches(t *testing.T) {
 			Hash:  "abc123",
 			Frags: [][]*syntax.Node{{{Filename: "test.go", Pos: 1, End: 10}}},
 		}
+
 		close(ch)
+
 		result := collectMatches(ch)
 		if len(result) != 1 {
 			t.Errorf("collectMatches() returned %d matches, want 1", len(result))
@@ -355,9 +381,13 @@ func TestCollectMatches(t *testing.T) {
 	t.Run("multiple matches", func(t *testing.T) {
 		ch := make(chan syntax.Match, 3)
 		ch <- syntax.Match{Hash: "hash1", Frags: [][]*syntax.Node{{{Filename: "test1.go"}}}}
+
 		ch <- syntax.Match{Hash: "hash2", Frags: [][]*syntax.Node{{{Filename: "test2.go"}}}}
+
 		ch <- syntax.Match{Hash: "hash3", Frags: [][]*syntax.Node{{{Filename: "test3.go"}}}}
+
 		close(ch)
+
 		result := collectMatches(ch)
 		if len(result) != 3 {
 			t.Errorf("collectMatches() returned %d matches, want 3", len(result))
@@ -376,7 +406,16 @@ func TestWriteFormatFile(t *testing.T) {
 		format := config.OutputFormatText
 		sortByEnum := printer.SortBySize
 
-		err := writeFormatFile(context.TODO(), cfg, matches, parseStats, format, filename, sortByEnum, "art-dupl")
+		err := writeFormatFile(
+			context.TODO(),
+			cfg,
+			matches,
+			parseStats,
+			format,
+			filename,
+			sortByEnum,
+			"art-dupl",
+		)
 		if err != nil {
 			t.Fatalf("writeFormatFile() error = %v", err)
 		}
@@ -392,16 +431,19 @@ type mockPrinter struct {
 
 func (m *mockPrinter) PrintHeader() error {
 	m.headerCalled = true
+
 	return nil
 }
 
 func (m *mockPrinter) PrintFooter() error {
 	m.footerCalled = true
+
 	return nil
 }
 
 func (m *mockPrinter) PrintClones(_ [][]*syntax.Node, _ ...printer.SortBy) error {
 	m.clonesCalled = true
+
 	return nil
 }
 
@@ -558,6 +600,7 @@ func TestPrintVersion(t *testing.T) {
 	origVersion := Version
 	origCommit := Commit
 	origDate := Date
+
 	defer func() {
 		Version = origVersion
 		Commit = origCommit
@@ -583,6 +626,7 @@ func TestCrawlPaths(t *testing.T) {
 		for range result {
 			count++
 		}
+
 		if count != 0 {
 			t.Errorf("crawlPaths() = %d paths, want 0", count)
 		}
@@ -590,8 +634,10 @@ func TestCrawlPaths(t *testing.T) {
 
 	t.Run("single file path", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		tmpFile := filepath.Join(tmpDir, "test.go")
-		if err := os.WriteFile(tmpFile, []byte("package main"), 0o600); err != nil {
+		err := os.WriteFile(tmpFile, []byte("package main"), 0o600)
+		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
@@ -604,6 +650,7 @@ func TestCrawlPaths(t *testing.T) {
 		for range result {
 			count++
 		}
+
 		if count != 1 {
 			t.Errorf("crawlPaths() = %d paths, want 1", count)
 		}
@@ -623,6 +670,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 
 	t.Run("with filter", func(t *testing.T) {
 		f := filter.NewFilter(false, nil)
+
 		ch := filesFeedWithOptions([]string{}, false, f, false)
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
@@ -643,9 +691,11 @@ func TestPrintDupls(t *testing.T) {
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
+
 		if !mock.headerCalled {
 			t.Error("Expected PrintHeader to be called")
 		}
+
 		if !mock.footerCalled {
 			t.Error("Expected PrintFooter to be called")
 		}
@@ -653,20 +703,23 @@ func TestPrintDupls(t *testing.T) {
 
 	t.Run("with matches", func(t *testing.T) {
 		mock := &mockPrinter{}
+
 		ch := make(chan syntax.Match, 1)
 		ch <- syntax.Match{
 			Hash: "abc123",
 			Frags: [][]*syntax.Node{
-				{{Filename: "test1.go", Pos: 1, End: 10}},
-				{{Filename: "test2.go", Pos: 1, End: 10}},
+				createTestNodes("test1.go", 1, 10),
+				createTestNodes("test2.go", 1, 10),
 			},
 		}
+
 		close(ch)
 
 		err := printDupls(mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
+
 		if !mock.clonesCalled {
 			t.Error("Expected PrintClones to be called")
 		}
@@ -676,6 +729,7 @@ func TestPrintDupls(t *testing.T) {
 func TestSetupFilter(t *testing.T) {
 	t.Run("empty config returns filter", func(t *testing.T) {
 		cfg := &config.Config{}
+
 		f := setupFilter(cfg)
 		if f == nil {
 			t.Error("setupFilter() returned nil")
@@ -684,6 +738,7 @@ func TestSetupFilter(t *testing.T) {
 
 	t.Run("with filter generated", func(t *testing.T) {
 		cfg := &config.Config{FilterGenerated: true}
+
 		f := setupFilter(cfg)
 		if f == nil {
 			t.Error("setupFilter() returned nil")
@@ -692,6 +747,7 @@ func TestSetupFilter(t *testing.T) {
 
 	t.Run("with include sqlc", func(t *testing.T) {
 		cfg := &config.Config{IncludeSQLC: true}
+
 		f := setupFilter(cfg)
 		if f == nil {
 			t.Error("setupFilter() returned nil")
@@ -700,6 +756,7 @@ func TestSetupFilter(t *testing.T) {
 
 	t.Run("with include templ", func(t *testing.T) {
 		cfg := &config.Config{IncludeTempl: true}
+
 		f := setupFilter(cfg)
 		if f == nil {
 			t.Error("setupFilter() returned nil")
@@ -717,9 +774,11 @@ func TestRunCmd_Integration(t *testing.T) {
 		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
+
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
+
 		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
@@ -727,6 +786,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -739,6 +799,7 @@ func TestRunCmd_Integration(t *testing.T) {
 
 	t.Run("invalid sort option returns error", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -747,6 +808,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--sort", "invalid", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -763,6 +825,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--detection-methods", "invalid-method", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -787,6 +850,7 @@ func TestRunCmd_Integration(t *testing.T) {
 
 	t.Run("verbose output", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -795,6 +859,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -807,10 +872,12 @@ func TestRunCmd_Integration(t *testing.T) {
 
 	t.Run("with vendor flag", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		vendorDir := filepath.Join(tmpDir, "vendor")
 		if err := os.MkdirAll(vendorDir, 0o750); err != nil {
 			t.Fatalf("Failed to create vendor dir: %v", err)
 		}
+
 		file1 := filepath.Join(vendorDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -819,6 +886,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--vendor", "--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -837,15 +905,18 @@ func TestRunStats_Integration(t *testing.T) {
 		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
+
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
+
 		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
 		cmd := NewStatsCommand()
 		cmd.SetArgs([]string{"--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -869,6 +940,7 @@ func TestRunStats_Integration(t *testing.T) {
 
 		cmd := NewStatsCommand()
 		cmd.SetArgs([]string{"--format", "invalid", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -881,6 +953,7 @@ func TestRunStats_Integration(t *testing.T) {
 
 	t.Run("stats with verbose", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -888,6 +961,7 @@ func TestRunStats_Integration(t *testing.T) {
 
 		cmd := NewStatsCommand()
 		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -907,9 +981,11 @@ func TestRunAllModes_Integration(t *testing.T) {
 		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
+
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
+
 		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
@@ -917,6 +993,7 @@ func TestRunAllModes_Integration(t *testing.T) {
 		cmd := NewRootCommand()
 		AddFlags(cmd)
 		cmd.SetArgs([]string{"--all", "--output-dir", outputDir, "--threshold", "10", tmpDir})
+
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
 		cmd.SetErr(buf)
@@ -944,9 +1021,11 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		duplicateCode := testDuplicateCode
 		file1 := filepath.Join(tmpDir, "file1.go")
 		file2 := filepath.Join(tmpDir, "file2.go")
+
 		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
+
 		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
@@ -959,7 +1038,13 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		duplChan, parseStats, filterStats, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
+
+		duplChan, parseStats, filterStats, err := executeAnalysis(
+			ctx,
+			cfg,
+			[]string{tmpDir},
+			config.OutputFormatText,
+		)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}
@@ -980,6 +1065,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 	t.Run("analysis with profile enabled", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -994,6 +1080,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		}
 
 		ctx := context.Background()
+
 		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
@@ -1015,6 +1102,7 @@ func Example() int {
 	return 42
 }
 `
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte(code), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -1026,7 +1114,14 @@ func Example() int {
 		}
 
 		ctx := context.Background()
-		tree, data, parseStats, err := buildSuffixTree(ctx, []string{tmpDir}, cfg, nil, config.OutputFormatText)
+
+		tree, data, parseStats, err := buildSuffixTree(
+			ctx,
+			[]string{tmpDir},
+			cfg,
+			nil,
+			config.OutputFormatText,
+		)
 		if err != nil {
 			t.Fatalf("buildSuffixTree() error = %v", err)
 		}
@@ -1046,6 +1141,7 @@ func Example() int {
 
 	t.Run("verbose output", func(t *testing.T) {
 		tmpDir := t.TempDir()
+
 		file1 := filepath.Join(tmpDir, "file1.go")
 		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
@@ -1057,6 +1153,7 @@ func Example() int {
 		}
 
 		ctx := context.Background()
+
 		tree, _, _, err := buildSuffixTree(ctx, []string{tmpDir}, cfg, nil, config.OutputFormatText)
 		if err != nil {
 			t.Fatalf("buildSuffixTree() error = %v", err)

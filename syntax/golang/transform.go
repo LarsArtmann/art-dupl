@@ -8,11 +8,17 @@ import (
 )
 
 // trans transforms given golang AST to uniform tree structure.
-func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,cyclop,funlen,maintidx // High complexity is inherent to AST transformation
+func (t *transformer) trans(
+	node ast.Node,
+) (o *syntax.Node) { //nolint:gocyclo,cyclop,funlen,maintidx // High complexity is inherent to AST transformation
 	o = syntax.NewNode()
 	o.Filename = t.filename
 	st, end := node.Pos(), node.End()
-	o.Pos, o.End = int32(t.fileset.File(st).Offset(st)), int32(t.fileset.File(end).Offset(end)) // #nosec G115 -- File offsets bounded by int32 in practice
+	o.Pos, o.End = int32(
+		t.fileset.File(st).Offset(st),
+	), int32(
+		t.fileset.File(end).Offset(end),
+	) // #nosec G115 -- File offsets bounded by int32 in practice
 
 	switch n := node.(type) {
 	case *ast.ArrayType:
@@ -50,6 +56,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 	case *ast.CallExpr:
 		o.Type = CallExpr
 		o.AddChildren(t.trans(n.Fun))
+
 		for _, arg := range n.Args {
 			o.AddChildren(t.trans(arg))
 		}
@@ -59,6 +66,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		for _, e := range n.List {
 			o.AddChildren(t.trans(e))
 		}
+
 		for _, stmt := range n.Body {
 			o.AddChildren(t.trans(stmt))
 		}
@@ -70,6 +78,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 	case *ast.CommClause:
 		o.Type = CommClause
 		t.addWithNilCheck(o, n.Comm)
+
 		for _, stmt := range n.Body {
 			o.AddChildren(t.trans(stmt))
 		}
@@ -77,6 +86,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 	case *ast.CompositeLit:
 		o.Type = CompositeLit
 		t.addWithNilCheck(o, n.Type)
+
 		for _, e := range n.Elts {
 			o.AddChildren(t.trans(e))
 		}
@@ -105,6 +115,7 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		for _, name := range n.Names {
 			o.AddChildren(t.trans(name))
 		}
+
 		o.AddChildren(t.trans(n.Type))
 
 	case *ast.FieldList:
@@ -115,11 +126,13 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 
 	case *ast.File:
 		o.Type = File
+
 		for _, decl := range n.Decls {
 			if genDecl, ok := decl.(*ast.GenDecl); ok && genDecl.Tok == token.IMPORT {
 				// skip import declarations
 				continue
 			}
+
 			o.AddChildren(t.trans(decl))
 		}
 
@@ -267,7 +280,9 @@ func (t *transformer) trans(node ast.Node) (o *syntax.Node) { //nolint:gocyclo,c
 		for _, name := range n.Names {
 			o.AddChildren(t.trans(name))
 		}
+
 		t.addWithNilCheck(o, n.Type)
+
 		for _, val := range n.Values {
 			o.AddChildren(t.trans(val))
 		}
@@ -298,6 +313,7 @@ func extractReceiverTypeName(recv *ast.FieldList) string {
 		if ident, ok := starExpr.X.(*ast.Ident); ok {
 			return ident.Name
 		}
+
 		return ""
 	}
 

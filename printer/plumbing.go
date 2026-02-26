@@ -34,7 +34,9 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	if err != nil {
 		return err
 	}
+
 	sort.Sort(byNameAndLine(clones))
+
 	return writeCloneLines(p.w, clones, "%s:%d-%d")
 }
 
@@ -48,5 +50,6 @@ func (p *plumbing) OutputPlumbing(threshold int, sortBy SortBy) error {
 
 	// For now, just indicate the sorting criteria used
 	_, _ = fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy.String())
+
 	return nil
 }

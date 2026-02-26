@@ -72,6 +72,7 @@ func TestExamplesTypes(t *testing.T) {
 		if err == nil {
 			t.Error("Error variable should not be nil")
 		}
+
 		if err.Error() == "" {
 			t.Error("Error message should not be empty")
 		}
@@ -87,9 +88,11 @@ func TestExamplesTypes(t *testing.T) {
 	if result.CloneGroups == nil {
 		t.Error("Clone groups should not be nil")
 	}
+
 	if result.Summary == nil {
 		t.Error("Summary should not be nil")
 	}
+
 	if result.Metadata == nil {
 		t.Error("Metadata should not be nil")
 	}
@@ -105,12 +108,15 @@ func TestExamplesTypes(t *testing.T) {
 	if cloneGroup.Hash == "" {
 		t.Error("Clone group should have hash")
 	}
+
 	if len(cloneGroup.Clones) == 0 {
 		t.Error("Clone group should have clones")
 	}
+
 	if cloneGroup.Size <= 0 {
 		t.Error("Clone group size should be positive")
 	}
+
 	if cloneGroup.Method == "" {
 		t.Error("Clone group should have method")
 	}
@@ -129,12 +135,15 @@ func TestExamplesTypes(t *testing.T) {
 	if clone.Filename == "" {
 		t.Error("Clone should have filename")
 	}
+
 	if clone.StartLine <= 0 {
 		t.Error("Start line should be positive")
 	}
+
 	if clone.EndLine <= clone.StartLine {
 		t.Error("End line should be after start line")
 	}
+
 	if clone.Size <= 0 {
 		t.Error("Clone size should be positive")
 	}
@@ -152,6 +161,7 @@ func TestExamplesTypes(t *testing.T) {
 	if summary.TotalFiles <= 0 {
 		t.Error("Total files should be positive")
 	}
+
 	if len(summary.MethodsUsed) == 0 {
 		t.Error("Methods used should not be empty")
 	}
@@ -166,9 +176,11 @@ func TestExamplesTypes(t *testing.T) {
 	if metadata.Version == "" {
 		t.Error("Version should not be empty")
 	}
+
 	if metadata.ConfigHash == "" {
 		t.Error("Config hash should not be empty")
 	}
+
 	if metadata.Toolchain == "" {
 		t.Error("Toolchain should not be empty")
 	}
@@ -186,6 +198,7 @@ func TestExamplesTypes(t *testing.T) {
 	if progress.Stage == "" {
 		t.Error("Progress stage should not be empty")
 	}
+
 	if progress.Percentage < 0 || progress.Percentage > 100 {
 		t.Errorf("Progress percentage should be between 0-100, got %f", progress.Percentage)
 	}
@@ -198,20 +211,25 @@ func TestExamplesDetector(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to create detector with nil options: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
+
 	_ = detector.Close()
 
 	// Test detector creation with default options
 	opts := artdupl.DefaultOptions()
+
 	detector, err = artdupl.NewDetector(opts)
 	if err != nil {
 		t.Errorf("Failed to create detector with default options: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
+
 	_ = detector.Close()
 
 	// Test detector creation with custom options
@@ -229,9 +247,11 @@ func TestExamplesDetector(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to create detector with custom options: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
+
 	_ = detector.Close()
 }
 
@@ -255,6 +275,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	if err != nil {
 		t.Errorf("File reader failed: %v", err)
 	}
+
 	if string(data) != "test content" {
 		t.Error("File reader returned wrong content")
 	}
@@ -265,6 +286,7 @@ func TestExamplesInterfaces(t *testing.T) {
 		if progress.Stage == "" {
 			t.Error("Progress stage should not be empty")
 		}
+
 		return nil
 	}
 
@@ -275,9 +297,11 @@ func TestExamplesInterfaces(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to create detector with progress callback: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
+
 	_ = detector.Close()
 }
 

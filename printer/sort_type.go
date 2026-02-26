@@ -23,7 +23,10 @@ func ParseSortBy(value string) (SortBy, error) {
 	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
 		return sortBy, nil
 	default:
-		return "", fmt.Errorf("invalid sort criteria '%s': must be one of (size|occurrence|hash|total-tokens)", value)
+		return "", fmt.Errorf(
+			"invalid sort criteria '%s': must be one of (size|occurrence|hash|total-tokens)",
+			value,
+		)
 	}
 }
 

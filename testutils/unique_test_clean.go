@@ -33,7 +33,11 @@ func TestGenerateRandomSuffix_Clean(t *testing.T) {
 		// Should be all lowercase letters a-z
 		for _, char := range suffix {
 			if char < 'a' || char > 'z' {
-				t.Errorf("Suffix should be lowercase letters a-z, got '%s' with invalid char '%c'", suffix, char)
+				t.Errorf(
+					"Suffix should be lowercase letters a-z, got '%s' with invalid char '%c'",
+					suffix,
+					char,
+				)
 			}
 		}
 	}
@@ -55,6 +59,7 @@ func TestUniqueFunction_Clean(t *testing.T) {
 // testUniquenessHelper tests that UniqueTestHelper generates unique strings.
 func testUniquenessHelper(t *testing.T, count int) {
 	t.Helper()
+
 	uniqueSet := make(map[string]bool)
 
 	for range count {
@@ -63,6 +68,7 @@ func testUniquenessHelper(t *testing.T, count int) {
 		if uniqueSet[str] {
 			t.Errorf("Duplicate found: %s", str)
 		}
+
 		uniqueSet[str] = true
 	}
 
@@ -81,11 +87,15 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 	numGoroutines := 3
 	numPerGoroutine := 5
 
-	var wg sync.WaitGroup
-	var mu sync.Mutex
+	var (
+		wg sync.WaitGroup
+		mu sync.Mutex
+	)
+
 	allStrings := make([]string, 0, numGoroutines*numPerGoroutine)
 
 	wg.Add(numGoroutines)
+
 	for range numGoroutines {
 		go func() {
 			defer wg.Done()
@@ -96,6 +106,7 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 			}
 
 			mu.Lock()
+
 			allStrings = append(allStrings, localStrings...)
 			mu.Unlock()
 		}()
@@ -109,6 +120,7 @@ func TestUniqueness_Concurrent_Clean(t *testing.T) {
 		if uniqueSet[s] {
 			t.Errorf("Duplicate found: %s", s)
 		}
+
 		uniqueSet[s] = true
 	}
 

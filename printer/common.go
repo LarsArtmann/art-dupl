@@ -27,6 +27,7 @@ func (c byNameAndLine) Less(i, j int) bool {
 	if c[i].filename == c[j].filename {
 		return c[i].lineStart < c[j].lineStart
 	}
+
 	return c[i].filename < c[j].filename
 }
 
@@ -36,23 +37,28 @@ func findLineBeg(file []byte, index int) int {
 			return i + 1
 		}
 	}
+
 	return 0
 }
 
 func extractContent(fileInfo *FileInfo, nstart, nend *syntax.Node) []byte {
 	var content []byte
+
 	start := findLineBeg(fileInfo.Content, int(nstart.Pos))
 
 	fileLen := len(fileInfo.Content)
 	if start > fileLen {
 		start = fileLen
 	}
+
 	startPos := min(int(nstart.Pos), fileLen)
 	endPos := min(int(nend.End), fileLen)
 
 	if startPos < endPos {
 		if start < startPos {
-			content = append(toWhitespace(fileInfo.Content[start:startPos]), fileInfo.Content[startPos:endPos]...)
+			content = append(
+				toWhitespace(fileInfo.Content[start:startPos]),
+				fileInfo.Content[startPos:endPos]...)
 		} else {
 			content = fileInfo.Content[startPos:endPos]
 		}
@@ -63,6 +69,7 @@ func extractContent(fileInfo *FileInfo, nstart, nend *syntax.Node) []byte {
 
 func toWhitespace(str []byte) []byte {
 	var out []byte
+
 	for _, c := range bytes.Runes(str) {
 		if c == '\t' {
 			out = append(out, '\t')
@@ -70,12 +77,15 @@ func toWhitespace(str []byte) []byte {
 			out = append(out, ' ')
 		}
 	}
+
 	return out
 }
 
 func deindent(block []byte) []byte {
 	const maxVal = 99
+
 	min := maxVal
+
 	re := regexp.MustCompile(`(^|\n)(\t*)\S`)
 	for _, line := range re.FindAllSubmatch(block, -1) {
 		indent := line[2]
@@ -83,10 +93,13 @@ func deindent(block []byte) []byte {
 			min = len(indent)
 		}
 	}
+
 	if min == 0 || min == maxVal {
 		return block
 	}
+
 	block = block[min:]
+
 Loop:
 	for i := 0; i < len(block); i++ {
 		if block[i] == '\n' && i != len(block)-1 {
@@ -95,11 +108,13 @@ Loop:
 					continue Loop
 				}
 			}
+
 			if i+min+1 <= len(block) {
 				block = append(block[:i+1], block[i+1+min:]...)
 			}
 		}
 	}
+
 	return block
 }
 
@@ -113,9 +128,13 @@ func formatCloneLine(filename string, lineStart, lineEnd int, formatStr string) 
 // formatStr uses %s for filename, %d for lineStart, %d for lineEnd.
 func writeCloneLines(w io.Writer, clones []clone, formatStr string) error {
 	for _, cl := range clones {
-		if _, err := fmt.Fprintln(w, formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, formatStr)); err != nil {
+		if _, err := fmt.Fprintln(
+			w,
+			formatCloneLine(cl.filename, cl.lineStart, cl.lineEnd, formatStr),
+		); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }

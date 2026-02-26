@@ -12,9 +12,15 @@ func isValidStringType[T ~string](val T, validValues map[T]bool) bool {
 }
 
 // unmarshalStringType unmarshals JSON into a string type with validation.
-func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string) (T, error) {
+func unmarshalStringType[T ~string](
+	data []byte,
+	isValid func(T) bool,
+	defaultVal T,
+	typeName string,
+) (T, error) {
 	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
+	err := json.Unmarshal(data, &str)
+	if err != nil {
 		return defaultVal, fmt.Errorf("unmarshaling %s: %w", typeName, err)
 	}
 
@@ -27,12 +33,20 @@ func unmarshalStringType[T ~string](data []byte, isValid func(T) bool, defaultVa
 }
 
 // unmarshalStringTypeToPointer unmarshals JSON into a pointer to a string type with validation.
-func unmarshalStringTypeToPointer[T ~string](data []byte, isValid func(T) bool, defaultVal T, typeName string, target *T) error {
+func unmarshalStringTypeToPointer[T ~string](
+	data []byte,
+	isValid func(T) bool,
+	defaultVal T,
+	typeName string,
+	target *T,
+) error {
 	val, err := unmarshalStringType[T](data, isValid, defaultVal, typeName)
 	if err != nil {
 		return err
 	}
+
 	*target = val
+
 	return nil
 }
 
@@ -44,10 +58,12 @@ func marshalStringType[T ~string](val T, isValid func(T) bool, typeName string) 
 		// This handles zero values that should be omitted from JSON output
 		return []byte("null"), nil
 	}
+
 	data, err := json.Marshal(string(val))
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal %s: %w", typeName, err)
 	}
+
 	return data, nil
 }
 
@@ -85,7 +101,11 @@ func (dm DetectionMethod) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler.
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
-	return marshalStringType(dm, func(s DetectionMethod) bool { return s.IsValid() }, "detection method")
+	return marshalStringType(
+		dm,
+		func(s DetectionMethod) bool { return s.IsValid() },
+		"detection method",
+	)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -217,6 +237,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 	}
 
 	methods := strings.Split(methodsStr, ",")
+
 	var result []DetectionMethod
 
 	for _, method := range methods {
@@ -235,7 +256,9 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 
 	// Remove duplicates while preserving order
 	seen := make(map[DetectionMethod]bool)
+
 	var unique []DetectionMethod
+
 	for _, m := range result {
 		if !seen[m] {
 			seen[m] = true
@@ -253,6 +276,7 @@ func ValidateDetectionMethods(methods []DetectionMethod) error {
 			return fmt.Errorf("invalid detection method: %s", method)
 		}
 	}
+
 	return nil
 }
 

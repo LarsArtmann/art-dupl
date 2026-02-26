@@ -52,6 +52,7 @@ func StartProfile() ProfileResult {
 	p := Profile()
 	p.Timestamp = time.Now()
 	p.Duration = 0
+
 	return p
 }
 
@@ -59,6 +60,7 @@ func StartProfile() ProfileResult {
 func EndProfile(start ProfileResult) ProfileResult {
 	end := Profile()
 	end.Duration = time.Since(start.Timestamp)
+
 	return end
 }
 
@@ -66,6 +68,7 @@ func EndProfile(start ProfileResult) ProfileResult {
 func ProfileWithDuration(duration time.Duration) ProfileResult {
 	p := Profile()
 	p.Duration = duration
+
 	return p
 }
 
@@ -96,9 +99,15 @@ func PrintProfileResult(result ProfileResult) {
 	fmt.Fprintln(os.Stderr, "Garbage Collection:")
 	fmt.Fprintf(os.Stderr, "  GC Cycles:          %8d\n", m.NumGC)
 	fmt.Fprintf(os.Stderr, "  Total Pause Time:    %8.2f ms\n", float64(m.PauseTotalNs)/1000000)
+
 	if m.NumGC > 0 {
-		fmt.Fprintf(os.Stderr, "  Avg Pause/Cycle:    %8.2f ms\n", float64(m.PauseTotalNs)/float64(m.NumGC)/1000000)
+		fmt.Fprintf(
+			os.Stderr,
+			"  Avg Pause/Cycle:    %8.2f ms\n",
+			float64(m.PauseTotalNs)/float64(m.NumGC)/1000000,
+		)
 	}
+
 	fmt.Fprintln(os.Stderr)
 
 	fmt.Fprintln(os.Stderr, "Concurrency:")

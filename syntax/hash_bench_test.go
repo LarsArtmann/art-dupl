@@ -18,13 +18,17 @@ func GenerateNodes(count int) []*Node {
 			End:      int32(i + 1),
 		}
 	}
+
 	return nodes
 }
 
 func BenchmarkHashSeqSmall(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(10)
+
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeq(nodes)
 	}
@@ -32,8 +36,11 @@ func BenchmarkHashSeqSmall(b *testing.B) {
 
 func BenchmarkHashSeqMedium(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(1000)
+
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeq(nodes)
 	}
@@ -41,8 +48,11 @@ func BenchmarkHashSeqMedium(b *testing.B) {
 
 func BenchmarkHashSeqLarge(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(10000)
+
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeq(nodes)
 	}
@@ -50,8 +60,11 @@ func BenchmarkHashSeqLarge(b *testing.B) {
 
 func BenchmarkHashSeqVeryLarge(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(100000)
+
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeq(nodes)
 	}
@@ -60,10 +73,12 @@ func BenchmarkHashSeqVeryLarge(b *testing.B) {
 // BenchmarkHashSeqFallback benchmarks the fallback (non-SIMD) implementation.
 func BenchmarkHashSeqFallback(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(10000)
 	buf := make([]byte, len(nodes))
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeqFallback(nodes, buf)
 	}
@@ -72,6 +87,7 @@ func BenchmarkHashSeqFallback(b *testing.B) {
 // BenchmarkBatchHash benchmarks batch hashing of multiple sequences.
 func BenchmarkBatchHash(b *testing.B) {
 	b.ReportAllocs()
+
 	batchSizes := []int{10, 100, 1000}
 
 	for _, batchSize := range batchSizes {
@@ -82,6 +98,7 @@ func BenchmarkBatchHash(b *testing.B) {
 			}
 
 			b.ResetTimer()
+
 			for b.Loop() {
 				BatchHash(sequences)
 			}
@@ -92,6 +109,7 @@ func BenchmarkBatchHash(b *testing.B) {
 // BenchmarkHashSeqWithConfig benchmarks hashSeq with custom configuration.
 func BenchmarkHashSeqWithConfig(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(10000)
 	config := HashConfig{
 		UseSIMD:   false,
@@ -99,6 +117,7 @@ func BenchmarkHashSeqWithConfig(b *testing.B) {
 	}
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		HashSeqWithConfig(nodes, config)
 	}
@@ -107,6 +126,7 @@ func BenchmarkHashSeqWithConfig(b *testing.B) {
 // BenchmarkHashSeqParallel benchmarks parallel hashing.
 func BenchmarkHashSeqParallel(b *testing.B) {
 	b.ReportAllocs()
+
 	sizes := []int{1000, 10000, 100000}
 
 	for _, size := range sizes {
@@ -126,6 +146,7 @@ func BenchmarkHashSeqParallel(b *testing.B) {
 // BenchmarkSerialize benchmarks the Serialize function.
 func BenchmarkSerialize(b *testing.B) {
 	b.ReportAllocs()
+
 	sizes := []int{10, 100, 1000, 10000}
 
 	for _, size := range sizes {
@@ -136,6 +157,7 @@ func BenchmarkSerialize(b *testing.B) {
 			root.AddChildren(nodes...)
 
 			b.ResetTimer()
+
 			for b.Loop() {
 				Serialize(root)
 			}
@@ -158,6 +180,7 @@ func BenchmarkFindSyntaxUnits(b *testing.B) {
 	match.Frags[1] = data[500:600]
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		// This will be different in actual usage, but benchmarks the pattern
 		FindSyntaxUnits(data, suffixtree.Match{
@@ -170,9 +193,11 @@ func BenchmarkFindSyntaxUnits(b *testing.B) {
 // BenchmarkMemoryPool benchmarks the memory pool efficiency.
 func BenchmarkMemoryPool(b *testing.B) {
 	b.ReportAllocs()
+
 	nodes := GenerateNodes(10000)
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		hashSeq(nodes)
 		hashSeq(nodes)

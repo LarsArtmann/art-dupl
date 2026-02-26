@@ -48,6 +48,7 @@ func encodeSemanticType(baseType int32, identifierName string) int32 {
 	}
 
 	nameHash := hashIdentifierFast(identifierName)
+
 	return (nameHash << 8) | (baseType & 0xFF)
 }
 
@@ -57,6 +58,7 @@ func encodeSemanticTypeHash(baseType, nameHash int32) int32 {
 	if !SemanticHashEnabled || nameHash == 0 {
 		return baseType
 	}
+
 	return (nameHash << 8) | (baseType & 0xFF)
 }
 
@@ -77,6 +79,7 @@ func combineIdentifierHashes(hash1, hash2 int32) int32 {
 	if hash1 == 0 {
 		return hash2
 	}
+
 	if hash2 == 0 {
 		return hash1
 	}
@@ -92,6 +95,7 @@ func encodeSemanticTypeMulti(baseType int32, identifiers ...string) int32 {
 	}
 
 	var combinedHash int32
+
 	for _, id := range identifiers {
 		if id != "" {
 			hash := hashIdentifierFast(id)

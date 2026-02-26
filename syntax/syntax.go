@@ -86,12 +86,15 @@ type Match struct {
 func Serialize(n *Node) []*Node {
 	stream := make([]*Node, 0, 10)
 	serial(n, &stream)
+
 	return stream
 }
 
 func serial(n *Node, stream *[]*Node) int {
 	*stream = append(*stream, n)
+
 	var count int
+
 	for i, child := range n.Children {
 		// To avoid "goroutine stack exceeds" with gigantic slices (Composite Literals).
 		if i > maxChildrenSerial {
@@ -100,7 +103,9 @@ func serial(n *Node, stream *[]*Node) int {
 
 		count += serial(child, stream)
 	}
+
 	n.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildrenSerial
+
 	return int(n.Owns) + 1
 }
 
@@ -120,6 +125,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
 		return Match{}
 	}
+
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
 	indexes := getUnitsIndexes(firstSeq, threshold)
 
@@ -136,6 +142,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 			if pos >= len(data) {
 				// Position out of bounds, remove this index
 				indexes = indexes[:len(indexes)-1]
+
 				break
 			}
 
@@ -144,10 +151,12 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 				// Different ownership structure means different tree shapes
 				// Remove the problematic index to ensure only complete matches
 				indexes = indexes[:len(indexes)-1]
+
 				break
 			}
 		}
 	}
+
 	if len(indexes) == 0 || isCyclic(indexes, firstSeq) || spansMultipleFiles(indexes, firstSeq) {
 		return Match{}
 	}
@@ -162,12 +171,16 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 
 	lastIndex := indexes[len(indexes)-1]
 	match.Hash = hashSeq(firstSeq[indexes[0] : lastIndex+int(firstSeq[lastIndex].Owns)])
+
 	return match
 }
 
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
-	var indexes []int
-	var split bool
+	var (
+		indexes []int
+		split   bool
+	)
+
 	for i := 0; i < len(nodeSeq); {
 		n := nodeSeq[i]
 		switch {
@@ -175,6 +188,7 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 			// not complete syntax unit
 			i++
 			split = true
+
 			continue
 		case int(n.Owns)+1 < threshold:
 			split = true
@@ -183,10 +197,13 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 				indexes = indexes[:0]
 				split = false
 			}
+
 			indexes = append(indexes, i)
 		}
+
 		i += int(n.Owns) + 1
 	}
+
 	return indexes
 }
 
@@ -199,6 +216,7 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 	}
 
 	alts := make(map[int]bool)
+
 	for i := 1; i <= cnt/2; i++ {
 		if cnt%i == 0 {
 			alts[i] = true
@@ -207,6 +225,7 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 
 	for i := range indexes[cnt/2] {
 		nstart := nodes[i+indexes[0]]
+
 	AltLoop:
 		for alt := range alts {
 			for j := alt; j < cnt; j += alt {
@@ -219,14 +238,18 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 				} else if i >= indexes[alt] {
 					return true
 				}
+
 				delete(alts, alt)
+
 				continue AltLoop
 			}
 		}
+
 		if len(alts) == 0 {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -234,12 +257,14 @@ func spansMultipleFiles(indexes []int, nodes []*Node) bool {
 	if len(indexes) < 2 {
 		return false
 	}
+
 	f := nodes[indexes[0]].Filename
 	for i := 1; i < len(indexes); i++ {
 		if nodes[indexes[i]].Filename != f {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -251,31 +276,39 @@ func Unique(group [][]*Node) [][]*Node {
 		start    int
 		end      int
 	}
+
 	seen := make(map[rangeKey]struct{})
 
 	var newGroup [][]*Node
+
 	for _, seq := range group {
 		if len(seq) == 0 {
 			continue
 		}
+
 		first := seq[0]
 		last := seq[len(seq)-1]
+
 		key := rangeKey{filename: first.Filename, start: int(first.Pos), end: int(last.End)}
 		if _, exists := seen[key]; !exists {
 			seen[key] = struct{}{}
+
 			newGroup = append(newGroup, seq)
 		}
 	}
+
 	return newGroup
 }
 
 // CountUniqueFiles returns the number of unique files in a clone group.
 func CountUniqueFiles(group [][]*Node) int {
 	uniqueFiles := make(map[string]bool)
+
 	for _, seq := range group {
 		if len(seq) > 0 {
 			uniqueFiles[seq[0].Filename] = true
 		}
 	}
+
 	return len(uniqueFiles)
 }

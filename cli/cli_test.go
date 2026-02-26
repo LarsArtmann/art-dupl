@@ -1,6 +1,5 @@
 package cli
 
-//nolint:testpackage // Tests require access to cli package internals
 import (
 	"flag"
 	"testing"

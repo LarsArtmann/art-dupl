@@ -26,6 +26,7 @@ func TestRun_giganticSlice(t *testing.T) {
 	}
 
 	var lines []string
+
 	for range 200_000 {
 		line := strings.Repeat("0x00,", 20)
 		lines = append(lines, line)

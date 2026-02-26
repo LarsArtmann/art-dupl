@@ -12,7 +12,9 @@ import (
 // These tests verify file-level exact duplicate detection using SHA-256 hashing
 
 // TestBasicHashDetectionShouldFindExactDuplicates tests that identical files are detected.
-func TestBasicHashDetectionShouldFindExactDuplicates(t *testing.T) { // BDD-style test with multiple test scenarios
+func TestBasicHashDetectionShouldFindExactDuplicates(
+	t *testing.T,
+) { // BDD-style test with multiple test scenarios
 	// GIVEN: Two identical files
 	setup := testutil.NewTestFileSetup(t)
 
@@ -29,7 +31,8 @@ func processUser(name string, age int) error {
 	return nil
 }`
 
-	if err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, content1); err != nil {
+	err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, content1)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -49,6 +52,7 @@ func processUser(name string, age int) error {
 	matches := testutil.CollectMatches(matchesChan)
 	if len(matches) != 1 {
 		t.Errorf("Expected 1 match, got %d", len(matches))
+
 		return
 	}
 
@@ -62,10 +66,12 @@ func processUser(name string, age int) error {
 	filenames := testutil.GetFilesInMatch(match)
 	foundFile1 := false
 	foundFile2 := false
+
 	for _, fn := range filenames {
 		if strings.HasSuffix(fn, "file1.go") {
 			foundFile1 = true
 		}
+
 		if strings.HasSuffix(fn, "file2.go") {
 			foundFile2 = true
 		}
@@ -88,7 +94,8 @@ func hello() {
 	println("hi")
 }`
 
-	if err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, content); err != nil {
+	err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, content)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -149,7 +156,8 @@ func processProduct(name string, price int) error {
 		"product2.go": content2,
 	}
 
-	if err := setup.CreateTestFiles(files); err != nil {
+	err := setup.CreateTestFiles(files)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -169,6 +177,7 @@ func processProduct(name string, price int) error {
 	// THEN: Should find both duplicate groups
 	matches := testutil.CollectMatches(matchesChan)
 	t.Logf("Found %d matches (expected 2)", len(matches))
+
 	if len(matches) != 2 {
 		t.Errorf("Expected 2 duplicate groups, got %d", len(matches))
 	}

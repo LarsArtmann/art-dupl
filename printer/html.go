@@ -26,7 +26,13 @@ func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
 	if len(threshold) > 0 {
 		thresh = threshold[0]
 	}
-	return &htmlprinter{w: w, ReadFile: fread, threshold: thresh, dupls: make([][][]*syntax.Node, 0)}
+
+	return &htmlprinter{
+		w:         w,
+		ReadFile:  fread,
+		threshold: thresh,
+		dupls:     make([][][]*syntax.Node, 0),
+	}
 }
 
 // htmlTemplate is the modernized HTML template with dark theme.
@@ -199,6 +205,7 @@ footer {
 
 func (p *htmlprinter) PrintHeader() error {
 	_, err := fmt.Fprintf(p.w, htmlTemplate, p.threshold)
+
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
@@ -221,6 +228,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 
 	// Calculate total tokens for this group
 	totalTokens := 0
+
 	for _, dup := range sortedDups {
 		if len(dup) > 0 {
 			totalTokens += len(dup)
@@ -244,6 +252,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		if cnt == 0 {
 			return errors.NewInternalError("zero length duplicate found", nil)
 		}
+
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
@@ -259,6 +268,7 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 	}
 
 	sort.Sort(byNameAndLine(clones))
+
 	for i, cl := range clones {
 		vscodeLink := fmt.Sprintf("vscode://file/%s:%d", cl.filename, cl.lineStart)
 		if _, err := fmt.Fprintf(p.w, `<div class="occurrence">
@@ -302,6 +312,7 @@ function copyCode(elementId) {
 </body>
 </html>
 `)
+
 	return err //nolint:wrapcheck // fmt errors are clear in context
 }
 
@@ -309,6 +320,7 @@ function copyCode(elementId) {
 func (p *htmlprinter) OutputHTML(threshold int, sortBy SortBy) error {
 	// Store clones for sorting - flatten the 3D structure to 2D
 	var allDups [][]*syntax.Node
+
 	p.dupMutex.Lock()
 	for i := range len(p.dupls) {
 		// p.dupls[i] is [][]*syntax.Node, add each clone group to allDups
@@ -327,7 +339,8 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy SortBy) error {
 
 	// Print sorted clones
 	for _, dup := range allDups {
-		if err := p.PrintClones([][]*syntax.Node{dup}, sortBy); err != nil {
+		err := p.PrintClones([][]*syntax.Node{dup}, sortBy)
+		if err != nil {
 			return err
 		}
 	}

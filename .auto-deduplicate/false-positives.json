@@ -1,0 +1,54 @@
+[
+  {
+    "fingerprint": "42a85623d119403965684f3fb6bedde4c85621d5b4d1ca25b6c2825242f2132d",
+    "files": ["/Users/larsartmann/projects/art-dupl/cmd/stats_integration_test.go"],
+    "reason": "The duplicate code has already been refactored. The inline strings.Contains calls have been replaced with the hasAllStrings helper function on line 211.",
+    "marked_at": "2026-02-26T05:26:10.953002+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "6546dc12806ea0b963d12402cc5cd42b3baa0d34ec0d9c65f07d8791d92e5bf1",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/cmd/root.go",
+      "/Users/larsartmann/projects/art-dupl/cmd/stats.go"
+    ],
+    "reason": "Two different Cobra CLI commands (root and stats) with different Use, Short, Long, and RunE handlers. Structural similarity is from standard Cobra framework pattern, not actual code duplication.",
+    "marked_at": "2026-02-26T16:43:57.579265+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "859df88a95f6dc2eafa73a0615103e2164c6d007ae6baca5ef7c3d162ad03b0f",
+    "files": ["/Users/larsartmann/projects/art-dupl/detection/detection_test.go"],
+    "reason": "Two different test functions testing different scenarios: legacy code patterns (io/ioutil) vs modern patterns (os). Different imports, function names, and test purposes.",
+    "marked_at": "2026-02-26T16:43:57.580046+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "cb62c3aecaceb9884bf32e8d77c87ee6260ea6b3de6b9a3a23c04ae0e1e95a58",
+    "files": ["/Users/larsartmann/projects/art-dupl/bdd/plumbing_output_test.go"],
+    "reason": "Two different test cases in plumbing output tests: 'machine-readable output' vs 'file paths in output'. Different code snippets, assertions, and test purposes.",
+    "marked_at": "2026-02-26T16:43:57.58039+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "af05537f818343d2faaef77d28c8ab3801e70d925a3b7265af2da351af44dbc1",
+    "files": ["/Users/larsartmann/projects/art-dupl/bdd/stats_subcommand_test.go"],
+    "reason": "Two different test cases testing different filter flags: --filter-generated vs --include-sqlc. Different code snippets and filter behaviors being tested.",
+    "marked_at": "2026-02-26T16:43:57.580913+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "695055f8ef014457bb208afa38785094370842c960d6865c3dc5444d887719e5",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/coverage_test.go"],
+    "reason": "Table-driven test - separate test cases for different validation scenarios (valid options vs zero threshold)",
+    "marked_at": "2026-02-26T16:52:21.34132+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "cac4c9bd34260a8e350001fe52f3ced4e9e652c0a1fa1069d1461b42d398a8ef",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/coverage_test.go"],
+    "reason": "Table-driven tests - separate test cases for different validation scenarios (AnalysisStats and SourceFile validation)",
+    "marked_at": "2026-02-26T16:52:21.34235+01:00",
+    "marked_by": "auto-deduplicate"
+  }
+]

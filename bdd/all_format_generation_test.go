@@ -20,6 +20,7 @@ var _ = Describe("All Format Generation (--all flag)", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -50,7 +51,14 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check that output directory contains expected files
@@ -62,6 +70,7 @@ func process(data string) error {
 
 			// Verify at least one JSON file was created
 			hasJSON := false
+
 			for _, file := range files {
 				if strings.Contains(file.Name(), ".json") {
 					hasJSON = true
@@ -71,6 +80,7 @@ func process(data string) error {
 					Expect(err).NotTo(HaveOccurred())
 
 					var result map[string]any
+
 					err = json.Unmarshal(jsonData, &result)
 					Expect(err).ToNot(HaveOccurred(), "Generated JSON should be valid")
 				}
@@ -89,7 +99,14 @@ func duplicate() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check JSON files for metadata
@@ -103,6 +120,7 @@ func duplicate() {}`
 					Expect(err).NotTo(HaveOccurred())
 
 					var result map[string]any
+
 					err = json.Unmarshal(jsonData, &result)
 					Expect(err).ToNot(HaveOccurred())
 
@@ -129,7 +147,14 @@ func test() {}`
 			customOutputDir := filepath.Join(setup.TmpDir, "custom", "nested", "output")
 
 			// Run with --all flag and custom output directory
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", customOutputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				customOutputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify directory was created
@@ -156,7 +181,14 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag using existing directory
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created
@@ -179,7 +211,14 @@ func multiDetect() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag (uses all detection methods by default)
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check for generated files
@@ -187,10 +226,13 @@ func multiDetect() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Should have multiple output files (one per format)
-			Expect(len(files)).To(BeNumerically(">=", 2), "Should have multiple output files for different formats")
+			Expect(
+				len(files),
+			).To(BeNumerically(">=", 2), "Should have multiple output files for different formats")
 
 			// Verify JSON file contains detection_method field with combined methods
 			foundJSON := false
+
 			for _, file := range files {
 				if strings.HasSuffix(file.Name(), ".json") {
 					foundJSON = true
@@ -199,6 +241,7 @@ func multiDetect() string {
 					Expect(err).NotTo(HaveOccurred())
 
 					var result map[string]any
+
 					err = json.Unmarshal(jsonData, &result)
 					Expect(err).ToNot(HaveOccurred())
 
@@ -213,6 +256,7 @@ func multiDetect() string {
 					))
 				}
 			}
+
 			Expect(foundJSON).To(BeTrue(), "Should generate JSON output file")
 		})
 	})
@@ -228,7 +272,14 @@ func small() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and high threshold
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "100")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"100",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even if few/no clones
@@ -255,7 +306,14 @@ func unique2() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(setup.TmpDir, "--all", "--output-dir", outputDir, "--threshold", "10")
+			_, err = setup.RunArtDuplOnDir(
+				setup.TmpDir,
+				"--all",
+				"--output-dir",
+				outputDir,
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even with no duplicates
@@ -271,6 +329,7 @@ func unique2() {}`
 					Expect(err).NotTo(HaveOccurred())
 
 					var result map[string]any
+
 					err = json.Unmarshal(jsonData, &result)
 					Expect(err).ToNot(HaveOccurred())
 

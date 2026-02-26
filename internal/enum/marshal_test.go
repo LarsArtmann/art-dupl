@@ -93,14 +93,22 @@ func TestUnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var result testEnum
-			err := UnmarshalJSON(&result, []byte(tt.input), "testEnum", tt.defaultValue, tt.validValues...)
+
+			err := UnmarshalJSON(
+				&result,
+				[]byte(tt.input),
+				"testEnum",
+				tt.defaultValue,
+				tt.validValues...)
 
 			if tt.expectError && err == nil {
 				t.Error("expected error, got nil")
 			}
+
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+
 			if result != tt.expected {
 				t.Errorf("result = %q, want %q", result, tt.expected)
 			}
@@ -139,9 +147,11 @@ func TestMarshalJSON(t *testing.T) {
 			if tt.expectError && err == nil {
 				t.Error("expected error, got nil")
 			}
+
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+
 			if !tt.expectError && string(result) != tt.expected {
 				t.Errorf("result = %s, want %s", result, tt.expected)
 			}
@@ -187,14 +197,23 @@ func TestUnmarshalJSONFromStrings(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var result testEnum
-			err := UnmarshalJSONFromStrings(&result, []byte(tt.input), "testEnum", tt.defaultValue, tt.validStrings)
+
+			err := UnmarshalJSONFromStrings(
+				&result,
+				[]byte(tt.input),
+				"testEnum",
+				tt.defaultValue,
+				tt.validStrings,
+			)
 
 			if tt.expectError && err == nil {
 				t.Error("expected error, got nil")
 			}
+
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+
 			if result != tt.expected {
 				t.Errorf("result = %q, want %q", result, tt.expected)
 			}
@@ -346,6 +365,7 @@ func TestMarshalJSONForInterface(t *testing.T) {
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
+
 			if string(result) != tt.expected {
 				t.Errorf("result = %s, want %s", result, tt.expected)
 			}
@@ -376,8 +396,10 @@ func TestJSONRoundTrip(t *testing.T) {
 			}
 
 			var result config
+
 			decoder := json.NewDecoder(strings.NewReader(string(data)))
 			decoder.DisallowUnknownFields()
+
 			if err := decoder.Decode(&result); err != nil {
 				t.Fatalf("unmarshal error: %v", err)
 			}

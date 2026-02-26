@@ -28,6 +28,13 @@ func (dm DetectionMethods) IsEmpty() bool {
 	return len(dm) == 0
 }
 
+// IsHashOnly checks if only hash detection method is selected.
+// This is useful for optimizing the analysis pipeline - when only hash detection
+// is used, we can skip AST parsing and work directly with file paths.
+func (dm DetectionMethods) IsHashOnly() bool {
+	return len(dm) == 1 && dm[0] == DetectionMethodHash
+}
+
 // Config represents the dupl configuration with strong typing.
 //
 // DOMAIN TYPES STATUS:
@@ -170,10 +177,13 @@ func DefaultConfig() *Config {
 //	domainThreshold, err := cfg.GetThresholdAsDomain()
 //	if err != nil { ... }
 func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
-	threshold, err := domain.NewThreshold(uint(c.Threshold)) // #nosec G115 -- Threshold values are bounded (0-1000)
+	threshold, err := domain.NewThreshold(
+		uint(c.Threshold),
+	) // #nosec G115 -- Threshold values are bounded (0-1000)
 	if err != nil {
 		return 0, errors.NewConfigError("invalid threshold in config", err)
 	}
+
 	return threshold, nil
 }
 
@@ -187,6 +197,7 @@ func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
 func (c *Config) SetThresholdFromDomain(threshold domain.Threshold) error {
 	// No validation needed - domain.Threshold already validated
 	c.Threshold = int(threshold.Uint()) // #nosec G115 -- Threshold values are bounded (0-1000)
+
 	return nil
 }
 
@@ -219,6 +230,7 @@ func LoadOptionalConfig(filename string) (*Config, error) {
 	if filename == "" {
 		return nil, nil
 	}
+
 	return LoadConfig(filename)
 }
 
@@ -262,7 +274,13 @@ func ValidateConfig(config *Config) error {
 	}
 
 	if !config.OutputFormat.IsValid() {
-		return errors.NewValidationError(fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", config.OutputFormat), nil)
+		return errors.NewValidationError(
+			fmt.Sprintf(
+				"invalid output format: %s (valid: text, html, json, plumbing)",
+				config.OutputFormat,
+			),
+			nil,
+		)
 	}
 
 	// Validate detection methods
@@ -272,7 +290,13 @@ func ValidateConfig(config *Config) error {
 
 	for _, method := range config.DetectionMethods {
 		if !method.IsValid() {
-			return errors.NewValidationError(fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", method), nil)
+			return errors.NewValidationError(
+				fmt.Sprintf(
+					"invalid detection method: %s (valid: hash, art-dupl, todos, legacy)",
+					method,
+				),
+				nil,
+			)
 		}
 	}
 

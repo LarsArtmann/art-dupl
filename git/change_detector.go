@@ -36,6 +36,7 @@ func NewChangeDetector(workingDir ...string) *ChangeDetector {
 	if len(workingDir) > 0 && workingDir[0] != "" {
 		dir = workingDir[0]
 	}
+
 	return &ChangeDetector{workingDir: dir}
 }
 
@@ -70,7 +71,14 @@ func (d *ChangeDetector) GetChangedFiles(since string) ([]ChangeInfo, error) {
 	// Get changed files using git diff
 	// --name-status shows status (A/M/D/R)
 	// --diff-filter=ACMR excludes deleted files (we can't analyze deleted files)
-	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--diff-filter=ACMR", since)
+	cmd := exec.CommandContext(
+		context.Background(),
+		"git",
+		"diff",
+		"--name-status",
+		"--diff-filter=ACMR",
+		since,
+	)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -80,6 +88,7 @@ func (d *ChangeDetector) GetChangedFiles(since string) ([]ChangeInfo, error) {
 		if errors.As(err, &exitErr) {
 			return nil, fmt.Errorf("%w: %s", ErrGitCommand, string(exitErr.Stderr))
 		}
+
 		return nil, fmt.Errorf("%w: %w", ErrGitCommand, err)
 	}
 
@@ -95,11 +104,13 @@ func (d *ChangeDetector) GetChangedGoFiles(since string) ([]ChangeInfo, error) {
 	}
 
 	var goFiles []ChangeInfo
+
 	for _, change := range changes {
 		if strings.HasSuffix(change.Path, ".go") {
 			goFiles = append(goFiles, change)
 		}
 	}
+
 	return goFiles, nil
 }
 
@@ -109,7 +120,14 @@ func (d *ChangeDetector) GetStagedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--cached", "--diff-filter=ACMR")
+	cmd := exec.CommandContext(
+		context.Background(),
+		"git",
+		"diff",
+		"--name-status",
+		"--cached",
+		"--diff-filter=ACMR",
+	)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -126,7 +144,13 @@ func (d *ChangeDetector) GetUnstagedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.CommandContext(context.Background(), "git", "diff", "--name-status", "--diff-filter=ACMR")
+	cmd := exec.CommandContext(
+		context.Background(),
+		"git",
+		"diff",
+		"--name-status",
+		"--diff-filter=ACMR",
+	)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -150,6 +174,7 @@ func (d *ChangeDetector) GetAllChanges() ([]ChangeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	allChanges = append(allChanges, staged...)
 
 	// Get unstaged changes
@@ -157,6 +182,7 @@ func (d *ChangeDetector) GetAllChanges() ([]ChangeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	allChanges = append(allChanges, unstaged...)
 
 	// Get untracked files
@@ -164,6 +190,7 @@ func (d *ChangeDetector) GetAllChanges() ([]ChangeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	allChanges = append(allChanges, untracked...)
 
 	return deduplicateChanges(allChanges), nil
@@ -175,7 +202,13 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 		return nil, ErrNotGitRepo
 	}
 
-	cmd := exec.CommandContext(context.Background(), "git", "ls-files", "--others", "--exclude-standard")
+	cmd := exec.CommandContext(
+		context.Background(),
+		"git",
+		"ls-files",
+		"--others",
+		"--exclude-standard",
+	)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
@@ -184,6 +217,7 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 	}
 
 	var changes []ChangeInfo
+
 	lines := bytes.SplitSeq(bytes.TrimSpace(output), []byte("\n"))
 	for line := range lines {
 		if len(line) > 0 {
@@ -193,6 +227,7 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 			})
 		}
 	}
+
 	return changes, nil
 }
 
@@ -216,6 +251,7 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 		if mainBranch == "main" {
 			return d.GetMergeBase("master")
 		}
+
 		return "", fmt.Errorf("%w: %w", ErrGitCommand, err)
 	}
 
@@ -255,6 +291,7 @@ func (d *ChangeDetector) isGitRepo() bool {
 // parseDiffOutput parses git diff --name-status output.
 func (d *ChangeDetector) parseDiffOutput(output []byte) []ChangeInfo {
 	var changes []ChangeInfo
+
 	lines := bytes.SplitSeq(bytes.TrimSpace(output), []byte("\n"))
 
 	for line := range lines {

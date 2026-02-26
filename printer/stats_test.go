@@ -19,10 +19,18 @@ func main() {
 }`)
 }
 
+// assertFileContains checks if output contains expected filename and value
+func assertFileContains(t *testing.T, output, filename, value string) {
+	if !strings.Contains(output, filename) || !strings.Contains(output, value) {
+		t.Errorf("Output should contain %s with %s", filename, value)
+	}
+}
+
 // createNodeSlice creates a slice of syntax.Node with sequential positions and types.
 // startPos is the starting position (inclusive), endPos is the ending position (inclusive).
 func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 	var nodes []*syntax.Node
+
 	for i := 0; i <= endPos-startPos; i++ {
 		pos := startPos + i
 		end := pos + 1
@@ -34,16 +42,21 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 			Type:     int32(typ),
 		})
 	}
+
 	return nodes
 }
 
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.
 func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 	t.Helper()
-	if err := statsPrinter.PrintFooter(); err != nil {
+
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
+
 	data := statsPrinter.GetStatsData()
+
 	return data.(*StatsData)
 }
 
@@ -62,9 +75,11 @@ func TestStatsDataAggregation(t *testing.T) {
 			threshold:  15,
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
+
 				if stats.TotalCloneGroups != 0 {
 					t.Errorf("TotalCloneGroups = %d, want 0", stats.TotalCloneGroups)
 				}
+
 				if stats.TotalClones != 0 {
 					t.Errorf("TotalClones = %d, want 0", stats.TotalClones)
 				}
@@ -88,9 +103,11 @@ func TestStatsDataAggregation(t *testing.T) {
 			threshold:  15,
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
+
 				if stats.TotalCloneGroups != 1 {
 					t.Errorf("TotalCloneGroups = %d, want 1", stats.TotalCloneGroups)
 				}
+
 				if stats.TotalClones != 2 {
 					t.Errorf("TotalClones = %d, want 2", stats.TotalClones)
 				}
@@ -98,6 +115,7 @@ func TestStatsDataAggregation(t *testing.T) {
 				if stats.TotalDuplicateLines <= 0 {
 					t.Errorf("TotalDuplicateLines = %d, want > 0", stats.TotalDuplicateLines)
 				}
+
 				if stats.TotalTokens != 4 { // 2 nodes per clone × 2
 					t.Errorf("TotalTokens = %d, want 4", stats.TotalTokens)
 				}
@@ -121,9 +139,11 @@ func TestStatsDataAggregation(t *testing.T) {
 			threshold:  15,
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
+
 				if stats.TotalCloneGroups != 2 {
 					t.Errorf("TotalCloneGroups = %d, want 2", stats.TotalCloneGroups)
 				}
+
 				if stats.TotalClones != 2 {
 					t.Errorf("TotalClones = %d, want 2", stats.TotalClones)
 				}
@@ -134,16 +154,19 @@ func TestStatsDataAggregation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), tt.threshold).(*stats)
 			statsPrinter.SetFilesCount(tt.filesCount)
 
 			for _, dupGroup := range tt.duplicates {
-				if err := statsPrinter.PrintClones(dupGroup); err != nil {
+				err := statsPrinter.PrintClones(dupGroup)
+				if err != nil {
 					t.Fatalf("PrintClones failed: %v", err)
 				}
 			}
 
-			if err := statsPrinter.PrintFooter(); err != nil {
+			err := statsPrinter.PrintFooter()
+			if err != nil {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
@@ -155,6 +178,7 @@ func TestStatsDataAggregation(t *testing.T) {
 // createCloneNodeGroup creates a group of clone nodes with specified files.
 func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 	var dups [][]*syntax.Node
+
 	for _, filename := range filenames {
 		nodes := []*syntax.Node{
 			{Filename: filename, Pos: 1, End: 3, Type: 1},
@@ -162,11 +186,13 @@ func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 		}
 		dups = append(dups, nodes)
 	}
+
 	return dups
 }
 
 func TestStatsComplexityScore(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 	statsPrinter.SetFilesCount(5)
 
@@ -174,16 +200,19 @@ func TestStatsComplexityScore(t *testing.T) {
 	for range 3 {
 		dups := createCloneNodeGroup([]string{"file1.go", "file2.go", "file3.go"})
 
-		if err := statsPrinter.PrintClones(dups); err != nil {
+		err := statsPrinter.PrintClones(dups)
+		if err != nil {
 			t.Fatalf("PrintClones failed: %v", err)
 		}
 	}
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
 	statsData := statsPrinter.GetStatsData().(*StatsData)
+
 	expectedComplexity := 9.0 / 3.0 // 9 clones / 3 groups
 	if statsData.ComplexityScore != expectedComplexity {
 		t.Errorf("ComplexityScore = %.2f, want %.2f", statsData.ComplexityScore, expectedComplexity)
@@ -192,6 +221,7 @@ func TestStatsComplexityScore(t *testing.T) {
 
 func TestStatsImpactScore(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 	statsPrinter.SetFilesCount(2)
 
@@ -202,7 +232,8 @@ func TestStatsImpactScore(t *testing.T) {
 		createNodeSlice("file3.go", 20, 23),
 	}
 
-	if err := statsPrinter.PrintClones(dups); err != nil {
+	err := statsPrinter.PrintClones(dups)
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
@@ -219,6 +250,7 @@ func TestStatsImpactScore(t *testing.T) {
 
 func TestStatsFileDuplicationTracking(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 	statsPrinter.SetFilesCount(2)
 
@@ -231,11 +263,13 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 		},
 	}
 
-	if err := statsPrinter.PrintClones(dups); err != nil {
+	err := statsPrinter.PrintClones(dups)
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err = statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -253,6 +287,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 
 func TestGetSizeRange(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 
 	tests := []struct {
@@ -285,6 +320,7 @@ func TestGetSizeRange(t *testing.T) {
 
 func TestGetTokenRange(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 
 	tests := []struct {
@@ -317,6 +353,7 @@ func TestGetTokenRange(t *testing.T) {
 
 func TestPrintSizeDistribution(t *testing.T) {
 	var buf bytes.Buffer
+
 	distribution := map[string]int{
 		"1-5 lines":   10,
 		"6-10 lines":  5,
@@ -327,7 +364,14 @@ func TestPrintSizeDistribution(t *testing.T) {
 
 	output := buf.String()
 	// Expected format: "  1-5 lines      :   10 clones [████████████████████] 55.6%"
-	expectedRanges := []string{"1-5 lines", "10 clones", "6-10 lines", "5 clones", "11-20 lines", "3 clones"}
+	expectedRanges := []string{
+		"1-5 lines",
+		"10 clones",
+		"6-10 lines",
+		"5 clones",
+		"11-20 lines",
+		"3 clones",
+	}
 
 	for _, expected := range expectedRanges {
 		if !strings.Contains(output, expected) {
@@ -342,6 +386,7 @@ func TestPrintSizeDistribution(t *testing.T) {
 
 	// Check that output is sorted (1-5 should come before 6-10)
 	idx1 := strings.Index(output, "1-5 lines")
+
 	idx2 := strings.Index(output, "6-10 lines")
 	if idx1 == -1 || idx2 == -1 || idx1 > idx2 {
 		t.Error("Output is not properly sorted")
@@ -350,6 +395,7 @@ func TestPrintSizeDistribution(t *testing.T) {
 
 func TestPrintTopFiles(t *testing.T) {
 	var buf bytes.Buffer
+
 	fileDuplication := map[string]int{
 		"fileA.go": 100,
 		"fileB.go": 50,
@@ -367,9 +413,7 @@ func TestPrintTopFiles(t *testing.T) {
 	}
 
 	// Check that top 2 files are in correct order (fileA.go: 100, fileC.go: 75)
-	if !strings.Contains(lines[0], "fileA.go") || !strings.Contains(lines[0], "100") {
-		t.Errorf("Top file should be fileA.go with 100 lines, got: %s", lines[0])
-	}
+	assertFileContains(t, lines[0], "fileA.go", "100")
 
 	if !strings.Contains(lines[1], "fileC.go") || !strings.Contains(lines[1], "75") {
 		t.Errorf("Second file should be fileC.go with 75 lines, got: %s", lines[1])
@@ -378,6 +422,7 @@ func TestPrintTopFiles(t *testing.T) {
 
 func TestPrintTopFilesWithLessThanN(t *testing.T) {
 	var buf bytes.Buffer
+
 	fileDuplication := map[string]int{
 		"fileA.go": 100,
 	}
@@ -385,9 +430,8 @@ func TestPrintTopFilesWithLessThanN(t *testing.T) {
 	printTopFiles(&buf, fileDuplication, 10) // Request top 10, but only 1 file exists
 
 	output := buf.String()
-	if !strings.Contains(output, "fileA.go") || !strings.Contains(output, "100") {
-		t.Error("Output should contain the single file")
-	}
+	assertFileContains(t, output, "fileA.go", "100")
+
 	if strings.Contains(output, "more files") {
 		t.Error("Output shouldn't contain 'more files' when all files are shown")
 	}
@@ -395,11 +439,15 @@ func TestPrintTopFilesWithLessThanN(t *testing.T) {
 
 func TestStatsDetectionMethods(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 	statsPrinter.SetDetectionMethods("hash,art-dupl")
 
 	if statsPrinter.statsData.DetectionMethods != "hash,art-dupl" {
-		t.Errorf("DetectionMethods = %s, want 'hash,art-dupl'", statsPrinter.statsData.DetectionMethods)
+		t.Errorf(
+			"DetectionMethods = %s, want 'hash,art-dupl'",
+			statsPrinter.statsData.DetectionMethods,
+		)
 	}
 }
 
@@ -419,18 +467,24 @@ func TestStatsAverageCloneSize(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 			statsPrinter.statsData.TotalDuplicateLines = tt.totalLines
 			statsPrinter.statsData.TotalClones = tt.totalClones
 			statsPrinter.statsData.TotalCloneGroups = tt.totalCloneGroups
 
-			if err := statsPrinter.PrintFooter(); err != nil {
+			err := statsPrinter.PrintFooter()
+			if err != nil {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
 			statsData := statsPrinter.GetStatsData().(*StatsData)
 			if statsData.AverageCloneSize != tt.expectedAverage {
-				t.Errorf("AverageCloneSize = %d, want %d", statsData.AverageCloneSize, tt.expectedAverage)
+				t.Errorf(
+					"AverageCloneSize = %d, want %d",
+					statsData.AverageCloneSize,
+					tt.expectedAverage,
+				)
 			}
 		})
 	}
@@ -438,6 +492,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 
 func TestStatsJSONOutput(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 
 	// Add some test data
@@ -456,14 +511,16 @@ func TestStatsJSONOutput(t *testing.T) {
 		},
 	}
 
-	if err := statsPrinter.PrintClones(dups); err != nil {
+	err := statsPrinter.PrintClones(dups)
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
 	// Set format to JSON
 	statsPrinter.format = FormatJSON
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err = statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -471,7 +528,8 @@ func TestStatsJSONOutput(t *testing.T) {
 
 	// Verify JSON is valid
 	var result map[string]any
-	if err := json.Unmarshal([]byte(output), &result); err != nil {
+	err = json.Unmarshal([]byte(output), &result)
+	if err != nil {
 		t.Fatalf("Output is not valid JSON: %v\nOutput: %s", err, output)
 	}
 
@@ -480,9 +538,11 @@ func TestStatsJSONOutput(t *testing.T) {
 	if !ok {
 		t.Fatal("Missing 'configuration' section in JSON")
 	}
+
 	if config["threshold"] != float64(15) {
 		t.Errorf("threshold = %v, want 15", config["threshold"])
 	}
+
 	if config["detectionMethods"] != "art-dupl,hash" {
 		t.Errorf("detectionMethods = %v, want 'art-dupl,hash'", config["detectionMethods"])
 	}
@@ -491,12 +551,15 @@ func TestStatsJSONOutput(t *testing.T) {
 	if !ok {
 		t.Fatal("Missing 'overview' section in JSON")
 	}
+
 	if overview["filesScanned"] != float64(10) {
 		t.Errorf("filesScanned = %v, want 10", overview["filesScanned"])
 	}
+
 	if overview["cloneGroups"] != float64(1) {
 		t.Errorf("cloneGroups = %v, want 1", overview["cloneGroups"])
 	}
+
 	if overview["totalClones"] != float64(2) {
 		t.Errorf("totalClones = %v, want 2", overview["totalClones"])
 	}
@@ -505,15 +568,19 @@ func TestStatsJSONOutput(t *testing.T) {
 	if !ok {
 		t.Fatal("Missing 'duplicateCode' section in JSON")
 	}
+
 	if dupCode["totalDuplicateLines"] == 0 {
 		t.Error("totalDuplicateLines should be > 0")
 	}
+
 	if dupCode["totalDuplicateTokens"] == 0 {
 		t.Error("totalDuplicateTokens should be > 0")
 	}
+
 	if dupCode["averageCloneSize"] == 0 {
 		t.Error("averageCloneSize should be > 0")
 	}
+
 	if dupCode["complexityScore"] != 2.0 { // 2 clones / 1 group
 		t.Errorf("complexityScore = %v, want 2.0", dupCode["complexityScore"])
 	}
@@ -531,6 +598,7 @@ func TestStatsJSONOutput(t *testing.T) {
 
 func TestStatsTextOutput(t *testing.T) {
 	var buf bytes.Buffer
+
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 	statsPrinter.SetFilesCount(5)
 	statsPrinter.SetDetectionMethods("art-dupl")
@@ -538,7 +606,8 @@ func TestStatsTextOutput(t *testing.T) {
 	// Set format to text
 	statsPrinter.format = FormatText
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -574,11 +643,13 @@ func TestStatsCSVOutput(t *testing.T) {
 		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
 	}
 
-	if err := sp.PrintClones(dups1); err != nil {
+	err := sp.PrintClones(dups1)
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	if err := sp.PrintFooter(); err != nil {
+	err = sp.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -633,14 +704,21 @@ func TestHealthScoreCalculation(t *testing.T) {
 		{"Perfect health", 0.0, 0.0, 0, "A"},
 		{"Excellent health", 2.0, 1.0, 500, "B"}, // Weighted score: 4.45% = B
 		{"Good health", 5.0, 2.0, 1000, "C"},     // Weighted score: 10.75% = C
-		{"Moderate health", 8.0, 3.0, 2000, "F"}, // Weighted score: 15.3% = F (threshold is < 15 for D)
-		{"Poor health", 12.0, 4.0, 3000, "F"},    // Weighted score: 21.7% = F
+		{
+			"Moderate health",
+			8.0,
+			3.0,
+			2000,
+			"F",
+		}, // Weighted score: 15.3% = F (threshold is < 15 for D)
+		{"Poor health", 12.0, 4.0, 3000, "F"}, // Weighted score: 21.7% = F
 		{"Critical health", 20.0, 5.0, 5000, "F"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
 
 			// Set up stats data
@@ -653,23 +731,43 @@ func TestHealthScoreCalculation(t *testing.T) {
 			grade := sp.calculateHealthScore()
 
 			if grade != tt.expectedGrade {
-				t.Errorf("calculateHealthScore() = %q, want %q for inputs (ratio=%.1f%%, complexity=%.2f, impact=%d)",
-					grade, tt.expectedGrade, tt.duplicationRatio, tt.complexityScore, tt.impactScore)
+				t.Errorf(
+					"calculateHealthScore() = %q, want %q for inputs (ratio=%.1f%%, complexity=%.2f, impact=%d)",
+					grade,
+					tt.expectedGrade,
+					tt.duplicationRatio,
+					tt.complexityScore,
+					tt.impactScore,
+				)
 			}
 		})
 	}
 }
 
+type gradeRecommendationTestCase struct {
+	name             string
+	healthScore      string
+	totalCloneGroups int
+	averageCloneSize int
+	complexityScore  float64
+	shouldContain    []string
+	shouldNotContain []string
+}
+
 func TestPrintRecommendations(t *testing.T) {
-	tests := []struct {
-		name             string
-		healthScore      string
-		totalCloneGroups int
-		averageCloneSize int
-		complexityScore  float64
-		shouldContain    []string
-		shouldNotContain []string
-	}{
+	createGradeTestCase := func(name, healthScore string, totalCloneGroups, averageCloneSize int, complexityScore float64, shouldContain, shouldNotContain []string) gradeRecommendationTestCase {
+		return gradeRecommendationTestCase{
+			name:             name,
+			healthScore:      healthScore,
+			totalCloneGroups: totalCloneGroups,
+			averageCloneSize: averageCloneSize,
+			complexityScore:  complexityScore,
+			shouldContain:    shouldContain,
+			shouldNotContain: shouldNotContain,
+		}
+	}
+
+	tests := []gradeRecommendationTestCase{
 		{
 			name:             "Grade A recommendations",
 			healthScore:      "A",
@@ -679,29 +777,18 @@ func TestPrintRecommendations(t *testing.T) {
 			shouldContain:    []string{"Excellent", "Keep up the good work"},
 			shouldNotContain: []string{"action needed", "Critical"},
 		},
-		{
-			name:             "Grade C recommendations with metrics",
-			healthScore:      "C",
-			totalCloneGroups: 15,
-			averageCloneSize: 60,
-			complexityScore:  3.5,
-			shouldContain:    []string{"Moderate", "50+ lines", "15 clone groups"},
-			shouldNotContain: []string{"Excellent", "Critical"},
-		},
-		{
-			name:             "Grade F critical recommendations",
-			healthScore:      "F",
-			totalCloneGroups: 30,
-			averageCloneSize: 80,
-			complexityScore:  6.0,
-			shouldContain:    []string{"Critical", "immediate action", "Halt new feature"},
-			shouldNotContain: []string{"Excellent", "minor"},
-		},
+		createGradeTestCase("Grade C recommendations with metrics", "C", 15, 60, 3.5,
+			[]string{"Moderate", "50+ lines", "15 clone groups"},
+			[]string{"Excellent", "Critical"}),
+		createGradeTestCase("Grade F critical recommendations", "F", 30, 80, 6.0,
+			[]string{"Critical", "immediate action", "Halt new feature"},
+			[]string{"Excellent", "minor"}),
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			sp := NewStats(&buf, mockReadFile("package main\nfunc main(){}"), 15).(*stats)
 
 			// Set up stats data
@@ -721,14 +808,22 @@ func TestPrintRecommendations(t *testing.T) {
 			// Check that all expected strings are present
 			for _, expected := range tt.shouldContain {
 				if !strings.Contains(output, expected) {
-					t.Errorf("Recommendations output missing expected text: %q\nGot: %s", expected, output)
+					t.Errorf(
+						"Recommendations output missing expected text: %q\nGot: %s",
+						expected,
+						output,
+					)
 				}
 			}
 
 			// Check that unexpected strings are NOT present
 			for _, notExpected := range tt.shouldNotContain {
 				if strings.Contains(output, notExpected) {
-					t.Errorf("Recommendations output should not contain: %q\nGot: %s", notExpected, output)
+					t.Errorf(
+						"Recommendations output should not contain: %q\nGot: %s",
+						notExpected,
+						output,
+					)
 				}
 			}
 
@@ -790,8 +885,13 @@ func TestSetFilterStats(t *testing.T) {
 				}
 			} else {
 				if len(data.FilterBreakdown) != len(tt.wantBreakdown) {
-					t.Errorf("FilterBreakdown length = %d, want %d", len(data.FilterBreakdown), len(tt.wantBreakdown))
+					t.Errorf(
+						"FilterBreakdown length = %d, want %d",
+						len(data.FilterBreakdown),
+						len(tt.wantBreakdown),
+					)
 				}
+
 				for key, want := range tt.wantBreakdown {
 					if got := data.FilterBreakdown[key]; got != want {
 						t.Errorf("FilterBreakdown[%q] = %d, want %d", key, got, want)
@@ -814,7 +914,8 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 	sp.statsData.DetectionMethods = "art-dupl"
 
 	// Print footer to generate output
-	if err := sp.PrintFooter(); err != nil {
+	err := sp.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -823,9 +924,11 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 	if data.FilesFiltered != 25 {
 		t.Errorf("FilesFiltered = %d, want 25", data.FilesFiltered)
 	}
+
 	if len(data.FilterBreakdown) != 3 {
 		t.Errorf("FilterBreakdown length = %d, want 3", len(data.FilterBreakdown))
 	}
+
 	if data.FilterBreakdown["templ"] != 10 {
 		t.Errorf("FilterBreakdown[templ] = %d, want 10", data.FilterBreakdown["templ"])
 	}

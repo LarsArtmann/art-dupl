@@ -36,8 +36,10 @@ func basicExample() {
 	detector, err := artdupl.NewDetector(nil)
 	if err != nil {
 		log.Printf("Failed to create detector: %v", err)
+
 		return
 	}
+
 	defer func() { _ = detector.Close() }()
 
 	// Analyze some files
@@ -47,13 +49,19 @@ func basicExample() {
 	}
 
 	ctx := context.Background()
+
 	result, err := detector.FindClones(ctx, files)
 	if err != nil {
 		log.Printf("Analysis failed: %v", err)
+
 		return
 	}
 
-	fmt.Printf("Found %d clone groups in %v\n", len(result.CloneGroups), result.Summary.AnalysisTime)
+	fmt.Printf(
+		"Found %d clone groups in %v\n",
+		len(result.CloneGroups),
+		result.Summary.AnalysisTime,
+	)
 	fmt.Printf("Analyzed %d files, found %d total clones\n",
 		result.Summary.TotalFiles, result.Summary.TotalClones)
 
@@ -70,14 +78,17 @@ func progressExample() {
 	opts.Threshold = 10
 	opts.ProgressCallback = func(progress *artdupl.Progress) error {
 		fmt.Printf("  [%s] %.1f%% - %s\n", progress.Stage, progress.Percentage, progress.Message)
+
 		return nil
 	}
 
 	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
 		log.Printf("Failed to create detector: %v", err)
+
 		return
 	}
+
 	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
@@ -86,6 +97,7 @@ func progressExample() {
 	result, err := detector.FindClones(ctx, files)
 	if err != nil {
 		log.Printf("Analysis failed: %v", err)
+
 		return
 	}
 
@@ -101,8 +113,10 @@ func streamingExample() {
 	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
 		log.Printf("Failed to create detector: %v", err)
+
 		return
 	}
+
 	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
@@ -111,6 +125,7 @@ func streamingExample() {
 	cloneChan, err := detector.FindClonesStream(ctx, files)
 	if err != nil {
 		log.Printf("Stream setup failed: %v", err)
+
 		return
 	}
 
@@ -142,8 +157,10 @@ func configExample() {
 	detector, err := artdupl.NewDetector(opts)
 	if err != nil {
 		log.Printf("Failed to create detector: %v", err)
+
 		return
 	}
+
 	defer func() { _ = detector.Close() }()
 
 	ctx := context.Background()
@@ -152,10 +169,12 @@ func configExample() {
 	result, err := detector.FindClones(ctx, files)
 	if err != nil {
 		log.Printf("Analysis failed: %v", err)
+
 		return
 	}
 
 	fmt.Printf("Config analysis: %d groups found\n", len(result.CloneGroups))
+
 	if len(result.CloneGroups) > 0 && len(result.CloneGroups[0].Clones) > 0 {
 		fmt.Printf("  Sample fragment: %s\n", result.CloneGroups[0].Clones[0].Fragment)
 	}
@@ -190,14 +209,18 @@ func errorExample() {
 
 	for _, tc := range testCases {
 		fmt.Printf("  Testing %s: ", tc.name)
+
 		detector, err := artdupl.NewDetector(tc.opts)
 		if err != nil {
 			fmt.Printf("✅ Expected error: %v\n", err)
+
 			continue
 		}
+
 		defer func() { _ = detector.Close() }()
 
 		ctx := context.Background()
+
 		_, err = detector.FindClones(ctx, tc.files)
 		if err != nil {
 			fmt.Printf("✅ Expected error: %v\n", err)

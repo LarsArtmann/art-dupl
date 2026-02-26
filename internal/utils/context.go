@@ -17,5 +17,6 @@ func ApplyTimeout(ctx context.Context, timeoutSeconds int) (context.Context, con
 
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSeconds)*time.Second)
 	fmt.Fprintf(os.Stderr, "⏱️  Execution timeout: %ds\n", timeoutSeconds)
+
 	return ctx, cancel
 }

@@ -28,6 +28,7 @@ var _ = Describe("Stats Subcommand", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -95,12 +96,21 @@ func duplicate() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON format - separate stdout from stderr
-			cmd := exec.Command(setup.BinaryPath, "stats", "--format", "json", "--threshold", "10", setup.TmpDir)
+			cmd := exec.Command(
+				setup.BinaryPath,
+				"stats",
+				"--format",
+				"json",
+				"--threshold",
+				"10",
+				setup.TmpDir,
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -129,11 +139,20 @@ func processUser(name string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON
-			cmd := exec.Command(setup.BinaryPath, "stats", setup.TmpDir, "--format", "json", "--threshold", "10")
+			cmd := exec.Command(
+				setup.BinaryPath,
+				"stats",
+				setup.TmpDir,
+				"--format",
+				"json",
+				"--threshold",
+				"10",
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -157,7 +176,15 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with CSV format - separate stdout
-			cmd := exec.Command(setup.BinaryPath, "stats", "--format", "csv", "--threshold", "10", setup.TmpDir)
+			cmd := exec.Command(
+				setup.BinaryPath,
+				"stats",
+				"--format",
+				"csv",
+				"--threshold",
+				"10",
+				setup.TmpDir,
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -201,7 +228,12 @@ func small() {}`
 			err := setup.CreateDuplicateFiles([]string{"vendor1.go", "vendor2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			_, err = setup.RunSubcommand("stats", "--vendor", "--threshold", testutil.ThresholdMedium)
+			_, err = setup.RunSubcommand(
+				"stats",
+				"--vendor",
+				"--threshold",
+				testutil.ThresholdMedium,
+			)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
@@ -254,7 +286,12 @@ func artDuplTest() string {
 		It("should work with --filter-generated flag", func() {
 			code := `package main
 func filterTest() {}`
-			testWithFilterFlag(setup, code, []string{"filter1.go", "filter2.go"}, "--filter-generated")
+			testWithFilterFlag(
+				setup,
+				code,
+				[]string{"filter1.go", "filter2.go"},
+				"--filter-generated",
+			)
 		})
 
 		It("should work with include-sqlc flag", func() {
@@ -291,7 +328,8 @@ func SQLCFunc() {}`
 	})
 
 	Context("When running stats with verbose flag", func() {
-		DescribeTable("should work with various verbose flag formats",
+		DescribeTable(
+			"should work with various verbose flag formats",
 			func(funcName string, files []string, flags ...string) {
 				code := fmt.Sprintf(`package main
 func %s() {}`, funcName)
@@ -303,14 +341,33 @@ func %s() {}`, funcName)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(output).ToNot(BeNil())
 			},
-			Entry("single verbose flag", "verboseTest", []string{"verbose1.go", "verbose2.go"}, "-v", "--threshold", "10"),
-			Entry("multiple verbose flags", "verboseTest2", []string{"verbose3.go", "verbose4.go"}, "-vv", "--threshold", "10"),
+			Entry(
+				"single verbose flag",
+				"verboseTest",
+				[]string{"verbose1.go", "verbose2.go"},
+				"-v",
+				"--threshold",
+				"10",
+			),
+			Entry(
+				"multiple verbose flags",
+				"verboseTest2",
+				[]string{"verbose3.go", "verbose4.go"},
+				"-vv",
+				"--threshold",
+				"10",
+			),
 		)
 	})
 })
 
 // testWithStats is a helper function to test stats subcommand with various options.
-func testWithStats(setup *testutil.BDDTestSetup, testCode string, filenames []string, flags ...string) {
+func testWithStats(
+	setup *testutil.BDDTestSetup,
+	testCode string,
+	filenames []string,
+	flags ...string,
+) {
 	err := setup.CreateDuplicateFiles(filenames, testCode)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -334,16 +391,26 @@ func containsThreshold(flags []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 // testDetectionMethod is a helper function to test a specific detection method.
-func testDetectionMethod(setup *testutil.BDDTestSetup, detectionMethod, testCode string, filenames []string) {
+func testDetectionMethod(
+	setup *testutil.BDDTestSetup,
+	detectionMethod, testCode string,
+	filenames []string,
+) {
 	testWithStats(setup, testCode, filenames, "--detection-methods", detectionMethod)
 }
 
 // testWithFilterFlag is a helper function to test filter flag functionality.
-func testWithFilterFlag(setup *testutil.BDDTestSetup, testCode string, filenames []string, flag string) {
+func testWithFilterFlag(
+	setup *testutil.BDDTestSetup,
+	testCode string,
+	filenames []string,
+	flag string,
+) {
 	testWithStats(setup, testCode, filenames, flag)
 }
 
@@ -352,6 +419,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -366,6 +434,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 			output, err := setup.RunSubcommand("stats", "/nonexistent/path")
 			// May error but should not panic
 			_ = err
+
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 
@@ -377,9 +446,16 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid format
-			output, err := setup.RunSubcommand("stats", "--format", "invalid_format", "--threshold", "10")
+			output, err := setup.RunSubcommand(
+				"stats",
+				"--format",
+				"invalid_format",
+				"--threshold",
+				"10",
+			)
 			// Should either error or use default
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -409,11 +485,20 @@ func patternB() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON to verify multiple groups
-			cmd := exec.Command(setup.BinaryPath, "stats", setup.TmpDir, "--format", "json", "--threshold", "10")
+			cmd := exec.Command(
+				setup.BinaryPath,
+				"stats",
+				setup.TmpDir,
+				"--format",
+				"json",
+				"--threshold",
+				"10",
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -437,11 +522,20 @@ func commonUtility(message string) {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			cmd := exec.Command(setup.BinaryPath, "stats", setup.TmpDir, "--format", "json", "--threshold", "5")
+			cmd := exec.Command(
+				setup.BinaryPath,
+				"stats",
+				setup.TmpDir,
+				"--format",
+				"json",
+				"--threshold",
+				"5",
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 

@@ -7,7 +7,12 @@ import (
 )
 
 // TestCloneSorting is a helper function for testing clone sorting algorithms that takes pre-created clones.
-func TestCloneSortingWithData(t *testing.T, sortFunc func([][]*syntax.Node) [][]*syntax.Node, sortName string, clones [][]*syntax.Node) {
+func TestCloneSortingWithData(
+	t *testing.T,
+	sortFunc func([][]*syntax.Node) [][]*syntax.Node,
+	sortName string,
+	clones [][]*syntax.Node,
+) {
 	sorted := sortFunc(clones)
 
 	if len(sorted[0]) < len(sorted[1]) || len(sorted[1]) < len(sorted[2]) {

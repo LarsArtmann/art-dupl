@@ -11,7 +11,10 @@ import (
 )
 
 // buildAnalysisPipeline processes files and prepares data for analysis.
-func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([]*syntax.Node, job.ParseStats, error) {
+func (d *detector) buildAnalysisPipeline(
+	ctx context.Context,
+	files []string,
+) ([]*syntax.Node, job.ParseStats, error) {
 	d.reportProgress(0, "Starting file processing", "")
 
 	// Create file channel
@@ -30,8 +33,10 @@ func (d *detector) buildAnalysisPipeline(ctx context.Context, files []string) ([
 			}
 
 			// Validate file exists and isn't too large
-			if err := d.validateFile(filename); err != nil {
+			err := d.validateFile(filename)
+			if err != nil {
 				d.logger.Warn("Skipping file %s: %v", filename, err)
+
 				continue
 			}
 
@@ -79,6 +84,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 
 	// Get matches based on detection methods
 	threshold := d.config.Threshold
+
 	var matchesChan <-chan syntax.Match
 
 	switch d.opts.DetectionMethods[0] { // Simplified - support single method for now
@@ -112,9 +118,14 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 }
 
 // streamDetectionResults streams detection results to the provided channel.
-func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.Node, resultChan chan<- *CloneGroup) error {
+func (d *detector) streamDetectionResults(
+	ctx context.Context,
+	data []*syntax.Node,
+	resultChan chan<- *CloneGroup,
+) error {
 	// Similar to runDetection but streams results instead of collecting all
 	threshold := d.config.Threshold
+
 	var matchesChan <-chan syntax.Match
 
 	switch d.opts.DetectionMethods[0] {
@@ -149,11 +160,16 @@ func (d *detector) streamDetectionResults(ctx context.Context, data []*syntax.No
 }
 
 // runSuffixTreeDetection executes suffix tree-based detection.
-func (d *detector) runSuffixTreeDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
+func (d *detector) runSuffixTreeDetection(
+	ctx context.Context,
+	data []*syntax.Node,
+	threshold int,
+) <-chan syntax.Match {
 	tree := d.buildSuffixTree(data)
 	suffixMatches := tree.FindDuplOver(threshold)
 
 	syntaxMatches := make(chan syntax.Match)
+
 	go func() {
 		defer close(syntaxMatches)
 
@@ -169,13 +185,22 @@ func (d *detector) runSuffixTreeDetection(ctx context.Context, data []*syntax.No
 }
 
 // runArtDuplDetection executes art-dupl (suffix tree) detection method.
-func (d *detector) runArtDuplDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
+func (d *detector) runArtDuplDetection(
+	ctx context.Context,
+	data []*syntax.Node,
+	threshold int,
+) <-chan syntax.Match {
 	return d.runSuffixTreeDetection(ctx, data, threshold)
 }
 
 // runHashDetection executes hash-based detection method using SHA-256 file hashing.
-func (d *detector) runHashDetection(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
+func (d *detector) runHashDetection(
+	ctx context.Context,
+	data []*syntax.Node,
+	threshold int,
+) <-chan syntax.Match {
 	hashDetector := hash.NewHashDetector(threshold)
+
 	return hashDetector.FindDuplOver(data, threshold)
 }
 
@@ -185,11 +210,15 @@ func (d *detector) buildSuffixTree(data []*syntax.Node) *suffixtree.STree {
 	for _, node := range data {
 		tree.Update(node)
 	}
+
 	return tree
 }
 
 // collectMatchesIntoGroups collects matches from a channel and groups them by hash.
-func collectMatchesIntoGroups(ctx context.Context, matchesChan <-chan syntax.Match) (map[string][][]*syntax.Node, error) {
+func collectMatchesIntoGroups(
+	ctx context.Context,
+	matchesChan <-chan syntax.Match,
+) (map[string][][]*syntax.Node, error) {
 	groups := make(map[string][][]*syntax.Node)
 
 	for match := range matchesChan {

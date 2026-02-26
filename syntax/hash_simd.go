@@ -16,6 +16,7 @@ var hashPool = sync.Pool{
 	New: func() any {
 		// Pre-allocate for common sizes (up to 10,000 nodes)
 		buf := make([]byte, 0, 10_000)
+
 		return &buf
 	},
 }
@@ -39,6 +40,7 @@ func hashSeq(nodes []*Node) string {
 	// Extract byte slice from pool to reduce allocations
 	bufPtr := hashPool.Get().(*[]byte)
 	buf := *bufPtr
+
 	defer func() {
 		// Reset and return buffer to pool
 		*bufPtr = buf[:0]
@@ -69,6 +71,7 @@ func hashSeq(nodes []*Node) string {
 	//
 
 	hash := xxh3.Hash(buf)
+
 	return format.Hash(hash)
 }
 
@@ -142,11 +145,14 @@ func BatchHash(sequences [][]*Node) []string {
 	var wg sync.WaitGroup
 	for i, seq := range sequences {
 		wg.Add(1)
+
 		go func(idx int, nodes []*Node) {
 			defer wg.Done()
+
 			results[idx] = hashSeq(nodes)
 		}(i, seq)
 	}
+
 	wg.Wait()
 
 	return results

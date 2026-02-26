@@ -90,7 +90,13 @@ func NewConfigError(msg string, cause error) *DuplError {
 
 // NewIOError creates a new I/O error.
 func NewIOError(file, msg string, cause error) *DuplError {
-	return &DuplError{Type: IOError, Message: msg, File: file, Cause: cause, Stack: string(debug.Stack())}
+	return &DuplError{
+		Type:    IOError,
+		Message: msg,
+		File:    file,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
 }
 
 // NewValidationError creates a new validation error.
@@ -99,7 +105,12 @@ func NewValidationError(msg string, cause error) *DuplError {
 }
 
 // NewInternalError creates a new internal error.
-func NewInternalError(msg string, cause error) *DuplError { return newError(InternalError, msg, cause) }
+func NewInternalError(
+	msg string,
+	cause error,
+) *DuplError {
+	return newError(InternalError, msg, cause)
+}
 
 // NewDetectionError creates a new detection error.
 func NewDetectionError(msg string, cause error) *DuplError {
@@ -107,21 +118,38 @@ func NewDetectionError(msg string, cause error) *DuplError {
 }
 
 // NewAnalysisError creates a new analysis error.
-func NewAnalysisError(msg string, cause error) *DuplError { return newError(AnalysisError, msg, cause) }
+func NewAnalysisError(
+	msg string,
+	cause error,
+) *DuplError {
+	return newError(AnalysisError, msg, cause)
+}
 
 // NewFileError creates a new file error with context.
 func NewFileError(file, msg string, cause error) *DuplError {
-	return &DuplError{Type: FileError, Message: msg, File: file, Cause: cause, Stack: string(debug.Stack())}
+	return &DuplError{
+		Type:    FileError,
+		Message: msg,
+		File:    file,
+		Cause:   cause,
+		Stack:   string(debug.Stack()),
+	}
 }
 
 // NewTimeoutError creates a new timeout error.
-func NewTimeoutError(msg string, cause error) *DuplError { return newError(TimeoutError, msg, cause) }
+func NewTimeoutError(
+	msg string,
+	cause error,
+) *DuplError {
+	return newError(TimeoutError, msg, cause)
+}
 
 // Error implements the error interface.
 func (e *DuplError) Error() string {
 	if e.File != "" {
 		return fmt.Sprintf("%s error at %s:%d: %s", e.Type, e.File, e.Line, e.Message)
 	}
+
 	return fmt.Sprintf("%s error: %s", e.Type, e.Message)
 }
 
@@ -136,6 +164,7 @@ func Is(err error, errorType ErrorType) bool {
 	if errors.As(err, &duplErr) {
 		return duplErr.Type == errorType
 	}
+
 	return false
 }
 
@@ -196,7 +225,12 @@ func WrapIO(err error, file, operation string) error {
 
 // wrapWithMessage wraps an error with context using a specific error type and constructor.
 // It appends the original error message to the context.
-func wrapWithMessage(err error, errorType ErrorType, context string, constructor func(string, error) *DuplError) error {
+func wrapWithMessage(
+	err error,
+	errorType ErrorType,
+	context string,
+	constructor func(string, error) *DuplError,
+) error {
 	if err == nil {
 		return nil
 	}

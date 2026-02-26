@@ -21,11 +21,14 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 		if content[offset] == '\n' {
 			line++
 		}
+
 		if offset == start {
 			lineStart = line
 		}
+
 		if offset == end-1 {
 			lineEnd = line
+
 			break
 		}
 	}
@@ -34,6 +37,7 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 	if lineStart == 0 {
 		lineStart = 1
 	}
+
 	if lineEnd == 0 {
 		lineEnd = lineStart
 	}
@@ -46,6 +50,7 @@ func SplitLines(content []byte) []string {
 	if len(content) == 0 {
 		return []string{}
 	}
+
 	return strings.Split(string(content), "\n")
 }
 
@@ -54,6 +59,7 @@ func JoinLines(lines []string) string {
 	if len(lines) == 0 {
 		return ""
 	}
+
 	return strings.Join(lines, "\n")
 }
 
@@ -68,11 +74,13 @@ type LineIndex struct {
 func NewLineIndex(content []byte) *LineIndex {
 	newlines := make([]int, 0, len(content)/40) // estimate 40 chars per line
 	newlines = append(newlines, 0)              // Line 1 starts at 0
+
 	for i, b := range content {
 		if b == '\n' {
 			newlines = append(newlines, i+1)
 		}
 	}
+
 	return &LineIndex{newlines: newlines}
 }
 
@@ -86,5 +94,6 @@ func (li *LineIndex) Line(offset int) int {
 	idx := sort.Search(len(li.newlines), func(i int) bool {
 		return li.newlines[i] > offset
 	})
+
 	return idx
 }

@@ -5,7 +5,7 @@ package bdd
 
 var (
 	// structuralTestCode1 and structuralTestCode2 have identical AST structure
-	// but different method names - should be flagged with --structural
+	// but different method names - should be flagged with --structural.
 	structuralTestCode1 = `package main
 
 import "testing"
@@ -37,7 +37,7 @@ func TestOrderService_GetByID(t *testing.T) {
 }`
 
 	// semanticDifferentCode1 and semanticDifferentCode2 have ALL different identifiers
-	// should NOT be flagged with semantic detection
+	// should NOT be flagged with semantic detection.
 	semanticDifferentCode1 = `package main
 
 import "testing"
@@ -68,7 +68,7 @@ func TestOrderService_GetByID(tb *testing.T) {
 	}
 }`
 
-	// trueDuplicateCode is identical in both files - should always be detected
+	// trueDuplicateCode is identical in both files - should always be detected.
 	trueDuplicateCode = `package main
 
 import "testing"
@@ -84,7 +84,7 @@ func TestSameFunction(t *testing.T) {
 	}
 }`
 
-	// configTestDifferentCode1 and configTestDifferentCode2 test config-based semantic
+	// configTestDifferentCode1 and configTestDifferentCode2 test config-based semantic.
 	configTestDifferentCode1 = `package main
 
 func processUser() {
@@ -102,7 +102,7 @@ func processOrder() {
 }`
 
 	// handlerTestCode1 and handlerTestCode2 are Ginkgo-style test patterns
-	// These have identical structure but test different handlers
+	// These have identical structure but test different handlers.
 	handlerTestCode1 = `package handler_test
 
 import (
@@ -152,7 +152,7 @@ func TestOrderHandler(t *testing.T) {
 }`
 
 	// enumPatternCode1 and enumPatternCode2 test enum-type method patterns
-	// Same structure but different receiver types
+	// Same structure but different receiver types.
 	enumPatternCode1 = `package enums
 
 type CrushMode string

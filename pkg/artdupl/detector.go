@@ -27,7 +27,8 @@ func NewDetector(opts *Options) (Detector, error) {
 	}
 
 	// Validate options
-	if err := ValidateOptions(opts); err != nil {
+	err := ValidateOptions(opts)
+	if err != nil {
 		return nil, errors.WrapConfig(err, "invalid options")
 	}
 
@@ -57,13 +58,20 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for %d files", len(files)))
+		return nil, errors.WrapValidation(
+			err,
+			fmt.Sprintf("input validation failed for %d files", len(files)),
+		)
 	}
 
 	// Process files and build analysis pipeline
 	data, _, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
-		return nil, errors.Wrap(err, errors.AnalysisError, fmt.Sprintf("analysis pipeline construction failed for %d files", len(files)))
+		return nil, errors.Wrap(
+			err,
+			errors.AnalysisError,
+			fmt.Sprintf("analysis pipeline construction failed for %d files", len(files)),
+		)
 	}
 
 	// Run detection based on configured methods
@@ -77,12 +85,19 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 }
 
 // FindClonesStream provides streaming results for large projects.
-func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error) {
+func (d *detector) FindClonesStream(
+	ctx context.Context,
+	files []string,
+) (<-chan *CloneGroup, error) {
 	d.started = time.Now()
 
 	// Validate inputs
-	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, errors.WrapValidation(err, fmt.Sprintf("input validation failed for streaming with %d files", len(files)))
+	err := d.validateInputs(ctx, files)
+	if err != nil {
+		return nil, errors.WrapValidation(
+			err,
+			fmt.Sprintf("input validation failed for streaming with %d files", len(files)),
+		)
 	}
 
 	// Create output channel
@@ -96,6 +111,7 @@ func (d *detector) FindClonesStream(ctx context.Context, files []string) (<-chan
 		data, _, err := d.buildAnalysisPipeline(ctx, files)
 		if err != nil {
 			d.logger.Error("Analysis pipeline error: %v", err)
+
 			return
 		}
 

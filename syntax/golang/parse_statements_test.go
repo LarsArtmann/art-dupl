@@ -6,6 +6,7 @@ import (
 
 func TestParse_ControlStatements(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name     string
 		code     string
@@ -80,6 +81,7 @@ func main() {
 
 func TestParse_ReturnStmt(t *testing.T) {
 	t.Parallel()
+
 	code := `package main
 
 func foo() int {
@@ -91,6 +93,7 @@ func foo() int {
 
 func TestParse_ReturnStmt_Table(t *testing.T) {
 	t.Parallel()
+
 	code := `package main
 
 func getValue() int {

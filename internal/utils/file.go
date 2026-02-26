@@ -19,6 +19,7 @@ func NewFileProcessor(baseDir ...string) *FileProcessor {
 	if len(baseDir) > 0 && baseDir[0] != "" {
 		fp.baseDir = baseDir[0]
 	}
+
 	return fp
 }
 
@@ -32,12 +33,14 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
-	if err := os.MkdirAll(dir, 0o750); err != nil {
+	err := os.MkdirAll(dir, 0o750)
+	if err != nil {
 		return errors.NewIOError(dir, "failed to create directory", err)
 	}
 
 	// Write file
-	if err := os.WriteFile(fullPath, content, perm); err != nil {
+	err = os.WriteFile(fullPath, content, perm)
+	if err != nil {
 		return errors.NewIOError(fullPath, "failed to write file", err)
 	}
 
@@ -57,7 +60,9 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 		fullPath = filepath.Join(fp.baseDir, filename)
 	}
 
-	data, err := os.ReadFile(fullPath) // #nosec G304 -- Path is constructed from base directory and validated filename
+	data, err := os.ReadFile(
+		fullPath,
+	) // #nosec G304 -- Path is constructed from base directory and validated filename
 	if err != nil {
 		return nil, errors.NewIOError(fullPath, "failed to read file", err)
 	}
@@ -68,20 +73,24 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 // WriteTestFiles creates multiple test files from content map.
 func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
 	for filename, content := range files {
-		if err := fp.WriteTextFile(filename, content); err != nil {
+		err := fp.WriteTextFile(filename, content)
+		if err != nil {
 			return fmt.Errorf("failed to write test file %s: %w", filename, err)
 		}
 	}
+
 	return nil
 }
 
 // WriteDuplicateFiles creates files with identical content for testing.
 func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string) error {
 	for _, filename := range filenames {
-		if err := fp.WriteTextFile(filename, content); err != nil {
+		err := fp.WriteTextFile(filename, content)
+		if err != nil {
 			return fmt.Errorf("failed to write duplicate file %s: %w", filename, err)
 		}
 	}
+
 	return nil
 }
 
@@ -112,8 +121,13 @@ func FindProjectRoot(startPath string, markers []string) (string, error) {
 			// Reached filesystem root
 			break
 		}
+
 		current = parent
 	}
 
-	return "", errors.NewFileError(startPath, fmt.Sprintf("project root not found (searched for %v)", markers), nil)
+	return "", errors.NewFileError(
+		startPath,
+		fmt.Sprintf("project root not found (searched for %v)", markers),
+		nil,
+	)
 }

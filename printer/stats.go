@@ -127,6 +127,7 @@ func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 		if uniqueLineCount == 0 {
 			uniqueLineCount = lineCount
 		}
+
 		p.statsData.TotalTokens += len(dup)
 
 		// Track file-level duplication
@@ -159,12 +160,20 @@ func (p *stats) PrintFooter() error {
 
 	// Calculate complexity score (clones per group)
 	if p.statsData.TotalCloneGroups > 0 {
-		p.statsData.ComplexityScore = float64(p.statsData.TotalClones) / float64(p.statsData.TotalCloneGroups)
+		p.statsData.ComplexityScore = float64(
+			p.statsData.TotalClones,
+		) / float64(
+			p.statsData.TotalCloneGroups,
+		)
 	}
 
 	// Calculate duplication ratio (percentage)
 	if p.statsData.TotalEstimatedLines > 0 {
-		p.statsData.DuplicationRatio = float64(p.statsData.TotalDuplicateLines) / float64(p.statsData.TotalEstimatedLines) * 100
+		p.statsData.DuplicationRatio = float64(
+			p.statsData.TotalDuplicateLines,
+		) / float64(
+			p.statsData.TotalEstimatedLines,
+		) * 100
 	}
 
 	// Calculate health score based on duplication ratio

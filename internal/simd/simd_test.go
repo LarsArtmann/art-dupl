@@ -24,6 +24,7 @@ func TestNewHasher(t *testing.T) {
 	// When SIMD is not available (current state), should return fallbackHasher
 	// We verify by checking the behavior matches fallbackHasher
 	data := []byte("test data")
+
 	result := hasher.Hash(data)
 	if result != nil {
 		t.Errorf("fallbackHasher.Hash() = %v, want nil", result)
@@ -75,10 +76,13 @@ func TestFallbackHasher_HashSlice(t *testing.T) {
 			result := hasher.HashSlice(tt.data)
 			if result == nil {
 				t.Error("HashSlice() returned nil slice")
+
 				return
 			}
+
 			if len(result) != len(tt.data) {
 				t.Errorf("HashSlice() returned %d elements, want %d", len(result), len(tt.data))
+
 				return
 			}
 			// All elements should be nil (since Hash returns nil)
@@ -105,12 +109,16 @@ func TestSimdHasher_HashSlice(t *testing.T) {
 
 	if result == nil {
 		t.Error("HashSlice() returned nil slice")
+
 		return
 	}
+
 	if len(result) != len(data) {
 		t.Errorf("HashSlice() returned %d elements, want %d", len(result), len(data))
+
 		return
 	}
+
 	for i, r := range result {
 		if r != nil {
 			t.Errorf("HashSlice()[%d] = %v, want nil", i, r)
@@ -155,13 +163,19 @@ func TestAlignSlice(t *testing.T) {
 
 			if len(result) != tt.wantLen {
 				t.Errorf("AlignSlice() length = %d, want %d", len(result), tt.wantLen)
+
 				return
 			}
 
 			// Verify original data is preserved
 			for i, b := range tt.data {
 				if result[i] != b {
-					t.Errorf("AlignSlice() corrupted data at index %d: got %d, want %d", i, result[i], b)
+					t.Errorf(
+						"AlignSlice() corrupted data at index %d: got %d, want %d",
+						i,
+						result[i],
+						b,
+					)
 				}
 			}
 
@@ -176,6 +190,7 @@ func TestAlignSlice(t *testing.T) {
 			if tt.wantCopy && &result[0] == &tt.data[0] {
 				t.Error("AlignSlice() returned same slice, expected a copy")
 			}
+
 			if !tt.wantCopy && len(result) > 0 && &result[0] != &tt.data[0] {
 				t.Error("AlignSlice() returned different slice, expected same slice")
 			}
@@ -191,6 +206,7 @@ func TestAlignSlice_EdgeCases(t *testing.T) {
 	for i := 0; i <= vectorSize*2; i++ {
 		data := make([]byte, i)
 		result := AlignSlice(data)
+
 		expectedLen := ((i + vectorSize - 1) / vectorSize) * vectorSize
 		if i%vectorSize == 0 {
 			expectedLen = i
@@ -205,9 +221,11 @@ func TestAlignSlice_EdgeCases(t *testing.T) {
 func TestUnsafeBytes(t *testing.T) {
 	t.Run("uint32 pointer", func(t *testing.T) {
 		data := []byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}
+
 		ptr := UnsafeBytes[uint32](data)
 		if ptr == nil {
 			t.Error("UnsafeBytes() returned nil")
+
 			return
 		}
 		// The value depends on endianness, just verify we can read it
@@ -217,22 +235,28 @@ func TestUnsafeBytes(t *testing.T) {
 
 	t.Run("uint64 pointer", func(t *testing.T) {
 		data := []byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}
+
 		ptr := UnsafeBytes[uint64](data)
 		if ptr == nil {
 			t.Error("UnsafeBytes() returned nil")
+
 			return
 		}
+
 		value := *ptr
 		_ = value
 	})
 
 	t.Run("byte pointer", func(t *testing.T) {
 		data := []byte{0x42}
+
 		ptr := UnsafeBytes[byte](data)
 		if ptr == nil {
 			t.Error("UnsafeBytes() returned nil")
+
 			return
 		}
+
 		if *ptr != 0x42 {
 			t.Errorf("UnsafeBytes() = 0x%x, want 0x42", *ptr)
 		}
@@ -247,8 +271,10 @@ func TestUnsafeSlice(t *testing.T) {
 
 		if len(slice) != 2 {
 			t.Errorf("UnsafeSlice() length = %d, want 2", len(slice))
+
 			return
 		}
+
 		if cap(slice) != 2 {
 			t.Errorf("UnsafeSlice() capacity = %d, want 2", cap(slice))
 		}
@@ -264,6 +290,7 @@ func TestUnsafeSlice(t *testing.T) {
 
 		if len(slice) != 2 {
 			t.Errorf("UnsafeSlice() length = %d, want 2", len(slice))
+
 			return
 		}
 	})
@@ -275,6 +302,7 @@ func TestUnsafeSlice(t *testing.T) {
 		defer func() {
 			_ = recover()
 		}()
+
 		slice := UnsafeSlice[uint32](data)
 		// If we get here, it handled empty slice
 		if len(slice) != 0 {
@@ -320,10 +348,13 @@ func TestUnsafeBytesAndSlice_Roundtrip(t *testing.T) {
 
 func TestHasherInterface(t *testing.T) {
 	// Verify both hasher types implement the Hasher interface
-	var _ Hasher = &fallbackHasher{}
-	var _ Hasher = &simdHasher{}
+	var (
+		_ Hasher = &fallbackHasher{}
+		_ Hasher = &simdHasher{}
+	)
 
 	// Verify NewHasher returns a valid Hasher implementation
+
 	if hasher := NewHasher(); hasher == nil {
 		t.Error("NewHasher() returned nil")
 	}

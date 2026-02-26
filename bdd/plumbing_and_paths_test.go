@@ -31,6 +31,7 @@ var _ = Describe("Plumbing Output Format", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -49,6 +50,7 @@ var _ = Describe("Plumbing Output Format", func() {
 			// Run with plumbing output
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Each line should follow plumbing format: filename:startline-endline
@@ -65,11 +67,15 @@ var _ = Describe("Plumbing Output Format", func() {
 		It("should be parseable by shell scripts", func() {
 			duplicateCode := duplicateTestCode
 
-			err := setup.CreateDuplicateFiles([]string{"pkg/file1.go", "pkg/file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"pkg/file1.go", "pkg/file2.go"},
+				duplicateCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Each line should be parseable with cut/awk
@@ -94,6 +100,7 @@ var _ = Describe("Plumbing Output Format", func() {
 
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should not contain HTML or text formatting
@@ -128,6 +135,7 @@ func large() {
 			// small: ~12 tokens, large: ~28 tokens
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "15")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should only show large files
@@ -151,6 +159,7 @@ func large() {
 				if line == "" {
 					continue
 				}
+
 				Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
 			}
 		})
@@ -162,6 +171,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -194,6 +204,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 				"--threshold", "5",
 			)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should find files from all paths
@@ -222,6 +233,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should find both
@@ -251,6 +263,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should only show include directory
@@ -287,6 +300,7 @@ func testCommon() { println(1) }`
 				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show regular files but not test files
@@ -301,6 +315,7 @@ var _ = Describe("Path Edge Cases", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -362,11 +377,7 @@ func root() { println(1) }`
 
 	Context("When no Go files exist in path", func() {
 		It("should handle empty directory gracefully", func() {
-			output, err := setup.RunArtDupl("--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-
-			// Should complete without error
-			Expect(output).ToNot(BeNil())
+			testutil.TestEmptyDirectory(setup, 5)
 		})
 
 		It("should handle directory with non-Go files", func() {

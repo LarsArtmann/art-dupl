@@ -13,32 +13,54 @@ func marshalStringID(s, validationMsg string) ([]byte, error) {
 	if s == "" {
 		return nil, errors.NewValidationError(validationMsg, nil)
 	}
+
 	return json.Marshal(s) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // unmarshalWithValidation is a generic helper for unmarshaling JSON with custom validation.
 // It unmarshals data to type T, validates it using the provided validator function,
 // and assigns the result if validation passes.
-func unmarshalWithValidation[T any](data []byte, typeName, validationMsg string, validator func(T) bool, assign func(T)) error {
+func unmarshalWithValidation[T any](
+	data []byte,
+	typeName, validationMsg string,
+	validator func(T) bool,
+	assign func(T),
+) error {
 	var value T
-	if err := json.Unmarshal(data, &value); err != nil {
+	err := json.Unmarshal(data, &value)
+	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
 	}
+
 	if !validator(value) {
 		return errors.NewValidationError(validationMsg, nil)
 	}
+
 	assign(value)
+
 	return nil
 }
 
 // unmarshalStringID is a helper for unmarshaling string IDs that must not be empty.
 func unmarshalStringID(data []byte, typeName, validationMsg string, assign func(string)) error {
-	return unmarshalWithValidation(data, typeName, validationMsg, func(s string) bool { return s != "" }, assign)
+	return unmarshalWithValidation(
+		data,
+		typeName,
+		validationMsg,
+		func(s string) bool { return s != "" },
+		assign,
+	)
 }
 
 // unmarshalUintNonZero is a helper for unmarshaling uint-based types that must not be zero.
 func unmarshalUintNonZero(data []byte, typeName, validationMsg string, assign func(uint)) error {
-	return unmarshalWithValidation(data, typeName, validationMsg, func(n uint) bool { return n != 0 }, assign)
+	return unmarshalWithValidation(
+		data,
+		typeName,
+		validationMsg,
+		func(n uint) bool { return n != 0 },
+		assign,
+	)
 }
 
 // unmarshalUint is a helper function for unmarshaling uint-based types
@@ -57,9 +79,12 @@ func marshalUint(n uint) ([]byte, error) {
 // It handles the common pattern of unmarshaling JSON to unsigned integers.
 func unmarshalUintGeneric[T uint16 | uint32](data []byte, typeName string, assign func(T)) error {
 	var n T
-	if err := json.Unmarshal(data, &n); err != nil {
+	err := json.Unmarshal(data, &n)
+	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
 	}
+
 	assign(n)
+
 	return nil
 }

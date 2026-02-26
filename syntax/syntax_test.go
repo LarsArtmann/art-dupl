@@ -6,10 +6,12 @@ const testFilename = "test.go"
 
 func TestSerialization(t *testing.T) {
 	t.Parallel()
+
 	n := genNodes(7)
 	n[0].AddChildren(n[1], n[2], n[3])
 	n[1].AddChildren(n[4], n[5])
 	n[2].AddChildren(n[6])
+
 	m := genNodes(6)
 	m[0].AddChildren(m[1], m[2], m[3], m[4], m[5])
 	testCases := []struct {
@@ -30,15 +32,19 @@ func genNodes(cnt int) []*Node {
 	for i := range nodes {
 		nodes[i] = NewNode()
 	}
+
 	return nodes
 }
 
 func compareSeries(t *testing.T, stream []*Node, owns []int) {
 	t.Helper()
+
 	if len(stream) != len(owns) {
 		t.Errorf("series aren't the same length; got %d, want %d", len(stream), len(owns))
+
 		return
 	}
+
 	for i, item := range stream {
 		if item.Owns != int32(owns[i]) {
 			t.Errorf("got %d, want %d", item.Owns, owns[i])
@@ -48,6 +54,7 @@ func compareSeries(t *testing.T, stream []*Node, owns []int) {
 
 func TestGetUnitsIndexes(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		seq       string
 		threshold int
@@ -63,11 +70,13 @@ func TestGetUnitsIndexes(t *testing.T) {
 Loop:
 	for _, tc := range testCases {
 		nodes := str2nodes(tc.seq)
+
 		indexes := getUnitsIndexes(nodes, tc.threshold)
 		for i := range tc.expected {
 			if i > len(indexes)-1 || tc.expected[i] != indexes[i] {
 				t.Errorf("for seq '%s', got %v, want %v", tc.seq, indexes, tc.expected)
 			}
+
 			continue Loop
 		}
 	}
@@ -75,6 +84,7 @@ Loop:
 
 func TestCyclicDupl(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		seq      string
 		indexes  []int
@@ -88,14 +98,28 @@ func TestCyclicDupl(t *testing.T) {
 		{"a0 b0 a0 c0", []int{0, 1, 2, 3}, false},
 		{"a0 b0 a0 b0 a0", []int{0, 1, 2}, false},
 		{"a1 b0 a1 b0 c1 b0", []int{0, 2, 4}, false},
-		{"a1 a1 a1 a1 a1 a1", []int{0, 4}, false},                                     //nolint:dupword // Intentional duplicates for testing
-		{"a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0", []int{0, 3, 6, 9, 12}, true}, //nolint:dupword // Intentional duplicates for testing
+		{
+			"a1 a1 a1 a1 a1 a1",
+			[]int{0, 4},
+			false,
+		}, //nolint:dupword // Intentional duplicates for testing
+		{
+			"a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0 a2 b0 b0",
+			[]int{0, 3, 6, 9, 12},
+			true,
+		}, //nolint:dupword // Intentional duplicates for testing
 	}
 
 	for _, tc := range testCases {
 		nodes := str2nodes(tc.seq)
 		if tc.expected != isCyclic(tc.indexes, nodes) {
-			t.Errorf("for seq '%s', indexes %v, got %t, want %t", tc.seq, tc.indexes, !tc.expected, tc.expected)
+			t.Errorf(
+				"for seq '%s', indexes %v, got %t, want %t",
+				tc.seq,
+				tc.indexes,
+				!tc.expected,
+				tc.expected,
+			)
 		}
 	}
 }
@@ -106,10 +130,12 @@ func TestCyclicDupl(t *testing.T) {
 //   - second character is the number for Node.Owns.
 func str2nodes(str string) []*Node {
 	chars := []rune(str)
+
 	nodes := make([]*Node, (len(chars)+1)/3)
 	for i := 0; i < len(chars)-1; i += 3 {
 		nodes[i/3] = &Node{Type: chars[i], Owns: chars[i+1] - '0'}
 	}
+
 	return nodes
 }
 
@@ -130,7 +156,6 @@ func FuzzSerialize(f *testing.F) {
 		// Parse input to create AST nodes
 		// Since we can't reliably parse all fuzz inputs as Go code,
 		// we'll create synthetic nodes based on input characteristics
-
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Serialize panicked with input %q: %v", input, r)

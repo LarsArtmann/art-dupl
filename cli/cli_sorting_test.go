@@ -53,7 +53,11 @@ func TestOccurrenceSorting(t *testing.T) {
 					Frags: createFragmentsWithDuplicates(3, 9), // 3 unique, 9 total
 				},
 			},
-			expectedOrder: []string{"hash2", "hash1", "hash3"}, // 5, 4, 3 unique counts (not 9, 6, 5 totals)
+			expectedOrder: []string{
+				"hash2",
+				"hash1",
+				"hash3",
+			}, // 5, 4, 3 unique counts (not 9, 6, 5 totals)
 		},
 	}
 
@@ -99,7 +103,12 @@ func TestOccurrenceSorting(t *testing.T) {
 				"hash2": len(syntax.Unique(groups["hash2"])),
 				"hash3": len(syntax.Unique(groups["hash3"])),
 			} {
-				t.Logf("%s: %d unique out of %d total", hash, expectedUniqueCount, len(groups[hash]))
+				t.Logf(
+					"%s: %d unique out of %d total",
+					hash,
+					expectedUniqueCount,
+					len(groups[hash]),
+				)
 			}
 		})
 	}
@@ -172,6 +181,7 @@ func createFragments(count int) [][]*syntax.Node {
 		}
 		fragments[i] = []*syntax.Node{node}
 	}
+
 	return fragments
 }
 
@@ -190,6 +200,7 @@ func createFragmentsWithDuplicates(uniqueCount, totalCount int) [][]*syntax.Node
 		}
 		fragments[i] = []*syntax.Node{node}
 	}
+
 	return fragments
 }
 
@@ -202,5 +213,6 @@ func createFragmentsWithSize(size int) [][]*syntax.Node {
 		End:      int32(size),
 		Owns:     int32(size),
 	}
+
 	return [][]*syntax.Node{{node}}
 }

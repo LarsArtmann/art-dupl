@@ -20,6 +20,7 @@ func NewConfidence(c float64) (Confidence, error) {
 			nil,
 		)
 	}
+
 	return Confidence(c), nil
 }
 
@@ -41,22 +42,27 @@ func (conf Confidence) MarshalJSON() ([]byte, error) {
 			nil,
 		)
 	}
+
 	return json.Marshal(float64(conf)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Confidence.
 func (conf *Confidence) UnmarshalJSON(data []byte) error {
 	var c float64
-	if err := json.Unmarshal(data, &c); err != nil {
+	err := json.Unmarshal(data, &c)
+	if err != nil {
 		return fmt.Errorf("failed to unmarshal Confidence: %w", err)
 	}
+
 	if c < 0.0 || c > 1.0 {
 		return errors.NewValidationError(
 			fmt.Sprintf("confidence must be between 0.0 and 1.0, got: %f", c),
 			nil,
 		)
 	}
+
 	*conf = Confidence(c)
+
 	return nil
 }
 
@@ -101,6 +107,7 @@ func NewHash(h string) (Hash, error) {
 	if h == "" {
 		return "", errors.NewValidationError("hash cannot be empty", nil)
 	}
+
 	return Hash(h), nil
 }
 
@@ -130,6 +137,7 @@ func NewProcessingTime(time uint) (ProcessingTime, error) {
 	if time == 0 {
 		return 0, errors.NewValidationError("processing time cannot be 0", nil)
 	}
+
 	return ProcessingTime(time), nil
 }
 
@@ -144,15 +152,19 @@ func (pt ProcessingTime) String() string {
 	if ms < 1000 {
 		return strconv.FormatUint(ms, 10) + "ms"
 	}
+
 	seconds := ms / 1000
 	if seconds < 60 {
 		return strconv.FormatUint(seconds, 10) + "s"
 	}
+
 	minutes := seconds / 60
 	if minutes < 60 {
 		return strconv.FormatUint(minutes, 10) + "m"
 	}
+
 	hours := minutes / 60
+
 	return strconv.FormatUint(hours, 10) + "h"
 }
 
@@ -161,16 +173,23 @@ func (pt ProcessingTime) MarshalJSON() ([]byte, error) {
 	if pt == 0 {
 		return nil, errors.NewValidationError("processing time cannot be 0", nil)
 	}
+
 	data, err := json.Marshal(uint(pt))
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal ProcessingTime: %w", err)
 	}
+
 	return data, nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ProcessingTime.
 func (pt *ProcessingTime) UnmarshalJSON(data []byte) error {
-	return unmarshalUintNonZero(data, "ProcessingTime", "processing time cannot be 0", func(n uint) {
-		*pt = ProcessingTime(n)
-	})
+	return unmarshalUintNonZero(
+		data,
+		"ProcessingTime",
+		"processing time cannot be 0",
+		func(n uint) {
+			*pt = ProcessingTime(n)
+		},
+	)
 }

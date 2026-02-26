@@ -89,6 +89,7 @@ func countLinesInFragment(fragment string) int {
 	if fragment == "" {
 		return 1 // At least one line even for empty content
 	}
+
 	return strings.Count(fragment, "\n") + 1
 }
 
@@ -98,6 +99,7 @@ func (p *JSONPrinter) PrintHeader() error {
 	// p.filesCount = 0
 	p.totalClones = 0
 	p.cloneGroups = []CloneGroup{}
+
 	return nil
 }
 
@@ -120,13 +122,20 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		if cnt == 0 {
 			return errors.NewInternalError("zero length duplicate found", nil)
 		}
+
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
 		// Use unified file processor
 		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
-			return fmt.Errorf("failed to process node range for file %s (clone %d of %d): %w", nstart.Filename, i+1, len(dups), err)
+			return fmt.Errorf(
+				"failed to process node range for file %s (clone %d of %d): %w",
+				nstart.Filename,
+				i+1,
+				len(dups),
+				err,
+			)
 		}
 
 		lineStart := fileInfo.LineStart
@@ -143,6 +152,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		if clones[i].Filename == clones[j].Filename {
 			return clones[i].LineStart < clones[j].LineStart
 		}
+
 		return clones[i].Filename < clones[j].Filename
 	})
 
@@ -203,11 +213,17 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 
 	data, err := json.MarshalIndent(&output, "", "  ")
 	if err != nil {
-		return errors.HandleMarshalingError("encode", "JSON output", err) //nolint:wrapcheck // Error already wraps cause
+		return errors.HandleMarshalingError(
+			"encode",
+			"JSON output",
+			err,
+		) //nolint:wrapcheck // Error already wraps cause
 	}
+
 	if _, err := p.w.Write(data); err != nil {
 		return errors.WrapIO(err, "JSON output", "write")
 	}
+
 	return nil
 }
 
@@ -240,10 +256,16 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 
 	data, err := json.MarshalIndent(simpleOutput, "", "  ")
 	if err != nil {
-		return errors.HandleMarshalingError("encode", "simple JSON output", err) //nolint:wrapcheck // Error already wraps cause
+		return errors.HandleMarshalingError(
+			"encode",
+			"simple JSON output",
+			err,
+		) //nolint:wrapcheck // Error already wraps cause
 	}
+
 	if _, err := p.w.Write(data); err != nil {
 		return errors.WrapIO(err, "simple JSON output", "write")
 	}
+
 	return nil
 }

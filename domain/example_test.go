@@ -50,8 +50,10 @@ func ExampleLineNumber() {
 	ln, err := domain.NewLineNumber(42)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
+
 		return
 	}
+
 	fmt.Printf("Line number: %d\n", ln)
 
 	// Invalid: zero line number

@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 )
@@ -13,6 +14,7 @@ func TestProfile(t *testing.T) {
 	if result.AllocMB < 0 {
 		t.Errorf("AllocMB should be >= 0, got %f", result.AllocMB)
 	}
+
 	if result.NumGoroutine < 0 {
 		t.Errorf("NumGoroutine should be >= 0, got %d", result.NumGoroutine)
 	}
@@ -40,13 +42,19 @@ func TestProfileWithDuration(t *testing.T) {
 	result := ProfileWithDuration(duration)
 
 	if result.Duration != duration {
-		t.Errorf("ProfileWithDuration duration should match input, got %v want %v", result.Duration, duration)
+		t.Errorf(
+			"ProfileWithDuration duration should match input, got %v want %v",
+			result.Duration,
+			duration,
+		)
 	}
 }
 
 func TestProfileDiff(t *testing.T) {
 	start := Profile()
+
 	time.Sleep(10 * time.Millisecond)
+
 	end := Profile()
 
 	diff := ProfileDiff(start, end)
@@ -89,7 +97,7 @@ func TestContextTimeoutExpired(t *testing.T) {
 	}
 
 	// Context should be cancelled
-	if ctx.Err() != context.DeadlineExceeded {
+	if !errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		t.Errorf("Context should have deadline exceeded error, got %v", ctx.Err())
 	}
 }

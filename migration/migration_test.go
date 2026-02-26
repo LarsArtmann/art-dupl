@@ -195,6 +195,7 @@ var _ = Describe("Migration Path", func() {
 
 			// Test unmarshaling
 			var unmarshaled migration.MigrationReport
+
 			err = json.Unmarshal(data, &unmarshaled)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(unmarshaled.MigrationID).To(Equal("test-migration"))

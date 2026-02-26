@@ -21,10 +21,12 @@ func TestConfigurationIntegration(t *testing.T) {
 	}
 
 	cliConfig := &config.Config{
-		Threshold:        50,                                                     // Should override file config
-		OutputFormat:     config.OutputFormatHTML,                                // Should override file config
-		IncludeVendor:    true,                                                   // Should override file config
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl}, // Should override file config
+		Threshold:     50,                      // Should override file config
+		OutputFormat:  config.OutputFormatHTML, // Should override file config
+		IncludeVendor: true,                    // Should override file config
+		DetectionMethods: config.DetectionMethods{
+			config.DetectionMethodArtDupl,
+		}, // Should override file config
 	}
 
 	merged := config.MergeConfigs(fileConfig, cliConfig)
@@ -33,9 +35,11 @@ func TestConfigurationIntegration(t *testing.T) {
 	if merged.Threshold != 50 {
 		t.Errorf("Expected threshold 50 (CLI override), got %d", merged.Threshold)
 	}
+
 	if merged.OutputFormat != "html" {
 		t.Errorf("Expected outputFormat html (CLI override), got %s", merged.OutputFormat)
 	}
+
 	if merged.IncludeVendor != true {
 		t.Errorf("Expected IncludeVendor true (CLI override), got %v", merged.IncludeVendor)
 	}
@@ -44,20 +48,51 @@ func TestConfigurationIntegration(t *testing.T) {
 	if merged.Verbose != true {
 		t.Errorf("Expected Verbose true (from file), got %v", merged.Verbose)
 	}
+
 	if len(merged.Paths) != 1 || merged.Paths[0] != "./test" {
 		t.Errorf("Expected paths [\"./test\"], got %v", merged.Paths)
 	}
+
 	if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != "*_test.go" {
 		t.Errorf("Expected ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
 	}
+
 	if merged.MaxChildrenSerial != 20000 {
 		t.Errorf("Expected MaxChildrenSerial 20000, got %d", merged.MaxChildrenSerial)
 	}
+
 	if merged.OutputFile != "output.json" {
 		t.Errorf("Expected OutputFile output.json, got %s", merged.OutputFile)
 	}
-	if len(merged.DetectionMethods) != 1 || merged.DetectionMethods[0] != config.DetectionMethodArtDupl {
-		t.Errorf("Expected DetectionMethods [art-dupl] (CLI override), got %v", merged.DetectionMethods)
+
+	if len(merged.DetectionMethods) != 1 ||
+		merged.DetectionMethods[0] != config.DetectionMethodArtDupl {
+		t.Errorf(
+			"Expected DetectionMethods [art-dupl] (CLI override), got %v",
+			merged.DetectionMethods,
+		)
+	}
+}
+
+// createConfigTestCase creates a test case for config validation.
+func createConfigTestCase(name string, threshold int, isValid bool) struct {
+	name    string
+	config  *config.Config
+	isValid bool
+} {
+	return struct {
+		name    string
+		config  *config.Config
+		isValid bool
+	}{
+		name: name,
+		config: &config.Config{
+			Threshold:         threshold,
+			OutputFormat:      config.OutputFormatText,
+			MaxChildrenSerial: 10000,
+			DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
+		},
+		isValid: isValid,
 	}
 }
 
@@ -67,26 +102,8 @@ func TestConfigurationValidation(t *testing.T) {
 		config  *config.Config
 		isValid bool
 	}{
-		{
-			name: "Valid config",
-			config: &config.Config{
-				Threshold:         15,
-				OutputFormat:      config.OutputFormatText,
-				MaxChildrenSerial: 10000,
-				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
-			},
-			isValid: true,
-		},
-		{
-			name: "Invalid threshold",
-			config: &config.Config{
-				Threshold:         0,
-				OutputFormat:      config.OutputFormatText,
-				MaxChildrenSerial: 10000,
-				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
-			},
-			isValid: false,
-		},
+		createConfigTestCase("Valid config", 15, true),
+		createConfigTestCase("Invalid threshold", 0, false),
 		{
 			name: "Invalid output format",
 			config: &config.Config{
@@ -105,6 +122,7 @@ func TestConfigurationValidation(t *testing.T) {
 			if tt.isValid && err != nil {
 				t.Errorf("Expected valid config, got error: %v", err)
 			}
+
 			if !tt.isValid && err == nil {
 				t.Error("Expected invalid config, but got no error")
 			}
@@ -139,6 +157,7 @@ func TestOutputFormatSelection(t *testing.T) {
 			if tt.outputFormat != "invalid" && err != nil {
 				t.Errorf("Expected valid format %s, got error: %v", tt.outputFormat, err)
 			}
+
 			if tt.outputFormat == "invalid" && err == nil {
 				t.Error("Expected invalid format to cause error")
 			}

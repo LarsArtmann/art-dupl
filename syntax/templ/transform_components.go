@@ -7,20 +7,27 @@ import (
 )
 
 // transformTemplElementExpression converts a TemplElementExpression to a syntax.Node.
-func (t *transformer) transformTemplElementExpression(tee *templparser.TemplElementExpression) *syntax.Node {
+func (t *transformer) transformTemplElementExpression(
+	tee *templparser.TemplElementExpression,
+) *syntax.Node {
 	if tee == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ComponentRender, tee.Range)
 	t.addChildren(o, tee.Children)
+
 	return o
 }
 
 // transformCallTemplateExpression converts a CallTemplateExpression to a syntax.Node.
-func (t *transformer) transformCallTemplateExpression(cte *templparser.CallTemplateExpression) *syntax.Node {
+func (t *transformer) transformCallTemplateExpression(
+	cte *templparser.CallTemplateExpression,
+) *syntax.Node {
 	if cte == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(ComponentRender, cte.Range)
 }
 
@@ -29,6 +36,7 @@ func (t *transformer) transformChildrenExpression(ce *templparser.ChildrenExpres
 	if ce == nil {
 		return nil
 	}
+
 	return t.createNode(ComponentChildrenExpression, 0, 0)
 }
 
@@ -37,6 +45,7 @@ func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syn
 	if se == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ScriptElement, se.Range)
 	for _, attr := range se.Attributes {
 		attrNode := t.transformAttribute(attr)
@@ -44,6 +53,7 @@ func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syn
 			o.AddChildren(attrNode)
 		}
 	}
+
 	return o
 }
 
@@ -52,6 +62,7 @@ func (t *transformer) transformDocType(dt *templparser.DocType) *syntax.Node {
 	if dt == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(Doctype, dt.Range)
 }
 
@@ -60,6 +71,7 @@ func (t *transformer) transformGoCode(gc *templparser.GoCode) *syntax.Node {
 	if gc == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(RawGoBlock, gc.Expression.Range)
 }
 
@@ -68,6 +80,7 @@ func (t *transformer) transformStringExpression(se *templparser.StringExpression
 	if se == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(Expression, se.Expression.Range)
 }
 
@@ -76,6 +89,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 	if re == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(Element, re.Range)
 	for _, attr := range re.Attributes {
 		attrNode := t.transformAttribute(attr)
@@ -83,6 +97,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 			o.AddChildren(attrNode)
 		}
 	}
+
 	return o
 }
 
@@ -91,5 +106,6 @@ func (t *transformer) transformFallthrough(f *templparser.Fallthrough) *syntax.N
 	if f == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(ComponentSwitchExpressionCase, f.Range)
 }

@@ -26,7 +26,7 @@ type TodoIssue struct {
 	Filename domain.Filepath   `json:"filename"`
 	Line     domain.LineNumber `json:"line"`
 	Text     string            `json:"text"`
-	Type     string            `json:"type"`           //nolint:godox // TODO, FIXME, XXX, etc.
+	Type     string            `json:"type"`
 	Tags     []string          `json:"tags,omitempty"` // @username, date, etc.
 }
 
@@ -71,10 +71,10 @@ func NewTodoDetector() *TodoDetector {
 	//nolint:godox
 	// FIXME pattern
 	patterns["FIXME"] = regexp.MustCompile(`(?i)FIXME\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
-	//nolint:godox
+
 	// XXX pattern
 	patterns["XXX"] = regexp.MustCompile(`(?i)XXX\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
-	//nolint:godox
+
 	// HACK pattern
 	patterns["HACK"] = regexp.MustCompile(`(?i)HACK\s*(?:\(([^)]*)\))?\s*:\s*(.+)`)
 	// NOTE pattern
@@ -151,6 +151,7 @@ func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 //nolint:gocognit // TODO parsing requires handling multiple comment formats and pattern matching
 func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) []TodoIssue {
 	fset := token.NewFileSet()
+
 	file, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
 	if err != nil {
 		return nil
@@ -188,16 +189,20 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						todoText = strings.TrimSpace(matches[2])
 					}
 
-					lineNum, err := domain.NewLineNumber(uint16(line)) // #nosec G115 -- Line numbers from parser are within uint16 range
+					lineNum, err := domain.NewLineNumber(
+						uint16(line),
+					) // #nosec G115 -- Line numbers from parser are within uint16 range
 					if err != nil {
 						// Parser should ensure line >= 1, but if invalid, skip this entry
 						continue
 					}
+
 					file, err := domain.NewFilepath(filename)
 					if err != nil {
 						// Invalid filename, skip this entry
 						continue
 					}
+
 					todos = append(todos, TodoIssue{
 						Filename: file,
 						Line:     lineNum,
@@ -205,6 +210,7 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						Type:     todoType,
 						Tags:     tags,
 					})
+
 					break // Only match first pattern per comment
 				}
 			}
@@ -253,16 +259,20 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 				// This is simplified - in a real implementation,
 				// we'd need to check if this node represents a call to the deprecated function
 				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
-					lineNum, err := domain.NewLineNumber(uint16(node.Pos)) // #nosec G115 -- Node positions are within uint16 range
+					lineNum, err := domain.NewLineNumber(
+						uint16(node.Pos),
+					) // #nosec G115 -- Node positions are within uint16 range
 					if err != nil {
 						// Invalid line number, skip this entry
 						continue
 					}
+
 					file, err := domain.NewFilepath(filename)
 					if err != nil {
 						// Invalid filename, skip this entry
 						continue
 					}
+
 					issues = append(issues, LegacyIssue{
 						Filename: file,
 						Line:     lineNum,

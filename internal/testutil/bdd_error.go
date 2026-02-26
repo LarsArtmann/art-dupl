@@ -20,6 +20,7 @@ func NewBDDError(operation string, cause error) *BDDError {
 // WithOutput adds output to the BDDError.
 func (e *BDDError) WithOutput(output string) *BDDError {
 	e.Output = output
+
 	return e
 }
 
@@ -28,6 +29,7 @@ func (e *BDDError) Error() string {
 	if e.Output != "" {
 		return fmt.Sprintf("BDD error during %s: %v\nOutput: %s", e.Operation, e.Cause, e.Output)
 	}
+
 	return fmt.Sprintf("BDD error during %s: %v", e.Operation, e.Cause)
 }
 

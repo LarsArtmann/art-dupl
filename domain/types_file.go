@@ -15,6 +15,7 @@ func NewFilepath(path string) (Filepath, error) {
 	if path == "" {
 		return "", errors.NewValidationError("filepath cannot be empty", nil)
 	}
+
 	return Filepath(path), nil
 }
 
@@ -46,6 +47,7 @@ func NewLineNumber(n uint16) (LineNumber, error) {
 	if n == 0 {
 		return 0, errors.NewValidationError("line number cannot be 0", nil)
 	}
+
 	return LineNumber(n), nil
 }
 
@@ -66,19 +68,24 @@ func (ln LineNumber) MarshalJSON() ([]byte, error) {
 	if ln == 0 {
 		return nil, errors.NewValidationError("line number cannot be 0", nil)
 	}
+
 	return json.Marshal(uint16(ln)) //nolint:wrapcheck // Standard JSON marshaling
 }
 
 // UnmarshalJSON implements json.Unmarshaler for LineNumber.
 func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 	var n uint16
-	if err := json.Unmarshal(data, &n); err != nil {
+	err := json.Unmarshal(data, &n)
+	if err != nil {
 		return fmt.Errorf("failed to unmarshal LineNumber: %w", err)
 	}
+
 	if n == 0 {
 		return errors.NewValidationError("line number cannot be 0", nil)
 	}
+
 	*ln = LineNumber(n)
+
 	return nil
 }
 

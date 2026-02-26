@@ -29,6 +29,7 @@ var _ = Describe("Plumbing Output Format", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -44,23 +45,33 @@ var _ = Describe("Plumbing Output Format", func() {
 		if err != nil {
 			return nil, err //nolint:wrapcheck // Test helper - pass through error
 		}
+
 		args := append([]string{"--plumbing", "--threshold", threshold}, extraFlags...)
+
 		return setup.RunArtDupl(args...)
 	}
 
 	// runPlumbingTestWithDetection is a helper that creates duplicate files and runs art-dupl with
 	// plumbing output and a specific detection method. It returns the output for custom assertions.
 	runPlumbingTestWithDetection := func(filenames []string, code, threshold, detectionMethod string) ([]byte, error) {
-		return runPlumbingTestWithFlags(filenames, code, threshold, "--detection-methods", detectionMethod)
+		return runPlumbingTestWithFlags(
+			filenames,
+			code,
+			threshold,
+			"--detection-methods",
+			detectionMethod,
+		)
 	}
 
 	// assertOutputContainsAny asserts that the output contains at least one of the expected substrings.
 	assertOutputContainsAny := func(output []byte, expected []string) {
 		outputStr := string(output)
+
 		matchers := make([]types.GomegaMatcher, len(expected))
 		for i, exp := range expected {
 			matchers[i] = ContainSubstring(exp)
 		}
+
 		Expect(outputStr).To(SatisfyAny(matchers...))
 	}
 
@@ -98,8 +109,7 @@ func pathTest() {}`,
 			},
 		}
 		for _, tt := range tests {
-			tt := tt
-			It(fmt.Sprintf("should include %s", tt.name), func() {
+			It("should include "+tt.name, func() {
 				output, err := runPlumbingTestWithFlags(tt.files, tt.code, tt.threshold)
 				Expect(err).ToNot(HaveOccurred())
 				assertOutputContainsAny(output, tt.assertions)
@@ -117,7 +127,13 @@ func lineNumberTest() {
 	fmt.Println("line 3")
 }`
 
-			output, err := setup.CreateAndRunDupl([]string{"line1.go", "line2.go"}, code, "--plumbing", "--threshold", "10")
+			output, err := setup.CreateAndRunDupl(
+				[]string{"line1.go", "line2.go"},
+				code,
+				"--plumbing",
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -202,7 +218,6 @@ func combinedPlumb() string {
 			},
 		}
 		for _, tt := range tests {
-			tt := tt // capture range variable
 			It(fmt.Sprintf("should work with %s detection method", tt.name), func() {
 				output, err := runPlumbingTestWithDetection(tt.files, tt.code, "10", tt.method)
 				Expect(err).ToNot(HaveOccurred())
@@ -212,7 +227,8 @@ func combinedPlumb() string {
 	})
 
 	Context("When using plumbing with sorting options", func() {
-		DescribeTable("should work with different sort types",
+		DescribeTable(
+			"should work with different sort types",
 			func(filenames []string, funcName, sortType string) {
 				code := fmt.Sprintf(`package main
 func %s() {}`, funcName)
@@ -222,20 +238,43 @@ func %s() {}`, funcName)
 				Expect(output).ToNot(BeNil())
 			},
 			Entry("size sorting", []string{"size1.go", "size2.go"}, "sizeSortPlumb", "size"),
-			Entry("occurrence sorting", []string{"occ1.go", "occ2.go", "occ3.go"}, "occSortPlumb", "occurrence"),
-			Entry("hash sorting", []string{"hashsort1.go", "hashsort2.go"}, "hashSortPlumb", "hash"),
+			Entry(
+				"occurrence sorting",
+				[]string{"occ1.go", "occ2.go", "occ3.go"},
+				"occSortPlumb",
+				"occurrence",
+			),
+			Entry(
+				"hash sorting",
+				[]string{"hashsort1.go", "hashsort2.go"},
+				"hashSortPlumb",
+				"hash",
+			),
 		)
 	})
 
 	Context("When using plumbing with file filtering", func() {
 		It("should work with vendor exclusion", func() {
 			code := testutil.SimpleCodeTemplate("vendorPlumb")
-			_ = setup.CreateAndRunDuplExpectSuccess([]string{"main1.go", "main2.go"}, code, "--plumbing", "--threshold", testutil.ThresholdSmall)
+			_ = setup.CreateAndRunDuplExpectSuccess(
+				[]string{"main1.go", "main2.go"},
+				code,
+				"--plumbing",
+				"--threshold",
+				testutil.ThresholdSmall,
+			)
 		})
 
 		It("should work with filter-generated flag", func() {
 			code := testutil.SimpleCodeTemplate("filterGenPlumb")
-			_ = setup.CreateAndRunDuplExpectSuccess([]string{"filter1.go", "filter2.go"}, code, "--plumbing", "--filter-generated", "--threshold", testutil.ThresholdSmall)
+			_ = setup.CreateAndRunDuplExpectSuccess(
+				[]string{"filter1.go", "filter2.go"},
+				code,
+				"--plumbing",
+				"--filter-generated",
+				"--threshold",
+				testutil.ThresholdSmall,
+			)
 		})
 
 		It("should work with include patterns", func() {
@@ -251,7 +290,13 @@ func patternPlumb() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing and include pattern
-			output, err := setup.RunArtDupl("--plumbing", "--include-pattern", "src/*", "--threshold", "5")
+			output, err := setup.RunArtDupl(
+				"--plumbing",
+				"--include-pattern",
+				"src/*",
+				"--threshold",
+				"5",
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -317,6 +362,7 @@ var _ = Describe("Plumbing Output Format Validation", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -419,6 +465,7 @@ func stdinPlumb() {}`
 // Helper function to parse plumbing output.
 func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 	var entries []PlumbingEntry
+
 	lines := strings.SplitSeq(strings.TrimSpace(output), "\n")
 
 	for line := range lines {
@@ -431,6 +478,7 @@ func parsePlumbingOutput(output string) ([]PlumbingEntry, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		entries = append(entries, entry)
 	}
 
@@ -478,6 +526,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 		if err != nil {
 			return entry, fmt.Errorf("invalid start line: %s", startParts[0])
 		}
+
 		entry.StartLine = startLine
 
 		if len(startParts) > 1 {
@@ -485,6 +534,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 			if err != nil {
 				return entry, fmt.Errorf("invalid start column: %s", startParts[1])
 			}
+
 			entry.StartCol = startCol
 		}
 
@@ -492,6 +542,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 		if err != nil {
 			return entry, fmt.Errorf("invalid end line: %s", endParts[0])
 		}
+
 		entry.EndLine = endLine
 
 		if len(endParts) > 1 {
@@ -499,6 +550,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 			if err != nil {
 				return entry, fmt.Errorf("invalid end column: %s", endParts[1])
 			}
+
 			entry.EndCol = endCol
 		}
 	} else {
@@ -507,6 +559,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 		if err != nil {
 			return entry, fmt.Errorf("invalid line number: %s", position)
 		}
+
 		entry.StartLine = lineNum
 		entry.EndLine = lineNum
 	}
@@ -519,6 +572,7 @@ var _ = Describe("Plumbing Output Advanced Parsing", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})

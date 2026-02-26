@@ -33,11 +33,23 @@ func HandleMarshalingError(operation, context string, err error) error {
 
 	switch err.Error() {
 	case "json: unsupported value":
-		return &MarshalError{Operation: operation, Context: context, Cause: fmt.Errorf("unsupported value type: %w", err)}
+		return &MarshalError{
+			Operation: operation,
+			Context:   context,
+			Cause:     fmt.Errorf("unsupported value type: %w", err),
+		}
 	case "json: unsupported type":
-		return &MarshalError{Operation: operation, Context: context, Cause: fmt.Errorf("unsupported type: %w", err)}
+		return &MarshalError{
+			Operation: operation,
+			Context:   context,
+			Cause:     fmt.Errorf("unsupported type: %w", err),
+		}
 	case "json: invalid UTF-8":
-		return &MarshalError{Operation: operation, Context: context, Cause: fmt.Errorf("invalid UTF-8 encoding: %w", err)}
+		return &MarshalError{
+			Operation: operation,
+			Context:   context,
+			Cause:     fmt.Errorf("invalid UTF-8 encoding: %w", err),
+		}
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
 	}
@@ -49,6 +61,7 @@ func SafeMarshal(v any, context string) ([]byte, error) {
 	if err != nil {
 		return nil, HandleMarshalingError("marshal", context, err)
 	}
+
 	return data, nil
 }
 
@@ -58,10 +71,12 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 	if v == nil {
 		return nil, NewValidationError(nilErrorMessage, nil)
 	}
+
 	data, err := json.Marshal(v)
 	if err != nil {
 		return nil, NewConfigError("failed to marshal value", err)
 	}
+
 	return data, nil
 }
 
@@ -71,6 +86,7 @@ func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	if err != nil {
 		return nil, HandleMarshalingError("marshal indent", context, err)
 	}
+
 	return data, nil
 }
 
@@ -80,10 +96,12 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 	if v == nil {
 		return nil, NewValidationError(nilErrorMessage, nil)
 	}
+
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, NewConfigError("failed to marshal value with indent", err)
 	}
+
 	return data, nil
 }
 
@@ -93,5 +111,6 @@ func SafeUnmarshal(data []byte, v any, context string) error {
 	if err != nil {
 		return HandleMarshalingError("unmarshal", context, err)
 	}
+
 	return nil
 }

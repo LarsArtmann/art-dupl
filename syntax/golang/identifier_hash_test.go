@@ -55,6 +55,7 @@ func TestHashIdentifierFast_DifferentInputs(t *testing.T) {
 	}
 
 	hashes := make(map[int32]string)
+
 	for _, input := range inputs {
 		hash := hashIdentifierFast(input)
 		if existing, exists := hashes[hash]; exists {
@@ -62,6 +63,7 @@ func TestHashIdentifierFast_DifferentInputs(t *testing.T) {
 			t.Logf("WARNING: hash collision between %q and %q: both hash to %d",
 				existing, input, hash)
 		}
+
 		hashes[hash] = input
 	}
 }
@@ -95,6 +97,7 @@ func TestEncodeSemanticType_BitManipulation(t *testing.T) {
 	// Enable semantic hashing for this test
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42) // Some base type in lower 8 bits
@@ -121,6 +124,7 @@ func TestEncodeSemanticType_Disabled(t *testing.T) {
 	// Disable semantic hashing
 	original := SemanticHashEnabled
 	SemanticHashEnabled = false
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
@@ -128,14 +132,19 @@ func TestEncodeSemanticType_Disabled(t *testing.T) {
 
 	// When disabled, should return base type unchanged
 	if result != baseType {
-		t.Errorf("encodeSemanticType(%d, 'anyIdentifier') with SemanticHashEnabled=false = %d, want %d",
-			baseType, result, baseType)
+		t.Errorf(
+			"encodeSemanticType(%d, 'anyIdentifier') with SemanticHashEnabled=false = %d, want %d",
+			baseType,
+			result,
+			baseType,
+		)
 	}
 }
 
 func TestEncodeSemanticType_EmptyIdentifier(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
@@ -198,6 +207,7 @@ func TestDecodeSemanticHash(t *testing.T) {
 func TestEncodeDecodeRoundTrip(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	tests := []struct {
@@ -233,6 +243,7 @@ func TestEncodeDecodeRoundTrip(t *testing.T) {
 func TestEncodeSemanticTypeHash(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
@@ -245,6 +256,7 @@ func TestEncodeSemanticTypeHash(t *testing.T) {
 		t.Errorf("base type not preserved: got %d, want %d",
 			DecodeBaseType(result), baseType)
 	}
+
 	if DecodeSemanticHash(result) != nameHash {
 		t.Errorf("hash not preserved: got %d, want %d",
 			DecodeSemanticHash(result), nameHash)
@@ -254,6 +266,7 @@ func TestEncodeSemanticTypeHash(t *testing.T) {
 func TestEncodeSemanticTypeHash_Disabled(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = false
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
@@ -271,6 +284,7 @@ func TestEncodeSemanticTypeHash_Disabled(t *testing.T) {
 func TestEncodeSemanticTypeHash_ZeroHash(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
@@ -349,12 +363,18 @@ func TestCombineIdentifierHashes(t *testing.T) {
 			if tt.wantZero && result != 0 {
 				t.Errorf("combineIdentifierHashes(%x, %x) = %x, want 0", tt.hash1, tt.hash2, result)
 			}
+
 			if !tt.wantZero && result == 0 {
 				t.Errorf("combineIdentifierHashes(%x, %x) = 0, want non-zero", tt.hash1, tt.hash2)
 			}
 			// Verify result is in 24-bit range
 			if result < 0 || result > 0x00FFFFFF {
-				t.Errorf("combineIdentifierHashes(%x, %x) = %x, out of 24-bit range", tt.hash1, tt.hash2, result)
+				t.Errorf(
+					"combineIdentifierHashes(%x, %x) = %x, out of 24-bit range",
+					tt.hash1,
+					tt.hash2,
+					result,
+				)
 			}
 		})
 	}
@@ -363,6 +383,7 @@ func TestCombineIdentifierHashes(t *testing.T) {
 func TestEncodeSemanticTypeMulti(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(FuncDecl)
@@ -392,13 +413,21 @@ func TestEncodeSemanticTypeMulti(t *testing.T) {
 			if tt.wantBase {
 				// Should return just the base type (no semantic hash)
 				if result != baseType {
-					t.Errorf("encodeSemanticTypeMulti(%v) = %d, want %d (no semantic hash)", tt.identifiers, result, baseType)
+					t.Errorf(
+						"encodeSemanticTypeMulti(%v) = %d, want %d (no semantic hash)",
+						tt.identifiers,
+						result,
+						baseType,
+					)
 				}
 			} else {
 				// Should have semantic hash in upper bits
 				semanticHash := DecodeSemanticHash(result)
 				if semanticHash == 0 {
-					t.Errorf("encodeSemanticTypeMulti(%v) returned zero semantic hash", tt.identifiers)
+					t.Errorf(
+						"encodeSemanticTypeMulti(%v) returned zero semantic hash",
+						tt.identifiers,
+					)
 				}
 			}
 		})
@@ -408,6 +437,7 @@ func TestEncodeSemanticTypeMulti(t *testing.T) {
 func TestEncodeSemanticTypeMulti_DifferentCombinations(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(FuncDecl)
@@ -421,9 +451,11 @@ func TestEncodeSemanticTypeMulti_DifferentCombinations(t *testing.T) {
 	if hash1 == hash2 {
 		t.Error("different receivers with same function should produce different hashes")
 	}
+
 	if hash1 == hash3 {
 		t.Error("same receiver with different functions should produce different hashes")
 	}
+
 	if hash1 == hash4 {
 		t.Error("completely different receiver+function should produce different hashes")
 	}
@@ -432,13 +464,18 @@ func TestEncodeSemanticTypeMulti_DifferentCombinations(t *testing.T) {
 func TestEncodeSemanticTypeMulti_Disabled(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = false
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(FuncDecl)
 	result := encodeSemanticTypeMulti(baseType, "CrushMode", "IsValid")
 
 	if result != baseType {
-		t.Errorf("encodeSemanticTypeMulti with SemanticHashEnabled=false = %d, want %d", result, baseType)
+		t.Errorf(
+			"encodeSemanticTypeMulti with SemanticHashEnabled=false = %d, want %d",
+			result,
+			baseType,
+		)
 	}
 }
 
@@ -450,6 +487,7 @@ func BenchmarkHashIdentifierFast(b *testing.B) {
 	}
 
 	b.ResetTimer()
+
 	for range b.N {
 		for _, id := range identifiers {
 			_ = hashIdentifierFast(id)
@@ -460,11 +498,13 @@ func BenchmarkHashIdentifierFast(b *testing.B) {
 func BenchmarkEncodeSemanticType(b *testing.B) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	baseType := int32(42)
 
 	b.ResetTimer()
+
 	for range b.N {
 		_ = encodeSemanticType(baseType, "identifierName")
 	}

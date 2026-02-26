@@ -15,10 +15,14 @@ func generateRandomSuffix() string {
 	// Generate 3-letter suffix for 26^3 = 17,576 possible combinations
 	// Note: Using math/rand is acceptable for test data generation where cryptographic security is not required
 	const suffixLength = 3
+
 	suffix := make([]byte, suffixLength)
 	for i := range suffixLength {
-		suffix[i] = byte('a' + rand.Intn(26)) // #nosec G404 -- Test data only, cryptographic security not required
+		suffix[i] = byte(
+			'a' + rand.Intn(26),
+		) // #nosec G404 -- Test data only, cryptographic security not required
 	}
+
 	return string(suffix)
 }
 

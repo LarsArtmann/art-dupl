@@ -12,10 +12,12 @@ func detectionMethodsToString(methods config.DetectionMethods) string {
 	if len(methods) == 0 {
 		return ""
 	}
+
 	result := make([]string, len(methods))
 	for i, dm := range methods {
 		result[i] = dm.String()
 	}
+
 	return strings.Join(result, ",")
 }
 

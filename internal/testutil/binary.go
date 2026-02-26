@@ -10,7 +10,16 @@ import (
 // BuildArtDuplBinary builds the art-dupl binary for testing.
 func BuildArtDuplBinary(t *testing.T, outputPath string) {
 	t.Helper()
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", outputPath, "../../cmd/art-dupl/main.go")
+
+	cmd := exec.CommandContext(
+		context.Background(),
+		"go",
+		"build",
+		"-o",
+		outputPath,
+		"../../cmd/art-dupl/main.go",
+	)
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Failed to build art-dupl binary: %v\nOutput: %s", err, string(output))
@@ -23,20 +32,22 @@ func BuildAndCleanArtDuplBinary(t *testing.T) string {
 	t.Helper()
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl-test")
 	BuildArtDuplBinary(t, binaryPath)
+
 	return binaryPath
 }
 
 // RunArtDuplBinary executes the art-dupl binary with given arguments and returns output.
 func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, error) {
 	t.Helper()
+
 	cmd := exec.CommandContext(context.Background(), binaryPath, args...)
+
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
-// RunArtDuplBinaryOnDir executes art-dupl on a directory with given flags.
-func RunArtDuplBinaryOnDir(t *testing.T, binaryPath, dir string, flags map[string]string) ([]byte, error) {
-	t.Helper()
-	args := []string{dir}
+// BuildArgsFromFlags converts a map of flags to command line arguments.
+func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
+	args := baseArgs
 	for flag, value := range flags {
 		if value != "" {
 			args = append(args, "--"+flag, value)
@@ -44,5 +55,18 @@ func RunArtDuplBinaryOnDir(t *testing.T, binaryPath, dir string, flags map[strin
 			args = append(args, "--"+flag)
 		}
 	}
+	return args
+}
+
+// RunArtDuplBinaryOnDir executes art-dupl on a directory with given flags.
+func RunArtDuplBinaryOnDir(
+	t *testing.T,
+	binaryPath, dir string,
+	flags map[string]string,
+) ([]byte, error) {
+	t.Helper()
+
+	args := BuildArgsFromFlags([]string{dir}, flags)
+
 	return RunArtDuplBinary(t, binaryPath, args...)
 }

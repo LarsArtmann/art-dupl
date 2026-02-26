@@ -15,7 +15,18 @@ func testCloneGroup(filenames ...string) domain.CloneGroup {
 	for i, f := range filenames {
 		clones[i] = domain.Clone{Filename: domain.GlobalPool().Intern(f)}
 	}
+
 	return domain.CloneGroup{Clones: clones}
+}
+
+// createTestCloneGroup creates a standardized CloneGroup with 3 clones for testing
+func createTestCloneGroup(id string, size int, severity domain.CloneSeverity) domain.CloneGroup {
+	return domain.CloneGroup{
+		ID:       domain.CloneGroupID(id),
+		Clones:   []domain.Clone{{}, {}, {}}, // 3 clones = 2 duplicates
+		Size:     uint(size),
+		Severity: severity,
+	}
 }
 
 // testNode creates a sample syntax node for testing.
@@ -49,8 +60,13 @@ func TestNodeToDomainClone(t *testing.T) {
 		clone := NodeToDomainClone(node, "test.go")
 
 		if clone.Status != domain.FileProcessingStateCompleted {
-			t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, clone.Status)
+			t.Errorf(
+				"Expected status %s, got %s",
+				domain.FileProcessingStateCompleted,
+				clone.Status,
+			)
 		}
+
 		if clone.FilenameString() != "test.go" {
 			t.Errorf("Expected filename 'test.go', got %q", clone.FilenameString())
 		}
@@ -59,8 +75,10 @@ func TestNodeToDomainClone(t *testing.T) {
 	t.Run("with existing file", func(t *testing.T) {
 		tempDir := t.TempDir()
 		testFile := filepath.Join(tempDir, "existing.go")
+
 		content := "package main\n\nfunc main() {}\n"
-		if err := os.WriteFile(testFile, []byte(content), 0o600); err != nil {
+		err := os.WriteFile(testFile, []byte(content), 0o600)
+		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
@@ -96,7 +114,11 @@ func TestNodeToDomainClone(t *testing.T) {
 				clone := NodeToDomainClone(node, tt.filename)
 
 				if clone.Status != domain.FileProcessingStateCompleted {
-					t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, clone.Status)
+					t.Errorf(
+						"Expected status %s, got %s",
+						domain.FileProcessingStateCompleted,
+						clone.Status,
+					)
 				}
 			})
 		}
@@ -131,14 +153,21 @@ func TestCloneGroupFromNodes(t *testing.T) {
 		if group.ID != "group-1" {
 			t.Errorf("Expected ID 'group-1', got %q", group.ID)
 		}
+
 		if len(group.Clones) == 0 {
 			t.Error("Expected at least one clone in group")
 		}
+
 		if group.Hash != "group-hash" {
 			t.Errorf("Expected hash 'group-hash', got %q", group.Hash)
 		}
+
 		if group.Status != domain.FileProcessingStateCompleted {
-			t.Errorf("Expected status %s, got %s", domain.FileProcessingStateCompleted, group.Status)
+			t.Errorf(
+				"Expected status %s, got %s",
+				domain.FileProcessingStateCompleted,
+				group.Status,
+			)
 		}
 	})
 
@@ -226,15 +255,19 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 		if analysis.ID != "analysis-id" {
 			t.Errorf("Expected ID 'analysis-id', got %q", analysis.ID)
 		}
+
 		if analysis.State != domain.DetectionStateCompleted {
 			t.Errorf("Expected state %s, got %s", domain.DetectionStateCompleted, analysis.State)
 		}
+
 		if analysis.Mode != domain.AnalysisModeFull {
 			t.Errorf("Expected mode %s, got %s", domain.AnalysisModeFull, analysis.Mode)
 		}
+
 		if analysis.Threshold != 15 {
 			t.Errorf("Expected threshold 15, got %d", analysis.Threshold)
 		}
+
 		if len(analysis.CloneGroups) != 0 {
 			t.Errorf("Expected 0 clone groups, got %d", len(analysis.CloneGroups))
 		}
@@ -259,12 +292,15 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 		if analysis.Threshold != 20 {
 			t.Errorf("Expected threshold 20, got %d", analysis.Threshold)
 		}
+
 		if len(analysis.CloneGroups) != 2 {
 			t.Errorf("Expected 2 clone groups, got %d", len(analysis.CloneGroups))
 		}
+
 		if analysis.Stats.TotalClones != 3 {
 			t.Errorf("Expected 3 total clones, got %d", analysis.Stats.TotalClones)
 		}
+
 		if analysis.Stats.TotalTokenSize != 300 {
 			t.Errorf("Expected 300 total token size, got %d", analysis.Stats.TotalTokenSize)
 		}
@@ -272,12 +308,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 	t.Run("stats calculation", func(t *testing.T) {
 		groups := []domain.CloneGroup{
-			{
-				ID:       "group-1",
-				Clones:   []domain.Clone{{}, {}, {}},
-				Size:     100,
-				Severity: domain.CloneSeverityMedium,
-			},
+			createTestCloneGroup("group-1", 100, domain.CloneSeverityMedium),
 		}
 
 		analysis := CreateAnalysisFromClones(groups, 15)
@@ -285,6 +316,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 		if analysis.Stats.TotalClones != 3 {
 			t.Errorf("Expected 3 total clones, got %d", analysis.Stats.TotalClones)
 		}
+
 		if analysis.Stats.FilesAnalyzed == 0 {
 			t.Error("Expected files analyzed to be calculated")
 		}
@@ -293,20 +325,20 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 	t.Run("duplication ratio", func(t *testing.T) {
 		// 3 clones in one group = 2 duplicates
 		groups := []domain.CloneGroup{
-			{
-				ID:       "group-1",
-				Clones:   []domain.Clone{{}, {}, {}}, // 2 duplicates (3-1)
-				Size:     100,
-				Severity: domain.CloneSeverityMedium,
-			},
+			createTestCloneGroup("group-1", 100, domain.CloneSeverityMedium),
 		}
 
 		analysis := CreateAnalysisFromClones(groups, 15)
 
 		// 2 duplicates / 3 total = 0.666...
 		expectedRatio := 2.0 / 3.0
-		if analysis.Stats.DuplicationRatio < expectedRatio-0.01 || analysis.Stats.DuplicationRatio > expectedRatio+0.01 {
-			t.Errorf("Expected duplication ratio ~%.2f, got %.2f", expectedRatio, analysis.Stats.DuplicationRatio)
+		if analysis.Stats.DuplicationRatio < expectedRatio-0.01 ||
+			analysis.Stats.DuplicationRatio > expectedRatio+0.01 {
+			t.Errorf(
+				"Expected duplication ratio ~%.2f, got %.2f",
+				expectedRatio,
+				analysis.Stats.DuplicationRatio,
+			)
 		}
 	})
 
@@ -321,7 +353,11 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 		// Complexity = totalSize / (numGroups + 1) = 300 / 3 = 100
 		expectedScore := 100.0
 		if analysis.Stats.ComplexityScore != expectedScore {
-			t.Errorf("Expected complexity score %.2f, got %.2f", expectedScore, analysis.Stats.ComplexityScore)
+			t.Errorf(
+				"Expected complexity score %.2f, got %.2f",
+				expectedScore,
+				analysis.Stats.ComplexityScore,
+			)
 		}
 	})
 }

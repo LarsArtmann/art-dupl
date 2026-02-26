@@ -2,7 +2,8 @@ package printer
 
 // calculateHealthScore calculates an A-F grade based on duplication, complexity, and impact metrics.
 func (p *stats) calculateHealthScore() string {
-	if p.statsData.DuplicationRatio == 0 && p.statsData.ComplexityScore == 0 && p.statsData.ImpactScore == 0 {
+	if p.statsData.DuplicationRatio == 0 && p.statsData.ComplexityScore == 0 &&
+		p.statsData.ImpactScore == 0 {
 		return "A"
 	}
 

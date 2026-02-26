@@ -108,6 +108,7 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	data, err := os.ReadFile(cachePath)
 	if err != nil {
 		fc.metadata.MissCount++
+
 		return nil, false
 	}
 
@@ -116,10 +117,12 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 		// Corrupted cache entry, remove it
 		_ = os.Remove(cachePath)
 		fc.metadata.MissCount++
+
 		return nil, false
 	}
 
 	fc.metadata.HitCount++
+
 	return nodes, true
 }
 
@@ -157,6 +160,7 @@ func (fc *FileCache) Has(contentHash string) bool {
 
 	cachePath := fc.cachePath(contentHash)
 	_, err := os.Stat(cachePath)
+
 	return err == nil
 }
 
@@ -166,7 +170,8 @@ func (fc *FileCache) Remove(contentHash string) error {
 	defer fc.mu.Unlock()
 
 	cachePath := fc.cachePath(contentHash)
-	if err := os.Remove(cachePath); err != nil && !os.IsNotExist(err) {
+	err := os.Remove(cachePath)
+	if err != nil && !os.IsNotExist(err) {
 		return errors.NewIOError(cachePath, "failed to remove cache entry", err)
 	}
 
@@ -179,12 +184,14 @@ func (fc *FileCache) Clear() error {
 	defer fc.mu.Unlock()
 
 	filesDir := filepath.Join(fc.cacheDir, "files")
-	if err := os.RemoveAll(filesDir); err != nil {
+	err := os.RemoveAll(filesDir)
+	if err != nil {
 		return errors.NewIOError(filesDir, "failed to clear cache", err)
 	}
 
 	// Recreate the files directory so subsequent Set() calls work
-	if err := os.MkdirAll(filesDir, 0o750); err != nil {
+	err = os.MkdirAll(filesDir, 0o750)
+	if err != nil {
 		return errors.NewIOError(filesDir, "failed to recreate cache directory", err)
 	}
 
@@ -208,6 +215,7 @@ func (fc *FileCache) Stats() Stats {
 	}
 
 	filesDir := filepath.Join(fc.cacheDir, "files")
+
 	entries, err := os.ReadDir(filesDir)
 	if err == nil {
 		stats.Size = len(entries)
@@ -226,6 +234,7 @@ func (fc *FileCache) Stats() Stats {
 func (fc *FileCache) GetStats() (hits, misses int) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
+
 	return fc.metadata.HitCount, fc.metadata.MissCount
 }
 
@@ -243,8 +252,10 @@ func (fc *FileCache) serialize(nodes []*syntax.Node) ([]byte, error) {
 	}
 
 	var buf bytes.Buffer
+
 	enc := gob.NewEncoder(&buf)
-	if err := enc.Encode(wrapper); err != nil {
+	err := enc.Encode(wrapper)
+	if err != nil {
 		return nil, fmt.Errorf("failed to serialize nodes: %w", err)
 	}
 
@@ -257,13 +268,18 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 	dec := gob.NewDecoder(buf)
 
 	var wrapper cacheEntry
-	if err := dec.Decode(&wrapper); err != nil {
+	err := dec.Decode(&wrapper)
+	if err != nil {
 		return nil, fmt.Errorf("failed to deserialize nodes: %w", err)
 	}
 
 	// Check version compatibility
 	if wrapper.Version != CacheVersion {
-		return nil, fmt.Errorf("cache version mismatch: got %d, want %d", wrapper.Version, CacheVersion)
+		return nil, fmt.Errorf(
+			"cache version mismatch: got %d, want %d",
+			wrapper.Version,
+			CacheVersion,
+		)
 	}
 
 	return wrapper.Nodes, nil
@@ -284,6 +300,7 @@ func (fc *FileCache) loadMetadata() {
 // saveMetadata saves cache metadata to disk.
 func (fc *FileCache) saveMetadata() error {
 	metadataPath := filepath.Join(fc.cacheDir, "metadata.json")
+
 	data, err := errors.SafeMarshalIndent(fc.metadata, "", "  ", "cache metadata")
 	if err != nil {
 		return errors.Wrap(err, errors.CacheError, "failed to marshal cache metadata")
@@ -292,6 +309,7 @@ func (fc *FileCache) saveMetadata() error {
 	if err := os.WriteFile(metadataPath, data, 0o600); err != nil {
 		return errors.WrapFile(err, metadataPath, "write")
 	}
+
 	return nil
 }
 
@@ -306,6 +324,7 @@ type cacheEntry struct {
 func CacheKey(content []byte) string {
 	// #nosec G401 -- SHA1 used for cache keys, not cryptographic security
 	h := sha1.Sum(content)
+
 	return hex.EncodeToString(h[:])
 }
 

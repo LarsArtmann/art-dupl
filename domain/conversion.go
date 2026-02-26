@@ -15,8 +15,10 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 	}
 
 	var fragment string
+
 	if fileContent != nil {
 		start := node.Pos
+
 		end := node.End
 		if start >= 0 && int(end) <= len(fileContent) && start < end {
 			fragment = string(fileContent[start:end])
@@ -30,15 +32,24 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		// hash functions (SHA-256, etc.) - this hash is for deduplication only,
 		// not security. See: https://github.com/zeebo/xxh3
 		//
-
 		hashStr = format.Hash(xxh3.Hash([]byte(fragment)))
 	}
 
-	startLn, _ := NewLineNumber(uint16(lineStart))                      // #nosec G115 -- lineStart >= 1 guaranteed by initialize default
-	endLn, _ := NewLineNumber(uint16(lineEnd))                          // #nosec G115 -- lineEnd >= 1 guaranteed by initialize default
-	startPos := NewBytePosition(uint32(node.Pos))                       // #nosec G115 -- node.Pos validated >= 0 in fragment extraction
-	endPos := NewBytePosition(uint32(node.End))                         // #nosec G115 -- node.End validated >= 0 in fragment extraction
-	complexity := NewComplexityScore(uint16(calculateComplexity(node))) // #nosec G115 -- complexity values bounded in practice (<1000)
+	startLn, _ := NewLineNumber(
+		uint16(lineStart),
+	) // #nosec G115 -- lineStart >= 1 guaranteed by initialize default
+	endLn, _ := NewLineNumber(
+		uint16(lineEnd),
+	) // #nosec G115 -- lineEnd >= 1 guaranteed by initialize default
+	startPos := NewBytePosition(
+		uint32(node.Pos),
+	) // #nosec G115 -- node.Pos validated >= 0 in fragment extraction
+	endPos := NewBytePosition(
+		uint32(node.End),
+	) // #nosec G115 -- node.End validated >= 0 in fragment extraction
+	complexity := NewComplexityScore(
+		uint16(calculateComplexity(node)),
+	) // #nosec G115 -- complexity values bounded in practice (<1000)
 
 	clone := Clone{
 		StartLine:  startLn,
@@ -61,12 +72,15 @@ func CalculateSeverity(size, complexity uint) CloneSeverity {
 	if complexity > 50 || size > 200 {
 		return CloneSeverityCritical
 	}
+
 	if complexity > 20 || size > 100 {
 		return CloneSeverityHigh
 	}
+
 	if complexity > 10 || size > 50 {
 		return CloneSeverityMedium
 	}
+
 	return CloneSeverityLow
 }
 

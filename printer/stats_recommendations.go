@@ -39,15 +39,24 @@ func (p *stats) printRecommendations() {
 	p.printSection("Next Steps:")
 
 	if p.statsData.TotalCloneGroups > 10 {
-		p.printBullet("You have %d clone groups - focus on the largest ones first", p.statsData.TotalCloneGroups)
+		p.printBullet(
+			"You have %d clone groups - focus on the largest ones first",
+			p.statsData.TotalCloneGroups,
+		)
 	}
 
 	if p.statsData.AverageCloneSize > 50 {
-		p.printBullet("Average clone size is %d lines - prioritize extracting large blocks", p.statsData.AverageCloneSize)
+		p.printBullet(
+			"Average clone size is %d lines - prioritize extracting large blocks",
+			p.statsData.AverageCloneSize,
+		)
 	}
 
 	if p.statsData.ComplexityScore > 3.0 {
-		p.printBullet("Complexity score of %.2f suggests multiple clones per group - consider patterns", p.statsData.ComplexityScore)
+		p.printBullet(
+			"Complexity score of %.2f suggests multiple clones per group - consider patterns",
+			p.statsData.ComplexityScore,
+		)
 	}
 
 	p.printBullet("Run with --threshold 50 to focus on large duplications only")

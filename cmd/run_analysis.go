@@ -9,6 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/LarsArtmann/art-dupl/printer"
@@ -26,32 +27,57 @@ func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, filterParam *filter.Filter, outputFormat config.OutputFormat) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTree(
+	ctx context.Context,
+	paths []string,
+	cfg *config.Config,
+	filterParam *filter.Filter,
+	outputFormat config.OutputFormat,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	if cfg.Verbose {
 		fmt.Fprintln(os.Stderr, "Building suffix tree")
 	} else if outputFormat == config.OutputFormatText {
 		fmt.Fprint(os.Stderr, "    📖 Parsing files and building analysis tree...")
 	}
 
-	var schan chan []*syntax.Node
-	var parseStats job.ParseStats
+	var (
+		schan      chan []*syntax.Node
+		parseStats job.ParseStats
+	)
 
 	// Debug output for incremental mode detection
+
 	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "🔍 buildSuffixTree: incremental=%v, cacheDir=%q\n", cfg.Incremental, cfg.CacheDir)
+		fmt.Fprintf(
+			os.Stderr,
+			"🔍 buildSuffixTree: incremental=%v, cacheDir=%q\n",
+			cfg.Incremental,
+			cfg.CacheDir,
+		)
 	}
 
 	if cfg.Incremental {
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
 		}
+
 		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache)
+
 		var incStatsChan chan job.IncrementalStats
-		schan, incStatsChan = incParser.ParseIncremental(ctx, filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor))
+
+		schan, incStatsChan = incParser.ParseIncremental(
+			ctx,
+			filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor),
+		)
 		t, data, done := job.BuildTree(ctx, schan)
 		<-done
+
 		incStats := <-incStatsChan
-		parseStats = job.ParseStats{FilesCount: incStats.FilesCount, LinesCount: incStats.LinesCount}
+		parseStats = job.ParseStats{
+			FilesCount: incStats.FilesCount,
+			LinesCount: incStats.LinesCount,
+		}
+
 		t.Update(&syntax.Node{Type: -1})
 
 		printSearchStatus(cfg, outputFormat)
@@ -61,15 +87,19 @@ func buildSuffixTree(ctx context.Context, paths []string, cfg *config.Config, fi
 
 	// Standard parsing without cache
 	var statsChan chan job.ParseStats
+
 	filesChan := filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if cfg.Workers > 1 {
 		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers)
 	} else {
 		schan, statsChan = job.Parse(ctx, filesChan)
 	}
+
 	t, data, done := job.BuildTree(ctx, schan)
 	<-done
+
 	parseStats = <-statsChan
+
 	t.Update(&syntax.Node{Type: -1})
 
 	printSearchStatus(cfg, outputFormat)
@@ -85,6 +115,7 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 	// User can opt-out with --include-sqlc
 	if !cfg.IncludeSQLC {
 		filterOptions = append(filterOptions, filter.FilterSQLC)
+
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (sqlc)\n")
 		}
@@ -94,41 +125,49 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 	// User can opt-out with --include-templ
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, filter.FilterTempl)
+
 		if cfg.Verbose {
 			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
 		}
 	}
 
 	// Create the filter if there are any options or include/exclude patterns
-	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 || len(cfg.IgnoreFiles) > 0 {
+	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
+		len(cfg.IgnoreFiles) > 0 {
 		filterParam := filter.NewFilter(true, filterOptions)
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
 		// IgnoreFiles are treated as exclude patterns
 		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
 
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ files filtered by default)\n")
+			fmt.Fprintf(
+				os.Stderr,
+				"🔍 Auto-generated code filtering enabled (templ files filtered by default)\n",
+			)
 		}
+
 		return filterParam
 	}
+
 	return nil
 }
 
 // executeAnalysis runs the core duplicate analysis logic.
-func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, outputFormat config.OutputFormat) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
+func executeAnalysis(
+	ctx context.Context,
+	cfg *config.Config,
+	paths []string,
+	outputFormat config.OutputFormat,
+) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
 	var startProfile job.ProfileResult
 	if cfg.Profile {
 		startProfile = job.StartProfile()
+
 		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
 	// Create filter based on config
 	filterParam := setupFilter(cfg)
-
-	t, data, parseStats, err := buildSuffixTree(ctx, paths, cfg, filterParam, outputFormat)
-	if err != nil {
-		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to build suffix tree for paths %v", paths))
-	}
 
 	// Get filter statistics if filter was enabled
 	var filterStats filter.FilterStats
@@ -136,11 +175,26 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, ou
 		filterStats = filterParam.GetStats()
 	}
 
+	// For hash-only detection, skip AST parsing and work directly with file paths
+	if cfg.DetectionMethods.IsHashOnly() {
+		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, outputFormat)
+	}
+
+	t, data, parseStats, err := buildSuffixTree(ctx, paths, cfg, filterParam, outputFormat)
+	if err != nil {
+		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(
+			err,
+			duplerrors.AnalysisError,
+			fmt.Sprintf("failed to build suffix tree for paths %v", paths),
+		)
+	}
+
 	multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
 	duplChan := make(chan syntax.Match)
 
 	go func() {
 		defer close(duplChan)
+
 		matches := multiDetector.FindDuplOver(cfg.Threshold)
 		for match := range matches {
 			select {
@@ -148,6 +202,7 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, ou
 				return
 			default:
 			}
+
 			duplChan <- match
 		}
 	}()
@@ -160,8 +215,95 @@ func executeAnalysis(ctx context.Context, cfg *config.Config, paths []string, ou
 	return duplChan, parseStats, filterStats, nil
 }
 
+// executeHashOnlyAnalysis runs hash-based duplicate detection without AST parsing.
+// This is an optimized path that works directly with file paths and content hashes,
+// allowing detection on any file type (not just Go source files).
+func executeHashOnlyAnalysis(
+	ctx context.Context,
+	cfg *config.Config,
+	paths []string,
+	filterParam *filter.Filter,
+	outputFormat config.OutputFormat,
+) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
+	if cfg.Verbose {
+		fmt.Fprintln(os.Stderr, "Running hash-only duplicate detection")
+	} else if outputFormat == config.OutputFormatText {
+		fmt.Fprint(os.Stderr, "    📖 Hashing files for duplicate detection...")
+	}
+
+	// Collect all files (not just .go files) for hash detection
+	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor)
+
+	// Collect files into a slice
+	var files []string
+	for file := range filesChan {
+		select {
+		case <-ctx.Done():
+			return nil, job.ParseStats{}, filter.FilterStats{}, ctx.Err()
+		default:
+		}
+		files = append(files, file)
+	}
+
+	if cfg.Verbose {
+		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", len(files))
+	} else if outputFormat == config.OutputFormatText {
+		fmt.Fprintln(os.Stderr, " ✅")
+	}
+
+	// Run hash detection
+	// Note: For hash detection, threshold is in bytes (file size), not tokens
+	// We use the configured threshold directly as the minimum file size
+	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
+
+	// Convert FileDuplicate to syntax.Match for consistent output
+	duplChan := make(chan syntax.Match)
+
+	go func() {
+		defer close(duplChan)
+
+		for _, fd := range fileDuplicates {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			// Create fragments from file duplicates
+			var fragments [][]*syntax.Node
+			for _, fh := range fd.Files {
+				// Create a synthetic node representing the entire file
+				node := &syntax.Node{
+					Filename: fh.Filename,
+					Pos:      0,
+					End:      int32(fh.Size),
+					Type:     1,
+				}
+				fragments = append(fragments, []*syntax.Node{node})
+			}
+
+			match := syntax.Match{
+				Hash:  fd.Hash,
+				Frags: fragments,
+			}
+			duplChan <- match
+		}
+	}()
+
+	// Get filter statistics if filter was enabled
+	var filterStats filter.FilterStats
+	if filterParam != nil {
+		filterStats = filterParam.GetStats()
+	}
+
+	return duplChan, job.ParseStats{FilesCount: len(files)}, filterStats, nil
+}
+
 // createPrinter returns the appropriate printer based on output format.
-func createPrinter(outputFormat config.OutputFormat, threshold int) func(io.Writer, printer.ReadFile) printer.Printer {
+func createPrinter(
+	outputFormat config.OutputFormat,
+	threshold int,
+) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
 		return func(w io.Writer, fread printer.ReadFile) printer.Printer {

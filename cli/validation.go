@@ -15,7 +15,9 @@ func ExitIfBothSet(flag1, flag2 *bool, flag1Name, flag2Name string) int {
 		names := fmt.Sprintf("%s and %s", flag1Name, flag2Name)
 		logger.Default.Error("you can have either output", "format", names)
 		os.Exit(1)
+
 		return 1
 	}
+
 	return 0
 }

@@ -35,6 +35,14 @@ func GetBuildDate() string {
 
 // PrintVersion prints version information.
 func PrintVersion() {
-	fmt.Printf("art-dupl version %s\n", GetVersion())                                   //nolint:forbidigo // Version output
-	fmt.Printf("Built with %s %s/%s\n", runtime.Compiler, runtime.GOOS, runtime.GOARCH) //nolint:forbidigo // Build info output
+	fmt.Printf(
+		"art-dupl version %s\n",
+		GetVersion(),
+	) //nolint:forbidigo // Version output
+	fmt.Printf(
+		"Built with %s %s/%s\n",
+		runtime.Compiler,
+		runtime.GOOS,
+		runtime.GOARCH,
+	) //nolint:forbidigo // Build info output
 }

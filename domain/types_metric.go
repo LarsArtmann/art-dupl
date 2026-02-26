@@ -88,6 +88,7 @@ func NewThreshold(t uint) (Threshold, error) {
 	if t == 0 {
 		return 0, errors.NewValidationError("threshold cannot be 0", nil)
 	}
+
 	return Threshold(t), nil
 }
 
@@ -101,6 +102,7 @@ func (t Threshold) MarshalJSON() ([]byte, error) {
 	if t == 0 {
 		return nil, errors.NewValidationError("threshold cannot be 0", nil)
 	}
+
 	return marshalUint(uint(t))
 }
 

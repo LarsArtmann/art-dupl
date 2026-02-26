@@ -19,6 +19,7 @@ func TestBuildTree(t *testing.T) {
 	// Create channel with test data
 	schan := make(chan []*syntax.Node, 1)
 	schan <- nodes
+
 	close(schan)
 
 	// Test BuildTree
@@ -30,6 +31,7 @@ func TestBuildTree(t *testing.T) {
 		// Success
 	case <-time.After(5 * time.Second):
 		t.Error("BuildTree timed out")
+
 		return
 	}
 
@@ -58,6 +60,7 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 		// Should complete successfully
 	case <-time.After(5 * time.Second):
 		t.Error("BuildTree with empty input should not time out")
+
 		return
 	}
 
@@ -86,7 +89,9 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 	// Send both sequences
 	schan := make(chan []*syntax.Node, 2)
 	schan <- sequence1
+
 	schan <- sequence2
+
 	close(schan)
 
 	tree, data, done := BuildTree(ctx, schan)
@@ -97,6 +102,7 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 		// Success
 	case <-time.After(5 * time.Second):
 		t.Error("BuildTree with multiple sequences timed out")
+
 		return
 	}
 

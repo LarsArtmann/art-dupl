@@ -50,23 +50,31 @@ Examples:
 	cmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
 	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
 	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
-	cmd.Flags().IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
+	cmd.Flags().
+		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
-	cmd.Flags().StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
+	cmd.Flags().
+		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
 	cmd.Flags().Bool("profile", false, "enable performance profiling")
 	cmd.Flags().String("timeout", "30m", "maximum execution time (default: 30m)")
 	_ = cmd.Flags().MarkHidden("profile")
 	_ = cmd.Flags().MarkHidden("timeout")
-	cmd.Flags().Bool("filter-generated", false, "enable filtering of sqlc.dev generated code (auto-detects sqlc.yaml in parent directories)")
-	cmd.Flags().Bool("include-sqlc", false, "include sqlc.dev generated files (override auto-detection)")
-	cmd.Flags().Bool("include-templ", false, "include templ.guide generated files (filtered by default)")
-	cmd.Flags().StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
+	cmd.Flags().
+		Bool("filter-generated", false, "enable filtering of sqlc.dev generated code (auto-detects sqlc.yaml in parent directories)")
+	cmd.Flags().
+		Bool("include-sqlc", false, "include sqlc.dev generated files (override auto-detection)")
+	cmd.Flags().
+		Bool("include-templ", false, "include templ.guide generated files (filtered by default)")
+	cmd.Flags().
+		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 
 	// Add semantic-aware detection flags
-	cmd.Flags().Bool("semantic", false, "explicitly enable semantic-aware detection (already the default; use only to override config file)")
-	cmd.Flags().Bool("structural", false, "disable semantic detection and use structural-only matching (may increase false positives) [opt-out from default]")
+	cmd.Flags().
+		Bool("semantic", false, "explicitly enable semantic-aware detection (already the default; use only to override config file)")
+	cmd.Flags().
+		Bool("structural", false, "disable semantic detection and use structural-only matching (may increase false positives) [opt-out from default]")
 
 	return cmd
 }
@@ -95,12 +103,18 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	// Validate conflicting flags - only an error if both are explicitly set
 	if semantic && structural {
-		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; these are mutually exclusive", nil)
+		return duplerrors.NewValidationError(
+			"cannot use both --semantic and --structural flags; these are mutually exclusive",
+			nil,
+		)
 	}
 
 	// Warn about --structural flag (opt-out from recommended default)
 	if structural {
-		fmt.Fprintf(os.Stderr, "Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n")
+		fmt.Fprintf(
+			os.Stderr,
+			"Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n",
+		)
 	}
 
 	// Parse and validate format
@@ -123,8 +137,12 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
+		return duplerrors.WrapValidation(
+			err,
+			fmt.Sprintf("invalid detection methods %q", detectionMethods),
+		)
 	}
+
 	appConfig.DetectionMethods = parsedMethods
 
 	if threshold != 15 {
@@ -134,6 +152,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if vendor {
 		appConfig.IncludeVendor = vendor
 	}
+
 	if files {
 		appConfig.FilesFromStdin = files
 	}
@@ -146,8 +165,12 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := parseDuration(timeoutStr)
 		if err != nil {
-			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
+			return duplerrors.WrapValidation(
+				err,
+				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr),
+			)
 		}
+
 		appConfig.Timeout = int(duration.Seconds())
 	}
 
@@ -155,18 +178,23 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if filterGenerated {
 		appConfig.FilterGenerated = true
 	}
+
 	if includeSQLC {
 		appConfig.IncludeSQLC = true
 	}
+
 	if includeTempl {
 		appConfig.IncludeTempl = true
 	}
+
 	if len(includePatterns) > 0 {
 		appConfig.IncludePatterns = includePatterns
 	}
+
 	if len(excludePatterns) > 0 {
 		appConfig.ExcludePatterns = excludePatterns
 	}
+
 	if semantic {
 		appConfig.Semantic = true
 	}
@@ -184,7 +212,10 @@ func runStats(cmd *cobra.Command, args []string) error {
 	}
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
+		return duplerrors.WrapValidation(
+			err,
+			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
+		)
 	}
 
 	// Wire semantic detection to golang package global
@@ -192,6 +223,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	// Add timeout context if specified
 	var cancel context.CancelFunc
+
 	ctx, cancel = utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
@@ -199,9 +231,18 @@ func runStats(cmd *cobra.Command, args []string) error {
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, parseStats, filterStats, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths, config.OutputFormat(format))
+	duplChan, parseStats, filterStats, err := executeAnalysis(
+		ctx,
+		mergedConfig,
+		mergedConfig.Paths,
+		config.OutputFormat(format),
+	)
 	if err != nil {
-		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
+		return duplerrors.Wrap(
+			err,
+			duplerrors.AnalysisError,
+			fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths),
+		)
 	}
 
 	// End profiling
@@ -233,6 +274,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetTimestamp(time.Now().UTC().Format(time.RFC3339))
 	}
+
 	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetAnalysisDuration(duration)
 	}
@@ -247,11 +289,13 @@ func runStats(cmd *cobra.Command, args []string) error {
 		totalFiltered := filterStats.TotalFiltered()
 		if totalFiltered > 0 {
 			breakdown := make(map[string]int)
+
 			for reason, count := range filterStats.FilteredByReason {
 				if reason != "not_filtered" {
 					breakdown[string(reason)] = count
 				}
 			}
+
 			sp.SetFilterStats(totalFiltered, breakdown)
 		}
 	}
@@ -276,8 +320,13 @@ func runStats(cmd *cobra.Command, args []string) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
-			if err := p.PrintClones(uniq, printer.SortByHash); err != nil {
-				return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to process clones for hash "+k)
+			err := p.PrintClones(uniq, printer.SortByHash)
+			if err != nil {
+				return duplerrors.Wrap(
+					err,
+					duplerrors.AnalysisError,
+					"failed to process clones for hash "+k,
+				)
 			}
 		}
 	}

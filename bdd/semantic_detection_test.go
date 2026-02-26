@@ -26,6 +26,7 @@ var _ = Describe("Semantic Detection", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -38,9 +39,17 @@ var _ = Describe("Semantic Detection", func() {
 		It("should detect structural duplicates even with different method names", func() {
 			// Create two files with identical AST structure but different method names
 			// These should be flagged as duplicates WITH --structural
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(structuralTestCode1), 0o644)
+			err := setup.FileProcessor.WriteFile(
+				filepath.Join(setup.TmpDir, "user_test.go"),
+				[]byte(structuralTestCode1),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(structuralTestCode2), 0o644)
+			err = setup.FileProcessor.WriteFile(
+				filepath.Join(setup.TmpDir, "order_test.go"),
+				[]byte(structuralTestCode2),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITH --structural flag (structural-only matching)
@@ -59,9 +68,17 @@ var _ = Describe("Semantic Detection", func() {
 		It("should NOT flag structurally identical code with different method names", func() {
 			// Create two files with identical AST structure but ALL different identifiers
 			// These should NOT be flagged as duplicates WITH --semantic flag
-			err := setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "user_test.go"), []byte(semanticDifferentCode1), 0o644)
+			err := setup.FileProcessor.WriteFile(
+				filepath.Join(setup.TmpDir, "user_test.go"),
+				[]byte(semanticDifferentCode1),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile(filepath.Join(setup.TmpDir, "order_test.go"), []byte(semanticDifferentCode2), 0o644)
+			err = setup.FileProcessor.WriteFile(
+				filepath.Join(setup.TmpDir, "order_test.go"),
+				[]byte(semanticDifferentCode2),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITH --semantic flag
@@ -77,7 +94,10 @@ var _ = Describe("Semantic Detection", func() {
 
 		It("should still detect true duplicates when identifiers match", func() {
 			// Create two files with identical code (true duplicates)
-			err := setup.FileProcessor.WriteDuplicateFiles([]string{"test1_test.go", "test2_test.go"}, trueDuplicateCode)
+			err := setup.FileProcessor.WriteDuplicateFiles(
+				[]string{"test1_test.go", "test2_test.go"},
+				trueDuplicateCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITH --semantic flag
@@ -113,6 +133,7 @@ var _ = Describe("Semantic Detection", func() {
 			cmd := exec.Command(setup.BinaryPath, "-c", configPath, setup.TmpDir)
 			output, err := cmd.CombinedOutput()
 			outputStr := string(output)
+
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should NOT flag as duplicates due to semantic detection (ALL identifiers differ)
@@ -125,22 +146,44 @@ var _ = Describe("Semantic Detection", func() {
 		It("should distinguish between different handler tests with semantic detection", func() {
 			// This is the main use case: Ginkgo test blocks for different handlers
 			// have identical structure but test different things
-			err := setup.FileProcessor.WriteFile("user_handler_test.go", []byte(handlerTestCode1), 0o644)
+			err := setup.FileProcessor.WriteFile(
+				"user_handler_test.go",
+				[]byte(handlerTestCode1),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile("order_handler_test.go", []byte(handlerTestCode2), 0o644)
+			err = setup.FileProcessor.WriteFile(
+				"order_handler_test.go",
+				[]byte(handlerTestCode2),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run WITH --structural (opt-out from semantic): should detect as duplicate
-			cmdStructural := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "15", "--structural")
+			cmdStructural := exec.Command(
+				setup.BinaryPath,
+				setup.TmpDir,
+				"--threshold",
+				"15",
+				"--structural",
+			)
 			outputStructural, err := cmdStructural.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
+
 			structuralStr := string(outputStructural)
 			Expect(structuralStr).To(ContainSubstring("user_handler_test.go"))
 
 			// Run WITH --semantic: should NOT detect as duplicate
-			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "15", "--semantic")
+			cmdDefault := exec.Command(
+				setup.BinaryPath,
+				setup.TmpDir,
+				"--threshold",
+				"15",
+				"--semantic",
+			)
 			outputDefault, err := cmdDefault.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
+
 			defaultStr := string(outputDefault)
 			// Different handler types should not match (NewUserHandler vs NewOrderHandler, GetUser vs GetOrder)
 			Expect(defaultStr).ToNot(ContainSubstring("user_handler_test.go"))
@@ -149,29 +192,54 @@ var _ = Describe("Semantic Detection", func() {
 	})
 
 	Context("When enum pattern methods have same structure but different receiver types", func() {
-		It("should NOT flag methods on different types as duplicates by default (semantic)", func() {
-			// This is the exact pattern from auto-deduplicate that caused false positives
-			err := setup.FileProcessor.WriteFile("crush_mode.go", []byte(enumPatternCode1), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteFile("safety_mode.go", []byte(enumPatternCode2), 0o644)
-			Expect(err).NotTo(HaveOccurred())
+		It(
+			"should NOT flag methods on different types as duplicates by default (semantic)",
+			func() {
+				// This is the exact pattern from auto-deduplicate that caused false positives
+				err := setup.FileProcessor.WriteFile(
+					"crush_mode.go",
+					[]byte(enumPatternCode1),
+					0o644,
+				)
+				Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteFile(
+					"safety_mode.go",
+					[]byte(enumPatternCode2),
+					0o644,
+				)
+				Expect(err).NotTo(HaveOccurred())
 
-			// Run WITH --structural (opt-out from semantic): should detect as duplicate
-			cmdStructural := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10", "--structural")
-			outputStructural, err := cmdStructural.CombinedOutput()
-			Expect(err).ToNot(HaveOccurred())
-			structuralStr := string(outputStructural)
-			Expect(structuralStr).To(ContainSubstring("crush_mode.go"))
-			Expect(structuralStr).To(ContainSubstring("safety_mode.go"))
+				// Run WITH --structural (opt-out from semantic): should detect as duplicate
+				cmdStructural := exec.Command(
+					setup.BinaryPath,
+					setup.TmpDir,
+					"--threshold",
+					"10",
+					"--structural",
+				)
+				outputStructural, err := cmdStructural.CombinedOutput()
+				Expect(err).ToNot(HaveOccurred())
 
-			// Run WITH --semantic: should NOT detect as duplicate
-			// Because receiver types (CrushMode vs SafetyMode) and function names (ParseCrushMode vs ParseSafetyMode) differ
-			cmdDefault := exec.Command(setup.BinaryPath, setup.TmpDir, "--threshold", "10", "--semantic")
-			outputDefault, err := cmdDefault.CombinedOutput()
-			Expect(err).ToNot(HaveOccurred())
-			defaultStr := string(outputDefault)
-			Expect(defaultStr).ToNot(ContainSubstring("crush_mode.go"))
-			Expect(defaultStr).ToNot(ContainSubstring("safety_mode.go"))
-		})
+				structuralStr := string(outputStructural)
+				Expect(structuralStr).To(ContainSubstring("crush_mode.go"))
+				Expect(structuralStr).To(ContainSubstring("safety_mode.go"))
+
+				// Run WITH --semantic: should NOT detect as duplicate
+				// Because receiver types (CrushMode vs SafetyMode) and function names (ParseCrushMode vs ParseSafetyMode) differ
+				cmdDefault := exec.Command(
+					setup.BinaryPath,
+					setup.TmpDir,
+					"--threshold",
+					"10",
+					"--semantic",
+				)
+				outputDefault, err := cmdDefault.CombinedOutput()
+				Expect(err).ToNot(HaveOccurred())
+
+				defaultStr := string(outputDefault)
+				Expect(defaultStr).ToNot(ContainSubstring("crush_mode.go"))
+				Expect(defaultStr).ToNot(ContainSubstring("safety_mode.go"))
+			},
+		)
 	})
 })

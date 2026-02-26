@@ -3,13 +3,10 @@ package job
 import (
 	"context"
 	"os"
-	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/syntax/golang"
-	"github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
 // IncrementalParser parses files with caching support.
@@ -21,7 +18,14 @@ type IncrementalParser struct {
 
 // NewIncrementalParser creates a new IncrementalParser.
 func NewIncrementalParser(cacheDir string, clearCache bool) *IncrementalParser {
-	logger.Default.Info("creating incremental parser", "cacheDir", cacheDir, "clearCache", clearCache)
+	logger.Default.Info(
+		"creating incremental parser",
+		"cacheDir",
+		cacheDir,
+		"clearCache",
+		clearCache,
+	)
+
 	return &IncrementalParser{
 		cache:      cache.NewFileCache(cacheDir),
 		clearCache: clearCache,
@@ -39,10 +43,14 @@ type IncrementalStats struct {
 // ParseIncremental parses files with caching.
 // For each file, it checks the cache first using content hash.
 // If found in cache, uses cached AST nodes. Otherwise parses and caches the result.
-func (ip *IncrementalParser) ParseIncremental(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan IncrementalStats) {
+func (ip *IncrementalParser) ParseIncremental(
+	ctx context.Context,
+	fchan chan string,
+) (chan []*syntax.Node, chan IncrementalStats) {
 	// Clear cache if requested
 	if ip.clearCache {
-		if err := ip.cache.Clear(); err != nil {
+		err := ip.cache.Clear()
+		if err != nil {
 			logger.Default.Error("failed to clear cache", "err", err)
 		}
 	}
@@ -57,7 +65,9 @@ func (ip *IncrementalParser) ParseIncremental(ctx context.Context, fchan chan st
 			select {
 			case <-ctx.Done():
 				statsChan <- stats
+
 				close(schan)
+
 				return
 			default:
 			}
@@ -76,6 +86,7 @@ func (ip *IncrementalParser) ParseIncremental(ctx context.Context, fchan chan st
 		}
 
 		statsChan <- stats
+
 		close(schan)
 	}()
 
@@ -95,6 +106,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	content, err := os.ReadFile(file)
 	if err != nil {
 		logger.Default.Error("failed to read file", "file", file, "err", err)
+
 		return nil, 0, false
 	}
 
@@ -109,23 +121,21 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		for _, node := range cachedNodes {
 			node.Filename = file
 		}
+
 		lines := countLines(content)
+
 		return cachedNodes, lines, true
 	}
 
 	// Cache miss - parse the file
-	var ast *syntax.Node
-	var lines int
-
-	switch filepath.Ext(file) {
-	case ".templ":
-		ast, lines, err = templ.ParseWithLineCount(file)
-	default:
-		ast, lines, err = golang.ParseWithLineCount(file)
-	}
-
+	var (
+		ast   *syntax.Node
+		lines int
+	)
+	ast, lines, err = ParseFileByExtension(file)
 	if err != nil {
 		logger.Default.Error("failed to parse file", "file", file, "err", err)
+
 		return nil, 0, false
 	}
 
@@ -133,7 +143,8 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	nodes := syntax.Serialize(ast)
 
 	// Cache the result
-	if cacheErr := ip.cache.Set(contentHash, nodes); cacheErr != nil {
+	cacheErr := ip.cache.Set(contentHash, nodes)
+	if cacheErr != nil {
 		logger.Default.Error("failed to cache file", "file", file, "err", cacheErr)
 	} else {
 		logger.Default.Info("cached file AST", "file", file, "hash", contentHash)
@@ -145,6 +156,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 // countLines counts the number of lines in content.
 func countLines(content []byte) int {
 	count := 0
+
 	for _, b := range content {
 		if b == '\n' {
 			count++
@@ -154,5 +166,6 @@ func countLines(content []byte) int {
 	if len(content) > 0 && content[len(content)-1] != '\n' {
 		count++
 	}
+
 	return count
 }

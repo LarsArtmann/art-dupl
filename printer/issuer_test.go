@@ -9,9 +9,21 @@ import (
 // assertToFilename checks that issue.To filenames match expected values.
 func assertToFilename(t *testing.T, issues []Issue, expected []string) {
 	t.Helper()
+
 	for i, issue := range issues {
 		if issue.To.Filename() != expected[i] {
 			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expected[i])
+		}
+	}
+}
+
+// assertFromFilename checks that all issue.From filenames match the expected value.
+func assertFromFilename(t *testing.T, issues []Issue, expected string) {
+	t.Helper()
+
+	for i, issue := range issues {
+		if issue.From.Filename() != expected {
+			t.Errorf("Issue[%d].From.Filename() = %q, want %q", i, issue.From.Filename(), expected)
 		}
 	}
 }
@@ -24,6 +36,7 @@ func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 			{Type: 1, Filename: filename, Pos: 0, End: 10},
 		}
 	}
+
 	return result
 }
 
@@ -31,6 +44,7 @@ func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 func createIssuerReadFile() ReadFile {
 	// Return content that's at least as long as the largest End position
 	content := "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\n"
+
 	return func(filename string) ([]byte, error) {
 		return []byte(content), nil
 	}
@@ -41,6 +55,7 @@ func TestMakeIssues_NoBidirectionalPairs(t *testing.T) {
 	nodes := createIssuerTestNodes("a.go", "b.go")
 
 	issuer := NewIssuer(createIssuerReadFile())
+
 	issues, err := issuer.MakeIssues(nodes)
 	if err != nil {
 		t.Fatalf("MakeIssues() error = %v", err)
@@ -56,6 +71,7 @@ func TestMakeIssues_ThreeClones(t *testing.T) {
 	nodes := createIssuerTestNodes("a.go", "b.go", "c.go")
 
 	issuer := NewIssuer(createIssuerReadFile())
+
 	issues, err := issuer.MakeIssues(nodes)
 	if err != nil {
 		t.Fatalf("MakeIssues() error = %v", err)
@@ -68,11 +84,7 @@ func TestMakeIssues_ThreeClones(t *testing.T) {
 	}
 
 	// All issues should have the first clone (a.go) as From
-	for i, issue := range issues {
-		if issue.From.Filename() != "a.go" {
-			t.Errorf("Issue[%d].From.Filename() = %q, want %q", i, issue.From.Filename(), "a.go")
-		}
-	}
+	assertFromFilename(t, issues, "a.go")
 
 	// To should be b.go and c.go (sorted)
 	assertToFilename(t, issues, []string{"b.go", "c.go"})
@@ -83,6 +95,7 @@ func TestMakeIssues_SingleClone(t *testing.T) {
 	nodes := createIssuerTestNodes("a.go")
 
 	issuer := NewIssuer(createIssuerReadFile())
+
 	issues, err := issuer.MakeIssues(nodes)
 	if err != nil {
 		t.Fatalf("MakeIssues() error = %v", err)
@@ -98,17 +111,14 @@ func TestMakeIssues_SortedByFilename(t *testing.T) {
 	nodes := createIssuerTestNodes("z.go", "a.go", "m.go")
 
 	issuer := NewIssuer(createIssuerReadFile())
+
 	issues, err := issuer.MakeIssues(nodes)
 	if err != nil {
 		t.Fatalf("MakeIssues() error = %v", err)
 	}
 
 	// After sorting, "a.go" should be the reference (From)
-	for i, issue := range issues {
-		if issue.From.Filename() != "a.go" {
-			t.Errorf("Issue[%d].From.Filename() = %q, want %q (sorted reference)", i, issue.From.Filename(), "a.go")
-		}
-	}
+	assertFromFilename(t, issues, "a.go")
 
 	// To should be "m.go" and "z.go" (sorted order)
 	assertToFilename(t, issues, []string{"m.go", "z.go"})
@@ -118,6 +128,7 @@ func TestMakeIssues_FourClones(t *testing.T) {
 	nodes := createIssuerTestNodes("a.go", "b.go", "c.go", "d.go")
 
 	issuer := NewIssuer(createIssuerReadFile())
+
 	issues, err := issuer.MakeIssues(nodes)
 	if err != nil {
 		t.Fatalf("MakeIssues() error = %v", err)
@@ -129,11 +140,7 @@ func TestMakeIssues_FourClones(t *testing.T) {
 	}
 
 	// All issues should have the first clone (a.go) as From
-	for i, issue := range issues {
-		if issue.From.Filename() != "a.go" {
-			t.Errorf("Issue[%d].From.Filename() = %q, want %q", i, issue.From.Filename(), "a.go")
-		}
-	}
+	assertFromFilename(t, issues, "a.go")
 
 	// To should be b.go, c.go, and d.go (sorted)
 	assertToFilename(t, issues, []string{"b.go", "c.go", "d.go"})

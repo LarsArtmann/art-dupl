@@ -57,6 +57,7 @@ func findSQLCConfigsInPath(path string, configs map[string]string) error {
 	}
 
 	findSQLCConfigsInParent(path, configs)
+
 	return nil
 }
 
@@ -72,10 +73,12 @@ func walkPathForSQLCConfigs(path string, configs map[string]string) error {
 		}
 
 		recordSQLCConfig(filePath, configs)
+
 		return nil
 	}); err != nil {
 		return errors.WrapFile(err, path, "walking for sqlc configs")
 	}
+
 	return nil
 }
 
@@ -84,6 +87,7 @@ func handleDirectoryWalk(name string) error {
 	if strings.HasPrefix(name, ".") || name == "node_modules" || name == "vendor" {
 		return filepath.SkipDir
 	}
+
 	return nil
 }
 
@@ -116,7 +120,9 @@ func tryAddSQLCConfig(parentPath, filename string, configs map[string]string) {
 
 // ParseSQLCConfig reads and parses a sqlc.yaml file.
 func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
-	data, err := os.ReadFile(configPath) // #nosec G304 -- configPath is from controlled source (project directory)
+	data, err := os.ReadFile(
+		configPath,
+	) // #nosec G304 -- configPath is from controlled source (project directory)
 	if err != nil {
 		return nil, errors.WrapFile(err, configPath, "reading sqlc config")
 	}
@@ -142,11 +148,13 @@ func GetSQLOutputDirs(paths []string) ([]string, error) {
 	}
 
 	var outputDirs []string
+
 	for configPath, projectRoot := range configPaths {
 		config, err := ParseSQLCConfig(configPath)
 		if err != nil {
 			// Log but continue - one bad config shouldn't stop everything
 			logger.Default.Warn("failed to parse sqlc config", "file", configPath, "err", err)
+
 			continue
 		}
 

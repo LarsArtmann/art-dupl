@@ -12,6 +12,7 @@ import (
 
 func TestJSONPrinter_PrintHeader(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewJSON(&buf, mockReadFile(""))
 
 	err := printer.PrintHeader()
@@ -23,9 +24,11 @@ func TestJSONPrinter_PrintHeader(t *testing.T) {
 	if jsonPrinter.iota != 0 {
 		t.Errorf("Expected iota to be 0, got %d", jsonPrinter.iota)
 	}
+
 	if jsonPrinter.filesCount != 0 {
 		t.Errorf("Expected filesCount to be 0, got %d", jsonPrinter.filesCount)
 	}
+
 	if jsonPrinter.totalClones != 0 {
 		t.Errorf("Expected totalClones to be 0, got %d", jsonPrinter.totalClones)
 	}
@@ -47,6 +50,7 @@ func bar() {
 `
 
 	var buf bytes.Buffer
+
 	printer := NewJSON(&buf, mockReadFile(testContent))
 
 	// Create mock duplicate nodes
@@ -62,6 +66,7 @@ func bar() {
 	if jsonPrinter.iota != 1 {
 		t.Errorf("Expected iota to be 1, got %d", jsonPrinter.iota)
 	}
+
 	if len(jsonPrinter.cloneGroups) != 1 {
 		t.Errorf("Expected 1 clone group, got %d", len(jsonPrinter.cloneGroups))
 	}
@@ -76,6 +81,7 @@ func foo() {
 `
 
 	var buf bytes.Buffer
+
 	printer := NewJSON(&buf, mockReadFile(testContent))
 
 	// Add some mock data
@@ -106,9 +112,11 @@ func foo() {
 	if !strings.Contains(output, "\"version\":") {
 		t.Error("JSON output missing version field")
 	}
+
 	if !strings.Contains(output, "\"clone_groups\":") {
 		t.Error("JSON output missing clone_groups field")
 	}
+
 	if !strings.Contains(output, "test-hash") {
 		t.Error("JSON output missing test hash")
 	}
@@ -116,6 +124,7 @@ func foo() {
 
 func TestJSONPrinter_EmptyOutput(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewJSON(&buf, mockReadFile(""))
 
 	// Properly initialize the printer
@@ -125,6 +134,7 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
+
 	err = jsonPrinter.OutputJSON(15, "size", "")
 	if err != nil {
 		t.Fatalf("OutputJSON with empty data failed: %v", err)
@@ -132,6 +142,7 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 
 	// Parse JSON to validate structure
 	var output JSONOutput
+
 	err = json.Unmarshal(buf.Bytes(), &output)
 	if err != nil {
 		t.Fatalf("Failed to parse JSON output: %v", err)
@@ -140,9 +151,11 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 	if len(output.CloneGroups) != 0 {
 		t.Errorf("Expected 0 clone groups, got %d", len(output.CloneGroups))
 	}
+
 	if output.Summary.TotalCloneGroups != 0 {
 		t.Errorf("Expected 0 total clone groups, got %d", output.Summary.TotalCloneGroups)
 	}
+
 	if output.Summary.TotalClones != 0 {
 		t.Errorf("Expected 0 total clones, got %d", output.Summary.TotalClones)
 	}

@@ -17,12 +17,15 @@ func (r Repository) IsValid() error {
 	if r.Path == "" {
 		return stderrors.New("repository path cannot be empty")
 	}
+
 	if r.Name == "" {
 		return stderrors.New("repository name cannot be empty")
 	}
+
 	if r.Language == "" {
 		return stderrors.New("repository language cannot be empty")
 	}
+
 	return nil
 }
 

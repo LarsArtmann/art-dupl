@@ -13,12 +13,22 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// cleanupDetector closes the detector and logs any errors.
+func cleanupDetector(t *testing.T, detector Detector) {
+	t.Helper()
+	err := detector.Close()
+	if err != nil {
+		t.Logf("Failed to close detector: %v", err)
+	}
+}
+
 // TestNewDetector_NilOptions tests that nil options are handled correctly.
 func TestNewDetector_NilOptions(t *testing.T) {
 	detector, err := NewDetector(nil)
 	if err != nil {
 		t.Errorf("NewDetector(nil) should not error, got: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("NewDetector(nil) should return valid detector")
 	}
@@ -38,6 +48,7 @@ func TestNewDetector_ValidOptions(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewDetector with valid options should not error, got: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("NewDetector should return valid detector")
 	}
@@ -129,6 +140,7 @@ func TestNewDetector_InvalidTimeout(t *testing.T) {
 // TestDetector_Close tests that Close returns nil.
 func TestDetector_Close(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -143,6 +155,7 @@ func TestDetector_Close(t *testing.T) {
 // TestDetector_FindClones_NoFiles tests FindClones with no files.
 func TestDetector_FindClones_NoFiles(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -157,6 +170,7 @@ func TestDetector_FindClones_NoFiles(t *testing.T) {
 // TestDetector_FindClones_NilFiles tests FindClones with nil files slice.
 func TestDetector_FindClones_NilFiles(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -171,6 +185,7 @@ func TestDetector_FindClones_NilFiles(t *testing.T) {
 // TestDetector_FindClones_NonExistentFile tests FindClones with non-existent file.
 func TestDetector_FindClones_NonExistentFile(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -189,6 +204,7 @@ func TestDetector_FindClones_NonExistentFile(t *testing.T) {
 // TestDetector_FindClonesStream_NoFiles tests FindClonesStream with no files.
 func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -203,6 +219,7 @@ func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
 // TestDetector_FindClones_ContextCanceled tests FindClones with canceled context.
 func TestDetector_FindClones_ContextCanceled(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
@@ -224,21 +241,27 @@ func TestDefaultOptions_Values(t *testing.T) {
 	if opts.Threshold != 15 {
 		t.Errorf("Default threshold should be 15, got %d", opts.Threshold)
 	}
+
 	if len(opts.DetectionMethods) != 1 {
 		t.Errorf("Default should have 1 detection method, got %d", len(opts.DetectionMethods))
 	}
+
 	if opts.DetectionMethods[0] != MethodArtDupl {
 		t.Errorf("Default method should be MethodArtDupl, got %v", opts.DetectionMethods[0])
 	}
+
 	if opts.MaxFileSize != 10*1024*1024 {
 		t.Errorf("Default max file size should be 10MB, got %d", opts.MaxFileSize)
 	}
+
 	if opts.MaxWorkers != 4 {
 		t.Errorf("Default max workers should be 4, got %d", opts.MaxWorkers)
 	}
+
 	if opts.Timeout != 30*time.Minute {
 		t.Errorf("Default timeout should be 30m, got %v", opts.Timeout)
 	}
+
 	if opts.MaxClonesPerGroup != 50 {
 		t.Errorf("Default max clones per group should be 50, got %d", opts.MaxClonesPerGroup)
 	}
@@ -435,15 +458,19 @@ func TestCloneGroup_Fields(t *testing.T) {
 	if group.Hash != "abc123" {
 		t.Errorf("Hash should be 'abc123', got %s", group.Hash)
 	}
+
 	if len(group.Clones) != 2 {
 		t.Errorf("Should have 2 clones, got %d", len(group.Clones))
 	}
+
 	if group.Size != 100 {
 		t.Errorf("Size should be 100, got %d", group.Size)
 	}
+
 	if group.LineCount != 11 {
 		t.Errorf("LineCount should be 11, got %d", group.LineCount)
 	}
+
 	if group.Method != MethodArtDupl {
 		t.Errorf("Method should be MethodArtDupl, got %v", group.Method)
 	}
@@ -464,21 +491,27 @@ func TestClone_Fields(t *testing.T) {
 	if clone.Filename != "test.go" {
 		t.Errorf("Filename should be 'test.go', got %s", clone.Filename)
 	}
+
 	if clone.StartLine != 10 {
 		t.Errorf("StartLine should be 10, got %d", clone.StartLine)
 	}
+
 	if clone.EndLine != 20 {
 		t.Errorf("EndLine should be 20, got %d", clone.EndLine)
 	}
+
 	if clone.StartPos != 100 {
 		t.Errorf("StartPos should be 100, got %d", clone.StartPos)
 	}
+
 	if clone.EndPos != 200 {
 		t.Errorf("EndPos should be 200, got %d", clone.EndPos)
 	}
+
 	if clone.Fragment != "code here" {
 		t.Errorf("Fragment should be 'code here', got %s", clone.Fragment)
 	}
+
 	if clone.Size != 50 {
 		t.Errorf("Size should be 50, got %d", clone.Size)
 	}
@@ -504,9 +537,11 @@ func TestResult_Fields(t *testing.T) {
 	if len(result.CloneGroups) != 2 {
 		t.Errorf("Should have 2 clone groups, got %d", len(result.CloneGroups))
 	}
+
 	if result.Summary.TotalFiles != 10 {
 		t.Errorf("TotalFiles should be 10, got %d", result.Summary.TotalFiles)
 	}
+
 	if result.Metadata.Version != "1.0.0" {
 		t.Errorf("Version should be '1.0.0', got %s", result.Metadata.Version)
 	}
@@ -526,18 +561,23 @@ func TestSummary_Fields(t *testing.T) {
 	if summary.TotalFiles != 100 {
 		t.Errorf("TotalFiles should be 100, got %d", summary.TotalFiles)
 	}
+
 	if summary.TotalClones != 50 {
 		t.Errorf("TotalClones should be 50, got %d", summary.TotalClones)
 	}
+
 	if summary.TotalGroups != 25 {
 		t.Errorf("TotalGroups should be 25, got %d", summary.TotalGroups)
 	}
+
 	if summary.AnalysisTime != 5*time.Second {
 		t.Errorf("AnalysisTime should be 5s, got %v", summary.AnalysisTime)
 	}
+
 	if len(summary.MethodsUsed) != 2 {
 		t.Errorf("Should have 2 methods, got %d", len(summary.MethodsUsed))
 	}
+
 	if summary.LinesAnalyzed != 10000 {
 		t.Errorf("LinesAnalyzed should be 10000, got %d", summary.LinesAnalyzed)
 	}
@@ -556,12 +596,15 @@ func TestMetadata_Fields(t *testing.T) {
 	if metadata.Version != "2.0.0" {
 		t.Errorf("Version should be '2.0.0', got %s", metadata.Version)
 	}
+
 	if !metadata.Timestamp.Equal(now) {
 		t.Errorf("Timestamp should be %v, got %v", now, metadata.Timestamp)
 	}
+
 	if metadata.ConfigHash != "config-hash-123" {
 		t.Errorf("ConfigHash should be 'config-hash-123', got %s", metadata.ConfigHash)
 	}
+
 	if metadata.Toolchain != "go1.21" {
 		t.Errorf("Toolchain should be 'go1.21', got %s", metadata.Toolchain)
 	}
@@ -581,18 +624,23 @@ func TestProgress_Fields(t *testing.T) {
 	if progress.Stage != "parsing" {
 		t.Errorf("Stage should be 'parsing', got %s", progress.Stage)
 	}
+
 	if progress.Completed != 75 {
 		t.Errorf("Completed should be 75, got %d", progress.Completed)
 	}
+
 	if progress.Total != 100 {
 		t.Errorf("Total should be 100, got %d", progress.Total)
 	}
+
 	if progress.Percentage != 75.5 {
 		t.Errorf("Percentage should be 75.5, got %f", progress.Percentage)
 	}
+
 	if progress.Message != "Processing files" {
 		t.Errorf("Message should be 'Processing files', got %s", progress.Message)
 	}
+
 	if progress.CurrentFile != "main.go" {
 		t.Errorf("CurrentFile should be 'main.go', got %s", progress.CurrentFile)
 	}
@@ -624,12 +672,15 @@ func TestDetectionMethod_Equality(t *testing.T) {
 	if MethodArtDupl != config.DetectionMethodArtDupl {
 		t.Error("MethodArtDupl should equal config.DetectionMethodArtDupl")
 	}
+
 	if MethodHash != config.DetectionMethodHash {
 		t.Error("MethodHash should equal config.DetectionMethodHash")
 	}
+
 	if MethodTodos != config.DetectionMethodTodos {
 		t.Error("MethodTodos should equal config.DetectionMethodTodos")
 	}
+
 	if MethodLegacy != config.DetectionMethodLegacy {
 		t.Error("MethodLegacy should equal config.DetectionMethodLegacy")
 	}
@@ -645,6 +696,7 @@ func TestFileReaderFunc(t *testing.T) {
 	if err != nil {
 		t.Errorf("FileReaderFunc should not error, got: %v", err)
 	}
+
 	if string(content) != "test content" {
 		t.Errorf("Content should be 'test content', got %s", string(content))
 	}
@@ -653,8 +705,10 @@ func TestFileReaderFunc(t *testing.T) {
 // TestProgressCallback tests progress callback functionality.
 func TestProgressCallback(t *testing.T) {
 	var receivedProgress *Progress
+
 	callback := func(p *Progress) error {
 		receivedProgress = p
+
 		return nil
 	}
 
@@ -679,10 +733,12 @@ func TestProgressCallback(t *testing.T) {
 		Percentage: 50.0,
 		Message:    "Testing",
 	}
+
 	err = callback(testProgress)
 	if err != nil {
 		t.Errorf("Callback should not error, got: %v", err)
 	}
+
 	if receivedProgress != testProgress {
 		t.Error("Callback should receive progress")
 	}
@@ -702,12 +758,15 @@ func TestConvertOptionsToConfig(t *testing.T) {
 	if cfg.Threshold != 25 {
 		t.Errorf("Threshold should be 25, got %d", cfg.Threshold)
 	}
+
 	if len(cfg.DetectionMethods) != 2 {
 		t.Errorf("Should have 2 detection methods, got %d", len(cfg.DetectionMethods))
 	}
+
 	if !cfg.IncludeVendor {
 		t.Error("IncludeVendor should be true")
 	}
+
 	if len(cfg.IgnoreFiles) != 2 {
 		t.Errorf("Should have 2 ignore files, got %d", len(cfg.IgnoreFiles))
 	}
@@ -740,6 +799,7 @@ func TestErrors_AllErrors(t *testing.T) {
 		if err == nil {
 			t.Errorf("Error at index %d should not be nil", i)
 		}
+
 		if err.Error() == "" {
 			t.Errorf("Error at index %d should have message", i)
 		}
@@ -756,7 +816,12 @@ func TestErrors_Is(t *testing.T) {
 	}{
 		{"same error", ErrNilOptions, ErrNilOptions, true},
 		{"different errors", ErrNilOptions, ErrInvalidThreshold, false},
-		{"wrapped error", fmt.Errorf("wrapped: %w", ErrInvalidThreshold), ErrInvalidThreshold, true},
+		{
+			"wrapped error",
+			fmt.Errorf("wrapped: %w", ErrInvalidThreshold),
+			ErrInvalidThreshold,
+			true,
+		},
 		{"nil error", nil, ErrNilOptions, false},
 	}
 
@@ -786,6 +851,7 @@ func TestOptions_WithFileReader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
@@ -806,6 +872,7 @@ func TestOptions_WithLogger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	if detector == nil {
 		t.Error("Detector should not be nil")
 	}
@@ -826,9 +893,11 @@ func TestClone_Empty(t *testing.T) {
 	if clone.Filename != "" {
 		t.Errorf("Empty Clone Filename should be empty string, got %s", clone.Filename)
 	}
+
 	if clone.StartLine != 0 {
 		t.Errorf("Empty Clone StartLine should be 0, got %d", clone.StartLine)
 	}
+
 	if clone.Size != 0 {
 		t.Errorf("Empty Clone Size should be 0, got %d", clone.Size)
 	}
@@ -841,9 +910,11 @@ func TestCloneGroup_Empty(t *testing.T) {
 	if group.Hash != "" {
 		t.Errorf("Empty CloneGroup Hash should be empty string, got %s", group.Hash)
 	}
+
 	if group.Clones != nil {
 		t.Errorf("Empty CloneGroup Clones should be nil, got %v", group.Clones)
 	}
+
 	if group.Size != 0 {
 		t.Errorf("Empty CloneGroup Size should be 0, got %d", group.Size)
 	}
@@ -856,9 +927,11 @@ func TestResult_Empty(t *testing.T) {
 	if result.CloneGroups != nil {
 		t.Errorf("Empty Result CloneGroups should be nil, got %v", result.CloneGroups)
 	}
+
 	if result.Summary != nil {
 		t.Errorf("Empty Result Summary should be nil, got %v", result.Summary)
 	}
+
 	if result.Metadata != nil {
 		t.Errorf("Empty Result Metadata should be nil, got %v", result.Metadata)
 	}
@@ -899,10 +972,12 @@ func createTestGoFile(t *testing.T, content string) string {
 	t.Helper()
 	tmpDir := t.TempDir()
 	filename := filepath.Join(tmpDir, "test.go")
+
 	err := os.WriteFile(filename, []byte(content), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
+
 	return filename
 }
 
@@ -924,10 +999,9 @@ func main() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	t.Cleanup(func() {
-		if err := detector.Close(); err != nil {
-			t.Logf("Failed to close detector: %v", err)
-		}
+		cleanupDetector(t, detector)
 	})
 
 	result, err := detector.FindClones(context.Background(), []string{filename})
@@ -937,6 +1011,7 @@ func main() {
 		if !errors.Is(err, ErrNoDuplicatesFound) {
 			t.Logf("FindClones returned: %v", err)
 		}
+
 		return
 	}
 
@@ -968,6 +1043,7 @@ func duplicate() {
 	if err != nil {
 		t.Fatalf("Failed to create file1: %v", err)
 	}
+
 	err = os.WriteFile(file2, []byte(duplicateCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create file2: %v", err)
@@ -980,15 +1056,15 @@ func duplicate() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	t.Cleanup(func() {
-		if err := detector.Close(); err != nil {
-			t.Logf("Failed to close detector: %v", err)
-		}
+		cleanupDetector(t, detector)
 	})
 
 	result, err := detector.FindClones(context.Background(), []string{file1, file2})
 	if err != nil {
 		t.Logf("FindClones returned: %v", err)
+
 		return
 	}
 
@@ -1019,10 +1095,9 @@ func main() {
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	t.Cleanup(func() {
-		if err := detector.Close(); err != nil {
-			t.Logf("Failed to close detector: %v", err)
-		}
+		cleanupDetector(t, detector)
 	})
 
 	_, err = detector.FindClones(ctx, []string{filename})
@@ -1101,6 +1176,7 @@ func TestProgress_Zero(t *testing.T) {
 	if progress.Stage != "" {
 		t.Errorf("Zero Progress Stage should be empty, got %s", progress.Stage)
 	}
+
 	if progress.Percentage != 0 {
 		t.Errorf("Zero Progress Percentage should be 0, got %f", progress.Percentage)
 	}
@@ -1120,6 +1196,7 @@ func TestProgress_Full(t *testing.T) {
 	if progress.Percentage != 100.0 {
 		t.Errorf("Progress at 100%% should be 100.0, got %f", progress.Percentage)
 	}
+
 	if progress.Completed != progress.Total {
 		t.Error("At 100%, Completed should equal Total")
 	}
@@ -1142,14 +1219,14 @@ func TestValidateOptions_InvalidDetectionMethod(t *testing.T) {
 // TestDetector_FindClonesStream_Cancellation tests stream detection with context cancellation.
 func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	t.Cleanup(func() {
-		if err := detector.Close(); err != nil {
-			t.Logf("Failed to close detector: %v", err)
-		}
+		cleanupDetector(t, detector)
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1217,9 +1294,11 @@ func TestSyntaxNode_BasicUsage(t *testing.T) {
 	if node.Filename != "test.go" {
 		t.Errorf("Filename should be 'test.go', got %s", node.Filename)
 	}
+
 	if node.Pos != 10 {
 		t.Errorf("Pos should be 10, got %d", node.Pos)
 	}
+
 	if node.End != 20 {
 		t.Errorf("End should be 20, got %d", node.End)
 	}
@@ -1228,14 +1307,14 @@ func TestSyntaxNode_BasicUsage(t *testing.T) {
 // TestDetector_Reuse tests that a detector can be reused.
 func TestDetector_Reuse(t *testing.T) {
 	opts := DefaultOptions()
+
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
+
 	t.Cleanup(func() {
-		if err := detector.Close(); err != nil {
-			t.Logf("Failed to close detector: %v", err)
-		}
+		cleanupDetector(t, detector)
 	})
 
 	// First call - empty files should error

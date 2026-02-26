@@ -19,8 +19,13 @@ func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, erro
 	if s.T != nil {
 		s.T.Helper()
 	}
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, append([]string{dir}, args...)...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput()                                                                       //nolint:wrapcheck // Test helper - pass through exec error
+
+	cmd := exec.CommandContext(
+		context.Background(),
+		s.BinaryPath,
+		append([]string{dir}, args...)...) // #nosec G204 -- Test helper running project binary
+
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithFlags executes art-dupl binary with flag map and returns combined output.
@@ -29,22 +34,22 @@ func (s *BDDTestSetup) RunArtDuplWithFlags(flags map[string]string) ([]byte, err
 }
 
 // RunArtDuplOnDirWithFlags executes art-dupl on directory with flag map.
-func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(dir string, flags map[string]string) ([]byte, error) {
+func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(
+	dir string,
+	flags map[string]string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	args := []string{dir}
-	for flag, value := range flags {
-		if value != "" {
-			args = append(args, "--"+flag, value)
-		} else {
-			args = append(args, "--"+flag)
-		}
-	}
+	args := BuildArgsFromFlags([]string{dir}, flags)
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput()                                             //nolint:wrapcheck // Test helper - pass through exec error
+	cmd := exec.CommandContext(
+		context.Background(),
+		s.BinaryPath,
+		args...) // #nosec G204 -- Test helper running project binary
+
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // RunArtDuplWithStdin executes art-dupl with stdin input.
@@ -53,17 +58,14 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 		s.T.Helper()
 	}
 
-	args := []string{"--files"}
-	for flag, value := range flags {
-		if value != "" {
-			args = append(args, "--"+flag, value)
-		} else {
-			args = append(args, "--"+flag)
-		}
-	}
+	args := BuildArgsFromFlags([]string{"--files"}, flags)
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
+	cmd := exec.CommandContext(
+		context.Background(),
+		s.BinaryPath,
+		args...) // #nosec G204 -- Test helper running project binary
 	cmd.Stdin = strings.NewReader(stdin)
+
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
@@ -82,8 +84,12 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 		args = append(args, s.TmpDir)
 	}
 
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...) // #nosec G204 -- Test helper running project binary
-	return cmd.CombinedOutput()                                             //nolint:wrapcheck // Test helper - pass through exec error
+	cmd := exec.CommandContext(
+		context.Background(),
+		s.BinaryPath,
+		args...) // #nosec G204 -- Test helper running project binary
+
+	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.
@@ -127,10 +133,12 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 
 	// #nosec G204 -- Test helper running project binary
 	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+
 	stdoutPipe, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create stdout pipe: %w", err)
 	}
+
 	stderrPipe, err := cmd.StderrPipe()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create stderr pipe: %w", err)
@@ -144,6 +152,7 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read stdout: %w", err)
 	}
+
 	stderr, err = io.ReadAll(stderrPipe)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read stderr: %w", err)

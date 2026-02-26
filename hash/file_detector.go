@@ -49,15 +49,18 @@ func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
 
 	// Convert to FileDuplicate slice
 	var duplicates []FileDuplicate
+
 	for hash, group := range hashGroups {
 		if len(group) >= 2 {
 			// Filter by size threshold
 			validFiles := make([]FileHash, 0)
+
 			for _, fh := range group {
 				if fh.Size >= threshold {
 					validFiles = append(validFiles, fh)
 				}
 			}
+
 			if len(validFiles) >= 2 {
 				duplicates = append(duplicates, FileDuplicate{
 					Hash:  hash,
@@ -102,6 +105,7 @@ func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 // extractUniqueFiles gets unique list of files from nodes.
 func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 	fileSet := make(map[string]bool)
+
 	var files []string
 
 	for _, node := range data {
@@ -125,7 +129,9 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 
 	for _, filename := range files {
 		// Read file content
-		content, err := os.ReadFile(filename) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
+		content, err := os.ReadFile(
+			filename,
+		) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 		if err != nil {
 			continue // Skip files that can't be read
 		}
@@ -160,7 +166,10 @@ func (f *FileDetector) groupByHash(fileHashes []FileHash) map[string][]FileHash 
 }
 
 // convertToMatches converts hash groups to syntax.Match format.
-func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, threshold int) []syntax.Match {
+func (f *FileDetector) convertToMatches(
+	hashGroups map[string][]FileHash,
+	threshold int,
+) []syntax.Match {
 	var matches []syntax.Match
 
 	for hash, group := range hashGroups {
@@ -171,6 +180,7 @@ func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, thresh
 
 		// Check if files meet minimum size threshold
 		validFiles := make([]FileHash, 0)
+
 		for _, fileHash := range group {
 			if fileHash.Size >= threshold {
 				validFiles = append(validFiles, fileHash)
@@ -187,8 +197,10 @@ func (f *FileDetector) convertToMatches(hashGroups map[string][]FileHash, thresh
 				node := &syntax.Node{
 					Filename: fileHash.Filename,
 					Pos:      0,
-					End:      int32(fileHash.Size), // #nosec G115 -- File sizes bounded by int32 in practice
-					Type:     1,                    // Use a generic type
+					End: int32(
+						fileHash.Size,
+					), // #nosec G115 -- File sizes bounded by int32 in practice
+					Type: 1, // Use a generic type
 				}
 
 				fragments = append(fragments, []*syntax.Node{node})

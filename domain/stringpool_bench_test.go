@@ -82,6 +82,7 @@ func BenchmarkStringPool_ConcurrentMixed(b *testing.B) {
 			} else {
 				_ = pool.Intern(fmt.Sprintf("unique%d_%d.go", b.N, i)) // Write
 			}
+
 			i++
 		}
 	})
@@ -140,16 +141,21 @@ func TestStringPool_LockContention(t *testing.T) {
 	pool := NewStringInternPool(10000)
 
 	var wg sync.WaitGroup
-	const goroutines = 100
-	const operations = 10000
+
+	const (
+		goroutines = 100
+		operations = 10000
+	)
 
 	// Track blocking time (requires runtime.MutexProfile)
 	// This test is for manual profiling: go test -run TestStringPool_LockContention -cpuprofile=cpu.prof
 
 	for g := range goroutines {
 		wg.Add(1)
+
 		go func(id int) {
 			defer wg.Done()
+
 			for i := range operations {
 				// Mix of reads and writes
 				if i%2 == 0 {

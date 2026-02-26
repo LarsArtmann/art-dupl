@@ -40,14 +40,17 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 		if start < 0 || end < 0 || start > end {
 			return true // Invalid input, skip
 		}
+
 		if end > len(content) {
 			return true // End beyond content, skip
 		}
 
 		startLine, endLine := ByteRangeToLines([]byte(content), start, end)
+
 		return startLine > 0 && endLine > 0
 	}
-	if err := quick.Check(f1, nil); err != nil {
+	err := quick.Check(f1, nil)
+	if err != nil {
 		t.Errorf("Positive line numbers property failed: %v", err)
 	}
 
@@ -56,14 +59,17 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 		if start < 0 || end < 0 || start > end {
 			return true // Invalid input, skip
 		}
+
 		if end > len(content) {
 			return true // End beyond content, skip
 		}
 
 		startLine, endLine := ByteRangeToLines([]byte(content), start, end)
+
 		return endLine >= startLine
 	}
-	if err := quick.Check(f2, nil); err != nil {
+	err = quick.Check(f2, nil)
+	if err != nil {
 		t.Errorf("End line >= start line property failed: %v", err)
 	}
 
@@ -74,9 +80,11 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 		}
 
 		startLine, endLine := ByteRangeToLines([]byte(""), start, end)
+
 		return startLine == 1 && endLine == 1
 	}
-	if err := quick.Check(f3, nil); err != nil {
+	err = quick.Check(f3, nil)
+	if err != nil {
 		t.Errorf("Empty content property failed: %v", err)
 	}
 }
@@ -88,9 +96,11 @@ func TestSplitLinesProperty(t *testing.T) {
 	f := func(content string) bool {
 		lines := SplitLines([]byte(content))
 		joined := JoinLines(lines)
+
 		return joined == content
 	}
-	if err := quick.Check(f, nil); err != nil {
+	err := quick.Check(f, nil)
+	if err != nil {
 		t.Errorf("Split-join roundtrip property failed: %v", err)
 	}
 }
@@ -103,15 +113,18 @@ func TestLineIndexProperty(t *testing.T) {
 		if offset < 0 {
 			return true // Negative offset, skip
 		}
+
 		if offset > len(content) {
 			return true // Offset beyond content, skip
 		}
 
 		idx := NewLineIndex([]byte(content))
 		lineNum := idx.Line(offset)
+
 		return lineNum >= 0
 	}
-	if err := quick.Check(f1, nil); err != nil {
+	err := quick.Check(f1, nil)
+	if err != nil {
 		t.Errorf("Positive line numbers property failed: %v", err)
 	}
 
@@ -120,9 +133,11 @@ func TestLineIndexProperty(t *testing.T) {
 		if offset1 < 0 || offset2 < 0 {
 			return true // Negative offsets, skip
 		}
+
 		if offset1 > offset2 {
 			offset1, offset2 = offset2, offset1 // Ensure offset1 <= offset2
 		}
+
 		if offset2 > len(content) {
 			return true // Offset beyond content, skip
 		}
@@ -130,9 +145,11 @@ func TestLineIndexProperty(t *testing.T) {
 		idx := NewLineIndex([]byte(content))
 		line1 := idx.Line(offset1)
 		line2 := idx.Line(offset2)
+
 		return line2 >= line1
 	}
-	if err := quick.Check(f2, nil); err != nil {
+	err = quick.Check(f2, nil)
+	if err != nil {
 		t.Errorf("Monotonicity property failed: %v", err)
 	}
 }

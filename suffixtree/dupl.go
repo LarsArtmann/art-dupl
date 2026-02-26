@@ -39,11 +39,14 @@ func (c *contextList) getAll() []Pos {
 	for k := range c.lists {
 		keys = append(keys, k)
 	}
+
 	sort.Ints(keys)
+
 	var ps []Pos
 	for _, k := range keys {
 		ps = append(ps, c.lists[k].positions...)
 	}
+
 	return ps
 }
 
@@ -62,10 +65,12 @@ func (c *contextList) append(c2 *contextList) {
 func (t *STree) FindDuplOver(threshold int) <-chan Match {
 	auxTran := newTran(0, 0, t.root)
 	ch := make(chan Match)
+
 	go func() {
 		walkTrans(auxTran, 0, threshold, ch)
 		close(ch)
 	}()
+
 	return ch
 }
 
@@ -77,24 +82,32 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	if len(s.trans) == 0 {
 		pl := newPosList()
 		// Safe conversion: ensure start is non-negative
-		start := max(Pos(0), parent.end+1-Pos(length)) // #nosec G115 -- Positions are valid in tree context
+		start := max(
+			Pos(0),
+			parent.end+1-Pos(length),
+		) // #nosec G115 -- Positions are valid in tree context
 		pl.add(start)
+
 		ch := 0
 		// Bounds check: ensure start-1 is within data slice bounds
 		if start > 0 && int(start-1) < len(s.tree.data) {
 			ch = s.tree.data[start-1].Val()
 		}
+
 		cl.lists[ch] = pl
+
 		return cl
 	}
 
 	for _, t := range s.trans {
 		ln := length + t.len()
+
 		cl2 := walkTrans(t, ln, threshold, ch)
 		if ln >= threshold {
 			cl.append(cl2)
 		}
 	}
+
 	if length >= threshold && len(cl.lists) > 1 {
 		// Safe conversion: ensure length fits in int32
 		if length <= math.MaxInt32 {
@@ -102,5 +115,6 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 			ch <- m
 		}
 	}
+
 	return cl
 }

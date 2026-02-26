@@ -85,10 +85,12 @@ type FilterStats struct {
 // TotalFiltered returns the total number of filtered files.
 func (fs FilterStats) TotalFiltered() int {
 	total := 0
+
 	for reason, count := range fs.FilteredByReason {
 		if reason != ReasonNotFiltered {
 			total += count
 		}
 	}
+
 	return total
 }

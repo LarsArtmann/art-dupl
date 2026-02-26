@@ -2,14 +2,11 @@ package job
 
 import (
 	"context"
-	"path/filepath"
 	"runtime"
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/syntax/golang"
-	"github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
 // ParseStats holds statistics from the parsing phase.
@@ -30,52 +27,63 @@ func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan Pa
 	// parse AST
 	achan := make(chan *syntax.Node)
 	statsChan := make(chan ParseStats, 1)
+
 	go func() {
 		fileCount := 0
 		lineCount := 0
+
 		for file := range fchan {
 			select {
 			case <-ctx.Done():
 				statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+
 				close(achan)
+
 				return
 			default:
 			}
+
 			fileCount++
 
-			var ast *syntax.Node
-			var lines int
-			var err error
+			var (
+				ast   *syntax.Node
+				lines int
+				err   error
+			)
 
 			// Dispatch to appropriate parser based on file extension
-			switch filepath.Ext(file) {
-			case ".templ":
-				ast, lines, err = templ.ParseWithLineCount(file)
-			default:
-				// Default to Go parser for .go files and any other files that reach here
-				ast, lines, err = golang.ParseWithLineCount(file)
-			}
 
+			ast, lines, err = ParseFileByExtension(file)
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
+
 				continue
 			}
+
 			lineCount += lines
+
 			achan <- ast
 		}
+
 		statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+
 		close(achan)
 	}()
 
 	// serialize
 	schan := make(chan []*syntax.Node)
 	go serializeAST(ctx, achan, schan)
+
 	return schan, statsChan
 }
 
 // ParseParallel parses files concurrently using a worker pool.
 // Workers defaults to runtime.GOMAXPROCS(0) if <= 0.
-func ParseParallel(ctx context.Context, fchan chan string, workers int) (chan []*syntax.Node, chan ParseStats) {
+func ParseParallel(
+	ctx context.Context,
+	fchan chan string,
+	workers int,
+) (chan []*syntax.Node, chan ParseStats) {
 	workers = normalizeWorkerCount(workers)
 
 	resultChan := make(chan parseResult, workers*2)
@@ -83,6 +91,7 @@ func ParseParallel(ctx context.Context, fchan chan string, workers int) (chan []
 
 	// Start workers
 	var wg sync.WaitGroup
+
 	fileQueue := make(chan string, workers*2)
 
 	startWorkers(ctx, &wg, fileQueue, resultChan, workers)
@@ -92,6 +101,7 @@ func ParseParallel(ctx context.Context, fchan chan string, workers int) (chan []
 
 	// Collect results and forward to achan
 	achan := make(chan *syntax.Node)
+
 	go closeResultChan(&wg, resultChan)
 
 	go collectResults(resultChan, achan, statsChan)
@@ -108,18 +118,24 @@ func normalizeWorkerCount(workers int) int {
 	if workers <= 0 {
 		workers = runtime.GOMAXPROCS(0)
 	}
+
 	if workers < 1 {
 		workers = 1
 	}
+
 	return workers
 }
 
 // startWorkers starts the worker goroutines.
-func startWorkers(ctx context.Context, wg *sync.WaitGroup, fileQueue <-chan string, resultChan chan<- parseResult, workers int) {
+func startWorkers(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	fileQueue <-chan string,
+	resultChan chan<- parseResult,
+	workers int,
+) {
 	for range workers {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for file := range fileQueue {
 				select {
 				case <-ctx.Done():
@@ -130,22 +146,13 @@ func startWorkers(ctx context.Context, wg *sync.WaitGroup, fileQueue <-chan stri
 				result := parseFile(file)
 				resultChan <- result
 			}
-		}()
+		})
 	}
 }
 
 // parseFile parses a single file and returns the result.
 func parseFile(file string) parseResult {
-	var ast *syntax.Node
-	var lines int
-	var err error
-
-	switch filepath.Ext(file) {
-	case ".templ":
-		ast, lines, err = templ.ParseWithLineCount(file)
-	default:
-		ast, lines, err = golang.ParseWithLineCount(file)
-	}
+	ast, lines, err := ParseFileByExtension(file)
 
 	return parseResult{ast: ast, lines: lines, err: err}
 }
@@ -156,10 +163,12 @@ func feedFiles(ctx context.Context, fchan <-chan string, fileQueue chan<- string
 		select {
 		case <-ctx.Done():
 			close(fileQueue)
+
 			return
 		case fileQueue <- file:
 		}
 	}
+
 	close(fileQueue)
 }
 
@@ -170,19 +179,29 @@ func closeResultChan(wg *sync.WaitGroup, resultChan chan parseResult) {
 }
 
 // collectResults collects parse results and forwards AST nodes.
-func collectResults(resultChan <-chan parseResult, achan chan<- *syntax.Node, statsChan chan<- ParseStats) {
+func collectResults(
+	resultChan <-chan parseResult,
+	achan chan<- *syntax.Node,
+	statsChan chan<- ParseStats,
+) {
 	fileCount := 0
 	lineCount := 0
+
 	for result := range resultChan {
 		if result.err != nil {
 			logger.Default.Error("failed to parse file", "err", result.err)
+
 			continue
 		}
+
 		fileCount++
+
 		lineCount += result.lines
 		achan <- result.ast
 	}
+
 	statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+
 	close(achan)
 }
 
@@ -192,11 +211,14 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 		select {
 		case <-ctx.Done():
 			close(schan)
+
 			return
 		default:
 		}
+
 		seq := syntax.Serialize(ast)
 		schan <- seq
 	}
+
 	close(schan)
 }

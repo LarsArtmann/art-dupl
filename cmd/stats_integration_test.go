@@ -9,10 +9,35 @@ import (
 	"testing"
 )
 
+// hasAllStrings returns a function that checks if all substrings exist in the given text
+func hasAllStrings(text string, substrings ...string) func() bool {
+	return func() bool {
+		for _, substring := range substrings {
+			if !strings.Contains(text, substring) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+// hasAnyStrings returns a function that checks if any substring exists in given text
+func hasAnyStrings(text string, substrings ...string) func() bool {
+	return func() bool {
+		for _, substring := range substrings {
+			if strings.Contains(text, substring) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
 func TestStatsCommandIntegration(t *testing.T) {
 	// Build the binary first
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
-	if err := buildBinary(binaryPath); err != nil {
+	err := buildBinary(binaryPath)
+	if err != nil {
 		t.Fatalf("Failed to build binary: %v", err)
 	}
 
@@ -94,6 +119,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 
@@ -110,7 +136,8 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 func TestStatsCommandErrorCases(t *testing.T) {
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
-	if err := buildBinary(binaryPath); err != nil {
+	err := buildBinary(binaryPath)
+	if err != nil {
 		t.Fatalf("Failed to build binary: %v", err)
 	}
 
@@ -185,41 +212,24 @@ func TestStatsOutputFormat(t *testing.T) {
 		check func() bool
 	}{
 		{
-			name: "has header section",
-			check: func() bool {
-				return strings.Contains(outputStr, "Code Duplication Statistics") &&
-					strings.Contains(outputStr, "============================")
-			},
+			name:  "has header section",
+			check: hasAllStrings(outputStr, "Code Duplication Statistics", "============================"),
 		},
 		{
-			name: "has configuration section",
-			check: func() bool {
-				return strings.Contains(outputStr, "Configuration:") &&
-					strings.Contains(outputStr, "Threshold:") &&
-					strings.Contains(outputStr, "Detection Methods:")
-			},
+			name:  "has configuration section",
+			check: hasAllStrings(outputStr, "Configuration:", "Threshold:", "Detection Methods:"),
 		},
 		{
-			name: "has overview section",
-			check: func() bool {
-				return strings.Contains(outputStr, "Overview:") &&
-					strings.Contains(outputStr, "Files Scanned:") &&
-					strings.Contains(outputStr, "Clone Groups:")
-			},
+			name:  "has overview section",
+			check: hasAllStrings(outputStr, "Overview:", "Files Scanned:", "Clone Groups:"),
 		},
 		{
-			name: "has duplicate code section",
-			check: func() bool {
-				return strings.Contains(outputStr, "Duplicate Code:") &&
-					strings.Contains(outputStr, "Total Duplicate Lines:")
-			},
+			name:  "has duplicate code section",
+			check: hasAllStrings(outputStr, "Duplicate Code:", "Total Duplicate Lines:"),
 		},
 		{
-			name: "has size distribution section",
-			check: func() bool {
-				return strings.Contains(outputStr, "Clone Size Distribution:") ||
-					strings.Contains(outputStr, "Top Files by Duplicate Lines:")
-			},
+			name:  "has size distribution section",
+			check: hasAnyStrings(outputStr, "Clone Size Distribution:", "Top Files by Duplicate Lines:"),
 		},
 	}
 
@@ -242,6 +252,7 @@ func buildBinary(outputPath string) error {
 
 	// Save current directory and restore later
 	originalDir, _ := os.Getwd()
+
 	defer func() { _ = os.Chdir(originalDir) }() // test cleanup
 
 	if err := os.Chdir(repoRoot); err != nil {
@@ -251,7 +262,16 @@ func buildBinary(outputPath string) error {
 	// Build the binary
 	cmd := &Command{
 		Path: "go",
-		Args: []string{"go", "build", "-o", outputPath, "-ldflags", "-s -w", "-trimpath", "./cmd/art-dupl"},
+		Args: []string{
+			"go",
+			"build",
+			"-o",
+			outputPath,
+			"-ldflags",
+			"-s -w",
+			"-trimpath",
+			"./cmd/art-dupl",
+		},
 	}
 
 	return cmd.Run()
@@ -269,6 +289,7 @@ func findRepoRoot() (string, error) {
 		if _, err := os.Stat(filepath.Join(current, "go.mod")); err == nil {
 			return current, nil
 		}
+
 		if _, err := os.Stat(filepath.Join(current, ".git")); err == nil {
 			return current, nil
 		}
@@ -277,6 +298,7 @@ func findRepoRoot() (string, error) {
 		if parent == current {
 			break
 		}
+
 		current = parent
 	}
 
@@ -295,13 +317,18 @@ type Command struct {
 //
 //nolint:funcorder // helper method
 func (c *Command) buildCmd() *exec.Cmd {
-	cmd := exec.CommandContext(context.Background(), c.Path, c.Args[1:]...) // Args[0] is the binary path
+	cmd := exec.CommandContext(
+		context.Background(),
+		c.Path,
+		c.Args[1:]...) // Args[0] is the binary path
 	if c.Dir != "" {
 		cmd.Dir = c.Dir
 	}
+
 	if len(c.Env) > 0 {
 		cmd.Env = c.Env
 	}
+
 	return cmd
 }
 

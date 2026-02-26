@@ -42,6 +42,7 @@ func New() *STree {
 	t.auxState = newState(t)
 	t.root.linkState = t.auxState
 	t.s = t.root
+
 	return t
 }
 
@@ -64,20 +65,27 @@ func (t *STree) update() {
 	// (s, (start, end)) is the canonical reference pair for the active point
 	s := t.s
 	start, end := t.start, t.end
+
 	var r *state
+
 	for {
 		var endPoint bool
+
 		r, endPoint = t.testAndSplit(s, start, end-1)
 		if endPoint {
 			break
 		}
+
 		r.fork(end)
+
 		if oldr != t.root {
 			oldr.linkState = r
 		}
+
 		oldr = r
 		s, start, _ = t.canonize(s.linkState, start, end-1)
 	}
+
 	if oldr != t.root {
 		oldr.linkState = r
 	}
@@ -97,6 +105,7 @@ func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint boo
 	c := t.data[t.end]
 	if start <= end {
 		tr := s.findTran(t.data[start])
+
 		splitPoint := tr.start + end - start + 1
 		if t.data[splitPoint].Val() == c.Val() {
 			return s, true
@@ -106,11 +115,14 @@ func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint boo
 		newSt.addTran(splitPoint, tr.end, tr.state)
 		tr.end = splitPoint - 1
 		tr.state = newSt
+
 		return newSt, false
 	}
+
 	if s == t.auxState || s.findTran(c) != nil {
 		return s, true
 	}
+
 	return s, false
 }
 
@@ -123,11 +135,13 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	if s == t.auxState {
 		s, start = t.root, start+1
 	}
+
 	if start > end {
 		return s, start, nil
 	}
 
 	var tr *tran
+
 	for {
 		if start <= end {
 			tr = s.findTran(t.data[start])
@@ -137,15 +151,19 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 						t.data[start].Val(), start), nil)
 			}
 		}
+
 		if tr.end-tr.start > end-start {
 			break
 		}
+
 		start += tr.end - tr.start + 1
 		s = tr.state
 	}
+
 	if s == nil {
 		return nil, 0, errors.NewInternalError("no suffix link resolution found", nil)
 	}
+
 	return s, start, nil
 }
 
@@ -155,12 +173,14 @@ func (t *STree) At(p Pos) Token {
 	if p < 0 || p >= Pos(len(t.data)) {
 		return nil
 	}
+
 	return t.data[p]
 }
 
 func (t *STree) String() string {
 	buf := new(bytes.Buffer)
 	printState(buf, t.root, 0)
+
 	return buf.String()
 }
 
@@ -195,6 +215,7 @@ func (s *state) addTran(start, end Pos, r *state) {
 func (s *state) fork(i Pos) *state {
 	r := newState(s.tree)
 	s.addTran(i, infinity, r)
+
 	return r
 }
 
@@ -220,5 +241,6 @@ func (t *tran) ActEnd() Pos {
 		// Safe conversion: tree data size won't overflow Pos in practice
 		return Pos(len(t.state.tree.data)) - 1 // #nosec G115 -- Data size won't exceed MaxInt32
 	}
+
 	return t.end
 }

@@ -71,6 +71,7 @@ func BenchmarkStringPool_GlobalPoolRealistic(b *testing.B) {
 				newFile := fmt.Sprintf("internal/package%d/new_file.go", i%50)
 				_ = GlobalPool().Intern(newFile)
 			}
+
 			i++
 		}
 	})
@@ -84,6 +85,7 @@ func BenchmarkStringPool_NodeToClonePattern(b *testing.B) {
 	b.ReportAllocs()
 
 	var i int
+
 	for b.Loop() {
 		// This is what actually happens in NodeToClone
 		clone := Clone{}
@@ -153,7 +155,6 @@ func generateRealisticCodeFragments() []string {
 // BenchmarkStringPool_ContentionProfile is for manual profiling.
 func BenchmarkStringPool_ContentionProfile(b *testing.B) {
 	// Run this with: go test -bench=BenchmarkStringPool_ContentionProfile -cpuprofile=cpu.prof -mutexprofile=mutex.prof
-
 	pool := NewStringInternPool(5000)
 
 	b.ResetTimer()
@@ -166,6 +167,7 @@ func BenchmarkStringPool_ContentionProfile(b *testing.B) {
 			} else {
 				_ = pool.Intern(fmt.Sprintf("file%d.go", i%1000))
 			}
+
 			i++
 		}
 	})

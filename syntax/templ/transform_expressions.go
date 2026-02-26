@@ -11,12 +11,16 @@ func (t *transformer) transformIfExpression(ie *templparser.IfExpression) *synta
 	if ie == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ComponentIfStatement, ie.Range)
 	t.addChildren(o, ie.Then)
+
 	for _, elseIf := range ie.ElseIfs {
 		t.addChildren(o, elseIf.Then)
 	}
+
 	t.addChildren(o, ie.Else)
+
 	return o
 }
 
@@ -25,8 +29,10 @@ func (t *transformer) transformForExpression(fe *templparser.ForExpression) *syn
 	if fe == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ComponentForStatement, fe.Range)
 	t.addChildren(o, fe.Children)
+
 	return o
 }
 
@@ -35,6 +41,7 @@ func (t *transformer) transformSwitchExpression(se *templparser.SwitchExpression
 	if se == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ComponentSwitchStatement, se.Range)
 	for _, c := range se.Cases {
 		caseNode := t.transformCaseExpression(c)
@@ -42,6 +49,7 @@ func (t *transformer) transformSwitchExpression(se *templparser.SwitchExpression
 			o.AddChildren(caseNode)
 		}
 	}
+
 	return o
 }
 
@@ -49,5 +57,6 @@ func (t *transformer) transformSwitchExpression(se *templparser.SwitchExpression
 func (t *transformer) transformCaseExpression(ce templparser.CaseExpression) *syntax.Node {
 	o := t.createNode(ComponentSwitchExpressionCase, 0, 0)
 	t.addChildren(o, ce.Children)
+
 	return o
 }

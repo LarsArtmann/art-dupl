@@ -29,12 +29,16 @@ func TestSortByParse(t *testing.T) {
 				if err == nil {
 					t.Errorf("Expected error for input %q, got nil", tt.input)
 				}
+
 				return
 			}
+
 			if err != nil {
 				t.Errorf("Unexpected error for input %q: %v", tt.input, err)
+
 				return
 			}
+
 			if result != tt.expected {
 				t.Errorf("Expected %q, got %q", tt.expected, result)
 			}
@@ -81,7 +85,12 @@ func TestSortByIsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.sortBy.String(), func(t *testing.T) {
 			if tt.sortBy.IsValid() != tt.isValid {
-				t.Errorf("Expected IsValid() to return %v for %q, got %v", tt.isValid, tt.sortBy, tt.sortBy.IsValid())
+				t.Errorf(
+					"Expected IsValid() to return %v for %q, got %v",
+					tt.isValid,
+					tt.sortBy,
+					tt.sortBy.IsValid(),
+				)
 			}
 		})
 	}

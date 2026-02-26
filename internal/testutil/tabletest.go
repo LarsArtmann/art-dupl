@@ -30,12 +30,14 @@ type TableTestCase struct {
 //	})
 func RunTableTest[T any](t *testing.T, tests []T, assertion func(t *testing.T, tt T)) {
 	t.Helper()
+
 	for _, tt := range tests {
 		// Extract name using type assertion if possible
 		var name string
 		if tc, ok := any(tt).(interface{ GetName() string }); ok {
 			name = tc.GetName()
 		}
+
 		t.Run(name, func(t *testing.T) {
 			assertion(t, tt)
 		})
@@ -67,8 +69,14 @@ func RunTableTest[T any](t *testing.T, tests []T, assertion func(t *testing.T, t
 //	}) {
 //		testutil.AssertEqual(t, tt.format.IsValid(), tt.expected, "Format.IsValid()")
 //	})
-func RunTableTestWithName[T any](t *testing.T, tests []T, getName func(T) string, assertion func(t *testing.T, tt T)) {
+func RunTableTestWithName[T any](
+	t *testing.T,
+	tests []T,
+	getName func(T) string,
+	assertion func(t *testing.T, tt T),
+) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(getName(tt), func(t *testing.T) {
 			assertion(t, tt)
@@ -87,6 +95,7 @@ func RunNamedTest(t *testing.T, name string, testFunc func(t *testing.T)) {
 // The messagePrefix is used in the error message (e.g., "Format.IsValid()").
 func AssertEqual[T comparable](t *testing.T, got, want T, messagePrefix string) {
 	t.Helper()
+
 	if got != want {
 		t.Errorf("%s = %v, want %v", messagePrefix, got, want)
 	}

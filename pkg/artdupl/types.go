@@ -179,5 +179,7 @@ func ValidateOptions(opts *Options) error {
 		return ErrInvalidTimeout
 	}
 
-	return config.ValidateDetectionMethods(opts.DetectionMethods) //nolint:wrapcheck // Pass through validation error
+	return config.ValidateDetectionMethods(
+		opts.DetectionMethods,
+	) //nolint:wrapcheck // Pass through validation error
 }

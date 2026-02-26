@@ -39,12 +39,14 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 						if uintWrapper.Uint() != wantWrapper.Uint() {
 							t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
 						}
+
 						return
 					}
 				}
 				// Fallback for non-UintWrapper types
 				// Use reflection or type assertion to compare
 				gotValue := fmt.Sprintf("%v", got)
+
 				wantValue := fmt.Sprintf("%v", tc.want)
 				if gotValue != wantValue {
 					t.Errorf("New%s() = %v, want %v", typeName, got, tc.want)
@@ -63,8 +65,10 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 	t.Run("RoundTrip", func(t *testing.T) {
 		original := tt.newFunc(123)
 		data, _ := tt.jsonMarshal(original)
+
 		var result T
-		if err := tt.jsonUnmarshal(&result, data); err != nil {
+		err := tt.jsonUnmarshal(&result, data)
+		if err != nil {
 			t.Fatalf("UnmarshalJSON() error: %v", err)
 		}
 		// Compare using the uint function to get value comparison
@@ -76,8 +80,14 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 }
 
 // testJSONRoundTrip is a helper for testing JSON marshaling and unmarshaling.
-func testJSONRoundTrip[T comparable](t *testing.T, original T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error) {
+func testJSONRoundTrip[T comparable](
+	t *testing.T,
+	original T,
+	marshal func(T) ([]byte, error),
+	unmarshal func(*T, []byte) error,
+) {
 	t.Helper()
+
 	data, err := marshal(original)
 	if err != nil {
 		t.Fatalf("MarshalJSON() error: %v", err)
@@ -102,8 +112,14 @@ type constructorTest[T any] struct {
 }
 
 // runConstructorTests runs a series of constructor tests with error checking.
-func runConstructorTests[T any](t *testing.T, constructorName string, tests []constructorTest[T], newFunc func(any) (T, error)) {
+func runConstructorTests[T any](
+	t *testing.T,
+	constructorName string,
+	tests []constructorTest[T],
+	newFunc func(any) (T, error),
+) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, gotErr := newFunc(tt.input)
@@ -111,8 +127,10 @@ func runConstructorTests[T any](t *testing.T, constructorName string, tests []co
 			if tt.wantError {
 				if gotErr == nil {
 					t.Errorf("%s() expected error, got nil", constructorName)
+
 					return
 				}
+
 				var validationErr *duplerrors.DuplError
 				if !stderrors.As(gotErr, &validationErr) {
 					t.Errorf("%s() expected ValidationError, got %T", constructorName, gotErr)
@@ -120,6 +138,7 @@ func runConstructorTests[T any](t *testing.T, constructorName string, tests []co
 			} else {
 				if gotErr != nil {
 					t.Errorf("%s() unexpected error: %v", constructorName, gotErr)
+
 					return
 				}
 				// Special handling for uint-based types
@@ -129,11 +148,13 @@ func runConstructorTests[T any](t *testing.T, constructorName string, tests []co
 						if v.Uint() != wantWrapper.Uint() {
 							t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
 						}
+
 						return
 					}
 				default:
 					// Use string comparison for incomparable types
 					gotValue := fmt.Sprintf("%v", got)
+
 					wantValue := fmt.Sprintf("%v", tt.want)
 					if gotValue != wantValue {
 						t.Errorf("%s() = %v, want %v", constructorName, got, tt.want)
@@ -153,8 +174,14 @@ type jsonTest[T comparable] struct {
 }
 
 // runJSONTests runs JSON marshal/unmarshal tests.
-func runJSONTests[T comparable](t *testing.T, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error, tests []jsonTest[T]) {
+func runJSONTests[T comparable](
+	t *testing.T,
+	marshal func(T) ([]byte, error),
+	unmarshal func(*T, []byte) error,
+	tests []jsonTest[T],
+) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, gotErr := marshal(tt.input)
@@ -162,13 +189,16 @@ func runJSONTests[T comparable](t *testing.T, marshal func(T) ([]byte, error), u
 			if tt.wantErr {
 				if gotErr == nil {
 					t.Errorf("MarshalJSON() expected error, got nil")
+
 					return
 				}
 			} else {
 				if gotErr != nil {
 					t.Errorf("MarshalJSON() unexpected error: %v", gotErr)
+
 					return
 				}
+
 				if string(got) != tt.want {
 					t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
 				}
@@ -178,29 +208,37 @@ func runJSONTests[T comparable](t *testing.T, marshal func(T) ([]byte, error), u
 }
 
 // runJSONUnmarshalTests runs JSON unmarshal tests.
-func runJSONUnmarshalTests[T comparable](t *testing.T, unmarshal func(*T, []byte) error, tests []struct {
-	name      string
-	input     string
-	want      T
-	wantError bool
-},
+func runJSONUnmarshalTests[T comparable](
+	t *testing.T,
+	unmarshal func(*T, []byte) error,
+	tests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
 ) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var got T
+
 			gotErr := unmarshal(&got, []byte(tt.input))
 
 			if tt.wantError {
 				if gotErr == nil {
 					t.Errorf("UnmarshalJSON() expected error, got nil")
+
 					return
 				}
 			} else {
 				if gotErr != nil {
 					t.Errorf("UnmarshalJSON() unexpected error: %v", gotErr)
+
 					return
 				}
+
 				if got != tt.want {
 					t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
 				}
@@ -240,7 +278,13 @@ type TestCase struct {
 //   - uintFunc: Method that extracts uint from the type
 //   - marshalFunc: Method that marshals the type to JSON
 //   - unmarshalFunc: Method that unmarshals JSON to the type
-func createUintTypeTest[T comparable](typeName string, newFunc func(uint) T, uintFunc func(T) uint, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error) TestCase {
+func createUintTypeTest[T comparable](
+	typeName string,
+	newFunc func(uint) T,
+	uintFunc func(T) uint,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
+) TestCase {
 	return TestCase{
 		name: typeName,
 		test: func(t *testing.T) {
@@ -262,6 +306,7 @@ func registerTestForType[T comparable](t *testing.T, typeName string, constructo
 	getUint func(T) uint, marshal func(T) ([]byte, error), unmarshal func(*T, []byte) error,
 ) {
 	t.Helper()
+
 	testCase := createUintTypeTest(typeName, constructor, getUint, marshal, unmarshal)
 	testCase.test(t)
 }
@@ -291,6 +336,7 @@ func registerUintTypeTestGeneric[T interface {
 			if marshaler, ok := any(v).(interface{ MarshalJSON() ([]byte, error) }); ok {
 				return marshaler.MarshalJSON()
 			}
+
 			return nil, fmt.Errorf("type %T does not implement MarshalJSON", v)
 		},
 		jsonUnmarshalFuncPtr[T]())
@@ -353,12 +399,19 @@ func TestUintTypes(t *testing.T) {
 
 // TestLineNumber_NewLineNumber tests the NewLineNumber constructor.
 // This helper reduces boilerplate when creating tests for types with JSON support.
-func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalTests []jsonTest[T], unmarshalTests []struct {
-	name      string
-	input     string
-	want      T
-	wantError bool
-}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error,
+func registerJSONTestSuite[T comparable](
+	t *testing.T,
+	typeName string,
+	marshalTests []jsonTest[T],
+	unmarshalTests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
+	roundTripValue T,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
 ) {
 	t.Helper()
 
@@ -379,6 +432,7 @@ func registerJSONTestSuite[T comparable](t *testing.T, typeName string, marshalT
 // This helper reduces boilerplate by running standard test functions and JSON test suite.
 func registerStandardTypeTest(t *testing.T, typeName string, testFuncs ...func(*testing.T)) {
 	t.Helper()
+
 	for _, tf := range testFuncs {
 		tf(t)
 	}
@@ -387,16 +441,32 @@ func registerStandardTypeTest(t *testing.T, typeName string, testFuncs ...func(*
 // registerTypeTestSuite creates and runs a complete test suite for types with JSON support.
 // This helper combines standard type tests with JSON marshaling/unmarshaling tests.
 // It reduces boilerplate by consolidating registerStandardTypeTest and registerJSONTestSuite calls.
-func registerTypeTestSuite[T comparable](t *testing.T, typeName string, testFuncs []func(*testing.T), marshalTests []jsonTest[T], unmarshalTests []struct {
-	name      string
-	input     string
-	want      T
-	wantError bool
-}, roundTripValue T, marshalFunc func(T) ([]byte, error), unmarshalFunc func(*T, []byte) error,
+func registerTypeTestSuite[T comparable](
+	t *testing.T,
+	typeName string,
+	testFuncs []func(*testing.T),
+	marshalTests []jsonTest[T],
+	unmarshalTests []struct {
+		name      string
+		input     string
+		want      T
+		wantError bool
+	},
+	roundTripValue T,
+	marshalFunc func(T) ([]byte, error),
+	unmarshalFunc func(*T, []byte) error,
 ) {
 	t.Helper()
 	registerStandardTypeTest(t, typeName, testFuncs...)
-	registerJSONTestSuite(t, typeName, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+	registerJSONTestSuite(
+		t,
+		typeName,
+		marshalTests,
+		unmarshalTests,
+		roundTripValue,
+		marshalFunc,
+		unmarshalFunc,
+	)
 }
 
 // createTypeTestSuite creates a complete test registration for types with JSON support.
@@ -421,7 +491,16 @@ func createTypeTestSuite[T comparable](
 ) func(*testing.T) {
 	return func(t *testing.T) {
 		t.Helper()
-		registerTypeTestSuite(t, typeName, testFuncs, marshalTests, unmarshalTests, roundTripValue, marshalFunc, unmarshalFunc)
+		registerTypeTestSuite(
+			t,
+			typeName,
+			testFuncs,
+			marshalTests,
+			unmarshalTests,
+			roundTripValue,
+			marshalFunc,
+			unmarshalFunc,
+		)
 	}
 }
 
@@ -439,6 +518,7 @@ func createStandardUintJSONTests[T comparable](
 }, roundTripValue T,
 ) {
 	var zero T
+
 	marshalTests = []jsonTest[T]{
 		{name: "valid value", input: validValue, want: validJSON, wantErr: false},
 		{name: "zero should error", input: zero, want: "", wantErr: true},
@@ -454,6 +534,7 @@ func createStandardUintJSONTests[T comparable](
 		{name: "invalid JSON", input: `not-json`, want: zero, wantError: true},
 	}
 	roundTripValue = validValue
+
 	return marshalTests, unmarshalTests, roundTripValue
 }
 
@@ -500,7 +581,11 @@ func createStandardUintTypeTest[T comparable](
 ) func(*testing.T) {
 	return func(t *testing.T) {
 		t.Helper()
-		marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(validValue, validJSON)
+
+		marshalTests, unmarshalTests, roundTripValue := createStandardUintJSONTests(
+			validValue,
+			validJSON,
+		)
 		createTypeTestSuite(
 			typeName,
 			testFuncs,
@@ -610,13 +695,28 @@ func TestConfidence_String(t *testing.T) {
 
 // TestConfidence tests Confidence type.
 func TestConfidence(t *testing.T) {
-	createTypeTestSuite("Confidence",
-		[]func(*testing.T){TestConfidence_NewConfidence, TestConfidence_Float64, TestConfidence_String},
+	createTypeTestSuite(
+		"Confidence",
+		[]func(*testing.T){
+			TestConfidence_NewConfidence,
+			TestConfidence_Float64,
+			TestConfidence_String,
+		},
 		[]jsonTest[Confidence]{
 			{name: "valid confidence 0.5", input: Confidence(0.5), want: `0.5`, wantErr: false},
 			{name: "valid confidence 1.0", input: Confidence(1.0), want: `1`, wantErr: false},
-			{name: "negative confidence should error", input: Confidence(-0.1), want: "", wantErr: true},
-			{name: "confidence > 1.0 should error", input: Confidence(1.5), want: "", wantErr: true},
+			{
+				name:    "negative confidence should error",
+				input:   Confidence(-0.1),
+				want:    "",
+				wantErr: true,
+			},
+			{
+				name:    "confidence > 1.0 should error",
+				input:   Confidence(1.5),
+				want:    "",
+				wantErr: true,
+			},
 		},
 		[]struct {
 			name      string
@@ -633,13 +733,20 @@ func TestConfidence(t *testing.T) {
 		Confidence(0.75),
 		func(v Confidence) ([]byte, error) { return v.MarshalJSON() },
 		jsonUnmarshalFuncPtr[Confidence](),
-	)(t)
+	)(
+		t,
+	)
 }
 
 // TestProcessingTime_NewProcessingTime tests the NewProcessingTime constructor.
 func TestProcessingTime_NewProcessingTime(t *testing.T) {
 	tests := []constructorTest[ProcessingTime]{
-		{name: "valid processing time", input: uint(500), want: ProcessingTime(500), wantError: false},
+		{
+			name:      "valid processing time",
+			input:     uint(500),
+			want:      ProcessingTime(500),
+			wantError: false,
+		},
 		{name: "one millisecond", input: uint(1), want: ProcessingTime(1), wantError: false},
 		{name: "zero should error", input: uint(0), want: ProcessingTime(0), wantError: true},
 	}
@@ -722,12 +829,18 @@ func TestProcessingTime_String(t *testing.T) {
 func TestProcessingTime(t *testing.T) {
 	createStandardUintTypeTest(
 		"ProcessingTime",
-		[]func(*testing.T){TestProcessingTime_NewProcessingTime, TestProcessingTime_Uint, TestProcessingTime_String},
+		[]func(*testing.T){
+			TestProcessingTime_NewProcessingTime,
+			TestProcessingTime_Uint,
+			TestProcessingTime_String,
+		},
 		ProcessingTime(500),
 		"500",
 		jsonMarshalFunc(ProcessingTime(0)),
 		jsonUnmarshalFuncPtr[ProcessingTime](),
-	)(t)
+	)(
+		t,
+	)
 }
 
 // jsonMarshalFunc returns a marshal function for types with MarshalJSON method.
@@ -743,6 +856,7 @@ func jsonUnmarshalFuncPtr[T any]() func(*T, []byte) error {
 		if unmarshaler, ok := any(v).(interface{ UnmarshalJSON(data []byte) error }); ok {
 			return unmarshaler.UnmarshalJSON(data)
 		}
+
 		return fmt.Errorf("type %T does not implement UnmarshalJSON", v)
 	}
 }
@@ -750,6 +864,7 @@ func jsonUnmarshalFuncPtr[T any]() func(*T, []byte) error {
 // emptyStringErrorTest returns a test case that verifies empty string input causes an error.
 func emptyStringErrorTest[T comparable]() constructorTest[T] {
 	var zero T
+
 	return constructorTest[T]{
 		name:      "empty string should error",
 		input:     "",
@@ -767,6 +882,7 @@ func runStringMethodTests[T any](t *testing.T, tests []struct {
 }, stringFunc func(T) string,
 ) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := stringFunc(tt.value); got != tt.want {
@@ -780,11 +896,29 @@ func runStringMethodTests[T any](t *testing.T, tests []struct {
 // It automatically includes valid test cases and a zero error test.
 // Additional custom tests can be provided via the extraTests parameter.
 // This helper reduces boilerplate for simple uint constructors with standard validation.
-func registerBasicUintConstructorTest[T any](t *testing.T, constructorName string, validValue1, validValue2 uint, expectedValue1, expectedValue2 T, constructorFunc func(uint) (T, error), extraTests ...constructorTest[T]) {
+func registerBasicUintConstructorTest[T any](
+	t *testing.T,
+	constructorName string,
+	validValue1, validValue2 uint,
+	expectedValue1, expectedValue2 T,
+	constructorFunc func(uint) (T, error),
+	extraTests ...constructorTest[T],
+) {
 	t.Helper()
+
 	tests := []constructorTest[T]{
-		{name: "valid " + constructorName, input: validValue1, want: expectedValue1, wantError: false},
-		{name: "another valid " + constructorName, input: validValue2, want: expectedValue2, wantError: false},
+		{
+			name:      "valid " + constructorName,
+			input:     validValue1,
+			want:      expectedValue1,
+			wantError: false,
+		},
+		{
+			name:      "another valid " + constructorName,
+			input:     validValue2,
+			want:      expectedValue2,
+			wantError: false,
+		},
 		{name: "zero should error", input: uint(0), want: *new(T), wantError: true},
 	}
 	tests = append(tests, extraTests...)
@@ -796,7 +930,12 @@ func registerBasicUintConstructorTest[T any](t *testing.T, constructorName strin
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
 // This helper reduces boilerplate when creating tests for types constructed
 // from strings with validation logic.
-func registerStringConstructorTest[T comparable](t *testing.T, constructorName string, tests []constructorTest[T], constructorFunc func(string) (T, error)) {
+func registerStringConstructorTest[T comparable](
+	t *testing.T,
+	constructorName string,
+	tests []constructorTest[T],
+	constructorFunc func(string) (T, error),
+) {
 	t.Helper()
 	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
 		return constructorFunc(input.(string))
@@ -807,10 +946,22 @@ func registerStringConstructorTest[T comparable](t *testing.T, constructorName s
 // It automatically includes a valid test case and an empty string error test.
 // Additional custom tests can be provided via the extraTests parameter.
 // This helper further reduces boilerplate for simple constructors with standard validation.
-func registerBasicStringConstructorTest[T comparable](t *testing.T, constructorName, sampleValue string, expectedValue T, constructorFunc func(string) (T, error), extraTests ...constructorTest[T]) {
+func registerBasicStringConstructorTest[T comparable](
+	t *testing.T,
+	constructorName, sampleValue string,
+	expectedValue T,
+	constructorFunc func(string) (T, error),
+	extraTests ...constructorTest[T],
+) {
 	t.Helper()
+
 	tests := []constructorTest[T]{
-		{name: "valid " + constructorName, input: sampleValue, want: expectedValue, wantError: false},
+		{
+			name:      "valid " + constructorName,
+			input:     sampleValue,
+			want:      expectedValue,
+			wantError: false,
+		},
 		emptyStringErrorTest[T](),
 	}
 	tests = append(tests, extraTests...)
@@ -819,25 +970,57 @@ func registerBasicStringConstructorTest[T comparable](t *testing.T, constructorN
 
 // TestCloneGroupID_NewCloneGroupID tests the NewCloneGroupID constructor.
 func TestCloneGroupID_NewCloneGroupID(t *testing.T) {
-	registerBasicStringConstructorTest(t, "NewCloneGroupID", "group-123", CloneGroupID("group-123"), NewCloneGroupID)
+	registerBasicStringConstructorTest(
+		t,
+		"NewCloneGroupID",
+		"group-123",
+		CloneGroupID("group-123"),
+		NewCloneGroupID,
+	)
 }
 
 // TestAnalysisID_NewAnalysisID tests the NewAnalysisID constructor.
 func TestAnalysisID_NewAnalysisID(t *testing.T) {
-	registerBasicStringConstructorTest(t, "NewAnalysisID", "analysis-456", AnalysisID("analysis-456"), NewAnalysisID)
+	registerBasicStringConstructorTest(
+		t,
+		"NewAnalysisID",
+		"analysis-456",
+		AnalysisID("analysis-456"),
+		NewAnalysisID,
+	)
 }
 
 // TestFilepath_NewFilepath tests the NewFilepath constructor.
 func TestFilepath_NewFilepath(t *testing.T) {
-	registerBasicStringConstructorTest(t, "NewFilepath", "/path/to/file.go", Filepath("/path/to/file.go"), NewFilepath,
-		constructorTest[Filepath]{name: "relative path", input: "./file.go", want: Filepath("./file.go"), wantError: false},
+	registerBasicStringConstructorTest(
+		t,
+		"NewFilepath",
+		"/path/to/file.go",
+		Filepath("/path/to/file.go"),
+		NewFilepath,
+		constructorTest[Filepath]{
+			name:      "relative path",
+			input:     "./file.go",
+			want:      Filepath("./file.go"),
+			wantError: false,
+		},
 	)
 }
 
 // TestHash_NewHash tests the NewHash constructor.
 func TestHash_NewHash(t *testing.T) {
-	registerBasicStringConstructorTest(t, "NewHash", "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"), NewHash,
-		constructorTest[Hash]{name: "short hash", input: "abc123", want: Hash("abc123"), wantError: false},
+	registerBasicStringConstructorTest(
+		t,
+		"NewHash",
+		"a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
+		Hash("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"),
+		NewHash,
+		constructorTest[Hash]{
+			name:      "short hash",
+			input:     "abc123",
+			want:      Hash("abc123"),
+			wantError: false,
+		},
 	)
 }
 

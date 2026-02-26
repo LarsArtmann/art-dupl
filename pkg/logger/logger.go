@@ -65,32 +65,40 @@ type charmLogger struct {
 func (l *charmLogger) Debug(msg string, args ...any) {
 	if len(args) == 0 {
 		l.logger.Debug(msg)
+
 		return
 	}
+
 	l.logger.Debug(msg, args...)
 }
 
 func (l *charmLogger) Info(msg string, args ...any) {
 	if len(args) == 0 {
 		l.logger.Info(msg)
+
 		return
 	}
+
 	l.logger.Info(msg, args...)
 }
 
 func (l *charmLogger) Warn(msg string, args ...any) {
 	if len(args) == 0 {
 		l.logger.Warn(msg)
+
 		return
 	}
+
 	l.logger.Warn(msg, args...)
 }
 
 func (l *charmLogger) Error(msg string, args ...any) {
 	if len(args) == 0 {
 		l.logger.Error(msg)
+
 		return
 	}
+
 	l.logger.Error(msg, args...)
 }
 

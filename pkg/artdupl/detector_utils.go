@@ -18,7 +18,8 @@ func (d *detector) reportProgress(percentage float64, stage, currentFile string)
 			CurrentFile: currentFile,
 		}
 
-		if err := d.opts.ProgressCallback(progress); err != nil {
+		err := d.opts.ProgressCallback(progress)
+		if err != nil {
 			d.logger.Warn("Progress callback error: %v", err)
 		}
 	}

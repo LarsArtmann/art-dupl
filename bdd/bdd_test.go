@@ -36,6 +36,7 @@ var _ = Describe("Basic User Workflows", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -139,11 +140,15 @@ func uniqueFunction(ctx context.Context) error {
 			output, err := setup.RunArtDupl("--threshold", "10")
 			// Print debug information if there's an error
 			if err != nil {
-				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
+				fmt.Printf(
+					"Command failed with output: %s\n",
+					string(output),
+				) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should find duplicates between the two similar functions
@@ -152,9 +157,11 @@ func uniqueFunction(ctx context.Context) error {
 		})
 
 		// Test: Verify occurrence sorting prioritizes clones with more unique files
-		It("should sort clones by occurrence (most files first) when using --sort occurrence", func() {
-			// Create code pattern 1: Complex function with unique structure
-			widespreadCode := `package main
+		It(
+			"should sort clones by occurrence (most files first) when using --sort occurrence",
+			func() {
+				// Create code pattern 1: Complex function with unique structure
+				widespreadCode := `package main
 
 import "fmt"
 
@@ -170,18 +177,18 @@ func (p *Processor) veryCommon(message string) {
 	}
 }`
 
-			// Create 4 files with the same code
-			err := setup.FileProcessor.WriteTextFile("widespread1.go", widespreadCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteTextFile("widespread2.go", widespreadCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteTextFile("widespread3.go", widespreadCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteTextFile("widespread4.go", widespreadCode)
-			Expect(err).NotTo(HaveOccurred())
+				// Create 4 files with the same code
+				err := setup.FileProcessor.WriteTextFile("widespread1.go", widespreadCode)
+				Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteTextFile("widespread2.go", widespreadCode)
+				Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteTextFile("widespread3.go", widespreadCode)
+				Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteTextFile("widespread4.go", widespreadCode)
+				Expect(err).NotTo(HaveOccurred())
 
-			// Create code pattern 2: Different complex function with error handling
-			lessCommonCode := `package main
+				// Create code pattern 2: Different complex function with error handling
+				lessCommonCode := `package main
 
 import "errors"
 
@@ -197,28 +204,34 @@ func (v *Validator) lessCommon(id int) error {
 	return nil
 }`
 
-			err = setup.FileProcessor.WriteTextFile("less1.go", lessCommonCode)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteTextFile("less2.go", lessCommonCode)
-			Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteTextFile("less1.go", lessCommonCode)
+				Expect(err).NotTo(HaveOccurred())
+				err = setup.FileProcessor.WriteTextFile("less2.go", lessCommonCode)
+				Expect(err).NotTo(HaveOccurred())
 
-			// Run art-dupl with --sort occurrence
-			output, err := setup.RunArtDupl("--threshold", "5", "--sort", "occurrence")
-			// Print debug information if there's an error
-			if err != nil {
-				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
-			}
+				// Run art-dupl with --sort occurrence
+				output, err := setup.RunArtDupl("--threshold", "5", "--sort", "occurrence")
+				// Print debug information if there's an error
+				if err != nil {
+					fmt.Printf(
+						"Command failed with output: %s\n",
+						string(output),
+					) //nolint:forbidigo // Debug output for test failure
+				}
 
-			// Verify
-			Expect(err).ToNot(HaveOccurred())
-			outputStr := string(output)
+				// Verify
+				Expect(err).ToNot(HaveOccurred())
 
-			// Verify both clone groups are found
-			widespreadIndex := strings.Index(outputStr, "widespread1.go")
-			lessCommonIndex := strings.Index(outputStr, "less1.go")
-			Expect(widespreadIndex).ToNot(Equal(-1), "Widespread clone should be found")
-			Expect(lessCommonIndex).ToNot(Equal(-1), "Less common clone should be found")
-		})
+				outputStr := string(output)
+
+				// Verify both clone groups are found
+				widespreadIndex := strings.Index(outputStr, "widespread1.go")
+				lessCommonIndex := strings.Index(outputStr, "less1.go")
+
+				Expect(widespreadIndex).ToNot(Equal(-1), "Widespread clone should be found")
+				Expect(lessCommonIndex).ToNot(Equal(-1), "Less common clone should be found")
+			},
+		)
 
 		It("should respect threshold settings to filter noise", func() {
 			// Run with high threshold
@@ -227,11 +240,15 @@ func (v *Validator) lessCommon(id int) error {
 			})
 			// Print debug information if there's an error
 			if err != nil {
-				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
+				fmt.Printf(
+					"Command failed with output: %s\n",
+					string(output),
+				) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should not be empty (might find some matches or might not, but should run)
@@ -246,13 +263,17 @@ func (v *Validator) lessCommon(id int) error {
 			output, err := cmd.Output()
 			// Print debug information if there's an error
 			if err != nil {
-				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
+				fmt.Printf(
+					"Command failed with output: %s\n",
+					string(output),
+				) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -272,6 +293,7 @@ func (v *Validator) lessCommon(id int) error {
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should contain HTML structure (actual HTML printer output)
@@ -287,6 +309,7 @@ var _ = Describe("File Targeting Scenarios", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -326,11 +349,15 @@ func processData(data string) error {
 			output, err := setup.RunArtDuplOnDir(subDir1, "--threshold", "10")
 			// Print debug information if there's an error
 			if err != nil {
-				fmt.Printf("Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output for test failure
+				fmt.Printf(
+					"Command failed with output: %s\n",
+					string(output),
+				) //nolint:forbidigo // Debug output for test failure
 			}
 
 			// Verify - should only mention files from subDir1
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 			Expect(outputStr).To(ContainSubstring("pkg1"))
 			Expect(outputStr).ToNot(ContainSubstring("pkg2"))
@@ -364,11 +391,16 @@ func unique() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create stdin with only target files (use absolute paths)
-			stdin := fmt.Sprintf("%s\n%s\n", setup.GetFilePath("target1.go"), setup.GetFilePath("target2.go"))
+			stdin := fmt.Sprintf(
+				"%s\n%s\n",
+				setup.GetFilePath("target1.go"),
+				setup.GetFilePath("target2.go"),
+			)
 			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{"threshold": "10"})
 
 			// Verify - should find duplicates between target files
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 			Expect(outputStr).To(ContainSubstring("target1.go"))
 			Expect(outputStr).To(ContainSubstring("target2.go"))
@@ -381,6 +413,7 @@ var _ = Describe("Integration Scenarios", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -435,6 +468,7 @@ func (s *Service) processInternal(data string) error {
 
 			// Parse JSON response
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -484,6 +518,7 @@ func processItem(data string, index int) error {
 
 			// Create multiple duplicate files using setup's helper
 			var filenames []string
+
 			for i := range numFiles {
 				filename := fmt.Sprintf("file%d.go", i)
 				filenames = append(filenames, filename)

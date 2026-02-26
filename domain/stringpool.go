@@ -14,6 +14,7 @@ func NewStringID(id uint32) StringID {
 	if id == 0 {
 		return 0 // ID 0 reserved for "not interned"
 	}
+
 	return StringID(id)
 }
 
@@ -33,10 +34,12 @@ func (sid StringID) MarshalJSON() ([]byte, error) {
 	if !sid.IsValid() {
 		return []byte("null"), nil
 	}
+
 	str := GlobalPool().Lookup(sid)
 	if str == "" {
 		return []byte("null"), nil
 	}
+
 	return []byte("\"" + str + "\""), nil
 }
 
@@ -45,15 +48,19 @@ func (sid StringID) MarshalJSON() ([]byte, error) {
 func (sid *StringID) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		*sid = 0
+
 		return nil
 	}
 	// Remove quotes
 	str := string(data[1 : len(data)-1])
 	if str == "" {
 		*sid = 0
+
 		return nil
 	}
+
 	*sid = GlobalPool().Intern(str)
+
 	return nil
 }
 
@@ -92,10 +99,13 @@ func (p *StringInternPool) Intern(s string) StringID {
 
 	// Fast path: read lock for existing strings
 	p.mu.RLock()
+
 	if id, exists := p.index[s]; exists {
 		p.mu.RUnlock()
+
 		return id
 	}
+
 	p.mu.RUnlock()
 
 	// Slow path: write lock to add new string
@@ -130,6 +140,7 @@ func (p *StringInternPool) Lookup(id StringID) string {
 	if idx >= 0 && idx < len(p.strings) {
 		return p.strings[idx]
 	}
+
 	return ""
 }
 
@@ -137,6 +148,7 @@ func (p *StringInternPool) Lookup(id StringID) string {
 func (p *StringInternPool) Len() int {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
+
 	return len(p.strings)
 }
 
@@ -175,12 +187,14 @@ func GlobalPool() *StringInternPool {
 	if globalPool != nil {
 		return globalPool
 	}
+
 	globalPoolOnce.Do(func() {
 		// Double-check in case of race
 		if globalPool == nil {
 			globalPool = NewStringInternPool(1000) // Expect up to 1000 unique filenames
 		}
 	})
+
 	return globalPool
 }
 

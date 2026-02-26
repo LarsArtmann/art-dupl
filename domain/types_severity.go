@@ -30,15 +30,19 @@ func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
 	if !cs.IsValid() {
 		return nil, fmt.Errorf("invalid clone severity: %s", cs)
 	}
+
 	return []byte(`"` + string(cs) + `"`), nil
 }
 
 func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 	str := strings.Trim(string(data), `"`)
+
 	severity := CloneSeverity(str)
 	if !severity.IsValid() {
 		return fmt.Errorf("invalid clone severity: %s", str)
 	}
+
 	*cs = severity
+
 	return nil
 }

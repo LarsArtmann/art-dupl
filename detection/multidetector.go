@@ -49,7 +49,12 @@ type MultiDetector struct {
 }
 
 // NewMultiDetector creates a new multi-method detector.
-func NewMultiDetector(cfg *config.Config, data []*syntax.Node, tree *suffixtree.STree, verbose bool) *MultiDetector {
+func NewMultiDetector(
+	cfg *config.Config,
+	data []*syntax.Node,
+	tree *suffixtree.STree,
+	verbose bool,
+) *MultiDetector {
 	return &MultiDetector{
 		config:  cfg,
 		data:    data,
@@ -64,8 +69,10 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 	if md.config.DetectionMethods.IsDefault() {
 		// Convert suffix tree matches to syntax matches
 		resultChan := make(chan syntax.Match)
+
 		go func() {
 			defer close(resultChan)
+
 			suffixMatches := md.tree.FindDuplOver(threshold)
 			for match := range suffixMatches {
 				syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
@@ -74,6 +81,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 				}
 			}
 		}()
+
 		return resultChan
 	}
 
@@ -86,6 +94,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 		// Run hash detection if selected
 		if md.config.DetectionMethods.Contains(config.DetectionMethodHash) {
 			md.logVerbose("Running hash-based detection...")
+
 			hashDetector := hash.NewHashDetector(threshold)
 			hashMatches := hashDetector.FindDuplOver(md.data, threshold)
 

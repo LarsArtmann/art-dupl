@@ -12,12 +12,15 @@ import (
 // Parse parses the given templ file and returns the unified syntax tree.
 func Parse(filename string) (*syntax.Node, error) {
 	node, _, err := ParseWithLineCount(filename)
+
 	return node, err
 }
 
 // ParseWithLineCount parses the given templ file and returns the syntax tree along with the line count.
 func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
-	content, err := os.ReadFile(filename) // #nosec G304 -- filename comes from controlled file system walk
+	content, err := os.ReadFile(
+		filename,
+	) // #nosec G304 -- filename comes from controlled file system walk
 	if err != nil {
 		return nil, 0, err //nolint:wrapcheck // Pass through os.ReadFile error
 	}

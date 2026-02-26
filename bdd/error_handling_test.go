@@ -42,11 +42,21 @@ func runWithFlagsAndCheckOutput(setup *testutil.BDDTestSetup, path string, flags
 	Expect(string(output)).ToNot(BeEmpty(), "Should handle gracefully and produce output")
 }
 
+// testInvalidFlag is a helper that tests art-dupl with an invalid flag
+// and verifies it handles the error gracefully.
+func testInvalidFlag(setup *testutil.BDDTestSetup, pattern, flagName, flagValue string) {
+	tempDir := createTempTestFile(pattern)
+	defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
+
+	runWithFlagsAndCheckOutput(setup, tempDir, flagName, flagValue)
+}
+
 var _ = Describe("Error Handling", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -89,6 +99,7 @@ var _ = Describe("Error Handling", func() {
 			// Create temporary directory with non-Go file
 			tempDir, err := os.MkdirTemp("", "art-dupl-error-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Create non-Go files
@@ -109,6 +120,7 @@ var _ = Describe("Error Handling", func() {
 			// Create temporary directory with mixed file types
 			tempDir, err := os.MkdirTemp("", "art-dupl-mixed-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Create Go files
@@ -139,6 +151,7 @@ var _ = Describe("Error Handling", func() {
 			// Create temp directory
 			tempDir, err := os.MkdirTemp("", "art-dupl-config-error-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Create malformed JSON config
@@ -151,6 +164,7 @@ var _ = Describe("Error Handling", func() {
 			output, err := setup.RunArtDupl("--config", configFile, ".")
 			// Should fail gracefully with clear error
 			Expect(err).To(HaveOccurred(), "Should error on invalid config")
+
 			outputStr := string(output)
 			Expect(outputStr).To(SatisfyAny(
 				ContainSubstring("error"),
@@ -178,6 +192,7 @@ var _ = Describe("Error Handling", func() {
 			// Create temp directory
 			tempDir, err := os.MkdirTemp("", "art-dupl-config-value-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Create config with invalid threshold
@@ -200,6 +215,7 @@ var _ = Describe("Error Handling", func() {
 	Context("When using invalid flag combinations", func() {
 		It("should handle conflicting output format flags gracefully", func() {
 			tempDir := createTempTestFile("art-dupl-flag-conflict-bdd-*")
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Try to use multiple output format flags
@@ -207,25 +223,18 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle invalid sorting option gracefully", func() {
-			tempDir := createTempTestFile("art-dupl-sort-error-bdd-*")
-			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
-
-			// Use invalid sort option
-			runWithFlagsAndCheckOutput(setup, tempDir, "--sort", "invalid_sort_option")
+			testInvalidFlag(setup, "art-dupl-sort-error-bdd-*", "--sort", "invalid_sort_option")
 		})
 
 		It("should handle invalid detection method gracefully", func() {
-			tempDir := createTempTestFile("art-dupl-method-error-bdd-*")
-			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
-
-			// Use invalid detection method
-			runWithFlagsAndCheckOutput(setup, tempDir, "--detection-methods", "invalid_method")
+			testInvalidFlag(setup, "art-dupl-method-error-bdd-*", "--detection-methods", "invalid_method")
 		})
 	})
 
 	Context("When dealing with permission issues", func() {
 		It("should handle unreadable files gracefully", func() {
 			tempDir := createTempTestFile("art-dupl-permission-bdd-*")
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Get the test file path
@@ -248,6 +257,7 @@ var _ = Describe("Error Handling", func() {
 			// Create parent temp directory
 			parentDir, err := os.MkdirTemp("", "art-dupl-permission-dir-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(parentDir) }() // test cleanup
 
 			// Create subdirectory
@@ -279,6 +289,7 @@ var _ = Describe("Error Handling", func() {
 			// Create empty temp directory
 			tempDir, err := os.MkdirTemp("", "art-dupl-empty-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Run art-dupl on empty directory
@@ -293,6 +304,7 @@ var _ = Describe("Error Handling", func() {
 			// Create temp directory with non-Go files
 			tempDir, err := os.MkdirTemp("", "art-dupl-nogo-bdd-*")
 			Expect(err).NotTo(HaveOccurred())
+
 			defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 			// Create non-Go files

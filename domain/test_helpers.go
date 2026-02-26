@@ -9,5 +9,6 @@ func MustNewLineNumber(n uint16) LineNumber {
 	if err != nil {
 		panic(err)
 	}
+
 	return ln
 }

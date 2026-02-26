@@ -15,6 +15,7 @@ var _ = Describe("Detection Methods", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -40,7 +41,10 @@ func main() {
 	processData("test")
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"exact1.go", "exact2.go", "exact3.go"}, identicalCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"exact1.go", "exact2.go", "exact3.go"},
+				identicalCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10")
@@ -62,11 +66,20 @@ func duplicate() string {
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--detection-methods", "hash", "--json", "--threshold", "5")
+			cmd := exec.Command(
+				setup.BinaryPath,
+				setup.TmpDir,
+				"--detection-methods",
+				"hash",
+				"--json",
+				"--threshold",
+				"5",
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -178,7 +191,12 @@ func structuralB(value string) error {
 			err = setup.CreateFileWithContent("structural2.go", structuralDup2)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--detection-methods", "hash,art-dupl", "--threshold", "5")
+			output, err := setup.RunArtDupl(
+				"--detection-methods",
+				"hash,art-dupl",
+				"--threshold",
+				"5",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -198,11 +216,20 @@ func test() string {
 			err := setup.CreateDuplicateFiles([]string{"combine1.go", "combine2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--detection-methods", "hash,art-dupl", "--json", "--threshold", "5")
+			cmd := exec.Command(
+				setup.BinaryPath,
+				setup.TmpDir,
+				"--detection-methods",
+				"hash,art-dupl",
+				"--json",
+				"--threshold",
+				"5",
+			)
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 

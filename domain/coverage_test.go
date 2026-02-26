@@ -16,11 +16,28 @@ type stringerValidator interface {
 // testEnumMethods tests String() and IsValid() methods for enum types.
 func testEnumMethods[T stringerValidator](t *testing.T, val T, wantStr string, wantValid bool) {
 	t.Helper()
+
 	if got := val.String(); got != wantStr {
 		t.Errorf("String() = %v, want %v", got, wantStr)
 	}
+
 	if got := val.IsValid(); got != wantValid {
 		t.Errorf("IsValid() = %v, want %v", got, wantValid)
+	}
+}
+
+// runEnumTests runs testEnumMethods for all test cases.
+func runEnumTests[T stringerValidator](t *testing.T, testCases []struct {
+	name    string
+	state   T
+	str     string
+	isValid bool
+},
+) {
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			testEnumMethods(t, tt.state, tt.str, tt.isValid)
+		})
 	}
 }
 
@@ -183,6 +200,33 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 	}
 }
 
+// createCloneTestCase creates a test case for Clone validation.
+func createCloneTestCase(
+	name string,
+	startLine, endLine, startPos, endPos int,
+	wantErr bool,
+) struct {
+	name    string
+	clone   Clone
+	wantErr bool
+} {
+	return struct {
+		name    string
+		clone   Clone
+		wantErr bool
+	}{
+		name: name,
+		clone: Clone{
+			StartLine: MustNewLineNumber(uint16(startLine)),
+			EndLine:   MustNewLineNumber(uint16(endLine)),
+			StartPos:  NewBytePosition(uint32(startPos)),
+			EndPos:    NewBytePosition(uint32(endPos)),
+			Status:    FileProcessingStateCompleted,
+		},
+		wantErr: wantErr,
+	}
+}
+
 // TestClone_IsValid tests Clone.IsValid method.
 func TestClone_IsValid(t *testing.T) {
 	tests := []struct {
@@ -190,17 +234,7 @@ func TestClone_IsValid(t *testing.T) {
 		clone   Clone
 		wantErr bool
 	}{
-		{
-			name: "valid clone",
-			clone: Clone{
-				StartLine: MustNewLineNumber(10),
-				EndLine:   MustNewLineNumber(20),
-				StartPos:  NewBytePosition(100),
-				EndPos:    NewBytePosition(200),
-				Status:    FileProcessingStateCompleted,
-			},
-			wantErr: false,
-		},
+		createCloneTestCase("valid clone", 10, 20, 100, 200, false),
 		{
 			name: "end line before start line",
 			clone: Clone{
@@ -210,17 +244,7 @@ func TestClone_IsValid(t *testing.T) {
 			},
 			wantErr: true,
 		},
-		{
-			name: "end pos before start pos",
-			clone: Clone{
-				StartLine: MustNewLineNumber(10),
-				EndLine:   MustNewLineNumber(20),
-				StartPos:  NewBytePosition(200),
-				EndPos:    NewBytePosition(100),
-				Status:    FileProcessingStateCompleted,
-			},
-			wantErr: true,
-		},
+		createCloneTestCase("end pos before start pos", 10, 20, 200, 100, true),
 		{
 			name: "invalid status",
 			clone: Clone{
@@ -592,8 +616,10 @@ func TestStringID_MarshalJSON(t *testing.T) {
 			got, err := tt.sid.MarshalJSON()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StringID.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if string(got) != tt.want {
 				t.Errorf("StringID.MarshalJSON() = %v, want %v", string(got), tt.want)
 			}
@@ -621,6 +647,7 @@ func TestStringID_UnmarshalJSON(t *testing.T) {
 			defer cleanup()
 
 			var sid StringID
+
 			err := sid.UnmarshalJSON([]byte(tt.input))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StringID.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
@@ -686,17 +713,20 @@ func TestStringInternPool_Len(t *testing.T) {
 	}
 
 	pool.Intern("hello")
+
 	if got := pool.Len(); got != 1 {
 		t.Errorf("Len() = %v, want 1", got)
 	}
 
 	pool.Intern("world")
+
 	if got := pool.Len(); got != 2 {
 		t.Errorf("Len() = %v, want 2", got)
 	}
 
 	// Same string should not increase count
 	pool.Intern("hello")
+
 	if got := pool.Len(); got != 2 {
 		t.Errorf("Len() = %v, want 2 (duplicate)", got)
 	}
@@ -717,11 +747,7 @@ func TestFileProcessingState_Methods(t *testing.T) {
 		{"invalid", FileProcessingState("invalid"), "invalid", false},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			testEnumMethods(t, tt.state, tt.str, tt.isValid)
-		})
-	}
+	runEnumTests(t, tests)
 }
 
 func TestDetectionState_Methods(t *testing.T) {
@@ -738,17 +764,13 @@ func TestDetectionState_Methods(t *testing.T) {
 		{"invalid", DetectionState("invalid"), "invalid", false},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			testEnumMethods(t, tt.state, tt.str, tt.isValid)
-		})
-	}
+	runEnumTests(t, tests)
 }
 
 func TestAnalysisMode_Methods(t *testing.T) {
 	tests := []struct {
 		name    string
-		mode    AnalysisMode
+		state   AnalysisMode
 		str     string
 		isValid bool
 	}{
@@ -758,19 +780,15 @@ func TestAnalysisMode_Methods(t *testing.T) {
 		{"invalid", AnalysisMode("invalid"), "invalid", false},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			testEnumMethods(t, tt.mode, tt.str, tt.isValid)
-		})
-	}
+	runEnumTests(t, tests)
 }
 
 func TestCloneSeverity_Methods(t *testing.T) {
 	tests := []struct {
-		name     string
-		severity CloneSeverity
-		str      string
-		isValid  bool
+		name    string
+		state   CloneSeverity
+		str     string
+		isValid bool
 	}{
 		{"low", CloneSeverityLow, "low", true},
 		{"medium", CloneSeverityMedium, "medium", true},
@@ -779,11 +797,7 @@ func TestCloneSeverity_Methods(t *testing.T) {
 		{"invalid", CloneSeverity("invalid"), "invalid", false},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			testEnumMethods(t, tt.severity, tt.str, tt.isValid)
-		})
-	}
+	runEnumTests(t, tests)
 }
 
 func TestCloneSeverity_MarshalJSON(t *testing.T) {
@@ -805,8 +819,10 @@ func TestCloneSeverity_MarshalJSON(t *testing.T) {
 			got, err := tt.severity.MarshalJSON()
 			if (err != nil) != tt.wantError {
 				t.Errorf("MarshalJSON() error = %v, wantError %v", err, tt.wantError)
+
 				return
 			}
+
 			if !tt.wantError && string(got) != tt.want {
 				t.Errorf("MarshalJSON() = %v, want %v", string(got), tt.want)
 			}
@@ -831,11 +847,14 @@ func TestCloneSeverity_UnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var got CloneSeverity
+
 			err := got.UnmarshalJSON([]byte(tt.input))
 			if (err != nil) != tt.wantError {
 				t.Errorf("UnmarshalJSON() error = %v, wantError %v", err, tt.wantError)
+
 				return
 			}
+
 			if !tt.wantError && got != tt.want {
 				t.Errorf("UnmarshalJSON() = %v, want %v", got, tt.want)
 			}
@@ -892,9 +911,11 @@ func TestNodeToClone(t *testing.T) {
 		if clone.Status != FileProcessingStateCompleted {
 			t.Errorf("Status = %v, want %v", clone.Status, FileProcessingStateCompleted)
 		}
+
 		if clone.StartLine.Uint() == 0 {
 			t.Error("StartLine should not be zero")
 		}
+
 		if clone.EndLine.Uint() == 0 {
 			t.Error("EndLine should not be zero")
 		}
@@ -950,9 +971,11 @@ func TestCloneStringMethods(t *testing.T) {
 	if got := clone.FilenameString(); got != TestFilename {
 		t.Errorf("FilenameString() = %v, want 'test.go'", got)
 	}
+
 	if got := clone.FragmentString(); got != "func main() {}" {
 		t.Errorf("FragmentString() = %v, want 'func main() {}'", got)
 	}
+
 	if got := clone.HashString(); got != "abc123" {
 		t.Errorf("HashString() = %v, want 'abc123'", got)
 	}
@@ -965,7 +988,8 @@ func TestValidateRules(t *testing.T) {
 			{valid: true, msg: "rule1"},
 			{valid: true, msg: "rule2"},
 		}
-		if err := validateRules(rules); err != nil {
+		err := validateRules(rules)
+		if err != nil {
 			t.Errorf("validateRules() error = %v, want nil", err)
 		}
 	})
@@ -975,10 +999,12 @@ func TestValidateRules(t *testing.T) {
 			{valid: false, msg: "rule1 failed"},
 			{valid: true, msg: "rule2"},
 		}
+
 		err := validateRules(rules)
 		if err == nil {
 			t.Error("validateRules() error = nil, want error")
 		}
+
 		if err.Error() != "rule1 failed" {
 			t.Errorf("validateRules() error = %v, want 'rule1 failed'", err)
 		}
@@ -990,10 +1016,12 @@ func TestValidateRules(t *testing.T) {
 			{valid: false, msg: "rule2 failed"},
 			{valid: true, msg: "rule3"},
 		}
+
 		err := validateRules(rules)
 		if err == nil {
 			t.Error("validateRules() error = nil, want error")
 		}
+
 		if err.Error() != "rule2 failed" {
 			t.Errorf("validateRules() error = %v, want 'rule2 failed'", err)
 		}
@@ -1029,6 +1057,7 @@ func TestMarshalStringID(t *testing.T) {
 		if err != nil {
 			t.Errorf("marshalStringID() error = %v", err)
 		}
+
 		if string(got) != `"test-id"` {
 			t.Errorf("marshalStringID() = %v, want `\"test-id\"`", string(got))
 		}
@@ -1045,11 +1074,14 @@ func TestMarshalStringID(t *testing.T) {
 // assertUnmarshalStringIDError tests that unmarshalStringID returns an error for the given input.
 func assertUnmarshalStringIDError(t *testing.T, input, wantErrContains string) {
 	t.Helper()
+
 	var result string
+
 	err := unmarshalStringID([]byte(input), "TestType", "TestType cannot be empty", func(s string) {
 		result = s
 	})
 	_ = result // Ensure variable is used
+
 	if err == nil {
 		t.Errorf("unmarshalStringID() error = nil, want error %q", wantErrContains)
 	}
@@ -1058,12 +1090,19 @@ func assertUnmarshalStringIDError(t *testing.T, input, wantErrContains string) {
 func TestUnmarshalStringID(t *testing.T) {
 	t.Run("valid string", func(t *testing.T) {
 		var result string
-		err := unmarshalStringID([]byte(`"test-id"`), "TestType", "TestType cannot be empty", func(s string) {
-			result = s
-		})
+
+		err := unmarshalStringID(
+			[]byte(`"test-id"`),
+			"TestType",
+			"TestType cannot be empty",
+			func(s string) {
+				result = s
+			},
+		)
 		if err != nil {
 			t.Errorf("unmarshalStringID() error = %v", err)
 		}
+
 		if result != "test-id" {
 			t.Errorf("unmarshalStringID() result = %v, want 'test-id'", result)
 		}
@@ -1083,6 +1122,7 @@ func TestMarshalUint(t *testing.T) {
 	if err != nil {
 		t.Errorf("marshalUint() error = %v", err)
 	}
+
 	if string(got) != "42" {
 		t.Errorf("marshalUint() = %v, want '42'", string(got))
 	}
@@ -1091,12 +1131,14 @@ func TestMarshalUint(t *testing.T) {
 func TestUnmarshalUint(t *testing.T) {
 	t.Run("valid uint", func(t *testing.T) {
 		var result uint
+
 		err := unmarshalUint([]byte("42"), "TestType", func(n uint) {
 			result = n
 		})
 		if err != nil {
 			t.Errorf("unmarshalUint() error = %v", err)
 		}
+
 		if result != 42 {
 			t.Errorf("unmarshalUint() result = %v, want 42", result)
 		}
@@ -1104,10 +1146,12 @@ func TestUnmarshalUint(t *testing.T) {
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		var result uint
+
 		err := unmarshalUint([]byte("invalid"), "TestType", func(n uint) {
 			result = n
 		})
 		_ = result // Ensure variable is used
+
 		if err == nil {
 			t.Error("unmarshalUint() error = nil, want error for invalid JSON")
 		}
@@ -1117,12 +1161,19 @@ func TestUnmarshalUint(t *testing.T) {
 func TestUnmarshalUintNonZero(t *testing.T) {
 	t.Run("valid non-zero", func(t *testing.T) {
 		var result uint
-		err := unmarshalUintNonZero([]byte("42"), "TestType", "TestType cannot be zero", func(n uint) {
-			result = n
-		})
+
+		err := unmarshalUintNonZero(
+			[]byte("42"),
+			"TestType",
+			"TestType cannot be zero",
+			func(n uint) {
+				result = n
+			},
+		)
 		if err != nil {
 			t.Errorf("unmarshalUintNonZero() error = %v", err)
 		}
+
 		if result != 42 {
 			t.Errorf("unmarshalUintNonZero() result = %v, want 42", result)
 		}
@@ -1130,10 +1181,17 @@ func TestUnmarshalUintNonZero(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		var result uint
-		err := unmarshalUintNonZero([]byte("0"), "TestType", "TestType cannot be zero", func(n uint) {
-			result = n
-		})
+
+		err := unmarshalUintNonZero(
+			[]byte("0"),
+			"TestType",
+			"TestType cannot be zero",
+			func(n uint) {
+				result = n
+			},
+		)
 		_ = result // Ensure variable is used
+
 		if err == nil {
 			t.Error("unmarshalUintNonZero() error = nil, want error for zero value")
 		}
@@ -1143,12 +1201,14 @@ func TestUnmarshalUintNonZero(t *testing.T) {
 func TestUnmarshalUintGeneric(t *testing.T) {
 	t.Run("uint16", func(t *testing.T) {
 		var result uint16
+
 		err := unmarshalUintGeneric[uint16]([]byte("42"), "TestType", func(n uint16) {
 			result = n
 		})
 		if err != nil {
 			t.Errorf("unmarshalUintGeneric() error = %v", err)
 		}
+
 		if result != 42 {
 			t.Errorf("unmarshalUintGeneric() result = %v, want 42", result)
 		}
@@ -1156,12 +1216,14 @@ func TestUnmarshalUintGeneric(t *testing.T) {
 
 	t.Run("uint32", func(t *testing.T) {
 		var result uint32
+
 		err := unmarshalUintGeneric[uint32]([]byte("42"), "TestType", func(n uint32) {
 			result = n
 		})
 		if err != nil {
 			t.Errorf("unmarshalUintGeneric() error = %v", err)
 		}
+
 		if result != 42 {
 			t.Errorf("unmarshalUintGeneric() result = %v, want 42", result)
 		}
@@ -1169,10 +1231,12 @@ func TestUnmarshalUintGeneric(t *testing.T) {
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		var result uint16
+
 		err := unmarshalUintGeneric[uint16]([]byte("invalid"), "TestType", func(n uint16) {
 			result = n
 		})
 		_ = result // Ensure variable is used
+
 		if err == nil {
 			t.Error("unmarshalUintGeneric() error = nil, want error for invalid JSON")
 		}
@@ -1209,12 +1273,15 @@ func TestAnalysisJSONRoundTrip(t *testing.T) {
 	if result.ID != original.ID {
 		t.Errorf("ID = %v, want %v", result.ID, original.ID)
 	}
+
 	if result.State != original.State {
 		t.Errorf("State = %v, want %v", result.State, original.State)
 	}
+
 	if result.Mode != original.Mode {
 		t.Errorf("Mode = %v, want %v", result.Mode, original.Mode)
 	}
+
 	if result.Threshold != original.Threshold {
 		t.Errorf("Threshold = %v, want %v", result.Threshold, original.Threshold)
 	}
@@ -1252,9 +1319,11 @@ func TestCloneGroupJSONRoundTrip(t *testing.T) {
 	if result.ID != original.ID {
 		t.Errorf("ID = %v, want %v", result.ID, original.ID)
 	}
+
 	if result.Hash != original.Hash {
 		t.Errorf("Hash = %v, want %v", result.Hash, original.Hash)
 	}
+
 	if result.Severity != original.Severity {
 		t.Errorf("Severity = %v, want %v", result.Severity, original.Severity)
 	}
@@ -1271,6 +1340,7 @@ func TestPoolStats(t *testing.T) {
 	if stats.TotalStrings != 2 {
 		t.Errorf("TotalStrings = %v, want 2", stats.TotalStrings)
 	}
+
 	if stats.TotalIDs != 2 {
 		t.Errorf("TotalIDs = %v, want 2", stats.TotalIDs)
 	}

@@ -31,6 +31,7 @@ func FindGitRoot(startPath string) string {
 		if parent == current || parent == "" {
 			return ""
 		}
+
 		current = parent
 	}
 }
@@ -38,6 +39,7 @@ func FindGitRoot(startPath string) string {
 // deduplicateChanges removes duplicate entries (same path).
 func deduplicateChanges(changes []ChangeInfo) []ChangeInfo {
 	seen := make(map[string]bool)
+
 	var result []ChangeInfo
 
 	for _, change := range changes {

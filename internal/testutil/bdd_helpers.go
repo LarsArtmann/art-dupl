@@ -15,10 +15,12 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 
 	for _, path := range paths {
 		fullPath := filepath.Join(s.TmpDir, path)
-		if err := os.MkdirAll(fullPath, 0o750); err != nil {
+		err := os.MkdirAll(fullPath, 0o750)
+		if err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", path, err)
 		}
 	}
+
 	return nil
 }
 
@@ -33,14 +35,17 @@ func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
 	dir := filepath.Dir(fullPath)
 
 	// Ensure directory exists
-	if err := os.MkdirAll(dir, 0o750); err != nil {
+	err := os.MkdirAll(dir, 0o750)
+	if err != nil {
 		return fmt.Errorf("failed to create directory %s: %w", dir, err)
 	}
 
 	// Write file
-	if err := os.WriteFile(fullPath, []byte(content), 0o600); err != nil {
+	err = os.WriteFile(fullPath, []byte(content), 0o600)
+	if err != nil {
 		return fmt.Errorf("failed to write file %s: %w", subpath, err)
 	}
+
 	return nil
 }
 
@@ -64,12 +69,17 @@ func (s *BDDTestSetup) CreateDuplicateFilesAndRun(content string, args ...string
 
 // CreateNamedDuplicateFilesAndRun creates duplicate files with specific names and content, then runs art-dupl.
 // Returns the command output for assertions. This helper reduces boilerplate in BDD tests.
-func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(filenames []string, content string, args ...string) ([]byte, error) {
+func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(
+	filenames []string,
+	content string,
+	args ...string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	if err := s.CreateDuplicateFiles(filenames, content); err != nil {
+	err := s.CreateDuplicateFiles(filenames, content)
+	if err != nil {
 		return nil, err
 	}
 
@@ -79,12 +89,17 @@ func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(filenames []string, conte
 // CreateAndRunDupl creates duplicate files with the given content and runs art-dupl with specified arguments.
 // This is a convenience helper that combines CreateDuplicateFiles and RunArtDupl.
 // Returns the command output and any error that occurred.
-func (s *BDDTestSetup) CreateAndRunDupl(filenames []string, content string, args ...string) ([]byte, error) {
+func (s *BDDTestSetup) CreateAndRunDupl(
+	filenames []string,
+	content string,
+	args ...string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	if err := s.CreateDuplicateFiles(filenames, content); err != nil {
+	err := s.CreateDuplicateFiles(filenames, content)
+	if err != nil {
 		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
 	}
 
@@ -94,17 +109,22 @@ func (s *BDDTestSetup) CreateAndRunDupl(filenames []string, content string, args
 // RunWithConfigFile creates a config file with custom filename, test files, and runs art-dupl.
 // This is a convenience helper for config file tests that combines file creation and execution.
 // Returns the command output and any error that occurred.
-func (s *BDDTestSetup) RunWithConfigFile(configFileName, configContent, code string, fileNames []string) ([]byte, error) {
+func (s *BDDTestSetup) RunWithConfigFile(
+	configFileName, configContent, code string,
+	fileNames []string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
 	configPath := filepath.Join(s.TmpDir, configFileName)
-	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
+	err := os.WriteFile(configPath, []byte(configContent), 0o600)
+	if err != nil {
 		return nil, fmt.Errorf("failed to write config file: %w", err)
 	}
 
-	if err := s.CreateDuplicateFiles(fileNames, code); err != nil {
+	err = s.CreateDuplicateFiles(fileNames, code)
+	if err != nil {
 		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
 	}
 
@@ -155,7 +175,8 @@ func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error
 	}
 
 	// Create the vendor directory structure
-	if err := s.CreateSubdirectories(vendorPath); err != nil {
+	err := s.CreateSubdirectories(vendorPath)
+	if err != nil {
 		return fmt.Errorf("failed to create vendor directory %s: %w", vendorPath, err)
 	}
 
@@ -163,11 +184,13 @@ func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error
 	lib1Path := filepath.Join(vendorPath, "lib1.go")
 	lib2Path := filepath.Join(vendorPath, "lib2.go")
 
-	if err := s.CreateFileWithContent(lib1Path, code); err != nil {
+	err = s.CreateFileWithContent(lib1Path, code)
+	if err != nil {
 		return fmt.Errorf("failed to create vendor file %s: %w", lib1Path, err)
 	}
 
-	if err := s.CreateFileWithContent(lib2Path, code); err != nil {
+	err = s.CreateFileWithContent(lib2Path, code)
+	if err != nil {
 		return fmt.Errorf("failed to create vendor file %s: %w", lib2Path, err)
 	}
 
@@ -177,7 +200,11 @@ func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error
 // CreateAndRunDuplExpectSuccess creates duplicate files, runs art-dupl, and asserts success.
 // This helper reduces boilerplate by combining CreateAndRunDupl with common assertions.
 // Returns the output for further assertions. Panics on error (suitable for Ginkgo tests).
-func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(filenames []string, content string, args ...string) []byte {
+func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(
+	filenames []string,
+	content string,
+	args ...string,
+) []byte {
 	if s.T != nil {
 		s.T.Helper()
 	}
@@ -187,11 +214,41 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(filenames []string, content
 		if s.T != nil {
 			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))
 		}
+
 		panic(fmt.Sprintf("art-dupl command failed: %v\nOutput: %s", err, string(output)))
 	}
+
 	if output == nil {
 		if s.T != nil {
 			s.T.Fatal("art-dupl output is nil")
+		}
+
+		panic("art-dupl output is nil")
+	}
+
+	return output
+}
+
+// TestEmptyDirectory verifies art-dupl handles empty directory gracefully.
+func TestEmptyDirectory(setup *BDDTestSetup, threshold int) []byte {
+	if setup.T != nil {
+		setup.T.Helper()
+	}
+
+	// Run on empty temp directory
+	args := []string{"--threshold", fmt.Sprintf("%d", threshold)}
+	output, err := setup.RunArtDupl(args...)
+	if err != nil {
+		if setup.T != nil {
+			setup.T.Fatalf("art-dupl command failed: %v", err)
+		}
+		panic(fmt.Sprintf("art-dupl command failed: %v", err))
+	}
+
+	// Should complete without error
+	if output == nil {
+		if setup.T != nil {
+			setup.T.Fatal("art-dupl output is nil")
 		}
 		panic("art-dupl output is nil")
 	}
@@ -207,14 +264,19 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(filenames []string, content
 //   - extraArgs: additional arguments to pass to art-dupl
 //
 // Returns the command output and any error that occurred.
-func (s *BDDTestSetup) RunVendorTest(includeVendor bool, subcommand string, extraArgs ...string) ([]byte, error) {
+func (s *BDDTestSetup) RunVendorTest(
+	includeVendor bool,
+	subcommand string,
+	extraArgs ...string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
 	// Create vendor directory with duplicate files
 	code := fmt.Sprintf(CommonDuplicateCodeTemplate, "vendorTestFunc")
-	if err := s.CreateVendorDuplicateFiles("vendor/example", code); err != nil {
+	err := s.CreateVendorDuplicateFiles("vendor/example", code)
+	if err != nil {
 		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
 	}
 
@@ -223,9 +285,11 @@ func (s *BDDTestSetup) RunVendorTest(includeVendor bool, subcommand string, extr
 	if subcommand != "" {
 		args = append(args, subcommand)
 	}
+
 	if includeVendor {
 		args = append(args, "--vendor")
 	}
+
 	args = append(args, extraArgs...)
 
 	return s.RunArtDupl(args...)
@@ -241,13 +305,19 @@ func (s *BDDTestSetup) RunVendorTest(includeVendor bool, subcommand string, extr
 //   - extraArgs: additional arguments to pass to art-dupl
 //
 // Returns the command output and any error that occurred.
-func (s *BDDTestSetup) RunVendorTestWithOptions(vendorPath, code string, includeVendor bool, subcommand string, extraArgs ...string) ([]byte, error) {
+func (s *BDDTestSetup) RunVendorTestWithOptions(
+	vendorPath, code string,
+	includeVendor bool,
+	subcommand string,
+	extraArgs ...string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
 	// Create vendor directory with duplicate files
-	if err := s.CreateVendorDuplicateFiles(vendorPath, code); err != nil {
+	err := s.CreateVendorDuplicateFiles(vendorPath, code)
+	if err != nil {
 		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
 	}
 
@@ -256,14 +326,17 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(vendorPath, code string, include
 	if subcommand != "" {
 		args = append(args, subcommand)
 	}
+
 	if includeVendor {
 		args = append(args, "--vendor")
 	}
+
 	args = append(args, extraArgs...)
 
 	// Use RunSubcommand when there's a subcommand (puts path at end), otherwise RunArtDupl
 	if subcommand != "" {
 		return s.RunSubcommand(args...)
 	}
+
 	return s.RunArtDupl(args...)
 }

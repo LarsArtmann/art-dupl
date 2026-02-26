@@ -82,6 +82,7 @@ func newBDDTestSetup() *testutil.BDDTestSetup {
 	DeferCleanup(func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
+
 	return setup
 }
 
@@ -103,7 +104,11 @@ var _ = Describe("Configuration File Loading", func() {
 				"threshold": 50,
 				"outputFormat": "json"
 			}`
-			output, err := runWithConfig(configContent, simpleTestCode, []string{"test1.go", "test2.go"})
+			output, err := runWithConfig(
+				configContent,
+				simpleTestCode,
+				[]string{"test1.go", "test2.go"},
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -115,7 +120,11 @@ var _ = Describe("Configuration File Loading", func() {
 				"vendor": true,
 				"verbose": true
 			}`
-			output, err := runWithConfig(configContent, multiConfigTestCode, []string{"multi1.go", "multi2.go"})
+			output, err := runWithConfig(
+				configContent,
+				multiConfigTestCode,
+				[]string{"multi1.go", "multi2.go"},
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -142,8 +151,10 @@ var _ = Describe("Configuration File Loading", func() {
 
 			// Change to temp directory so relative paths work
 			originalDir, _ := os.Getwd()
+
 			defer func() { _ = os.Chdir(originalDir) }() // test cleanup
-			_ = os.Chdir(setup.TmpDir)                   // test setup
+
+			_ = os.Chdir(setup.TmpDir) // test setup
 
 			// Run with config file (uses paths from config)
 			output, err := setup.RunArtDupl("--config", configPath)
@@ -157,7 +168,11 @@ var _ = Describe("Configuration File Loading", func() {
 			configContent := `{
 				"threshold": 50
 			}`
-			output, err := runWithConfig(configContent, overrideTestCode, []string{"override1.go", "override2.go"})
+			output, err := runWithConfig(
+				configContent,
+				overrideTestCode,
+				[]string{"override1.go", "override2.go"},
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -182,6 +197,7 @@ var _ = Describe("Configuration File Loading", func() {
 
 			// Verify JSON output
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result).To(HaveKey("clone_groups"))
@@ -191,14 +207,21 @@ var _ = Describe("Configuration File Loading", func() {
 	Context("When configuration file has invalid format", func() {
 		It("should handle malformed JSON gracefully", func() {
 			configContent := `{ invalid json content }`
-			output, err := runWithConfig(configContent, malformedTestCode, []string{"malformed1.go", "malformed2.go"})
+			output, err := runWithConfig(
+				configContent,
+				malformedTestCode,
+				[]string{"malformed1.go", "malformed2.go"},
+			)
 			Expect(err).To(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("error"))
 		})
 
 		It("should handle missing config file gracefully", func() {
 			configPath := filepath.Join(setup.TmpDir, "nonexistent.json")
-			err := setup.CreateDuplicateFiles([]string{"missing1.go", "missing2.go"}, missingConfigCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"missing1.go", "missing2.go"},
+				missingConfigCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--config", configPath, setup.TmpDir)
@@ -211,8 +234,13 @@ var _ = Describe("Configuration File Loading", func() {
 				"threshold": "not a number",
 				"outputFormat": 12345
 			}`
-			output, err := runWithConfig(configContent, invalidTypeCode, []string{"invalid1.go", "invalid2.go"})
+			output, err := runWithConfig(
+				configContent,
+				invalidTypeCode,
+				[]string{"invalid1.go", "invalid2.go"},
+			)
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -223,7 +251,11 @@ var _ = Describe("Configuration File Loading", func() {
 				"threshold": 15,
 				"detectionMethods": ["hash", "art-dupl"]
 			}`
-			output, err := runWithConfig(configContent, detectionMethodCode, []string{"detect1.go", "detect2.go"})
+			output, err := runWithConfig(
+				configContent,
+				detectionMethodCode,
+				[]string{"detect1.go", "detect2.go"},
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -233,7 +265,11 @@ var _ = Describe("Configuration File Loading", func() {
 				"threshold": 15,
 				"detectionMethods": ["hash"]
 			}`
-			output, err := runWithConfig(configContent, singleMethodCode, []string{"single1.go", "single2.go"})
+			output, err := runWithConfig(
+				configContent,
+				singleMethodCode,
+				[]string{"single1.go", "single2.go"},
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -343,16 +379,28 @@ var _ = Describe("Configuration File Edge Cases", func() {
 
 	Context("When configuration file is empty", func() {
 		It("should handle empty config file gracefully", func() {
-			output, err := setup.RunWithConfigFile("empty.json", "", emptyConfigCode, []string{"empty1.go", "empty2.go"})
+			output, err := setup.RunWithConfigFile(
+				"empty.json",
+				"",
+				emptyConfigCode,
+				[]string{"empty1.go", "empty2.go"},
+			)
 			// May error or use defaults
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 
 		It("should handle config with only whitespace", func() {
-			output, err := setup.RunWithConfigFile("whitespace.json", "   \n\t  ", whitespaceConfigCode, []string{"ws1.go", "ws2.go"})
+			output, err := setup.RunWithConfigFile(
+				"whitespace.json",
+				"   \n\t  ",
+				whitespaceConfigCode,
+				[]string{"ws1.go", "ws2.go"},
+			)
 			// May error or use defaults
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -364,9 +412,15 @@ var _ = Describe("Configuration File Edge Cases", func() {
 				"unknownField": "should be ignored",
 				"anotherUnknown": 12345
 			}`
-			output, err := setup.RunWithConfigFile("dupl.json", configContent, unknownFieldCode, []string{"unknown1.go", "unknown2.go"})
+			output, err := setup.RunWithConfigFile(
+				"dupl.json",
+				configContent,
+				unknownFieldCode,
+				[]string{"unknown1.go", "unknown2.go"},
+			)
 			// Should work and ignore unknown fields
 			_ = err
+
 			Expect(output).ToNot(BeNil())
 		})
 	})
@@ -411,7 +465,10 @@ func nestedConfig() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create test files
-			err = setup.CreateDuplicateFiles([]string{"unicode1.go", "unicode2.go"}, unicodeConfigCode)
+			err = setup.CreateDuplicateFiles(
+				[]string{"unicode1.go", "unicode2.go"},
+				unicodeConfigCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with unicode config

@@ -30,5 +30,6 @@ func (e *GitError) Is(target error) bool {
 	if !ok {
 		return false
 	}
+
 	return e.Op == t.Op || e.Err == t.Err
 }

@@ -73,6 +73,7 @@ func (p *stats) printCSV() {
 	if p.statsData.FilesFiltered > 0 {
 		_, _ = fmt.Fprintf(p.w, "Files Filtered,%d\n", p.statsData.FilesFiltered)
 	}
+
 	_, _ = fmt.Fprintf(p.w, "Clone Groups,%d\n", p.statsData.TotalCloneGroups)
 	_, _ = fmt.Fprintf(p.w, "Total Clones,%d\n", p.statsData.TotalClones)
 	_, _ = fmt.Fprintf(p.w, "\n")
@@ -100,12 +101,15 @@ func (p *stats) printText() {
 	p.printSection("Configuration:")
 	p.printMetric("Threshold", fmt.Sprintf("%d tokens", p.threshold))
 	p.printMetric("Detection Methods", p.statsData.DetectionMethods)
+
 	if p.statsData.Timestamp != "" {
 		p.printMetric("Timestamp", p.statsData.Timestamp)
 	}
+
 	if p.statsData.AnalysisDuration != "" {
 		p.printMetric("Analysis Time", p.statsData.AnalysisDuration)
 	}
+
 	_, _ = fmt.Fprintf(p.w, "\n")
 
 	// Print overview
@@ -114,7 +118,11 @@ func (p *stats) printText() {
 
 	// Print filter information if files were filtered
 	if p.statsData.FilesFiltered > 0 {
-		filterPercent := float64(p.statsData.FilesFiltered) / float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
+		filterPercent := float64(
+			p.statsData.FilesFiltered,
+		) / float64(
+			p.statsData.TotalFilesScanned+p.statsData.FilesFiltered,
+		) * 100
 		filterText := fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent)
 		p.printMetric("Files Filtered", filterText)
 
@@ -137,18 +145,23 @@ func (p *stats) printText() {
 	// Print duplicate code metrics
 	p.printSection("Duplicate Code:")
 	p.printMetric("Total Duplicate Lines", strconv.Itoa(p.statsData.TotalDuplicateLines))
+
 	if p.statsData.TotalEstimatedLines > 0 {
 		p.printMetric("Estimated Total Lines", strconv.Itoa(p.statsData.TotalEstimatedLines))
 		p.printMetric("Duplication Ratio", fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio))
 	}
+
 	p.printMetric("Total Duplicate Tokens", strconv.Itoa(p.statsData.TotalTokens))
 	p.printMetric("Average Clone Size", fmt.Sprintf("%d lines", p.statsData.AverageCloneSize))
 	p.printMetric("Complexity Score", fmt.Sprintf("%.2f", p.statsData.ComplexityScore))
 	p.printMetric("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
+
 	if p.statsData.HealthScore != "" {
-		styledHealthScore := p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore)
+		styledHealthScore := p.healthScoreStyle(p.statsData.HealthScore).
+			Render(p.statsData.HealthScore)
 		p.printMetric("Health Score", styledHealthScore)
 	}
+
 	_, _ = fmt.Fprintf(p.w, "\n")
 
 	// Print size distribution
@@ -239,6 +252,7 @@ func (p *stats) buildJSONData() any {
 	jsonData.DuplicateCode.TotalTokens = p.statsData.TotalTokens
 	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
 	jsonData.DuplicateCode.ComplexityScore = p.statsData.ComplexityScore
+
 	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
 	if p.statsData.TotalEstimatedLines > 0 {
 		jsonData.DuplicateCode.EstimatedLines = p.statsData.TotalEstimatedLines
@@ -249,9 +263,11 @@ func (p *stats) buildJSONData() any {
 	if p.statsData.HealthScore != "" {
 		jsonData.Metrics.HealthScore = p.statsData.HealthScore
 	}
+
 	if p.statsData.AnalysisDuration != "" {
 		jsonData.Metrics.AnalysisTime = p.statsData.AnalysisDuration
 	}
+
 	if p.statsData.Timestamp != "" {
 		jsonData.Metrics.Timestamp = p.statsData.Timestamp
 	}
@@ -268,6 +284,7 @@ func (p *stats) buildJSONData() any {
 	// Fill top files
 	if len(p.statsData.FileDuplication) > 0 {
 		files := sortTopFiles(p.statsData.FileDuplication, 10)
+
 		jsonData.TopFiles = make([]jsonTopFile, len(files))
 		for i := range files {
 			jsonData.TopFiles[i] = jsonTopFile{

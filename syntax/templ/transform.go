@@ -13,6 +13,7 @@ func (t *transformer) createNode(nodeType int32, start, end int64) *syntax.Node 
 	n.Filename = t.filename
 	n.Pos = int32(start) // #nosec G115 -- File sizes bounded by int32 in practice
 	n.End = int32(end)   // #nosec G115 -- File sizes bounded by int32 in practice
+
 	return n
 }
 
@@ -81,8 +82,10 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 	if tmpl == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(ComponentDeclaration, tmpl.Range)
 	t.addChildren(o, tmpl.Children)
+
 	return o
 }
 
@@ -91,6 +94,7 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 	if css == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(CSSDeclaration, css.Range)
 	// Process CSS properties as children
 	for _, prop := range css.Properties {
@@ -99,6 +103,7 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 			o.AddChildren(propNode)
 		}
 	}
+
 	return o
 }
 
@@ -107,6 +112,7 @@ func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate
 	if script == nil {
 		return nil
 	}
+
 	return t.createNodeFromRange(ScriptDeclaration, script.Range)
 }
 

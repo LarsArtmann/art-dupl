@@ -74,6 +74,7 @@ func (s *state) findTranFallback(c Token) *tran {
 			return tr
 		}
 	}
+
 	return nil
 }
 

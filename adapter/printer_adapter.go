@@ -16,6 +16,7 @@ type PrinterAdapter struct {
 func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 	// Try to read file content
 	var fileContent []byte
+
 	if filename != "" {
 		// #nosec G304 -- filename is controlled input from syntax tree, not user input
 		if content, err := os.ReadFile(filename); err == nil {
@@ -23,13 +24,16 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 		}
 		// If file doesn't exist or can't be read, continue with empty content
 	}
+
 	return domain.NodeToClone(node, filename, fileContent)
 }
 
 // CloneGroupFromNodes creates domain clone group from syntax nodes.
 func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGroup {
-	var clones []domain.Clone
-	var totalSize uint
+	var (
+		clones    []domain.Clone
+		totalSize uint
+	)
 
 	for _, nodeGroup := range nodes {
 		if len(nodeGroup) == 0 {
@@ -39,7 +43,9 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 		// Calculate size based on first node
 		startNode := nodeGroup[0]
 		endNode := nodeGroup[len(nodeGroup)-1]
-		size := uint(max(0, endNode.End-startNode.Pos)) // #nosec G115 -- size is always non-negative in valid clones
+		size := uint(
+			max(0, endNode.End-startNode.Pos),
+		) // #nosec G115 -- size is always non-negative in valid clones
 		totalSize += size
 
 		// Convert each node to domain clone
@@ -64,8 +70,10 @@ func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGro
 
 // CreateAnalysisFromClones creates domain analysis from clone data.
 func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) domain.Analysis {
-	var totalClones uint
-	var totalComplexity uint
+	var (
+		totalClones     uint
+		totalComplexity uint
+	)
 
 	for _, group := range cloneGroups {
 		totalClones += uint(len(group.Clones))
@@ -104,11 +112,13 @@ func generateAnalysisID() string {
 
 func countUniqueFiles(groups []domain.CloneGroup) uint {
 	fileSet := make(map[string]bool)
+
 	for _, group := range groups {
 		for _, clone := range group.Clones {
 			fileSet[clone.FilenameString()] = true
 		}
 	}
+
 	return uint(len(fileSet))
 }
 
@@ -119,10 +129,12 @@ func calculateDuplicationRatio(groups []domain.CloneGroup) float64 {
 
 	totalDuplicates := 0
 	totalClones := 0
+
 	for _, group := range groups {
 		if len(group.Clones) > 1 {
 			totalDuplicates += len(group.Clones) - 1
 		}
+
 		totalClones += len(group.Clones)
 	}
 

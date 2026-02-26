@@ -98,6 +98,7 @@ func TestExtractReceiverTypeName(t *testing.T) {
 func TestSemanticFuncDeclDetection(t *testing.T) {
 	original := SemanticHashEnabled
 	SemanticHashEnabled = true
+
 	defer func() { SemanticHashEnabled = original }()
 
 	// Parse a file with methods on different types
@@ -114,6 +115,7 @@ func ParseSafetyMode(s string) SafetyMode { return SafetyMode(s) }
 `
 
 	tmpDir := t.TempDir()
+
 	tmpFile := tmpDir + "/test.go"
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -126,12 +128,15 @@ func ParseSafetyMode(s string) SafetyMode { return SafetyMode(s) }
 
 	// Collect all FuncDecl types
 	funcDeclTypes := make(map[int32]string)
+
 	var collectFuncDecls func(n *syntax.Node)
+
 	collectFuncDecls = func(n *syntax.Node) {
 		if DecodeBaseType(n.Type) == FuncDecl {
 			// Store the semantic hash
 			funcDeclTypes[n.Type] = ""
 		}
+
 		for _, child := range n.Children {
 			collectFuncDecls(child)
 		}

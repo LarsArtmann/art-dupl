@@ -10,10 +10,12 @@ import (
 // generateRandomTokens creates a slice of random token values.
 func generateRandomTokens(count int) []Token {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	tokens := make([]Token, count)
 	for i := range tokens {
 		tokens[i] = &testToken{val: r.Intn(1000)}
 	}
+
 	return tokens
 }
 
@@ -31,6 +33,7 @@ func generateTreeWithRandomTokens(tokenCount int) *STree {
 	tree := New()
 	tokens := generateRandomTokens(tokenCount)
 	tree.Update(tokens...)
+
 	return tree
 }
 
@@ -46,10 +49,23 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 	return tree
 }
 
+// benchmarkFindTranMethod is a helper for benchmarking s.findTran with different parameters
+func benchmarkFindTranMethod(b *testing.B, stateCount, transPerState int) {
+	benchmarkFindTran(b, stateCount, transPerState, nil, func(s *state, t Token) *tran {
+		return s.findTran(t)
+	})
+}
+
 // benchmarkFindTran is a helper for benchmarking findTran functions.
 // If setup is nil, uses default tree generation with stateCount and transPerState.
-func benchmarkFindTran(b *testing.B, stateCount, transPerState int, setup func() *STree, fn func(*state, Token) *tran) {
+func benchmarkFindTran(
+	b *testing.B,
+	stateCount, transPerState int,
+	setup func() *STree,
+	fn func(*state, Token) *tran,
+) {
 	b.Helper()
+
 	var tree *STree
 	if setup != nil {
 		tree = setup()
@@ -75,6 +91,7 @@ func BenchmarkFindTranSmall(b *testing.B) {
 		tree := New()
 		tokens := generateRandomTokens(100)
 		tree.Update(tokens...)
+
 		return tree
 	}, func(s *state, t Token) *tran {
 		return s.findTran(t)
@@ -83,23 +100,17 @@ func BenchmarkFindTranSmall(b *testing.B) {
 
 // BenchmarkFindTranMedium benchmarks findTran with a medium number of transitions.
 func BenchmarkFindTranMedium(b *testing.B) {
-	benchmarkFindTran(b, 50, 10, nil, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	benchmarkFindTranMethod(b, 50, 10)
 }
 
 // BenchmarkFindTranLarge benchmarks findTran with a large number of transitions.
 func BenchmarkFindTranLarge(b *testing.B) {
-	benchmarkFindTran(b, 100, 50, nil, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	benchmarkFindTranMethod(b, 100, 50)
 }
 
 // BenchmarkFindTranVeryLarge benchmarks findTran with a very large number of transitions.
 func BenchmarkFindTranVeryLarge(b *testing.B) {
-	benchmarkFindTran(b, 200, 100, nil, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	benchmarkFindTranMethod(b, 200, 100)
 }
 
 // BenchmarkFindTranFallback benchmarks the fallback (linear) implementation.
@@ -112,6 +123,7 @@ func BenchmarkFindTranFallback(b *testing.B) {
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.
 func benchmarkTreeOperation(b *testing.B, tokenCount int, operation func(*STree)) {
 	b.Helper()
+
 	tree := generateTreeWithRandomTokens(tokenCount)
 
 	for b.Loop() {
@@ -128,6 +140,7 @@ func BenchmarkConstruction(b *testing.B) {
 			tokens := generateRandomTokens(size)
 
 			b.ResetTimer()
+
 			for b.Loop() {
 				tree := New()
 				tree.Update(tokens...)
@@ -172,6 +185,7 @@ func BenchmarkUpdate(b *testing.B) {
 			tokens := generateRandomTokens(batchSize)
 
 			b.ResetTimer()
+
 			for b.Loop() {
 				tree.Update(tokens...)
 			}
@@ -186,6 +200,7 @@ func BenchmarkAt(b *testing.B) {
 	tree.Update(tokens...)
 
 	positions := make([]int, 100)
+
 	r := rand.New(rand.NewSource(42))
 	for i := range positions {
 		positions[i] = r.Intn(len(tokens))
@@ -241,6 +256,7 @@ func BenchmarkSearch(b *testing.B) {
 			if tr == nil {
 				break
 			}
+
 			s = tr.state
 		}
 	}

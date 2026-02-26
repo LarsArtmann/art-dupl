@@ -26,12 +26,15 @@ type IncrementalStats struct {
 
 func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, error) {
 	fchan := make(chan string, 1024)
+
 	go func() {
 		for _, f := range files {
 			fchan <- f
 		}
+
 		close(fchan)
 	}()
+
 	schan, _ := job.Parse(ctx, fchan)
 	t, data, done := job.BuildTree(ctx, schan)
 	<-done
@@ -40,13 +43,19 @@ func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, e
 	t.Update(&syntax.Node{Type: -1})
 
 	duplChan := findSyntaxUnitsChan(t, data, threshold)
+
 	return makeIssues(duplChan)
 }
 
 // findSyntaxUnitsChan processes matches from the suffix tree into syntax units.
-func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold int) <-chan syntax.Match {
+func findSyntaxUnitsChan(
+	t *suffixtree.STree,
+	data *[]*syntax.Node,
+	threshold int,
+) <-chan syntax.Match {
 	mchan := t.FindDuplOver(threshold)
 	duplChan := make(chan syntax.Match)
+
 	go func() {
 		for m := range mchan {
 			match := syntax.FindSyntaxUnits(*data, m, threshold)
@@ -54,8 +63,10 @@ func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold in
 				duplChan <- match
 			}
 		}
+
 		close(duplChan)
 	}()
+
 	return duplChan
 }
 
@@ -63,12 +74,20 @@ func findSyntaxUnitsChan(t *suffixtree.STree, data *[]*syntax.Node, threshold in
 // On subsequent runs, unchanged files are loaded from cache instead of being reparsed.
 // cacheDir specifies where to store cached AST nodes (empty for default: .cache/art-dupl/files/).
 // clearCache forces a cache reset before running.
-func RunIncremental(ctx context.Context, files []string, threshold int, cacheDir string, clearCache bool) ([]printer.Issue, IncrementalStats, error) {
+func RunIncremental(
+	ctx context.Context,
+	files []string,
+	threshold int,
+	cacheDir string,
+	clearCache bool,
+) ([]printer.Issue, IncrementalStats, error) {
 	fchan := make(chan string, 1024)
+
 	go func() {
 		for _, f := range files {
 			fchan <- f
 		}
+
 		close(fchan)
 	}()
 
@@ -82,12 +101,14 @@ func RunIncremental(ctx context.Context, files []string, threshold int, cacheDir
 	t.Update(&syntax.Node{Type: -1})
 
 	duplChan := findSyntaxUnitsChan(t, data, threshold)
+
 	issues, err := makeIssues(duplChan)
 	if err != nil {
 		return nil, IncrementalStats{}, err
 	}
 
 	stats := <-statsChan
+
 	return issues, IncrementalStats{
 		FilesCount:  stats.FilesCount,
 		LinesCount:  stats.LinesCount,
@@ -101,15 +122,18 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 	for dupl := range duplChan {
 		groups[dupl.Hash] = append(groups[dupl.Hash], dupl.Frags...)
 	}
+
 	keys := make([]string, 0, len(groups))
 	for k := range groups {
 		keys = append(keys, k)
 	}
+
 	sort.Strings(keys)
 
 	p := printer.NewIssuer(os.ReadFile)
 
 	var issues []printer.Issue
+
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
@@ -117,6 +141,7 @@ func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
 			if err != nil {
 				return nil, err //nolint:wrapcheck // Printer errors are already clear
 			}
+
 			issues = append(issues, i...)
 		}
 	}

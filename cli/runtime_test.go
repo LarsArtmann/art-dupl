@@ -1,6 +1,5 @@
 package cli
 
-//nolint:testpackage // Tests require access to cli package internals
 import (
 	"os"
 	"testing"
@@ -89,14 +88,18 @@ func TestCLIIOWriters(t *testing.T) {
 	originalStdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
+
 	defer func() {
 		os.Stdout = originalStdout
-		if err := w.Close(); err != nil {
+
+		err := w.Close()
+		if err != nil {
 			t.Logf("Error closing pipe writer: %v", err)
 		}
 	}()
 
 	testData := []byte("test to stdout")
+
 	go func() {
 		if _, err := stdout.Write(testData); err != nil {
 			t.Logf("Error writing to stdout: %v", err)

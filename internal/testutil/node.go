@@ -21,6 +21,7 @@ func CreateMockNodes(count int, filename string) []*syntax.Node {
 	for i := range nodes {
 		nodes[i] = CreateMockNode(golang.FuncDecl, filename, i*10, (i+1)*10)
 	}
+
 	return nodes
 }
 
@@ -30,5 +31,6 @@ func CreateMockCloneGroup(hash string, size int, filenames []string) []*syntax.N
 	for i, filename := range filenames {
 		nodes[i] = CreateMockNode(golang.FuncDecl, filename, i*20, (i+1)*20)
 	}
+
 	return nodes
 }

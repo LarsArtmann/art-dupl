@@ -25,7 +25,11 @@ const (
 func ParseFormat(value string) (Format, error) {
 	format := config.OutputFormat(value)
 	if !format.IsValid() {
-		return "", fmt.Errorf("invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)", value)
+		return "", fmt.Errorf(
+			"invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)",
+			value,
+		)
 	}
+
 	return format, nil
 }

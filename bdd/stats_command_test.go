@@ -73,6 +73,7 @@ func assertGeneratedFilesFiltered(
 
 	output, err := setup.RunSubcommand("stats", "--threshold", "5")
 	Expect(err).ToNot(HaveOccurred())
+
 	outputStr := string(output)
 
 	Expect(outputStr).To(ContainSubstring("regular1.go"))
@@ -97,6 +98,7 @@ func assertGeneratedFilesIncluded(
 
 	output, err := setup.RunSubcommand("stats", includeFlag, "--threshold", "5")
 	Expect(err).ToNot(HaveOccurred())
+
 	outputStr := string(output)
 
 	Expect(outputStr).To(ContainSubstring(generatedFilename))
@@ -107,6 +109,7 @@ var _ = Describe("Stats Command", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -144,6 +147,7 @@ func Component() templ.Component { return nil }`
 			// Run with verbose flag
 			output, err := setup.RunSubcommand("stats", "--verbose", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should indicate filtering is active
@@ -156,14 +160,26 @@ func Component() templ.Component { return nil }`
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
-			assertGeneratedFilesIncluded(setup, regularCode, "page_templ.go", templCode, "--include-templ")
+			assertGeneratedFilesIncluded(
+				setup,
+				regularCode,
+				"page_templ.go",
+				templCode,
+				"--include-templ",
+			)
 		})
 
 		It("should include sqlc files when --include-sqlc is specified", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "query")
 			sqlcCode := fmt.Sprintf(sqlcCodeTemplate, "query")
 
-			assertGeneratedFilesIncluded(setup, regularCode, "queries.sql.go", sqlcCode, "--include-sqlc")
+			assertGeneratedFilesIncluded(
+				setup,
+				regularCode,
+				"queries.sql.go",
+				sqlcCode,
+				"--include-sqlc",
+			)
 		})
 
 		It("should include both when both flags are specified", func() {
@@ -179,8 +195,15 @@ func Component() templ.Component { return nil }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with both include flags
-			output, err := setup.RunSubcommand("stats", "--include-templ", "--include-sqlc", "--threshold", "5")
+			output, err := setup.RunSubcommand(
+				"stats",
+				"--include-templ",
+				"--include-sqlc",
+				"--threshold",
+				"5",
+			)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show both generated files
@@ -210,6 +233,7 @@ func duplicate() {
 
 			// Parse JSON
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -229,6 +253,7 @@ func duplicate() {
 			// Run stats with CSV format
 			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should contain CSV header and data
@@ -245,6 +270,7 @@ func duplicate() {
 			// Run stats without format flag
 			output, err := setup.RunSubcommand("stats")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should contain human-readable headers
@@ -277,6 +303,7 @@ func processData() {
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -295,6 +322,7 @@ func processData() {
 			// Run stats
 			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show health score
@@ -319,6 +347,7 @@ func b() { println(2) }`
 			// Run stats
 			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show top files section
@@ -355,6 +384,7 @@ func common() {
 			// Run stats on the entire temp directory (which contains both pkg1 and pkg2)
 			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should find duplicates from both paths
@@ -379,6 +409,7 @@ func unique2() { println("unique2") }`
 			// Run stats
 			output, err := setup.RunSubcommand("stats")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show health score A for clean code
@@ -395,6 +426,7 @@ func unique2() { println("unique2") }`
 			// Run stats
 			output, err := setup.RunSubcommand("stats", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should not mention vendor files
@@ -420,6 +452,7 @@ var _ = Describe("Stats Command Edge Cases", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -433,6 +466,7 @@ var _ = Describe("Stats Command Edge Cases", func() {
 			// Run stats on empty directory (pass tmpDir explicitly)
 			output, err := setup.RunSubcommand("stats", setup.TmpDir)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show zero files scanned
@@ -449,6 +483,7 @@ func main() {}`
 
 			output, err := setup.RunSubcommand("stats", setup.TmpDir)
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show single file, no clones
@@ -468,6 +503,7 @@ func small() { println(1) }`
 			// Run with very high threshold (pass tmpDir explicitly)
 			output, err := setup.RunSubcommand("stats", "--threshold", "1000")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show zero clone groups

@@ -33,19 +33,28 @@ func (se StringEnum) String() string {
 // parseJSONString extracts and cleans a string from JSON data.
 func parseJSONString(data []byte) string {
 	str := string(data)
+
 	str = strings.TrimSpace(str)
 	if len(str) >= 2 && str[0] == '"' && str[len(str)-1] == '"' {
 		str = str[1 : len(str)-1]
 	}
+
 	return str
 }
 
-func UnmarshalJSON[T ~string](dest *T, data []byte, typeName string, defaultValue T, validValues ...T) error {
+func UnmarshalJSON[T ~string](
+	dest *T,
+	data []byte,
+	typeName string,
+	defaultValue T,
+	validValues ...T,
+) error {
 	str := parseJSONString(data)
 
 	// Check if empty
 	if str == "" {
 		*dest = defaultValue
+
 		return nil
 	}
 
@@ -53,13 +62,28 @@ func UnmarshalJSON[T ~string](dest *T, data []byte, typeName string, defaultValu
 	// Validate against provided values
 	if slices.Contains(validValues, candidate) {
 		*dest = candidate
+
 		return nil
 	}
 
 	// Create error with rich context
-	validationErr := fmt.Errorf("invalid %s value %q, must be one of %v", typeName, str, validValues)
+	validationErr := fmt.Errorf(
+		"invalid %s value %q, must be one of %v",
+		typeName,
+		str,
+		validValues,
+	)
 	*dest = defaultValue
-	return fmt.Errorf("%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validValues=%v): %w", typeName, str, dest, defaultValue, validValues, errors.NewValidationError(validationErr.Error(), validationErr))
+
+	return fmt.Errorf(
+		"%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validValues=%v): %w",
+		typeName,
+		str,
+		dest,
+		defaultValue,
+		validValues,
+		errors.NewValidationError(validationErr.Error(), validationErr),
+	)
 }
 
 // MarshalJSON provides generic JSON marshaling for enum types.
@@ -75,32 +99,61 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal enum value %q: %w", value, err)
 		}
+
 		return data, nil
 	}
 
 	// If we get here, the value is invalid
 	validationErr := fmt.Errorf("enum value %q is not in valid list %v", value, validValues)
-	return nil, fmt.Errorf("marshaling failed for value %v (validValues=%v): %w", value, validValues, errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr))
+
+	return nil, fmt.Errorf(
+		"marshaling failed for value %v (validValues=%v): %w",
+		value,
+		validValues,
+		errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr),
+	)
 }
 
 // UnmarshalJSONFromStrings unmarshals JSON using a string slice for validation.
-func UnmarshalJSONFromStrings[T ~string](dest *T, data []byte, typeName string, defaultValue T, validStrings []string) error {
+func UnmarshalJSONFromStrings[T ~string](
+	dest *T,
+	data []byte,
+	typeName string,
+	defaultValue T,
+	validStrings []string,
+) error {
 	str := parseJSONString(data)
 
 	if str == "" {
 		*dest = defaultValue
+
 		return nil
 	}
 
 	// Check against valid strings
 	if slices.Contains(validStrings, str) {
 		*dest = T(str)
+
 		return nil
 	}
 
-	validationErr := fmt.Errorf("invalid %s value %q, must be one of %v", typeName, str, validStrings)
+	validationErr := fmt.Errorf(
+		"invalid %s value %q, must be one of %v",
+		typeName,
+		str,
+		validStrings,
+	)
 	*dest = defaultValue
-	return fmt.Errorf("%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validStrings=%v): %w", typeName, str, dest, defaultValue, validStrings, errors.NewValidationError(validationErr.Error(), validationErr))
+
+	return fmt.Errorf(
+		"%s unmarshaling failed for %s (dest=%v, defaultValue=%v, validStrings=%v): %w",
+		typeName,
+		str,
+		dest,
+		defaultValue,
+		validStrings,
+		errors.NewValidationError(validationErr.Error(), validationErr),
+	)
 }
 
 // ParseEnum parses a string into an enum type with validation.
@@ -114,6 +167,7 @@ func ParseEnum[T ~string](str string, defaultValue T, validValues ...T) T {
 	if slices.Contains(validValues, candidate) {
 		return candidate
 	}
+
 	return defaultValue
 }
 
@@ -123,6 +177,7 @@ func EnumToStringSlice[T ~string](enums ...T) []string {
 	for _, e := range enums {
 		result = append(result, string(e))
 	}
+
 	return result
 }
 
@@ -139,6 +194,7 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 
 	// Get the zero value of type T
 	var zero T
+
 	typeOfT := reflect.TypeOf(zero)
 
 	// Create candidate by converting string to type T
@@ -150,10 +206,12 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 	if !candidate.IsValid() {
 		validationErr := fmt.Errorf("invalid %s value %q (must pass validation)", typeName, str)
 		*dest = zero
+
 		return errors.NewValidationError(validationErr.Error(), validationErr)
 	}
 
 	*dest = candidate
+
 	return nil
 }
 
@@ -169,8 +227,14 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 
 	data, err := json.Marshal(value.String())
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal %s enum value %q: %w", typeName, value.String(), err)
+		return nil, fmt.Errorf(
+			"failed to marshal %s enum value %q: %w",
+			typeName,
+			value.String(),
+			err,
+		)
 	}
+
 	return data, nil
 }
 
@@ -185,5 +249,6 @@ func EnumNames[T ~string](enums ...T) []string {
 	for _, e := range enums {
 		names = append(names, string(e))
 	}
+
 	return names
 }

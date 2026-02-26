@@ -14,16 +14,19 @@ func (c char) Val() int {
 func str2tok(str string) []Token {
 	// Use utf8.RuneCountInString to get actual character count for Unicode support
 	toks := make([]Token, utf8.RuneCountInString(str))
+
 	i := 0
 	for _, c := range str {
 		toks[i] = char(c)
 		i++
 	}
+
 	return toks
 }
 
 func TestConstruction(t *testing.T) {
 	t.Parallel()
+
 	str := "cacao"
 	_, s := genStates(8, str)
 	// s[0] is root
@@ -76,9 +79,11 @@ func TestConstruction(t *testing.T) {
 
 func compareTrees(t *testing.T, expected, actual *state) {
 	t.Helper()
+
 	ch1, ch2 := walker(expected), walker(actual)
 	for {
 		etran, ok1 := <-ch1
+
 		atran, ok2 := <-ch2
 		if !ok1 || !ok2 {
 			if ok1 {
@@ -86,8 +91,10 @@ func compareTrees(t *testing.T, expected, actual *state) {
 			} else if ok2 {
 				t.Error("actual tree is longer")
 			}
+
 			break
 		}
+
 		if etran.start != atran.start || etran.ActEnd() != atran.ActEnd() {
 			t.Errorf("got transition (%d, %d) '%s', want (%d, %d) '%s'",
 				atran.start, atran.ActEnd(), actual.tree.data[atran.start:atran.ActEnd()+1],
@@ -99,16 +106,19 @@ func compareTrees(t *testing.T, expected, actual *state) {
 
 func walker(s *state) <-chan *tran {
 	ch := make(chan *tran)
+
 	go func() {
 		walk(s, ch)
 		close(ch)
 	}()
+
 	return ch
 }
 
 func walk(s *state, ch chan<- *tran) {
 	for _, tr := range s.trans {
 		ch <- tr
+
 		walk(tr.state, ch)
 	}
 }
@@ -116,10 +126,12 @@ func walk(s *state, ch chan<- *tran) {
 func genStates(count int, data string) (*STree, []*state) {
 	t := new(STree)
 	t.data = str2tok(data)
+
 	states := make([]*state, count)
 	for i := range states {
 		states[i] = newState(t)
 	}
+
 	return t, states
 }
 
@@ -130,6 +142,7 @@ type refPair struct {
 
 func TestCanonize(t *testing.T) {
 	t.Parallel()
+
 	tree, s := genStates(5, "somebanana")
 	tree.auxState, tree.root = s[4], s[0]
 	s[0].addTran(0, 3, s[1])
@@ -142,6 +155,7 @@ func TestCanonize(t *testing.T) {
 				return i
 			}
 		}
+
 		return -1
 	}
 
@@ -162,8 +176,10 @@ func TestCanonize(t *testing.T) {
 		if err != nil {
 			t.Errorf("canonize failed for origin (%d, (%d, %d)): %v",
 				find(tc.origin.s), tc.origin.start, tc.origin.end, err)
+
 			continue
 		}
+
 		if s != tc.expected.s || start != tc.expected.start {
 			t.Errorf("for origin ref. pair (%d, (%d, %d)) got (%d, %d), want (%d, %d)",
 				find(tc.origin.s), tc.origin.start, tc.origin.end,
@@ -176,6 +192,7 @@ func TestCanonize(t *testing.T) {
 
 func TestSplitting(t *testing.T) {
 	t.Parallel()
+
 	tree := new(STree)
 	tree.data = str2tok("banana|cbao")
 	s1 := newState(tree)
@@ -184,14 +201,18 @@ func TestSplitting(t *testing.T) {
 
 	// active point is (s1, 0, -1), an explicit state
 	tree.end = 7 // c
+
 	rets, end := tree.testAndSplit(s1, 0, -1)
 	if rets != s1 {
 		t.Errorf("got state %p, want %p", rets, s1)
 	}
+
 	if end {
 		t.Error("should not be an end-point")
 	}
+
 	tree.end = 8 // b
+
 	_, end = tree.testAndSplit(s1, 0, -1)
 	if !end {
 		t.Error("should be an end-point")
@@ -199,10 +220,12 @@ func TestSplitting(t *testing.T) {
 
 	// active point is (s1, 0, 2), an implicit state
 	tree.end = 9 // a
+
 	rets, end = tree.testAndSplit(s1, 0, 2)
 	if rets != s1 {
 		t.Error("returned state should be unchanged")
 	}
+
 	if !end {
 		t.Error("should be an end-point")
 	}
@@ -210,18 +233,21 @@ func TestSplitting(t *testing.T) {
 	// [s1]-banana->[s2] => [s1]-ban->[rets]-ana->[s2]
 	tree.end = 10 // o
 	rets, end = tree.testAndSplit(s1, 0, 2)
+
 	tr := s1.findTran(char('b'))
 	if tr == nil {
 		t.Error("should have a b-transition")
 	} else if tr.state != rets {
 		t.Errorf("got state %p, want %p", tr.state, rets)
 	}
+
 	tr2 := rets.findTran(char('a'))
 	if tr2 == nil {
 		t.Error("should have an a-transition")
 	} else if tr2.state != s2 {
 		t.Errorf("got state %p, want %p", tr2.state, s2)
 	}
+
 	if end {
 		t.Error("should not be an end-point")
 	}
@@ -281,7 +307,12 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 		// Verify data is stored correctly
 		for i, token := range tokens {
 			if tree.data[i].Val() != token.Val() {
-				t.Errorf("Data mismatch at index %d: got %d, want %d", i, tree.data[i].Val(), token.Val())
+				t.Errorf(
+					"Data mismatch at index %d: got %d, want %d",
+					i,
+					tree.data[i].Val(),
+					token.Val(),
+				)
 			}
 		}
 	})
@@ -320,6 +351,7 @@ func TestUnicodeSupport(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			tree := New()
 			tokens := str2tok(tc.input)
 

@@ -31,9 +31,11 @@ func TestNewFileCache(t *testing.T) {
 		if fc == nil {
 			t.Fatal("Expected non-nil FileCache")
 		}
+
 		if fc.cacheDir != DefaultCacheDir {
 			t.Errorf("Expected cacheDir=%q, got %q", DefaultCacheDir, fc.cacheDir)
 		}
+
 		if fc.metadata.Version != CacheVersion {
 			t.Errorf("Expected Version=%d, got %d", CacheVersion, fc.metadata.Version)
 		}
@@ -41,10 +43,12 @@ func TestNewFileCache(t *testing.T) {
 
 	t.Run("custom directory", func(t *testing.T) {
 		customDir := t.TempDir()
+
 		fc := NewFileCache(customDir)
 		if fc == nil {
 			t.Fatal("Expected non-nil FileCache")
 		}
+
 		if fc.cacheDir != customDir {
 			t.Errorf("Expected cacheDir=%q, got %q", customDir, fc.cacheDir)
 		}
@@ -67,6 +71,7 @@ func TestFileCache_Get_Set(t *testing.T) {
 		if hit {
 			t.Error("Expected cache miss, got hit")
 		}
+
 		if nodes != nil {
 			t.Error("Expected nil nodes for cache miss")
 		}
@@ -87,6 +92,7 @@ func TestFileCache_Get_Set(t *testing.T) {
 		if !hit {
 			t.Error("Expected cache hit, got miss")
 		}
+
 		if retrievedNodes == nil {
 			t.Fatal("Expected non-nil nodes")
 		}
@@ -95,11 +101,17 @@ func TestFileCache_Get_Set(t *testing.T) {
 		if len(retrievedNodes) != len(originalNodes) {
 			t.Errorf("Expected %d nodes, got %d", len(originalNodes), len(retrievedNodes))
 		}
+
 		if retrievedNodes[0].Type != originalNodes[0].Type {
 			t.Errorf("Expected Type=%d, got %d", originalNodes[0].Type, retrievedNodes[0].Type)
 		}
+
 		if retrievedNodes[0].Filename != originalNodes[0].Filename {
-			t.Errorf("Expected Filename=%q, got %q", originalNodes[0].Filename, retrievedNodes[0].Filename)
+			t.Errorf(
+				"Expected Filename=%q, got %q",
+				originalNodes[0].Filename,
+				retrievedNodes[0].Filename,
+			)
 		}
 	})
 
@@ -110,10 +122,13 @@ func TestFileCache_Get_Set(t *testing.T) {
 		nodes1 := []*syntax.Node{{Type: 1, Pos: 0, End: 10, Filename: "file1.go"}}
 		nodes2 := []*syntax.Node{{Type: 2, Pos: 5, End: 15, Filename: "file2.go"}}
 
-		if err := fc.Set(hash1, nodes1); err != nil {
+		err := fc.Set(hash1, nodes1)
+		if err != nil {
 			t.Fatalf("Set hash1 failed: %v", err)
 		}
-		if err := fc.Set(hash2, nodes2); err != nil {
+
+		err = fc.Set(hash2, nodes2)
+		if err != nil {
 			t.Fatalf("Set hash2 failed: %v", err)
 		}
 
@@ -123,9 +138,11 @@ func TestFileCache_Get_Set(t *testing.T) {
 		if !hit1 || !hit2 {
 			t.Error("Expected both entries to be cache hits")
 		}
+
 		if retrieved1[0].Type != nodes1[0].Type {
 			t.Errorf("hash1: Expected Type=%d, got %d", nodes1[0].Type, retrieved1[0].Type)
 		}
+
 		if retrieved2[0].Type != nodes2[0].Type {
 			t.Errorf("hash2: Expected Type=%d, got %d", nodes2[0].Type, retrieved2[0].Type)
 		}
@@ -146,7 +163,8 @@ func TestFileCache_Has(t *testing.T) {
 
 	t.Run("exists after set", func(t *testing.T) {
 		nodes := testNodes()
-		if err := fc.Set(contentHash, nodes); err != nil {
+		err := fc.Set(contentHash, nodes)
+		if err != nil {
 			t.Fatalf("Set failed: %v", err)
 		}
 
@@ -156,7 +174,8 @@ func TestFileCache_Has(t *testing.T) {
 	})
 
 	t.Run("not exists after remove", func(t *testing.T) {
-		if err := fc.Remove(contentHash); err != nil {
+		err := fc.Remove(contentHash)
+		if err != nil {
 			t.Fatalf("Remove failed: %v", err)
 		}
 
@@ -181,7 +200,8 @@ func TestFileCache_Remove(t *testing.T) {
 
 	t.Run("remove existing entry", func(t *testing.T) {
 		nodes := testNodes()
-		if err := fc.Set(contentHash, nodes); err != nil {
+		err := fc.Set(contentHash, nodes)
+		if err != nil {
 			t.Fatalf("Set failed: %v", err)
 		}
 
@@ -189,7 +209,8 @@ func TestFileCache_Remove(t *testing.T) {
 			t.Fatal("Entry should exist before removal")
 		}
 
-		if err := fc.Remove(contentHash); err != nil {
+		err = fc.Remove(contentHash)
+		if err != nil {
 			t.Fatalf("Remove failed: %v", err)
 		}
 
@@ -213,7 +234,8 @@ func TestFileCache_Clear(t *testing.T) {
 
 	nodes := testNodes()
 	for _, hash := range hashes {
-		if err := fc.Set(hash, nodes); err != nil {
+		err := fc.Set(hash, nodes)
+		if err != nil {
 			t.Fatalf("Set failed: %v", err)
 		}
 	}
@@ -225,7 +247,8 @@ func TestFileCache_Clear(t *testing.T) {
 	}
 
 	// Clear cache
-	if err := fc.Clear(); err != nil {
+	err := fc.Clear()
+	if err != nil {
 		t.Fatalf("Clear failed: %v", err)
 	}
 
@@ -253,9 +276,11 @@ func TestFileCache_Stats(t *testing.T) {
 		if stats.Hits != 0 {
 			t.Errorf("Expected 0 hits, got %d", stats.Hits)
 		}
+
 		if stats.Misses != 0 {
 			t.Errorf("Expected 0 misses, got %d", stats.Misses)
 		}
+
 		if stats.Size != 0 {
 			t.Errorf("Expected 0 size, got %d", stats.Size)
 		}
@@ -278,12 +303,15 @@ func TestFileCache_Stats(t *testing.T) {
 		if stats.Hits != 1 {
 			t.Errorf("Expected 1 hit, got %d", stats.Hits)
 		}
+
 		if stats.Misses != 1 {
 			t.Errorf("Expected 1 miss, got %d", stats.Misses)
 		}
+
 		if stats.Size != 1 {
 			t.Errorf("Expected 1 size, got %d", stats.Size)
 		}
+
 		if stats.BytesUsed <= 0 {
 			t.Errorf("Expected positive BytesUsed, got %d", stats.BytesUsed)
 		}
@@ -314,6 +342,7 @@ func TestFileCache_GetStats(t *testing.T) {
 		if hits != 1 {
 			t.Errorf("Expected 1 hit, got %d", hits)
 		}
+
 		if misses != 1 {
 			t.Errorf("Expected 1 miss, got %d", misses)
 		}
@@ -363,6 +392,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	fc := NewFileCache(tempDir)
 
 	const numOps = 100
+
 	done := make(chan bool, numOps*3)
 
 	// Concurrent writes
@@ -371,6 +401,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 			hash := CacheKey([]byte{byte(i)})
 			nodes := []*syntax.Node{{Type: int32(i), Filename: "test.go"}}
 			fc.Set(hash, nodes)
+
 			done <- true
 		}(i)
 	}
@@ -380,6 +411,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			fc.Get(hash)
+
 			done <- true
 		}(i)
 	}
@@ -389,6 +421,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
 			fc.Has(hash)
+
 			done <- true
 		}(i)
 	}
@@ -415,6 +448,7 @@ func TestFileCache_EmptyNodes(t *testing.T) {
 		if !hit {
 			t.Fatal("Expected cache hit")
 		}
+
 		if len(nodes) != 0 {
 			t.Errorf("Expected 0 nodes, got %d", len(nodes))
 		}
@@ -450,7 +484,8 @@ func TestFileCache_NestedNodes(t *testing.T) {
 		},
 	}
 
-	if err := fc.Set(contentHash, originalNodes); err != nil {
+	err := fc.Set(contentHash, originalNodes)
+	if err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
@@ -463,11 +498,16 @@ func TestFileCache_NestedNodes(t *testing.T) {
 	if len(retrievedNodes[0].Children) == 0 {
 		t.Fatal("Expected children to be preserved")
 	}
+
 	if len(retrievedNodes[0].Children[0].Children) != 2 {
 		t.Errorf("Expected 2 grandchildren, got %d", len(retrievedNodes[0].Children[0].Children))
 	}
+
 	if retrievedNodes[0].Children[0].Children[0].Type != 3 {
-		t.Errorf("Expected grandchild Type=3, got %d", retrievedNodes[0].Children[0].Children[0].Type)
+		t.Errorf(
+			"Expected grandchild Type=3, got %d",
+			retrievedNodes[0].Children[0].Children[0].Type,
+		)
 	}
 }
 
@@ -479,7 +519,8 @@ func TestFileCache_Persistence(t *testing.T) {
 
 	// Create first cache instance and set data
 	fc1 := NewFileCache(tempDir)
-	if err := fc1.Set(contentHash, nodes); err != nil {
+	err := fc1.Set(contentHash, nodes)
+	if err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
@@ -491,6 +532,7 @@ func TestFileCache_Persistence(t *testing.T) {
 	if !hit {
 		t.Fatal("Expected cache hit in second instance")
 	}
+
 	if len(retrievedNodes) != len(nodes) {
 		t.Errorf("Expected %d nodes, got %d", len(nodes), len(retrievedNodes))
 	}

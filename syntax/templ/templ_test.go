@@ -75,9 +75,11 @@ templ empty() {
 			if err != nil {
 				t.Fatalf("ParseBytes() error = %v", err)
 			}
+
 			if lineCount <= 0 {
 				t.Errorf("ParseBytes() lineCount = %d, want > 0", lineCount)
 			}
+
 			if tt.wantNodes && node == nil {
 				t.Errorf("ParseBytes() returned nil node, expected non-nil")
 			}
@@ -127,14 +129,17 @@ templ nested() {
 
 	// Verify tree structure is traversable
 	var countNodes func(*syntax.Node) int
+
 	countNodes = func(n *syntax.Node) int {
 		if n == nil {
 			return 0
 		}
+
 		count := 1
 		for _, child := range n.Children {
 			count += countNodes(child)
 		}
+
 		return count
 	}
 

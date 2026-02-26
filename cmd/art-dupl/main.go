@@ -28,7 +28,10 @@ func main() {
 		switch errStr {
 		case "flag: help requested":
 			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-				if _, writeErr := fmt.Fprintln(w, styles.Text.Render("💡 Use examples below to get started:")); writeErr == nil {
+				if _, writeErr := fmt.Fprintln(
+					w,
+					styles.Text.Render("💡 Use examples below to get started:"),
+				); writeErr == nil {
 					examples := []string{
 						"  art-dupl                    # Analyze current directory",
 						"  art-dupl -t 50 ./src        # Higher threshold for larger clones",
@@ -36,7 +39,10 @@ func main() {
 						"  art-dupl --all --output-dir ./reports # Generate all formats",
 					}
 					for _, ex := range examples {
-						if _, writeErr := fmt.Fprintln(w, styles.Codeblock.Program.Name.Render(ex)); writeErr != nil {
+						if _, writeErr := fmt.Fprintln(
+							w,
+							styles.Codeblock.Program.Name.Render(ex),
+						); writeErr != nil {
 							break
 						}
 					}
@@ -45,15 +51,27 @@ func main() {
 		default:
 			// Provide helpful hints for common errors
 			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-				if _, writeErr := fmt.Fprintln(w, styles.Text.Render("Quick Fix: Check file paths and permissions")); writeErr == nil {
-					if _, writeErr := fmt.Fprintln(w, styles.Text.Render("Get Help: art-dupl --help")); writeErr != nil {
+				if _, writeErr := fmt.Fprintln(
+					w,
+					styles.Text.Render("Quick Fix: Check file paths and permissions"),
+				); writeErr == nil {
+					if _, writeErr := fmt.Fprintln(
+						w,
+						styles.Text.Render("Get Help: art-dupl --help"),
+					); writeErr != nil {
 						_ = writeErr
 					}
 				}
 			}
 		}
+
 		if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-			if _, writeErr := fmt.Fprintln(w, styles.Text.Render("📚 Visit https://github.com/LarsArtmann/art-dupl for documentation")); writeErr != nil {
+			if _, writeErr := fmt.Fprintln(
+				w,
+				styles.Text.Render(
+					"📚 Visit https://github.com/LarsArtmann/art-dupl for documentation",
+				),
+			); writeErr != nil {
 				_ = writeErr
 			}
 		}
@@ -67,7 +85,8 @@ func main() {
 		fang.WithNotifySignal(os.Interrupt), // Handle Ctrl+C gracefully
 	}
 
-	if err := fang.Execute(context.Background(), rootCmd, options...); err != nil {
+	err := fang.Execute(context.Background(), rootCmd, options...)
+	if err != nil {
 		os.Exit(1)
 	}
 }

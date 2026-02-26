@@ -40,6 +40,7 @@ func TestDefaultOptions_Basic(t *testing.T) {
 // TestValidateOptions_Valid_Basic tests valid options.
 func TestValidateOptions_Valid_Basic(t *testing.T) {
 	opts := DefaultOptions()
+
 	err := ValidateOptions(opts)
 	if err != nil {
 		t.Errorf("Valid options should pass validation: %v", err)
@@ -150,12 +151,15 @@ func TestCloneGroup_Validation_Basic(t *testing.T) {
 	if group.Hash == "" {
 		t.Error("Clone group should have hash")
 	}
+
 	if len(group.Clones) == 0 {
 		t.Error("Clone group should have at least one clone")
 	}
+
 	if group.Size <= 0 {
 		t.Error("Clone group size should be positive")
 	}
+
 	if group.Method == "" {
 		t.Error("Clone group should have detection method")
 	}
@@ -175,15 +179,19 @@ func TestProgress_Validation_Basic(t *testing.T) {
 	if progress.Stage == "" {
 		t.Error("Stage should not be empty")
 	}
+
 	if progress.Completed < 0 {
 		t.Error("Completed should be non-negative")
 	}
+
 	if progress.Total <= 0 {
 		t.Error("Total should be positive")
 	}
+
 	if progress.Percentage < 0 || progress.Percentage > 100 {
 		t.Error("Percentage should be between 0-100")
 	}
+
 	if progress.Message == "" {
 		t.Error("Message should not be empty")
 	}

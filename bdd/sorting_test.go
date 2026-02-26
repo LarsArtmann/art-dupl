@@ -26,6 +26,7 @@ var _ = Describe("Sorting Functionality", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -108,8 +109,12 @@ func processItem(data string, index int) error {
 			})
 			// Print debug info on error
 			if err != nil {
-				fmt.Printf("DEBUG: Command failed with output: %s\n", string(output)) //nolint:forbidigo // Debug output
+				fmt.Printf(
+					"DEBUG: Command failed with output: %s\n",
+					string(output),
+				) //nolint:forbidigo // Debug output
 			}
+
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -121,7 +126,9 @@ func processItem(data string, index int) error {
 
 			Expect(largeIndex).ToNot(Equal(-1), "Large clone should be found")
 			Expect(mediumIndex).ToNot(Equal(-1), "Medium clone should be found")
-			Expect(largeIndex).To(BeNumerically("<", mediumIndex), "Larger clone should appear first when sorted by size")
+			Expect(
+				largeIndex,
+			).To(BeNumerically("<", mediumIndex), "Larger clone should appear first when sorted by size")
 		})
 
 		It("should use size sorting when explicitly specified", func() {
@@ -200,7 +207,9 @@ func lessCommonFunction(id int, name string) error {
 
 			Expect(widespreadIndex).ToNot(Equal(-1), "Widespread clone should be found")
 			Expect(lessCommonIndex).ToNot(Equal(-1), "Less common clone should be found")
-			Expect(widespreadIndex).To(BeNumerically("<", lessCommonIndex), "More widespread clone should appear first")
+			Expect(
+				widespreadIndex,
+			).To(BeNumerically("<", lessCommonIndex), "More widespread clone should appear first")
 		})
 	})
 

@@ -10,6 +10,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// validateCloneSorting checks if the sorted clone groups match the expected order
+func validateCloneSorting(t *testing.T, sorted [][]*syntax.Node, expectedOrder []string, sortingType string) {
+	for i, clone := range sorted {
+		if clone[0].Filename != expectedOrder[i] {
+			t.Errorf("%s sorting failed at index %d. Expected: %s, Got: %s",
+				sortingType, i, expectedOrder[i], clone[0].Filename)
+		}
+	}
+}
+
 // TestSortingIntegration tests the complete sorting functionality across all printers.
 func TestSortingIntegration(t *testing.T) {
 	// Create test file content with multiple clone groups
@@ -48,10 +58,20 @@ func anotherLargeFunction() {
 }`
 
 	// Create mock clone groups with different sizes and characteristics
-	smallClone := createMockCloneGroup(t, "small.go", 10, 2)                 // Small size, 2 tokens
-	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)               // Medium size, 5 tokens
-	largeClone := createMockCloneGroup(t, "large.go", 60, 8)                 // Large size, 8 tokens
-	anotherLargeClone := createMockCloneGroup(t, "another_large.go", 100, 8) // Same size as largeClone, 8 tokens
+	smallClone := createMockCloneGroup(t, "small.go", 10, 2) // Small size, 2 tokens
+	mediumClone := createMockCloneGroup(
+		t,
+		"medium.go",
+		30,
+		5,
+	) // Medium size, 5 tokens
+	largeClone := createMockCloneGroup(t, "large.go", 60, 8) // Large size, 8 tokens
+	anotherLargeClone := createMockCloneGroup(
+		t,
+		"another_large.go",
+		100,
+		8,
+	) // Same size as largeClone, 8 tokens
 
 	// Create clones with multiple occurrences to test total-tokens
 	multiOccurrenceClone := createMockCloneGroup(t, "multi.go", 200, 3) // 3 tokens
@@ -67,9 +87,14 @@ func anotherLargeFunction() {
 			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"},
 		},
 		{
-			name:          "Sort by occurrence (file count, descending)",
-			sortBy:        SortByOccurrence,
-			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"}, // All have same occurrence (1), falls back to hash sort which is alphabetical
+			name:   "Sort by occurrence (file count, descending)",
+			sortBy: SortByOccurrence,
+			expectedOrder: []string{
+				"large.go",
+				"another_large.go",
+				"medium.go",
+				"small.go",
+			}, // All have same occurrence (1), falls back to hash sort which is alphabetical
 		},
 		{
 			name:          "Sort by hash (filename order)",
@@ -77,20 +102,33 @@ func anotherLargeFunction() {
 			expectedOrder: []string{"another_large.go", "large.go", "medium.go", "small.go"},
 		},
 		{
-			name:          "Sort by total-tokens",
-			sortBy:        SortByTotalTokens,
-			expectedOrder: []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"}, // multi.go has 5 occurrences of 3 tokens = 15 total
+			name:   "Sort by total-tokens",
+			sortBy: SortByTotalTokens,
+			expectedOrder: []string{
+				"large.go",
+				"another_large.go",
+				"multi.go",
+				"medium.go",
+				"small.go",
+			}, // multi.go has 5 occurrences of 3 tokens = 15 total
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Prepare clone data for all tests
-			clones := [][]*syntax.Node{largeClone, mediumClone, smallClone, anotherLargeClone, multiOccurrenceClone}
+			clones := [][]*syntax.Node{
+				largeClone,
+				mediumClone,
+				smallClone,
+				anotherLargeClone,
+				multiOccurrenceClone,
+			}
 
 			// Test JSON Printer sorting (special case with different verification logic)
 			t.Run("JSONPrinter", func(t *testing.T) {
 				var buf bytes.Buffer
+
 				printer := NewJSON(&buf, mockReadFile(testContent))
 
 				err := printer.PrintClones(clones, tc.sortBy)
@@ -106,6 +144,7 @@ func anotherLargeFunction() {
 
 				// For total-tokens sorting, we need special handling since it's the same as size in JSON
 				output := buf.String()
+
 				if tc.sortBy == SortByTotalTokens {
 					// Just check that output contains expected files
 					for _, file := range []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"} {
@@ -122,13 +161,24 @@ func anotherLargeFunction() {
 				constructor func(io.Writer, ReadFile) Printer
 			}{
 				{"TextPrinter", NewText},
-				{"HTMLPrinter", func(w io.Writer, fread ReadFile) Printer { return NewHTML(w, fread) }},
+				{
+					"HTMLPrinter",
+					func(w io.Writer, fread ReadFile) Printer { return NewHTML(w, fread) },
+				},
 				{"PlumbingPrinter", NewPlumbing},
 			}
 
 			for _, sp := range standardPrinters {
 				t.Run(sp.name, func(t *testing.T) {
-					testPrinterSorting(t, sp.constructor, testContent, clones, tc.sortBy, tc.expectedOrder, sp.name)
+					testPrinterSorting(
+						t,
+						sp.constructor,
+						testContent,
+						clones,
+						tc.sortBy,
+						tc.expectedOrder,
+						sp.name,
+					)
 				})
 			}
 		})
@@ -136,11 +186,19 @@ func anotherLargeFunction() {
 }
 
 // testPrinterSorting tests a printer's sorting functionality with standard verification logic.
-func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Printer,
-	testContent string, clones [][]*syntax.Node, sortBy SortBy, expectedOrder []string, printerName string,
+func testPrinterSorting(
+	t *testing.T,
+	constructor func(io.Writer, ReadFile) Printer,
+	testContent string,
+	clones [][]*syntax.Node,
+	sortBy SortBy,
+	expectedOrder []string,
+	printerName string,
 ) {
 	t.Helper()
+
 	var buf bytes.Buffer
+
 	printer := constructor(&buf, mockReadFile(testContent))
 
 	err := printer.PrintClones(clones, sortBy)
@@ -155,9 +213,18 @@ func testPrinterSorting(t *testing.T, constructor func(io.Writer, ReadFile) Prin
 	lastIndex := strings.Index(output, expectedOrder[len(expectedOrder)-1])
 
 	if firstIndex == -1 || lastIndex == -1 {
-		t.Errorf("Expected files not found in output. First: %s, Last: %s", expectedOrder[0], expectedOrder[len(expectedOrder)-1])
+		t.Errorf(
+			"Expected files not found in output. First: %s, Last: %s",
+			expectedOrder[0],
+			expectedOrder[len(expectedOrder)-1],
+		)
 	} else if firstIndex > lastIndex {
-		t.Errorf("%s sorting failed: %s should appear before %s", printerName, expectedOrder[0], expectedOrder[len(expectedOrder)-1])
+		t.Errorf(
+			"%s sorting failed: %s should appear before %s",
+			printerName,
+			expectedOrder[0],
+			expectedOrder[len(expectedOrder)-1],
+		)
 	}
 }
 
@@ -203,12 +270,7 @@ func TestCommonSortingUtilities(t *testing.T) {
 
 		// Should be sorted alphabetically by filename
 		expectedOrder := []string{"large.go", "medium.go", "small.go"}
-		for i, clone := range sorted {
-			if clone[0].Filename != expectedOrder[i] {
-				t.Errorf("Hash sorting failed at index %d. Expected: %s, Got: %s",
-					i, expectedOrder[i], clone[0].Filename)
-			}
-		}
+		validateCloneSorting(t, sorted, expectedOrder, "Hash")
 	})
 
 	// Test SortClonesByTotalTokens
@@ -221,7 +283,6 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// In real usage, the function receives a group of clones
 		// where each inner slice is a separate occurrence
 		// For testing, we'll simulate sorting multiple groups separately
-
 		group1 := createMockCloneGroup(t, "small.go", 10, 2)  // 2 tokens
 		group2 := createMockCloneGroup(t, "medium.go", 30, 5) // 5 tokens
 		group3 := createMockCloneGroup(t, "large.go", 60, 8)  // 8 tokens
@@ -232,11 +293,6 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// Since SortClonesByTotalTokens counts all nodes, and we have single occurrences,
 		// it should sort by the number of nodes in each group
 		expectedOrder := []string{"large.go", "medium.go", "small.go"}
-		for i, clone := range sorted {
-			if clone[0].Filename != expectedOrder[i] {
-				t.Errorf("Total-tokens sorting failed at index %d. Expected: %s, Got: %s",
-					i, expectedOrder[i], clone[0].Filename)
-			}
-		}
+		validateCloneSorting(t, sorted, expectedOrder, "Total-tokens")
 	})
 }

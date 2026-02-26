@@ -13,12 +13,14 @@ func CollectMatches(matchesChan <-chan syntax.Match) []syntax.Match {
 	for match := range matchesChan {
 		matches = append(matches, match)
 	}
+
 	return matches
 }
 
 // GetFilesInMatch extracts unique filenames from a match.
 func GetFilesInMatch(match syntax.Match) []string {
 	var files []string
+
 	for _, frag := range match.Frags {
 		if len(frag) > 0 {
 			filename := frag[0].Filename
@@ -27,6 +29,7 @@ func GetFilesInMatch(match syntax.Match) []string {
 			}
 		}
 	}
+
 	return files
 }
 
@@ -42,5 +45,6 @@ func ContainsSubstring(str string, substrings []string) bool {
 			return true
 		}
 	}
+
 	return false
 }

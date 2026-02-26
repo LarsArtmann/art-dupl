@@ -15,11 +15,18 @@ func contains[T comparable](slice []T, item T) bool {
 }
 
 // runTestCases is a generic helper for running table-driven tests.
-func runTestCases[T any, R comparable](t *testing.T, tests []T, nameFunc func(T) string, testFunc, expectFunc func(T) R) {
+func runTestCases[T any, R comparable](
+	t *testing.T,
+	tests []T,
+	nameFunc func(T) string,
+	testFunc, expectFunc func(T) R,
+) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(nameFunc(tt), func(t *testing.T) {
 			t.Helper()
+
 			result := testFunc(tt)
 			if result != expectFunc(tt) {
 				t.Errorf("Expected %v, got %v", expectFunc(tt), result)
@@ -40,7 +47,11 @@ func (t fileContentTest) GetName() string   { return t.name }
 func (t fileContentTest) GetExpected() bool { return t.expected }
 
 // runFileContentTestCases is a helper for running file content test cases.
-func runFileContentTestCases(t *testing.T, tests []fileContentTest, detectionFunc func(string, string) bool) {
+func runFileContentTestCases(
+	t *testing.T,
+	tests []fileContentTest,
+	detectionFunc func(string, string) bool,
+) {
 	t.Helper()
 	runTestCases(t, tests,
 		fileContentTest.GetName,
@@ -50,7 +61,13 @@ func runFileContentTestCases(t *testing.T, tests []fileContentTest, detectionFun
 }
 
 // runSimpleTestCases is a generic helper for running simple test cases with a single function.
-func runSimpleTestCases[T any, R comparable](t *testing.T, tests []T, testFunc func(T) R, nameFunc func(T) string, expectFunc func(T) R) {
+func runSimpleTestCases[T any, R comparable](
+	t *testing.T,
+	tests []T,
+	testFunc func(T) R,
+	nameFunc func(T) string,
+	expectFunc func(T) R,
+) {
 	t.Helper()
 	runTestCases(t, tests, nameFunc, testFunc, expectFunc)
 }
@@ -61,7 +78,11 @@ type testCaseInterface[T any, R comparable] interface {
 	GetExpected() R
 }
 
-func runGenericTestCases[T testCaseInterface[T, R], R comparable](t *testing.T, tests []T, testFunc func(T) R) {
+func runGenericTestCases[T testCaseInterface[T, R], R comparable](
+	t *testing.T,
+	tests []T,
+	testFunc func(T) R,
+) {
 	t.Helper()
 	runSimpleTestCases(t, tests,
 		testFunc,
@@ -111,10 +132,12 @@ func TestNewFilter(t *testing.T) {
 
 	t.Run("creates disabled filter", func(t *testing.T) {
 		t.Parallel()
+
 		f := NewFilter(false, nil)
 		if f.enabled {
 			t.Error("Expected disabled filter")
 		}
+
 		if len(f.options) != 0 {
 			t.Errorf("Expected empty options, got %v", f.options)
 		}
@@ -122,13 +145,16 @@ func TestNewFilter(t *testing.T) {
 
 	t.Run("creates enabled filter with options", func(t *testing.T) {
 		t.Parallel()
+
 		f := NewFilter(true, []FilterOption{FilterSQLC, FilterTempl})
 		if !f.enabled {
 			t.Error("Expected enabled filter")
 		}
+
 		if !f.options[FilterSQLC] {
 			t.Error("Expected SQLC option enabled")
 		}
+
 		if !f.options[FilterTempl] {
 			t.Error("Expected Templ option enabled")
 		}
@@ -139,12 +165,15 @@ func TestNewFilter(t *testing.T) {
 		if !f.enabled {
 			t.Error("Expected enabled filter")
 		}
+
 		if !f.options[FilterSQLC] {
 			t.Error("Expected SQLC option enabled for FilterAll")
 		}
+
 		if !f.options[FilterTempl] {
 			t.Error("Expected Templ option enabled for FilterAll")
 		}
+
 		if !f.options[FilterGoEnum] {
 			t.Error("Expected GoEnum option enabled for FilterAll")
 		}
@@ -163,9 +192,16 @@ var (
 )
 
 // withPatterns runs a test for pattern setting methods.
-func withPatterns(t *testing.T, patternType string, setPatterns patternSetter, getPatterns func(*Filter) []string, patterns []string) {
+func withPatterns(
+	t *testing.T,
+	patternType string,
+	setPatterns patternSetter,
+	getPatterns func(*Filter) []string,
+	patterns []string,
+) {
 	t.Helper()
 	t.Parallel()
+
 	f := NewFilter(true, []FilterOption{FilterAll})
 	setPatterns(f, patterns)
 	testPatternSlices(t, patternType, getPatterns(f), patterns)
@@ -212,9 +248,11 @@ func TestPatternSetting(t *testing.T) {
 // testPatternSlices is a helper for testing pattern slices.
 func testPatternSlices(t *testing.T, patternType string, patterns, wantPatterns []string) {
 	t.Helper()
+
 	if len(patterns) != len(wantPatterns) {
 		t.Errorf("Expected %d patterns, got %d", len(wantPatterns), len(patterns))
 	}
+
 	for _, pattern := range wantPatterns {
 		if !contains(patterns, pattern) {
 			t.Errorf("Expected %s in %s patterns", pattern, patternType)
@@ -227,6 +265,7 @@ func TestShouldFilter(t *testing.T) {
 
 	t.Run("disabled filter never filters", func(t *testing.T) {
 		t.Parallel()
+
 		f := NewFilter(false, []FilterOption{FilterAll})
 		if f.ShouldFilter("any/file.go") {
 			t.Error("Disabled filter should not filter")
@@ -292,7 +331,8 @@ func TestFilterIdempotentProperty(t *testing.T) {
 
 		return result1 == result2
 	}
-	if err := quick.Check(f, nil); err != nil {
+	err := quick.Check(f, nil)
+	if err != nil {
 		t.Errorf("Idempotent property failed: %v", err)
 	}
 }
@@ -307,9 +347,11 @@ func TestDisabledFilterProperty(t *testing.T) {
 		}
 
 		filter := NewFilter(false, nil)
+
 		return !filter.ShouldFilter(filePath)
 	}
-	if err := quick.Check(f, nil); err != nil {
+	err := quick.Check(f, nil)
+	if err != nil {
 		t.Errorf("Disabled filter property failed: %v", err)
 	}
 }
@@ -340,7 +382,8 @@ func TestIncludePatternProperty(t *testing.T) {
 
 		return true
 	}
-	if err := quick.Check(f, nil); err != nil {
+	err := quick.Check(f, nil)
+	if err != nil {
 		t.Errorf("Include pattern property failed: %v", err)
 	}
 }
@@ -364,7 +407,8 @@ func TestExcludePatternProperty(t *testing.T) {
 		// The two should match
 		return shouldFilter == isFiltered
 	}
-	if err := quick.Check(f, nil); err != nil {
+	err := quick.Check(f, nil)
+	if err != nil {
 		t.Errorf("Exclude pattern property failed: %v", err)
 	}
 }
@@ -374,18 +418,27 @@ func TestExcludePatternProperty(t *testing.T) {
 func createTempFile(t *testing.T, name, content string) string {
 	t.Helper()
 	tmpDir := t.TempDir()
+
 	filePath := filepath.Join(tmpDir, name)
-	if err := os.WriteFile(filePath, []byte(content), 0o600); err != nil {
+	err := os.WriteFile(filePath, []byte(content), 0o600)
+	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
+
 	return filePath
 }
 
 // assertFilterBehavior creates a temp file and asserts the filter behavior.
-func assertFilterBehavior(t *testing.T, name, content string, opts []FilterOption, shouldFilter bool) {
+func assertFilterBehavior(
+	t *testing.T,
+	name, content string,
+	opts []FilterOption,
+	shouldFilter bool,
+) {
 	t.Helper()
 	tmpFile := createTempFile(t, name, content)
 	f := NewFilter(true, opts)
+
 	got := f.ShouldFilter(tmpFile)
 	if got != shouldFilter {
 		t.Errorf("ShouldFilter() = %v, want %v", got, shouldFilter)
@@ -397,14 +450,24 @@ func TestShouldFilterIntegration(t *testing.T) {
 
 	t.Run("filters sqlc file", func(t *testing.T) {
 		t.Parallel()
-		assertFilterBehavior(t, "models.go", "// Code generated by sqlc. DO NOT EDIT.\npackage db\ntype User struct {}\n",
-			[]FilterOption{FilterSQLC}, true)
+		assertFilterBehavior(
+			t,
+			"models.go",
+			"// Code generated by sqlc. DO NOT EDIT.\npackage db\ntype User struct {}\n",
+			[]FilterOption{FilterSQLC},
+			true,
+		)
 	})
 
 	t.Run("filters templ file", func(t *testing.T) {
 		t.Parallel()
-		assertFilterBehavior(t, "header_templ.go", "package components\nimport \"github.com/a-h/templ\"\nfunc header() templ.Component { return nil }\n",
-			[]FilterOption{FilterTempl}, true)
+		assertFilterBehavior(
+			t,
+			"header_templ.go",
+			"package components\nimport \"github.com/a-h/templ\"\nfunc header() templ.Component { return nil }\n",
+			[]FilterOption{FilterTempl},
+			true,
+		)
 	})
 
 	t.Run("does not filter regular file", func(t *testing.T) {
@@ -415,8 +478,13 @@ func TestShouldFilterIntegration(t *testing.T) {
 
 	t.Run("filters go-enum file", func(t *testing.T) {
 		t.Parallel()
-		assertFilterBehavior(t, "status_enum.go", "// Code generated by go-enum DO NOT EDIT.\npackage enums\nconst StatusPending Status = iota\n",
-			[]FilterOption{FilterGoEnum}, true)
+		assertFilterBehavior(
+			t,
+			"status_enum.go",
+			"// Code generated by go-enum DO NOT EDIT.\npackage enums\nconst StatusPending Status = iota\n",
+			[]FilterOption{FilterGoEnum},
+			true,
+		)
 	})
 }
 
@@ -635,20 +703,29 @@ func TestPatternMatching(t *testing.T) {
 
 	t.Run("filename matching works", func(t *testing.T) {
 		t.Parallel()
+
 		paths := []string{"file.go", "test.txt", "main.go"}
 		pattern := "*.go"
 
 		for _, path := range paths {
 			match := matchPattern(path, pattern)
+
 			shouldBeMatch := strings.HasSuffix(path, ".go")
 			if match != shouldBeMatch {
-				t.Errorf("Pattern %q with path %q: got %v, want %v", pattern, path, match, shouldBeMatch)
+				t.Errorf(
+					"Pattern %q with path %q: got %v, want %v",
+					pattern,
+					path,
+					match,
+					shouldBeMatch,
+				)
 			}
 		}
 	})
 
 	t.Run("directory pattern works", func(t *testing.T) {
 		t.Parallel()
+
 		paths := []string{
 			"vendor/file.go",
 			"src/main.go",
@@ -658,9 +735,17 @@ func TestPatternMatching(t *testing.T) {
 
 		for _, path := range paths {
 			match := matchPattern(path, pattern)
-			shouldBeMatch := strings.HasPrefix(path, "vendor/") || strings.Contains(path, "/vendor/")
+
+			shouldBeMatch := strings.HasPrefix(path, "vendor/") ||
+				strings.Contains(path, "/vendor/")
 			if match != shouldBeMatch {
-				t.Errorf("Pattern %q with path %q: got %v, want %v", pattern, path, match, shouldBeMatch)
+				t.Errorf(
+					"Pattern %q with path %q: got %v, want %v",
+					pattern,
+					path,
+					match,
+					shouldBeMatch,
+				)
 			}
 		}
 	})
@@ -671,6 +756,7 @@ func TestFilterMetrics(t *testing.T) {
 
 	t.Run("tracks filtered files by reason", func(t *testing.T) {
 		t.Parallel()
+
 		metrics := NewMetrics()
 
 		// Record some filtered files
@@ -684,15 +770,22 @@ func TestFilterMetrics(t *testing.T) {
 		if stats.TotalFilesChecked != 4 {
 			t.Errorf("Expected TotalFilesChecked=4, got %d", stats.TotalFilesChecked)
 		}
+
 		if stats.FilteredByReason[ReasonSQLC] != 2 {
 			t.Errorf("Expected SQLC count=2, got %d", stats.FilteredByReason[ReasonSQLC])
 		}
+
 		if stats.FilteredByReason[ReasonTempl] != 1 {
 			t.Errorf("Expected Templ count=1, got %d", stats.FilteredByReason[ReasonTempl])
 		}
+
 		if stats.FilteredByReason[ReasonExcludePattern] != 1 {
-			t.Errorf("Expected ExcludePattern count=1, got %d", stats.FilteredByReason[ReasonExcludePattern])
+			t.Errorf(
+				"Expected ExcludePattern count=1, got %d",
+				stats.FilteredByReason[ReasonExcludePattern],
+			)
 		}
+
 		if stats.TotalFiltered() != 4 {
 			t.Errorf("Expected TotalFiltered=4, got %d", stats.TotalFiltered())
 		}
@@ -700,6 +793,7 @@ func TestFilterMetrics(t *testing.T) {
 
 	t.Run("tracks not filtered files", func(t *testing.T) {
 		t.Parallel()
+
 		metrics := NewMetrics()
 
 		// Record both filtered and not filtered
@@ -712,9 +806,11 @@ func TestFilterMetrics(t *testing.T) {
 		if stats.TotalFilesChecked != 3 {
 			t.Errorf("Expected TotalFilesChecked=3, got %d", stats.TotalFilesChecked)
 		}
+
 		if stats.FilteredByReason[ReasonSQLC] != 1 {
 			t.Errorf("Expected SQLC count=1, got %d", stats.FilteredByReason[ReasonSQLC])
 		}
+
 		if stats.TotalFiltered() != 1 {
 			t.Errorf("Expected TotalFiltered=1, got %d", stats.TotalFiltered())
 		}
@@ -722,6 +818,7 @@ func TestFilterMetrics(t *testing.T) {
 
 	t.Run("nil metrics handler", func(t *testing.T) {
 		t.Parallel()
+
 		var metrics *Metrics
 
 		// Should not panic
@@ -770,10 +867,13 @@ const StatusPending Status = iota`,
 
 	for name, content := range files {
 		dir := filepath.Join(tmpDir, filepath.Dir(name))
-		if err := os.MkdirAll(dir, 0o755); err != nil {
+		err := os.MkdirAll(dir, 0o755)
+		if err != nil {
 			t.Fatalf("Failed to create dir: %v", err)
 		}
-		if err := os.WriteFile(filepath.Join(tmpDir, name), []byte(content), 0o644); err != nil {
+
+		err = os.WriteFile(filepath.Join(tmpDir, name), []byte(content), 0o644)
+		if err != nil {
 			t.Fatalf("Failed to write file: %v", err)
 		}
 	}
@@ -817,6 +917,9 @@ const StatusPending Status = iota`,
 
 	// Verify the main.go file was processed (metrics recorded for it)
 	if stats.FilteredByReason[ReasonNotFiltered] > 1 {
-		t.Errorf("Unexpected number of not-filtered files: %d", stats.FilteredByReason[ReasonNotFiltered])
+		t.Errorf(
+			"Unexpected number of not-filtered files: %d",
+			stats.FilteredByReason[ReasonNotFiltered],
+		)
 	}
 }

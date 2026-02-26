@@ -1,6 +1,8 @@
 package bdd
 
 import (
+	"fmt"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -20,6 +22,7 @@ var _ = Describe("Templ Clone Detection", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -39,11 +42,33 @@ var _ = Describe("Templ Clone Detection", func() {
 
 		output, err := setup.RunArtDupl("--include-templ", formatFlag, "--threshold", threshold)
 		Expect(err).ToNot(HaveOccurred())
+
 		outputStr := string(output)
 
 		for _, substr := range expectedSubstrings {
 			Expect(outputStr).To(ContainSubstring(substr))
 		}
+	}
+
+	// templComponentCode returns a standardized component template with custom HTML
+	templComponentCode := func(componentName, paramName, htmlBody string) string {
+		return fmt.Sprintf(`package main
+
+templ %s(%s string) {
+	%s
+}`, componentName, paramName, htmlBody)
+	}
+
+	// buttonTemplCode returns a standardized button component template
+	buttonTemplCode := func(componentName, paramName string) string {
+		return templComponentCode(componentName, paramName,
+			fmt.Sprintf(`<button type="button" class="btn">\n\t\t{ %s }\n\t</button>`, paramName))
+	}
+
+	// inputTemplCode returns a standardized input field component template
+	inputTemplCode := func(componentName, paramName string) string {
+		return templComponentCode(componentName, paramName,
+			fmt.Sprintf(`<input type="text" name={ %s } />`, paramName))
 	}
 
 	Context("When analyzing .templ source files", func() {
@@ -91,6 +116,7 @@ templ PageFooter() {
 			// Run art-dupl with --include-templ flag and low threshold
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should detect the duplicate header components
@@ -137,6 +163,7 @@ templ Panel(heading string, text string) {
 
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should detect the duplicate card/panel structures
@@ -170,6 +197,7 @@ templ Menu(options []string) {
 
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			Expect(outputStr).To(ContainSubstring("list.templ"))
@@ -202,6 +230,7 @@ templ Toggle(visible bool, text string) {
 
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			Expect(outputStr).To(ContainSubstring("conditional.templ"))
@@ -239,6 +268,7 @@ templ Display(name string) {
 			// Run without --include-templ - should only analyze .go files
 			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// .templ files should not appear without the flag (they're filtered by default)
@@ -248,22 +278,9 @@ templ Display(name string) {
 
 	Context("When using different output formats with .templ files", func() {
 		It("should produce valid JSON output including .templ files", func() {
-			templCode := `package main
-
-templ Button(text string) {
-	<button type="button" class="btn">
-		{ text }
-	</button>
-}`
-			templCode2 := `package main
-
-templ Submit(label string) {
-	<button type="button" class="btn">
-		{ label }
-	</button>
-}`
 			runTemplOutputTest(
-				templCode, templCode2,
+				buttonTemplCode("Button", "text"),
+				buttonTemplCode("Submit", "label"),
 				"button.templ", "submit.templ",
 				"--json", "3",
 				[]string{"button.templ", "submit.templ", `"clone_groups"`},
@@ -271,18 +288,9 @@ templ Submit(label string) {
 		})
 
 		It("should produce HTML output including .templ files", func() {
-			templCode := `package main
-
-templ InputField(name string) {
-	<input type="text" name={ name } />
-}`
-			templCode2 := `package main
-
-templ TextField(id string) {
-	<input type="text" name={ id } />
-}`
 			runTemplOutputTest(
-				templCode, templCode2,
+				inputTemplCode("InputField", "name"),
+				inputTemplCode("TextField", "id"),
 				"input.templ", "text.templ",
 				"--html", "2",
 				[]string{"<!DOCTYPE html>", "input.templ", "text.templ"},
@@ -325,6 +333,7 @@ css buttonStyles() {
 			// Use a very low threshold to try to detect any clones
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "2")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Both files should be processed (appear in output or not cause errors)
@@ -373,6 +382,7 @@ templ LoginForm(url string) {
 
 			output, err := setup.RunArtDupl("--include-templ", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			Expect(outputStr).To(ContainSubstring("form.templ"))

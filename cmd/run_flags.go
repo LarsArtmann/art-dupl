@@ -56,12 +56,18 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	// Validate conflicting flags - only an error if both are explicitly set
 	if semantic && structural {
-		return duplerrors.NewValidationError("cannot use both --semantic and --structural flags; these are mutually exclusive", nil)
+		return duplerrors.NewValidationError(
+			"cannot use both --semantic and --structural flags; these are mutually exclusive",
+			nil,
+		)
 	}
 
 	// Warn about --structural flag (opt-out from recommended default)
 	if structural {
-		fmt.Fprintf(os.Stderr, "Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n")
+		fmt.Fprintf(
+			os.Stderr,
+			"Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n",
+		)
 	}
 
 	// Concurrent processing flag
@@ -81,8 +87,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Parse and set detection methods
 	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
 	if err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid detection methods %q", detectionMethods))
+		return duplerrors.WrapValidation(
+			err,
+			fmt.Sprintf("invalid detection methods %q", detectionMethods),
+		)
 	}
+
 	appConfig.DetectionMethods = parsedMethods
 
 	if threshold != 15 {
@@ -92,6 +102,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if vendor {
 		appConfig.IncludeVendor = vendor
 	}
+
 	if files {
 		appConfig.FilesFromStdin = files
 	}
@@ -113,8 +124,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if timeoutStr != "30m" && timeoutStr != "" {
 		duration, err := time.ParseDuration(timeoutStr)
 		if err != nil {
-			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr))
+			return duplerrors.WrapValidation(
+				err,
+				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr),
+			)
 		}
+
 		appConfig.Timeout = int(duration.Seconds())
 	}
 
@@ -122,15 +137,19 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if filterGenerated {
 		appConfig.FilterGenerated = true
 	}
+
 	if includeSQLC {
 		appConfig.IncludeSQLC = true
 	}
+
 	if includeTempl {
 		appConfig.IncludeTempl = true
 	}
+
 	if len(includePatterns) > 0 {
 		appConfig.IncludePatterns = includePatterns
 	}
+
 	if len(excludePatterns) > 0 {
 		appConfig.ExcludePatterns = excludePatterns
 	}
@@ -139,15 +158,19 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if incremental {
 		appConfig.Incremental = true
 	}
+
 	if since != "" {
 		appConfig.Since = since
 	}
+
 	if cacheDir != "" {
 		appConfig.CacheDir = cacheDir
 	}
+
 	if clearCache {
 		appConfig.ClearCache = true
 	}
+
 	if semantic {
 		appConfig.Semantic = true
 	}
@@ -166,7 +189,10 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	golang.SemanticHashEnabled = mergedConfig.Semantic
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
-		return duplerrors.WrapValidation(err, fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths))
+		return duplerrors.WrapValidation(
+			err,
+			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
+		)
 	}
 
 	// Get context from Cobra (includes Fang's signal handling)
@@ -178,9 +204,19 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Add timeout context if specified
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
-	duplChan, parseStats, _, err := executeAnalysis(ctx, mergedConfig, mergedConfig.Paths, mergedConfig.OutputFormat)
+
+	duplChan, parseStats, _, err := executeAnalysis(
+		ctx,
+		mergedConfig,
+		mergedConfig.Paths,
+		mergedConfig.OutputFormat,
+	)
 	if err != nil {
-		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths))
+		return duplerrors.Wrap(
+			err,
+			duplerrors.AnalysisError,
+			fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths),
+		)
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
@@ -192,8 +228,22 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
-	if err := printDupls(p, duplChan, printer.SortBy(sortBy), mergedConfig.Threshold, detectionMethodStr); err != nil {
-		return duplerrors.Wrap(err, duplerrors.AnalysisError, fmt.Sprintf("failed to print duplicates (sortBy: %s, threshold: %d)", sortBy, mergedConfig.Threshold))
+	if err := printDupls(
+		p,
+		duplChan,
+		printer.SortBy(sortBy),
+		mergedConfig.Threshold,
+		detectionMethodStr,
+	); err != nil {
+		return duplerrors.Wrap(
+			err,
+			duplerrors.AnalysisError,
+			fmt.Sprintf(
+				"failed to print duplicates (sortBy: %s, threshold: %d)",
+				sortBy,
+				mergedConfig.Threshold,
+			),
+		)
 	}
 
 	return nil

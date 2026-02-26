@@ -5,10 +5,18 @@ import (
 )
 
 // AssertMergeConfigsWithNil is a helper function for testing merge configs with nil parameters.
-func AssertMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig bool, expectedValues map[string]any) {
+func AssertMergeConfigsWithNil(
+	t *testing.T,
+	testConfig *Config,
+	isNilFileConfig bool,
+	expectedValues map[string]any,
+) {
 	t.Helper()
-	var merged *Config
-	var testName string
+
+	var (
+		merged   *Config
+		testName string
+	)
 
 	if isNilFileConfig {
 		testName = "NilFileConfig"
@@ -21,13 +29,23 @@ func AssertMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig
 	// Test expected values
 	if threshold, ok := expectedValues["threshold"].(int); ok {
 		if merged.Threshold != threshold {
-			t.Errorf("%s: Expected merged threshold %d, got %d", testName, threshold, merged.Threshold)
+			t.Errorf(
+				"%s: Expected merged threshold %d, got %d",
+				testName,
+				threshold,
+				merged.Threshold,
+			)
 		}
 	}
 
 	if outputFormat, ok := expectedValues["outputFormat"].(string); ok {
 		if merged.OutputFormat.String() != outputFormat {
-			t.Errorf("%s: Expected merged OutputFormat %s, got %s", testName, outputFormat, merged.OutputFormat.String())
+			t.Errorf(
+				"%s: Expected merged OutputFormat %s, got %s",
+				testName,
+				outputFormat,
+				merged.OutputFormat.String(),
+			)
 		}
 	}
 
@@ -39,7 +57,12 @@ func AssertMergeConfigsWithNil(t *testing.T, testConfig *Config, isNilFileConfig
 
 	if includeVendor, ok := expectedValues["includeVendor"].(bool); ok {
 		if merged.IncludeVendor != includeVendor {
-			t.Errorf("%s: Expected merged IncludeVendor %v, got %v", testName, includeVendor, merged.IncludeVendor)
+			t.Errorf(
+				"%s: Expected merged IncludeVendor %v, got %v",
+				testName,
+				includeVendor,
+				merged.IncludeVendor,
+			)
 		}
 	}
 }

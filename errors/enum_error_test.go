@@ -12,7 +12,6 @@ func TestNewEnumValidationError(t *testing.T) {
 	cause := errors.New("invalid detection method")
 
 	err := NewEnumValidationError(enumType, enumValue, cause)
-
 	if err == nil {
 		t.Fatal("NewEnumValidationError should return error, got nil")
 	}
@@ -21,9 +20,11 @@ func TestNewEnumValidationError(t *testing.T) {
 	if err.Type != ValidationError {
 		t.Errorf("Expected Type=ValidationError, got %s", err.Type)
 	}
+
 	if !errors.Is(err, cause) {
 		t.Errorf("Expected Cause to match input cause")
 	}
+
 	if err.Stack == "" {
 		t.Errorf("Expected non-empty Stack field")
 	}
@@ -32,6 +33,7 @@ func TestNewEnumValidationError(t *testing.T) {
 	if err.EnumType != enumType {
 		t.Errorf("Expected EnumType=%s, got %s", enumType, err.EnumType)
 	}
+
 	if err.EnumValue != enumValue {
 		t.Errorf("Expected EnumValue=%s, got %s", enumValue, err.EnumValue)
 	}
@@ -84,5 +86,6 @@ func findString(s, substr string) int {
 			return i
 		}
 	}
+
 	return -1
 }

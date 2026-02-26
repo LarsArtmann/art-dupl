@@ -61,6 +61,7 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 	if el == nil {
 		return nil
 	}
+
 	o := t.createNodeFromRange(Element, el.Range)
 	for _, attr := range el.Attributes {
 		attrNode := t.transformAttribute(attr)
@@ -68,7 +69,9 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 			o.AddChildren(attrNode)
 		}
 	}
+
 	t.addChildren(o, el.Children)
+
 	return o
 }
 

@@ -21,6 +21,7 @@ var _ = Describe("Incremental Detection", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -79,7 +80,10 @@ func ModifiedTest() {
 		})
 
 		It("should detect duplicates correctly on first run", func() {
-			err := setup.CreateDuplicateFiles([]string{"first.go", "second.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"first.go", "second.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache")
@@ -94,7 +98,10 @@ func ModifiedTest() {
 
 	Context("When running incremental mode a second time", func() {
 		It("should use cached AST for unchanged files", func() {
-			err := setup.CreateDuplicateFiles([]string{"cached1.go", "cached2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"cached1.go", "cached2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -108,6 +115,7 @@ func ModifiedTest() {
 			filesDir := filepath.Join(cacheDir, "files")
 			entries1, err := os.ReadDir(filesDir)
 			Expect(err).NotTo(HaveOccurred())
+
 			initialCount := len(entries1)
 
 			// Second run - should use cache
@@ -125,7 +133,10 @@ func ModifiedTest() {
 		})
 
 		It("should be faster on second run (uses cache)", func() {
-			err := setup.CreateDuplicateFiles([]string{"speed1.go", "speed2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"speed1.go", "speed2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -134,12 +145,14 @@ func ModifiedTest() {
 			start1 := time.Now()
 			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
 			duration1 := time.Since(start1)
+
 			Expect(err).ToNot(HaveOccurred())
 
 			// Second run
 			start2 := time.Now()
 			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
 			duration2 := time.Since(start2)
+
 			Expect(err).ToNot(HaveOccurred())
 
 			// Second run should be faster or similar (cache hit)
@@ -151,7 +164,10 @@ func ModifiedTest() {
 
 	Context("When using --clear-cache flag", func() {
 		It("should clear cache before running", func() {
-			err := setup.CreateDuplicateFiles([]string{"clear1.go", "clear2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"clear1.go", "clear2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -167,7 +183,14 @@ func ModifiedTest() {
 			Expect(entries).NotTo(BeEmpty())
 
 			// Run with --clear-cache
-			output, err := setup.RunArtDupl("--incremental", "--clear-cache", "--cache-dir", cacheDir, "-t", "10")
+			output, err := setup.RunArtDupl(
+				"--incremental",
+				"--clear-cache",
+				"--cache-dir",
+				cacheDir,
+				"-t",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 
@@ -181,7 +204,10 @@ func ModifiedTest() {
 
 	Context("When files are modified", func() {
 		It("should re-parse files with different content", func() {
-			err := setup.CreateDuplicateFiles([]string{"modify1.go", "modify2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"modify1.go", "modify2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -194,6 +220,7 @@ func ModifiedTest() {
 			filesDir := filepath.Join(cacheDir, "files")
 			entries1, err := os.ReadDir(filesDir)
 			Expect(err).NotTo(HaveOccurred())
+
 			initialHashes := make(map[string]bool)
 			for _, e := range entries1 {
 				initialHashes[e.Name()] = true
@@ -213,16 +240,21 @@ func ModifiedTest() {
 
 			// Should have at least one new cache entry (modified file)
 			newEntries := 0
+
 			for _, e := range entries2 {
 				if !initialHashes[e.Name()] {
 					newEntries++
 				}
 			}
+
 			Expect(newEntries).To(BeNumerically(">=", 1))
 		})
 
 		It("should still use cache for unchanged files when one file is modified", func() {
-			err := setup.CreateDuplicateFiles([]string{"mix1.go", "mix2.go", "mix3.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"mix1.go", "mix2.go", "mix3.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -249,7 +281,14 @@ func ModifiedTest() {
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
-			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "--json", "-t", "10")
+			output, err := setup.RunArtDupl(
+				"--incremental",
+				"--cache-dir",
+				cacheDir,
+				"--json",
+				"-t",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should produce valid JSON
@@ -257,12 +296,22 @@ func ModifiedTest() {
 		})
 
 		It("should work with plumbing output format", func() {
-			err := setup.CreateDuplicateFiles([]string{"plumb1.go", "plumb2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"plumb1.go", "plumb2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
-			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "--plumbing", "-t", "10")
+			output, err := setup.RunArtDupl(
+				"--incremental",
+				"--cache-dir",
+				cacheDir,
+				"--plumbing",
+				"-t",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should produce plumbing output (format: filename:lineStart-lineEnd)
@@ -272,7 +321,10 @@ func ModifiedTest() {
 		})
 
 		It("should work with different thresholds", func() {
-			err := setup.CreateDuplicateFiles([]string{"thresh1.go", "thresh2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"thresh1.go", "thresh2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -288,12 +340,22 @@ func ModifiedTest() {
 		})
 
 		It("should work with verbose output", func() {
-			err := setup.CreateDuplicateFiles([]string{"verbose1.go", "verbose2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"verbose1.go", "verbose2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
-			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "--verbose", "-t", "10")
+			output, err := setup.RunArtDupl(
+				"--incremental",
+				"--cache-dir",
+				cacheDir,
+				"--verbose",
+				"-t",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -301,7 +363,10 @@ func ModifiedTest() {
 
 	Context("When using stats subcommand after incremental run", func() {
 		It("should work independently of previous cache state", func() {
-			err := setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles(
+				[]string{"stats1.go", "stats2.go"},
+				incrementalTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
@@ -323,6 +388,7 @@ var _ = Describe("Incremental Detection Edge Cases", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})

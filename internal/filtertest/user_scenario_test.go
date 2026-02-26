@@ -34,6 +34,7 @@ sql:
         out: "internal/storage/queries"
 `
 	configPath := filepath.Join(tmpDir, "sqlc.yaml")
+
 	err := os.WriteFile(configPath, []byte(sqlcConfig), 0o644)
 	if err != nil {
 		t.Fatalf("failed to write sqlc.yaml: %v", err)
@@ -85,7 +86,11 @@ func (q *Queries) ListArticles(ctx context.Context) ([]Article, error) {
     return nil, nil
 }
 `
-	if err := os.WriteFile(filepath.Join(queriesDir, "articles.sql.go"), []byte(articlesSQLC), 0o644); err != nil {
+	if err := os.WriteFile(
+		filepath.Join(queriesDir, "articles.sql.go"),
+		[]byte(articlesSQLC),
+		0o644,
+	); err != nil {
 		t.Fatalf("failed to write articles.sql.go: %v", err)
 	}
 
@@ -116,7 +121,11 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
     return User{}, nil
 }
 `
-	if err := os.WriteFile(filepath.Join(queriesDir, "users.sql.go"), []byte(usersSQLC), 0o644); err != nil {
+	if err := os.WriteFile(
+		filepath.Join(queriesDir, "users.sql.go"),
+		[]byte(usersSQLC),
+		0o644,
+	); err != nil {
 		t.Fatalf("failed to write users.sql.go: %v", err)
 	}
 
@@ -140,7 +149,11 @@ func (r *Repository) SaveArticle(article ArticleModel) error {
     return nil
 }
 `
-	if err := os.WriteFile(filepath.Join(repoDir, "article_repository.go"), []byte(articleRepo), 0o644); err != nil {
+	if err := os.WriteFile(
+		filepath.Join(repoDir, "article_repository.go"),
+		[]byte(articleRepo),
+		0o644,
+	); err != nil {
 		t.Fatalf("failed to write article_repository.go: %v", err)
 	}
 
@@ -163,7 +176,11 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
     return nil
 }
 `
-	if err := os.WriteFile(filepath.Join(repoDir, "mock_repository.go"), []byte(mockRepo), 0o644); err != nil {
+	if err := os.WriteFile(
+		filepath.Join(repoDir, "mock_repository.go"),
+		[]byte(mockRepo),
+		0o644,
+	); err != nil {
 		t.Fatalf("failed to write mock_repository.go: %v", err)
 	}
 
@@ -172,6 +189,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	if err != nil {
 		t.Fatalf("FindSQLCConfigs failed: %v", err)
 	}
+
 	if len(configs) == 0 {
 		t.Error("Should find sqlc.yaml in project root")
 	}
@@ -181,18 +199,22 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	if err != nil {
 		t.Fatalf("GetSQLOutputDirs failed: %v", err)
 	}
+
 	if len(outputDirs) == 0 {
 		t.Error("Should extract output directories from sqlc.yaml")
 	}
 
 	expectedOutputDir := filepath.Join(tmpDir, "internal/storage/queries")
 	found := false
+
 	for _, dir := range outputDirs {
 		if dir == expectedOutputDir {
 			found = true
+
 			break
 		}
 	}
+
 	if !found {
 		t.Errorf("Should have the queries output directory: %s", expectedOutputDir)
 	}
@@ -204,6 +226,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	if !fltr.ShouldFilter(filepath.Join(queriesDir, "articles.sql.go")) {
 		t.Error("articles.sql.go should be filtered (SQLC generated)")
 	}
+
 	if !fltr.ShouldFilter(filepath.Join(queriesDir, "users.sql.go")) {
 		t.Error("users.sql.go should be filtered (SQLC generated)")
 	}
@@ -212,6 +235,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	if fltr.ShouldFilter(filepath.Join(repoDir, "article_repository.go")) {
 		t.Error("article_repository.go should NOT be filtered (regular Go file)")
 	}
+
 	if fltr.ShouldFilter(filepath.Join(repoDir, "mock_repository.go")) {
 		t.Error("mock_repository.go should NOT be filtered (regular Go file)")
 	}
@@ -231,6 +255,7 @@ sql:
         package: "queries"
         out: "db/sqlc"
 `
+
 	configPath := filepath.Join(tmpDir, "sqlc.yaml")
 	if err := os.WriteFile(configPath, []byte(sqlcConfig), 0o644); err != nil {
 		t.Fatalf("failed to write sqlc.yaml: %v", err)
@@ -251,6 +276,7 @@ type User struct {
     Name string
 }
 `
+
 	sqlcFilePath := filepath.Join(queriesDir, "users.sql.go")
 	if err := os.WriteFile(sqlcFilePath, []byte(sqlcFile), 0o644); err != nil {
 		t.Fatalf("failed to write users.sql.go: %v", err)
@@ -289,6 +315,7 @@ sql:
         package: "queries"
         out: "internal/db"
 `
+
 	configPath := filepath.Join(projectRoot, "sqlc.yaml")
 	if err := os.WriteFile(configPath, []byte(sqlcConfig), 0o644); err != nil {
 		t.Fatalf("failed to write sqlc.yaml: %v", err)
@@ -309,6 +336,7 @@ type User struct {
     Name string
 }
 `
+
 	sqlcFilePath := filepath.Join(subDir, "users.sql.go")
 	if err := os.WriteFile(sqlcFilePath, []byte(sqlcFile), 0o644); err != nil {
 		t.Fatalf("failed to write users.sql.go: %v", err)
@@ -319,6 +347,7 @@ type User struct {
 	if err != nil {
 		t.Fatalf("FindSQLCConfigs failed: %v", err)
 	}
+
 	if len(configs) == 0 {
 		t.Error("Should find sqlc.yaml in parent directory")
 	}
@@ -331,12 +360,15 @@ type User struct {
 
 	expectedOutputDir := filepath.Join(projectRoot, "internal/db")
 	found := false
+
 	for _, dir := range outputDirs {
 		if dir == expectedOutputDir {
 			found = true
+
 			break
 		}
 	}
+
 	if !found {
 		t.Errorf("Should resolve output directory relative to project root: %s", expectedOutputDir)
 	}

@@ -1,6 +1,8 @@
 package bdd
 
 import (
+	"fmt"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -34,6 +36,7 @@ func assertGeneratedFileFiltered(
 
 	output, err := setup.RunArtDupl("--threshold", threshold)
 	Expect(err).ToNot(HaveOccurred())
+
 	outputStr := string(output)
 
 	// Should find duplicates in regular files
@@ -44,6 +47,22 @@ func assertGeneratedFileFiltered(
 	Expect(outputStr).ToNot(ContainSubstring(generatedFile))
 
 	return outputStr
+}
+
+// assertSQLCFileFiltered tests that a specific SQLC generated file type is filtered out.
+// It uses a standardized code pattern with the provided functionName.
+func assertSQLCFileFiltered(setup *testutil.BDDTestSetup, filename, functionName string) {
+	regularCode := fmt.Sprintf("package main\nfunc %s() { println(1) }", functionName)
+	generatedCode := fmt.Sprintf("package db\nfunc %s() { println(1) }", functionName)
+
+	assertGeneratedFileFiltered(
+		setup,
+		[]string{"service1.go", "service2.go"},
+		regularCode,
+		filename,
+		generatedCode,
+		"3",
+	)
 }
 
 // assertGeneratedFileIncluded is a helper to verify generated files are included when
@@ -65,6 +84,7 @@ func assertGeneratedFileIncluded(
 
 	output, err := setup.RunArtDupl(includeFlag, "--threshold", threshold)
 	Expect(err).ToNot(HaveOccurred())
+
 	outputStr := string(output)
 
 	// Should now include generated file
@@ -78,6 +98,7 @@ var _ = Describe("Default Filtering Behavior", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
@@ -144,6 +165,7 @@ func common() { println(1) }`
 
 			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should only show regular files (duplicates between them)
@@ -197,36 +219,15 @@ func query() {
 		})
 
 		It("should exclude models.go files by default", func() {
-			assertGeneratedFileFiltered(
-				setup,
-				[]string{"service1.go", "service2.go"},
-				"package main\nfunc validate() { println(1) }",
-				"models.go",
-				"package db\nfunc validate() { println(1) }",
-				"3",
-			)
+			assertSQLCFileFiltered(setup, "models.go", "validate")
 		})
 
 		It("should exclude querier.go files by default", func() {
-			assertGeneratedFileFiltered(
-				setup,
-				[]string{"service1.go", "service2.go"},
-				"package main\nfunc query() { println(1) }",
-				"querier.go",
-				"package db\nfunc query() { println(1) }",
-				"3",
-			)
+			assertSQLCFileFiltered(setup, "querier.go", "query")
 		})
 
 		It("should exclude batch.go files by default", func() {
-			assertGeneratedFileFiltered(
-				setup,
-				[]string{"service1.go", "service2.go"},
-				"package main\nfunc batch() { println(1) }",
-				"batch.go",
-				"package db\nfunc batch() { println(1) }",
-				"3",
-			)
+			assertSQLCFileFiltered(setup, "batch.go", "batch")
 		})
 
 		It("should include SQLC files when --include-sqlc is used", func() {
@@ -272,6 +273,7 @@ func process() { println(1) }`
 
 			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should only show regular files (duplicates between them)
@@ -301,6 +303,7 @@ func process() { println(1) }`
 			// Run with both include flags
 			output, err := setup.RunArtDupl("--include-templ", "--include-sqlc", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should show all files
@@ -312,11 +315,15 @@ func process() { println(1) }`
 
 	Context("When vendor directory is present", func() {
 		It("should exclude vendor directory by default", func() {
-			err := setup.CreateVendorDuplicateFiles("vendor/github.com/example", testutil.SimpleVendorTestCode)
+			err := setup.CreateVendorDuplicateFiles(
+				"vendor/github.com/example",
+				testutil.SimpleVendorTestCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
+
 			outputStr := string(output)
 
 			// Should not mention vendor files
@@ -371,6 +378,7 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 
 	BeforeEach(func() {
 		var err error
+
 		setup, err = testutil.NewBDDTestSetupForGinkgo()
 		Expect(err).NotTo(HaveOccurred())
 	})
