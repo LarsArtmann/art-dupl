@@ -20,7 +20,10 @@ func (do DetectionOptions) IsValid() error {
 	}
 
 	if !do.Mode.IsValid() {
-		return fmt.Errorf("invalid analysis mode: %s", do.Mode) //nolint:err113 // Validation needs dynamic context
+		return fmt.Errorf(
+			"invalid analysis mode: %s",
+			do.Mode,
+		)
 	}
 
 	if len(do.Paths) == 0 {

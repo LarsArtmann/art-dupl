@@ -185,7 +185,7 @@ type patternSetter func(*Filter, []string)
 
 // Common test pattern constants to avoid duplication.
 //
-//nolint:gochecknoglobals // Test fixtures for pattern testing
+
 var (
 	testIncludePatterns = []string{"vendor/*", "generated/keep.go"}
 	testExcludePatterns = []string{"test/*", "*.pb.go"}

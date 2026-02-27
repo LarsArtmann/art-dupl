@@ -104,7 +104,11 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 	}
 
 	// If we get here, the value is invalid
-	validationErr := fmt.Errorf("enum value %q is not in valid list %v", value, validValues) //nolint:err113 // Error needs dynamic context
+	validationErr := fmt.Errorf(
+		"enum value %q is not in valid list %v",
+		value,
+		validValues,
+	)
 
 	return nil, fmt.Errorf(
 		"marshaling failed for value %v (validValues=%v): %w",
@@ -204,7 +208,11 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 
 	// Validate using IsValid method
 	if !candidate.IsValid() {
-		validationErr := fmt.Errorf("invalid %s value %q (must pass validation)", typeName, str) //nolint:err113 // Error needs dynamic context
+		validationErr := fmt.Errorf(
+			"invalid %s value %q (must pass validation)",
+			typeName,
+			str,
+		)
 		*dest = zero
 
 		return errors.NewValidationError(validationErr.Error(), validationErr)

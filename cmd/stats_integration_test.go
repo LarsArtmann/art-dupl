@@ -268,7 +268,7 @@ func buildBinary(outputPath string) error {
 	defer func() { _ = os.Chdir(originalDir) }() // test cleanup
 
 	if err := os.Chdir(repoRoot); err != nil {
-		return err //nolint:wrapcheck // Test helper - pass through os.Chdir error
+		return err
 	}
 
 	// Build the binary
@@ -294,7 +294,7 @@ func findRepoRoot() (string, error) {
 	// Start from current directory and look for git repo or go.mod
 	current, err := os.Getwd()
 	if err != nil {
-		return "", err //nolint:wrapcheck // Test helper - pass through os.Getwd error
+		return "", err
 	}
 
 	for {
@@ -346,10 +346,10 @@ func (c *Command) buildCmd() *exec.Cmd {
 
 // CombinedOutput runs the command and returns its combined stdout and stderr.
 func (c *Command) CombinedOutput() ([]byte, error) {
-	return c.buildCmd().CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return c.buildCmd().CombinedOutput()
 }
 
 // Run runs the command.
 func (c *Command) Run() error {
-	return c.buildCmd().Run() //nolint:wrapcheck // Test helper - pass through exec error
+	return c.buildCmd().Run()
 }

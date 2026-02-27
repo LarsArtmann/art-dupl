@@ -26,6 +26,19 @@ func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
 	}
 }
 
+// printBuildingStatus outputs the status message before tree building starts.
+func printBuildingStatus(
+	cfg *config.Config,
+	outputFormat config.OutputFormat,
+	verboseMsg, textMsg string,
+) {
+	if cfg.Verbose {
+		fmt.Fprintln(os.Stderr, verboseMsg)
+	} else if outputFormat == config.OutputFormatText {
+		fmt.Fprint(os.Stderr, textMsg)
+	}
+}
+
 // buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(
 	ctx context.Context,
@@ -34,11 +47,12 @@ func buildSuffixTree(
 	filterParam *filter.Filter,
 	outputFormat config.OutputFormat,
 ) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "Building suffix tree")
-	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprint(os.Stderr, "    📖 Parsing files and building analysis tree...")
-	}
+	printBuildingStatus(
+		cfg,
+		outputFormat,
+		"Building suffix tree",
+		"    📖 Parsing files and building analysis tree...",
+	)
 
 	var (
 		schan      chan []*syntax.Node
@@ -225,11 +239,12 @@ func executeHashOnlyAnalysis(
 	filterParam *filter.Filter,
 	outputFormat config.OutputFormat,
 ) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
-	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "Running hash-only duplicate detection")
-	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprint(os.Stderr, "    📖 Hashing files for duplicate detection...")
-	}
+	printBuildingStatus(
+		cfg,
+		outputFormat,
+		"Running hash-only duplicate detection",
+		"    📖 Hashing files for duplicate detection...",
+	)
 
 	// Collect all files (not just .go files) for hash detection
 	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor)
@@ -279,8 +294,10 @@ func executeHashOnlyAnalysis(
 				node := &syntax.Node{
 					Filename: fh.Filename,
 					Pos:      0,
-					End:      int32(fh.Size), //nolint:gosec // Size is validated to be within int32 range
-					Type:     1,
+					End: int32(
+						fh.Size,
+					),
+					Type: 1,
 				}
 				fragments = append(fragments, []*syntax.Node{node})
 			}

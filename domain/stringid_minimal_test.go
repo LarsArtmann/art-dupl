@@ -30,12 +30,11 @@ func TestStringID_IntegrationMinimal(t *testing.T) {
 		t.Errorf("HashString() = %s, want abc123", clone.HashString())
 	}
 
-	//nolint:forbidigo // debug output in test
 	fmt.Println("✅ StringID integration works!")
-	//nolint:forbidigo // debug output in test
+
 	fmt.Printf("   Filename: %s (ID: %d)\n", clone.FilenameString(), clone.Filename)
-	//nolint:forbidigo // debug output in test
+
 	fmt.Printf("   Fragment: %s (ID: %d)\n", clone.FragmentString(), clone.Fragment)
-	//nolint:forbidigo // debug output in test
+
 	fmt.Printf("   Hash: %s (ID: %d)\n", clone.HashString(), clone.Hash)
 }

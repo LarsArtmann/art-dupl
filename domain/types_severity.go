@@ -28,7 +28,10 @@ func (cs CloneSeverity) String() string { return string(cs) }
 
 func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
 	if !cs.IsValid() {
-		return nil, fmt.Errorf("invalid clone severity: %s", cs) //nolint:err113 // Validation needs dynamic context
+		return nil, fmt.Errorf(
+			"invalid clone severity: %s",
+			cs,
+		)
 	}
 
 	return []byte(`"` + string(cs) + `"`), nil
@@ -39,7 +42,10 @@ func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 
 	severity := CloneSeverity(str)
 	if !severity.IsValid() {
-		return fmt.Errorf("invalid clone severity: %s", str) //nolint:err113 // Validation needs dynamic context
+		return fmt.Errorf(
+			"invalid clone severity: %s",
+			str,
+		)
 	}
 
 	*cs = severity

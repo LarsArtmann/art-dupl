@@ -43,7 +43,7 @@ var _ = Describe("Plumbing Output Format", func() {
 	runPlumbingTestWithFlags := func(filenames []string, code, threshold string, extraFlags ...string) ([]byte, error) {
 		err := setup.CreateDuplicateFiles(filenames, code)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // Test helper - pass through error
+			return nil, err
 		}
 
 		args := append([]string{"--plumbing", "--threshold", threshold}, extraFlags...)

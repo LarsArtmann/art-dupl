@@ -19,11 +19,17 @@ type Analysis struct {
 
 func (a Analysis) IsValid() error {
 	if !a.State.IsValid() {
-		return fmt.Errorf("invalid analysis state: %s", a.State) //nolint:err113 // Validation needs dynamic context
+		return fmt.Errorf(
+			"invalid analysis state: %s",
+			a.State,
+		)
 	}
 
 	if !a.Mode.IsValid() {
-		return fmt.Errorf("invalid analysis mode: %s", a.Mode) //nolint:err113 // Validation needs dynamic context
+		return fmt.Errorf(
+			"invalid analysis mode: %s",
+			a.Mode,
+		)
 	}
 
 	if a.Threshold == 0 {

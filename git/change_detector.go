@@ -242,7 +242,13 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 		mainBranch = "main"
 	}
 
-	cmd := exec.CommandContext(context.Background(), "git", "merge-base", "HEAD", mainBranch) //nolint:gosec // merge-base with validated branch name
+	cmd := exec.CommandContext(
+		context.Background(),
+		"git",
+		"merge-base",
+		"HEAD",
+		mainBranch,
+	)
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
