@@ -120,4 +120,13 @@ const (
 	DefaultThreshold = 15
 	VendorDirPrefix  = "vendor" + string(filepath.Separator)
 	VendorDirInPath  = string(filepath.Separator) + VendorDirPrefix
+
+	// DSStoreFile is the macOS Finder metadata file that should always be excluded.
+	DSStoreFile = ".DS_Store"
+
+	// GitDirPrefix is the Git directory prefix for exclusion.
+	GitDirPrefix = ".git" + string(filepath.Separator)
+
+	// GitDirInPath is the Git directory marker when it appears in a path.
+	GitDirInPath = string(filepath.Separator) + GitDirPrefix
 )

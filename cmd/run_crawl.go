@@ -67,9 +67,20 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 			}
 
 			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Check vendor flag
+				// Skip vendor directories if flag not set
 				if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
 					strings.Contains(path, cli.VendorDirInPath)) {
+					return nil
+				}
+
+				// Skip .git directories
+				if strings.HasPrefix(path, cli.GitDirPrefix) ||
+					strings.Contains(path, cli.GitDirInPath) {
+					return nil
+				}
+
+				// Skip .DS_Store files
+				if info.Name() == cli.DSStoreFile {
 					return nil
 				}
 
@@ -126,9 +137,20 @@ func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor boo
 			}
 
 			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Check vendor flag
+				// Skip vendor directories if flag not set
 				if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
 					strings.Contains(path, cli.VendorDirInPath)) {
+					return nil
+				}
+
+				// Skip .git directories
+				if strings.HasPrefix(path, cli.GitDirPrefix) ||
+					strings.Contains(path, cli.GitDirInPath) {
+					return nil
+				}
+
+				// Skip .DS_Store files
+				if info.Name() == cli.DSStoreFile {
 					return nil
 				}
 
