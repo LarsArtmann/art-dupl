@@ -149,6 +149,10 @@ func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	// Update impact score (tokens × instances)
 	p.statsData.ImpactScore += tokensInGroup * len(dups)
 
+	// Track severity based on tokens in the clone group (once per group)
+	severity := p.getSeverity(tokensInGroup)
+	p.statsData.SeverityBreakdown[severity]++
+
 	return nil
 }
 

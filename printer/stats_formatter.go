@@ -9,8 +9,8 @@ import (
 // jsonStatsOutput represents the JSON output structure for statistics.
 type jsonStatsOutput struct {
 	Configuration struct {
-		Threshold        int    `json:"threshold"`
-		DetectionMethods string `json:"detectionMethods"`
+		Threshold         int    `json:"threshold"`
+		DetectionMethods  string `json:"detectionMethods"`
 		SemanticDetection bool   `json:"semanticDetection"`
 	} `json:"configuration"`
 	Overview struct {
@@ -37,6 +37,7 @@ type jsonStatsOutput struct {
 	Note              string         `json:"note"`
 	SizeDistribution  map[string]int `json:"sizeDistribution"`
 	TokenDistribution map[string]int `json:"tokenDistribution"`
+	SeverityBreakdown map[string]int `json:"severityBreakdown"`
 	TopFiles          []jsonTopFile  `json:"topFiles"`
 }
 
@@ -290,6 +291,9 @@ func (p *stats) buildJSONData() any {
 
 	// Fill token distribution
 	jsonData.TokenDistribution = p.statsData.TokenDistribution
+
+	// Fill severity breakdown
+	jsonData.SeverityBreakdown = p.statsData.SeverityBreakdown
 
 	// Add methodology note
 	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."

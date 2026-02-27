@@ -21,6 +21,7 @@ const (
 	FileError       ErrorType = "file"
 	TimeoutError    ErrorType = "timeout"
 	CacheError      ErrorType = "cache"
+	CancelledError  ErrorType = "cancelled"
 )
 
 // DuplError is the main error type with rich context.
@@ -142,6 +143,11 @@ func NewTimeoutError(
 	cause error,
 ) *DuplError {
 	return newError(TimeoutError, msg, cause)
+}
+
+// NewCancelledError creates a new cancelled error for user-initiated cancellation.
+func NewCancelledError(msg string, cause error) *DuplError {
+	return newError(CancelledError, msg, cause)
 }
 
 // Error implements the error interface.
