@@ -23,6 +23,14 @@ func cleanupDetector(t *testing.T, detector Detector) {
 	}
 }
 
+// newTestOptionsWithThreshold creates Options with a specific threshold and default detection method.
+func newTestOptionsWithThreshold(threshold int) *Options {
+	return &Options{
+		Threshold:        threshold,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+	}
+}
+
 // TestNewDetector_NilOptions tests that nil options are handled correctly.
 func TestNewDetector_NilOptions(t *testing.T) {
 	detector, err := NewDetector(nil)
@@ -281,27 +289,18 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 			wantErr: ErrNilOptions,
 		},
 		{
-			name: "zero threshold",
-			opts: &Options{
-				Threshold:        0,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-			},
+			name:    "zero threshold",
+			opts:    newTestOptionsWithThreshold(0),
 			wantErr: ErrInvalidThreshold,
 		},
 		{
-			name: "negative threshold",
-			opts: &Options{
-				Threshold:        -5,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-			},
+			name:    "negative threshold",
+			opts:    newTestOptionsWithThreshold(-5),
 			wantErr: ErrInvalidThreshold,
 		},
 		{
-			name: "threshold too large",
-			opts: &Options{
-				Threshold:        1001,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-			},
+			name:    "threshold too large",
+			opts:    newTestOptionsWithThreshold(1001),
 			wantErr: ErrThresholdTooLarge,
 		},
 		{
@@ -931,15 +930,21 @@ func TestResult_Empty(t *testing.T) {
 	}
 }
 
-// TestClone_WithFragment tests Clone with fragment content.
-func TestClone_WithFragment(t *testing.T) {
-	clone := Clone{
+// createTestClone creates a Clone with configurable fragment for testing.
+func createTestClone(t *testing.T, fragment string) Clone {
+	t.Helper()
+	return Clone{
 		Filename:  "test.go",
 		StartLine: 1,
 		EndLine:   5,
-		Fragment:  "package main\n\nfunc main() {}\n",
+		Fragment:  fragment,
 		Size:      25,
 	}
+}
+
+// createTestClone creates a Clone with configurable fragment for testing.
+func TestClone_WithFragment(t *testing.T) {
+	clone := createTestClone(t, "package main\n\nfunc main() {}\n")
 
 	if clone.Fragment == "" {
 		t.Error("Clone with fragment should have non-empty Fragment")
@@ -948,13 +953,7 @@ func TestClone_WithFragment(t *testing.T) {
 
 // TestClone_WithoutFragment tests Clone without fragment content.
 func TestClone_WithoutFragment(t *testing.T) {
-	clone := Clone{
-		Filename:  "test.go",
-		StartLine: 1,
-		EndLine:   5,
-		Fragment:  "",
-		Size:      25,
-	}
+	clone := createTestClone(t, "")
 
 	if clone.Fragment != "" {
 		t.Errorf("Clone without fragment should have empty Fragment, got %s", clone.Fragment)

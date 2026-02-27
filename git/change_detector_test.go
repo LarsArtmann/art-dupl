@@ -9,15 +9,18 @@ import (
 )
 
 // assertSingleChange asserts that changes has exactly 1 item and verifies its status.
-func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus string, changeType string) {
+func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, changeType string) {
 	t.Helper()
+
 	if len(changes) != 1 {
 		t.Errorf("Expected 1 %s, got %d", changeType, len(changes))
 	}
+
 	if len(changes) > 0 && changes[0].Status != expectedStatus {
 		t.Errorf("Expected status %s for %s, got %q", expectedStatus, changeType, changes[0].Status)
 	}
 }
+
 // Returns the temp directory path and a cleanup function.
 func setupGitRepo(t *testing.T) string {
 	t.Helper()
@@ -204,13 +207,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 			t.Fatalf("GetChangedFiles failed: %v", err)
 		}
 
-		if len(changes) != 1 {
-			t.Errorf("Expected 1 change, got %d", len(changes))
-		}
-
-		if changes[0].Status != "M" {
-			t.Errorf("Expected status M, got %q", changes[0].Status)
-		}
+		assertSingleChange(t, changes, "M", "change")
 	})
 
 	t.Run("empty since defaults to HEAD", func(t *testing.T) {
@@ -354,13 +351,7 @@ func TestChangeDetector_GetUntrackedFiles(t *testing.T) {
 			t.Fatalf("GetUntrackedFiles failed: %v", err)
 		}
 
-		if len(changes) != 1 {
-			t.Errorf("Expected 1 untracked file, got %d", len(changes))
-		}
-
-		if changes[0].Status != "A" {
-			t.Errorf("Expected status A for untracked file, got %q", changes[0].Status)
-		}
+		assertSingleChange(t, changes, "A", "untracked file")
 	})
 }
 
@@ -486,13 +477,7 @@ func TestDeduplicateChanges(t *testing.T) {
 		}
 
 		result := deduplicateChanges(changes)
-		if len(result) != 1 {
-			t.Fatalf("Expected 1 result, got %d", len(result))
-		}
-
-		if result[0].Status != "M" {
-			t.Errorf("Expected status M from first occurrence, got %q", result[0].Status)
-		}
+		assertSingleChange(t, result, "M", "result")
 	})
 }
 
@@ -511,13 +496,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("M\tfile.go\n")
 
 		result := detector.parseDiffOutput(output)
-		if len(result) != 1 {
-			t.Fatalf("Expected 1 result, got %d", len(result))
-		}
-
-		if result[0].Status != "M" {
-			t.Errorf("Expected status M, got %q", result[0].Status)
-		}
+		assertSingleChange(t, result, "M", "result")
 
 		if result[0].Path != "file.go" {
 			t.Errorf("Expected path file.go, got %q", result[0].Path)

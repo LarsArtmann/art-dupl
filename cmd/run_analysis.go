@@ -291,13 +291,12 @@ func executeHashOnlyAnalysis(
 
 			for _, fh := range fd.Files {
 				// Create a synthetic node representing the entire file
+				//nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
 				node := &syntax.Node{
 					Filename: fh.Filename,
 					Pos:      0,
-					End: int32(
-						fh.Size,
-					),
-					Type: 1,
+					End:      int32(fh.Size),
+					Type:     1,
 				}
 				fragments = append(fragments, []*syntax.Node{node})
 			}

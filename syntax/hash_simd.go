@@ -38,7 +38,15 @@ func hashSeq(nodes []*Node) string {
 
 	// Prepare byte array for hashing
 	// Extract byte slice from pool to reduce allocations
-	bufPtr := hashPool.Get().(*[]byte)
+	rawBuf := hashPool.Get()
+
+	bufPtr, ok := rawBuf.(*[]byte)
+	if !ok {
+		// This should never happen as we always put *[]byte in the pool
+		// but we handle it gracefully
+		return ""
+	}
+
 	buf := *bufPtr
 
 	defer func() {

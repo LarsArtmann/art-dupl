@@ -242,6 +242,7 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 		mainBranch = "main"
 	}
 
+	//nolint:gosec // G204: Running git command with hardcoded arguments, not user input
 	cmd := exec.CommandContext(
 		context.Background(),
 		"git",

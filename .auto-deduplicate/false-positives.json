@@ -107,5 +107,88 @@
     "reason": "Similar test structure but different expectations: one tests for boolean error (wantErr: true), other tests for specific error type (wantErr: ErrNoDetectionMethods). These are different test scenarios.",
     "marked_at": "2026-02-27T08:51:10.915666+01:00",
     "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "0a1fc6c073b808f6a8bb921344a41b9d466ce618235da848d9b8767ab87bb5ef",
+    "files": ["/Users/larsartmann/projects/art-dupl/internal/enum/marshal_test.go"],
+    "reason": "Table-driven test data with different test case values",
+    "marked_at": "2026-02-27T09:29:26.5202+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "d4d2f68d5a0f215d8a4499e072c133d27b478e04089cca9636f8f9d841e670ab",
+    "files": ["/Users/larsartmann/projects/art-dupl/adapter/printer_adapter_test.go"],
+    "reason": "Different test values (threshold 15 vs 20, clone groups 0 vs 2)",
+    "marked_at": "2026-02-27T09:29:26.521954+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "e30e5e750936e5291666883dd7ce9e8627ab091d2b4b38e376effc16c3462bf7",
+    "files": ["/Users/larsartmann/projects/art-dupl/pkg/filter/filter_test.go"],
+    "reason": "Different test values for stats assertions",
+    "marked_at": "2026-02-27T09:29:26.522715+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "6948b66cf37c41dede6ddf3c57b3dcb9d6550e4e135eca0da893752df91b9cbc",
+    "files": ["/Users/larsartmann/projects/art-dupl/pkg/artdupl/detector_test.go"],
+    "reason": "Clone struct with Fragment vs without Fragment - testing opposite conditions",
+    "marked_at": "2026-02-27T09:29:26.523361+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "5b5529b2ed2740ffc6662e027aa5f9e41fcb9dda53a23d8a65b5421513306fa1",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/domain_types_test.go"],
+    "reason": "Table-driven test struct definitions - idiomatic Go pattern for parameterized tests",
+    "marked_at": "2026-02-27T09:38:46.780262+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "f971283f0bc0b7de1b4045516997b64b7926cd4781bb84a5987b26a2265dd97b",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/pkg/artdupl/detector_test.go",
+      "/Users/larsartmann/projects/art-dupl/printer/stats_test.go"
+    ],
+    "reason": "Different test locations check different clone properties (Filename/StartLine vs Size) - not true duplicates",
+    "marked_at": "2026-02-27T09:38:46.781561+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "abc1b15a729216889a218056edd6e56ccce2ab38bde2781ca79b723658644a66",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/domain_types_test.go"],
+    "reason": "Test cases with similar structure but different test values (0.0, 0.5, 1.0) - not true duplicates",
+    "marked_at": "2026-02-27T09:43:35.170575+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "a0895efeb227427cbb4111f94330adcf0048870cd961453f2b4871a119f7b68b",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/cmd/run_flags.go",
+      "/Users/larsartmann/projects/art-dupl/cmd/stats.go"
+    ],
+    "reason": "Standard Go error handling pattern - extracting would add unnecessary indirection without meaningful benefit",
+    "marked_at": "2026-02-27T09:43:35.172592+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "c4cbb9d3b701fa6cacecb42a65d7426e8afe4fcb2a9f8bb9f2e91d1e832e5826",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/domain_types_test.go"],
+    "reason": "Test cases with similar structure but different test values - not true duplicates",
+    "marked_at": "2026-02-27T09:43:35.174223+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "857157090949988c2aaf5a6bb302bb55dccae9292c77c90df50f02d1c83bc469",
+    "files": ["/Users/larsartmann/projects/art-dupl/bdd/default_filtering_test.go"],
+    "reason": "Intentional test structure - each Context/It tests different output format (JSON, HTML, plumbing)",
+    "marked_at": "2026-02-27T09:58:48.51411+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "2a168e58a53ebf787945007941f1f397e2381033672f6c08d74dc374c3a312dc",
+    "files": ["/Users/larsartmann/projects/art-dupl/suffixtree/suffixtree_test.go"],
+    "reason": "Only 1 location exists - this is just test data, not a duplicate",
+    "marked_at": "2026-02-27T09:58:48.515542+01:00",
+    "marked_by": "auto-deduplicate"
   }
 ]

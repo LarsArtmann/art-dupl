@@ -40,6 +40,7 @@ func BuildAndCleanArtDuplBinary(t *testing.T) string {
 func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, error) {
 	t.Helper()
 
+	//nolint:gosec // G204: Running test binary with controlled arguments in test context
 	cmd := exec.CommandContext(
 		context.Background(),
 		binaryPath,

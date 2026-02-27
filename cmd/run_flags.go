@@ -13,6 +13,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// wrapAnalysisError wraps an analysis error with context about the paths being analyzed.
+func wrapAnalysisError(err error, paths []string) error {
+	return duplerrors.Wrap(
+		err,
+		duplerrors.AnalysisError,
+		fmt.Sprintf("analysis failed for paths %v", paths),
+	)
+}
+
 // runCmd implements Cobra command execution.
 //
 //nolint:gocyclo,cyclop,funlen // Command execution requires handling many CLI flags and configuration options
@@ -212,11 +221,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.OutputFormat,
 	)
 	if err != nil {
-		return duplerrors.Wrap(
-			err,
-			duplerrors.AnalysisError,
-			fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths),
-		)
+		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
 
 	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)

@@ -2,9 +2,19 @@ package simd
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 	"unsafe"
 )
+
+// assertSliceLength is a test helper that asserts a slice has the expected length.
+func assertSliceLength(t *testing.T, slice any, length int) {
+	t.Helper()
+	v := reflect.ValueOf(slice)
+	if v.Len() != length {
+		t.Errorf("UnsafeSlice() length = %d, want %d", v.Len(), length)
+	}
+}
 
 func TestAvailable(t *testing.T) {
 	// On ARM64 (including Apple Silicon), Available() returns false
@@ -269,11 +279,7 @@ func TestUnsafeSlice(t *testing.T) {
 		data := []byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}
 		slice := UnsafeSlice[uint32](data)
 
-		if len(slice) != 2 {
-			t.Errorf("UnsafeSlice() length = %d, want 2", len(slice))
-
-			return
-		}
+		assertSliceLength(t, slice, 2)
 
 		if cap(slice) != 2 {
 			t.Errorf("UnsafeSlice() capacity = %d, want 2", cap(slice))
@@ -288,11 +294,7 @@ func TestUnsafeSlice(t *testing.T) {
 		}
 		slice := UnsafeSlice[uint64](data)
 
-		if len(slice) != 2 {
-			t.Errorf("UnsafeSlice() length = %d, want 2", len(slice))
-
-			return
-		}
+		assertSliceLength(t, slice, 2)
 	})
 
 	t.Run("empty slice", func(t *testing.T) {

@@ -19,18 +19,11 @@ var _ = Describe("All Format Generation (--all flag)", func() {
 	)
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 
 		outputDir = filepath.Join(setup.TmpDir, "output")
-		err = os.MkdirAll(outputDir, 0o755)
+		err := os.MkdirAll(outputDir, 0o755)
 		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When generating all formats with default settings", func() {
@@ -166,15 +159,7 @@ func test() {}`
 			err = os.MkdirAll(outputDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with --all flag using existing directory
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"10",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created
@@ -197,14 +182,7 @@ func multiDetect() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag (uses all detection methods by default)
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"10",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check for generated files
@@ -258,14 +236,7 @@ func small() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and high threshold
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"100",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "100")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even if few/no clones

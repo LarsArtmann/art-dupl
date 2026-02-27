@@ -14,6 +14,17 @@ func contains[T comparable](slice []T, item T) bool {
 	return slices.Contains(slice, item)
 }
 
+// requireSQLCMetrics asserts the expected TotalFilesChecked and SQLC filter count.
+func requireSQLCMetrics(t *testing.T, stats FilterStats, expectedTotalFiles, expectedSQLCCount int) {
+	t.Helper()
+	if stats.TotalFilesChecked != expectedTotalFiles {
+		t.Errorf("Expected TotalFilesChecked=%d, got %d", expectedTotalFiles, stats.TotalFilesChecked)
+	}
+	if stats.FilteredByReason[ReasonSQLC] != expectedSQLCCount {
+		t.Errorf("Expected SQLC count=%d, got %d", expectedSQLCCount, stats.FilteredByReason[ReasonSQLC])
+	}
+}
+
 // runTestCases is a generic helper for running table-driven tests.
 func runTestCases[T any, R comparable](
 	t *testing.T,
@@ -767,13 +778,7 @@ func TestFilterMetrics(t *testing.T) {
 
 		stats := metrics.GetStats()
 
-		if stats.TotalFilesChecked != 4 {
-			t.Errorf("Expected TotalFilesChecked=4, got %d", stats.TotalFilesChecked)
-		}
-
-		if stats.FilteredByReason[ReasonSQLC] != 2 {
-			t.Errorf("Expected SQLC count=2, got %d", stats.FilteredByReason[ReasonSQLC])
-		}
+		requireSQLCMetrics(t, stats, 4, 2)
 
 		if stats.FilteredByReason[ReasonTempl] != 1 {
 			t.Errorf("Expected Templ count=1, got %d", stats.FilteredByReason[ReasonTempl])
@@ -803,13 +808,7 @@ func TestFilterMetrics(t *testing.T) {
 
 		stats := metrics.GetStats()
 
-		if stats.TotalFilesChecked != 3 {
-			t.Errorf("Expected TotalFilesChecked=3, got %d", stats.TotalFilesChecked)
-		}
-
-		if stats.FilteredByReason[ReasonSQLC] != 1 {
-			t.Errorf("Expected SQLC count=1, got %d", stats.FilteredByReason[ReasonSQLC])
-		}
+		requireSQLCMetrics(t, stats, 3, 1)
 
 		if stats.TotalFiltered() != 1 {
 			t.Errorf("Expected TotalFiltered=1, got %d", stats.TotalFiltered())
@@ -891,14 +890,7 @@ const StatusPending Status = iota`,
 	// Check metrics
 	stats := fltr.GetStats()
 
-	if stats.TotalFilesChecked != 4 {
-		t.Errorf("Expected TotalFilesChecked=4, got %d", stats.TotalFilesChecked)
-	}
-
-	// Verify SQLC file was filtered
-	if stats.FilteredByReason[ReasonSQLC] != 1 {
-		t.Errorf("Expected 1 SQLC file filtered, got %d", stats.FilteredByReason[ReasonSQLC])
-	}
+	requireSQLCMetrics(t, stats, 4, 1)
 
 	// Verify Templ file was filtered
 	if stats.FilteredByReason[ReasonTempl] != 1 {

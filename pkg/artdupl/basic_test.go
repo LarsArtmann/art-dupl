@@ -64,6 +64,26 @@ func TestValidateOptions_Valid_Basic(t *testing.T) {
 	}
 }
 
+// newInvalidThresholdTestCase creates a test case for invalid threshold validation.
+func newInvalidThresholdTestCase(name string, threshold int) struct {
+	name    string
+	opts    *Options
+	wantErr bool
+} {
+	return struct {
+		name    string
+		opts    *Options
+		wantErr bool
+	}{
+		name: name,
+		opts: &Options{
+			Threshold:        threshold,
+			DetectionMethods: []DetectionMethod{MethodArtDupl},
+		},
+		wantErr: true,
+	}
+}
+
 // TestValidateOptions_Invalid_Basic tests invalid options.
 func TestValidateOptions_Invalid_Basic(t *testing.T) {
 	testCases := []struct {
@@ -76,22 +96,8 @@ func TestValidateOptions_Invalid_Basic(t *testing.T) {
 			opts:    nil,
 			wantErr: true,
 		},
-		{
-			name: "threshold too low",
-			opts: &Options{
-				Threshold:        0,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-			},
-			wantErr: true,
-		},
-		{
-			name: "threshold too high",
-			opts: &Options{
-				Threshold:        1001,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-			},
-			wantErr: true,
-		},
+		newInvalidThresholdTestCase("threshold too low", 0),
+		newInvalidThresholdTestCase("threshold too high", 1001),
 		{
 			name: "no detection methods",
 			opts: &Options{

@@ -47,12 +47,7 @@ func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syn
 	}
 
 	o := t.createNodeFromRange(ScriptElement, se.Range)
-	for _, attr := range se.Attributes {
-		attrNode := t.transformAttribute(attr)
-		if attrNode != nil {
-			o.AddChildren(attrNode)
-		}
-	}
+	t.addAttributesToNode(se.Attributes, o)
 
 	return o
 }
@@ -91,12 +86,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 	}
 
 	o := t.createNodeFromRange(Element, re.Range)
-	for _, attr := range re.Attributes {
-		attrNode := t.transformAttribute(attr)
-		if attrNode != nil {
-			o.AddChildren(attrNode)
-		}
-	}
+	t.addAttributesToNode(re.Attributes, o)
 
 	return o
 }

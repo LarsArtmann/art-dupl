@@ -35,10 +35,7 @@ var _ = Describe("Basic User Workflows", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 
 		// Define test Go files with intentional duplicates
 		testFiles := map[string]string{
@@ -126,12 +123,8 @@ func uniqueFunction(ctx context.Context) error {
 		}
 
 		// Write test files using unified processor
-		err = setup.CreateTestFiles(testFiles)
+		err := setup.CreateTestFiles(testFiles)
 		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When analyzing code for duplicates", func() {
@@ -308,18 +301,11 @@ var _ = Describe("File Targeting Scenarios", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 
 		// Create subdirectories
-		err = setup.CreateSubdirectories("pkg1", "pkg2")
+		err := setup.CreateSubdirectories("pkg1", "pkg2")
 		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
 	Context("When analyzing specific directories", func() {
@@ -412,14 +398,7 @@ var _ = Describe("Integration Scenarios", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("CI/CD Pipeline Integration", func() {

@@ -42,6 +42,15 @@ func runWithFlagsAndCheckOutput(setup *testutil.BDDTestSetup, path string, flags
 	Expect(string(output)).ToNot(BeEmpty(), "Should handle gracefully and produce output")
 }
 
+// assertErrorMessage checks that output contains an error-related substring.
+func assertErrorMessage(output []byte) {
+	Expect(string(output)).To(SatisfyAny(
+		ContainSubstring("error"),
+		ContainSubstring("no such"),
+		ContainSubstring("not found"),
+	))
+}
+
 // testInvalidFlag is a helper that tests art-dupl with an invalid flag
 // and verifies it handles the error gracefully.
 func testInvalidFlag(setup *testutil.BDDTestSetup, pattern, flagName, flagValue string) {
@@ -69,11 +78,7 @@ var _ = Describe("Error Handling", func() {
 			// Should fail gracefully with error message
 			Expect(err).To(HaveOccurred(), "Should error when path doesn't exist")
 			Expect(string(output)).NotTo(BeEmpty(), "Should produce error message")
-			Expect(string(output)).To(SatisfyAny(
-				ContainSubstring("error"),
-				ContainSubstring("no such"),
-				ContainSubstring("not found"),
-			))
+			assertErrorMessage(output)
 		})
 
 		It("should handle non-existent file gracefully", func() {

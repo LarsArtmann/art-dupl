@@ -33,24 +33,20 @@ func DuplicateFunction() int {
 `
 
 // createDuplicateTestFiles creates two test files with duplicate code in the given directory.
-func createDuplicateTestFiles(t *testing.T, tmpDir string) (string, string) {
+func createDuplicateTestFiles(t *testing.T, tmpDir string) {
 	t.Helper()
 
 	duplicateCode := testDuplicateCode
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
 
-	err := os.WriteFile(file1, []byte(duplicateCode), 0o600)
-	if err != nil {
+	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	err := os.WriteFile(file2, []byte(duplicateCode), 0o600)
-	if err != nil {
+	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-
-	return file1, file2
 }
 
 // runOutputFormatTest runs a test for a specific output format flag.
@@ -259,16 +255,15 @@ func TestUnique(t *testing.T) {
 }
 
 func TestVersionFunctions(t *testing.T) {
-	// Save original values
 	origVersion := Version
 	origCommit := Commit
 	origDate := Date
 
-	defer func() {
+	t.Cleanup(func() {
 		Version = origVersion
 		Commit = origCommit
 		Date = origDate
-	}()
+	})
 
 	t.Run("GetVersion with dev", func(t *testing.T) {
 		Version = "dev"
@@ -597,16 +592,15 @@ func TestAddFlags(t *testing.T) {
 }
 
 func TestPrintVersion(t *testing.T) {
-	// Save and restore original values
 	origVersion := Version
 	origCommit := Commit
 	origDate := Date
 
-	defer func() {
+	t.Cleanup(func() {
 		Version = origVersion
 		Commit = origCommit
 		Date = origDate
-	}()
+	})
 
 	Version = "1.0.0"
 	Commit = "abc123"
@@ -960,17 +954,7 @@ func TestRunAllModes_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 		outputDir := filepath.Join(tmpDir, "reports")
 
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		createDuplicateTestFiles(t, tmpDir)
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
@@ -1000,17 +984,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 	t.Run("basic analysis", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		createDuplicateTestFiles(t, tmpDir)
 
 		cfg := &config.Config{
 			Threshold:        10,

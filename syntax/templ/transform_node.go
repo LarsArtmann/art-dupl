@@ -63,12 +63,7 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 	}
 
 	o := t.createNodeFromRange(Element, el.Range)
-	for _, attr := range el.Attributes {
-		attrNode := t.transformAttribute(attr)
-		if attrNode != nil {
-			o.AddChildren(attrNode)
-		}
-	}
+	t.addAttributesToNode(el.Attributes, o)
 
 	t.addChildren(o, el.Children)
 
@@ -114,4 +109,14 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 	}
 
 	return o
+}
+
+// addAttributesToNode transforms attributes and adds them as children to the given node.
+func (t *transformer) addAttributesToNode(attrs []templparser.Attribute, node *syntax.Node) {
+	for _, attr := range attrs {
+		attrNode := t.transformAttribute(attr)
+		if attrNode != nil {
+			node.AddChildren(attrNode)
+		}
+	}
 }

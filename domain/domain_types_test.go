@@ -174,6 +174,14 @@ type jsonTest[T comparable] struct {
 	wantErr bool
 }
 
+// jsonUnmarshalTest is a helper for testing JSON unmarshaling.
+type jsonUnmarshalTest[T comparable] struct {
+	name      string
+	input     string
+	want      T
+	wantError bool
+}
+
 // runJSONTests runs JSON marshal/unmarshal tests.
 func runJSONTests[T comparable](
 	t *testing.T,
@@ -404,12 +412,7 @@ func registerJSONTestSuite[T comparable](
 	t *testing.T,
 	typeName string,
 	marshalTests []jsonTest[T],
-	unmarshalTests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
+	unmarshalTests []jsonUnmarshalTest[T],
 	roundTripValue T,
 	marshalFunc func(T) ([]byte, error),
 	unmarshalFunc func(*T, []byte) error,

@@ -11,13 +11,18 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-// TestNewMultiDetector tests MultiDetector constructor.
-func TestNewMultiDetector(t *testing.T) {
-	cfg := &config.Config{
+// createTestConfig creates a test configuration for MultiDetector tests.
+func createTestConfig() *config.Config {
+	return &config.Config{
 		Threshold:        15,
 		Verbose:          true,
 		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
 	}
+}
+
+// TestNewMultiDetector tests MultiDetector constructor.
+func TestNewMultiDetector(t *testing.T) {
+	cfg := createTestConfig()
 
 	data := []*syntax.Node{
 		{Filename: "test.go", Type: int32(golang.File)},

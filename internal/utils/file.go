@@ -73,22 +73,30 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 
 // WriteTestFiles creates multiple test files from content map.
 func (fp *FileProcessor) WriteTestFiles(files map[string]string) error {
-	for filename, content := range files {
-		err := fp.WriteTextFile(filename, content)
-		if err != nil {
-			return fmt.Errorf("failed to write test file %s: %w", filename, err)
-		}
-	}
-
-	return nil
+	return fp.writeFiles("test", files, func(filename, content string) error {
+		return fp.WriteTextFile(filename, content)
+	})
 }
 
 // WriteDuplicateFiles creates files with identical content for testing.
 func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string) error {
+	files := make(map[string]string, len(filenames))
 	for _, filename := range filenames {
-		err := fp.WriteTextFile(filename, content)
+		files[filename] = content
+	}
+	return fp.writeFiles("duplicate", files, fp.WriteTextFile)
+}
+
+// writeFiles is a helper that writes multiple files with a custom write function.
+func (fp *FileProcessor) writeFiles(
+	fileType string,
+	files map[string]string,
+	writeFunc func(string, string) error,
+) error {
+	for filename, content := range files {
+		err := writeFunc(filename, content)
 		if err != nil {
-			return fmt.Errorf("failed to write duplicate file %s: %w", filename, err)
+			return fmt.Errorf("failed to write %s file %s: %w", fileType, filename, err)
 		}
 	}
 

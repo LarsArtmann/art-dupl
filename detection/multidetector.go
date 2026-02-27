@@ -74,12 +74,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 			defer close(resultChan)
 
 			suffixMatches := md.tree.FindDuplOver(threshold)
-			for match := range suffixMatches {
-				syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
-				if len(syntaxMatch.Frags) > 0 {
-					resultChan <- syntaxMatch
-				}
-			}
+			md.processSuffixTreeMatches(suffixMatches, resultChan, threshold)
 		}()
 
 		return resultChan
@@ -110,13 +105,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 			md.logVerbose("Running suffix tree-based detection...")
 			artDuplMatches := md.tree.FindDuplOver(threshold)
 
-			for match := range artDuplMatches {
-				// Convert suffix tree matches to syntax matches
-				syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
-				if len(syntaxMatch.Frags) > 0 {
-					resultChan <- syntaxMatch
-				}
-			}
+			md.processSuffixTreeMatches(artDuplMatches, resultChan, threshold)
 		}
 	}()
 
@@ -127,5 +116,15 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 func (md *MultiDetector) logVerbose(message string) {
 	if md.verbose {
 		logger.Default.Info(message)
+	}
+}
+
+// processSuffixTreeMatches converts suffix tree matches to syntax matches and sends them to the result channel.
+func (md *MultiDetector) processSuffixTreeMatches(matches <-chan suffixtree.Match, resultChan chan<- syntax.Match, threshold int) {
+	for match := range matches {
+		syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
+		if len(syntaxMatch.Frags) > 0 {
+			resultChan <- syntaxMatch
+		}
 	}
 }

@@ -35,6 +35,23 @@ func hasAnyStrings(text string, substrings ...string) func() bool {
 	}
 }
 
+// createTestCommand creates a Command for testing with the given arguments.
+// It finds the repo root for relative path resolution.
+func createTestCommand(t *testing.T, args []string) *Command {
+	t.Helper()
+
+	repoRoot, err := findRepoRoot()
+	if err != nil {
+		t.Fatalf("Failed to find repo root: %v", err)
+	}
+
+	return &Command{
+		Path: args[0],
+		Args: args,
+		Dir:  repoRoot,
+	}
+}
+
 func TestStatsCommandIntegration(t *testing.T) {
 	// Build the binary first
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
@@ -106,17 +123,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Find repo root for relative paths
-			repoRoot, err := findRepoRoot()
-			if err != nil {
-				t.Fatalf("Failed to find repo root: %v", err)
-			}
-
-			cmd := &Command{
-				Path: tt.args[0],
-				Args: tt.args,
-				Dir:  repoRoot,
-			}
+			cmd := createTestCommand(t, tt.args)
 
 			output, err := cmd.CombinedOutput()
 
@@ -164,17 +171,7 @@ func TestStatsCommandErrorCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Find repo root for relative paths
-			repoRoot, err := findRepoRoot()
-			if err != nil {
-				t.Fatalf("Failed to find repo root: %v", err)
-			}
-
-			cmd := &Command{
-				Path: tt.args[0],
-				Args: tt.args,
-				Dir:  repoRoot,
-			}
+			cmd := createTestCommand(t, tt.args)
 
 			_, err = cmd.CombinedOutput()
 			if (err != nil) != tt.wantErr {

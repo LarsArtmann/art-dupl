@@ -26,18 +26,24 @@ func common() { println(1) }`
 // - Multiple path arguments
 // - Edge cases with paths
 
+// expectValidPlumbingOutput validates that each non-empty line in the output
+// follows the plumbing format: filename.go:startline-endline
+func expectValidPlumbingOutput(output []byte) {
+	lines := strings.SplitSeq(strings.TrimSpace(string(output)), "\n")
+	for line := range lines {
+		if line == "" {
+			continue
+		}
+		// Should contain filename and line numbers
+		Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
+	}
+}
+
 var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When using plumbing output", func() {
@@ -51,17 +57,8 @@ var _ = Describe("Plumbing Output Format", func() {
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-
 			// Each line should follow plumbing format: filename:startline-endline
-			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
-			for line := range lines {
-				if line == "" {
-					continue
-				}
-				// Should contain filename and line numbers
-				Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
-			}
+			expectValidPlumbingOutput(output)
 		})
 
 		It("should be parseable by shell scripts", func() {
@@ -154,14 +151,7 @@ func large() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should still be valid plumbing format
-			lines := strings.SplitSeq(strings.TrimSpace(string(output)), "\n")
-			for line := range lines {
-				if line == "" {
-					continue
-				}
-
-				Expect(line).To(MatchRegexp(`\.go:\d+-\d+$`))
-			}
+			expectValidPlumbingOutput(output)
 		})
 	})
 })

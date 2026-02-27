@@ -29,6 +29,50 @@ func createTestCloneGroup(id string, size int, severity domain.CloneSeverity) do
 	}
 }
 
+// createTestNodes creates a node group for testing with customizable end position and filename.
+func createTestNodes(end int32, filename string) [][]*syntax.Node {
+	return [][]*syntax.Node{
+		{
+			{Type: 1, Pos: 0, End: end, Filename: filename},
+		},
+	}
+}
+
+// createTestCloneGroups creates a slice of CloneGroup for testing.
+func createTestCloneGroups(groups ...struct {
+	id     string
+	clones int
+	size   int
+},
+) []domain.CloneGroup {
+	result := make([]domain.CloneGroup, len(groups))
+	for i, g := range groups {
+		clones := make([]domain.Clone, g.clones)
+		for j := range clones {
+			clones[j] = domain.Clone{}
+		}
+		result[i] = domain.CloneGroup{
+			ID:     domain.CloneGroupID(g.id),
+			Clones: clones,
+			Size:   uint(g.size),
+		}
+	}
+	return result
+}
+
+// assertAnalysisThresholdAndCloneGroups validates the threshold and clone groups count of an Analysis.
+func assertAnalysisThresholdAndCloneGroups(t *testing.T, analysis *domain.Analysis, expectedThreshold domain.Threshold, expectedCloneGroups int) {
+	t.Helper()
+
+	if analysis.Threshold != expectedThreshold {
+		t.Errorf("Expected threshold %d, got %d", expectedThreshold, analysis.Threshold)
+	}
+
+	if len(analysis.CloneGroups) != expectedCloneGroups {
+		t.Errorf("Expected %d clone groups, got %d", expectedCloneGroups, len(analysis.CloneGroups))
+	}
+}
+
 // testNode creates a sample syntax node for testing.
 func testNode() *syntax.Node {
 	return &syntax.Node{
@@ -53,19 +97,26 @@ func testNodes() [][]*syntax.Node {
 	}
 }
 
+// assertCloneStatusCompleted asserts that the clone has the completed status.
+func assertCloneStatusCompleted(t *testing.T, clone domain.Clone) {
+	t.Helper()
+
+	if clone.Status != domain.FileProcessingStateCompleted {
+		t.Errorf(
+			"Expected status %s, got %s",
+			domain.FileProcessingStateCompleted,
+			clone.Status,
+		)
+	}
+}
+
 // TestNodeToDomainClone tests node to domain clone conversion.
 func TestNodeToDomainClone(t *testing.T) {
 	t.Run("basic conversion without file", func(t *testing.T) {
 		node := testNode()
 		clone := NodeToDomainClone(node, "test.go")
 
-		if clone.Status != domain.FileProcessingStateCompleted {
-			t.Errorf(
-				"Expected status %s, got %s",
-				domain.FileProcessingStateCompleted,
-				clone.Status,
-			)
-		}
+		assertCloneStatusCompleted(t, clone)
 
 		if clone.FilenameString() != "test.go" {
 			t.Errorf("Expected filename 'test.go', got %q", clone.FilenameString())
@@ -114,13 +165,7 @@ func TestNodeToDomainClone(t *testing.T) {
 				node := testNode()
 				clone := NodeToDomainClone(node, tt.filename)
 
-				if clone.Status != domain.FileProcessingStateCompleted {
-					t.Errorf(
-						"Expected status %s, got %s",
-						domain.FileProcessingStateCompleted,
-						clone.Status,
-					)
-				}
+				assertCloneStatusCompleted(t, clone)
 			})
 		}
 	})
@@ -173,11 +218,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 	})
 
 	t.Run("size calculation", func(t *testing.T) {
-		nodes := [][]*syntax.Node{
-			{
-				{Type: 1, Pos: 0, End: 100, Filename: "test.go"},
-			},
-		}
+		nodes := createTestNodes(100, "test.go")
 
 		group := CloneGroupFromNodes("group-1", nodes)
 
@@ -218,11 +259,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 
 	t.Run("severity calculation", func(t *testing.T) {
 		// Large size should result in critical severity
-		nodes := [][]*syntax.Node{
-			{
-				{Type: 1, Pos: 0, End: 300, Filename: "large.go"}, // size = 300 > 200 = critical
-			},
-		}
+		nodes := createTestNodes(300, "large.go") // size = 300 > 200 = critical
 
 		group := CloneGroupFromNodes("group-1", nodes)
 
@@ -265,38 +302,18 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 			t.Errorf("Expected mode %s, got %s", domain.AnalysisModeFull, analysis.Mode)
 		}
 
-		if analysis.Threshold != 15 {
-			t.Errorf("Expected threshold 15, got %d", analysis.Threshold)
-		}
-
-		if len(analysis.CloneGroups) != 0 {
-			t.Errorf("Expected 0 clone groups, got %d", len(analysis.CloneGroups))
-		}
+		assertAnalysisThresholdAndCloneGroups(t, &analysis, 15, 0)
 	})
 
 	t.Run("with clone groups", func(t *testing.T) {
-		groups := []domain.CloneGroup{
-			{
-				ID:     "group-1",
-				Clones: []domain.Clone{{}}, // One clone
-				Size:   100,
-			},
-			{
-				ID:     "group-2",
-				Clones: []domain.Clone{{}, {}}, // Two clones
-				Size:   200,
-			},
-		}
+		groups := createTestCloneGroups(
+			struct{ id string; clones int; size int }{id: "group-1", clones: 1, size: 100},
+			struct{ id string; clones int; size int }{id: "group-2", clones: 2, size: 200},
+		)
 
 		analysis := CreateAnalysisFromClones(groups, 20)
 
-		if analysis.Threshold != 20 {
-			t.Errorf("Expected threshold 20, got %d", analysis.Threshold)
-		}
-
-		if len(analysis.CloneGroups) != 2 {
-			t.Errorf("Expected 2 clone groups, got %d", len(analysis.CloneGroups))
-		}
+		assertAnalysisThresholdAndCloneGroups(t, &analysis, 20, 2)
 
 		if analysis.Stats.TotalClones != 3 {
 			t.Errorf("Expected 3 total clones, got %d", analysis.Stats.TotalClones)
@@ -344,10 +361,10 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 	})
 
 	t.Run("complexity score", func(t *testing.T) {
-		groups := []domain.CloneGroup{
-			{ID: "group-1", Clones: []domain.Clone{{}}, Size: 100},
-			{ID: "group-2", Clones: []domain.Clone{{}}, Size: 200},
-		}
+		groups := createTestCloneGroups(
+			struct{ id string; clones int; size int }{id: "group-1", clones: 1, size: 100},
+			struct{ id string; clones int; size int }{id: "group-2", clones: 1, size: 200},
+		)
 
 		analysis := CreateAnalysisFromClones(groups, 15)
 

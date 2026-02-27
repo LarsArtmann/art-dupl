@@ -238,11 +238,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 		config.OutputFormat(format),
 	)
 	if err != nil {
-		return duplerrors.Wrap(
-			err,
-			duplerrors.AnalysisError,
-			fmt.Sprintf("analysis failed for paths %v", mergedConfig.Paths),
-		)
+		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
 
 	// End profiling

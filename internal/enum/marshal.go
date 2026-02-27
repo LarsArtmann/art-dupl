@@ -204,6 +204,7 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 	// Create candidate by converting string to type T
 	candidatePtr := reflect.New(typeOfT.Elem())
 	candidatePtr.Elem().SetString(str)
+	//nolint:forcetypeassert // Safe: We just created this value via reflection with type T
 	candidate := candidatePtr.Elem().Interface().(T)
 
 	// Validate using IsValid method

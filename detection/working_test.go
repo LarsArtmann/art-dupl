@@ -3,18 +3,13 @@ package detection
 import (
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // TestNewMultiDetector_Working tests MultiDetector constructor.
 func TestNewMultiDetector_Working(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		Verbose:          true,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
+	cfg := createTestConfig()
 
 	data := []*syntax.Node{
 		{Filename: "test.go", Type: 1}, // Use integer type

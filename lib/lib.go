@@ -27,14 +27,6 @@ func sendFilesToChannel(files []string, fchan chan<- string) {
 	}()
 }
 
-// IncrementalStats holds statistics from incremental parsing.
-type IncrementalStats struct {
-	FilesCount  int
-	LinesCount  int
-	CacheHits   int
-	CacheMisses int
-}
-
 func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, error) {
 	fchan := make(chan string, 1024)
 	sendFilesToChannel(files, fchan)
@@ -84,7 +76,7 @@ func RunIncremental(
 	threshold int,
 	cacheDir string,
 	clearCache bool,
-) ([]printer.Issue, IncrementalStats, error) {
+) ([]printer.Issue, job.IncrementalStats, error) {
 	fchan := make(chan string, 1024)
 	sendFilesToChannel(files, fchan)
 
@@ -101,17 +93,12 @@ func RunIncremental(
 
 	issues, err := makeIssues(duplChan)
 	if err != nil {
-		return nil, IncrementalStats{}, err
+		return nil, job.IncrementalStats{}, err
 	}
 
 	stats := <-statsChan
 
-	return issues, IncrementalStats{
-		FilesCount:  stats.FilesCount,
-		LinesCount:  stats.LinesCount,
-		CacheHits:   stats.CacheHits,
-		CacheMisses: stats.CacheMisses,
-	}, nil
+	return issues, stats, nil
 }
 
 func makeIssues(duplChan <-chan syntax.Match) ([]printer.Issue, error) {
