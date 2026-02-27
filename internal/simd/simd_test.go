@@ -7,6 +7,12 @@ import (
 	"unsafe"
 )
 
+// testData16Bytes is a 16-byte test data slice for SIMD tests.
+var testData16Bytes = []byte{
+	0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+	0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
+}
+
 // assertSliceLength is a test helper that asserts a slice has the expected length.
 func assertSliceLength(t *testing.T, slice any, length int) {
 	t.Helper()

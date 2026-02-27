@@ -200,10 +200,7 @@ func TestDecodeSemanticHash(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := DecodeSemanticHash(tt.input)
-			if result != tt.expected {
-				t.Errorf("DecodeSemanticHash(0x%08X) = 0x%06X, want 0x%06X",
-					tt.input, result, tt.expected)
-			}
+			compareDecodeResult(t, "DecodeSemanticHash", tt.input, result, tt.expected)
 		})
 	}
 }
