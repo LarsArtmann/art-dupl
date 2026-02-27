@@ -56,14 +56,7 @@ var _ = Describe("Error Handling", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When analyzing non-existent paths", func() {

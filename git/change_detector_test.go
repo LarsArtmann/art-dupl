@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-// setupGitRepo creates a temporary git repository for testing.
+// assertSingleChange asserts that changes has exactly 1 item and verifies its status.
+func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus string, changeType string) {
+	t.Helper()
+	if len(changes) != 1 {
+		t.Errorf("Expected 1 %s, got %d", changeType, len(changes))
+	}
+	if len(changes) > 0 && changes[0].Status != expectedStatus {
+		t.Errorf("Expected status %s for %s, got %q", expectedStatus, changeType, changes[0].Status)
+	}
+}
 // Returns the temp directory path and a cleanup function.
 func setupGitRepo(t *testing.T) string {
 	t.Helper()

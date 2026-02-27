@@ -40,11 +40,13 @@ func createDuplicateTestFiles(t *testing.T, tmpDir string) (string, string) {
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
 
-	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
+	err := os.WriteFile(file1, []byte(duplicateCode), 0o600)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
+	err := os.WriteFile(file2, []byte(duplicateCode), 0o600)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -57,17 +59,7 @@ func runOutputFormatTest(t *testing.T, formatFlag string) {
 
 	tmpDir := t.TempDir()
 
-	duplicateCode := testDuplicateCode
-	file1 := filepath.Join(tmpDir, "file1.go")
-	file2 := filepath.Join(tmpDir, "file2.go")
-
-	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-
-	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	createDuplicateTestFiles(t, tmpDir)
 
 	cmd := NewRootCommand()
 	AddFlags(cmd)
@@ -89,17 +81,7 @@ func runStatsFormatTest(t *testing.T, format string) {
 
 	tmpDir := t.TempDir()
 
-	duplicateCode := testDuplicateCode
-	file1 := filepath.Join(tmpDir, "file1.go")
-	file2 := filepath.Join(tmpDir, "file2.go")
-
-	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-
-	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	createDuplicateTestFiles(t, tmpDir)
 
 	cmd := NewStatsCommand()
 	cmd.SetArgs([]string{"--format", format, "--threshold", "10", tmpDir})
@@ -791,17 +773,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		// Create test files with intentional duplicates
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		createDuplicateTestFiles(t, tmpDir)
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
@@ -922,17 +894,7 @@ func TestRunStats_Integration(t *testing.T) {
 	t.Run("basic stats execution", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		duplicateCode := testDuplicateCode
-		file1 := filepath.Join(tmpDir, "file1.go")
-		file2 := filepath.Join(tmpDir, "file2.go")
-
-		if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
-
-		if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		createDuplicateTestFiles(t, tmpDir)
 
 		cmd := NewStatsCommand()
 		cmd.SetArgs([]string{"--threshold", "10", tmpDir})

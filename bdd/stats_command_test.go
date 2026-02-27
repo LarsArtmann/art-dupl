@@ -108,14 +108,7 @@ var _ = Describe("Stats Command", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When running stats with default filtering", func() {
@@ -449,17 +442,6 @@ func unique2() { println("unique2") }`
 
 var _ = Describe("Stats Command Edge Cases", func() {
 	var setup *testutil.BDDTestSetup
-
-	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
-	})
 
 	Context("When handling empty or minimal projects", func() {
 		It("should handle empty directory gracefully", func() {

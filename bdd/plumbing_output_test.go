@@ -28,14 +28,7 @@ var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	// runPlumbingTestWithFlags is a generic helper that creates duplicate files and runs art-dupl
@@ -360,17 +353,6 @@ func positionTest() {
 var _ = Describe("Plumbing Output Format Validation", func() {
 	var setup *testutil.BDDTestSetup
 
-	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
-	})
-
 	Context("When validating plumbing output structure", func() {
 		It("should have consistent delimiter usage", func() {
 			code := `package main
@@ -569,17 +551,6 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 
 var _ = Describe("Plumbing Output Advanced Parsing", func() {
 	var setup *testutil.BDDTestSetup
-
-	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
-	})
 
 	Context("When parsing plumbing output programmatically", func() {
 		It("should produce parseable entries for multiple clones", func() {

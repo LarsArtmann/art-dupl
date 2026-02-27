@@ -25,14 +25,7 @@ var _ = Describe("Sorting Functionality", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When sorting by size", func() {

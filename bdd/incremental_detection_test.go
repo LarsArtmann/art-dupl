@@ -20,14 +20,7 @@ var _ = Describe("Incremental Detection", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).To(Succeed())
+		setup = CreateBDDTestSetup()
 	})
 
 	// incrementalTestCode is a simple code sample for incremental tests.
@@ -387,14 +380,7 @@ var _ = Describe("Incremental Detection Edge Cases", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).To(Succeed())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When cache directory does not exist", func() {
