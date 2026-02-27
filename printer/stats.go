@@ -76,6 +76,7 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 			FileDuplication:   make(map[string]int),
 			SizeDistribution:  make(map[string]int),
 			TokenDistribution: make(map[string]int),
+			SeverityBreakdown: make(map[string]int),
 		},
 		base:    styles.base,
 		header:  styles.header,

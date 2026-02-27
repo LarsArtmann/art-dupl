@@ -11,6 +11,7 @@ type jsonStatsOutput struct {
 	Configuration struct {
 		Threshold        int    `json:"threshold"`
 		DetectionMethods string `json:"detectionMethods"`
+		SemanticDetection bool   `json:"semanticDetection"`
 	} `json:"configuration"`
 	Overview struct {
 		FilesScanned    int            `json:"filesScanned"`
@@ -64,6 +65,11 @@ func (p *stats) printCSV() {
 	// Configuration
 	_, _ = fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
 	_, _ = fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
+	semanticCSV := "disabled"
+	if p.statsData.SemanticDetection {
+		semanticCSV = "enabled"
+	}
+	_, _ = fmt.Fprintf(p.w, "Semantic Detection,%s\n", semanticCSV)
 	_, _ = fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
 	_, _ = fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
 	_, _ = fmt.Fprintf(p.w, "\n")
@@ -101,6 +107,12 @@ func (p *stats) printText() {
 	p.printSection("Configuration:")
 	p.printMetric("Threshold", fmt.Sprintf("%d tokens", p.threshold))
 	p.printMetric("Detection Methods", p.statsData.DetectionMethods)
+
+	semanticStatus := "disabled"
+	if p.statsData.SemanticDetection {
+		semanticStatus = "enabled"
+	}
+	p.printMetric("Semantic Detection", semanticStatus)
 
 	if p.statsData.Timestamp != "" {
 		p.printMetric("Timestamp", p.statsData.Timestamp)
@@ -233,6 +245,7 @@ func (p *stats) buildJSONData() any {
 	// Fill configuration
 	jsonData.Configuration.Threshold = p.threshold
 	jsonData.Configuration.DetectionMethods = p.statsData.DetectionMethods
+	jsonData.Configuration.SemanticDetection = p.statsData.SemanticDetection
 
 	// Fill overview
 	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned

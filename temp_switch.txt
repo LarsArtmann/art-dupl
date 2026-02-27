@@ -1,2 +1,0 @@
-	// Apply sorting based on specified criteria
-	allDups = SortNodesByCriteria(allDups, sortBy)

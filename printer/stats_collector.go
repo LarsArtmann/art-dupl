@@ -34,6 +34,11 @@ func (p *stats) SetDetectionMethods(methods string) {
 	p.statsData.DetectionMethods = methods
 }
 
+// SetSemanticDetection sets whether semantic detection was enabled.
+func (p *stats) SetSemanticDetection(enabled bool) {
+	p.statsData.SemanticDetection = enabled
+}
+
 // SetFormat sets the output format.
 func (p *stats) SetFormat(format Format) {
 	p.format = format

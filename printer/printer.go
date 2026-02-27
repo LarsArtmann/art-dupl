@@ -19,6 +19,7 @@ type StatsPrinter interface {
 	Printer
 	SetFilesCount(count int)
 	SetDetectionMethods(methods string)
+	SetSemanticDetection(enabled bool)
 	SetFormat(format Format)
 	SetTimestamp(timestamp string)
 	SetAnalysisDuration(duration time.Duration)

@@ -55,9 +55,10 @@ type StatsData struct {
 	Timestamp        string `json:"timestamp"`         // ISO 8601 timestamp
 
 	// Aggregation metrics
-	FileDuplication   map[string]int `json:"file_duplication"`   // filename -> duplicate line count
-	SizeDistribution  map[string]int `json:"size_distribution"`  // size range -> count (lines)
-	TokenDistribution map[string]int `json:"token_distribution"` // token range -> count
+	FileDuplication    map[string]int `json:"file_duplication"`    // filename -> duplicate line count
+	SizeDistribution   map[string]int `json:"size_distribution"`   // size range -> count (lines)
+	TokenDistribution  map[string]int `json:"token_distribution"`  // token range -> count
+	SeverityBreakdown  map[string]int `json:"severity_breakdown"`  // severity -> count (small/medium/large/huge)
 
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out
@@ -65,4 +66,5 @@ type StatsData struct {
 
 	// Metadata
 	DetectionMethods string `json:"detection_methods"` // Comma-separated detection methods used
+	SemanticDetection bool   `json:"semantic_detection"` // Whether semantic-aware detection was enabled
 }

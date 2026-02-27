@@ -266,6 +266,11 @@ func runStats(cmd *cobra.Command, args []string) error {
 		sp.SetDetectionMethods(detectionMethodStr)
 	}
 
+	// Set semantic detection status
+	if sp, ok := p.(printer.StatsPrinter); ok {
+		sp.SetSemanticDetection(mergedConfig.Semantic)
+	}
+
 	// Set analysis timestamp and duration
 	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetTimestamp(time.Now().UTC().Format(time.RFC3339))
