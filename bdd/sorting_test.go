@@ -112,7 +112,7 @@ func processItem(data string, index int) error {
 				fmt.Printf(
 					"DEBUG: Command failed with output: %s\n",
 					string(output),
-				) //nolint:forbidigo // Debug output
+				)
 			}
 
 			Expect(err).ToNot(HaveOccurred())

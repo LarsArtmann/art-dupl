@@ -217,7 +217,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 			"encode",
 			"JSON output",
 			err,
-		) //nolint:wrapcheck // Error already wraps cause
+		)
 	}
 
 	if _, err := p.w.Write(data); err != nil {
@@ -260,7 +260,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 			"encode",
 			"simple JSON output",
 			err,
-		) //nolint:wrapcheck // Error already wraps cause
+		)
 	}
 
 	if _, err := p.w.Write(data); err != nil {

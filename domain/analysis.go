@@ -1,7 +1,6 @@
 package domain
 
 import (
-	stderrors "errors"
 	"fmt"
 )
 
@@ -20,19 +19,19 @@ type Analysis struct {
 
 func (a Analysis) IsValid() error {
 	if !a.State.IsValid() {
-		return fmt.Errorf("invalid analysis state: %s", a.State)
+		return fmt.Errorf("invalid analysis state: %s", a.State) //nolint:err113 // Validation needs dynamic context
 	}
 
 	if !a.Mode.IsValid() {
-		return fmt.Errorf("invalid analysis mode: %s", a.Mode)
+		return fmt.Errorf("invalid analysis mode: %s", a.Mode) //nolint:err113 // Validation needs dynamic context
 	}
 
 	if a.Threshold == 0 {
-		return stderrors.New("analysis threshold cannot be zero")
+		return ErrAnalysisThresholdZero
 	}
 
 	if a.CreatedAt == "" {
-		return stderrors.New("analysis created at cannot be empty")
+		return ErrAnalysisCreatedAtEmpty
 	}
 
 	for i, group := range a.CloneGroups {

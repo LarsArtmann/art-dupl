@@ -49,6 +49,7 @@ func (conf Confidence) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler for Confidence.
 func (conf *Confidence) UnmarshalJSON(data []byte) error {
 	var c float64
+
 	err := json.Unmarshal(data, &c)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal Confidence: %w", err)

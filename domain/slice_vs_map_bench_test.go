@@ -6,8 +6,13 @@ import (
 )
 
 // initializeStringIDMaps fills both string-to-ID and ID-to-string maps
-// with the specified count and format string
-func initializeStringIDMaps(strToID map[string]uint32, idToStr map[uint32]string, count int, format string) {
+// with the specified count and format string.
+func initializeStringIDMaps(
+	strToID map[string]uint32,
+	idToStr map[uint32]string,
+	count int,
+	format string,
+) {
 	for i := range count {
 		s := fmt.Sprintf(format, i)
 		id := uint32(i)

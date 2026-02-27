@@ -46,6 +46,7 @@ func runWithFlagsAndCheckOutput(setup *testutil.BDDTestSetup, path string, flags
 // and verifies it handles the error gracefully.
 func testInvalidFlag(setup *testutil.BDDTestSetup, pattern, flagName, flagValue string) {
 	tempDir := createTempTestFile(pattern)
+
 	defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
 
 	runWithFlagsAndCheckOutput(setup, tempDir, flagName, flagValue)
@@ -227,7 +228,12 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle invalid detection method gracefully", func() {
-			testInvalidFlag(setup, "art-dupl-method-error-bdd-*", "--detection-methods", "invalid_method")
+			testInvalidFlag(
+				setup,
+				"art-dupl-method-error-bdd-*",
+				"--detection-methods",
+				"invalid_method",
+			)
 		})
 	})
 

@@ -25,6 +25,7 @@ func helper() {
 }`
 
 	goFile := setup.GetFilePath("test.go")
+
 	err := setup.CreateTestFile("test.go", testContent)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)

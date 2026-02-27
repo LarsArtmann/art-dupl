@@ -33,6 +33,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
+
 	err := os.MkdirAll(dir, 0o750)
 	if err != nil {
 		return errors.NewIOError(dir, "failed to create directory", err)

@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -17,15 +16,15 @@ type DetectionOptions struct {
 
 func (do DetectionOptions) IsValid() error {
 	if do.Threshold == 0 {
-		return errors.New("threshold must be > 0")
+		return ErrThresholdInvalid
 	}
 
 	if !do.Mode.IsValid() {
-		return fmt.Errorf("invalid analysis mode: %s", do.Mode)
+		return fmt.Errorf("invalid analysis mode: %s", do.Mode) //nolint:err113 // Validation needs dynamic context
 	}
 
 	if len(do.Paths) == 0 {
-		return errors.New("at least one path must be specified")
+		return ErrNoPathsSpecified
 	}
 
 	return nil

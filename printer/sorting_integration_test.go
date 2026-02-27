@@ -10,8 +10,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-// validateCloneSorting checks if the sorted clone groups match the expected order
-func validateCloneSorting(t *testing.T, sorted [][]*syntax.Node, expectedOrder []string, sortingType string) {
+// validateCloneSorting checks if the sorted clone groups match the expected order.
+func validateCloneSorting(
+	t *testing.T,
+	sorted [][]*syntax.Node,
+	expectedOrder []string,
+	sortingType string,
+) {
 	for i, clone := range sorted {
 		if clone[0].Filename != expectedOrder[i] {
 			t.Errorf("%s sorting failed at index %d. Expected: %s, Got: %s",

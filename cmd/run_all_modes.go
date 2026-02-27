@@ -50,6 +50,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 
 	for _, format := range formats {
 		filename := filepath.Join(outputDir, "report."+string(format))
+
 		err := writeFormatFile(
 			ctx,
 			cfg,

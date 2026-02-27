@@ -2,7 +2,6 @@
 package domain
 
 import (
-	stderrors "errors"
 	"fmt"
 )
 
@@ -28,17 +27,17 @@ type Clone struct {
 
 func (c Clone) IsValid() error {
 	if c.EndLine < c.StartLine {
-		return stderrors.New("clone end line must be >= start line")
+		return ErrCloneEndLineInvalid
 	}
 
 	if c.StartPos > 0 || c.EndPos > 0 {
 		if c.StartPos >= c.EndPos {
-			return stderrors.New("clone end position must be > start position")
+			return ErrCloneEndPositionInvalid
 		}
 	}
 
 	if !c.Status.IsValid() {
-		return fmt.Errorf("invalid clone processing state: %s", c.Status)
+		return fmt.Errorf("invalid clone processing state: %s", c.Status) //nolint:err113 // Validation needs dynamic context
 	}
 
 	return nil
@@ -64,15 +63,15 @@ type CloneGroup struct {
 
 func (cg CloneGroup) IsValid() error {
 	if len(cg.Clones) == 0 {
-		return stderrors.New("clone group must have at least one clone")
+		return ErrCloneGroupEmpty
 	}
 
 	if !cg.Severity.IsValid() {
-		return fmt.Errorf("invalid clone severity: %s", cg.Severity)
+		return fmt.Errorf("invalid clone severity: %s", cg.Severity) //nolint:err113 // Validation needs dynamic context
 	}
 
 	if !cg.Status.IsValid() {
-		return fmt.Errorf("invalid clone group status: %s", cg.Status)
+		return fmt.Errorf("invalid clone group status: %s", cg.Status) //nolint:err113 // Validation needs dynamic context
 	}
 
 	for i, clone := range cg.Clones {

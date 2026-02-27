@@ -23,7 +23,7 @@ func ParseSortBy(value string) (SortBy, error) {
 	case SortBySize, SortByOccurrence, SortByHash, SortByTotalTokens:
 		return sortBy, nil
 	default:
-		return "", fmt.Errorf(
+		return "", fmt.Errorf( //nolint:err113 // Error needs dynamic context
 			"invalid sort criteria '%s': must be one of (size|occurrence|hash|total-tokens)",
 			value,
 		)

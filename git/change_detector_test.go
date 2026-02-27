@@ -72,11 +72,13 @@ func createAndCommitFile(t *testing.T, repoDir, filename, content string) {
 // writeFile writes content to a file for testing.
 func writeFile(t *testing.T, repoDir, filename, content string) {
 	t.Helper()
-	if err := os.WriteFile(
+
+	err := os.WriteFile(
 		filepath.Join(repoDir, filename),
 		[]byte(content),
 		0o600,
-	); err != nil {
+	)
+	if err != nil {
 		t.Fatalf("Failed to write %s: %v", filename, err)
 	}
 }
@@ -156,7 +158,7 @@ func TestChangeDetector_isGitRepo(t *testing.T) {
 	})
 }
 
-// testNoChanges is a helper function that tests that no changes are detected
+// testNoChanges is a helper function that tests that no changes are detected.
 func testNoChanges(t *testing.T, since string) {
 	repoDir := setupGitRepo(t)
 	createAndCommitFile(t, repoDir, "initial.go", "package main")
@@ -581,6 +583,7 @@ func TestFindGitRoot(t *testing.T) {
 		repoDir := setupGitRepo(t)
 
 		subDir := filepath.Join(repoDir, "subdir")
+
 		err := os.Mkdir(subDir, 0o750)
 		if err != nil {
 			t.Fatalf("Failed to create subdir: %v", err)

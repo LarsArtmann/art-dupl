@@ -16,6 +16,7 @@ import (
 // cleanupDetector closes the detector and logs any errors.
 func cleanupDetector(t *testing.T, detector Detector) {
 	t.Helper()
+
 	err := detector.Close()
 	if err != nil {
 		t.Logf("Failed to close detector: %v", err)

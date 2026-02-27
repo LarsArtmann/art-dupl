@@ -19,7 +19,7 @@ func testCloneGroup(filenames ...string) domain.CloneGroup {
 	return domain.CloneGroup{Clones: clones}
 }
 
-// createTestCloneGroup creates a standardized CloneGroup with 3 clones for testing
+// createTestCloneGroup creates a standardized CloneGroup with 3 clones for testing.
 func createTestCloneGroup(id string, size int, severity domain.CloneSeverity) domain.CloneGroup {
 	return domain.CloneGroup{
 		ID:       domain.CloneGroupID(id),
@@ -77,6 +77,7 @@ func TestNodeToDomainClone(t *testing.T) {
 		testFile := filepath.Join(tempDir, "existing.go")
 
 		content := "package main\n\nfunc main() {}\n"
+
 		err := os.WriteFile(testFile, []byte(content), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)

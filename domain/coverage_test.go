@@ -988,6 +988,7 @@ func TestValidateRules(t *testing.T) {
 			{valid: true, msg: "rule1"},
 			{valid: true, msg: "rule2"},
 		}
+
 		err := validateRules(rules)
 		if err != nil {
 			t.Errorf("validateRules() error = %v, want nil", err)

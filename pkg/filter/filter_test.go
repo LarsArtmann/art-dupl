@@ -331,6 +331,7 @@ func TestFilterIdempotentProperty(t *testing.T) {
 
 		return result1 == result2
 	}
+
 	err := quick.Check(f, nil)
 	if err != nil {
 		t.Errorf("Idempotent property failed: %v", err)
@@ -350,6 +351,7 @@ func TestDisabledFilterProperty(t *testing.T) {
 
 		return !filter.ShouldFilter(filePath)
 	}
+
 	err := quick.Check(f, nil)
 	if err != nil {
 		t.Errorf("Disabled filter property failed: %v", err)
@@ -382,6 +384,7 @@ func TestIncludePatternProperty(t *testing.T) {
 
 		return true
 	}
+
 	err := quick.Check(f, nil)
 	if err != nil {
 		t.Errorf("Include pattern property failed: %v", err)
@@ -407,6 +410,7 @@ func TestExcludePatternProperty(t *testing.T) {
 		// The two should match
 		return shouldFilter == isFiltered
 	}
+
 	err := quick.Check(f, nil)
 	if err != nil {
 		t.Errorf("Exclude pattern property failed: %v", err)
@@ -420,6 +424,7 @@ func createTempFile(t *testing.T, name, content string) string {
 	tmpDir := t.TempDir()
 
 	filePath := filepath.Join(tmpDir, name)
+
 	err := os.WriteFile(filePath, []byte(content), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -867,6 +872,7 @@ const StatusPending Status = iota`,
 
 	for name, content := range files {
 		dir := filepath.Join(tmpDir, filepath.Dir(name))
+
 		err := os.MkdirAll(dir, 0o755)
 		if err != nil {
 			t.Fatalf("Failed to create dir: %v", err)

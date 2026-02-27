@@ -181,5 +181,5 @@ func ValidateOptions(opts *Options) error {
 
 	return config.ValidateDetectionMethods(
 		opts.DetectionMethods,
-	) //nolint:wrapcheck // Pass through validation error
+	)
 }

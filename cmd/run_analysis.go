@@ -236,12 +236,14 @@ func executeHashOnlyAnalysis(
 
 	// Collect files into a slice
 	var files []string
+
 	for file := range filesChan {
 		select {
 		case <-ctx.Done():
 			return nil, job.ParseStats{}, filter.FilterStats{}, ctx.Err()
 		default:
 		}
+
 		files = append(files, file)
 	}
 
@@ -271,6 +273,7 @@ func executeHashOnlyAnalysis(
 
 			// Create fragments from file duplicates
 			var fragments [][]*syntax.Node
+
 			for _, fh := range fd.Files {
 				// Create a synthetic node representing the entire file
 				node := &syntax.Node{

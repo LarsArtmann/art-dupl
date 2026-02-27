@@ -25,7 +25,7 @@ const (
 func ParseFormat(value string) (Format, error) {
 	format := config.OutputFormat(value)
 	if !format.IsValid() {
-		return "", fmt.Errorf(
+		return "", fmt.Errorf( //nolint:err113 // Error needs dynamic context
 			"invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)",
 			value,
 		)

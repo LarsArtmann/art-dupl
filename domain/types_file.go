@@ -75,6 +75,7 @@ func (ln LineNumber) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler for LineNumber.
 func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 	var n uint16
+
 	err := json.Unmarshal(data, &n)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal LineNumber: %w", err)

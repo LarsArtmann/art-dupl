@@ -163,6 +163,7 @@ func TestFileCache_Has(t *testing.T) {
 
 	t.Run("exists after set", func(t *testing.T) {
 		nodes := testNodes()
+
 		err := fc.Set(contentHash, nodes)
 		if err != nil {
 			t.Fatalf("Set failed: %v", err)
@@ -200,6 +201,7 @@ func TestFileCache_Remove(t *testing.T) {
 
 	t.Run("remove existing entry", func(t *testing.T) {
 		nodes := testNodes()
+
 		err := fc.Set(contentHash, nodes)
 		if err != nil {
 			t.Fatalf("Set failed: %v", err)
@@ -294,7 +296,8 @@ func TestFileCache_Stats(t *testing.T) {
 		fc.Get("nonexistent")
 
 		// Set entry
-		if err := fc.Set(contentHash, nodes); err != nil {
+		err := fc.Set(contentHash, nodes)
+		if err != nil {
 			t.Fatalf("Failed to set cache entry: %v", err)
 		}
 
@@ -337,7 +340,10 @@ func TestFileCache_GetStats(t *testing.T) {
 		nodes := testNodes()
 
 		fc.Get("nonexistent") // miss
-		fc.Set(contentHash, nodes)
+		err := fc.Set(contentHash, nodes)
+		if err != nil {
+			t.Fatalf("Set failed: %v", err)
+		}
 		fc.Get(contentHash) // hit
 
 		hits, misses := fc.GetStats()
@@ -401,8 +407,10 @@ func TestFileCache_Concurrency(t *testing.T) {
 	for i := range numOps {
 		go func(i int) {
 			hash := CacheKey([]byte{byte(i)})
+
 			nodes := []*syntax.Node{{Type: int32(i), Filename: "test.go"}}
-			if err := fc.Set(hash, nodes); err != nil {
+			err := fc.Set(hash, nodes)
+			if err != nil {
 				t.Errorf("Failed to set cache entry: %v", err)
 			}
 
@@ -523,6 +531,7 @@ func TestFileCache_Persistence(t *testing.T) {
 
 	// Create first cache instance and set data
 	fc1 := NewFileCache(tempDir)
+
 	err := fc1.Set(contentHash, nodes)
 	if err != nil {
 		t.Fatalf("Set failed: %v", err)

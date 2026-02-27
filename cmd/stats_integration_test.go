@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// hasAllStrings returns a function that checks if all substrings exist in the given text
+// hasAllStrings returns a function that checks if all substrings exist in the given text.
 func hasAllStrings(text string, substrings ...string) func() bool {
 	return func() bool {
 		for _, substring := range substrings {
@@ -17,11 +17,12 @@ func hasAllStrings(text string, substrings ...string) func() bool {
 				return false
 			}
 		}
+
 		return true
 	}
 }
 
-// hasAnyStrings returns a function that checks if any substring exists in given text
+// hasAnyStrings returns a function that checks if any substring exists in given text.
 func hasAnyStrings(text string, substrings ...string) func() bool {
 	return func() bool {
 		for _, substring := range substrings {
@@ -29,6 +30,7 @@ func hasAnyStrings(text string, substrings ...string) func() bool {
 				return true
 			}
 		}
+
 		return false
 	}
 }
@@ -36,6 +38,7 @@ func hasAnyStrings(text string, substrings ...string) func() bool {
 func TestStatsCommandIntegration(t *testing.T) {
 	// Build the binary first
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
+
 	err := buildBinary(binaryPath)
 	if err != nil {
 		t.Fatalf("Failed to build binary: %v", err)
@@ -136,6 +139,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 func TestStatsCommandErrorCases(t *testing.T) {
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
+
 	err := buildBinary(binaryPath)
 	if err != nil {
 		t.Fatalf("Failed to build binary: %v", err)
@@ -212,8 +216,12 @@ func TestStatsOutputFormat(t *testing.T) {
 		check func() bool
 	}{
 		{
-			name:  "has header section",
-			check: hasAllStrings(outputStr, "Code Duplication Statistics", "============================"),
+			name: "has header section",
+			check: hasAllStrings(
+				outputStr,
+				"Code Duplication Statistics",
+				"============================",
+			),
 		},
 		{
 			name:  "has configuration section",
@@ -228,8 +236,12 @@ func TestStatsOutputFormat(t *testing.T) {
 			check: hasAllStrings(outputStr, "Duplicate Code:", "Total Duplicate Lines:"),
 		},
 		{
-			name:  "has size distribution section",
-			check: hasAnyStrings(outputStr, "Clone Size Distribution:", "Top Files by Duplicate Lines:"),
+			name: "has size distribution section",
+			check: hasAnyStrings(
+				outputStr,
+				"Clone Size Distribution:",
+				"Top Files by Duplicate Lines:",
+			),
 		},
 	}
 

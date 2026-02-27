@@ -259,7 +259,7 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = domain.Threshold(uint(threshold))
 	} else {
-		return domain.DetectionOptions{}, errors.New("missing or invalid threshold in config")
+		return domain.DetectionOptions{}, errors.New("missing or invalid threshold in config") //nolint:err113 // Error message is descriptive
 	}
 
 	// Extract paths
@@ -272,7 +272,7 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	}
 
 	if len(options.Paths) == 0 {
-		return domain.DetectionOptions{}, errors.New("no paths found in config")
+		return domain.DetectionOptions{}, errors.New("no paths found in config") //nolint:err113 // Error message is descriptive
 	}
 
 	// Set defaults

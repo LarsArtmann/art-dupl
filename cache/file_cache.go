@@ -170,6 +170,7 @@ func (fc *FileCache) Remove(contentHash string) error {
 	defer fc.mu.Unlock()
 
 	cachePath := fc.cachePath(contentHash)
+
 	err := os.Remove(cachePath)
 	if err != nil && !os.IsNotExist(err) {
 		return errors.NewIOError(cachePath, "failed to remove cache entry", err)
@@ -184,6 +185,7 @@ func (fc *FileCache) Clear() error {
 	defer fc.mu.Unlock()
 
 	filesDir := filepath.Join(fc.cacheDir, "files")
+
 	err := os.RemoveAll(filesDir)
 	if err != nil {
 		return errors.NewIOError(filesDir, "failed to clear cache", err)
@@ -254,6 +256,7 @@ func (fc *FileCache) serialize(nodes []*syntax.Node) ([]byte, error) {
 	var buf bytes.Buffer
 
 	enc := gob.NewEncoder(&buf)
+
 	err := enc.Encode(wrapper)
 	if err != nil {
 		return nil, fmt.Errorf("failed to serialize nodes: %w", err)
@@ -268,6 +271,7 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 	dec := gob.NewDecoder(buf)
 
 	var wrapper cacheEntry
+
 	err := dec.Decode(&wrapper)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deserialize nodes: %w", err)
@@ -275,7 +279,7 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 
 	// Check version compatibility
 	if wrapper.Version != CacheVersion {
-		return nil, fmt.Errorf(
+		return nil, fmt.Errorf( //nolint:err113 // Error message needs dynamic values
 			"cache version mismatch: got %d, want %d",
 			wrapper.Version,
 			CacheVersion,

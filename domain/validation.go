@@ -12,7 +12,7 @@ type validationRule struct {
 func validateRules(rules []validationRule) error {
 	for _, rule := range rules {
 		if !rule.valid {
-			return stderrors.New(rule.msg)
+			return stderrors.New(rule.msg) //nolint:err113 // Dynamic error message from validation rule
 		}
 	}
 

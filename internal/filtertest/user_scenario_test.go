@@ -205,15 +205,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	expectedOutputDir := filepath.Join(tmpDir, "internal/storage/queries")
-	found := false
-
-	for _, dir := range outputDirs {
-		if dir == expectedOutputDir {
-			found = true
-
-			break
-		}
-	}
+	found := slices.Contains(outputDirs, expectedOutputDir)
 
 	if !found {
 		t.Errorf("Should have the queries output directory: %s", expectedOutputDir)
@@ -359,15 +351,7 @@ type User struct {
 	}
 
 	expectedOutputDir := filepath.Join(projectRoot, "internal/db")
-	found := false
-
-	for _, dir := range outputDirs {
-		if dir == expectedOutputDir {
-			found = true
-
-			break
-		}
-	}
+	found := slices.Contains(outputDirs, expectedOutputDir)
 
 	if !found {
 		t.Errorf("Should resolve output directory relative to project root: %s", expectedOutputDir)

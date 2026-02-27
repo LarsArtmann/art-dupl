@@ -6,7 +6,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// sortCloneGroupsBySizeDescending sorts CloneGroup slice by size (largest first, descending)
+// sortCloneGroupsBySizeDescending sorts CloneGroup slice by size (largest first, descending).
 func sortCloneGroupsBySizeDescending(groups []CloneGroup) {
 	sort.Slice(groups, func(i, j int) bool {
 		return groups[i].Size > groups[j].Size

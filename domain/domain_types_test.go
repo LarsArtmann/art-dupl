@@ -67,6 +67,7 @@ func testUintTypeSuite[T any](t *testing.T, typeName string, tt testUintType[T])
 		data, _ := tt.jsonMarshal(original)
 
 		var result T
+
 		err := tt.jsonUnmarshal(&result, data)
 		if err != nil {
 			t.Fatalf("UnmarshalJSON() error: %v", err)

@@ -61,13 +61,15 @@ func getHelpOutput(setup *testutil.BDDTestSetup) string {
 	return string(output)
 }
 
-// verifyHelpContent checks that help output contains at least one of the expected substrings
+// verifyHelpContent checks that help output contains at least one of the expected substrings.
 func verifyHelpContent(setup *testutil.BDDTestSetup, substrings []string) {
 	outputStr := getHelpOutput(setup)
+
 	var expectations []types.GomegaMatcher
 	for _, substr := range substrings {
 		expectations = append(expectations, ContainSubstring(substr))
 	}
+
 	Expect(outputStr).To(SatisfyAny(expectations...))
 }
 

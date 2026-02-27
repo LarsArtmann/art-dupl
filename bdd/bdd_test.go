@@ -143,7 +143,7 @@ func uniqueFunction(ctx context.Context) error {
 				fmt.Printf(
 					"Command failed with output: %s\n",
 					string(output),
-				) //nolint:forbidigo // Debug output for test failure
+				)
 			}
 
 			// Verify
@@ -216,7 +216,7 @@ func (v *Validator) lessCommon(id int) error {
 					fmt.Printf(
 						"Command failed with output: %s\n",
 						string(output),
-					) //nolint:forbidigo // Debug output for test failure
+					)
 				}
 
 				// Verify
@@ -243,7 +243,7 @@ func (v *Validator) lessCommon(id int) error {
 				fmt.Printf(
 					"Command failed with output: %s\n",
 					string(output),
-				) //nolint:forbidigo // Debug output for test failure
+				)
 			}
 
 			// Verify
@@ -266,7 +266,7 @@ func (v *Validator) lessCommon(id int) error {
 				fmt.Printf(
 					"Command failed with output: %s\n",
 					string(output),
-				) //nolint:forbidigo // Debug output for test failure
+				)
 			}
 
 			// Verify
@@ -352,7 +352,7 @@ func processData(data string) error {
 				fmt.Printf(
 					"Command failed with output: %s\n",
 					string(output),
-				) //nolint:forbidigo // Debug output for test failure
+				)
 			}
 
 			// Verify - should only mention files from subDir1

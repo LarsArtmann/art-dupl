@@ -19,7 +19,7 @@ import (
 var (
 	sharedBinary     string
 	sharedBinaryOnce sync.Once
-	sharedBinaryErr  error
+	errSharedBinary  error
 )
 
 // BDDTestSetup provides complete BDD test infrastructure with temporary directory and binary management.
@@ -82,13 +82,13 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	// Build binary once using sync.Once to avoid concurrent builds
 	sharedBinaryOnce.Do(func() {
 		sharedBinary = filepath.Join(os.TempDir(), "art-dupl-bdd-shared")
-		sharedBinaryErr = buildSharedBinary(sharedBinary)
+		errSharedBinary = buildSharedBinary(sharedBinary)
 	})
 
-	if sharedBinaryErr != nil {
+	if errSharedBinary != nil {
 		_ = os.RemoveAll(tmpDir) // cleanup on error path
 
-		return nil, sharedBinaryErr
+		return nil, errSharedBinary
 	}
 
 	// Check if binary still exists (may have been cleaned up by OS)
@@ -136,7 +136,7 @@ func buildSharedBinary(binaryPath string) error {
 func (s *BDDTestSetup) Cleanup() error {
 	return os.RemoveAll(
 		s.TmpDir,
-	) //nolint:wrapcheck // Test cleanup - pass through os.RemoveAll error
+	)
 }
 
 // CreateDuplicateFiles creates multiple files with identical content.
@@ -144,7 +144,7 @@ func (s *BDDTestSetup) CreateDuplicateFiles(filenames []string, content string) 
 	return s.FileProcessor.WriteDuplicateFiles(
 		filenames,
 		content,
-	) //nolint:wrapcheck // Test helper - pass through error
+	)
 }
 
 // CreateTestFile creates a single test file with given content.
@@ -152,14 +152,14 @@ func (s *BDDTestSetup) CreateTestFile(filename, content string) error {
 	return s.FileProcessor.WriteTextFile(
 		filename,
 		content,
-	) //nolint:wrapcheck // Test helper - pass through error
+	)
 }
 
 // CreateTestFiles creates multiple test files from a map.
 func (s *BDDTestSetup) CreateTestFiles(files map[string]string) error {
 	return s.FileProcessor.WriteTestFiles(
 		files,
-	) //nolint:wrapcheck // Test helper - pass through error
+	)
 }
 
 // GetFilePath returns full path for a file in test directory.

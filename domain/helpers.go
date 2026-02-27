@@ -27,6 +27,7 @@ func unmarshalWithValidation[T any](
 	assign func(T),
 ) error {
 	var value T
+
 	err := json.Unmarshal(data, &value)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
@@ -79,6 +80,7 @@ func marshalUint(n uint) ([]byte, error) {
 // It handles the common pattern of unmarshaling JSON to unsigned integers.
 func unmarshalUintGeneric[T uint16 | uint32](data []byte, typeName string, assign func(T)) error {
 	var n T
+
 	err := json.Unmarshal(data, &n)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)

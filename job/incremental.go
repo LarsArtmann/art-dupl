@@ -132,6 +132,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		ast   *syntax.Node
 		lines int
 	)
+
 	ast, lines, err = ParseFileByExtension(file)
 	if err != nil {
 		logger.Default.Error("failed to parse file", "file", file, "err", err)

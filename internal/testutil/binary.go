@@ -48,6 +48,7 @@ func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, 
 // BuildArgsFromFlags converts a map of flags to command line arguments.
 func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
 	args := baseArgs
+
 	for flag, value := range flags {
 		if value != "" {
 			args = append(args, "--"+flag, value)
@@ -55,6 +56,7 @@ func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
 			args = append(args, "--"+flag)
 		}
 	}
+
 	return args
 }
 

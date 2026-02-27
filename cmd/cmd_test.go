@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// createTestNodes creates a test node slice with the specified filename and position
+// createTestNodes creates a test node slice with the specified filename and position.
 func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
 		{Filename: filename, Pos: pos, End: end},
@@ -636,6 +636,7 @@ func TestCrawlPaths(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		tmpFile := filepath.Join(tmpDir, "test.go")
+
 		err := os.WriteFile(tmpFile, []byte("package main"), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)

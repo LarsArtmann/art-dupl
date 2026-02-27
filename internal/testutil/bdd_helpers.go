@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 // CreateSubdirectories creates multiple directories in test temporary directory.
@@ -15,6 +16,7 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 
 	for _, path := range paths {
 		fullPath := filepath.Join(s.TmpDir, path)
+
 		err := os.MkdirAll(fullPath, 0o750)
 		if err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", path, err)
@@ -118,6 +120,7 @@ func (s *BDDTestSetup) RunWithConfigFile(
 	}
 
 	configPath := filepath.Join(s.TmpDir, configFileName)
+
 	err := os.WriteFile(configPath, []byte(configContent), 0o600)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write config file: %w", err)
@@ -236,12 +239,14 @@ func TestEmptyDirectory(setup *BDDTestSetup, threshold int) []byte {
 	}
 
 	// Run on empty temp directory
-	args := []string{"--threshold", fmt.Sprintf("%d", threshold)}
+	args := []string{"--threshold", strconv.Itoa(threshold)}
+
 	output, err := setup.RunArtDupl(args...)
 	if err != nil {
 		if setup.T != nil {
 			setup.T.Fatalf("art-dupl command failed: %v", err)
 		}
+
 		panic(fmt.Sprintf("art-dupl command failed: %v", err))
 	}
 
@@ -250,6 +255,7 @@ func TestEmptyDirectory(setup *BDDTestSetup, threshold int) []byte {
 		if setup.T != nil {
 			setup.T.Fatal("art-dupl output is nil")
 		}
+
 		panic("art-dupl output is nil")
 	}
 
@@ -275,6 +281,7 @@ func (s *BDDTestSetup) RunVendorTest(
 
 	// Create vendor directory with duplicate files
 	code := fmt.Sprintf(CommonDuplicateCodeTemplate, "vendorTestFunc")
+
 	err := s.CreateVendorDuplicateFiles("vendor/example", code)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)

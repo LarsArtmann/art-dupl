@@ -504,6 +504,7 @@ func DeadlineFunc() {}
 // Regular comment - no TODO
 func RegularFunc() {}
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -548,6 +549,7 @@ func MultiTagFunc() {}
 // FIXME(2024-01-15): dated fixme
 func DatedFunc() {}
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -594,6 +596,7 @@ func RegularFunc() {}
 /* Another regular comment */
 func AnotherFunc() {}
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -643,6 +646,7 @@ func BlockFunc() {}
 /* FIXME: block fixme */
 func BlockFixmeFunc() {}
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -667,6 +671,7 @@ func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue
 	tmpDir := t.TempDir()
 
 	testFile := tmpDir + "/" + filename
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -733,6 +738,7 @@ func TestLegacyDetector_FindLegacyInFile_EmptyFile(t *testing.T) {
 
 	goCode := `package test
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -760,6 +766,7 @@ func setupTodoTest(t *testing.T) (*TodoDetector, []*syntax.Node, string) {
 // TODO: test
 func Test() {}
 `
+
 	err := os.WriteFile(testFile, []byte(goCode), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write test file: %v", err)

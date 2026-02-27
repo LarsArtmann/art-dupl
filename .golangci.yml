@@ -162,6 +162,7 @@ linters:
             - github.com/stretchr/testify
             - github.com/samber/mo
             - gopkg.in/yaml.v3
+            - github.com/go-faster/yaml
             - github.com/a-h/templ
     wrapcheck:
       ignore-sigs:
@@ -182,6 +183,58 @@ linters:
           - gocyclo
           - maintidx
           - dupl
+          - gosec
+          - err113
+          - exhaustruct
+          - paralleltest
+          - testpackage
+          - varnamelen
+          - gochecknoglobals
+          - forcetypeassert
+          - forbidigo
+          - mnd
+          - tagliatelle
+          - revive
+          - wrapcheck
+          - godoclint
+      - path: bdd/
+        linters:
+          - funlen
+          - cyclop
+          - gocognit
+          - gocyclo
+          - maintidx
+          - dupl
+          - gosec
+          - err113
+          - exhaustruct
+          - paralleltest
+          - testpackage
+          - varnamelen
+          - gochecknoglobals
+          - forcetypeassert
+          - forbidigo
+          - mnd
+          - tagliatelle
+          - revive
+          - wrapcheck
+          - godoclint
+          - forbidigo
+          - godox
+      - path: examples/
+        linters:
+          - exhaustruct
+          - varnamelen
+          - mnd
+          - tagliatelle
+          - revive
+      - path: testutils/
+        linters:
+          - exhaustruct
+          - varnamelen
+          - mnd
+          - tagliatelle
+          - revive
           - gosec
       - path: migration/
         linters:

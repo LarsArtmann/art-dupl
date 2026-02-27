@@ -67,7 +67,7 @@ func UnmarshalJSON[T ~string](
 	}
 
 	// Create error with rich context
-	validationErr := fmt.Errorf(
+	validationErr := fmt.Errorf( //nolint:err113 // Error needs dynamic context
 		"invalid %s value %q, must be one of %v",
 		typeName,
 		str,
@@ -104,7 +104,7 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 	}
 
 	// If we get here, the value is invalid
-	validationErr := fmt.Errorf("enum value %q is not in valid list %v", value, validValues)
+	validationErr := fmt.Errorf("enum value %q is not in valid list %v", value, validValues) //nolint:err113 // Error needs dynamic context
 
 	return nil, fmt.Errorf(
 		"marshaling failed for value %v (validValues=%v): %w",
@@ -137,7 +137,7 @@ func UnmarshalJSONFromStrings[T ~string](
 		return nil
 	}
 
-	validationErr := fmt.Errorf(
+	validationErr := fmt.Errorf( //nolint:err113 // Error needs dynamic context
 		"invalid %s value %q, must be one of %v",
 		typeName,
 		str,
@@ -204,7 +204,7 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 
 	// Validate using IsValid method
 	if !candidate.IsValid() {
-		validationErr := fmt.Errorf("invalid %s value %q (must pass validation)", typeName, str)
+		validationErr := fmt.Errorf("invalid %s value %q (must pass validation)", typeName, str) //nolint:err113 // Error needs dynamic context
 		*dest = zero
 
 		return errors.NewValidationError(validationErr.Error(), validationErr)

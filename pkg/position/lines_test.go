@@ -49,6 +49,7 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 
 		return startLine > 0 && endLine > 0
 	}
+
 	err := quick.Check(f1, nil)
 	if err != nil {
 		t.Errorf("Positive line numbers property failed: %v", err)
@@ -68,6 +69,7 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 
 		return endLine >= startLine
 	}
+
 	err = quick.Check(f2, nil)
 	if err != nil {
 		t.Errorf("End line >= start line property failed: %v", err)
@@ -83,6 +85,7 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 
 		return startLine == 1 && endLine == 1
 	}
+
 	err = quick.Check(f3, nil)
 	if err != nil {
 		t.Errorf("Empty content property failed: %v", err)
@@ -99,6 +102,7 @@ func TestSplitLinesProperty(t *testing.T) {
 
 		return joined == content
 	}
+
 	err := quick.Check(f, nil)
 	if err != nil {
 		t.Errorf("Split-join roundtrip property failed: %v", err)
@@ -123,6 +127,7 @@ func TestLineIndexProperty(t *testing.T) {
 
 		return lineNum >= 0
 	}
+
 	err := quick.Check(f1, nil)
 	if err != nil {
 		t.Errorf("Positive line numbers property failed: %v", err)
@@ -148,6 +153,7 @@ func TestLineIndexProperty(t *testing.T) {
 
 		return line2 >= line1
 	}
+
 	err = quick.Check(f2, nil)
 	if err != nil {
 		t.Errorf("Monotonicity property failed: %v", err)

@@ -19,7 +19,7 @@ func main() {
 }`)
 }
 
-// assertFileContains checks if output contains expected filename and value
+// assertFileContains checks if output contains expected filename and value.
 func assertFileContains(t *testing.T, output, filename, value string) {
 	if !strings.Contains(output, filename) || !strings.Contains(output, value) {
 		t.Errorf("Output should contain %s with %s", filename, value)
@@ -528,6 +528,7 @@ func TestStatsJSONOutput(t *testing.T) {
 
 	// Verify JSON is valid
 	var result map[string]any
+
 	err = json.Unmarshal([]byte(output), &result)
 	if err != nil {
 		t.Fatalf("Output is not valid JSON: %v\nOutput: %s", err, output)

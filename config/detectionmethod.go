@@ -19,6 +19,7 @@ func unmarshalStringType[T ~string](
 	typeName string,
 ) (T, error) {
 	var str string
+
 	err := json.Unmarshal(data, &str)
 	if err != nil {
 		return defaultVal, fmt.Errorf("unmarshaling %s: %w", typeName, err)
@@ -26,7 +27,7 @@ func unmarshalStringType[T ~string](
 
 	typed := T(str)
 	if !isValid(typed) {
-		return defaultVal, fmt.Errorf("invalid %s: %s", typeName, str)
+		return defaultVal, fmt.Errorf("invalid %s: %s", typeName, str) //nolint:err113 // Validation needs dynamic context
 	}
 
 	return typed, nil
@@ -248,7 +249,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 
 		dm := DetectionMethod(method)
 		if !dm.IsValid() {
-			return nil, fmt.Errorf("invalid detection method: %s", method)
+			return nil, fmt.Errorf("invalid detection method: %s", method) //nolint:err113 // Validation needs dynamic context
 		}
 
 		result = append(result, dm)
@@ -273,7 +274,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 func ValidateDetectionMethods(methods []DetectionMethod) error {
 	for _, method := range methods {
 		if !method.IsValid() {
-			return fmt.Errorf("invalid detection method: %s", method)
+			return fmt.Errorf("invalid detection method: %s", method) //nolint:err113 // Validation needs dynamic context
 		}
 	}
 

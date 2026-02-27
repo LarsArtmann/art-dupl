@@ -17,5 +17,6 @@ func ParseFileByExtension(file string) (ast *syntax.Node, lines int, err error) 
 		// Default to Go parser for .go files and any other files that reach here
 		ast, lines, err = golang.ParseWithLineCount(file)
 	}
+
 	return ast, lines, err
 }
