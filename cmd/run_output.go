@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/errors"
@@ -10,12 +11,18 @@ import (
 
 // printDupls prints duplicates using the specified printer.
 func printDupls(
+	ctx context.Context,
 	p printer.Printer,
 	duplChan <-chan syntax.Match,
 	sortBy printer.SortBy,
 	threshold int,
 	detectionMethod string,
 ) error {
+	// Check for cancellation before starting
+	if ctx.Err() != nil {
+		return ctx.Err() //nolint:wrapcheck
+	}
+
 	// Build groups from matches
 	groups := printer.BuildCloneGroups(duplChan)
 
@@ -76,6 +83,11 @@ func printDupls(
 				err,
 			)
 		}
+	}
+
+	// Check for cancellation before printing footer
+	if ctx.Err() != nil {
+		return ctx.Err() //nolint:wrapcheck
 	}
 
 	err = p.PrintFooter()

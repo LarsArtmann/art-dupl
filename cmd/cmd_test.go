@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -683,7 +684,7 @@ func TestPrintDupls(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		err := printDupls(mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(context.Background(), mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -711,13 +712,46 @@ func TestPrintDupls(t *testing.T) {
 
 		close(ch)
 
-		err := printDupls(mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(context.Background(), mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
 
 		if !mock.clonesCalled {
 			t.Error("Expected PrintClones to be called")
+		}
+	})
+
+	t.Run("cancelled context returns error", func(t *testing.T) {
+		mock := &mockPrinter{}
+
+		ch := make(chan syntax.Match, 1)
+		ch <- syntax.Match{
+			Hash: "abc123",
+			Frags: [][]*syntax.Node{
+				createTestNodes("test1.go", 1, 10),
+				createTestNodes("test2.go", 1, 10),
+			},
+		}
+
+		close(ch)
+
+		// Create a cancelled context
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+
+		err := printDupls(ctx, mock, ch, printer.SortBySize, 15, "art-dupl")
+		if err == nil {
+			t.Error("Expected error from cancelled context")
+		}
+
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("Expected context.Canceled, got %v", err)
+		}
+
+		// Footer should not be called when cancelled
+		if mock.footerCalled {
+			t.Error("Expected PrintFooter NOT to be called on cancellation")
 		}
 	})
 }

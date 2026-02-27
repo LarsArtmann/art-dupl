@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/cmd"
 	"github.com/charmbracelet/fang"
+	"github.com/charmbracelet/lipgloss"
 )
+
+const exitCodeInterrupt = 130
 
 func main() {
 	// Create root command
@@ -19,6 +23,18 @@ func main() {
 
 	// Enhanced error handler with fang styling and context-aware suggestions
 	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
+		// Special handling for context cancellation (Ctrl+C)
+		if errors.Is(err, context.Canceled) {
+			canceledStyle := lipgloss.NewStyle().
+				Foreground(lipgloss.Color("196")).
+				Bold(true).
+				Render("⏹ CANCELED")
+
+			fmt.Fprintln(w, canceledStyle)
+
+			return
+		}
+
 		renderHelpLink := func(message string) {
 			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
 				if _, writeErr := fmt.Fprintln(
@@ -77,6 +93,11 @@ func main() {
 
 	err := fang.Execute(context.Background(), rootCmd, options...)
 	if err != nil {
+		// Use exit code 130 for SIGINT cancellation (128 + signal 2)
+		if errors.Is(err, context.Canceled) {
+			os.Exit(exitCodeInterrupt)
+		}
+
 		os.Exit(1)
 	}
 }

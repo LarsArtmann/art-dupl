@@ -38,6 +38,11 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 		return fmt.Errorf("analysis failed for paths %v: %w", cfg.Paths, err)
 	}
 
+	// Check for cancellation after analysis completes
+	if ctx.Err() != nil {
+		return ctx.Err() //nolint:wrapcheck
+	}
+
 	// Convert channel to slice for reuse
 	matches := collectMatches(duplChan)
 
@@ -85,7 +90,7 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 
 // writeFormatFile writes a single output format to a file.
 func writeFormatFile(
-	_ context.Context,
+	ctx context.Context,
 	cfg *config.Config,
 	matches []syntax.Match,
 	parseStats job.ParseStats,
@@ -124,7 +129,7 @@ func writeFormatFile(
 		}
 	}()
 
-	if err := printDupls(p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
+	if err := printDupls(ctx, p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
 		return fmt.Errorf("failed to print %s format: %w", format, err)
 	}
 

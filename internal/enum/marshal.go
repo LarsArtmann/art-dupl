@@ -2,12 +2,19 @@ package enum
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"slices"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/errors"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+)
+
+// Static errors for enum validation.
+var (
+	ErrEnumValueInvalid = errors.New("enum value is not in valid list")
+	ErrInvalidEnumValue = errors.New("invalid enum value")
 )
 
 // ValidatableEnum interface for enums that can validate themselves.
@@ -82,7 +89,7 @@ func UnmarshalJSON[T ~string](
 		dest,
 		defaultValue,
 		validValues,
-		errors.NewValidationError(validationErr.Error(), validationErr),
+		duplerrors.NewValidationError(validationErr.Error(), validationErr),
 	)
 }
 
@@ -114,7 +121,7 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 		"marshaling failed for value %v (validValues=%v): %w",
 		value,
 		validValues,
-		errors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr),
+		duplerrors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr),
 	)
 }
 
@@ -156,7 +163,7 @@ func UnmarshalJSONFromStrings[T ~string](
 		dest,
 		defaultValue,
 		validStrings,
-		errors.NewValidationError(validationErr.Error(), validationErr),
+		duplerrors.NewValidationError(validationErr.Error(), validationErr),
 	)
 }
 
@@ -216,7 +223,7 @@ func UnmarshalJSONForInterface[T EnumType](dest *T, data []byte, typeName string
 		)
 		*dest = zero
 
-		return errors.NewValidationError(validationErr.Error(), validationErr)
+		return duplerrors.NewValidationError(validationErr.Error(), validationErr)
 	}
 
 	*dest = candidate

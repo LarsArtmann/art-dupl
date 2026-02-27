@@ -224,6 +224,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
 
+	// Check for cancellation after analysis completes
+	if ctx.Err() != nil {
+		return ctx.Err() //nolint:wrapcheck
+	}
+
 	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
@@ -234,6 +239,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
 	if err := printDupls(
+		ctx,
 		p,
 		duplChan,
 		printer.SortBy(sortBy),
