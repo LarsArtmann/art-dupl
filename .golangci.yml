@@ -197,6 +197,7 @@ linters:
           - revive
           - wrapcheck
           - godoclint
+          - recvcheck
       - path: bdd/
         linters:
           - funlen
