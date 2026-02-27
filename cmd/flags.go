@@ -42,12 +42,12 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	// Add incremental analysis flags
 	rootCmd.Flags().
-		Bool("incremental", false, "enable incremental analysis (only analyze changed files)")
+		Bool("incremental", false, "enable incremental analysis with AST caching")
 	rootCmd.Flags().
 		String("since", "", "git reference for incremental mode (e.g., HEAD~1, main, commit-hash)")
 	rootCmd.Flags().
-		String("cache-dir", "", "cache directory for AST caching (default: .cache/art-dupl)")
-	rootCmd.Flags().Bool("clear-cache", false, "clear cache before running")
+		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
+	rootCmd.Flags().Bool("clear-cache", false, "clear cache before running (requires --incremental)")
 
 	// Add hidden flags for advanced features
 	rootCmd.Flags().Bool("profile", false, "enable performance profiling")

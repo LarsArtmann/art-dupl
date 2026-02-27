@@ -300,5 +300,13 @@ func ValidateConfig(config *Config) error {
 		}
 	}
 
+	// Validate cache flags require incremental mode
+	if (config.CacheDir != "" || config.ClearCache) && !config.Incremental {
+		return errors.NewValidationError(
+			"--cache-dir and --clear-cache require --incremental mode",
+			nil,
+		)
+	}
+
 	return nil
 }

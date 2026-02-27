@@ -213,6 +213,41 @@ func TestValidateConfig(t *testing.T) {
 			},
 			isValid: false,
 		},
+		{
+			name: "Cache flags require incremental - cache-dir without incremental",
+			config: &Config{
+				Threshold:         15,
+				OutputFormat:      "text",
+				MaxChildrenSerial: 10000,
+				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+				CacheDir:          ".cache/art-dupl",
+			},
+			isValid: false,
+		},
+		{
+			name: "Cache flags require incremental - clear-cache without incremental",
+			config: &Config{
+				Threshold:         15,
+				OutputFormat:      "text",
+				MaxChildrenSerial: 10000,
+				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+				ClearCache:        true,
+			},
+			isValid: false,
+		},
+		{
+			name: "Cache flags valid with incremental",
+			config: &Config{
+				Threshold:         15,
+				OutputFormat:      "text",
+				MaxChildrenSerial: 10000,
+				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
+				Incremental:       true,
+				CacheDir:          ".cache/art-dupl",
+				ClearCache:        true,
+			},
+			isValid: true,
+		},
 	}
 
 	for _, tt := range tests {
