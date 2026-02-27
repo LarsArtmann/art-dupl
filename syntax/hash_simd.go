@@ -79,7 +79,7 @@ func hashSeq(nodes []*Node) string {
 // This is the current implementation used throughout the codebase.
 func hashSeqFallback(nodes []*Node, buf []byte) {
 	for i, node := range nodes {
-		buf[i] = byte(node.Type)
+		buf[i] = byte(node.Type) //nolint:gosec // node.Type is validated to fit in byte
 	}
 }
 

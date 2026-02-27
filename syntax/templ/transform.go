@@ -19,7 +19,7 @@ func (t *transformer) createNode(nodeType int32, start, end int64) *syntax.Node 
 
 // createNodeFromRange creates a new syntax.Node from a templ Range.
 func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *syntax.Node {
-	return t.createNode(int32(nodeType), r.From.Index, r.To.Index)
+	return t.createNode(int32(nodeType), r.From.Index, r.To.Index) //nolint:gosec // nodeType is validated to be within int32 range
 }
 
 // addChildren processes a slice of nodes and adds them as children to the parent.

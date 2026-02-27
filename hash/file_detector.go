@@ -197,10 +197,8 @@ func (f *FileDetector) convertToMatches(
 				node := &syntax.Node{
 					Filename: fileHash.Filename,
 					Pos:      0,
-					End: int32(
-						fileHash.Size,
-					), // #nosec G115 -- File sizes bounded by int32 in practice
-					Type: 1, // Use a generic type
+					End:      int32(fileHash.Size), //nolint:gosec // File sizes bounded by int32 in practice
+					Type:     1,                    // Use a generic type
 				}
 
 				fragments = append(fragments, []*syntax.Node{node})

@@ -11,7 +11,7 @@ import (
 func BuildArtDuplBinary(t *testing.T, outputPath string) {
 	t.Helper()
 
-	cmd := exec.CommandContext(
+	cmd := exec.CommandContext( //nolint:gosec // go build with validated paths in test
 		context.Background(),
 		"go",
 		"build",
@@ -40,7 +40,7 @@ func BuildAndCleanArtDuplBinary(t *testing.T) string {
 func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, error) {
 	t.Helper()
 
-	cmd := exec.CommandContext(context.Background(), binaryPath, args...)
+	cmd := exec.CommandContext(context.Background(), binaryPath, args...) //nolint:gosec // test binary with validated args
 
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }

@@ -279,7 +279,7 @@ func executeHashOnlyAnalysis(
 				node := &syntax.Node{
 					Filename: fh.Filename,
 					Pos:      0,
-					End:      int32(fh.Size),
+					End:      int32(fh.Size), //nolint:gosec // Size is validated to be within int32 range
 					Type:     1,
 				}
 				fragments = append(fragments, []*syntax.Node{node})

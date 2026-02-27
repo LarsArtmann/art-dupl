@@ -1,7 +1,5 @@
 package domain
 
-
-
 // Repository represents source code repository.
 type Repository struct {
 	Path        string       `json:"path"`

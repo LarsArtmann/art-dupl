@@ -71,7 +71,7 @@ func (d *ChangeDetector) GetChangedFiles(since string) ([]ChangeInfo, error) {
 	// Get changed files using git diff
 	// --name-status shows status (A/M/D/R)
 	// --diff-filter=ACMR excludes deleted files (we can't analyze deleted files)
-	cmd := exec.CommandContext(
+	cmd := exec.CommandContext( //nolint:gosec // git diff with validated since parameter
 		context.Background(),
 		"git",
 		"diff",
@@ -242,7 +242,7 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 		mainBranch = "main"
 	}
 
-	cmd := exec.CommandContext(context.Background(), "git", "merge-base", "HEAD", mainBranch)
+	cmd := exec.CommandContext(context.Background(), "git", "merge-base", "HEAD", mainBranch) //nolint:gosec // merge-base with validated branch name
 	cmd.Dir = d.workingDir
 
 	output, err := cmd.Output()
