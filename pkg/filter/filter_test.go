@@ -15,13 +15,27 @@ func contains[T comparable](slice []T, item T) bool {
 }
 
 // requireSQLCMetrics asserts the expected TotalFilesChecked and SQLC filter count.
-func requireSQLCMetrics(t *testing.T, stats FilterStats, expectedTotalFiles, expectedSQLCCount int) {
+func requireSQLCMetrics(
+	t *testing.T,
+	stats FilterStats,
+	expectedTotalFiles, expectedSQLCCount int,
+) {
 	t.Helper()
+
 	if stats.TotalFilesChecked != expectedTotalFiles {
-		t.Errorf("Expected TotalFilesChecked=%d, got %d", expectedTotalFiles, stats.TotalFilesChecked)
+		t.Errorf(
+			"Expected TotalFilesChecked=%d, got %d",
+			expectedTotalFiles,
+			stats.TotalFilesChecked,
+		)
 	}
+
 	if stats.FilteredByReason[ReasonSQLC] != expectedSQLCCount {
-		t.Errorf("Expected SQLC count=%d, got %d", expectedSQLCCount, stats.FilteredByReason[ReasonSQLC])
+		t.Errorf(
+			"Expected SQLC count=%d, got %d",
+			expectedSQLCCount,
+			stats.FilteredByReason[ReasonSQLC],
+		)
 	}
 }
 

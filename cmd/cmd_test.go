@@ -41,11 +41,13 @@ func createDuplicateTestFiles(t *testing.T, tmpDir string) {
 	file1 := filepath.Join(tmpDir, "file1.go")
 	file2 := filepath.Join(tmpDir, "file2.go")
 
-	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
+	err := os.WriteFile(file1, []byte(duplicateCode), 0o600)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
+	err := os.WriteFile(file2, []byte(duplicateCode), 0o600)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 }

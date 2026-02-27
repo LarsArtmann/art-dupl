@@ -129,7 +129,14 @@ func writeFormatFile(
 		}
 	}()
 
-	if err := printDupls(ctx, p, matchChan, sortByEnum, cfg.Threshold, detectionMethodStr); err != nil {
+	if err := printDupls(
+		ctx,
+		p,
+		matchChan,
+		sortByEnum,
+		cfg.Threshold,
+		detectionMethodStr,
+	); err != nil {
 		return fmt.Errorf("failed to print %s format: %w", format, err)
 	}
 

@@ -9,50 +9,54 @@
 
 ## Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| **Build Status** | ✅ PASSING |
-| **Test Compilation** | ✅ PASSING |
-| **Domain Tests** | ✅ 100% PASS (0.657s) |
-| **Lint Status** | ⚠️ 100+ pre-existing issues |
-| **TODO Comments** | 71 in Go files |
-| **Uncommitted Changes** | 0 (all committed) |
+| Metric                  | Value                       |
+| ----------------------- | --------------------------- |
+| **Build Status**        | ✅ PASSING                  |
+| **Test Compilation**    | ✅ PASSING                  |
+| **Domain Tests**        | ✅ 100% PASS (0.657s)       |
+| **Lint Status**         | ⚠️ 100+ pre-existing issues |
+| **TODO Comments**       | 71 in Go files              |
+| **Uncommitted Changes** | 0 (all committed)           |
 
 ---
 
 ## a) FULLY DONE ✅
 
 ### 1. Critical Bug Fixes (Just Completed)
+
 - **Generic Type Inference Errors FIXED** in `domain/domain_types_test.go`
   - `runJSONUnmarshalTests()` signature corrected
-  - `createTypeTestSuite()` signature corrected  
+  - `createTypeTestSuite()` signature corrected
   - `TestConfidence()` call site updated
   - Root cause: Go treats named types and anonymous struct types as different types
 
 ### 2. Stats Enhancement (Just Completed)
+
 - **Severity Distribution Display** added to stats output
   - `printer/stats_formatter.go` - Added severity section
   - `printer/stats_visualization.go` - Added `printSeverityDistribution()` function
   - Shows small/medium/large/huge clone counts with percentages
 
 ### 3. Core Features (Previously Complete)
-| Feature | Status |
-|---------|--------|
-| Suffix Tree Detection | ✅ FULLY FUNCTIONAL |
-| Hash-Based Detection | ✅ FULLY FUNCTIONAL |
-| Multi-Detection Mode | ✅ FULLY FUNCTIONAL |
-| HTML/JSON/Plumbing Output | ✅ FULLY FUNCTIONAL |
-| Statistics Subcommand | ✅ FULLY FUNCTIONAL |
+
+| Feature                      | Status              |
+| ---------------------------- | ------------------- |
+| Suffix Tree Detection        | ✅ FULLY FUNCTIONAL |
+| Hash-Based Detection         | ✅ FULLY FUNCTIONAL |
+| Multi-Detection Mode         | ✅ FULLY FUNCTIONAL |
+| HTML/JSON/Plumbing Output    | ✅ FULLY FUNCTIONAL |
+| Statistics Subcommand        | ✅ FULLY FUNCTIONAL |
 | Smart Filtering (SQLC/Templ) | ✅ FULLY FUNCTIONAL |
-| Sorting Options | ✅ FULLY FUNCTIONAL |
-| Fang CLI Framework | ✅ FULLY FUNCTIONAL |
-| Semantic Detection | ✅ FULLY FUNCTIONAL |
+| Sorting Options              | ✅ FULLY FUNCTIONAL |
+| Fang CLI Framework           | ✅ FULLY FUNCTIONAL |
+| Semantic Detection           | ✅ FULLY FUNCTIONAL |
 
 ---
 
 ## b) PARTIALLY DONE ⚠️
 
 ### 1. Code Quality (Ongoing)
+
 - **Linting Issues:** 100+ pre-existing issues
   - `err113` (dynamic errors): ~20 instances
   - `exhaustruct` (missing struct fields): ~15 instances
@@ -61,11 +65,13 @@
   - And 50+ more categories
 
 ### 2. Test Coverage
+
 - Domain package: ✅ Good coverage
 - BDD tests: ✅ Comprehensive (Ginkgo/Gomega)
 - Some packages lack test files (cmd/art-dupl, internal/testutil, etc.)
 
 ### 3. Documentation
+
 - ✅ README, AGENTS.md, FEATURES.md complete
 - ⚠️ Some TODOs in docs need cleanup
 - ⚠️ Status reports need archiving
@@ -75,17 +81,20 @@
 ## c) NOT STARTED 📋
 
 ### 1. Performance Optimizations
+
 - SIMD optimizations (partially implemented, needs completion)
 - Parallel processing for large codebases
 - Memory profiling and optimization
 
 ### 2. Advanced Features
+
 - IDE integration (LSP server)
 - Watch mode for continuous monitoring
 - Diff output between versions
 - Baseline file support for incremental analysis
 
 ### 3. CI/CD Enhancements
+
 - GitHub Actions workflow optimization
 - Performance regression testing
 - Automated benchmark tracking
@@ -95,6 +104,7 @@
 ## d) TOTALLY FUCKED UP! 🚨
 
 ### 1. BuildFlow Pre-Commit Hook (BROKEN)
+
 - **Status:** ❌ FAILING
 - **Issue:** Go module cache corruption
 - **Error:** `open /Users/larsartmann/Library/Caches/go-build/...: no such file or directory`
@@ -102,8 +112,9 @@
 - **Impact:** Cannot run pre-commit checks automatically
 
 ### 2. Go Module Cache (UNSTABLE)
+
 - **Status:** ❌ CORRUPTED
-- **Symptoms:** 
+- **Symptoms:**
   - `go mod tidy` fails with cache errors
   - Multiple packages cannot find build artifacts
   - Affects `go-faster/yaml`, `charmbracelet/*`, `onsi/gomega`
@@ -217,23 +228,27 @@
 ### Why Does the Go Module Cache Keep Corrupting?
 
 **Symptoms:**
+
 - `go mod tidy` fails with "no such file or directory" errors
 - Cache files in `/Users/larsartmann/Library/Caches/go-build/` are missing
 - Affects random packages (different each time)
 - Started happening recently (past few days)
 
 **What I've Tried:**
+
 - `go clean -cache` - Temporary fix
 - `go mod download` - Re-downloads but issue returns
 - Multiple commits work fine, then suddenly fail
 
 **Hypotheses:**
+
 1. **Concurrent access** - BuildFlow runs steps in parallel
 2. **Disk space issues** - But 3.5GB available
 3. **macOS filesystem issues** - APFS corruption?
 4. **Go version incompatibility** - Using Go 1.24+ with older modules?
 
 **What I Need:**
+
 - How to permanently fix the module cache issues?
 - Is this a known issue with BuildFlow?
 - Should we disable parallel module operations?
@@ -242,13 +257,13 @@
 
 ## Technical Debt Summary
 
-| Category | Count | Priority |
-|----------|-------|----------|
-| Lint Issues | 100+ | Medium |
-| TODO Comments | 71 | Low |
-| Files >350 Lines | 31 | Low |
-| Missing Tests | 4 packages | Medium |
-| Documentation TODOs | 25+ | Low |
+| Category            | Count      | Priority |
+| ------------------- | ---------- | -------- |
+| Lint Issues         | 100+       | Medium   |
+| TODO Comments       | 71         | Low      |
+| Files >350 Lines    | 31         | Low      |
+| Missing Tests       | 4 packages | Medium   |
+| Documentation TODOs | 25+        | Low      |
 
 ---
 
@@ -269,11 +284,12 @@ b6e409f feat(stats): add semantic detection status to all output formats and ref
 The project is **functionally stable** with all core features working. The main blocker is the **Go module cache corruption** affecting the BuildFlow pre-commit hook. Once that's resolved, development can proceed smoothly.
 
 **Immediate Action Required:**
+
 1. Fix module cache (try complete purge)
 2. Verify BuildFlow works
 3. Resume normal development workflow
 
 ---
 
-*Report generated by Crush AI Assistant*  
-*Assisted-by: Kimi K2.5 via Crush <crush@charm.land>*
+_Report generated by Crush AI Assistant_  
+_Assisted-by: Kimi K2.5 via Crush <crush@charm.land>_

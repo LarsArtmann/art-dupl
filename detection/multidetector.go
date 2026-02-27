@@ -120,7 +120,11 @@ func (md *MultiDetector) logVerbose(message string) {
 }
 
 // processSuffixTreeMatches converts suffix tree matches to syntax matches and sends them to the result channel.
-func (md *MultiDetector) processSuffixTreeMatches(matches <-chan suffixtree.Match, resultChan chan<- syntax.Match, threshold int) {
+func (md *MultiDetector) processSuffixTreeMatches(
+	matches <-chan suffixtree.Match,
+	resultChan chan<- syntax.Match,
+	threshold int,
+) {
 	for match := range matches {
 		syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
 		if len(syntaxMatch.Frags) > 0 {

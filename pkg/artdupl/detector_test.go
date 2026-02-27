@@ -938,6 +938,7 @@ func TestResult_Empty(t *testing.T) {
 // createTestClone creates a Clone with configurable fragment for testing.
 func createTestClone(t *testing.T, fragment string) Clone {
 	t.Helper()
+
 	return Clone{
 		Filename:  "test.go",
 		StartLine: 1,

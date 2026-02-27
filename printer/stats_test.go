@@ -723,9 +723,15 @@ func TestHealthScoreCalculation(t *testing.T) {
 			2000,
 			"B",
 		}, // totalScore ≈ 7.0
-		{"Poor health", 12.0, 4.0, 3000, "C"}, // totalScore ≈ 11.3
+		{"Poor health", 12.0, 4.0, 3000, "C"},     // totalScore ≈ 11.3
 		{"Critical health", 20.0, 5.0, 5000, "D"}, // totalScore ≈ 18.5
-		{"Extreme duplication", 40.0, 10.0, 10000, "F"}, // totalScore = 40*0.7 + 20*0.2 + 10*0.1 = 33
+		{
+			"Extreme duplication",
+			40.0,
+			10.0,
+			10000,
+			"F",
+		}, // totalScore = 40*0.7 + 20*0.2 + 10*0.1 = 33
 	}
 
 	for _, tt := range tests {

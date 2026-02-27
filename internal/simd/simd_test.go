@@ -16,6 +16,7 @@ var testData16Bytes = []byte{
 // assertSliceLength is a test helper that asserts a slice has the expected length.
 func assertSliceLength(t *testing.T, slice any, length int) {
 	t.Helper()
+
 	v := reflect.ValueOf(slice)
 	if v.Len() != length {
 		t.Errorf("UnsafeSlice() length = %d, want %d", v.Len(), length)

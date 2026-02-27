@@ -14,7 +14,7 @@ import "fmt"
 // - B: < 10 (good - acceptable duplication)
 // - C: < 15 (fair - needs attention)
 // - D: < 25 (poor - significant cleanup needed)
-// - F: >= 25 (critical - major refactoring required)
+// - F: >= 25 (critical - major refactoring required).
 func (p *stats) calculateHealthScore() string {
 	if p.statsData.DuplicationRatio == 0 && p.statsData.ComplexityScore == 0 &&
 		p.statsData.ImpactScore == 0 {
@@ -96,7 +96,7 @@ func (p *stats) getTokenRange(tokens int) string {
 }
 
 // getSeverity returns a severity level based on token count.
-// Categories: small (threshold-30), medium (31-50), large (51-100), huge (100+)
+// Categories: small (threshold-30), medium (31-50), large (51-100), huge (100+).
 func (p *stats) getSeverity(tokens int) string {
 	switch {
 	case tokens <= 30:

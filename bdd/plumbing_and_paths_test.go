@@ -27,7 +27,7 @@ func common() { println(1) }`
 // - Edge cases with paths
 
 // expectValidPlumbingOutput validates that each non-empty line in the output
-// follows the plumbing format: filename.go:startline-endline
+// follows the plumbing format: filename.go:startline-endline.
 func expectValidPlumbingOutput(output []byte) {
 	lines := strings.SplitSeq(strings.TrimSpace(string(output)), "\n")
 	for line := range lines {

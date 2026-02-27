@@ -51,17 +51,24 @@ func createTestCloneGroups(groups ...struct {
 		for j := range clones {
 			clones[j] = domain.Clone{}
 		}
+
 		result[i] = domain.CloneGroup{
 			ID:     domain.CloneGroupID(g.id),
 			Clones: clones,
 			Size:   uint(g.size),
 		}
 	}
+
 	return result
 }
 
 // assertAnalysisThresholdAndCloneGroups validates the threshold and clone groups count of an Analysis.
-func assertAnalysisThresholdAndCloneGroups(t *testing.T, analysis *domain.Analysis, expectedThreshold domain.Threshold, expectedCloneGroups int) {
+func assertAnalysisThresholdAndCloneGroups(
+	t *testing.T,
+	analysis *domain.Analysis,
+	expectedThreshold domain.Threshold,
+	expectedCloneGroups int,
+) {
 	t.Helper()
 
 	if analysis.Threshold != expectedThreshold {

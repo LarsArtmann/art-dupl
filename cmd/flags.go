@@ -47,7 +47,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		String("since", "", "git reference for incremental mode (e.g., HEAD~1, main, commit-hash)")
 	rootCmd.Flags().
 		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
-	rootCmd.Flags().Bool("clear-cache", false, "clear cache before running (requires --incremental)")
+	rootCmd.Flags().
+		Bool("clear-cache", false, "clear cache before running (requires --incremental)")
 
 	// Add hidden flags for advanced features
 	rootCmd.Flags().Bool("profile", false, "enable performance profiling")

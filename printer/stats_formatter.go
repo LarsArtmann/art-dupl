@@ -67,10 +67,12 @@ func (p *stats) printCSV() {
 	// Configuration
 	_, _ = fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
 	_, _ = fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
+
 	semanticCSV := "disabled"
 	if p.statsData.SemanticDetection {
 		semanticCSV = "enabled"
 	}
+
 	_, _ = fmt.Fprintf(p.w, "Semantic Detection,%s\n", semanticCSV)
 	_, _ = fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
 	_, _ = fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
@@ -95,7 +97,10 @@ func (p *stats) printCSV() {
 	_, _ = fmt.Fprintf(p.w, "Complexity Score,%.2f\n", p.statsData.ComplexityScore)
 	_, _ = fmt.Fprintf(p.w, "Impact Score,%d\n", p.statsData.ImpactScore)
 	_, _ = fmt.Fprintf(p.w, "Health Score,%s\n", p.statsData.HealthScore)
-	_, _ = fmt.Fprintf(p.w, "Health Score Thresholds,A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%\n")
+	_, _ = fmt.Fprintf(
+		p.w,
+		"Health Score Thresholds,A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%\n",
+	)
 	_, _ = fmt.Fprintf(p.w, "\n")
 	_, _ = fmt.Fprintf(p.w, "Note,Metrics count unique duplicate patterns not total occurrences\n")
 }
@@ -115,6 +120,7 @@ func (p *stats) printText() {
 	if p.statsData.SemanticDetection {
 		semanticStatus = "enabled"
 	}
+
 	p.printMetric("Semantic Detection", semanticStatus)
 
 	if p.statsData.Timestamp != "" {

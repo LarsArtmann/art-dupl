@@ -121,7 +121,10 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 		"marshaling failed for value %v (validValues=%v): %w",
 		value,
 		validValues,
-		duplerrors.NewValidationError("failed to marshal enum: "+validationErr.Error(), validationErr),
+		duplerrors.NewValidationError(
+			"failed to marshal enum: "+validationErr.Error(),
+			validationErr,
+		),
 	)
 }
 

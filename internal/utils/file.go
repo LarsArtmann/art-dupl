@@ -84,6 +84,7 @@ func (fp *FileProcessor) WriteDuplicateFiles(filenames []string, content string)
 	for _, filename := range filenames {
 		files[filename] = content
 	}
+
 	return fp.writeFiles("duplicate", files, fp.WriteTextFile)
 }
 
