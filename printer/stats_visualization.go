@@ -78,3 +78,28 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 		_, _ = fmt.Fprintf(w, "  ... and %d more files\n", len(files)-topN)
 	}
 }
+
+// severityOrder defines the display order for severity levels.
+var severityOrder = []string{"small", "medium", "large", "huge"}
+
+// printSeverityDistribution prints the severity breakdown with visualization.
+func printSeverityDistribution(w io.Writer, distribution map[string]int) {
+	total := 0
+	for _, count := range distribution {
+		total += count
+	}
+
+	for _, severity := range severityOrder {
+		count, exists := distribution[severity]
+		if !exists {
+			continue
+		}
+
+		percentage := 0.0
+		if total > 0 {
+			percentage = float64(count) / float64(total) * 100
+		}
+
+		_, _ = fmt.Fprintf(w, "  %-10s: %4d clones (%.1f%%)\n", severity, count, percentage)
+	}
+}

@@ -220,12 +220,7 @@ func runJSONTests[T comparable](
 func runJSONUnmarshalTests[T comparable](
 	t *testing.T,
 	unmarshal func(*T, []byte) error,
-	tests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
+	tests []jsonUnmarshalTest[T],
 ) {
 	t.Helper()
 
@@ -478,12 +473,7 @@ func createTypeTestSuite[T comparable](
 	typeName string,
 	testFuncs []func(*testing.T),
 	marshalTests []jsonTest[T],
-	unmarshalTests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
+	unmarshalTests []jsonUnmarshalTest[T],
 	roundTripValue T,
 	marshalFunc func(T) ([]byte, error),
 	unmarshalFunc func(*T, []byte) error,
@@ -707,12 +697,7 @@ func TestConfidence(t *testing.T) {
 				wantErr: true,
 			},
 		},
-		[]struct {
-			name      string
-			input     string
-			want      Confidence
-			wantError bool
-		}{
+		[]jsonUnmarshalTest[Confidence]{
 			{name: "valid JSON 0.5", input: `0.5`, want: Confidence(0.5), wantError: false},
 			{name: "valid JSON 1.0", input: `1.0`, want: Confidence(1.0), wantError: false},
 			{name: "negative should error", input: `-0.1`, want: Confidence(0), wantError: true},

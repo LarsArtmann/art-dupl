@@ -184,6 +184,13 @@ func (p *stats) printText() {
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
+	// Print severity breakdown
+	if len(p.statsData.SeverityBreakdown) > 0 {
+		p.printSection("Clone Severity:")
+		printSeverityDistribution(p.w, p.statsData.SeverityBreakdown)
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
 	// Print top files with most duplicates
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
