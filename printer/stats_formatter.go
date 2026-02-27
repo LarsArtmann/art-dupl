@@ -30,9 +30,10 @@ type jsonStatsOutput struct {
 		DuplicationRatio float64 `json:"duplicationRatio,omitempty"`
 	} `json:"duplicateCode"`
 	Metrics struct {
-		HealthScore  string `json:"healthScore,omitempty"`
-		AnalysisTime string `json:"analysisTime,omitempty"`
-		Timestamp    string `json:"timestamp,omitempty"`
+		HealthScore           string `json:"healthScore,omitempty"`
+		HealthScoreThresholds string `json:"healthScoreThresholds,omitempty"`
+		AnalysisTime          string `json:"analysisTime,omitempty"`
+		Timestamp             string `json:"timestamp,omitempty"`
 	} `json:"metrics"`
 	Note              string         `json:"note"`
 	SizeDistribution  map[string]int `json:"sizeDistribution"`
@@ -94,6 +95,7 @@ func (p *stats) printCSV() {
 	_, _ = fmt.Fprintf(p.w, "Complexity Score,%.2f\n", p.statsData.ComplexityScore)
 	_, _ = fmt.Fprintf(p.w, "Impact Score,%d\n", p.statsData.ImpactScore)
 	_, _ = fmt.Fprintf(p.w, "Health Score,%s\n", p.statsData.HealthScore)
+	_, _ = fmt.Fprintf(p.w, "Health Score Thresholds,A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%\n")
 	_, _ = fmt.Fprintf(p.w, "\n")
 	_, _ = fmt.Fprintf(p.w, "Note,Metrics count unique duplicate patterns not total occurrences\n")
 }
@@ -173,6 +175,7 @@ func (p *stats) printText() {
 		styledHealthScore := p.healthScoreStyle(p.statsData.HealthScore).
 			Render(p.statsData.HealthScore)
 		p.printMetric("Health Score", styledHealthScore)
+		p.printLine("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
 	}
 
 	_, _ = fmt.Fprintf(p.w, "\n")
@@ -283,6 +286,7 @@ func (p *stats) buildJSONData() any {
 	// Fill metrics
 	if p.statsData.HealthScore != "" {
 		jsonData.Metrics.HealthScore = p.statsData.HealthScore
+		jsonData.Metrics.HealthScoreThresholds = "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%"
 	}
 
 	if p.statsData.AnalysisDuration != "" {

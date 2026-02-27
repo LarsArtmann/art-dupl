@@ -328,6 +328,8 @@ func TestGetSizeRange(t *testing.T) {
 func TestGetTokenRange(t *testing.T) {
 	var buf bytes.Buffer
 
+	// With threshold=15, ranges are:
+	// 1-15 (t), 16-30 (t*2), 31-45 (t*3), 46-75 (t*5), 76-150 (t*10), 151+ (>t*10)
 	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 
 	tests := []struct {
@@ -338,14 +340,14 @@ func TestGetTokenRange(t *testing.T) {
 		{15, "1-15 tokens"},
 		{16, "16-30 tokens"},
 		{30, "16-30 tokens"},
-		{31, "31-50 tokens"},
-		{50, "31-50 tokens"},
-		{51, "51-100 tokens"},
-		{100, "51-100 tokens"},
-		{101, "101-200 tokens"},
-		{200, "101-200 tokens"},
-		{201, "200+ tokens"},
-		{1000, "200+ tokens"},
+		{31, "31-45 tokens"},
+		{45, "31-45 tokens"},
+		{46, "46-75 tokens"},
+		{75, "46-75 tokens"},
+		{76, "76-150 tokens"},
+		{150, "76-150 tokens"},
+		{151, "151+ tokens"},
+		{1000, "151+ tokens"},
 	}
 
 	for _, tt := range tests {
@@ -702,6 +704,8 @@ func TestStatsCSVOutput(t *testing.T) {
 }
 
 func TestHealthScoreCalculation(t *testing.T) {
+	// New algorithm: totalScore = duplication*0.7 + complexity*0.2 + impact*0.1
+	// Grades: A: <5, B: <10, C: <15, D: <25, F: >=25
 	tests := []struct {
 		name             string
 		duplicationRatio float64
@@ -710,17 +714,18 @@ func TestHealthScoreCalculation(t *testing.T) {
 		expectedGrade    string
 	}{
 		{"Perfect health", 0.0, 0.0, 0, "A"},
-		{"Excellent health", 2.0, 1.0, 500, "B"}, // Weighted score: 4.45% = B
-		{"Good health", 5.0, 2.0, 1000, "C"},     // Weighted score: 10.75% = C
+		{"Excellent health", 2.0, 1.0, 500, "A"}, // totalScore ≈ 1.85
+		{"Good health", 5.0, 2.0, 1000, "A"},     // totalScore ≈ 4.4
 		{
 			"Moderate health",
 			8.0,
 			3.0,
 			2000,
-			"F",
-		}, // Weighted score: 15.3% = F (threshold is < 15 for D)
-		{"Poor health", 12.0, 4.0, 3000, "F"}, // Weighted score: 21.7% = F
-		{"Critical health", 20.0, 5.0, 5000, "F"},
+			"B",
+		}, // totalScore ≈ 7.0
+		{"Poor health", 12.0, 4.0, 3000, "C"}, // totalScore ≈ 11.3
+		{"Critical health", 20.0, 5.0, 5000, "D"}, // totalScore ≈ 18.5
+		{"Extreme duplication", 40.0, 10.0, 10000, "F"}, // totalScore = 40*0.7 + 20*0.2 + 10*0.1 = 33
 	}
 
 	for _, tt := range tests {
