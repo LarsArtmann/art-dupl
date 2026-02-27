@@ -92,31 +92,18 @@ func Authenticate(username, password string) bool {
 		})
 
 		// Regular files should NOT be filtered
-		if fltr.ShouldFilter(setup.GetFilePath("main.go")) {
-			t.Errorf("main.go should not be filtered")
-		}
-
-		if fltr.ShouldFilter(setup.GetFilePath("service/user.go")) {
-			t.Errorf("service/user.go should not be filtered")
-		}
-
-		if fltr.ShouldFilter(setup.GetFilePath("service/auth.go")) {
-			t.Errorf("service/auth.go should not be filtered")
-		}
+		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("main.go"))
+		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("service/user.go"))
+		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("service/auth.go"))
 
 		// sqlc files SHOULD be filtered
-		if !fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {
-			t.Errorf("db/models.go should be filtered (sqlc)")
-		}
-
-		if !fltr.ShouldFilter(setup.GetFilePath("db/querier.go")) {
-			t.Errorf("db/querier.go should be filtered (sqlc)")
-		}
+		AssertFilesShouldBeFiltered(t, fltr, []string{
+			setup.GetFilePath("db/models.go"),
+			setup.GetFilePath("db/querier.go"),
+		})
 
 		// templ files SHOULD be filtered
-		if !fltr.ShouldFilter(setup.GetFilePath("components/header_templ.go")) {
-			t.Errorf("components/header_templ.go should be filtered (templ)")
-		}
+		AssertFileShouldBeFiltered(t, fltr, setup.GetFilePath("components/header_templ.go"))
 	})
 
 	t.Run("include sqlc but filter templ", func(t *testing.T) {
@@ -277,13 +264,9 @@ func Authenticate(username, password string) bool {
 		}
 
 		// db/user.go should NOT be filtered (regular)
-		if fltr.ShouldFilter(setup.GetFilePath("db/user.go")) {
-			t.Errorf("db/user.go should not be filtered")
-		}
+		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("db/user.go"))
 
 		// main.go should NOT be filtered (not in subdirectory being analyzed)
-		if fltr.ShouldFilter(setup.GetFilePath("main.go")) {
-			t.Errorf("main.go should not be filtered")
-		}
+		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("main.go"))
 	})
 }

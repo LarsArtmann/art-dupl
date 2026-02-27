@@ -217,15 +217,22 @@ func TestValidateConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateConfig(tt.config)
-			if tt.isValid && err != nil {
-				t.Errorf("Expected valid config, got error: %v", err)
-			}
-
-			if !tt.isValid && err == nil {
-				t.Error("Expected invalid config, but got no error")
-			}
+			AssertConfigValidation(t, tt.config, tt.isValid)
 		})
+	}
+}
+
+// AssertConfigValidation validates a config and asserts the expected result.
+func AssertConfigValidation(t *testing.T, cfg *Config, expectValid bool) {
+	t.Helper()
+
+	err := ValidateConfig(cfg)
+	if expectValid && err != nil {
+		t.Errorf("Expected valid config, got error: %v", err)
+	}
+
+	if !expectValid && err == nil {
+		t.Error("Expected invalid config, but got no error")
 	}
 }
 
@@ -261,17 +268,7 @@ func TestMergeConfigs(t *testing.T) {
 		t.Errorf("Expected merged OutputFormat html, got %s", merged.OutputFormat)
 	}
 
-	if merged.Verbose != true {
-		t.Errorf("Expected merged Verbose true, got %v", merged.Verbose)
-	}
-
-	if len(merged.Paths) != 1 || merged.Paths[0] != "./cmd" {
-		t.Errorf("Expected merged paths [\"./cmd\"], got %v", merged.Paths)
-	}
-
-	if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != "*_test.go" {
-		t.Errorf("Expected merged ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
-	}
+	AssertMergedConfig(t, merged, "./cmd", "*_test.go", "merged")
 }
 
 func TestMergeConfigsWithNil(t *testing.T) {

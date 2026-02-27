@@ -268,6 +268,23 @@ func TestFileCache_Clear(t *testing.T) {
 	}
 }
 
+// assertCacheStats asserts that cache stats match expected values.
+func assertCacheStats(t *testing.T, stats Stats, expectedHits, expectedMisses, expectedSize int) {
+	t.Helper()
+
+	if stats.Hits != expectedHits {
+		t.Errorf("Expected %d hits, got %d", expectedHits, stats.Hits)
+	}
+
+	if stats.Misses != expectedMisses {
+		t.Errorf("Expected %d misses, got %d", expectedMisses, stats.Misses)
+	}
+
+	if stats.Size != expectedSize {
+		t.Errorf("Expected %d size, got %d", expectedSize, stats.Size)
+	}
+}
+
 // TestFileCache_Stats tests statistics tracking.
 func TestFileCache_Stats(t *testing.T) {
 	tempDir := t.TempDir()
@@ -275,17 +292,7 @@ func TestFileCache_Stats(t *testing.T) {
 
 	t.Run("empty cache stats", func(t *testing.T) {
 		stats := fc.Stats()
-		if stats.Hits != 0 {
-			t.Errorf("Expected 0 hits, got %d", stats.Hits)
-		}
-
-		if stats.Misses != 0 {
-			t.Errorf("Expected 0 misses, got %d", stats.Misses)
-		}
-
-		if stats.Size != 0 {
-			t.Errorf("Expected 0 size, got %d", stats.Size)
-		}
+		assertCacheStats(t, stats, 0, 0, 0)
 	})
 
 	t.Run("stats after operations", func(t *testing.T) {
@@ -305,17 +312,7 @@ func TestFileCache_Stats(t *testing.T) {
 		fc.Get(contentHash)
 
 		stats := fc.Stats()
-		if stats.Hits != 1 {
-			t.Errorf("Expected 1 hit, got %d", stats.Hits)
-		}
-
-		if stats.Misses != 1 {
-			t.Errorf("Expected 1 miss, got %d", stats.Misses)
-		}
-
-		if stats.Size != 1 {
-			t.Errorf("Expected 1 size, got %d", stats.Size)
-		}
+		assertCacheStats(t, stats, 1, 1, 1)
 
 		if stats.BytesUsed <= 0 {
 			t.Errorf("Expected positive BytesUsed, got %d", stats.BytesUsed)

@@ -51,14 +51,7 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"10",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check that output directory contains expected files
@@ -99,14 +92,7 @@ func duplicate() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"10",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check JSON files for metadata
@@ -306,14 +292,7 @@ func unique2() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
-			_, err = setup.RunArtDuplOnDir(
-				setup.TmpDir,
-				"--all",
-				"--output-dir",
-				outputDir,
-				"--threshold",
-				"10",
-			)
+			_, err = setup.RunArtDuplAllFormat(outputDir, "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify files were created even with no duplicates

@@ -87,15 +87,7 @@ func TestOccurrenceSorting(t *testing.T) {
 			})
 
 			// Verify order
-			if len(keys) != len(tt.expectedOrder) {
-				t.Fatalf("Expected %d groups, got %d", len(tt.expectedOrder), len(keys))
-			}
-
-			for i, expectedHash := range tt.expectedOrder {
-				if keys[i] != expectedHash {
-					t.Errorf("Position %d: expected hash %s, got %s", i, expectedHash, keys[i])
-				}
-			}
+			assertSortedOrder(t, keys, tt.expectedOrder)
 
 			// Also verify the unique counts are correct
 			for hash, expectedUniqueCount := range map[string]int{
@@ -111,6 +103,21 @@ func TestOccurrenceSorting(t *testing.T) {
 				)
 			}
 		})
+	}
+}
+
+// assertSortedOrder verifies that the keys are in the expected order.
+func assertSortedOrder(t *testing.T, keys, expectedOrder []string) {
+	t.Helper()
+
+	if len(keys) != len(expectedOrder) {
+		t.Fatalf("Expected %d groups, got %d", len(expectedOrder), len(keys))
+	}
+
+	for i, expectedHash := range expectedOrder {
+		if keys[i] != expectedHash {
+			t.Errorf("Position %d: expected hash %s, got %s", i, expectedHash, keys[i])
+		}
 	}
 }
 
@@ -155,15 +162,7 @@ func TestSizeSorting(t *testing.T) {
 			})
 
 			// Verify order
-			if len(keys) != len(tt.expectedOrder) {
-				t.Fatalf("Expected %d groups, got %d", len(tt.expectedOrder), len(keys))
-			}
-
-			for i, expectedHash := range tt.expectedOrder {
-				if keys[i] != expectedHash {
-					t.Errorf("Position %d: expected hash %s, got %s", i, expectedHash, keys[i])
-				}
-			}
+			assertSortedOrder(t, keys, tt.expectedOrder)
 		})
 	}
 }

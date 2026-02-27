@@ -18,6 +18,19 @@ func (e testEnum) String() string {
 	return string(e)
 }
 
+// assertError checks if error matches expectations.
+func assertError(t *testing.T, expectError bool, err error) {
+	t.Helper()
+
+	if expectError && err == nil {
+		t.Error("expected error, got nil")
+	}
+
+	if !expectError && err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
 func TestStringEnum_String(t *testing.T) {
 	tests := []struct {
 		input    testEnum
@@ -39,23 +52,42 @@ func TestStringEnum_String(t *testing.T) {
 	}
 }
 
+type enumTestCase struct {
+	name         string
+	input        string
+	defaultValue testEnum
+	validValues  []testEnum
+	expected     testEnum
+	expectError  bool
+}
+
+func newEnumTestCase(
+	name, input string,
+	defaultValue testEnum,
+	validValues []testEnum,
+	expected testEnum,
+	expectError bool,
+) enumTestCase {
+	return enumTestCase{
+		name:         name,
+		input:        input,
+		defaultValue: defaultValue,
+		validValues:  validValues,
+		expected:     expected,
+		expectError:  expectError,
+	}
+}
+
 func TestUnmarshalJSON(t *testing.T) {
-	tests := []struct {
-		name         string
-		input        string
-		defaultValue testEnum
-		validValues  []testEnum
-		expected     testEnum
-		expectError  bool
-	}{
-		{
-			name:         "valid value",
-			input:        `"alpha"`,
-			defaultValue: testEnumC,
-			validValues:  []testEnum{testEnumA, testEnumB, testEnumC},
-			expected:     testEnumA,
-			expectError:  false,
-		},
+	tests := []enumTestCase{
+		newEnumTestCase(
+			"valid value",
+			`"alpha"`,
+			testEnumC,
+			[]testEnum{testEnumA, testEnumB, testEnumC},
+			testEnumA,
+			false,
+		),
 		{
 			name:         "unquoted valid value",
 			input:        `beta`,
@@ -101,13 +133,7 @@ func TestUnmarshalJSON(t *testing.T) {
 				tt.defaultValue,
 				tt.validValues...)
 
-			if tt.expectError && err == nil {
-				t.Error("expected error, got nil")
-			}
-
-			if !tt.expectError && err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
+			assertError(t, tt.expectError, err)
 
 			if result != tt.expected {
 				t.Errorf("result = %q, want %q", result, tt.expected)
@@ -144,13 +170,7 @@ func TestMarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := MarshalJSON(tt.value, tt.validValues...)
 
-			if tt.expectError && err == nil {
-				t.Error("expected error, got nil")
-			}
-
-			if !tt.expectError && err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
+			assertError(t, tt.expectError, err)
 
 			if !tt.expectError && string(result) != tt.expected {
 				t.Errorf("result = %s, want %s", result, tt.expected)
@@ -206,13 +226,7 @@ func TestUnmarshalJSONFromStrings(t *testing.T) {
 				tt.validStrings,
 			)
 
-			if tt.expectError && err == nil {
-				t.Error("expected error, got nil")
-			}
-
-			if !tt.expectError && err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
+			assertError(t, tt.expectError, err)
 
 			if result != tt.expected {
 				t.Errorf("result = %q, want %q", result, tt.expected)
@@ -269,11 +283,9 @@ func TestParseEnum(t *testing.T) {
 	}
 }
 
-func TestEnumToStringSlice(t *testing.T) {
-	enums := []testEnum{testEnumA, testEnumB, testEnumC}
-	result := EnumToStringSlice(enums...)
+func assertStringSliceEqual(t *testing.T, result, expected []string) {
+	t.Helper()
 
-	expected := []string{"alpha", "beta", "gamma"}
 	if len(result) != len(expected) {
 		t.Fatalf("len(result) = %d, want %d", len(result), len(expected))
 	}
@@ -283,6 +295,14 @@ func TestEnumToStringSlice(t *testing.T) {
 			t.Errorf("result[%d] = %q, want %q", i, v, expected[i])
 		}
 	}
+}
+
+func TestEnumToStringSlice(t *testing.T) {
+	enums := []testEnum{testEnumA, testEnumB, testEnumC}
+	result := EnumToStringSlice(enums...)
+
+	expected := []string{"alpha", "beta", "gamma"}
+	assertStringSliceEqual(t, result, expected)
 }
 
 func TestValidateEnum(t *testing.T) {
@@ -314,15 +334,7 @@ func TestEnumNames(t *testing.T) {
 	result := EnumNames(enums...)
 
 	expected := []string{"alpha", "beta", "gamma"}
-	if len(result) != len(expected) {
-		t.Fatalf("len(result) = %d, want %d", len(result), len(expected))
-	}
-
-	for i, v := range result {
-		if v != expected[i] {
-			t.Errorf("result[%d] = %q, want %q", i, v, expected[i])
-		}
-	}
+	assertStringSliceEqual(t, result, expected)
 }
 
 // validatableTestEnum for testing EnumType interface.

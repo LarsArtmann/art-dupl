@@ -4,12 +4,33 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
+
+// buildFilterCmd creates an exec.Command for running art-dupl with filter patterns.
+func buildFilterCmd(
+	binaryPath, tmpDir string,
+	threshold int,
+	includePatterns, excludePatterns []string,
+) *exec.Cmd {
+	args := []string{binaryPath, tmpDir}
+	for _, p := range includePatterns {
+		args = append(args, "--include-pattern", p)
+	}
+
+	for _, p := range excludePatterns {
+		args = append(args, "--exclude-pattern", p)
+	}
+
+	args = append(args, "--threshold", strconv.Itoa(threshold))
+
+	return exec.Command("./art-dupl-filter_features-test", args...)
+}
 
 // BDD Test Suite for Filter Features
 //
@@ -375,15 +396,12 @@ func two() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with multiple include patterns
-			cmd = exec.Command(
+			cmd = buildFilterCmd(
 				"./art-dupl-filter_features-test",
 				setup.TmpDir,
-				"--include-pattern",
-				"pkg1/*",
-				"--include-pattern",
-				"pkg2/*",
-				"--threshold",
-				"10",
+				10,
+				[]string{"pkg1/*", "pkg2/*"},
+				nil,
 			)
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())
@@ -495,15 +513,12 @@ func test() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include and exclude - include should take precedence
-			cmd = exec.Command(
+			cmd = buildFilterCmd(
 				"./art-dupl-filter_features-test",
 				setup.TmpDir,
-				"--include-pattern",
-				"specific/*",
-				"--exclude-pattern",
-				"*/file.go",
-				"--threshold",
-				"10",
+				10,
+				[]string{"specific/*"},
+				[]string{"*/file.go"},
 			)
 			output, err := cmd.CombinedOutput()
 			Expect(err).ToNot(HaveOccurred())

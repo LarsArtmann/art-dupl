@@ -45,17 +45,7 @@ func TestConfigurationIntegration(t *testing.T) {
 	}
 
 	// Test file config values preserved
-	if merged.Verbose != true {
-		t.Errorf("Expected Verbose true (from file), got %v", merged.Verbose)
-	}
-
-	if len(merged.Paths) != 1 || merged.Paths[0] != "./test" {
-		t.Errorf("Expected paths [\"./test\"], got %v", merged.Paths)
-	}
-
-	if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != "*_test.go" {
-		t.Errorf("Expected ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
-	}
+	config.AssertMergedConfig(t, merged, "./test", "*_test.go", "")
 
 	if merged.MaxChildrenSerial != 20000 {
 		t.Errorf("Expected MaxChildrenSerial 20000, got %d", merged.MaxChildrenSerial)

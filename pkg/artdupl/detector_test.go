@@ -613,14 +613,7 @@ func TestMetadata_Fields(t *testing.T) {
 
 // TestProgress_Fields tests Progress field assignments.
 func TestProgress_Fields(t *testing.T) {
-	progress := Progress{
-		Stage:       "parsing",
-		Completed:   75,
-		Total:       100,
-		Percentage:  75.5,
-		Message:     "Processing files",
-		CurrentFile: "main.go",
-	}
+	progress := newTestProgress("parsing", 75, 100, 75.5, "Processing files", "main.go")
 
 	if progress.Stage != "parsing" {
 		t.Errorf("Stage should be 'parsing', got %s", progress.Stage)
@@ -1185,14 +1178,7 @@ func TestProgress_Zero(t *testing.T) {
 
 // TestProgress_Full tests Progress at 100%.
 func TestProgress_Full(t *testing.T) {
-	progress := Progress{
-		Stage:       "complete",
-		Completed:   100,
-		Total:       100,
-		Percentage:  100.0,
-		Message:     "Done",
-		CurrentFile: "",
-	}
+	progress := newTestProgress("complete", 100, 100, 100.0, "Done", "")
 
 	if progress.Percentage != 100.0 {
 		t.Errorf("Progress at 100%% should be 100.0, got %f", progress.Percentage)

@@ -8,6 +8,19 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// waitForCompletion waits for the done channel or times out after 5 seconds.
+// It uses the provided error message if a timeout occurs.
+func waitForCompletion(t *testing.T, done chan bool, errorMessage string) {
+	select {
+	case <-done:
+		// Success
+	case <-time.After(5 * time.Second):
+		t.Error(errorMessage)
+
+		return
+	}
+}
+
 func TestBuildTree(t *testing.T) {
 	ctx := context.Background()
 	// Create a simple sequence of nodes
@@ -26,14 +39,7 @@ func TestBuildTree(t *testing.T) {
 	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing to complete
-	select {
-	case <-done:
-		// Success
-	case <-time.After(5 * time.Second):
-		t.Error("BuildTree timed out")
-
-		return
-	}
+	waitForCompletion(t, done, "BuildTree timed out")
 
 	// Verify tree is not nil
 	if tree == nil {
@@ -55,14 +61,7 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing
-	select {
-	case <-done:
-		// Should complete successfully
-	case <-time.After(5 * time.Second):
-		t.Error("BuildTree with empty input should not time out")
-
-		return
-	}
+	waitForCompletion(t, done, "BuildTree with empty input should not time out")
 
 	// Tree should still be created (but empty)
 	if tree == nil {
@@ -97,14 +96,7 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 	tree, data, done := BuildTree(ctx, schan)
 
 	// Wait for processing
-	select {
-	case <-done:
-		// Success
-	case <-time.After(5 * time.Second):
-		t.Error("BuildTree with multiple sequences timed out")
-
-		return
-	}
+	waitForCompletion(t, done, "BuildTree with multiple sequences timed out")
 
 	// Should contain all nodes from both sequences
 	if len(*data) != 4 {

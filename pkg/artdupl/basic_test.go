@@ -6,6 +6,23 @@ import (
 	"testing"
 )
 
+// newTestProgress creates a Progress struct with the given parameters.
+func newTestProgress(
+	stage string,
+	completed, total int,
+	percentage float64,
+	message, currentFile string,
+) Progress {
+	return Progress{
+		Stage:       stage,
+		Completed:   completed,
+		Total:       total,
+		Percentage:  percentage,
+		Message:     message,
+		CurrentFile: currentFile,
+	}
+}
+
 // TestDetectionMethod_Values_Basic tests detection method constants.
 func TestDetectionMethod_Values_Basic(t *testing.T) {
 	methods := []DetectionMethod{
@@ -167,14 +184,7 @@ func TestCloneGroup_Validation_Basic(t *testing.T) {
 
 // TestProgress_Validation_Basic tests progress structure.
 func TestProgress_Validation_Basic(t *testing.T) {
-	progress := Progress{
-		Stage:       "parsing",
-		Completed:   50,
-		Total:       100,
-		Percentage:  50.0,
-		Message:     "Processing files",
-		CurrentFile: "test.go",
-	}
+	progress := newTestProgress("parsing", 50, 100, 50.0, "Processing files", "test.go")
 
 	if progress.Stage == "" {
 		t.Error("Stage should not be empty")

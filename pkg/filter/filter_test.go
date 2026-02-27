@@ -713,18 +713,8 @@ func TestPatternMatching(t *testing.T) {
 		pattern := "*.go"
 
 		for _, path := range paths {
-			match := matchPattern(path, pattern)
-
 			shouldBeMatch := strings.HasSuffix(path, ".go")
-			if match != shouldBeMatch {
-				t.Errorf(
-					"Pattern %q with path %q: got %v, want %v",
-					pattern,
-					path,
-					match,
-					shouldBeMatch,
-				)
-			}
+			assertPatternMatch(t, pattern, path, shouldBeMatch)
 		}
 	})
 
@@ -739,21 +729,26 @@ func TestPatternMatching(t *testing.T) {
 		pattern := "vendor/*"
 
 		for _, path := range paths {
-			match := matchPattern(path, pattern)
-
 			shouldBeMatch := strings.HasPrefix(path, "vendor/") ||
 				strings.Contains(path, "/vendor/")
-			if match != shouldBeMatch {
-				t.Errorf(
-					"Pattern %q with path %q: got %v, want %v",
-					pattern,
-					path,
-					match,
-					shouldBeMatch,
-				)
-			}
+			assertPatternMatch(t, pattern, path, shouldBeMatch)
 		}
 	})
+}
+
+func assertPatternMatch(t *testing.T, pattern, path string, shouldBeMatch bool) {
+	t.Helper()
+
+	match := matchPattern(path, pattern)
+	if match != shouldBeMatch {
+		t.Errorf(
+			"Pattern %q with path %q: got %v, want %v",
+			pattern,
+			path,
+			match,
+			shouldBeMatch,
+		)
+	}
 }
 
 func TestFilterMetrics(t *testing.T) {

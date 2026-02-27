@@ -16,6 +16,17 @@ import (
 // DefaultCacheDir re-exports the default cache directory for consumers.
 const DefaultCacheDir = cache.DefaultCacheDir
 
+// sendFilesToChannel sends all files to the channel and closes it.
+func sendFilesToChannel(files []string, fchan chan<- string) {
+	go func() {
+		for _, f := range files {
+			fchan <- f
+		}
+
+		close(fchan)
+	}()
+}
+
 // IncrementalStats holds statistics from incremental parsing.
 type IncrementalStats struct {
 	FilesCount  int
@@ -26,14 +37,7 @@ type IncrementalStats struct {
 
 func Run(ctx context.Context, files []string, threshold int) ([]printer.Issue, error) {
 	fchan := make(chan string, 1024)
-
-	go func() {
-		for _, f := range files {
-			fchan <- f
-		}
-
-		close(fchan)
-	}()
+	sendFilesToChannel(files, fchan)
 
 	schan, _ := job.Parse(ctx, fchan)
 	t, data, done := job.BuildTree(ctx, schan)
@@ -82,14 +86,7 @@ func RunIncremental(
 	clearCache bool,
 ) ([]printer.Issue, IncrementalStats, error) {
 	fchan := make(chan string, 1024)
-
-	go func() {
-		for _, f := range files {
-			fchan <- f
-		}
-
-		close(fchan)
-	}()
+	sendFilesToChannel(files, fchan)
 
 	incParser := job.NewIncrementalParser(cacheDir, clearCache)
 	schan, statsChan := incParser.ParseIncremental(ctx, fchan)

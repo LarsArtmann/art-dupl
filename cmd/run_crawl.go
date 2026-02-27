@@ -67,15 +67,8 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 			}
 
 			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Skip vendor directories if flag not set
-				if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
-					strings.Contains(path, cli.VendorDirInPath)) {
-					return nil
-				}
-
-				// Skip .git directories
-				if strings.HasPrefix(path, cli.GitDirPrefix) ||
-					strings.Contains(path, cli.GitDirInPath) {
+				// Skip vendor and git directories
+				if shouldSkipPath(path, includeVendor) {
 					return nil
 				}
 
@@ -112,6 +105,22 @@ func isSourceFile(name string) bool {
 	return strings.HasSuffix(name, ".go") || strings.HasSuffix(name, ".templ")
 }
 
+// shouldSkipPath returns true if the path should be skipped due to being a vendor or git directory.
+func shouldSkipPath(path string, includeVendor bool) bool {
+	if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
+		strings.Contains(path, cli.VendorDirInPath)) {
+		return true
+	}
+
+	// Skip .git directories
+	if strings.HasPrefix(path, cli.GitDirPrefix) ||
+		strings.Contains(path, cli.GitDirInPath) {
+		return true
+	}
+
+	return false
+}
+
 // crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
 // This is used for hash-based detection which works on any file type.
 func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool) chan string {
@@ -137,15 +146,8 @@ func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor boo
 			}
 
 			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Skip vendor directories if flag not set
-				if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
-					strings.Contains(path, cli.VendorDirInPath)) {
-					return nil
-				}
-
-				// Skip .git directories
-				if strings.HasPrefix(path, cli.GitDirPrefix) ||
-					strings.Contains(path, cli.GitDirInPath) {
+				// Skip vendor and git directories
+				if shouldSkipPath(path, includeVendor) {
 					return nil
 				}
 

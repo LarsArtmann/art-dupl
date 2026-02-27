@@ -52,6 +52,19 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
 }
 
+// RunArtDuplAllFormat runs art-dupl with --all flag to generate all output formats.
+// The output directory will be created if it doesn't exist.
+func (s *BDDTestSetup) RunArtDuplAllFormat(outputDir, threshold string) ([]byte, error) {
+	return s.RunArtDuplOnDir(
+		s.TmpDir,
+		"--all",
+		"--output-dir",
+		outputDir,
+		"--threshold",
+		threshold,
+	)
+}
+
 // RunArtDuplWithStdin executes art-dupl with stdin input.
 func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string) ([]byte, error) {
 	if s.T != nil {

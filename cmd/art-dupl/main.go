@@ -10,7 +10,6 @@ import (
 	"github.com/charmbracelet/fang"
 )
 
-//nolint:gocognit // Main function orchestrates CLI setup with enhanced error handling and context-aware suggestions
 func main() {
 	// Create root command
 	rootCmd := cmd.NewRootCommand()
@@ -20,6 +19,17 @@ func main() {
 
 	// Enhanced error handler with fang styling and context-aware suggestions
 	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
+		renderHelpLink := func(message string) {
+			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
+				if _, writeErr := fmt.Fprintln(
+					w,
+					styles.Text.Render(message),
+				); writeErr != nil {
+					_ = writeErr
+				}
+			}
+		}
+
 		// Use fang's default error rendering as base
 		fang.DefaultErrorHandler(w, styles, err)
 
@@ -50,31 +60,11 @@ func main() {
 			}
 		default:
 			// Provide helpful hints for common errors
-			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-				if _, writeErr := fmt.Fprintln(
-					w,
-					styles.Text.Render("Quick Fix: Check file paths and permissions"),
-				); writeErr == nil {
-					if _, writeErr := fmt.Fprintln(
-						w,
-						styles.Text.Render("Get Help: art-dupl --help"),
-					); writeErr != nil {
-						_ = writeErr
-					}
-				}
-			}
+			renderHelpLink("Quick Fix: Check file paths and permissions")
+			renderHelpLink("Get Help: art-dupl --help")
 		}
 
-		if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-			if _, writeErr := fmt.Fprintln(
-				w,
-				styles.Text.Render(
-					"📚 Visit https://github.com/LarsArtmann/art-dupl for documentation",
-				),
-			); writeErr != nil {
-				_ = writeErr
-			}
-		}
+		renderHelpLink("📚 Visit https://github.com/LarsArtmann/art-dupl for documentation")
 	}
 
 	// Enable fang features for better CLI experience

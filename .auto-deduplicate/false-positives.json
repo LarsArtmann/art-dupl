@@ -50,5 +50,62 @@
     "reason": "Table-driven tests - separate test cases for different validation scenarios (AnalysisStats and SourceFile validation)",
     "marked_at": "2026-02-26T16:52:21.34235+01:00",
     "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "eb574474eafa2dd5390dfdc9d68782859fcc89a855c7df155c1f537979b4a4bf",
+    "files": ["/Users/larsartmann/projects/art-dupl/domain/coverage_test.go"],
+    "reason": "These are different test cases in a table-driven test with different values (name, path, wantErr). Not actual code duplicates.",
+    "marked_at": "2026-02-27T08:39:44.104142+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "7149fb6a9536393c388627772557b1d2227f177e74f3423cb3c906bd9e9886a6",
+    "files": ["/Users/larsartmann/projects/art-dupl/bdd/plumbing_output_test.go"],
+    "reason": "Intentional test data variations - each entry represents different detection method (hash, art-dupl, combined) with unique code snippets",
+    "marked_at": "2026-02-27T08:42:24.330031+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "9a0cc6a1f58c3931123d6227685eb12f5d01af3e334dfbd8034ba6d49a5a64a4",
+    "files": ["/Users/larsartmann/projects/art-dupl/bdd/stats_subcommand_test.go"],
+    "reason": "Locations 1 and 2 identical (threshold 10), but location 3 differs (threshold 5). Extracting helper would add complexity due to test setup dependencies. Partial duplicate.",
+    "marked_at": "2026-02-27T08:42:24.330917+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "f50278af7a0d3b60f3efc5fb3541c155ae09b3b232c867ba133a76a2c0201be3",
+    "files": ["/Users/larsartmann/projects/art-dupl/config/config_test.go"],
+    "reason": "Intentional test table variations testing different validation scenarios (threshold too low, too high, invalid format, etc.)",
+    "marked_at": "2026-02-27T08:42:24.331666+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "7640bee3d95f69a852256eea5f093a71cbd7f041438144440799c5840d76246b",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/pkg/artdupl/basic_test.go",
+      "/Users/larsartmann/projects/art-dupl/pkg/artdupl/detector_test.go"
+    ],
+    "reason": "Intentional test table variations testing different threshold values (0, -5, 1, 1000, 1001)",
+    "marked_at": "2026-02-27T08:42:24.332158+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "0427b760a5b00dd7939cdbaca741e90924ba7b84f9f60fdae7d63fe2988bc103",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/internal/filtertest/integration_filter_test.go"
+    ],
+    "reason": "Context-specific filter assertions testing different file types (sqlc vs templ). Each test has unique file path expectations that would require complex abstraction that reduces readability.",
+    "marked_at": "2026-02-27T08:51:10.914289+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "7b66bea0738516f0e92d22e67ed5d11cf45a74e8f68068a8c179352a5f5b9556",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/pkg/artdupl/basic_test.go",
+      "/Users/larsartmann/projects/art-dupl/pkg/artdupl/detector_test.go"
+    ],
+    "reason": "Similar test structure but different expectations: one tests for boolean error (wantErr: true), other tests for specific error type (wantErr: ErrNoDetectionMethods). These are different test scenarios.",
+    "marked_at": "2026-02-27T08:51:10.915666+01:00",
+    "marked_by": "auto-deduplicate"
   }
 ]

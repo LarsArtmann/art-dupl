@@ -24,6 +24,19 @@ var _ = Describe("Detection Methods", func() {
 		Expect(setup.Cleanup()).NotTo(HaveOccurred())
 	})
 
+	// Helper function to create command with detection methods
+	createDetectionCmd := func(detectionMethods string) *exec.Cmd {
+		return exec.Command(
+			setup.BinaryPath,
+			setup.TmpDir,
+			"--detection-methods",
+			detectionMethods,
+			"--json",
+			"--threshold",
+			"5",
+		)
+	}
+
 	Context("When using hash-based detection", func() {
 		It("should detect exact file-level duplicates", func() {
 			identicalCode := `package main
@@ -66,15 +79,7 @@ func duplicate() string {
 			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--detection-methods",
-				"hash",
-				"--json",
-				"--threshold",
-				"5",
-			)
+			cmd := createDetectionCmd("hash")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -216,15 +221,7 @@ func test() string {
 			err := setup.CreateDuplicateFiles([]string{"combine1.go", "combine2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--detection-methods",
-				"hash,art-dupl",
-				"--json",
-				"--threshold",
-				"5",
-			)
+			cmd := createDetectionCmd("hash,art-dupl")
 			output, err := cmd.Output()
 			Expect(err).ToNot(HaveOccurred())
 

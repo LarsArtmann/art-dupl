@@ -30,6 +30,18 @@ type BDDTestSetup struct {
 	BinaryPath    string
 }
 
+// createBuildCommand creates a command to build the art-dupl binary.
+func createBuildCommand(binaryPath string) *exec.Cmd {
+	return exec.CommandContext(
+		context.Background(),
+		"go",
+		"build",
+		"-o",
+		binaryPath,
+		"../cmd/art-dupl/main.go",
+	) // #nosec G204 -- Test helper building project binary
+}
+
 // NewBDDTestSetup creates a new BDD test setup with temporary directory and builds art-dupl binary.
 // The caller is responsible for cleaning up the temporary directory using Cleanup() or manually.
 func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
@@ -41,14 +53,7 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	}
 
 	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := exec.CommandContext(
-		context.Background(),
-		"go",
-		"build",
-		"-o",
-		binaryPath,
-		"../cmd/art-dupl/main.go",
-	) // #nosec G204 -- Test helper building project binary
+	cmd := createBuildCommand(binaryPath)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -111,14 +116,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 
 // buildSharedBinary builds the art-dupl binary at the given path.
 func buildSharedBinary(binaryPath string) error {
-	cmd := exec.CommandContext(
-		context.Background(),
-		"go",
-		"build",
-		"-o",
-		binaryPath,
-		"../cmd/art-dupl/main.go",
-	) // #nosec G204 -- Test helper building project binary
+	cmd := createBuildCommand(binaryPath)
 
 	output, buildErr := cmd.CombinedOutput()
 	if buildErr != nil {

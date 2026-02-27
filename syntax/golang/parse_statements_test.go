@@ -82,25 +82,29 @@ func main() {
 func TestParse_ReturnStmt(t *testing.T) {
 	t.Parallel()
 
-	code := `package main
+	tests := []struct {
+		name string
+		code string
+	}{
+		{"return_foo", `package main
 
 func foo() int {
 	return 42
 }
-`
-	testParseNodeType(t, "return", code, ReturnStmt)
-}
-
-func TestParse_ReturnStmt_Table(t *testing.T) {
-	t.Parallel()
-
-	code := `package main
+`},
+		{"return_getValue", `package main
 
 func getValue() int {
 	return 42
 }
-`
-	testParseNodeType(t, "return_table", code, ReturnStmt)
+`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			testParseNodeType(t, tt.name, tt.code, ReturnStmt)
+		})
+	}
 }
 
 func TestParse_IncDecStmt(t *testing.T) {

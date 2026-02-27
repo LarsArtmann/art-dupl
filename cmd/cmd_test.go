@@ -32,6 +32,25 @@ func DuplicateFunction() int {
 }
 `
 
+// createDuplicateTestFiles creates two test files with duplicate code in the given directory.
+func createDuplicateTestFiles(t *testing.T, tmpDir string) (string, string) {
+	t.Helper()
+
+	duplicateCode := testDuplicateCode
+	file1 := filepath.Join(tmpDir, "file1.go")
+	file2 := filepath.Join(tmpDir, "file2.go")
+
+	if err := os.WriteFile(file1, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	if err := os.WriteFile(file2, []byte(duplicateCode), 0o600); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	return file1, file2
+}
+
 // runOutputFormatTest runs a test for a specific output format flag.
 func runOutputFormatTest(t *testing.T, formatFlag string) {
 	t.Helper()
