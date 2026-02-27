@@ -13,6 +13,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// invalidMaxFileSizeOptions creates Options with invalid MaxFileSize for testing.
+func invalidMaxFileSizeOptions() *Options {
+	return &Options{
+		Threshold:        15,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+		MaxFileSize:      -1,
+	}
+}
+
 // cleanupDetector closes the detector and logs any errors.
 func cleanupDetector(t *testing.T, detector Detector) {
 	t.Helper()
@@ -119,11 +128,7 @@ func TestNewDetector_InvalidMaxWorkers(t *testing.T) {
 
 // TestNewDetector_InvalidMaxFileSize tests detector creation with invalid max file size.
 func TestNewDetector_InvalidMaxFileSize(t *testing.T) {
-	opts := &Options{
-		Threshold:        15,
-		DetectionMethods: []DetectionMethod{MethodArtDupl},
-		MaxFileSize:      -1,
-	}
+	opts := invalidMaxFileSizeOptions()
 
 	_, err := NewDetector(opts)
 	if !errors.Is(err, ErrInvalidMaxFileSize) {

@@ -307,8 +307,16 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 	t.Run("with clone groups", func(t *testing.T) {
 		groups := createTestCloneGroups(
-			struct{ id string; clones int; size int }{id: "group-1", clones: 1, size: 100},
-			struct{ id string; clones int; size int }{id: "group-2", clones: 2, size: 200},
+			struct {
+				id     string
+				clones int
+				size   int
+			}{id: "group-1", clones: 1, size: 100},
+			struct {
+				id     string
+				clones int
+				size   int
+			}{id: "group-2", clones: 2, size: 200},
 		)
 
 		analysis := CreateAnalysisFromClones(groups, 20)
@@ -362,8 +370,16 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 	t.Run("complexity score", func(t *testing.T) {
 		groups := createTestCloneGroups(
-			struct{ id string; clones int; size int }{id: "group-1", clones: 1, size: 100},
-			struct{ id string; clones int; size int }{id: "group-2", clones: 1, size: 200},
+			struct {
+				id     string
+				clones int
+				size   int
+			}{id: "group-1", clones: 1, size: 100},
+			struct {
+				id     string
+				clones int
+				size   int
+			}{id: "group-2", clones: 1, size: 200},
 		)
 
 		analysis := CreateAnalysisFromClones(groups, 15)

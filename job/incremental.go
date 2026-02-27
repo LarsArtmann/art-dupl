@@ -105,9 +105,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	// #nosec G304 -- File path comes from controlled source directory walk in ParseIncremental
 	content, err := os.ReadFile(file)
 	if err != nil {
-		logger.Default.Error("failed to read file", "file", file, "err", err)
-
-		return nil, 0, false
+		return ip.handleFileError(file, err, "read")
 	}
 
 	// Compute content hash
@@ -135,9 +133,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 	ast, lines, err = ParseFileByExtension(file)
 	if err != nil {
-		logger.Default.Error("failed to parse file", "file", file, "err", err)
-
-		return nil, 0, false
+		return ip.handleFileError(file, err, "parse")
 	}
 
 	// Serialize AST to nodes
@@ -152,6 +148,13 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	}
 
 	return nodes, lines, false
+}
+
+// handleFileError logs the error and returns zero values.
+func (ip *IncrementalParser) handleFileError(file string, err error, operation string) ([]*syntax.Node, int, bool) {
+	logger.Default.Error("failed to "+operation+" file", "file", file, "err", err)
+
+	return nil, 0, false
 }
 
 // countLines counts the number of lines in content.

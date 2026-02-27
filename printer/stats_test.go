@@ -26,6 +26,13 @@ func assertFileContains(t *testing.T, output, filename, value string) {
 	}
 }
 
+// assertMapFloat checks if a float64 value in a map matches the expected value.
+func assertMapFloat(t *testing.T, m map[string]any, key string, expected float64) {
+	if m[key] != expected {
+		t.Errorf("%s = %v, want %v", key, m[key], expected)
+	}
+}
+
 // createNodeSlice creates a slice of syntax.Node with sequential positions and types.
 // startPos is the starting position (inclusive), endPos is the ending position (inclusive).
 func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {

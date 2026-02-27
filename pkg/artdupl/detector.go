@@ -58,10 +58,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, errors.WrapValidation(
-			err,
-			fmt.Sprintf("input validation failed for %d files", len(files)),
-		)
+		return nil, d.wrapValidationError(err, "", len(files))
 	}
 
 	// Process files and build analysis pipeline
@@ -94,10 +91,7 @@ func (d *detector) FindClonesStream(
 	// Validate inputs
 	err := d.validateInputs(ctx, files)
 	if err != nil {
-		return nil, errors.WrapValidation(
-			err,
-			fmt.Sprintf("input validation failed for streaming with %d files", len(files)),
-		)
+		return nil, d.wrapValidationError(err, "streaming with ", len(files))
 	}
 
 	// Create output channel
@@ -124,6 +118,14 @@ func (d *detector) FindClonesStream(
 	}()
 
 	return resultChan, nil
+}
+
+// wrapValidationError wraps a validation error with context about the operation.
+func (d *detector) wrapValidationError(err error, operation string, fileCount int) error {
+	return errors.WrapValidation(
+		err,
+		fmt.Sprintf("input validation failed for "+operation+"%d files", fileCount),
+	)
 }
 
 // Close releases any resources held by the detector.

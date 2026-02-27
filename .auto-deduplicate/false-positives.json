@@ -190,5 +190,36 @@
     "reason": "Only 1 location exists - this is just test data, not a duplicate",
     "marked_at": "2026-02-27T09:58:48.515542+01:00",
     "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "f703139eee4caeafea806bbadbd0011defa60a8e7e2a58ab6ec15660bc141007",
+    "files": ["/Users/larsartmann/projects/art-dupl/migration/migration_test.go"],
+    "reason": "Test data structs with intentionally different values for different test cases - not actual duplication",
+    "marked_at": "2026-02-27T10:35:39.622099+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "edd34409dea14e9a7a4f070427acffe5226bb2203b6cbbbe20ea02f05970ca96",
+    "files": ["/Users/larsartmann/projects/art-dupl/internal/simd/simd_test.go"],
+    "reason": "Different test contexts checking different variables (tt.data vs data) - different test scenarios, not actual duplication",
+    "marked_at": "2026-02-27T10:35:39.623886+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "f0e86696a43f608fec98f07467e07494d444a0e877bf1b3c01e21db8cc207124",
+    "files": ["/Users/larsartmann/projects/art-dupl/pkg/artdupl/detector_pipeline.go"],
+    "reason": "Different methods (runSuffixTreeDetection, runArtDuplDetection, runHashDetection) with same signature but fundamentally different implementations - suffix tree builder vs delegator vs hash detector",
+    "marked_at": "2026-02-27T10:35:39.624428+01:00",
+    "marked_by": "auto-deduplicate"
+  },
+  {
+    "fingerprint": "e1e801c4bf7847a9a0fc0d22b69d76ee6157be266dd7da3a7d9e6afd040241c3",
+    "files": [
+      "/Users/larsartmann/projects/art-dupl/suffixtree/suffixtree_test.go",
+      "/Users/larsartmann/projects/art-dupl/syntax/syntax_test.go"
+    ],
+    "reason": "Cannot extract helper due to import cycle constraint (suffixtree -\u003e syntax -\u003e testutil -\u003e cycle). Panic recovery patterns are test-specific and appropriate to keep inline.",
+    "marked_at": "2026-02-27T10:35:39.625248+01:00",
+    "marked_by": "auto-deduplicate"
   }
 ]

@@ -11,6 +11,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
 )
 
+// statError prints an error message for file stat failures and exits.
+func statError(path string, err error) {
+	fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
+	os.Exit(1)
+}
+
 // filesFeedWithOptions creates a channel of file paths with options.
 func filesFeedWithOptions(
 	paths []string,
@@ -51,8 +57,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 		for _, path := range paths {
 			info, err := os.Lstat(path)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
-				os.Exit(1)
+				statError(path, err)
 			}
 
 			if !info.IsDir() {
@@ -130,8 +135,7 @@ func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor boo
 		for _, path := range paths {
 			info, err := os.Lstat(path)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
-				os.Exit(1)
+				statError(path, err)
 			}
 
 			if !info.IsDir() {

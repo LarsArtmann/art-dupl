@@ -4,6 +4,13 @@ import (
 	"testing"
 )
 
+// compareDecodeResult is a test helper for comparing decode function results.
+func compareDecodeResult(t *testing.T, funcName string, input, result, expected int32) {
+	if result != expected {
+		t.Errorf("%s(0x%08X) = 0x%06X, want 0x%06X", funcName, input, result, expected)
+	}
+}
+
 func TestHashIdentifierFast_Consistency(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -172,10 +179,7 @@ func TestDecodeBaseType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := DecodeBaseType(tt.input)
-			if result != tt.expected {
-				t.Errorf("DecodeBaseType(0x%08X) = 0x%02X, want 0x%02X",
-					tt.input, result, tt.expected)
-			}
+			compareDecodeResult(t, "DecodeBaseType", tt.input, result, tt.expected)
 		})
 	}
 }

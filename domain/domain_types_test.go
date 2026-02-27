@@ -450,12 +450,7 @@ func registerTypeTestSuite[T comparable](
 	typeName string,
 	testFuncs []func(*testing.T),
 	marshalTests []jsonTest[T],
-	unmarshalTests []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	},
+	unmarshalTests []jsonUnmarshalTest[T],
 	roundTripValue T,
 	marshalFunc func(T) ([]byte, error),
 	unmarshalFunc func(*T, []byte) error,
@@ -514,12 +509,7 @@ func createTypeTestSuite[T comparable](
 func createStandardUintJSONTests[T comparable](
 	validValue T,
 	validJSON string,
-) (marshalTests []jsonTest[T], unmarshalTests []struct {
-	name      string
-	input     string
-	want      T
-	wantError bool
-}, roundTripValue T,
+) (marshalTests []jsonTest[T], unmarshalTests []jsonUnmarshalTest[T], roundTripValue T,
 ) {
 	var zero T
 
@@ -527,12 +517,7 @@ func createStandardUintJSONTests[T comparable](
 		{name: "valid value", input: validValue, want: validJSON, wantErr: false},
 		{name: "zero should error", input: zero, want: "", wantErr: true},
 	}
-	unmarshalTests = []struct {
-		name      string
-		input     string
-		want      T
-		wantError bool
-	}{
+	unmarshalTests = []jsonUnmarshalTest[T]{
 		{name: "valid JSON", input: validJSON, want: validValue, wantError: false},
 		{name: "zero should error", input: `0`, want: zero, wantError: true},
 		{name: "invalid JSON", input: `not-json`, want: zero, wantError: true},

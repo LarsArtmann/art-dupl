@@ -79,11 +79,7 @@ func NewFileCache(cacheDir string) *FileCache {
 
 	fc := &FileCache{
 		cacheDir: cacheDir,
-		metadata: Metadata{
-			Version:   CacheVersion,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
+		metadata: newMetadata(),
 	}
 
 	// Ensure cache directories exist (tests verify this)
@@ -94,6 +90,15 @@ func NewFileCache(cacheDir string) *FileCache {
 	fc.loadMetadata()
 
 	return fc
+}
+
+// newMetadata creates a new Metadata with current timestamps.
+func newMetadata() Metadata {
+	return Metadata{
+		Version:   CacheVersion,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }
 
 // Get retrieves cached AST nodes for the given content hash.
@@ -197,11 +202,7 @@ func (fc *FileCache) Clear() error {
 		return errors.NewIOError(filesDir, "failed to recreate cache directory", err)
 	}
 
-	fc.metadata = Metadata{
-		Version:   CacheVersion,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	fc.metadata = newMetadata()
 
 	return nil
 }
