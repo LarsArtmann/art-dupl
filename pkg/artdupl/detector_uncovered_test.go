@@ -226,6 +226,7 @@ func TestRunHashDetection(t *testing.T) {
 // TestReportProgress tests the reportProgress function.
 func TestReportProgress(t *testing.T) {
 	var receivedProgress *Progress
+
 	callback := func(p *Progress) error {
 		receivedProgress = p
 		return nil
