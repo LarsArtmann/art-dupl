@@ -4,16 +4,38 @@ import (
 	"testing"
 )
 
+// validatable is a type constraint for types with IsValid() error method.
+type validatable interface {
+	IsValid() error
+}
+
+// testValidMethods runs table-driven tests for types with IsValid() error method.
+func testValidMethods[T validatable](t *testing.T, testCases []struct {
+	name    string
+	value   T
+	wantErr bool
+},
+) {
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.value.IsValid()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsValid() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 // TestAnalysis_IsValid tests Analysis.IsValid method.
 func TestAnalysis_IsValid(t *testing.T) {
 	tests := []struct {
-		name     string
-		analysis Analysis
-		wantErr  bool
+		name    string
+		value   Analysis
+		wantErr bool
 	}{
 		{
 			name: "valid analysis",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-1",
 				State:     DetectionStateCompleted,
 				Mode:      AnalysisModeFull,
@@ -24,7 +46,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name: "invalid state",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-2",
 				State:     DetectionState("invalid"),
 				Mode:      AnalysisModeFull,
@@ -35,7 +57,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name: "invalid mode",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-3",
 				State:     DetectionStateIdle,
 				Mode:      AnalysisMode("invalid"),
@@ -46,7 +68,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name: "zero threshold",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-4",
 				State:     DetectionStateIdle,
 				Mode:      AnalysisModeFull,
@@ -57,7 +79,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name: "empty created at",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-5",
 				State:     DetectionStateIdle,
 				Mode:      AnalysisModeFull,
@@ -68,7 +90,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name: "invalid clone group",
-			analysis: Analysis{
+			value: Analysis{
 				ID:        "test-6",
 				State:     DetectionStateCompleted,
 				Mode:      AnalysisModeFull,
@@ -82,26 +104,19 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.analysis.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Analysis.IsValid() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	testValidMethods(t, tests)
 }
 
 // TestAnalysisStats_IsValid tests AnalysisStats.IsValid method.
 func TestAnalysisStats_IsValid(t *testing.T) {
 	tests := []struct {
 		name    string
-		stats   AnalysisStats
+		value   AnalysisStats
 		wantErr bool
 	}{
 		{
 			name: "valid stats",
-			stats: AnalysisStats{
+			value: AnalysisStats{
 				FilesAnalyzed:    10,
 				TotalClones:      5,
 				TotalTokenSize:   100,
@@ -113,7 +128,7 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		},
 		{
 			name: "zero files analyzed",
-			stats: AnalysisStats{
+			value: AnalysisStats{
 				FilesAnalyzed:    0,
 				ProcessingTime:   1000,
 				ComplexityScore:  1.0,
@@ -123,7 +138,7 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		},
 		{
 			name: "zero processing time",
-			stats: AnalysisStats{
+			value: AnalysisStats{
 				FilesAnalyzed:    10,
 				ProcessingTime:   0,
 				ComplexityScore:  1.0,
@@ -133,7 +148,7 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		},
 		{
 			name: "negative complexity score",
-			stats: AnalysisStats{
+			value: AnalysisStats{
 				FilesAnalyzed:    10,
 				ProcessingTime:   1000,
 				ComplexityScore:  -1.0,
@@ -143,7 +158,7 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		},
 		{
 			name: "negative duplication ratio",
-			stats: AnalysisStats{
+			value: AnalysisStats{
 				FilesAnalyzed:    10,
 				ProcessingTime:   1000,
 				ComplexityScore:  1.0,
@@ -153,14 +168,7 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.stats.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("AnalysisStats.IsValid() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	testValidMethods(t, tests)
 }
 
 // TestDetectionOptions_IsValid tests DetectionOptions.IsValid method.
