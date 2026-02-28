@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"context"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"

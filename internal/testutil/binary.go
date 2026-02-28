@@ -1,7 +1,6 @@
 package testutil
 
 import (
-	"context"
 	"os/exec"
 	"path/filepath"
 	"testing"

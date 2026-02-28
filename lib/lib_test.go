@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"context"
 	"os"
 	"strings"
 	"testing"
