@@ -92,7 +92,7 @@ func buildSuffixTree(
 			LinesCount: incStats.LinesCount,
 		}
 
-		tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // Sentinel node only needs Type
+		tree.Update(&syntax.Node{Type: -1})
 
 		printSearchStatus(cfg, outputFormat)
 
@@ -114,7 +114,7 @@ func buildSuffixTree(
 
 	parseStats = <-statsChan
 
-	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // Sentinel node only needs Type
+	tree.Update(&syntax.Node{Type: -1})
 
 	printSearchStatus(cfg, outputFormat)
 
@@ -295,7 +295,7 @@ func executeHashOnlyAnalysis(
 			for _, fileHash := range fileDup.Files {
 				// Create a synthetic node representing the entire file
 				//nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
-				node := &syntax.Node{ //nolint:exhaustruct // Synthetic node for hash detection
+				node := &syntax.Node{
 					Filename: fileHash.Filename,
 					Pos:      0,
 					End:      int32(fileHash.Size),
