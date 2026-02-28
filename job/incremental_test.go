@@ -265,7 +265,7 @@ func main() {
 	}
 
 	stats := parser.GetCacheStats()
-	if stats.Entries != 1 {
-		t.Errorf("Expected 1 cache entry, got %d", stats.Entries)
+	if stats.Size != 1 {
+		t.Errorf("Expected 1 cache entry, got %d", stats.Size)
 	}
 }
