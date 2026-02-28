@@ -1,5 +1,7 @@
 # art-dupl
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/LarsArtmann/art-dupl)](https://goreportcard.com/report/github.com/LarsArtmann/art-dupl) [![codecov](https://codecov.io/gh/LarsArtmann/art-dupl/graph/badge.svg?token=art-dupl)](https://codecov.io/gh/LarsArtmann/art-dupl)
+
 **art-dupl** is a Go tool for finding code clones using suffix tree algorithms on serialized ASTs. It identifies structural duplicates while ignoring literal values.
 
 ## Installation

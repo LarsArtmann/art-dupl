@@ -481,6 +481,8 @@ func TestSemanticField(t *testing.T) {
 
 	// Test Semantic can be loaded from config file
 	t.Run("LoadFromConfigFile", func(t *testing.T) {
+		t.Parallel()
+
 		tmpDir, cleanup := createTempDir(t)
 		defer cleanup()
 
@@ -507,6 +509,8 @@ func TestSemanticField(t *testing.T) {
 
 	// Test Semantic is preserved in save/load round trip
 	t.Run("SaveLoadRoundTrip", func(t *testing.T) {
+		t.Parallel()
+
 		tmpDir, cleanup := createTempDir(t)
 		defer cleanup()
 
