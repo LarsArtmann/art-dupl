@@ -15,7 +15,7 @@ type FileProcessor struct {
 
 // NewFileProcessor creates a new file processor with optional base directory.
 func NewFileProcessor(baseDir ...string) *FileProcessor {
-	fp := &FileProcessor{}
+	fp := &FileProcessor{} //nolint:exhaustruct // baseDir set below
 	if len(baseDir) > 0 && baseDir[0] != "" {
 		fp.baseDir = baseDir[0]
 	}
@@ -34,7 +34,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
 
-	err := os.MkdirAll(dir, 0o750)
+	err := os.MkdirAll(dir, 0o750) //nolint:mnd // Standard directory permission
 	if err != nil {
 		return errors.NewIOError(dir, "failed to create directory", err)
 	}
@@ -50,7 +50,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 // WriteTextFile writes text content to a file with consistent permissions.
 func (fp *FileProcessor) WriteTextFile(filename, content string) error {
-	return fp.WriteFile(filename, []byte(content), 0o644)
+	return fp.WriteFile(filename, []byte(content), 0o644) //nolint:mnd // Standard file permission
 }
 
 // ReadFile reads file content with consistent error handling.

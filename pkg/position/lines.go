@@ -72,7 +72,7 @@ type LineIndex struct {
 // NewLineIndex creates an index from file content.
 // It records the byte offset of each newline character.
 func NewLineIndex(content []byte) *LineIndex {
-	newlines := make([]int, 0, len(content)/40) // estimate 40 chars per line
+	newlines := make([]int, 0, len(content)/40) //nolint:mnd // estimate 40 chars per line
 	newlines = append(newlines, 0)              // Line 1 starts at 0
 
 	for i, b := range content {

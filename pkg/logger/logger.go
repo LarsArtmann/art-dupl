@@ -105,10 +105,10 @@ func (l *charmLogger) Error(msg string, args ...any) {
 // NoOpLogger provides a no-op logger implementation.
 type NoOpLogger struct{}
 
-func (l *NoOpLogger) Debug(msg string, args ...any) {}
-func (l *NoOpLogger) Info(msg string, args ...any)  {}
-func (l *NoOpLogger) Warn(msg string, args ...any)  {}
-func (l *NoOpLogger) Error(msg string, args ...any) {}
+func (l *NoOpLogger) Debug(_ string, _ ...any) {}
+func (l *NoOpLogger) Info(_ string, _ ...any)  {}
+func (l *NoOpLogger) Warn(_ string, _ ...any)  {}
+func (l *NoOpLogger) Error(_ string, _ ...any) {}
 
 // Default returns a no-op logger by default.
 //

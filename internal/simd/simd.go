@@ -67,7 +67,7 @@ func NewHasher() Hasher {
 type fallbackHasher struct{}
 
 // Hash returns nil - actual hashing is done by xxh3 in calling packages.
-func (f *fallbackHasher) Hash(data []byte) []byte {
+func (f *fallbackHasher) Hash(_ []byte) []byte {
 	// Implementation delegated to xxh3 in calling packages to avoid import cycle
 	return nil
 }

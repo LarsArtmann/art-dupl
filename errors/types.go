@@ -44,7 +44,7 @@ type EnumValidationError struct {
 
 // NewEnumValidationError creates a new enum validation error with rich context.
 func NewEnumValidationError(enumType, enumValue string, cause error) *EnumValidationError {
-	return &EnumValidationError{
+	return &EnumValidationError{ //nolint:exhaustruct // File/Line optional, set by specific constructors
 		DuplError: DuplError{
 			Type:    ValidationError,
 			Message: fmt.Sprintf("enum validation error: type=%s, value=%q", enumType, enumValue),
