@@ -30,7 +30,7 @@ func main() {
 				Bold(true).
 				Render("⏹ CANCELED")
 
-			fmt.Fprintln(w, canceledStyle)
+			_, _ = fmt.Fprintln(w, canceledStyle)
 
 			return
 		}

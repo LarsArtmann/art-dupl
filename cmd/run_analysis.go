@@ -255,7 +255,10 @@ func executeHashOnlyAnalysis(
 	for file := range filesChan {
 		select {
 		case <-ctx.Done():
-			return nil, job.ParseStats{}, filter.FilterStats{}, fmt.Errorf("context cancelled: %w", ctx.Err())
+			return nil, job.ParseStats{}, filter.FilterStats{}, fmt.Errorf(
+				"context cancelled: %w",
+				ctx.Err(),
+			)
 		default:
 		}
 

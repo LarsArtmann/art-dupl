@@ -49,6 +49,7 @@ func TestNewHasher(t *testing.T) {
 }
 
 func testHasherHash(t *testing.T, hasher Hasher, name string) {
+	t.Helper()
 	tests := []struct {
 		testName string
 		data     []byte

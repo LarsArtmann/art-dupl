@@ -21,15 +21,9 @@ func main() {
 
 // assertFileContains checks if output contains expected filename and value.
 func assertFileContains(t *testing.T, output, filename, value string) {
+	t.Helper()
 	if !strings.Contains(output, filename) || !strings.Contains(output, value) {
 		t.Errorf("Output should contain %s with %s", filename, value)
-	}
-}
-
-// assertMapFloat checks if a float64 value in a map matches the expected value.
-func assertMapFloat(t *testing.T, m map[string]any, key string, expected float64) {
-	if m[key] != expected {
-		t.Errorf("%s = %v, want %v", key, m[key], expected)
 	}
 }
 

@@ -47,24 +47,15 @@ func createBuildCommand(binaryPath string) *exec.Cmd {
 func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	t.Helper()
 
-	tmpDir, err := os.MkdirTemp("", "art-dupl-bdd-*")
-	if err != nil {
-		t.Fatalf("Failed to create temporary directory: %v", err)
-	}
+	tmpDir := t.TempDir()
 
 	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
 	cmd := createBuildCommand(binaryPath)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		_ = os.RemoveAll(tmpDir) // cleanup on error path
-
 		t.Fatalf("Failed to build art-dupl binary: %v\nOutput: %s", err, string(output))
 	}
-
-	t.Cleanup(func() {
-		_ = os.RemoveAll(tmpDir) // test cleanup
-	})
 
 	return &BDDTestSetup{
 		T:             t,

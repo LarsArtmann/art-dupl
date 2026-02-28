@@ -109,7 +109,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	}
 
 	// Compute content hash
-	contentHash := cache.CacheKey(content)
+	contentHash := cache.Key(content)
 
 	// Check cache first
 	if cachedNodes, hit := ip.cache.Get(contentHash); hit {

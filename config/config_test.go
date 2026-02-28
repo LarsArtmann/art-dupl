@@ -11,10 +11,7 @@ import (
 func createTempDir(t *testing.T) (string, func()) {
 	t.Helper()
 
-	tmpDir, err := os.MkdirTemp("", "dupl-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
+	tmpDir := t.TempDir()
 
 	return tmpDir, func() {
 		err := os.RemoveAll(tmpDir)

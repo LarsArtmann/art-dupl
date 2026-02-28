@@ -20,7 +20,7 @@ func generateRandomSuffix() string {
 	for i := range suffixLength {
 		suffix[i] = byte(
 			'a' + rand.Intn(26),
-		) // #nosec G404 -- Test data only, cryptographic security not required
+		) // #nosec G115,G404 -- Test data only, overflow impossible (0-25 + 'a')
 	}
 
 	return string(suffix)

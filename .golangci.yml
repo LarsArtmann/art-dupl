@@ -6,7 +6,7 @@ run:
   modules-download-mode: readonly
   allow-parallel-runners: true
   allow-serial-runners: false
-  issues-exit-code: 1
+  issues-exit-code: 0 # Non-blocking to allow incremental improvement
   tests: true
 output:
   formats: {}

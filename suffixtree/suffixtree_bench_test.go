@@ -51,6 +51,7 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 
 // benchmarkFindTranMethod is a helper for benchmarking s.findTran with different parameters.
 func benchmarkFindTranMethod(b *testing.B, stateCount, transPerState int) {
+	b.Helper()
 	benchmarkFindTran(b, stateCount, transPerState, nil, func(s *state, t Token) *tran {
 		return s.findTran(t)
 	})
