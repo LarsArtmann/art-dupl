@@ -44,6 +44,11 @@ const (
 
 	// CacheVersion is incremented when cache format changes.
 	CacheVersion = 1
+
+	// Directory permissions.
+	cacheDirPerms = 0o750
+	// File permissions.
+	cacheFilePerms = 0o600
 )
 
 // FileCache provides caching for parsed AST nodes.
@@ -84,7 +89,7 @@ func NewFileCache(cacheDir string) *FileCache {
 
 	// Ensure cache directories exist (tests verify this)
 	filesDir := filepath.Join(cacheDir, "files")
-	_ = os.MkdirAll(filesDir, 0o750)
+	_ = os.MkdirAll(filesDir, cacheDirPerms)
 
 	// Load existing metadata if available
 	fc.loadMetadata()
@@ -138,7 +143,7 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 
 	// Ensure cache directory exists
 	filesDir := filepath.Join(fc.cacheDir, "files")
-	if err := os.MkdirAll(filesDir, 0o750); err != nil {
+	if err := os.MkdirAll(filesDir, cacheDirPerms); err != nil {
 		return errors.NewIOError(filesDir, "failed to create cache directory", err)
 	}
 
@@ -148,7 +153,7 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	}
 
 	cachePath := fc.cachePath(contentHash)
-	if err := os.WriteFile(cachePath, data, 0o600); err != nil {
+	if err := os.WriteFile(cachePath, data, cacheFilePerms); err != nil {
 		return errors.NewIOError(cachePath, "failed to write cache file", err)
 	}
 
@@ -197,7 +202,7 @@ func (fc *FileCache) Clear() error {
 	}
 
 	// Recreate the files directory so subsequent Set() calls work
-	err = os.MkdirAll(filesDir, 0o750)
+	err = os.MkdirAll(filesDir, cacheDirPerms)
 	if err != nil {
 		return errors.NewIOError(filesDir, "failed to recreate cache directory", err)
 	}
@@ -212,7 +217,7 @@ func (fc *FileCache) Stats() Stats {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
-	stats := Stats{
+	stats := Stats{ //nolint:exhaustruct // Size and BytesUsed calculated below
 		Hits:   fc.metadata.HitCount,
 		Misses: fc.metadata.MissCount,
 	}
@@ -234,7 +239,7 @@ func (fc *FileCache) Stats() Stats {
 }
 
 // GetStats returns cache hit/miss statistics.
-func (fc *FileCache) GetStats() (hits, misses int) {
+func (fc *FileCache) GetStats() (int, int) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
@@ -311,7 +316,7 @@ func (fc *FileCache) saveMetadata() error {
 		return errors.Wrap(err, errors.CacheError, "failed to marshal cache metadata")
 	}
 
-	if err := os.WriteFile(metadataPath, data, 0o600); err != nil {
+	if err := os.WriteFile(metadataPath, data, cacheFilePerms); err != nil {
 		return errors.WrapFile(err, metadataPath, "write")
 	}
 
@@ -324,9 +329,15 @@ type cacheEntry struct {
 	Nodes   []*syntax.Node
 }
 
-// CacheKey generates a cache key from file content.
+// Key generates a cache key from file content.
 // This uses SHA1 for cache keys (fast and collision-resistant enough for this use case).
-func CacheKey(content []byte) string {
+//
+// Deprecated: Use Key instead. CacheKey is kept for backward compatibility.
+func CacheKey(content []byte) string { return Key(content) }
+
+// Key generates a cache key from file content.
+// This uses SHA1 for cache keys (fast and collision-resistant enough for this use case).
+func Key(content []byte) string {
 	// #nosec G401 -- SHA1 used for cache keys, not cryptographic security
 	h := sha1.Sum(content)
 
@@ -335,7 +346,7 @@ func CacheKey(content []byte) string {
 
 //nolint:gochecknoinits // Required for gob registration of types used in cache serialization
 func init() {
-	// Register types for gob encoding
-	gob.Register(&syntax.Node{})
-	gob.Register(&cacheEntry{})
+	// Register types for gob encoding (zero-values are intentional for registration)
+	gob.Register(&syntax.Node{}) //nolint:exhaustruct // Zero-value registration only
+	gob.Register(&cacheEntry{})  //nolint:exhaustruct // Zero-value registration only
 }

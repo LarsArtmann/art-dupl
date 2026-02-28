@@ -76,7 +76,7 @@ func NewParseError(file string, line int, msg string, cause error) *DuplError {
 
 // newError creates a new error with the specified type.
 func newError(errorType ErrorType, msg string, cause error) *DuplError {
-	return &DuplError{
+	return &DuplError{ //nolint:exhaustruct // File/Line optional, set by specific constructors
 		Type:    errorType,
 		Message: msg,
 		Cause:   cause,
@@ -91,7 +91,7 @@ func NewConfigError(msg string, cause error) *DuplError {
 
 // NewIOError creates a new I/O error.
 func NewIOError(file, msg string, cause error) *DuplError {
-	return &DuplError{
+	return &DuplError{ //nolint:exhaustruct // Line optional for I/O errors
 		Type:    IOError,
 		Message: msg,
 		File:    file,
@@ -128,7 +128,7 @@ func NewAnalysisError(
 
 // NewFileError creates a new file error with context.
 func NewFileError(file, msg string, cause error) *DuplError {
-	return &DuplError{
+	return &DuplError{ //nolint:exhaustruct // Line optional for file errors
 		Type:    FileError,
 		Message: msg,
 		File:    file,
@@ -187,7 +187,7 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 		return err
 	}
 
-	return &DuplError{
+	return &DuplError{ //nolint:exhaustruct // File/Line optional for wrapped errors
 		Type:    errorType,
 		Message: msg,
 		Cause:   err,
@@ -207,7 +207,7 @@ func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
 		return err
 	}
 
-	return &DuplError{
+	return &DuplError{ //nolint:exhaustruct // File/Line optional for wrapped errors
 		Type:    errorType,
 		Message: fmt.Sprintf(format, args...),
 		Cause:   err,

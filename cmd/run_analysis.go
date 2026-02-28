@@ -83,7 +83,7 @@ func buildSuffixTree(
 			ctx,
 			filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor),
 		)
-		t, data, done := job.BuildTree(ctx, schan)
+		tree, data, done := job.BuildTree(ctx, schan)
 		<-done
 
 		incStats := <-incStatsChan
@@ -92,11 +92,11 @@ func buildSuffixTree(
 			LinesCount: incStats.LinesCount,
 		}
 
-		t.Update(&syntax.Node{Type: -1})
+		tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // Sentinel node only needs Type
 
 		printSearchStatus(cfg, outputFormat)
 
-		return t, *data, parseStats, nil
+		return tree, *data, parseStats, nil
 	}
 
 	// Standard parsing without cache
@@ -109,16 +109,16 @@ func buildSuffixTree(
 		schan, statsChan = job.Parse(ctx, filesChan)
 	}
 
-	t, data, done := job.BuildTree(ctx, schan)
+	tree, data, done := job.BuildTree(ctx, schan)
 	<-done
 
 	parseStats = <-statsChan
 
-	t.Update(&syntax.Node{Type: -1})
+	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // Sentinel node only needs Type
 
 	printSearchStatus(cfg, outputFormat)
 
-	return t, *data, parseStats, nil
+	return tree, *data, parseStats, nil
 }
 
 // setupFilter creates a filter based on config settings.
@@ -255,7 +255,7 @@ func executeHashOnlyAnalysis(
 	for file := range filesChan {
 		select {
 		case <-ctx.Done():
-			return nil, job.ParseStats{}, filter.FilterStats{}, ctx.Err()
+			return nil, job.ParseStats{}, filter.FilterStats{}, fmt.Errorf("context cancelled: %w", ctx.Err())
 		default:
 		}
 
@@ -279,7 +279,7 @@ func executeHashOnlyAnalysis(
 	go func() {
 		defer close(duplChan)
 
-		for _, fd := range fileDuplicates {
+		for _, fileDup := range fileDuplicates {
 			select {
 			case <-ctx.Done():
 				return
@@ -289,20 +289,20 @@ func executeHashOnlyAnalysis(
 			// Create fragments from file duplicates
 			var fragments [][]*syntax.Node
 
-			for _, fh := range fd.Files {
+			for _, fileHash := range fileDup.Files {
 				// Create a synthetic node representing the entire file
 				//nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
-				node := &syntax.Node{
-					Filename: fh.Filename,
+				node := &syntax.Node{ //nolint:exhaustruct // Synthetic node for hash detection
+					Filename: fileHash.Filename,
 					Pos:      0,
-					End:      int32(fh.Size),
+					End:      int32(fileHash.Size),
 					Type:     1,
 				}
 				fragments = append(fragments, []*syntax.Node{node})
 			}
 
 			match := syntax.Match{
-				Hash:  fd.Hash,
+				Hash:  fileDup.Hash,
 				Frags: fragments,
 			}
 			duplChan <- match
@@ -315,7 +315,7 @@ func executeHashOnlyAnalysis(
 		filterStats = filterParam.GetStats()
 	}
 
-	return duplChan, job.ParseStats{FilesCount: len(files)}, filterStats, nil
+	return duplChan, job.ParseStats{FilesCount: len(files), LinesCount: 0}, filterStats, nil
 }
 
 // createPrinter returns the appropriate printer based on output format.
