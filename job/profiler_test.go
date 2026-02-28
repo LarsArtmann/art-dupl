@@ -73,7 +73,7 @@ func TestProfileDiff(t *testing.T) {
 
 func TestContextTimeout(t *testing.T) {
 	// Test that timeout context works correctly
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Millisecond)
 	defer cancel()
 
 	select {
@@ -86,7 +86,7 @@ func TestContextTimeout(t *testing.T) {
 
 func TestContextTimeoutExpired(t *testing.T) {
 	// Test that timeout context expires correctly
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Millisecond)
 	defer cancel()
 
 	select {

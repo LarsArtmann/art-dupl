@@ -12,6 +12,7 @@ import (
 func newTestConfig() *config.Config {
 	cfg := config.DefaultConfig()
 	cfg.Threshold = 15
+
 	return cfg
 }
 

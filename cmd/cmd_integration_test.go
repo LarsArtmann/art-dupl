@@ -241,7 +241,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 			IncludeSQLC:      true,
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		duplChan, parseStats, filterStats, err := executeAnalysis(
 			ctx,
@@ -282,7 +282,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 			IncludeSQLC:      true,
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		duplChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
 		if err != nil {
@@ -315,7 +315,7 @@ func Example() int {
 			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		tree, data, parseStats, err := buildSuffixTree(
 			ctx,
@@ -354,7 +354,7 @@ func Example() int {
 			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		tree, _, _, err := buildSuffixTree(ctx, []string{tmpDir}, cfg, nil, config.OutputFormatText)
 		if err != nil {

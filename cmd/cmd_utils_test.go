@@ -305,7 +305,7 @@ func TestWriteFormatFile(t *testing.T) {
 		sortByEnum := printer.SortBySize
 
 		err := writeFormatFile(
-			context.TODO(),
+			t.Context(),
 			cfg,
 			matches,
 			parseStats,

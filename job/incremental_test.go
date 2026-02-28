@@ -24,7 +24,7 @@ func main() {
 	}
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
@@ -68,7 +68,7 @@ func main() {
 	}
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
@@ -114,7 +114,7 @@ func main() {
 	}
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
@@ -148,7 +148,7 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 	cacheDir := setup.TmpDir + "/cache"
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 
 	fchan := make(chan string, 1)
 
@@ -169,7 +169,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	cacheDir := setup.TmpDir + "/cache"
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent.go"
@@ -213,7 +213,7 @@ func function2() {
 	}
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 2)
 	fchan <- setup.GetFilePath("file1.go")
@@ -264,7 +264,7 @@ func main() {
 	}
 
 	parser := NewIncrementalParser(cacheDir, false)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")

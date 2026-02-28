@@ -22,7 +22,7 @@ func waitForCompletion(t *testing.T, done chan bool, errorMessage string) {
 }
 
 func TestBuildTree(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	// Create a simple sequence of nodes
 	nodes := make([]*syntax.Node, 3)
 	for i := range nodes {
@@ -53,7 +53,7 @@ func TestBuildTree(t *testing.T) {
 }
 
 func TestBuildTreeEmptyInput(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	// Test with empty channel
 	schan := make(chan []*syntax.Node)
 	close(schan)
@@ -75,7 +75,7 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 }
 
 func TestBuildTreeMultipleSequences(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	// Create multiple sequences
 	sequence1 := make([]*syntax.Node, 2)
 	sequence1[0] = &syntax.Node{Type: 1}

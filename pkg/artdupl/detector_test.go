@@ -191,7 +191,7 @@ func TestDetector_FindClones_NonExistentFile(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	result, err := detector.FindClones(context.Background(), []string{"nonexistent_file.go"})
+	result, err := detector.FindClones(t.Context(), []string{"nonexistent_file.go"})
 	if err == nil && result != nil {
 		return
 	}

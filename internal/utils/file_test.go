@@ -210,7 +210,7 @@ func TestApplyTimeout(t *testing.T) {
 		g := NewWithT(t)
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		resultCtx, cancel := ApplyTimeout(ctx, 0)
 		defer cancel()
@@ -223,7 +223,7 @@ func TestApplyTimeout(t *testing.T) {
 		g := NewWithT(t)
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		resultCtx, cancel := ApplyTimeout(ctx, -1)
 		defer cancel()
@@ -236,7 +236,7 @@ func TestApplyTimeout(t *testing.T) {
 		g := NewWithT(t)
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		resultCtx, cancel := ApplyTimeout(ctx, 5)
 		defer cancel()
@@ -252,7 +252,7 @@ func TestApplyTimeout(t *testing.T) {
 		g := NewWithT(t)
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		resultCtx, cancel := ApplyTimeout(ctx, 1)
 		defer cancel()
@@ -273,7 +273,7 @@ func TestApplyTimeout(t *testing.T) {
 		g := NewWithT(t)
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		resultCtx, cancel := ApplyTimeout(ctx, 10)
 
 		cancel()

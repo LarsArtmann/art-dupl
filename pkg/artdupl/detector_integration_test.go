@@ -46,7 +46,7 @@ func main() {
 		cleanupDetector(t, detector)
 	})
 
-	result, err := detector.FindClones(context.Background(), []string{filename})
+	result, err := detector.FindClones(t.Context(), []string{filename})
 	if err != nil {
 		if !errors.Is(err, ErrNoDuplicatesFound) {
 			t.Logf("FindClones returned: %v", err)
@@ -101,7 +101,7 @@ func duplicate() {
 		cleanupDetector(t, detector)
 	})
 
-	result, err := detector.FindClones(context.Background(), []string{file1, file2})
+	result, err := detector.FindClones(t.Context(), []string{file1, file2})
 	if err != nil {
 		t.Logf("FindClones returned: %v", err)
 
@@ -126,7 +126,7 @@ func main() {
 
 	opts := DefaultOptions()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Nanosecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 1*time.Nanosecond)
 	defer cancel()
 
 	time.Sleep(1 * time.Millisecond)
@@ -161,7 +161,7 @@ func TestDetector_Integration_NonExistentFile(t *testing.T) {
 		cleanupDetector(t, detector)
 	})
 
-	result, err := detector.FindClones(context.Background(), []string{"nonexistent_file.go"})
+	result, err := detector.FindClones(t.Context(), []string{"nonexistent_file.go"})
 	if err == nil && result != nil {
 		return
 	}
@@ -190,7 +190,7 @@ func main() {
 		cleanupDetector(t, detector)
 	})
 
-	_, err = detector.FindClonesStream(context.Background(), []string{filename})
+	_, err = detector.FindClonesStream(t.Context(), []string{filename})
 	if err != nil {
 		t.Logf("FindClonesStream returned: %v", err)
 	}

@@ -11,8 +11,8 @@ import (
 func BuildArtDuplBinary(t *testing.T, outputPath string) {
 	t.Helper()
 
-	cmd := exec.CommandContext( //nolint:gosec // go build with validated paths in test
-		context.Background(),
+	cmd := exec.CommandContext(
+		t.Context(),
 		"go",
 		"build",
 		"-o",
@@ -40,9 +40,8 @@ func BuildAndCleanArtDuplBinary(t *testing.T) string {
 func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, error) {
 	t.Helper()
 
-	//nolint:gosec // G204: Running test binary with controlled arguments in test context
 	cmd := exec.CommandContext(
-		context.Background(),
+		t.Context(),
 		binaryPath,
 		args...)
 

@@ -9,7 +9,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
 	testContent := `package main
@@ -49,7 +49,7 @@ func helper() {
 }
 
 func TestParseErrorHandling(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent_file.go"
@@ -68,7 +68,7 @@ func TestParseErrorHandling(t *testing.T) {
 }
 
 func TestParseMultipleFiles(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
 	files := map[string]string{

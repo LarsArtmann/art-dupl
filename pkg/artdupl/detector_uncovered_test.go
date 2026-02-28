@@ -64,7 +64,7 @@ func TestConvertToCloneGroup_MaxClonesLimit(t *testing.T) {
 
 	// Create 5 fragments
 	frags := make([][]*syntax.Node, 5)
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		frags[i] = []*syntax.Node{
 			{Type: 1, Filename: "file.go", Pos: int32(i), End: int32(i + 1)},
 		}
@@ -211,7 +211,7 @@ func TestRunHashDetection(t *testing.T) {
 		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	matchesChan := d.runHashDetection(ctx, data, 1)
 
 	if matchesChan == nil {
@@ -229,6 +229,7 @@ func TestReportProgress(t *testing.T) {
 
 	callback := func(p *Progress) error {
 		receivedProgress = p
+
 		return nil
 	}
 
@@ -307,7 +308,7 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 	}
 	close(matchesChan)
 
-	groups, err := collectMatchesIntoGroups(context.Background(), matchesChan)
+	groups, err := collectMatchesIntoGroups(t.Context(), matchesChan)
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
@@ -328,7 +329,7 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 // TestCollectMatchesIntoGroups_Cancelled tests collectMatchesIntoGroups with cancelled context.
 func TestCollectMatchesIntoGroups_Cancelled(t *testing.T) {
 	matchesChan := make(chan syntax.Match, 1)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 
 	// Send match and close channel
 	matchesChan <- syntax.Match{Hash: "hash1", Frags: [][]*syntax.Node{{{}}}}
@@ -360,7 +361,7 @@ func TestStreamDetectionResults(t *testing.T) {
 		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	// This will run and send results to the channel
 	// We just need to make sure it doesn't panic
 	err := d.streamDetectionResults(ctx, data, resultChan)
@@ -380,7 +381,7 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 	}
 
 	resultChan := make(chan *CloneGroup)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	cancel() // Cancel immediately
 
 	data := []*syntax.Node{
@@ -471,7 +472,7 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	matchesChan := d.runSuffixTreeDetection(ctx, data, 1)
 
 	if matchesChan == nil {
@@ -492,7 +493,7 @@ func TestRunArtDuplDetection(t *testing.T) {
 		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	matchesChan := d.runArtDuplDetection(ctx, data, 1)
 
 	if matchesChan == nil {

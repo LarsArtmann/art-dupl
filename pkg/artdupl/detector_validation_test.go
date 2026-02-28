@@ -457,7 +457,7 @@ func TestDetector_FindClones_NoFiles(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	_, err = detector.FindClones(context.Background(), []string{})
+	_, err = detector.FindClones(t.Context(), []string{})
 	if !errors.Is(err, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
 	}
@@ -472,7 +472,7 @@ func TestDetector_FindClones_NilFiles(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	_, err = detector.FindClones(context.Background(), nil)
+	_, err = detector.FindClones(t.Context(), nil)
 	if !errors.Is(err, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
 	}
@@ -487,7 +487,7 @@ func TestDetector_FindClones_ContextCanceled(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
 	_, err = detector.FindClones(ctx, []string{"some_file.go"})
@@ -505,7 +505,7 @@ func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	_, err = detector.FindClonesStream(context.Background(), []string{})
+	_, err = detector.FindClonesStream(t.Context(), []string{})
 	if !errors.Is(err, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
 	}
@@ -524,7 +524,7 @@ func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 		cleanupDetector(t, detector)
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
 	_, err = detector.FindClonesStream(ctx, []string{"test.go"})
@@ -546,12 +546,12 @@ func TestDetector_Reuse(t *testing.T) {
 		cleanupDetector(t, detector)
 	})
 
-	_, err = detector.FindClones(context.Background(), []string{})
+	_, err = detector.FindClones(t.Context(), []string{})
 	if !errors.Is(err, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
 	}
 
-	_, err = detector.FindClones(context.Background(), []string{})
+	_, err = detector.FindClones(t.Context(), []string{})
 	if !errors.Is(err, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided on reuse, got: %v", err)
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseParallel(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
 	files := map[string]string{
@@ -68,7 +68,7 @@ func function3() {
 }
 
 func TestParseParallelWithDefaultWorkers(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
 	content := `package main
@@ -100,7 +100,7 @@ func main() {
 }
 
 func TestParseParallelContextCancellation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 
 	fchan := make(chan string, 1)
 
@@ -118,7 +118,7 @@ func TestParseParallelContextCancellation(t *testing.T) {
 }
 
 func TestParseParallelErrorHandling(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent_file.go"
@@ -210,7 +210,7 @@ func TestParseFileByExtensionNonexistentFile(t *testing.T) {
 }
 
 func TestParseStatsFromSequential(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
 	content := `package main

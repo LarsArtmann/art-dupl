@@ -75,7 +75,7 @@ func TestSendFilesToChannelClosesChannel(t *testing.T) {
 
 // TestRunWithEmptyFiles tests Run with empty file list.
 func TestRunWithEmptyFiles(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	issues, err := Run(ctx, []string{}, 15)
@@ -90,7 +90,7 @@ func TestRunWithEmptyFiles(t *testing.T) {
 
 // TestRunWithNonExistentFile tests Run with a non-existent file.
 func TestRunWithNonExistentFile(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	issues, err := Run(ctx, []string{"/nonexistent/file.go"}, 15)
@@ -120,7 +120,7 @@ func add(a, b int) int {
 		t.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	issues, err := Run(ctx, []string{filePath}, 15)
@@ -162,7 +162,7 @@ func duplicateFunction(x, y int) int {
 		t.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	issues, err := Run(ctx, []string{file1, file2}, 5) // Low threshold to catch duplicates
@@ -178,7 +178,7 @@ func duplicateFunction(x, y int) int {
 
 // TestRunWithContextCancellation tests Run with context cancellation.
 func TestRunWithContextCancellation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	cancel() // Cancel immediately
 
 	issues, err := Run(ctx, []string{}, 15)
@@ -193,7 +193,7 @@ func TestRunWithContextCancellation(t *testing.T) {
 
 // TestRunIncrementalWithEmptyFiles tests RunIncremental with empty file list.
 func TestRunIncrementalWithEmptyFiles(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	issues, stats, err := RunIncremental(ctx, []string{}, 15, "", true)
@@ -211,7 +211,7 @@ func TestRunIncrementalWithEmptyFiles(t *testing.T) {
 
 // TestRunIncrementalWithNonExistentFile tests RunIncremental with non-existent file.
 func TestRunIncrementalWithNonExistentFile(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	issues, _, err := RunIncremental(ctx, []string{"/nonexistent/path.go"}, 15, "", true)
@@ -241,7 +241,7 @@ func process(data string) string {
 		t.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	cacheDir := filepath.Join(tmpDir, ".cache")
@@ -275,7 +275,7 @@ func cachedFunc() int {
 		t.Fatal(err)
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	cacheDir := filepath.Join(tmpDir, ".cache")
 
 	// First run - should parse and cache
@@ -316,7 +316,7 @@ func clearFunc() bool {
 		t.Fatal(err)
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	cacheDir := filepath.Join(tmpDir, ".cache")
 
 	// First run - creates cache

@@ -309,7 +309,7 @@ func TestPrintDupls(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		err := printDupls(context.Background(), mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(t.Context(), mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -337,7 +337,7 @@ func TestPrintDupls(t *testing.T) {
 
 		close(ch)
 
-		err := printDupls(context.Background(), mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(t.Context(), mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -361,7 +361,7 @@ func TestPrintDupls(t *testing.T) {
 
 		close(ch)
 
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(t.Context())
 		cancel()
 
 		err := printDupls(ctx, mock, ch, printer.SortBySize, 15, "art-dupl")

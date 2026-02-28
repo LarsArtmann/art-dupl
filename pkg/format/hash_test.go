@@ -66,7 +66,7 @@ func TestHashMatchesHexEncoding(t *testing.T) {
 func TestHashLength(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		result := Hash(uint64(i))
 		if len(result) != 16 {
 			t.Errorf("Hash(%d) returned string of length %d, want 16", i, len(result))
@@ -89,7 +89,7 @@ func BenchmarkHash(b *testing.B) {
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				_ = Hash(bm.input)
 			}
 		})
