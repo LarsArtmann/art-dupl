@@ -1,15 +1,11 @@
-# version: "2" - Commented out for golangci-lint v1 compatibility
+# golangci-lint v1 compatible configuration
 run:
   timeout: 5m
   go: "1.25"
-  build-tags: []
   modules-download-mode: readonly
-  allow-parallel-runners: true
-  allow-serial-runners: false
-  issues-exit-code: 0 # Non-blocking to allow incremental improvement
+  issues-exit-code: 0
   tests: true
-output:
-  formats: {}
+
 linters:
   enable:
     - maintidx
@@ -27,9 +23,7 @@ linters:
     - wrapcheck
     - tparallel
     - nonamedreturns
-    - unqueryvet
     - nlreturn
-    - wsl_v5
     - godot
     - noctx
     - prealloc
@@ -44,8 +38,6 @@ linters:
     - usestdlibvars
     - zerologlint
     - contextcheck
-    - funcorder
-    - iotamixing
     - nakedret
     - promlinter
     - paralleltest
@@ -54,8 +46,7 @@ linters:
     - fatcontext
     - forbidigo
     - copyloopvar
-    - godoclint
-    - err113
+    - goerr113
     - gocyclo
     - errname
     - testifylint
@@ -67,8 +58,6 @@ linters:
     - ineffassign
     - goprintffuncname
     - depguard
-    - modernize
-    - arangolint
     - goconst
     - gomodguard
     - varnamelen
@@ -76,11 +65,9 @@ linters:
     - gochecksumtype
     - sloglint
     - mnd
-    - exptostd
     - unused
     - tagliatelle
     - iface
-    - embeddedstructfieldcheck
     - spancheck
     - recvcheck
     - inamedparam
@@ -107,149 +94,142 @@ linters:
     - intrange
     - durationcheck
     - predeclared
-    - nilnesserr
     - gomoddirectives
     - errcheck
     - cyclop
     - revive
     - thelper
     - bidichk
-    - tagalign
     - godox
     - nilnil
     - dogsled
-    - noinlineerr
     - dupl
-  settings:
-    cyclop:
-      max-complexity: 15
-    dupl:
-      threshold: 100
-    funlen:
-      lines: 80
-      statements: 50
-    gocognit:
-      min-complexity: 35
-    goconst:
-      min-len: 5
-      min-occurrences: 4
-    gocyclo:
-      min-complexity: 15
-    ireturn:
-      allow:
-        - anon
-        - error
-        - empty
-        - stdlib
-        - generic
-        - Printer
-        - Hasher
-        - Detector
-        - Token
-    depguard:
-      rules:
-        Main:
-          files:
-            - $all
-          allow:
-            - $gostd
-            - github.com/LarsArtmann/art-dupl
-            - github.com/charmbracelet
-            - github.com/onsi/ginkgo/v2
-            - github.com/onsi/gomega
-            - github.com/spf13/cobra
-            - github.com/zeebo/xxh3
-            - github.com/stretchr/testify
-            - github.com/samber/mo
-            - gopkg.in/yaml.v3
-            - github.com/go-faster/yaml
-            - github.com/a-h/templ
-    wrapcheck:
-      ignore-sigs:
-        - errors.Wrap
-        - errors.Wrapf
-        - errors.WrapFile
-        - fmt.Errorf(
-        - errors.New(
-        - stderrors.New(
-        - domain.NewValidationError(
-  exclusions:
+
+linters-settings:
+  cyclop:
+    max-complexity: 15
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 80
+    statements: 50
+  gocognit:
+    min-complexity: 35
+  goconst:
+    min-len: 5
+    min-occurrences: 4
+  gocyclo:
+    min-complexity: 15
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - generic
+      - Printer
+      - Hasher
+      - Detector
+      - Token
+  depguard:
     rules:
-      - path: _test\.go
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - exhaustruct
-          - paralleltest
-          - testpackage
-          - varnamelen
-          - gochecknoglobals
-          - forcetypeassert
-          - forbidigo
-          - mnd
-          - tagliatelle
-          - revive
-          - wrapcheck
-          - godoclint
-          - recvcheck
-          - nestif
-      - path: bdd/
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - exhaustruct
-          - paralleltest
-          - testpackage
-          - varnamelen
-          - gochecknoglobals
-          - forcetypeassert
-          - forbidigo
-          - mnd
-          - tagliatelle
-          - revive
-          - wrapcheck
-          - godoclint
-          - forbidigo
-          - godox
-          - nestif
-      - path: examples/
-        linters:
-          - exhaustruct
-          - varnamelen
-          - mnd
-          - tagliatelle
-          - revive
-      - path: testutils/
-        linters:
-          - exhaustruct
-          - varnamelen
-          - mnd
-          - tagliatelle
-          - revive
-          - gosec
-      - path: migration/
-        linters:
-          - typecheck
-      - path: cmd/
-        linters:
-          - exhaustruct
-      - path: "syntax/"
-        linters:
-          - gocyclo
-          - cyclop
-formatters:
-  enable:
-    - golines
-issues: {}
+      Main:
+        files:
+          - $all
+        allow:
+          - $gostd
+          - github.com/LarsArtmann/art-dupl
+          - github.com/charmbracelet
+          - github.com/onsi/ginkgo/v2
+          - github.com/onsi/gomega
+          - github.com/spf13/cobra
+          - github.com/zeebo/xxh3
+          - github.com/stretchr/testify
+          - github.com/samber/mo
+          - gopkg.in/yaml.v3
+          - github.com/go-faster/yaml
+          - github.com/a-h/templ
+  wrapcheck:
+    ignore-sigs:
+      - errors.Wrap
+      - errors.Wrapf
+      - errors.WrapFile
+      - fmt.Errorf(
+      - errors.New(
+      - stderrors.New(
+      - domain.NewValidationError(
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - cyclop
+        - gocognit
+        - gocyclo
+        - maintidx
+        - dupl
+        - gosec
+        - goerr113
+        - exhaustruct
+        - paralleltest
+        - testpackage
+        - varnamelen
+        - gochecknoglobals
+        - forcetypeassert
+        - forbidigo
+        - mnd
+        - tagliatelle
+        - revive
+        - wrapcheck
+        - nestif
+        - recvcheck
+    - path: bdd/
+      linters:
+        - funlen
+        - cyclop
+        - gocognit
+        - gocyclo
+        - maintidx
+        - dupl
+        - gosec
+        - goerr113
+        - exhaustruct
+        - paralleltest
+        - testpackage
+        - varnamelen
+        - gochecknoglobals
+        - forcetypeassert
+        - forbidigo
+        - mnd
+        - tagliatelle
+        - revive
+        - wrapcheck
+        - forbidigo
+        - godox
+        - nestif
+    - path: examples/
+      linters:
+        - exhaustruct
+        - varnamelen
+        - mnd
+        - tagliatelle
+        - revive
+    - path: testutils/
+      linters:
+        - exhaustruct
+        - varnamelen
+        - mnd
+        - tagliatelle
+        - revive
+        - gosec
+    - path: migration/
+      linters:
+        - typecheck
+    - path: cmd/
+      linters:
+        - exhaustruct
+    - path: "syntax/"
+      linters:
+        - gocyclo
+        - cyclop
