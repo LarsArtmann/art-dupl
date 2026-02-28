@@ -240,6 +240,9 @@ linters:
       - path: migration/
         linters:
           - typecheck
+      - path: cmd/
+        linters:
+          - exhaustruct
 formatters:
   enable:
     - golines

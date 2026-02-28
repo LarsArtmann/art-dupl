@@ -1,0 +1,34 @@
+# Pre-commit Hook for art-dupl
+#
+# This hook runs art-dupl to detect code duplication before commits.
+# Add this to your .pre-commit-config.yaml:
+#
+# repos:
+#   - repo: local
+#     hooks:
+#       - id: art-dupl
+#         name: art-dupl
+#         entry: art-dupl --plumbing -t 30
+#         language: system
+#         types: [go]
+#         pass_filenames: false
+#
+# Or use the script directly:
+#
+# repos:
+#   - repo: https://github.com/LarsArtmann/art-dupl
+#     rev: v1.0.0
+#     hooks:
+#       - id: art-dupl
+#         args: ['-t', '30']
+
+repos:
+  - repo: local
+    hooks:
+      - id: art-dupl
+        name: Detect code duplication
+        entry: bash -c 'art-dupl --plumbing -t 30 . && echo "No significant code duplication found"'
+        language: system
+        types: [go]
+        pass_filenames: false
+        stages: [pre-commit]
