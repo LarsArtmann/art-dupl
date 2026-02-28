@@ -22,6 +22,7 @@ func main() {
 // assertFileContains checks if output contains expected filename and value.
 func assertFileContains(t *testing.T, output, filename, value string) {
 	t.Helper()
+
 	if !strings.Contains(output, filename) || !strings.Contains(output, value) {
 		t.Errorf("Output should contain %s with %s", filename, value)
 	}
