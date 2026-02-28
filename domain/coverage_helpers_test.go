@@ -29,8 +29,8 @@ func TestValidateRules(t *testing.T) {
 			t.Error("validateRules() error = nil, want error")
 		}
 
-		if err.Error() != "rule1 failed" {
-			t.Errorf("validateRules() error = %v, want 'rule1 failed'", err)
+		if err.Error() != "validation failed: rule1 failed" {
+			t.Errorf("validateRules() error = %v, want 'validation failed: rule1 failed'", err)
 		}
 	})
 
@@ -46,8 +46,8 @@ func TestValidateRules(t *testing.T) {
 			t.Error("validateRules() error = nil, want error")
 		}
 
-		if err.Error() != "rule2 failed" {
-			t.Errorf("validateRules() error = %v, want 'rule2 failed'", err)
+		if err.Error() != "validation failed: rule2 failed" {
+			t.Errorf("validateRules() error = %v, want 'validation failed: rule2 failed'", err)
 		}
 	})
 }

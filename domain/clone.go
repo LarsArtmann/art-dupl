@@ -37,10 +37,7 @@ func (c Clone) IsValid() error {
 	}
 
 	if !c.Status.IsValid() {
-		return fmt.Errorf(
-			"invalid clone processing state: %s",
-			c.Status,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidCloneState, c.Status)
 	}
 
 	return nil
@@ -70,17 +67,11 @@ func (cg CloneGroup) IsValid() error {
 	}
 
 	if !cg.Severity.IsValid() {
-		return fmt.Errorf(
-			"invalid clone severity: %s",
-			cg.Severity,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidCloneSeverity, cg.Severity)
 	}
 
 	if !cg.Status.IsValid() {
-		return fmt.Errorf(
-			"invalid clone group status: %s",
-			cg.Status,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidCloneGroupStatus, cg.Status)
 	}
 
 	for i, clone := range cg.Clones {

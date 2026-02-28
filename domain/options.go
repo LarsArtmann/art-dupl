@@ -20,10 +20,7 @@ func (do DetectionOptions) IsValid() error {
 	}
 
 	if !do.Mode.IsValid() {
-		return fmt.Errorf(
-			"invalid analysis mode: %s",
-			do.Mode,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidAnalysisMode, do.Mode)
 	}
 
 	if len(do.Paths) == 0 {

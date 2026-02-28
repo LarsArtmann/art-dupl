@@ -2,8 +2,15 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
+)
+
+// Static errors for config validation.
+var (
+	ErrInvalidDetectionMethod = errors.New("invalid detection method")
+	ErrInvalidType            = errors.New("invalid type")
 )
 
 // isValidStringType validates a string type against a set of valid values.
@@ -27,11 +34,7 @@ func unmarshalStringType[T ~string](
 
 	typed := T(str)
 	if !isValid(typed) {
-		return defaultVal, fmt.Errorf(
-			"invalid %s: %s",
-			typeName,
-			str,
-		)
+		return defaultVal, fmt.Errorf("%w %s: %s", ErrInvalidType, typeName, str)
 	}
 
 	return typed, nil
@@ -253,10 +256,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 
 		dm := DetectionMethod(method)
 		if !dm.IsValid() {
-			return nil, fmt.Errorf(
-				"invalid detection method: %s",
-				method,
-			)
+			return nil, fmt.Errorf("%w: %s", ErrInvalidDetectionMethod, method)
 		}
 
 		result = append(result, dm)
@@ -281,10 +281,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 func ValidateDetectionMethods(methods []DetectionMethod) error {
 	for _, method := range methods {
 		if !method.IsValid() {
-			return fmt.Errorf(
-				"invalid detection method: %s",
-				method,
-			)
+			return fmt.Errorf("%w: %s", ErrInvalidDetectionMethod, method)
 		}
 	}
 

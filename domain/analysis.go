@@ -19,17 +19,11 @@ type Analysis struct {
 
 func (a Analysis) IsValid() error {
 	if !a.State.IsValid() {
-		return fmt.Errorf(
-			"invalid analysis state: %s",
-			a.State,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidAnalysisState, a.State)
 	}
 
 	if !a.Mode.IsValid() {
-		return fmt.Errorf(
-			"invalid analysis mode: %s",
-			a.Mode,
-		)
+		return fmt.Errorf("%w: %s", ErrInvalidAnalysisMode, a.Mode)
 	}
 
 	if a.Threshold == 0 {

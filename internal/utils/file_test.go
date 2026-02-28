@@ -1,150 +1,284 @@
 package utils
 
 import (
+	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	. "github.com/onsi/gomega"
 )
 
-// TestFindProjectRoot tests func FindProjectRoot function.
-func TestFindProjectRoot(t *testing.T) {
-	t.Run("finds project root with go.mod", func(t *testing.T) {
-		// Create temporary directory structure
+func TestFileProcessorWriteFile(t *testing.T) {
+	t.Parallel()
+
+	t.Run("writes file to base directory", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
 		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
-		subDir := filepath.Join(rootDir, "subdir")
-		deepDir := filepath.Join(subDir, "deep")
+		fp := NewFileProcessor(tmpDir)
 
-		// Create directories
-		require.NoError(t, os.MkdirAll(deepDir, 0o755))
+		err := fp.WriteFile("test.txt", []byte("hello world"), 0o644)
+		g.Expect(err).ToNot(HaveOccurred())
 
-		// Create go.mod in root
-		goModPath := filepath.Join(rootDir, "go.mod")
-		require.NoError(t, os.WriteFile(goModPath, []byte("module test"), 0o644))
-
-		// Test from deep subdirectory
-		foundRoot, err := FindProjectRoot(deepDir, []string{"go.mod"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should find project root")
+		content, err := os.ReadFile(filepath.Join(tmpDir, "test.txt"))
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("hello world"))
 	})
 
-	t.Run("finds project root with .git", func(t *testing.T) {
+	t.Run("creates nested directories", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
 		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
-		subDir := filepath.Join(rootDir, "subdir")
+		fp := NewFileProcessor(tmpDir)
 
-		// Create directories
-		require.NoError(t, os.MkdirAll(subDir, 0o755))
+		err := fp.WriteFile("subdir/nested/test.txt", []byte("nested content"), 0o644)
+		g.Expect(err).ToNot(HaveOccurred())
 
-		// Create .git in root
-		gitDir := filepath.Join(rootDir, ".git")
-		require.NoError(t, os.Mkdir(gitDir, 0o755))
-
-		// Test from subdirectory
-		foundRoot, err := FindProjectRoot(subDir, []string{".git"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should find project root")
+		content, err := os.ReadFile(filepath.Join(tmpDir, "subdir/nested/test.txt"))
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("nested content"))
 	})
 
-	t.Run("finds project root with sqlc.yaml", func(t *testing.T) {
+	t.Run("writes without base directory", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
 		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
-		dbDir := filepath.Join(rootDir, "db")
+		fp := NewFileProcessor()
 
-		// Create directories
-		require.NoError(t, os.MkdirAll(dbDir, 0o755))
+		filePath := filepath.Join(tmpDir, "test.txt")
+		err := fp.WriteFile(filePath, []byte("absolute path"), 0o644)
+		g.Expect(err).ToNot(HaveOccurred())
 
-		// Create sqlc.yaml in root
-		sqlcPath := filepath.Join(rootDir, "sqlc.yaml")
-		require.NoError(t, os.WriteFile(sqlcPath, []byte("version: 2"), 0o644))
+		content, err := os.ReadFile(filePath)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("absolute path"))
+	})
+}
 
-		// Test from db subdirectory
-		foundRoot, err := FindProjectRoot(dbDir, []string{"sqlc.yaml"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should find project root")
+func TestFileProcessorWriteTextFile(t *testing.T) {
+	t.Parallel()
+
+	t.Run("writes text file", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		tmpDir := t.TempDir()
+		fp := NewFileProcessor(tmpDir)
+
+		err := fp.WriteTextFile("test.txt", "text content")
+		g.Expect(err).ToNot(HaveOccurred())
+
+		content, err := os.ReadFile(filepath.Join(tmpDir, "test.txt"))
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("text content"))
+	})
+}
+
+func TestFileProcessorReadFile(t *testing.T) {
+	t.Parallel()
+
+	t.Run("reads file from base directory", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		tmpDir := t.TempDir()
+		fp := NewFileProcessor(tmpDir)
+
+		g.Expect(os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644)).To(Succeed())
+
+		content, err := fp.ReadFile("test.txt")
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("read me"))
 	})
 
-	t.Run("checks markers in order of preference", func(t *testing.T) {
+	t.Run("returns error for nonexistent file", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
 		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
-		subDir := filepath.Join(rootDir, "subdir")
+		fp := NewFileProcessor(tmpDir)
 
-		// Create directories
-		require.NoError(t, os.MkdirAll(subDir, 0o755))
-
-		// Create both markers in root
-		goModPath := filepath.Join(rootDir, "go.mod")
-		require.NoError(t, os.WriteFile(goModPath, []byte("module test"), 0o644))
-
-		gitDir := filepath.Join(rootDir, ".git")
-		require.NoError(t, os.Mkdir(gitDir, 0o755))
-
-		// Test with go.mod first in marker list
-		foundRoot, err := FindProjectRoot(subDir, []string{"go.mod", ".git"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should find project root")
+		_, err := fp.ReadFile("nonexistent.txt")
+		g.Expect(err).To(HaveOccurred())
 	})
 
-	t.Run("returns error when marker not found", func(t *testing.T) {
+	t.Run("reads without base directory", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
 		tmpDir := t.TempDir()
-		subDir := filepath.Join(tmpDir, "project", "subdir")
+		fp := NewFileProcessor()
 
-		// Create directory without any markers
-		require.NoError(t, os.MkdirAll(subDir, 0o755))
+		filePath := filepath.Join(tmpDir, "test.txt")
+		g.Expect(os.WriteFile(filePath, []byte("absolute"), 0o644)).To(Succeed())
 
-		// Test - should fail to find marker
-		_, err := FindProjectRoot(subDir, []string{"go.mod", ".git", "sqlc.yaml"})
-		assert.Error(t, err, "should return error when no marker found")
+		content, err := fp.ReadFile(filePath)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(string(content)).To(Equal("absolute"))
+	})
+}
+
+func TestFileProcessorWriteTestFiles(t *testing.T) {
+	t.Parallel()
+
+	t.Run("writes multiple test files", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		tmpDir := t.TempDir()
+		fp := NewFileProcessor(tmpDir)
+
+		files := map[string]string{
+			"file1.go": `package main
+
+func main() {}`,
+			"file2.go": `package main
+
+func helper() {}`,
+		}
+
+		err := fp.WriteTestFiles(files)
+		g.Expect(err).ToNot(HaveOccurred())
+
+		for filename, expectedContent := range files {
+			content, err := os.ReadFile(filepath.Join(tmpDir, filename))
+			g.Expect(err).ToNot(HaveOccurred())
+			g.Expect(string(content)).To(Equal(expectedContent))
+		}
+	})
+}
+
+func TestFileProcessorWriteDuplicateFiles(t *testing.T) {
+	t.Parallel()
+
+	t.Run("writes files with identical content", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		tmpDir := t.TempDir()
+		fp := NewFileProcessor(tmpDir)
+
+		filenames := []string{"dup1.go", "dup2.go", "dup3.go"}
+		content := `package main
+
+func duplicate() {
+	println("same")
+}`
+
+		err := fp.WriteDuplicateFiles(filenames, content)
+		g.Expect(err).ToNot(HaveOccurred())
+
+		for _, filename := range filenames {
+			actualContent, err := os.ReadFile(filepath.Join(tmpDir, filename))
+			g.Expect(err).ToNot(HaveOccurred())
+			g.Expect(string(actualContent)).To(Equal(content))
+		}
+	})
+}
+
+func TestFileProcessorRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	t.Run("write and read round trip", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		tmpDir := t.TempDir()
+		fp := NewFileProcessor(tmpDir)
+
+		original := []byte("round trip content with binary\x00data")
+
+		err := fp.WriteFile("roundtrip.bin", original, 0o644)
+		g.Expect(err).ToNot(HaveOccurred())
+
+		read, err := fp.ReadFile("roundtrip.bin")
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(bytes.Equal(original, read)).To(BeTrue())
+	})
+}
+
+func TestApplyTimeout(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns original context when timeout is zero", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		ctx := context.Background()
+
+		resultCtx, cancel := ApplyTimeout(ctx, 0)
+		defer cancel()
+
+		g.Expect(resultCtx).To(Equal(ctx))
+		g.Expect(resultCtx.Err()).ToNot(HaveOccurred())
 	})
 
-	t.Run("returns project root when already at root", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
+	t.Run("returns original context when timeout is negative", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
 
-		// Create directory
-		require.NoError(t, os.Mkdir(rootDir, 0o755))
+		ctx := context.Background()
 
-		// Create go.mod
-		goModPath := filepath.Join(rootDir, "go.mod")
-		require.NoError(t, os.WriteFile(goModPath, []byte("module test"), 0o644))
+		resultCtx, cancel := ApplyTimeout(ctx, -1)
+		defer cancel()
 
-		// Test from root directory itself
-		foundRoot, err := FindProjectRoot(rootDir, []string{"go.mod"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should return current directory when already at root")
+		g.Expect(resultCtx).To(Equal(ctx))
+		g.Expect(resultCtx.Err()).ToNot(HaveOccurred())
 	})
 
-	t.Run("stops at filesystem root", func(t *testing.T) {
-		// Create a temporary directory without markers
-		tmpDir := t.TempDir()
+	t.Run("creates timeout context when positive", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
 
-		// Test from temp directory (likely no markers in parents)
-		_, err := FindProjectRoot(tmpDir, []string{"go.mod", ".git"})
-		assert.Error(t, err, "should return error after reaching filesystem root")
+		ctx := context.Background()
+
+		resultCtx, cancel := ApplyTimeout(ctx, 5)
+		defer cancel()
+
+		g.Expect(resultCtx).ToNot(Equal(ctx))
+
+		deadline, hasDeadline := resultCtx.Deadline()
+		g.Expect(hasDeadline).To(BeTrue())
+		g.Expect(time.Now().Before(deadline)).To(BeTrue())
 	})
 
-	t.Run("handles absolute paths", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		rootDir := filepath.Join(tmpDir, "project")
-		subDir := filepath.Join(rootDir, "subdir")
+	t.Run("context expires after timeout", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
 
-		// Create directories
-		require.NoError(t, os.MkdirAll(subDir, 0o755))
+		ctx := context.Background()
 
-		// Create go.mod
-		goModPath := filepath.Join(rootDir, "go.mod")
-		require.NoError(t, os.WriteFile(goModPath, []byte("module test"), 0o644))
+		resultCtx, cancel := ApplyTimeout(ctx, 1)
+		defer cancel()
 
-		// Get absolute path
-		absSubDir, err := filepath.Abs(subDir)
-		require.NoError(t, err)
+		select {
+		case <-resultCtx.Done():
+			t.Error("context should not be done immediately")
+		default:
+		}
 
-		// Test with absolute path
-		foundRoot, err := FindProjectRoot(absSubDir, []string{"go.mod"})
-		require.NoError(t, err)
-		assert.Equal(t, rootDir, foundRoot, "should handle absolute paths")
+		time.Sleep(1100 * time.Millisecond)
+
+		g.Expect(resultCtx.Err()).To(HaveOccurred())
+		g.Expect(resultCtx.Err()).To(Equal(context.DeadlineExceeded))
+	})
+
+	t.Run("cancel function works", func(t *testing.T) {
+		g := NewWithT(t)
+		t.Parallel()
+
+		ctx := context.Background()
+		resultCtx, cancel := ApplyTimeout(ctx, 10)
+
+		cancel()
+
+		g.Expect(resultCtx.Err()).To(HaveOccurred())
+		g.Expect(resultCtx.Err()).To(Equal(context.Canceled))
 	})
 }

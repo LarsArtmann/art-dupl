@@ -1,6 +1,6 @@
 package domain
 
-import stderrors "errors"
+import "fmt"
 
 // validationRule represents a single validation rule.
 type validationRule struct {
@@ -12,9 +12,7 @@ type validationRule struct {
 func validateRules(rules []validationRule) error {
 	for _, rule := range rules {
 		if !rule.valid {
-			return stderrors.New(
-				rule.msg,
-			)
+			return fmt.Errorf("%w: %s", ErrValidationFailed, rule.msg)
 		}
 	}
 
