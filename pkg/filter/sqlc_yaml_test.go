@@ -8,9 +8,9 @@ import (
 
 func TestHandleDirectoryWalk(t *testing.T) {
 	tests := []struct {
-		name      string
-		dirName   string
-		wantSkip  bool
+		name     string
+		dirName  string
+		wantSkip bool
 	}{
 		{
 			name:     "regular directory",
@@ -42,6 +42,8 @@ func TestHandleDirectoryWalk(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := handleDirectoryWalk(tt.dirName)
+
+
 			gotSkip := err != nil
 			if gotSkip != tt.wantSkip {
 				t.Errorf("handleDirectoryWalk(%q) = %v, want skip=%v", tt.dirName, err, tt.wantSkip)
@@ -84,7 +86,12 @@ func TestRecordSQLCConfig(t *testing.T) {
 			recordSQLCConfig(tt.filePath, configs)
 
 			if len(configs) != tt.wantLen {
-				t.Errorf("recordSQLCConfig(%q) added %d configs, want %d", tt.filePath, len(configs), tt.wantLen)
+				t.Errorf(
+					"recordSQLCConfig(%q) added %d configs, want %d",
+					tt.filePath,
+					len(configs),
+					tt.wantLen,
+				)
 			}
 
 			if tt.wantLen > 0 {
@@ -195,9 +202,11 @@ func TestFindSQLCConfigs(t *testing.T) {
 		yamlPath := filepath.Join(tmpDir, "sqlc.yaml")
 		ymlPath := filepath.Join(tmpDir, "sqlc.yml")
 
-		if err := os.WriteFile(yamlPath, []byte("version: \"2\""), 0o644); err != nil {
+		if err := os.WriteFile(yamlPath, []byte("version: \"2\""), 0o644); err !
+= nil {
 			t.Fatal(err)
 		}
+
 		if err := os.WriteFile(ymlPath, []byte("version: \"2\""), 0o644); err != nil {
 			t.Fatal(err)
 		}
@@ -212,8 +221,10 @@ func TestFindSQLCConfigs(t *testing.T) {
 		}
 	})
 
-	t.Run("finds config in nested directory", func(t *testing.T) {
+	t.Run("finds config in nested directory", func(t *testing.
+T) {
 		tmpDir := t.TempDir()
+
 		nestedDir := filepath.Join(tmpDir, "internal", "db")
 		if err := os.MkdirAll(nestedDir, 0o755); err != nil {
 			t.Fatal(err)
@@ -234,8 +245,10 @@ func TestFindSQLCConfigs(t *testing.T) {
 		}
 	})
 
-	t.Run("skips hidden directories", func(t *testing.T) {
+	t.Run("skips hidden directories", func(t *testing
+.T) {
 		tmpDir := t.TempDir()
+
 		hiddenDir := filepath.Join(tmpDir, ".git")
 		if err := os.MkdirAll(hiddenDir, 0o755); err != nil {
 			t.Fatal(err)
@@ -256,8 +269,10 @@ func TestFindSQLCConfigs(t *testing.T) {
 		}
 	})
 
-	t.Run("skips vendor directory", func(t *testing.T) {
+	t.Run("skips vendor directory", func(t *testin
+g.T) {
 		tmpDir := t.TempDir()
+
 		vendorDir := filepath.Join(tmpDir, "vendor")
 		if err := os.MkdirAll(vendorDir, 0o755); err != nil {
 			t.Fatal(err)
@@ -379,9 +394,9 @@ sql:
 func TestTryAddSQLCConfig(t *testing.T) {
 	t.Run("adds existing config", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		configPath := filepath.Join(tmpDir, "sqlc.yaml")
-
-		if err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644); err != nil {
+		configPath := filepaerr := os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
+th.te("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 

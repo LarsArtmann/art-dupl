@@ -153,8 +153,10 @@ func TestSplitLines(t *testing.T) {
 			got := SplitLines([]byte(tt.content))
 			if len(got) != len(tt.want) {
 				t.Errorf("SplitLines() got %d lines, want %d", len(got), len(tt.want))
+
 				return
 			}
+
 			for i, line := range got {
 				if line != tt.want[i] {
 					t.Errorf("SplitLines()[%d] = %q, want %q", i, line, tt.want[i])
