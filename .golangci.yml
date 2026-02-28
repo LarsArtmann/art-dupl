@@ -245,6 +245,10 @@ linters:
       - path: cmd/
         linters:
           - exhaustruct
+      - path: "syntax/"
+        linters:
+          - gocyclo
+          - cyclop
 formatters:
   enable:
     - golines
