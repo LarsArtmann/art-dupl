@@ -20,9 +20,9 @@ import (
 // printSearchStatus outputs the status message after tree building completes.
 func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
 	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, "Searching for clones")
+		_, _ = fmt.Fprintln(os.Stderr, "Searching for clones")
 	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprintln(os.Stderr, " ✅")
+		_, _ = fmt.Fprintln(os.Stderr, " ✅")
 	}
 }
 
@@ -33,9 +33,9 @@ func printBuildingStatus(
 	verboseMsg, textMsg string,
 ) {
 	if cfg.Verbose {
-		fmt.Fprintln(os.Stderr, verboseMsg)
+		_, _ = fmt.Fprintln(os.Stderr, verboseMsg)
 	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprint(os.Stderr, textMsg)
+		_, _ = fmt.Fprint(os.Stderr, textMsg)
 	}
 }
 
@@ -62,7 +62,7 @@ func buildSuffixTree(
 	// Debug output for incremental mode detection
 
 	if cfg.Verbose {
-		fmt.Fprintf(
+		_, _ = fmt.Fprintf(
 			os.Stderr,
 			"🔍 buildSuffixTree: incremental=%v, cacheDir=%q\n",
 			cfg.Incremental,
@@ -72,7 +72,7 @@ func buildSuffixTree(
 
 	if cfg.Incremental {
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
+			_, _ = fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
 		}
 
 		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache)
@@ -131,7 +131,7 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 		filterOptions = append(filterOptions, filter.FilterSQLC)
 
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (sqlc)\n")
+			_, _ = fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (sqlc)\n")
 		}
 	}
 
@@ -141,7 +141,7 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 		filterOptions = append(filterOptions, filter.FilterTempl)
 
 		if cfg.Verbose {
-			fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
+			_, _ = fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
 		}
 	}
 
@@ -154,7 +154,7 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
 
 		if cfg.Verbose {
-			fmt.Fprintf(
+			_, _ = fmt.Fprintf(
 				os.Stderr,
 				"🔍 Auto-generated code filtering enabled (templ files filtered by default)\n",
 			)
@@ -177,7 +177,7 @@ func executeAnalysis(
 	if cfg.Profile {
 		startProfile = job.StartProfile()
 
-		fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
+		_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
 	// Create filter based on config

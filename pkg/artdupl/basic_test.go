@@ -4,7 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/config"
 )
+
+// newTestConfig creates a config for testing.
+func newTestConfig() *config.Config {
+	cfg := config.DefaultConfig()
+	cfg.Threshold = 15
+	return cfg
+}
 
 // newTestProgress creates a Progress struct with the given parameters.
 func newTestProgress(

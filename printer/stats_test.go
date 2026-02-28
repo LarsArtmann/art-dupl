@@ -179,7 +179,7 @@ func TestStatsDataAggregation(t *testing.T) {
 
 // createCloneNodeGroup creates a group of clone nodes with specified files.
 func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
-	var dups [][]*syntax.Node
+	dups := make([][]*syntax.Node, 0, len(filenames))
 
 	for _, filename := range filenames {
 		nodes := []*syntax.Node{
