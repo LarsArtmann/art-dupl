@@ -407,15 +407,14 @@ func NewCache() {}`)
 func NoCache() {}`)
 			Expect(err).NotTo(HaveOccurred())
 
-			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
-
-			// Run without incremental flag
-			output, err := setup.RunArtDupl("--cache-dir", cacheDir, "-t", "5")
+			// Run without incremental flag (cache-dir requires --incremental, so don't use it)
+			output, err := setup.RunArtDupl("-t", "5")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 
-			// Cache directory should not have files subdirectory (no caching occurred)
-			filesDir := filepath.Join(cacheDir, "files")
+			// Default cache directory should not exist (no caching occurred without --incremental)
+			defaultCacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
+			filesDir := filepath.Join(defaultCacheDir, "files")
 			_, err = os.Stat(filesDir)
 			Expect(os.IsNotExist(err)).To(BeTrue())
 		})

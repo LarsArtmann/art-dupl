@@ -143,8 +143,8 @@ func Component() templ.Component { return nil }`
 
 			outputStr := string(output)
 
-			// Should indicate filtering is active
-			Expect(outputStr).To(ContainSubstring("templ"))
+			// Should show only 1 file scanned (templ file was filtered out)
+			Expect(outputStr).To(ContainSubstring("Files Scanned: 1"))
 		})
 	})
 
@@ -442,6 +442,10 @@ func unique2() { println("unique2") }`
 
 var _ = Describe("Stats Command Edge Cases", func() {
 	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+	})
 
 	Context("When handling empty or minimal projects", func() {
 		It("should handle empty directory gracefully", func() {

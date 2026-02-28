@@ -46,7 +46,7 @@ func createDuplicateTestFiles(t *testing.T, tmpDir string) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	err := os.WriteFile(file2, []byte(duplicateCode), 0o600)
+	err = os.WriteFile(file2, []byte(duplicateCode), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}

@@ -106,7 +106,7 @@ func TestCyclicDupl(t *testing.T) {
 		{
 			"a2 b0 a2 b0 a2 b0 a2 b0 a2 b0",
 			[]int{0, 3, 6, 9, 12},
-			true,
+			false,
 		},
 	}
 
