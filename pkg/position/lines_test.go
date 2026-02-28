@@ -5,6 +5,203 @@ import (
 	"testing/quick"
 )
 
+func TestByteRangeToLines(t *testing.T) {
+	tests := []struct {
+		name      string
+		content   string
+		start     int
+		end       int
+		wantStart int
+		wantEnd   int
+	}{
+		{
+			name:      "empty content",
+			content:   "",
+			start:     0,
+			end:       0,
+			wantStart: 1,
+			wantEnd:   1,
+		},
+		{
+			name:      "single line no newline",
+			content:   "hello world",
+			start:     0,
+			end:       5,
+			wantStart: 1,
+			wantEnd:   1,
+		},
+		{
+			name:      "single line entire content",
+			content:   "hello world",
+			start:     0,
+			end:       11,
+			wantStart: 1,
+			wantEnd:   1,
+		},
+		{
+			name:      "two lines first line",
+			content:   "line1\nline2",
+			start:     0,
+			end:       5,
+			wantStart: 1,
+			wantEnd:   1,
+		},
+		{
+			name:      "two lines spanning newline",
+			content:   "line1\nline2",
+			start:     3,
+			end:       8,
+			wantStart: 1,
+			wantEnd:   2,
+		},
+		{
+			name:      "two lines second line",
+			content:   "line1\nline2",
+			start:     6,
+			end:       11,
+			wantStart: 2,
+			wantEnd:   2,
+		},
+		{
+			name:      "three lines middle line",
+			content:   "line1\nline2\nline3",
+			start:     6,
+			end:       11,
+			wantStart: 2,
+			wantEnd:   2,
+		},
+		{
+			name:      "three lines spanning all",
+			content:   "line1\nline2\nline3",
+			start:     0,
+			end:       17,
+			wantStart: 1,
+			wantEnd:   3,
+		},
+		{
+			name:      "start at newline",
+			content:   "line1\nline2",
+			start:     5,
+			end:       11,
+			wantStart: 2, // newline at position 5 increments line to 2 before recording
+			wantEnd:   2,
+		},
+		{
+			name:      "end beyond content uses last line",
+			content:   "line1\nline2",
+			start:     6,
+			end:       100,
+			wantStart: 2,
+			wantEnd:   2,
+		},
+		{
+			name:      "position not found defaults to 1",
+			content:   "hello",
+			start:     100,
+			end:       200,
+			wantStart: 1,
+			wantEnd:   1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotStart, gotEnd := ByteRangeToLines([]byte(tt.content), tt.start, tt.end)
+			if gotStart != tt.wantStart || gotEnd != tt.wantEnd {
+				t.Errorf("ByteRangeToLines() = (%d, %d), want (%d, %d)",
+					gotStart, gotEnd, tt.wantStart, tt.wantEnd)
+			}
+		})
+	}
+}
+
+func TestSplitLines(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+		want    []string
+	}{
+		{
+			name:    "empty content",
+			content: "",
+			want:    []string{},
+		},
+		{
+			name:    "single line",
+			content: "hello",
+			want:    []string{"hello"},
+		},
+		{
+			name:    "two lines",
+			content: "line1\nline2",
+			want:    []string{"line1", "line2"},
+		},
+		{
+			name:    "three lines",
+			content: "a\nb\nc",
+			want:    []string{"a", "b", "c"},
+		},
+		{
+			name:    "trailing newline",
+			content: "line1\n",
+			want:    []string{"line1", ""},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := SplitLines([]byte(tt.content))
+			if len(got) != len(tt.want) {
+				t.Errorf("SplitLines() got %d lines, want %d", len(got), len(tt.want))
+				return
+			}
+			for i, line := range got {
+				if line != tt.want[i] {
+					t.Errorf("SplitLines()[%d] = %q, want %q", i, line, tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestJoinLines(t *testing.T) {
+	tests := []struct {
+		name  string
+		lines []string
+		want  string
+	}{
+		{
+			name:  "empty lines",
+			lines: []string{},
+			want:  "",
+		},
+		{
+			name:  "single line",
+			lines: []string{"hello"},
+			want:  "hello",
+		},
+		{
+			name:  "two lines",
+			lines: []string{"line1", "line2"},
+			want:  "line1\nline2",
+		},
+		{
+			name:  "three lines",
+			lines: []string{"a", "b", "c"},
+			want:  "a\nb\nc",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := JoinLines(tt.lines)
+			if got != tt.want {
+				t.Errorf("JoinLines() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestLineIndex(t *testing.T) {
 	content := []byte("Line 1\nLine 2\nLine 3")
 	idx := NewLineIndex(content)
