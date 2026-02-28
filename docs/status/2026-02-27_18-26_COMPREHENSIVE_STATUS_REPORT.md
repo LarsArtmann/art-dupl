@@ -9,14 +9,14 @@
 
 ## Executive Summary
 
-| Metric                  | Value                              |
-| ----------------------- | ---------------------------------- |
-| **Build Status**        | ✅ PASSING                         |
-| **Test Status**         | ⚠️ 1 FAILING (TestCyclicDupl)      |
-| **Lint Status**         | ⚠️ 387 pre-existing issues         |
-| **TODO Comments**       | 55 in 11 Go files                  |
-| **Uncommitted Changes** | 15 files (mostly lint fixes)       |
-| **Cache UX Fix**        | ✅ COMMITTED & PUSHED              |
+| Metric                  | Value                         |
+| ----------------------- | ----------------------------- |
+| **Build Status**        | ✅ PASSING                    |
+| **Test Status**         | ⚠️ 1 FAILING (TestCyclicDupl) |
+| **Lint Status**         | ⚠️ 387 pre-existing issues    |
+| **TODO Comments**       | 55 in 11 Go files             |
+| **Uncommitted Changes** | 15 files (mostly lint fixes)  |
+| **Cache UX Fix**        | ✅ COMMITTED & PUSHED         |
 
 ---
 
@@ -32,12 +32,14 @@
 - **Impact:** Users now get clear error instead of silent no-op
 
 **Before:**
+
 ```bash
 $ art-dupl --clear-cache .
 # Silent no-op, confusing UX
 ```
 
 **After:**
+
 ```bash
 $ art-dupl --clear-cache .
 ERROR: --cache-dir and --clear-cache require --incremental mode
@@ -52,20 +54,20 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 ### 3. Core Features (Previously Complete)
 
-| Feature                      | Status              | Location                    |
-| ---------------------------- | ------------------- | --------------------------- |
-| Suffix Tree Detection        | ✅ FULLY FUNCTIONAL | `suffixtree/`               |
-| Hash-Based Detection         | ✅ FULLY FUNCTIONAL | `hash/`                     |
-| Multi-Detection Mode         | ✅ FULLY FUNCTIONAL | `detection/`                |
-| HTML/JSON/Plumbing Output    | ✅ FULLY FUNCTIONAL | `printer/`                  |
-| Statistics Subcommand        | ✅ FULLY FUNCTIONAL | `printer/stats*.go`         |
-| Smart Filtering (SQLC/Templ) | ✅ FULLY FUNCTIONAL | `pkg/filter/`               |
-| Sorting Options              | ✅ FULLY FUNCTIONAL | `cli/`                      |
-| Fang CLI Framework           | ✅ FULLY FUNCTIONAL | `cmd/`                      |
-| Semantic Detection           | ✅ FULLY FUNCTIONAL | `syntax/golang/identifier_*`|
-| Incremental Mode + Caching   | ✅ FULLY FUNCTIONAL | `job/incremental.go`        |
-| Health Score System          | ✅ FULLY FUNCTIONAL | `printer/stats_health.go`   |
-| Severity Distribution        | ✅ FULLY FUNCTIONAL | `printer/stats_*.go`        |
+| Feature                      | Status              | Location                     |
+| ---------------------------- | ------------------- | ---------------------------- |
+| Suffix Tree Detection        | ✅ FULLY FUNCTIONAL | `suffixtree/`                |
+| Hash-Based Detection         | ✅ FULLY FUNCTIONAL | `hash/`                      |
+| Multi-Detection Mode         | ✅ FULLY FUNCTIONAL | `detection/`                 |
+| HTML/JSON/Plumbing Output    | ✅ FULLY FUNCTIONAL | `printer/`                   |
+| Statistics Subcommand        | ✅ FULLY FUNCTIONAL | `printer/stats*.go`          |
+| Smart Filtering (SQLC/Templ) | ✅ FULLY FUNCTIONAL | `pkg/filter/`                |
+| Sorting Options              | ✅ FULLY FUNCTIONAL | `cli/`                       |
+| Fang CLI Framework           | ✅ FULLY FUNCTIONAL | `cmd/`                       |
+| Semantic Detection           | ✅ FULLY FUNCTIONAL | `syntax/golang/identifier_*` |
+| Incremental Mode + Caching   | ✅ FULLY FUNCTIONAL | `job/incremental.go`         |
+| Health Score System          | ✅ FULLY FUNCTIONAL | `printer/stats_health.go`    |
+| Severity Distribution        | ✅ FULLY FUNCTIONAL | `printer/stats_*.go`         |
 
 ---
 
@@ -75,43 +77,43 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 **Status:** Ready to commit but needs review
 
-| File                              | Changes                        |
-| --------------------------------- | ------------------------------ |
-| `adapter/printer_adapter_test.go` | noinlineerr fixes              |
-| `bdd/plumbing_and_paths_test.go`  | Minor formatting               |
-| `cmd/flags.go`                    | Formatting (my cache fix)      |
-| `cmd/run_all_modes.go`            | noinlineerr fixes              |
-| `detection/multidetector.go`      | Error handling cleanup         |
-| `internal/enum/marshal.go`        | Error handling cleanup         |
-| `internal/simd/simd_test.go`      | Minor formatting               |
-| `internal/utils/file.go`          | Minor formatting               |
-| `job/incremental.go`              | Logging improvements           |
-| `pkg/artdupl/detector_test.go`    | Minor formatting               |
-| `pkg/filter/filter_test.go`       | Test improvements              |
-| `printer/stats_formatter.go`      | Formatting, blank lines        |
-| `printer/stats_health.go`         | Godoclint fixes (periods)      |
-| `printer/stats_test.go`           | Test improvements              |
-| `docs/status/...`                 | Status report updates          |
+| File                              | Changes                   |
+| --------------------------------- | ------------------------- |
+| `adapter/printer_adapter_test.go` | noinlineerr fixes         |
+| `bdd/plumbing_and_paths_test.go`  | Minor formatting          |
+| `cmd/flags.go`                    | Formatting (my cache fix) |
+| `cmd/run_all_modes.go`            | noinlineerr fixes         |
+| `detection/multidetector.go`      | Error handling cleanup    |
+| `internal/enum/marshal.go`        | Error handling cleanup    |
+| `internal/simd/simd_test.go`      | Minor formatting          |
+| `internal/utils/file.go`          | Minor formatting          |
+| `job/incremental.go`              | Logging improvements      |
+| `pkg/artdupl/detector_test.go`    | Minor formatting          |
+| `pkg/filter/filter_test.go`       | Test improvements         |
+| `printer/stats_formatter.go`      | Formatting, blank lines   |
+| `printer/stats_health.go`         | Godoclint fixes (periods) |
+| `printer/stats_test.go`           | Test improvements         |
+| `docs/status/...`                 | Status report updates     |
 
 ### 2. Lint Issues by Category (387 total)
 
-| Category        | Count | Priority |
-| --------------- | ----- | -------- |
-| exhaustruct     | 50    | P2       |
-| revive          | 50    | P2       |
-| tagliatelle     | 50    | P3       |
-| varnamelen      | 50    | P3       |
-| mnd             | 50    | P3       |
-| godoclint       | 20    | P2       |
-| recvcheck       | 19    | P2       |
-| err113          | 16    | P1       |
-| wrapcheck       | 13    | P2       |
-| prealloc        | 11    | P3       |
-| unparam         | 9     | P3       |
-| nonamedreturns  | 7     | P3       |
-| godox           | 6     | P3       |
-| goprintffuncname| 5     | P3       |
-| Others          | 6     | P3       |
+| Category         | Count | Priority |
+| ---------------- | ----- | -------- |
+| exhaustruct      | 50    | P2       |
+| revive           | 50    | P2       |
+| tagliatelle      | 50    | P3       |
+| varnamelen       | 50    | P3       |
+| mnd              | 50    | P3       |
+| godoclint        | 20    | P2       |
+| recvcheck        | 19    | P2       |
+| err113           | 16    | P1       |
+| wrapcheck        | 13    | P2       |
+| prealloc         | 11    | P3       |
+| unparam          | 9     | P3       |
+| nonamedreturns   | 7     | P3       |
+| godox            | 6     | P3       |
+| goprintffuncname | 5     | P3       |
+| Others           | 6     | P3       |
 
 ---
 
@@ -152,6 +154,7 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 **Commit:** `0423c1f` - refactor: fix all err113 dynamic error issues  
 **Problem:** Introduced build errors:
+
 - `domain/analysis.go` had duplicate error declarations (also in `domain/analysis_errors.go`)
 - `cmd/run_all_modes.go` and `cmd/run_flags.go` had wrong function signatures
 
@@ -197,33 +200,33 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 
 ## f) Top #25 Things to Get Done Next
 
-| # | Task                                      | Priority | Effort | Impact |
-|---|------------------------------------------- |----------|--------|--------|
-| 1 | Fix TestCyclicDupl failing test           | P0       | Low    | High   |
-| 2 | Commit 15 uncommitted lint fix files      | P0       | Low    | Medium |
-| 3 | Fix domain type inference errors          | P1       | Medium | Medium |
-| 4 | Add build verification to pre-commit      | P1       | Low    | High   |
-| 5 | Fix 16 err113 dynamic error issues        | P1       | Medium | Medium |
-| 6 | Configure lint to allow incremental fixes | P1       | Low    | High   |
-| 7 | Fix wrapcheck issues (13)                 | P2       | Low    | Medium |
-| 8 | Add missing exhaustruct fields (50)       | P2       | Medium | Low    |
-| 9 | Fix godoclint issues (20)                 | P2       | Low    | Low    |
-| 10 | Document TestCyclicDupl expected behavior | P2       | Low    | Medium |
-| 11 | Fix revive exported const comments (50)   | P2       | Low    | Low    |
-| 12 | Reduce godox TODO markers (6)             | P3       | Low    | Low    |
-| 13 | Fix prealloc issues (11)                  | P3       | Low    | Low    |
-| 14 | Fix unparam issues (9)                    | P3       | Low    | Low    |
-| 15 | Fix nonamedreturns issues (7)             | P3       | Low    | Low    |
-| 16 | Add SIMD benchmarks                       | P3       | Medium | Medium |
-| 17 | Memory profiling for large codebases      | P3       | Medium | Medium |
-| 18 | Fix varnamelen issues (50)                | P3       | Medium | Low    |
-| 19 | Fix mnd magic number issues (50)          | P3       | Medium | Low    |
-| 20 | Fix tagliatelle naming issues (50)        | P3       | Medium | Low    |
-| 21 | Add IDE/LSP integration docs              | P3       | Low    | Medium |
-| 22 | Watch mode for continuous monitoring      | P4       | High   | Medium |
-| 23 | Baseline file support                     | P4       | Medium | Medium |
-| 24 | Diff output between versions              | P4       | Medium | Low    |
-| 25 | Performance regression testing            | P4       | High   | High   |
+| #   | Task                                      | Priority | Effort | Impact |
+| --- | ----------------------------------------- | -------- | ------ | ------ |
+| 1   | Fix TestCyclicDupl failing test           | P0       | Low    | High   |
+| 2   | Commit 15 uncommitted lint fix files      | P0       | Low    | Medium |
+| 3   | Fix domain type inference errors          | P1       | Medium | Medium |
+| 4   | Add build verification to pre-commit      | P1       | Low    | High   |
+| 5   | Fix 16 err113 dynamic error issues        | P1       | Medium | Medium |
+| 6   | Configure lint to allow incremental fixes | P1       | Low    | High   |
+| 7   | Fix wrapcheck issues (13)                 | P2       | Low    | Medium |
+| 8   | Add missing exhaustruct fields (50)       | P2       | Medium | Low    |
+| 9   | Fix godoclint issues (20)                 | P2       | Low    | Low    |
+| 10  | Document TestCyclicDupl expected behavior | P2       | Low    | Medium |
+| 11  | Fix revive exported const comments (50)   | P2       | Low    | Low    |
+| 12  | Reduce godox TODO markers (6)             | P3       | Low    | Low    |
+| 13  | Fix prealloc issues (11)                  | P3       | Low    | Low    |
+| 14  | Fix unparam issues (9)                    | P3       | Low    | Low    |
+| 15  | Fix nonamedreturns issues (7)             | P3       | Low    | Low    |
+| 16  | Add SIMD benchmarks                       | P3       | Medium | Medium |
+| 17  | Memory profiling for large codebases      | P3       | Medium | Medium |
+| 18  | Fix varnamelen issues (50)                | P3       | Medium | Low    |
+| 19  | Fix mnd magic number issues (50)          | P3       | Medium | Low    |
+| 20  | Fix tagliatelle naming issues (50)        | P3       | Medium | Low    |
+| 21  | Add IDE/LSP integration docs              | P3       | Low    | Medium |
+| 22  | Watch mode for continuous monitoring      | P4       | High   | Medium |
+| 23  | Baseline file support                     | P4       | Medium | Medium |
+| 24  | Diff output between versions              | P4       | Medium | Low    |
+| 25  | Performance regression testing            | P4       | High   | High   |
 
 ---
 
@@ -232,6 +235,7 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 **Question:** Why does `TestCyclicDupl` expect `true` for the sequence `'a2 b0 a2 b0 a2 b0 a2 b0 a2 b0'` with indexes `[0 3 6 9 12]`?
 
 **Context:**
+
 - Test file: `syntax/syntax_test.go:116`
 - Function under test: Likely `FindSyntaxUnits` or similar
 - The test expects cyclic duplicate detection to return `true`
@@ -240,11 +244,13 @@ ERROR: --cache-dir and --clear-cache require --incremental mode
 **What I've tried:** Nothing yet - just discovered the failure
 
 **What I need to understand:**
+
 1. What is the expected behavior of cyclic duplicate detection?
 2. Is this a regression or a pre-existing issue?
 3. What changed that might have broken this?
 
 **Suggested investigation:**
+
 1. `git log --oneline -20 -- syntax/syntax_test.go syntax/syntax.go`
 2. Read the test case comments
 3. Understand the cyclic detection algorithm
@@ -295,4 +301,4 @@ b807911 docs: add comprehensive status report for 2026-02-27
 
 ---
 
-*Generated by Crush AI Assistant*
+_Generated by Crush AI Assistant_
