@@ -198,6 +198,7 @@ linters:
           - wrapcheck
           - godoclint
           - recvcheck
+          - nestif
       - path: bdd/
         linters:
           - funlen
@@ -222,6 +223,7 @@ linters:
           - godoclint
           - forbidigo
           - godox
+          - nestif
       - path: examples/
         linters:
           - exhaustruct
