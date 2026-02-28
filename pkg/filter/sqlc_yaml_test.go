@@ -43,7 +43,6 @@ func TestHandleDirectoryWalk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := handleDirectoryWalk(tt.dirName)
 
-
 			gotSkip := err != nil
 			if gotSkip != tt.wantSkip {
 				t.Errorf("handleDirectoryWalk(%q) = %v, want skip=%v", tt.dirName, err, tt.wantSkip)
@@ -118,7 +117,8 @@ sql:
         package: "db"
         out: "internal/db"
 `
-		if err := os.WriteFile(configPath, []byte(content), 0o644); err != nil {
+		err := os.WriteFile(configPath, []byte(content), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -167,11 +167,12 @@ sql:
 sql:
   - [invalid yaml structure
 `
-		if err := os.WriteFile(configPath, []byte(content), 0o644); err != nil {
+		err := os.WriteFile(configPath, []byte(content), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err := ParseSQLCConfig(configPath)
+		_, err = ParseSQLCConfig(configPath)
 		if err == nil {
 			t.Error("ParseSQLCConfig() expected error for invalid yaml")
 		}
@@ -183,7 +184,8 @@ func TestFindSQLCConfigs(t *testing.T) {
 		tmpDir := t.TempDir()
 		configPath := filepath.Join(tmpDir, "sqlc.yaml")
 
-		if err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644); err != nil {
+		err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -202,12 +204,13 @@ func TestFindSQLCConfigs(t *testing.T) {
 		yamlPath := filepath.Join(tmpDir, "sqlc.yaml")
 		ymlPath := filepath.Join(tmpDir, "sqlc.yml")
 
-		if err := os.WriteFile(yamlPath, []byte("version: \"2\""), 0o644); err !
-= nil {
+		err := os.WriteFile(yamlPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
-		if err := os.WriteFile(ymlPath, []byte("version: \"2\""), 0o644); err != nil {
+		err = os.WriteFile(ymlPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -221,17 +224,18 @@ func TestFindSQLCConfigs(t *testing.T) {
 		}
 	})
 
-	t.Run("finds config in nested directory", func(t *testing.
-T) {
+	t.Run("finds config in nested directory", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		nestedDir := filepath.Join(tmpDir, "internal", "db")
-		if err := os.MkdirAll(nestedDir, 0o755); err != nil {
+		err := os.MkdirAll(nestedDir, 0o755)
+		if err != nil {
 			t.Fatal(err)
 		}
 
 		configPath := filepath.Join(nestedDir, "sqlc.yaml")
-		if err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644); err != nil {
+		err = os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -245,17 +249,18 @@ T) {
 		}
 	})
 
-	t.Run("skips hidden directories", func(t *testing
-.T) {
+	t.Run("skips hidden directories", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		hiddenDir := filepath.Join(tmpDir, ".git")
-		if err := os.MkdirAll(hiddenDir, 0o755); err != nil {
+		err := os.MkdirAll(hiddenDir, 0o755)
+		if err != nil {
 			t.Fatal(err)
 		}
 
 		configPath := filepath.Join(hiddenDir, "sqlc.yaml")
-		if err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644); err != nil {
+		err = os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -269,17 +274,18 @@ T) {
 		}
 	})
 
-	t.Run("skips vendor directory", func(t *testin
-g.T) {
+	t.Run("skips vendor directory", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		vendorDir := filepath.Join(tmpDir, "vendor")
-		if err := os.MkdirAll(vendorDir, 0o755); err != nil {
+		err := os.MkdirAll(vendorDir, 0o755)
+		if err != nil {
 			t.Fatal(err)
 		}
 
 		configPath := filepath.Join(vendorDir, "sqlc.yaml")
-		if err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644); err != nil {
+		err = os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -337,7 +343,8 @@ sql:
         package: "models"
         out: "pkg/models"
 `
-		if err := os.WriteFile(configPath, []byte(content), 0o644); err != nil {
+		err := os.WriteFile(configPath, []byte(content), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -376,7 +383,8 @@ sql:
       go:
         package: "db"
 `
-		if err := os.WriteFile(configPath, []byte(content), 0o644); err != nil {
+		err := os.WriteFile(configPath, []byte(content), 0o644)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -394,8 +402,9 @@ sql:
 func TestTryAddSQLCConfig(t *testing.T) {
 	t.Run("adds existing config", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		configPath := filepaerr := os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
-th.te("version: \"2\""), 0o644)
+		configPath := filepath.Join(tmpDir, "sqlc.yaml")
+
+		err := os.WriteFile(configPath, []byte("version: \"2\""), 0o644)
 		if err != nil {
 			t.Fatal(err)
 		}
