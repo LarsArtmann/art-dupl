@@ -1,4 +1,4 @@
-version: "2"
+# version: "2" - Commented out for golangci-lint v1 compatibility
 run:
   timeout: 5m
   go: "1.25"
