@@ -757,7 +757,7 @@ templ withWhitespace() {
 	}
 }
 
-// countAllNodes recursively counts all nodes in a tree
+// countAllNodes recursively counts all nodes in a tree.
 func countAllNodes(n *syntax.Node) int {
 	if n == nil {
 		return 0

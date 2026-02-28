@@ -38,17 +38,22 @@ func function3() {
 
 	fchan := make(chan string, 4)
 	fchan <- setup.GetFilePath("file1.go")
+
 	fchan <- setup.GetFilePath("file2.go")
+
 	fchan <- setup.GetFilePath("file3.go")
+
 	close(fchan)
 
 	schan, statsChan := ParseParallel(ctx, fchan, 2)
 
 	count := 0
+
 	for seq := range schan {
 		if len(seq) == 0 {
 			t.Error("Expected parsed nodes for valid Go file")
 		}
+
 		count++
 	}
 
@@ -79,6 +84,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, _ := ParseParallel(ctx, fchan, 0)
@@ -116,6 +122,7 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent_file.go"
+
 	close(fchan)
 
 	schan, _ := ParseParallel(ctx, fchan, 1)
@@ -219,6 +226,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, statsChan := Parse(ctx, fchan)

@@ -42,6 +42,7 @@ When a new release is created:
 ## Shell Completions
 
 The formula automatically installs shell completions for:
+
 - Bash
 - Zsh
 - Fish

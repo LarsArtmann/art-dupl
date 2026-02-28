@@ -106,6 +106,7 @@ func (p *stats) printCSV() {
 }
 
 // printText prints statistics in text format.
+//
 //nolint:funlen // High statement count due to sequential formatting operations
 func (p *stats) printText() {
 	// Print header

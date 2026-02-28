@@ -70,7 +70,10 @@ func TestFileProcessorReadFile(t *testing.T) {
 		tmpDir := t.TempDir()
 		fp := NewFileProcessor(tmpDir)
 
-		require.NoError(t, os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644))
+		require.NoError(
+			t,
+			os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644),
+		)
 
 		content, err := fp.ReadFile("test.txt")
 		require.NoError(t, err)
@@ -165,6 +168,7 @@ func TestFileProcessorRoundTrip(t *testing.T) {
 func TestApplyTimeout(t *testing.T) {
 	t.Run("returns original context when timeout is zero", func(t *testing.T) {
 		ctx := context.Background()
+
 		resultCtx, cancel := ApplyTimeout(ctx, 0)
 		defer cancel()
 
@@ -174,6 +178,7 @@ func TestApplyTimeout(t *testing.T) {
 
 	t.Run("returns original context when timeout is negative", func(t *testing.T) {
 		ctx := context.Background()
+
 		resultCtx, cancel := ApplyTimeout(ctx, -1)
 		defer cancel()
 
@@ -183,6 +188,7 @@ func TestApplyTimeout(t *testing.T) {
 
 	t.Run("creates timeout context when positive", func(t *testing.T) {
 		ctx := context.Background()
+
 		resultCtx, cancel := ApplyTimeout(ctx, 5)
 		defer cancel()
 
@@ -195,6 +201,7 @@ func TestApplyTimeout(t *testing.T) {
 
 	t.Run("context expires after timeout", func(t *testing.T) {
 		ctx := context.Background()
+
 		resultCtx, cancel := ApplyTimeout(ctx, 1)
 		defer cancel()
 

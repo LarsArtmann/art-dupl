@@ -28,6 +28,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
@@ -71,6 +72,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
@@ -79,6 +81,7 @@ func main() {
 
 	fchan2 := make(chan string, 1)
 	fchan2 <- setup.GetFilePath("test.go")
+
 	close(fchan2)
 
 	schan2, statsChan := parser.ParseIncremental(ctx, fchan2)
@@ -115,6 +118,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
@@ -125,6 +129,7 @@ func main() {
 
 	fchan2 := make(chan string, 1)
 	fchan2 <- setup.GetFilePath("test.go")
+
 	close(fchan2)
 
 	schan2, statsChan := parserWithClear.ParseIncremental(ctx, fchan2)
@@ -168,6 +173,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 
 	fchan := make(chan string, 1)
 	fchan <- "nonexistent.go"
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
@@ -211,16 +217,20 @@ func function2() {
 
 	fchan := make(chan string, 2)
 	fchan <- setup.GetFilePath("file1.go")
+
 	fchan <- setup.GetFilePath("file2.go")
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
 
 	count := 0
+
 	for seq := range schan {
 		if len(seq) == 0 {
 			t.Error("Expected parsed nodes")
 		}
+
 		count++
 	}
 
@@ -258,6 +268,7 @@ func main() {
 
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
+
 	close(fchan)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)

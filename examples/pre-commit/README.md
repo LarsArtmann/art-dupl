@@ -5,6 +5,7 @@ This directory contains example pre-commit hooks for art-dupl.
 ## Quick Setup
 
 1. Install pre-commit:
+
    ```bash
    pip install pre-commit
    # or
@@ -12,6 +13,7 @@ This directory contains example pre-commit hooks for art-dupl.
    ```
 
 2. Copy the config to your project:
+
    ```bash
    cp .pre-commit-config.yaml /path/to/your/project/.pre-commit-config.yaml
    ```
@@ -103,10 +105,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version: "stable"
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - run: pip install pre-commit
       - run: go install github.com/LarsArtmann/art-dupl@latest
       - uses: pre-commit/action@v3.0.1

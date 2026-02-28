@@ -6,6 +6,7 @@ default: clean check test build
 # Clean build artifacts
 clean:
     rm -rf dist/ cover.out
+    find . -name "*.test" -type f -delete 2>/dev/null || true
 
 # Run tests with coverage
 test: clean
