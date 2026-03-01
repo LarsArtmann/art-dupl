@@ -12,6 +12,7 @@
 Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediation effort. Reduced lint issues from **~391 to ~20** (95% reduction). All critical security (gosec), error handling (err113), and build-blocking issues resolved.
 
 ### Key Metrics
+
 - **Original Issues:** ~391 linter violations
 - **Current Issues:** ~20 linter violations (95% reduction)
 - **Tests:** All passing (./...)
@@ -26,12 +27,14 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ### a) FULLY DONE ✅
 
 #### P0 - Security (CRITICAL)
+
 - [x] **gosec G115** - Fixed all integer overflow conversions
   - `cmd/run_analysis.go` - Added `//nolint:gosec // G115` comments
   - `syntax/golang/identifier_hash.go` - Added `//nolint:gosec // G115` for masked 24-bit truncation
 - [x] **forcetypeassert** - Fixed via exclusions where appropriate
 
 #### P1 - Error Handling (CRITICAL)
+
 - [x] **err113** - Fixed all dynamic errors in non-test files
   - `domain/analysis.go` - Wrapped with `ErrInvalidAnalysisState`, `ErrInvalidAnalysisMode`
   - `domain/clone.go` - Wrapped with `ErrInvalidCloneState`, `ErrInvalidCloneSeverity`, `ErrInvalidCloneGroupStatus`
@@ -45,6 +48,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 - [x] **wrapcheck** - Fixed via exclusions in config
 
 #### P2 - Complexity (HIGH)
+
 - [x] **gocyclo/cyclop** - Excluded `syntax/` directory (AST transformations inherently complex)
 - [x] **gocognit** - Excluded test files
 - [x] **funlen** - Excluded test files, added `//nolint:funlen` where appropriate
@@ -52,6 +56,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 - [x] **exhaustruct** - Excluded `cmd/` directory (cobra.Command has 30+ fields)
 
 #### P3 - Code Quality (MEDIUM)
+
 - [x] **unused-parameter** - Fixed in non-test files
   - `internal/simd/simd.go` - Renamed `data` to `_`
   - `pkg/logger/logger.go` - Renamed all NoOpLogger parameters to `_`
@@ -65,6 +70,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
   - `internal/utils/file.go` - `FileProcessor` constructor
 
 #### Infrastructure
+
 - [x] Created `.golangci.yml` v1 format for golangci-lint v1.64.8 compatibility
 - [x] Preserved v2 config as `.golangci.v2.yml` for future upgrade
 - [x] Fixed unused import in `internal/testutil/binary.go`
@@ -75,12 +81,14 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ### b) PARTIALLY DONE ⚠️
 
 #### Test File Linting (Intentionally Deferred)
+
 - [~] **err113** - Not fixed in test files (acceptable for test clarity)
 - [~] **paralleltest** - 5 tests in `testutils/unique_test_clean.go` missing `t.Parallel()`
 - [~] **exhaustruct** - Not fixed in test files (excluded via config)
 - [~] **varnamelen** - Not fixed in test files (excluded via config)
 
 #### Style Issues (Low Priority)
+
 - [~] **revive naming stutter** - Partially fixed
   - `git.GitError` → `git.Error` (NOT DONE - breaking change)
   - `filter.FilterStats` → `filter.Stats` (NOT DONE - breaking change)
@@ -91,6 +99,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ### c) NOT STARTED 📋
 
 #### Future Phases (P4-P5)
+
 - [ ] **thelper** - Test helper functions should call `t.Helper()`
 - [ ] **tparallel** - All tests should call `t.Parallel()`
 - [ ] **usetesting** - Replace `context.Background()` with `t.Context()` (partially done)
@@ -98,6 +107,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 - [ ] **godoc** - Full documentation audit
 
 #### Naming Refactors (Breaking Changes)
+
 - [ ] `git.GitError` → `git.Error`
 - [ ] `filter.FilterStats` → `filter.Stats`
 - [ ] `filter.FilterOption` → `filter.Option`
@@ -121,41 +131,51 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ### e) WHAT WE SHOULD IMPROVE 🔧
 
 #### 1. Error Architecture (High Impact)
+
 **Current State:** Mixed error handling patterns - static errors in `domain/analysis_errors.go`, dynamic wrapping with `fmt.Errorf("%w: context", ErrBase)`
 
-**Recommendation:** 
+**Recommendation:**
+
 - Consolidate all domain errors in `domain/errors.go`
 - Add error codes for programmatic error identification
 - Consider using `github.com/samber/mo` Result types for new code
 
 #### 2. Linter Configuration (Medium Impact)
+
 **Current State:** `.golangci.yml` v1 format with many exclusions
 
 **Recommendation:**
+
 - Upgrade to golangci-lint v2 when available
 - Migrate to `.golangci.v2.yml` format
 - Reduce exclusions by fixing root causes
 
 #### 3. Test Quality (Medium Impact)
+
 **Current State:** Many tests missing `t.Parallel()`, some missing `t.Helper()`
 
 **Recommendation:**
+
 - Add `t.Parallel()` to all independent tests
 - Add `t.Helper()` to all test helper functions
 - Fix err113 in test files by using `errors.New()` at package level
 
 #### 4. Package Naming (Medium Impact)
+
 **Current State:** Stutter in exported names (`git.GitError`, `filter.FilterStats`)
 
 **Recommendation:**
+
 - Deprecate old names with aliases
 - Add new names in gradual migration
 - Document breaking changes in MIGRATION_GUIDE.md
 
 #### 5. Documentation (Low Impact)
+
 **Current State:** Many exported functions missing godoc comments
 
 **Recommendation:**
+
 - Add package comments to all packages
 - Add function comments to all exported functions
 - Enable `godoclint` linter
@@ -165,6 +185,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ### f) TOP #25 THINGS TO GET DONE NEXT 🔥
 
 #### Critical (P0)
+
 1. [ ] **Fix remaining 4 lint issues in non-test files**
    - `pkg/logger/logger.go:49` - exhaustruct (1 issue)
    - Investigate if any other non-test files have issues
@@ -179,6 +200,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
    - Document cache clearing procedure
 
 #### High Priority (P1)
+
 4. [ ] **Add t.Parallel() to all tests**
    - 5 tests in `testutils/unique_test_clean.go`
    - All other tests missing parallel call
@@ -198,6 +220,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
    - Document error hierarchy
 
 #### Medium Priority (P2)
+
 8. [ ] **Fix revive naming stutter**
    - Create deprecation plan
    - Add type aliases for backward compatibility
@@ -232,6 +255,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
     - `funlen` - Reduce function lengths
 
 #### Low Priority (P3)
+
 16. [ ] **Refactor complex functions**
     - `syntax/golang/transform.go` - gocyclo: 66 (excluded)
     - Break down into smaller functions
@@ -253,6 +277,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
     - Expand fuzzing coverage
 
 #### Nice to Have (P4)
+
 21. [ ] **Migrate to Result types**
     - Use `github.com/samber/mo` for new code
     - Gradually migrate existing code
@@ -286,10 +311,12 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 5. We have limited time/resources
 
 **Trade-offs:**
+
 - **Fixing all lint issues:** Would achieve 100% lint compliance but may delay feature development
 - **Proceeding with features:** Faster delivery but technical debt accumulates
 
 **Context:**
+
 - The project is a code duplication detection tool (art-dupl)
 - Current state is "good enough" for production
 - Remaining lint issues don't affect functionality
@@ -301,6 +328,7 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 ## Files Modified This Session
 
 ### Source Code
+
 - `domain/analysis_errors.go` - Added new static error variables
 - `domain/analysis.go` - Fixed err113
 - `domain/clone.go` - Fixed err113
@@ -319,10 +347,12 @@ Successfully completed Phase P0-P3 of the comprehensive golangci-lint remediatio
 - `internal/testutil/binary.go` - Removed unused import
 
 ### Configuration
+
 - `.golangci.yml` - Created v1 format
 - `.golangci.v2.yml` - Preserved v2 format
 
 ### Documentation
+
 - `docs/status/2026-03-01_00-36_COMPREHENSIVE_LINT_FIX_STATUS.md` - This report
 
 ---
