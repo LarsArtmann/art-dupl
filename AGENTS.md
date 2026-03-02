@@ -321,9 +321,11 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - Large composite literals are serialized to prevent stack overflow
 - Maximum children limit prevents excessive memory usage
 - Stream processing keeps memory usage bounded
+- **Suffix tree uses O(1) map-based transition lookup** (optimized from O(n) linear search)
 - SIMD optimizations available for improved performance (via internal/simd)
 - Hash-based detection is faster than suffix tree for some scenarios
 - Multiple detection methods can be run together (adds overhead)
+- `--semantic` flag is now faster than non-semantic mode due to optimization (was 9x slower)
 
 ### File Processing
 
