@@ -35,6 +35,14 @@ func newTestOptionsWithThreshold(threshold int) *Options {
 	}
 }
 
+// newTestOptionsWithNoDetectionMethods creates Options with empty detection methods.
+func newTestOptionsWithNoDetectionMethods() *Options {
+	return &Options{
+		Threshold:        15,
+		DetectionMethods: []DetectionMethod{},
+	}
+}
+
 // createTestClone creates a Clone with configurable fragment for testing.
 func createTestClone(t *testing.T, fragment string) Clone {
 	t.Helper()

@@ -109,11 +109,8 @@ func TestValidateOptions_Invalid_Basic(t *testing.T) {
 		newInvalidThresholdTestCase("threshold too low", 0),
 		newInvalidThresholdTestCase("threshold too high", 1001),
 		{
-			name: "no detection methods",
-			opts: &Options{
-				Threshold:        15,
-				DetectionMethods: []DetectionMethod{},
-			},
+			name:    "no detection methods",
+			opts:    newTestOptionsWithNoDetectionMethods(),
 			wantErr: true,
 		},
 	}

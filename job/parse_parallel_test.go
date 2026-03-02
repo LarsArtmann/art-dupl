@@ -89,14 +89,7 @@ func main() {
 
 	schan, _ := ParseParallel(ctx, fchan, 0)
 
-	select {
-	case seq := <-schan:
-		if len(seq) == 0 {
-			t.Error("Expected some parsed nodes")
-		}
-	case <-time.After(5 * time.Second):
-		t.Error("ParseParallel timed out")
-	}
+	waitForParsedNodes(t, schan, "ParseParallel timed out")
 }
 
 func TestParseParallelContextCancellation(t *testing.T) {

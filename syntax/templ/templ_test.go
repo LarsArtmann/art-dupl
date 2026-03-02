@@ -118,20 +118,7 @@ templ nested() {
 	</div>
 }`
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Verify tree structure is traversable
-	nodeCount := countAllNodes(node)
-	if nodeCount < 1 {
-		t.Errorf("Expected at least 1 node, got %d", nodeCount)
-	}
+	testParseAndVerifyNodeCount(t, input, 1)
 }
 
 func TestParseWithLineCountFile(t *testing.T) {
@@ -172,19 +159,7 @@ css className() {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Should have at least one child (CSS declaration)
-	if len(node.Children) == 0 {
-		t.Error("Expected at least one child node for CSS template")
-	}
+	testParseTemplInputMin(t, input, 1)
 }
 
 func TestParseScriptTemplate(t *testing.T) {
@@ -195,19 +170,7 @@ script onClick() {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Should have at least one child (Script declaration)
-	if len(node.Children) == 0 {
-		t.Error("Expected at least one child node for Script template")
-	}
+	testParseTemplInputMin(t, input, 1)
 }
 
 func TestParseSwitchStatement(t *testing.T) {
@@ -225,20 +188,7 @@ templ switchExample(val int) {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Verify tree is traversable
-	nodeCount := countAllNodes(node)
-	if nodeCount < 3 {
-		t.Errorf("Expected at least 3 nodes for switch statement, got %d", nodeCount)
-	}
+	testParseAndVerifyNodeCount(t, input, 3)
 }
 
 func TestParseComponentWithChildren(t *testing.T) {
@@ -255,6 +205,10 @@ templ child() {
 }
 `
 
+	testParseTemplInputMin(t, input, 2)
+}
+
+func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -264,9 +218,24 @@ templ child() {
 		t.Fatal("ParseBytes() returned nil node")
 	}
 
-	// Should have 2 component declarations
-	if len(node.Children) < 2 {
-		t.Errorf("Expected at least 2 component declarations, got %d", len(node.Children))
+	if len(node.Children) < expectedMin {
+		t.Errorf("Expected at least %d component declarations, got %d", expectedMin, len(node.Children))
+	}
+}
+
+func testParseAndVerifyNodeCount(t *testing.T, input string, expectedMin int) {
+	node, _, err := ParseBytes("test.templ", []byte(input))
+	if err != nil {
+		t.Fatalf("ParseBytes() error = %v", err)
+	}
+
+	if node == nil {
+		t.Fatal("ParseBytes() returned nil node")
+	}
+
+	nodeCount := countAllNodes(node)
+	if nodeCount < expectedMin {
+		t.Errorf("Expected at least %d nodes, got %d", expectedMin, nodeCount)
 	}
 }
 
@@ -284,20 +253,7 @@ templ elseifExample(a, b bool) {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Count nodes in tree
-	nodeCount := countAllNodes(node)
-	if nodeCount < 3 {
-		t.Errorf("Expected at least 3 nodes for if/elseif/else, got %d", nodeCount)
-	}
+	testParseAndVerifyNodeCount(t, input, 3)
 }
 
 func TestParseExpressionAttributes(t *testing.T) {
@@ -308,20 +264,7 @@ templ attrs(name string, active bool) {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Verify structure
-	nodeCount := countAllNodes(node)
-	if nodeCount < 2 {
-		t.Errorf("Expected at least 2 nodes with attributes, got %d", nodeCount)
-	}
+	testParseAndVerifyNodeCount(t, input, 2)
 }
 
 func TestParseDoctype(t *testing.T) {
@@ -443,20 +386,7 @@ templ nested() {
 }
 `
 
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Count all nested nodes
-	nodeCount := countAllNodes(node)
-	if nodeCount < 5 {
-		t.Errorf("Expected at least 5 nodes for nested elements, got %d", nodeCount)
-	}
+	testParseAndVerifyNodeCount(t, input, 5)
 }
 
 func TestParseMultipleComponents(t *testing.T) {
@@ -475,6 +405,10 @@ templ footer() {
 }
 `
 
+	testParseTemplInputExact(t, input, 3)
+}
+
+func testParseTemplInputExact(t *testing.T, input string, expected int) {
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -484,9 +418,8 @@ templ footer() {
 		t.Fatal("ParseBytes() returned nil node")
 	}
 
-	// Should have 3 component declarations
-	if len(node.Children) != 3 {
-		t.Errorf("Expected 3 component declarations, got %d", len(node.Children))
+	if len(node.Children) != expected {
+		t.Errorf("Expected %d component declarations, got %d", expected, len(node.Children))
 	}
 }
 

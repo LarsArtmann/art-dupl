@@ -15,33 +15,15 @@ func TestFileProcessorWriteFile(t *testing.T) {
 	t.Parallel()
 
 	t.Run("writes file to base directory", func(t *testing.T) {
-		g := NewWithT(t)
 		t.Parallel()
 
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor(tmpDir)
-
-		err := fp.WriteFile("test.txt", []byte("hello world"), 0o644)
-		g.Expect(err).ToNot(HaveOccurred())
-
-		content, err := os.ReadFile(filepath.Join(tmpDir, "test.txt"))
-		g.Expect(err).ToNot(HaveOccurred())
-		g.Expect(string(content)).To(Equal("hello world"))
+		assertWriteFile(t, "test.txt", "hello world")
 	})
 
 	t.Run("creates nested directories", func(t *testing.T) {
-		g := NewWithT(t)
 		t.Parallel()
 
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor(tmpDir)
-
-		err := fp.WriteFile("subdir/nested/test.txt", []byte("nested content"), 0o644)
-		g.Expect(err).ToNot(HaveOccurred())
-
-		content, err := os.ReadFile(filepath.Join(tmpDir, "subdir/nested/test.txt"))
-		g.Expect(err).ToNot(HaveOccurred())
-		g.Expect(string(content)).To(Equal("nested content"))
+		assertWriteFile(t, "subdir/nested/test.txt", "nested content")
 	})
 
 	t.Run("writes without base directory", func(t *testing.T) {
@@ -201,6 +183,19 @@ func TestFileProcessorRoundTrip(t *testing.T) {
 		g.Expect(err).ToNot(HaveOccurred())
 		g.Expect(bytes.Equal(original, read)).To(BeTrue())
 	})
+}
+
+func assertWriteFile(t *testing.T, filename, expectedContent string) {
+	g := NewWithT(t)
+	tmpDir := t.TempDir()
+	fp := NewFileProcessor(tmpDir)
+
+	err := fp.WriteFile(filename, []byte(expectedContent), 0o644)
+	g.Expect(err).ToNot(HaveOccurred())
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, filename))
+	g.Expect(err).ToNot(HaveOccurred())
+	g.Expect(string(content)).To(Equal(expectedContent))
 }
 
 func TestApplyTimeout(t *testing.T) {

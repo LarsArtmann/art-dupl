@@ -28,6 +28,15 @@ func assertFileContains(t *testing.T, output, filename, value string) {
 	}
 }
 
+// assertMapFloat64Equal asserts that a float64 value in a map equals the expected value.
+func assertMapFloat64Equal(t *testing.T, m map[string]any, key string, expected float64) {
+	t.Helper()
+
+	if m[key] != expected {
+		t.Errorf("%s = %v, want %v", key, m[key], expected)
+	}
+}
+
 // createNodeSlice creates a slice of syntax.Node with sequential positions and types.
 // startPos is the starting position (inclusive), endPos is the ending position (inclusive).
 func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
@@ -557,17 +566,9 @@ func TestStatsJSONOutput(t *testing.T) {
 		t.Fatal("Missing 'overview' section in JSON")
 	}
 
-	if overview["filesScanned"] != float64(10) {
-		t.Errorf("filesScanned = %v, want 10", overview["filesScanned"])
-	}
-
-	if overview["cloneGroups"] != float64(1) {
-		t.Errorf("cloneGroups = %v, want 1", overview["cloneGroups"])
-	}
-
-	if overview["totalClones"] != float64(2) {
-		t.Errorf("totalClones = %v, want 2", overview["totalClones"])
-	}
+	assertMapFloat64Equal(t, overview, "filesScanned", 10)
+	assertMapFloat64Equal(t, overview, "cloneGroups", 1)
+	assertMapFloat64Equal(t, overview, "totalClones", 2)
 
 	dupCode, ok := result["duplicateCode"].(map[string]any)
 	if !ok {

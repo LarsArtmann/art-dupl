@@ -5,6 +5,26 @@ import (
 	"testing"
 )
 
+func newRepositoryTestCase(name, path, repoName, language string, wantErr bool) struct {
+	name    string
+	repo    Repository
+	wantErr bool
+} {
+	return struct {
+		name    string
+		repo    Repository
+		wantErr bool
+	}{
+		name: name,
+		repo: Repository{
+			Path:     path,
+			Name:     repoName,
+			Language: language,
+		},
+		wantErr: wantErr,
+	}
+}
+
 // TestRepository_IsValid tests Repository.IsValid method.
 func TestRepository_IsValid(t *testing.T) {
 	tests := []struct {
@@ -12,42 +32,10 @@ func TestRepository_IsValid(t *testing.T) {
 		repo    Repository
 		wantErr bool
 	}{
-		{
-			name: "valid repository",
-			repo: Repository{
-				Path:     "/path/to/repo",
-				Name:     "my-repo",
-				Language: "go",
-			},
-			wantErr: false,
-		},
-		{
-			name: "empty path",
-			repo: Repository{
-				Path:     "",
-				Name:     "my-repo",
-				Language: "go",
-			},
-			wantErr: true,
-		},
-		{
-			name: "empty name",
-			repo: Repository{
-				Path:     "/path/to/repo",
-				Name:     "",
-				Language: "go",
-			},
-			wantErr: true,
-		},
-		{
-			name: "empty language",
-			repo: Repository{
-				Path:     "/path/to/repo",
-				Name:     "my-repo",
-				Language: "",
-			},
-			wantErr: true,
-		},
+		newRepositoryTestCase("valid repository", "/path/to/repo", "my-repo", "go", false),
+		newRepositoryTestCase("empty path", "", "my-repo", "go", true),
+		newRepositoryTestCase("empty name", "/path/to/repo", "", "go", true),
+		newRepositoryTestCase("empty language", "/path/to/repo", "my-repo", "", true),
 	}
 
 	for _, tt := range tests {
@@ -60,6 +48,27 @@ func TestRepository_IsValid(t *testing.T) {
 	}
 }
 
+func newSourceFileTestCase(name, path, fileName string, size uint64, hash string, wantErr bool) struct {
+	name    string
+	file    SourceFile
+	wantErr bool
+} {
+	return struct {
+		name    string
+		file    SourceFile
+		wantErr bool
+	}{
+		name: name,
+		file: SourceFile{
+			Path: path,
+			Name: fileName,
+			Size: size,
+			Hash: hash,
+		},
+		wantErr: wantErr,
+	}
+}
+
 // TestSourceFile_IsValid tests SourceFile.IsValid method.
 func TestSourceFile_IsValid(t *testing.T) {
 	tests := []struct {
@@ -67,56 +76,11 @@ func TestSourceFile_IsValid(t *testing.T) {
 		file    SourceFile
 		wantErr bool
 	}{
-		{
-			name: "valid source file",
-			file: SourceFile{
-				Path: "/path/to/file.go",
-				Name: "file.go",
-				Size: 1024,
-				Hash: "abc123",
-			},
-			wantErr: false,
-		},
-		{
-			name: "empty path",
-			file: SourceFile{
-				Path: "",
-				Name: "file.go",
-				Size: 1024,
-				Hash: "abc123",
-			},
-			wantErr: true,
-		},
-		{
-			name: "empty name",
-			file: SourceFile{
-				Path: "/path/to/file.go",
-				Name: "",
-				Size: 1024,
-				Hash: "abc123",
-			},
-			wantErr: true,
-		},
-		{
-			name: "zero size",
-			file: SourceFile{
-				Path: "/path/to/file.go",
-				Name: "file.go",
-				Size: 0,
-				Hash: "abc123",
-			},
-			wantErr: true,
-		},
-		{
-			name: "empty hash",
-			file: SourceFile{
-				Path: "/path/to/file.go",
-				Name: "file.go",
-				Size: 1024,
-				Hash: "",
-			},
-			wantErr: true,
-		},
+		newSourceFileTestCase("valid source file", "/path/to/file.go", "file.go", 1024, "abc123", false),
+		newSourceFileTestCase("empty path", "", "file.go", 1024, "abc123", true),
+		newSourceFileTestCase("empty name", "/path/to/file.go", "", 1024, "abc123", true),
+		newSourceFileTestCase("zero size", "/path/to/file.go", "file.go", 0, "abc123", true),
+		newSourceFileTestCase("empty hash", "/path/to/file.go", "file.go", 1024, "", true),
 	}
 
 	for _, tt := range tests {

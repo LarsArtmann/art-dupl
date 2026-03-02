@@ -78,6 +78,20 @@ func (n *Node) Val() int {
 	return int(n.Type)
 }
 
+// NewSyntheticFileNode creates a synthetic node representing an entire file.
+// This is used for file-level duplicate detection where we want to match
+// entire files rather than specific code fragments.
+//
+//nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
+func NewSyntheticFileNode(filename string, size int) *Node {
+	return &Node{
+		Filename: filename,
+		Pos:      0,
+		End:      int32(size),
+		Type:     1,
+	}
+}
+
 type Match struct {
 	Hash  string
 	Frags [][]*Node

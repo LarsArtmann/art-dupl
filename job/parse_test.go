@@ -37,14 +37,7 @@ func helper() {
 
 	schan, _ := Parse(ctx, fchan)
 
-	select {
-	case seq := <-schan:
-		if len(seq) == 0 {
-			t.Error("Expected some parsed nodes, got empty sequence")
-		}
-	case <-time.After(5 * time.Second):
-		t.Error("Parse timed out - possible deadlock")
-	}
+	waitForParsedNodes(t, schan, "Parse timed out - possible deadlock", "Expected some parsed nodes, got empty sequence")
 }
 
 func TestParseErrorHandling(t *testing.T) {

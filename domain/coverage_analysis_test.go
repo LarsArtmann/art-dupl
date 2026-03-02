@@ -9,7 +9,17 @@ type validatable interface {
 	IsValid() error
 }
 
-// testValidMethods runs table-driven tests for types with IsValid() error method.
+// newDetectionOptions creates a DetectionOptions with default values for testing.
+// The threshold parameter allows customizing the threshold value (including 0).
+func newDetectionOptions(threshold Threshold) DetectionOptions {
+	return DetectionOptions{
+		Threshold:    threshold,
+		Mode:         AnalysisModeFull,
+		Paths:        []Filepath{"./src"},
+		OutputFormat: "text",
+	}
+}
+
 func testValidMethods[T validatable](t *testing.T, testCases []struct {
 	name    string
 	value   T
@@ -179,23 +189,13 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "valid options",
-			options: DetectionOptions{
-				Threshold:    15,
-				Mode:         AnalysisModeFull,
-				Paths:        []Filepath{"./src"},
-				OutputFormat: "text",
-			},
+			name:    "valid options",
+			options: newDetectionOptions(15),
 			wantErr: false,
 		},
 		{
-			name: "zero threshold",
-			options: DetectionOptions{
-				Threshold:    0,
-				Mode:         AnalysisModeFull,
-				Paths:        []Filepath{"./src"},
-				OutputFormat: "text",
-			},
+			name:    "zero threshold",
+			options: newDetectionOptions(0),
 			wantErr: true,
 		},
 		{

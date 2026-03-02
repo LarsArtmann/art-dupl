@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os/exec"
@@ -103,6 +104,38 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 		args...) // #nosec G204 -- Test helper running project binary
 
 	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+}
+
+// RunStatsSubcommandWithJSON runs the stats subcommand with JSON format and parses the result.
+// The threshold parameter is required and specifies the minimum clone size to report.
+func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]any, error) {
+	if s.T != nil {
+		s.T.Helper()
+	}
+
+	args := []string{"stats", "--format", "json", "--threshold", threshold}
+
+	hasDir := slices.Contains(args, s.TmpDir)
+	if !hasDir {
+		args = append(args, s.TmpDir)
+	}
+
+	cmd := exec.CommandContext(
+		context.Background(),
+		s.BinaryPath,
+		args...) // #nosec G204 -- Test helper running project binary
+
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("failed to run stats command: %w\nOutput: %s", err, string(output))
+	}
+
+	var result map[string]any
+	if err := json.Unmarshal(output, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON output: %w\nOutput: %s", err, string(output))
+	}
+
+	return result, nil
 }
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.

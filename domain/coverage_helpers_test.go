@@ -184,42 +184,40 @@ func TestUnmarshalUint(t *testing.T) {
 
 func TestUnmarshalUintNonZero(t *testing.T) {
 	t.Run("valid non-zero", func(t *testing.T) {
-		var result uint
-
-		err := unmarshalUintNonZero(
-			[]byte("42"),
-			"TestType",
-			"TestType cannot be zero",
-			func(n uint) {
-				result = n
-			},
-		)
-		if err != nil {
-			t.Errorf("unmarshalUintNonZero() error = %v", err)
-		}
-
-		if result != 42 {
-			t.Errorf("unmarshalUintNonZero() result = %v, want 42", result)
-		}
+		testUnmarshalUintNonZero(t, []byte("42"), false, 42)
 	})
 
 	t.Run("zero value", func(t *testing.T) {
-		var result uint
+		testUnmarshalUintNonZero(t, []byte("0"), true, 0)
+	})
+}
 
-		err := unmarshalUintNonZero(
-			[]byte("0"),
-			"TestType",
-			"TestType cannot be zero",
-			func(n uint) {
-				result = n
-			},
-		)
+func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expectedValue uint) {
+	var result uint
+	err := unmarshalUintNonZero(
+		input,
+		"TestType",
+		"TestType cannot be zero",
+		func(n uint) {
+			result = n
+		},
+	)
+
+	if expectError {
 		_ = result
-
 		if err == nil {
 			t.Error("unmarshalUintNonZero() error = nil, want error for zero value")
 		}
-	})
+		return
+	}
+
+	if err != nil {
+		t.Errorf("unmarshalUintNonZero() error = %v", err)
+	}
+
+	if result != expectedValue {
+		t.Errorf("unmarshalUintNonZero() result = %v, want %d", result, expectedValue)
+	}
 }
 
 func TestUnmarshalUintGeneric(t *testing.T) {

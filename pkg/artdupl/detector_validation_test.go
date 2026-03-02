@@ -70,11 +70,8 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 			wantErr: ErrThresholdTooLarge,
 		},
 		{
-			name: "no detection methods",
-			opts: &Options{
-				Threshold:        15,
-				DetectionMethods: []DetectionMethod{},
-			},
+			name:    "no detection methods",
+			opts:    newTestOptionsWithNoDetectionMethods(),
 			wantErr: ErrNoDetectionMethods,
 		},
 		{

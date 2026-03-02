@@ -149,6 +149,27 @@ func TestSaveConfig(t *testing.T) {
 	}
 }
 
+// newInvalidConfigTestCase creates a test case for invalid configuration validation.
+func newInvalidConfigTestCase(name string, threshold int, outputFormat OutputFormat, maxChildrenSerial int) struct {
+	name    string
+	config  *Config
+	isValid bool
+} {
+	return struct {
+		name    string
+		config  *Config
+		isValid bool
+	}{
+		name: name,
+		config: &Config{
+			Threshold:         threshold,
+			OutputFormat:      outputFormat,
+			MaxChildrenSerial: maxChildrenSerial,
+		},
+		isValid: false,
+	}
+}
+
 func TestValidateConfig(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -165,51 +186,11 @@ func TestValidateConfig(t *testing.T) {
 			},
 			isValid: true,
 		},
-		{
-			name: "Invalid threshold - too low",
-			config: &Config{
-				Threshold:         0,
-				OutputFormat:      "text",
-				MaxChildrenSerial: 10000,
-			},
-			isValid: false,
-		},
-		{
-			name: "Invalid threshold - too high",
-			config: &Config{
-				Threshold:         1001,
-				OutputFormat:      "text",
-				MaxChildrenSerial: 10000,
-			},
-			isValid: false,
-		},
-		{
-			name: "Invalid output format",
-			config: &Config{
-				Threshold:         15,
-				OutputFormat:      "xml",
-				MaxChildrenSerial: 10000,
-			},
-			isValid: false,
-		},
-		{
-			name: "Invalid maxChildrenSerial - too low",
-			config: &Config{
-				Threshold:         15,
-				OutputFormat:      "text",
-				MaxChildrenSerial: 999,
-			},
-			isValid: false,
-		},
-		{
-			name: "Invalid maxChildrenSerial - too high",
-			config: &Config{
-				Threshold:         15,
-				OutputFormat:      "text",
-				MaxChildrenSerial: 100001,
-			},
-			isValid: false,
-		},
+		newInvalidConfigTestCase("Invalid threshold - too low", 0, OutputFormat("text"), 10000),
+		newInvalidConfigTestCase("Invalid threshold - too high", 1001, OutputFormat("text"), 10000),
+		newInvalidConfigTestCase("Invalid output format", 15, OutputFormat("xml"), 10000),
+		newInvalidConfigTestCase("Invalid maxChildrenSerial - too low", 15, OutputFormat("text"), 999),
+		newInvalidConfigTestCase("Invalid maxChildrenSerial - too high", 15, OutputFormat("text"), 100001),
 		{
 			name: "Cache flags require incremental - cache-dir without incremental",
 			config: &Config{

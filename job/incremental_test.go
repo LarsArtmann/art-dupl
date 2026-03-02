@@ -6,7 +6,24 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+func waitForParsedNodes(t *testing.T, schan chan []*syntax.Node, timeoutMsg string, emptyMsg ...string) {
+	t.Helper()
+	emptyError := "Expected some parsed nodes"
+	if len(emptyMsg) > 0 {
+		emptyError = emptyMsg[0]
+	}
+	select {
+	case seq := <-schan:
+		if len(seq) == 0 {
+			t.Error(emptyError)
+		}
+	case <-time.After(5 * time.Second):
+		t.Error(timeoutMsg)
+	}
+}
 
 func TestIncrementalParserBasic(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
@@ -33,14 +50,7 @@ func main() {
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
 
-	select {
-	case seq := <-schan:
-		if len(seq) == 0 {
-			t.Error("Expected some parsed nodes")
-		}
-	case <-time.After(5 * time.Second):
-		t.Error("ParseIncremental timed out")
-	}
+	waitForParsedNodes(t, schan, "ParseIncremental timed out")
 
 	stats := <-statsChan
 	if stats.FilesCount != 1 {

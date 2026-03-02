@@ -97,14 +97,7 @@ var _ = Describe("Default Filtering Behavior", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When analyzing code with templ generated files", func() {
@@ -377,14 +370,7 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		var err error
-
-		setup, err = testutil.NewBDDTestSetupForGinkgo()
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When using JSON output", func() {

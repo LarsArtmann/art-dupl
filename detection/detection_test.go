@@ -690,6 +690,14 @@ func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue
 	return detector.findLegacyInFile(testFile, nodes)
 }
 
+// runLegacyDetectionTestCase is a helper function that runs the legacy detector on the provided Go code.
+func runLegacyDetectionTestCase(t *testing.T, testFile, goCode, expectedLog string) {
+	issues := runLegacyDetectionTest(t, testFile, goCode)
+	if issues == nil {
+		t.Log(expectedLog)
+	}
+}
+
 // TestLegacyDetector_FindLegacyInFile_RealFile tests findLegacyInFile with actual Go files.
 func TestLegacyDetector_FindLegacyInFile_RealFile(t *testing.T) {
 	goCode := `package test
@@ -707,10 +715,7 @@ func LegacyFunc() {
 	_ = data
 }`
 
-	issues := runLegacyDetectionTest(t, "test_legacy.go", goCode)
-	if issues == nil {
-		t.Log("No legacy issues found (simplified detection)")
-	}
+	runLegacyDetectionTestCase(t, "test_legacy.go", goCode, "No legacy issues found (simplified detection)")
 }
 
 // TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns tests file without legacy patterns.
@@ -729,10 +734,7 @@ func ModernFunc() {
 	_ = data
 }`
 
-	issues := runLegacyDetectionTest(t, "no_legacy.go", goCode)
-	if issues == nil {
-		t.Log("No legacy issues in modern code (expected)")
-	}
+	runLegacyDetectionTestCase(t, "no_legacy.go", goCode, "No legacy issues in modern code (expected)")
 }
 
 // TestLegacyDetector_FindLegacyInFile_EmptyFile tests with empty Go file.

@@ -38,13 +38,15 @@ func createTestNodes(end int32, filename string) [][]*syntax.Node {
 	}
 }
 
-// createTestCloneGroups creates a slice of CloneGroup for testing.
-func createTestCloneGroups(groups ...struct {
+// CloneGroupParams holds parameters for creating test clone groups.
+type CloneGroupParams struct {
 	id     string
 	clones int
 	size   int
-},
-) []domain.CloneGroup {
+}
+
+// createTestCloneGroups creates a slice of CloneGroup for testing.
+func createTestCloneGroups(groups ...CloneGroupParams) []domain.CloneGroup {
 	result := make([]domain.CloneGroup, len(groups))
 	for i, g := range groups {
 		clones := make([]domain.Clone, g.clones)
@@ -314,16 +316,8 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 	t.Run("with clone groups", func(t *testing.T) {
 		groups := createTestCloneGroups(
-			struct {
-				id     string
-				clones int
-				size   int
-			}{id: "group-1", clones: 1, size: 100},
-			struct {
-				id     string
-				clones int
-				size   int
-			}{id: "group-2", clones: 2, size: 200},
+			CloneGroupParams{id: "group-1", clones: 1, size: 100},
+			CloneGroupParams{id: "group-2", clones: 2, size: 200},
 		)
 
 		analysis := CreateAnalysisFromClones(groups, 20)
@@ -377,16 +371,8 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 	t.Run("complexity score", func(t *testing.T) {
 		groups := createTestCloneGroups(
-			struct {
-				id     string
-				clones int
-				size   int
-			}{id: "group-1", clones: 1, size: 100},
-			struct {
-				id     string
-				clones int
-				size   int
-			}{id: "group-2", clones: 1, size: 200},
+			CloneGroupParams{id: "group-1", clones: 1, size: 100},
+			CloneGroupParams{id: "group-2", clones: 1, size: 200},
 		)
 
 		analysis := CreateAnalysisFromClones(groups, 15)

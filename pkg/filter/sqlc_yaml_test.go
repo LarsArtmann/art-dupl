@@ -324,10 +324,26 @@ func TestFindSQLCConfigs(t *testing.T) {
 }
 
 func TestGetSQLOutputDirs(t *testing.T) {
-	t.Run("extracts output directories", func(t *testing.T) {
+	helper := func(t *testing.T, content string, expectedCount int) {
 		tmpDir := t.TempDir()
 		configPath := filepath.Join(tmpDir, "sqlc.yaml")
 
+		err := os.WriteFile(configPath, []byte(content), 0o644)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		dirs, err := GetSQLOutputDirs([]string{tmpDir})
+		if err != nil {
+			t.Fatalf("GetSQLOutputDirs() error = %v", err)
+		}
+
+		if len(dirs) != expectedCount {
+			t.Errorf("len(dirs) = %d, want %d", len(dirs), expectedCount)
+		}
+	}
+
+	t.Run("extracts output directories", func(t *testing.T) {
 		content := `version: "2"
 sql:
   - schema: "schema.sql"
@@ -343,19 +359,7 @@ sql:
         package: "models"
         out: "pkg/models"
 `
-		err := os.WriteFile(configPath, []byte(content), 0o644)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		dirs, err := GetSQLOutputDirs([]string{tmpDir})
-		if err != nil {
-			t.Fatalf("GetSQLOutputDirs() error = %v", err)
-		}
-
-		if len(dirs) != 2 {
-			t.Errorf("len(dirs) = %d, want 2", len(dirs))
-		}
+		helper(t, content, 2)
 	})
 
 	t.Run("no config files", func(t *testing.T) {
@@ -372,9 +376,6 @@ sql:
 	})
 
 	t.Run("handles empty out field", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		configPath := filepath.Join(tmpDir, "sqlc.yaml")
-
 		content := `version: "2"
 sql:
   - schema: "schema.sql"
@@ -383,19 +384,7 @@ sql:
       go:
         package: "db"
 `
-		err := os.WriteFile(configPath, []byte(content), 0o644)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		dirs, err := GetSQLOutputDirs([]string{tmpDir})
-		if err != nil {
-			t.Fatalf("GetSQLOutputDirs() error = %v", err)
-		}
-
-		if len(dirs) != 0 {
-			t.Errorf("len(dirs) = %d, want 0 (empty out should not add dir)", len(dirs))
-		}
+		helper(t, content, 0)
 	})
 }
 
