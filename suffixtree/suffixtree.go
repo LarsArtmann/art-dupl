@@ -2,7 +2,7 @@
 // Core types: STree (tree), state (node), tran (edge), Match (duplicate), Token (interface).
 // Algorithm: Build incrementally, FindDuplOver() searches for sequences >= threshold.
 // Performance: O(n*m) worst case, typically O(n). Memory: O(n*k).
-// SIMD: findTranSIMD() for vectorized search when transitions > 8.
+// Optimization: Map-based transition lookup for O(1) findTran performance.
 package suffixtree
 
 import (
