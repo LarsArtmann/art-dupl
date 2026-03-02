@@ -11,6 +11,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// newTestDetector creates a detector with default test configuration.
+func newTestDetector() *detector {
+	return &detector{
+		opts: &Options{
+			DetectionMethods: []DetectionMethod{MethodArtDupl},
+		},
+		config: newTestConfig(),
+	}
+}
+
 // TestConvertToCloneGroup tests the convertToCloneGroup function.
 func TestConvertToCloneGroup(t *testing.T) {
 	d := &detector{
@@ -343,12 +353,7 @@ func TestCollectMatchesIntoGroups_Cancelled(t *testing.T) {
 
 // TestStreamDetectionResults tests the streamDetectionResults function.
 func TestStreamDetectionResults(t *testing.T) {
-	d := &detector{
-		opts: &Options{
-			DetectionMethods: []DetectionMethod{MethodArtDupl},
-		},
-		config: newTestConfig(),
-	}
+	d := newTestDetector()
 
 	resultChan := make(chan *CloneGroup, 1)
 	data := []*syntax.Node{
@@ -367,12 +372,7 @@ func TestStreamDetectionResults(t *testing.T) {
 
 // TestStreamDetectionResults_Cancelled tests streamDetectionResults with cancelled context.
 func TestStreamDetectionResults_Cancelled(t *testing.T) {
-	d := &detector{
-		opts: &Options{
-			DetectionMethods: []DetectionMethod{MethodArtDupl},
-		},
-		config: newTestConfig(),
-	}
+	d := newTestDetector()
 
 	resultChan := make(chan *CloneGroup)
 	ctx, cancel := context.WithCancel(t.Context())

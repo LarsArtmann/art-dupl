@@ -53,13 +53,7 @@ func main() {
 	waitForParsedNodes(t, schan, "ParseIncremental timed out")
 
 	stats := <-statsChan
-	if stats.FilesCount != 1 {
-		t.Errorf("Expected FilesCount=1, got %d", stats.FilesCount)
-	}
-
-	if stats.CacheMisses != 1 {
-		t.Errorf("Expected CacheMisses=1 (first run), got %d", stats.CacheMisses)
-	}
+	testutil.AssertIncrementalStats(t, stats.FilesCount, stats.CacheMisses, 1, 1)
 }
 
 func TestIncrementalParserCacheHit(t *testing.T) {
@@ -249,13 +243,7 @@ func function2() {
 	}
 
 	stats := <-statsChan
-	if stats.FilesCount != 2 {
-		t.Errorf("Expected FilesCount=2, got %d", stats.FilesCount)
-	}
-
-	if stats.CacheMisses != 2 {
-		t.Errorf("Expected CacheMisses=2, got %d", stats.CacheMisses)
-	}
+	testutil.AssertIncrementalStats(t, stats.FilesCount, stats.CacheMisses, 2, 2)
 }
 
 func TestIncrementalParserGetCacheStats(t *testing.T) {

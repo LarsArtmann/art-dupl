@@ -8,6 +8,20 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// AssertIncrementalStats asserts that the incremental parser stats have expected values.
+// Use this to verify the results of a first run (filesCount=1, cacheMisses=1) or subsequent runs.
+func AssertIncrementalStats(t *testing.T, actualFilesCount, actualCacheMisses, expectedFilesCount, expectedCacheMisses int) {
+	t.Helper()
+
+	if actualFilesCount != expectedFilesCount {
+		t.Errorf("Expected FilesCount=%d, got %d", expectedFilesCount, actualFilesCount)
+	}
+
+	if actualCacheMisses != expectedCacheMisses {
+		t.Errorf("Expected CacheMisses=%d, got %d", expectedCacheMisses, actualCacheMisses)
+	}
+}
+
 // PanicRecovery returns a defer recover function that reports a panic with the given input.
 // Use in fuzz tests to catch panics and report them with the input that caused the panic.
 func PanicRecovery(t *testing.T, input string) func() {
