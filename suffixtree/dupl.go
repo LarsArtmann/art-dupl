@@ -99,7 +99,15 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 		return cl
 	}
 
-	for _, t := range s.trans {
+	// Sort transitions by token value for deterministic iteration order
+	transKeys := make([]int, 0, len(s.trans))
+	for k := range s.trans {
+		transKeys = append(transKeys, k)
+	}
+	sort.Ints(transKeys)
+
+	for _, k := range transKeys {
+		t := s.trans[k]
 		ln := length + t.len()
 
 		cl2 := walkTrans(t, ln, threshold, ch)

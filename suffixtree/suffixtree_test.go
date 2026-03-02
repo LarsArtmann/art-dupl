@@ -1,6 +1,8 @@
 package suffixtree
 
 import (
+	"cmp"
+	"slices"
 	"testing"
 	"unicode/utf8"
 )
@@ -116,7 +118,16 @@ func walker(s *state) <-chan *tran {
 }
 
 func walk(s *state, ch chan<- *tran) {
+	// Collect and sort transitions by start position for deterministic order
+	transList := make([]*tran, 0, len(s.trans))
 	for _, tr := range s.trans {
+		transList = append(transList, tr)
+	}
+	slices.SortFunc(transList, func(a, b *tran) int {
+		return cmp.Compare(a.start, b.start)
+	})
+
+	for _, tr := range transList {
 		ch <- tr
 
 		walk(tr.state, ch)
