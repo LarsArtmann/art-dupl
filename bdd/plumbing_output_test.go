@@ -24,6 +24,17 @@ import (
 // - Plumbing format validation
 // - Integration with CI/CD pipelines
 
+// assertLinesContainGoFiles checks that all non-empty lines in the output contain .go file paths.
+// This is used to validate plumbing output format where each line should reference a Go source file.
+func assertLinesContainGoFiles(output []byte) {
+	lines := strings.SplitSeq(strings.TrimSpace(string(output)), "\n")
+	for line := range lines {
+		if strings.TrimSpace(line) != "" {
+			Expect(line).To(ContainSubstring(".go"))
+		}
+	}
+}
+
 var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -314,15 +325,8 @@ func ciCdFunction() error {
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
 			// Each line should be parseable
-			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
-			for line := range lines {
-				if strings.TrimSpace(line) != "" {
-					// Line should contain file path information
-					Expect(line).To(ContainSubstring(".go"))
-				}
-			}
+			assertLinesContainGoFiles(output)
 		})
 
 		It("should include clone positions for precise reporting", func() {
@@ -369,16 +373,8 @@ func delimiterTest() {}`
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			lines := strings.SplitSeq(strings.TrimSpace(outputStr), "\n")
-
 			// All non-empty lines should have consistent structure
-			for line := range lines {
-				if strings.TrimSpace(line) != "" {
-					// Should contain .go extension (file path)
-					Expect(line).To(ContainSubstring(".go"))
-				}
-			}
+			assertLinesContainGoFiles(output)
 		})
 
 		It("should handle files with special characters in paths", func() {

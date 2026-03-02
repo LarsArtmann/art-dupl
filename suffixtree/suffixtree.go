@@ -195,20 +195,22 @@ func printState(buf *bytes.Buffer, s *state, ident int) {
 // state is an explicit state of the suffix tree.
 type state struct {
 	tree      *STree
-	trans     []*tran
+	trans     map[int]*tran
 	linkState *state
 }
 
 func newState(t *STree) *state {
 	return &state{
 		tree:      t,
-		trans:     make([]*tran, 0),
+		trans:     make(map[int]*tran),
 		linkState: nil,
 	}
 }
 
 func (s *state) addTran(start, end Pos, r *state) {
-	s.trans = append(s.trans, newTran(start, end, r))
+	// Key is the token value at the transition's start position
+	key := s.tree.data[start].Val()
+	s.trans[key] = newTran(start, end, r)
 }
 
 // fork creates a new branch from the state s.

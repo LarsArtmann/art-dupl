@@ -33,25 +33,22 @@ func HandleMarshalingError(operation, context string, err error) error {
 
 	switch err.Error() {
 	case "json: unsupported value":
-		return &MarshalError{
-			Operation: operation,
-			Context:   context,
-			Cause:     fmt.Errorf("unsupported value type: %w", err),
-		}
+		return newMarshalError(operation, context, err, "unsupported value type: %w")
 	case "json: unsupported type":
-		return &MarshalError{
-			Operation: operation,
-			Context:   context,
-			Cause:     fmt.Errorf("unsupported type: %w", err),
-		}
+		return newMarshalError(operation, context, err, "unsupported type: %w")
 	case "json: invalid UTF-8":
-		return &MarshalError{
-			Operation: operation,
-			Context:   context,
-			Cause:     fmt.Errorf("invalid UTF-8 encoding: %w", err),
-		}
+		return newMarshalError(operation, context, err, "invalid UTF-8 encoding: %w")
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
+	}
+}
+
+// newMarshalError creates a new MarshalError with a formatted error message.
+func newMarshalError(operation, context string, err error, msgFormat string) *MarshalError {
+	return &MarshalError{
+		Operation: operation,
+		Context:   context,
+		Cause:     fmt.Errorf(msgFormat, err),
 	}
 }
 

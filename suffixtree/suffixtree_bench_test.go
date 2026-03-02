@@ -114,10 +114,10 @@ func BenchmarkFindTranVeryLarge(b *testing.B) {
 	benchmarkFindTranMethod(b, 200, 100)
 }
 
-// BenchmarkFindTranFallback benchmarks the fallback (linear) implementation.
-func BenchmarkFindTranFallback(b *testing.B) {
+// BenchmarkFindTranMap benchmarks the map-based implementation.
+func BenchmarkFindTranMap(b *testing.B) {
 	benchmarkFindTran(b, 100, 50, nil, func(s *state, t Token) *tran {
-		return s.findTranFallback(t)
+		return s.findTran(t)
 	})
 }
 
