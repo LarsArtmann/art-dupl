@@ -33,13 +33,7 @@ func TestConvertToCloneGroup(t *testing.T) {
 
 	group := d.convertToCloneGroup("test-hash", frags, MethodArtDupl)
 
-	if group.Hash != "test-hash" {
-		t.Errorf("Expected Hash='test-hash', got %s", group.Hash)
-	}
-
-	if len(group.Clones) != 2 {
-		t.Errorf("Expected 2 clones, got %d", len(group.Clones))
-	}
+	assertCloneGroupBasic(t, group, "test-hash", 2)
 
 	if group.Method != MethodArtDupl {
 		t.Errorf("Expected Method=MethodArtDupl, got %v", group.Method)

@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+// assertCloneGroupBasic asserts basic CloneGroup properties (Hash and Clone count).
+func assertCloneGroupBasic(t *testing.T, group *CloneGroup, expectedHash string, expectedCloneCount int) {
+	t.Helper()
+	if group.Hash != expectedHash {
+		t.Errorf("Expected Hash=%q, got %s", expectedHash, group.Hash)
+	}
+	if len(group.Clones) != expectedCloneCount {
+		t.Errorf("Expected %d clones, got %d", expectedCloneCount, len(group.Clones))
+	}
+}
+
 // TestCloneGroup_Fields tests CloneGroup field assignments.
 func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
@@ -19,13 +30,7 @@ func TestCloneGroup_Fields(t *testing.T) {
 		Method:    MethodArtDupl,
 	}
 
-	if group.Hash != "abc123" {
-		t.Errorf("Hash should be 'abc123', got %s", group.Hash)
-	}
-
-	if len(group.Clones) != 2 {
-		t.Errorf("Should have 2 clones, got %d", len(group.Clones))
-	}
+	assertCloneGroupBasic(t, &group, "abc123", 2)
 
 	if group.Size != 100 {
 		t.Errorf("Size should be 100, got %d", group.Size)
