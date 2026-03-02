@@ -12,7 +12,7 @@ func BenchmarkTreeConstructionFewUniqueTokens(b *testing.B) {
 		// Only 50 unique token types
 		tokens[i] = &testToken{val: i % 50}
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		tree := New()
@@ -28,7 +28,7 @@ func BenchmarkTreeConstructionManyUniqueTokens(b *testing.B) {
 		// 5000 unique token types (identifiers)
 		tokens[i] = &testToken{val: i % 5000}
 	}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		tree := New()
