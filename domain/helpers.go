@@ -90,3 +90,24 @@ func unmarshalUintGeneric[T uint16 | uint32](data []byte, typeName string, assig
 
 	return nil
 }
+
+// marshalInt32 is a helper function for marshaling int32-based types.
+// It handles the common pattern of marshaling int32-wrapped types to JSON.
+func marshalInt32(n int32) ([]byte, error) {
+	return json.Marshal(n) //nolint:wrapcheck // Standard JSON marshaling
+}
+
+// unmarshalInt32 is a helper function for unmarshaling int32-based types.
+// It handles the common pattern of unmarshaling JSON to int32.
+func unmarshalInt32(data []byte, typeName string, assign func(int32)) error {
+	var n int32
+
+	err := json.Unmarshal(data, &n)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal %s: %w", typeName, err)
+	}
+
+	assign(n)
+
+	return nil
+}
