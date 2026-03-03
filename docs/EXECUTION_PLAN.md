@@ -3,6 +3,7 @@
 ## 1. Reflection: What Was Forgotten & Could Be Better
 
 ### What I Forgot:
+
 1. **Memory profiling before/after** - No baseline to quantify memory overhead
 2. **ADR (Architecture Decision Record)** - No formal record of why map vs slice
 3. **Property-based testing** - No fuzzing for suffix tree correctness
@@ -10,12 +11,14 @@
 5. **Cleanup of stale diagnostics** - findtran_simd.go references still in LSP cache
 
 ### What Could Be Done Better:
+
 1. **Incremental commits** - Should have committed each file change separately
 2. **Benchmark-driven development** - Should have written benchmarks FIRST
 3. **Documentation sync** - Should have updated docs WITH code changes
 4. **Type safety** - Token.Val() returns int but should be int32 for consistency
 
 ### What Could Still Be Improved:
+
 1. **Hybrid slice/map approach** - Memory optimization for small transition counts
 2. **Better type models** - Stronger typing for Token values
 3. **Concurrent tree building** - For very large codebases
@@ -28,15 +31,18 @@
 ### Phase 1: Quick Wins (Low Effort, High Impact) ⭐⭐⭐
 
 #### Step 1.1: Fix Stale LSP Diagnostics
+
 **Work:** 5 minutes  
 **Impact:** Clean development environment  
 **Action:** Restart LSP or verify file is truly gone  
 **Verification:** No more findtran_simd.go errors in diagnostics
 
 #### Step 1.2: Add Real-World End-to-End Benchmark
+
 **Work:** 30 minutes  
 **Impact:** Track real performance regression  
-**Action:** 
+**Action:**
+
 ```go
 // bdd/semantic_performance_bench_test.go
 func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
@@ -44,15 +50,18 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
     // Compare semantic vs non-semantic
 }
 ```
+
 **Verification:** Benchmark runs and shows improvement
 
 #### Step 1.3: Create ADR for Map-Based Optimization
+
 **Work:** 20 minutes  
 **Impact:** Document architectural decision  
 **Action:** Create `docs/adr/0001-map-based-transition-lookup.md`  
 **Verification:** ADR follows project template
 
 #### Step 1.4: Update AGENTS.md with Performance Notes
+
 **Work:** 15 minutes  
 **Impact:** Team awareness  
 **Action:** Add section on suffix tree performance characteristics  
@@ -63,9 +72,11 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 ### Phase 2: Type Safety & Architecture (Medium Effort, Medium Impact) ⭐⭐
 
 #### Step 2.1: Create TokenValue Type Alias
+
 **Work:** 1 hour  
 **Impact:** Better type safety  
 **Action:**
+
 ```go
 // suffixtree/token.go
 package suffixtree
@@ -76,12 +87,15 @@ type Token interface {
     Val() TokenValue
 }
 ```
+
 **Verification:** All implementations compile, tests pass
 
 #### Step 2.2: Refactor state struct for Better Encapsulation
+
 **Work:** 1.5 hours  
 **Impact:** Cleaner API  
 **Action:**
+
 ```go
 type state struct {
     tree      *STree
@@ -93,16 +107,20 @@ func (s *state) findTran(key TokenValue) *tran {
     return s.trans[key]
 }
 ```
+
 **Verification:** Tests pass, no performance regression
 
 #### Step 2.3: Add Transition Count Statistics
+
 **Work:** 45 minutes  
 **Impact:** Debugging and optimization insights  
 **Action:**
+
 ```go
 func (s *state) transitionCount() int { return len(s.trans) }
 func (t *STree) Stats() TreeStats { ... }
 ```
+
 **Verification:** Stats() returns meaningful data
 
 ---
@@ -110,9 +128,11 @@ func (t *STree) Stats() TreeStats { ... }
 ### Phase 3: Memory Optimization (Medium Effort, High Impact) ⭐⭐⭐
 
 #### Step 3.1: Implement Hybrid Slice/Map Approach
+
 **Work:** 3 hours  
 **Impact:** 20-30% memory reduction  
 **Action:**
+
 ```go
 type state struct {
     tree       *STree
@@ -125,7 +145,7 @@ const mapThreshold = 8
 func (s *state) addTran(start, end Pos, r *state) {
     key := s.tree.data[start].Val()
     tran := newTran(start, end, r)
-    
+
     if len(s.transSmall) < mapThreshold {
         s.transSmall = append(s.transSmall, tran)
     } else {
@@ -154,12 +174,15 @@ func (s *state) findTran(key int) *tran {
     return nil
 }
 ```
-**Verification:** 
+
+**Verification:**
+
 - Tests pass
 - Benchmark shows memory reduction
 - No performance regression
 
 #### Step 3.2: Benchmark Memory vs Performance Trade-off
+
 **Work:** 30 minutes  
 **Impact:** Data-driven decision  
 **Action:** Run benchmarks comparing slice-only vs map-only vs hybrid  
@@ -170,9 +193,11 @@ func (s *state) findTran(key int) *tran {
 ### Phase 4: Testing & Quality (Medium Effort, High Impact) ⭐⭐⭐
 
 #### Step 4.1: Add Property-Based Tests for Suffix Tree
+
 **Work:** 3 hours  
 **Impact:** Catch edge cases  
 **Action:**
+
 ```go
 // suffixtree/prop_test.go
 func TestPropertyFindDuplFindsAllDuplicates(t *testing.T) {
@@ -181,12 +206,15 @@ func TestPropertyFindDuplFindsAllDuplicates(t *testing.T) {
     // Verify no false positives
 }
 ```
+
 **Verification:** Tests catch intentional bugs
 
 #### Step 4.2: Add Fuzzing for Tree Construction
+
 **Work:** 1 hour  
 **Impact:** Robustness  
 **Action:**
+
 ```go
 func FuzzTreeConstruction(f *testing.F) {
     f.Add([]byte{1, 2, 3, 1, 2, 3})
@@ -196,9 +224,11 @@ func FuzzTreeConstruction(f *testing.F) {
     })
 }
 ```
+
 **Verification:** Fuzzing runs without panics
 
 #### Step 4.3: Benchmark Regression Test in CI
+
 **Work:** 1 hour  
 **Impact:** Prevent performance regressions  
 **Action:** Add benchmark comparison to CI workflow  
@@ -209,14 +239,17 @@ func FuzzTreeConstruction(f *testing.F) {
 ### Phase 5: Advanced Optimizations (High Effort, Medium Impact) ⭐
 
 #### Step 5.1: Research Concurrent Tree Building
+
 **Work:** 4 hours  
 **Impact:** 2-4x faster on multi-core  
-**Action:** 
+**Action:**
+
 - Research parallel suffix tree algorithms
 - Prototype concurrent construction
 - Measure speedup
 
 #### Step 5.2: Memory Pool for tran Objects
+
 **Work:** 2 hours  
 **Impact:** Reduce GC pressure  
 **Action:** Use `sync.Pool` for `tran` allocation  
@@ -227,48 +260,55 @@ func FuzzTreeConstruction(f *testing.F) {
 ## 3. Sorted by Work vs Impact
 
 ### Immediate (Do Today)
-| Step | Work | Impact | Task |
-|------|------|--------|------|
-| 1.1 | 5m | ⭐⭐⭐ | Fix stale diagnostics |
-| 1.2 | 30m | ⭐⭐⭐ | Real-world benchmark |
-| 1.3 | 20m | ⭐⭐ | Create ADR |
-| 1.4 | 15m | ⭐⭐ | Update AGENTS.md |
+
+| Step | Work | Impact | Task                  |
+| ---- | ---- | ------ | --------------------- |
+| 1.1  | 5m   | ⭐⭐⭐ | Fix stale diagnostics |
+| 1.2  | 30m  | ⭐⭐⭐ | Real-world benchmark  |
+| 1.3  | 20m  | ⭐⭐   | Create ADR            |
+| 1.4  | 15m  | ⭐⭐   | Update AGENTS.md      |
 
 ### This Week
-| Step | Work | Impact | Task |
-|------|------|--------|------|
-| 2.1 | 1h | ⭐⭐ | TokenValue type |
-| 2.2 | 1.5h | ⭐⭐ | Refactor state struct |
-| 3.2 | 30m | ⭐⭐⭐ | Benchmark trade-offs |
-| 4.2 | 1h | ⭐⭐⭐ | Fuzzing |
+
+| Step | Work | Impact | Task                  |
+| ---- | ---- | ------ | --------------------- |
+| 2.1  | 1h   | ⭐⭐   | TokenValue type       |
+| 2.2  | 1.5h | ⭐⭐   | Refactor state struct |
+| 3.2  | 30m  | ⭐⭐⭐ | Benchmark trade-offs  |
+| 4.2  | 1h   | ⭐⭐⭐ | Fuzzing               |
 
 ### Next Week
-| Step | Work | Impact | Task |
-|------|------|--------|------|
-| 3.1 | 3h | ⭐⭐⭐ | Hybrid slice/map |
-| 4.1 | 3h | ⭐⭐⭐ | Property-based tests |
-| 4.3 | 1h | ⭐⭐ | CI benchmark check |
+
+| Step | Work | Impact | Task                 |
+| ---- | ---- | ------ | -------------------- |
+| 3.1  | 3h   | ⭐⭐⭐ | Hybrid slice/map     |
+| 4.1  | 3h   | ⭐⭐⭐ | Property-based tests |
+| 4.3  | 1h   | ⭐⭐   | CI benchmark check   |
 
 ### Future
-| Step | Work | Impact | Task |
-|------|------|--------|------|
-| 5.1 | 4h | ⭐⭐ | Concurrent building |
-| 5.2 | 2h | ⭐⭐ | Memory pooling |
+
+| Step | Work | Impact | Task                |
+| ---- | ---- | ------ | ------------------- |
+| 5.1  | 4h   | ⭐⭐   | Concurrent building |
+| 5.2  | 2h   | ⭐⭐   | Memory pooling      |
 
 ---
 
 ## 4. Existing Code That Fits Requirements
 
 ### For Hybrid Approach:
+
 - **Existing pattern:** `internal/simd/simd.go` - conditional optimization
 - **Existing benchmark infra:** `suffixtree/suffixtree_bench_test.go`
 - **Existing test patterns:** `suffixtree/dupl_test.go`
 
 ### For Type Safety:
+
 - **Existing pattern:** `domain/line_number.go` - strong typing with validation
 - **Existing pattern:** `domain/threshold.go` - typed int with bounds checking
 
 ### For Property Testing:
+
 - **Existing:** `suffixtree/suffixtree_test.go` has basic fuzz test
 - **Can extend:** Add more generators and properties
 
@@ -277,6 +317,7 @@ func FuzzTreeConstruction(f *testing.F) {
 ## 5. Type Model Improvements
 
 ### Current Issues:
+
 ```go
 // Token.Val() returns int - inconsistent with Pos (int32)
 type Token interface {
@@ -288,6 +329,7 @@ map[int]*tran  // Should match Token value type
 ```
 
 ### Proposed Type Model:
+
 ```go
 // suffixtree/types.go
 package suffixtree
@@ -311,6 +353,7 @@ type StateID uint32
 ```
 
 ### Benefits:
+
 1. Type safety - can't mix up token values with positions
 2. Clarity - self-documenting code
 3. Consistency - all int32-based for 32-bit systems
@@ -321,19 +364,23 @@ type StateID uint32
 ## 6. Well-Established Libraries to Consider
 
 ### For Testing:
+
 - **`github.com/stretchr/testify`** - Already used? Check
 - **`pgregory/rapid`** - Property-based testing (better than stdlib fuzzing)
 - **`google/go-cmp`** - Already in go.mod (indirect)
 
 ### For Performance:
+
 - **`github.com/cockroachdb/swiss`** - Swiss table map (faster than Go map)
 - **`github.com/dolthub/swiss`** - Alternative Swiss table
 
 ### For Concurrency:
+
 - **`github.com/sourcegraph/conc`** - Structured concurrency (by Cody)
 - **`golang.org/x/sync/errgroup`** - Already in go.mod
 
 ### Analysis:
+
 - **Swiss tables:** Worth benchmarking - could be 10-20% faster for lookups
 - **Rapid:** Better than stdlib fuzzing for property tests - worth trying
 - **Conc:** Not needed unless we do concurrent tree building

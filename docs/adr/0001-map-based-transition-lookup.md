@@ -99,18 +99,18 @@ Use SIMD instructions for parallel comparison.
 
 ### Benchmarks
 
-| Scenario | Before | After | Improvement |
-|----------|--------|-------|-------------|
-| Tree construction (5000 unique tokens) | 978 ms | 1.79 ms | **546x** |
-| `--semantic` on art-dupl codebase | 1.077s | 0.182s | **5.9x** |
-| vs non-semantic | 3.5x slower | 1.2x faster | **4.2x** |
+| Scenario                               | Before      | After       | Improvement |
+| -------------------------------------- | ----------- | ----------- | ----------- |
+| Tree construction (5000 unique tokens) | 978 ms      | 1.79 ms     | **546x**    |
+| `--semantic` on art-dupl codebase      | 1.077s      | 0.182s      | **5.9x**    |
+| vs non-semantic                        | 3.5x slower | 1.2x faster | **4.2x**    |
 
 ### Memory Usage
 
-| Token Diversity | Slice | Map | Overhead |
-|----------------|-------|-----|----------|
-| 50 unique | 172 KB | 172 KB | 0% |
-| 5000 unique | 172 KB | 901 KB | 424% |
+| Token Diversity | Slice  | Map    | Overhead |
+| --------------- | ------ | ------ | -------- |
+| 50 unique       | 172 KB | 172 KB | 0%       |
+| 5000 unique     | 172 KB | 901 KB | 424%     |
 
 Note: Memory overhead is acceptable given the dramatic speed improvement and typical codebase characteristics (few files have >1000 unique identifiers).
 

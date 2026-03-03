@@ -11,7 +11,7 @@
 Successfully resolved the `--semantic` flag performance degradation issue that caused **9x slowdown** (4.9s → 44.3s). The root cause was O(n) linear search in suffix tree transition lookup. The fix implemented **O(1) map-based lookup**, resulting in:
 
 - **546x faster** tree construction with many unique tokens
-- **5.9x faster** `--semantic` execution on art-dupl codebase  
+- **5.9x faster** `--semantic` execution on art-dupl codebase
 - `--semantic` now **1.2x FASTER** than non-semantic mode (was 9x slower)
 
 All changes committed, tested, and pushed. Phase 1 of improvement plan is complete.
@@ -21,6 +21,7 @@ All changes committed, tested, and pushed. Phase 1 of improvement plan is comple
 ## a) FULLY DONE ✅
 
 ### Core Optimization (COMPLETE)
+
 - [x] Changed `state.trans` from `[]*tran` to `map[int]*tran`
 - [x] Implemented O(1) `findTran` lookup
 - [x] Added deterministic iteration ordering for tests
@@ -29,6 +30,7 @@ All changes committed, tested, and pushed. Phase 1 of improvement plan is comple
 - [x] Build succeeds (`go build ./...`)
 
 ### Documentation (COMPLETE)
+
 - [x] **ADR-0001**: Map-based transition lookup architecture decision record
   - File: `docs/adr/0001-map-based-transition-lookup.md`
   - 135 lines covering context, decision, consequences, alternatives
@@ -40,6 +42,7 @@ All changes committed, tested, and pushed. Phase 1 of improvement plan is comple
   - Added O(1) optimization note
 
 ### Benchmarks (COMPLETE)
+
 - [x] **Memory benchmarks**: `suffixtree/memory_bench_test.go`
   - `BenchmarkMemoryUsageFewTokens`: 50 unique tokens
   - `BenchmarkMemoryUsageManyTokens`: 5000 unique tokens
@@ -49,6 +52,7 @@ All changes committed, tested, and pushed. Phase 1 of improvement plan is comple
   - Compares `--semantic` vs non-semantic performance
 
 ### Planning Documents (COMPLETE)
+
 - [x] **IMPROVEMENT_PLAN.md**: What was done, what could be improved
 - [x] **EXECUTION_PLAN.md**: Multi-step execution plan with priorities
   - 5 phases with small, actionable steps
@@ -56,6 +60,7 @@ All changes committed, tested, and pushed. Phase 1 of improvement plan is comple
   - Type model improvement suggestions
 
 ### Commits (10 commits pushed)
+
 ```
 df23e3a docs(agents): document suffix tree O(1) optimization
 8235ddb docs(adr): add ADR for map-based transition lookup
@@ -74,12 +79,14 @@ b956d49 refactor: optimize suffix tree transitions with map-based lookup
 ## b) PARTIALLY DONE 🟡
 
 ### LSP Diagnostics Cleanup
+
 - **Status**: Stale references to deleted `findtran_simd.go` still appear in LSP cache
 - **Impact**: Cosmetic - doesn't affect build or tests
 - **Files affected**: Diagnostics show errors for non-existent file
 - **Resolution needed**: LSP server restart or cache clear
 
 ### Type Safety Improvements
+
 - **Status**: TokenValue type alias designed but not implemented
 - **Impact**: Medium - would improve type safety across packages
 - **Blocked by**: Requires changes in multiple packages (syntax/, suffixtree/)
@@ -90,22 +97,26 @@ b956d49 refactor: optimize suffix tree transitions with map-based lookup
 ## c) NOT STARTED 🔵
 
 ### Phase 2: Type Safety & Architecture
+
 - [ ] Create `TokenValue` type alias (int32)
 - [ ] Refactor `state` struct for better encapsulation
 - [ ] Add transition count statistics
 - [ ] Update Token interface to use typed values
 
 ### Phase 3: Memory Optimization
+
 - [ ] Implement hybrid slice/map approach
 - [ ] Benchmark memory vs performance trade-off
 - [ ] Document decision rationale
 
 ### Phase 4: Testing & Quality
+
 - [ ] Property-based tests for suffix tree
 - [ ] Fuzzing for tree construction
 - [ ] CI benchmark regression testing
 
 ### Phase 5: Advanced Optimizations
+
 - [ ] Research concurrent tree building
 - [ ] Memory pool for tran objects
 - [ ] SIMD for token comparison (different from transition search)
@@ -117,6 +128,7 @@ b956d49 refactor: optimize suffix tree transitions with map-based lookup
 **NONE** - All work completed successfully with no critical issues.
 
 Minor issues:
+
 1. **LSP stale diagnostics** - Non-critical, cosmetic only
 2. **golangci-lint config** - Pre-existing issue, unrelated to this work
 
@@ -157,6 +169,7 @@ Minor issues:
 ## f) Top #25 Things To Get Done Next! 🎯
 
 ### Priority 1: Critical (Do Today)
+
 1. ✅ ~~Fix semantic performance~~ - DONE
 2. 🔄 Create PR for merge to main
 3. 🔄 Fix LSP stale diagnostics (restart LSP)
@@ -164,6 +177,7 @@ Minor issues:
 5. 🔄 Update CHANGELOG.md
 
 ### Priority 2: High (This Week)
+
 6. 🔄 Run full benchmark comparison (before/after)
 7. 🔄 Code review with team
 8. 🔄 Test on large codebase (e.g., kubernetes, golang/go)
@@ -171,6 +185,7 @@ Minor issues:
 10. 🔄 Create TokenValue type alias
 
 ### Priority 3: Medium (Next 2 Weeks)
+
 11. 🔄 Implement hybrid slice/map approach
 12. 🔄 Benchmark memory vs performance trade-off
 13. 🔄 Add property-based tests (rapid or stdlib fuzzing)
@@ -178,6 +193,7 @@ Minor issues:
 15. 🔄 Memory profiling documentation
 
 ### Priority 4: Nice-to-Have (Next Month)
+
 16. 🔄 Concurrent tree building research
 17. 🔄 Memory pooling for tran objects
 18. 🔄 Swiss table evaluation
@@ -185,6 +201,7 @@ Minor issues:
 20. 🔄 Performance comparison with other tools
 
 ### Priority 5: Future (Later)
+
 21. 🔄 Distributed detection for massive codebases
 22. 🔄 Incremental analysis improvements
 23. 🔄 Cache optimization
@@ -198,16 +215,19 @@ Minor issues:
 ### Question: Should we implement the hybrid slice/map approach now or wait?
 
 **Context:**
+
 - Current map-based approach: 901 KB for 5000 unique tokens (5x memory increase)
 - Hybrid approach could reduce this to ~400 KB (2.3x increase)
 - Current performance is excellent (546x faster, 5.9x for semantic)
 - Memory overhead is acceptable for typical codebases
 
 **Trade-offs:**
+
 - **Pros**: 50% memory reduction, best of both worlds
 - **Cons**: More complex code, additional benchmark/testing needed, threshold tuning required
 
 **What I need help with:**
+
 1. What is the acceptable memory overhead threshold?
 2. Should we prioritize simplicity or memory efficiency?
 3. Do we have users with memory constraints?
@@ -222,6 +242,7 @@ Minor issues:
 ## Performance Metrics Summary
 
 ### Before Optimization
+
 ```
 WITHOUT semantic: 0.303s
 WITH semantic:    1.077s (3.5x slower)
@@ -229,6 +250,7 @@ Tree construction (5000 tokens): 978 ms
 ```
 
 ### After Optimization
+
 ```
 WITHOUT semantic: 0.257s
 WITH semantic:    0.182s (1.4x faster!)
@@ -236,11 +258,13 @@ Tree construction (5000 tokens): 1.79 ms
 ```
 
 ### Improvement
+
 - Tree construction: **546x faster**
 - `--semantic` flag: **5.9x faster**
 - vs non-semantic: **4.2x improvement** (was 3.5x slower, now 1.4x faster)
 
 ### Memory Usage
+
 ```
 50 unique tokens:   172 KB (no change)
 5000 unique tokens: 901 KB (5x increase - acceptable)
@@ -251,6 +275,7 @@ Tree construction (5000 tokens): 1.79 ms
 ## Files Changed Summary
 
 ### Core Implementation (5 files)
+
 - `suffixtree/suffixtree.go` - Map-based transitions
 - `suffixtree/findtran.go` - O(1) lookup (NEW)
 - `suffixtree/dupl.go` - Deterministic iteration
@@ -258,6 +283,7 @@ Tree construction (5000 tokens): 1.79 ms
 - `suffixtree/suffixtree_bench_test.go` - Benchmark updates
 
 ### Documentation (5 files)
+
 - `docs/adr/0001-map-based-transition-lookup.md` (NEW)
 - `docs/EXECUTION_PLAN.md` (NEW)
 - `docs/IMPROVEMENT_PLAN.md` (NEW)
@@ -265,10 +291,12 @@ Tree construction (5000 tokens): 1.79 ms
 - `suffixtree/suffixtree.go` - Package docs
 
 ### Tests (2 files)
+
 - `suffixtree/memory_bench_test.go` (NEW)
 - `bdd/semantic_performance_bench_test.go` (NEW)
 
 ### Deleted (1 file)
+
 - `suffixtree/findtran_simd.go` - Obsolete SIMD code
 
 **Total:** 10 new files, 6 modified, 1 deleted

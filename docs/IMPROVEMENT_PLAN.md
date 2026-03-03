@@ -7,11 +7,13 @@ Successfully optimized `--semantic` flag performance from **9x slowdown** to **1
 ## What Was Done
 
 ### Core Optimization
+
 - Changed `state.trans` from `[]*tran` (slice) to `map[int]*tran` (map)
 - Transition lookup: O(n) → O(1)
 - Result: 546x faster tree construction with many unique tokens
 
 ### Files Modified
+
 1. `suffixtree/suffixtree.go` - Map-based transition storage
 2. `suffixtree/findtran.go` - O(1) lookup implementation
 3. `suffixtree/dupl.go` - Deterministic iteration order
@@ -20,11 +22,11 @@ Successfully optimized `--semantic` flag performance from **9x slowdown** to **1
 
 ### Performance Results
 
-| Scenario | Before | After | Improvement |
-|----------|--------|-------|-------------|
-| Tree construction (5000 unique tokens) | 978 ms | 1.79 ms | **546x** |
-| `--semantic` on art-dupl codebase | 1.077s | 0.182s | **5.9x** |
-| vs non-semantic | 3.5x slower | 1.2x faster | **4.2x** |
+| Scenario                               | Before      | After       | Improvement |
+| -------------------------------------- | ----------- | ----------- | ----------- |
+| Tree construction (5000 unique tokens) | 978 ms      | 1.79 ms     | **546x**    |
+| `--semantic` on art-dupl codebase      | 1.077s      | 0.182s      | **5.9x**    |
+| vs non-semantic                        | 3.5x slower | 1.2x faster | **4.2x**    |
 
 ## What Could Still Be Improved
 
@@ -33,10 +35,12 @@ Successfully optimized `--semantic` flag performance from **9x slowdown** to **1
 **Problem**: Maps use more memory than slices for small transition counts.
 
 **Data**:
+
 - Few tokens (50 unique): 172 KB, 165 allocs
 - Many tokens (5000 unique): 901 KB, 15K allocs
 
 **Solution**: Hybrid approach
+
 ```go
 // Pseudo-code
 type state struct {
@@ -53,6 +57,7 @@ type state struct {
 **Missing**: Real-world benchmarks using actual Go code
 
 **Action**: Add benchmarks in `bdd/` that:
+
 - Parse actual Go files
 - Compare semantic vs non-semantic
 - Measure end-to-end performance
@@ -65,6 +70,7 @@ type state struct {
 **Problem**: `Token.Val()` returns `int`, but `Pos` is `int32`
 
 **Solution**: Create a proper `TokenValue` type alias
+
 ```go
 type TokenValue int32
 
@@ -81,6 +87,7 @@ type Token interface {
 **Problem**: `findtran.go` is only 13 lines
 
 **Options**:
+
 1. Merge into `suffixtree.go`
 2. Keep separate but add more context
 3. Rename to `state.go` and add state methods
@@ -91,6 +98,7 @@ type Token interface {
 ### 5. Documentation Updates (Low Impact, Low Effort)
 
 **Missing**:
+
 - Performance notes in AGENTS.md
 - Architecture decision record (ADR) for map vs slice
 - Comments explaining why map is faster
@@ -103,6 +111,7 @@ type Token interface {
 **Idea**: Build suffix tree concurrently for large codebases
 
 **Approach**:
+
 - Partition token stream
 - Build partial trees in parallel
 - Merge trees
@@ -115,6 +124,7 @@ type Token interface {
 **Missing**: Fuzzing/property tests for suffix tree correctness
 
 **Action**: Add fuzz tests that:
+
 - Generate random token sequences
 - Verify findDuplOver finds all duplicates
 - Verify no false positives
@@ -125,17 +135,20 @@ type Token interface {
 ## Recommended Priority Order
 
 ### Phase 1: Quick Wins (This Week)
+
 1. ✅ ~~Update package documentation~~ (DONE)
 2. Add comprehensive benchmarks
 3. Update AGENTS.md with performance notes
 4. Clean up code organization
 
 ### Phase 2: Memory Optimization (Next Week)
+
 5. Implement hybrid slice/map approach
 6. Benchmark memory vs performance trade-offs
 7. Document decision
 
 ### Phase 3: Architecture (Future)
+
 8. Type safety improvements
 9. Property-based testing
 10. Concurrent tree construction (if needed)
@@ -169,6 +182,7 @@ type Token interface {
 ## Conclusion
 
 The map-based optimization is a significant win. The main remaining work is:
+
 1. Documentation and benchmarking
 2. Optional memory optimization (hybrid approach)
 3. Long-term architecture improvements

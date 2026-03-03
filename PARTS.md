@@ -10,13 +10,13 @@ art-dupl contains several high-quality, well-tested components that could be ext
 
 **Top Extraction Candidates:**
 
-| Priority | Component | Extraction Value | Recommendation |
-|----------|-----------|------------------|----------------|
-| 1 | Suffix Tree | High | Extract as generic library |
-| 2 | String Intern Pool | Medium | Extract if API refined |
-| 3 | Smart File Filter | Medium | Extract with broader tool support |
-| 4 | Clone Detection SDK | High | Already designed, needs refinement |
-| 5 | Domain Types | Low | Keep internal, patterns valuable |
+| Priority | Component           | Extraction Value | Recommendation                     |
+| -------- | ------------------- | ---------------- | ---------------------------------- |
+| 1        | Suffix Tree         | High             | Extract as generic library         |
+| 2        | String Intern Pool  | Medium           | Extract if API refined             |
+| 3        | Smart File Filter   | Medium           | Extract with broader tool support  |
+| 4        | Clone Detection SDK | High             | Already designed, needs refinement |
+| 5        | Domain Types        | Low              | Keep internal, patterns valuable   |
 
 ---
 
@@ -27,6 +27,7 @@ art-dupl contains several high-quality, well-tested components that could be ext
 A generic suffix tree implementation optimized for finding duplicate sequences.
 
 **Key Features:**
+
 - O(1) map-based transition lookup (optimized from O(n) linear search)
 - Stream processing via `Update()` for incremental builds
 - `FindDuplOver()` for threshold-based duplicate detection
@@ -55,10 +56,10 @@ func (t *STree) FindDuplOver(threshold int) <-chan Match
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| None found | - | No dedicated Go suffix tree library exists |
-| Custom implementations | - | Typically inline, not reusable |
+| Library                | Stars | Notes                                      |
+| ---------------------- | ----- | ------------------------------------------ |
+| None found             | -     | No dedicated Go suffix tree library exists |
+| Custom implementations | -     | Typically inline, not reusable             |
 
 ### Unique Value Proposition
 
@@ -114,6 +115,7 @@ func (t *STree) At(p Pos) Token
 Thread-safe string interning pool for memory-efficient string storage.
 
 **Key Features:**
+
 - 32-bit StringID (4B vs 16B for string header)
 - Thread-safe with RWMutex
 - JSON marshaling/unmarshaling support
@@ -138,10 +140,10 @@ func GlobalPool() *StringInternPool
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `intern` (various) | ~50-100 | Simple interning, no ID system |
-| `go.stringinterner` | ~30 | Basic interning, no JSON support |
+| Library             | Stars   | Notes                            |
+| ------------------- | ------- | -------------------------------- |
+| `intern` (various)  | ~50-100 | Simple interning, no ID system   |
+| `go.stringinterner` | ~30     | Basic interning, no JSON support |
 
 ### Unique Value Proposition
 
@@ -155,6 +157,7 @@ func GlobalPool() *StringInternPool
 **Consider extracting as `github.com/LarsArtmann/go-stringpool`**
 
 **Improvements needed:**
+
 - Remove JSON dependency (make it optional)
 - Add `Clear()` for pool reset
 - Consider generational pooling for long-running processes
@@ -170,6 +173,7 @@ func GlobalPool() *StringInternPool
 Intelligent filtering of auto-generated code files.
 
 **Key Features:**
+
 - Detects SQLC-generated files via `sqlc.yaml` detection
 - Detects Templ-generated files via header comments
 - Detects GoEnum-generated files
@@ -193,10 +197,10 @@ func (f *Filter) GetStats() FilterStats
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `.gitignore` parsers | ~100+ | Pattern-based only |
-| `golang.org/x/tools/go/packages` | N/A | Has `IgnoreFile` but limited |
+| Library                          | Stars | Notes                        |
+| -------------------------------- | ----- | ---------------------------- |
+| `.gitignore` parsers             | ~100+ | Pattern-based only           |
+| `golang.org/x/tools/go/packages` | N/A   | Has `IgnoreFile` but limited |
 
 ### Unique Value Proposition
 
@@ -210,6 +214,7 @@ func (f *Filter) GetStats() FilterStats
 **Extract as `github.com/LarsArtmann/go-genfilter`**
 
 **Improvements needed:**
+
 - Add more tool patterns (protobuf, wire, mockgen, etc.)
 - Make detection logic pluggable
 - Add file content inspection for better accuracy
@@ -225,6 +230,7 @@ func (f *Filter) GetStats() FilterStats
 High-level SDK for programmatic code clone detection.
 
 **Key Features:**
+
 - Clean `Detector` interface
 - Streaming and batch APIs
 - Progress reporting
@@ -252,11 +258,11 @@ type Options struct {
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `mibk/dupl` | 357 | CLI tool only, no SDK |
-| PMD CPD | 4k+ | Java-based, Java-centric |
-| SonarQube | 8k+ | Platform, not library |
+| Library     | Stars | Notes                    |
+| ----------- | ----- | ------------------------ |
+| `mibk/dupl` | 357   | CLI tool only, no SDK    |
+| PMD CPD     | 4k+   | Java-based, Java-centric |
+| SonarQube   | 8k+   | Platform, not library    |
 
 ### Unique Value Proposition
 
@@ -270,6 +276,7 @@ type Options struct {
 **Already the right approach - refine `pkg/artdupl/`**
 
 **Improvements needed:**
+
 - Complete SDK implementation per `SDK_DESIGN.md`
 - Add plugin system for custom detection methods
 - Add caching/incremental analysis support
@@ -286,6 +293,7 @@ type Options struct {
 Strongly-typed domain model with validation.
 
 **Key Features:**
+
 - Value objects: `LineNumber`, `BytePosition`, `TokenCount`, `Threshold`
 - Entities: `Clone`, `CloneGroup`, `Analysis`
 - Enums: `FileProcessingState`, `DetectionState`, `CloneSeverity`
@@ -312,10 +320,10 @@ type Clone struct {
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `go-types` (various) | ~50-100 | Generic type wrappers |
-| Custom per-project | - | Most projects use primitives |
+| Library              | Stars   | Notes                        |
+| -------------------- | ------- | ---------------------------- |
+| `go-types` (various) | ~50-100 | Generic type wrappers        |
+| Custom per-project   | -       | Most projects use primitives |
 
 ### Unique Value Proposition
 
@@ -340,6 +348,7 @@ Domain types are highly specific to this project. The patterns are valuable but 
 Unified AST representation for code analysis.
 
 **Key Features:**
+
 - Memory-optimized Node struct (40B vs 64B)
 - Language-agnostic design
 - Serialization for suffix tree processing
@@ -363,11 +372,11 @@ func FindSyntaxUnits(data []*Node, m Match, threshold int) Match
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `go/ast` | Stdlib | Go-specific |
-| `tree-sitter` | 18k+ | Multi-language but heavy |
-| `sitter` (Go bindings) | ~500 | Tree-sitter Go bindings |
+| Library                | Stars  | Notes                    |
+| ---------------------- | ------ | ------------------------ |
+| `go/ast`               | Stdlib | Go-specific              |
+| `tree-sitter`          | 18k+   | Multi-language but heavy |
+| `sitter` (Go bindings) | ~500   | Tree-sitter Go bindings  |
 
 ### Unique Value Proposition
 
@@ -390,6 +399,7 @@ This is tightly coupled to the suffix tree algorithm. Extract only as part of a 
 Multi-format output system for clone reports.
 
 **Key Features:**
+
 - Text, HTML, JSON, Plumbing, Stats formats
 - Sortable output (size, occurrence, hash)
 - Adapter pattern for extensibility
@@ -414,11 +424,11 @@ type StatsPrinter interface {
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `tabwriter` | Stdlib | Basic table output |
-| `termui` | 7k+ | Terminal UI, overkill |
-| `printer` (various) | ~50 | Format-specific |
+| Library             | Stars  | Notes                 |
+| ------------------- | ------ | --------------------- |
+| `tabwriter`         | Stdlib | Basic table output    |
+| `termui`            | 7k+    | Terminal UI, overkill |
+| `printer` (various) | ~50    | Format-specific       |
 
 ### Unique Value Proposition
 
@@ -441,6 +451,7 @@ The printer system is tightly coupled to clone representation. The adapter patte
 Typed error handling with context.
 
 **Key Features:**
+
 - Categorized errors (validation, config, analysis)
 - Error wrapping with context
 - JSON marshalable errors
@@ -464,11 +475,11 @@ func NewAnalysisError(msg string, cause error) *Error
 
 ### Alternatives
 
-| Library | Stars | Notes |
-|---------|-------|-------|
-| `cockroachdb/errors` | 1.5k+ | Rich error handling |
-| `pkg/errors` | 8k+ | Deprecated but popular |
-| `larsartmann/uniflow` | - | Railway-oriented errors |
+| Library               | Stars | Notes                   |
+| --------------------- | ----- | ----------------------- |
+| `cockroachdb/errors`  | 1.5k+ | Rich error handling     |
+| `pkg/errors`          | 8k+   | Deprecated but popular  |
+| `larsartmann/uniflow` | -     | Railway-oriented errors |
 
 ### Unique Value Proposition
 
@@ -562,14 +573,17 @@ Per the library policy, extracted libraries should:
 ## Conclusion
 
 **Extract Now:**
+
 - Suffix Tree Library (high value, clean API)
 - Complete Clone Detection SDK (core product)
 
 **Consider Later:**
+
 - String Intern Pool (needs API refinement)
 - Smart File Filter (needs broader tool support)
 
 **Keep Internal:**
+
 - Domain Types (patterns, not library)
 - Syntax Package (coupled to algorithm)
 - Printer System (domain-specific)
