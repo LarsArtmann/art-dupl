@@ -27,20 +27,20 @@ func (p *posList) add(pos Pos) {
 }
 
 type contextList struct {
-	lists map[int]*posList
+	lists map[TokenValue]*posList
 }
 
 func newContextList() *contextList {
-	return &contextList{make(map[int]*posList)}
+	return &contextList{make(map[TokenValue]*posList)}
 }
 
 func (c *contextList) getAll() []Pos {
-	keys := make([]int, 0, len(c.lists))
+	keys := make([]TokenValue, 0, len(c.lists))
 	for k := range c.lists {
 		keys = append(keys, k)
 	}
 
-	sort.Ints(keys)
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
 
 	var ps []Pos
 	for _, k := range keys {
@@ -88,7 +88,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 		) // #nosec G115 -- Positions are valid in tree context
 		pl.add(start)
 
-		ch := 0
+		ch := TokenValue(0)
 		// Bounds check: ensure start-1 is within data slice bounds
 		if start > 0 && int(start-1) < len(s.tree.data) {
 			ch = s.tree.data[start-1].Val()
@@ -100,11 +100,11 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	}
 
 	// Sort transitions by token value for deterministic iteration order
-	transKeys := make([]int, 0, len(s.trans))
+	transKeys := make([]TokenValue, 0, len(s.trans))
 	for k := range s.trans {
 		transKeys = append(transKeys, k)
 	}
-	sort.Ints(transKeys)
+	sort.Slice(transKeys, func(i, j int) bool { return transKeys[i] < transKeys[j] })
 
 	for _, k := range transKeys {
 		t := s.trans[k]

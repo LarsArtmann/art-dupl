@@ -19,8 +19,15 @@ const infinity = math.MaxInt32
 // Pos denotes position in data slice.
 type Pos int32
 
+// TokenValue represents a unique token identifier in the suffix tree.
+// This is defined here to avoid import cycles with the domain package.
+// It mirrors domain.TokenValue for consistency.
+type TokenValue int32
+
+// Token represents a token in the suffix tree sequence.
+// Implementations must provide a TokenValue that uniquely identifies the token type.
 type Token interface {
-	Val() int
+	Val() TokenValue
 }
 
 // STree is a struct representing a suffix tree.
@@ -195,14 +202,14 @@ func printState(buf *bytes.Buffer, s *state, ident int) {
 // state is an explicit state of the suffix tree.
 type state struct {
 	tree      *STree
-	trans     map[int]*tran
+	trans     map[TokenValue]*tran
 	linkState *state
 }
 
 func newState(t *STree) *state {
 	return &state{
 		tree:      t,
-		trans:     make(map[int]*tran),
+		trans:     make(map[TokenValue]*tran),
 		linkState: nil,
 	}
 }

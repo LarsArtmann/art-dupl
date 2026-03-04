@@ -74,8 +74,10 @@ func (n *Node) AddChildren(children ...*Node) {
 	n.Children = append(n.Children, children...)
 }
 
-func (n *Node) Val() int {
-	return int(n.Type)
+// Val returns the token value for suffix tree compatibility.
+// Implements the suffixtree.Token interface.
+func (n *Node) Val() suffixtree.TokenValue {
+	return suffixtree.TokenValue(n.Type)
 }
 
 // NewSyntheticFileNode creates a synthetic node representing an entire file.
