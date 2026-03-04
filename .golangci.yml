@@ -1,4 +1,5 @@
-# golangci-lint v1 compatible configuration
+version: "2"
+
 run:
   timeout: 5m
   go: "1.25"
@@ -46,7 +47,7 @@ linters:
     - fatcontext
     - forbidigo
     - copyloopvar
-    - goerr113
+    - err113
     - gocyclo
     - errname
     - testifylint
@@ -170,7 +171,7 @@ issues:
         - maintidx
         - dupl
         - gosec
-        - goerr113
+        - err113
         - exhaustruct
         - paralleltest
         - testpackage
@@ -193,7 +194,7 @@ issues:
         - maintidx
         - dupl
         - gosec
-        - goerr113
+        - err113
         - exhaustruct
         - paralleltest
         - testpackage
