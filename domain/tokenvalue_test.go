@@ -80,9 +80,9 @@ func TestTokenValue_Int(t *testing.T) {
 
 func TestTokenValue_IsValid(t *testing.T) {
 	tests := []struct {
-		name     string
-		value    TokenValue
-		wantErr  bool
+		name    string
+		value   TokenValue
+		wantErr bool
 	}{
 		{"zero", 0, false},
 		{"positive", 42, false},
