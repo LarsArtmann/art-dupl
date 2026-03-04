@@ -9,8 +9,8 @@ import (
 
 type char rune
 
-func (c char) Val() int {
-	return int(c)
+func (c char) Val() TokenValue {
+	return TokenValue(c)
 }
 
 func str2tok(str string) []Token {

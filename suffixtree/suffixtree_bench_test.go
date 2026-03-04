@@ -24,8 +24,8 @@ type testToken struct {
 	val int
 }
 
-func (t *testToken) Val() int {
-	return t.val
+func (t *testToken) Val() TokenValue {
+	return TokenValue(t.val)
 }
 
 // generateTreeWithRandomTokens creates a tree with the specified number of random tokens.

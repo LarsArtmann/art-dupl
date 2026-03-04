@@ -20,8 +20,7 @@ const infinity = math.MaxInt32
 type Pos int32
 
 // TokenValue represents a unique token identifier in the suffix tree.
-// This is defined here to avoid import cycles with the domain package.
-// It mirrors domain.TokenValue for consistency.
+// Uses int32 to keep memory pressure low while supporting large token sets.
 type TokenValue int32
 
 // Token represents a token in the suffix tree sequence.
