@@ -226,41 +226,64 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 		return false
 	}
 
-	alts := make(map[int]bool)
+	alts := findDivisors(cnt)
+	if len(alts) == 0 {
+		return false
+	}
 
+	for i := range indexes[cnt/2] {
+		if checkPatternCycle(i, indexes, nodes, alts, cnt) {
+			return true
+		}
+	}
+
+	return len(alts) == 0
+}
+
+// findDivisors returns all divisors of cnt that are <= cnt/2.
+func findDivisors(cnt int) map[int]bool {
+	alts := make(map[int]bool)
 	for i := 1; i <= cnt/2; i++ {
 		if cnt%i == 0 {
 			alts[i] = true
 		}
 	}
+	return alts
+}
 
-	for i := range indexes[cnt/2] {
-		nstart := nodes[i+indexes[0]]
+// checkPatternCycle checks if a cycle exists at the given starting position.
+func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, cnt int) bool {
+	startNode := nodes[startIdx+indexes[0]]
 
-	AltLoop:
-		for alt := range alts {
-			for j := alt; j < cnt; j += alt {
-				index := i + indexes[j]
-				if index < len(nodes) {
-					nalt := nodes[index]
-					if nstart.Owns == nalt.Owns && nstart.Type == nalt.Type {
-						continue
-					}
-				} else if i >= indexes[alt] {
-					return true
-				}
+	for alt := range alts {
+		if isPatternRepeating(startIdx, alt, indexes, nodes, startNode, cnt) {
+			return true
+		}
+		delete(alts, alt)
+	}
 
-				delete(alts, alt)
+	return false
+}
 
-				continue AltLoop
-			}
+// isPatternRepeating checks if the pattern repeats at the given period (alt).
+func isPatternRepeating(
+	startIdx, alt int,
+	indexes []int,
+	nodes []*Node,
+	startNode *Node,
+	cnt int,
+) bool {
+	for j := alt; j < cnt; j += alt {
+		index := startIdx + indexes[j]
+		if index >= len(nodes) {
+			return startIdx >= indexes[alt]
 		}
 
-		if len(alts) == 0 {
+		nalt := nodes[index]
+		if startNode.Owns != nalt.Owns || startNode.Type != nalt.Type {
 			return false
 		}
 	}
-
 	return true
 }
 

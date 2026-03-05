@@ -51,58 +51,107 @@ func filesFeedWithOptions(
 
 // crawlPaths walks paths and returns a channel of Go files.
 func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan string {
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, isSourceFile)
+}
+
+// crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
+// This is used for hash-based detection which works on any file type.
+func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool) chan string {
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, nil)
+}
+
+// fileCheckFunc returns true if a file should be included based on its name.
+// A nil function accepts all files.
+type fileCheckFunc func(name string) bool
+
+// crawlPathsWithFileCheck walks paths and returns a channel of files that pass the file check.
+func crawlPathsWithFileCheck(
+	paths []string,
+	filter *filter.Filter,
+	includeVendor bool,
+	fileCheck fileCheckFunc,
+) chan string {
 	fchan := make(chan string)
 
 	go func() {
 		for _, path := range paths {
-			info, err := os.Lstat(path)
-			if err != nil {
-				statError(path, err)
-			}
-
-			if !info.IsDir() {
-				// Apply filter to single file
-				if !shouldIncludeFile(filter, path) {
-					continue
-				}
-
-				fchan <- path
-
-				continue
-			}
-
-			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Skip vendor and git directories
-				if shouldSkipPath(path, includeVendor) {
-					return nil
-				}
-
-				// Skip .DS_Store files
-				if info.Name() == cli.DSStoreFile {
-					return nil
-				}
-
-				if !info.IsDir() && isSourceFile(info.Name()) {
-					// Apply filter to file
-					if !shouldIncludeFile(filter, path) {
-						return nil
-					}
-
-					fchan <- path
-				}
-
-				return nil
-			})
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
-				os.Exit(1)
-			}
+			crawlSinglePath(path, filter, includeVendor, fileCheck, fchan)
 		}
 
 		close(fchan)
 	}()
 
 	return fchan
+}
+
+// crawlSinglePath handles crawling of a single path (file or directory).
+func crawlSinglePath(
+	path string,
+	filter *filter.Filter,
+	includeVendor bool,
+	fileCheck fileCheckFunc,
+	fchan chan string,
+) {
+	info, err := os.Lstat(path)
+	if err != nil {
+		statError(path, err)
+	}
+
+	if !info.IsDir() {
+		if shouldIncludeFile(filter, path) {
+			fchan <- path
+		}
+
+		return
+	}
+
+	crawlDirectory(path, filter, includeVendor, fileCheck, fchan)
+}
+
+// crawlDirectory walks a directory tree and sends matching files to the channel.
+func crawlDirectory(
+	path string,
+	filter *filter.Filter,
+	includeVendor bool,
+	fileCheck fileCheckFunc,
+	fchan chan string,
+) {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
+		return handleWalkEntry(path, info, filter, includeVendor, fileCheck, fchan)
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
+		os.Exit(1)
+	}
+}
+
+// handleWalkEntry processes a single entry during directory walk.
+func handleWalkEntry(
+	path string,
+	info os.FileInfo,
+	filter *filter.Filter,
+	includeVendor bool,
+	fileCheck fileCheckFunc,
+	fchan chan string,
+) error {
+	if shouldSkipPath(path, includeVendor) {
+		return nil
+	}
+
+	if info.Name() == cli.DSStoreFile {
+		return nil
+	}
+
+	if !info.IsDir() && passesFileCheck(info.Name(), fileCheck) && shouldIncludeFile(filter, path) {
+		fchan <- path
+	}
+
+	return nil
+}
+
+// passesFileCheck returns true if the file passes the optional file check.
+func passesFileCheck(name string, fileCheck fileCheckFunc) bool {
+	return fileCheck == nil || fileCheck(name)
 }
 
 // isSourceFile returns true if the filename has a supported source file extension.
@@ -124,61 +173,4 @@ func shouldSkipPath(path string, includeVendor bool) bool {
 	}
 
 	return false
-}
-
-// crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
-// This is used for hash-based detection which works on any file type.
-func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool) chan string {
-	fchan := make(chan string)
-
-	go func() {
-		for _, path := range paths {
-			info, err := os.Lstat(path)
-			if err != nil {
-				statError(path, err)
-			}
-
-			if !info.IsDir() {
-				// Apply filter to single file
-				if !shouldIncludeFile(filter, path) {
-					continue
-				}
-
-				fchan <- path
-
-				continue
-			}
-
-			err = filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-				// Skip vendor and git directories
-				if shouldSkipPath(path, includeVendor) {
-					return nil
-				}
-
-				// Skip .DS_Store files
-				if info.Name() == cli.DSStoreFile {
-					return nil
-				}
-
-				if !info.IsDir() {
-					// Apply filter to file
-					if !shouldIncludeFile(filter, path) {
-						return nil
-					}
-
-					fchan <- path
-				}
-
-				return nil
-			})
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
-				os.Exit(1)
-			}
-		}
-
-		close(fchan)
-	}()
-
-	return fchan
 }
