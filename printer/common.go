@@ -82,8 +82,16 @@ func toWhitespace(str []byte) []byte {
 }
 
 func deindent(block []byte) []byte {
-	const maxVal = 99
+	min := findMinIndent(block)
+	if min == 0 {
+		return block
+	}
+	return stripIndent(block, min)
+}
 
+// findMinIndent finds the minimum tab indentation in the block.
+func findMinIndent(block []byte) int {
+	const maxVal = 99
 	min := maxVal
 
 	re := regexp.MustCompile(`(^|\n)(\t*)\S`)
@@ -94,28 +102,36 @@ func deindent(block []byte) []byte {
 		}
 	}
 
-	if min == 0 || min == maxVal {
-		return block
+	if min == maxVal {
+		return 0
 	}
+	return min
+}
 
-	block = block[min:]
+// stripIndent removes the given number of tabs from each line.
+func stripIndent(block []byte, indentCount int) []byte {
+	block = block[indentCount:]
 
-Loop:
 	for i := 0; i < len(block); i++ {
-		if block[i] == '\n' && i != len(block)-1 {
-			for j := 0; j < min && i+j+1 < len(block); j++ {
-				if block[i+j+1] != '\t' {
-					continue Loop
-				}
-			}
-
-			if i+min+1 <= len(block) {
-				block = append(block[:i+1], block[i+1+min:]...)
-			}
+		if block[i] != '\n' || i == len(block)-1 {
+			continue
+		}
+		if canStripTabs(block, i+1, indentCount) {
+			block = append(block[:i+1], block[i+1+indentCount:]...)
 		}
 	}
 
 	return block
+}
+
+// canStripTabs checks if there are enough tabs to strip at the given position.
+func canStripTabs(block []byte, start, count int) bool {
+	for j := 0; j < count && start+j < len(block); j++ {
+		if block[start+j] != '\t' {
+			return false
+		}
+	}
+	return true
 }
 
 // formatCloneLine formats a single clone line with the given format string.

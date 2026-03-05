@@ -229,6 +229,59 @@ func executeAnalysis(
 	return duplChan, parseStats, filterStats, nil
 }
 
+// collectFilesFromChannel collects file paths from a channel into a slice,
+// respecting context cancellation.
+func collectFilesFromChannel(ctx context.Context, filesChan <-chan string) ([]string, error) {
+	var files []string
+	for file := range filesChan {
+		select {
+		case <-ctx.Done():
+			return nil, fmt.Errorf("context cancelled: %w", ctx.Err())
+		default:
+			files = append(files, file)
+		}
+	}
+	return files, nil
+}
+
+// convertFileDuplicatesToMatches converts hash.FileDuplicate slices to syntax.Match channel.
+func convertFileDuplicatesToMatches(
+	ctx context.Context,
+	fileDuplicates []hash.FileDuplicate,
+) chan syntax.Match {
+	duplChan := make(chan syntax.Match)
+
+	go func() {
+		defer close(duplChan)
+
+		for _, fileDup := range fileDuplicates {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			match := syntax.Match{
+				Hash:  fileDup.Hash,
+				Frags: createFragmentsFromFileHashes(fileDup.Files),
+			}
+			duplChan <- match
+		}
+	}()
+
+	return duplChan
+}
+
+// createFragmentsFromFileHashes converts file hashes to syntax.Node fragments.
+func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
+	fragments := make([][]*syntax.Node, len(files))
+	for i, fileHash := range files {
+		node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)
+		fragments[i] = []*syntax.Node{node}
+	}
+	return fragments
+}
+
 // executeHashOnlyAnalysis runs hash-based duplicate detection without AST parsing.
 // This is an optimized path that works directly with file paths and content hashes,
 // allowing detection on any file type (not just Go source files).
@@ -249,27 +302,12 @@ func executeHashOnlyAnalysis(
 	// Collect all files (not just .go files) for hash detection
 	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor)
 
-	// Collect files into a slice
-	var files []string
-
-	for file := range filesChan {
-		select {
-		case <-ctx.Done():
-			return nil, job.ParseStats{}, filter.FilterStats{}, fmt.Errorf(
-				"context cancelled: %w",
-				ctx.Err(),
-			)
-		default:
-		}
-
-		files = append(files, file)
+	files, err := collectFilesFromChannel(ctx, filesChan)
+	if err != nil {
+		return nil, job.ParseStats{}, filter.FilterStats{}, err
 	}
 
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", len(files))
-	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprintln(os.Stderr, " ✅")
-	}
+	printFileCollectionStatus(cfg, outputFormat, len(files))
 
 	// Run hash detection
 	// Note: For hash detection, threshold is in bytes (file size), not tokens
@@ -277,33 +315,7 @@ func executeHashOnlyAnalysis(
 	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
 
 	// Convert FileDuplicate to syntax.Match for consistent output
-	duplChan := make(chan syntax.Match)
-
-	go func() {
-		defer close(duplChan)
-
-		for _, fileDup := range fileDuplicates {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-			}
-
-			// Create fragments from file duplicates
-			var fragments [][]*syntax.Node
-
-			for _, fileHash := range fileDup.Files {
-				node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)
-				fragments = append(fragments, []*syntax.Node{node})
-			}
-
-			match := syntax.Match{
-				Hash:  fileDup.Hash,
-				Frags: fragments,
-			}
-			duplChan <- match
-		}
-	}()
+	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
 
 	// Get filter statistics if filter was enabled
 	var filterStats filter.FilterStats
@@ -312,6 +324,15 @@ func executeHashOnlyAnalysis(
 	}
 
 	return duplChan, job.ParseStats{FilesCount: len(files), LinesCount: 0}, filterStats, nil
+}
+
+// printFileCollectionStatus outputs status after file collection.
+func printFileCollectionStatus(cfg *config.Config, outputFormat config.OutputFormat, fileCount int) {
+	if cfg.Verbose {
+		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", fileCount)
+	} else if outputFormat == config.OutputFormatText {
+		fmt.Fprintln(os.Stderr, " ✅")
+	}
 }
 
 // createPrinter returns the appropriate printer based on output format.

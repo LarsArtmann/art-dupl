@@ -212,66 +212,85 @@ func (p *htmlprinter) PrintHeader() error {
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.iota++
 
-	// Extract sortBy parameter, default to SortBySize
 	sortCriteria := SortBySize
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
 
-	// Apply sorting to the clone groups before processing
 	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
-	// Store clones for later output with sorting
 	p.dupMutex.Lock()
 	p.dupls = append(p.dupls, sortedDups)
 	p.dupMutex.Unlock()
 
-	// Calculate total tokens for this group
-	totalTokens := 0
+	totalTokens := calculateTotalTokens(sortedDups)
 
-	for _, dup := range sortedDups {
-		if len(dup) > 0 {
-			totalTokens += len(dup)
-		}
+	if err := p.writeCloneGroupHeader(len(sortedDups), totalTokens); err != nil {
+		return err
 	}
 
-	// Modern clone group container
-	if _, err := fmt.Fprintf(p.w, `<div class="clone-group">
+	clones, err := p.buildClones(sortedDups)
+	if err != nil {
+		return err
+	}
+
+	sort.Sort(byNameAndLine(clones))
+
+	if err := p.writeCloneOccurrences(clones); err != nil {
+		return err
+	}
+
+	return p.writeCloneGroupFooter()
+}
+
+func calculateTotalTokens(dups [][]*syntax.Node) int {
+	total := 0
+	for _, dup := range dups {
+		total += len(dup)
+	}
+	return total
+}
+
+func (p *htmlprinter) writeCloneGroupHeader(occurrences, tokens int) error {
+	_, err := fmt.Fprintf(p.w, `<div class="clone-group">
 <div class="clone-header" onclick="this.parentElement.classList.toggle('collapsed')">
 <h3>Clone Group #%d</h3>
 <span class="badge">%d occurrences · %d tokens</span>
 </div>
 <div class="clone-body">
-`, p.iota, len(sortedDups), totalTokens); err != nil {
-		return err //nolint:wrapcheck // fmt errors are clear in context
-	}
+`, p.iota, occurrences, tokens)
+	return err //nolint:wrapcheck
+}
 
-	clones := make([]clone, len(sortedDups))
-	for i, dup := range sortedDups {
+func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
+	clones := make([]clone, len(dups))
+	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return errors.NewInternalError("zero length duplicate found", nil)
+			return nil, errors.NewInternalError("zero length duplicate found", nil)
 		}
 
 		nstart := dup[0]
 		nend := dup[cnt-1]
 
-		// Use unified file processor
 		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		cl := clone{filename: fileInfo.Filename, lineStart: fileInfo.LineStart}
-		cl.fragment = extractContent(fileInfo, nstart, nend)
-		clones[i] = cl
+		clones[i] = clone{
+			filename:  fileInfo.Filename,
+			lineStart: fileInfo.LineStart,
+			fragment:  extractContent(fileInfo, nstart, nend),
+		}
 	}
+	return clones, nil
+}
 
-	sort.Sort(byNameAndLine(clones))
-
+func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 	for i, cl := range clones {
 		vscodeLink := fmt.Sprintf("vscode://file/%s:%d", cl.filename, cl.lineStart)
-		if _, err := fmt.Fprintf(p.w, `<div class="occurrence">
+		_, err := fmt.Fprintf(p.w, `<div class="occurrence">
 <div class="file-link">
 <a href="%s" title="Open in VSCode">%s:%d</a>
 <button class="copy-btn" onclick="copyCode('code-%d-%d')">📋 Copy</button>
@@ -279,17 +298,17 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 <pre><code id="code-%d-%d">%s</code></pre>
 </div>
 `, vscodeLink, html.EscapeString(cl.filename), cl.lineStart, p.iota, i, p.iota, i,
-			html.EscapeString(string(cl.fragment))); err != nil {
-			return err //nolint:wrapcheck // fmt errors are clear in context
+			html.EscapeString(string(cl.fragment)))
+		if err != nil {
+			return err //nolint:wrapcheck
 		}
 	}
-
-	// Close clone-body and clone-group
-	if _, err := fmt.Fprint(p.w, "</div></div>\n"); err != nil {
-		return err //nolint:wrapcheck // fmt errors are clear in context
-	}
-
 	return nil
+}
+
+func (p *htmlprinter) writeCloneGroupFooter() error {
+	_, err := fmt.Fprint(p.w, "</div></div>\n")
+	return err //nolint:wrapcheck
 }
 
 func (p *htmlprinter) PrintFooter() error {

@@ -256,57 +256,71 @@ func SaveConfig(config *Config, filename string) error {
 }
 
 // ValidateConfig validates the configuration.
-func ValidateConfig(config *Config) error {
-	if config.Threshold < 1 {
+func ValidateConfig(cfg *Config) error {
+	validations := []func() error{
+		func() error { return validateThreshold(cfg.Threshold) },
+		func() error { return validateMaxChildrenSerial(cfg.MaxChildrenSerial) },
+		func() error { return validateOutputFormat(cfg.OutputFormat) },
+		func() error { return validateDetectionMethods(cfg.DetectionMethods) },
+		func() error { return validateCacheFlags(cfg.CacheDir, cfg.ClearCache, cfg.Incremental) },
+	}
+
+	for _, validate := range validations {
+		if err := validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateThreshold(threshold int) error {
+	if threshold < 1 {
 		return errors.NewValidationError("threshold must be greater than 0", nil)
 	}
-
-	if config.Threshold > 1000 {
+	if threshold > 1000 {
 		return errors.NewValidationError("threshold seems too large (max 1000)", nil)
 	}
+	return nil
+}
 
-	if config.MaxChildrenSerial < 1000 {
+func validateMaxChildrenSerial(maxChildren int) error {
+	if maxChildren < 1000 {
 		return errors.NewValidationError("maxChildrenSerial should be at least 1000", nil)
 	}
-
-	if config.MaxChildrenSerial > 100000 {
+	if maxChildren > 100000 {
 		return errors.NewValidationError("maxChildrenSerial seems too large (max 100000)", nil)
 	}
+	return nil
+}
 
-	if !config.OutputFormat.IsValid() {
+func validateOutputFormat(format OutputFormat) error {
+	if !format.IsValid() {
 		return errors.NewValidationError(
-			fmt.Sprintf(
-				"invalid output format: %s (valid: text, html, json, plumbing)",
-				config.OutputFormat,
-			),
+			fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", format),
 			nil,
 		)
 	}
+	return nil
+}
 
-	// Validate detection methods
-	if len(config.DetectionMethods) == 0 {
+func validateDetectionMethods(methods []DetectionMethod) error {
+	if len(methods) == 0 {
 		return errors.NewValidationError("at least one detection method must be specified", nil)
 	}
-
-	for _, method := range config.DetectionMethods {
+	for _, method := range methods {
 		if !method.IsValid() {
 			return errors.NewValidationError(
-				fmt.Sprintf(
-					"invalid detection method: %s (valid: hash, art-dupl, todos, legacy)",
-					method,
-				),
+				fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", method),
 				nil,
 			)
 		}
 	}
+	return nil
+}
 
-	// Validate cache flags require incremental mode
-	if (config.CacheDir != "" || config.ClearCache) && !config.Incremental {
-		return errors.NewValidationError(
-			"--cache-dir and --clear-cache require --incremental mode",
-			nil,
-		)
+func validateCacheFlags(cacheDir string, clearCache, incremental bool) error {
+	if (cacheDir != "" || clearCache) && !incremental {
+		return errors.NewValidationError("--cache-dir and --clear-cache require --incremental mode", nil)
 	}
-
 	return nil
 }

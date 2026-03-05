@@ -134,9 +134,6 @@ func serial(n *Node, stream *[]*Node) int {
 // - Accept domain.Threshold instead of int
 // - Return domain types instead of primitive types
 // - Validate threshold at domain boundary
-//
-// Also: This function is complex (cyclop lint suppression). Consider breaking into smaller
-// functions for better testability and readability.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
 		return Match{}
@@ -145,38 +142,36 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
 	indexes := getUnitsIndexes(firstSeq, threshold)
 
-	// Validate that syntax units have consistent ownership across all positions
-	// This ensures we're matching complete syntactic structures with identical tree shapes
 	if len(indexes) > 0 && len(m.Ps) > 1 {
-		lasti := indexes[len(indexes)-1]
-		firstn := firstSeq[lasti]
-
-		// Check each occurrence of the pattern
-		for i := 1; i < len(m.Ps); i++ {
-			// Ensure we don't go out of bounds
-			pos := int(m.Ps[i]) + lasti
-			if pos >= len(data) {
-				// Position out of bounds, remove this index
-				indexes = indexes[:len(indexes)-1]
-
-				break
-			}
-
-			n := data[pos]
-			if firstn.Owns != n.Owns {
-				// Different ownership structure means different tree shapes
-				// Remove the problematic index to ensure only complete matches
-				indexes = indexes[:len(indexes)-1]
-
-				break
-			}
-		}
+		indexes = validateOwnershipConsistency(data, m, firstSeq, indexes)
 	}
 
 	if len(indexes) == 0 || isCyclic(indexes, firstSeq) || spansMultipleFiles(indexes, firstSeq) {
 		return Match{}
 	}
 
+	return buildMatch(data, m, firstSeq, indexes)
+}
+
+func validateOwnershipConsistency(
+	data []*Node,
+	m suffixtree.Match,
+	firstSeq []*Node,
+	indexes []int,
+) []int {
+	lasti := indexes[len(indexes)-1]
+	firstn := firstSeq[lasti]
+
+	for i := 1; i < len(m.Ps); i++ {
+		pos := int(m.Ps[i]) + lasti
+		if pos >= len(data) || data[pos].Owns != firstn.Owns {
+			return indexes[:len(indexes)-1]
+		}
+	}
+	return indexes
+}
+
+func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []int) Match {
 	match := Match{Frags: make([][]*Node, len(m.Ps))}
 	for i, pos := range m.Ps {
 		match.Frags[i] = make([]*Node, len(indexes))

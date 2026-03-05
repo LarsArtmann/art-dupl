@@ -16,45 +16,45 @@ import "fmt"
 // - D: < 25 (poor - significant cleanup needed)
 // - F: >= 25 (critical - major refactoring required).
 func (p *stats) calculateHealthScore() string {
-	if p.statsData.DuplicationRatio == 0 && p.statsData.ComplexityScore == 0 &&
-		p.statsData.ImpactScore == 0 {
+	if p.isEmptyStats() {
 		return "A"
 	}
 
-	// Duplication ratio is the primary score (direct percentage)
+	totalScore := p.calculateTotalHealthScore()
+	return scoreToGrade(totalScore)
+}
+
+func (p *stats) isEmptyStats() bool {
+	return p.statsData.DuplicationRatio == 0 &&
+		p.statsData.ComplexityScore == 0 &&
+		p.statsData.ImpactScore == 0
+}
+
+func (p *stats) calculateTotalHealthScore() float64 {
 	duplicationScore := p.statsData.DuplicationRatio
+	complexityScore := min((p.statsData.ComplexityScore/10.0)*20, 20)
+	impactScore := min((float64(p.statsData.ImpactScore)/10000.0)*10, 10)
 
-	// Complexity score: normalize to 0-20 scale (complexity 10 = 20 points)
-	// This ensures complexity doesn't dominate the score
-	complexityScore := (p.statsData.ComplexityScore / 10.0) * 20
-	if complexityScore > 20 {
-		complexityScore = 20
+	return duplicationScore*0.7 + complexityScore*0.2 + impactScore*0.1
+}
+
+func scoreToGrade(score float64) string {
+	thresholds := []struct {
+		limit float64
+		grade string
+	}{
+		{5, "A"},
+		{10, "B"},
+		{15, "C"},
+		{25, "D"},
 	}
 
-	// Impact score: normalize to 0-10 scale (impact 10000 = 10 points)
-	// Impact is the least important factor
-	impactScore := (float64(p.statsData.ImpactScore) / 10000.0) * 10
-	if impactScore > 10 {
-		impactScore = 10
+	for _, t := range thresholds {
+		if score < t.limit {
+			return t.grade
+		}
 	}
-
-	// Weighted average: duplication 70%, complexity 20%, impact 10%
-	// Duplication is the primary health indicator
-	totalScore := duplicationScore*0.7 + complexityScore*0.2 + impactScore*0.1
-
-	// Convert to A-F grade based on total score
-	switch {
-	case totalScore < 5:
-		return "A"
-	case totalScore < 10:
-		return "B"
-	case totalScore < 15:
-		return "C"
-	case totalScore < 25:
-		return "D"
-	default:
-		return "F"
-	}
+	return "F"
 }
 
 // getSizeRange returns a human-readable size range for a line count.

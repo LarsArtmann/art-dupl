@@ -106,14 +106,21 @@ func (p *stats) printCSV() {
 }
 
 // printText prints statistics in text format.
-//
-//nolint:funlen // High statement count due to sequential formatting operations
 func (p *stats) printText() {
-	// Print header
+	p.printTextHeader()
+	p.printTextConfiguration()
+	p.printTextOverview()
+	p.printTextDuplicateCode()
+	p.printTextDistributions()
+	p.printTextRecommendations()
+}
+
+func (p *stats) printTextHeader() {
 	p.printHeader("Code Duplication Statistics")
 	p.printLine("============================")
+}
 
-	// Print configuration
+func (p *stats) printTextConfiguration() {
 	p.printSection("Configuration:")
 	p.printMetric("Threshold", fmt.Sprintf("%d tokens", p.threshold))
 	p.printMetric("Detection Methods", p.statsData.DetectionMethods)
@@ -122,50 +129,47 @@ func (p *stats) printText() {
 	if p.statsData.SemanticDetection {
 		semanticStatus = "enabled"
 	}
-
 	p.printMetric("Semantic Detection", semanticStatus)
 
 	if p.statsData.Timestamp != "" {
 		p.printMetric("Timestamp", p.statsData.Timestamp)
 	}
-
 	if p.statsData.AnalysisDuration != "" {
 		p.printMetric("Analysis Time", p.statsData.AnalysisDuration)
 	}
-
 	_, _ = fmt.Fprintf(p.w, "\n")
+}
 
-	// Print overview
+func (p *stats) printTextOverview() {
 	p.printSection("Overview:")
 	p.printMetric("Files Scanned", strconv.Itoa(p.statsData.TotalFilesScanned))
 
-	// Print filter information if files were filtered
 	if p.statsData.FilesFiltered > 0 {
-		filterPercent := float64(
-			p.statsData.FilesFiltered,
-		) / float64(
-			p.statsData.TotalFilesScanned+p.statsData.FilesFiltered,
-		) * 100
-		filterText := fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent)
-		p.printMetric("Files Filtered", filterText)
-
-		// Print filter breakdown
-		if len(p.statsData.FilterBreakdown) > 0 {
-			_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filtering Breakdown:"))
-			for reason, count := range p.statsData.FilterBreakdown {
-				_, _ = fmt.Fprintf(p.w, "  %s %s: %s\n",
-					p.metric.Render("•"),
-					p.base.Render(reason),
-					p.base.Render(fmt.Sprintf("%d files", count)))
-			}
-		}
+		p.printFilterBreakdown()
 	}
 
 	p.printMetric("Clone Groups", strconv.Itoa(p.statsData.TotalCloneGroups))
 	p.printMetric("Total Clones", strconv.Itoa(p.statsData.TotalClones))
 	_, _ = fmt.Fprintf(p.w, "\n")
+}
 
-	// Print duplicate code metrics
+func (p *stats) printFilterBreakdown() {
+	filterPercent := float64(p.statsData.FilesFiltered) /
+		float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
+	p.printMetric("Files Filtered", fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent))
+
+	if len(p.statsData.FilterBreakdown) > 0 {
+		_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filtering Breakdown:"))
+		for reason, count := range p.statsData.FilterBreakdown {
+			_, _ = fmt.Fprintf(p.w, "  %s %s: %s\n",
+				p.metric.Render("•"),
+				p.base.Render(reason),
+				p.base.Render(fmt.Sprintf("%d files", count)))
+		}
+	}
+}
+
+func (p *stats) printTextDuplicateCode() {
 	p.printSection("Duplicate Code:")
 	p.printMetric("Total Duplicate Lines", strconv.Itoa(p.statsData.TotalDuplicateLines))
 
@@ -180,39 +184,36 @@ func (p *stats) printText() {
 	p.printMetric("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
 
 	if p.statsData.HealthScore != "" {
-		styledHealthScore := p.healthScoreStyle(p.statsData.HealthScore).
-			Render(p.statsData.HealthScore)
-		p.printMetric("Health Score", styledHealthScore)
+		styled := p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore)
+		p.printMetric("Health Score", styled)
 		p.printLine("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
 	}
-
 	_, _ = fmt.Fprintf(p.w, "\n")
+}
 
-	// Print size distribution
+func (p *stats) printTextDistributions() {
 	if len(p.statsData.SizeDistribution) > 0 {
 		p.printSection("Clone Size Distribution:")
 		printSizeDistribution(p.w, p.statsData.SizeDistribution)
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
-	// Print severity breakdown
 	if len(p.statsData.SeverityBreakdown) > 0 {
 		p.printSection("Clone Severity:")
 		printSeverityDistribution(p.w, p.statsData.SeverityBreakdown)
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
-	// Print top files with most duplicates
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
 	}
+}
 
-	// Print actionable recommendations
+func (p *stats) printTextRecommendations() {
 	_, _ = fmt.Fprintf(p.w, "\n%s\n", p.header.Render("Recommendations:"))
 	p.printRecommendations()
 
-	// Print methodology note
 	p.printSection("Note:")
 	p.printLine("Metrics count unique duplicate patterns, not total occurrences.")
 	p.printLine("A clone group with 3 instances counts once for line calculations.")
