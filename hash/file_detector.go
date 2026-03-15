@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/pkg/format"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/zeebo/xxh3"
 )
@@ -133,7 +134,8 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 			filename,
 		) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 		if err != nil {
-			continue // Skip files that can't be read
+			logger.Default.Debug("skipping file that cannot be read", "file", filename, "err", err)
+			continue
 		}
 
 		// Calculate XXH3 hash
