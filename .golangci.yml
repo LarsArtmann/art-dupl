@@ -139,8 +139,8 @@ linters-settings:
           - $all
         allow:
           - $gostd
-          - github.com/LarsArtmann/art-dupl
-          - github.com/charmbracelet
+          - github.com/LarsArtmann/art-dupl/**
+          - github.com/charmbracelet/**
           - github.com/onsi/ginkgo/v2
           - github.com/onsi/gomega
           - github.com/spf13/cobra
