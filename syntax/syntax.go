@@ -253,6 +253,10 @@ func findDivisors(cnt int) map[int]bool {
 
 // checkPatternCycle checks if a cycle exists at the given starting position.
 func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, cnt int) bool {
+	// Bounds check to prevent panic
+	if startIdx+indexes[0] >= len(nodes) {
+		return false
+	}
 	startNode := nodes[startIdx+indexes[0]]
 
 	for alt := range alts {

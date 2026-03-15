@@ -110,10 +110,20 @@ func findMinIndent(block []byte) int {
 
 // stripIndent removes the given number of tabs from each line.
 func stripIndent(block []byte, indentCount int) []byte {
+	if indentCount <= 0 || len(block) == 0 {
+		return block
+	}
+	if indentCount >= len(block) {
+		return block
+	}
 	block = block[indentCount:]
 
 	for i := 0; i < len(block); i++ {
 		if block[i] != '\n' || i == len(block)-1 {
+			continue
+		}
+		// Bounds check before slicing
+		if i+1+indentCount > len(block) {
 			continue
 		}
 		if canStripTabs(block, i+1, indentCount) {
