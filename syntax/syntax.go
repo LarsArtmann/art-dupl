@@ -232,12 +232,13 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 	}
 
 	for i := range indexes[cnt/2] {
-		if checkPatternCycle(i, indexes, nodes, alts, cnt) {
-			return true
+		checkPatternCycle(i, indexes, nodes, alts, cnt)
+		if len(alts) == 0 {
+			return false
 		}
 	}
 
-	return len(alts) == 0
+	return true
 }
 
 // findDivisors returns all divisors of cnt that are <= cnt/2.
@@ -251,22 +252,19 @@ func findDivisors(cnt int) map[int]bool {
 	return alts
 }
 
-// checkPatternCycle checks if a cycle exists at the given starting position.
-func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, cnt int) bool {
+// checkPatternCycle removes invalid periods from alts for the given starting position.
+func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, cnt int) {
 	// Bounds check to prevent panic
 	if startIdx+indexes[0] >= len(nodes) {
-		return false
+		return
 	}
 	startNode := nodes[startIdx+indexes[0]]
 
 	for alt := range alts {
-		if isPatternRepeating(startIdx, alt, indexes, nodes, startNode, cnt) {
-			return true
+		if !isPatternRepeating(startIdx, alt, indexes, nodes, startNode, cnt) {
+			delete(alts, alt)
 		}
-		delete(alts, alt)
 	}
-
-	return false
 }
 
 // isPatternRepeating checks if the pattern repeats at the given period (alt).
