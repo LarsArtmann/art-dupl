@@ -2,7 +2,7 @@ package suffixtree
 
 import (
 	"math"
-	"sort"
+	"slices"
 )
 
 type Match struct {
@@ -40,7 +40,7 @@ func (c *contextList) getAll() []Pos {
 		keys = append(keys, k)
 	}
 
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	slices.Sort(keys)
 
 	var ps []Pos
 	for _, k := range keys {
@@ -104,7 +104,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	for k := range s.trans {
 		transKeys = append(transKeys, k)
 	}
-	sort.Slice(transKeys, func(i, j int) bool { return transKeys[i] < transKeys[j] })
+	slices.Sort(transKeys)
 
 	for _, k := range transKeys {
 		t := s.trans[k]

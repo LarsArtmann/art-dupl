@@ -58,8 +58,6 @@ func emptyConfig() {}`
 func whitespaceConfig() {}`
 	unknownFieldCode = `package main
 func unknownField() {}`
-	nestedConfigCode = `package main
-func nestedConfig() {}`
 	unicodeConfigCode = `package main
 func unicodeConfig() {}`
 )

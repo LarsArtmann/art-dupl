@@ -466,8 +466,7 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
 	}
 
-	ctx := t.Context()
-	matchesChan := d.runSuffixTreeDetection(ctx, data, 1)
+	matchesChan := d.runSuffixTreeDetection(data, 1)
 
 	if matchesChan == nil {
 		t.Error("Expected non-nil matches channel")

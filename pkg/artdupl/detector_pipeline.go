@@ -161,7 +161,6 @@ func (d *detector) streamDetectionResults(
 
 // runSuffixTreeDetection executes suffix tree-based detection.
 func (d *detector) runSuffixTreeDetection(
-	ctx context.Context,
 	data []*syntax.Node,
 	threshold int,
 ) <-chan syntax.Match {
@@ -186,16 +185,16 @@ func (d *detector) runSuffixTreeDetection(
 
 // runArtDuplDetection executes art-dupl (suffix tree) detection method.
 func (d *detector) runArtDuplDetection(
-	ctx context.Context,
+	_ context.Context,
 	data []*syntax.Node,
 	threshold int,
 ) <-chan syntax.Match {
-	return d.runSuffixTreeDetection(ctx, data, threshold)
+	return d.runSuffixTreeDetection(data, threshold)
 }
 
 // runHashDetection executes hash-based detection method using SHA-256 file hashing.
 func (d *detector) runHashDetection(
-	ctx context.Context,
+	_ context.Context,
 	data []*syntax.Node,
 	threshold int,
 ) <-chan syntax.Match {
