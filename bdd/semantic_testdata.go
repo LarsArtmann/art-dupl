@@ -3,6 +3,7 @@ package bdd
 // Test code samples for semantic detection tests
 // Extracted to reduce file size of semantic_detection_test.go
 
+//nolint:unused // Test data used in semantic_detection_test.go
 var (
 	// structuralTestCode1 and structuralTestCode2 have identical AST structure
 	// but different method names - should be flagged with --structural.
