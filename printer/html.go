@@ -716,52 +716,6 @@ func (p *htmlprinter) writeDiffComparison(base *CloneWithContent, other CloneDif
 	return err //nolint:wrapcheck
 }
 
-// writeDiffPanel writes a single diff panel (base or compared).
-func (p *htmlprinter) writeDiffPanel(panelType string, content []byte, lines []DiffLine, showLineNumbers bool) error {
-	_, err := fmt.Fprintf(p.w, `
-<div class="diff-panel %s">
-<div class="diff-panel-title">%s</div>
-<pre><code>
-`, panelType, map[string]string{"base": "Base Reference", "compared": "Compared"}[panelType])
-	if err != nil {
-		return err //nolint:wrapcheck
-	}
-
-	// If no diff computed (same number of lines), show plain content
-	if len(lines) == 0 {
-		_, err = fmt.Fprintf(p.w, `%s`, html.EscapeString(string(content)))
-	} else {
-		for _, line := range lines {
-			typeClass := ""
-			switch line.Type {
-			case DiffLineAdded:
-				typeClass = "added"
-			case DiffLineRemoved:
-				typeClass = "removed"
-			case DiffLineModified:
-				typeClass = "modified"
-			}
-
-			lineNum := ""
-			if showLineNumbers {
-				lineNum = fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
-			}
-
-			_, err := fmt.Fprintf(p.w, `<div class="diff-line %s">%s<span class="diff-line-content">%s</span></div>
-`, typeClass, lineNum, html.EscapeString(line.Content))
-			if err != nil {
-				return err //nolint:wrapcheck
-			}
-		}
-	}
-
-	_, err = fmt.Fprint(p.w, `</code></pre>
-</div>
-`)
-
-	return err //nolint:wrapcheck
-}
-
 // writeDiffPanelsWithWordDiff renders both base and compared panels with word-level highlighting.
 func (p *htmlprinter) writeDiffPanelsWithWordDiff(base *CloneWithContent, other CloneDiff) error {
 	baseLines := other.Diff.Base
