@@ -29,7 +29,7 @@ func unmarshalStringType[T ~string](
 
 	err := json.Unmarshal(data, &str)
 	if err != nil {
-		return defaultVal, fmt.Errorf("unmarshaling %s: %w", typeName, err)
+		return defaultVal, fmt.Errorf("unmarshaling %s from data %q: %w", typeName, string(data), err)
 	}
 
 	typed := T(str)
