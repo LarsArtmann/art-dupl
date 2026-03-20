@@ -2,6 +2,7 @@ package artdupl
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -27,18 +28,18 @@ func (d *detector) validateFile(filename string) error {
 	// Check if file exists
 	info, err := os.Stat(filename)
 	if err != nil {
-		return ErrFileNotFound
+		return fmt.Errorf("%w: %s", ErrFileNotFound, filename)
 	}
 
 	// Check file size
 	if d.opts.MaxFileSize > 0 && info.Size() > d.opts.MaxFileSize {
-		return ErrFileTooLarge
+		return fmt.Errorf("%w: %s (size=%d, max=%d)", ErrFileTooLarge, filename, info.Size(), d.opts.MaxFileSize)
 	}
 
 	// Check if file should be ignored
 	for _, pattern := range d.opts.IgnoreFiles {
 		if matched, _ := filepath.Match(pattern, filepath.Base(filename)); matched {
-			return ErrParsingFailed // Use generic error for ignored files
+			return fmt.Errorf("%w: %s (ignored by pattern=%s)", ErrParsingFailed, filename, pattern)
 		}
 	}
 
