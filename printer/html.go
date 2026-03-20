@@ -349,6 +349,42 @@ footer {
 	font-weight: 500;
 	text-decoration: line-through;
 }
+/* Inline diff view */
+.diff-content.inline {
+	display: block;
+}
+.diff-content.inline .diff-panel {
+	border-right: none;
+	border-bottom: 1px solid var(--border);
+}
+.diff-content.inline .diff-panel:last-child {
+	border-bottom: none;
+}
+/* Diff view toggle buttons */
+.diff-view-toggle {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 15px;
+}
+.diff-view-toggle button {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	color: var(--text-secondary);
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: all 0.2s;
+}
+.diff-view-toggle button:hover {
+	background: var(--border);
+	color: var(--text-primary);
+}
+.diff-view-toggle button.active {
+	background: var(--accent);
+	color: white;
+	border-color: var(--accent);
+}
 .diff-legend {
 	display: flex;
 	gap: 20px;
@@ -557,6 +593,11 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 		}
 	}
 
+	// Write view toggle buttons
+	if err := p.writeDiffViewToggle(); err != nil {
+		return err
+	}
+
 	// Write comparison selector for multiple clones
 	if len(groupDiff.Others) > 1 {
 		if err := p.writeDiffSelector(groupDiff); err != nil {
@@ -580,6 +621,18 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 </div>
 </div>
 `)
+
+	return err //nolint:wrapcheck
+}
+
+// writeDiffViewToggle writes the view mode toggle buttons (side-by-side vs inline).
+func (p *htmlprinter) writeDiffViewToggle() error {
+	_, err := fmt.Fprintf(p.w, `
+<div class="diff-view-toggle">
+<button id="diff-toggle-%d-side" class="active" data-mode="side" onclick="toggleDiffView(%d, 'side')">◫ Side by Side</button>
+<button id="diff-toggle-%d-inline" data-mode="inline" onclick="toggleDiffView(%d, 'inline')">▣ Inline</button>
+</div>
+`, p.iota, p.iota, p.iota, p.iota)
 
 	return err //nolint:wrapcheck
 }
@@ -645,19 +698,14 @@ func (p *htmlprinter) writeDiffComparison(base *CloneWithContent, other CloneDif
 
 	_, err = fmt.Fprint(p.w, `</span>
 </div>
-<div class="diff-content">
+<div class="diff-content" data-diff-index="`+strconv.Itoa(index)+`">
 `)
 	if err != nil {
 		return err //nolint:wrapcheck
 	}
 
-	// Write base panel
-	if err := p.writeDiffPanel("base", base.Content, other.Diff.Base, true); err != nil {
-		return err
-	}
-
-	// Write compared panel
-	if err := p.writeDiffPanel("compared", other.Content, other.Diff.Compared, true); err != nil {
+	// Write base and compared panels with word-level highlighting
+	if err := p.writeDiffPanelsWithWordDiff(base, other); err != nil {
 		return err
 	}
 
@@ -714,6 +762,86 @@ func (p *htmlprinter) writeDiffPanel(panelType string, content []byte, lines []D
 	return err //nolint:wrapcheck
 }
 
+// writeDiffPanelsWithWordDiff renders both base and compared panels with word-level highlighting.
+func (p *htmlprinter) writeDiffPanelsWithWordDiff(base *CloneWithContent, other CloneDiff) error {
+	baseLines := other.Diff.Base
+	comparedLines := other.Diff.Compared
+
+	// Start base panel
+	_, err := fmt.Fprint(p.w, `
+<div class="diff-panel base">
+<div class="diff-panel-title">Base Reference</div>
+<pre><code>
+`)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// Render base panel
+	if err := p.renderDiffLines(baseLines, comparedLines, true); err != nil {
+		return err
+	}
+
+	// Close base panel, start compared panel
+	_, err = fmt.Fprint(p.w, `</code></pre>
+</div>
+<div class="diff-panel compared">
+<div class="diff-panel-title">Compared</div>
+<pre><code>
+`)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// Render compared panel
+	if err := p.renderDiffLines(comparedLines, baseLines, false); err != nil {
+		return err
+	}
+
+	_, err = fmt.Fprint(p.w, `</code></pre>
+</div>
+`)
+
+	return err //nolint:wrapcheck
+}
+
+// renderDiffLines renders diff lines with optional word-level highlighting for modified lines.
+func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePanel bool) error {
+	for i, line := range lines {
+		typeClass := ""
+		switch line.Type {
+		case DiffLineAdded:
+			typeClass = "added"
+		case DiffLineRemoved:
+			typeClass = "removed"
+		case DiffLineModified:
+			typeClass = "modified"
+		}
+
+		lineNum := fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
+
+		var content string
+		if line.Type == DiffLineModified && i < len(oppositeLines) && oppositeLines[i].Type == DiffLineModified {
+			// For modified lines, show word-level diff
+			if isBasePanel {
+				content = WordDiff(line.Content, oppositeLines[i].Content)
+			} else {
+				content = WordDiff(oppositeLines[i].Content, line.Content)
+			}
+		} else {
+			content = html.EscapeString(line.Content)
+		}
+
+		_, err := fmt.Fprintf(p.w, `<div class="diff-line %s">%s<span class="diff-line-content">%s</span></div>
+`, typeClass, lineNum, content)
+		if err != nil {
+			return err //nolint:wrapcheck
+		}
+	}
+
+	return nil
+}
+
 // countDiffStats counts the number of added, removed, and modified lines.
 func countDiffStats(diff DiffResult) (added, removed, modified int) {
 	for _, line := range diff.Compared {
@@ -758,6 +886,61 @@ function showDiff(index, groupId) {
 		selected.classList.add('active');
 	}
 }
+
+// Diff view mode toggle: side-by-side vs inline
+function toggleDiffView(groupId, mode) {
+	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupId + '-"]');
+	comparisons.forEach(function(comp) {
+		const content = comp.querySelector('.diff-content');
+		if (content) {
+			if (mode === 'inline') {
+				content.classList.add('inline');
+			} else {
+				content.classList.remove('inline');
+			}
+		}
+	});
+
+	// Update toggle button states
+	const buttons = document.querySelectorAll('[id^="diff-toggle-' + groupId + '-"]');
+	buttons.forEach(function(btn) {
+		btn.classList.remove('active');
+		if (btn.dataset.mode === mode) {
+			btn.classList.add('active');
+		}
+	});
+
+	// Save preference
+	try {
+		localStorage.setItem('artdupl-diff-mode', mode);
+	} catch (e) {
+		// Ignore localStorage errors
+	}
+}
+
+// Initialize diff view mode from saved preference
+document.addEventListener('DOMContentLoaded', function() {
+	try {
+		const savedMode = localStorage.getItem('artdupl-diff-mode');
+		if (savedMode === 'inline') {
+			// Apply inline mode to all diff comparisons
+			const allContents = document.querySelectorAll('.diff-content');
+			allContents.forEach(function(content) {
+				content.classList.add('inline');
+			});
+			// Update all toggle buttons
+			const allToggles = document.querySelectorAll('.diff-view-toggle button');
+			allToggles.forEach(function(btn) {
+				btn.classList.remove('active');
+				if (btn.dataset.mode === 'inline') {
+					btn.classList.add('active');
+				}
+			});
+		}
+	} catch (e) {
+		// Ignore localStorage errors
+	}
+});
 </script>
 </body>
 </html>
