@@ -26,6 +26,7 @@ func MustParseConfig(mode DetectionMode) ParseConfig {
 	if err := cfg.Validate(); err != nil {
 		panic(err)
 	}
+
 	return cfg
 }
 
@@ -34,6 +35,7 @@ func (cfg ParseConfig) Validate() error {
 	if !cfg.Mode.IsValid() {
 		return fmt.Errorf("invalid detection mode: %q", cfg.Mode)
 	}
+
 	return nil
 }
 

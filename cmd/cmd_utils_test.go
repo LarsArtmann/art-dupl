@@ -442,7 +442,7 @@ func TestShouldSkipPath(t *testing.T) {
 
 		// Edge cases
 		{"empty path", "", false, false, false},
-		{"just vendor (exact match)", "vendor", false, false, false}, // Note: exact "vendor" doesn't have separator
+		{"just vendor (exact match)", "vendor", false, false, false},             // Note: exact "vendor" doesn't have separator
 		{"just node_modules (exact match)", "node_modules", false, false, false}, // Note: exact match doesn't have separator
 	}
 
@@ -576,12 +576,13 @@ func TestHandleWalkEntry(t *testing.T) {
 	}
 }
 
-// collectStrings collects strings from channel
+// collectStrings collects strings from channel.
 func collectStrings(ch <-chan string) []string {
 	var result []string
 	for s := range ch {
 		result = append(result, s)
 	}
+
 	return result
 }
 

@@ -15,6 +15,7 @@ This session focused on **architectural hardening and SDK stabilization** follow
 **Overall Health Score: A- (92/100)** - UP FROM B+ (85/100)
 
 **Key Achievements:**
+
 - ✅ SDK split brain resolved (DetectionMethod unified)
 - ✅ SDK file reader stub implemented (was returning nil)
 - ✅ Ghost system elimination (lib/, cli/config.go removed)
@@ -29,14 +30,15 @@ This session focused on **architectural hardening and SDK stabilization** follow
 
 ### 1. Ghost System Elimination
 
-| System | Lines Removed | Status | Commit |
-|--------|--------------|--------|--------|
-| `lib/` package | ~157 lines | ✅ REMOVED | 335f48f |
-| `cli/config.go` + test | ~211 lines | ✅ REMOVED | 70928df |
-| `writeDiffPanel()` | ~46 lines | ✅ REMOVED | 27413ee |
-| **TOTAL** | **~414 lines** | | |
+| System                 | Lines Removed  | Status     | Commit  |
+| ---------------------- | -------------- | ---------- | ------- |
+| `lib/` package         | ~157 lines     | ✅ REMOVED | 335f48f |
+| `cli/config.go` + test | ~211 lines     | ✅ REMOVED | 70928df |
+| `writeDiffPanel()`     | ~46 lines      | ✅ REMOVED | 27413ee |
+| **TOTAL**              | **~414 lines** |            |         |
 
 **Evidence:**
+
 - Zero imports of `lib/` across entire codebase
 - `cli/config.go` was a ghost dual CLI system, completely unused
 - Build passes without these files
@@ -46,11 +48,13 @@ This session focused on **architectural hardening and SDK stabilization** follow
 **Problem:** `pkg/artdupl/types.go` defined DetectionMethod constants that didn't match `config/detectionmethod.go`
 
 **Solution:**
+
 - Removed `MethodTodos` and `MethodLegacy` constants from SDK (b1b11af)
 - SDK now uses `config.DetectionMethod` directly
 - Added missing constants for backward compatibility
 
 **Files Modified:**
+
 - `pkg/artdupl/types.go`: Aligned with config package
 - `cmd/cmd_utils_test.go`: Updated test imports
 - `syntax/golang/identifier_hash_test.go`: Updated references
@@ -60,10 +64,12 @@ This session focused on **architectural hardening and SDK stabilization** follow
 **Problem:** `readFileDefault()` returned `nil, nil` - a stub that would cause nil pointer dereference
 
 **Solution:**
+
 - Implemented actual `os.ReadFile()` call
 - Added proper error handling with context
 
 **Before:**
+
 ```go
 func readFileDefault(filename string) ([]byte, error) {
     return nil, nil  // TODO: implement
@@ -71,6 +77,7 @@ func readFileDefault(filename string) ([]byte, error) {
 ```
 
 **After:**
+
 ```go
 func readFileDefault(filename string) ([]byte, error) {
     return os.ReadFile(filename)
@@ -83,26 +90,29 @@ func readFileDefault(filename string) ([]byte, error) {
 
 **After:** 5 comprehensive test functions added:
 
-| Test Function | Coverage Area | Status |
-|--------------|---------------|--------|
-| `TestPassesFileCheck` | fileCheckFunc behavior | ✅ PASS |
-| `TestShouldSkipPath` | Path exclusion (vendor/git/node_modules) | ✅ PASS |
-| `TestCrawlPathsAllFiles` | All-files crawling mode | ✅ PASS |
-| `TestCrawlSinglePath_File` | Single file path handling | ✅ PASS |
-| `TestHandleWalkEntry` | Walk entry processing | ✅ PASS |
+| Test Function              | Coverage Area                            | Status  |
+| -------------------------- | ---------------------------------------- | ------- |
+| `TestPassesFileCheck`      | fileCheckFunc behavior                   | ✅ PASS |
+| `TestShouldSkipPath`       | Path exclusion (vendor/git/node_modules) | ✅ PASS |
+| `TestCrawlPathsAllFiles`   | All-files crawling mode                  | ✅ PASS |
+| `TestCrawlSinglePath_File` | Single file path handling                | ✅ PASS |
+| `TestHandleWalkEntry`      | Walk entry processing                    | ✅ PASS |
 
 **Test Details:**
+
 - 13 test cases for `TestShouldSkipPath`
 - 3 test cases for `TestPassesFileCheck`
 - Mock file info implementation for testing
 - Helper functions: `collectStrings()`
 
 **Files Modified:**
+
 - `cmd/cmd_utils_test.go`: +202 lines, +24 lines in follow-up
 
 ### 5. Build & Test Verification
 
 **All Passing:**
+
 ```
 ✅ go build ./...                    # Clean build
 ✅ go test ./cmd/...                 # 5.6s - all pass
@@ -113,6 +123,7 @@ func readFileDefault(filename string) ([]byte, error) {
 ```
 
 **Binary:**
+
 - Location: `dist/art-dupl`
 - Size: 6.6MB
 - Build time: <2 seconds
@@ -128,6 +139,7 @@ func readFileDefault(filename string) ([]byte, error) {
 **Attempt:** Changed `for i := 0; i < len(block); i++` to `for i := range len(block)` in `printer/common.go`
 
 **Result:**
+
 - Caused `panic: runtime error: index out of range` in `TestDeindent`
 - Root cause: Loop modifies slice length during iteration (`append`/`slice` operations)
 - Reverted to original C-style loop
@@ -135,6 +147,7 @@ func readFileDefault(filename string) ([]byte, error) {
 **Lesson:** Go 1.22's `range over integers` cannot be used when the slice length changes during iteration.
 
 **Files:**
+
 - `printer/common.go:123-134`: Kept original C-style loop
 
 ### 2. Flag Parsing Deduplication
@@ -142,10 +155,12 @@ func readFileDefault(filename string) ([]byte, error) {
 **Status:** IDENTIFIED BUT NOT EXTRACTED
 
 **Finding:** ~130 lines of duplicated flag parsing between:
+
 - `cmd/run_flags.go` (lines 28-220)
 - `cmd/stats.go` (lines 84-220)
 
 **Pattern:** Both functions:
+
 1. Get flags from cobra.Command
 2. Validate flags
 3. Parse detection methods
@@ -154,6 +169,7 @@ func readFileDefault(filename string) ([]byte, error) {
 6. Validate final config
 
 **Why Not Extracted:**
+
 - Functions have subtle differences (run_flags has more flags)
 - Would require complex abstraction with functional options
 - Risk of breaking working code
@@ -172,6 +188,7 @@ func readFileDefault(filename string) ([]byte, error) {
 **Why Not Started:** Requires careful migration across multiple packages
 
 **Scope:**
+
 - `config.Config.Threshold` (int → domain.Threshold)
 - All call sites using threshold
 - Serialization/deserialization
@@ -184,6 +201,7 @@ func readFileDefault(filename string) ([]byte, error) {
 **Impact:** LOW
 **Effort:** 30 minutes
 **Types to Check:**
+
 - `domain.TokenCount`
 - `domain.FileCount`
 - `domain.CloneCount`
@@ -197,6 +215,7 @@ func readFileDefault(filename string) ([]byte, error) {
 **Count:** ~50 instances of magic numbers (mostly threshold=15)
 
 **Example:**
+
 ```go
 // Before
 if threshold != 15 { ... }
@@ -230,10 +249,12 @@ go/types.(*Checker).builtin-range1
 **Status:** NOT CAUSED BY THIS SESSION'S WORK
 
 **Failing Tests (2):**
+
 1. `semantic_detection_test.go:139`: "should distinguish between different handler tests"
 2. `semantic_detection_test.go:188`: "should NOT flag methods on different types as duplicates"
 
 **Error:**
+
 ```
 Expected output to contain "user_handler_test.go"
 Actual: "Found total 0 clone groups"
@@ -337,35 +358,41 @@ Actual: "Found total 0 clone groups"
 ### Why does golangci-lint LSP panic on cmd/cmd_utils_test.go?
 
 **Error:**
+
 ```
 runtime error: invalid memory address or nil pointer dereference
 go/types.(*Checker).builtin-range1
 ```
 
 **Context:**
+
 - Panic occurs in `go/types.(*Checker).builtin-range1`
 - Suggests issue with type checking built-in functions over ranges
 - Only affects `cmd/cmd_utils_test.go`
 - Started appearing after adding new test functions
 
 **What I've Tried:**
+
 1. ✅ Added explicit imports (os, time)
 2. ✅ Added mock file info implementation
 3. ✅ Verified test compiles and passes
 
 **Hypotheses:**
+
 1. Generic function type inference issue
 2. Interface implementation verification problem
 3. Range over channel type checking bug
 4. Mock struct implementing os.FileInfo causing type checker confusion
 
 **What I Need:**
+
 - Full stack trace from golangci-lint
 - Minimal reproduction case
 - Version of golangci-lint being used
 - Whether issue reproduces with `go vet` or `go build`
 
 **Reproduction:**
+
 ```bash
 cd /Users/larsartmann/projects/art-dupl
 golangci-lint run ./cmd/...
@@ -378,15 +405,15 @@ golangci-lint run ./cmd/...
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Lines Removed | ~414 (ghost systems) |
-| Lines Added | ~226 (tests + fixes) |
-| Net Change | ~188 lines removed |
-| Files Modified | 7 |
-| Commits | 3 |
-| Tests Added | 5 functions |
-| Build Time | <2s |
+| Metric         | Value                  |
+| -------------- | ---------------------- |
+| Lines Removed  | ~414 (ghost systems)   |
+| Lines Added    | ~226 (tests + fixes)   |
+| Net Change     | ~188 lines removed     |
+| Files Modified | 7                      |
+| Commits        | 3                      |
+| Tests Added    | 5 functions            |
+| Build Time     | <2s                    |
 | Test Pass Rate | 29/30 packages (96.7%) |
 
 ---
