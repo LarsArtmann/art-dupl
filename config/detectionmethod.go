@@ -93,8 +93,7 @@ const (
 var validDetectionMethods = map[DetectionMethod]bool{
 	DetectionMethodHash:    true,
 	DetectionMethodArtDupl: true,
-	DetectionMethodTodos:   true,
-	DetectionMethodLegacy:  true,
+	// DetectionMethodTodos and DetectionMethodLegacy are defined but not yet implemented
 }
 
 // String implements fmt.Stringer.
