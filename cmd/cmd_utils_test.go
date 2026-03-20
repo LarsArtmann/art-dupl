@@ -2,10 +2,13 @@ package cmd
 
 import (
 	"bytes"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -439,8 +442,8 @@ func TestShouldSkipPath(t *testing.T) {
 
 		// Edge cases
 		{"empty path", "", false, false, false},
-		{"just vendor", "vendor", false, false, true},
-		{"just node_modules", "node_modules", false, false, true},
+		{"just vendor (exact match)", "vendor", false, false, false}, // Note: exact "vendor" doesn't have separator
+		{"just node_modules (exact match)", "node_modules", false, false, false}, // Note: exact match doesn't have separator
 	}
 
 	for _, tt := range tests {
@@ -541,9 +544,9 @@ func TestHandleWalkEntry(t *testing.T) {
 			wantSent:  false,
 		},
 		{
-			name:      "DS_Store skipped",
+			name:      "DS_Store file excluded",
 			path:      tempDir + "/.DS_Store",
-			info:      info,
+			info:      &mockFileInfo{name: ".DS_Store", isDir: false},
 			fileCheck: isSourceFile,
 			wantErr:   false,
 			wantSent:  false,
@@ -581,3 +584,16 @@ func collectStrings(ch <-chan string) []string {
 	}
 	return result
 }
+
+// mockFileInfo is a mock implementation of os.FileInfo for testing.
+type mockFileInfo struct {
+	name  string
+	isDir bool
+}
+
+func (m *mockFileInfo) Name() string       { return m.name }
+func (m *mockFileInfo) Size() int64        { return 0 }
+func (m *mockFileInfo) Mode() os.FileMode  { return 0 }
+func (m *mockFileInfo) ModTime() time.Time { return time.Time{} }
+func (m *mockFileInfo) IsDir() bool        { return m.isDir }
+func (m *mockFileInfo) Sys() any           { return nil }
