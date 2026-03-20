@@ -81,7 +81,7 @@ func splitLines(data []byte) [][]byte {
 	var lines [][]byte
 	start := 0
 
-	for i := 0; i < len(data); i++ {
+	for i := range len(data) {
 		if data[i] == '\n' {
 			lines = append(lines, data[start:i+1])
 			start = i + 1
@@ -135,7 +135,7 @@ func diffLargeFiles(baseLines, comparedLines [][]byte, base, compared []DiffLine
 	}
 
 	// Compare line by line up to the shorter length
-	for i := 0; i < minLen; i++ {
+	for i := range minLen {
 		baseTrimmed := bytes.TrimSpace(baseLines[i])
 		comparedTrimmed := bytes.TrimSpace(comparedLines[i])
 

@@ -5,6 +5,7 @@ import (
 	"html"
 	"io"
 	"sort"
+	"strconv"
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -526,7 +527,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 	_, err := fmt.Fprint(p.w, `
 <div class="diff-selector">
-<select id="diff-select-`+fmt.Sprintf("%d", p.iota)+`" onchange="showDiff(this.value, `+fmt.Sprintf("%d", p.iota)+`)">
+<select id="diff-select-`+strconv.Itoa(p.iota)+`" onchange="showDiff(this.value, `+strconv.Itoa(p.iota)+`)">
 <option value="" disabled selected>Compare with...</option>
 `)
 	if err != nil {
@@ -664,6 +665,7 @@ func countDiffStats(diff DiffResult) (added, removed, modified int) {
 			modified++
 		}
 	}
+
 	return added, removed, modified
 }
 

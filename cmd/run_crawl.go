@@ -60,7 +60,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 // This is used for hash-based detection which works on any file type.
 // The includeNodeModules parameter controls whether to include node_modules directories
 // (excluded by default to avoid processing large dependency directories).
-func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool, includeNodeModules bool) chan string {
+func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor, includeNodeModules bool) chan string {
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, nil)
 }
 
@@ -174,7 +174,7 @@ func isSourceFile(name string) bool {
 }
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
-func shouldSkipPath(path string, includeVendor bool, includeNodeModules bool) bool {
+func shouldSkipPath(path string, includeVendor, includeNodeModules bool) bool {
 	if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
 		strings.Contains(path, cli.VendorDirInPath)) {
 		return true

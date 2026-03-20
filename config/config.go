@@ -175,7 +175,7 @@ func DefaultConfig() *Config {
 		Since:              "",
 		CacheDir:           "",
 		ClearCache:         false,
-		Semantic:           false, // Default: off for backward compatibility (enable with --semantic)
+		Semantic:           false,            // Default: off for backward compatibility (enable with --semantic)
 		DiffMode:           DiffModeDisabled, // Default: diff mode disabled
 	}
 }
