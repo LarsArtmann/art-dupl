@@ -14,6 +14,7 @@
 The art-dupl codebase is in a **stable, functional state** with the diff mode implementation (Phase 3) recently completed. The project successfully builds, passes the majority of tests, and has comprehensive features implemented. However, there are 60 outstanding TODO items, 2 test failures in the generics module, and ongoing linter issues that require attention.
 
 **Overall Health Score: B+ (85/100)**
+
 - Build Status: ✅ PASSING
 - Test Status: ⚠️ MOSTLY PASSING (2 failures)
 - Code Quality: ⚠️ NEEDS ATTENTION (linter issues)
@@ -24,12 +25,14 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 ## A) FULLY DONE ✅
 
 ### 1. Core Detection Engine
+
 - **Suffix Tree Algorithm**: Fully implemented with O(1) map-based transition lookup
 - **Hash-Based Detection**: Rolling hash implementation with node_modules exclusion
 - **Multi-Method Detection**: Supports running both algorithms simultaneously
 - **AST Processing**: Complete Go AST serialization and node processing
 
 ### 2. Diff Mode Implementation (Just Completed)
+
 - **WordDiff Integration**: Connected sergi/go-diff for word-level highlighting
 - **Side-by-Side View**: Fully functional diff comparison panels
 - **Inline View Toggle**: JavaScript-based view switching with localStorage persistence
@@ -37,6 +40,7 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Integration Tests**: 3 new HTML diff tests added and passing
 
 ### 3. CLI Framework (Fang/Cobra)
+
 - **Professional CLI**: Complete migration to Fang framework
 - **Auto-completion**: Shell completion for bash, zsh, fish, PowerShell
 - **Configuration Files**: JSON-based config with validation
@@ -44,6 +48,7 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Smart Filtering**: SQLC and templ generated code filtering
 
 ### 4. Output Formats
+
 - **Text**: Human-readable output with syntax highlighting
 - **HTML**: Full-featured with code fragments, diff visualization, and VSCode links
 - **JSON**: Structured output with statistics
@@ -51,12 +56,14 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Stats**: Multiple formats (text, JSON, CSV) via stats subcommand
 
 ### 5. Domain Model & Architecture
+
 - **Strong Typing**: Domain types for Clone, CloneGroup, DetectionMethod
 - **String Pool**: Efficient string deduplication
 - **Adapter Pattern**: Printer abstraction layer
 - **Error Handling**: Typed error wrappers with context
 
 ### 6. Testing Infrastructure
+
 - **Unit Tests**: 96 test files covering core functionality
 - **BDD Tests**: Ginkgo/Gomega suite passing (13.7s)
 - **Benchmarks**: Performance testing with race detector support
@@ -64,12 +71,14 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Coverage**: Threshold checking at 80%
 
 ### 7. Build System
+
 - **Justfile**: Primary build system (95% of cases)
 - **Cross-platform**: Linux, macOS, Windows support
 - **CGO Disabled**: Static binaries
 - **Build Artifacts**: Output to `dist/art-dupl` (6.6MB)
 
 ### 8. Recent Fixes (Last 20 Commits)
+
 - Fixed ghost system removal (cli/config.go)
 - Removed orphaned lib/ package
 - Added error context improvements (Tier 2 Pareto)
@@ -82,6 +91,7 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 ## B) PARTIALLY DONE ⚠️
 
 ### 1. Generics Support
+
 - **Status**: Infrastructure in place, but 2 test failures
 - **Issues**:
   - `TestTypeParamsInTypeSpec`: Missing `type` keyword in test code
@@ -89,6 +99,7 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Impact**: LOW (generics parsing works, tests need fixing)
 
 ### 2. Linting & Code Quality
+
 - **Status**: Linter running but with issues
 - **Issues**:
   - golangci-lint panics on cmd/cmd_utils_test.go (nil pointer dereference)
@@ -98,16 +109,19 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 - **Impact**: MEDIUM (code compiles, but quality gates affected)
 
 ### 3. Error Context Improvements
+
 - **Status**: Tier 2 Pareto fixes applied
 - **Completed**: BDD utilities, SDK validation, printer errors, parser errors
 - **Remaining**: Additional context needed in some areas
 
 ### 4. Memory Optimization
+
 - **Status**: SIMD infrastructure ready, optimizations pending
 - **Completed**: SIMD package with ARM64 support
 - **Pending**: String interning, memory layout optimizations
 
 ### 5. Configuration System
+
 - **Status**: Functional but has merge precedence bugs
 - **Issues**: Threshold flag functionality needs verification
 - **Completed**: JSON config, validation, CLI flags
@@ -117,11 +131,13 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 ## C) NOT STARTED ❌
 
 ### High Priority (Security & Core)
+
 1. **gosec Security Violations**: G115 integer overflow, G301/G304/G306 file permissions
 2. **Cyclomatic Complexity**: Fix cyclop and gocognit in critical functions
 3. **SARIF Output**: Security tool integration format
 
 ### Medium Priority (Testing & Refactoring)
+
 4. **BDD Test Suite**: 37-54 tests reportedly failing (exit status 1) - but current run shows passing
 5. **Import Cycles**: Compilation errors between config/domain packages
 6. **JSON Character Corruption**: UTF-8 marshaling issues investigation
@@ -131,6 +147,7 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 10. **Type Safety**: FindSyntaxUnits position types
 
 ### Lower Priority (Features & Enhancements)
+
 11. **CSV Output**: Proper encoding/csv implementation
 12. **CLI Argument Routing**: Cobra/Ginkgo framework conflicts
 13. **Dual CLI Removal**: Delete old Run() function
@@ -147,32 +164,39 @@ The art-dupl codebase is in a **stable, functional state** with the diff mode im
 ## D) TOTALLY FUCKED UP 🔥
 
 ### 1. Linter Infrastructure (CRITICAL)
+
 **Problem**: golangci-lint panics consistently
+
 ```
 runtime error: invalid memory address or nil pointer dereference
 go/types.(*Checker).builtin-range1
 ```
 
-**Root Cause**: 
+**Root Cause**:
+
 - Parallel linter execution conflicts
 - Go toolchain version mismatch (1.26.1 vs 1.23.5)
 - cmd/cmd_utils_test.go triggers type checker panic
 
-**Impact**: 
+**Impact**:
+
 - Cannot run linting in CI/CD
 - Code quality gates bypassed
 - Potential bugs going undetected
 
 **Fix Required**:
+
 - Restart LSP server
 - Fix cmd/cmd_utils_test.go type issue
 - Ensure single linter instance
 - Update Go toolchain or pin versions
 
 ### 2. Test Data Corruption (MEDIUM)
+
 **Problem**: syntax/golang/generics_test.go has syntax errors in test data
 
 **Evidence**:
+
 ```go
 // Missing 'type' keyword
 Stack[T any] struct {  // Should be: type Stack[T any] struct {
@@ -186,9 +210,11 @@ FilterFunc[T any] func  // Should be: type FilterFunc[T any] func
 **Fix Required**: Add proper `type` keywords to test code strings
 
 ### 3. Documentation Drift (LOW)
+
 **Problem**: Multiple status documents may be outdated
 
-**Evidence**: 
+**Evidence**:
+
 - 60 TODO items all unchecked
 - Some documents reference completed work as pending
 - ARCHITECTURE_REVIEW.md may be stale
@@ -322,29 +348,34 @@ FilterFunc[T any] func  // Should be: type FilterFunc[T any] func
 **Why does the golangci-lint LSP server panic on cmd/cmd_utils_test.go?**
 
 **Evidence:**
+
 ```
 panic: runtime error: invalid memory address or nil pointer dereference
 go/types.(*Checker).builtin-range1
 ```
 
 **What I've Tried:**
+
 - Restarted LSP server multiple times
 - Checked for parallel linter conflicts
 - Verified Go version compatibility
 
 **Hypotheses:**
+
 1. Type checker issue with Go 1.23.5 vs 1.26.1 mismatch
 2. Circular import or type resolution problem
 3. Memory corruption in LSP server
 4. Specific code pattern triggering type checker bug
 
 **What I Need:**
+
 - Access to cmd/cmd_utils_test.go contents
 - Go version and toolchain details
 - golangci-lint configuration
 - Whether this reproduces with CLI `golangci-lint run`
 
 **Why It Matters:**
+
 - Blocks CI/CD quality gates
 - Prevents linting feedback during development
 - May indicate deeper type system issues
@@ -423,6 +454,7 @@ f6a7bd3 chore(docs): add architectural retrospective and execution plan
 **Confidence Level:** High (95%)
 
 **Key Recommendations:**
+
 1. Fix linter panic immediately (blocking)
 2. Fix generics tests (quick win)
 3. Audit TODO list for accuracy
@@ -430,6 +462,7 @@ f6a7bd3 chore(docs): add architectural retrospective and execution plan
 5. Maintain current velocity on feature work
 
 **Risk Assessment:**
+
 - **Low Risk**: Core functionality stable, builds passing
 - **Medium Risk**: Linter issues may hide bugs
 - **High Risk**: Security vulnerabilities unaddressed
