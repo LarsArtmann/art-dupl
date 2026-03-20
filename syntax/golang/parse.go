@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -21,7 +22,7 @@ func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
-		return nil, 0, err //nolint:wrapcheck // Parse errors are already clear
+		return nil, 0, fmt.Errorf("failed to parse %s: %w", filename, err)
 	}
 
 	t := &transformer{
