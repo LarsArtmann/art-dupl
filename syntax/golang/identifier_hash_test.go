@@ -128,7 +128,7 @@ func TestEncodeSemanticType_Disabled(t *testing.T) {
 	// When disabled, should return base type unchanged
 	if result != baseType {
 		t.Errorf(
-			"encodeSemanticType(%d, 'anyIdentifier') with SemanticHashEnabled=false = %d, want %d",
+			"encodeSemanticType(%d, 'anyIdentifier', false) = %d, want %d",
 			baseType,
 			result,
 			baseType,
@@ -142,7 +142,7 @@ func TestEncodeSemanticType_EmptyIdentifier(t *testing.T) {
 
 	// Empty identifier should return base type unchanged
 	if result != baseType {
-		t.Errorf("encodeSemanticType(%d, '') = %d, want %d", baseType, result, baseType)
+		t.Errorf("encodeSemanticType(%d, '', true) = %d, want %d", baseType, result, baseType)
 	}
 }
 
@@ -345,11 +345,6 @@ func TestCombineIdentifierHashes(t *testing.T) {
 }
 
 func TestEncodeSemanticTypeMulti(t *testing.T) {
-	original := SemanticHashEnabled
-	SemanticHashEnabled = true
-
-	defer func() { SemanticHashEnabled = original }()
-
 	baseType := int32(FuncDecl)
 
 	tests := []struct {
@@ -426,7 +421,8 @@ func TestEncodeSemanticTypeMulti_Disabled(t *testing.T) {
 
 	if result != baseType {
 		t.Errorf(
-			"encodeSemanticTypeMulti with SemanticHashEnabled=false = %d, want %d",
+			"encodeSemanticTypeMulti(%d, false, ...) = %d, want %d",
+			baseType,
 			result,
 			baseType,
 		)

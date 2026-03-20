@@ -19,6 +19,12 @@ const (
 
 	// MethodHash uses rolling hash on file content.
 	MethodHash = config.DetectionMethodHash
+
+	// MethodTodos detects TODO comments in code.
+	MethodTodos = config.DetectionMethodTodos
+
+	// MethodLegacy uses the legacy detection algorithm.
+	MethodLegacy = config.DetectionMethodLegacy
 )
 
 // Detector is the main interface for code duplication detection.

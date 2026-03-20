@@ -132,7 +132,7 @@ func add(a, b int) int {
 	found := false
 
 	for _, child := range node.Children {
-		if child.Type == FuncDecl {
+		if DecodeBaseType(child.Type) == FuncDecl {
 			found = true
 
 			break
@@ -168,11 +168,11 @@ type Person struct {
 	found := false
 
 	for _, child := range node.Children {
-		if child.Type == GenDecl {
+		if DecodeBaseType(child.Type) == GenDecl {
 			for _, spec := range child.Children {
-				if spec.Type == TypeSpec {
+				if DecodeBaseType(spec.Type) == TypeSpec {
 					for _, typeChild := range spec.Children {
-						if typeChild.Type == StructType {
+						if DecodeBaseType(typeChild.Type) == StructType {
 							found = true
 
 							break
@@ -293,7 +293,7 @@ func TestNodePositions(t *testing.T) {
 }
 
 func findNodeType(node *syntax.Node, nodeType int) bool {
-	if node.Type == int32(nodeType) {
+	if DecodeBaseType(node.Type) == int32(nodeType) {
 		return true
 	}
 

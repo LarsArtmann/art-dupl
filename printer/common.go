@@ -120,7 +120,7 @@ func stripIndent(block []byte, indentCount int) []byte {
 	}
 	block = block[indentCount:]
 
-	for i := 0; i < len(block); i++ {
+	for i := range len(block) {
 		if block[i] != '\n' || i == len(block)-1 {
 			continue
 		}

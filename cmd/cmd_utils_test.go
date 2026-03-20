@@ -379,3 +379,205 @@ func TestParseDuration(t *testing.T) {
 		})
 	}
 }
+
+func TestPassesFileCheck(t *testing.T) {
+	tests := []struct {
+		name      string
+		fileCheck fileCheckFunc
+		want      bool
+	}{
+		{
+			name:      "nil check accepts all",
+			fileCheck: nil,
+			want:      true,
+		},
+		{
+			name:      "check that returns true",
+			fileCheck: func(_ string) bool { return true },
+			want:      true,
+		},
+		{
+			name:      "check that returns false",
+			fileCheck: func(_ string) bool { return false },
+			want:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := passesFileCheck("test.go", tt.fileCheck)
+			if got != tt.want {
+				t.Errorf("passesFileCheck() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestShouldSkipPath(t *testing.T) {
+	tests := []struct {
+		name               string
+		path               string
+		includeVendor      bool
+		includeNodeModules bool
+		want               bool
+	}{
+		// Vendor directory tests
+		{"vendor prefix excluded", "vendor/github.com/foo/bar.go", false, false, true},
+		{"vendor in path excluded", "project/vendor/github.com/foo", false, false, true},
+		{"vendor prefix included", "vendor/github.com/foo/bar.go", true, false, false},
+		{"regular path no vendor", "project/src/main.go", false, false, false},
+
+		// Git directory tests
+		{"git prefix excluded", ".git/config", false, false, true},
+		{"git in path excluded", "project/.git/objects", false, false, true},
+		{"regular path no git", "project/src/main.go", false, false, false},
+
+		// node_modules tests
+		{"node_modules prefix excluded", "node_modules/lodash/index.js", false, false, true},
+		{"node_modules in path excluded", "project/node_modules/react", false, false, true},
+		{"node_modules included", "node_modules/lodash/index.js", false, true, false},
+
+		// Edge cases
+		{"empty path", "", false, false, false},
+		{"just vendor", "vendor", false, false, true},
+		{"just node_modules", "node_modules", false, false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := shouldSkipPath(tt.path, tt.includeVendor, tt.includeNodeModules)
+			if got != tt.want {
+				t.Errorf("shouldSkipPath(%q, vendor=%v, node_modules=%v) = %v, want %v",
+					tt.path, tt.includeVendor, tt.includeNodeModules, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCrawlPathsAllFiles(t *testing.T) {
+	tempDir := t.TempDir()
+
+	// Create test files including non-source
+	testFiles := []string{
+		"main.go",
+		"readme.md",
+		"app.js",
+	}
+
+	for _, f := range testFiles {
+		path := tempDir + "/" + f
+		if err := os.WriteFile(path, []byte("test"), 0o644); err != nil {
+			t.Fatalf("Failed to create file %s: %v", path, err)
+		}
+	}
+
+	t.Run("crawls all files with nil check", func(t *testing.T) {
+		f := filter.NewFilter(false, nil)
+		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true))
+
+		// Should find all 3 files
+		if len(files) != 3 {
+			t.Errorf("Expected 3 files, got %d: %v", len(files), files)
+		}
+	})
+}
+
+func TestCrawlSinglePath_File(t *testing.T) {
+	tempDir := t.TempDir()
+	testFile := tempDir + "/test.go"
+	if err := os.WriteFile(testFile, []byte("package main"), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	f := filter.NewFilter(false, nil)
+	fchan := make(chan string, 10)
+
+	crawlSinglePath(testFile, f, false, false, isSourceFile, fchan)
+	close(fchan)
+
+	files := collectStrings(fchan)
+	if len(files) != 1 {
+		t.Errorf("Expected 1 file, got %d", len(files))
+	}
+	if len(files) > 0 && files[0] != testFile {
+		t.Errorf("Expected %s, got %s", testFile, files[0])
+	}
+}
+
+func TestHandleWalkEntry(t *testing.T) {
+	tempDir := t.TempDir()
+	testFile := tempDir + "/test.go"
+	if err := os.WriteFile(testFile, []byte("package main"), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+
+	info, err := os.Lstat(testFile)
+	if err != nil {
+		t.Fatalf("Failed to stat test file: %v", err)
+	}
+
+	tests := []struct {
+		name      string
+		path      string
+		info      os.FileInfo
+		fileCheck fileCheckFunc
+		wantErr   bool
+		wantSent  bool
+	}{
+		{
+			name:      "valid Go file",
+			path:      testFile,
+			info:      info,
+			fileCheck: isSourceFile,
+			wantErr:   false,
+			wantSent:  true,
+		},
+		{
+			name:      "nil info skips",
+			path:      testFile,
+			info:      nil,
+			fileCheck: isSourceFile,
+			wantErr:   false,
+			wantSent:  false,
+		},
+		{
+			name:      "DS_Store skipped",
+			path:      tempDir + "/.DS_Store",
+			info:      info,
+			fileCheck: isSourceFile,
+			wantErr:   false,
+			wantSent:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := filter.NewFilter(false, nil)
+			fchan := make(chan string, 1)
+
+			err := handleWalkEntry(tt.path, tt.info, f, false, false, tt.fileCheck, fchan)
+			close(fchan)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("handleWalkEntry() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			files := collectStrings(fchan)
+			if tt.wantSent && len(files) == 0 {
+				t.Error("Expected file to be sent to channel")
+			}
+			if !tt.wantSent && len(files) > 0 {
+				t.Error("Expected no file to be sent to channel")
+			}
+		})
+	}
+}
+
+// collectStrings collects strings from channel
+func collectStrings(ch <-chan string) []string {
+	var result []string
+	for s := range ch {
+		result = append(result, s)
+	}
+	return result
+}

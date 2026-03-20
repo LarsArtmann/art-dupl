@@ -96,12 +96,7 @@ func TestExtractReceiverTypeName(t *testing.T) {
 }
 
 func TestSemanticFuncDeclDetection(t *testing.T) {
-	original := SemanticHashEnabled
-	SemanticHashEnabled = true
-
-	defer func() { SemanticHashEnabled = original }()
-
-	// Parse a file with methods on different types
+	// Parse a file with methods on different types (semantic mode is default)
 	code := `package test
 
 type CrushMode string
