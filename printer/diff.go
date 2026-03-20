@@ -298,6 +298,8 @@ func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
 			added++
 		case DiffLineModified:
 			modified++
+		case DiffLineEqual, DiffLineRemoved:
+			// No action needed
 		}
 	}
 	for _, line := range diff.Base {

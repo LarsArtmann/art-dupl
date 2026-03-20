@@ -138,7 +138,8 @@ func stripIndent(block []byte, indentCount int) []byte {
 
 // canStripTabs checks if there are enough tabs to strip at the given position.
 func canStripTabs(block []byte, start, count int) bool {
-	for j := 0; j < count && start+j < len(block); j++ {
+	end := min(count, len(block)-start)
+	for j := range end {
 		if block[start+j] != '\t' {
 			return false
 		}

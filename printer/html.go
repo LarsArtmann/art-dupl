@@ -770,6 +770,8 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 			typeClass = "removed"
 		case DiffLineModified:
 			typeClass = "modified"
+		case DiffLineEqual:
+			typeClass = "equal"
 		}
 
 		lineNum := fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
@@ -806,6 +808,8 @@ func countDiffStats(diff DiffResult) (added, removed, modified int) {
 			removed++
 		case DiffLineModified:
 			modified++
+		case DiffLineEqual:
+			// No action needed
 		}
 	}
 
