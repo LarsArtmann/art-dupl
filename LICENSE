@@ -1,6 +1,10 @@
 The MIT License (MIT)
 
+This project is based on https://github.com/golangci/dupl which is a fork of
+https://github.com/mibk/dupl. This fork (art-dupl) continues under the MIT License.
+
 Copyright (c) 2015 Michal Bohuslávek
+Copyright (c) 2025 Lars Artmann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
