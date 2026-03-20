@@ -7,8 +7,25 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
+)
+
+// Directory exclusion constants.
+const (
+	// VendorDirPrefix is the vendor directory prefix for exclusion.
+	VendorDirPrefix = "vendor" + string(filepath.Separator)
+	// VendorDirInPath is the vendor directory marker when it appears in a path.
+	VendorDirInPath = string(filepath.Separator) + VendorDirPrefix
+	// DSStoreFile is the macOS Finder metadata file that should always be excluded.
+	DSStoreFile = ".DS_Store"
+	// GitDirPrefix is the Git directory prefix for exclusion.
+	GitDirPrefix = ".git" + string(filepath.Separator)
+	// GitDirInPath is the Git directory marker when it appears in a path.
+	GitDirInPath = string(filepath.Separator) + GitDirPrefix
+	// NodeModulesDirPrefix is the node_modules directory prefix for exclusion.
+	NodeModulesDirPrefix = "node_modules" + string(filepath.Separator)
+	// NodeModulesDirInPath is the node_modules directory marker when it appears in a path.
+	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
 )
 
 // statError prints an error message for file stat failures and exits.
@@ -152,7 +169,7 @@ func handleWalkEntry(
 		return nil
 	}
 
-	if info.Name() == cli.DSStoreFile {
+	if info.Name() == DSStoreFile {
 		return nil
 	}
 
@@ -175,21 +192,21 @@ func isSourceFile(name string) bool {
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
 func shouldSkipPath(path string, includeVendor, includeNodeModules bool) bool {
-	if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
-		strings.Contains(path, cli.VendorDirInPath)) {
+	if !includeVendor && (strings.HasPrefix(path, VendorDirPrefix) ||
+		strings.Contains(path, VendorDirInPath)) {
 		return true
 	}
 
 	// Skip .git directories
-	if strings.HasPrefix(path, cli.GitDirPrefix) ||
-		strings.Contains(path, cli.GitDirInPath) {
+	if strings.HasPrefix(path, GitDirPrefix) ||
+		strings.Contains(path, GitDirInPath) {
 		return true
 	}
 
 	// Skip node_modules directories (configurable, excluded by default in hash detection)
 	// This prevents processing large dependency directories in hash detection mode
-	if !includeNodeModules && (strings.HasPrefix(path, cli.NodeModulesDirPrefix) ||
-		strings.Contains(path, cli.NodeModulesDirInPath)) {
+	if !includeNodeModules && (strings.HasPrefix(path, NodeModulesDirPrefix) ||
+		strings.Contains(path, NodeModulesDirInPath)) {
 		return true
 	}
 
