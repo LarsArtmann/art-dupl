@@ -2,6 +2,9 @@ package printer
 
 import (
 	"bytes"
+	"strings"
+
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 // DiffLine represents a single line in a diff view.
@@ -303,4 +306,58 @@ func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
 		}
 	}
 	return added, removed, modified
+}
+
+// WordDiff performs a word-level diff between two strings using go-diff.
+// Returns HTML-formatted string with highlighted word changes.
+func WordDiff(base, compared string) string {
+	dmp := diffmatchpatch.New()
+
+	// Split texts into words for word-level diffing
+	words1 := strings.Fields(base)
+	words2 := strings.Fields(compared)
+
+	// Convert words to unique characters (line-mode optimization)
+	chars1, chars2, wordArray := dmp.DiffLinesToChars(
+		strings.Join(words1, "\n"),
+		strings.Join(words2, "\n"),
+	)
+
+	// Diff the character representations
+	diffs := dmp.DiffMain(chars1, chars2, false)
+
+	// Convert back to words
+	diffs = dmp.DiffCharsToLines(diffs, wordArray)
+
+	// Cleanup for better readability
+	diffs = dmp.DiffCleanupSemantic(diffs)
+
+	// Build HTML output
+	var result strings.Builder
+	for _, diff := range diffs {
+		switch diff.Type {
+		case diffmatchpatch.DiffDelete:
+			result.WriteString(`<span class="word-removed">`)
+			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(`</span> `)
+		case diffmatchpatch.DiffInsert:
+			result.WriteString(`<span class="word-added">`)
+			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(`</span> `)
+		case diffmatchpatch.DiffEqual:
+			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(" ")
+		}
+	}
+
+	return strings.TrimSpace(result.String())
+}
+
+// htmlEscape escapes HTML special characters.
+func htmlEscape(s string) string {
+	s = strings.ReplaceAll(s, "&", "&amp;")
+	s = strings.ReplaceAll(s, "<", "&lt;")
+	s = strings.ReplaceAll(s, ">", "&gt;")
+	s = strings.ReplaceAll(s, `"`, "&quot;")
+	return s
 }
