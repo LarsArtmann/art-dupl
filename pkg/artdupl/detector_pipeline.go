@@ -2,6 +2,7 @@ package artdupl
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/hash"
@@ -57,9 +58,9 @@ func (d *detector) buildAnalysisPipeline(
 	case <-done:
 		// Tree building complete
 	case <-ctx.Done():
-		return nil, job.ParseStats{}, ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
+		return nil, job.ParseStats{}, fmt.Errorf("pipeline canceled after processing %d files: %w", len(files), ctx.Err())
 	case <-time.After(d.opts.Timeout):
-		return nil, job.ParseStats{}, ErrAnalysisTimeout
+		return nil, job.ParseStats{}, fmt.Errorf("analysis timed out after %v (processing %d files): %w", d.opts.Timeout, len(files), ErrAnalysisTimeout)
 	}
 
 	// Get file count
