@@ -1,5 +1,7 @@
 package golang
 
+import "fmt"
+
 // ParseConfig holds configuration for the Go source code parser.
 // It controls how AST nodes are transformed and matched.
 type ParseConfig struct {
@@ -17,19 +19,36 @@ func DefaultParseConfig() ParseConfig {
 	}
 }
 
-// IsValid returns nil if the config is valid, otherwise an error describing the problem.
-func (cfg ParseConfig) IsValid() error {
+// MustParseConfig returns a ParseConfig with the given mode, panicking if invalid.
+// Use this for compile-time constants where you know the mode is valid.
+func MustParseConfig(mode DetectionMode) ParseConfig {
+	cfg := ParseConfig{Mode: mode}
+	if err := cfg.Validate(); err != nil {
+		panic(err)
+	}
+	return cfg
+}
+
+// Validate returns nil if the config is valid, otherwise an error describing the problem.
+func (cfg ParseConfig) Validate() error {
 	if !cfg.Mode.IsValid() {
-		return ErrInvalidDetectionMode{Mode: cfg.Mode}
+		return fmt.Errorf("invalid detection mode: %q", cfg.Mode)
 	}
 	return nil
 }
 
-// ErrInvalidDetectionMode is returned when an invalid DetectionMode is provided.
-type ErrInvalidDetectionMode struct {
-	Mode DetectionMode
+// IsSemantic returns true if semantic matching is enabled.
+func (cfg ParseConfig) IsSemantic() bool {
+	return cfg.Mode.IsSemantic()
 }
 
-func (e ErrInvalidDetectionMode) Error() string {
-	return "invalid detection mode: " + string(e.Mode)
+// SemanticHashEnabled controls whether semantic-aware hashing is enabled.
+// This is a package-level setting used by the default parser.
+// Deprecated: Use ParseConfig with explicit DetectionMode instead.
+var SemanticHashEnabled bool
+
+// SetDefaultParseConfig sets the default parse configuration for the package.
+// This affects all subsequent Parse() calls that use DefaultParseConfig().
+func SetDefaultParseConfig(cfg ParseConfig) {
+	SemanticHashEnabled = cfg.Mode.IsSemantic()
 }
