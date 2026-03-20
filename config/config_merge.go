@@ -30,6 +30,11 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.IncludeVendor = cfg.IncludeVendor
 	}
 
+	// IncludeNodeModules (bool)
+	if !skipZeroValues || cfg.IncludeNodeModules {
+		result.IncludeNodeModules = cfg.IncludeNodeModules
+	}
+
 	// FilesFromStdin (bool)
 	if !skipZeroValues || cfg.FilesFromStdin {
 		result.FilesFromStdin = cfg.FilesFromStdin

@@ -301,6 +301,11 @@ func executeHashOnlyAnalysis(
 		"    📖 Hashing files for duplicate detection...",
 	)
 
+	// Inform user that node_modules is excluded by default in hash mode
+	if cfg.Verbose {
+		_, _ = fmt.Fprintln(os.Stderr, "🔍 Excluding node_modules/ directory (use --include-node-modules to include)")
+	}
+
 	// Collect all files (not just .go files) for hash detection
 	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor)
 

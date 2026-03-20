@@ -134,6 +134,11 @@ func handleWalkEntry(
 	fileCheck fileCheckFunc,
 	fchan chan string,
 ) error {
+	// info can be nil if there was an error accessing the file/directory
+	if info == nil {
+		return nil
+	}
+
 	if shouldSkipPath(path, includeVendor) {
 		return nil
 	}

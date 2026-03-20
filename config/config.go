@@ -59,6 +59,11 @@ type Config struct {
 	// IncludeVendor includes vendor directory in analysis
 	IncludeVendor bool `json:"includeVendor,omitempty"`
 
+	// IncludeNodeModules includes node_modules directory in hash-based analysis.
+	// By default, node_modules is excluded in hash detection mode to avoid
+	// processing large dependency directories. Set to true to include them.
+	IncludeNodeModules bool `json:"includeNodeModules,omitempty"`
+
 	// FilesFromStdin reads file paths from stdin when true
 	FilesFromStdin bool `json:"filesFromStdin,omitempty"`
 
@@ -147,30 +152,31 @@ type Config struct {
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
 	return &Config{
-		Threshold:         15,
-		IncludeVendor:     false,
-		FilesFromStdin:    false,
-		OutputFormat:      OutputFormatText,
-		Verbose:           false,
-		Paths:             []string{"."},
-		IgnoreFiles:       []string{},
-		MaxChildrenSerial: 10000,
-		OutputFile:        "",
-		SortBy:            SortBySize,
-		DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
-		Profile:           false,
-		Timeout:           0,
-		FilterGenerated:   false,
-		IncludeSQLC:       false,
-		IncludeTempl:      false,
-		IncludePatterns:   []string{},
-		ExcludePatterns:   []string{},
-		Incremental:       false,
-		Since:             "",
-		CacheDir:          "",
-		ClearCache:        false,
-		Semantic:          false, // Default: off for backward compatibility (enable with --semantic)
-		DiffMode:          DiffModeDisabled, // Default: diff mode disabled
+		Threshold:          15,
+		IncludeVendor:      false,
+		IncludeNodeModules: false,
+		FilesFromStdin:     false,
+		OutputFormat:       OutputFormatText,
+		Verbose:            false,
+		Paths:              []string{"."},
+		IgnoreFiles:        []string{},
+		MaxChildrenSerial:  10000,
+		OutputFile:         "",
+		SortBy:             SortBySize,
+		DetectionMethods:   DetectionMethods{DetectionMethodArtDupl},
+		Profile:            false,
+		Timeout:            0,
+		FilterGenerated:    false,
+		IncludeSQLC:        false,
+		IncludeTempl:       false,
+		IncludePatterns:    []string{},
+		ExcludePatterns:    []string{},
+		Incremental:        false,
+		Since:              "",
+		CacheDir:           "",
+		ClearCache:         false,
+		Semantic:           false, // Default: off for backward compatibility (enable with --semantic)
+		DiffMode:           DiffModeDisabled, // Default: diff mode disabled
 	}
 }
 
