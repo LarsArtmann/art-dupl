@@ -21,6 +21,7 @@ func (p *stats) calculateHealthScore() string {
 	}
 
 	totalScore := p.calculateTotalHealthScore()
+
 	return scoreToGrade(totalScore)
 }
 
@@ -54,6 +55,7 @@ func scoreToGrade(score float64) string {
 			return t.grade
 		}
 	}
+
 	return "F"
 }
 

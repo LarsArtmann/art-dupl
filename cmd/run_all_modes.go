@@ -112,7 +112,7 @@ func writeFormatFile(
 		}
 	}()
 
-	p := createPrinter(format, cfg.Threshold)(file, os.ReadFile)
+	p := createPrinter(format, cfg.Threshold, cfg.DiffMode)(file, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(parseStats.FilesCount)

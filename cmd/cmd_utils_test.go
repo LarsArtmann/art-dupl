@@ -239,7 +239,7 @@ func TestCreatePrinter(t *testing.T) {
 
 			readFile := func(filename string) ([]byte, error) { return nil, nil }
 
-			fn := createPrinter(tt.format, 15)
+			fn := createPrinter(tt.format, 15, config.DiffModeDisabled)
 			p := fn(&buf, readFile)
 
 			if p == nil {

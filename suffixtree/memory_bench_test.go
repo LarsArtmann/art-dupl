@@ -12,18 +12,18 @@ func benchmarkMemoryUsage(b *testing.B, uniqueCount int) {
 		tokens[i] = &testToken{val: i % uniqueCount}
 	}
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		tree := New()
 		tree.Update(tokens...)
 	}
 }
 
-// BenchmarkMemoryUsageFewTokens measures memory with few unique tokens
+// BenchmarkMemoryUsageFewTokens measures memory with few unique tokens.
 func BenchmarkMemoryUsageFewTokens(b *testing.B) {
 	benchmarkMemoryUsage(b, 50) // 50 unique
 }
 
-// BenchmarkMemoryUsageManyTokens measures memory with many unique tokens
+// BenchmarkMemoryUsageManyTokens measures memory with many unique tokens.
 func BenchmarkMemoryUsageManyTokens(b *testing.B) {
 	benchmarkMemoryUsage(b, 5000) // 5000 unique
 }

@@ -134,6 +134,11 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if !skipZeroValues || cfg.Semantic {
 		result.Semantic = cfg.Semantic
 	}
+
+	// DiffMode (DiffMode) - apply if set
+	if !skipZeroValues || cfg.DiffMode.IsEnabled() {
+		result.DiffMode = cfg.DiffMode
+	}
 }
 
 func mergeFileConfig(result, cfg *Config) {

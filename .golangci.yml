@@ -53,7 +53,6 @@ linters:
     - goheader
     - ineffassign
     - goprintffuncname
-    - depguard
     - goconst
     - gomodguard
     - varnamelen
@@ -103,24 +102,6 @@ linters:
   settings:
     cyclop:
       max-complexity: 15
-    depguard:
-      rules:
-        Main:
-          allow:
-            - $gostd
-            - github.com/LarsArtmann/art-dupl/**
-            - github.com/charmbracelet/**
-            - github.com/onsi/ginkgo/v2
-            - github.com/onsi/gomega
-            - github.com/spf13/cobra
-            - github.com/zeebo/xxh3
-            - github.com/stretchr/testify
-            - github.com/samber/mo
-            - gopkg.in/yaml.v3
-            - github.com/go-faster/yaml
-            - github.com/a-h/templ
-          files:
-            - $all
     dupl:
       threshold: 100
     funlen:

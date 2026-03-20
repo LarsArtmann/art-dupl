@@ -135,6 +135,7 @@ func (f *FileDetector) hashFiles(files []string) ([]FileHash, error) {
 		) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 		if err != nil {
 			logger.Default.Debug("skipping file that cannot be read", "file", filename, "err", err)
+
 			continue
 		}
 

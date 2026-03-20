@@ -241,6 +241,7 @@ func collectFilesFromChannel(ctx context.Context, filesChan <-chan string) ([]st
 			files = append(files, file)
 		}
 	}
+
 	return files, nil
 }
 
@@ -279,6 +280,7 @@ func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
 		node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)
 		fragments[i] = []*syntax.Node{node}
 	}
+
 	return fragments
 }
 
@@ -339,11 +341,12 @@ func printFileCollectionStatus(cfg *config.Config, outputFormat config.OutputFor
 func createPrinter(
 	outputFormat config.OutputFormat,
 	threshold int,
+	diffMode config.DiffMode,
 ) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
 		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-			return printer.NewHTML(w, fread, threshold)
+			return printer.NewHTMLWithOptions(w, fread, diffMode, threshold)
 		}
 	case config.OutputFormatPlumbing:
 		return printer.NewPlumbing

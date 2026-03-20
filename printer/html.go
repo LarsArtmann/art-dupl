@@ -7,10 +7,12 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// htmlprinter generates HTML output for code duplication reports.
 type htmlprinter struct {
 	ReadFile
 
@@ -19,9 +21,18 @@ type htmlprinter struct {
 	threshold int
 	dupMutex  sync.Mutex
 	dupls     [][][]*syntax.Node
+	diffMode  config.DiffMode // Enable diff visualization mode
 }
 
+// NewHTML creates a new HTML printer.
+// Supports optional threshold parameter (default: 15).
 func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
+	return NewHTMLWithOptions(w, fread, config.DiffModeDisabled, threshold...)
+}
+
+// NewHTMLWithOptions creates a new HTML printer with full options.
+// diffMode enables visual diff highlighting between duplicate occurrences.
+func NewHTMLWithOptions(w io.Writer, fread ReadFile, diffMode config.DiffMode, threshold ...int) Printer {
 	thresh := 15
 	if len(threshold) > 0 {
 		thresh = threshold[0]
@@ -32,6 +43,7 @@ func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
 		ReadFile:  fread,
 		threshold: thresh,
 		dupls:     make([][][]*syntax.Node, 0),
+		diffMode:  diffMode,
 	}
 }
 
@@ -191,6 +203,145 @@ footer {
 	margin-top: 40px;
 }
 .collapsed .clone-body { display: none; }
+/* Diff mode styles */
+.diff-mode { margin-top: 10px; }
+.diff-base-header {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	padding: 10px 15px;
+	margin-bottom: 15px;
+}
+.diff-base-header .label {
+	color: var(--success);
+	font-weight: bold;
+	font-size: 0.85rem;
+}
+.diff-base-header .file-info {
+	color: var(--text-secondary);
+	font-family: 'Fira Code', 'Consolas', monospace;
+	font-size: 0.9rem;
+}
+.diff-selector {
+	margin-bottom: 15px;
+}
+.diff-selector select {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	color: var(--text-primary);
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	cursor: pointer;
+	width: 100%%;
+	max-width: 400px;
+}
+.diff-selector select:hover { border-color: var(--accent); }
+.diff-selector select:focus { outline: none; border-color: var(--accent); }
+.diff-comparison {
+	display: none;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	overflow: hidden;
+}
+.diff-comparison.active { display: block; }
+.diff-header {
+	background: var(--bg-tertiary);
+	padding: 10px 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid var(--border);
+}
+.diff-header .file-info {
+	color: var(--text-secondary);
+	font-family: 'Fira Code', 'Consolas', monospace;
+	font-size: 0.9rem;
+}
+.diff-stats {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+}
+.diff-stats .added { color: var(--success); margin-right: 10px; }
+.diff-stats .removed { color: var(--error); margin-right: 10px; }
+.diff-stats .modified { color: var(--warning); }
+.diff-content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0;
+}
+.diff-content.single {
+	grid-template-columns: 1fr;
+}
+.diff-panel {
+	background: var(--bg-primary);
+	overflow-x: auto;
+}
+.diff-panel.base { border-right: 1px solid var(--border); }
+.diff-panel-title {
+	background: var(--bg-tertiary);
+	padding: 8px 15px;
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	border-bottom: 1px solid var(--border);
+}
+.diff-panel pre {
+	border: none;
+	border-radius: 0;
+	margin: 0;
+	background: transparent;
+}
+.diff-panel code {
+	display: block;
+}
+.diff-line {
+	display: flex;
+	padding: 0;
+	min-height: 1.5em;
+}
+.diff-line:hover { background: rgba(88, 166, 255, 0.1); }
+.diff-line-num {
+	color: var(--text-secondary);
+	padding: 0 10px;
+	min-width: 40px;
+	text-align: right;
+	user-select: none;
+	font-size: 0.8rem;
+	opacity: 0.5;
+}
+.diff-line-content {
+	flex: 1;
+	white-space: pre;
+	padding: 0 10px;
+}
+.diff-line.added { background: rgba(78, 201, 176, 0.15); }
+.diff-line.added .diff-line-num { color: var(--success); opacity: 1; }
+.diff-line.removed { background: rgba(244, 71, 71, 0.15); }
+.diff-line.removed .diff-line-num { color: var(--error); opacity: 1; }
+.diff-line.modified { background: rgba(206, 145, 120, 0.15); }
+.diff-line.modified .diff-line-num { color: var(--warning); opacity: 1; }
+.diff-legend {
+	display: flex;
+	gap: 20px;
+	padding: 10px 15px;
+	background: var(--bg-tertiary);
+	border-top: 1px solid var(--border);
+	font-size: 0.8rem;
+}
+.diff-legend-item { display: flex; align-items: center; gap: 6px; }
+.diff-legend-color {
+	width: 12px;
+	height: 12px;
+	border-radius: 2px;
+}
+.diff-legend-color.added { background: rgba(78, 201, 176, 0.3); border: 1px solid var(--success); }
+.diff-legend-color.removed { background: rgba(244, 71, 71, 0.3); border: 1px solid var(--error); }
+.diff-legend-color.modified { background: rgba(206, 145, 120, 0.3); border: 1px solid var(--warning); }
+@media (max-width: 900px) {
+	.diff-content { grid-template-columns: 1fr; }
+	.diff-panel.base { border-right: none; border-bottom: 1px solid var(--border); }
+}
+/* Media query percentage escaped for Go template */
 </style>
 </head>
 <body>
@@ -236,8 +387,14 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 
 	sort.Sort(byNameAndLine(clones))
 
-	if err := p.writeCloneOccurrences(clones); err != nil {
-		return err
+	if p.diffMode.IsEnabled() && len(clones) > 1 {
+		if err := p.writeDiffView(clones); err != nil {
+			return err
+		}
+	} else {
+		if err := p.writeCloneOccurrences(clones); err != nil {
+			return err
+		}
 	}
 
 	return p.writeCloneGroupFooter()
@@ -248,6 +405,7 @@ func calculateTotalTokens(dups [][]*syntax.Node) int {
 	for _, dup := range dups {
 		total += len(dup)
 	}
+
 	return total
 }
 
@@ -259,6 +417,7 @@ func (p *htmlprinter) writeCloneGroupHeader(occurrences, tokens int) error {
 </div>
 <div class="clone-body">
 `, p.iota, occurrences, tokens)
+
 	return err //nolint:wrapcheck
 }
 
@@ -284,6 +443,7 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 			fragment:  extractContent(fileInfo, nstart, nend),
 		}
 	}
+
 	return clones, nil
 }
 
@@ -303,12 +463,208 @@ func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 			return err //nolint:wrapcheck
 		}
 	}
+
 	return nil
 }
 
 func (p *htmlprinter) writeCloneGroupFooter() error {
 	_, err := fmt.Fprint(p.w, "</div></div>\n")
+
 	return err //nolint:wrapcheck
+}
+
+// writeDiffView renders the diff visualization for clone groups.
+func (p *htmlprinter) writeDiffView(clones []clone) error {
+	groupDiff := ComputeCloneGroupDiff(clones)
+
+	if len(groupDiff.Others) == 0 {
+		// Single clone, no diff possible
+		return p.writeCloneOccurrences(clones)
+	}
+
+	// Write base clone header
+	baseVSCode := fmt.Sprintf("vscode://file/%s:%d", groupDiff.Base.Filename, groupDiff.Base.LineStart)
+	_, err := fmt.Fprintf(p.w, `
+<div class="diff-mode">
+<div class="diff-base-header">
+<span class="label">📋 BASE REFERENCE</span>
+<div class="file-info"><a href="%s">%s:%d</a></div>
+</div>
+`, baseVSCode, html.EscapeString(groupDiff.Base.Filename), groupDiff.Base.LineStart)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// Write comparison selector for multiple clones
+	if len(groupDiff.Others) > 1 {
+		if err := p.writeDiffSelector(groupDiff); err != nil {
+			return err
+		}
+	}
+
+	// Write diff panels for each comparison
+	for idx, other := range groupDiff.Others {
+		if err := p.writeDiffComparison(groupDiff.Base, other, idx, len(groupDiff.Others)); err != nil {
+			return err
+		}
+	}
+
+	// Write legend
+	_, err = fmt.Fprint(p.w, `
+<div class="diff-legend">
+<div class="diff-legend-item"><div class="diff-legend-color added"></div>Added</div>
+<div class="diff-legend-item"><div class="diff-legend-color removed"></div>Removed</div>
+<div class="diff-legend-item"><div class="diff-legend-color modified"></div>Modified</div>
+</div>
+</div>
+`)
+
+	return err //nolint:wrapcheck
+}
+
+// writeDiffSelector writes the dropdown for selecting which clone to compare.
+func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
+	_, err := fmt.Fprint(p.w, `
+<div class="diff-selector">
+<select id="diff-select-`+fmt.Sprintf("%d", p.iota)+`" onchange="showDiff(this.value, `+fmt.Sprintf("%d", p.iota)+`)">
+<option value="" disabled selected>Compare with...</option>
+`)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	for idx, other := range groupDiff.Others {
+		_, err := fmt.Fprintf(p.w, `<option value="%d">%s:%d</option>
+`, idx, html.EscapeString(other.Filename), other.LineStart)
+		if err != nil {
+			return err //nolint:wrapcheck
+		}
+	}
+
+	_, err = fmt.Fprint(p.w, `</select>
+</div>
+`)
+
+	return err //nolint:wrapcheck
+}
+
+// writeDiffComparison writes a side-by-side diff comparison.
+func (p *htmlprinter) writeDiffComparison(base *CloneWithContent, other CloneDiff, index, total int) error {
+	activeClass := "active"
+	if total > 1 && index > 0 {
+		activeClass = ""
+	}
+
+	otherVSCode := fmt.Sprintf("vscode://file/%s:%d", other.Filename, other.LineStart)
+
+	// Calculate diff stats
+	added, removed, modified := countDiffStats(other.Diff)
+
+	_, err := fmt.Fprintf(p.w, `
+<div class="diff-comparison %s" id="diff-compare-%d-%d">
+<div class="diff-header">
+<span class="file-info"><a href="%s">%s:%d</a></span>
+<span class="diff-stats">
+`, activeClass, p.iota, index, otherVSCode, html.EscapeString(other.Filename), other.LineStart)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// Write stats
+	if added > 0 {
+		_, _ = fmt.Fprintf(p.w, `<span class="added">+%d</span>`, added)
+	}
+	if removed > 0 {
+		_, _ = fmt.Fprintf(p.w, `<span class="removed">-%d</span>`, removed)
+	}
+	if modified > 0 {
+		_, _ = fmt.Fprintf(p.w, `<span class="modified">~%d</span>`, modified)
+	}
+
+	_, err = fmt.Fprint(p.w, `</span>
+</div>
+<div class="diff-content">
+`)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// Write base panel
+	if err := p.writeDiffPanel("base", base.Content, other.Diff.Base, true); err != nil {
+		return err
+	}
+
+	// Write compared panel
+	if err := p.writeDiffPanel("compared", other.Content, other.Diff.Compared, true); err != nil {
+		return err
+	}
+
+	_, err = fmt.Fprint(p.w, `</div>
+</div>
+`)
+
+	return err //nolint:wrapcheck
+}
+
+// writeDiffPanel writes a single diff panel (base or compared).
+func (p *htmlprinter) writeDiffPanel(panelType string, content []byte, lines []DiffLine, showLineNumbers bool) error {
+	_, err := fmt.Fprintf(p.w, `
+<div class="diff-panel %s">
+<div class="diff-panel-title">%s</div>
+<pre><code>
+`, panelType, map[string]string{"base": "Base Reference", "compared": "Compared"}[panelType])
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	// If no diff computed (same number of lines), show plain content
+	if len(lines) == 0 {
+		_, err = fmt.Fprintf(p.w, `%s`, html.EscapeString(string(content)))
+	} else {
+		for _, line := range lines {
+			typeClass := ""
+			switch line.Type {
+			case DiffLineAdded:
+				typeClass = "added"
+			case DiffLineRemoved:
+				typeClass = "removed"
+			case DiffLineModified:
+				typeClass = "modified"
+			}
+
+			lineNum := ""
+			if showLineNumbers {
+				lineNum = fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
+			}
+
+			_, err := fmt.Fprintf(p.w, `<div class="diff-line %s">%s<span class="diff-line-content">%s</span></div>
+`, typeClass, lineNum, html.EscapeString(line.Content))
+			if err != nil {
+				return err //nolint:wrapcheck
+			}
+		}
+	}
+
+	_, err = fmt.Fprint(p.w, `</code></pre>
+</div>
+`)
+
+	return err //nolint:wrapcheck
+}
+
+// countDiffStats counts the number of added, removed, and modified lines.
+func countDiffStats(diff DiffResult) (added, removed, modified int) {
+	for _, line := range diff.Compared {
+		switch line.Type {
+		case DiffLineAdded:
+			added++
+		case DiffLineRemoved:
+			removed++
+		case DiffLineModified:
+			modified++
+		}
+	}
+	return added, removed, modified
 }
 
 func (p *htmlprinter) PrintFooter() error {
@@ -326,6 +682,18 @@ function copyCode(elementId) {
 		btn.innerText = '✓ Copied!';
 		setTimeout(() => btn.innerText = original, 2000);
 	});
+}
+function showDiff(index, groupId) {
+	// Hide all diff comparisons for this group
+	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupId + '-"]');
+	comparisons.forEach(function(comp) {
+		comp.classList.remove('active');
+	});
+	// Show selected comparison
+	const selected = document.getElementById('diff-compare-' + groupId + '-' + index);
+	if (selected) {
+		selected.classList.add('active');
+	}
 }
 </script>
 </body>

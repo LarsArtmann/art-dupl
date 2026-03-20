@@ -21,6 +21,7 @@ type CLIConfig struct {
 	SimpleJSON    *bool
 	Plumbing      *bool
 	SortBy        *string
+	DiffMode      *bool // Enable diff visualization for HTML output
 	Paths         []string
 }
 
@@ -66,6 +67,11 @@ func NewCLIConfig() *CLIConfig {
 			"sort",
 			"size",
 			"sort clone groups by: size, occurrence, hash, total-tokens",
+		),
+		DiffMode: flag.Bool(
+			"diff",
+			false,
+			"enable diff visualization for HTML output (shows differences between duplicates)",
 		),
 	}
 }
@@ -129,4 +135,12 @@ const (
 
 	// GitDirInPath is the Git directory marker when it appears in a path.
 	GitDirInPath = string(filepath.Separator) + GitDirPrefix
+
+	// NodeModulesDirPrefix is the Node.js modules directory prefix for exclusion.
+	// This is excluded by default in hash detection mode to avoid processing
+	// large dependency directories that are not typically source code.
+	NodeModulesDirPrefix = "node_modules" + string(filepath.Separator)
+
+	// NodeModulesDirInPath is the node_modules marker when it appears in a path.
+	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
 )

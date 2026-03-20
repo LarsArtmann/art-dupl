@@ -89,18 +89,7 @@ func TestTypeParamsInTypeSpec(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "generic_types.go")
 
-	code := `package test
-
-// Generic stack type
-type Stack[T any] struct {
-	items []T
-}
-
-// Generic map with two type parameters
-type MyMap[K comparable, V any] struct {
-	data map[K]V
-}
-`
+	code := "package test\n\n// Generic stack type\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Generic map with two type parameters\ntype MyMap[K comparable, V any] struct {\n\tdata map[K]V\n}"
 
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -123,14 +112,7 @@ func TestTypeParamsInFuncType(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "generic_funcs.go")
 
-	code := `package test
-
-// Generic function type
-type FilterFunc[T any] func(items []T) []T
-
-// Generic function type with constraints
-type Comparator[T comparable] func(a, b T) int
-`
+	code := "package test\n\n// Generic function type\ntype FilterFunc[T any] func(items []T) []T\n\n// Generic function type with constraints\ntype Comparator[T comparable] func(a, b T)"
 
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)

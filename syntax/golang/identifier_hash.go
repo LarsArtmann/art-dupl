@@ -31,7 +31,7 @@ func hashIdentifierFast(name string) int32 {
 	}
 
 	// Truncate to 24 bits
-	//nolint:gosec // G115: Safe conversion - masked to 24 bits, always fits in int32
+
 	return int32(hash & 0x00FFFFFF)
 }
 

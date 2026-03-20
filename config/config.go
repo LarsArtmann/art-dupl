@@ -138,6 +138,10 @@ type Config struct {
 	// 0 or negative means use runtime.GOMAXPROCS(0).
 	// 1 means sequential processing (same as Parse()).
 	Workers int `json:"workers,omitempty"`
+
+	// DiffMode enables diff visualization for HTML output.
+	// When enabled, duplicate occurrences are shown with visual diff highlighting.
+	DiffMode DiffMode `json:"diffMode,omitempty"`
 }
 
 // DefaultConfig returns a default configuration.
@@ -166,6 +170,7 @@ func DefaultConfig() *Config {
 		CacheDir:          "",
 		ClearCache:        false,
 		Semantic:          false, // Default: off for backward compatibility (enable with --semantic)
+		DiffMode:          DiffModeDisabled, // Default: diff mode disabled
 	}
 }
 
@@ -270,6 +275,7 @@ func ValidateConfig(cfg *Config) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -280,6 +286,7 @@ func validateThreshold(threshold int) error {
 	if threshold > 1000 {
 		return errors.NewValidationError("threshold seems too large (max 1000)", nil)
 	}
+
 	return nil
 }
 
@@ -290,6 +297,7 @@ func validateMaxChildrenSerial(maxChildren int) error {
 	if maxChildren > 100000 {
 		return errors.NewValidationError("maxChildrenSerial seems too large (max 100000)", nil)
 	}
+
 	return nil
 }
 
@@ -300,6 +308,7 @@ func validateOutputFormat(format OutputFormat) error {
 			nil,
 		)
 	}
+
 	return nil
 }
 
@@ -315,6 +324,7 @@ func validateDetectionMethods(methods []DetectionMethod) error {
 			)
 		}
 	}
+
 	return nil
 }
 
@@ -322,5 +332,6 @@ func validateCacheFlags(cacheDir string, clearCache, incremental bool) error {
 	if (cacheDir != "" || clearCache) && !incremental {
 		return errors.NewValidationError("--cache-dir and --clear-cache require --incremental mode", nil)
 	}
+
 	return nil
 }

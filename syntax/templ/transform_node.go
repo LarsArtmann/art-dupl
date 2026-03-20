@@ -8,7 +8,7 @@ import (
 
 // transformNode converts a Node to a syntax.Node.
 //
-//nolint:cyclop // High complexity is inherent to AST transformation with many node types
+
 func (t *transformer) transformNode(node templparser.Node) *syntax.Node {
 	if node == nil {
 		return nil

@@ -208,6 +208,7 @@ func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expe
 		if err == nil {
 			t.Error("unmarshalUintNonZero() error = nil, want error for zero value")
 		}
+
 		return
 	}
 

@@ -86,6 +86,7 @@ func deindent(block []byte) []byte {
 	if min == 0 {
 		return block
 	}
+
 	return stripIndent(block, min)
 }
 
@@ -105,6 +106,7 @@ func findMinIndent(block []byte) int {
 	if min == maxVal {
 		return 0
 	}
+
 	return min
 }
 
@@ -141,6 +143,7 @@ func canStripTabs(block []byte, start, count int) bool {
 			return false
 		}
 	}
+
 	return true
 }
 

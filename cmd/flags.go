@@ -67,4 +67,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	// Add concurrent processing flag
 	rootCmd.Flags().
 		Int("workers", 0, "number of concurrent workers for file parsing (0 = auto-detect based on CPU cores)")
+
+	// Add diff mode flag for HTML output
+	rootCmd.Flags().
+		String("diff", "", "enable diff visualization for HTML output (values: side-by-side, inline, or true for side-by-side)")
 }

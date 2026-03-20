@@ -159,7 +159,7 @@ func isSourceFile(name string) bool {
 	return strings.HasSuffix(name, ".go") || strings.HasSuffix(name, ".templ")
 }
 
-// shouldSkipPath returns true if the path should be skipped due to being a vendor or git directory.
+// shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
 func shouldSkipPath(path string, includeVendor bool) bool {
 	if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
 		strings.Contains(path, cli.VendorDirInPath)) {
@@ -169,6 +169,13 @@ func shouldSkipPath(path string, includeVendor bool) bool {
 	// Skip .git directories
 	if strings.HasPrefix(path, cli.GitDirPrefix) ||
 		strings.Contains(path, cli.GitDirInPath) {
+		return true
+	}
+
+	// Skip node_modules directories (always excluded, not configurable like vendor)
+	// This prevents processing large dependency directories in hash detection mode
+	if strings.HasPrefix(path, cli.NodeModulesDirPrefix) ||
+		strings.Contains(path, cli.NodeModulesDirInPath) {
 		return true
 	}
 

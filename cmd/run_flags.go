@@ -62,6 +62,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Semantic detection flags
 	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
+	diffModeStr, _ := cmd.Flags().GetString("diff")
 
 	// Validate conflicting flags - only an error if both are explicitly set
 	if semantic && structural {
@@ -188,6 +189,14 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		appConfig.Workers = workers
 	}
 
+	if diffModeStr != "" {
+		parsedDiffMode, err := config.ParseDiffMode(diffModeStr)
+		if err != nil {
+			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --diff value %q", diffModeStr))
+		}
+		appConfig.DiffMode = parsedDiffMode
+	}
+
 	if len(args) > 0 {
 		appConfig.Paths = args
 	}
@@ -229,7 +238,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return ctx.Err() //nolint:wrapcheck
 	}
 
-	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold)(os.Stdout, os.ReadFile)
+	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold, mergedConfig.DiffMode)(os.Stdout, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(parseStats.FilesCount)

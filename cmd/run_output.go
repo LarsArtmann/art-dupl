@@ -52,6 +52,7 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []
 	}
 	uniqueCounts := printer.ComputeUniqueCounts(groups)
 	printer.SortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
+
 	return keys
 }
 
@@ -61,6 +62,7 @@ func printHeader(p printer.Printer, sortBy printer.SortBy, threshold int) error 
 		return errors.Wrap(err, errors.AnalysisError,
 			fmt.Sprintf("failed to print header (sortBy: %s, threshold: %d)", sortBy.String(), threshold))
 	}
+
 	return nil
 }
 
@@ -86,6 +88,7 @@ func printCloneGroups(
 				fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
 		}
 	}
+
 	return nil
 }
 
@@ -100,6 +103,7 @@ func handleJSONOutput(p printer.Printer, threshold int, sortBy printer.SortBy, d
 		return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w",
 			threshold, sortBy.String(), err)
 	}
+
 	return nil
 }
 
@@ -108,5 +112,6 @@ func printFooter(p printer.Printer) error {
 	if err := p.PrintFooter(); err != nil {
 		return fmt.Errorf("failed to print footer: %w", err)
 	}
+
 	return nil
 }

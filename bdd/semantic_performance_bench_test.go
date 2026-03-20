@@ -26,7 +26,7 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 	projectRoot := filepath.Join(filepath.Dir(currentFile), "..")
 
 	b.Run("WithoutSemantic", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			cmd := exec.Command(binaryPath, projectRoot, "--threshold", "50")
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			output, err := cmd.CombinedOutput()
@@ -37,7 +37,7 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 	})
 
 	b.Run("WithSemantic", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			cmd := exec.Command(binaryPath, projectRoot, "--threshold", "50", "--semantic")
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			output, err := cmd.CombinedOutput()
@@ -79,7 +79,7 @@ func (s *ServiceB) Validate() bool { return true }
 	}
 
 	b.Run("WithoutSemantic", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			cmd := exec.Command(binaryPath, testDir, "--threshold", "10")
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			if output, err := cmd.CombinedOutput(); err != nil {
@@ -89,7 +89,7 @@ func (s *ServiceB) Validate() bool { return true }
 	})
 
 	b.Run("WithSemantic", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			cmd := exec.Command(binaryPath, testDir, "--threshold", "10", "--semantic")
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			if output, err := cmd.CombinedOutput(); err != nil {

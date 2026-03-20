@@ -133,7 +133,7 @@ func serial(n *Node, stream *[]*Node) int {
 // Consider:
 // - Accept domain.Threshold instead of int
 // - Return domain types instead of primitive types
-// - Validate threshold at domain boundary
+// - Validate threshold at domain boundary.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
 		return Match{}
@@ -168,6 +168,7 @@ func validateOwnershipConsistency(
 			return indexes[:len(indexes)-1]
 		}
 	}
+
 	return indexes
 }
 
@@ -249,6 +250,7 @@ func findDivisors(cnt int) map[int]bool {
 			alts[i] = true
 		}
 	}
+
 	return alts
 }
 
@@ -286,6 +288,7 @@ func isPatternRepeating(
 			return false
 		}
 	}
+
 	return true
 }
 
