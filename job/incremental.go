@@ -156,7 +156,12 @@ func (ip *IncrementalParser) handleFileError(
 	err error,
 	operation string,
 ) ([]*syntax.Node, int, bool) {
-	logger.Default.Error("failed to "+operation+" file", "file", file, "err", err)
+	logger.Default.Error(
+		"failed to "+operation+" file",
+		"file", file,
+		"operation", operation,
+		"err", err,
+	)
 
 	return nil, 0, false
 }

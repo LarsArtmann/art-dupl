@@ -266,6 +266,20 @@ footer {
 .diff-stats .added { color: var(--success); margin-right: 10px; }
 .diff-stats .removed { color: var(--error); margin-right: 10px; }
 .diff-stats .modified { color: var(--warning); }
+.diff-aggregate-stats {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	padding: 10px 15px;
+	margin: 10px 0;
+	display: flex;
+	gap: 15px;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+.diff-aggregate-stats .added { color: var(--success); }
+.diff-aggregate-stats .removed { color: var(--error); }
+.diff-aggregate-stats .modified { color: var(--warning); }
 .diff-content {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -483,6 +497,10 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 		return p.writeCloneOccurrences(clones)
 	}
 
+	// Calculate aggregate stats
+	totalAdded, totalRemoved, totalModified := groupDiff.TotalAdded, groupDiff.TotalRemoved, groupDiff.TotalModified
+	hasAggregateStats := totalAdded > 0 || totalRemoved > 0 || totalModified > 0
+
 	// Write base clone header
 	baseVSCode := fmt.Sprintf("vscode://file/%s:%d", groupDiff.Base.Filename, groupDiff.Base.LineStart)
 	_, err := fmt.Fprintf(p.w, `
@@ -490,10 +508,32 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 <div class="diff-base-header">
 <span class="label">📋 BASE REFERENCE</span>
 <div class="file-info"><a href="%s">%s:%d</a></div>
-</div>
 `, baseVSCode, html.EscapeString(groupDiff.Base.Filename), groupDiff.Base.LineStart)
 	if err != nil {
 		return err //nolint:wrapcheck
+	}
+
+	// Write aggregate diff stats if available
+	if hasAggregateStats {
+		_, err = fmt.Fprint(p.w, `<div class="diff-aggregate-stats">`)
+		if err != nil {
+			return err //nolint:wrapcheck
+		}
+
+		if totalAdded > 0 {
+			_, _ = fmt.Fprintf(p.w, `<span class="added">+%d added</span>`, totalAdded)
+		}
+		if totalRemoved > 0 {
+			_, _ = fmt.Fprintf(p.w, `<span class="removed">-%d removed</span>`, totalRemoved)
+		}
+		if totalModified > 0 {
+			_, _ = fmt.Fprintf(p.w, `<span class="modified">~%d modified</span>`, totalModified)
+		}
+
+		_, err = fmt.Fprint(p.w, `</div>`)
+		if err != nil {
+			return err //nolint:wrapcheck
+		}
 	}
 
 	// Write comparison selector for multiple clones

@@ -224,6 +224,10 @@ type CloneGroupDiff struct {
 	Base       *CloneWithContent
 	Others     []CloneDiff
 	HasAnyDiff bool
+	// Aggregate statistics across all diffs in this group
+	TotalAdded    int
+	TotalRemoved  int
+	TotalModified int
 }
 
 // CloneWithContent represents a clone with its file content.
@@ -257,22 +261,46 @@ func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 	}
 
 	// Compute diff for each other clone against base
-	for i := 1; i < len(clones); i++ {
-		diff := LineDiff(clones[0].fragment, clones[i].fragment)
+	for idx := 1; idx < len(clones); idx++ {
+		diff := LineDiff(clones[0].fragment, clones[idx].fragment)
 		if diff.HasDiff {
 			result.HasAnyDiff = true
 		}
 
+		// Aggregate diff stats
+		added, removed, modified := countDiffLineStats(diff)
+		result.TotalAdded += added
+		result.TotalRemoved += removed
+		result.TotalModified += modified
+
 		result.Others = append(result.Others, CloneDiff{
 			CloneWithContent: CloneWithContent{
-				Filename:  clones[i].filename,
-				LineStart: clones[i].lineStart,
-				LineEnd:   clones[i].lineEnd,
-				Content:   clones[i].fragment,
+				Filename:  clones[idx].filename,
+				LineStart: clones[idx].lineStart,
+				LineEnd:   clones[idx].lineEnd,
+				Content:   clones[idx].fragment,
 			},
 			Diff: diff,
 		})
 	}
 
 	return result
+}
+
+// countDiffLineStats counts added, removed, and modified lines in a DiffResult.
+func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
+	for _, line := range diff.Compared {
+		switch line.Type {
+		case DiffLineAdded:
+			added++
+		case DiffLineModified:
+			modified++
+		}
+	}
+	for _, line := range diff.Base {
+		if line.Type == DiffLineRemoved {
+			removed++
+		}
+	}
+	return added, removed, modified
 }
