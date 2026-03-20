@@ -51,13 +51,17 @@ func filesFeedWithOptions(
 
 // crawlPaths walks paths and returns a channel of Go files.
 func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan string {
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, isSourceFile)
+	// For Go source file crawling, we don't have a node_modules exclusion config
+	// so we pass true to maintain backward compatibility
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, isSourceFile)
 }
 
 // crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
 // This is used for hash-based detection which works on any file type.
-func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool) chan string {
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, nil)
+// The includeNodeModules parameter controls whether to include node_modules directories
+// (excluded by default to avoid processing large dependency directories).
+func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor bool, includeNodeModules bool) chan string {
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, nil)
 }
 
 // fileCheckFunc returns true if a file should be included based on its name.
@@ -65,17 +69,19 @@ func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor boo
 type fileCheckFunc func(name string) bool
 
 // crawlPathsWithFileCheck walks paths and returns a channel of files that pass the file check.
+// The includeNodeModules parameter controls whether node_modules directories are included.
 func crawlPathsWithFileCheck(
 	paths []string,
 	filter *filter.Filter,
 	includeVendor bool,
+	includeNodeModules bool,
 	fileCheck fileCheckFunc,
 ) chan string {
 	fchan := make(chan string)
 
 	go func() {
 		for _, path := range paths {
-			crawlSinglePath(path, filter, includeVendor, fileCheck, fchan)
+			crawlSinglePath(path, filter, includeVendor, includeNodeModules, fileCheck, fchan)
 		}
 
 		close(fchan)
@@ -89,6 +95,7 @@ func crawlSinglePath(
 	path string,
 	filter *filter.Filter,
 	includeVendor bool,
+	includeNodeModules bool,
 	fileCheck fileCheckFunc,
 	fchan chan string,
 ) {
@@ -105,7 +112,7 @@ func crawlSinglePath(
 		return
 	}
 
-	crawlDirectory(path, filter, includeVendor, fileCheck, fchan)
+	crawlDirectory(path, filter, includeVendor, includeNodeModules, fileCheck, fchan)
 }
 
 // crawlDirectory walks a directory tree and sends matching files to the channel.
@@ -113,11 +120,12 @@ func crawlDirectory(
 	path string,
 	filter *filter.Filter,
 	includeVendor bool,
+	includeNodeModules bool,
 	fileCheck fileCheckFunc,
 	fchan chan string,
 ) {
 	err := filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-		return handleWalkEntry(path, info, filter, includeVendor, fileCheck, fchan)
+		return handleWalkEntry(path, info, filter, includeVendor, includeNodeModules, fileCheck, fchan)
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
@@ -131,6 +139,7 @@ func handleWalkEntry(
 	info os.FileInfo,
 	filter *filter.Filter,
 	includeVendor bool,
+	includeNodeModules bool,
 	fileCheck fileCheckFunc,
 	fchan chan string,
 ) error {
@@ -139,7 +148,7 @@ func handleWalkEntry(
 		return nil
 	}
 
-	if shouldSkipPath(path, includeVendor) {
+	if shouldSkipPath(path, includeVendor, includeNodeModules) {
 		return nil
 	}
 
@@ -165,7 +174,7 @@ func isSourceFile(name string) bool {
 }
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
-func shouldSkipPath(path string, includeVendor bool) bool {
+func shouldSkipPath(path string, includeVendor bool, includeNodeModules bool) bool {
 	if !includeVendor && (strings.HasPrefix(path, cli.VendorDirPrefix) ||
 		strings.Contains(path, cli.VendorDirInPath)) {
 		return true
@@ -177,10 +186,10 @@ func shouldSkipPath(path string, includeVendor bool) bool {
 		return true
 	}
 
-	// Skip node_modules directories (always excluded, not configurable like vendor)
+	// Skip node_modules directories (configurable, excluded by default in hash detection)
 	// This prevents processing large dependency directories in hash detection mode
-	if strings.HasPrefix(path, cli.NodeModulesDirPrefix) ||
-		strings.Contains(path, cli.NodeModulesDirInPath) {
+	if !includeNodeModules && (strings.HasPrefix(path, cli.NodeModulesDirPrefix) ||
+		strings.Contains(path, cli.NodeModulesDirInPath)) {
 		return true
 	}
 

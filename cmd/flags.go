@@ -9,6 +9,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	// Add all flags to root command with better descriptions
 	rootCmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
 	rootCmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
+	rootCmd.Flags().
+		Bool("include-node-modules", false, "include node_modules directory in hash-based detection (excluded by default)")
 	rootCmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	rootCmd.Flags().
 		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")

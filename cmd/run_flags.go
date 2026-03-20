@@ -113,6 +113,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		appConfig.IncludeVendor = vendor
 	}
 
+	includeNodeModules, _ := cmd.Flags().GetBool("include-node-modules")
+	if includeNodeModules {
+		appConfig.IncludeNodeModules = includeNodeModules
+	}
+
 	if files {
 		appConfig.FilesFromStdin = files
 	}

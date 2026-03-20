@@ -307,7 +307,7 @@ func executeHashOnlyAnalysis(
 	}
 
 	// Collect all files (not just .go files) for hash detection
-	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor)
+	filesChan := crawlPathsAllFiles(paths, filterParam, cfg.IncludeVendor, cfg.IncludeNodeModules)
 
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {

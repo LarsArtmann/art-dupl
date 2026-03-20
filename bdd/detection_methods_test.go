@@ -2,7 +2,9 @@ package bdd
 
 import (
 	"encoding/json"
+	"os"
 	"os/exec"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -251,6 +253,75 @@ func test() {}
 			// Should have error message
 			outputStr := string(output)
 			Expect(outputStr).ToNot(BeEmpty())
+		})
+	})
+
+	Context("When using hash-based detection with node_modules", func() {
+		It("should exclude node_modules by default", func() {
+			// Create node_modules directory with duplicate files
+			nodeModulesDir := filepath.Join(setup.TmpDir, "node_modules", "somepackage")
+			err := os.MkdirAll(nodeModulesDir, 0o755)
+			Expect(err).NotTo(HaveOccurred())
+
+			nodeModulesCode := `package somepackage
+
+import "fmt"
+
+func NodeModulesFunc() {
+	for i := 0; i < 5; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			err = os.WriteFile(filepath.Join(nodeModulesDir, "file1.go"), []byte(nodeModulesCode), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+			err = os.WriteFile(filepath.Join(nodeModulesDir, "file2.go"), []byte(nodeModulesCode), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create regular files with same content (duplicates)
+			err = setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, nodeModulesCode)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run hash detection in verbose mode
+			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10", "-v")
+			Expect(err).ToNot(HaveOccurred())
+
+			outputStr := string(output)
+			// Should contain the exclusion message
+			Expect(outputStr).To(ContainSubstring("node_modules"))
+			// Should detect regular files but not node_modules
+			Expect(outputStr).To(ContainSubstring("regular1.go"))
+			Expect(outputStr).To(ContainSubstring("regular2.go"))
+		})
+
+		It("should include node_modules when --include-node-modules is specified", func() {
+			// Create node_modules directory with duplicate files
+			nodeModulesDir := filepath.Join(setup.TmpDir, "node_modules", "somepackage")
+			err := os.MkdirAll(nodeModulesDir, 0o755)
+			Expect(err).NotTo(HaveOccurred())
+
+			nodeModulesCode := `package somepackage
+
+import "fmt"
+
+func NodeModulesFunc() {
+	for i := 0; i < 5; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			err = os.WriteFile(filepath.Join(nodeModulesDir, "file1.go"), []byte(nodeModulesCode), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+			err = os.WriteFile(filepath.Join(nodeModulesDir, "file2.go"), []byte(nodeModulesCode), 0o644)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run hash detection with include-node-modules flag
+			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10", "--include-node-modules")
+			Expect(err).ToNot(HaveOccurred())
+
+			outputStr := string(output)
+			// Should detect files in node_modules
+			Expect(outputStr).To(ContainSubstring("node_modules"))
 		})
 	})
 })
