@@ -485,8 +485,7 @@ func BenchmarkLineDiff_Small(b *testing.B) {
 	base := []byte("func foo() {\n    return 1\n}")
 	compared := []byte("func bar() {\n    return 2\n}")
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		LineDiff(base, compared)
 	}
 }
@@ -506,8 +505,7 @@ func BenchmarkLineDiff_Medium(b *testing.B) {
 		}
 	}
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		LineDiff(base, compared)
 	}
 }
@@ -527,8 +525,7 @@ func BenchmarkLineDiff_Large(b *testing.B) {
 		}
 	}
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		LineDiff(base, compared)
 	}
 }
