@@ -11,7 +11,7 @@ type BDDError struct {
 
 // NewBDDError creates a new BDDError with the given operation and cause.
 func NewBDDError(operation string, cause error) *BDDError {
-	return &BDDError{
+	return &BDDError{ //nolint:exhaustruct
 		Operation: operation,
 		Cause:     cause,
 	}

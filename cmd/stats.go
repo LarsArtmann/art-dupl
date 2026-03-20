@@ -12,7 +12,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/spf13/cobra"
 )
 
@@ -218,9 +217,6 @@ func runStats(cmd *cobra.Command, args []string) error {
 		)
 	}
 
-	// Wire semantic detection to golang package global
-	golang.SemanticHashEnabled = mergedConfig.Semantic
-
 	// Add timeout context if specified
 	var cancel context.CancelFunc
 
@@ -235,7 +231,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
-		config.OutputFormat(format),
+		format,
 	)
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)

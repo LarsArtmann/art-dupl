@@ -45,14 +45,14 @@ func (d *detector) convertToCloneGroup(
 // convertFragmentToClone converts a syntax fragment to SDK Clone format.
 func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	if len(frag) == 0 {
-		return &Clone{}
+		return &Clone{} //nolint:exhaustruct
 	}
 
 	// Get file information from first node
 	firstNode := frag[0]
 	lastNode := frag[len(frag)-1]
 
-	clone := &Clone{
+	clone := &Clone{ //nolint:exhaustruct
 		Filename:  firstNode.Filename,
 		StartLine: int(firstNode.Pos),
 		EndLine:   int(lastNode.End),

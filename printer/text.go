@@ -19,7 +19,7 @@ type text struct {
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
-	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
+	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)} //nolint:exhaustruct
 }
 
 func (p *text) PrintHeader() error { return nil }

@@ -104,7 +104,12 @@ func MarshalJSON[T ~string](value T, validValues ...T) ([]byte, error) {
 	if slices.Contains(validValues, value) {
 		data, err := json.Marshal(string(value))
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal enum value %q: %w", value, err)
+			return nil, fmt.Errorf(
+				"failed to marshal enum value %q (validValues=%v): %w",
+				value,
+				validValues,
+				err,
+			)
 		}
 
 		return data, nil

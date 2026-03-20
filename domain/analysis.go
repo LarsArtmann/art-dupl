@@ -27,11 +27,11 @@ func (a Analysis) IsValid() error {
 	}
 
 	if a.Threshold == 0 {
-		return ErrAnalysisThresholdZero
+		return fmt.Errorf("%w: ID=%s", ErrAnalysisThresholdZero, a.ID)
 	}
 
 	if a.CreatedAt == "" {
-		return ErrAnalysisCreatedAtEmpty
+		return fmt.Errorf("%w: ID=%s", ErrAnalysisCreatedAtEmpty, a.ID)
 	}
 
 	for i, group := range a.CloneGroups {
@@ -56,9 +56,9 @@ type AnalysisStats struct {
 
 func (as AnalysisStats) IsValid() error {
 	return validateFields(
-		validationRule{as.FilesAnalyzed > 0, "files analyzed cannot be zero"},
-		validationRule{as.ProcessingTime > 0, "processing time cannot be zero"},
-		validationRule{as.ComplexityScore >= 0, "complexity score cannot be negative"},
-		validationRule{as.DuplicationRatio >= 0, "duplication ratio cannot be negative"},
+		validationRule{as.FilesAnalyzed > 0, fmt.Sprintf("files analyzed cannot be zero (actual=%d)", as.FilesAnalyzed)},
+		validationRule{as.ProcessingTime > 0, fmt.Sprintf("processing time cannot be zero (actual=%d)", as.ProcessingTime)},
+		validationRule{as.ComplexityScore >= 0, fmt.Sprintf("complexity score cannot be negative (actual=%f)", as.ComplexityScore)},
+		validationRule{as.DuplicationRatio >= 0, fmt.Sprintf("duplication ratio cannot be negative (actual=%f)", as.DuplicationRatio)},
 	)
 }

@@ -24,7 +24,7 @@ func Profile() ProfileResult {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
-	return ProfileResult{
+	return ProfileResult{ //nolint:exhaustruct
 		AllocMB:      float64(m.Alloc) / 1024 / 1024,
 		TotalAllocMB: float64(m.TotalAlloc) / 1024 / 1024,
 		SysMB:        float64(m.Sys) / 1024 / 1024,
@@ -36,7 +36,7 @@ func Profile() ProfileResult {
 
 // ProfileDiff calculates the difference between two profiles.
 func ProfileDiff(start, end ProfileResult) ProfileResult {
-	return ProfileResult{
+	return ProfileResult{ //nolint:exhaustruct
 		AllocMB:      end.AllocMB - start.AllocMB,
 		TotalAllocMB: end.TotalAllocMB - start.TotalAllocMB,
 		SysMB:        end.SysMB - start.SysMB,

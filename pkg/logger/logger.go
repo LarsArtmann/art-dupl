@@ -46,7 +46,7 @@ func NewLogger(cfg *Config) Logger {
 		level = log.InfoLevel
 	}
 
-	logger := log.NewWithOptions(cfg.Output, log.Options{
+	logger := log.NewWithOptions(cfg.Output, log.Options{ //nolint:exhaustruct
 		Level:           level,
 		ReportTimestamp: true,
 		ReportCaller:    cfg.ReportCaller,

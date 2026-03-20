@@ -149,7 +149,7 @@ func (t *transformer) trans(
 		// reducing false positives for template patterns like enums.
 		receiverType := extractReceiverTypeName(n.Recv)
 		funcName := n.Name.Name
-		o.Type = encodeSemanticTypeMulti(FuncDecl, receiverType, funcName)
+		o.Type = encodeSemanticTypeMulti(FuncDecl, t.config.Mode.IsSemantic(), receiverType, funcName)
 		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 		t.addWithNilCheck(o, n.Body)
@@ -175,7 +175,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Call))
 
 	case *ast.Ident:
-		o.Type = encodeSemanticType(Ident, n.Name)
+		o.Type = encodeSemanticType(Ident, n.Name, t.config.Mode.IsSemantic())
 
 	case *ast.IfStmt:
 		o.Type = IfStmt
@@ -236,7 +236,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.SelectorExpr:
-		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name)
+		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.X), t.trans(n.Sel))
 
 	case *ast.SendStmt:
@@ -271,7 +271,7 @@ func (t *transformer) trans(
 
 	case *ast.TypeSpec:
 		// Semantic hashing: encode type name to differentiate type declarations
-		o.Type = encodeSemanticType(TypeSpec, n.Name.Name)
+		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.Name))
 		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Type))

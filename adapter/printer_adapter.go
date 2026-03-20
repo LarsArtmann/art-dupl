@@ -80,7 +80,7 @@ func CreateAnalysisFromClones(cloneGroups []domain.CloneGroup, threshold uint) d
 		totalComplexity += group.Size
 	}
 
-	return domain.Analysis{
+	return domain.Analysis{ //nolint:exhaustruct
 		ID:          domain.AnalysisID(generateAnalysisID()),
 		State:       domain.DetectionStateCompleted,
 		Mode:        domain.AnalysisModeFull,

@@ -27,12 +27,12 @@ type Clone struct {
 
 func (c Clone) IsValid() error {
 	if c.EndLine < c.StartLine {
-		return ErrCloneEndLineInvalid
+		return fmt.Errorf("%w: StartLine=%d, EndLine=%d", ErrCloneEndLineInvalid, c.StartLine, c.EndLine)
 	}
 
 	if c.StartPos > 0 || c.EndPos > 0 {
 		if c.StartPos >= c.EndPos {
-			return ErrCloneEndPositionInvalid
+			return fmt.Errorf("%w: StartPos=%d, EndPos=%d", ErrCloneEndPositionInvalid, c.StartPos, c.EndPos)
 		}
 	}
 
@@ -63,7 +63,7 @@ type CloneGroup struct {
 
 func (cg CloneGroup) IsValid() error {
 	if len(cg.Clones) == 0 {
-		return ErrCloneGroupEmpty
+		return fmt.Errorf("%w: ID=%s", ErrCloneGroupEmpty, cg.ID)
 	}
 
 	if !cg.Severity.IsValid() {

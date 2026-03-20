@@ -46,7 +46,7 @@ func NewDetector(opts *Options) (Detector, error) {
 	// Convert SDK options to internal config
 	cfg := convertOptionsToConfig(opts)
 
-	return &detector{
+	return &detector{ //nolint:exhaustruct
 		opts:   opts,
 		config: cfg,
 		logger: opts.Logger,

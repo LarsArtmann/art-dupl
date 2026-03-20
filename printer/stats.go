@@ -68,11 +68,11 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 	// Initialize styles
 	styles := initStyles()
 
-	return &stats{
+	return &stats{ //nolint:exhaustruct
 		w:         w,
 		ReadFile:  fread,
 		threshold: threshold,
-		statsData: &StatsData{
+		statsData: &StatsData{ //nolint:exhaustruct
 			FileDuplication:   make(map[string]int),
 			SizeDistribution:  make(map[string]int),
 			TokenDistribution: make(map[string]int),

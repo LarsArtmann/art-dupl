@@ -82,7 +82,7 @@ func NewFileCache(cacheDir string) *FileCache {
 		cacheDir = DefaultCacheDir
 	}
 
-	fc := &FileCache{
+	fc := &FileCache{ //nolint:exhaustruct
 		cacheDir: cacheDir,
 		metadata: newMetadata(),
 	}
@@ -99,7 +99,7 @@ func NewFileCache(cacheDir string) *FileCache {
 
 // newMetadata creates a new Metadata with current timestamps.
 func newMetadata() Metadata {
-	return Metadata{
+	return Metadata{ //nolint:exhaustruct
 		Version:   CacheVersion,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

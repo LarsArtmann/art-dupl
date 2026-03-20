@@ -296,7 +296,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 // getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
 	return []LegacyPattern{
-		{
+		{ //nolint:exhaustruct
 			Type:     "deprecated_function",
 			Message:  "Use of deprecated function",
 			Severity: "medium",
@@ -307,7 +307,7 @@ func getDefaultLegacyPatterns() []LegacyPattern {
 				"os/exec.CommandContext", // Actually not deprecated, example
 			},
 		},
-		{
+		{ //nolint:exhaustruct
 			Type:     "old_pattern",
 			Message:  "Old code pattern that should be refactored",
 			Severity: "low",
@@ -316,7 +316,7 @@ func getDefaultLegacyPatterns() []LegacyPattern {
 				`if.*err.*!=.*nil.*{.*return.*err}`,                  // error checking pattern (could be improved)
 			},
 		},
-		{
+		{ //nolint:exhaustruct
 			Type:     "deprecated_import",
 			Message:  "Use of deprecated import path",
 			Severity: "high",

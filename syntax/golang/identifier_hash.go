@@ -1,10 +1,5 @@
 package golang
 
-// SemanticHashEnabled controls whether semantic identifiers are included in type hashes.
-// When false (default), only AST node types are used (current behavior).
-// When true, identifier names are hashed into the type field for semantic matching.
-var SemanticHashEnabled bool
-
 // hashIdentifierFast computes a 24-bit FNV-1a hash of an identifier name.
 // The result fits in the upper 24 bits of int32 when shifted, allowing
 // the lower 8 bits to store the base AST node type.
@@ -39,12 +34,16 @@ func hashIdentifierFast(name string) int32 {
 // Layout: [24 bits identifier hash][8 bits base type]
 // This allows semantic-aware matching while preserving AST type information.
 //
+// When semanticEnabled is false, returns baseType unchanged (structural mode).
+// When semanticEnabled is true, encodes identifier name into the type hash.
+//
 // Example:
 //
-//	encodeSemanticType(SelectorExpr, "String") => unique type for "X.String" calls
-//	encodeSemanticType(SelectorExpr, "Error") => different type for "X.Error" calls
-func encodeSemanticType(baseType int32, identifierName string) int32 {
-	if !SemanticHashEnabled || identifierName == "" {
+//	encodeSemanticType(SelectorExpr, "String", true) => unique type for "X.String" calls
+//	encodeSemanticType(SelectorExpr, "Error", true) => different type for "X.Error" calls
+//	encodeSemanticType(SelectorExpr, "String", false) => same as SelectorExpr (structural)
+func encodeSemanticType(baseType int32, identifierName string, semanticEnabled bool) int32 {
+	if !semanticEnabled || identifierName == "" {
 		return baseType
 	}
 
@@ -55,8 +54,8 @@ func encodeSemanticType(baseType int32, identifierName string) int32 {
 
 // encodeSemanticTypeHash combines a base node type with a pre-computed hash.
 // Use this when the hash is already computed to avoid recomputation.
-func encodeSemanticTypeHash(baseType, nameHash int32) int32 { //nolint:unused // Used in tests
-	if !SemanticHashEnabled || nameHash == 0 {
+func encodeSemanticTypeHash(baseType, nameHash int32, semanticEnabled bool) int32 { //nolint:unused // Used in tests
+	if !semanticEnabled || nameHash == 0 {
 		return baseType
 	}
 
@@ -90,8 +89,9 @@ func combineIdentifierHashes(hash1, hash2 int32) int32 {
 
 // encodeSemanticTypeMulti combines a base node type with multiple identifier hashes.
 // This is useful for nodes like FuncDecl where both receiver type and function name matter.
-func encodeSemanticTypeMulti(baseType int32, identifiers ...string) int32 {
-	if !SemanticHashEnabled || len(identifiers) == 0 {
+// When semanticEnabled is false, returns baseType unchanged (structural mode).
+func encodeSemanticTypeMulti(baseType int32, semanticEnabled bool, identifiers ...string) int32 {
+	if !semanticEnabled || len(identifiers) == 0 {
 		return baseType
 	}
 

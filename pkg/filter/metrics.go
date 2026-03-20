@@ -22,7 +22,7 @@ type Metrics struct {
 
 // NewMetrics creates a new filter metrics tracker.
 func NewMetrics() *Metrics {
-	return &Metrics{
+	return &Metrics{ //nolint:exhaustruct
 		FilteredByReason: make(map[FilterReason]int),
 		FilteredFiles:    make(map[FilterReason][]string),
 	}
@@ -61,7 +61,7 @@ func (m *Metrics) RecordFiltered(filePath string, reason FilterReason) {
 // GetStats returns the current filter statistics.
 func (m *Metrics) GetStats() FilterStats {
 	if m == nil {
-		return FilterStats{}
+		return FilterStats{} //nolint:exhaustruct
 	}
 
 	m.mu.RLock()

@@ -8,11 +8,11 @@
 
 ## Executive Summary: The Pareto Principle Applied
 
-| Tier | Issues | % of Total | Action | Impact |
-|------|--------|------------|--------|--------|
-| **1%** | ~3 issues | 0.8% | Fix exhaustive switches | **51%** safer code |
-| **4%** | ~15 issues | 4% | Fix unused code, err113, low-hanging fruit | **64%** code quality |
-| **20%** | ~70 issues | 20% | Fix struct initialization, quick linter fixes | **80%** CI/CD pass rate |
+| Tier    | Issues     | % of Total | Action                                        | Impact                  |
+| ------- | ---------- | ---------- | --------------------------------------------- | ----------------------- |
+| **1%**  | ~3 issues  | 0.8%       | Fix exhaustive switches                       | **51%** safer code      |
+| **4%**  | ~15 issues | 4%         | Fix unused code, err113, low-hanging fruit    | **64%** code quality    |
+| **20%** | ~70 issues | 20%        | Fix struct initialization, quick linter fixes | **80%** CI/CD pass rate |
 
 ### Linter Issues Breakdown (354 total)
 
@@ -35,11 +35,11 @@ other:        75 (21%) - Various
 
 **Status:** DONE in commit 94ed84f
 
-| File | Line | Issue | Fix Applied |
-|------|------|-------|-------------|
-| printer/diff.go | 296 | Missing DiffLineEqual, DiffLineRemoved | ✅ Added cases |
-| printer/html.go | 766 | Missing DiffLineEqual | ✅ Added case |
-| printer/html.go | 802 | Missing DiffLineEqual | ✅ Added case |
+| File            | Line | Issue                                  | Fix Applied    |
+| --------------- | ---- | -------------------------------------- | -------------- |
+| printer/diff.go | 296  | Missing DiffLineEqual, DiffLineRemoved | ✅ Added cases |
+| printer/html.go | 766  | Missing DiffLineEqual                  | ✅ Added case  |
+| printer/html.go | 802  | Missing DiffLineEqual                  | ✅ Added case  |
 
 **Impact:** Prevents runtime panics when new enum values are added. Code is now future-proof.
 
@@ -49,19 +49,19 @@ other:        75 (21%) - Various
 
 ### Task 2.1: Remove Unused Code (14 issues, 15 min)
 
-| File | Line | Issue |
-|------|------|-------|
-| domain/helpers.go | 96, 102 | marshalInt32, unmarshalInt32 unused |
-| pkg/artdupl/detector_pipeline.go | 18 | Unused return value |
-| hash/file_detector.go | 128 | Unused error return |
+| File                             | Line    | Issue                               |
+| -------------------------------- | ------- | ----------------------------------- |
+| domain/helpers.go                | 96, 102 | marshalInt32, unmarshalInt32 unused |
+| pkg/artdupl/detector_pipeline.go | 18      | Unused return value                 |
+| hash/file_detector.go            | 128     | Unused error return                 |
 
 **Action:** Remove unused functions and fix unused return values.
 
 ### Task 2.2: Fix Dynamic Error Definitions (3 issues, 15 min)
 
-| File | Line | Issue |
-|------|------|-------|
-| errors/marshal.go | 51 | fmt.Errorf in error struct |
+| File                   | Line     | Issue                           |
+| ---------------------- | -------- | ------------------------------- |
+| errors/marshal.go      | 51       | fmt.Errorf in error struct      |
 | migration/migration.go | 262, 277 | errors.New with dynamic content |
 
 **Action:** Convert to static errors or wrap properly.
@@ -133,21 +133,21 @@ Remove unnecessary type conversions that Go can infer.
 
 These require significant refactoring and have lower ROI:
 
-| Issue Type | Count | Effort | Priority |
-|------------|-------|--------|----------|
-| gosec security | 5 | High | Low |
-| godox (TODO/FIXME) | 6 | Medium | Low |
-| wrapcheck | 12 | Medium | Low |
-| goprintffuncname | 5 | Low | Low |
-| nonamedreturns | 7 | Medium | Low |
-| nolintlint | 2 | Low | Low |
-| nestif | 1 | High | Low |
-| nilnil | 1 | Medium | Low |
-| gochecknoglobals | 2 | High | Low |
-| ireturn | 1 | High | Low |
-| prealloc | 3 | Low | Low |
-| unparam | 3 | Medium | Low |
-| maintidx | 1 | High | Low |
+| Issue Type         | Count | Effort | Priority |
+| ------------------ | ----- | ------ | -------- |
+| gosec security     | 5     | High   | Low      |
+| godox (TODO/FIXME) | 6     | Medium | Low      |
+| wrapcheck          | 12    | Medium | Low      |
+| goprintffuncname   | 5     | Low    | Low      |
+| nonamedreturns     | 7     | Medium | Low      |
+| nolintlint         | 2     | Low    | Low      |
+| nestif             | 1     | High   | Low      |
+| nilnil             | 1     | Medium | Low      |
+| gochecknoglobals   | 2     | High   | Low      |
+| ireturn            | 1     | High   | Low      |
+| prealloc           | 3     | Low    | Low      |
+| unparam            | 3     | Medium | Low      |
+| maintidx           | 1     | High   | Low      |
 
 **Recommendation:** Add `//nolint:` comments for these issues rather than fixing individually.
 
@@ -156,33 +156,37 @@ These require significant refactoring and have lower ROI:
 ## Implementation Strategy
 
 ### Phase 1: Quick Wins (30 min)
+
 1. ✅ Fix exhaustive switches (DONE)
 2. Remove unused code
 3. Fix dynamic errors
 4. Fix unconvert
 
 ### Phase 2: High-Value NOLINT (60 min)
+
 5. Add nolint:exhaustruct where appropriate
 6. Add nolint for other low-priority issues
 
 ### Phase 3: Medium-Effort Fixes (90 min)
+
 7. Fix varnamelen (rename variables)
 8. Fix mnd (extract constants)
 9. Fix tagliatelle (JSON tags)
 
 ### Phase 4: Long-Term (Future)
+
 10. Architectural refactoring for remaining issues
 
 ---
 
 ## Success Metrics
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Linter issues | 354 | <100 |
-| CI/CD pass rate | 0% | 100% |
-| Code safety | Basic | Enhanced (exhaustive switches) |
-| Technical debt | High | Medium |
+| Metric          | Before | After                          |
+| --------------- | ------ | ------------------------------ |
+| Linter issues   | 354    | <100                           |
+| CI/CD pass rate | 0%     | 100%                           |
+| Code safety     | Basic  | Enhanced (exhaustive switches) |
+| Technical debt  | High   | Medium                         |
 
 ---
 
@@ -193,12 +197,12 @@ flowchart TD
     A[Start: 354 Linter Issues] --> B{Tier 1: 1%}
     B --> C[Fix exhaustive switches]
     C --> D[Tier 2: 4%]
-    
+
     D --> E[Remove unused code]
     E --> F[Fix dynamic errors]
     F --> G[Fix unconvert]
     G --> H[Tier 3: 20%]
-    
+
     H --> I[Fix exhaustruct]
     I --> J[Fix varnamelen]
     J --> K[Fix tagliatelle]
@@ -206,10 +210,10 @@ flowchart TD
     L --> M[Fix revive]
     M --> N[Fix recvcheck]
     N --> O[Tier 4: 80%]
-    
+
     O --> P[Add nolint for remaining]
     P --> Q[Result: <100 Issues]
-    
+
     style C fill:#90EE90
     style E fill:#FFE4B5
     style I fill:#FFE4B5
@@ -222,15 +226,18 @@ flowchart TD
 ## Detailed Task List (27 tasks, 10-30 min each)
 
 ### Tier 1 Tasks (1 task, 5 min)
+
 1. [✅ DONE] Fix exhaustive switches (3 issues)
 
 ### Tier 2 Tasks (4 tasks, 60 min)
+
 2. [TODO] Remove unused functions (domain/helpers.go)
 3. [TODO] Fix unused return values (hash, pkg/artdupl)
 4. [TODO] Fix dynamic error definitions (errors, migration)
 5. [TODO] Fix unconvert issue (cmd/stats.go)
 
 ### Tier 3 Tasks (7 tasks, 180 min)
+
 6. [TODO] Fix exhaustruct in pkg/artdupl/types.go (31 issues)
 7. [TODO] Fix exhaustruct in printer/json.go (17 issues)
 8. [TODO] Fix exhaustruct in printer/stats_data.go (16 issues)
@@ -240,6 +247,7 @@ flowchart TD
 12. [TODO] Fix tagliatelle - JSON tags (50 issues)
 
 ### Tier 4 Tasks (15 tasks, 120 min)
+
 13. [TODO] Add nolint for gosec (5 issues)
 14. [TODO] Add nolint for godox (6 issues)
 15. [TODO] Add nolint for wrapcheck (12 issues)

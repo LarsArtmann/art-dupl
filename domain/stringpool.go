@@ -82,7 +82,7 @@ type StringInternPool struct {
 // NewStringInternPool creates a new string interning pool.
 // Pre-allocates space for expected string count to reduce allocations.
 func NewStringInternPool(expectedStrings int) *StringInternPool {
-	return &StringInternPool{
+	return &StringInternPool{ //nolint:exhaustruct
 		strings: make([]string, 0, expectedStrings),
 		index:   make(map[string]StringID, expectedStrings/4),
 		nextID:  1, // ID 0 reserved for "not interned"

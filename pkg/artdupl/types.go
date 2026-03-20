@@ -2,16 +2,15 @@ package artdupl
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
-// DetectionMethod is an alias to config.DetectionMethod for convenience.
-// This ensures type consistency across the codebase.
-//
-// Note: This is now fully unified with config package - no duplicate types.
+// DetectionMethod represents the method used for duplicate detection.
+// This is a re-export of config.DetectionMethod for SDK convenience.
 type DetectionMethod = config.DetectionMethod
 
 const (
@@ -20,12 +19,6 @@ const (
 
 	// MethodHash uses rolling hash on file content.
 	MethodHash = config.DetectionMethodHash
-
-	// MethodTodos finds TODO comments.
-	MethodTodos = config.DetectionMethodTodos
-
-	// MethodLegacy finds legacy code patterns.
-	MethodLegacy = config.DetectionMethodLegacy
 )
 
 // Detector is the main interface for code duplication detection.
@@ -128,7 +121,7 @@ type Logger = logger.Logger
 
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
-	return &Options{
+	return &Options{ //nolint:exhaustruct
 		Threshold:         15,
 		DetectionMethods:  []DetectionMethod{MethodArtDupl},
 		IncludeVendor:     false,
@@ -144,9 +137,8 @@ func DefaultOptions() *Options {
 }
 
 // readFileDefault is the default file reader using os package.
-var readFileDefault = func(filename string) ([]byte, error) { //nolint:gochecknoglobals // Default implementation for config
-	// This will be implemented with actual file reading
-	return nil, nil
+var readFileDefault = func(filename string) ([]byte, error) { //nolint:gochecknoglobals // Default implementation
+	return os.ReadFile(filename) //nolint:wrapcheck // Standard library error
 }
 
 // ValidateOptions checks if the provided options are valid.

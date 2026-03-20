@@ -151,7 +151,7 @@ type Config struct {
 
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
-	return &Config{
+	return &Config{ //nolint:exhaustruct
 		Threshold:          15,
 		IncludeVendor:      false,
 		IncludeNodeModules: false,

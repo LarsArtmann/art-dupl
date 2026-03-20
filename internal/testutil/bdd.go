@@ -104,7 +104,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		}
 	}
 
-	return &BDDTestSetup{
+	return &BDDTestSetup{ //nolint:exhaustruct
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
 		BinaryPath:    sharedBinary,

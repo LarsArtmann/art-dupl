@@ -9,15 +9,28 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// Parse the given file and return uniform syntax tree.
+// Parse the given file and return uniform syntax tree using default configuration.
+// For custom configuration, use ParseWithConfig.
 func Parse(filename string) (*syntax.Node, error) {
-	node, _, err := ParseWithLineCount(filename)
+	return ParseWithConfig(filename, DefaultParseConfig())
+}
+
+// ParseWithConfig parses the given file with the specified configuration.
+func ParseWithConfig(filename string, cfg ParseConfig) (*syntax.Node, error) {
+	node, _, err := ParseWithLineCountConfig(filename, cfg)
 
 	return node, err
 }
 
 // ParseWithLineCount parses the given file and returns the syntax tree along with the line count.
+// Uses default configuration (semantic mode).
 func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
+	return ParseWithLineCountConfig(filename, DefaultParseConfig())
+}
+
+// ParseWithLineCountConfig parses the given file with the specified configuration
+// and returns the syntax tree along with the line count.
+func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, int, error) {
 	fset := token.NewFileSet()
 
 	file, err := parser.ParseFile(fset, filename, nil, 0)
@@ -28,6 +41,7 @@ func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 	t := &transformer{
 		fileset:  fset,
 		filename: filename,
+		config:   cfg,
 	}
 	lineCount := fset.File(file.Pos()).LineCount()
 
@@ -37,6 +51,7 @@ func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 type transformer struct {
 	fileset  *token.FileSet
 	filename string
+	config   ParseConfig
 }
 
 // addWithNilCheck adds a child to o if not nil and valid.

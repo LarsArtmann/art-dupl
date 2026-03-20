@@ -16,7 +16,7 @@ type DetectionOptions struct {
 
 func (do DetectionOptions) IsValid() error {
 	if do.Threshold == 0 {
-		return ErrThresholdInvalid
+		return fmt.Errorf("%w: actual=%d", ErrThresholdInvalid, do.Threshold)
 	}
 
 	if !do.Mode.IsValid() {
@@ -24,7 +24,7 @@ func (do DetectionOptions) IsValid() error {
 	}
 
 	if len(do.Paths) == 0 {
-		return ErrNoPathsSpecified
+		return fmt.Errorf("%w: at least one path required", ErrNoPathsSpecified)
 	}
 
 	return nil

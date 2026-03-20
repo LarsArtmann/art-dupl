@@ -51,7 +51,7 @@ func NodeToClone(node *syntax.Node, filename string, fileContent []byte) Clone {
 		uint16(calculateComplexity(node)),
 	) // #nosec G115 -- complexity values bounded in practice (<1000)
 
-	clone := Clone{
+	clone := Clone{ //nolint:exhaustruct
 		StartLine:  startLn,
 		EndLine:    endLn,
 		StartPos:   startPos,

@@ -67,7 +67,7 @@ func (d *detector) buildAnalysisPipeline(
 	fileCount := <-fileCountChan
 
 	// Finalize tree
-	tree.Update(&syntax.Node{Type: -1})
+	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct
 
 	// Convert data slice to pointer
 	nodeData := *data

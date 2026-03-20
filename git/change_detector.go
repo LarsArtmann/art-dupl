@@ -86,10 +86,20 @@ func (d *ChangeDetector) GetChangedFiles(since string) ([]ChangeInfo, error) {
 		// Check if it's an exit error (invalid reference)
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
-			return nil, fmt.Errorf("%w: %s", ErrGitCommand, string(exitErr.Stderr))
+			return nil, fmt.Errorf(
+				"%w: git diff --name-status --diff-filter=ACMR %s: %s",
+				ErrGitCommand,
+				since,
+				string(exitErr.Stderr),
+			)
 		}
 
-		return nil, fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf(
+			"%w: git diff --name-status --diff-filter=ACMR %s: %w",
+			ErrGitCommand,
+			since,
+			err,
+		)
 	}
 
 	return d.parseDiffOutput(output), nil
@@ -132,7 +142,7 @@ func (d *ChangeDetector) GetStagedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf("%w: git diff --name-status --cached --diff-filter=ACMR: %w", ErrGitCommand, err)
 	}
 
 	return d.parseDiffOutput(output), nil
@@ -155,7 +165,7 @@ func (d *ChangeDetector) GetUnstagedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf("%w: git diff --name-status --diff-filter=ACMR: %w", ErrGitCommand, err)
 	}
 
 	return d.parseDiffOutput(output), nil
@@ -213,7 +223,7 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf("%w: git ls-files --others --exclude-standard: %w", ErrGitCommand, err)
 	}
 
 	var changes []ChangeInfo
@@ -258,7 +268,13 @@ func (d *ChangeDetector) GetMergeBase(mainBranch string) (string, error) {
 			return d.GetMergeBase("master")
 		}
 
-		return "", fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return "", fmt.Errorf(
+			"%w: git merge-base HEAD %s (workingDir=%s): %w",
+			ErrGitCommand,
+			mainBranch,
+			d.workingDir,
+			err,
+		)
 	}
 
 	return strings.TrimSpace(string(output)), nil
@@ -275,7 +291,12 @@ func (d *ChangeDetector) GetCurrentBranch() (string, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("%w: %w", ErrGitCommand, err)
+		return "", fmt.Errorf(
+			"%w: git rev-parse --abbrev-ref HEAD (workingDir=%s): %w",
+			ErrGitCommand,
+			d.workingDir,
+			err,
+		)
 	}
 
 	return strings.TrimSpace(string(output)), nil

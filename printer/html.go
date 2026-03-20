@@ -39,7 +39,7 @@ func NewHTMLWithOptions(w io.Writer, fread ReadFile, diffMode config.DiffMode, t
 		thresh = threshold[0]
 	}
 
-	return &htmlprinter{
+	return &htmlprinter{ //nolint:exhaustruct
 		w:         w,
 		ReadFile:  fread,
 		threshold: thresh,
@@ -509,7 +509,7 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 			)
 		}
 
-		clones[i] = clone{
+		clones[i] = clone{ //nolint:exhaustruct
 			filename:  fileInfo.Filename,
 			lineStart: fileInfo.LineStart,
 			fragment:  extractContent(fileInfo, nstart, nend),

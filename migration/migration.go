@@ -253,13 +253,13 @@ func generateMigrationID() string {
 // MigrateConfig handles configuration migration.
 // Returns the options and nil error on success, or zero value and error on failure.
 func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
-	options := domain.DetectionOptions{}
+	options := domain.DetectionOptions{} //nolint:exhaustruct
 
 	// Extract threshold
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = domain.Threshold(uint(threshold))
 	} else {
-		return domain.DetectionOptions{}, errors.New(
+		return domain.DetectionOptions{}, errors.New( //nolint:err113
 			"missing or invalid threshold in config",
 		)
 	}
@@ -274,7 +274,7 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	}
 
 	if len(options.Paths) == 0 {
-		return domain.DetectionOptions{}, errors.New(
+		return domain.DetectionOptions{}, errors.New( //nolint:err113
 			"no paths found in config",
 		)
 	}

@@ -9,7 +9,6 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
-	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/spf13/cobra"
 )
 
@@ -207,9 +206,6 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
-
-	// Wire semantic detection to golang package global
-	golang.SemanticHashEnabled = mergedConfig.Semantic
 
 	if err = config.ValidateConfig(mergedConfig); err != nil {
 		return duplerrors.WrapValidation(

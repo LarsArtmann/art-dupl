@@ -78,7 +78,7 @@ type JSONPrinter struct {
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
-	return &JSONPrinter{
+	return &JSONPrinter{ //nolint:exhaustruct
 		w:        w,
 		ReadFile: fread,
 	}
@@ -195,13 +195,13 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
 
-	output := JSONOutput{
+	output := JSONOutput{ //nolint:exhaustruct
 		Version:       "1.0",
 		Timestamp:     time.Now().UTC(),
 		Threshold:     threshold,
 		FilesAnalyzed: p.filesCount,
 		CloneGroups:   p.cloneGroups,
-		Summary: Summary{
+		Summary: Summary{ //nolint:exhaustruct
 			TotalCloneGroups: len(p.cloneGroups),
 			TotalClones:      p.totalClones,
 			ComplexityScore:  float64(p.totalClones) / float64(len(p.cloneGroups)+1),
