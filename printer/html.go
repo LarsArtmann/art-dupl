@@ -335,6 +335,20 @@ footer {
 .diff-line.removed .diff-line-num { color: var(--error); opacity: 1; }
 .diff-line.modified { background: rgba(206, 145, 120, 0.15); }
 .diff-line.modified .diff-line-num { color: var(--warning); opacity: 1; }
+/* Word-level diff highlighting */
+.word-added {
+	background: rgba(78, 201, 176, 0.4);
+	border-radius: 2px;
+	padding: 1px 2px;
+	font-weight: 500;
+}
+.word-removed {
+	background: rgba(244, 71, 71, 0.4);
+	border-radius: 2px;
+	padding: 1px 2px;
+	font-weight: 500;
+	text-decoration: line-through;
+}
 .diff-legend {
 	display: flex;
 	gap: 20px;
@@ -441,7 +455,10 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return nil, errors.NewInternalError("zero length duplicate found", nil)
+			return nil, errors.NewInternalError(
+				fmt.Sprintf("zero length duplicate found in clone group #%d (index=%d)", p.iota, i),
+				nil,
+			)
 		}
 
 		nstart := dup[0]
@@ -449,7 +466,11 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 
 		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(
+				err,
+				errors.AnalysisError,
+				fmt.Sprintf("failed to process clone in group #%d (index=%d, file=%s)", p.iota, i, nstart.Filename),
+			)
 		}
 
 		clones[i] = clone{
