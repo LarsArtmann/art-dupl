@@ -84,7 +84,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	if errSharedBinary != nil {
 		cleanupErr := os.RemoveAll(tmpDir)
 		if cleanupErr != nil {
-			return nil, fmt.Errorf("shared binary build failed: %w; additionally temp dir cleanup failed: %v", errSharedBinary, cleanupErr)
+			return nil, fmt.Errorf("shared binary build failed: %w; additionally temp dir cleanup failed: %w", errSharedBinary, cleanupErr)
 		}
 
 		return nil, fmt.Errorf("shared binary build failed: %w", errSharedBinary)
@@ -97,7 +97,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		if buildErr != nil {
 			cleanupErr := os.RemoveAll(tmpDir)
 			if cleanupErr != nil {
-				return nil, fmt.Errorf("binary rebuild failed: %w; additionally temp dir %s cleanup failed: %v", buildErr, tmpDir, cleanupErr)
+				return nil, fmt.Errorf("binary rebuild failed: %w; additionally temp dir %s cleanup failed: %w", buildErr, tmpDir, cleanupErr)
 			}
 
 			return nil, fmt.Errorf("binary rebuild failed (was missing from %s): %w", sharedBinary, buildErr)

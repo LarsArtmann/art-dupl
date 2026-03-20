@@ -305,6 +305,7 @@ func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
 			removed++
 		}
 	}
+
 	return added, removed, modified
 }
 
@@ -359,5 +360,6 @@ func htmlEscape(s string) string {
 	s = strings.ReplaceAll(s, "<", "&lt;")
 	s = strings.ReplaceAll(s, ">", "&gt;")
 	s = strings.ReplaceAll(s, `"`, "&quot;")
+
 	return s
 }
