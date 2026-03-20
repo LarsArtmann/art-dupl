@@ -14,8 +14,8 @@ func TestGenericsSupport(t *testing.T) {
 		nodeType int
 	}{
 		{
-			name:     "IndexListExpr - generic type instantiation",
-			code:     `package test
+			name: "IndexListExpr - generic type instantiation",
+			code: `package test
 
 type Map[K comparable, V any] struct{}
 var m = Map[string, int]{}`,

@@ -71,7 +71,7 @@ func (s *ServiceB) Process() error { return nil }
 func (s *ServiceB) Validate() bool { return true }
 `
 	// Create 20 test files
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		filename := filepath.Join(testDir, fmt.Sprintf("file%d.go", i))
 		if err := os.WriteFile(filename, []byte(code), 0o644); err != nil {
 			b.Fatalf("Failed to write test file: %v", err)
