@@ -29,7 +29,8 @@ func NewDetector(opts *Options) (Detector, error) {
 	// Validate options
 	err := ValidateOptions(opts)
 	if err != nil {
-		return nil, errors.WrapConfig(err, "invalid options")
+		return nil, errors.WrapConfig(err, fmt.Sprintf("invalid options (threshold=%d, methods=%v)",
+			opts.Threshold, opts.DetectionMethods))
 	}
 
 	// Set default file reader if not provided
@@ -58,7 +59,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, d.wrapValidationError(err, "", len(files))
+		return nil, d.wrapValidationError(err, fmt.Sprintf("validation failed for %d files", len(files)), len(files))
 	}
 
 	// Process files and build analysis pipeline
@@ -67,14 +68,16 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 		return nil, errors.Wrap(
 			err,
 			errors.AnalysisError,
-			fmt.Sprintf("analysis pipeline construction failed for %d files", len(files)),
+			fmt.Sprintf("analysis pipeline construction failed for %d files (methods=%v, threshold=%d)",
+				len(files), d.config.DetectionMethods, d.config.Threshold),
 		)
 	}
 
 	// Run detection based on configured methods
 	cloneGroups, err := d.runDetection(ctx, data)
 	if err != nil {
-		return nil, errors.Wrap(err, errors.DetectionError, "detection failed")
+		return nil, errors.Wrap(err, errors.DetectionError,
+			fmt.Sprintf("detection failed (methods=%v, nodes=%d)", d.config.DetectionMethods, len(data)))
 	}
 
 	// Build and return result
@@ -91,7 +94,8 @@ func (d *detector) FindClonesStream(
 	// Validate inputs
 	err := d.validateInputs(ctx, files)
 	if err != nil {
-		return nil, d.wrapValidationError(err, "streaming with ", len(files))
+		return nil, d.wrapValidationError(err,
+			fmt.Sprintf("streaming validation failed for %d files", len(files)), len(files))
 	}
 
 	// Create output channel
