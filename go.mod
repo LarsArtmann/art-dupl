@@ -33,7 +33,7 @@
 // USAGE:
 //
 //	// As CLI
-//	$ art-dupl ./... --threshold 15 --format json
+//	$ art-dupl ./... --threshold 15 --json
 //
 //	// As SDK (Go API)
 //	import "github.com/LarsArtmann/art-dupl/pkg/artdupl"

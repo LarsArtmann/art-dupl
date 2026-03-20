@@ -7,13 +7,16 @@
 ## Installation
 
 ```bash
-go install github.com/LarsArtmann/art-dupl@latest
+go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl && just build
+git clone https://github.com/LarsArtmann/art-dupl.git
+cd art-dupl
+just build    # Creates ./dist/art-dupl
+./dist/art-dupl
 ```
 
 ## Quick Start
@@ -251,6 +254,13 @@ Top Files by Duplicate Lines:
 - **printer/** - Output formatting
 
 ## Testing
+
+```bash
+just test  # Run all tests
+just check # Run linting
+```
+
+Or with make:
 
 ```bash
 make test  # Run all tests

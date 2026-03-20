@@ -160,6 +160,7 @@ func (t *transformer) trans(
 
 	case *ast.FuncType:
 		o.Type = FuncType
+		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Params))
 		t.addWithNilCheck(o, n.Results)
 
@@ -190,6 +191,13 @@ func (t *transformer) trans(
 	case *ast.IndexExpr:
 		o.Type = IndexExpr
 		o.AddChildren(t.trans(n.X), t.trans(n.Index))
+
+	case *ast.IndexListExpr:
+		o.Type = IndexListExpr
+		o.AddChildren(t.trans(n.X))
+		for _, idx := range n.Indices {
+			o.AddChildren(t.trans(idx))
+		}
 
 	case *ast.InterfaceType:
 		o.Type = InterfaceType
@@ -264,7 +272,9 @@ func (t *transformer) trans(
 	case *ast.TypeSpec:
 		// Semantic hashing: encode type name to differentiate type declarations
 		o.Type = encodeSemanticType(TypeSpec, n.Name.Name)
-		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
+		o.AddChildren(t.trans(n.Name))
+		t.addWithNilCheck(o, n.TypeParams)
+		o.AddChildren(t.trans(n.Type))
 
 	case *ast.TypeSwitchStmt:
 		o.Type = TypeSwitchStmt

@@ -31,6 +31,7 @@ const (
 	IfStmt
 	IncDecStmt
 	IndexExpr
+	IndexListExpr
 	InterfaceType
 	KeyValueExpr
 	LabeledStmt
