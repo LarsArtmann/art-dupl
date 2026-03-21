@@ -149,7 +149,12 @@ func (t *transformer) trans(
 		// reducing false positives for template patterns like enums.
 		receiverType := extractReceiverTypeName(n.Recv)
 		funcName := n.Name.Name
-		o.Type = encodeSemanticTypeMulti(FuncDecl, t.config.Mode.IsSemantic(), receiverType, funcName)
+		o.Type = encodeSemanticTypeMulti(
+			FuncDecl,
+			t.config.Mode.IsSemantic(),
+			receiverType,
+			funcName,
+		)
 		t.addWithNilCheck(o, n.Recv)
 		o.AddChildren(t.trans(n.Name), t.trans(n.Type))
 		t.addWithNilCheck(o, n.Body)

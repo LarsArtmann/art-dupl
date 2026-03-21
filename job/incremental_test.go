@@ -9,7 +9,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-func waitForParsedNodes(t *testing.T, schan chan []*syntax.Node, timeoutMsg string, emptyMsg ...string) {
+func waitForParsedNodes(
+	t *testing.T,
+	schan chan []*syntax.Node,
+	timeoutMsg string,
+	emptyMsg ...string,
+) {
 	t.Helper()
 	emptyError := "Expected some parsed nodes"
 	if len(emptyMsg) > 0 {

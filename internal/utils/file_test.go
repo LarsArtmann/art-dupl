@@ -72,7 +72,8 @@ func TestFileProcessorReadFile(t *testing.T) {
 		tmpDir := t.TempDir()
 		fp := NewFileProcessor(tmpDir)
 
-		g.Expect(os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644)).To(Succeed())
+		g.Expect(os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644)).
+			To(Succeed())
 
 		content, err := fp.ReadFile("test.txt")
 		g.Expect(err).ToNot(HaveOccurred())

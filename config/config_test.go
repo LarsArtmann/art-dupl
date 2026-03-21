@@ -150,7 +150,12 @@ func TestSaveConfig(t *testing.T) {
 }
 
 // newInvalidConfigTestCase creates a test case for invalid configuration validation.
-func newInvalidConfigTestCase(name string, threshold int, outputFormat OutputFormat, maxChildrenSerial int) struct {
+func newInvalidConfigTestCase(
+	name string,
+	threshold int,
+	outputFormat OutputFormat,
+	maxChildrenSerial int,
+) struct {
 	name    string
 	config  *Config
 	isValid bool
@@ -189,8 +194,18 @@ func TestValidateConfig(t *testing.T) {
 		newInvalidConfigTestCase("Invalid threshold - too low", 0, OutputFormat("text"), 10000),
 		newInvalidConfigTestCase("Invalid threshold - too high", 1001, OutputFormat("text"), 10000),
 		newInvalidConfigTestCase("Invalid output format", 15, OutputFormat("xml"), 10000),
-		newInvalidConfigTestCase("Invalid maxChildrenSerial - too low", 15, OutputFormat("text"), 999),
-		newInvalidConfigTestCase("Invalid maxChildrenSerial - too high", 15, OutputFormat("text"), 100001),
+		newInvalidConfigTestCase(
+			"Invalid maxChildrenSerial - too low",
+			15,
+			OutputFormat("text"),
+			999,
+		),
+		newInvalidConfigTestCase(
+			"Invalid maxChildrenSerial - too high",
+			15,
+			OutputFormat("text"),
+			100001,
+		),
 		{
 			name: "Cache flags require incremental - cache-dir without incremental",
 			config: &Config{

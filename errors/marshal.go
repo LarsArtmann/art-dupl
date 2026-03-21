@@ -48,7 +48,10 @@ func newMarshalError(operation, context string, err error, msgFormat string) *Ma
 	return &MarshalError{
 		Operation: operation,
 		Context:   context,
-		Cause:     fmt.Errorf(msgFormat, err), //nolint:err113 // Intentional: wrapping error with context
+		Cause: fmt.Errorf(
+			msgFormat,
+			err,
+		), //nolint:err113 // Intentional: wrapping error with context
 	}
 }
 

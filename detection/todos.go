@@ -194,14 +194,28 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 						uint16(line),
 					) // #nosec G115 -- Line numbers from parser are within uint16 range
 					if err != nil {
-						logger.Default.Debug("skipping todo entry with invalid line number", "file", filename, "line", line, "err", err)
+						logger.Default.Debug(
+							"skipping todo entry with invalid line number",
+							"file",
+							filename,
+							"line",
+							line,
+							"err",
+							err,
+						)
 
 						continue
 					}
 
 					file, err := domain.NewFilepath(filename)
 					if err != nil {
-						logger.Default.Debug("skipping todo entry with invalid filename", "file", filename, "err", err)
+						logger.Default.Debug(
+							"skipping todo entry with invalid filename",
+							"file",
+							filename,
+							"err",
+							err,
+						)
 
 						continue
 					}
@@ -266,14 +280,28 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 						uint16(node.Pos),
 					) // #nosec G115 -- Node positions are within uint16 range
 					if err != nil {
-						logger.Default.Debug("skipping legacy issue with invalid line number", "file", filename, "pos", node.Pos, "err", err)
+						logger.Default.Debug(
+							"skipping legacy issue with invalid line number",
+							"file",
+							filename,
+							"pos",
+							node.Pos,
+							"err",
+							err,
+						)
 
 						continue
 					}
 
 					file, err := domain.NewFilepath(filename)
 					if err != nil {
-						logger.Default.Debug("skipping legacy issue with invalid filename", "file", filename, "err", err)
+						logger.Default.Debug(
+							"skipping legacy issue with invalid filename",
+							"file",
+							filename,
+							"err",
+							err,
+						)
 
 						continue
 					}

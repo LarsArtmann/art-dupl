@@ -132,7 +132,11 @@ func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]
 
 	var result map[string]any
 	if err := json.Unmarshal(output, &result); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal JSON output: %w\nOutput: %s", err, string(output))
+		return nil, fmt.Errorf(
+			"failed to unmarshal JSON output: %w\nOutput: %s",
+			err,
+			string(output),
+		)
 	}
 
 	return result, nil

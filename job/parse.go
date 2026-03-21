@@ -24,7 +24,11 @@ type parseResult struct {
 
 // Parse parses files sequentially (legacy behavior).
 // When semantic is true, identifier names are included in type hashes.
-func Parse(ctx context.Context, fchan chan string, semantic bool) (chan []*syntax.Node, chan ParseStats) {
+func Parse(
+	ctx context.Context,
+	fchan chan string,
+	semantic bool,
+) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
 	statsChan := make(chan ParseStats, 1)

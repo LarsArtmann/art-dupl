@@ -27,12 +27,22 @@ type Clone struct {
 
 func (c Clone) IsValid() error {
 	if c.EndLine < c.StartLine {
-		return fmt.Errorf("%w: StartLine=%d, EndLine=%d", ErrCloneEndLineInvalid, c.StartLine, c.EndLine)
+		return fmt.Errorf(
+			"%w: StartLine=%d, EndLine=%d",
+			ErrCloneEndLineInvalid,
+			c.StartLine,
+			c.EndLine,
+		)
 	}
 
 	if c.StartPos > 0 || c.EndPos > 0 {
 		if c.StartPos >= c.EndPos {
-			return fmt.Errorf("%w: StartPos=%d, EndPos=%d", ErrCloneEndPositionInvalid, c.StartPos, c.EndPos)
+			return fmt.Errorf(
+				"%w: StartPos=%d, EndPos=%d",
+				ErrCloneEndPositionInvalid,
+				c.StartPos,
+				c.EndPos,
+			)
 		}
 	}
 

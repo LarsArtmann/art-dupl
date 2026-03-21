@@ -72,7 +72,11 @@ func buildSuffixTree(
 
 	if cfg.Incremental {
 		if cfg.Verbose {
-			_, _ = fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
+			_, _ = fmt.Fprintf(
+				os.Stderr,
+				"🔍 Incremental mode enabled, cache dir: %s\n",
+				cfg.CacheDir,
+			)
 		}
 
 		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache, cfg.Semantic)
@@ -303,7 +307,10 @@ func executeHashOnlyAnalysis(
 
 	// Inform user that node_modules is excluded by default in hash mode
 	if cfg.Verbose {
-		_, _ = fmt.Fprintln(os.Stderr, "🔍 Excluding node_modules/ directory (use --include-node-modules to include)")
+		_, _ = fmt.Fprintln(
+			os.Stderr,
+			"🔍 Excluding node_modules/ directory (use --include-node-modules to include)",
+		)
 	}
 
 	// Collect all files (not just .go files) for hash detection
@@ -334,7 +341,11 @@ func executeHashOnlyAnalysis(
 }
 
 // printFileCollectionStatus outputs status after file collection.
-func printFileCollectionStatus(cfg *config.Config, outputFormat config.OutputFormat, fileCount int) {
+func printFileCollectionStatus(
+	cfg *config.Config,
+	outputFormat config.OutputFormat,
+	fileCount int,
+) {
 	if cfg.Verbose {
 		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", fileCount)
 	} else if outputFormat == config.OutputFormatText {

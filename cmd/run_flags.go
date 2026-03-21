@@ -196,7 +196,10 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	if diffModeStr != "" {
 		parsedDiffMode, err := config.ParseDiffMode(diffModeStr)
 		if err != nil {
-			return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --diff value %q", diffModeStr))
+			return duplerrors.WrapValidation(
+				err,
+				fmt.Sprintf("invalid --diff value %q", diffModeStr),
+			)
 		}
 		appConfig.DiffMode = parsedDiffMode
 	}
@@ -244,7 +247,14 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return ctx.Err() //nolint:wrapcheck
 	}
 
-	p := createPrinter(mergedConfig.OutputFormat, mergedConfig.Threshold, mergedConfig.DiffMode)(os.Stdout, os.ReadFile)
+	p := createPrinter(
+		mergedConfig.OutputFormat,
+		mergedConfig.Threshold,
+		mergedConfig.DiffMode,
+	)(
+		os.Stdout,
+		os.ReadFile,
+	)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(parseStats.FilesCount)

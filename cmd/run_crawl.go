@@ -77,7 +77,11 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 // This is used for hash-based detection which works on any file type.
 // The includeNodeModules parameter controls whether to include node_modules directories
 // (excluded by default to avoid processing large dependency directories).
-func crawlPathsAllFiles(paths []string, filter *filter.Filter, includeVendor, includeNodeModules bool) chan string {
+func crawlPathsAllFiles(
+	paths []string,
+	filter *filter.Filter,
+	includeVendor, includeNodeModules bool,
+) chan string {
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, nil)
 }
 
@@ -142,7 +146,15 @@ func crawlDirectory(
 	fchan chan string,
 ) {
 	err := filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-		return handleWalkEntry(path, info, filter, includeVendor, includeNodeModules, fileCheck, fchan)
+		return handleWalkEntry(
+			path,
+			info,
+			filter,
+			includeVendor,
+			includeNodeModules,
+			fileCheck,
+			fchan,
+		)
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)

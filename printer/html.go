@@ -33,7 +33,12 @@ func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
 
 // NewHTMLWithOptions creates a new HTML printer with full options.
 // diffMode enables visual diff highlighting between duplicate occurrences.
-func NewHTMLWithOptions(w io.Writer, fread ReadFile, diffMode config.DiffMode, threshold ...int) Printer {
+func NewHTMLWithOptions(
+	w io.Writer,
+	fread ReadFile,
+	diffMode config.DiffMode,
+	threshold ...int,
+) Printer {
 	thresh := 15
 	if len(threshold) > 0 {
 		thresh = threshold[0]
@@ -505,7 +510,12 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 			return nil, errors.Wrap(
 				err,
 				errors.AnalysisError,
-				fmt.Sprintf("failed to process clone in group #%d (index=%d, file=%s)", p.iota, i, nstart.Filename),
+				fmt.Sprintf(
+					"failed to process clone in group #%d (index=%d, file=%s)",
+					p.iota,
+					i,
+					nstart.Filename,
+				),
 			)
 		}
 
@@ -559,7 +569,11 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 	hasAggregateStats := totalAdded > 0 || totalRemoved > 0 || totalModified > 0
 
 	// Write base clone header
-	baseVSCode := fmt.Sprintf("vscode://file/%s:%d", groupDiff.Base.Filename, groupDiff.Base.LineStart)
+	baseVSCode := fmt.Sprintf(
+		"vscode://file/%s:%d",
+		groupDiff.Base.Filename,
+		groupDiff.Base.LineStart,
+	)
 	_, err := fmt.Fprintf(p.w, `
 <div class="diff-mode">
 <div class="diff-base-header">
@@ -607,7 +621,12 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 
 	// Write diff panels for each comparison
 	for idx, other := range groupDiff.Others {
-		if err := p.writeDiffComparison(groupDiff.Base, other, idx, len(groupDiff.Others)); err != nil {
+		if err := p.writeDiffComparison(
+			groupDiff.Base,
+			other,
+			idx,
+			len(groupDiff.Others),
+		); err != nil {
 			return err
 		}
 	}
@@ -664,7 +683,11 @@ func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 }
 
 // writeDiffComparison writes a side-by-side diff comparison.
-func (p *htmlprinter) writeDiffComparison(base *CloneWithContent, other CloneDiff, index, total int) error {
+func (p *htmlprinter) writeDiffComparison(
+	base *CloneWithContent,
+	other CloneDiff,
+	index, total int,
+) error {
 	activeClass := "active"
 	if total > 1 && index > 0 {
 		activeClass = ""
@@ -777,7 +800,8 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 		lineNum := fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
 
 		var content string
-		if line.Type == DiffLineModified && i < len(oppositeLines) && oppositeLines[i].Type == DiffLineModified {
+		if line.Type == DiffLineModified && i < len(oppositeLines) &&
+			oppositeLines[i].Type == DiffLineModified {
 			// For modified lines, show word-level diff
 			if isBasePanel {
 				content = WordDiff(line.Content, oppositeLines[i].Content)
@@ -788,8 +812,14 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 			content = html.EscapeString(line.Content)
 		}
 
-		_, err := fmt.Fprintf(p.w, `<div class="diff-line %s">%s<span class="diff-line-content">%s</span></div>
-`, typeClass, lineNum, content)
+		_, err := fmt.Fprintf(
+			p.w,
+			`<div class="diff-line %s">%s<span class="diff-line-content">%s</span></div>
+`,
+			typeClass,
+			lineNum,
+			content,
+		)
 		if err != nil {
 			return err //nolint:wrapcheck
 		}

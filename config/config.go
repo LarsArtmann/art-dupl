@@ -325,7 +325,10 @@ func validateDetectionMethods(methods []DetectionMethod) error {
 	for _, method := range methods {
 		if !method.IsValid() {
 			return errors.NewValidationError(
-				fmt.Sprintf("invalid detection method: %s (valid: hash, art-dupl, todos, legacy)", method),
+				fmt.Sprintf(
+					"invalid detection method: %s (valid: hash, art-dupl, todos, legacy)",
+					method,
+				),
 				nil,
 			)
 		}
@@ -336,7 +339,10 @@ func validateDetectionMethods(methods []DetectionMethod) error {
 
 func validateCacheFlags(cacheDir string, clearCache, incremental bool) error {
 	if (cacheDir != "" || clearCache) && !incremental {
-		return errors.NewValidationError("--cache-dir and --clear-cache require --incremental mode", nil)
+		return errors.NewValidationError(
+			"--cache-dir and --clear-cache require --incremental mode",
+			nil,
+		)
 	}
 
 	return nil

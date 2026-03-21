@@ -273,17 +273,34 @@ func NodeModulesFunc() {
 	}
 }`
 
-			err = os.WriteFile(filepath.Join(nodeModulesDir, "file1.go"), []byte(nodeModulesCode), 0o644)
+			err = os.WriteFile(
+				filepath.Join(nodeModulesDir, "file1.go"),
+				[]byte(nodeModulesCode),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(filepath.Join(nodeModulesDir, "file2.go"), []byte(nodeModulesCode), 0o644)
+			err = os.WriteFile(
+				filepath.Join(nodeModulesDir, "file2.go"),
+				[]byte(nodeModulesCode),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Create regular files with same content (duplicates)
-			err = setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, nodeModulesCode)
+			err = setup.CreateDuplicateFiles(
+				[]string{"regular1.go", "regular2.go"},
+				nodeModulesCode,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run hash detection in verbose mode
-			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10", "-v")
+			output, err := setup.RunArtDupl(
+				"--detection-methods",
+				"hash",
+				"--threshold",
+				"10",
+				"-v",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -310,13 +327,27 @@ func NodeModulesFunc() {
 	}
 }`
 
-			err = os.WriteFile(filepath.Join(nodeModulesDir, "file1.go"), []byte(nodeModulesCode), 0o644)
+			err = os.WriteFile(
+				filepath.Join(nodeModulesDir, "file1.go"),
+				[]byte(nodeModulesCode),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(filepath.Join(nodeModulesDir, "file2.go"), []byte(nodeModulesCode), 0o644)
+			err = os.WriteFile(
+				filepath.Join(nodeModulesDir, "file2.go"),
+				[]byte(nodeModulesCode),
+				0o644,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run hash detection with include-node-modules flag
-			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10", "--include-node-modules")
+			output, err := setup.RunArtDupl(
+				"--detection-methods",
+				"hash",
+				"--threshold",
+				"10",
+				"--include-node-modules",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

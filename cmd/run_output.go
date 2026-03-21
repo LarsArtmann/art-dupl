@@ -59,8 +59,15 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []
 // printHeader prints the header with error wrapping.
 func printHeader(p printer.Printer, sortBy printer.SortBy, threshold int) error {
 	if err := p.PrintHeader(); err != nil {
-		return errors.Wrap(err, errors.AnalysisError,
-			fmt.Sprintf("failed to print header (sortBy: %s, threshold: %d)", sortBy.String(), threshold))
+		return errors.Wrap(
+			err,
+			errors.AnalysisError,
+			fmt.Sprintf(
+				"failed to print header (sortBy: %s, threshold: %d)",
+				sortBy.String(),
+				threshold,
+			),
+		)
 	}
 
 	return nil
@@ -93,7 +100,12 @@ func printCloneGroups(
 }
 
 // handleJSONOutput handles JSON-specific output if the printer is a JSONPrinter.
-func handleJSONOutput(p printer.Printer, threshold int, sortBy printer.SortBy, detectionMethod string) error {
+func handleJSONOutput(
+	p printer.Printer,
+	threshold int,
+	sortBy printer.SortBy,
+	detectionMethod string,
+) error {
 	jsonPrinter, ok := p.(*printer.JSONPrinter)
 	if !ok {
 		return nil

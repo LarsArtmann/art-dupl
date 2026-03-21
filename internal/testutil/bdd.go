@@ -54,7 +54,12 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("Failed to build art-dupl binary at %s: %v\nOutput: %s", binaryPath, err, string(output))
+		t.Fatalf(
+			"Failed to build art-dupl binary at %s: %v\nOutput: %s",
+			binaryPath,
+			err,
+			string(output),
+		)
 	}
 
 	return &BDDTestSetup{
@@ -84,7 +89,11 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	if errSharedBinary != nil {
 		cleanupErr := os.RemoveAll(tmpDir)
 		if cleanupErr != nil {
-			return nil, fmt.Errorf("shared binary build failed: %w; additionally temp dir cleanup failed: %w", errSharedBinary, cleanupErr)
+			return nil, fmt.Errorf(
+				"shared binary build failed: %w; additionally temp dir cleanup failed: %w",
+				errSharedBinary,
+				cleanupErr,
+			)
 		}
 
 		return nil, fmt.Errorf("shared binary build failed: %w", errSharedBinary)
@@ -97,10 +106,19 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		if buildErr != nil {
 			cleanupErr := os.RemoveAll(tmpDir)
 			if cleanupErr != nil {
-				return nil, fmt.Errorf("binary rebuild failed: %w; additionally temp dir %s cleanup failed: %w", buildErr, tmpDir, cleanupErr)
+				return nil, fmt.Errorf(
+					"binary rebuild failed: %w; additionally temp dir %s cleanup failed: %w",
+					buildErr,
+					tmpDir,
+					cleanupErr,
+				)
 			}
 
-			return nil, fmt.Errorf("binary rebuild failed (was missing from %s): %w", sharedBinary, buildErr)
+			return nil, fmt.Errorf(
+				"binary rebuild failed (was missing from %s): %w",
+				sharedBinary,
+				buildErr,
+			)
 		}
 	}
 

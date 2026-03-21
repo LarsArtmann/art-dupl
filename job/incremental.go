@@ -18,7 +18,7 @@ type IncrementalParser struct {
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
-func NewIncrementalParser(cacheDir string, clearCache bool, semantic bool) *IncrementalParser {
+func NewIncrementalParser(cacheDir string, clearCache, semantic bool) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
 		"cacheDir",

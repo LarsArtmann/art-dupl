@@ -37,7 +37,12 @@ func helper() {
 
 	schan, _ := Parse(ctx, fchan, true)
 
-	waitForParsedNodes(t, schan, "Parse timed out - possible deadlock", "Expected some parsed nodes, got empty sequence")
+	waitForParsedNodes(
+		t,
+		schan,
+		"Parse timed out - possible deadlock",
+		"Expected some parsed nodes, got empty sequence",
+	)
 }
 
 func TestParseErrorHandling(t *testing.T) {

@@ -219,7 +219,11 @@ func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
 	}
 
 	if len(node.Children) < expectedMin {
-		t.Errorf("Expected at least %d component declarations, got %d", expectedMin, len(node.Children))
+		t.Errorf(
+			"Expected at least %d component declarations, got %d",
+			expectedMin,
+			len(node.Children),
+		)
 	}
 }
 

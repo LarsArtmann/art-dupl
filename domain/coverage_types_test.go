@@ -48,7 +48,12 @@ func TestRepository_IsValid(t *testing.T) {
 	}
 }
 
-func newSourceFileTestCase(name, path, fileName string, size uint64, hash string, wantErr bool) struct {
+func newSourceFileTestCase(
+	name, path, fileName string,
+	size uint64,
+	hash string,
+	wantErr bool,
+) struct {
 	name    string
 	file    SourceFile
 	wantErr bool
@@ -76,7 +81,14 @@ func TestSourceFile_IsValid(t *testing.T) {
 		file    SourceFile
 		wantErr bool
 	}{
-		newSourceFileTestCase("valid source file", "/path/to/file.go", "file.go", 1024, "abc123", false),
+		newSourceFileTestCase(
+			"valid source file",
+			"/path/to/file.go",
+			"file.go",
+			1024,
+			"abc123",
+			false,
+		),
 		newSourceFileTestCase("empty path", "", "file.go", 1024, "abc123", true),
 		newSourceFileTestCase("empty name", "/path/to/file.go", "", 1024, "abc123", true),
 		newSourceFileTestCase("zero size", "/path/to/file.go", "file.go", 0, "abc123", true),

@@ -156,7 +156,10 @@ func (p *stats) printTextOverview() {
 func (p *stats) printFilterBreakdown() {
 	filterPercent := float64(p.statsData.FilesFiltered) /
 		float64(p.statsData.TotalFilesScanned+p.statsData.FilesFiltered) * 100
-	p.printMetric("Files Filtered", fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent))
+	p.printMetric(
+		"Files Filtered",
+		fmt.Sprintf("%d (%.0f%%)", p.statsData.FilesFiltered, filterPercent),
+	)
 
 	if len(p.statsData.FilterBreakdown) > 0 {
 		_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filtering Breakdown:"))

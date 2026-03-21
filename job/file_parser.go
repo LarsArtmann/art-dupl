@@ -17,7 +17,10 @@ func ParseFileByExtension(file string) (ast *syntax.Node, lines int, err error) 
 // ParseFileByExtensionWithConfig parses a file based on its extension with semantic mode configuration.
 // When semantic is true, identifier names are included in the type hash (reduces false positives).
 // When semantic is false, only AST structure is considered (structural matching).
-func ParseFileByExtensionWithConfig(file string, semantic bool) (ast *syntax.Node, lines int, err error) {
+func ParseFileByExtensionWithConfig(
+	file string,
+	semantic bool,
+) (ast *syntax.Node, lines int, err error) {
 	switch filepath.Ext(file) {
 	case ".templ":
 		ast, lines, err = templ.ParseWithLineCount(file)

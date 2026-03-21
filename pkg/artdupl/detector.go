@@ -59,7 +59,11 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 
 	// Validate inputs
 	if err := d.validateInputs(ctx, files); err != nil {
-		return nil, d.wrapValidationError(err, fmt.Sprintf("validation failed for %d files", len(files)), len(files))
+		return nil, d.wrapValidationError(
+			err,
+			fmt.Sprintf("validation failed for %d files", len(files)),
+			len(files),
+		)
 	}
 
 	// Process files and build analysis pipeline
@@ -68,16 +72,27 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 		return nil, errors.Wrap(
 			err,
 			errors.AnalysisError,
-			fmt.Sprintf("analysis pipeline construction failed for %d files (methods=%v, threshold=%d)",
-				len(files), d.config.DetectionMethods, d.config.Threshold),
+			fmt.Sprintf(
+				"analysis pipeline construction failed for %d files (methods=%v, threshold=%d)",
+				len(files),
+				d.config.DetectionMethods,
+				d.config.Threshold,
+			),
 		)
 	}
 
 	// Run detection based on configured methods
 	cloneGroups, err := d.runDetection(ctx, data)
 	if err != nil {
-		return nil, errors.Wrap(err, errors.DetectionError,
-			fmt.Sprintf("detection failed (methods=%v, nodes=%d)", d.config.DetectionMethods, len(data)))
+		return nil, errors.Wrap(
+			err,
+			errors.DetectionError,
+			fmt.Sprintf(
+				"detection failed (methods=%v, nodes=%d)",
+				d.config.DetectionMethods,
+				len(data),
+			),
+		)
 	}
 
 	// Build and return result

@@ -442,8 +442,20 @@ func TestShouldSkipPath(t *testing.T) {
 
 		// Edge cases
 		{"empty path", "", false, false, false},
-		{"just vendor (exact match)", "vendor", false, false, false},             // Note: exact "vendor" doesn't have separator
-		{"just node_modules (exact match)", "node_modules", false, false, false}, // Note: exact match doesn't have separator
+		{
+			"just vendor (exact match)",
+			"vendor",
+			false,
+			false,
+			false,
+		}, // Note: exact "vendor" doesn't have separator
+		{
+			"just node_modules (exact match)",
+			"node_modules",
+			false,
+			false,
+			false,
+		}, // Note: exact match doesn't have separator
 	}
 
 	for _, tt := range tests {

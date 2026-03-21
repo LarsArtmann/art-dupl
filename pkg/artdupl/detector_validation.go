@@ -33,7 +33,13 @@ func (d *detector) validateFile(filename string) error {
 
 	// Check file size
 	if d.opts.MaxFileSize > 0 && info.Size() > d.opts.MaxFileSize {
-		return fmt.Errorf("%w: %s (size=%d, max=%d)", ErrFileTooLarge, filename, info.Size(), d.opts.MaxFileSize)
+		return fmt.Errorf(
+			"%w: %s (size=%d, max=%d)",
+			ErrFileTooLarge,
+			filename,
+			info.Size(),
+			d.opts.MaxFileSize,
+		)
 	}
 
 	// Check if file should be ignored

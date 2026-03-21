@@ -56,9 +56,21 @@ type AnalysisStats struct {
 
 func (as AnalysisStats) IsValid() error {
 	return validateFields(
-		validationRule{as.FilesAnalyzed > 0, fmt.Sprintf("files analyzed cannot be zero (actual=%d)", as.FilesAnalyzed)},
-		validationRule{as.ProcessingTime > 0, fmt.Sprintf("processing time cannot be zero (actual=%d)", as.ProcessingTime)},
-		validationRule{as.ComplexityScore >= 0, fmt.Sprintf("complexity score cannot be negative (actual=%f)", as.ComplexityScore)},
-		validationRule{as.DuplicationRatio >= 0, fmt.Sprintf("duplication ratio cannot be negative (actual=%f)", as.DuplicationRatio)},
+		validationRule{
+			as.FilesAnalyzed > 0,
+			fmt.Sprintf("files analyzed cannot be zero (actual=%d)", as.FilesAnalyzed),
+		},
+		validationRule{
+			as.ProcessingTime > 0,
+			fmt.Sprintf("processing time cannot be zero (actual=%d)", as.ProcessingTime),
+		},
+		validationRule{
+			as.ComplexityScore >= 0,
+			fmt.Sprintf("complexity score cannot be negative (actual=%f)", as.ComplexityScore),
+		},
+		validationRule{
+			as.DuplicationRatio >= 0,
+			fmt.Sprintf("duplication ratio cannot be negative (actual=%f)", as.DuplicationRatio),
+		},
 	)
 }

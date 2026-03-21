@@ -142,7 +142,11 @@ func (d *ChangeDetector) GetStagedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: git diff --name-status --cached --diff-filter=ACMR: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf(
+			"%w: git diff --name-status --cached --diff-filter=ACMR: %w",
+			ErrGitCommand,
+			err,
+		)
 	}
 
 	return d.parseDiffOutput(output), nil
@@ -165,7 +169,11 @@ func (d *ChangeDetector) GetUnstagedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: git diff --name-status --diff-filter=ACMR: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf(
+			"%w: git diff --name-status --diff-filter=ACMR: %w",
+			ErrGitCommand,
+			err,
+		)
 	}
 
 	return d.parseDiffOutput(output), nil
@@ -223,7 +231,11 @@ func (d *ChangeDetector) GetUntrackedFiles() ([]ChangeInfo, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("%w: git ls-files --others --exclude-standard: %w", ErrGitCommand, err)
+		return nil, fmt.Errorf(
+			"%w: git ls-files --others --exclude-standard: %w",
+			ErrGitCommand,
+			err,
+		)
 	}
 
 	var changes []ChangeInfo

@@ -280,7 +280,11 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 
 	err := dec.Decode(&wrapper)
 	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize nodes (dataSize=%d bytes): %w", len(data), err)
+		return nil, fmt.Errorf(
+			"failed to deserialize nodes (dataSize=%d bytes): %w",
+			len(data),
+			err,
+		)
 	}
 
 	// Check version compatibility

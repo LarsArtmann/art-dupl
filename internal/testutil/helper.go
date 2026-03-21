@@ -10,7 +10,10 @@ import (
 
 // AssertIncrementalStats asserts that the incremental parser stats have expected values.
 // Use this to verify the results of a first run (filesCount=1, cacheMisses=1) or subsequent runs.
-func AssertIncrementalStats(t *testing.T, actualFilesCount, actualCacheMisses, expectedFilesCount, expectedCacheMisses int) {
+func AssertIncrementalStats(
+	t *testing.T,
+	actualFilesCount, actualCacheMisses, expectedFilesCount, expectedCacheMisses int,
+) {
 	t.Helper()
 
 	if actualFilesCount != expectedFilesCount {

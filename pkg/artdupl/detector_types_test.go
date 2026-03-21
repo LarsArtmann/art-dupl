@@ -7,7 +7,12 @@ import (
 )
 
 // assertCloneGroupBasic asserts basic CloneGroup properties (Hash and Clone count).
-func assertCloneGroupBasic(t *testing.T, group *CloneGroup, expectedHash string, expectedCloneCount int) {
+func assertCloneGroupBasic(
+	t *testing.T,
+	group *CloneGroup,
+	expectedHash string,
+	expectedCloneCount int,
+) {
 	t.Helper()
 	if group.Hash != expectedHash {
 		t.Errorf("Expected Hash=%q, got %s", expectedHash, group.Hash)

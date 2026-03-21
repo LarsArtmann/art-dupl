@@ -58,9 +58,18 @@ func (d *detector) buildAnalysisPipeline(
 	case <-done:
 		// Tree building complete
 	case <-ctx.Done():
-		return nil, job.ParseStats{}, fmt.Errorf("pipeline canceled after processing %d files: %w", len(files), ctx.Err())
+		return nil, job.ParseStats{}, fmt.Errorf(
+			"pipeline canceled after processing %d files: %w",
+			len(files),
+			ctx.Err(),
+		)
 	case <-time.After(d.opts.Timeout):
-		return nil, job.ParseStats{}, fmt.Errorf("analysis timed out after %v (processing %d files): %w", d.opts.Timeout, len(files), ErrAnalysisTimeout)
+		return nil, job.ParseStats{}, fmt.Errorf(
+			"analysis timed out after %v (processing %d files): %w",
+			d.opts.Timeout,
+			len(files),
+			ErrAnalysisTimeout,
+		)
 	}
 
 	// Get file count

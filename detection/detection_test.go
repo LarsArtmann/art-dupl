@@ -715,7 +715,12 @@ func LegacyFunc() {
 	_ = data
 }`
 
-	runLegacyDetectionTestCase(t, "test_legacy.go", goCode, "No legacy issues found (simplified detection)")
+	runLegacyDetectionTestCase(
+		t,
+		"test_legacy.go",
+		goCode,
+		"No legacy issues found (simplified detection)",
+	)
 }
 
 // TestLegacyDetector_FindLegacyInFile_NoLegacyPatterns tests file without legacy patterns.
@@ -734,7 +739,12 @@ func ModernFunc() {
 	_ = data
 }`
 
-	runLegacyDetectionTestCase(t, "no_legacy.go", goCode, "No legacy issues in modern code (expected)")
+	runLegacyDetectionTestCase(
+		t,
+		"no_legacy.go",
+		goCode,
+		"No legacy issues in modern code (expected)",
+	)
 }
 
 // TestLegacyDetector_FindLegacyInFile_EmptyFile tests with empty Go file.
