@@ -160,7 +160,7 @@ func UnsafeSlice[T any](data []byte) []T {
 		data,
 	) / int(
 		unsafe.Sizeof(t),
-	) //nolint:gosec // G115: Size is validated before calling, overflow checked by len(data)
+	)
 
 	return header[:n:n]
 }

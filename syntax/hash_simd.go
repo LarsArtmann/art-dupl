@@ -89,7 +89,7 @@ func hashSeqFallback(nodes []*Node, buf []byte) {
 	for i, node := range nodes {
 		buf[i] = byte(
 			node.Type,
-		) //nolint:gosec // G115: node.Type is an int32, converted to byte for hashing
+		)
 	}
 }
 
