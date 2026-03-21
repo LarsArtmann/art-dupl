@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
@@ -104,7 +105,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	appConfig.DetectionMethods = parsedMethods
 
-	if threshold != 15 {
+	if threshold != cli.DefaultThreshold {
 		appConfig.Threshold = threshold
 	}
 

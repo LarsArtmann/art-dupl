@@ -14,7 +14,6 @@ import (
 
 const exitCodeInterrupt = 130
 
-//nolint:cyclop // Main function complexity is inherent to CLI setup and error handling
 func main() {
 	// Create root command
 	rootCmd := cmd.NewRootCommand()

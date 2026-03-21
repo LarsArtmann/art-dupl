@@ -87,7 +87,9 @@ func hashSeq(nodes []*Node) string {
 // This is the current implementation used throughout the codebase.
 func hashSeqFallback(nodes []*Node, buf []byte) {
 	for i, node := range nodes {
-		buf[i] = byte(node.Type) //nolint:gosec // G115: node.Type is an int32, converted to byte for hashing
+		buf[i] = byte(
+			node.Type,
+		) //nolint:gosec // G115: node.Type is an int32, converted to byte for hashing
 	}
 }
 

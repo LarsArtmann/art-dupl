@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
@@ -50,7 +51,7 @@ Examples:
 	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
 	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	cmd.Flags().
-		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
+		IntP("threshold", "t", cli.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	cmd.Flags().
 		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
@@ -144,7 +145,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	appConfig.DetectionMethods = parsedMethods
 
-	if threshold != 15 {
+	if threshold != cli.DefaultThreshold {
 		appConfig.Threshold = threshold
 	}
 
