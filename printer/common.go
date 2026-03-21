@@ -10,11 +10,12 @@ import (
 )
 
 type clone struct {
-	filename  string
-	lineStart int
-	lineEnd   int
-	fragment  []byte
-	size      int // Size field for sorting
+	filename       string
+	lineStart      int
+	lineEnd        int
+	fragment       []byte
+	size           int              // Size field for sorting
+	classification CloneClassification // Classification metadata for actionable reports
 }
 
 type byNameAndLine []clone

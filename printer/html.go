@@ -6,12 +6,23 @@ import (
 	"io"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+// classificationStats tracks counts for HTML summary.
+type classificationStats struct {
+	categoryCounts map[CloneCategory]int
+	priorityCounts map[ClonePriority]int
+	testCount      int
+	prodCount      int
+	totalClones    int
+	totalTokens    int
+}
 
 // htmlprinter generates HTML output for code duplication reports.
 type htmlprinter struct {
@@ -23,6 +34,7 @@ type htmlprinter struct {
 	dupMutex  sync.Mutex
 	dupls     [][][]*syntax.Node
 	diffMode  config.DiffMode // Enable diff visualization mode
+	stats     classificationStats
 }
 
 // NewHTML creates a new HTML printer.
@@ -45,11 +57,15 @@ func NewHTMLWithOptions(
 	}
 
 	return &htmlprinter{ //nolint:exhaustruct
-		w:         w,
-		ReadFile:  fread,
+		w:        w,
+		ReadFile: fread,
 		threshold: thresh,
-		dupls:     make([][][]*syntax.Node, 0),
-		diffMode:  diffMode,
+		dupls:    make([][][]*syntax.Node, 0),
+		diffMode: diffMode,
+		stats: classificationStats{
+			categoryCounts: make(map[CloneCategory]int),
+			priorityCounts: make(map[ClonePriority]int),
+		},
 	}
 }
 
@@ -411,6 +427,122 @@ footer {
 	.diff-content { grid-template-columns: 1fr; }
 	.diff-panel.base { border-right: none; border-bottom: 1px solid var(--border); }
 }
+/* Classification badges */
+.badge-group {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.badge-category, .badge-priority, .badge-test {
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 0.8rem;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+.badge-category { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
+.badge-priority.critical { background: rgba(244, 71, 71, 0.2); color: var(--error); border: 1px solid var(--error); }
+.badge-priority.high { background: rgba(206, 145, 120, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+.badge-priority.medium { background: rgba(88, 166, 255, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+.badge-priority.low { background: rgba(78, 201, 176, 0.2); color: var(--success); border: 1px solid var(--success); }
+.badge-test { background: rgba(197, 134, 192, 0.2); color: var(--keyword); border: 1px solid var(--keyword); }
+/* Classification badges */
+.badge-group {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.badge-category, .badge-priority, .badge-test {
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 0.8rem;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+.badge-category { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
+.badge-priority.critical { background: rgba(244, 71, 71, 0.2); color: var(--error); border: 1px solid var(--error); }
+.badge-priority.high { background: rgba(206, 145, 120, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+.badge-priority.medium { background: rgba(88, 166, 255, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+.badge-priority.low { background: rgba(78, 201, 176, 0.2); color: var(--success); border: 1px solid var(--success); }
+.badge-test { background: rgba(197, 134, 192, 0.2); color: var(--keyword); border: 1px solid var(--keyword); }
+.suggestion {
+	background: var(--bg-tertiary);
+	border-left: 3px solid var(--accent);
+	padding: 8px 12px;
+	margin: 10px 0;
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+	font-style: italic;
+}
+/* Summary section for filter buttons */
+.summary-section {
+	background: var(--bg-secondary);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 30px;
+}
+.summary-section h3 {
+	margin: 0 0 20px 0;
+	color: var(--accent);
+	font-size: 1.2rem;
+}
+.summary-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 15px;
+}
+.summary-item {
+	background: var(--bg-tertiary);
+	border-radius: 6px;
+	padding: 12px;
+	text-align: center;
+}
+.summary-emoji {
+	font-size: 1.5rem;
+	display: block;
+}
+.summary-label {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	display: block;
+}
+.summary-count {
+	font-size: 1.4rem;
+	color: var(--text-primary);
+	font-weight: bold;
+}
+.filter-buttons {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-bottom: 15px;
+}
+.filter-btn {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	color: var(--text-secondary);
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: all 0.2s;
+}
+.filter-btn:hover {
+	background: var(--border);
+	color: var(--text-primary);
+}
+.filter-btn.active {
+	background: var(--accent);
+	color: white;
+	border-color: var(--accent);
+}
 /* Media query percentage escaped for Go template */
 </style>
 </head>
@@ -444,14 +576,13 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 	p.dupls = append(p.dupls, sortedDups)
 	p.dupMutex.Unlock()
 
-	totalTokens := calculateTotalTokens(sortedDups)
-
-	if err := p.writeCloneGroupHeader(len(sortedDups), totalTokens); err != nil {
+	// Build clones first so we can extract classification data for the header
+	clones, err := p.buildClones(sortedDups)
+	if err != nil {
 		return err
 	}
 
-	clones, err := p.buildClones(sortedDups)
-	if err != nil {
+	if err := p.writeCloneGroupHeader(clones); err != nil {
 		return err
 	}
 
@@ -470,25 +601,105 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 	return p.writeCloneGroupFooter()
 }
 
-func calculateTotalTokens(dups [][]*syntax.Node) int {
-	total := 0
-	for _, dup := range dups {
-		total += len(dup)
+func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
+	// Calculate aggregate metrics from clones
+	occurrences := len(clones)
+	totalTokens := 0
+	hasTest := false
+	highestPriority := PriorityLow
+	primaryCategory := CategoryUnknown
+	categoryCounts := make(map[CloneCategory]int)
+
+	for _, cl := range clones {
+		totalTokens += cl.classification.Tokens
+		if cl.classification.IsTest {
+			hasTest = true
+		}
+		categoryCounts[cl.classification.Category]++
+		// Track highest priority
+		if priorityHigher(cl.classification.Priority, highestPriority) {
+			highestPriority = cl.classification.Priority
+		}
+
+		// Update global stats
+		p.stats.categoryCounts[cl.classification.Category]++
+		p.stats.priorityCounts[cl.classification.Priority]++
+		if cl.classification.IsTest {
+			p.stats.testCount++
+		} else {
+			p.stats.prodCount++
+		}
 	}
 
-	return total
-}
+	p.stats.totalClones += occurrences
+	p.stats.totalTokens += totalTokens
 
-func (p *htmlprinter) writeCloneGroupHeader(occurrences, tokens int) error {
-	_, err := fmt.Fprintf(p.w, `<div class="clone-group">
+	// Find most common category
+	maxCount := 0
+	for cat, count := range categoryCounts {
+		if count > maxCount {
+			maxCount = count
+			primaryCategory = cat
+		}
+	}
+
+	// Get first clone's suggestion (they're usually similar)
+	suggestion := ""
+	if len(clones) > 0 {
+		suggestion = clones[0].classification.Suggestion
+	}
+
+	// Build badges HTML
+	categoryEmoji := primaryCategory.GetCategoryEmoji()
+	priorityEmoji := highestPriority.GetPriorityEmoji()
+
+	badgesHTML := fmt.Sprintf(
+		`<span class="badge-category">%s %s</span><span class="badge-priority %s">%s %s</span>`,
+		categoryEmoji, primaryCategory, highestPriority, priorityEmoji, highestPriority,
+	)
+
+	if hasTest {
+		badgesHTML += `<span class="badge-test">🧪 test</span>`
+	}
+
+	_, err := fmt.Fprintf(p.w, `<div class="clone-group" data-category="%s" data-priority="%s" data-test="%t">
 <div class="clone-header" onclick="this.parentElement.classList.toggle('collapsed')">
 <h3>Clone Group #%d</h3>
+<div class="badge-group">
+%s
 <span class="badge">%d occurrences · %d tokens</span>
 </div>
+</div>
 <div class="clone-body">
-`, p.iota, occurrences, tokens)
+%s
+`,
+		primaryCategory, highestPriority, hasTest,
+		p.iota,
+		badgesHTML,
+		occurrences, totalTokens,
+		suggestionHTML(suggestion))
 
 	return err //nolint:wrapcheck
+}
+
+// priorityHigher returns true if p1 is higher priority than p2.
+func priorityHigher(p1, p2 ClonePriority) bool {
+	priorityOrder := map[ClonePriority]int{
+		PriorityCritical: 4,
+		PriorityHigh:     3,
+		PriorityMedium:   2,
+		PriorityLow:      1,
+	}
+
+	return priorityOrder[p1] > priorityOrder[p2]
+}
+
+func suggestionHTML(suggestion string) string {
+	if suggestion == "" {
+		return ""
+	}
+
+	return fmt.Sprintf(`<div class="suggestion">💡 %s</div>`, html.EscapeString(suggestion))
 }
 
 func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
@@ -519,10 +730,21 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 			)
 		}
 
-		clones[i] = clone{ //nolint:exhaustruct
-			filename:  fileInfo.Filename,
-			lineStart: fileInfo.LineStart,
-			fragment:  extractContent(fileInfo, nstart, nend),
+		// Calculate clone metrics for classification
+		tokens := cnt
+		lines := fileInfo.LineEnd - fileInfo.LineStart + 1
+		nodeType := nstart.Type
+
+		// Classify the clone for actionable reporting
+		classification := ClassifyClone(fileInfo.Filename, nodeType, tokens, lines)
+
+		clones[i] = clone{
+			filename:       fileInfo.Filename,
+			lineStart:      fileInfo.LineStart,
+			lineEnd:        fileInfo.LineEnd,
+			fragment:       extractContent(fileInfo, nstart, nend),
+			size:           cnt,
+			classification: classification,
 		}
 	}
 
@@ -846,8 +1068,125 @@ func countDiffStats(diff DiffResult) (added, removed, modified int) {
 	return added, removed, modified
 }
 
+// buildSummarySection generates the HTML summary section with category/priority distribution
+// and filter buttons.
+func (p *htmlprinter) buildSummarySection() string {
+	if p.stats.totalClones == 0 {
+		return ""
+	}
+
+	var sb strings.Builder
+
+	// Summary section header
+	sb.WriteString(`<div class="summary-section">`)
+	sb.WriteString(`<h2>📊 Summary</h2>`)
+
+	// Overview stats
+	sb.WriteString(`<div class="summary-grid">`)
+	sb.WriteString(`<div class="summary-item"><span class="summary-label">Total Clones</span><span class="summary-value">`)
+	sb.WriteString(strconv.Itoa(p.stats.totalClones))
+	sb.WriteString(`</span></div>`)
+	sb.WriteString(`<div class="summary-item"><span class="summary-label">Total Tokens</span><span class="summary-value">`)
+	sb.WriteString(strconv.Itoa(p.stats.totalTokens))
+	sb.WriteString(`</span></div>`)
+	sb.WriteString(`<div class="summary-item"><span class="summary-label">Production</span><span class="summary-value">`)
+	sb.WriteString(strconv.Itoa(p.stats.prodCount))
+	sb.WriteString(`</span></div>`)
+	sb.WriteString(`<div class="summary-item"><span class="summary-label">Test Code</span><span class="summary-value">`)
+	sb.WriteString(strconv.Itoa(p.stats.testCount))
+	sb.WriteString(`</span></div>`)
+	sb.WriteString(`</div>`)
+
+	// Category breakdown
+	if len(p.stats.categoryCounts) > 0 {
+		sb.WriteString(`<div class="summary-category"><h3>By Category</h3><div class="category-list">`)
+		for _, cat := range orderedCategories() {
+			if count := p.stats.categoryCounts[cat]; count > 0 {
+				sb.WriteString(`<span class="category-tag">`)
+				sb.WriteString(cat.GetCategoryEmoji())
+				sb.WriteString(" ")
+				sb.WriteString(string(cat))
+				sb.WriteString(": ")
+				sb.WriteString(strconv.Itoa(count))
+				sb.WriteString(`</span>`)
+			}
+		}
+		sb.WriteString(`</div></div>`)
+	}
+
+	// Priority breakdown
+	if len(p.stats.priorityCounts) > 0 {
+		sb.WriteString(`<div class="summary-category"><h3>By Priority</h3><div class="priority-list">`)
+		for _, pri := range orderedPriorities() {
+			if count := p.stats.priorityCounts[pri]; count > 0 {
+				sb.WriteString(`<span class="priority-tag priority-`)
+				sb.WriteString(string(pri))
+				sb.WriteString(`">`)
+				sb.WriteString(pri.GetPriorityEmoji())
+				sb.WriteString(" ")
+				sb.WriteString(string(pri))
+				sb.WriteString(": ")
+				sb.WriteString(strconv.Itoa(count))
+				sb.WriteString(`</span>`)
+			}
+		}
+		sb.WriteString(`</div></div>`)
+	}
+
+	// Filter buttons
+	sb.WriteString(`<div class="filter-buttons"><h3>Filters</h3>`)
+	sb.WriteString(`<button class="filter-btn active" data-filter="all" onclick="filterClones('all')">All</button>`)
+	sb.WriteString(`<button class="filter-btn" data-filter="prod" onclick="filterClones('prod')">📦 Production</button>`)
+	sb.WriteString(`<button class="filter-btn" data-filter="test" onclick="filterClones('test')">🧪 Test</button>`)
+	sb.WriteString(`<span class="filter-separator">|</span>`)
+
+	for _, cat := range orderedCategories() {
+		sb.WriteString(`<button class="filter-btn" data-filter="cat-`)
+		sb.WriteString(string(cat))
+		sb.WriteString(`" onclick="filterClones('cat-`)
+		sb.WriteString(string(cat))
+		sb.WriteString(`')">`)
+		sb.WriteString(cat.GetCategoryEmoji())
+		sb.WriteString(`</button>`)
+	}
+
+	sb.WriteString(`</div>`)
+	sb.WriteString(`</div>`)
+
+	return sb.String()
+}
+
+// orderedCategories returns categories in a stable order for display.
+func orderedCategories() []CloneCategory {
+	return []CloneCategory{
+		CategoryFunction,
+		CategoryMethod,
+		CategoryHandler,
+		CategoryStruct,
+		CategoryInterface,
+		CategoryLoop,
+		CategoryConditional,
+		CategoryAssignment,
+		CategoryExpression,
+		CategoryTest,
+		CategoryUnknown,
+	}
+}
+
+// orderedPriorities returns priorities in a stable order for display.
+func orderedPriorities() []ClonePriority {
+	return []ClonePriority{
+		PriorityCritical,
+		PriorityHigh,
+		PriorityMedium,
+		PriorityLow,
+	}
+}
+
 func (p *htmlprinter) PrintFooter() error {
-	_, err := fmt.Fprint(p.w, `
+	summary := p.buildSummarySection()
+
+	_, err := fmt.Fprint(p.w, summary+`
 </div>
 <footer>
 <p>Generated by art-dupl · Code Duplication Detection Tool</p>
@@ -904,6 +1243,31 @@ function toggleDiffView(groupId, mode) {
 	} catch (e) {
 		// Ignore localStorage errors
 	}
+}
+
+// Filter clones by test/prod or category
+function filterClones(filter) {
+	// Update active button state
+	document.querySelectorAll('.filter-btn').forEach(function(btn) {
+		btn.classList.remove('active');
+		if (btn.dataset.filter === filter) {
+			btn.classList.add('active');
+		}
+	});
+
+	// Filter clone groups
+	document.querySelectorAll('.clone-group').forEach(function(group) {
+		if (filter === 'all') {
+			group.style.display = '';
+		} else if (filter === 'prod') {
+			group.style.display = group.dataset.test === 'false' ? '' : 'none';
+		} else if (filter === 'test') {
+			group.style.display = group.dataset.test === 'true' ? '' : 'none';
+		} else if (filter.startsWith('cat-')) {
+			var cat = filter.substring(4);
+			group.style.display = group.dataset.category === cat ? '' : 'none';
+		}
+	});
 }
 
 // Initialize diff view mode from saved preference
