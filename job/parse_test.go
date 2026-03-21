@@ -35,7 +35,7 @@ func helper() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan)
+	schan, _ := Parse(ctx, fchan, true)
 
 	waitForParsedNodes(t, schan, "Parse timed out - possible deadlock", "Expected some parsed nodes, got empty sequence")
 }
@@ -48,7 +48,7 @@ func TestParseErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan)
+	schan, _ := Parse(ctx, fchan, true)
 
 	select {
 	case seq := <-schan:
@@ -93,7 +93,7 @@ func function1() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan)
+	schan, _ := Parse(ctx, fchan, true)
 
 	// Should receive sequences for both files
 	count := 0

@@ -45,7 +45,7 @@ func function3() {
 
 	close(fchan)
 
-	schan, statsChan := ParseParallel(ctx, fchan, 2)
+	schan, statsChan := ParseParallel(ctx, fchan, 2, true)
 
 	count := 0
 
@@ -87,7 +87,7 @@ func main() {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 0)
+	schan, _ := ParseParallel(ctx, fchan, 0, true)
 
 	waitForParsedNodes(t, schan, "ParseParallel timed out")
 }
@@ -103,7 +103,7 @@ func TestParseParallelContextCancellation(t *testing.T) {
 		close(fchan)
 	}()
 
-	schan, _ := ParseParallel(ctx, fchan, 2)
+	schan, _ := ParseParallel(ctx, fchan, 2, true)
 
 	// Should complete without deadlock
 	for range schan {
@@ -118,7 +118,7 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 1)
+	schan, _ := ParseParallel(ctx, fchan, 1, true)
 
 	// Should handle errors gracefully
 	select {
@@ -222,7 +222,7 @@ func main() {
 
 	close(fchan)
 
-	schan, statsChan := Parse(ctx, fchan)
+	schan, statsChan := Parse(ctx, fchan, true)
 
 	// Drain the sequences channel
 	for range schan {

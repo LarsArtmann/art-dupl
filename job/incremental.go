@@ -14,21 +14,25 @@ import (
 type IncrementalParser struct {
 	cache      *cache.FileCache
 	clearCache bool
+	semantic   bool
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
-func NewIncrementalParser(cacheDir string, clearCache bool) *IncrementalParser {
+func NewIncrementalParser(cacheDir string, clearCache bool, semantic bool) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
 		"cacheDir",
 		cacheDir,
 		"clearCache",
 		clearCache,
+		"semantic",
+		semantic,
 	)
 
 	return &IncrementalParser{
 		cache:      cache.NewFileCache(cacheDir),
 		clearCache: clearCache,
+		semantic:   semantic,
 	}
 }
 
@@ -131,7 +135,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		lines int
 	)
 
-	ast, lines, err = ParseFileByExtension(file)
+	ast, lines, err = ParseFileByExtensionWithConfig(file, ip.semantic)
 	if err != nil {
 		return ip.handleFileError(file, err, "parse")
 	}

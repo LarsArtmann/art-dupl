@@ -207,6 +207,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
+	// Handle --structural flag to explicitly disable semantic detection (opt-out from default)
+	if structural {
+		mergedConfig.Semantic = false
+	}
+
 	if err = config.ValidateConfig(mergedConfig); err != nil {
 		return duplerrors.WrapValidation(
 			err,

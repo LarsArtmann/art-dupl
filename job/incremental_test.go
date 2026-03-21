@@ -40,7 +40,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -71,7 +71,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -117,7 +117,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -129,7 +129,7 @@ func main() {
 	for range schan {
 	}
 
-	parserWithClear := NewIncrementalParser(cacheDir, true)
+	parserWithClear := NewIncrementalParser(cacheDir, true, true)
 
 	fchan2 := make(chan string, 1)
 	fchan2 <- setup.GetFilePath("test.go")
@@ -151,7 +151,7 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx, cancel := context.WithCancel(t.Context())
 
 	fchan := make(chan string, 1)
@@ -172,7 +172,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -216,7 +216,7 @@ func function2() {
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 2)
@@ -261,7 +261,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false)
+	parser := NewIncrementalParser(cacheDir, false, true)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)

@@ -23,7 +23,8 @@ type parseResult struct {
 }
 
 // Parse parses files sequentially (legacy behavior).
-func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan ParseStats) {
+// When semantic is true, identifier names are included in type hashes.
+func Parse(ctx context.Context, fchan chan string, semantic bool) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
 	statsChan := make(chan ParseStats, 1)
@@ -53,7 +54,7 @@ func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan Pa
 
 			// Dispatch to appropriate parser based on file extension
 
-			ast, lines, err = ParseFileByExtension(file)
+			ast, lines, err = ParseFileByExtensionWithConfig(file, semantic)
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 
@@ -79,10 +80,12 @@ func Parse(ctx context.Context, fchan chan string) (chan []*syntax.Node, chan Pa
 
 // ParseParallel parses files concurrently using a worker pool.
 // Workers defaults to runtime.GOMAXPROCS(0) if <= 0.
+// When semantic is true, identifier names are included in type hashes.
 func ParseParallel(
 	ctx context.Context,
 	fchan chan string,
 	workers int,
+	semantic bool,
 ) (chan []*syntax.Node, chan ParseStats) {
 	workers = normalizeWorkerCount(workers)
 
@@ -94,7 +97,7 @@ func ParseParallel(
 
 	fileQueue := make(chan string, workers*2)
 
-	startWorkers(ctx, &wg, fileQueue, resultChan, workers)
+	startWorkers(ctx, &wg, fileQueue, resultChan, workers, semantic)
 
 	// Feed files to workers
 	go feedFiles(ctx, fchan, fileQueue)
@@ -133,6 +136,7 @@ func startWorkers(
 	fileQueue <-chan string,
 	resultChan chan<- parseResult,
 	workers int,
+	semantic bool,
 ) {
 	for range workers {
 		wg.Go(func() {
@@ -143,7 +147,7 @@ func startWorkers(
 				default:
 				}
 
-				result := parseFile(file)
+				result := parseFileWithConfig(file, semantic)
 				resultChan <- result
 			}
 		})
@@ -153,6 +157,13 @@ func startWorkers(
 // parseFile parses a single file and returns the result.
 func parseFile(file string) parseResult {
 	ast, lines, err := ParseFileByExtension(file)
+
+	return parseResult{ast: ast, lines: lines, err: err}
+}
+
+// parseFileWithConfig parses a single file with semantic configuration.
+func parseFileWithConfig(file string, semantic bool) parseResult {
+	ast, lines, err := ParseFileByExtensionWithConfig(file, semantic)
 
 	return parseResult{ast: ast, lines: lines, err: err}
 }

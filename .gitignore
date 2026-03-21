@@ -22,3 +22,7 @@ my-reports/
 # BDD test binaries
 bdd/art-dupl-*
 bdd/art-dupl
+# Dependencies
+node_modules/
+# Sensitive files
+*.db

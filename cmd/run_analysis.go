@@ -75,7 +75,7 @@ func buildSuffixTree(
 			_, _ = fmt.Fprintf(os.Stderr, "🔍 Incremental mode enabled, cache dir: %s\n", cfg.CacheDir)
 		}
 
-		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache)
+		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache, cfg.Semantic)
 
 		var incStatsChan chan job.IncrementalStats
 
@@ -104,9 +104,9 @@ func buildSuffixTree(
 
 	filesChan := filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor)
 	if cfg.Workers > 1 {
-		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers)
+		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers, cfg.Semantic)
 	} else {
-		schan, statsChan = job.Parse(ctx, filesChan)
+		schan, statsChan = job.Parse(ctx, filesChan, cfg.Semantic)
 	}
 
 	tree, data, done := job.BuildTree(ctx, schan)

@@ -50,7 +50,7 @@ func (d *detector) buildAnalysisPipeline(
 	}()
 
 	// Parse files and build syntax tree
-	syntaxChan, fileCountChan := job.Parse(ctx, fileChan)
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.config.Semantic)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	// Wait for tree building to complete
