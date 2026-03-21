@@ -1,104 +1,113 @@
 version: "2"
 run:
   timeout: 5m
+  go: ""
+  build-tags: []
+  allow-parallel-runners: false
+  allow-serial-runners: false
   tests: true
+output:
+  formats: {}
 linters:
   enable:
-    - maintidx
-    - wastedassign
-    - errorlint
-    - grouper
-    - exhaustruct
-    - testpackage
-    - importas
-    - nolintlint
-    - gosmopolitan
-    - gosec
-    - decorder
-    - forcetypeassert
-    - wrapcheck
-    - tparallel
-    - nonamedreturns
-    - nlreturn
-    - godot
-    - noctx
-    - prealloc
-    - gocheckcompilerdirectives
-    - nosprintfhostport
-    - sqlclosecheck
-    - gocritic
-    - nestif
-    - ginkgolinter
-    - perfsprint
-    - staticcheck
-    - usestdlibvars
-    - zerologlint
-    - contextcheck
-    - nakedret
-    - promlinter
-    - paralleltest
-    - whitespace
-    - rowserrcheck
-    - fatcontext
-    - forbidigo
-    - copyloopvar
-    - err113
-    - gocyclo
-    - errname
-    - testifylint
-    - testableexamples
-    - gochecknoinits
-    - containedctx
-    - unconvert
-    - goheader
-    - ineffassign
-    - goprintffuncname
-    - goconst
-    - gomodguard
-    - varnamelen
     - misspell
-    - gochecksumtype
-    - sloglint
-    - mnd
-    - unused
-    - tagliatelle
-    - iface
     - spancheck
-    - recvcheck
-    - inamedparam
     - interfacebloat
+    - govet
+    - makezero
+    - predeclared
+    - durationcheck
+    - revive
+    - errorlint
+    - nakedret
+    - paralleltest
+    - gochecksumtype
     - usetesting
-    - gochecknoglobals
-    - bodyclose
+    - nestif
+    - godot
+    - rowserrcheck
+    - goheader
     - gocognit
-    - dupword
-    - nilerr
     - reassign
     - canonicalheader
-    - unparam
-    - exhaustive
-    - govet
     - asasalint
-    - makezero
+    - varnamelen
+    - exhaustruct
+    - gocritic
+    - forbidigo
+    - gocyclo
+    - testifylint
+    - gomoddirectives
+    - thelper
+    - grouper
+    - nosprintfhostport
+    - tagliatelle
+    - nilerr
+    - unparam
+    - errcheck
+    - bidichk
+    - staticcheck
+    - usestdlibvars
+    - unconvert
+    - iface
+    - noctx
+    - fatcontext
+    - goconst
+    - gomodguard
+    - unused
     - funlen
-    - mirror
+    - nilnil
+    - nolintlint
+    - gosec
+    - gochecknoinits
+    - errchkjson
+    - testpackage
+    - prealloc
+    - gocheckcompilerdirectives
+    - zerologlint
+    - promlinter
+    - containedctx
+    - gochecknoglobals
+    - bodyclose
+    - maintidx
+    - gosmopolitan
+    - dupword
     - protogetter
-    - loggercheck
     - asciicheck
     - ireturn
-    - intrange
-    - durationcheck
-    - predeclared
-    - gomoddirectives
-    - errcheck
-    - cyclop
-    - revive
-    - thelper
-    - bidichk
-    - godox
-    - nilnil
     - dogsled
+    - nilnesserr
+    - decorder
+    - forcetypeassert
+    - tparallel
+    - err113
+    - loggercheck
+    - godox
+    - wastedassign
+    - sqlclosecheck
+    - ginkgolinter
+    - recvcheck
+    - cyclop
     - dupl
+    - wrapcheck
+    - contextcheck
+    - copyloopvar
+    - errname
+    - testableexamples
+    - ineffassign
+    - sloglint
+    - mnd
+    - inamedparam
+    - exhaustive
+    - mirror
+    - musttag
+    - importas
+    - nonamedreturns
+    - nlreturn
+    - whitespace
+    - intrange
+    - perfsprint
+    - goprintffuncname
   settings:
     cyclop:
       max-complexity: 15
@@ -208,3 +217,7 @@ linters:
         linters:
           - gocyclo
           - cyclop
+formatters:
+  enable:
+    - golines
+issues: {}
