@@ -237,6 +237,8 @@ func LoadConfig(filename string) (*Config, error) {
 
 // LoadOptionalConfig loads configuration from file if filename is not empty.
 // Returns nil if filename is empty, allowing optional config file usage.
+//
+//nolint:nilnil // Intentional: nil config + nil error means "no config file, which is valid"
 func LoadOptionalConfig(filename string) (*Config, error) {
 	if filename == "" {
 		return nil, nil
