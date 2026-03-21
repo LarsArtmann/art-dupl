@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +14,7 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("include-node-modules", false, "include node_modules directory in hash-based detection (excluded by default)")
 	rootCmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	rootCmd.Flags().
-		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
+		IntP("threshold", "t", cli.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
 	rootCmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	rootCmd.Flags().
 		Bool("html", false, "output results as HTML with syntax-highlighted code fragments")

@@ -7,6 +7,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
+// DefaultThreshold is the default minimum token sequence size for clone detection.
+const DefaultThreshold = 15
+
 // RuntimeConfig represents the runtime configuration from CLI flags and config files.
 type RuntimeConfig struct {
 	// CLI Flags
@@ -57,7 +60,7 @@ func (r *RuntimeConfig) ToConfig() *config.Config {
 // DefaultRuntimeConfig returns a default runtime configuration.
 func DefaultRuntimeConfig() *RuntimeConfig {
 	return &RuntimeConfig{ //nolint:exhaustruct
-		Threshold:    15, // defaultThreshold
+		Threshold:    DefaultThreshold,
 		SortBy:       "size",
 		OutputWriter: &cliStdout{},
 		ErrorWriter:  &cliStderr{},
