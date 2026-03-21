@@ -1,7 +1,6 @@
 package migration
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -259,8 +258,9 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	if threshold, ok := oldConfig["threshold"].(float64); ok {
 		options.Threshold = domain.Threshold(uint(threshold))
 	} else {
-		return domain.DetectionOptions{}, errors.New( //nolint:err113
-			"missing or invalid threshold in config",
+		return domain.DetectionOptions{}, fmt.Errorf( //nolint:err113
+			"missing or invalid threshold in config: got %v (type %T)",
+			oldConfig["threshold"], oldConfig["threshold"],
 		)
 	}
 
@@ -274,8 +274,9 @@ func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
 	}
 
 	if len(options.Paths) == 0 {
-		return domain.DetectionOptions{}, errors.New( //nolint:err113
-			"no paths found in config",
+		return domain.DetectionOptions{}, fmt.Errorf( //nolint:err113
+			"no paths found in config: paths=%v (type %T)",
+			oldConfig["paths"], oldConfig["paths"],
 		)
 	}
 

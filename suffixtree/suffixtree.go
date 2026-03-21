@@ -167,7 +167,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 	}
 
 	if s == nil {
-		return nil, 0, errors.NewInternalError("no suffix link resolution found", nil)
+		return nil, 0, errors.NewInternalError(
+			fmt.Sprintf("no suffix link resolution found: start=%d, end=%d", start, end), nil)
 	}
 
 	return s, start, nil

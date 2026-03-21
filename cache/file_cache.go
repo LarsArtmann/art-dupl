@@ -265,7 +265,7 @@ func (fc *FileCache) serialize(nodes []*syntax.Node) ([]byte, error) {
 
 	err := enc.Encode(wrapper)
 	if err != nil {
-		return nil, fmt.Errorf("failed to serialize nodes: %w", err)
+		return nil, fmt.Errorf("failed to serialize %d nodes: %w", len(nodes), err)
 	}
 
 	return buf.Bytes(), nil
@@ -280,7 +280,7 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 
 	err := dec.Decode(&wrapper)
 	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize nodes: %w", err)
+		return nil, fmt.Errorf("failed to deserialize nodes (dataSize=%d bytes): %w", len(data), err)
 	}
 
 	// Check version compatibility

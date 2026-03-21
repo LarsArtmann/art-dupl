@@ -136,7 +136,7 @@ type ProcessingTime uint
 // Returns error if the time is 0 (invalid).
 func NewProcessingTime(time uint) (ProcessingTime, error) {
 	if time == 0 {
-		return 0, errors.NewValidationError("processing time cannot be 0", nil)
+		return 0, errors.NewValidationError(fmt.Sprintf("processing time cannot be 0 (actual=%d)", time), nil)
 	}
 
 	return ProcessingTime(time), nil
@@ -172,7 +172,7 @@ func (pt ProcessingTime) String() string {
 // MarshalJSON implements json.Marshaler for ProcessingTime.
 func (pt ProcessingTime) MarshalJSON() ([]byte, error) {
 	if pt == 0 {
-		return nil, errors.NewValidationError("processing time cannot be 0", nil)
+		return nil, errors.NewValidationError(fmt.Sprintf("processing time cannot be 0 (actual=%d)", pt), nil)
 	}
 
 	data, err := json.Marshal(uint(pt))

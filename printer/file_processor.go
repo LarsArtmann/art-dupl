@@ -1,6 +1,8 @@
 package printer
 
 import (
+	"fmt"
+
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -42,7 +44,10 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 // ProcessNodeRange processes a range of nodes (start to end).
 func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInfo, error) {
 	if startNode == nil || endNode == nil {
-		return nil, errors.NewInternalError("nil start or end node provided", nil)
+		return nil, errors.NewInternalError(
+			fmt.Sprintf("nil node provided: startNode=%v, endNode=%v", startNode != nil, endNode != nil),
+			nil,
+		)
 	}
 
 	// Use start node for filename, but combine positions
