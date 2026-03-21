@@ -191,7 +191,7 @@ func (p *stats) PrintFooter() error {
 }
 
 // printLine prints a base-styled line with indentation.
-func (p *stats) printLine(format string, args ...any) {
+func (p *stats) printLinef(format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render(fmt.Sprintf(format, args...)))
 }
 
@@ -206,17 +206,17 @@ func (p *stats) printMetric(label, value string) {
 }
 
 // printSuccess prints a success-styled message.
-func (p *stats) printSuccess(format string, args ...any) {
+func (p *stats) printSuccessf(format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "%s\n", p.success.Render(fmt.Sprintf(format, args...)))
 }
 
 // printWarning prints a warning-styled message.
-func (p *stats) printWarning(format string, args ...any) {
+func (p *stats) printWarningf(format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "%s\n", p.warning.Render(fmt.Sprintf(format, args...)))
 }
 
 // printError prints an error-styled message.
-func (p *stats) printError(format string, args ...any) {
+func (p *stats) printErrorf(format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "%s\n", p.error.Render(fmt.Sprintf(format, args...)))
 }
 
@@ -226,6 +226,6 @@ func (p *stats) printHeader(title string) {
 }
 
 // printBullet prints a bullet point with base styling.
-func (p *stats) printBullet(format string, args ...any) {
+func (p *stats) printBulletf(format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf(format, args...)))
 }

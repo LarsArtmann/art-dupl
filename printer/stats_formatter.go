@@ -117,7 +117,7 @@ func (p *stats) printText() {
 
 func (p *stats) printTextHeader() {
 	p.printHeader("Code Duplication Statistics")
-	p.printLine("============================")
+	p.printLinef("============================")
 }
 
 func (p *stats) printTextConfiguration() {
@@ -189,7 +189,7 @@ func (p *stats) printTextDuplicateCode() {
 	if p.statsData.HealthScore != "" {
 		styled := p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore)
 		p.printMetric("Health Score", styled)
-		p.printLine("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
+		p.printLinef("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
 	}
 	_, _ = fmt.Fprintf(p.w, "\n")
 }
@@ -218,8 +218,8 @@ func (p *stats) printTextRecommendations() {
 	p.printRecommendations()
 
 	p.printSection("Note:")
-	p.printLine("Metrics count unique duplicate patterns, not total occurrences.")
-	p.printLine("A clone group with 3 instances counts once for line calculations.")
+	p.printLinef("Metrics count unique duplicate patterns, not total occurrences.")
+	p.printLinef("A clone group with 3 instances counts once for line calculations.")
 }
 
 // topFileStat holds file duplication statistics for sorting.

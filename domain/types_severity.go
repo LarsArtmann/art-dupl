@@ -52,7 +52,6 @@ func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
 func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 	str := strings.Trim(string(data), `"`)
 
-
 	severity := CloneSeverity(str)
 	if !severity.IsValid() {
 		return fmt.Errorf(
