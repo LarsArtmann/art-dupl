@@ -1,6 +1,12 @@
 package golang
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// ErrInvalidDetectionMode is returned when an invalid DetectionMode is used.
+var ErrInvalidDetectionMode = errors.New("invalid detection mode")
 
 // ParseConfig holds configuration for the Go source code parser.
 // It controls how AST nodes are transformed and matched.
@@ -33,7 +39,7 @@ func MustParseConfig(mode DetectionMode) ParseConfig {
 // Validate returns nil if the config is valid, otherwise an error describing the problem.
 func (cfg ParseConfig) Validate() error {
 	if !cfg.Mode.IsValid() {
-		return fmt.Errorf("invalid detection mode: %q", cfg.Mode)
+		return fmt.Errorf("%w: %q", ErrInvalidDetectionMode, cfg.Mode)
 	}
 
 	return nil
@@ -46,6 +52,7 @@ func (cfg ParseConfig) IsSemantic() bool {
 
 // SemanticHashEnabled controls whether semantic-aware hashing is enabled.
 // This is a package-level setting used by the default parser.
+//
 // Deprecated: Use ParseConfig with explicit DetectionMode instead.
 var SemanticHashEnabled bool
 

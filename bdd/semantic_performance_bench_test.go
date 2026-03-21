@@ -22,6 +22,7 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 	}
 
 	// Get project root (two levels up from bdd/)
+	//nolint:dogsled // Standard pattern for getting current file path
 	_, currentFile, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Join(filepath.Dir(currentFile), "..")
 

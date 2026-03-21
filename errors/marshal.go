@@ -7,7 +7,15 @@ package errors
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+)
+
+// Pre-defined error formats for static error wrapping.
+var (
+	ErrUnsupportedValueType = errors.New("unsupported value type")
+	ErrUnsupportedType      = errors.New("unsupported type")
+	ErrInvalidUTF8          = errors.New("invalid UTF-8 encoding")
 )
 
 // MarshalError is a specialized error for JSON marshaling failures.
@@ -33,25 +41,22 @@ func HandleMarshalingError(operation, context string, err error) error {
 
 	switch err.Error() {
 	case "json: unsupported value":
-		return newMarshalError(operation, context, err, "unsupported value type: %w")
+		return newMarshalError(operation, context, err, ErrUnsupportedValueType)
 	case "json: unsupported type":
-		return newMarshalError(operation, context, err, "unsupported type: %w")
+		return newMarshalError(operation, context, err, ErrUnsupportedType)
 	case "json: invalid UTF-8":
-		return newMarshalError(operation, context, err, "invalid UTF-8 encoding: %w")
+		return newMarshalError(operation, context, err, ErrInvalidUTF8)
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
 	}
 }
 
-// newMarshalError creates a new MarshalError with a formatted error message.
-func newMarshalError(operation, context string, err error, msgFormat string) *MarshalError {
+// newMarshalError creates a new MarshalError with a wrapped static error.
+func newMarshalError(operation, context string, err, staticErr error) *MarshalError {
 	return &MarshalError{
 		Operation: operation,
 		Context:   context,
-		Cause: fmt.Errorf(
-			msgFormat,
-			err,
-		), //nolint:err113 // Intentional: wrapping error with context
+		Cause:     fmt.Errorf("%w: %w", staticErr, err),
 	}
 }
 

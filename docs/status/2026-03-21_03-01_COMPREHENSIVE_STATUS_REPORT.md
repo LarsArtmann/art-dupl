@@ -16,6 +16,7 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 ## A) WORK FULLY DONE ✅
 
 ### 1. Critical Bug Fixes (COMPLETED)
+
 - **Semantic Flag Connection**: Fixed the `--structural` flag bug where the flag was parsed but never applied
   - `job/parse.go:149` - Added `semantic bool` parameter to `startWorkers()`
   - `job/incremental.go` - Added `semantic` field to `IncrementalParser` struct
@@ -23,17 +24,20 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
   - `pkg/artdupl/detector_pipeline.go` - Updated to pass `d.config.Semantic` to `job.Parse()`
 
 ### 2. Test File Updates (COMPLETED)
+
 - Updated all test calls to include semantic parameter:
   - `job/incremental_test.go` - 8 call sites updated
   - `job/parse_parallel_test.go` - 5 call sites updated
   - `job/parse_test.go` - 4 call sites updated
 
 ### 3. Build Verification (COMPLETED)
+
 - `go build ./...` - SUCCESS
 - `go test ./... -short` - ALL TESTS PASS
 - 38 files modified, 471 insertions(+), 91 deletions(-)
 
 ### 4. Previous Session Work (COMPLETED)
+
 - Fixed `syntax/golang/generics_test.go` - Added missing `type` keywords
 - Fixed `cmd/run_flags.go` - Added structural flag handling after config merge
 - Connected semantic flag through entire parser pipeline
@@ -43,9 +47,11 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 ## B) WORK PARTIALLY DONE ⚠️
 
 ### 1. Code Quality Improvements (IN PROGRESS)
+
 **Linting Status:** 312 issues remaining (from pre-commit hook)
 
 **Breakdown by Category:**
+
 - `mnd` (Magic Numbers): 50 issues
 - `revive`: 50 issues
 - `tagliatelle`: 50 issues
@@ -57,12 +63,15 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 - Other categories: <5 issues each
 
 **Notable Issues:**
+
 - `syntax/golang/transform.go:11` - Cognitive complexity 37 (threshold: 35)
 - `cmd/run_flags.go:27` - Function `runCmd` has high complexity metrics
 - `job/parse.go:158` - `parseFile` function is unused (detected by `unused` linter)
 
 ### 2. File Size Management (ONGOING)
+
 **Files Over 350 Lines (46 files):**
+
 - `adapter/printer_adapter_test.go` (494 lines)
 - `bdd/filter_features_test.go` (621 lines)
 - `bdd/plumbing_output_test.go` (620 lines)
@@ -76,6 +85,7 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 ## C) WORK NOT STARTED 📋
 
 ### 1. Remaining Linting Fixes
+
 - Fix 50 magic number violations
 - Fix 50 varnamelen violations (short variable names)
 - Fix 50 revive style violations
@@ -83,12 +93,14 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 - Fix 12 wrapcheck error wrapping violations
 
 ### 2. Architecture Improvements
+
 - Refactor `transform.go` to reduce cognitive complexity from 37 to <35
 - Split `runCmd` function (currently 40 cyclomatic complexity)
 - Address 6 TODO/FIXME comments in codebase
 - Remove or use the unused `parseFile` function
 
 ### 3. Test Coverage
+
 - Increase coverage in `syntax/golang` package
 - Add more edge case tests for semantic detection
 - BDD test coverage for new semantic flag functionality
@@ -98,20 +110,25 @@ The art-dupl project is in a **PRODUCTION-READY** state with 38 modified files p
 ## D) TOTALLY FUCKED UP 🚨
 
 ### 1. Pre-Commit Hook Issues
+
 **CRITICAL:** The BuildFlow pre-commit hook is FAILING due to 312 linting violations.
 
 **Impact:**
+
 - Cannot commit without `--no-verify` flag
 - Blocks clean git workflow
 - Indicates accumulated technical debt
 
 **Root Cause:**
+
 - Project has accumulated linting violations over multiple sessions
 - Some violations are in generated/test files
 - Magic number and naming convention violations are pervasive
 
 ### 2. Disabled Linters (TECHNICAL DEBT)
+
 Several linters are disabled in `.golangci.yml`:
+
 - `gci`, `gofumpt`, `goimports` - managed by BuildFlow
 - `swaggo` - potentially useful but disabled
 - Various formatters superseded by others
@@ -121,22 +138,26 @@ Several linters are disabled in `.golangci.yml`:
 ## E) WHAT WE SHOULD IMPROVE 🎯
 
 ### Immediate (Next Session)
+
 1. **Fix Critical Linting Issues** - Address the 312 violations blocking clean commits
 2. **Remove Unused Code** - Delete `parseFile` function or make it used
 3. **Fix TODO Comments** - Address 6 remaining TODO/FIXME items
 
 ### Short Term (This Week)
+
 4. **Reduce Magic Numbers** - Extract constants for the 50 `mnd` violations
 5. **Fix Variable Naming** - Expand short variable names (50 `varnamelen` issues)
 6. **Standardize JSON Tags** - Fix 50 `tagliatelle` violations
 
 ### Medium Term (This Month)
+
 7. **Complexity Reduction** - Refactor high-complexity functions
 8. **Test Coverage** - Add tests for semantic detection edge cases
 9. **Documentation** - Update AGENTS.md with recent architectural changes
 10. **Code Generation** - Review if some test boilerplate can be generated
 
 ### Long Term (Next Quarter)
+
 11. **Architecture Review** - Consider splitting large packages
 12. **Performance Optimization** - Profile and optimize hot paths
 13. **Dependency Updates** - Review and update outdated dependencies
@@ -148,6 +169,7 @@ Several linters are disabled in `.golangci.yml`:
 ## F) TOP #25 THINGS TO GET DONE NEXT 📋
 
 ### Priority 1: Critical Fixes (Do First)
+
 1. Fix 312 linting violations to restore clean pre-commit hooks
 2. Remove or utilize the unused `parseFile` function in `job/parse.go`
 3. Address 6 TODO/FIXME comments across codebase
@@ -155,6 +177,7 @@ Several linters are disabled in `.golangci.yml`:
 5. Reduce cyclomatic complexity in `cmd/run_flags.go:runCmd`
 
 ### Priority 2: Code Quality (This Week)
+
 6. Extract magic numbers to named constants (50 violations)
 7. Expand short variable names (50 violations)
 8. Fix JSON tag naming conventions (50 violations)
@@ -162,6 +185,7 @@ Several linters are disabled in `.golangci.yml`:
 10. Fix struct initialization completeness (6 violations)
 
 ### Priority 3: Testing (Next 2 Weeks)
+
 11. Add BDD tests for `--structural` flag functionality
 12. Increase test coverage for semantic detection
 13. Add edge case tests for incremental parser with semantic=false
@@ -169,6 +193,7 @@ Several linters are disabled in `.golangci.yml`:
 15. Add integration tests for hash-only detection with semantic flags
 
 ### Priority 4: Architecture (Next Month)
+
 16. Refactor `transform.go` into smaller functions
 17. Split `runCmd` into smaller, testable functions
 18. Review and consolidate duplicate test helpers
@@ -176,6 +201,7 @@ Several linters are disabled in `.golangci.yml`:
 20. Optimize `syntax/golang/identifier_hash.go` if needed
 
 ### Priority 5: Documentation & Tooling (Next Quarter)
+
 21. Update AGENTS.md with semantic detection architecture
 22. Create architecture decision records (ADRs) for major changes
 23. Document the semantic vs structural detection modes
@@ -189,24 +215,28 @@ Several linters are disabled in `.golangci.yml`:
 **Question:** Should we maintain backward compatibility with the `--structural` flag being opt-in (default semantic=true), or should we reconsider the default behavior based on user feedback?
 
 **Context:**
+
 - Current implementation: Semantic detection is ON by default (`--semantic` is implicit)
 - User must explicitly use `--structural` to disable semantic matching
 - This is a breaking change from previous versions where structural was the default
 - The semantic feature adds computational overhead but reduces false positives
 
 **Considerations:**
+
 1. **Performance:** Semantic mode is ~15ns per identifier hash, but adds up for large codebases
 2. **Accuracy:** Semantic mode reduces false positives from similar-looking code
 3. **User Expectation:** CLI tools typically default to fastest mode, with opt-in for accuracy
 4. **Breaking Change:** Current default may surprise existing users
 
 **Possible Answers:**
+
 - A) Keep semantic=true as default (current) - prioritize accuracy over speed
 - B) Revert to structural=true as default - prioritize speed, opt-in for accuracy
 - C) Add config file support to let users set their preferred default
 - D) Add a `--fast` flag that's an alias for `--structural`
 
 **What I Need:**
+
 - User feedback on which behavior is more expected
 - Performance benchmarks on real-world codebases
 - Documentation review to ensure clarity about the defaults

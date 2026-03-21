@@ -158,13 +158,6 @@ func startWorkers(
 	}
 }
 
-// parseFile parses a single file and returns the result.
-func parseFile(file string) parseResult {
-	ast, lines, err := ParseFileByExtension(file)
-
-	return parseResult{ast: ast, lines: lines, err: err}
-}
-
 // parseFileWithConfig parses a single file with semantic configuration.
 func parseFileWithConfig(file string, semantic bool) parseResult {
 	ast, lines, err := ParseFileByExtensionWithConfig(file, semantic)

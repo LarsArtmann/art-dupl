@@ -188,16 +188,17 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 	hasDiff := false
 
 	for i > 0 && j > 0 {
-		if bytes.Equal(bytes.TrimSpace(baseLines[i-1]), bytes.TrimSpace(comparedLines[j-1])) {
+		switch {
+		case bytes.Equal(bytes.TrimSpace(baseLines[i-1]), bytes.TrimSpace(comparedLines[j-1])):
 			// Lines match
 			i--
 			j--
-		} else if dp[i-1][j] >= dp[i][j-1] {
+		case dp[i-1][j] >= dp[i][j-1]:
 			// Line removed from base
 			base[i-1].Type = DiffLineRemoved
 			hasDiff = true
 			i--
-		} else {
+		default:
 			// Line added in compared
 			compared[j-1].Type = DiffLineAdded
 			hasDiff = true
@@ -265,6 +266,7 @@ func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 
 	// Compute diff for each other clone against base
 	for idx := 1; idx < len(clones); idx++ {
+		//nolint:gosec // G602: Bounds checked above (len(clones) > 0, idx < len(clones))
 		diff := LineDiff(clones[0].fragment, clones[idx].fragment)
 		if diff.HasDiff {
 			result.HasAnyDiff = true

@@ -123,7 +123,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 			)
 		}
 
-		cl := clone{
+		cl := clone{ //nolint:exhaustruct // fragment and size set separately below
 			filename:  fileInfo.Filename,
 			lineStart: fileInfo.LineStart,
 			lineEnd:   fileInfo.LineEnd,

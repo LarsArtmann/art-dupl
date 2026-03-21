@@ -10,55 +10,57 @@ output:
   formats: {}
 linters:
   enable:
-    - misspell
-    - spancheck
-    - interfacebloat
+    # Critical linters - always enabled
     - govet
+    - staticcheck
+    - errcheck
+    - gosec
+    - ineffassign
+    - unused
+    - gocritic
+    # Important linters
+    - misspell
+    - errorlint
+    - goconst
     - makezero
     - predeclared
-    - durationcheck
     - revive
-    - errorlint
+    - dupl
+    - nestif
+    - gocyclo
+    - gocognit
+    - funlen
+    - cyclop
+    # Optional linters (lower priority)
+    - spancheck
+    - interfacebloat
+    - durationcheck
     - nakedret
     - paralleltest
     - gochecksumtype
     - usetesting
-    - nestif
     - godot
     - rowserrcheck
     - goheader
-    - gocognit
     - reassign
     - canonicalheader
     - asasalint
-    - varnamelen
-    - exhaustruct
-    - gocritic
-    - forbidigo
-    - gocyclo
     - testifylint
     - gomoddirectives
     - thelper
     - grouper
     - nosprintfhostport
-    - tagliatelle
     - nilerr
     - unparam
-    - errcheck
     - bidichk
-    - staticcheck
     - usestdlibvars
     - unconvert
     - iface
     - noctx
     - fatcontext
-    - goconst
     - gomodguard
-    - unused
-    - funlen
     - nilnil
     - nolintlint
-    - gosec
     - gochecknoinits
     - errchkjson
     - testpackage
@@ -67,7 +69,6 @@ linters:
     - zerologlint
     - promlinter
     - containedctx
-    - gochecknoglobals
     - bodyclose
     - maintidx
     - gosmopolitan
@@ -82,21 +83,15 @@ linters:
     - tparallel
     - err113
     - loggercheck
-    - godox
     - wastedassign
     - sqlclosecheck
     - ginkgolinter
     - recvcheck
-    - cyclop
-    - dupl
-    - wrapcheck
     - contextcheck
     - copyloopvar
     - errname
     - testableexamples
-    - ineffassign
     - sloglint
-    - mnd
     - inamedparam
     - exhaustive
     - mirror
@@ -108,6 +103,15 @@ linters:
     - intrange
     - perfsprint
     - goprintffuncname
+  disable:
+    # Noisy linters - disabled to focus on critical issues
+    - varnamelen # Short variable names are common in Go
+    - exhaustruct # Partial struct initialization is idiomatic
+    - tagliatelle # Struct tag naming conventions vary
+    - wrapcheck # Error wrapping context-dependent
+    - godox # TODO comments are acceptable
+    - mnd # Magic numbers are often clear in context
+    - gochecknoglobals # Package-level vars are sometimes necessary
   settings:
     cyclop:
       max-complexity: 15
@@ -155,17 +159,10 @@ linters:
           - dupl
           - gosec
           - err113
-          - exhaustruct
           - paralleltest
           - testpackage
-          - varnamelen
-          - gochecknoglobals
           - forcetypeassert
           - forbidigo
-          - mnd
-          - tagliatelle
-          - revive
-          - wrapcheck
           - nestif
           - recvcheck
       - path: bdd/
@@ -178,41 +175,21 @@ linters:
           - dupl
           - gosec
           - err113
-          - exhaustruct
           - paralleltest
           - testpackage
-          - varnamelen
-          - gochecknoglobals
           - forcetypeassert
           - forbidigo
-          - mnd
-          - tagliatelle
-          - revive
-          - wrapcheck
-          - forbidigo
-          - godox
           - nestif
       - path: examples/
         linters:
-          - exhaustruct
-          - varnamelen
-          - mnd
-          - tagliatelle
           - revive
       - path: testutils/
         linters:
-          - exhaustruct
-          - varnamelen
-          - mnd
-          - tagliatelle
           - revive
           - gosec
       - path: migration/
         linters:
           - typecheck
-      - path: cmd/
-        linters:
-          - exhaustruct
       - path: syntax/
         linters:
           - gocyclo

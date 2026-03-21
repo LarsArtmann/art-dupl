@@ -75,9 +75,9 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	nodes2[0].Owns = 4
 	nodes2[5].Owns = 2
 
-	data := append(
-		nodes1,
-		nodes2...) //nolint:makezero,gocritic // Creating combined slice for testing purposes
+	data := make([]*Node, 0, len(nodes1)+len(nodes2))
+	data = append(data, nodes1...)
+	data = append(data, nodes2...)
 	_ = data
 
 	match := suffixtree.Match{

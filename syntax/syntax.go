@@ -67,7 +67,7 @@ type Node struct {
 }
 
 func NewNode() *Node {
-	return &Node{}
+	return &Node{} //nolint:exhaustruct // Intentionally empty node for incremental construction
 }
 
 func (n *Node) AddChildren(children ...*Node) {
@@ -91,6 +91,7 @@ func NewSyntheticFileNode(filename string, size int) *Node {
 		Pos:      0,
 		End:      int32(size),
 		Type:     1,
+		// Owns and Children intentionally omitted - will be set later
 	}
 }
 
@@ -136,7 +137,7 @@ func serial(n *Node, stream *[]*Node) int {
 // - Validate threshold at domain boundary.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
-		return Match{}
+		return Match{} //nolint:exhaustruct // Empty match indicates no syntax units found
 	}
 
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
@@ -147,7 +148,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	}
 
 	if len(indexes) == 0 || isCyclic(indexes, firstSeq) || spansMultipleFiles(indexes, firstSeq) {
-		return Match{}
+		return Match{} //nolint:exhaustruct // Empty match indicates no syntax units found
 	}
 
 	return buildMatch(data, m, firstSeq, indexes)
@@ -173,7 +174,10 @@ func validateOwnershipConsistency(
 }
 
 func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []int) Match {
-	match := Match{Frags: make([][]*Node, len(m.Ps))}
+	match := Match{
+		Frags: make([][]*Node, len(m.Ps)),
+		// Hash is computed below after fragments are populated
+	}
 	for i, pos := range m.Ps {
 		match.Frags[i] = make([]*Node, len(indexes))
 		for j, index := range indexes {

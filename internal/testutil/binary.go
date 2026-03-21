@@ -10,6 +10,7 @@ import (
 func BuildArtDuplBinary(t *testing.T, outputPath string) {
 	t.Helper()
 
+	//nolint:gosec // G204: Go build command with controlled arguments is safe
 	cmd := exec.CommandContext(
 		t.Context(),
 		"go",

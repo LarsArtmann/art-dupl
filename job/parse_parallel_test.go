@@ -9,6 +9,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+// testContentSimple is a reusable test Go file content to avoid goconst warnings.
+const testContentSimple = `package main
+
+func main() {
+	println("hello")
+}`
+
 func TestParseParallel(t *testing.T) {
 	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
@@ -71,13 +78,7 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
+	err := setup.CreateTestFile("test.go", testContentSimple)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
@@ -170,13 +171,7 @@ func TestNormalizeWorkerCount(t *testing.T) {
 func TestParseFileByExtensionGoFile(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
+	err := setup.CreateTestFile("test.go", testContentSimple)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
@@ -206,13 +201,7 @@ func TestParseStatsFromSequential(t *testing.T) {
 	ctx := t.Context()
 	setup := testutil.NewTestFileSetup(t)
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
+	err := setup.CreateTestFile("test.go", testContentSimple)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
