@@ -158,8 +158,8 @@ func (p *StringInternPool) Stats() PoolStats {
 	defer p.mu.RUnlock()
 
 	return PoolStats{
-		TotalStrings: len(p.strings),
-		IssuedCount:  int(p.nextID) - 1,
+		TotalStrings:    len(p.strings),
+		IssuedCount:     int(p.nextID) - 1,
 		UniqueFilenames: 0, // Could track by prefix if needed
 	}
 }
@@ -167,7 +167,7 @@ func (p *StringInternPool) Stats() PoolStats {
 // PoolStats represents string pool statistics.
 type PoolStats struct {
 	TotalStrings    int `json:"totalStrings"`
-	IssuedCount    int `json:"issuedCount"`
+	IssuedCount     int `json:"issuedCount"`
 	UniqueFilenames int `json:"uniqueFilenames"`
 }
 

@@ -3,7 +3,7 @@
 **Date:** 2026-03-22  
 **Time:** 10:20  
 **Branch:** fork  
-**Commit:** ccd8c3d  
+**Commit:** ccd8c3d
 
 ---
 
@@ -17,13 +17,13 @@ Successfully completed the strong ID type safety refactoring as recommended by `
 
 ### a) ✅ FULLY DONE
 
-| Task | Status | Details |
-|------|--------|---------|
-| Strong ID type safety refactoring | ✅ COMPLETE | All 5 violations fixed |
-| Linter verification | ✅ COMPLETE | `branching-flow strong-id .` → 0 violations |
-| Build verification | ✅ COMPLETE | `go build ./...` passes |
-| Test verification | ✅ COMPLETE | All tests pass |
-| Git commit | ✅ COMPLETE | Commit ccd8c3d |
+| Task                              | Status      | Details                                     |
+| --------------------------------- | ----------- | ------------------------------------------- |
+| Strong ID type safety refactoring | ✅ COMPLETE | All 5 violations fixed                      |
+| Linter verification               | ✅ COMPLETE | `branching-flow strong-id .` → 0 violations |
+| Build verification                | ✅ COMPLETE | `go build ./...` passes                     |
+| Test verification                 | ✅ COMPLETE | All tests pass                              |
+| Git commit                        | ✅ COMPLETE | Commit ccd8c3d                              |
 
 ### b) PARTIALLY DONE
 
@@ -43,15 +43,15 @@ N/A - no issues
 
 ### Files Modified (7 files, +55/-29 lines)
 
-| File | Change | Type |
-|------|--------|------|
-| `adapter/printer_adapter.go` | `groupID string` → `groupID domain.CloneGroupID` | Type Safety |
-| `domain/stringpool.go` | `TotalIDs` → `IssuedCount`, `id` → `rawValue` | Naming |
-| `domain/types_id.go` | `id` → `s` in factory functions | Naming |
-| `migration/migration.go` | Added `MigrationID` type, updated struct and generator | New Type |
-| `migration/migration_test.go` | Updated to use typed `MigrationID` | Test Update |
-| `domain/coverage_types_test.go` | Updated to check `IssuedCount` | Test Update |
-| `docs/status/2026-03-22_06-24_*.md` | Formatting improvements | Docs |
+| File                                | Change                                                 | Type        |
+| ----------------------------------- | ------------------------------------------------------ | ----------- |
+| `adapter/printer_adapter.go`        | `groupID string` → `groupID domain.CloneGroupID`       | Type Safety |
+| `domain/stringpool.go`              | `TotalIDs` → `IssuedCount`, `id` → `rawValue`          | Naming      |
+| `domain/types_id.go`                | `id` → `s` in factory functions                        | Naming      |
+| `migration/migration.go`            | Added `MigrationID` type, updated struct and generator | New Type    |
+| `migration/migration_test.go`       | Updated to use typed `MigrationID`                     | Test Update |
+| `domain/coverage_types_test.go`     | Updated to check `IssuedCount`                         | Test Update |
+| `docs/status/2026-03-22_06-24_*.md` | Formatting improvements                                | Docs        |
 
 ### Type Safety Improvements
 
@@ -69,12 +69,14 @@ N/A - no issues
 ## Verification Results
 
 ### Before
+
 ```
 branching-flow strong-id .
 Violations: 13
 ```
 
 ### After
+
 ```
 branching-flow strong-id .
 Violations: 0
@@ -83,6 +85,7 @@ Your codebase uses strong ID types for type safety.
 ```
 
 ### Test Results
+
 ```
 go test ./... → 29 packages, all passing
 ```
@@ -156,6 +159,7 @@ The library provides phantom-type-based ID safety where `CloneGroupID` and `Anal
 **Current state:** We have simple `type XxxID string` which provides naming safety but not compile-time protection against mixing different ID types.
 
 **Trade-offs:**
+
 - ✅ Pro: Zero external dependency
 - ✅ Pro: Simple, well-understood pattern
 - ❌ Con: `type CloneGroupID("abc")` and `type AnalysisID("abc")` are both just strings
@@ -173,7 +177,7 @@ Author: Lars Artmann <git@lars.software>
 Date:   Sun Mar 22 09:56:38 2026 +0100
 
     refactor(domain): strengthen type safety with typed IDs and improve naming consistency
-    
+
     - MigrationReport now uses typed MigrationID instead of string
     - CloneGroupFromNodes accepts domain.CloneGroupID instead of string
     - PoolStats.TotalIDs renamed to PoolStats.IssuedCount for clarity

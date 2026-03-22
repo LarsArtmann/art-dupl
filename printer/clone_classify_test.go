@@ -221,7 +221,11 @@ func TestClassifyClone(t *testing.T) {
 				t.Errorf("ClassifyClone().Priority = %v, want %v", got.Priority, tt.wantPriority)
 			}
 			if got.Suggestion != tt.wantSuggestion {
-				t.Errorf("ClassifyClone().Suggestion = %v, want %v", got.Suggestion, tt.wantSuggestion)
+				t.Errorf(
+					"ClassifyClone().Suggestion = %v, want %v",
+					got.Suggestion,
+					tt.wantSuggestion,
+				)
 			}
 		})
 	}

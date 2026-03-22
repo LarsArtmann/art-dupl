@@ -674,7 +674,9 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 		badgesHTML += `<span class="badge-test">🧪 test</span>`
 	}
 
-	_, err := fmt.Fprintf(p.w, `<div class="clone-group" data-category="%s" data-priority="%s" data-test="%t">
+	_, err := fmt.Fprintf(
+		p.w,
+		`<div class="clone-group" data-category="%s" data-priority="%s" data-test="%t">
 <div class="clone-header" onclick="this.parentElement.classList.toggle('collapsed')">
 <h3>Clone Group #%d</h3>
 <div class="badge-group">
@@ -685,11 +687,15 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 <div class="clone-body">
 %s
 `,
-		primaryCategory, highestPriority, hasTest,
+		primaryCategory,
+		highestPriority,
+		hasTest,
 		p.iota,
 		badgesHTML,
-		occurrences, totalTokens,
-		suggestionHTML(suggestion))
+		occurrences,
+		totalTokens,
+		suggestionHTML(suggestion),
+	)
 
 	return err //nolint:wrapcheck
 }
@@ -1095,23 +1101,33 @@ func (p *htmlprinter) buildSummarySection() string {
 
 	// Overview stats
 	sb.WriteString(`<div class="summary-grid">`)
-	sb.WriteString(`<div class="summary-item"><span class="summary-label">Total Clones</span><span class="summary-value">`)
+	sb.WriteString(
+		`<div class="summary-item"><span class="summary-label">Total Clones</span><span class="summary-value">`,
+	)
 	sb.WriteString(strconv.Itoa(p.stats.totalClones))
 	sb.WriteString(`</span></div>`)
-	sb.WriteString(`<div class="summary-item"><span class="summary-label">Total Tokens</span><span class="summary-value">`)
+	sb.WriteString(
+		`<div class="summary-item"><span class="summary-label">Total Tokens</span><span class="summary-value">`,
+	)
 	sb.WriteString(strconv.Itoa(p.stats.totalTokens))
 	sb.WriteString(`</span></div>`)
-	sb.WriteString(`<div class="summary-item"><span class="summary-label">Production</span><span class="summary-value">`)
+	sb.WriteString(
+		`<div class="summary-item"><span class="summary-label">Production</span><span class="summary-value">`,
+	)
 	sb.WriteString(strconv.Itoa(p.stats.prodCount))
 	sb.WriteString(`</span></div>`)
-	sb.WriteString(`<div class="summary-item"><span class="summary-label">Test Code</span><span class="summary-value">`)
+	sb.WriteString(
+		`<div class="summary-item"><span class="summary-label">Test Code</span><span class="summary-value">`,
+	)
 	sb.WriteString(strconv.Itoa(p.stats.testCount))
 	sb.WriteString(`</span></div>`)
 	sb.WriteString(`</div>`)
 
 	// Category breakdown
 	if len(p.stats.categoryCounts) > 0 {
-		sb.WriteString(`<div class="summary-category"><h3>By Category</h3><div class="category-list">`)
+		sb.WriteString(
+			`<div class="summary-category"><h3>By Category</h3><div class="category-list">`,
+		)
 		for _, cat := range orderedCategories() {
 			if count := p.stats.categoryCounts[cat]; count > 0 {
 				sb.WriteString(`<span class="category-tag">`)
@@ -1128,7 +1144,9 @@ func (p *htmlprinter) buildSummarySection() string {
 
 	// Priority breakdown
 	if len(p.stats.priorityCounts) > 0 {
-		sb.WriteString(`<div class="summary-category"><h3>By Priority</h3><div class="priority-list">`)
+		sb.WriteString(
+			`<div class="summary-category"><h3>By Priority</h3><div class="priority-list">`,
+		)
 		for _, pri := range orderedPriorities() {
 			if count := p.stats.priorityCounts[pri]; count > 0 {
 				sb.WriteString(`<span class="priority-tag priority-`)
@@ -1147,9 +1165,15 @@ func (p *htmlprinter) buildSummarySection() string {
 
 	// Filter buttons
 	sb.WriteString(`<div class="filter-buttons"><h3>Filters</h3>`)
-	sb.WriteString(`<button class="filter-btn active" data-filter="all" onclick="filterClones('all')">All</button>`)
-	sb.WriteString(`<button class="filter-btn" data-filter="prod" onclick="filterClones('prod')">📦 Production</button>`)
-	sb.WriteString(`<button class="filter-btn" data-filter="test" onclick="filterClones('test')">🧪 Test</button>`)
+	sb.WriteString(
+		`<button class="filter-btn active" data-filter="all" onclick="filterClones('all')">All</button>`,
+	)
+	sb.WriteString(
+		`<button class="filter-btn" data-filter="prod" onclick="filterClones('prod')">📦 Production</button>`,
+	)
+	sb.WriteString(
+		`<button class="filter-btn" data-filter="test" onclick="filterClones('test')">🧪 Test</button>`,
+	)
 	sb.WriteString(`<span class="filter-separator">|</span>`)
 
 	for _, cat := range orderedCategories() {

@@ -91,13 +91,13 @@ func (mp *MigrationPath) CreateMigrationReport(before, after domain.Analysis) Mi
 
 // MigrationReport tracks migration status and changes.
 type MigrationReport struct {
-	MigrationID     MigrationID        `json:"migrationId"`
-	CreatedAt       string             `json:"createdAt"`
-	BeforeState     domain.Analysis    `json:"beforeState"`
-	AfterState      domain.Analysis    `json:"afterState"`
+	MigrationID     MigrationID         `json:"migrationId"`
+	CreatedAt       string              `json:"createdAt"`
+	BeforeState     domain.Analysis     `json:"beforeState"`
+	AfterState      domain.Analysis     `json:"afterState"`
 	Differences     AnalysisDifferences `json:"differences"`
-	Validations     []ValidationResult `json:"validations"`
-	Recommendations []string           `json:"recommendations"`
+	Validations     []ValidationResult  `json:"validations"`
+	Recommendations []string            `json:"recommendations"`
 }
 
 // AnalysisDifferences tracks changes between analyses.
