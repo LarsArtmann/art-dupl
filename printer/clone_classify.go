@@ -1,3 +1,4 @@
+// Package printer provides functionality for formatting and outputting code clone reports.
 package printer
 
 import (
@@ -156,54 +157,82 @@ func isTestFile(filename string) bool {
 
 // calculatePriority determines the priority level based on category, test status, and size.
 func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) ClonePriority {
-	// Test files are generally lower priority unless very large
 	if isTest {
-		if tokens > 100 || lines > 30 {
-			return PriorityMedium
-		}
-
-		return PriorityLow
+		return calculateTestPriority(tokens, lines)
 	}
 
-	// Production code prioritization
+	return calculateProductionPriority(category, tokens, lines)
+}
+
+// calculateTestPriority returns priority for test files.
+func calculateTestPriority(tokens, lines int) ClonePriority {
+	if tokens > 100 || lines > 30 {
+		return PriorityMedium
+	}
+
+	return PriorityLow
+}
+
+// calculateProductionPriority returns priority for production code.
+func calculateProductionPriority(category CloneCategory, tokens, lines int) ClonePriority {
 	switch category {
 	case CategoryFunction, CategoryMethod:
-		if tokens > 50 || lines > 20 {
-			return PriorityCritical
-		}
-
-		if tokens > 25 || lines > 10 {
-			return PriorityHigh
-		}
-
-		return PriorityMedium
+		return functionPriority(tokens, lines)
 	case CategoryStruct, CategoryInterface:
-		if tokens > 30 {
-			return PriorityHigh
-		}
-
-		return PriorityMedium
+		return typePriority(tokens)
 	case CategoryHandler:
 		return PriorityHigh
 	case CategoryLoop, CategoryConditional:
-		if tokens > 30 {
-			return PriorityHigh
-		}
-
-		return PriorityMedium
+		return controlFlowPriority(tokens)
 	case CategoryTest, CategoryAssignment, CategoryExpression, CategoryUnknown:
-		if tokens > 50 {
-			return PriorityHigh
-		}
-
-		if tokens > 25 {
-			return PriorityMedium
-		}
-
-		return PriorityLow
+		return otherPriority(tokens)
 	default:
-		return PriorityLow
+		return otherPriority(tokens)
 	}
+}
+
+// functionPriority calculates priority for function/method clones.
+func functionPriority(tokens, lines int) ClonePriority {
+	if tokens > 50 || lines > 20 {
+		return PriorityCritical
+	}
+
+	if tokens > 25 || lines > 10 {
+		return PriorityHigh
+	}
+
+	return PriorityMedium
+}
+
+// typePriority calculates priority for struct/interface clones.
+func typePriority(tokens int) ClonePriority {
+	if tokens > 30 {
+		return PriorityHigh
+	}
+
+	return PriorityMedium
+}
+
+// controlFlowPriority calculates priority for loop/conditional clones.
+func controlFlowPriority(tokens int) ClonePriority {
+	if tokens > 30 {
+		return PriorityHigh
+	}
+
+	return PriorityMedium
+}
+
+// otherPriority calculates priority for other category clones.
+func otherPriority(tokens int) ClonePriority {
+	if tokens > 50 {
+		return PriorityHigh
+	}
+
+	if tokens > 25 {
+		return PriorityMedium
+	}
+
+	return PriorityLow
 }
 
 // getSuggestion returns an actionable suggestion for the clone.

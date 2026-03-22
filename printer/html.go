@@ -543,6 +543,40 @@ footer {
 	color: white;
 	border-color: var(--accent);
 }
+.summary-value {
+	font-size: 1.4rem;
+	color: var(--text-primary);
+	font-weight: bold;
+}
+.summary-category {
+	margin-top: 15px;
+}
+.summary-category h3 {
+	margin: 0 0 10px 0;
+	font-size: 1rem;
+	color: var(--accent);
+}
+.category-list, .priority-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.category-tag, .priority-tag {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 4px 10px;
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+}
+.priority-tag.priority-critical { border-color: var(--error); color: var(--error); }
+.priority-tag.priority-high { border-color: var(--warning); color: var(--warning); }
+.priority-tag.priority-medium { border-color: var(--accent); color: var(--accent); }
+.priority-tag.priority-low { border-color: var(--success); color: var(--success); }
+.filter-separator {
+	color: var(--border);
+	margin: 0 5px;
+}
 /* Media query percentage escaped for Go template */
 </style>
 </head>
@@ -1291,6 +1325,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	} catch (e) {
 		// Ignore localStorage errors
+	}
+
+	// Move summary section to top (after header)
+	var summary = document.querySelector('.summary-section');
+	var statsGrid = document.querySelector('.stats-grid');
+	if (summary && statsGrid) {
+		statsGrid.parentNode.insertBefore(summary, statsGrid.nextSibling);
 	}
 });
 </script>
