@@ -29,7 +29,7 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 }
 
 // CloneGroupFromNodes creates domain clone group from syntax nodes.
-func CloneGroupFromNodes(groupID string, nodes [][]*syntax.Node) domain.CloneGroup {
+func CloneGroupFromNodes(groupID domain.CloneGroupID, nodes [][]*syntax.Node) domain.CloneGroup {
 	var (
 		clones    []domain.Clone
 		totalSize uint

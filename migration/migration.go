@@ -11,6 +11,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// MigrationID represents a unique identifier for a migration.
+type MigrationID string
+
 // MigrationPath handles conversion between old and new type systems.
 type MigrationPath struct {
 	legacyPrinter printer.Printer
@@ -34,7 +37,7 @@ func (mp *MigrationPath) FromSyntaxToNodes(dups [][]*syntax.Node, threshold uint
 	var cloneGroups []domain.CloneGroup
 
 	for i, nodeGroup := range dups {
-		groupID := fmt.Sprintf("group-%d", i)
+		groupID := domain.CloneGroupID(fmt.Sprintf("group-%d", i))
 		cloneGroup := adapter.CloneGroupFromNodes(groupID, [][]*syntax.Node{nodeGroup})
 		cloneGroups = append(cloneGroups, cloneGroup)
 	}
@@ -88,13 +91,13 @@ func (mp *MigrationPath) CreateMigrationReport(before, after domain.Analysis) Mi
 
 // MigrationReport tracks migration status and changes.
 type MigrationReport struct {
-	MigrationID     string              `json:"migrationId"`
-	CreatedAt       string              `json:"createdAt"`
-	BeforeState     domain.Analysis     `json:"beforeState"`
-	AfterState      domain.Analysis     `json:"afterState"`
+	MigrationID     MigrationID        `json:"migrationId"`
+	CreatedAt       string             `json:"createdAt"`
+	BeforeState     domain.Analysis    `json:"beforeState"`
+	AfterState      domain.Analysis    `json:"afterState"`
 	Differences     AnalysisDifferences `json:"differences"`
-	Validations     []ValidationResult  `json:"validations"`
-	Recommendations []string            `json:"recommendations"`
+	Validations     []ValidationResult `json:"validations"`
+	Recommendations []string           `json:"recommendations"`
 }
 
 // AnalysisDifferences tracks changes between analyses.
@@ -245,8 +248,8 @@ func (mp *MigrationPath) generateRecommendations(before, after domain.Analysis) 
 	return recommendations
 }
 
-func generateMigrationID() string {
-	return fmt.Sprintf("migration-%d", time.Now().Unix())
+func generateMigrationID() MigrationID {
+	return MigrationID(fmt.Sprintf("migration-%d", time.Now().Unix()))
 }
 
 // MigrateConfig handles configuration migration.

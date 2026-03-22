@@ -10,12 +10,12 @@ import (
 type StringID uint32
 
 // NewStringID creates a validated StringID from a uint32.
-func NewStringID(id uint32) StringID {
-	if id == 0 {
+func NewStringID(rawValue uint32) StringID {
+	if rawValue == 0 {
 		return 0 // ID 0 reserved for "not interned"
 	}
 
-	return StringID(id)
+	return StringID(rawValue)
 }
 
 // IsValid checks if StringID is valid (non-zero).
@@ -158,8 +158,8 @@ func (p *StringInternPool) Stats() PoolStats {
 	defer p.mu.RUnlock()
 
 	return PoolStats{
-		TotalStrings:    len(p.strings),
-		TotalIDs:        int(p.nextID) - 1,
+		TotalStrings: len(p.strings),
+		IssuedCount:  int(p.nextID) - 1,
 		UniqueFilenames: 0, // Could track by prefix if needed
 	}
 }
@@ -167,7 +167,7 @@ func (p *StringInternPool) Stats() PoolStats {
 // PoolStats represents string pool statistics.
 type PoolStats struct {
 	TotalStrings    int `json:"totalStrings"`
-	TotalIDs        int `json:"totalIds"`
+	IssuedCount    int `json:"issuedCount"`
 	UniqueFilenames int `json:"uniqueFilenames"`
 }
 

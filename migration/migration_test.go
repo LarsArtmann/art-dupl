@@ -164,7 +164,7 @@ var _ = Describe("Migration Path", func() {
 	Context("When JSON marshaling migration reports", func() {
 		It("should serialize migration reports correctly", func() {
 			report := migration.MigrationReport{
-				MigrationID: "test-migration",
+				MigrationID: migration.MigrationID("test-migration"),
 				CreatedAt:   "2023-01-01T00:00:00Z",
 				BeforeState: domain.Analysis{
 					Threshold: 10,
@@ -198,7 +198,7 @@ var _ = Describe("Migration Path", func() {
 
 			err = json.Unmarshal(data, &unmarshaled)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(unmarshaled.MigrationID).To(Equal("test-migration"))
+			Expect(unmarshaled.MigrationID).To(Equal(migration.MigrationID("test-migration")))
 			Expect(unmarshaled.Differences.CloneGroupsAdded).To(Equal(1))
 			Expect(unmarshaled.Validations).To(HaveLen(1))
 		})

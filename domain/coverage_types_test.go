@@ -276,8 +276,8 @@ func TestPoolStats(t *testing.T) {
 		t.Errorf("TotalStrings = %v, want 2", stats.TotalStrings)
 	}
 
-	if stats.TotalIDs != 2 {
-		t.Errorf("TotalIDs = %v, want 2", stats.TotalIDs)
+	if stats.IssuedCount != 2 {
+		t.Errorf("IssuedCount = %v, want 2", stats.IssuedCount)
 	}
 }
 
