@@ -14,7 +14,7 @@ type clone struct {
 	lineStart      int
 	lineEnd        int
 	fragment       []byte
-	size           int              // Size field for sorting
+	size           int                 // Size field for sorting
 	classification CloneClassification // Classification metadata for actionable reports
 }
 

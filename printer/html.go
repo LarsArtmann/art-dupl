@@ -57,11 +57,11 @@ func NewHTMLWithOptions(
 	}
 
 	return &htmlprinter{ //nolint:exhaustruct
-		w:        w,
-		ReadFile: fread,
+		w:         w,
+		ReadFile:  fread,
 		threshold: thresh,
-		dupls:    make([][][]*syntax.Node, 0),
-		diffMode: diffMode,
+		dupls:     make([][][]*syntax.Node, 0),
+		diffMode:  diffMode,
 		stats: classificationStats{
 			categoryCounts: make(map[CloneCategory]int),
 			priorityCounts: make(map[ClonePriority]int),
