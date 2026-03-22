@@ -449,28 +449,6 @@ footer {
 .badge-priority.medium { background: rgba(88, 166, 255, 0.2); color: var(--accent); border: 1px solid var(--accent); }
 .badge-priority.low { background: rgba(78, 201, 176, 0.2); color: var(--success); border: 1px solid var(--success); }
 .badge-test { background: rgba(197, 134, 192, 0.2); color: var(--keyword); border: 1px solid var(--keyword); }
-/* Classification badges */
-.badge-group {
-	display: flex;
-	gap: 8px;
-	flex-wrap: wrap;
-	align-items: center;
-}
-.badge-category, .badge-priority, .badge-test {
-	padding: 3px 10px;
-	border-radius: 12px;
-	font-size: 0.8rem;
-	font-weight: 500;
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-}
-.badge-category { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
-.badge-priority.critical { background: rgba(244, 71, 71, 0.2); color: var(--error); border: 1px solid var(--error); }
-.badge-priority.high { background: rgba(206, 145, 120, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-.badge-priority.medium { background: rgba(88, 166, 255, 0.2); color: var(--accent); border: 1px solid var(--accent); }
-.badge-priority.low { background: rgba(78, 201, 176, 0.2); color: var(--success); border: 1px solid var(--success); }
-.badge-test { background: rgba(197, 134, 192, 0.2); color: var(--keyword); border: 1px solid var(--keyword); }
 .suggestion {
 	background: var(--bg-tertiary);
 	border-left: 3px solid var(--accent);
