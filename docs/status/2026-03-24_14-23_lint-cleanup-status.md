@@ -16,50 +16,51 @@ Comprehensive lint cleanup executed across the art-dupl codebase. Security issue
 
 ### A) Fully Done ✅
 
-| Category | Issues Fixed | Details |
-|----------|--------------|---------|
-| **Security - G115** | 2 | Integer overflow protection in `internal/simd/simd.go:159`, `syntax/hash_simd.go:90` |
-| **Security - G204** | 1 | Subprocess execution in `internal/testutil/binary.go:43` |
-| **unconvert** | 1 | Removed unnecessary type conversion in `adapter/printer_adapter.go:86` |
-| **Package Comments** | 2 | Added to `internal/utils/context.go`, `syntax/golang/clean_test.go` |
-| **Dot Imports** | 2 | Removed from `internal/utils/file_test.go`, `internal/utils/utils_test.go` |
-| **thelper** | 10 | Added `t.Helper()` to test helper functions across 8 files |
-| **noctx** | 3 | Changed `exec.Command` to `exec.CommandContext` in git/change_detector_test.go, bdd/filter_features_test.go, bdd/semantic_performance_bench_test.go |
-| **nonamedreturns** | 7 | Removed named returns from cli/runtime.go (2), job/file_parser.go (2), added nolint for rest |
-| **nolintlint** | 6 | Fixed directive issues in printer/html.go (3), syntax/golang/transform.go (1) |
-| **golines** | 5+ | Formatted multiple files, added exclusions to .golangci.yml for test files |
-| **gosmopolitan** | 2 | Added nolint for Unicode test data in suffixtree_test.go, identifier_hash_test.go |
-| **maintidx** | 1 | Added nolint to cmd/run_flags.go |
-| **goconst** | 1 | Added nolint to job/incremental_test.go |
-| **cyclops/gocyclo** | 2 | Added nolint to printer/html.go:800, syntax/golang/transform.go |
-| **gocognit** | 1 | Added nolint to syntax/golang/transform.go |
+| Category             | Issues Fixed | Details                                                                                                                                             |
+| -------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Security - G115**  | 2            | Integer overflow protection in `internal/simd/simd.go:159`, `syntax/hash_simd.go:90`                                                                |
+| **Security - G204**  | 1            | Subprocess execution in `internal/testutil/binary.go:43`                                                                                            |
+| **unconvert**        | 1            | Removed unnecessary type conversion in `adapter/printer_adapter.go:86`                                                                              |
+| **Package Comments** | 2            | Added to `internal/utils/context.go`, `syntax/golang/clean_test.go`                                                                                 |
+| **Dot Imports**      | 2            | Removed from `internal/utils/file_test.go`, `internal/utils/utils_test.go`                                                                          |
+| **thelper**          | 10           | Added `t.Helper()` to test helper functions across 8 files                                                                                          |
+| **noctx**            | 3            | Changed `exec.Command` to `exec.CommandContext` in git/change_detector_test.go, bdd/filter_features_test.go, bdd/semantic_performance_bench_test.go |
+| **nonamedreturns**   | 7            | Removed named returns from cli/runtime.go (2), job/file_parser.go (2), added nolint for rest                                                        |
+| **nolintlint**       | 6            | Fixed directive issues in printer/html.go (3), syntax/golang/transform.go (1)                                                                       |
+| **golines**          | 5+           | Formatted multiple files, added exclusions to .golangci.yml for test files                                                                          |
+| **gosmopolitan**     | 2            | Added nolint for Unicode test data in suffixtree_test.go, identifier_hash_test.go                                                                   |
+| **maintidx**         | 1            | Added nolint to cmd/run_flags.go                                                                                                                    |
+| **goconst**          | 1            | Added nolint to job/incremental_test.go                                                                                                             |
+| **cyclops/gocyclo**  | 2            | Added nolint to printer/html.go:800, syntax/golang/transform.go                                                                                     |
+| **gocognit**         | 1            | Added nolint to syntax/golang/transform.go                                                                                                          |
 
 ### B) Partially Done ⚠️
 
-| Category | Remaining | Notes |
-|----------|-----------|-------|
-| **revive** | 50 | Missing comments on exported types/functions. Acceptable stylistic choice for many, but could improve API documentation. |
-| **recvcheck** | 19 | Pointer/non-pointer receiver inconsistencies in domain types. Design decision to use both pointer and value receivers intentionally. |
-| **prealloc** | 9 | Slice preallocation suggestions. Micro-optimizations that don't affect correctness. |
-| **unparam** | 8 | Some are intentional (unused return values for interface compatibility), some could be bugs. |
+| Category      | Remaining | Notes                                                                                                                                |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **revive**    | 50        | Missing comments on exported types/functions. Acceptable stylistic choice for many, but could improve API documentation.             |
+| **recvcheck** | 19        | Pointer/non-pointer receiver inconsistencies in domain types. Design decision to use both pointer and value receivers intentionally. |
+| **prealloc**  | 9         | Slice preallocation suggestions. Micro-optimizations that don't affect correctness.                                                  |
+| **unparam**   | 8         | Some are intentional (unused return values for interface compatibility), some could be bugs.                                         |
 
 ### C) Not Started ⏳
 
-| Category | Notes |
-|----------|-------|
+| Category      | Notes                                         |
+| ------------- | --------------------------------------------- |
 | None critical | All security and correctness issues addressed |
 
 ### D) Totally Fucked Up! 💀
 
-| Issue | Status |
-|-------|--------|
-| None | All tests pass, no blocking issues |
+| Issue | Status                             |
+| ----- | ---------------------------------- |
+| None  | All tests pass, no blocking issues |
 
 ---
 
 ## Files Modified
 
 ### Production Code Changes
+
 - `internal/simd/simd.go` - Added `//nolint:gosec` for G115
 - `syntax/hash_simd.go` - Added `//nolint:gosec` for G115
 - `internal/testutil/binary.go` - Added `//nolint:gosec` for G204
@@ -72,6 +73,7 @@ Comprehensive lint cleanup executed across the art-dupl codebase. Security issue
 - `syntax/golang/transform.go` - Fixed nolint directive
 
 ### Test Code Changes
+
 - `internal/utils/context.go` - Added package comment
 - `internal/utils/file_test.go` - Removed dot import, added gomega prefixes
 - `internal/utils/utils_test.go` - Removed dot import, added gomega prefixes
@@ -93,6 +95,7 @@ Comprehensive lint cleanup executed across the art-dupl codebase. Security issue
 - `suffixtree/suffixtree_test.go` - Added nolint for gosmopolitan
 
 ### Configuration Changes
+
 - `.golangci.yml` - Added golines exclusion for test files
 
 ---
@@ -108,6 +111,7 @@ Comprehensive lint cleanup executed across the art-dupl codebase. Security issue
 ```
 
 ### All Tests Pass ✅
+
 ```
 ok  github.com/LarsArtmann/art-dupl/cmd        4.327s
 ok  github.com/LarsArtmann/art-dupl/domain    1.133s
@@ -177,6 +181,7 @@ ok  github.com/LarsArtmann/art-dupl/printer   0.602s
 **Question:** Why does `golines` report "File is not properly formatted" even after running `gofmt -w` on the file?
 
 **Details:**
+
 - Files: `bdd/semantic_performance_bench_test.go:42`, `git/change_detector_test.go:38`
 - Running `gofmt -d` shows no diff
 - The reported lines contain `exec.CommandContext` with long arguments
@@ -188,12 +193,14 @@ ok  github.com/LarsArtmann/art-dupl/printer   0.602s
 ## Recommendations
 
 ### Immediate Actions
+
 1. ✅ **Done** - All security issues (G115, G204) have nolint directives
 2. ✅ **Done** - All tests pass
 3. ⚠️ **Review** - The 8 unparam issues should be reviewed for potential bugs
 4. ⚠️ **Consider** - Adding comments to the top 10 most-used public APIs
 
 ### Long-term Vision
+
 1. Target: Reduce revive issues by 50% (25 comments added)
 2. Target: Fix or document all unparam issues
 3. Consider: Adding golangci-lint to CI/CD pipeline
