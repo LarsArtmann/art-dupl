@@ -14,6 +14,14 @@ import (
 // contentUnavailable is the message used when fragment content cannot be extracted.
 const contentUnavailable = "[content unavailable]"
 
+// testNodes returns a slice of test nodes for testing.
+func testNodes() []*syntax.Node {
+	return []*syntax.Node{
+		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
+		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
+	}
+}
+
 // newTestDetector creates a detector with default test configuration.
 func newTestDetector() *detector {
 	return &detector{
@@ -213,10 +221,7 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 func TestRunHashDetection(t *testing.T) {
 	d := &detector{}
 
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
-	}
+	data := testNodes()
 
 	ctx := t.Context()
 	matchesChan := d.runHashDetection(ctx, data, 1)
@@ -464,10 +469,7 @@ func TestConvertToCloneGroup_SingleFragment(t *testing.T) {
 func TestRunSuffixTreeDetection(t *testing.T) {
 	d := &detector{}
 
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
-	}
+	data := testNodes()
 
 	matchesChan := d.runSuffixTreeDetection(data, 1)
 
@@ -484,10 +486,7 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 func TestRunArtDuplDetection(t *testing.T) {
 	d := &detector{}
 
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
-	}
+	data := testNodes()
 
 	ctx := t.Context()
 	matchesChan := d.runArtDuplDetection(ctx, data, 1)
@@ -505,10 +504,7 @@ func TestRunArtDuplDetection(t *testing.T) {
 func TestBuildSuffixTree(t *testing.T) {
 	d := &detector{}
 
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
-	}
+	data := testNodes()
 
 	tree := d.buildSuffixTree(data)
 	if tree == nil {

@@ -25,22 +25,22 @@ func RequireGoldenString(tb testing.TB, output string) {
 	golden.RequireEqual(tb, output)
 }
 
-// GinkgoRequireGolden is like RequireGolden but uses Ginkgo's test context automatically.
-func GinkgoRequireGolden(output []byte) {
+// ginkgoTB extracts a testing.TB from Ginkgo's test context.
+// Panics if not called from within a Ginkgo test.
+func ginkgoTB() testing.TB {
 	ginkgoT := ginkgo.GinkgoT()
 	if tb, ok := ginkgoT.(testing.TB); ok {
-		golden.RequireEqual(tb, output)
-	} else {
-		panic("GinkgoRequireGolden must be called from within a Ginkgo test")
+		return tb
 	}
+	panic("must be called from within a Ginkgo test")
+}
+
+// GinkgoRequireGolden is like RequireGolden but uses Ginkgo's test context automatically.
+func GinkgoRequireGolden(output []byte) {
+	golden.RequireEqual(ginkgoTB(), output)
 }
 
 // GinkgoRequireGoldenString is like GinkgoRequireGolden but takes a string.
 func GinkgoRequireGoldenString(output string) {
-	ginkgoT := ginkgo.GinkgoT()
-	if tb, ok := ginkgoT.(testing.TB); ok {
-		golden.RequireEqual(tb, output)
-	} else {
-		panic("GinkgoRequireGoldenString must be called from within a Ginkgo test")
-	}
+	golden.RequireEqual(ginkgoTB(), output)
 }

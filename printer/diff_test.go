@@ -433,13 +433,13 @@ func BenchmarkLineDiff_Small(b *testing.B) {
 	}
 }
 
-func BenchmarkLineDiff_Medium(b *testing.B) {
-	// 50 lines - triggers LCS path
-	base := make([]byte, 0, 1000)
-	compared := make([]byte, 0, 1000)
+// makeLineDiffTestData generates test data for line diff benchmarks.
+func makeLineDiffTestData(numLines, diffPos int) ([]byte, []byte) {
+	base := make([]byte, 0, numLines*20)
+	compared := make([]byte, 0, numLines*20)
 
-	for i := range 50 {
-		if i == 25 {
+	for i := range numLines {
+		if i == diffPos {
 			base = append(base, "func processUser() {\n"...)
 			compared = append(compared, "func processAdmin() {\n"...)
 		} else {
@@ -447,6 +447,13 @@ func BenchmarkLineDiff_Medium(b *testing.B) {
 			compared = append(compared, "    line\n"...)
 		}
 	}
+
+	return base, compared
+}
+
+func BenchmarkLineDiff_Medium(b *testing.B) {
+	// 50 lines - triggers LCS path
+	base, compared := makeLineDiffTestData(50, 25)
 
 	for b.Loop() {
 		LineDiff(base, compared)
@@ -455,18 +462,7 @@ func BenchmarkLineDiff_Medium(b *testing.B) {
 
 func BenchmarkLineDiff_Large(b *testing.B) {
 	// 150 lines - triggers large file heuristic
-	base := make([]byte, 0, 3000)
-	compared := make([]byte, 0, 3000)
-
-	for i := range 150 {
-		if i == 75 {
-			base = append(base, "func processUser() {\n"...)
-			compared = append(compared, "func processAdmin() {\n"...)
-		} else {
-			base = append(base, "    line\n"...)
-			compared = append(compared, "    line\n"...)
-		}
-	}
+	base, compared := makeLineDiffTestData(150, 75)
 
 	for b.Loop() {
 		LineDiff(base, compared)
@@ -488,33 +484,35 @@ func TestWordDiff_EqualContent(t *testing.T) {
 	}
 }
 
-func TestWordDiff_WordChanges(t *testing.T) {
-	base := "func processUser(name string) error"
-	compared := "func processAdmin(name string) error"
-
-	result := WordDiff(base, compared)
-
-	// Should highlight the changed word
-	if !strings.Contains(result, `class="word-added"`) {
-		t.Error("Expected word-added span for changed word")
+func TestWordDiff_HasChanges(t *testing.T) {
+	tests := []struct {
+		name     string
+		base     string
+		compared string
+	}{
+		{
+			name:     "single_word_change",
+			base:     "func processUser(name string) error",
+			compared: "func processAdmin(name string) error",
+		},
+		{
+			name:     "multiple_changes",
+			base:     "return user.Name and user.Email",
+			compared: "return admin.Name and admin.Email",
+		},
 	}
-	if !strings.Contains(result, `class="word-removed"`) {
-		t.Error("Expected word-removed span for changed word")
-	}
-}
 
-func TestWordDiff_MultipleChanges(t *testing.T) {
-	base := "return user.Name and user.Email"
-	compared := "return admin.Name and admin.Email"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := WordDiff(tt.base, tt.compared)
 
-	result := WordDiff(base, compared)
-
-	// Should highlight the changed words
-	if !strings.Contains(result, `class="word-added"`) {
-		t.Error("Expected word-added span for changes")
-	}
-	if !strings.Contains(result, `class="word-removed"`) {
-		t.Error("Expected word-removed span for changes")
+			if !strings.Contains(result, `class="word-added"`) {
+				t.Error("Expected word-added span for changed word")
+			}
+			if !strings.Contains(result, `class="word-removed"`) {
+				t.Error("Expected word-removed span for changed word")
+			}
+		})
 	}
 }
 

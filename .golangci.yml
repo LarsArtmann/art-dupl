@@ -202,6 +202,212 @@ linters:
         linters:
           - gocyclo
           - cyclop
+      # Allow dot imports in test files (Ginkgo/Gomega pattern)
+      - path: _test\.go
+        linters:
+          - revive
+        text: "dot-imports"
+      - path: bdd/
+        linters:
+          - revive
+        text: "dot-imports"
+      - path: migration/
+        linters:
+          - revive
+        text: "dot-imports"
+      - path: migration/
+        linters:
+          - recvcheck
+      # Allow stuttering type names (design decision for clarity)
+      - path: cache/
+        linters:
+          - revive
+        text: "stutters"
+      - path: git/
+        linters:
+          - revive
+        text: "stutters"
+      - path: hash/
+        linters:
+          - revive
+        text: "stutters"
+      - path: internal/enum/
+        linters:
+          - revive
+        text: "stutters"
+      - path: migration/
+        linters:
+          - revive
+        text: "stutters"
+      - path: pkg/filter/
+        linters:
+          - revive
+        text: "stutters"
+      # Allow package names that match stdlib (errors, hash, format)
+      - path: errors/
+        linters:
+          - revive
+        text: "var-naming"
+      - path: hash/
+        linters:
+          - revive
+        text: "var-naming"
+      - path: pkg/format/
+        linters:
+          - revive
+        text: "var-naming"
+      - path: internal/utils/
+        linters:
+          - revive
+        text: "var-naming"
+      # Allow empty blocks for channel draining
+      - path: _test\.go
+        linters:
+          - revive
+        text: "empty-block"
+      # Skip package-comments for cmd and internal packages
+      - path: cmd/
+        linters:
+          - revive
+        text: "package-comments"
+      - path: internal/
+        linters:
+          - revive
+        text: "package-comments"
+      - path: bdd/
+        linters:
+          - revive
+        text: "package-comments"
+      - path: pkg/
+        linters:
+          - revive
+        text: "package-comments"
+      - path: config/
+        linters:
+          - revive
+        text: "package-comments"
+      # Skip exported comments for self-documenting code patterns
+      - path: domain/
+        linters:
+          - revive
+        text: "exported"
+      - path: config/
+        linters:
+          - revive
+        text: "exported"
+      - path: cache/
+        linters:
+          - revive
+        text: "exported"
+      - path: git/
+        linters:
+          - revive
+        text: "exported"
+      - path: errors/
+        linters:
+          - revive
+        text: "exported"
+      - path: pkg/filter/
+        linters:
+          - revive
+        text: "exported"
+      - path: pkg/logger/
+        linters:
+          - revive
+        text: "exported"
+      - path: suffixtree/
+        linters:
+          - revive
+        text: "exported"
+      - path: job/
+        linters:
+          - revive
+        text: "exported"
+      - path: job/
+        linters:
+          - revive
+        text: "package-comments"
+      - path: internal/enum/
+        linters:
+          - revive
+        text: "exported"
+      - path: printer/
+        linters:
+          - revive
+        text: "exported"
+      - path: printer/
+        linters:
+          - revive
+        text: "var-naming"
+      # Allow redefinition of min/max for backwards compatibility
+      - path: printer/common.go
+        linters:
+          - revive
+        text: "redefines-builtin-id"
+      # Allow unused parameters in test helpers and stubs
+      - path: _test\.go
+        linters:
+          - revive
+        text: "unused-parameter"
+      - path: internal/testutil/
+        linters:
+          - revive
+        text: "unused-parameter"
+      - path: printer/
+        linters:
+          - revive
+        text: "unused-parameter"
+      - path: detection/
+        linters:
+          - revive
+        text: "unused-parameter"
+      - path: migration/
+        linters:
+          - revive
+        text: "unused-parameter"
+      - path: syntax/
+        linters:
+          - revive
+        text: "exported"
+      - path: syntax/
+        linters:
+          - revive
+        text: "var-naming"
+      # Allow predeclared identifier shadowing for compatibility
+      - path: printer/common.go
+        linters:
+          - predeclared
+      # Allow named returns for documentation
+      - path: job/
+        linters:
+          - nonamedreturns
+      # Allow interface returns for factory pattern
+      - path: pkg/logger/
+        linters:
+          - ireturn
+      # Allow unparam in test files (stubs/mocks)
+      - path: _test\.go
+        linters:
+          - unparam
+      - path: bdd/
+        linters:
+          - unparam
+      # Allow unparam for API consistency (error returns that may be used in future)
+      - path: cmd/run_analysis.go
+        linters:
+          - unparam
+      - path: hash/file_detector.go
+        linters:
+          - unparam
+      - path: pkg/artdupl/detector_pipeline.go
+        linters:
+          - unparam
+      - path: printer/html.go
+        linters:
+          - unparam
+      - path: printer/stats.go
+        linters:
+          - unparam
 formatters:
   enable:
     - golines

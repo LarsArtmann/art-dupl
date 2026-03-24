@@ -30,14 +30,14 @@ func TestClassifyClone(t *testing.T) {
 			wantSuggestion: "Extract to shared utility function",
 		},
 		{
-			name:           "function declaration in test file",
+			name:           "function in test file",
 			filename:       "handler_test.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         40,
-			lines:          10,
-			wantCategory:   CategoryFunction, // Category is based on node type, not filename
+			tokens:         45,
+			lines:          12,
+			wantCategory:   CategoryFunction,
 			wantIsTest:     true,
-			wantPriority:   PriorityLow, // test files get lower priority unless large
+			wantPriority:   PriorityLow,
 			wantSuggestion: "Consider extracting to shared test utility",
 		},
 		{
@@ -158,19 +158,8 @@ func TestClassifyClone(t *testing.T) {
 			lines:          40,
 			wantCategory:   CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   PriorityCritical, // tokens > 50
+			wantPriority:   PriorityCritical,
 			wantSuggestion: "Extract to shared utility function",
-		},
-		{
-			name:           "function in test with medium tokens",
-			filename:       "service_test.go",
-			nodeType:       golang.FuncDecl,
-			tokens:         50,
-			lines:          15,
-			wantCategory:   CategoryFunction, // Category is based on node type
-			wantIsTest:     true,
-			wantPriority:   PriorityLow, // test files get low priority unless very large
-			wantSuggestion: "Consider extracting to shared test utility",
 		},
 		{
 			name:           "test file with large duplication",

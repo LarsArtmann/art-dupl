@@ -57,6 +57,14 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 	return nodes
 }
 
+// createTestCloneGroups creates a standard set of clone groups for testing.
+func createTestCloneGroups() [][]*syntax.Node {
+	return [][]*syntax.Node{
+		{{Filename: "file1.go", Pos: 2, End: 3}, {Filename: "file1.go", Pos: 2, End: 3}},
+		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
+	}
+}
+
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.
 func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 	t.Helper()
@@ -644,10 +652,7 @@ func TestStatsCSVOutput(t *testing.T) {
 	sp.SetDetectionMethods("art-dupl")
 
 	// Create some clones
-	dups1 := [][]*syntax.Node{
-		{{Filename: "file1.go", Pos: 2, End: 3}, {Filename: "file1.go", Pos: 2, End: 3}},
-		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
-	}
+	dups1 := createTestCloneGroups()
 
 	err := sp.PrintClones(dups1)
 	if err != nil {

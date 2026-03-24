@@ -12,7 +12,7 @@ func TestParseBytes(t *testing.T) {
 	tests := []struct {
 		name      string
 		input     string
-		wantNodes bool // whether we expect any nodes
+		wantNodes bool
 	}{
 		{
 			name: "simple component",
@@ -88,7 +88,6 @@ templ empty() {
 }
 
 func TestNodeTypeConstants(t *testing.T) {
-	// Verify all node type constants are defined and non-zero
 	types := []int32{
 		ComponentDeclaration,
 		Element,
@@ -122,7 +121,6 @@ templ nested() {
 }
 
 func TestParseWithLineCountFile(t *testing.T) {
-	// Create a temporary file
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test.templ")
 
@@ -273,8 +271,14 @@ templ attrs(name string, active bool) {
 	testParseAndVerifyNodeCount(t, input, 2)
 }
 
-func TestParseDoctype(t *testing.T) {
-	input := `package main
+func TestParseValidTemplates(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{
+			name: "doctype",
+			input: `package main
 
 templ page() {
 	<!DOCTYPE html>
@@ -282,20 +286,11 @@ templ page() {
 		<body>Content</body>
 	</html>
 }
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseScriptElement(t *testing.T) {
-	input := `package main
+`,
+		},
+		{
+			name: "script_element",
+			input: `package main
 
 templ withScript() {
 	<div>
@@ -304,20 +299,11 @@ templ withScript() {
 		</script>
 	</div>
 }
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseRawElement(t *testing.T) {
-	input := `package main
+`,
+		},
+		{
+			name: "raw_element",
+			input: `package main
 
 templ withRaw() {
 	<div>
@@ -326,53 +312,184 @@ templ withRaw() {
 		</style>
 	</div>
 }
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseChildrenExpression(t *testing.T) {
-	input := `package main
+`,
+		},
+		{
+			name: "children_expression",
+			input: `package main
 
 templ wrapper() {
 	<div class="wrapper">
 		{ children... }
 	</div>
 }
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseGoCode(t *testing.T) {
-	input := `package main
+`,
+		},
+		{
+			name: "go_code",
+			input: `package main
 
 templ withGoCode() {
 	<div>
 		{ fmt.Sprintf("Hello %s", "World") }
 	</div>
 }
-`
+`,
+		},
+		{
+			name: "complex_attributes",
+			input: `package main
 
+templ complex(id string, data map[string]any) {
+	<div
+		id={ id }
+		class={ "container " + id }
+		data-attrs={ data }
+		if true {
+			enabled?={ true }
+		}
+	>
+		Content
+	</div>
+}
+`,
+		},
+		{
+			name: "conditional_attribute",
+			input: `package main
+
+templ conditionalAttr(show bool, name string) {
+	<div if show {
+		class={ name }
+	}>Content</div>
+}
+`,
+		},
+		{
+			name: "bool_attributes",
+			input: `package main
+
+templ boolAttrs(disabled bool, checked bool) {
+	<input disabled?={ disabled } checked?={ checked } />
+}
+`,
+		},
+		{
+			name: "constant_bool_attribute",
+			input: `package main
+
+templ constBoolAttr() {
+	<input disabled checked />
+}
+`,
+		},
+		{
+			name: "css_expression_property",
+			input: `package main
+
+css dynamicStyle(color string) {
+	color: color;
+	background: #fff;
+}
+`,
+		},
+		{
+			name: "go_expression",
+			input: `package main
+
+var globalVar = "test"
+
+templ withGlobal() {
+	<div>{ globalVar }</div>
+}
+`,
+		},
+		{
+			name: "templ_render_call",
+			input: `package main
+
+templ child() {
+	<span>Child</span>
+}
+
+templ parent() {
+	<div>
+		@child()
+	</div>
+}
+`,
+		},
+		{
+			name: "call_template_expression",
+			input: `package main
+
+templ partial() {
+	<span>Partial</span>
+}
+
+templ main() {
+	!partial()
+}
+`,
+		},
+		{
+			name: "fallthrough",
+			input: `package main
+
+templ withFallthrough(val int) {
+	switch val {
+		case 1:
+			<p>One</p>
+			fallthrough
+		case 2:
+			<p>Two</p>
+	}
+}
+`,
+		},
+		{
+			name: "comments",
+			input: `package main
+
+// This is a Go comment
+templ withComments() {
+	<!-- HTML comment -->
+	<div>
+		// Another Go comment
+		<span>Content</span>
+	</div>
+}
+`,
+		},
+		{
+			name: "whitespace",
+			input: `package main
+
+templ withWhitespace() {
+
+
+
+	<div>Content</div>
+
+
+}
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			testParseValid(t, tt.input)
+		})
+	}
+}
+
+func testParseValid(t *testing.T, input string) {
+	t.Helper()
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
 	}
-
 	if node == nil {
 		t.Fatal("ParseBytes() returned nil node")
 	}
@@ -431,7 +548,6 @@ func testParseTemplInputExact(t *testing.T, input string, expected int) {
 }
 
 func TestParseInvalidSyntax(t *testing.T) {
-	// Invalid templ syntax should return an error
 	input := `package main
 
 templ invalid( {
@@ -459,245 +575,6 @@ func TestParseWithLineCountNonexistent(t *testing.T) {
 	}
 }
 
-func TestParseBytesWithComplexAttributes(t *testing.T) {
-	input := `package main
-
-templ complex(id string, data map[string]any) {
-	<div
-		id={ id }
-		class={ "container " + id }
-		data-attrs={ data }
-		if true {
-			enabled?={ true }
-		}
-	>
-		Content
-	</div>
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseConditionalAttribute(t *testing.T) {
-	input := `package main
-
-templ conditionalAttr(show bool, name string) {
-	<div if show {
-		class={ name }
-	}>Content</div>
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseBoolAttributes(t *testing.T) {
-	input := `package main
-
-templ boolAttrs(disabled bool, checked bool) {
-	<input disabled?={ disabled } checked?={ checked } />
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseConstantBoolAttribute(t *testing.T) {
-	input := `package main
-
-templ constBoolAttr() {
-	<input disabled checked />
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseCSSExpressionProperty(t *testing.T) {
-	input := `package main
-
-css dynamicStyle(color string) {
-	color: color;
-	background: #fff;
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseGoExpression(t *testing.T) {
-	input := `package main
-
-var globalVar = "test"
-
-templ withGlobal() {
-	<div>{ globalVar }</div>
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseTemplRenderCall(t *testing.T) {
-	input := `package main
-
-templ child() {
-	<span>Child</span>
-}
-
-templ parent() {
-	<div>
-		@child()
-	</div>
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseCallTemplateExpression(t *testing.T) {
-	input := `package main
-
-templ partial() {
-	<span>Partial</span>
-}
-
-templ main() {
-	!partial()
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseFallthrough(t *testing.T) {
-	input := `package main
-
-templ withFallthrough(val int) {
-	switch val {
-		case 1:
-			<p>One</p>
-			fallthrough
-		case 2:
-			<p>Two</p>
-	}
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseComments(t *testing.T) {
-	input := `package main
-
-// This is a Go comment
-templ withComments() {
-	<!-- HTML comment -->
-	<div>
-		// Another Go comment
-		<span>Content</span>
-	</div>
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-func TestParseWhitespace(t *testing.T) {
-	input := `package main
-
-templ withWhitespace() {
-
-
-
-	<div>Content</div>
-
-
-}
-`
-
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-}
-
-// countAllNodes recursively counts all nodes in a tree.
 func countAllNodes(n *syntax.Node) int {
 	if n == nil {
 		return 0

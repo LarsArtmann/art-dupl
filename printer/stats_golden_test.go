@@ -66,19 +66,7 @@ func TestStatsCSVOutputGolden(t *testing.T) {
 	statsPrinter.SetDetectionMethods("art-dupl")
 	statsPrinter.format = FormatCSV
 
-	// Add some clone data
-	dups := [][]*syntax.Node{
-		{
-			{Filename: "file1.go", Pos: 2, End: 3},
-			{Filename: "file1.go", Pos: 2, End: 3},
-		},
-		{
-			{Filename: "file2.go", Pos: 2, End: 3},
-			{Filename: "file2.go", Pos: 2, End: 3},
-		},
-	}
-
-	if err := statsPrinter.PrintClones(dups); err != nil {
+	if err := statsPrinter.PrintClones(createTestCloneGroups()); err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
