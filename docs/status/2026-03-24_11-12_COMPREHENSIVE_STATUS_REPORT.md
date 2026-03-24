@@ -9,13 +9,13 @@
 
 ## EXECUTIVE SUMMARY
 
-| Metric | Status | Details |
-|--------|--------|---------|
-| **Tests** | ✅ PASSING | 29 packages, all tests passing |
-| **Coverage** | ⚠️ MIXED | 64-100% across packages (avg ~80%) |
-| **Lint** | 🔴 NEEDS WORK | 116 issues (50 revive, 19 recvcheck, 9 nonamedreturns, etc.) |
-| **Build** | ✅ WORKING | Binary builds successfully |
-| **Git Status** | ✅ CLEAN | Nothing to commit |
+| Metric         | Status        | Details                                                      |
+| -------------- | ------------- | ------------------------------------------------------------ |
+| **Tests**      | ✅ PASSING    | 29 packages, all tests passing                               |
+| **Coverage**   | ⚠️ MIXED      | 64-100% across packages (avg ~80%)                           |
+| **Lint**       | 🔴 NEEDS WORK | 116 issues (50 revive, 19 recvcheck, 9 nonamedreturns, etc.) |
+| **Build**      | ✅ WORKING    | Binary builds successfully                                   |
+| **Git Status** | ✅ CLEAN      | Nothing to commit                                            |
 
 ---
 
@@ -23,42 +23,42 @@
 
 ### A) FULLY COMPLETED
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Golden File Testing Support | ✅ DONE | charmbracelet/x/exp/golden library integrated |
+| Feature                     | Status  | Notes                                              |
+| --------------------------- | ------- | -------------------------------------------------- |
+| Golden File Testing Support | ✅ DONE | charmbracelet/x/exp/golden library integrated      |
 | Clone Classification System | ✅ DONE | Categories, priorities, filtering, summary section |
-| Strong ID Type Refactoring | ✅ DONE | Typed IDs (CloneGroupID, AnalysisID, etc.) |
-| Domain Type Safety | ✅ DONE | IsValid() methods, proper validation |
-| Stats Subcommand | ✅ DONE | JSON, CSV, Text formats with distributions |
-| Semantic Detection | ✅ DONE | FNV-1a hashing of identifiers |
-| Multi-method Detection | ✅ DONE | art-dupl (suffix tree) + hash-based |
-| BDD Test Suite | ✅ DONE | 226 specs, Ginkgo/Gomega framework |
-| HTML Output | ✅ DONE | Interactive diff view, syntax highlighting |
-| Templ/SQLC Filtering | ✅ DONE | Auto-detection and filtering |
-| Incremental Detection | ✅ DONE | Git integration for changed files |
+| Strong ID Type Refactoring  | ✅ DONE | Typed IDs (CloneGroupID, AnalysisID, etc.)         |
+| Domain Type Safety          | ✅ DONE | IsValid() methods, proper validation               |
+| Stats Subcommand            | ✅ DONE | JSON, CSV, Text formats with distributions         |
+| Semantic Detection          | ✅ DONE | FNV-1a hashing of identifiers                      |
+| Multi-method Detection      | ✅ DONE | art-dupl (suffix tree) + hash-based                |
+| BDD Test Suite              | ✅ DONE | 226 specs, Ginkgo/Gomega framework                 |
+| HTML Output                 | ✅ DONE | Interactive diff view, syntax highlighting         |
+| Templ/SQLC Filtering        | ✅ DONE | Auto-detection and filtering                       |
+| Incremental Detection       | ✅ DONE | Git integration for changed files                  |
 
 ### B) PARTIALLY COMPLETED
 
-| Feature | Status | Details |
-|---------|--------|---------|
+| Feature                   | Status         | Details                           |
+| ------------------------- | -------------- | --------------------------------- |
 | Golden File Test Coverage | 🔄 IN PROGRESS | 5 golden files added, more needed |
-| Test Coverage (printer) | ⚠️ 64.1% | Below 80% threshold |
-| Test Coverage (syntax) | ⚠️ 67.6% | Below 80% threshold |
-| CLI Test Coverage | ⚠️ 62.5% | Below 80% threshold |
-| Job Package Coverage | ⚠️ 76.6% | Near 80% threshold |
-| Hash Package Coverage | ⚠️ 73.8% | Below 80% threshold |
-| Lint Issues | 🔄 IN PROGRESS | 116 issues remain |
+| Test Coverage (printer)   | ⚠️ 64.1%       | Below 80% threshold               |
+| Test Coverage (syntax)    | ⚠️ 67.6%       | Below 80% threshold               |
+| CLI Test Coverage         | ⚠️ 62.5%       | Below 80% threshold               |
+| Job Package Coverage      | ⚠️ 76.6%       | Near 80% threshold                |
+| Hash Package Coverage     | ⚠️ 73.8%       | Below 80% threshold               |
+| Lint Issues               | 🔄 IN PROGRESS | 116 issues remain                 |
 
 ### C) NOT STARTED
 
-| Item | Priority | Notes |
-|------|----------|-------|
-| Lint Cleanup - revive issues | 🔴 HIGH | 50+ issues (comments, naming, exports) |
-| Lint Cleanup - recvcheck | 🔴 HIGH | 19 pointer receiver inconsistencies |
-| Lint Cleanup - nonamedreturns | 🟡 MEDIUM | 9 named return issues |
-| Lint Cleanup - prealloc | 🟡 MEDIUM | 9 preallocation suggestions |
-| Lint Cleanup - gosec | 🔴 HIGH | 3 security issues (overflow, exec) |
-| Large File Refactoring | 🟡 MEDIUM | printer/html.go (1377 lines), stats_test.go (950 lines) |
+| Item                          | Priority  | Notes                                                   |
+| ----------------------------- | --------- | ------------------------------------------------------- |
+| Lint Cleanup - revive issues  | 🔴 HIGH   | 50+ issues (comments, naming, exports)                  |
+| Lint Cleanup - recvcheck      | 🔴 HIGH   | 19 pointer receiver inconsistencies                     |
+| Lint Cleanup - nonamedreturns | 🟡 MEDIUM | 9 named return issues                                   |
+| Lint Cleanup - prealloc       | 🟡 MEDIUM | 9 preallocation suggestions                             |
+| Lint Cleanup - gosec          | 🔴 HIGH   | 3 security issues (overflow, exec)                      |
+| Large File Refactoring        | 🟡 MEDIUM | printer/html.go (1377 lines), stats_test.go (950 lines) |
 
 ### D) TOTALLY FUCKED UP
 
@@ -73,33 +73,33 @@
 
 ## TEST COVERAGE BREAKDOWN
 
-| Package | Coverage | Target | Status |
-|---------|----------|--------|--------|
-| pkg/format | 100.0% | 80% | ✅ EXCEEDS |
-| pkg/position | 100.0% | 80% | ✅ EXCEEDS |
-| adapter | 97.6% | 80% | ✅ EXCEEDS |
-| domain | 97.0% | 80% | ✅ EXCEEDS |
-| internal/simd | 95.8% | 80% | ✅ EXCEEDS |
-| syntax/golang | 94.3% | 80% | ✅ EXCEEDS |
-| internal/utils | 93.4% | 80% | ✅ EXCEEDS |
-| suffixtree | 90.8% | 80% | ✅ EXCEEDS |
-| errors | 89.4% | 80% | ✅ EXCEEDS |
-| cache | 87.0% | 80% | ✅ EXCEEDS |
-| pkg/artdupl | 86.8% | 80% | ✅ EXCEEDS |
-| pkg/logger | 87.5% | 80% | ✅ EXCEEDS |
-| detection | 83.0% | 80% | ✅ EXCEEDS |
-| git | 83.0% | 80% | ✅ EXCEEDS |
-| pkg/filter | 82.5% | 80% | ✅ EXCEEDS |
-| syntax/templ | 80.6% | 80% | ✅ MEETS |
-| internal/enum | 77.9% | 80% | ⚠️ BELOW |
-| job | 76.6% | 80% | ⚠️ BELOW |
-| config | 75.3% | 80% | ⚠️ BELOW |
-| hash | 73.8% | 80% | ⚠️ BELOW |
-| cmd | 73.9% | 80% | ⚠️ BELOW |
-| bdd | 70.0% | 80% | ⚠️ BELOW |
-| syntax | 67.6% | 80% | ⚠️ BELOW |
-| cli | 62.5% | 80% | ⚠️ BELOW |
-| printer | 64.1% | 80% | ⚠️ BELOW |
+| Package        | Coverage | Target | Status     |
+| -------------- | -------- | ------ | ---------- |
+| pkg/format     | 100.0%   | 80%    | ✅ EXCEEDS |
+| pkg/position   | 100.0%   | 80%    | ✅ EXCEEDS |
+| adapter        | 97.6%    | 80%    | ✅ EXCEEDS |
+| domain         | 97.0%    | 80%    | ✅ EXCEEDS |
+| internal/simd  | 95.8%    | 80%    | ✅ EXCEEDS |
+| syntax/golang  | 94.3%    | 80%    | ✅ EXCEEDS |
+| internal/utils | 93.4%    | 80%    | ✅ EXCEEDS |
+| suffixtree     | 90.8%    | 80%    | ✅ EXCEEDS |
+| errors         | 89.4%    | 80%    | ✅ EXCEEDS |
+| cache          | 87.0%    | 80%    | ✅ EXCEEDS |
+| pkg/artdupl    | 86.8%    | 80%    | ✅ EXCEEDS |
+| pkg/logger     | 87.5%    | 80%    | ✅ EXCEEDS |
+| detection      | 83.0%    | 80%    | ✅ EXCEEDS |
+| git            | 83.0%    | 80%    | ✅ EXCEEDS |
+| pkg/filter     | 82.5%    | 80%    | ✅ EXCEEDS |
+| syntax/templ   | 80.6%    | 80%    | ✅ MEETS   |
+| internal/enum  | 77.9%    | 80%    | ⚠️ BELOW   |
+| job            | 76.6%    | 80%    | ⚠️ BELOW   |
+| config         | 75.3%    | 80%    | ⚠️ BELOW   |
+| hash           | 73.8%    | 80%    | ⚠️ BELOW   |
+| cmd            | 73.9%    | 80%    | ⚠️ BELOW   |
+| bdd            | 70.0%    | 80%    | ⚠️ BELOW   |
+| syntax         | 67.6%    | 80%    | ⚠️ BELOW   |
+| cli            | 62.5%    | 80%    | ⚠️ BELOW   |
+| printer        | 64.1%    | 80%    | ⚠️ BELOW   |
 
 ---
 
@@ -107,24 +107,24 @@
 
 ### By Category
 
-| Category | Count | Severity |
-|----------|-------|----------|
-| revive | 50 | Medium (comments, naming) |
-| recvcheck | 19 | Medium (pointer receivers) |
-| nonamedreturns | 9 | Low (style) |
-| prealloc | 9 | Low (optimization) |
-| unparam | 8 | Medium (unused params) |
-| unconvert | 1 | Low |
-| thelper | 4 | Medium |
-| gosec | 3 | **HIGH** (security) |
-| gosmopolitan | 2 | Low (i18n) |
-| funlen | 2 | Medium (function length) |
-| gocyclo | 1 | Medium |
-| gocognit | 1 | Medium |
-| goconst | 1 | Low |
-| nestif | 1 | Medium |
-| maintidx | 1 | Medium |
-| nolintlint | 1 | Medium |
+| Category       | Count | Severity                   |
+| -------------- | ----- | -------------------------- |
+| revive         | 50    | Medium (comments, naming)  |
+| recvcheck      | 19    | Medium (pointer receivers) |
+| nonamedreturns | 9     | Low (style)                |
+| prealloc       | 9     | Low (optimization)         |
+| unparam        | 8     | Medium (unused params)     |
+| unconvert      | 1     | Low                        |
+| thelper        | 4     | Medium                     |
+| gosec          | 3     | **HIGH** (security)        |
+| gosmopolitan   | 2     | Low (i18n)                 |
+| funlen         | 2     | Medium (function length)   |
+| gocyclo        | 1     | Medium                     |
+| gocognit       | 1     | Medium                     |
+| goconst        | 1     | Low                        |
+| nestif         | 1     | Medium                     |
+| maintidx       | 1     | Medium                     |
+| nolintlint     | 1     | Medium                     |
 
 ### Critical Lint Issues (Security)
 
@@ -231,13 +231,13 @@ art-dupl/
 
 ## DEPENDENCIES
 
-| Dependency | Version | Purpose |
-|------------|---------|---------|
-| charmbracelet/fang | v1.0.0 | CLI framework |
-| charmbracelet/x/exp/golden | latest | Golden file testing |
-| onsi/ginkgo/v2 | v2.28.1 | BDD testing |
-| onsi/gomega | v1.39.0 | Ginkgo matchers |
-| spf13/cobra | v1.10.2 | CLI commands |
+| Dependency                 | Version | Purpose             |
+| -------------------------- | ------- | ------------------- |
+| charmbracelet/fang         | v1.0.0  | CLI framework       |
+| charmbracelet/x/exp/golden | latest  | Golden file testing |
+| onsi/ginkgo/v2             | v2.28.1 | BDD testing         |
+| onsi/gomega                | v1.39.0 | Ginkgo matchers     |
+| spf13/cobra                | v1.10.2 | CLI commands        |
 
 ---
 
