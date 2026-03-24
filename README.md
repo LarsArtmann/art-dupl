@@ -2,7 +2,9 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/LarsArtmann/art-dupl)](https://goreportcard.com/report/github.com/LarsArtmann/art-dupl) [![codecov](https://codecov.io/gh/LarsArtmann/art-dupl/graph/badge.svg?token=art-dupl)](https://codecov.io/gh/LarsArtmann/art-dupl)
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms on serialized ASTs. It identifies structural duplicates while ignoring literal values.
+**art-dupl** is a professional code duplication detection tool for Go projects. It finds repeated code patterns in your source files, helping you identify opportunities for refactoring and reduce code duplication.
+
+The tool analyzes Go source code at the AST level, ignoring literal values (like strings and numbers) to focus on structural patterns. It supports semantic-aware detection that considers identifier names to reduce false positives.
 
 ## Installation
 
@@ -34,9 +36,9 @@ just build    # Creates ./dist/art-dupl
 # JSON output for CI/CD
 ./art-dupl -json -t 20
 
-# Semantic-aware detection (opt-in with --semantic flag)
-# Matches by identifier names to reduce false positives
-./art-dupl --semantic ./src
+# Semantic-aware detection (default, matches by identifier names)
+# Use --structural to disable and get structural-only matching
+./art-dupl ./src
 
 # Parallel parsing for faster analysis (auto-detect CPU cores)
 ./art-dupl --workers 0 ./src
@@ -59,11 +61,10 @@ source <(./art-dupl completion zsh)
 ## Key Features
 
 - **Structural clone detection** using suffix tree algorithms
-- **Semantic-aware detection** (opt-in with `--semantic` flag) for content-aware duplicate matching
+- **Semantic-aware detection** (default) reduces false positives by matching identifier names
   - Distinguishes methods by receiver type (e.g., `CrushMode.IsValid` vs `SafetyMode.IsValid`)
-  - Matches by identifier names, not just AST structure
-  - Default: structural-only matching for backward compatibility
-- **Multi-language support**: Go files and `.templ` templates (templ.guide)
+  - Use `--structural` to disable and get structural-only matching
+- **Smart filtering**: Auto-detects and filters SQLC and Templ generated code with configurable patterns
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
 - **Multiple output formats**: text, HTML, JSON, plumbing
@@ -97,22 +98,24 @@ Use with:
     --clear-cache            Clear cache before running
 -c, --config                 Path to configuration file (JSON format)
 -m, --detection-methods      Detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)
-    --exclude-pattern        Additional file patterns to exclude
--f, --files                  Read file names from stdin, one per line
-    --filter-generated       Enable filtering of sqlc.dev and templ.guide generated code
--h, --help                   Help for art-dupl
-    --html                   Output results as HTML with syntax-highlighted code fragments
-    --include-pattern        File patterns to always include (takes precedence over filter)
-    --include-sqlc           Include sqlc.dev generated files (override auto-detection)
-    --include-templ          Include templ.guide generated files (override default filtering)
-    --incremental            Enable incremental analysis (only analyze changed files)
+    --diff                      Enable diff visualization for HTML output (values: side-by-side, inline, or true for side-by-side)
+    --exclude-pattern           Additional file patterns to exclude
+    -f --files                  Read file names from stdin, one per line
+    --filter-generated          Enable filtering of sqlc.dev and templ.guide generated code
+    -h --help                   Help for art-dupl
+    --html                      Output results as HTML with syntax-highlighted code fragments
+    --include-node-modules      Include node_modules directory in hash-based detection (excluded by default)
+    --include-pattern           File patterns to always include (takes precedence over filter)
+    --include-sqlc              Include sqlc.dev generated files (override auto-detection)
+    --include-templ             Include templ.guide generated files (override default filtering)
+    --incremental               Enable incremental analysis with AST caching
 -j, --json                   Output structured JSON format with metadata and statistics
 -o, --output-dir             Output directory for generated files (used with --all)
 -p, --plumbing               Output machine-readable plumbing format for script integration
     --semantic               Enable semantic-aware detection (match by identifier names)
     --since                  Git reference for incremental mode (e.g., HEAD~1, main)
 -s, --sort                   Sort clone groups: size, occurrence, hash, total-tokens (default: size)
-    --structural             Use structural-only matching [deprecated: this is now default]
+    --structural            Use structural-only matching (may increase false positives)
 -t, --threshold              Minimum token sequence size (default: 15)
     --vendor                 Include vendor directory in analysis
 -v, --verbose                Enable verbose logging (repeat for more verbosity)
@@ -145,7 +148,7 @@ Supports all root command flags plus:
 -m, --detection-methods  Detection methods to use
     --format             Output format: text, json, csv (default: text)
     --semantic           Enable semantic-aware detection
-    --structural         Use structural-only matching [deprecated]
+    --structural         Use structural-only matching (may increase false positives)
 ```
 
 **Format validation**: The `--format` flag accepts "text", "json", or "csv".
@@ -244,6 +247,7 @@ Top Files by Duplicate Lines:
 - **Text**: Simple clone listing with file paths and line numbers
 - **HTML**: Detailed report with syntax-highlighted code fragments
 - **JSON**: Structured data with metadata and summary statistics
+- **simple-json**: Lightweight JSON output for scripting
 - **Plumbing**: Machine-readable format for scripts
 
 ## Architecture

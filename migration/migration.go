@@ -1,18 +1,58 @@
 package migration
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/adapter"
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // MigrationID represents a unique identifier for a migration.
 type MigrationID string
+
+// NewMigrationID creates a validated MigrationID from a string.
+func NewMigrationID(s string) (MigrationID, error) {
+	if s == "" {
+		return "", errors.NewValidationError("migration ID cannot be empty", nil)
+	}
+
+	return MigrationID(s), nil
+}
+
+// String returns the string representation of MigrationID.
+func (id MigrationID) String() string {
+	return string(id)
+}
+
+// MarshalJSON implements json.Marshaler for MigrationID.
+func (id MigrationID) MarshalJSON() ([]byte, error) {
+	if id == "" {
+		return nil, errors.NewValidationError("migration ID cannot be empty", nil)
+	}
+
+	return json.Marshal(string(id))
+}
+
+// UnmarshalJSON implements json.Unmarshaler for MigrationID.
+func (id *MigrationID) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return errors.NewValidationError("migration ID cannot be empty", nil)
+	}
+
+	*id = MigrationID(s)
+
+	return nil
+}
 
 // MigrationPath handles conversion between old and new type systems.
 type MigrationPath struct {

@@ -3,6 +3,7 @@ package adapter
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -299,8 +300,8 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 	t.Run("empty clone groups", func(t *testing.T) {
 		analysis := CreateAnalysisFromClones(nil, 15)
 
-		if analysis.ID != "analysis-id" {
-			t.Errorf("Expected ID 'analysis-id', got %q", analysis.ID)
+		if !strings.HasPrefix(string(analysis.ID), "analysis-") {
+			t.Errorf("Expected ID to start with 'analysis-', got %q", analysis.ID)
 		}
 
 		if analysis.State != domain.DetectionStateCompleted {

@@ -1,7 +1,9 @@
 package adapter
 
 import (
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -59,7 +61,7 @@ func CloneGroupFromNodes(groupID domain.CloneGroupID, nodes [][]*syntax.Node) do
 	severity := domain.CalculateSeverity(totalSize, totalSize/10) // Approximate complexity
 
 	return domain.CloneGroup{
-		ID:       domain.CloneGroupID(groupID),
+		ID:       groupID,
 		Clones:   clones,
 		Size:     totalSize,
 		Hash:     domain.Hash(generateGroupHash(clones)),
@@ -105,9 +107,8 @@ func generateGroupHash(_ []domain.Clone) string {
 	return "group-hash"
 }
 
-func generateAnalysisID() string {
-	// Implement proper ID generation
-	return "analysis-id"
+func generateAnalysisID() domain.AnalysisID {
+	return domain.AnalysisID(fmt.Sprintf("analysis-%d", time.Now().UnixNano()))
 }
 
 func countUniqueFiles(groups []domain.CloneGroup) uint {
@@ -146,6 +147,5 @@ func calculateDuplicationRatio(groups []domain.CloneGroup) float64 {
 }
 
 func currentTime() string {
-	// Implement proper time generation
-	return "2023-01-01T00:00:00Z"
+	return time.Now().UTC().Format(time.RFC3339)
 }
