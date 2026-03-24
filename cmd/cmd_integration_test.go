@@ -289,6 +289,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		}
 
 		for range duplChan {
+			// Drain channel
 		}
 	})
 }

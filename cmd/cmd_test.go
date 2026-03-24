@@ -287,6 +287,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 		}
 
 		for range ch {
+			// Drain channel
 		}
 	})
 
@@ -299,6 +300,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 		}
 
 		for range ch {
+			// Drain channel
 		}
 	})
 }

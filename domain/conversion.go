@@ -95,7 +95,7 @@ func calculateComplexity(node *syntax.Node) uint {
 	case 0:
 		complexity += 2
 	default:
-		complexity += 1
+		complexity++
 	}
 
 	return complexity

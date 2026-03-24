@@ -65,7 +65,7 @@ func getHelpOutput(setup *testutil.BDDTestSetup) string {
 func verifyHelpContent(setup *testutil.BDDTestSetup, substrings []string) {
 	outputStr := getHelpOutput(setup)
 
-	var expectations []types.GomegaMatcher
+	expectations := make([]types.GomegaMatcher, 0, len(substrings))
 	for _, substr := range substrings {
 		expectations = append(expectations, ContainSubstring(substr))
 	}

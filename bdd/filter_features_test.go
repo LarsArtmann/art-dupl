@@ -19,7 +19,8 @@ func buildFilterCmd(
 	threshold int,
 	includePatterns, excludePatterns []string,
 ) *exec.Cmd {
-	args := []string{binaryPath, tmpDir}
+	args := make([]string, 0, 2+2*len(includePatterns)+2*len(excludePatterns)+1)
+	args = append(args, binaryPath, tmpDir)
 	for _, p := range includePatterns {
 		args = append(args, "--include-pattern", p)
 	}

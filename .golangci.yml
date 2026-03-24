@@ -192,6 +192,12 @@ linters:
       - path: migration/
         linters:
           - typecheck
+      - path: config/
+        linters:
+          - recvcheck
+      - path: domain/
+        linters:
+          - recvcheck
       - path: syntax/
         linters:
           - gocyclo

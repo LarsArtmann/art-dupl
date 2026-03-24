@@ -6,8 +6,6 @@ import (
 )
 
 // CloneSeverity represents clone severity levels for categorizing duplicate code.
-//
-//nolint:recvcheck // UnmarshalJSON requires pointer receiver, others use value receiver
 type CloneSeverity string
 
 // Clone severity constants define the importance level of detected clones.

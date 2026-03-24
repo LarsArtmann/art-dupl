@@ -496,7 +496,7 @@ func processItem(data string, index int) error {
 }`
 
 			// Create multiple duplicate files using setup's helper
-			var filenames []string
+			filenames := make([]string, 0, numFiles)
 
 			for i := range numFiles {
 				filename := fmt.Sprintf("file%d.go", i)

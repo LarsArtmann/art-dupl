@@ -42,7 +42,12 @@ func (c *contextList) getAll() []Pos {
 
 	slices.Sort(keys)
 
-	var ps []Pos
+	// Calculate total capacity for all positions
+	totalCap := 0
+	for _, k := range keys {
+		totalCap += len(c.lists[k].positions)
+	}
+	ps := make([]Pos, 0, totalCap)
 	for _, k := range keys {
 		ps = append(ps, c.lists[k].positions...)
 	}

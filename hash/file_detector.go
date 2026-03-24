@@ -193,7 +193,7 @@ func (f *FileDetector) convertToMatches(
 		// Only create match if we have at least 2 substantial files
 		if len(validFiles) >= 2 {
 			// Create fragments for each valid file
-			var fragments [][]*syntax.Node
+			fragments := make([][]*syntax.Node, 0, len(validFiles))
 
 			for _, fileHash := range validFiles {
 				node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)

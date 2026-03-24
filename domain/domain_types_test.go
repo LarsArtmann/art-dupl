@@ -391,7 +391,7 @@ func createUintTypeTestFromName(typeName string) TestCase {
 // Uses the createUintTypeTest helper to reduce boilerplate and eliminate code duplication.
 func TestUintTypes(t *testing.T) {
 	// Define test case structure
-	var tests []TestCase
+	tests := make([]TestCase, 0, len(uintTypeNames))
 	for _, typeName := range uintTypeNames {
 		tests = append(tests, createUintTypeTestFromName(typeName))
 	}
@@ -882,21 +882,20 @@ func registerBasicUintConstructorTest[T any](
 ) {
 	t.Helper()
 
-	tests := []constructorTest[T]{
-		{
-			name:      "valid " + constructorName,
-			input:     validValue1,
-			want:      expectedValue1,
-			wantError: false,
-		},
-		{
-			name:      "another valid " + constructorName,
-			input:     validValue2,
-			want:      expectedValue2,
-			wantError: false,
-		},
-		{name: "zero should error", input: uint(0), want: *new(T), wantError: true},
-	}
+	tests := make([]constructorTest[T], 0, 3+len(extraTests))
+	tests = append(tests, constructorTest[T]{
+		name:      "valid " + constructorName,
+		input:     validValue1,
+		want:      expectedValue1,
+		wantError: false,
+	})
+	tests = append(tests, constructorTest[T]{
+		name:      "another valid " + constructorName,
+		input:     validValue2,
+		want:      expectedValue2,
+		wantError: false,
+	})
+	tests = append(tests, constructorTest[T]{name: "zero should error", input: uint(0), want: *new(T), wantError: true})
 	tests = append(tests, extraTests...)
 	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
 		return constructorFunc(input.(uint))
@@ -931,15 +930,14 @@ func registerBasicStringConstructorTest[T comparable](
 ) {
 	t.Helper()
 
-	tests := []constructorTest[T]{
-		{
-			name:      "valid " + constructorName,
-			input:     sampleValue,
-			want:      expectedValue,
-			wantError: false,
-		},
-		emptyStringErrorTest[T](),
-	}
+	tests := make([]constructorTest[T], 0, 2+len(extraTests))
+	tests = append(tests, constructorTest[T]{
+		name:      "valid " + constructorName,
+		input:     sampleValue,
+		want:      expectedValue,
+		wantError: false,
+	})
+	tests = append(tests, emptyStringErrorTest[T]())
 	tests = append(tests, extraTests...)
 	registerStringConstructorTest(t, constructorName, tests, constructorFunc)
 }

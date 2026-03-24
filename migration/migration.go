@@ -74,7 +74,7 @@ func NewMigrationPath(
 // FromSyntaxToDomain converts syntax nodes to domain types.
 func (mp *MigrationPath) FromSyntaxToNodes(dups [][]*syntax.Node, threshold uint) domain.Analysis {
 	// Convert each duplicate group to domain clone group
-	var cloneGroups []domain.CloneGroup
+	cloneGroups := make([]domain.CloneGroup, 0, len(dups))
 
 	for i, nodeGroup := range dups {
 		groupID := domain.CloneGroupID(fmt.Sprintf("group-%d", i))

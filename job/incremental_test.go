@@ -87,6 +87,7 @@ func main() {
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
 	for range schan {
+		// Drain channel
 	}
 
 	fchan2 := make(chan string, 1)
@@ -133,6 +134,7 @@ func main() {
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
 	for range schan {
+		// Drain channel
 	}
 
 	parserWithClear := NewIncrementalParser(cacheDir, true, true)
@@ -145,6 +147,7 @@ func main() {
 	schan2, statsChan := parserWithClear.ParseIncremental(ctx, fchan2)
 
 	for range schan2 {
+		// Drain channel
 	}
 
 	stats := <-statsChan

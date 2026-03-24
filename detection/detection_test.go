@@ -375,6 +375,7 @@ func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
 
 	// Drain the channel
 	for range matches {
+		// Drain
 	}
 }
 
@@ -400,6 +401,7 @@ func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
 
 	// Drain the channel
 	for range matches {
+		// Drain
 	}
 }
 
@@ -428,6 +430,7 @@ func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 
 	// Drain the channel
 	for range matches {
+		// Drain
 	}
 }
 
