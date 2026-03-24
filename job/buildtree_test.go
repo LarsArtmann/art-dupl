@@ -10,6 +10,7 @@ import (
 // waitForCompletion waits for the done channel or times out after 5 seconds.
 // It uses the provided error message if a timeout occurs.
 func waitForCompletion(t *testing.T, done chan bool, errorMessage string) {
+	t.Helper()
 	select {
 	case <-done:
 		// Success

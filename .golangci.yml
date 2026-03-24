@@ -165,6 +165,7 @@ linters:
           - forbidigo
           - nestif
           - recvcheck
+          - golines
       - path: bdd/
         linters:
           - funlen
@@ -180,6 +181,7 @@ linters:
           - forcetypeassert
           - forbidigo
           - nestif
+          - golines
       - path: examples/
         linters:
           - revive

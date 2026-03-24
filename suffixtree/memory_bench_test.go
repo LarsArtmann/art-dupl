@@ -6,6 +6,7 @@ import (
 
 // benchmarkMemoryUsage is a helper that benchmarks memory usage with the given number of unique tokens.
 func benchmarkMemoryUsage(b *testing.B, uniqueCount int) {
+	b.Helper()
 	b.ReportAllocs()
 	tokens := make([]Token, 10000)
 	for i := range tokens {

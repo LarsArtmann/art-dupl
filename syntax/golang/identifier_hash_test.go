@@ -6,6 +6,7 @@ import (
 
 // compareDecodeResult is a test helper for comparing decode function results.
 func compareDecodeResult(t *testing.T, funcName string, input, result, expected int32) {
+	t.Helper()
 	if result != expected {
 		t.Errorf("%s(0x%08X) = 0x%06X, want 0x%06X", funcName, input, result, expected)
 	}
@@ -80,7 +81,7 @@ func TestHashIdentifierFast_EdgeCases(t *testing.T) {
 		name  string
 		input string
 	}{
-		{"unicode", "日本語"},
+		{"unicode", "日本語"}, //nolint:gosmopolitan // Intentional Unicode test data
 		{"special chars", "test_id"},
 		{"all caps", "FOO"},
 		{"single underscore", "_"},

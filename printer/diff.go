@@ -293,6 +293,8 @@ func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 }
 
 // countDiffLineStats counts added, removed, and modified lines in a DiffResult.
+//
+//nolint:nonamedreturns // Named returns are appropriate for counting functions
 func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
 	for _, line := range diff.Compared {
 		switch line.Type {

@@ -176,6 +176,8 @@ func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) str
 
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
 // Returns both outputs and any error that occurred.
+//
+//nolint:nonamedreturns // Multiple return values for stdout/stderr
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
 	if s.T != nil {
 		s.T.Helper()

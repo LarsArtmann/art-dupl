@@ -26,6 +26,7 @@ func testValidMethods[T validatable](t *testing.T, testCases []struct {
 	wantErr bool
 },
 ) {
+	t.Helper()
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.value.IsValid()

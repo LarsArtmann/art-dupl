@@ -27,7 +27,7 @@ func setupGitRepo(t *testing.T) string {
 	tempDir := t.TempDir()
 
 	// Initialize git repo with explicit branch name
-	cmd := exec.Command("git", "init", "-b", "main")
+	cmd := exec.CommandContext(t.Context(), "git", "init", "-b", "main")
 
 	cmd.Dir = tempDir
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -35,14 +35,14 @@ func setupGitRepo(t *testing.T) string {
 	}
 
 	// Configure git user (required for commits) - use --local to ensure it's set for this repo
-	cmd = exec.Command("git", "config", "--local", "user.email", "test@test.com")
+	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "user.email", "test@test.com")
 
 	cmd.Dir = tempDir
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("Failed to config git email: %v, output: %s", err, string(output))
 	}
 
-	cmd = exec.Command("git", "config", "--local", "user.name", "Test")
+	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "user.name", "Test")
 
 	cmd.Dir = tempDir
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -50,7 +50,7 @@ func setupGitRepo(t *testing.T) string {
 	}
 
 	// Disable GPG signing for test repos (user may have it enabled globally)
-	cmd = exec.Command("git", "config", "--local", "commit.gpgsign", "false")
+	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "commit.gpgsign", "false")
 
 	cmd.Dir = tempDir
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -66,14 +66,14 @@ func createAndCommitFile(t *testing.T, repoDir, filename, content string) {
 
 	writeFile(t, repoDir, filename, content)
 
-	cmd := exec.Command("git", "add", filename)
+	cmd := exec.CommandContext(t.Context(), "git", "add", filename)
 
 	cmd.Dir = repoDir
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("Failed to git add: %v, output: %s", err, string(output))
 	}
 
-	cmd = exec.Command("git", "commit", "-m", "Add "+filename)
+	cmd = exec.CommandContext(t.Context(), "git", "commit", "-m", "Add "+filename)
 
 	cmd.Dir = repoDir
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -172,6 +172,7 @@ func TestChangeDetector_isGitRepo(t *testing.T) {
 
 // testNoChanges is a helper function that tests that no changes are detected.
 func testNoChanges(t *testing.T, since string) {
+	t.Helper()
 	repoDir := setupGitRepo(t)
 	createAndCommitFile(t, repoDir, "initial.go", "package main")
 	assertNoChanges(t, repoDir, since)
@@ -273,7 +274,7 @@ func TestChangeDetector_GetStagedFiles(t *testing.T) {
 		// Create and stage a new file
 		writeFile(t, repoDir, "new.go", "package main\n")
 
-		cmd := exec.Command("git", "add", "new.go")
+		cmd := exec.CommandContext(t.Context(), "git", "add", "new.go")
 
 		cmd.Dir = repoDir
 		if err := cmd.Run(); err != nil {
@@ -374,7 +375,7 @@ func TestChangeDetector_GetAllChanges(t *testing.T) {
 		// Staged file
 		writeFile(t, repoDir, "staged.go", "package main\n")
 
-		cmd := exec.Command("git", "add", "staged.go")
+		cmd := exec.CommandContext(t.Context(), "git", "add", "staged.go")
 		cmd.Dir = repoDir
 		_ = cmd.Run()
 

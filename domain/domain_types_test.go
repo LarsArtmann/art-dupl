@@ -496,6 +496,8 @@ func createTypeTestSuite[T comparable](
 // createStandardUintJSONTests generates standard JSON test cases for uint-based types.
 // This helper reduces boilerplate by providing common test patterns for numeric types.
 // ValidValue is used for marshal and unmarshal valid tests, RoundTripValue is used for round-trip testing.
+//
+//nolint:nonamedreturns // Named returns used for multiple output slices
 func createStandardUintJSONTests[T comparable](
 	validValue T,
 	validJSON string,

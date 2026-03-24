@@ -193,6 +193,7 @@ func TestUnmarshalUintNonZero(t *testing.T) {
 }
 
 func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expectedValue uint) {
+	t.Helper()
 	var result uint
 	err := unmarshalUintNonZero(
 		input,

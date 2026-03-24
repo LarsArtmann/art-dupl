@@ -1,3 +1,5 @@
+// Package utils provides utility functions for context management and file processing.
+// Package utils provides utility functions for context management and file processing.
 package utils
 
 import (

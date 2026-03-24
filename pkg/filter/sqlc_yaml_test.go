@@ -325,6 +325,7 @@ func TestFindSQLCConfigs(t *testing.T) {
 
 func TestGetSQLOutputDirs(t *testing.T) {
 	helper := func(t *testing.T, content string, expectedCount int) {
+		t.Helper()
 		tmpDir := t.TempDir()
 		configPath := filepath.Join(tmpDir, "sqlc.yaml")
 

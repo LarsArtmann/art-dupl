@@ -8,9 +8,11 @@ import (
 )
 
 // trans transforms given golang AST to uniform tree structure.
+//
+//nolint:gocognit,funlen,maintidx,nonamedreturns // High complexity is inherent to AST transformation
 func (t *transformer) trans(
 	node ast.Node,
-) (o *syntax.Node) { //nolint:gocognit,gocyclo,cyclop,funlen,maintidx // High complexity is inherent to AST transformation
+) (o *syntax.Node) {
 	o = syntax.NewNode()
 	o.Filename = t.filename
 	st, end := node.Pos(), node.End()

@@ -106,7 +106,7 @@ func (t *STree) update() {
 // a c-transition. If not, then state (exs, (start, end)) is made
 // explicit (if not already so).
 //
-//nolint:funcorder
+//nolint:funcorder,nonamedreturns
 func (t *STree) testAndSplit(s *state, start, end Pos) (exs *state, endPoint bool) {
 	c := t.data[t.end]
 	if start <= end {

@@ -10,7 +10,7 @@ import (
 
 // ParseFileByExtension parses a file based on its extension.
 // Uses default configuration (semantic mode).
-func ParseFileByExtension(file string) (ast *syntax.Node, lines int, err error) {
+func ParseFileByExtension(file string) (*syntax.Node, int, error) {
 	return ParseFileByExtensionWithConfig(file, true)
 }
 
@@ -20,7 +20,10 @@ func ParseFileByExtension(file string) (ast *syntax.Node, lines int, err error) 
 func ParseFileByExtensionWithConfig(
 	file string,
 	semantic bool,
-) (ast *syntax.Node, lines int, err error) {
+) (*syntax.Node, int, error) {
+	var ast *syntax.Node
+	var lines int
+	var err error
 	switch filepath.Ext(file) {
 	case ".templ":
 		ast, lines, err = templ.ParseWithLineCount(file)

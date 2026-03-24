@@ -34,6 +34,7 @@ func TestIncrementalParserBasic(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
+	//nolint:goconst // Intentional duplicate for independent test cases
 	content := `package main
 
 func main() {

@@ -209,6 +209,7 @@ templ child() {
 }
 
 func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
+	t.Helper()
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -228,6 +229,7 @@ func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
 }
 
 func testParseAndVerifyNodeCount(t *testing.T, input string, expectedMin int) {
+	t.Helper()
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -413,6 +415,7 @@ templ footer() {
 }
 
 func testParseTemplInputExact(t *testing.T, input string, expected int) {
+	t.Helper()
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)

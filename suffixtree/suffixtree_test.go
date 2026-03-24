@@ -344,7 +344,7 @@ func TestUnicodeSupport(t *testing.T) {
 		},
 		{
 			name:     "Chinese characters",
-			input:    "你好世界",
+			input:    "你好世界", //nolint:gosmopolitan // Intentional Unicode test data
 			expected: []rune{'你', '好', '世', '界'},
 		},
 		{

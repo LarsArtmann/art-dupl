@@ -1,6 +1,7 @@
 package bdd
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +13,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
-// buildFilterCmd creates an exec.Command for running art-dupl with filter patterns.
+// buildFilterCmd creates an exec.CommandContext for running art-dupl with filter patterns.
 func buildFilterCmd(
 	binaryPath, tmpDir string,
 	threshold int,
@@ -29,7 +30,7 @@ func buildFilterCmd(
 
 	args = append(args, "--threshold", strconv.Itoa(threshold))
 
-	return exec.Command("./art-dupl-filter_features-test", args...)
+	return exec.CommandContext(context.Background(), "./art-dupl-filter_features-test", args...)
 }
 
 // BDD Test Suite for Filter Features

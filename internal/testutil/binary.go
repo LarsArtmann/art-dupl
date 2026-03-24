@@ -1,3 +1,7 @@
+// Package testutil provides testing utilities for art-dupl.
+//
+// This package contains helper functions for building and running the art-dupl
+// binary during tests, as well as other testing utilities.
 package testutil
 
 import (
@@ -40,6 +44,7 @@ func BuildAndCleanArtDuplBinary(t *testing.T) string {
 func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, error) {
 	t.Helper()
 
+	//nolint:gosec // G204: Safe - binaryPath from controlled build, args from test code
 	cmd := exec.CommandContext(
 		t.Context(),
 		binaryPath,

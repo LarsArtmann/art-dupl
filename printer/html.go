@@ -796,6 +796,8 @@ func (p *htmlprinter) writeCloneGroupFooter() error {
 }
 
 // writeDiffView renders the diff visualization for clone groups.
+//
+//nolint:gocyclo,cyclop // High cyclomatic complexity is inherent to HTML generation with multiple cases
 func (p *htmlprinter) writeDiffView(clones []clone) error {
 	groupDiff := ComputeCloneGroupDiff(clones)
 
@@ -825,6 +827,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 	}
 
 	// Write aggregate diff stats if available
+	//nolint:nestif // Complex but necessary HTML generation with conditional blocks
 	if hasAggregateStats {
 		_, err = fmt.Fprint(p.w, `<div class="diff-aggregate-stats">`)
 		if err != nil {
@@ -1069,6 +1072,8 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 }
 
 // countDiffStats counts the number of added, removed, and modified lines.
+//
+//nolint:nonamedreturns // Named returns are appropriate for counting functions
 func countDiffStats(diff DiffResult) (added, removed, modified int) {
 	for _, line := range diff.Compared {
 		switch line.Type {
@@ -1088,6 +1093,8 @@ func countDiffStats(diff DiffResult) (added, removed, modified int) {
 
 // buildSummarySection generates the HTML summary section with category/priority distribution
 // and filter buttons.
+//
+//nolint:funlen // Long function is inherent to comprehensive HTML summary generation
 func (p *htmlprinter) buildSummarySection() string {
 	if p.stats.totalClones == 0 {
 		return ""
@@ -1219,6 +1226,7 @@ func orderedPriorities() []ClonePriority {
 	}
 }
 
+//nolint:funlen // Long function is inherent to comprehensive HTML footer generation
 func (p *htmlprinter) PrintFooter() error {
 	summary := p.buildSummarySection()
 

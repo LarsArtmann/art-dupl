@@ -87,9 +87,8 @@ func hashSeq(nodes []*Node) string {
 // This is the current implementation used throughout the codebase.
 func hashSeqFallback(nodes []*Node, buf []byte) {
 	for i, node := range nodes {
-		buf[i] = byte(
-			node.Type,
-		)
+		//nolint:gosec // G115: Safe - node.Type is NodeType (uint8), always fits in byte
+		buf[i] = byte(node.Type)
 	}
 }
 
@@ -168,8 +167,7 @@ func BatchHash(sequences [][]*Node) []string {
 	return results
 }
 
-// HashSeqWithConfig computes a hash with additional configuration options.
-// This provides flexibility for different hashing strategies.
+// HashConfig contains configuration options for hash computation.
 type HashConfig struct {
 	// UseSIMD forces SIMD usage even if not automatically detected
 	UseSIMD bool

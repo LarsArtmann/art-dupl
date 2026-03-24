@@ -1,3 +1,4 @@
+// Package golang provides Go-specific AST transformation and node type definitions.
 package golang
 
 import (

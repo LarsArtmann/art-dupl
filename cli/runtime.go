@@ -71,9 +71,9 @@ func DefaultRuntimeConfig() *RuntimeConfig {
 type cliStdout struct{}
 
 //nolint:wrapcheck // Error wrapping not needed for IO Write operations
-func (c *cliStdout) Write(p []byte) (n int, err error) { return os.Stdout.Write(p) }
+func (c *cliStdout) Write(p []byte) (int, error) { return os.Stdout.Write(p) }
 
 type cliStderr struct{}
 
 //nolint:wrapcheck // Error wrapping not needed for IO Write operations
-func (c *cliStderr) Write(p []byte) (n int, err error) { return os.Stderr.Write(p) }
+func (c *cliStderr) Write(p []byte) (int, error) { return os.Stderr.Write(p) }
