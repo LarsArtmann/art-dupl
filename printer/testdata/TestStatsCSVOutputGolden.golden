@@ -1,0 +1,22 @@
+Metric,Value
+Threshold,15
+Detection Methods,art-dupl
+Semantic Detection,disabled
+Timestamp,
+Analysis Time,
+
+Files Scanned,3
+Clone Groups,1
+Total Clones,2
+
+Total Duplicate Lines,1
+Estimated Total Lines,0
+Duplication Ratio,0.0%
+Total Duplicate Tokens,4
+Average Clone Size,1
+Complexity Score,2.00
+Impact Score,8
+Health Score,A
+Health Score Thresholds,A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%
+
+Note,Metrics count unique duplicate patterns not total occurrences

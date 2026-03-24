@@ -1,0 +1,43 @@
+{
+  "configuration": {
+    "threshold": 15,
+    "detectionMethods": "art-dupl,hash",
+    "semanticDetection": false
+  },
+  "overview": {
+    "filesScanned": 10,
+    "cloneGroups": 1,
+    "totalClones": 2
+  },
+  "duplicateCode": {
+    "totalDuplicateLines": 1,
+    "totalDuplicateTokens": 4,
+    "averageCloneSize": 1,
+    "complexityScore": 2,
+    "impactScore": 8
+  },
+  "metrics": {
+    "healthScore": "A",
+    "healthScoreThresholds": "A: \u003c5% dup, B: \u003c10%, C: \u003c15%, D: \u003c25%, F: \u003e=25%"
+  },
+  "note": "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations.",
+  "sizeDistribution": {
+    "1-5 lines": 2
+  },
+  "tokenDistribution": {
+    "1-15 tokens": 2
+  },
+  "severityBreakdown": {
+    "small": 1
+  },
+  "topFiles": [
+    {
+      "filename": "file2.go",
+      "duplicateLines": 2
+    },
+    {
+      "filename": "file1.go",
+      "duplicateLines": 1
+    }
+  ]
+}
