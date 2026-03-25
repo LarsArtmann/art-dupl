@@ -85,7 +85,7 @@ func ModifiedTest() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should find duplicates
-			Expect(string(output)).To(ContainSubstring("found"))
+			Expect(string(output)).To(ContainSubstring("Found total"))
 		})
 	})
 
@@ -329,7 +329,7 @@ func ModifiedTest() {
 			// Run with low threshold (should find duplicates)
 			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "5")
 			Expect(err).ToNot(HaveOccurred())
-			Expect(string(output)).To(ContainSubstring("found"))
+			Expect(string(output)).To(ContainSubstring("Found total"))
 		})
 
 		It("should work with verbose output", func() {

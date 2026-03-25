@@ -13,12 +13,13 @@ import (
 type TextPrinter struct {
 	ReadFile
 
-	cnt         int
-	w           io.Writer
-	totalSize   int
-	cloneGroups [][]clone
-	currentHash string // Hash for the current clone group (for hash detection)
-	isFileDupe  bool   // True if current group is an entire file duplicate
+	cnt           int
+	w             io.Writer
+	totalSize     int
+	cloneGroups   [][]clone
+	currentHash   string   // Hash for the current clone group (for hash detection)
+	isFileDupe    bool     // True if current group is an entire file duplicate
+	diffHintFiles []string // Files to show diff hint for
 }
 
 // SetHash sets the hash for the current clone group.
@@ -37,54 +38,43 @@ func NewText(w io.Writer, fread ReadFile) Printer {
 
 func (p *TextPrinter) PrintHeader() error { return nil }
 
+// detectFileDuplicate checks if all fragments are entire file duplicates.
+func detectFileDuplicate(isFileDupeFlag bool, dups [][]*syntax.Node) bool {
+	if isFileDupeFlag {
+		return true
+	}
+	if len(dups) == 0 {
+		return false
+	}
+	for _, frag := range dups {
+		if len(frag) != 1 || frag[0].Pos != 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
+// calculateCloneSizes calculates fragment sizes and total size for clones.
+func calculateCloneSizes(clones []clone) int {
+	totalSize := 0
+	for i := range clones {
+		clones[i].size = len(clones[i].fragment)
+		totalSize += clones[i].size
+	}
+
+	return totalSize
+}
+
 func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.cnt++
 
-	// Extract sortBy parameter, default to SortBySize
 	sortCriteria := SortBySize
 	if len(sortBy) > 0 {
 		sortCriteria = sortBy[0]
 	}
 
-	// Apply sorting to the clone groups before processing
 	sortedDups := SortNodesByCriteria(dups, sortCriteria)
-
-	// Detect if this is a file duplicate (hash detection mode)
-	// File duplicates have: single node per fragment, node.Pos == 0
-	isFileDupe := p.isFileDupe
-	if !isFileDupe && len(sortedDups) > 0 {
-		// Check if all fragments are single nodes starting at position 0
-		allSingleNodes := true
-		for _, frag := range sortedDups {
-			if len(frag) != 1 || frag[0].Pos != 0 {
-				allSingleNodes = false
-			}
-		}
-
-		if allSingleNodes {
-			isFileDupe = true
-		}
-	}
-
-	// Print enhanced header for file duplicates
-	if isFileDupe && p.currentHash != "" {
-		hashPrefix := p.currentHash
-		if len(hashPrefix) > 12 {
-			hashPrefix = hashPrefix[:12]
-		}
-		if _, err := fmt.Fprintf(
-			p.w,
-			"📄 FILE DUPLICATE | 🔗 [%s...] | %d files\n\n",
-			hashPrefix,
-			len(sortedDups),
-		); err != nil {
-			return err
-		}
-	} else {
-		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
-			return err
-		}
-	}
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
@@ -95,12 +85,32 @@ func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		)
 	}
 
-	// Store clones with size for sorting
-	groupCloneSize := 0
+	groupCloneSize := calculateCloneSizes(clones)
 
-	for _, cl := range clones {
-		cl.size = len(cl.fragment) // Size is the length of the fragment
-		groupCloneSize += cl.size
+	isFileDupe := detectFileDuplicate(p.isFileDupe, sortedDups)
+
+	if isFileDupe && p.currentHash != "" {
+		hashPrefix := p.currentHash
+		if len(hashPrefix) > 12 {
+			hashPrefix = hashPrefix[:12]
+		}
+		fileSizeStr := formatBytes(clones[0].fileSize)
+		if _, err := fmt.Fprintf(
+			p.w,
+			"📄 FILE DUPLICATE | 🔗 [%s...] | %d files | %s\n\n",
+			hashPrefix,
+			len(sortedDups),
+			fileSizeStr,
+		); err != nil {
+			return err
+		}
+		for _, cl := range clones {
+			p.diffHintFiles = append(p.diffHintFiles, cl.filename)
+		}
+	} else {
+		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
+			return err
+		}
 	}
 
 	p.cloneGroups = append(p.cloneGroups, clones)
@@ -143,9 +153,21 @@ func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) er
 }
 
 func (p *TextPrinter) PrintFooter() error {
-	_, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt)
+	if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
+		return err //nolint:wrapcheck // fmt errors are clear in context
+	}
 
-	return err //nolint:wrapcheck // fmt errors are clear in context
+	// Add diff hint if we have file duplicates
+	if len(p.diffHintFiles) >= 2 {
+		// Use first two files for diff hint
+		file1 := p.diffHintFiles[0]
+		file2 := p.diffHintFiles[1]
+		if _, err := fmt.Fprintf(p.w, "\n→ diff %s %s\n", file1, file2); err != nil {
+			return err //nolint:wrapcheck // fmt errors are clear in context
+		}
+	}
+
+	return nil
 }
 
 func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
@@ -169,12 +191,13 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 			)
 		}
 
-		cl := clone{ //nolint:exhaustruct // fragment and size set separately below
+		cl := clone{ //nolint:exhaustruct // fragment, size, fileSize set separately below
 			filename:  fileInfo.Filename,
 			lineStart: fileInfo.LineStart,
 			lineEnd:   fileInfo.LineEnd,
 		}
 		cl.fragment = extractContent(fileInfo, nstart, nend)
+		cl.fileSize = len(fileInfo.Content)
 		clones[i] = cl
 	}
 
@@ -241,4 +264,24 @@ func (p *TextPrinter) OutputText(threshold int, sortBy SortBy) error {
 
 func (p *TextPrinter) printCloneList(clones []clone) error {
 	return writeCloneLines(p.w, clones, "  %s:%d,%d")
+}
+
+// formatBytes converts bytes to human-readable format (KB, MB, etc.).
+func formatBytes(bytes int) string {
+	const (
+		KB = 1024
+		MB = 1024 * KB
+		GB = 1024 * MB
+	)
+
+	switch {
+	case bytes >= GB:
+		return fmt.Sprintf("%.1f GB", float64(bytes)/GB)
+	case bytes >= MB:
+		return fmt.Sprintf("%.1f MB", float64(bytes)/MB)
+	case bytes >= KB:
+		return fmt.Sprintf("%.1f KB", float64(bytes)/KB)
+	default:
+		return fmt.Sprintf("%d B", bytes)
+	}
 }
