@@ -9,22 +9,35 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-type text struct {
+// TextPrinter implements text-based output for duplicate detection.
+type TextPrinter struct {
 	ReadFile
 
 	cnt         int
 	w           io.Writer
 	totalSize   int
 	cloneGroups [][]clone
+	currentHash string // Hash for the current clone group (for hash detection)
+	isFileDupe  bool   // True if current group is an entire file duplicate
+}
+
+// SetHash sets the hash for the current clone group.
+func (p *TextPrinter) SetHash(hash string) {
+	p.currentHash = hash
+}
+
+// SetFileDuplicate marks the current group as a file duplicate.
+func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
+	p.isFileDupe = isDupe
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
-	return &text{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)} //nolint:exhaustruct
+	return &TextPrinter{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)} //nolint:exhaustruct
 }
 
-func (p *text) PrintHeader() error { return nil }
+func (p *TextPrinter) PrintHeader() error { return nil }
 
-func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.cnt++
 
 	// Extract sortBy parameter, default to SortBySize
@@ -36,8 +49,41 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	// Apply sorting to the clone groups before processing
 	sortedDups := SortNodesByCriteria(dups, sortCriteria)
 
-	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
-		return err //nolint:wrapcheck // fmt errors are clear in context
+	// Detect if this is a file duplicate (hash detection mode)
+	// File duplicates have: single node per fragment, node.Pos == 0
+	isFileDupe := p.isFileDupe
+	if !isFileDupe && len(sortedDups) > 0 {
+		// Check if all fragments are single nodes starting at position 0
+		allSingleNodes := true
+		for _, frag := range sortedDups {
+			if len(frag) != 1 || frag[0].Pos != 0 {
+				allSingleNodes = false
+			}
+		}
+
+		if allSingleNodes {
+			isFileDupe = true
+		}
+	}
+
+	// Print enhanced header for file duplicates
+	if isFileDupe && p.currentHash != "" {
+		hashPrefix := p.currentHash
+		if len(hashPrefix) > 12 {
+			hashPrefix = hashPrefix[:12]
+		}
+		if _, err := fmt.Fprintf(
+			p.w,
+			"📄 FILE DUPLICATE | 🔗 [%s...] | %d files\n\n",
+			hashPrefix,
+			len(sortedDups),
+		); err != nil {
+			return err
+		}
+	} else {
+		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
+			return err
+		}
 	}
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
@@ -66,7 +112,7 @@ func (p *text) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 }
 
 // PrintClonesSorted prints clones with specified sorting criteria.
-func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) error {
+func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) error {
 	p.cnt++
 	if _, err := fmt.Fprintf(
 		p.w,
@@ -96,7 +142,7 @@ func (p *text) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) error {
 	return p.printCloneList(clones)
 }
 
-func (p *text) PrintFooter() error {
+func (p *TextPrinter) PrintFooter() error {
 	_, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt)
 
 	return err //nolint:wrapcheck // fmt errors are clear in context
@@ -136,7 +182,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 }
 
 // OutputText generates text output with sorting.
-func (p *text) OutputText(threshold int, sortBy SortBy) error {
+func (p *TextPrinter) OutputText(threshold int, sortBy SortBy) error {
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
@@ -193,6 +239,6 @@ func (p *text) OutputText(threshold int, sortBy SortBy) error {
 	return p.PrintFooter()
 }
 
-func (p *text) printCloneList(clones []clone) error {
+func (p *TextPrinter) printCloneList(clones []clone) error {
 	return writeCloneLines(p.w, clones, "  %s:%d,%d")
 }

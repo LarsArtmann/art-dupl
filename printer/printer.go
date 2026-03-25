@@ -8,6 +8,11 @@ import (
 
 type ReadFile func(filename string) ([]byte, error)
 
+// HashSetter is an optional interface for printers that support hash metadata.
+type HashSetter interface {
+	SetHash(hash string)
+}
+
 type Printer interface {
 	PrintHeader() error
 	PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error // Add optional sortBy parameter

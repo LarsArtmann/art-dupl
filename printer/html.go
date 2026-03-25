@@ -983,7 +983,7 @@ func (p *htmlprinter) writeDiffComparison(
 }
 
 // writeDiffPanelsWithWordDiff renders both base and compared panels with word-level highlighting.
-func (p *htmlprinter) writeDiffPanelsWithWordDiff(base *CloneWithContent, other CloneDiff) error {
+func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other CloneDiff) error {
 	baseLines := other.Diff.Base
 	comparedLines := other.Diff.Compared
 

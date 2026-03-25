@@ -86,8 +86,9 @@ func printCloneGroups(
 			continue
 		}
 
-		if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-			jsonPrinter.SetHash(k)
+		// Set hash for printers that support HashSetter interface
+		if hs, ok := p.(printer.HashSetter); ok {
+			hs.SetHash(k)
 		}
 
 		if err := p.PrintClones(uniq, sortBy); err != nil {
