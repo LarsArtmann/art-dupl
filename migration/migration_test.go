@@ -2,6 +2,7 @@ package migration_test
 
 import (
 	"encoding/json"
+	"testing"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -11,6 +12,11 @@ import (
 	"github.com/LarsArtmann/art-dupl/migration"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+func TestMigration(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Migration Suite")
+}
 
 var _ = Describe("Migration Path", func() {
 	Context("When migrating from syntax to domain", func() {
@@ -43,8 +49,8 @@ var _ = Describe("Migration Path", func() {
 	Context("When migrating configuration", func() {
 		It("should migrate valid old config", func() {
 			oldConfig := map[string]any{
-				"threshold": 15,
-				"paths":     []string{"./src", "./lib"},
+				"threshold": float64(15), // JSON unmarshals numbers as float64
+				"paths":     []any{"./src", "./lib"},
 			}
 
 			options, err := migration.MigrateConfig(oldConfig)
@@ -129,7 +135,7 @@ var _ = Describe("Migration Path", func() {
 			Expect(report.MigrationID).NotTo(BeEmpty())
 			Expect(report.Differences.CloneGroupsAdded).To(Equal(1))
 			Expect(report.Differences.ClonesAdded).To(Equal(1))
-			Expect(report.Differences.ComplexityChanges).To(Equal(0.2))
+			Expect(report.Differences.ComplexityChanges).To(BeNumerically("~", 0.2, 0.0001))
 			Expect(report.Validations).ToNot(BeEmpty())
 			Expect(report.Recommendations).ToNot(BeEmpty())
 		})
@@ -140,6 +146,7 @@ var _ = Describe("Migration Path", func() {
 			analysis := domain.Analysis{
 				Threshold: 10,
 				State:     domain.DetectionStateCompleted,
+				Mode:      domain.AnalysisModeFull,
 				CreatedAt: time.Now().Format(time.RFC3339),
 			}
 
@@ -163,14 +170,30 @@ var _ = Describe("Migration Path", func() {
 
 	Context("When JSON marshaling migration reports", func() {
 		It("should serialize migration reports correctly", func() {
+			beforeID := domain.AnalysisID("before-test-id")
+			afterID := domain.AnalysisID("after-test-id")
 			report := migration.MigrationReport{
 				MigrationID: migration.MigrationID("test-migration"),
 				CreatedAt:   "2023-01-01T00:00:00Z",
 				BeforeState: domain.Analysis{
+					ID:        beforeID,
 					Threshold: 10,
+					Mode:      domain.AnalysisModeFull,
+					State:     domain.DetectionStateCompleted,
+					CreatedAt: "2023-01-01T00:00:00Z",
+					Stats: domain.AnalysisStats{
+						ProcessingTime: 100,
+					},
 				},
 				AfterState: domain.Analysis{
+					ID:        afterID,
 					Threshold: 15,
+					Mode:      domain.AnalysisModeFull,
+					State:     domain.DetectionStateCompleted,
+					CreatedAt: "2023-01-01T01:00:00Z",
+					Stats: domain.AnalysisStats{
+						ProcessingTime: 200,
+					},
 				},
 				Differences: migration.AnalysisDifferences{
 					CloneGroupsAdded: 1,
@@ -190,7 +213,7 @@ var _ = Describe("Migration Path", func() {
 			data, err := json.Marshal(report)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(data)).To(ContainSubstring("test-migration"))
-			Expect(string(data)).To(ContainSubstring("CloneGroupsAdded"))
+			Expect(string(data)).To(ContainSubstring("cloneGroupsAdded"))
 			Expect(string(data)).To(ContainSubstring("test-check"))
 
 			// Test unmarshaling
