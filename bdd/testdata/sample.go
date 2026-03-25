@@ -1,5 +1,7 @@
 package testdata
 
+import "context"
+
 func Hello() {
 	println("hello world")
 }
