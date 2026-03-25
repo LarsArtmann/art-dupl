@@ -32,6 +32,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/errors"
@@ -63,14 +64,14 @@ type Metadata struct {
 	Version   int       `json:"version"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	HitCount  int       `json:"hitCount"`
-	MissCount int       `json:"missCount"`
+	HitCount  int64     `json:"hitCount"`  // Accessed atomically
+	MissCount int64     `json:"missCount"` // Accessed atomically
 }
 
 // Stats returns cache statistics.
 type Stats struct {
-	Hits      int
-	Misses    int
+	Hits      int64
+	Misses    int64
 	Size      int // Number of cached entries
 	BytesUsed int64
 }
@@ -117,7 +118,7 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	// #nosec G304 -- Path constructed from controlled cache directory and content hash
 	data, err := os.ReadFile(cachePath)
 	if err != nil {
-		fc.metadata.MissCount++
+		atomic.AddInt64(&fc.metadata.MissCount, 1)
 
 		return nil, false
 	}
@@ -126,12 +127,12 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	if err != nil {
 		// Corrupted cache entry, remove it
 		_ = os.Remove(cachePath)
-		fc.metadata.MissCount++
+		atomic.AddInt64(&fc.metadata.MissCount, 1)
 
 		return nil, false
 	}
 
-	fc.metadata.HitCount++
+	atomic.AddInt64(&fc.metadata.HitCount, 1)
 
 	return nodes, true
 }
@@ -239,7 +240,7 @@ func (fc *FileCache) Stats() Stats {
 }
 
 // GetStats returns cache hit/miss statistics.
-func (fc *FileCache) GetStats() (int, int) {
+func (fc *FileCache) GetStats() (int64, int64) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 

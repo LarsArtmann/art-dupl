@@ -269,7 +269,7 @@ func TestFileCache_Clear(t *testing.T) {
 }
 
 // assertCacheStats asserts that cache stats match expected values.
-func assertCacheStats(t *testing.T, stats Stats, expectedHits, expectedMisses, expectedSize int) {
+func assertCacheStats(t *testing.T, stats Stats, expectedHits, expectedMisses, expectedSize int64) {
 	t.Helper()
 
 	if stats.Hits != expectedHits {
@@ -280,7 +280,7 @@ func assertCacheStats(t *testing.T, stats Stats, expectedHits, expectedMisses, e
 		t.Errorf("Expected %d misses, got %d", expectedMisses, stats.Misses)
 	}
 
-	if stats.Size != expectedSize {
+	if stats.Size != int(expectedSize) {
 		t.Errorf("Expected %d size, got %d", expectedSize, stats.Size)
 	}
 }
