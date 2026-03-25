@@ -1,9 +1,0 @@
-version: "2"
-run:
-  timeout: 5m
-linters:
-  enable:
-    - misspell
-    - dupword
-    - gocheckcompilerdirectives
-    - asciicheck
