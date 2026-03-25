@@ -8,9 +8,26 @@ clean:
     rm -rf dist/ cover.out
     find . -name "*.test" -type f -delete 2>/dev/null || true
 
-# Run tests with coverage
+# Run tests (with coverage if possible, falls back to without)
 test: clean
-    go test -v -cover ./...
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Try coverage first, silently checking for version mismatch
+    if go test -cover ./... > /tmp/test_cover.log 2>&1; then
+        # Coverage worked, re-run with verbose output
+        go test -v -cover ./...
+    else
+        # Coverage failed, check if it's a version mismatch
+        if grep -q "go tool version" /tmp/test_cover.log 2>/dev/null || \
+           grep -q "compile: version" /tmp/test_cover.log 2>/dev/null; then
+            echo "Warning: Go version mismatch detected, running tests without coverage"
+            go test -v ./...
+        else
+            # Some other failure, show the log and exit
+            cat /tmp/test_cover.log
+            exit 1
+        fi
+    fi
 
 # Run linter
 check:
