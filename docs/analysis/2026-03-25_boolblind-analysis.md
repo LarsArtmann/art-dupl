@@ -8,10 +8,10 @@
 
 ## Findings Summary
 
-| Severity | Count | Struct | Location | Bool Fields |
-|----------|-------|--------|----------|-------------|
-| 🚨 Critical | 1 | Config | config/config.go:60 | 11 bools |
-| ⚠️ High | 1 | RuntimeConfig | cli/runtime.go:17 | 7 bools |
+| Severity    | Count | Struct        | Location            | Bool Fields |
+| ----------- | ----- | ------------- | ------------------- | ----------- |
+| 🚨 Critical | 1     | Config        | config/config.go:60 | 11 bools    |
+| ⚠️ High     | 1     | RuntimeConfig | cli/runtime.go:17   | 7 bools     |
 
 ---
 
@@ -20,6 +20,7 @@
 ### 1. Config struct (config/config.go)
 
 **Fields identified:**
+
 - `IncludeVendor`
 - `IncludeNodeModules`
 - `FilesFromStdin`
@@ -47,6 +48,7 @@
 ### 2. RuntimeConfig struct (cli/runtime.go)
 
 **Fields identified:**
+
 - `Vendor`
 - `Verbose`
 - `FilesFromStdin`
@@ -69,18 +71,19 @@
 
 Converting these bool fields to bitflags would:
 
-| Aspect | Impact | Assessment |
-|--------|--------|------------|
-| Memory savings | ~9-15 bytes per instance | Negligible |
-| Code complexity | High increase | Bad tradeoff |
-| Readability | Decreased | Negative |
-| Config compatibility | Breaking change | Risky |
-| Test maintenance | High burden | Unnecessary |
-| Performance | No measurable gain | Irrelevant |
+| Aspect               | Impact                   | Assessment   |
+| -------------------- | ------------------------ | ------------ |
+| Memory savings       | ~9-15 bytes per instance | Negligible   |
+| Code complexity      | High increase            | Bad tradeoff |
+| Readability          | Decreased                | Negative     |
+| Config compatibility | Breaking change          | Risky        |
+| Test maintenance     | High burden              | Unnecessary  |
+| Performance          | No measurable gain       | Irrelevant   |
 
 ### When Bitflags ARE Appropriate
 
 Bitflags make sense when:
+
 1. Storing many boolean states in a database or network protocol
 2. Working with hardware registers or binary protocols
 3. Need atomic operations on multiple flags
