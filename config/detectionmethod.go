@@ -40,7 +40,7 @@ func unmarshalStringType[T ~string](
 
 	typed := T(str)
 	if !isValid(typed) {
-		return defaultVal, fmt.Errorf("%w %s: %s", ErrInvalidType, typeName, str)
+		return defaultVal, fmt.Errorf("%w %s (value=%q, defaultVal=%v): %s", ErrInvalidType, typeName, str, defaultVal, str)
 	}
 
 	return typed, nil
@@ -56,7 +56,7 @@ func unmarshalStringTypeToPointer[T ~string](
 ) error {
 	val, err := unmarshalStringType[T](data, isValid, defaultVal, typeName)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshal to %s failed (target=%v, defaultVal=%v): %w", typeName, target, defaultVal, err)
 	}
 
 	*target = val
@@ -75,7 +75,7 @@ func marshalStringType[T ~string](val T, isValid func(T) bool, typeName string) 
 
 	data, err := json.Marshal(string(val))
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal %s: %w", typeName, err)
+		return nil, fmt.Errorf("failed to marshal %s (val=%v): %w", typeName, val, err)
 	}
 
 	return data, nil

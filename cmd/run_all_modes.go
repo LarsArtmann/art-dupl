@@ -23,7 +23,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	}
 
 	if err := os.MkdirAll(outputDir, 0o750); err != nil {
-		return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
+		return fmt.Errorf("failed to create output directory %q (sortBy=%s): %w", outputDir, sortBy, err)
 	}
 
 	fmt.Fprintf(
@@ -35,12 +35,12 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	// Run analysis once
 	duplChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat)
 	if err != nil {
-		return fmt.Errorf("analysis failed for paths %v: %w", cfg.Paths, err)
+		return fmt.Errorf("analysis failed for paths %v (sortBy=%s, outputDir=%s): %w", cfg.Paths, sortBy, outputDir, err)
 	}
 
 	// Check for cancellation after analysis completes
 	if ctx.Err() != nil {
-		return ctx.Err() //nolint:wrapcheck
+		return fmt.Errorf("context cancelled (sortBy=%s, outputDir=%s): %w", sortBy, outputDir, ctx.Err())
 	}
 
 	// Convert channel to slice for reuse
@@ -67,7 +67,8 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			detectionMethodStr,
 		)
 		if err != nil {
-			return err
+			return fmt.Errorf("write format file failed (matches=%v, parseStats=%v, format=%s, filename=%s, sortByEnum=%s, detectionMethodStr=%s): %w",
+				matches, parseStats, format, filename, sortByEnum, detectionMethodStr, err)
 		}
 
 		fmt.Fprintf(os.Stderr, "  ✅ Generated %s\n", filename)
@@ -137,7 +138,8 @@ func writeFormatFile(
 		cfg.Threshold,
 		detectionMethodStr,
 	); err != nil {
-		return fmt.Errorf("failed to print %s format: %w", format, err)
+		return fmt.Errorf("failed to print %s format (matches=%v, parseStats=%v, filename=%s, sortByEnum=%s, detectionMethodStr=%s): %w",
+			format, matches, parseStats, filename, sortByEnum, detectionMethodStr, err)
 	}
 
 	return nil

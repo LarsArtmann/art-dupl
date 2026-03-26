@@ -2,6 +2,7 @@ package artdupl
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -148,31 +149,31 @@ var readFileDefault = os.ReadFile //nolint:gochecknoglobals // Default implement
 // ValidateOptions checks if the provided options are valid.
 func ValidateOptions(opts *Options) error {
 	if opts == nil {
-		return ErrNilOptions
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrNilOptions)
 	}
 
 	if opts.Threshold < 1 {
-		return ErrInvalidThreshold
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrInvalidThreshold)
 	}
 
 	if opts.Threshold > 1000 {
-		return ErrThresholdTooLarge
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrThresholdTooLarge)
 	}
 
 	if len(opts.DetectionMethods) == 0 {
-		return ErrNoDetectionMethods
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrNoDetectionMethods)
 	}
 
 	if opts.MaxFileSize < 0 {
-		return ErrInvalidMaxFileSize
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrInvalidMaxFileSize)
 	}
 
 	if opts.MaxWorkers < 1 {
-		return ErrInvalidMaxWorkers
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrInvalidMaxWorkers)
 	}
 
 	if opts.Timeout < 0 {
-		return ErrInvalidTimeout
+		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrInvalidTimeout)
 	}
 
 	return config.ValidateDetectionMethods(

@@ -78,7 +78,7 @@ func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 
 	err := json.Unmarshal(data, &n)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal LineNumber: %w", err)
+		return fmt.Errorf("unmarshal LineNumber failed (n=%v): %w", n, err)
 	}
 
 	if n == 0 {

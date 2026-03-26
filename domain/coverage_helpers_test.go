@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -29,8 +30,8 @@ func TestValidateRules(t *testing.T) {
 			t.Error("validateRules() error = nil, want error")
 		}
 
-		if err.Error() != "validation failed: rule1 failed" {
-			t.Errorf("validateRules() error = %v, want 'validation failed: rule1 failed'", err)
+		if !strings.Contains(err.Error(), "validation failed") || !strings.Contains(err.Error(), "rule1 failed") {
+			t.Errorf("validateRules() error = %v, want error containing 'validation failed' and 'rule1 failed'", err)
 		}
 	})
 
@@ -46,8 +47,8 @@ func TestValidateRules(t *testing.T) {
 			t.Error("validateRules() error = nil, want error")
 		}
 
-		if err.Error() != "validation failed: rule2 failed" {
-			t.Errorf("validateRules() error = %v, want 'validation failed: rule2 failed'", err)
+		if !strings.Contains(err.Error(), "validation failed") || !strings.Contains(err.Error(), "rule2 failed") {
+			t.Errorf("validateRules() error = %v, want error containing 'validation failed' and 'rule2 failed'", err)
 		}
 	})
 }

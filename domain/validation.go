@@ -12,7 +12,7 @@ type validationRule struct {
 func validateRules(rules []validationRule) error {
 	for _, rule := range rules {
 		if !rule.valid {
-			return fmt.Errorf("%w: %s", ErrValidationFailed, rule.msg)
+			return fmt.Errorf("%w (rules=%v): %s", ErrValidationFailed, rules, rule.msg)
 		}
 	}
 

@@ -20,13 +20,13 @@ type FileInfo struct {
 // ProcessFileContent unified file processing for all printers.
 func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	if node == nil {
-		return nil, errors.NewInternalError("nil node provided", nil)
+		return nil, errors.NewInternalError(fmt.Sprintf("nil node provided (fread=%v)", fread), nil)
 	}
 
 	// Read file content
 	file, err := fread(node.Filename)
 	if err != nil {
-		return nil, errors.WrapIO(err, node.Filename, "read")
+		return nil, fmt.Errorf("read file failed (fread=%v, filename=%s): %w", fread, node.Filename, err)
 	}
 
 	// Calculate line positions
@@ -46,7 +46,8 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	if startNode == nil || endNode == nil {
 		return nil, errors.NewInternalError(
 			fmt.Sprintf(
-				"nil node provided: startNode=%v, endNode=%v",
+				"nil node provided (fread=%v, startNode=%v, endNode=%v)",
+				fread,
 				startNode != nil,
 				endNode != nil,
 			),
@@ -57,7 +58,7 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	// Use start node for filename, but combine positions
 	file, err := fread(startNode.Filename)
 	if err != nil {
-		return nil, errors.WrapIO(err, startNode.Filename, "read")
+		return nil, fmt.Errorf("read file failed (fread=%v, filename=%s): %w", fread, startNode.Filename, err)
 	}
 
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(startNode.Pos), int(endNode.End))
