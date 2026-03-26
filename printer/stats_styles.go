@@ -3,7 +3,7 @@ package printer
 import (
 	"os"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 // styleConfig holds all lipgloss styles.

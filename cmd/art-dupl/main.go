@@ -7,9 +7,9 @@ import (
 	"io"
 	"os"
 
+	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/cmd"
 	"github.com/charmbracelet/fang"
-	"github.com/charmbracelet/lipgloss"
 )
 
 const exitCodeInterrupt = 130

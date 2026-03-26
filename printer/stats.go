@@ -39,8 +39,8 @@ import (
 	"fmt"
 	"io"
 
+	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/charmbracelet/lipgloss"
 )
 
 // stats provides aggregated statistics about code duplication.
@@ -201,8 +201,15 @@ func (p *stats) printSection(title string) {
 }
 
 // printMetric prints a metric label and value.
+// Note: We use Inherit() to combine styles and render the complete line at once.
+// This avoids lipgloss v2 adding reset codes between styled segments, which would
+// break substring matching in tests.
 func (p *stats) printMetric(label, value string) {
-	_, _ = fmt.Fprintf(p.w, "  %s %s\n", p.metric.Render(label+":"), p.base.Render(value))
+	// Combine styles: base (bold) inherits from metric (color)
+	styled := p.base.Inherit(p.metric)
+
+	// Render the complete line with both styles applied
+	_, _ = fmt.Fprintf(p.w, "%s\n", styled.Render(fmt.Sprintf("  %s: %s", label, value)))
 }
 
 // printSuccess prints a success-styled message.
