@@ -50,6 +50,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
 	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
 	includeTempl, _ := cmd.Flags().GetBool("include-templ")
+	only, _ := cmd.Flags().GetString("only")
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 
@@ -159,6 +160,10 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	if includeTempl {
 		appConfig.IncludeTempl = true
+	}
+
+	if only != "" {
+		appConfig.Only = only
 	}
 
 	if len(includePatterns) > 0 {

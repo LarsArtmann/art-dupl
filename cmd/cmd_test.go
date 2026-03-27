@@ -281,7 +281,7 @@ func TestCrawlPaths(t *testing.T) {
 
 func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("empty options", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{}, false, (*filter.Filter)(nil), false)
+		ch := filesFeedWithOptions([]string{}, false, (*filter.Filter)(nil), false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -294,7 +294,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("with filter", func(t *testing.T) {
 		f := filter.NewFilter(false, nil)
 
-		ch := filesFeedWithOptions([]string{}, false, f, false)
+		ch := filesFeedWithOptions([]string{}, false, f, false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}

@@ -39,6 +39,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("include-templ", false, "include templ.guide generated files (override default filtering)")
 	rootCmd.Flags().
+		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
+	rootCmd.Flags().
 		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	rootCmd.Flags().
 		StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")

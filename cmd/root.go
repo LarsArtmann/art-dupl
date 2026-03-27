@@ -52,6 +52,10 @@ Examples:
   art-dupl --include-templ ./src
   art-dupl --include-pattern "vendor/*" ./src
 
+  # Only specific file types
+  art-dupl --only templ ./src
+  art-dupl --only go ./src
+
   # Semantic-aware detection (group by identifier names)
   art-dupl --semantic ./src
 

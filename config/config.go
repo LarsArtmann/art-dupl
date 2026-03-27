@@ -106,6 +106,10 @@ type Config struct {
 	// IncludeTempl includes templ.guide generated files (only when filterGenerated is true)
 	IncludeTempl bool `json:"includeTempl,omitempty"`
 
+	// Only restricts analysis to a specific file type ("go" or "templ")
+	// Empty string means analyze both file types
+	Only string `json:"only,omitempty"`
+
 	// IncludePatterns specifies file patterns to always include (takes precedence over filter)
 	IncludePatterns []string `json:"includePatterns,omitempty"`
 
@@ -169,6 +173,7 @@ func DefaultConfig() *Config {
 		FilterGenerated:    false,
 		IncludeSQLC:        false,
 		IncludeTempl:       false,
+		Only:               "",
 		IncludePatterns:    []string{},
 		ExcludePatterns:    []string{},
 		Incremental:        false,
@@ -276,6 +281,7 @@ func ValidateConfig(cfg *Config) error {
 		func() error { return validateOutputFormat(cfg.OutputFormat) },
 		func() error { return validateDetectionMethods(cfg.DetectionMethods) },
 		func() error { return validateCacheFlags(cfg.CacheDir, cfg.ClearCache, cfg.Incremental) },
+		func() error { return validateOnly(cfg.Only) },
 	}
 
 	for _, validate := range validations {
@@ -347,5 +353,18 @@ func validateCacheFlags(cacheDir string, clearCache, incremental bool) error {
 		)
 	}
 
+	return nil
+}
+
+func validateOnly(only string) error {
+	if only == "" {
+		return nil
+	}
+	if only != "go" && only != "templ" {
+		return errors.NewValidationError(
+			fmt.Sprintf("invalid --only value: %q (valid: go, templ)", only),
+			nil,
+		)
+	}
 	return nil
 }
