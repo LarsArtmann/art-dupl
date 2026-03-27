@@ -12,11 +12,11 @@ Successfully completed initial golines formatting fixes across the codebase. The
 
 ### Current Status
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Lint Issues** | 0 | ✅ CLEAN |
-| **Test Pass Rate** | 100% | ✅ PASSING |
-| **Code Coverage** | 80%+ | ✅ MET |
+| Metric                   | Value   | Status       |
+| ------------------------ | ------- | ------------ |
+| **Lint Issues**          | 0       | ✅ CLEAN     |
+| **Test Pass Rate**       | 100%    | ✅ PASSING   |
+| **Code Coverage**        | 80%+    | ✅ MET       |
 | **golines Issues Fixed** | 4 files | ✅ COMPLETED |
 
 ---
@@ -54,39 +54,39 @@ Successfully completed initial golines formatting fixes across the codebase. The
 
 ### 🔴 HIGH Priority
 
-| Task | Impact | Effort | Status |
-|------|--------|--------|--------|
+| Task                                                 | Impact   | Effort   | Status      |
+| ---------------------------------------------------- | -------- | -------- | ----------- |
 | Fix gosec security violations (G115, G301/G304/G306) | Security | ~4 hours | **PENDING** |
-| Add SARIF output format | Feature | ~3 hours | **PENDING** |
+| Add SARIF output format                              | Feature  | ~3 hours | **PENDING** |
 
 ### 🟡 MEDIUM Priority
 
-| Task | Impact | Effort | Status |
-|------|--------|--------|--------|
-| Fix cyclomatic complexity (cyclop, gocognit) | Quality | ~3 hours | **PENDING** |
-| Implement TokenValue type with validation | Quality | ~6 hours | **PENDING** |
-| Update README with semantic behavior | Docs | ~1 hour | **PENDING** |
-| Fix JSON output format inconsistencies | Quality | ~1 hour | **PENDING** |
-| Fix double-counting in TotalDuplicateLines | Accuracy | ~2 hours | **PENDING** |
-| Optimize memory layouts for SIMD | Performance | ~4 hours | **PENDING** |
-| Implement CSV output format properly | Feature | ~2 hours | **PENDING** |
+| Task                                         | Impact      | Effort   | Status      |
+| -------------------------------------------- | ----------- | -------- | ----------- |
+| Fix cyclomatic complexity (cyclop, gocognit) | Quality     | ~3 hours | **PENDING** |
+| Implement TokenValue type with validation    | Quality     | ~6 hours | **PENDING** |
+| Update README with semantic behavior         | Docs        | ~1 hour  | **PENDING** |
+| Fix JSON output format inconsistencies       | Quality     | ~1 hour  | **PENDING** |
+| Fix double-counting in TotalDuplicateLines   | Accuracy    | ~2 hours | **PENDING** |
+| Optimize memory layouts for SIMD             | Performance | ~4 hours | **PENDING** |
+| Implement CSV output format properly         | Feature     | ~2 hours | **PENDING** |
 
 ### 🟢 LOW Priority
 
-| Task | Impact | Effort | Status |
-|------|--------|--------|--------|
+| Task                                   | Impact          | Effort   | Status      |
+| -------------------------------------- | --------------- | -------- | ----------- |
 | Split large files (5 files >300 lines) | Maintainability | ~6 hours | **PENDING** |
-| Create Architecture Decision Records | Docs | ~2 hours | **PENDING** |
-| Add package examples and godoc | Docs | ~3 hours | **PENDING** |
+| Create Architecture Decision Records   | Docs            | ~2 hours | **PENDING** |
+| Add package examples and godoc         | Docs            | ~3 hours | **PENDING** |
 
 ### ⚪ Future Considerations
 
-| Task | Impact | Effort | Status |
-|------|--------|--------|--------|
-| GitHub Actions workflow templates | CI/CD | ~2 hours | **PENDING** |
-| Performance baseline benchmarks | Testing | ~3 hours | **PENDING** |
-| TypeScript/JavaScript support | Feature | ~8 hours | **PENDING** |
-| Python language support | Feature | ~8 hours | **PENDING** |
+| Task                                 | Impact  | Effort   | Status      |
+| ------------------------------------ | ------- | -------- | ----------- |
+| GitHub Actions workflow templates    | CI/CD   | ~2 hours | **PENDING** |
+| Performance baseline benchmarks      | Testing | ~3 hours | **PENDING** |
+| TypeScript/JavaScript support        | Feature | ~8 hours | **PENDING** |
+| Python language support              | Feature | ~8 hours | **PENDING** |
 | Watch mode for continuous monitoring | Feature | ~6 hours | **PENDING** |
 
 ---
@@ -95,11 +95,11 @@ Successfully completed initial golines formatting fixes across the codebase. The
 
 ### From branching-flow-analysis.md
 
-| Phase | Priority | Items | Est. Time | Status |
-|-------|----------|-------|-----------|--------|
+| Phase       | Priority | Items                             | Est. Time | Status          |
+| ----------- | -------- | --------------------------------- | --------- | --------------- |
 | **Phase 1** | Critical | 8 High Errors + 253 Phantom Types | 14-20 hrs | **NOT STARTED** |
-| **Phase 2** | High | 359 Medium Errors + 2 Warnings | 6-9 hrs | **NOT STARTED** |
-| **Phase 3** | Low | 126 Low Errors + 7 Opportunities | 6-9 hrs | **NOT STARTED** |
+| **Phase 2** | High     | 359 Medium Errors + 2 Warnings    | 6-9 hrs   | **NOT STARTED** |
+| **Phase 3** | Low      | 126 Low Errors + 7 Opportunities  | 6-9 hrs   | **NOT STARTED** |
 
 ### Key Findings Summary
 
