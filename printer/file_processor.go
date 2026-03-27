@@ -26,7 +26,12 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	// Read file content
 	file, err := fread(node.Filename)
 	if err != nil {
-		return nil, fmt.Errorf("read file failed (fread=%v, filename=%s): %w", fread, node.Filename, err)
+		return nil, fmt.Errorf(
+			"read file failed (fread=%v, filename=%s): %w",
+			fread,
+			node.Filename,
+			err,
+		)
 	}
 
 	// Calculate line positions
@@ -58,7 +63,12 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	// Use start node for filename, but combine positions
 	file, err := fread(startNode.Filename)
 	if err != nil {
-		return nil, fmt.Errorf("read file failed (fread=%v, filename=%s): %w", fread, startNode.Filename, err)
+		return nil, fmt.Errorf(
+			"read file failed (fread=%v, filename=%s): %w",
+			fread,
+			startNode.Filename,
+			err,
+		)
 	}
 
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(startNode.Pos), int(endNode.End))

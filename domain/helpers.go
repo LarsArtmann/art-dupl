@@ -30,11 +30,20 @@ func unmarshalWithValidation[T any](
 
 	err := json.Unmarshal(data, &value)
 	if err != nil {
-		return fmt.Errorf("unmarshal %s failed (validationMsg=%q, value=%v): %w", typeName, validationMsg, value, err)
+		return fmt.Errorf(
+			"unmarshal %s failed (validationMsg=%q, value=%v): %w",
+			typeName,
+			validationMsg,
+			value,
+			err,
+		)
 	}
 
 	if !validator(value) {
-		return errors.NewValidationError(fmt.Sprintf("%s (typeName=%q, value=%v)", validationMsg, typeName, value), nil)
+		return errors.NewValidationError(
+			fmt.Sprintf("%s (typeName=%q, value=%v)", validationMsg, typeName, value),
+			nil,
+		)
 	}
 
 	assign(value)

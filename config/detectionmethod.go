@@ -40,7 +40,14 @@ func unmarshalStringType[T ~string](
 
 	typed := T(str)
 	if !isValid(typed) {
-		return defaultVal, fmt.Errorf("%w %s (value=%q, defaultVal=%v): %s", ErrInvalidType, typeName, str, defaultVal, str)
+		return defaultVal, fmt.Errorf(
+			"%w %s (value=%q, defaultVal=%v): %s",
+			ErrInvalidType,
+			typeName,
+			str,
+			defaultVal,
+			str,
+		)
 	}
 
 	return typed, nil
@@ -56,7 +63,13 @@ func unmarshalStringTypeToPointer[T ~string](
 ) error {
 	val, err := unmarshalStringType[T](data, isValid, defaultVal, typeName)
 	if err != nil {
-		return fmt.Errorf("unmarshal to %s failed (target=%v, defaultVal=%v): %w", typeName, target, defaultVal, err)
+		return fmt.Errorf(
+			"unmarshal to %s failed (target=%v, defaultVal=%v): %w",
+			typeName,
+			target,
+			defaultVal,
+			err,
+		)
 	}
 
 	*target = val
