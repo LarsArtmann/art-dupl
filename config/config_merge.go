@@ -105,6 +105,11 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.IncludeTempl = cfg.IncludeTempl
 	}
 
+	// Only (string) - apply if set (filters to specific file type)
+	if !skipZeroValues || cfg.Only != "" {
+		result.Only = cfg.Only
+	}
+
 	// IncludePatterns ([]string)
 	if !skipZeroValues || len(cfg.IncludePatterns) > 0 {
 		result.IncludePatterns = cfg.IncludePatterns

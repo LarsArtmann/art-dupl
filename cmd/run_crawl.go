@@ -68,7 +68,14 @@ func filesFeedWithOptions(
 		return fchan
 	}
 
-	return crawlPathsWithOnly(paths, filter, includeVendor, only)
+	// Build file check function that combines isSourceFile with only filter
+	fileCheck := func(name string) bool {
+		if !isSourceFile(name) {
+			return false
+		}
+		return matchesOnlyFilter(name, only)
+	}
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, fileCheck)
 }
 
 // crawlPaths walks paths and returns a channel of Go files.
@@ -82,12 +89,20 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 // This is used for hash-based detection which works on any file type.
 // The includeNodeModules parameter controls whether to include node_modules directories
 // (excluded by default to avoid processing large dependency directories).
+// The only parameter filters to specific file extensions (".go" or ".templ").
 func crawlPathsAllFiles(
 	paths []string,
 	filter *filter.Filter,
 	includeVendor, includeNodeModules bool,
+	only string,
 ) chan string {
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, nil)
+	var fileCheck fileCheckFunc
+	if only != "" {
+		fileCheck = func(name string) bool {
+			return matchesOnlyFilter(name, only)
+		}
+	}
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, fileCheck)
 }
 
 // fileCheckFunc returns true if a file should be included based on its name.
@@ -131,7 +146,7 @@ func crawlSinglePath(
 	}
 
 	if !info.IsDir() {
-		if shouldIncludeFile(filter, path) {
+		if shouldIncludeFile(filter, path) && passesFileCheck(info.Name(), fileCheck) {
 			fchan <- path
 		}
 
@@ -217,104 +232,6 @@ func matchesOnlyFilter(path, only string) bool {
 	default:
 		return true
 	}
-}
-
-// crawlPathsWithOnly walks paths and returns a channel of Go files with "only" filter.
-func crawlPathsWithOnly(
-	paths []string,
-	filter *filter.Filter,
-	includeVendor bool,
-	only string,
-) chan string {
-	fchan := make(chan string)
-
-	go func() {
-		for _, path := range paths {
-			crawlSinglePathWithOnly(path, filter, includeVendor, only, fchan)
-		}
-
-		close(fchan)
-	}()
-
-	return fchan
-}
-
-// crawlSinglePathWithOnly handles crawling of a single path with "only" filter.
-func crawlSinglePathWithOnly(
-	path string,
-	filter *filter.Filter,
-	includeVendor bool,
-	only string,
-	fchan chan string,
-) {
-	info, err := os.Lstat(path)
-	if err != nil {
-		statError(path, err)
-	}
-
-	if !info.IsDir() {
-		if shouldIncludeFile(filter, path) && matchesOnlyFilter(path, only) {
-			fchan <- path
-		}
-
-		return
-	}
-
-	crawlDirectoryWithOnly(path, filter, includeVendor, only, fchan)
-}
-
-// crawlDirectoryWithOnly walks a directory tree with "only" filter.
-func crawlDirectoryWithOnly(
-	path string,
-	filter *filter.Filter,
-	includeVendor bool,
-	only string,
-	fchan chan string,
-) {
-	err := filepath.Walk(path, func(walkPath string, info os.FileInfo, _ error) error {
-		return handleWalkEntryWithOnly(
-			walkPath,
-			info,
-			filter,
-			includeVendor,
-			only,
-			fchan,
-		)
-	})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
-		os.Exit(1)
-	}
-}
-
-// handleWalkEntryWithOnly processes a single entry during directory walk with "only" filter.
-func handleWalkEntryWithOnly(
-	path string,
-	info os.FileInfo,
-	filter *filter.Filter,
-	includeVendor bool,
-	only string,
-	fchan chan string,
-) error {
-	// info can be nil if there was an error accessing the file/directory
-	if info == nil {
-		return nil
-	}
-
-	if shouldSkipPath(path, includeVendor, false) {
-		return nil
-	}
-
-	if info.Name() == DSStoreFile {
-		return nil
-	}
-
-	if !info.IsDir() && isSourceFile(info.Name()) && shouldIncludeFile(filter, path) &&
-		matchesOnlyFilter(path, only) {
-		fchan <- path
-	}
-
-	return nil
 }
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.

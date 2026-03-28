@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -301,6 +302,62 @@ func TestFilesFeedWithOptions(t *testing.T) {
 
 		for range ch {
 			// Drain channel
+		}
+	})
+}
+
+func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create test files
+	files := []string{"test1.go", "test2.go", "test1.templ", "test2.templ"}
+	for _, f := range files {
+		path := filepath.Join(tmpDir, f)
+		if err := os.WriteFile(path, []byte("content"), 0o600); err != nil {
+			t.Fatalf("Failed to create test file: %v", err)
+		}
+	}
+
+	t.Run("only go files", func(t *testing.T) {
+		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "go")
+		var found []string
+		for f := range ch {
+			found = append(found, filepath.Base(f))
+		}
+		if len(found) != 2 {
+			t.Errorf("Expected 2 .go files, got %d: %v", len(found), found)
+		}
+		for _, f := range found {
+			if !strings.HasSuffix(f, ".go") {
+				t.Errorf("Expected only .go files, found: %s", f)
+			}
+		}
+	})
+
+	t.Run("only templ files", func(t *testing.T) {
+		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "templ")
+		var found []string
+		for f := range ch {
+			found = append(found, filepath.Base(f))
+		}
+		if len(found) != 2 {
+			t.Errorf("Expected 2 .templ files, got %d: %v", len(found), found)
+		}
+		for _, f := range found {
+			if !strings.HasSuffix(f, ".templ") {
+				t.Errorf("Expected only .templ files, found: %s", f)
+			}
+		}
+	})
+
+	t.Run("all files with empty filter", func(t *testing.T) {
+		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "")
+		var found []string
+		for f := range ch {
+			found = append(found, filepath.Base(f))
+		}
+		if len(found) != 4 {
+			t.Errorf("Expected 4 files, got %d: %v", len(found), found)
 		}
 	})
 }

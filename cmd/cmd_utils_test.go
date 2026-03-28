@@ -488,7 +488,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 
 	t.Run("crawls all files with nil check", func(t *testing.T) {
 		f := filter.NewFilter(false, nil)
-		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true))
+		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
 
 		// Should find all 3 files
 		if len(files) != 3 {
