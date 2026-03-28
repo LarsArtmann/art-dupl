@@ -23,6 +23,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		BoolP("plumbing", "p", false, "output machine-readable plumbing format for script integration")
 	rootCmd.Flags().
+		Bool("sarif", false, "output SARIF format for security tool integration (GitHub Advanced Security, CodeQL)")
+	rootCmd.Flags().
 		StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical), total-tokens (highest total token count) (default: size)")
 	rootCmd.Flags().
 		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")

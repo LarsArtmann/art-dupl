@@ -154,6 +154,7 @@ const (
 	OutputFormatCSV        OutputFormat = "csv"
 	OutputFormatPlumbing   OutputFormat = "plumbing"
 	OutputFormatSimpleJSON OutputFormat = "simple-json"
+	OutputFormatSARIF      OutputFormat = "sarif"
 )
 
 //nolint:gochecknoglobals // Lookup table for valid output formats, initialized once at package load
@@ -164,6 +165,7 @@ var validOutputFormats = map[OutputFormat]bool{
 	OutputFormatCSV:        true,
 	OutputFormatPlumbing:   true,
 	OutputFormatSimpleJSON: true,
+	OutputFormatSARIF:      true,
 }
 
 // String implements fmt.Stringer.
@@ -243,6 +245,7 @@ func AllOutputFormats() []OutputFormat {
 		OutputFormatCSV,
 		OutputFormatPlumbing,
 		OutputFormatSimpleJSON,
+		OutputFormatSARIF,
 	}
 }
 

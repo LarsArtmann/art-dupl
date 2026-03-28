@@ -414,8 +414,8 @@ func TestOutputFormats(t *testing.T) {
 	t.Parallel()
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
-	if len(formats) != 6 {
-		t.Errorf("Expected 6 formats, got %d", len(formats))
+	if len(formats) != 7 {
+		t.Errorf("Expected 7 formats, got %d", len(formats))
 	}
 
 	// Test AllSortCriteria
