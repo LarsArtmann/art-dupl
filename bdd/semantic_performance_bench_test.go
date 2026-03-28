@@ -39,7 +39,14 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 
 	b.Run("WithSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(b.Context(), binaryPath, projectRoot, "--threshold", "50", "--semantic")
+			cmd := exec.CommandContext(
+				b.Context(),
+				binaryPath,
+				projectRoot,
+				"--threshold",
+				"50",
+				"--semantic",
+			)
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			output, err := cmd.CombinedOutput()
 			if err != nil {
@@ -91,7 +98,14 @@ func (s *ServiceB) Validate() bool { return true }
 
 	b.Run("WithSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(b.Context(), binaryPath, testDir, "--threshold", "10", "--semantic")
+			cmd := exec.CommandContext(
+				b.Context(),
+				binaryPath,
+				testDir,
+				"--threshold",
+				"10",
+				"--semantic",
+			)
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
 			if output, err := cmd.CombinedOutput(); err != nil {
 				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))

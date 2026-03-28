@@ -17,6 +17,7 @@ func assertParseBytesSuccess(t *testing.T, input string) *syntax.Node {
 	if node == nil {
 		t.Fatal("ParseBytes() returned nil node")
 	}
+
 	return node
 }
 

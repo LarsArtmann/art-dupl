@@ -895,7 +895,15 @@ func registerBasicUintConstructorTest[T any](
 		want:      expectedValue2,
 		wantError: false,
 	})
-	tests = append(tests, constructorTest[T]{name: "zero should error", input: uint(0), want: *new(T), wantError: true})
+	tests = append(
+		tests,
+		constructorTest[T]{
+			name:      "zero should error",
+			input:     uint(0),
+			want:      *new(T),
+			wantError: true,
+		},
+	)
 	tests = append(tests, extraTests...)
 	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
 		return constructorFunc(input.(uint))

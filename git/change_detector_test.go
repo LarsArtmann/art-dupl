@@ -35,7 +35,14 @@ func setupGitRepo(t *testing.T) string {
 	}
 
 	// Configure git user (required for commits) - use --local to ensure it's set for this repo
-	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "user.email", "test@test.com")
+	cmd = exec.CommandContext(
+		t.Context(),
+		"git",
+		"config",
+		"--local",
+		"user.email",
+		"test@test.com",
+	)
 
 	cmd.Dir = tempDir
 	if output, err := cmd.CombinedOutput(); err != nil {

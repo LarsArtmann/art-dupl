@@ -220,7 +220,12 @@ func matchesOnlyFilter(path, only string) bool {
 }
 
 // crawlPathsWithOnly walks paths and returns a channel of Go files with "only" filter.
-func crawlPathsWithOnly(paths []string, filter *filter.Filter, includeVendor bool, only string) chan string {
+func crawlPathsWithOnly(
+	paths []string,
+	filter *filter.Filter,
+	includeVendor bool,
+	only string,
+) chan string {
 	fchan := make(chan string)
 
 	go func() {
@@ -304,7 +309,8 @@ func handleWalkEntryWithOnly(
 		return nil
 	}
 
-	if !info.IsDir() && isSourceFile(info.Name()) && shouldIncludeFile(filter, path) && matchesOnlyFilter(path, only) {
+	if !info.IsDir() && isSourceFile(info.Name()) && shouldIncludeFile(filter, path) &&
+		matchesOnlyFilter(path, only) {
 		fchan <- path
 	}
 

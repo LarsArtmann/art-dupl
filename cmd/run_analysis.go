@@ -85,7 +85,13 @@ func buildSuffixTree(
 
 		schan, incStatsChan = incParser.ParseIncremental(
 			ctx,
-			filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor, cfg.Only),
+			filesFeedWithOptions(
+				paths,
+				cfg.FilesFromStdin,
+				filterParam,
+				cfg.IncludeVendor,
+				cfg.Only,
+			),
 		)
 		tree, data, done := job.BuildTree(ctx, schan)
 		<-done
@@ -106,7 +112,13 @@ func buildSuffixTree(
 	// Standard parsing without cache
 	var statsChan chan job.ParseStats
 
-	filesChan := filesFeedWithOptions(paths, cfg.FilesFromStdin, filterParam, cfg.IncludeVendor, cfg.Only)
+	filesChan := filesFeedWithOptions(
+		paths,
+		cfg.FilesFromStdin,
+		filterParam,
+		cfg.IncludeVendor,
+		cfg.Only,
+	)
 	if cfg.Workers > 1 {
 		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers, cfg.Semantic)
 	} else {

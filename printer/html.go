@@ -610,6 +610,7 @@ func (p *htmlprinter) PrintHeader() error {
 	if _, err := fmt.Fprintf(p.w, htmlTemplate, p.threshold); err != nil {
 		return err //nolint:wrapcheck
 	}
+
 	return p.writeMetadata()
 }
 
@@ -649,8 +650,11 @@ func (p *htmlprinter) writeMetadata() error {
 	}
 
 	metaStr := strings.Join(parts, "")
-	if _, err := fmt.Fprintf(p.w, `<script>document.getElementById('report-metadata').innerHTML = %s;</script>`,
-		strconv.Quote(metaStr)); err != nil {
+	if _, err := fmt.Fprintf(
+		p.w,
+		`<script>document.getElementById('report-metadata').innerHTML = %s;</script>`,
+		strconv.Quote(metaStr),
+	); err != nil {
 		return err //nolint:wrapcheck
 	}
 
