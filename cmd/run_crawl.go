@@ -208,7 +208,7 @@ func isSourceFile(name string) bool {
 }
 
 // matchesOnlyFilter returns true if the file matches the "only" filter criteria.
-func matchesOnlyFilter(path string, only string) bool {
+func matchesOnlyFilter(path, only string) bool {
 	switch only {
 	case "go":
 		return strings.HasSuffix(path, ".go")

@@ -15,6 +15,7 @@ func TestHTMLOutputGolden(t *testing.T) {
 		&buf,
 		mockReadFile(testFileContent),
 		config.DiffModeSideBySide,
+		ReportMetadata{},
 		15,
 	)
 
@@ -32,7 +33,7 @@ func TestHTMLOutputGolden(t *testing.T) {
 func TestHTMLOutputGoldenNoDiff(t *testing.T) {
 	var buf bytes.Buffer
 
-	printer := NewHTMLWithOptions(&buf, mockReadFile(testFileContent), config.DiffModeDisabled, 15)
+	printer := NewHTMLWithOptions(&buf, mockReadFile(testFileContent), config.DiffModeDisabled, ReportMetadata{}, 15)
 
 	if err := printer.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)

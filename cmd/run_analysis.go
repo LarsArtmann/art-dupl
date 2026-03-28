@@ -358,11 +358,12 @@ func createPrinter(
 	outputFormat config.OutputFormat,
 	threshold int,
 	diffMode config.DiffMode,
+	metadata printer.ReportMetadata,
 ) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
 		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-			return printer.NewHTMLWithOptions(w, fread, diffMode, threshold)
+			return printer.NewHTMLWithOptions(w, fread, diffMode, metadata, threshold)
 		}
 	case config.OutputFormatPlumbing:
 		return printer.NewPlumbing

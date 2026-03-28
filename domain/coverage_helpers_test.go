@@ -5,6 +5,15 @@ import (
 	"testing"
 )
 
+func assertErrorContains(t *testing.T, err error, substrs ...string) {
+	t.Helper()
+	for _, substr := range substrs {
+		if !strings.Contains(err.Error(), substr) {
+			t.Errorf("error = %v, want error containing %q", err, substr)
+		}
+	}
+}
+
 // TestValidationHelpers tests validation helper functions.
 func TestValidateRules(t *testing.T) {
 	t.Run("all rules pass", func(t *testing.T) {
@@ -27,12 +36,9 @@ func TestValidateRules(t *testing.T) {
 
 		err := validateRules(rules)
 		if err == nil {
-			t.Error("validateRules() error = nil, want error")
+			t.Fatal("validateRules() error = nil, want error")
 		}
-
-		if !strings.Contains(err.Error(), "validation failed") || !strings.Contains(err.Error(), "rule1 failed") {
-			t.Errorf("validateRules() error = %v, want error containing 'validation failed' and 'rule1 failed'", err)
-		}
+		assertErrorContains(t, err, "validation failed", "rule1 failed")
 	})
 
 	t.Run("middle rule fails", func(t *testing.T) {
@@ -44,12 +50,9 @@ func TestValidateRules(t *testing.T) {
 
 		err := validateRules(rules)
 		if err == nil {
-			t.Error("validateRules() error = nil, want error")
+			t.Fatal("validateRules() error = nil, want error")
 		}
-
-		if !strings.Contains(err.Error(), "validation failed") || !strings.Contains(err.Error(), "rule2 failed") {
-			t.Errorf("validateRules() error = %v, want error containing 'validation failed' and 'rule2 failed'", err)
-		}
+		assertErrorContains(t, err, "validation failed", "rule2 failed")
 	})
 }
 

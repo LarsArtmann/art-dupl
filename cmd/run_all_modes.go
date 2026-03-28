@@ -137,7 +137,17 @@ func writeFormatFile(
 		}
 	}()
 
-	p := createPrinter(format, cfg.Threshold, cfg.DiffMode)(file, os.ReadFile)
+	// Build metadata for HTML report
+	metadata := printer.ReportMetadata{
+		Semantic:         cfg.Semantic,
+		DetectionMethods: detectionMethodsToStringSlice(cfg.DetectionMethods),
+		SortBy:           sortByEnum.String(),
+		FilterGenerated:  cfg.FilterGenerated,
+		IncludeSQLC:      cfg.IncludeSQLC,
+		IncludeTempl:     cfg.IncludeTempl,
+	}
+
+	p := createPrinter(format, cfg.Threshold, cfg.DiffMode, metadata)(file, os.ReadFile)
 
 	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
 		jsonPrinter.SetFilesCount(parseStats.FilesCount)

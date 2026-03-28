@@ -253,10 +253,21 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return ctx.Err() //nolint:wrapcheck
 	}
 
+	// Build metadata for HTML report
+	metadata := printer.ReportMetadata{
+		Semantic:         mergedConfig.Semantic,
+		DetectionMethods: detectionMethodsToStringSlice(mergedConfig.DetectionMethods),
+		SortBy:           sortBy,
+		FilterGenerated:  mergedConfig.FilterGenerated,
+		IncludeSQLC:      mergedConfig.IncludeSQLC,
+		IncludeTempl:     mergedConfig.IncludeTempl,
+	}
+
 	p := createPrinter(
 		mergedConfig.OutputFormat,
 		mergedConfig.Threshold,
 		mergedConfig.DiffMode,
+		metadata,
 	)(
 		os.Stdout,
 		os.ReadFile,

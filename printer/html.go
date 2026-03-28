@@ -24,6 +24,16 @@ type classificationStats struct {
 	totalTokens    int
 }
 
+// ReportMetadata contains CLI settings used for the report.
+type ReportMetadata struct {
+	Semantic         bool
+	DetectionMethods []string
+	SortBy           string
+	FilterGenerated  bool
+	IncludeSQLC      bool
+	IncludeTempl     bool
+}
+
 // htmlprinter generates HTML output for code duplication reports.
 type htmlprinter struct {
 	ReadFile
@@ -35,20 +45,23 @@ type htmlprinter struct {
 	dupls     [][][]*syntax.Node
 	diffMode  config.DiffMode // Enable diff visualization mode
 	stats     classificationStats
+	metadata  ReportMetadata
 }
 
 // NewHTML creates a new HTML printer.
 // Supports optional threshold parameter (default: 15).
 func NewHTML(w io.Writer, fread ReadFile, threshold ...int) Printer {
-	return NewHTMLWithOptions(w, fread, config.DiffModeDisabled, threshold...)
+	return NewHTMLWithOptions(w, fread, config.DiffModeDisabled, ReportMetadata{}, threshold...)
 }
 
 // NewHTMLWithOptions creates a new HTML printer with full options.
 // diffMode enables visual diff highlighting between duplicate occurrences.
+// metadata contains CLI settings to display in the report.
 func NewHTMLWithOptions(
 	w io.Writer,
 	fread ReadFile,
 	diffMode config.DiffMode,
+	metadata ReportMetadata,
 	threshold ...int,
 ) Printer {
 	thresh := 15
@@ -66,6 +79,7 @@ func NewHTMLWithOptions(
 			categoryCounts: make(map[CloneCategory]int),
 			priorityCounts: make(map[ClonePriority]int),
 		},
+		metadata: metadata,
 	}
 }
 
@@ -555,6 +569,29 @@ footer {
 	color: var(--border);
 	margin: 0 5px;
 }
+/* Metadata section */
+.metadata-section {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
+}
+.metadata-badge {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 4px 10px;
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+}
+.metadata-badge.enabled {
+	background: rgba(88, 166, 255, 0.15);
+	border-color: var(--accent);
+	color: var(--accent);
+}
+.metadata-badge.disabled {
+	opacity: 0.6;
+}
 /* Media query percentage escaped for Go template */
 </style>
 </head>
@@ -566,12 +603,58 @@ footer {
 <div class="stats-grid">
 <div class="stat-card"><h3>%d</h3><p>Threshold (tokens)</p></div>
 </div>
+<div class="metadata-section" id="report-metadata"></div>
 `
 
 func (p *htmlprinter) PrintHeader() error {
-	_, err := fmt.Fprintf(p.w, htmlTemplate, p.threshold)
+	if _, err := fmt.Fprintf(p.w, htmlTemplate, p.threshold); err != nil {
+		return err //nolint:wrapcheck
+	}
+	return p.writeMetadata()
+}
 
-	return err //nolint:wrapcheck // fmt errors are clear in context
+func (p *htmlprinter) writeMetadata() error {
+	var parts []string
+
+	if p.metadata.Semantic {
+		parts = append(parts, `<span class="metadata-badge enabled">🔤 Semantic</span>`)
+	} else {
+		parts = append(parts, `<span class="metadata-badge disabled">🔤 Structural</span>`)
+	}
+
+	if len(p.metadata.DetectionMethods) > 0 {
+		parts = append(parts, fmt.Sprintf(`<span class="metadata-badge">🔍 %s</span>`,
+			html.EscapeString(strings.Join(p.metadata.DetectionMethods, ", "))))
+	}
+
+	if p.metadata.SortBy != "" {
+		parts = append(parts, fmt.Sprintf(`<span class="metadata-badge">📊 %s</span>`,
+			html.EscapeString(p.metadata.SortBy)))
+	}
+
+	if p.metadata.FilterGenerated {
+		parts = append(parts, `<span class="metadata-badge">🚫 Filter Generated</span>`)
+	}
+
+	if p.metadata.IncludeSQLC {
+		parts = append(parts, `<span class="metadata-badge">📦 Include SQLC</span>`)
+	}
+
+	if p.metadata.IncludeTempl {
+		parts = append(parts, `<span class="metadata-badge">📦 Include Templ</span>`)
+	}
+
+	if len(parts) == 0 {
+		return nil
+	}
+
+	metaStr := strings.Join(parts, "")
+	if _, err := fmt.Fprintf(p.w, `<script>document.getElementById('report-metadata').innerHTML = %s;</script>`,
+		strconv.Quote(metaStr)); err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	return nil
 }
 
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {

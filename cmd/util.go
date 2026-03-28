@@ -21,6 +21,20 @@ func detectionMethodsToString(methods config.DetectionMethods) string {
 	return strings.Join(result, ",")
 }
 
+// detectionMethodsToStringSlice converts detection methods to a slice of strings.
+func detectionMethodsToStringSlice(methods config.DetectionMethods) []string {
+	if len(methods) == 0 {
+		return nil
+	}
+
+	result := make([]string, len(methods))
+	for i, dm := range methods {
+		result[i] = dm.String()
+	}
+
+	return result
+}
+
 // shouldIncludeFile returns true if the file should be included (not filtered).
 func shouldIncludeFile(f *filter.Filter, path string) bool {
 	return f == nil || !f.ShouldFilter(path)
