@@ -8,6 +8,31 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+func assertParseBytesSuccess(t *testing.T, input string) *syntax.Node {
+	t.Helper()
+	node, _, err := ParseBytes("test.templ", []byte(input))
+	if err != nil {
+		t.Fatalf("ParseBytes() error = %v", err)
+	}
+	if node == nil {
+		t.Fatal("ParseBytes() returned nil node")
+	}
+	return node
+}
+
+func runParseTests(t *testing.T, tests []struct {
+	name  string
+	input string
+},
+) {
+	t.Helper()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertParseBytesSuccess(t, tt.input)
+		})
+	}
+}
+
 func TestParseBytes(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -588,10 +613,16 @@ func countAllNodes(n *syntax.Node) int {
 	return count
 }
 
-// TestParseCallTemplateExpression specifically tests the !template() call syntax.
-func TestParseCallTemplateExpression(t *testing.T) {
-	// This test ensures the CallTemplateExpression path is covered
-	input := `package main
+// TestParseChildrenCount tests parsing of various templ constructs with expected children counts.
+func TestParseChildrenCount(t *testing.T) {
+	tests := []struct {
+		name             string
+		input            string
+		expectedChildren int
+	}{
+		{
+			name: "call_template_expression",
+			input: `package main
 
 templ greeting(name string) {
 	<p>Hello, { name }!</p>
@@ -602,18 +633,86 @@ templ page() {
 		!greeting("World")
 	</div>
 }
-`
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
+`,
+			expectedChildren: 2,
+		},
+		{
+			name: "switch_with_default",
+			input: `package main
+
+templ withDefault(value int) {
+	switch value {
+		case 1:
+			<p>One</p>
+		case 2:
+			<p>Two</p>
+		default:
+			<p>Other</p>
 	}
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
+}
+`,
+			expectedChildren: 1,
+		},
+		{
+			name: "complex_script_template",
+			input: `package main
+
+script complexHandler(event string) {
+	console.log("Event:", event);
+	const data = { event: event, timestamp: Date.now() };
+	fetch('/api/log', { method: 'POST', body: JSON.stringify(data) });
+}
+
+templ button() {
+	<button onClick={ complexHandler("click") }>Click me</button>
+}
+`,
+			expectedChildren: 2,
+		},
+		{
+			name: "mixed_content",
+			input: `package main
+
+import "fmt"
+
+css sharedStyles() {
+	background-color: #ffffff;
+	color: { "blue" };
+}
+
+script analytics(event string) {
+	console.log(event);
+}
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<title>{ title }</title>
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
+}
+
+templ Button(text string) {
+	<button onClick={ analytics("click") }>
+		{ text }
+	</button>
+}
+`,
+			expectedChildren: 4,
+		},
 	}
 
-	// Should have 2 component declarations (greeting and page)
-	if len(node.Children) != 2 {
-		t.Errorf("Expected 2 component declarations, got %d", len(node.Children))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			node := assertParseBytesSuccess(t, tt.input)
+			if len(node.Children) != tt.expectedChildren {
+				t.Errorf("Expected %d children, got %d", tt.expectedChildren, len(node.Children))
+			}
+		})
 	}
 }
 
@@ -645,46 +744,7 @@ templ withMultipleVars() {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			node, _, err := ParseBytes("test.templ", []byte(tt.input))
-			if err != nil {
-				t.Fatalf("ParseBytes() error = %v", err)
-			}
-			if node == nil {
-				t.Fatal("ParseBytes() returned nil node")
-			}
-		})
-	}
-}
-
-// TestParseSwitchWithDefault tests switch statements with default cases.
-func TestParseSwitchWithDefault(t *testing.T) {
-	input := `package main
-
-templ withDefault(value int) {
-	switch value {
-		case 1:
-			<p>One</p>
-		case 2:
-			<p>Two</p>
-		default:
-			<p>Other</p>
-	}
-}
-`
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Should have 1 component declaration
-	if len(node.Children) != 1 {
-		t.Errorf("Expected 1 component declaration, got %d", len(node.Children))
-	}
+	runParseTests(t, tests)
 }
 
 // TestParseComplexAttributes tests various attribute types.
@@ -722,92 +782,7 @@ templ withMultiple(id string, active bool) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			node, _, err := ParseBytes("test.templ", []byte(tt.input))
-			if err != nil {
-				t.Fatalf("ParseBytes() error = %v", err)
-			}
-			if node == nil {
-				t.Fatal("ParseBytes() returned nil node")
-			}
-		})
-	}
-}
-
-// TestParseComplexScriptTemplate tests script templates with various content.
-func TestParseComplexScriptTemplate(t *testing.T) {
-	input := `package main
-
-script complexHandler(event string) {
-	console.log("Event:", event);
-	const data = { event: event, timestamp: Date.now() };
-	fetch('/api/log', { method: 'POST', body: JSON.stringify(data) });
-}
-
-templ button() {
-	<button onClick={ complexHandler("click") }>Click me</button>
-}
-`
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Should have 2 declarations (script and templ)
-	if len(node.Children) != 2 {
-		t.Errorf("Expected 2 declarations, got %d", len(node.Children))
-	}
-}
-
-// TestParseMixedContent tests a complex templ file with mixed content types.
-func TestParseMixedContent(t *testing.T) {
-	input := `package main
-
-import "fmt"
-
-css sharedStyles() {
-	background-color: #ffffff;
-	color: { "blue" };
-}
-
-script analytics(event string) {
-	console.log(event);
-}
-
-templ Layout(title string) {
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<title>{ title }</title>
-		</head>
-		<body>
-			{ children... }
-		</body>
-	</html>
-}
-
-templ Button(text string) {
-	<button onClick={ analytics("click") }>
-		{ text }
-	</button>
-}
-`
-	node, _, err := ParseBytes("test.templ", []byte(input))
-	if err != nil {
-		t.Fatalf("ParseBytes() error = %v", err)
-	}
-	if node == nil {
-		t.Fatal("ParseBytes() returned nil node")
-	}
-
-	// Should have 4 declarations (css, script, Layout, Button)
-	if len(node.Children) != 4 {
-		t.Errorf("Expected 4 declarations, got %d", len(node.Children))
-	}
+	runParseTests(t, tests)
 }
 
 // TestParseEdgeCases tests edge cases and unusual but valid syntax.
