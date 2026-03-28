@@ -54,63 +54,30 @@ func buildSuffixTree(
 		"    📖 Parsing files and building analysis tree...",
 	)
 
-	var (
-		schan      chan []*syntax.Node
-		parseStats job.ParseStats
-	)
+	if cfg.Incremental {
+		return buildSuffixTreeIncremental(ctx, paths, cfg, filterParam, outputFormat)
+	}
 
-	// Debug output for incremental mode detection
+	return buildSuffixTreeStandard(ctx, paths, cfg, filterParam, outputFormat)
+}
 
+// buildSuffixTreeIncremental builds a suffix tree using incremental parsing with cache.
+func buildSuffixTreeIncremental(
+	ctx context.Context,
+	paths []string,
+	cfg *config.Config,
+	filterParam *filter.Filter,
+	outputFormat config.OutputFormat,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	if cfg.Verbose {
 		_, _ = fmt.Fprintf(
 			os.Stderr,
-			"🔍 buildSuffixTree: incremental=%v, cacheDir=%q\n",
-			cfg.Incremental,
+			"🔍 Incremental mode enabled, cache dir: %s\n",
 			cfg.CacheDir,
 		)
 	}
 
-	if cfg.Incremental {
-		if cfg.Verbose {
-			_, _ = fmt.Fprintf(
-				os.Stderr,
-				"🔍 Incremental mode enabled, cache dir: %s\n",
-				cfg.CacheDir,
-			)
-		}
-
-		incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache, cfg.Semantic)
-
-		var incStatsChan chan job.IncrementalStats
-
-		schan, incStatsChan = incParser.ParseIncremental(
-			ctx,
-			filesFeedWithOptions(
-				paths,
-				cfg.FilesFromStdin,
-				filterParam,
-				cfg.IncludeVendor,
-				cfg.Only,
-			),
-		)
-		tree, data, done := job.BuildTree(ctx, schan)
-		<-done
-
-		incStats := <-incStatsChan
-		parseStats = job.ParseStats{
-			FilesCount: incStats.FilesCount,
-			LinesCount: incStats.LinesCount,
-		}
-
-		tree.Update(&syntax.Node{Type: -1})
-
-		printSearchStatus(cfg, outputFormat)
-
-		return tree, *data, parseStats, nil
-	}
-
-	// Standard parsing without cache
-	var statsChan chan job.ParseStats
+	incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache, cfg.Semantic)
 
 	filesChan := filesFeedWithOptions(
 		paths,
@@ -119,6 +86,41 @@ func buildSuffixTree(
 		cfg.IncludeVendor,
 		cfg.Only,
 	)
+	schan, incStatsChan := incParser.ParseIncremental(ctx, filesChan)
+	tree, data, done := job.BuildTree(ctx, schan)
+	<-done
+
+	incStats := <-incStatsChan
+	parseStats := job.ParseStats{
+		FilesCount: incStats.FilesCount,
+		LinesCount: incStats.LinesCount,
+	}
+
+	tree.Update(&syntax.Node{Type: -1})
+	printSearchStatus(cfg, outputFormat)
+
+	return tree, *data, parseStats, nil
+}
+
+// buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
+func buildSuffixTreeStandard(
+	ctx context.Context,
+	paths []string,
+	cfg *config.Config,
+	filterParam *filter.Filter,
+	outputFormat config.OutputFormat,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+	filesChan := filesFeedWithOptions(
+		paths,
+		cfg.FilesFromStdin,
+		filterParam,
+		cfg.IncludeVendor,
+		cfg.Only,
+	)
+
+	var schan chan []*syntax.Node
+	var statsChan chan job.ParseStats
+
 	if cfg.Workers > 1 {
 		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers, cfg.Semantic)
 	} else {
@@ -128,10 +130,9 @@ func buildSuffixTree(
 	tree, data, done := job.BuildTree(ctx, schan)
 	<-done
 
-	parseStats = <-statsChan
+	parseStats := <-statsChan
 
 	tree.Update(&syntax.Node{Type: -1})
-
 	printSearchStatus(cfg, outputFormat)
 
 	return tree, *data, parseStats, nil
@@ -383,6 +384,10 @@ func createPrinter(
 		return printer.NewJSON
 	case config.OutputFormatSimpleJSON:
 		return printer.NewJSON
+	case config.OutputFormatSARIF:
+		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
+			return printer.NewSARIF(w, fread, threshold)
+		}
 	case config.OutputFormatCSV:
 		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
 			return printer.NewStats(w, fread, threshold)

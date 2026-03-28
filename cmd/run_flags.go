@@ -35,6 +35,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	html, _ := cmd.Flags().GetBool("html")
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
+	sarif, _ := cmd.Flags().GetBool("sarif")
 	sortBy, _ := cmd.Flags().GetString("sort")
 	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
 
@@ -128,6 +129,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		appConfig.OutputFormat = config.OutputFormatHTML
 	case plumbing:
 		appConfig.OutputFormat = config.OutputFormatPlumbing
+	case sarif:
+		appConfig.OutputFormat = config.OutputFormatSARIF
 	case jsonFlag:
 		appConfig.OutputFormat = config.OutputFormatJSON
 	}
