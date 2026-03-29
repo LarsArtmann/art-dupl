@@ -73,8 +73,10 @@ func filesFeedWithOptions(
 		if !isSourceFile(name) {
 			return false
 		}
+
 		return matchesOnlyFilter(name, only)
 	}
+
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, fileCheck)
 }
 
@@ -102,6 +104,7 @@ func crawlPathsAllFiles(
 			return matchesOnlyFilter(name, only)
 		}
 	}
+
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, fileCheck)
 }
 

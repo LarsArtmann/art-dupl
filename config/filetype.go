@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -39,6 +40,7 @@ func (ft FileType) MarshalJSON() ([]byte, error) {
 	if ft == FileTypeAll {
 		return []byte("null"), nil
 	}
+
 	return marshalStringType(
 		ft,
 		func(s FileType) bool { return s.IsValid() },
@@ -77,8 +79,12 @@ func hasSuffix(s, suffix string) bool {
 	if len(suffix) > len(s) {
 		return false
 	}
+
 	return s[len(s)-len(suffix):] == suffix
 }
+
+// ErrInvalidFileType is returned when a file type value is invalid.
+var ErrInvalidFileType = errors.New("invalid file type")
 
 // ParseFileType parses a string into a FileType, validating the value.
 // Returns FileTypeAll and an error if the value is invalid.
@@ -86,9 +92,11 @@ func ParseFileType(s string) (FileType, error) {
 	if s == "" {
 		return FileTypeAll, nil
 	}
+
 	ft := FileType(s)
 	if !ft.IsValid() {
-		return FileTypeAll, fmt.Errorf("invalid file type: %q (valid: go, templ)", s)
+		return FileTypeAll, fmt.Errorf("%w: %q (valid: go, templ)", ErrInvalidFileType, s)
 	}
+
 	return ft, nil
 }

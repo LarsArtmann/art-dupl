@@ -320,7 +320,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 
 	t.Run("only go files", func(t *testing.T) {
 		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "go")
-		var found []string
+		found := make([]string, 0, 2)
 		for f := range ch {
 			found = append(found, filepath.Base(f))
 		}
@@ -336,7 +336,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 
 	t.Run("only templ files", func(t *testing.T) {
 		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "templ")
-		var found []string
+		found := make([]string, 0, 2)
 		for f := range ch {
 			found = append(found, filepath.Base(f))
 		}
@@ -352,7 +352,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 
 	t.Run("all files with empty filter", func(t *testing.T) {
 		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "")
-		var found []string
+		found := make([]string, 0, 4)
 		for f := range ch {
 			found = append(found, filepath.Base(f))
 		}
