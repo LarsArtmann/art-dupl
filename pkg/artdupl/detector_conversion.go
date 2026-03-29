@@ -48,20 +48,30 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 		return &Clone{} //nolint:exhaustruct
 	}
 
-	// Get file information from first node
 	firstNode := frag[0]
 	lastNode := frag[len(frag)-1]
 
+	startPos := int(firstNode.Pos)
+	endPos := int(lastNode.End)
+
+	startLine, endLine := startPos, endPos
+
+	if d.opts.FileReader != nil {
+		content, err := d.opts.FileReader(firstNode.Filename)
+		if err == nil && len(content) > 0 {
+			startLine, endLine = position.ByteRangeToLines(content, startPos, endPos)
+		}
+	}
+
 	clone := &Clone{ //nolint:exhaustruct
 		Filename:  firstNode.Filename,
-		StartLine: int(firstNode.Pos),
-		EndLine:   int(lastNode.End),
-		StartPos:  int(firstNode.Pos),
-		EndPos:    int(lastNode.End),
+		StartLine: startLine,
+		EndLine:   endLine,
+		StartPos:  startPos,
+		EndPos:    endPos,
 		Size:      len(frag),
 	}
 
-	// Include fragment content if requested
 	if d.opts.IncludeFragments {
 		clone.Fragment = d.extractFragmentContent(frag)
 	}
@@ -75,29 +85,21 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 		return ""
 	}
 
-	// Read the source file
 	content, err := d.opts.FileReader(frag[0].Filename)
 	if err != nil {
 		d.logger.Warn("Failed to read file %s: %v", frag[0].Filename, err)
 
-		return "[content unavailable]"
+		return ""
 	}
 
-	// Extract the relevant lines
-	lines := position.SplitLines(content)
-	start := frag[0].Pos - 1 // Convert to 0-based
+	start := frag[0].Pos
 	end := frag[len(frag)-1].End
 
-	if start < 0 || int(end) >= len(lines) {
-		return "[content unavailable]"
+	if start < 0 || int(end) > len(content) || start >= end {
+		return ""
 	}
 
-	var fragmentLines []string
-	for i := int(start); i <= int(end) && i < len(lines); i++ {
-		fragmentLines = append(fragmentLines, lines[i])
-	}
-
-	return position.JoinLines(fragmentLines)
+	return string(content[start:end])
 }
 
 // buildResult creates final Result structure.

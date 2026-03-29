@@ -11,9 +11,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// contentUnavailable is the message used when fragment content cannot be extracted.
-const contentUnavailable = "[content unavailable]"
-
 // testNodes returns a slice of test nodes for testing.
 func testNodes() []*syntax.Node {
 	return []*syntax.Node{
@@ -152,8 +149,8 @@ func TestExtractFragmentContent_NotFound(t *testing.T) {
 	}
 
 	content := d.extractFragmentContent(frag)
-	if content != contentUnavailable {
-		t.Errorf("Expected '%s', got %s", contentUnavailable, content)
+	if content != "" {
+		t.Errorf("Expected empty string for missing file, got %q", content)
 	}
 }
 
@@ -185,8 +182,8 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 	}
 
 	content := d.extractFragmentContent(frag)
-	if content != contentUnavailable {
-		t.Errorf("Expected '%s', got %s", contentUnavailable, content)
+	if content != "" {
+		t.Errorf("Expected empty string for invalid range, got %q", content)
 	}
 }
 
