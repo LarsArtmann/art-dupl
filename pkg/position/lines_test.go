@@ -102,6 +102,30 @@ func TestByteRangeToLines(t *testing.T) {
 			wantStart: 1,
 			wantEnd:   1,
 		},
+		{
+			name:      "same position single point on line 2",
+			content:   "line1\nline2\nline3",
+			start:     10, // middle of "line2"
+			end:       10,
+			wantStart: 2,
+			wantEnd:   2,
+		},
+		{
+			name:      "same position at newline",
+			content:   "line1\nline2",
+			start:     5, // the newline character
+			end:       5,
+			wantStart: 2,
+			wantEnd:   2,
+		},
+		{
+			name:      "same position on first line",
+			content:   "hello world",
+			start:     3,
+			end:       3,
+			wantStart: 1,
+			wantEnd:   1,
+		},
 	}
 
 	for _, tt := range tests {

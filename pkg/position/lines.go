@@ -14,6 +14,11 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 		return 1, 1
 	}
 
+	// Handle same position (single point) - both start and end are the same
+	if start == end {
+		return offsetToLine(content, start), offsetToLine(content, end)
+	}
+
 	line := 1
 	lineStart, lineEnd := 0, 0
 
@@ -43,6 +48,29 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 	}
 
 	return lineStart, lineEnd
+}
+
+// offsetToLine returns the 1-based line number for a byte offset.
+// Follows the same line-counting semantics as ByteRangeToLines:
+// a position at a newline character returns the line that the newline terminates.
+func offsetToLine(content []byte, offset int) int {
+	if offset < 0 || len(content) == 0 {
+		return 1
+	}
+
+	// Cap offset to content bounds
+	if offset >= len(content) {
+		offset = len(content) - 1
+	}
+
+	line := 1
+	for i := 0; i <= offset && i < len(content); i++ {
+		if content[i] == '\n' {
+			line++
+		}
+	}
+
+	return line
 }
 
 // SplitLines splits content into lines by newline characters.
