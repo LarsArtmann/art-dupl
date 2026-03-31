@@ -13,13 +13,23 @@ func (d *detector) convertToCloneGroup(
 	frags [][]*syntax.Node,
 	method DetectionMethod,
 ) *CloneGroup {
-	clones := make([]*Clone, len(frags))
+	// First pass: convert fragments and filter out invalid/nil clones
+	validClones := make([]*Clone, 0, len(frags))
 	totalSize := 0
 	maxLines := 0
 
-	for i, frag := range frags {
+	for _, frag := range frags {
 		clone := d.convertFragmentToClone(frag)
-		clones[i] = clone
+		if clone == nil {
+			continue
+		}
+
+		if err := clone.IsValid(); err != nil {
+			d.logger.Warn("Skipping invalid clone: %v", err)
+			continue
+		}
+
+		validClones = append(validClones, clone)
 		totalSize += clone.Size
 
 		lines := clone.EndLine - clone.StartLine + 1
@@ -28,14 +38,19 @@ func (d *detector) convertToCloneGroup(
 		}
 	}
 
+	// Skip groups with no valid clones
+	if len(validClones) == 0 {
+		return nil
+	}
+
 	// Limit clones per group if specified
-	if d.opts.MaxClonesPerGroup > 0 && len(clones) > d.opts.MaxClonesPerGroup {
-		clones = clones[:d.opts.MaxClonesPerGroup]
+	if d.opts.MaxClonesPerGroup > 0 && len(validClones) > d.opts.MaxClonesPerGroup {
+		validClones = validClones[:d.opts.MaxClonesPerGroup]
 	}
 
 	return &CloneGroup{
 		Hash:      hash,
-		Clones:    clones,
+		Clones:    validClones,
 		Size:      totalSize,
 		LineCount: maxLines,
 		Method:    method,
@@ -43,9 +58,10 @@ func (d *detector) convertToCloneGroup(
 }
 
 // convertFragmentToClone converts a syntax fragment to SDK Clone format.
+// Returns nil for empty fragments (not valid clones).
 func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 	if len(frag) == 0 {
-		return &Clone{} //nolint:exhaustruct
+		return nil
 	}
 
 	firstNode := frag[0]
@@ -106,18 +122,26 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result {
 	analysisTime := time.Since(d.started)
 
+	// Filter out nil clone groups
+	validGroups := make([]*CloneGroup, 0, len(cloneGroups))
+	for _, group := range cloneGroups {
+		if group != nil {
+			validGroups = append(validGroups, group)
+		}
+	}
+
 	// Calculate summary statistics
 	totalClones := 0
-	for _, group := range cloneGroups {
+	for _, group := range validGroups {
 		totalClones += len(group.Clones)
 	}
 
 	return &Result{
-		CloneGroups: cloneGroups,
+		CloneGroups: validGroups,
 		Summary: &Summary{
 			TotalFiles:    fileCount,
 			TotalClones:   totalClones,
-			TotalGroups:   len(cloneGroups),
+			TotalGroups:   len(validGroups),
 			AnalysisTime:  analysisTime,
 			MethodsUsed:   d.opts.DetectionMethods,
 			LinesAnalyzed: 0, // Calculate actual lines analyzed

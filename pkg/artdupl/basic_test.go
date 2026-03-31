@@ -195,6 +195,55 @@ func TestCloneGroup_Validation_Basic(t *testing.T) {
 	}
 }
 
+// TestClone_IsValid tests Clone validation.
+func TestClone_IsValid(t *testing.T) {
+	tests := []struct {
+		name    string
+		clone   Clone
+		wantErr error
+	}{
+		{
+			name:    "valid clone with positions",
+			clone:   Clone{StartLine: 1, EndLine: 5, StartPos: 10, EndPos: 50},
+			wantErr: nil,
+		},
+		{
+			name:    "valid clone single line",
+			clone:   Clone{StartLine: 5, EndLine: 5, StartPos: 10, EndPos: 20},
+			wantErr: nil,
+		},
+		{
+			name:    "valid clone without positions",
+			clone:   Clone{StartLine: 1, EndLine: 10},
+			wantErr: nil,
+		},
+		{
+			name:    "invalid end line before start",
+			clone:   Clone{StartLine: 10, EndLine: 5},
+			wantErr: ErrCloneEndLineBeforeStart,
+		},
+		{
+			name:    "invalid zero length positions",
+			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 50},
+			wantErr: ErrCloneZeroLength,
+		},
+		{
+			name:    "invalid negative length positions",
+			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 30},
+			wantErr: ErrCloneZeroLength,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.clone.IsValid()
+			if !errors.Is(err, tt.wantErr) {
+				t.Errorf("Clone.IsValid() = %v, want %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 // TestProgress_Validation_Basic tests progress structure.
 func TestProgress_Validation_Basic(t *testing.T) {
 	progress := newTestProgress("parsing", 50, 100, 50.0, "Processing files", "test.go")

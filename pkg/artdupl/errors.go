@@ -33,6 +33,11 @@ var (
 	ErrNoDuplicatesFound = errors.New("no duplicates found")
 	ErrResultProcessing  = errors.New("error processing results")
 
+	// Clone validation errors.
+	ErrCloneEndLineBeforeStart = errors.New("clone end line is before start line")
+	ErrCloneZeroLength          = errors.New("clone has zero length (start >= end)")
+	ErrCloneInvalidPosition     = errors.New("clone has invalid byte positions")
+
 	// System errors.
 	ErrMemoryLimit = errors.New("memory limit exceeded")
 	ErrInternal    = errors.New("internal error")

@@ -126,8 +126,9 @@ func TestConvertFragmentToClone(t *testing.T) {
 		d := &detector{opts: &Options{}}
 		clone := d.convertFragmentToClone([]*syntax.Node{})
 
-		if clone == nil {
-			t.Error("Expected non-nil clone for empty fragment")
+		// Empty fragments now return nil (not valid clones)
+		if clone != nil {
+			t.Error("Expected nil clone for empty fragment")
 		}
 	})
 }

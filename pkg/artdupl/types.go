@@ -67,6 +67,22 @@ type Clone struct {
 	Size      int    `json:"size"`               // Size in bytes/tokens
 }
 
+// IsValid validates the clone data and returns an error if invalid.
+// A valid clone must have EndLine >= StartLine and EndPos > StartPos.
+func (c Clone) IsValid() error {
+	if c.EndLine < c.StartLine {
+		return ErrCloneEndLineBeforeStart
+	}
+
+	if c.StartPos > 0 || c.EndPos > 0 {
+		if c.StartPos >= c.EndPos {
+			return ErrCloneZeroLength
+		}
+	}
+
+	return nil
+}
+
 // Summary provides statistics and metadata about the analysis.
 type Summary struct {
 	TotalFiles    int               `json:"total_files"`
