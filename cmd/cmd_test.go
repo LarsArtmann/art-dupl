@@ -23,6 +23,23 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
+func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
+	t.Helper()
+	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, ext)
+	found := make([]string, 0, expectedCount)
+	for f := range ch {
+		found = append(found, filepath.Base(f))
+	}
+	if len(found) != expectedCount {
+		t.Errorf("Expected %d %s files, got %d: %v", expectedCount, ext, len(found), found)
+	}
+	for _, f := range found {
+		if !strings.HasSuffix(f, "."+ext) {
+			t.Errorf("Expected only .%s files, found: %s", ext, f)
+		}
+	}
+}
+
 const testDuplicateCode = `package test
 
 func DuplicateFunction() int {
@@ -319,35 +336,11 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	}
 
 	t.Run("only go files", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "go")
-		found := make([]string, 0, 2)
-		for f := range ch {
-			found = append(found, filepath.Base(f))
-		}
-		if len(found) != 2 {
-			t.Errorf("Expected 2 .go files, got %d: %v", len(found), found)
-		}
-		for _, f := range found {
-			if !strings.HasSuffix(f, ".go") {
-				t.Errorf("Expected only .go files, found: %s", f)
-			}
-		}
+		testFilesFeedWithExtension(t, tmpDir, "go", 2)
 	})
 
 	t.Run("only templ files", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "templ")
-		found := make([]string, 0, 2)
-		for f := range ch {
-			found = append(found, filepath.Base(f))
-		}
-		if len(found) != 2 {
-			t.Errorf("Expected 2 .templ files, got %d: %v", len(found), found)
-		}
-		for _, f := range found {
-			if !strings.HasSuffix(f, ".templ") {
-				t.Errorf("Expected only .templ files, found: %s", f)
-			}
-		}
+		testFilesFeedWithExtension(t, tmpDir, "templ", 2)
 	})
 
 	t.Run("all files with empty filter", func(t *testing.T) {

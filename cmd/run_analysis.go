@@ -39,55 +39,52 @@ func printBuildingStatus(
 	}
 }
 
+// buildParams holds common parameters for building a suffix tree.
+type buildParams struct {
+	ctx         context.Context
+	paths       []string
+	cfg         *config.Config
+	filterParam *filter.Filter
+	outputFormat config.OutputFormat
+}
+
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(
-	ctx context.Context,
-	paths []string,
-	cfg *config.Config,
-	filterParam *filter.Filter,
-	outputFormat config.OutputFormat,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTree(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	printBuildingStatus(
-		cfg,
-		outputFormat,
+		params.cfg,
+		params.outputFormat,
 		"Building suffix tree",
 		"    📖 Parsing files and building analysis tree...",
 	)
 
-	if cfg.Incremental {
-		return buildSuffixTreeIncremental(ctx, paths, cfg, filterParam, outputFormat)
+	if params.cfg.Incremental {
+		return buildSuffixTreeIncremental(params)
 	}
 
-	return buildSuffixTreeStandard(ctx, paths, cfg, filterParam, outputFormat)
+	return buildSuffixTreeStandard(params)
 }
 
 // buildSuffixTreeIncremental builds a suffix tree using incremental parsing with cache.
-func buildSuffixTreeIncremental(
-	ctx context.Context,
-	paths []string,
-	cfg *config.Config,
-	filterParam *filter.Filter,
-	outputFormat config.OutputFormat,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
-	if cfg.Verbose {
+func buildSuffixTreeIncremental(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+	if params.cfg.Verbose {
 		_, _ = fmt.Fprintf(
 			os.Stderr,
 			"🔍 Incremental mode enabled, cache dir: %s\n",
-			cfg.CacheDir,
+			params.cfg.CacheDir,
 		)
 	}
 
-	incParser := job.NewIncrementalParser(cfg.CacheDir, cfg.ClearCache, cfg.Semantic)
+	incParser := job.NewIncrementalParser(params.cfg.CacheDir, params.cfg.ClearCache, params.cfg.Semantic)
 
 	filesChan := filesFeedWithOptions(
-		paths,
-		cfg.FilesFromStdin,
-		filterParam,
-		cfg.IncludeVendor,
-		cfg.Only,
+		params.paths,
+		params.cfg.FilesFromStdin,
+		params.filterParam,
+		params.cfg.IncludeVendor,
+		params.cfg.Only,
 	)
-	schan, incStatsChan := incParser.ParseIncremental(ctx, filesChan)
-	tree, data, done := job.BuildTree(ctx, schan)
+	schan, incStatsChan := incParser.ParseIncremental(params.ctx, filesChan)
+	tree, data, done := job.BuildTree(params.ctx, schan)
 	<-done
 
 	incStats := <-incStatsChan
@@ -97,43 +94,37 @@ func buildSuffixTreeIncremental(
 	}
 
 	tree.Update(&syntax.Node{Type: -1})
-	printSearchStatus(cfg, outputFormat)
+	printSearchStatus(params.cfg, params.outputFormat)
 
 	return tree, *data, parseStats, nil
 }
 
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
-func buildSuffixTreeStandard(
-	ctx context.Context,
-	paths []string,
-	cfg *config.Config,
-	filterParam *filter.Filter,
-	outputFormat config.OutputFormat,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTreeStandard(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	filesChan := filesFeedWithOptions(
-		paths,
-		cfg.FilesFromStdin,
-		filterParam,
-		cfg.IncludeVendor,
-		cfg.Only,
+		params.paths,
+		params.cfg.FilesFromStdin,
+		params.filterParam,
+		params.cfg.IncludeVendor,
+		params.cfg.Only,
 	)
 
 	var schan chan []*syntax.Node
 	var statsChan chan job.ParseStats
 
-	if cfg.Workers > 1 {
-		schan, statsChan = job.ParseParallel(ctx, filesChan, cfg.Workers, cfg.Semantic)
+	if params.cfg.Workers > 1 {
+		schan, statsChan = job.ParseParallel(params.ctx, filesChan, params.cfg.Workers, params.cfg.Semantic)
 	} else {
-		schan, statsChan = job.Parse(ctx, filesChan, cfg.Semantic)
+		schan, statsChan = job.Parse(params.ctx, filesChan, params.cfg.Semantic)
 	}
 
-	tree, data, done := job.BuildTree(ctx, schan)
+	tree, data, done := job.BuildTree(params.ctx, schan)
 	<-done
 
 	parseStats := <-statsChan
 
 	tree.Update(&syntax.Node{Type: -1})
-	printSearchStatus(cfg, outputFormat)
+	printSearchStatus(params.cfg, params.outputFormat)
 
 	return tree, *data, parseStats, nil
 }
@@ -211,7 +202,13 @@ func executeAnalysis(
 		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, outputFormat)
 	}
 
-	t, data, parseStats, err := buildSuffixTree(ctx, paths, cfg, filterParam, outputFormat)
+	t, data, parseStats, err := buildSuffixTree(buildParams{
+		ctx:         ctx,
+		paths:       paths,
+		cfg:         cfg,
+		filterParam: filterParam,
+		outputFormat: outputFormat,
+	})
 	if err != nil {
 		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(
 			err,
