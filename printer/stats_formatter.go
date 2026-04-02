@@ -237,7 +237,7 @@ type topFileStat struct {
 func sortTopFiles(fileDuplication map[string]int, limit int) []topFileStat {
 	files := make([]topFileStat, 0, len(fileDuplication))
 	for filename, lines := range fileDuplication {
-		files = append(files, topFileStat{filename, lines})
+		files = append(files, topFileStat{FileStatMixin{filename, lines}})
 	}
 
 	// Sort by lines descending

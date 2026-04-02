@@ -4,8 +4,10 @@ import (
 	"github.com/LarsArtmann/gogenfilter"
 )
 
-type FilterOption = gogenfilter.FilterOption
-type FilterReason = gogenfilter.FilterReason
+type (
+	FilterOption = gogenfilter.FilterOption
+	FilterReason = gogenfilter.FilterReason
+)
 
 const (
 	FilterSQLC   = gogenfilter.FilterSQLC

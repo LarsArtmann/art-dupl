@@ -17,6 +17,7 @@ The auto-generated code filtering logic has been **successfully extracted** from
 ## a) FULLY DONE
 
 ### 1. SDK Implementation (`github.com/LarsArtmann/gogenfilter`)
+
 - **All source files complete and compiling:**
   - `types.go` (45 lines) — `FilterOption`, `FilterReason` string types with constants
   - `pattern.go` (29 lines) — `MatchPattern()` for glob-style matching
@@ -32,6 +33,7 @@ The auto-generated code filtering logic has been **successfully extracted** from
 - **go.mod** — Self-contained, single external dependency (`github.com/go-faster/yaml v0.4.6`)
 
 ### 2. art-dupl Wrapper Integration
+
 - **`pkg/filter/types.go`** — Type aliases for all exported types and constants
 - **`pkg/filter/filter.go`** — Type alias for `Filter`, wrapper for `NewFilter`
 - **`pkg/filter/metrics.go`** — Type aliases for `MetricsMixin`, `Metrics`, `FilterStats`, `NewMetrics`
@@ -41,35 +43,38 @@ The auto-generated code filtering logic has been **successfully extracted** from
 - **Old test files deleted:** `filter_test.go` (932 lines), `sqlc_yaml_test.go` (420 lines)
 
 ### 3. Workspace Configuration
+
 - **`/Users/larsartmann/projects/go.work`** — Links both modules (updated to include gogenfilter)
 - **`art-dupl/go.mod`** — Added `require` + `replace` directive pointing to local SDK
 - **`go mod tidy`** — Succeeded cleanly
 
 ### 4. Test Results (All Passing)
 
-| Package | Tests | Status |
-|---------|-------|--------|
-| `gogenfilter` (SDK) | 26 | PASS |
-| `art-dupl/pkg/filter` (wrapper) | 10 | PASS |
-| `art-dupl/internal/filtertest` (integration) | 4 + subtests | PASS |
-| `art-dupl/suffixtree` | — | PASS |
-| `art-dupl/syntax` | — | PASS |
-| `art-dupl/syntax/golang` | — | PASS |
-| `art-dupl/syntax/templ` | — | PASS |
-| `art-dupl/detection` | — | PASS |
-| `art-dupl/hash` | — | PASS |
-| `art-dupl/config` | — | PASS |
-| `art-dupl/domain` | — | PASS |
-| `art-dupl/job` | — | PASS |
+| Package                                      | Tests        | Status |
+| -------------------------------------------- | ------------ | ------ |
+| `gogenfilter` (SDK)                          | 26           | PASS   |
+| `art-dupl/pkg/filter` (wrapper)              | 10           | PASS   |
+| `art-dupl/internal/filtertest` (integration) | 4 + subtests | PASS   |
+| `art-dupl/suffixtree`                        | —            | PASS   |
+| `art-dupl/syntax`                            | —            | PASS   |
+| `art-dupl/syntax/golang`                     | —            | PASS   |
+| `art-dupl/syntax/templ`                      | —            | PASS   |
+| `art-dupl/detection`                         | —            | PASS   |
+| `art-dupl/hash`                              | —            | PASS   |
+| `art-dupl/config`                            | —            | PASS   |
+| `art-dupl/domain`                            | —            | PASS   |
+| `art-dupl/job`                               | —            | PASS   |
 
 ---
 
 ## b) PARTIALLY DONE
 
 ### 1. Go Workspace `go.work` File
+
 - The `go.work` file at `/Users/larsartmann/projects/go.work` was updated to include `gogenfilter`, but it also includes `projects-management-automation` which is a separate project. This is a shared workspace file that may affect other work.
 
 ### 2. SDK Git Repository
+
 - The gogenfilter SDK exists at `/Users/larsartmann/projects/gogenfilter/` but has **NO git repository** initialized yet. This needs to be done before the SDK can be published.
 
 ---
@@ -90,16 +95,20 @@ The auto-generated code filtering logic has been **successfully extracted** from
 ## d) TOTALLY FUCKED UP (Issues Found)
 
 ### 1. Pre-existing: `printer/stats_formatter.go:240` Compile Error
+
 ```
 cannot use filename (variable of type string) as FileStatMixin value in struct literal
 too many values in struct literal of type topFileStat
 ```
+
 This blocks all `cmd/` and `printer/` package tests. It existed before this work started and is completely unrelated to the filter extraction.
 
 ### 2. Pre-existing: golangci-lint Crash in filter Package
+
 The linter crashes with a nil pointer dereference when analyzing `pkg/filter/filter.go`. This is a tooling bug in golangci-lint v2, not a code issue.
 
 ### 3. No Git History for SDK
+
 The entire SDK was created in one shot with no git history. All the design decisions, iterations, and fixes from previous sessions are lost from the SDK's perspective.
 
 ---
@@ -118,6 +127,7 @@ The entire SDK was created in one shot with no git history. All the design decis
 ## f) Top #25 Things We Should Get Done Next
 
 ### Critical (Must Do)
+
 1. **Initialize git repo in gogenfilter** — `git init`, initial commit, branch setup
 2. **Create GitHub repo `github.com/LarsArtmann/gogenfilter`** — Push SDK
 3. **Tag SDK as `v0.1.0`** — First semantic version
@@ -127,6 +137,7 @@ The entire SDK was created in one shot with no git history. All the design decis
 7. **Run `just ci`** — Verify CI pipeline passes
 
 ### High Priority
+
 8. **Run `just check` (lint)** — Verify golangci-lint passes on wrapper
 9. **BDD tests for filter wrapper** — Add Ginkgo-based BDD tests for the wrapper
 10. **SDK CI/CD pipeline** — Add GitHub Actions for the gogenfilter repo
@@ -134,6 +145,7 @@ The entire SDK was created in one shot with no git history. All the design decis
 12. **Verify workspace cleanup** — Ensure go.work is correct or removed
 
 ### Medium Priority
+
 13. **Export `SQLCFilePatterns()` from SDK** — Make pattern list accessible
 14. **Add SDK examples directory** — Standalone usage examples
 15. **SDK integration test with real linter** — Prove it works as a library
@@ -142,6 +154,7 @@ The entire SDK was created in one shot with no git history. All the design decis
 18. **Consider gogenfilter Go module path** — Verify the import path is final
 
 ### Lower Priority
+
 19. **Add `CONTRIBUTING.md` to SDK** — For open-source readiness
 20. **Add `LICENSE` to SDK** — Required for publishing
 21. **SDK benchmark tests** — Performance regression testing
@@ -157,6 +170,7 @@ The entire SDK was created in one shot with no git history. All the design decis
 **Should the gogenfilter SDK live at `github.com/LarsArtmann/gogenfilter` or somewhere else?**
 
 This determines:
+
 - The Go module import path (currently `github.com/LarsArtmann/gogenfilter`)
 - The GitHub repository URL
 - The `replace` directive removal and versioned dependency in art-dupl
