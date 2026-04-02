@@ -1,41 +1,24 @@
-// Package filter provides smart filtering of auto-generated Go code.
 package filter
 
-// FilterOption represents a type of generated code to filter.
-type FilterOption string
-
-const (
-	// FilterSQLC filters sqlc.dev generated files.
-	FilterSQLC FilterOption = "sqlc"
-
-	// FilterTempl filters templ.guide generated files.
-	FilterTempl FilterOption = "templ"
-
-	// FilterGoEnum filters go-enum generated files.
-	FilterGoEnum FilterOption = "go-enum"
-
-	// FilterAll filters all auto-generated code.
-	FilterAll FilterOption = "all"
+import (
+	"github.com/LarsArtmann/gogenfilter"
 )
 
-// FilterReason represents the reason a file was filtered.
-type FilterReason string
+type FilterOption = gogenfilter.FilterOption
+type FilterReason = gogenfilter.FilterReason
 
 const (
-	ReasonSQLC           FilterReason = "sqlc"
-	ReasonTempl          FilterReason = "templ"
-	ReasonGoEnum         FilterReason = "go-enum"
-	ReasonIncludePattern FilterReason = "include-pattern"
-	ReasonExcludePattern FilterReason = "exclude-pattern"
-	ReasonNotFiltered    FilterReason = "not-filtered"
+	FilterSQLC   = gogenfilter.FilterSQLC
+	FilterTempl  = gogenfilter.FilterTempl
+	FilterGoEnum = gogenfilter.FilterGoEnum
+	FilterAll    = gogenfilter.FilterAll
 )
 
-// sqlcFilePatterns contains the standard filename patterns for sqlc.dev generated files.
-//
-//nolint:gochecknoglobals // Lookup table for sqlc file pattern matching
-var sqlcFilePatterns = []string{
-	"models.go",
-	"querier.go",
-	"query.sql.go",
-	"batch.go",
-}
+const (
+	ReasonSQLC           = gogenfilter.ReasonSQLC
+	ReasonTempl          = gogenfilter.ReasonTempl
+	ReasonGoEnum         = gogenfilter.ReasonGoEnum
+	ReasonIncludePattern = gogenfilter.ReasonIncludePattern
+	ReasonExcludePattern = gogenfilter.ReasonExcludePattern
+	ReasonNotFiltered    = gogenfilter.ReasonNotFiltered
+)

@@ -82,10 +82,10 @@ go 1.26.0
 require (
 	charm.land/lipgloss/v2 v2.0.2
 	charm.land/log/v2 v2.0.0
+	github.com/LarsArtmann/gogenfilter v0.0.0-00010101000000-000000000000
 	github.com/a-h/templ v0.3.1001
 	github.com/charmbracelet/fang v1.0.0
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260323091123-df7b1bcffcca
-	github.com/go-faster/yaml v0.4.6
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.0
 	github.com/sergi/go-diff v1.4.0
@@ -109,6 +109,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
+	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-logfmt/logfmt v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
@@ -138,3 +139,5 @@ require (
 	golang.org/x/text v0.35.0 // indirect
 	golang.org/x/tools v0.43.0 // indirect
 )
+
+replace github.com/LarsArtmann/gogenfilter => ../gogenfilter
