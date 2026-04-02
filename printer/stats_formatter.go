@@ -222,10 +222,15 @@ func (p *stats) printTextRecommendations() {
 	p.printLinef("A clone group with 3 instances counts once for line calculations.")
 }
 
-// topFileStat holds file duplication statistics for sorting.
-type topFileStat struct {
+// FileStatMixin provides common fields for file statistics.
+type FileStatMixin struct {
 	filename string
 	lines    int
+}
+
+// topFileStat holds file duplication statistics for sorting.
+type topFileStat struct {
+	FileStatMixin
 }
 
 // sortTopFiles returns the top N files sorted by duplicate lines.

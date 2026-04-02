@@ -41,10 +41,10 @@ func printBuildingStatus(
 
 // buildParams holds common parameters for building a suffix tree.
 type buildParams struct {
-	ctx         context.Context
-	paths       []string
-	cfg         *config.Config
-	filterParam *filter.Filter
+	ctx          context.Context
+	paths        []string
+	cfg          *config.Config
+	filterParam  *filter.Filter
 	outputFormat config.OutputFormat
 }
 
@@ -89,8 +89,10 @@ func buildSuffixTreeIncremental(params buildParams) (*suffixtree.STree, []*synta
 
 	incStats := <-incStatsChan
 	parseStats := job.ParseStats{
-		FilesCount: incStats.FilesCount,
-		LinesCount: incStats.LinesCount,
+		ParseStatsMixin: job.ParseStatsMixin{
+			FilesCount: incStats.FilesCount,
+			LinesCount: incStats.LinesCount,
+		},
 	}
 
 	tree.Update(&syntax.Node{Type: -1})
@@ -203,10 +205,10 @@ func executeAnalysis(
 	}
 
 	t, data, parseStats, err := buildSuffixTree(buildParams{
-		ctx:         ctx,
-		paths:       paths,
-		cfg:         cfg,
-		filterParam: filterParam,
+		ctx:          ctx,
+		paths:        paths,
+		cfg:          cfg,
+		filterParam:  filterParam,
 		outputFormat: outputFormat,
 	})
 	if err != nil {
@@ -353,7 +355,7 @@ func executeHashOnlyAnalysis(
 		filterStats = filterParam.GetStats()
 	}
 
-	return duplChan, job.ParseStats{FilesCount: len(files), LinesCount: 0}, filterStats, nil
+	return duplChan, job.ParseStats{ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0}}, filterStats, nil
 }
 
 // printFileCollectionStatus outputs status after file collection.

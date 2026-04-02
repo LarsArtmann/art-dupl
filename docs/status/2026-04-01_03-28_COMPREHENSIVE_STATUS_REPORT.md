@@ -22,34 +22,34 @@ Additionally, cmd package has **uncommitted refactoring** (struct parameter patt
 
 ### A) FULLY DONE
 
-| Task | Status | Details |
-|------|--------|---------|
-| Fix `ByteRangeToLines` same-position bug | ✅ DONE | Added special case handling + `offsetToLine()` helper |
-| Add `Clone.IsValid()` to SDK | ✅ DONE | Validates EndLine >= StartLine, EndPos > StartPos |
-| Add validation errors | ✅ DONE | `ErrCloneEndLineBeforeStart`, `ErrCloneZeroLength` |
-| Fix empty fragment handling | ✅ DONE | `convertFragmentToClone` returns nil, filtered upstream |
-| Filter invalid/nil clones | ✅ DONE | In `convertToCloneGroup` and `buildResult` |
-| Add comprehensive tests | ✅ DONE | `TestClone_IsValid`, edge case tests |
-| Commit and push changes | ✅ DONE | Commits `6e39b6a` and `28c3102` pushed |
+| Task                                     | Status  | Details                                                 |
+| ---------------------------------------- | ------- | ------------------------------------------------------- |
+| Fix `ByteRangeToLines` same-position bug | ✅ DONE | Added special case handling + `offsetToLine()` helper   |
+| Add `Clone.IsValid()` to SDK             | ✅ DONE | Validates EndLine >= StartLine, EndPos > StartPos       |
+| Add validation errors                    | ✅ DONE | `ErrCloneEndLineBeforeStart`, `ErrCloneZeroLength`      |
+| Fix empty fragment handling              | ✅ DONE | `convertFragmentToClone` returns nil, filtered upstream |
+| Filter invalid/nil clones                | ✅ DONE | In `convertToCloneGroup` and `buildResult`              |
+| Add comprehensive tests                  | ✅ DONE | `TestClone_IsValid`, edge case tests                    |
+| Commit and push changes                  | ✅ DONE | Commits `6e39b6a` and `28c3102` pushed                  |
 
 ### B) PARTIALLY DONE
 
-| Task | Status | Details |
-|------|--------|---------|
+| Task             | Status     | Details                                                                          |
+| ---------------- | ---------- | -------------------------------------------------------------------------------- |
 | cmd/ refactoring | 🔄 PARTIAL | `buildSuffixTree` refactored to use struct params, tests pass, **NOT COMMITTED** |
 
 ### C) NOT STARTED
 
-| Task | Status | Details |
-|------|--------|---------|
-| Commit cmd/ refactoring | ⏳ NOT STARTED | Struct parameter pattern for `buildSuffixTree` |
-| SDK using domain types | ⏳ NOT STARTED | Could use `domain.LineNumber`, `domain.BytePosition` in SDK |
-| Preventive validation | ⏳ NOT STARTED | Validate in detection layer before conversion |
+| Task                    | Status         | Details                                                     |
+| ----------------------- | -------------- | ----------------------------------------------------------- |
+| Commit cmd/ refactoring | ⏳ NOT STARTED | Struct parameter pattern for `buildSuffixTree`              |
+| SDK using domain types  | ⏳ NOT STARTED | Could use `domain.LineNumber`, `domain.BytePosition` in SDK |
+| Preventive validation   | ⏳ NOT STARTED | Validate in detection layer before conversion               |
 
 ### D) TOTALLY FUCKED UP
 
-| Issue | Status | Details |
-|-------|--------|---------|
+| Issue           | Status  | Details                                    |
+| --------------- | ------- | ------------------------------------------ |
 | None identified | ✅ None | All reported issues investigated and fixed |
 
 ---
@@ -57,6 +57,7 @@ Additionally, cmd package has **uncommitted refactoring** (struct parameter patt
 ## Changes Summary (Last Session)
 
 ### Commit `6e39b6a` - Fix Position Handling
+
 **Files:** `pkg/position/lines.go`, `pkg/position/lines_test.go`
 
 ```go
@@ -71,7 +72,9 @@ if start == end {
 ```
 
 ### Commit `28c3102` - SDK Validation
-**Files:** 
+
+**Files:**
+
 - `pkg/artdupl/errors.go` - Added validation errors
 - `pkg/artdupl/types.go` - Added `Clone.IsValid()`
 - `pkg/artdupl/detector_conversion.go` - Filter invalid/nil clones
@@ -137,12 +140,14 @@ if start == end {
 **Question:** Should the SDK (`artdupl.Clone`) use domain types (`domain.LineNumber`, `domain.BytePosition`) instead of plain `int` for compile-time type safety, or is the current approach acceptable since SDK users are not expected to construct clones directly?
 
 **Context:**
+
 - `domain.Clone` uses strong types: `LineNumber`, `BytePosition`, `StringID`
 - `artdupl.Clone` uses plain `int` and `string`
 - Clones are typically constructed by the detector, not by SDK users
 - Adding domain types would require more imports and complexity
 
 **Trade-offs:**
+
 - ✅ Strong types: Compile-time safety, prevents invalid values
 - ❌ Complexity: More imports, conversion overhead
 - ❌ May be overkill: Users typically don't construct clones manually
@@ -153,33 +158,33 @@ if start == end {
 
 ### Committed (Pushed)
 
-| File | Change |
-|------|--------|
-| `pkg/position/lines.go` | Fixed same-position bug |
-| `pkg/position/lines_test.go` | Added edge case tests |
-| `pkg/artdupl/types.go` | Added `Clone.IsValid()` |
-| `pkg/artdupl/errors.go` | Added validation errors |
-| `pkg/artdupl/detector_conversion.go` | Filter invalid clones |
-| `pkg/artdupl/basic_test.go` | Added `TestClone_IsValid` |
+| File                                     | Change                      |
+| ---------------------------------------- | --------------------------- |
+| `pkg/position/lines.go`                  | Fixed same-position bug     |
+| `pkg/position/lines_test.go`             | Added edge case tests       |
+| `pkg/artdupl/types.go`                   | Added `Clone.IsValid()`     |
+| `pkg/artdupl/errors.go`                  | Added validation errors     |
+| `pkg/artdupl/detector_conversion.go`     | Filter invalid clones       |
+| `pkg/artdupl/basic_test.go`              | Added `TestClone_IsValid`   |
 | `pkg/artdupl/detector_uncovered_test.go` | Updated empty fragment test |
 
 ### Uncommitted (cmd/)
 
-| File | Change |
-|------|--------|
-| `cmd/run_analysis.go` | Refactored to struct parameter pattern |
-| `cmd/cmd_test.go` | Extracted helper function |
-| `cmd/cmd_integration_test.go` | Updated to use struct params |
+| File                          | Change                                 |
+| ----------------------------- | -------------------------------------- |
+| `cmd/run_analysis.go`         | Refactored to struct parameter pattern |
+| `cmd/cmd_test.go`             | Extracted helper function              |
+| `cmd/cmd_integration_test.go` | Updated to use struct params           |
 
 ---
 
 ## Test Status
 
-| Package | Status | Duration |
-|---------|--------|----------|
-| `pkg/position` | ✅ PASS | 0.377s |
-| `pkg/artdupl` | ✅ PASS | 0.493s |
-| `cmd` | ✅ PASS | 171.868s |
+| Package        | Status  | Duration |
+| -------------- | ------- | -------- |
+| `pkg/position` | ✅ PASS | 0.377s   |
+| `pkg/artdupl`  | ✅ PASS | 0.493s   |
+| `cmd`          | ✅ PASS | 171.868s |
 
 ---
 
@@ -203,4 +208,4 @@ e66ec1a feat(core): add analysis and crawling logic
 
 ---
 
-*Report generated: 2026-04-01 03:28*
+_Report generated: 2026-04-01 03:28_

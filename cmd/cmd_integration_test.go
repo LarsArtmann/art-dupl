@@ -318,10 +318,10 @@ func Example() int {
 		ctx := t.Context()
 
 		tree, data, parseStats, err := buildSuffixTree(buildParams{
-			ctx:         ctx,
-			paths:       []string{tmpDir},
-			cfg:         cfg,
-			filterParam: nil,
+			ctx:          ctx,
+			paths:        []string{tmpDir},
+			cfg:          cfg,
+			filterParam:  nil,
 			outputFormat: config.OutputFormatText,
 		})
 		if err != nil {
@@ -357,10 +357,10 @@ func Example() int {
 		ctx := t.Context()
 
 		tree, _, _, err := buildSuffixTree(buildParams{
-			ctx:         ctx,
-			paths:       []string{tmpDir},
-			cfg:         cfg,
-			filterParam: nil,
+			ctx:          ctx,
+			paths:        []string{tmpDir},
+			cfg:          cfg,
+			filterParam:  nil,
 			outputFormat: config.OutputFormatText,
 		})
 		if err != nil {

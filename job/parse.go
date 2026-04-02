@@ -11,8 +11,7 @@ import (
 
 // ParseStats holds statistics from the parsing phase.
 type ParseStats struct {
-	FilesCount int
-	LinesCount int
+	ParseStatsMixin
 }
 
 // parseResult holds the result of parsing a single file.
@@ -40,7 +39,7 @@ func Parse(
 		for file := range fchan {
 			select {
 			case <-ctx.Done():
-				statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+				statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
 
 				close(achan)
 
@@ -70,7 +69,7 @@ func Parse(
 			achan <- ast
 		}
 
-		statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+		statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
 
 		close(achan)
 	}()
@@ -208,7 +207,7 @@ func collectResults(
 		achan <- result.ast
 	}
 
-	statsChan <- ParseStats{FilesCount: fileCount, LinesCount: lineCount}
+	statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
 
 	close(achan)
 }

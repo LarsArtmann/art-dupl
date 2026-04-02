@@ -6,8 +6,8 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// styleConfig holds all lipgloss styles.
-type styleConfig struct {
+// StyleMixin holds common lipgloss style fields.
+type StyleMixin struct {
 	base    lipgloss.Style
 	header  lipgloss.Style
 	section lipgloss.Style
@@ -15,6 +15,11 @@ type styleConfig struct {
 	success lipgloss.Style
 	warning lipgloss.Style
 	error   lipgloss.Style
+}
+
+// styleConfig holds all lipgloss styles.
+type styleConfig struct {
+	StyleMixin
 }
 
 // initStyles initializes lipgloss styles, respecting NO_COLOR environment variable.
@@ -33,24 +38,28 @@ func initStyles() styleConfig {
 	// Disable all colors if NO_COLOR is set
 	if noColor {
 		return styleConfig{
-			base:    lipgloss.NewStyle(),
-			header:  lipgloss.NewStyle(),
-			section: lipgloss.NewStyle(),
-			metric:  lipgloss.NewStyle(),
-			success: lipgloss.NewStyle(),
-			warning: lipgloss.NewStyle(),
-			error:   lipgloss.NewStyle(),
+			StyleMixin: StyleMixin{
+				base:    lipgloss.NewStyle(),
+				header:  lipgloss.NewStyle(),
+				section: lipgloss.NewStyle(),
+				metric:  lipgloss.NewStyle(),
+				success: lipgloss.NewStyle(),
+				warning: lipgloss.NewStyle(),
+				error:   lipgloss.NewStyle(),
+			},
 		}
 	}
 
 	return styleConfig{
-		base:    lipgloss.NewStyle().Bold(true),
-		header:  headerStyle,
-		section: sectionStyle,
-		metric:  metricStyle,
-		success: successStyle,
-		warning: warningStyle,
-		error:   errorStyle,
+		StyleMixin: StyleMixin{
+			base:    lipgloss.NewStyle().Bold(true),
+			header:  headerStyle,
+			section: sectionStyle,
+			metric:  metricStyle,
+			success: successStyle,
+			warning: warningStyle,
+			error:   errorStyle,
+		},
 	}
 }
 

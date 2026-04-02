@@ -39,25 +39,18 @@ import (
 	"fmt"
 	"io"
 
-	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // stats provides aggregated statistics about code duplication.
 type stats struct {
 	ReadFile
+	StyleMixin
 
 	w         io.Writer
 	threshold int
 	format    Format
 	statsData *StatsData
-	base      lipgloss.Style
-	header    lipgloss.Style
-	section   lipgloss.Style
-	metric    lipgloss.Style
-	success   lipgloss.Style
-	warning   lipgloss.Style
-	error     lipgloss.Style
 }
 
 // NewStats creates a new stats printer.
@@ -78,13 +71,15 @@ func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
 			TokenDistribution: make(map[string]int),
 			SeverityBreakdown: make(map[string]int),
 		},
-		base:    styles.base,
-		header:  styles.header,
-		section: styles.section,
-		metric:  styles.metric,
-		success: styles.success,
-		warning: styles.warning,
-		error:   styles.error,
+		StyleMixin: StyleMixin{
+			base:    styles.base,
+			header:  styles.header,
+			section: styles.section,
+			metric:  styles.metric,
+			success: styles.success,
+			warning: styles.warning,
+			error:   styles.error,
+		},
 	}
 }
 

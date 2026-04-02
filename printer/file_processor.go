@@ -10,11 +10,9 @@ import (
 
 // FileInfo represents processed file information.
 type FileInfo struct {
-	Filename  string
-	LineStart int
-	LineEnd   int
-	Content   []byte
-	Node      *syntax.Node
+	CloneWithContentMixin
+	Content []byte
+	Node    *syntax.Node
 }
 
 // ProcessFileContent unified file processing for all printers.
@@ -38,11 +36,13 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(node.Pos), int(node.End))
 
 	return &FileInfo{
-		Filename:  node.Filename,
-		LineStart: lineStart,
-		LineEnd:   lineEnd,
-		Content:   file,
-		Node:      node,
+		CloneWithContentMixin: CloneWithContentMixin{
+			Filename:  node.Filename,
+			LineStart: lineStart,
+			LineEnd:   lineEnd,
+		},
+		Content: file,
+		Node:    node,
 	}, nil
 }
 
@@ -74,10 +74,12 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(startNode.Pos), int(endNode.End))
 
 	return &FileInfo{
-		Filename:  startNode.Filename,
-		LineStart: lineStart,
-		LineEnd:   lineEnd,
-		Content:   file,
-		Node:      startNode,
+		CloneWithContentMixin: CloneWithContentMixin{
+			Filename:  startNode.Filename,
+			LineStart: lineStart,
+			LineEnd:   lineEnd,
+		},
+		Content: file,
+		Node:    startNode,
 	}, nil
 }

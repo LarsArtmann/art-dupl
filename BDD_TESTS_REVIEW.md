@@ -15,6 +15,7 @@ The art-dupl project has a **well-structured, comprehensive BDD test suite** tha
 ### Overall Grade: **A-** (Excellent)
 
 **Strengths:**
+
 - Proper Ginkgo v2 usage with Gomega matchers
 - Strong end-user perspective throughout
 - Comprehensive coverage of CLI workflows
@@ -23,6 +24,7 @@ The art-dupl project has a **well-structured, comprehensive BDD test suite** tha
 - Clear test documentation
 
 **Areas for Improvement:**
+
 - Some tests could be more specific in assertions
 - Missing edge case tests for performance scenarios
 - Limited negative test scenarios
@@ -35,6 +37,7 @@ The art-dupl project has a **well-structured, comprehensive BDD test suite** tha
 ### ✅ Excellent Practices
 
 #### Proper Ginkgo v2 Integration
+
 ```go
 import (
     . "github.com/onsi/ginkgo/v2"
@@ -45,6 +48,7 @@ import (
 All 18 test files correctly import and use Ginkgo v2 with Gomega matchers. The suite follows modern Ginkgo conventions.
 
 #### Well-Structured Describe/Context/It Pattern
+
 ```go
 var _ = Describe("Basic User Workflows", func() {
     var setup *testutil.BDDTestSetup
@@ -63,12 +67,14 @@ var _ = Describe("Basic User Workflows", func() {
 ```
 
 **Observation:** Tests use clear hierarchical organization with:
+
 - 34 `Describe` blocks for major features
 - Multiple `Context` blocks per feature for different scenarios
 - 226 `It` blocks for individual test cases
 - Proper use of `BeforeEach` for setup
 
 #### Effective Use of Gomega Matchers
+
 ```go
 Expect(outputStr).To(ContainSubstring("duplicate1.go"))
 Expect(err).ToNot(HaveOccurred())
@@ -79,6 +85,7 @@ Expect(duration).To(BeNumerically("<", 5*time.Second))
 Tests use a rich variety of Gomega matchers appropriately, making assertions clear and readable.
 
 #### Proper Cleanup Pattern
+
 ```go
 func CreateBDDTestSetup() *testutil.BDDTestSetup {
     setup, err := testutil.NewBDDTestSetupForGinkgo()
@@ -98,6 +105,7 @@ Excellent use of `DeferCleanup` for automatic resource management, preventing te
 ### ⚠️ Minor Issues
 
 #### Inconsistent Setup Patterns
+
 Some tests use manual cleanup while others use `DeferCleanup`:
 
 ```go
@@ -118,6 +126,7 @@ AfterEach(func() {
 **Recommendation:** Standardize on `DeferCleanup` pattern across all tests for consistency.
 
 #### Limited Use of DescribeTable
+
 While some tests use `DescribeTable` effectively:
 
 ```go
@@ -139,9 +148,11 @@ DescribeTable("should work with various verbose flag formats",
 ### ✅ Excellent User-Centric Test Design
 
 #### Real-World Workflows
+
 Tests validate actual user scenarios, not implementation details:
 
 **Example 1: CI/CD Integration**
+
 ```go
 Context("CI/CD Pipeline Integration", func() {
     It("should provide JSON output suitable for automation", func() {
@@ -165,6 +176,7 @@ func (s *Service) Process(ctx context.Context, data string) error { ... }`
 **Analysis:** This test validates the actual use case of integrating art-dupl into a CI/CD pipeline, checking that JSON output is parseable and contains the right data.
 
 **Example 2: Developer Daily Workflow**
+
 ```go
 Context("When analyzing code for duplicates", func() {
     It("should find structural duplicates ignoring literal values", func() {
@@ -186,6 +198,7 @@ Context("When analyzing code for duplicates", func() {
 **Analysis:** Tests focus on what the user wants to achieve (find duplicates) rather than how the algorithm works.
 
 #### Feature-Focused Testing
+
 Tests are organized by user-facing features:
 
 1. **Basic User Workflows** (bdd_test.go)
@@ -226,6 +239,7 @@ Tests are organized by user-facing features:
 **Analysis:** This organization maps directly to how users interact with the tool, making tests easy to navigate and understand.
 
 #### Realistic Test Data
+
 Tests use realistic code samples:
 
 ```go
@@ -255,9 +269,11 @@ func processData(data string) error {
 ### ⚠️ Opportunities for Improvement
 
 #### Limited Edge Case Testing
+
 Some edge cases are not well-covered:
 
 **Missing:**
+
 - Very large files (performance testing)
 - Deeply nested directory structures
 - Concurrent execution scenarios
@@ -266,6 +282,7 @@ Some edge cases are not well-covered:
 - Permission errors (beyond basic tests)
 
 **Example Gap:**
+
 ```go
 // Current: Basic performance test
 It("should handle multiple files efficiently", func() {
@@ -283,14 +300,17 @@ It("should handle large codebases (1000+ files)", func() {
 ```
 
 #### Limited Negative Testing
+
 Most tests focus on happy paths. Could benefit from more error scenarios:
 
 **Current Coverage:**
+
 - Invalid config files ✅
 - Missing paths ✅
 - Invalid flags ✅
 
 **Missing Coverage:**
+
 - Corrupted Go files
 - Invalid UTF-8 encoding
 - Extremely long file paths
@@ -306,6 +326,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 #### Well-Covered Features
 
 ✅ **CLI Commands** (cli_commands_test.go)
+
 - Version display
 - Help documentation
 - Flag validation
@@ -313,6 +334,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Error messages
 
 ✅ **Configuration** (configuration_file_test.go)
+
 - JSON loading
 - CLI override
 - Invalid config handling
@@ -320,6 +342,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Unicode content
 
 ✅ **Filter Features** (filter_features_test.go)
+
 - SQLC filtering
 - Templ filtering
 - Pattern matching
@@ -327,6 +350,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Include/exclude patterns
 
 ✅ **Stats Subcommand** (stats_subcommand_test.go)
+
 - Text output
 - JSON output
 - CSV output
@@ -334,12 +358,14 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Path filtering
 
 ✅ **Semantic Detection** (semantic_detection_test.go)
+
 - Semantic-aware mode
 - Structural-only mode
 - Config file support
 - Ginkgo test patterns
 
 ✅ **Error Handling** (error_handling_test.go)
+
 - Missing paths
 - Invalid file types
 - Malformed configs
@@ -348,6 +374,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 #### Coverage Gaps
 
 ⚠️ **Performance Scenarios**
+
 - Large file handling (>1MB)
 - Deep directory trees (>10 levels)
 - High file counts (>1000 files)
@@ -355,6 +382,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Memory limits
 
 ⚠️ **Edge Cases**
+
 - Symlink handling
 - Permission errors
 - Disk full scenarios
@@ -362,12 +390,14 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 - Case sensitivity issues
 
 ⚠️ **Integration Scenarios**
+
 - Real project analysis (e.g., Kubernetes, Docker)
 - Multi-module Go projects
 - Cross-platform paths
 - Different Go versions
 
 ⚠️ **Output Format Validation**
+
 - HTML output structure validation
 - JSON schema validation
 - CSV format compliance
@@ -375,26 +405,26 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 
 ### Test Distribution
 
-| Test File | Specs | Focus Area |
-|-----------|-------|------------|
-| bdd_test.go | 15 | Core workflows |
-| cli_commands_test.go | 18 | CLI interface |
-| configuration_file_test.go | 14 | Config management |
-| filter_features_test.go | 10 | Filtering |
-| stats_subcommand_test.go | 20 | Stats feature |
-| semantic_detection_test.go | 12 | Semantic detection |
-| error_handling_test.go | 10 | Error cases |
-| detection_methods_test.go | 8 | Detection methods |
-| plumbing_output_test.go | 10 | Plumbing format |
-| sorting_test.go | 8 | Sorting options |
-| all_format_generation_test.go | 10 | Multi-format output |
-| default_filtering_test.go | 8 | Default filters |
-| incremental_detection_test.go | 8 | Incremental mode |
-| plumbing_and_paths_test.go | 10 | Path handling |
-| golden_test.go | 15 | Golden file tests |
-| templ_clone_detection_test.go | 10 | Templ detection |
-| semantic_performance_bench_test.go | 10 | Performance |
-| stats_command_test.go | 10 | Stats command |
+| Test File                          | Specs | Focus Area          |
+| ---------------------------------- | ----- | ------------------- |
+| bdd_test.go                        | 15    | Core workflows      |
+| cli_commands_test.go               | 18    | CLI interface       |
+| configuration_file_test.go         | 14    | Config management   |
+| filter_features_test.go            | 10    | Filtering           |
+| stats_subcommand_test.go           | 20    | Stats feature       |
+| semantic_detection_test.go         | 12    | Semantic detection  |
+| error_handling_test.go             | 10    | Error cases         |
+| detection_methods_test.go          | 8     | Detection methods   |
+| plumbing_output_test.go            | 10    | Plumbing format     |
+| sorting_test.go                    | 8     | Sorting options     |
+| all_format_generation_test.go      | 10    | Multi-format output |
+| default_filtering_test.go          | 8     | Default filters     |
+| incremental_detection_test.go      | 8     | Incremental mode    |
+| plumbing_and_paths_test.go         | 10    | Path handling       |
+| golden_test.go                     | 15    | Golden file tests   |
+| templ_clone_detection_test.go      | 10    | Templ detection     |
+| semantic_performance_bench_test.go | 10    | Performance         |
+| stats_command_test.go              | 10    | Stats command       |
 
 **Analysis:** Good distribution across feature areas. Stats subcommand has the most tests (30 total), reflecting its importance and complexity.
 
@@ -405,6 +435,7 @@ Most tests focus on happy paths. Could benefit from more error scenarios:
 ### ✅ Excellent Helper Design
 
 #### BDDTestSetup Structure
+
 ```go
 type BDDTestSetup struct {
     T             *testing.T
@@ -415,12 +446,14 @@ type BDDTestSetup struct {
 ```
 
 **Strengths:**
+
 - Clean abstraction of test infrastructure
 - Manages temporary directory lifecycle
 - Provides shared binary path
 - Integrates with FileProcessor utility
 
 #### Shared Binary Optimization
+
 ```go
 var (
     sharedBinary     string
@@ -441,6 +474,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 **Analysis:** Excellent optimization! Building the binary once and sharing it across all tests significantly reduces test execution time (2.94s for 226 tests).
 
 #### Rich Helper Methods
+
 ```go
 // File creation helpers
 func (s *BDDTestSetup) CreateDuplicateFiles(filenames []string, content string) error
@@ -458,12 +492,14 @@ func (s *BDDTestSetup) RunWithConfigFile(configName, configContent, code string,
 ```
 
 **Strengths:**
+
 - Comprehensive API covering all test scenarios
 - Clear, descriptive method names
 - Consistent error handling
 - Good separation of concerns
 
 #### Ginkgo Integration
+
 ```go
 func CreateBDDTestSetup() *testutil.BDDTestSetup {
     setup, err := testutil.NewBDDTestSetupForGinkgo()
@@ -488,6 +524,7 @@ func CreateBDDTestSetup() *testutil.BDDTestSetup {
 ### ⚠️ Minor Issues
 
 #### Inconsistent Helper Usage
+
 Some tests use helpers inconsistently:
 
 ```go
@@ -502,6 +539,7 @@ output, err := cmd.Output()
 **Recommendation:** Standardize on using helper methods throughout to improve consistency and maintainability.
 
 #### Limited Documentation
+
 Helper methods lack comprehensive documentation:
 
 ```go
@@ -524,6 +562,7 @@ func (s *BDDTestSetup) RunArtDupl(args ...string) ([]byte, error)
 ### ✅ Excellent Maintainability
 
 #### Clear Test Organization
+
 ```
 bdd/
 ├── bdd_test.go                      # Core workflows
@@ -547,12 +586,14 @@ bdd/
 ```
 
 **Strengths:**
+
 - One test file per feature area
 - Clear naming convention
 - Logical grouping
 - Easy to navigate
 
 #### Descriptive Test Names
+
 ```go
 It("should find structural duplicates ignoring literal values", func() { })
 It("should display version information", func() { })
@@ -563,7 +604,9 @@ It("should exclude sqlc generated code by default with --filter-generated", func
 **Analysis:** Test names clearly describe the expected behavior, making it easy to understand what's being tested without reading the implementation.
 
 #### Consistent Patterns
+
 All tests follow the same structure:
+
 1. Setup in `BeforeEach`
 2. Create test data
 3. Execute command
@@ -573,6 +616,7 @@ All tests follow the same structure:
 **Benefit:** New team members can quickly understand and contribute to tests.
 
 #### Test Data Reuse
+
 ```go
 // Constants for reusable test data
 const (
@@ -589,6 +633,7 @@ func multiConfig() {}`
 ### ⚠️ Maintainability Concerns
 
 #### Code Duplication
+
 Some test patterns are duplicated:
 
 ```go
@@ -610,6 +655,7 @@ func (s *BDDTestSetup) RunWithCustomBinary(args ...string) ([]byte, error) {
 ```
 
 #### Hard-Coded Values
+
 Some tests use magic numbers:
 
 ```go
@@ -633,6 +679,7 @@ const (
 ### Excellent Tests (Exemplars)
 
 #### Test 1: CI/CD Integration (bdd_test.go:405)
+
 ```go
 Context("CI/CD Pipeline Integration", func() {
     It("should provide JSON output suitable for automation", func() {
@@ -658,6 +705,7 @@ Context("CI/CD Pipeline Integration", func() {
 ```
 
 **Why Excellent:**
+
 - Realistic use case (CI/CD integration)
 - Tests actual user workflow
 - Validates JSON structure for automation
@@ -665,6 +713,7 @@ Context("CI/CD Pipeline Integration", func() {
 - Clear, focused test
 
 #### Test 2: Config Override (configuration_file_test.go:165)
+
 ```go
 It("should use CLI threshold over config threshold", func() {
     configContent := `{"threshold": 50}`
@@ -676,12 +725,14 @@ It("should use CLI threshold over config threshold", func() {
 ```
 
 **Why Excellent:**
+
 - Tests important precedence rule
 - Simple and focused
 - Clear intent
 - Easy to understand
 
 #### Test 3: Filter Precedence (filter_features_test.go:476)
+
 ```go
 It("should give include patterns precedence over exclude patterns", func() {
     // Creates files in different directories
@@ -703,6 +754,7 @@ It("should give include patterns precedence over exclude patterns", func() {
 ```
 
 **Why Excellent:**
+
 - Tests complex interaction between features
 - Clear documentation of expected behavior
 - Realistic scenario
@@ -711,6 +763,7 @@ It("should give include patterns precedence over exclude patterns", func() {
 ### Tests Needing Improvement
 
 #### Test 1: Weak Assertion (bdd_test.go:248)
+
 ```go
 It("should respect threshold settings to filter noise", func() {
     output, err := setup.RunArtDuplWithFlags(map[string]string{"threshold": "50"})
@@ -723,6 +776,7 @@ It("should respect threshold settings to filter noise", func() {
 **Issue:** Only checks that output is non-empty, doesn't verify threshold behavior.
 
 **Better:**
+
 ```go
 It("should respect threshold settings to filter noise", func() {
     // Create small duplicate (below threshold)
@@ -741,6 +795,7 @@ It("should respect threshold settings to filter noise", func() {
 ```
 
 #### Test 2: Missing Error Validation (error_handling_test.go:76)
+
 ```go
 It("should handle missing directory gracefully", func() {
     output, err := setup.RunArtDupl(nonExistentPath)
@@ -756,6 +811,7 @@ It("should handle missing directory gracefully", func() {
 ```
 
 **Better:**
+
 ```go
 It("should handle missing directory gracefully", func() {
     output, err := setup.RunArtDupl(nonExistentPath)
@@ -823,6 +879,7 @@ It("should handle missing directory gracefully", func() {
 ### High Priority
 
 1. **Add Performance Tests**
+
    ```go
    Context("Performance", func() {
        It("should handle 1000+ files in under 30 seconds", func() {
@@ -877,20 +934,20 @@ It("should handle missing directory gracefully", func() {
 
 ## 9. Test Metrics Summary
 
-| Metric | Value | Assessment |
-|--------|-------|------------|
-| Total Test Files | 18 | ✅ Good coverage |
-| Total Test Specs | 226 | ✅ Comprehensive |
-| Describe Blocks | 34 | ✅ Well-organized |
-| Test Execution Time | 2.94s | ✅ Fast |
-| Test Coverage | 70.0% | ✅ Good |
-| Passing Tests | 226/226 (100%) | ✅ Excellent |
-| Test Helper Quality | A | ✅ Excellent |
-| User Perspective | A | ✅ Excellent |
-| Maintainability | A- | ✅ Very Good |
-| Documentation | B+ | ⚠️ Good, could improve |
-| Edge Case Coverage | B | ⚠️ Adequate, needs work |
-| Performance Testing | B- | ⚠️ Needs improvement |
+| Metric              | Value          | Assessment              |
+| ------------------- | -------------- | ----------------------- |
+| Total Test Files    | 18             | ✅ Good coverage        |
+| Total Test Specs    | 226            | ✅ Comprehensive        |
+| Describe Blocks     | 34             | ✅ Well-organized       |
+| Test Execution Time | 2.94s          | ✅ Fast                 |
+| Test Coverage       | 70.0%          | ✅ Good                 |
+| Passing Tests       | 226/226 (100%) | ✅ Excellent            |
+| Test Helper Quality | A              | ✅ Excellent            |
+| User Perspective    | A              | ✅ Excellent            |
+| Maintainability     | A-             | ✅ Very Good            |
+| Documentation       | B+             | ⚠️ Good, could improve  |
+| Edge Case Coverage  | B              | ⚠️ Adequate, needs work |
+| Performance Testing | B-             | ⚠️ Needs improvement    |
 
 ---
 
@@ -899,6 +956,7 @@ It("should handle missing directory gracefully", func() {
 The art-dupl BDD test suite is **well-designed, comprehensive, and genuinely helpful** for ensuring the tool works correctly from an end-user perspective. The tests demonstrate:
 
 ### Strengths
+
 ✅ **Excellent Ginkgo v2 usage** with proper patterns and structure
 ✅ **Strong end-user focus** with realistic scenarios and workflows
 ✅ **Good test organization** with clear naming and structure
@@ -908,6 +966,7 @@ The art-dupl BDD test suite is **well-designed, comprehensive, and genuinely hel
 ✅ **Good maintainability** with consistent patterns
 
 ### Areas for Improvement
+
 ⚠️ **Edge case testing** could be more comprehensive
 ⚠️ **Performance testing** needs enhancement
 ⚠️ **Some weak assertions** should be strengthened
@@ -920,6 +979,7 @@ The art-dupl BDD test suite is **well-designed, comprehensive, and genuinely hel
 The BDD test suite is **production-ready and valuable**. It effectively validates the tool from a user perspective and will catch regressions. The test infrastructure is well-designed and maintainable.
 
 The suite would benefit from:
+
 1. More edge case and performance tests
 2. Stronger assertions in some tests
 3. Better test documentation
@@ -932,16 +992,19 @@ However, these are enhancements, not critical issues. The current test suite is 
 ## 11. Action Items
 
 ### Immediate (Sprint 1)
+
 - [ ] Add 3-5 performance tests for large codebases
 - [ ] Strengthen weak assertions in bdd_test.go
 - [ ] Add edge case tests for error handling
 
 ### Short-term (Sprint 2-3)
+
 - [ ] Add comprehensive test documentation
 - [ ] Standardize helper usage across all tests
 - [ ] Add integration tests with real projects
 
 ### Long-term (Backlog)
+
 - [ ] Implement test data builders
 - [ ] Add cross-platform testing
 - [ ] Create test coverage dashboard

@@ -50,9 +50,8 @@ type Summary struct {
 
 // SimpleJSONClone represents a single code clone instance in simple format (from duplicates project).
 type SimpleJSONClone struct {
+	LineRangeMixin
 	Filename   string `json:"filename"`
-	StartLine  int    `json:"start_line"`
-	EndLine    int    `json:"end_line"`
 	TokenCount int    `json:"token_count"`
 }
 
@@ -61,6 +60,12 @@ type SimpleCloneGroup struct {
 	Hash      string            `json:"hash"`
 	Score     int               `json:"score"` // Impact score: tokens × instances
 	Instances []SimpleJSONClone `json:"instances"`
+}
+
+// LineRangeMixin provides common line range fields.
+type LineRangeMixin struct {
+	StartLine int
+	EndLine   int
 }
 
 // SimpleJSONOutput represents the simple JSON output format (from duplicates project).
@@ -240,9 +245,11 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		simpleInstances := make([]SimpleJSONClone, len(group.Files))
 		for j, file := range group.Files {
 			simpleInstances[j] = SimpleJSONClone{
+				LineRangeMixin: LineRangeMixin{
+					StartLine: file.LineStart,
+					EndLine:   file.LineEnd,
+				},
 				Filename:   file.Filename,
-				StartLine:  file.LineStart,
-				EndLine:    file.LineEnd,
 				TokenCount: group.Size, // Each clone in group has same size
 			}
 		}

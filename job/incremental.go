@@ -36,10 +36,15 @@ func NewIncrementalParser(cacheDir string, clearCache, semantic bool) *Increment
 	}
 }
 
+// ParseStatsMixin provides common fields for parsing statistics.
+type ParseStatsMixin struct {
+	FilesCount int
+	LinesCount int
+}
+
 // IncrementalStats holds statistics from incremental parsing.
 type IncrementalStats struct {
-	FilesCount  int
-	LinesCount  int
+	ParseStatsMixin
 	CacheHits   int
 	CacheMisses int
 }

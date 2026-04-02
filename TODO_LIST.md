@@ -52,12 +52,14 @@
 ## Summary of Recent Changes (2026-03-28)
 
 ### 1. Fixed Lint Issue (cmd/run_analysis.go)
+
 - Split `buildSuffixTree` function (92 lines) into three focused functions:
   - `buildSuffixTree` - Entry point that delegates to appropriate implementation
   - `buildSuffixTreeIncremental` - Handles incremental parsing with cache
   - `buildSuffixTreeStandard` - Handles standard parsing without cache
 
 ### 2. Added SARIF Output Format
+
 - Added `OutputFormatSARIF` constant in `config/detectionmethod.go`
 - Created `printer/sarif.go` with full SARIF 2.1.0 implementation:
   - SARIFOutput, SARIFRun, SARIFTool, SARIFResult structures
@@ -71,11 +73,13 @@
 - Updated test in `config/config_test.go` to expect 7 formats
 
 ### 3. Verified Gosec Annotations
+
 - All G115 integer overflow annotations are properly in place
 - All G304 file permission annotations are properly in place
 - No new security issues introduced
 
 ### Build & Test Status
+
 - ✅ All builds pass
 - ✅ All unit tests pass (config, printer, cmd packages)
 - ✅ SARIF printer tests: 8/8 passing
