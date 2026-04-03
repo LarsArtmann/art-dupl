@@ -42,9 +42,11 @@ func (id MigrationID) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler for MigrationID.
 func (id *MigrationID) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+	err := json.Unmarshal(data, &s)
+	if err != nil {
 		return err
 	}
+
 	if s == "" {
 		return errors.NewValidationError("migration ID cannot be empty", nil)
 	}

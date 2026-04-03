@@ -203,12 +203,15 @@ func TestClassifyClone(t *testing.T) {
 			if got.Category != tt.wantCategory {
 				t.Errorf("ClassifyClone().Category = %v, want %v", got.Category, tt.wantCategory)
 			}
+
 			if got.IsTest != tt.wantIsTest {
 				t.Errorf("ClassifyClone().IsTest = %v, want %v", got.IsTest, tt.wantIsTest)
 			}
+
 			if got.Priority != tt.wantPriority {
 				t.Errorf("ClassifyClone().Priority = %v, want %v", got.Priority, tt.wantPriority)
 			}
+
 			if got.Suggestion != tt.wantSuggestion {
 				t.Errorf(
 					"ClassifyClone().Suggestion = %v, want %v",

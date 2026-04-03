@@ -21,9 +21,12 @@ func ParseFileByExtensionWithConfig(
 	file string,
 	semantic bool,
 ) (*syntax.Node, int, error) {
-	var ast *syntax.Node
-	var lines int
-	var err error
+	var (
+		ast   *syntax.Node
+		lines int
+		err   error
+	)
+
 	switch filepath.Ext(file) {
 	case ".templ":
 		ast, lines, err = templ.ParseWithLineCount(file)
@@ -33,6 +36,7 @@ func ParseFileByExtensionWithConfig(
 		if semantic {
 			mode = golang.DetectionModeSemantic
 		}
+
 		cfg := golang.ParseConfig{Mode: mode}
 		ast, lines, err = golang.ParseWithLineCountConfig(file, cfg)
 	}

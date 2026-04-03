@@ -6,10 +6,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 var _ = Describe("Detection Methods", func() {

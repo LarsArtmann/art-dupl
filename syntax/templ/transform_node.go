@@ -1,9 +1,8 @@
 package templ
 
 import (
-	templparser "github.com/a-h/templ/parser/v2"
-
 	"github.com/LarsArtmann/art-dupl/syntax"
+	templparser "github.com/a-h/templ/parser/v2"
 )
 
 // transformNode converts a Node to a syntax.Node.

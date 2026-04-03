@@ -95,6 +95,7 @@ func deindent(block []byte) []byte {
 // findMinIndent finds the minimum tab indentation in the block.
 func findMinIndent(block []byte) int {
 	const maxVal = 99
+
 	min := maxVal
 
 	re := regexp.MustCompile(`(^|\n)(\t*)\S`)
@@ -117,9 +118,11 @@ func stripIndent(block []byte, indentCount int) []byte {
 	if indentCount <= 0 || len(block) == 0 {
 		return block
 	}
+
 	if indentCount >= len(block) {
 		return block
 	}
+
 	block = block[indentCount:]
 
 	for i := 0; i < len(block); i++ {
@@ -130,6 +133,7 @@ func stripIndent(block []byte, indentCount int) []byte {
 		if i+1+indentCount > len(block) {
 			continue
 		}
+
 		if canStripTabs(block, i+1, indentCount) {
 			block = append(block[:i+1], block[i+1+indentCount:]...)
 		}

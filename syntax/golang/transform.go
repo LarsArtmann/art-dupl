@@ -202,6 +202,7 @@ func (t *transformer) trans(
 	case *ast.IndexListExpr:
 		o.Type = IndexListExpr
 		o.AddChildren(t.trans(n.X))
+
 		for _, idx := range n.Indices {
 			o.AddChildren(t.trans(idx))
 		}

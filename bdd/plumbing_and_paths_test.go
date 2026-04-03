@@ -5,10 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // testCodeSamples contains code samples used in plumbing tests.

@@ -210,6 +210,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 				fmt.Sprintf("invalid --diff value %q", diffModeStr),
 			)
 		}
+
 		appConfig.DiffMode = parsedDiffMode
 	}
 

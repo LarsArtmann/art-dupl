@@ -696,6 +696,7 @@ func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue
 // runLegacyDetectionTestCase is a helper function that runs the legacy detector on the provided Go code.
 func runLegacyDetectionTestCase(t *testing.T, testFile, goCode, expectedLog string) {
 	t.Helper()
+
 	issues := runLegacyDetectionTest(t, testFile, goCode)
 	if issues == nil {
 		t.Log(expectedLog)

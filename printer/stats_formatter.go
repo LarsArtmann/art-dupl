@@ -129,14 +129,17 @@ func (p *stats) printTextConfiguration() {
 	if p.statsData.SemanticDetection {
 		semanticStatus = "enabled"
 	}
+
 	p.printMetric("Semantic Detection", semanticStatus)
 
 	if p.statsData.Timestamp != "" {
 		p.printMetric("Timestamp", p.statsData.Timestamp)
 	}
+
 	if p.statsData.AnalysisDuration != "" {
 		p.printMetric("Analysis Time", p.statsData.AnalysisDuration)
 	}
+
 	_, _ = fmt.Fprintf(p.w, "\n")
 }
 
@@ -191,6 +194,7 @@ func (p *stats) printTextDuplicateCode() {
 		p.printMetric("Health Score", styled)
 		p.printLinef("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
 	}
+
 	_, _ = fmt.Fprintf(p.w, "\n")
 }
 

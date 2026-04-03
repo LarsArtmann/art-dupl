@@ -688,11 +688,13 @@ func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 	sort.Sort(byNameAndLine(clones))
 
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
-		if err := p.writeDiffView(clones); err != nil {
+		err := p.writeDiffView(clones)
+		if err != nil {
 			return err
 		}
 	} else {
-		if err := p.writeCloneOccurrences(clones); err != nil {
+		err := p.writeCloneOccurrences(clones)
+		if err != nil {
 			return err
 		}
 	}
@@ -714,6 +716,7 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 		if cl.classification.IsTest {
 			hasTest = true
 		}
+
 		categoryCounts[cl.classification.Category]++
 		// Track highest priority
 		if priorityHigher(cl.classification.Priority, highestPriority) {
@@ -722,6 +725,7 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 
 		// Update global stats
 		p.stats.categoryCounts[cl.classification.Category]++
+
 		p.stats.priorityCounts[cl.classification.Priority]++
 		if cl.classification.IsTest {
 			p.stats.testCount++
@@ -859,6 +863,7 @@ func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
 func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 	for i, cl := range clones {
 		vscodeLink := fmt.Sprintf("vscode://file/%s:%d", cl.filename, cl.lineStart)
+
 		_, err := fmt.Fprintf(p.w, `<div class="occurrence">
 <div class="file-link">
 <a href="%s" title="Open in VSCode">%s:%d</a>
@@ -903,6 +908,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 		groupDiff.Base.Filename,
 		groupDiff.Base.LineStart,
 	)
+
 	_, err := fmt.Fprintf(p.w, `
 <div class="diff-mode">
 <div class="diff-base-header">
@@ -924,9 +930,11 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 		if totalAdded > 0 {
 			_, _ = fmt.Fprintf(p.w, `<span class="added">+%d added</span>`, totalAdded)
 		}
+
 		if totalRemoved > 0 {
 			_, _ = fmt.Fprintf(p.w, `<span class="removed">-%d removed</span>`, totalRemoved)
 		}
+
 		if totalModified > 0 {
 			_, _ = fmt.Fprintf(p.w, `<span class="modified">~%d modified</span>`, totalModified)
 		}
@@ -944,19 +952,21 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 
 	// Write comparison selector for multiple clones
 	if len(groupDiff.Others) > 1 {
-		if err := p.writeDiffSelector(groupDiff); err != nil {
+		err := p.writeDiffSelector(groupDiff)
+		if err != nil {
 			return err
 		}
 	}
 
 	// Write diff panels for each comparison
 	for idx, other := range groupDiff.Others {
-		if err := p.writeDiffComparison(
+		err := p.writeDiffComparison(
 			groupDiff.Base,
 			other,
 			idx,
 			len(groupDiff.Others),
-		); err != nil {
+		)
+		if err != nil {
 			return err
 		}
 	}
@@ -1042,9 +1052,11 @@ func (p *htmlprinter) writeDiffComparison(
 	if added > 0 {
 		_, _ = fmt.Fprintf(p.w, `<span class="added">+%d</span>`, added)
 	}
+
 	if removed > 0 {
 		_, _ = fmt.Fprintf(p.w, `<span class="removed">-%d</span>`, removed)
 	}
+
 	if modified > 0 {
 		_, _ = fmt.Fprintf(p.w, `<span class="modified">~%d</span>`, modified)
 	}
@@ -1116,6 +1128,7 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePanel bool) error {
 	for i, line := range lines {
 		typeClass := ""
+
 		switch line.Type {
 		case DiffLineAdded:
 			typeClass = "added"
@@ -1130,6 +1143,7 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 		lineNum := fmt.Sprintf(`<span class="diff-line-num">%d</span>`, line.LineNumber)
 
 		var content string
+
 		if line.Type == DiffLineModified && i < len(oppositeLines) &&
 			oppositeLines[i].Type == DiffLineModified {
 			// For modified lines, show word-level diff
@@ -1222,6 +1236,7 @@ func (p *htmlprinter) buildSummarySection() string {
 		sb.WriteString(
 			`<div class="summary-category"><h3>By Category</h3><div class="category-list">`,
 		)
+
 		for _, cat := range orderedCategories() {
 			if count := p.stats.categoryCounts[cat]; count > 0 {
 				sb.WriteString(`<span class="category-tag">`)
@@ -1233,6 +1248,7 @@ func (p *htmlprinter) buildSummarySection() string {
 				sb.WriteString(`</span>`)
 			}
 		}
+
 		sb.WriteString(`</div></div>`)
 	}
 
@@ -1241,6 +1257,7 @@ func (p *htmlprinter) buildSummarySection() string {
 		sb.WriteString(
 			`<div class="summary-category"><h3>By Priority</h3><div class="priority-list">`,
 		)
+
 		for _, pri := range orderedPriorities() {
 			if count := p.stats.priorityCounts[pri]; count > 0 {
 				sb.WriteString(`<span class="priority-tag priority-`)
@@ -1254,6 +1271,7 @@ func (p *htmlprinter) buildSummarySection() string {
 				sb.WriteString(`</span>`)
 			}
 		}
+
 		sb.WriteString(`</div></div>`)
 	}
 

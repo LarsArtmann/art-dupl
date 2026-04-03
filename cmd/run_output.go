@@ -25,15 +25,18 @@ func printDupls(
 	groups := printer.BuildCloneGroups(duplChan)
 	keys := getSortedKeys(groups, sortBy)
 
-	if err := printHeader(p, sortBy, threshold); err != nil {
+	err := printHeader(p, sortBy, threshold)
+	if err != nil {
 		return err
 	}
 
-	if err := printCloneGroups(p, groups, keys, sortBy); err != nil {
+	err := printCloneGroups(p, groups, keys, sortBy)
+	if err != nil {
 		return err
 	}
 
-	if err := handleJSONOutput(p, threshold, sortBy, detectionMethod); err != nil {
+	err := handleJSONOutput(p, threshold, sortBy, detectionMethod)
+	if err != nil {
 		return err
 	}
 
@@ -50,6 +53,7 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []
 	for k := range groups {
 		keys = append(keys, k)
 	}
+
 	uniqueCounts := printer.ComputeUniqueCounts(groups)
 	printer.SortCloneGroupKeys(keys, sortBy, groups, uniqueCounts)
 
@@ -58,7 +62,8 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []
 
 // printHeader prints the header with error wrapping.
 func printHeader(p printer.Printer, sortBy printer.SortBy, threshold int) error {
-	if err := p.PrintHeader(); err != nil {
+	err := p.PrintHeader()
+	if err != nil {
 		return errors.Wrap(
 			err,
 			errors.AnalysisError,
@@ -91,7 +96,8 @@ func printCloneGroups(
 			hs.SetHash(k)
 		}
 
-		if err := p.PrintClones(uniq, sortBy); err != nil {
+		err := p.PrintClones(uniq, sortBy)
+		if err != nil {
 			return errors.Wrap(err, errors.AnalysisError,
 				fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
 		}
@@ -112,7 +118,8 @@ func handleJSONOutput(
 		return nil
 	}
 
-	if err := jsonPrinter.OutputJSON(threshold, sortBy, detectionMethod); err != nil {
+	err := jsonPrinter.OutputJSON(threshold, sortBy, detectionMethod)
+	if err != nil {
 		return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w",
 			threshold, sortBy.String(), err)
 	}
@@ -122,7 +129,8 @@ func handleJSONOutput(
 
 // printFooter prints the footer with error wrapping.
 func printFooter(p printer.Printer) error {
-	if err := p.PrintFooter(); err != nil {
+	err := p.PrintFooter()
+	if err != nil {
 		return fmt.Errorf("failed to print footer: %w", err)
 	}
 

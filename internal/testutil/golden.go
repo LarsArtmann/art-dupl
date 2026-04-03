@@ -32,6 +32,7 @@ func ginkgoTB() testing.TB {
 	if tb, ok := ginkgoT.(testing.TB); ok {
 		return tb
 	}
+
 	panic("must be called from within a Ginkgo test")
 }
 

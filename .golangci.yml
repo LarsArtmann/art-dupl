@@ -1,414 +1,407 @@
 version: "2"
 run:
-  timeout: 5m
-  go: ""
-  build-tags: []
-  allow-parallel-runners: false
-  allow-serial-runners: false
-  tests: true
+    timeout: 5m
+    go: 1.26.1
+    build-tags:
+        - goexperiment.goroutineleakprofile
+        - goexperiment.jsonv2
+        - goexperiment.simd
+    allow-parallel-runners: true
+    allow-serial-runners: true
+    tests: true
 output:
-  formats: {}
+    formats: {}
 linters:
-  enable:
-    # Critical linters - always enabled
-    - govet
-    - staticcheck
-    - errcheck
-    - gosec
-    - ineffassign
-    - unused
-    - gocritic
-    # Important linters
-    - misspell
-    - errorlint
-    - goconst
-    - makezero
-    - predeclared
-    - revive
-    - dupl
-    - nestif
-    - gocyclo
-    - gocognit
-    - funlen
-    - cyclop
-    # Optional linters (lower priority)
-    - spancheck
-    - interfacebloat
-    - durationcheck
-    - nakedret
-    - paralleltest
-    - gochecksumtype
-    - usetesting
-    - godot
-    - rowserrcheck
-    - goheader
-    - reassign
-    - canonicalheader
-    - asasalint
-    - testifylint
-    - gomoddirectives
-    - thelper
-    - grouper
-    - nosprintfhostport
-    - nilerr
-    - unparam
-    - bidichk
-    - usestdlibvars
-    - unconvert
-    - iface
-    - noctx
-    - fatcontext
-    - gomodguard
-    - nilnil
-    - nolintlint
-    - gochecknoinits
-    - errchkjson
-    - testpackage
-    - prealloc
-    - gocheckcompilerdirectives
-    - zerologlint
-    - promlinter
-    - containedctx
-    - bodyclose
-    - maintidx
-    - gosmopolitan
-    - dupword
-    - protogetter
-    - asciicheck
-    - ireturn
-    - dogsled
-    - nilnesserr
-    - decorder
-    - forcetypeassert
-    - tparallel
-    - err113
-    - loggercheck
-    - wastedassign
-    - sqlclosecheck
-    - ginkgolinter
-    - recvcheck
-    - contextcheck
-    - copyloopvar
-    - errname
-    - testableexamples
-    - sloglint
-    - inamedparam
-    - exhaustive
-    - mirror
-    - musttag
-    - importas
-    - nonamedreturns
-    - nlreturn
-    - whitespace
-    - intrange
-    - perfsprint
-    - goprintffuncname
-  disable:
-    # Noisy linters - disabled to focus on critical issues
-    - varnamelen # Short variable names are common in Go
-    - exhaustruct # Partial struct initialization is idiomatic
-    - tagliatelle # Struct tag naming conventions vary
-    - wrapcheck # Error wrapping context-dependent
-    - godox # TODO comments are acceptable
-    - mnd # Magic numbers are often clear in context
-    - gochecknoglobals # Package-level vars are sometimes necessary
-  settings:
-    cyclop:
-      max-complexity: 15
-    dupl:
-      threshold: 100
-    funlen:
-      lines: 80
-      statements: 50
-    gocognit:
-      min-complexity: 35
-    goconst:
-      min-len: 5
-      min-occurrences: 4
-    gocyclo:
-      min-complexity: 15
-    ireturn:
-      allow:
-        - anon
-        - error
-        - empty
-        - stdlib
-        - generic
-        - Printer
-        - Hasher
-        - Detector
-        - Token
-    wrapcheck:
-      ignore-sigs:
-        - errors.Wrap
-        - errors.Wrapf
-        - errors.WrapFile
-        - fmt.Errorf(
-        - errors.New(
-        - stderrors.New(
-        - domain.NewValidationError(
-  exclusions:
-    rules:
-      - path: _test\.go
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - paralleltest
-          - testpackage
-          - forcetypeassert
-          - forbidigo
-          - nestif
-          - recvcheck
-          - golines
-      - path: bdd/
-        linters:
-          - funlen
-          - cyclop
-          - gocognit
-          - gocyclo
-          - maintidx
-          - dupl
-          - gosec
-          - err113
-          - paralleltest
-          - testpackage
-          - forcetypeassert
-          - forbidigo
-          - nestif
-          - golines
-      - path: examples/
-        linters:
-          - revive
-      - path: testutils/
-        linters:
-          - revive
-          - gosec
-      - path: migration/
-        linters:
-          - typecheck
-      - path: config/
-        linters:
-          - recvcheck
-      - path: domain/
-        linters:
-          - recvcheck
-      - path: syntax/
-        linters:
-          - gocyclo
-          - cyclop
-      # Allow dot imports in test files (Ginkgo/Gomega pattern)
-      - path: _test\.go
-        linters:
-          - revive
-        text: "dot-imports"
-      - path: bdd/
-        linters:
-          - revive
-        text: "dot-imports"
-      - path: migration/
-        linters:
-          - revive
-        text: "dot-imports"
-      - path: migration/
-        linters:
-          - recvcheck
-      # Allow stuttering type names (design decision for clarity)
-      - path: cache/
-        linters:
-          - revive
-        text: "stutters"
-      - path: git/
-        linters:
-          - revive
-        text: "stutters"
-      - path: hash/
-        linters:
-          - revive
-        text: "stutters"
-      - path: internal/enum/
-        linters:
-          - revive
-        text: "stutters"
-      - path: migration/
-        linters:
-          - revive
-        text: "stutters"
-      - path: pkg/filter/
-        linters:
-          - revive
-        text: "stutters"
-      # Allow package names that match stdlib (errors, hash, format)
-      - path: errors/
-        linters:
-          - revive
-        text: "var-naming"
-      - path: hash/
-        linters:
-          - revive
-        text: "var-naming"
-      - path: pkg/format/
-        linters:
-          - revive
-        text: "var-naming"
-      - path: internal/utils/
-        linters:
-          - revive
-        text: "var-naming"
-      # Allow empty blocks for channel draining
-      - path: _test\.go
-        linters:
-          - revive
-        text: "empty-block"
-      # Skip package-comments for cmd and internal packages
-      - path: cmd/
-        linters:
-          - revive
-        text: "package-comments"
-      - path: internal/
-        linters:
-          - revive
-        text: "package-comments"
-      - path: bdd/
-        linters:
-          - revive
-        text: "package-comments"
-      - path: pkg/
-        linters:
-          - revive
-        text: "package-comments"
-      - path: config/
-        linters:
-          - revive
-        text: "package-comments"
-      # Skip exported comments for self-documenting code patterns
-      - path: domain/
-        linters:
-          - revive
-        text: "exported"
-      - path: config/
-        linters:
-          - revive
-        text: "exported"
-      - path: cache/
-        linters:
-          - revive
-        text: "exported"
-      - path: git/
-        linters:
-          - revive
-        text: "exported"
-      - path: errors/
-        linters:
-          - revive
-        text: "exported"
-      - path: pkg/filter/
-        linters:
-          - revive
-        text: "exported"
-      - path: pkg/logger/
-        linters:
-          - revive
-        text: "exported"
-      - path: suffixtree/
-        linters:
-          - revive
-        text: "exported"
-      - path: job/
-        linters:
-          - revive
-        text: "exported"
-      - path: job/
-        linters:
-          - revive
-        text: "package-comments"
-      - path: internal/enum/
-        linters:
-          - revive
-        text: "exported"
-      - path: printer/
-        linters:
-          - revive
-        text: "exported"
-      - path: printer/
-        linters:
-          - revive
-        text: "var-naming"
-      # Allow redefinition of min/max for backwards compatibility
-      - path: printer/common.go
-        linters:
-          - revive
-        text: "redefines-builtin-id"
-      # Allow unused parameters in test helpers and stubs
-      - path: _test\.go
-        linters:
-          - revive
-        text: "unused-parameter"
-      - path: internal/testutil/
-        linters:
-          - revive
-        text: "unused-parameter"
-      - path: printer/
-        linters:
-          - revive
-        text: "unused-parameter"
-      - path: detection/
-        linters:
-          - revive
-        text: "unused-parameter"
-      - path: migration/
-        linters:
-          - revive
-        text: "unused-parameter"
-      - path: syntax/
-        linters:
-          - revive
-        text: "exported"
-      - path: syntax/
-        linters:
-          - revive
-        text: "var-naming"
-      # Allow predeclared identifier shadowing for compatibility
-      - path: printer/common.go
-        linters:
-          - predeclared
-      # Allow named returns for documentation
-      - path: job/
-        linters:
-          - nonamedreturns
-      # Allow interface returns for factory pattern
-      - path: pkg/logger/
-        linters:
-          - ireturn
-      # Allow unparam in test files (stubs/mocks)
-      - path: _test\.go
-        linters:
-          - unparam
-      - path: bdd/
-        linters:
-          - unparam
-      # Allow unparam for API consistency (error returns that may be used in future)
-      - path: cmd/run_analysis.go
-        linters:
-          - unparam
-      - path: hash/file_detector.go
-        linters:
-          - unparam
-      - path: pkg/artdupl/detector_pipeline.go
-        linters:
-          - unparam
-      - path: printer/html.go
-        linters:
-          - unparam
-      - path: printer/stats.go
-        linters:
-          - unparam
+    enable:
+        - arangolint
+        - asasalint
+        - asciicheck
+        - bidichk
+        - bodyclose
+        - canonicalheader
+        - containedctx
+        - contextcheck
+        - copyloopvar
+        - cyclop
+        - decorder
+        - depguard
+        - dogsled
+        - dupl
+        - dupword
+        - durationcheck
+        - embeddedstructfieldcheck
+        - err113
+        - errcheck
+        - errchkjson
+        - errname
+        - errorlint
+        - exhaustive
+        - exptostd
+        - fatcontext
+        - forbidigo
+        - forcetypeassert
+        - funlen
+        - ginkgolinter
+        - gocheckcompilerdirectives
+        - gochecknoinits
+        - gochecksumtype
+        - gocognit
+        - goconst
+        - gocritic
+        - gocyclo
+        - godoclint
+        - godot
+        - goheader
+        - gomoddirectives
+        - gomodguard
+        - goprintffuncname
+        - gosec
+        - gosmopolitan
+        - govet
+        - grouper
+        - iface
+        - importas
+        - inamedparam
+        - ineffassign
+        - interfacebloat
+        - intrange
+        - iotamixing
+        - ireturn
+        - loggercheck
+        - maintidx
+        - makezero
+        - mirror
+        - misspell
+        - modernize
+        - musttag
+        - nakedret
+        - nestif
+        - nilerr
+        - nilnesserr
+        - nilnil
+        - nlreturn
+        - noctx
+        - noinlineerr
+        - nolintlint
+        - nonamedreturns
+        - nosprintfhostport
+        - paralleltest
+        - perfsprint
+        - prealloc
+        - predeclared
+        - promlinter
+        - protogetter
+        - reassign
+        - recvcheck
+        - revive
+        - rowserrcheck
+        - sloglint
+        - spancheck
+        - sqlclosecheck
+        - staticcheck
+        - tagalign
+        - testableexamples
+        - testifylint
+        - testpackage
+        - thelper
+        - tparallel
+        - unconvert
+        - unparam
+        - unqueryvet
+        - unused
+        - usestdlibvars
+        - usetesting
+        - wastedassign
+        - whitespace
+        - wsl_v5
+        - zerologlint
+    settings:
+        cyclop:
+            max-complexity: 15
+        dupl:
+            threshold: 100
+        funlen:
+            lines: 80
+            statements: 50
+        gocognit:
+            min-complexity: 35
+        goconst:
+            min-len: 5
+            min-occurrences: 4
+        gocyclo:
+            min-complexity: 15
+        ireturn:
+            allow:
+                - anon
+                - error
+                - empty
+                - stdlib
+                - generic
+                - Printer
+                - Hasher
+                - Detector
+                - Token
+        wrapcheck:
+            ignore-sigs:
+                - errors.Wrap
+                - errors.Wrapf
+                - errors.WrapFile
+                - fmt.Errorf(
+                - errors.New(
+                - stderrors.New(
+                - domain.NewValidationError(
+    exclusions:
+        rules:
+            - path: _test\.go
+              linters:
+                - funlen
+                - cyclop
+                - gocognit
+                - gocyclo
+                - maintidx
+                - dupl
+                - gosec
+                - err113
+                - paralleltest
+                - testpackage
+                - forcetypeassert
+                - forbidigo
+                - nestif
+                - recvcheck
+                - golines
+            - path: bdd/
+              linters:
+                - funlen
+                - cyclop
+                - gocognit
+                - gocyclo
+                - maintidx
+                - dupl
+                - gosec
+                - err113
+                - paralleltest
+                - testpackage
+                - forcetypeassert
+                - forbidigo
+                - nestif
+                - golines
+            - path: examples/
+              linters:
+                - revive
+            - path: testutils/
+              linters:
+                - revive
+                - gosec
+            - path: migration/
+              linters:
+                - typecheck
+            - path: config/
+              linters:
+                - recvcheck
+            - path: domain/
+              linters:
+                - recvcheck
+            - path: syntax/
+              linters:
+                - gocyclo
+                - cyclop
+            - path: _test\.go
+              text: dot-imports
+              linters:
+                - revive
+            - path: bdd/
+              text: dot-imports
+              linters:
+                - revive
+            - path: migration/
+              text: dot-imports
+              linters:
+                - revive
+            - path: migration/
+              linters:
+                - recvcheck
+            - path: cache/
+              text: stutters
+              linters:
+                - revive
+            - path: git/
+              text: stutters
+              linters:
+                - revive
+            - path: hash/
+              text: stutters
+              linters:
+                - revive
+            - path: internal/enum/
+              text: stutters
+              linters:
+                - revive
+            - path: migration/
+              text: stutters
+              linters:
+                - revive
+            - path: pkg/filter/
+              text: stutters
+              linters:
+                - revive
+            - path: errors/
+              text: var-naming
+              linters:
+                - revive
+            - path: hash/
+              text: var-naming
+              linters:
+                - revive
+            - path: pkg/format/
+              text: var-naming
+              linters:
+                - revive
+            - path: internal/utils/
+              text: var-naming
+              linters:
+                - revive
+            - path: _test\.go
+              text: empty-block
+              linters:
+                - revive
+            - path: cmd/
+              text: package-comments
+              linters:
+                - revive
+            - path: internal/
+              text: package-comments
+              linters:
+                - revive
+            - path: bdd/
+              text: package-comments
+              linters:
+                - revive
+            - path: pkg/
+              text: package-comments
+              linters:
+                - revive
+            - path: config/
+              text: package-comments
+              linters:
+                - revive
+            - path: domain/
+              text: exported
+              linters:
+                - revive
+            - path: config/
+              text: exported
+              linters:
+                - revive
+            - path: cache/
+              text: exported
+              linters:
+                - revive
+            - path: git/
+              text: exported
+              linters:
+                - revive
+            - path: errors/
+              text: exported
+              linters:
+                - revive
+            - path: pkg/filter/
+              text: exported
+              linters:
+                - revive
+            - path: pkg/logger/
+              text: exported
+              linters:
+                - revive
+            - path: suffixtree/
+              text: exported
+              linters:
+                - revive
+            - path: job/
+              text: exported
+              linters:
+                - revive
+            - path: job/
+              text: package-comments
+              linters:
+                - revive
+            - path: internal/enum/
+              text: exported
+              linters:
+                - revive
+            - path: printer/
+              text: exported
+              linters:
+                - revive
+            - path: printer/
+              text: var-naming
+              linters:
+                - revive
+            - path: printer/common.go
+              text: redefines-builtin-id
+              linters:
+                - revive
+            - path: _test\.go
+              text: unused-parameter
+              linters:
+                - revive
+            - path: internal/testutil/
+              text: unused-parameter
+              linters:
+                - revive
+            - path: printer/
+              text: unused-parameter
+              linters:
+                - revive
+            - path: detection/
+              text: unused-parameter
+              linters:
+                - revive
+            - path: migration/
+              text: unused-parameter
+              linters:
+                - revive
+            - path: syntax/
+              text: exported
+              linters:
+                - revive
+            - path: syntax/
+              text: var-naming
+              linters:
+                - revive
+            - path: printer/common.go
+              linters:
+                - predeclared
+            - path: job/
+              linters:
+                - nonamedreturns
+            - path: pkg/logger/
+              linters:
+                - ireturn
+            - path: _test\.go
+              linters:
+                - unparam
+            - path: bdd/
+              linters:
+                - unparam
+            - path: cmd/run_analysis.go
+              linters:
+                - unparam
+            - path: hash/file_detector.go
+              linters:
+                - unparam
+            - path: pkg/artdupl/detector_pipeline.go
+              linters:
+                - unparam
+            - path: printer/html.go
+              linters:
+                - unparam
+            - path: printer/stats.go
+              linters:
+                - unparam
 formatters:
-  enable:
-    - golines
+    enable:
+        - gci
+        - goimports
+        - gofumpt
+        - golines
 issues: {}

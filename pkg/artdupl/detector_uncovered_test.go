@@ -192,8 +192,10 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 func TestExtractFragmentContent_WithFragments(t *testing.T) {
 	tmpDir := t.TempDir()
 	testFile := filepath.Join(tmpDir, "test.go")
+
 	content := []byte("line1\nline2\nline3\n")
-	if err := os.WriteFile(testFile, content, 0o644); err != nil {
+	err := os.WriteFile(testFile, content, 0o644)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -308,14 +310,17 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 		Hash:  "hash1",
 		Frags: [][]*syntax.Node{{{Filename: "file1.go"}}},
 	}
+
 	matchesChan <- syntax.Match{
 		Hash:  "hash1",
 		Frags: [][]*syntax.Node{{{Filename: "file2.go"}}},
 	}
+
 	matchesChan <- syntax.Match{
 		Hash:  "hash2",
 		Frags: [][]*syntax.Node{{{Filename: "file3.go"}}},
 	}
+
 	close(matchesChan)
 
 	groups, err := collectMatchesIntoGroups(t.Context(), matchesChan)
@@ -343,6 +348,7 @@ func TestCollectMatchesIntoGroups_Cancelled(t *testing.T) {
 
 	// Send match and close channel
 	matchesChan <- syntax.Match{Hash: "hash1", Frags: [][]*syntax.Node{{{}}}}
+
 	close(matchesChan)
 
 	// Cancel after processing starts
@@ -396,8 +402,10 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 	tmpDir := t.TempDir()
 	testFile := filepath.Join(tmpDir, "test.go")
+
 	content := []byte("line1\nline2\nline3\n")
-	if err := os.WriteFile(testFile, content, 0o644); err != nil {
+	err := os.WriteFile(testFile, content, 0o644)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -422,6 +430,7 @@ func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 // TestValidateFile_IgnorePatternMatching tests file pattern matching in validateFile.
 func TestValidateFile_IgnorePatternMatching(t *testing.T) {
 	tmpDir := t.TempDir()
+
 	testFile := filepath.Join(tmpDir, "test.go")
 	if err := os.WriteFile(testFile, []byte("package test"), 0o644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)

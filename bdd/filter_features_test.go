@@ -7,10 +7,9 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // buildFilterCmd creates an exec.CommandContext for running art-dupl with filter patterns.
@@ -20,6 +19,7 @@ func buildFilterCmd(
 	includePatterns, excludePatterns []string,
 ) *exec.Cmd {
 	args := make([]string, 0, 2+2*len(includePatterns)+2*len(excludePatterns)+1)
+
 	args = append(args, binaryPath, tmpDir)
 	for _, p := range includePatterns {
 		args = append(args, "--include-pattern", p)

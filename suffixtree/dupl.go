@@ -47,6 +47,7 @@ func (c *contextList) getAll() []Pos {
 	for _, k := range keys {
 		totalCap += len(c.lists[k].positions)
 	}
+
 	ps := make([]Pos, 0, totalCap)
 	for _, k := range keys {
 		ps = append(ps, c.lists[k].positions...)
@@ -109,6 +110,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	for k := range s.trans {
 		transKeys = append(transKeys, k)
 	}
+
 	slices.Sort(transKeys)
 
 	for _, k := range transKeys {

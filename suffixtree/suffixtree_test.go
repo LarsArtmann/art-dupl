@@ -123,6 +123,7 @@ func walk(s *state, ch chan<- *tran) {
 	for _, tr := range s.trans {
 		transList = append(transList, tr)
 	}
+
 	slices.SortFunc(transList, func(a, b *tran) int {
 		return cmp.Compare(a.start, b.start)
 	})

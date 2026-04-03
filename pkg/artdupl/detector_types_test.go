@@ -14,9 +14,11 @@ func assertCloneGroupBasic(
 	expectedCloneCount int,
 ) {
 	t.Helper()
+
 	if group.Hash != expectedHash {
 		t.Errorf("Expected Hash=%q, got %s", expectedHash, group.Hash)
 	}
+
 	if len(group.Clones) != expectedCloneCount {
 		t.Errorf("Expected %d clones, got %d", expectedCloneCount, len(group.Clones))
 	}

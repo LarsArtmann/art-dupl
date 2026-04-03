@@ -11,6 +11,7 @@ import (
 // FileInfo represents processed file information.
 type FileInfo struct {
 	CloneWithContentMixin
+
 	Content []byte
 	Node    *syntax.Node
 }

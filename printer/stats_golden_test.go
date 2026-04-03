@@ -15,11 +15,13 @@ func TestTextOutputGolden(t *testing.T) {
 	statsPrinter.SetFilesCount(5)
 	statsPrinter.SetDetectionMethods("art-dupl")
 
-	if err := statsPrinter.PrintHeader(); err != nil {
+	err := statsPrinter.PrintHeader()
+	if err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -45,13 +47,15 @@ func TestStatsJSONOutputGolden(t *testing.T) {
 		},
 	}
 
-	if err := statsPrinter.PrintClones(dups); err != nil {
+	err := statsPrinter.PrintClones(dups)
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
 	statsPrinter.format = FormatJSON
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -66,11 +70,13 @@ func TestStatsCSVOutputGolden(t *testing.T) {
 	statsPrinter.SetDetectionMethods("art-dupl")
 	statsPrinter.format = FormatCSV
 
-	if err := statsPrinter.PrintClones(createTestCloneGroups()); err != nil {
+	err := statsPrinter.PrintClones(createTestCloneGroups())
+	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	if err := statsPrinter.PrintFooter(); err != nil {
+	err := statsPrinter.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 

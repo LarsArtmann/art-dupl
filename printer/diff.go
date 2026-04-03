@@ -82,6 +82,7 @@ func splitLines(data []byte) [][]byte {
 	}
 
 	var lines [][]byte
+
 	start := 0
 
 	for i := range data {
@@ -244,12 +245,14 @@ type CloneWithContentMixin struct {
 // CloneWithContent represents a clone with its file content.
 type CloneWithContent struct {
 	CloneWithContentMixin
+
 	Content []byte
 }
 
 // CloneDiff represents a clone with its diff against the base.
 type CloneDiff struct {
 	CloneWithContent
+
 	Diff DiffResult
 }
 
@@ -315,6 +318,7 @@ func countDiffLineStats(diff DiffResult) (added, removed, modified int) {
 			// No action needed
 		}
 	}
+
 	for _, line := range diff.Base {
 		if line.Type == DiffLineRemoved {
 			removed++
@@ -350,6 +354,7 @@ func WordDiff(base, compared string) string {
 
 	// Build HTML output
 	var result strings.Builder
+
 	for _, diff := range diffs {
 		switch diff.Type {
 		case diffmatchpatch.DiffDelete:

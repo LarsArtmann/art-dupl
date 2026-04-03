@@ -51,6 +51,7 @@ type Summary struct {
 // SimpleJSONClone represents a single code clone instance in simple format (from duplicates project).
 type SimpleJSONClone struct {
 	LineRangeMixin
+
 	Filename   string `json:"filename"`
 	TokenCount int    `json:"token_count"`
 }

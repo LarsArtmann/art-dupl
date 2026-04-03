@@ -16,10 +16,12 @@ func waitForParsedNodes(
 	emptyMsg ...string,
 ) {
 	t.Helper()
+
 	emptyError := "Expected some parsed nodes"
 	if len(emptyMsg) > 0 {
 		emptyError = emptyMsg[0]
 	}
+
 	select {
 	case seq := <-schan:
 		if len(seq) == 0 {

@@ -18,6 +18,7 @@ func validateCloneSorting(
 	sortingType string,
 ) {
 	t.Helper()
+
 	for i, clone := range sorted {
 		if clone[0].Filename != expectedOrder[i] {
 			t.Errorf("%s sorting failed at index %d. Expected: %s, Got: %s",

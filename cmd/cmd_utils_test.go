@@ -302,7 +302,9 @@ func TestWriteFormatFile(t *testing.T) {
 
 		cfg := &config.Config{Threshold: 15}
 		matches := []syntax.Match{}
-		parseStats := job.ParseStats{ParseStatsMixin: job.ParseStatsMixin{FilesCount: 10, LinesCount: 100}}
+		parseStats := job.ParseStats{
+			ParseStatsMixin: job.ParseStatsMixin{FilesCount: 10, LinesCount: 100},
+		}
 		format := config.OutputFormatText
 		sortByEnum := printer.SortBySize
 
@@ -481,7 +483,8 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 
 	for _, f := range testFiles {
 		path := tempDir + "/" + f
-		if err := os.WriteFile(path, []byte("test"), 0o644); err != nil {
+		err := os.WriteFile(path, []byte("test"), 0o644)
+		if err != nil {
 			t.Fatalf("Failed to create file %s: %v", path, err)
 		}
 	}
@@ -499,8 +502,10 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 
 func TestCrawlSinglePath_File(t *testing.T) {
 	tempDir := t.TempDir()
+
 	testFile := tempDir + "/test.go"
-	if err := os.WriteFile(testFile, []byte("package main"), 0o644); err != nil {
+	err := os.WriteFile(testFile, []byte("package main"), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -514,6 +519,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 	if len(files) != 1 {
 		t.Errorf("Expected 1 file, got %d", len(files))
 	}
+
 	if len(files) > 0 && files[0] != testFile {
 		t.Errorf("Expected %s, got %s", testFile, files[0])
 	}
@@ -521,6 +527,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 
 func TestHandleWalkEntry(t *testing.T) {
 	tempDir := t.TempDir()
+
 	testFile := tempDir + "/test.go"
 	if err := os.WriteFile(testFile, []byte("package main"), 0o644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
@@ -581,6 +588,7 @@ func TestHandleWalkEntry(t *testing.T) {
 			if tt.wantSent && len(files) == 0 {
 				t.Error("Expected file to be sent to channel")
 			}
+
 			if !tt.wantSent && len(files) > 0 {
 				t.Error("Expected no file to be sent to channel")
 			}

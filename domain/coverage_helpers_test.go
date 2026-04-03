@@ -7,6 +7,7 @@ import (
 
 func assertErrorContains(t *testing.T, err error, substrs ...string) {
 	t.Helper()
+
 	for _, substr := range substrs {
 		if !strings.Contains(err.Error(), substr) {
 			t.Errorf("error = %v, want error containing %q", err, substr)
@@ -38,6 +39,7 @@ func TestValidateRules(t *testing.T) {
 		if err == nil {
 			t.Fatal("validateRules() error = nil, want error")
 		}
+
 		assertErrorContains(t, err, "validation failed", "rule1 failed")
 	})
 
@@ -52,6 +54,7 @@ func TestValidateRules(t *testing.T) {
 		if err == nil {
 			t.Fatal("validateRules() error = nil, want error")
 		}
+
 		assertErrorContains(t, err, "validation failed", "rule2 failed")
 	})
 }
@@ -198,7 +201,9 @@ func TestUnmarshalUintNonZero(t *testing.T) {
 
 func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expectedValue uint) {
 	t.Helper()
+
 	var result uint
+
 	err := unmarshalUintNonZero(
 		input,
 		"TestType",
@@ -210,6 +215,7 @@ func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expe
 
 	if expectError {
 		_ = result
+
 		if err == nil {
 			t.Error("unmarshalUintNonZero() error = nil, want error for zero value")
 		}

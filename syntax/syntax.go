@@ -238,6 +238,7 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 
 	for i := range indexes[cnt/2] {
 		checkPatternCycle(i, indexes, nodes, alts, cnt)
+
 		if len(alts) == 0 {
 			return false
 		}
@@ -249,6 +250,7 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 // findDivisors returns all divisors of cnt that are <= cnt/2.
 func findDivisors(cnt int) map[int]bool {
 	alts := make(map[int]bool)
+
 	for i := 1; i <= cnt/2; i++ {
 		if cnt%i == 0 {
 			alts[i] = true
@@ -264,6 +266,7 @@ func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]
 	if startIdx+indexes[0] >= len(nodes) {
 		return
 	}
+
 	startNode := nodes[startIdx+indexes[0]]
 
 	for alt := range alts {

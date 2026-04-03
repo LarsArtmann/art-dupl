@@ -45,6 +45,7 @@ type ParseStatsMixin struct {
 // IncrementalStats holds statistics from incremental parsing.
 type IncrementalStats struct {
 	ParseStatsMixin
+
 	CacheHits   int
 	CacheMisses int
 }

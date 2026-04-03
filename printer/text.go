@@ -43,9 +43,11 @@ func detectFileDuplicate(isFileDupeFlag bool, dups [][]*syntax.Node) bool {
 	if isFileDupeFlag {
 		return true
 	}
+
 	if len(dups) == 0 {
 		return false
 	}
+
 	for _, frag := range dups {
 		if len(frag) != 1 || frag[0].Pos != 0 {
 			return false
@@ -58,6 +60,7 @@ func detectFileDuplicate(isFileDupeFlag bool, dups [][]*syntax.Node) bool {
 // calculateCloneSizes calculates fragment sizes and total size for clones.
 func calculateCloneSizes(clones []clone) int {
 	totalSize := 0
+
 	for i := range clones {
 		clones[i].size = len(clones[i].fragment)
 		totalSize += clones[i].size
@@ -94,6 +97,7 @@ func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		if len(hashPrefix) > 12 {
 			hashPrefix = hashPrefix[:12]
 		}
+
 		fileSizeStr := formatBytes(clones[0].fileSize)
 		if _, err := fmt.Fprintf(
 			p.w,
@@ -104,6 +108,7 @@ func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		); err != nil {
 			return err
 		}
+
 		for _, cl := range clones {
 			p.diffHintFiles = append(p.diffHintFiles, cl.filename)
 		}
@@ -161,6 +166,7 @@ func (p *TextPrinter) PrintFooter() error {
 	if len(p.diffHintFiles) >= 2 {
 		// Use first two files for diff hint
 		file1 := p.diffHintFiles[0]
+
 		file2 := p.diffHintFiles[1]
 		if _, err := fmt.Fprintf(p.w, "\n→ diff %s %s\n", file1, file2); err != nil {
 			return err //nolint:wrapcheck // fmt errors are clear in context

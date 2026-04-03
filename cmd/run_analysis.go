@@ -49,7 +49,9 @@ type buildParams struct {
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTree(
+	params buildParams,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	printBuildingStatus(
 		params.cfg,
 		params.outputFormat,
@@ -65,7 +67,9 @@ func buildSuffixTree(params buildParams) (*suffixtree.STree, []*syntax.Node, job
 }
 
 // buildSuffixTreeIncremental builds a suffix tree using incremental parsing with cache.
-func buildSuffixTreeIncremental(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTreeIncremental(
+	params buildParams,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	if params.cfg.Verbose {
 		_, _ = fmt.Fprintf(
 			os.Stderr,
@@ -74,7 +78,11 @@ func buildSuffixTreeIncremental(params buildParams) (*suffixtree.STree, []*synta
 		)
 	}
 
-	incParser := job.NewIncrementalParser(params.cfg.CacheDir, params.cfg.ClearCache, params.cfg.Semantic)
+	incParser := job.NewIncrementalParser(
+		params.cfg.CacheDir,
+		params.cfg.ClearCache,
+		params.cfg.Semantic,
+	)
 
 	filesChan := filesFeedWithOptions(
 		params.paths,
@@ -102,7 +110,9 @@ func buildSuffixTreeIncremental(params buildParams) (*suffixtree.STree, []*synta
 }
 
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
-func buildSuffixTreeStandard(params buildParams) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTreeStandard(
+	params buildParams,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
 	filesChan := filesFeedWithOptions(
 		params.paths,
 		params.cfg.FilesFromStdin,
@@ -111,11 +121,18 @@ func buildSuffixTreeStandard(params buildParams) (*suffixtree.STree, []*syntax.N
 		params.cfg.Only,
 	)
 
-	var schan chan []*syntax.Node
-	var statsChan chan job.ParseStats
+	var (
+		schan     chan []*syntax.Node
+		statsChan chan job.ParseStats
+	)
 
 	if params.cfg.Workers > 1 {
-		schan, statsChan = job.ParseParallel(params.ctx, filesChan, params.cfg.Workers, params.cfg.Semantic)
+		schan, statsChan = job.ParseParallel(
+			params.ctx,
+			filesChan,
+			params.cfg.Workers,
+			params.cfg.Semantic,
+		)
 	} else {
 		schan, statsChan = job.Parse(params.ctx, filesChan, params.cfg.Semantic)
 	}
@@ -249,6 +266,7 @@ func executeAnalysis(
 // respecting context cancellation.
 func collectFilesFromChannel(ctx context.Context, filesChan <-chan string) ([]string, error) {
 	var files []string
+
 	for file := range filesChan {
 		select {
 		case <-ctx.Done():
@@ -355,7 +373,9 @@ func executeHashOnlyAnalysis(
 		filterStats = filterParam.GetStats()
 	}
 
-	return duplChan, job.ParseStats{ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0}}, filterStats, nil
+	return duplChan, job.ParseStats{
+		ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0},
+	}, filterStats, nil
 }
 
 // printFileCollectionStatus outputs status after file collection.

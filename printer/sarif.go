@@ -145,6 +145,7 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) erro
 	if p.processedHashes[hash] {
 		return nil
 	}
+
 	p.processedHashes[hash] = true
 
 	// Calculate size (token count)

@@ -24,8 +24,10 @@ func (d *detector) convertToCloneGroup(
 			continue
 		}
 
-		if err := clone.IsValid(); err != nil {
+		err := clone.IsValid()
+		if err != nil {
 			d.logger.Warn("Skipping invalid clone: %v", err)
+
 			continue
 		}
 

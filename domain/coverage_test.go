@@ -34,6 +34,7 @@ func runEnumTests[T stringerValidator](t *testing.T, testCases []struct {
 },
 ) {
 	t.Helper()
+
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			testEnumMethods(t, tt.state, tt.str, tt.isValid)

@@ -4,9 +4,8 @@ import (
 	"os"
 	"strings"
 
-	templparser "github.com/a-h/templ/parser/v2"
-
 	"github.com/LarsArtmann/art-dupl/syntax"
+	templparser "github.com/a-h/templ/parser/v2"
 )
 
 // Parse parses the given templ file and returns the unified syntax tree.

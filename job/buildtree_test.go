@@ -11,6 +11,7 @@ import (
 // It uses the provided error message if a timeout occurs.
 func waitForCompletion(t *testing.T, done chan bool, errorMessage string) {
 	t.Helper()
+
 	select {
 	case <-done:
 		// Success

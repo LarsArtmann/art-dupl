@@ -285,7 +285,8 @@ func ValidateConfig(cfg *Config) error {
 	}
 
 	for _, validate := range validations {
-		if err := validate(); err != nil {
+		err := validate()
+		if err != nil {
 			return err
 		}
 	}
@@ -297,6 +298,7 @@ func validateThreshold(threshold int) error {
 	if threshold < 1 {
 		return errors.NewValidationError("threshold must be greater than 0", nil)
 	}
+
 	if threshold > 1000 {
 		return errors.NewValidationError("threshold seems too large (max 1000)", nil)
 	}
@@ -308,6 +310,7 @@ func validateMaxChildrenSerial(maxChildren int) error {
 	if maxChildren < 1000 {
 		return errors.NewValidationError("maxChildrenSerial should be at least 1000", nil)
 	}
+
 	if maxChildren > 100000 {
 		return errors.NewValidationError("maxChildrenSerial seems too large (max 100000)", nil)
 	}
@@ -330,6 +333,7 @@ func validateDetectionMethods(methods []DetectionMethod) error {
 	if len(methods) == 0 {
 		return errors.NewValidationError("at least one detection method must be specified", nil)
 	}
+
 	for _, method := range methods {
 		if !method.IsValid() {
 			return errors.NewValidationError(
@@ -360,6 +364,7 @@ func validateOnly(only string) error {
 	if only == "" {
 		return nil
 	}
+
 	if only != "go" && only != "templ" {
 		return errors.NewValidationError(
 			fmt.Sprintf("invalid --only value: %q (valid: go, templ)", only),

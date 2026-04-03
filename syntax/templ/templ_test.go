@@ -10,10 +10,12 @@ import (
 
 func assertParseBytesSuccess(t *testing.T, input string) *syntax.Node {
 	t.Helper()
+
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
 	}
+
 	if node == nil {
 		t.Fatal("ParseBytes() returned nil node")
 	}
@@ -27,6 +29,7 @@ func runParseTests(t *testing.T, tests []struct {
 },
 ) {
 	t.Helper()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assertParseBytesSuccess(t, tt.input)
@@ -234,6 +237,7 @@ templ child() {
 
 func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
 	t.Helper()
+
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -254,6 +258,7 @@ func testParseTemplInputMin(t *testing.T, input string, expectedMin int) {
 
 func testParseAndVerifyNodeCount(t *testing.T, input string, expectedMin int) {
 	t.Helper()
+
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -512,10 +517,12 @@ templ withWhitespace() {
 
 func testParseValid(t *testing.T, input string) {
 	t.Helper()
+
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
 	}
+
 	if node == nil {
 		t.Fatal("ParseBytes() returned nil node")
 	}
@@ -559,6 +566,7 @@ templ footer() {
 
 func testParseTemplInputExact(t *testing.T, input string, expected int) {
 	t.Helper()
+
 	node, _, err := ParseBytes("test.templ", []byte(input))
 	if err != nil {
 		t.Fatalf("ParseBytes() error = %v", err)
@@ -853,6 +861,7 @@ templ component() {
 				// Empty file and imports-only are valid
 				t.Fatalf("ParseBytes() error = %v", err)
 			}
+
 			if node == nil {
 				t.Fatal("ParseBytes() returned nil node")
 			}

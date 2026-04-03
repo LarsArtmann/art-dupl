@@ -52,6 +52,7 @@ func TestHashMatchesHexEncoding(t *testing.T) {
 			t.Parallel()
 
 			result := Hash(tc)
+
 			expected := hex.EncodeToString([]byte{
 				byte(tc >> 56), byte(tc >> 48), byte(tc >> 40), byte(tc >> 32),
 				byte(tc >> 24), byte(tc >> 16), byte(tc >> 8), byte(tc),
@@ -89,6 +90,7 @@ func BenchmarkHash(b *testing.B) {
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
 			b.ResetTimer()
+
 			for range b.N {
 				_ = Hash(bm.input)
 			}

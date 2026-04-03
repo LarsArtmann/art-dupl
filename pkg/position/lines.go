@@ -64,6 +64,7 @@ func offsetToLine(content []byte, offset int) int {
 	}
 
 	line := 1
+
 	for i := 0; i <= offset && i < len(content); i++ {
 		if content[i] == '\n' {
 			line++

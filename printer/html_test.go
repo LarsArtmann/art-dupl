@@ -10,6 +10,7 @@ import (
 
 func TestHTMLDiffRendering(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewHTMLWithOptions(
 		&buf,
 		mockReadFile(""),
@@ -18,11 +19,13 @@ func TestHTMLDiffRendering(t *testing.T) {
 		15,
 	)
 
-	if err := printer.PrintHeader(); err != nil {
+	err := printer.PrintHeader()
+	if err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	if err := printer.PrintFooter(); err != nil {
+	err := printer.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -50,6 +53,7 @@ func TestHTMLDiffRendering(t *testing.T) {
 
 func TestHTMLInlineViewMode(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewHTMLWithOptions(
 		&buf,
 		mockReadFile(""),
@@ -58,11 +62,13 @@ func TestHTMLInlineViewMode(t *testing.T) {
 		15,
 	)
 
-	if err := printer.PrintHeader(); err != nil {
+	err := printer.PrintHeader()
+	if err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	if err := printer.PrintFooter(); err != nil {
+	err := printer.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
@@ -81,6 +87,7 @@ func TestHTMLInlineViewMode(t *testing.T) {
 
 func TestHTMLDiffJavaScriptFunctions(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewHTMLWithOptions(
 		&buf,
 		mockReadFile(""),
@@ -89,11 +96,13 @@ func TestHTMLDiffJavaScriptFunctions(t *testing.T) {
 		15,
 	)
 
-	if err := printer.PrintHeader(); err != nil {
+	err := printer.PrintHeader()
+	if err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	if err := printer.PrintFooter(); err != nil {
+	err := printer.PrintFooter()
+	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 

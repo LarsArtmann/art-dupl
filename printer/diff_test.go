@@ -51,6 +51,7 @@ func TestLineDiff_ModifiedLines(t *testing.T) {
 	if result.Base[0].Type != DiffLineModified {
 		t.Errorf("Expected base line 0 to be Modified, got %d", result.Base[0].Type)
 	}
+
 	if result.Compared[0].Type != DiffLineModified {
 		t.Errorf("Expected compared line 0 to be Modified, got %d", result.Compared[0].Type)
 	}
@@ -59,6 +60,7 @@ func TestLineDiff_ModifiedLines(t *testing.T) {
 	if result.Base[1].Type != DiffLineEqual {
 		t.Errorf("Expected base line 1 to be Equal, got %d", result.Base[1].Type)
 	}
+
 	if result.Base[2].Type != DiffLineEqual {
 		t.Errorf("Expected base line 2 to be Equal, got %d", result.Base[2].Type)
 	}
@@ -78,6 +80,7 @@ func TestLineDiff_AddedLines(t *testing.T) {
 	if len(result.Compared) != 3 {
 		t.Errorf("Expected 3 compared lines, got %d", len(result.Compared))
 	}
+
 	if result.Compared[2].Type != DiffLineAdded {
 		t.Errorf("Expected compared line 2 to be Added, got %d", result.Compared[2].Type)
 	}
@@ -97,6 +100,7 @@ func TestLineDiff_RemovedLines(t *testing.T) {
 	if len(result.Base) != 3 {
 		t.Errorf("Expected 3 base lines, got %d", len(result.Base))
 	}
+
 	if result.Base[2].Type != DiffLineRemoved {
 		t.Errorf("Expected base line 2 to be Removed, got %d", result.Base[2].Type)
 	}
@@ -180,6 +184,7 @@ func TestLineDiff_RealWorldClone(t *testing.T) {
 
 	// Count modified lines
 	modifiedCount := 0
+
 	for _, line := range result.Base {
 		if line.Type == DiffLineModified {
 			modifiedCount++
@@ -223,6 +228,7 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 	if result.Base == nil {
 		t.Fatal("Expected Base to not be nil")
 	}
+
 	if result.Base.Filename != "file1.go" {
 		t.Errorf("Expected base filename to be file1.go, got %s", result.Base.Filename)
 	}
@@ -314,6 +320,7 @@ func TestDiffSameLength(t *testing.T) {
 	if base[0].Type != DiffLineEqual {
 		t.Error("First line should still be Equal")
 	}
+
 	if base[1].Type != DiffLineModified {
 		t.Error("Second line should be Modified")
 	}
@@ -336,6 +343,7 @@ func TestDiffLargeFiles(t *testing.T) {
 
 	base := make([]DiffLine, 150)
 	compared := make([]DiffLine, 150)
+
 	for i := range 150 {
 		base[i] = DiffLine{Content: string(baseLines[i]), Type: DiffLineEqual, LineNumber: i + 1}
 		compared[i] = DiffLine{
@@ -375,9 +383,11 @@ func TestCountDiffStats(t *testing.T) {
 	if added != 1 {
 		t.Errorf("Expected 1 added, got %d", added)
 	}
+
 	if removed != 1 {
 		t.Errorf("Expected 1 removed, got %d", removed)
 	}
+
 	if modified != 1 {
 		t.Errorf("Expected 1 modified, got %d", modified)
 	}
@@ -419,6 +429,7 @@ func TestLineDiff_ContentPreservation(t *testing.T) {
 	if !strings.Contains(result.Base[0].Content, "func foo() {") {
 		t.Errorf("Base content not preserved: %q", result.Base[0].Content)
 	}
+
 	if !strings.Contains(result.Compared[0].Content, "func bar() {") {
 		t.Errorf("Compared content not preserved: %q", result.Compared[0].Content)
 	}
@@ -479,6 +490,7 @@ func TestWordDiff_EqualContent(t *testing.T) {
 	if strings.Contains(result, `class="word-added"`) {
 		t.Error("Expected no word-added spans for identical content")
 	}
+
 	if strings.Contains(result, `class="word-removed"`) {
 		t.Error("Expected no word-removed spans for identical content")
 	}
@@ -509,6 +521,7 @@ func TestWordDiff_HasChanges(t *testing.T) {
 			if !strings.Contains(result, `class="word-added"`) {
 				t.Error("Expected word-added span for changed word")
 			}
+
 			if !strings.Contains(result, `class="word-removed"`) {
 				t.Error("Expected word-removed span for changed word")
 			}

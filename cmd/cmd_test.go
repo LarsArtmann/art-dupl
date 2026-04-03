@@ -25,14 +25,18 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 
 func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
 	t.Helper()
+
 	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, ext)
+
 	found := make([]string, 0, expectedCount)
 	for f := range ch {
 		found = append(found, filepath.Base(f))
 	}
+
 	if len(found) != expectedCount {
 		t.Errorf("Expected %d %s files, got %d: %v", expectedCount, ext, len(found), found)
 	}
+
 	for _, f := range found {
 		if !strings.HasSuffix(f, "."+ext) {
 			t.Errorf("Expected only .%s files, found: %s", ext, f)
@@ -330,7 +334,8 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	files := []string{"test1.go", "test2.go", "test1.templ", "test2.templ"}
 	for _, f := range files {
 		path := filepath.Join(tmpDir, f)
-		if err := os.WriteFile(path, []byte("content"), 0o600); err != nil {
+		err := os.WriteFile(path, []byte("content"), 0o600)
+		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 	}
@@ -345,10 +350,12 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 
 	t.Run("all files with empty filter", func(t *testing.T) {
 		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "")
+
 		found := make([]string, 0, 4)
 		for f := range ch {
 			found = append(found, filepath.Base(f))
 		}
+
 		if len(found) != 4 {
 			t.Errorf("Expected 4 files, got %d: %v", len(found), found)
 		}

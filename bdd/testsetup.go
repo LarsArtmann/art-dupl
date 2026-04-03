@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
-
 	"github.com/onsi/ginkgo/v2"
 )
 

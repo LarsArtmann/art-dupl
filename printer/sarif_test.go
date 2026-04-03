@@ -24,6 +24,7 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 
 func TestNewSARIF(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15)
 
 	if printer == nil {
@@ -33,6 +34,7 @@ func TestNewSARIF(t *testing.T) {
 
 func TestSARIFPrinter_PrintHeader(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15)
 
 	err := printer.PrintHeader()
@@ -48,6 +50,7 @@ func TestSARIFPrinter_PrintHeader(t *testing.T) {
 
 func TestSARIFPrinter_PrintClones(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Create test clone group
@@ -69,6 +72,7 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 
 func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	err := printer.PrintClones([][]*syntax.Node{})
@@ -83,6 +87,7 @@ func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
 
 func TestSARIFPrinter_PrintFooter(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Add some test data
@@ -118,6 +123,7 @@ func TestSARIFPrinter_PrintFooter(t *testing.T) {
 
 func TestSARIFPrinter_DetermineLevel(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 10).(*sarifPrinter)
 
 	tests := []struct {
@@ -175,6 +181,7 @@ func TestGenerateCloneHash(t *testing.T) {
 
 func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Create test clone groups with same hash
@@ -183,6 +190,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 
 	// First group
 	dups1 := [][]*syntax.Node{nodes1, nodes2}
+
 	err := printer.PrintClones(dups1)
 	if err != nil {
 		t.Errorf("First PrintClones returned error: %v", err)
@@ -190,6 +198,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 
 	// Second group with same hash (should be filtered)
 	dups2 := [][]*syntax.Node{nodes1, nodes2}
+
 	err = printer.PrintClones(dups2)
 	if err != nil {
 		t.Errorf("Second PrintClones returned error: %v", err)
@@ -203,6 +212,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 
 func TestSARIFOutput_Structure(t *testing.T) {
 	var buf bytes.Buffer
+
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Add test data
@@ -214,7 +224,8 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	_ = printer.PrintFooter()
 
 	var output SARIFOutput
-	if err := json.Unmarshal(buf.Bytes(), &output); err != nil {
+	err := json.Unmarshal(buf.Bytes(), &output)
+	if err != nil {
 		t.Fatalf("Failed to unmarshal SARIF output: %v", err)
 	}
 

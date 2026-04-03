@@ -127,6 +127,7 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	if err != nil {
 		// Corrupted cache entry, remove it
 		_ = os.Remove(cachePath)
+
 		atomic.AddInt64(&fc.metadata.MissCount, 1)
 
 		return nil, false

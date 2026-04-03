@@ -3,11 +3,10 @@ package bdd
 import (
 	"fmt"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // BDD Test Suite for CLI Commands (Version, Help, etc.)
