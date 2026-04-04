@@ -30,12 +30,12 @@ func printDupls(
 		return err
 	}
 
-	err := printCloneGroups(p, groups, keys, sortBy)
+	err = printCloneGroups(p, groups, keys, sortBy)
 	if err != nil {
 		return err
 	}
 
-	err := handleJSONOutput(p, threshold, sortBy, detectionMethod)
+	err = handleJSONOutput(p, threshold, sortBy, detectionMethod)
 	if err != nil {
 		return err
 	}

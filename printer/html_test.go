@@ -24,7 +24,7 @@ func TestHTMLDiffRendering(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := printer.PrintFooter()
+	err = printer.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestHTMLInlineViewMode(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := printer.PrintFooter()
+	err = printer.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestHTMLDiffJavaScriptFunctions(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := printer.PrintFooter()
+	err = printer.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}

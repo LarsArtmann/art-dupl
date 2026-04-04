@@ -20,7 +20,7 @@ func TestTextOutputGolden(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := statsPrinter.PrintFooter()
+	err = statsPrinter.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
@@ -54,7 +54,7 @@ func TestStatsJSONOutputGolden(t *testing.T) {
 
 	statsPrinter.format = FormatJSON
 
-	err := statsPrinter.PrintFooter()
+	err = statsPrinter.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestStatsCSVOutputGolden(t *testing.T) {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	err := statsPrinter.PrintFooter()
+	err = statsPrinter.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}

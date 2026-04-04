@@ -1,7 +1,7 @@
 version: "2"
 run:
     timeout: 5m
-    go: 1.26.1
+    go: 1.26.0
     build-tags:
         - goexperiment.goroutineleakprofile
         - goexperiment.jsonv2
@@ -36,6 +36,7 @@ linters:
         - errname
         - errorlint
         - exhaustive
+        - exhaustruct
         - exptostd
         - fatcontext
         - forbidigo
@@ -43,6 +44,7 @@ linters:
         - funlen
         - ginkgolinter
         - gocheckcompilerdirectives
+        - gochecknoglobals
         - gochecknoinits
         - gochecksumtype
         - gocognit
@@ -51,6 +53,7 @@ linters:
         - gocyclo
         - godoclint
         - godot
+        - godox
         - goheader
         - gomoddirectives
         - gomodguard
@@ -72,6 +75,7 @@ linters:
         - makezero
         - mirror
         - misspell
+        - mnd
         - modernize
         - musttag
         - nakedret
@@ -100,6 +104,7 @@ linters:
         - sqlclosecheck
         - staticcheck
         - tagalign
+        - tagliatelle
         - testableexamples
         - testifylint
         - testpackage
@@ -111,8 +116,10 @@ linters:
         - unused
         - usestdlibvars
         - usetesting
+        - varnamelen
         - wastedassign
         - whitespace
+        - wrapcheck
         - wsl_v5
         - zerologlint
     settings:

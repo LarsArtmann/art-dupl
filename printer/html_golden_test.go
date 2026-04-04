@@ -24,7 +24,7 @@ func TestHTMLOutputGolden(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := printer.PrintFooter()
+	err = printer.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
@@ -48,7 +48,7 @@ func TestHTMLOutputGoldenNoDiff(t *testing.T) {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err := printer.PrintFooter()
+	err = printer.PrintFooter()
 	if err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
