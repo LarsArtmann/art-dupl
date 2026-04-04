@@ -79,8 +79,6 @@ module github.com/LarsArtmann/art-dupl
 
 go 1.26.1
 
-replace github.com/LarsArtmann/gogenfilter => ../gogenfilter
-
 require (
 	charm.land/lipgloss/v2 v2.0.2
 	charm.land/log/v2 v2.0.0
@@ -143,3 +141,5 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
+
+replace github.com/LarsArtmann/gogenfilter => ../gogenfilter
