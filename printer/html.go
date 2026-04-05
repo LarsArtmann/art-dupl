@@ -69,7 +69,7 @@ func NewHTMLWithOptions(
 		thresh = threshold[0]
 	}
 
-	return &htmlprinter{ //nolint:exhaustruct
+	return &htmlprinter{
 		w:         w,
 		ReadFile:  fread,
 		threshold: thresh,
@@ -1195,7 +1195,7 @@ func countDiffStats(diff DiffResult) (added, removed, modified int) {
 // buildSummarySection generates the HTML summary section with category/priority distribution
 // and filter buttons.
 //
-//nolint:funlen // Long function is inherent to comprehensive HTML summary generation
+
 func (p *htmlprinter) buildSummarySection() string {
 	if p.stats.totalClones == 0 {
 		return ""
@@ -1331,7 +1331,6 @@ func orderedPriorities() []ClonePriority {
 	}
 }
 
-//nolint:funlen // Long function is inherent to comprehensive HTML footer generation
 func (p *htmlprinter) PrintFooter() error {
 	summary := p.buildSummarySection()
 

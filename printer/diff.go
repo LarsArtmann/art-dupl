@@ -42,7 +42,7 @@ func LineDiff(base, compared []byte) DiffResult {
 	baseLines := splitLines(base)
 	comparedLines := splitLines(compared)
 
-	result := DiffResult{ //nolint:exhaustruct
+	result := DiffResult{
 		Base:     make([]DiffLine, len(baseLines)),
 		Compared: make([]DiffLine, len(comparedLines)),
 	}
@@ -259,10 +259,10 @@ type CloneDiff struct {
 // ComputeCloneGroupDiff computes diffs for a group of clones.
 func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 	if len(clones) == 0 {
-		return CloneGroupDiff{} //nolint:exhaustruct
+		return CloneGroupDiff{}
 	}
 
-	result := CloneGroupDiff{ //nolint:exhaustruct
+	result := CloneGroupDiff{
 		Base: &CloneWithContent{
 			CloneWithContentMixin: CloneWithContentMixin{
 				Filename:  clones[0].filename,

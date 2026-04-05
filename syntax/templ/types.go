@@ -10,44 +10,44 @@ package templ
 const (
 	BadNode = iota
 
-	// Core declarations.
+	// ComponentDeclaration represents a component declaration.
 	ComponentDeclaration
 	CSSDeclaration
 	ScriptDeclaration
 
-	// HTML structure.
+	// Element represents an HTML element.
 	Element
 	TagStart
 	TagEnd
 	SelfClosingTag
 	Doctype
 
-	// Style/Script elements (structural, not content).
+	// StyleElement represents a style element (structural, not content).
 	StyleElement
 	ScriptElement
 
-	// Flow control.
+	// ComponentIfStatement represents a component if statement.
 	ComponentIfStatement
 	ComponentForStatement
 	ComponentSwitchStatement
 	ComponentSwitchExpressionCase
 	ComponentSwitchDefaultCase
 
-	// Attributes (structural).
+	// Attribute represents an attribute (structural).
 	Attribute
 	SpreadAttributes
 	ConditionalAttributeIfStatement
 
-	// Expressions and blocks.
+	// Expression represents an expression or block.
 	Expression
 	ComponentBlock
 	ComponentRender
 	ComponentChildrenExpression
 	RawGoBlock
 
-	// Imports.
+	// ComponentImport represents an import.
 	ComponentImport
 
-	// File root.
+	// File represents the file root.
 	File
 )

@@ -67,7 +67,7 @@ type Node struct {
 }
 
 func NewNode() *Node {
-	return &Node{} //nolint:exhaustruct // Intentionally empty node for incremental construction
+	return &Node{}
 }
 
 func (n *Node) AddChildren(children ...*Node) {
@@ -137,7 +137,7 @@ func serial(n *Node, stream *[]*Node) int {
 // - Validate threshold at domain boundary.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
-		return Match{} //nolint:exhaustruct // Empty match indicates no syntax units found
+		return Match{}
 	}
 
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
@@ -148,7 +148,7 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	}
 
 	if len(indexes) == 0 || isCyclic(indexes, firstSeq) || spansMultipleFiles(indexes, firstSeq) {
-		return Match{} //nolint:exhaustruct // Empty match indicates no syntax units found
+		return Match{}
 	}
 
 	return buildMatch(data, m, firstSeq, indexes)

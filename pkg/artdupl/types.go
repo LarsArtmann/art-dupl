@@ -160,7 +160,7 @@ func DefaultOptions() *Options {
 }
 
 // readFileDefault is the default file reader using os package.
-var readFileDefault = os.ReadFile //nolint:gochecknoglobals // Default implementation
+var readFileDefault = os.ReadFile
 
 // ValidateOptions checks if the provided options are valid.
 func ValidateOptions(opts *Options) error {

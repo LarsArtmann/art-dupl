@@ -34,7 +34,7 @@ type RuntimeConfig struct {
 
 // ToConfig converts RuntimeConfig to config.Config.
 func (r *RuntimeConfig) ToConfig() *config.Config {
-	cfg := &config.Config{ //nolint:exhaustruct
+	cfg := &config.Config{
 		Threshold:      r.Threshold,
 		IncludeVendor:  r.Vendor,
 		FilesFromStdin: r.FilesFromStdin,
@@ -59,7 +59,7 @@ func (r *RuntimeConfig) ToConfig() *config.Config {
 
 // DefaultRuntimeConfig returns a default runtime configuration.
 func DefaultRuntimeConfig() *RuntimeConfig {
-	return &RuntimeConfig{ //nolint:exhaustruct
+	return &RuntimeConfig{
 		Threshold:    DefaultThreshold,
 		SortBy:       "size",
 		OutputWriter: &cliStdout{},

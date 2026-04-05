@@ -33,7 +33,7 @@ func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
-	return &TextPrinter{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)} //nolint:exhaustruct
+	return &TextPrinter{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
 }
 
 func (p *TextPrinter) PrintHeader() error { return nil }
@@ -197,7 +197,7 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 			)
 		}
 
-		cl := clone{ //nolint:exhaustruct // fragment, size, fileSize set separately below
+		cl := clone{
 			filename:  fileInfo.Filename,
 			lineStart: fileInfo.LineStart,
 			lineEnd:   fileInfo.LineEnd,

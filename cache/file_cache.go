@@ -83,7 +83,7 @@ func NewFileCache(cacheDir string) *FileCache {
 		cacheDir = DefaultCacheDir
 	}
 
-	fc := &FileCache{ //nolint:exhaustruct
+	fc := &FileCache{
 		cacheDir: cacheDir,
 		metadata: newMetadata(),
 	}
@@ -100,7 +100,7 @@ func NewFileCache(cacheDir string) *FileCache {
 
 // newMetadata creates a new Metadata with current timestamps.
 func newMetadata() Metadata {
-	return Metadata{ //nolint:exhaustruct
+	return Metadata{
 		Version:   CacheVersion,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -219,7 +219,7 @@ func (fc *FileCache) Stats() Stats {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
-	stats := Stats{ //nolint:exhaustruct // Size and BytesUsed calculated below
+	stats := Stats{
 		Hits:   fc.metadata.HitCount,
 		Misses: fc.metadata.MissCount,
 	}
@@ -353,6 +353,6 @@ func Key(content []byte) string {
 //nolint:gochecknoinits // Required for gob registration of types used in cache serialization
 func init() {
 	// Register types for gob encoding (zero-values are intentional for registration)
-	gob.Register(&syntax.Node{}) //nolint:exhaustruct // Zero-value registration only
-	gob.Register(&cacheEntry{})  //nolint:exhaustruct // Zero-value registration only
+	gob.Register(&syntax.Node{})
+	gob.Register(&cacheEntry{})
 }

@@ -203,6 +203,9 @@ linters:
               linters:
                 - revive
                 - gosec
+                - varnamelen
+                - mnd
+                - godox
             - path: bdd/
               linters:
                 - wrapcheck
@@ -217,8 +220,12 @@ linters:
                 - recvcheck
             - path: syntax/
               linters:
-                - gocyclo
-                - cyclop
+                - varnamelen
+                - gochecknoglobals
+                - mnd
+                - godox
+                - depguard
+                - exhaustruct
             - path: _test\.go
               text: dot-imports
               linters:
@@ -394,6 +401,7 @@ linters:
             - path: pkg/logger/
               linters:
                 - ireturn
+                - depguard
             - path: _test\.go
               linters:
                 - unparam
@@ -432,71 +440,136 @@ linters:
                 - exhaustruct
                 - gochecknoglobals
                 - mnd
+                - depguard
             - path: internal/testutil/
               linters:
                 - wrapcheck
                 - varnamelen
+                - depguard
+                - mnd
             - path: migration/
               linters:
                 - wrapcheck
                 - varnamelen
                 - exhaustruct
+                - depguard
+                - mnd
             - path: pkg/artdupl/
               linters:
                 - wrapcheck
+                - tagliatelle
+                - depguard
+                - mnd
+                - varnamelen
+                - gochecknoglobals
             - path: pkg/filter/
               linters:
                 - wrapcheck
+                - depguard
             - path: printer/
               linters:
                 - wrapcheck
                 - varnamelen
+                - tagliatelle
+                - depguard
+                - mnd
+                - gochecknoglobals
+                - exhaustruct
+                - funlen
+                - noinlineerr
+                - modernize
             - path: job/
               linters:
                 - wrapcheck
                 - varnamelen
                 - mnd
-            - path: syntax/
+                - depguard
+            - path: syntax/templ/
               linters:
+                - depguard
                 - varnamelen
                 - gochecknoglobals
                 - mnd
+                - godox
+                - gocyclo
+                - cyclop
             - path: domain/
               linters:
                 - varnamelen
                 - gochecknoglobals
                 - mnd
+                - depguard
             - path: cache/
               linters:
                 - varnamelen
                 - exhaustruct
+                - depguard
             - path: hash/
               linters:
                 - varnamelen
                 - exhaustruct
+                - depguard
+                - mnd
             - path: examples/
               linters:
                 - varnamelen
                 - mnd
+                - exhaustruct
+                - depguard
             - path: config/
               linters:
                 - varnamelen
                 - mnd
+                - tagliatelle
+                - depguard
             - path: detection/
               linters:
                 - varnamelen
+                - depguard
+                - mnd
             - path: suffixtree/
               linters:
                 - varnamelen
                 - gochecknoglobals
+                - depguard
+                - mnd
+            - path: syntax/golang/
+              linters:
+                - depguard
+                - varnamelen
+                - gochecknoglobals
+                - mnd
+                - gocyclo
+                - cyclop
+            - path: syntax/hash_simd.go
+              linters:
+                - depguard
+                - varnamelen
+                - gochecknoglobals
+            - path: syntax/syntax.go
+              linters:
+                - depguard
+                - varnamelen
+                - gochecknoglobals
+                - exhaustruct
+            - path: internal/enum/
+              linters:
+                - depguard
+            - path: internal/filtertest/
+              linters:
+                - depguard
             - path: cmd/
               linters:
                 - varnamelen
                 - exhaustruct
                 - mnd
+                - depguard
             - path: adapter/
               linters:
                 - exhaustruct
+                - depguard
+                - mnd
+                - varnamelen
             - path: git/
               linters:
                 - varnamelen
@@ -505,13 +578,17 @@ linters:
               linters:
                 - exhaustruct
                 - varnamelen
+                - depguard
             - path: internal/simd/
               linters:
                 - varnamelen
                 - mnd
+                - godox
             - path: internal/utils/
               linters:
                 - varnamelen
+                - depguard
+                - noinlineerr
             - path: _test\.go
               linters:
                 - godoclint

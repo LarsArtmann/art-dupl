@@ -11,7 +11,7 @@ import (
 // hashPool is a sync.Pool for reusing byte slices in hashSeq operations.
 // This reduces memory allocations for hash operations.
 //
-//nolint:gochecknoglobals // Performance optimization: shared buffer pool for hashing
+
 var hashPool = sync.Pool{
 	New: func() any {
 		// Pre-allocate for common sizes (up to 10,000 nodes)
