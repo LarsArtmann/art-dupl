@@ -50,7 +50,7 @@ func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, 
 		binaryPath,
 		args...)
 
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()
 }
 
 // BuildArgsFromFlags converts a map of flags to command line arguments.

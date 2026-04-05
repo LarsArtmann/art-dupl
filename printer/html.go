@@ -608,7 +608,7 @@ footer {
 
 func (p *htmlprinter) PrintHeader() error {
 	if _, err := fmt.Fprintf(p.w, htmlTemplate, p.threshold); err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	return p.writeMetadata()
@@ -655,7 +655,7 @@ func (p *htmlprinter) writeMetadata() error {
 		`<script>document.getElementById('report-metadata').innerHTML = %s;</script>`,
 		strconv.Quote(metaStr),
 	); err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	return nil
@@ -788,7 +788,7 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 		suggestionHTML(suggestion),
 	)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // priorityHigher returns true if p1 is higher priority than p2.
@@ -874,7 +874,7 @@ func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 `, vscodeLink, html.EscapeString(cl.filename), cl.lineStart, p.iota, i, p.iota, i,
 			html.EscapeString(string(cl.fragment)))
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 	}
 
@@ -884,7 +884,7 @@ func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 func (p *htmlprinter) writeCloneGroupFooter() error {
 	_, err := fmt.Fprint(p.w, "</div></div>\n")
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // writeDiffView renders the diff visualization for clone groups.
@@ -916,7 +916,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 <div class="file-info"><a href="%s">%s:%d</a></div>
 `, baseVSCode, html.EscapeString(groupDiff.Base.Filename), groupDiff.Base.LineStart)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	// Write aggregate diff stats if available
@@ -924,7 +924,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 	if hasAggregateStats {
 		_, err = fmt.Fprint(p.w, `<div class="diff-aggregate-stats">`)
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 
 		if totalAdded > 0 {
@@ -941,7 +941,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 
 		_, err = fmt.Fprint(p.w, `</div>`)
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 	}
 
@@ -981,7 +981,7 @@ func (p *htmlprinter) writeDiffView(clones []clone) error {
 </div>
 `)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // writeDiffViewToggle writes the view mode toggle buttons (side-by-side vs inline).
@@ -993,7 +993,7 @@ func (p *htmlprinter) writeDiffViewToggle() error {
 </div>
 `, p.iota, p.iota, p.iota, p.iota)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // writeDiffSelector writes the dropdown for selecting which clone to compare.
@@ -1004,14 +1004,14 @@ func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 <option value="" disabled selected>Compare with...</option>
 `)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	for idx, other := range groupDiff.Others {
 		_, err := fmt.Fprintf(p.w, `<option value="%d">%s:%d</option>
 `, idx, html.EscapeString(other.Filename), other.LineStart)
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 	}
 
@@ -1019,7 +1019,7 @@ func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 </div>
 `)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // writeDiffComparison writes a side-by-side diff comparison.
@@ -1045,7 +1045,7 @@ func (p *htmlprinter) writeDiffComparison(
 <span class="diff-stats">
 `, activeClass, p.iota, index, otherVSCode, html.EscapeString(other.Filename), other.LineStart)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	// Write stats
@@ -1066,7 +1066,7 @@ func (p *htmlprinter) writeDiffComparison(
 <div class="diff-content" data-diff-index="`+strconv.Itoa(index)+`">
 `)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	// Write base and compared panels with word-level highlighting
@@ -1078,7 +1078,7 @@ func (p *htmlprinter) writeDiffComparison(
 </div>
 `)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // writeDiffPanelsWithWordDiff renders both base and compared panels with word-level highlighting.
@@ -1093,7 +1093,7 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	// Render base panel
@@ -1109,7 +1109,7 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	// Render compared panel
@@ -1121,7 +1121,7 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 </div>
 `)
 
-	return err //nolint:wrapcheck
+	return err
 }
 
 // renderDiffLines renders diff lines with optional word-level highlighting for modified lines.
@@ -1165,7 +1165,7 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 			content,
 		)
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 	}
 
@@ -1454,7 +1454,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </html>
 `)
 
-	return err //nolint:wrapcheck // fmt errors are clear in context
+	return err
 }
 
 // OutputHTML generates HTML output with sorting.

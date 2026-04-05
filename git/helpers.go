@@ -22,6 +22,7 @@ func FindGitRoot(startPath string) string {
 	current := absPath
 	for {
 		gitDir := filepath.Join(current, ".git")
+
 		_, err := os.Stat(gitDir)
 		if err == nil {
 			return current

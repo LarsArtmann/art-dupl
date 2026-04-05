@@ -26,7 +26,7 @@ func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, erro
 		s.BinaryPath,
 		append([]string{dir}, args...)...) // #nosec G204 -- Test helper running project binary
 
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()
 }
 
 // RunArtDuplWithFlags executes art-dupl binary with flag map and returns combined output.
@@ -50,7 +50,7 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(
 		s.BinaryPath,
 		args...) // #nosec G204 -- Test helper running project binary
 
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()
 }
 
 // RunArtDuplAllFormat runs art-dupl with --all flag to generate all output formats.
@@ -80,7 +80,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 		args...) // #nosec G204 -- Test helper running project binary
 	cmd.Stdin = strings.NewReader(stdin)
 
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()
 }
 
 // RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
@@ -103,7 +103,7 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 		s.BinaryPath,
 		args...) // #nosec G204 -- Test helper running project binary
 
-	return cmd.CombinedOutput() //nolint:wrapcheck // Test helper - pass through exec error
+	return cmd.CombinedOutput()
 }
 
 // RunStatsSubcommandWithJSON runs the stats subcommand with JSON format and parses the result.

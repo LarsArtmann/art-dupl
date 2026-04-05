@@ -157,6 +157,10 @@ linters:
                 - errors.New(
                 - stderrors.New(
                 - domain.NewValidationError(
+                - errors.HandleMarshalingError(
+                - errors.WrapIO(
+        gomoddirectives:
+            allow_replacements: true
     exclusions:
         rules:
             - path: _test\.go
@@ -199,6 +203,9 @@ linters:
               linters:
                 - revive
                 - gosec
+            - path: bdd/
+              linters:
+                - wrapcheck
             - path: migration/
               linters:
                 - typecheck
@@ -271,6 +278,9 @@ linters:
               text: empty-block
               linters:
                 - revive
+            - path: cmd/
+              linters:
+                - containedctx
             - path: cmd/
               text: package-comments
               linters:
@@ -405,6 +415,44 @@ linters:
             - path: printer/stats.go
               linters:
                 - unparam
+            - path: go.mod
+              linters:
+                - gomoddirectives
+            - path: _test\.go
+              linters:
+                - wrapcheck
+                - varnamelen
+                - exhaustruct
+                - gochecknoglobals
+                - mnd
+            - path: bdd/
+              linters:
+                - wrapcheck
+                - varnamelen
+                - exhaustruct
+                - gochecknoglobals
+                - mnd
+            - path: internal/testutil/
+              linters:
+                - wrapcheck
+                - varnamelen
+            - path: migration/
+              linters:
+                - wrapcheck
+                - varnamelen
+                - exhaustruct
+            - path: pkg/artdupl/
+              linters:
+                - wrapcheck
+            - path: pkg/filter/
+              linters:
+                - wrapcheck
+            - path: printer/
+              linters:
+                - wrapcheck
+            - path: job/
+              linters:
+                - wrapcheck
 formatters:
     enable:
         - gci

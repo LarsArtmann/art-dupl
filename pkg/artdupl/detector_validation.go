@@ -16,7 +16,7 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 	// Check for context cancellation
 	select {
 	case <-ctx.Done():
-		return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
+		return ctx.Err()
 	default:
 	}
 

@@ -30,6 +30,7 @@ func setupGitRepo(t *testing.T) string {
 	cmd := exec.CommandContext(t.Context(), "git", "init", "-b", "main")
 
 	cmd.Dir = tempDir
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Failed to init git repo: %v, output: %s", err, string(output))
@@ -46,6 +47,7 @@ func setupGitRepo(t *testing.T) string {
 	)
 
 	cmd.Dir = tempDir
+
 	output, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Failed to config git email: %v, output: %s", err, string(output))

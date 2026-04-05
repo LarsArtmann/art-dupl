@@ -298,7 +298,7 @@ func generateMigrationID() MigrationID {
 // MigrateConfig handles configuration migration.
 // Returns the options and nil error on success, or zero value and error on failure.
 func MigrateConfig(oldConfig map[string]any) (domain.DetectionOptions, error) {
-	options := domain.DetectionOptions{} //nolint:exhaustruct
+	options := domain.DetectionOptions{}
 
 	// Extract threshold
 	if threshold, ok := oldConfig["threshold"].(float64); ok {

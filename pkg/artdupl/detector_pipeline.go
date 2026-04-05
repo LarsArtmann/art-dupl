@@ -161,7 +161,7 @@ func (d *detector) streamDetectionResults(
 			select {
 			case resultChan <- group:
 			case <-ctx.Done():
-				return ctx.Err() //nolint:wrapcheck // Context cancellation errors are already clear
+				return ctx.Err()
 			}
 		}
 	}
@@ -234,7 +234,7 @@ func collectMatchesIntoGroups(
 		// Check for cancellation
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err() //nolint:wrapcheck // Standard context cancellation
+			return nil, ctx.Err()
 		default:
 		}
 

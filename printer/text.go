@@ -135,7 +135,7 @@ func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) er
 		len(dups),
 		sortBy,
 	); err != nil {
-		return err //nolint:wrapcheck // fmt errors are clear in context
+		return err
 	}
 
 	clones, err := prepareClonesInfo(p.ReadFile, dups)
@@ -159,7 +159,7 @@ func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) er
 
 func (p *TextPrinter) PrintFooter() error {
 	if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
-		return err //nolint:wrapcheck // fmt errors are clear in context
+		return err
 	}
 
 	// Add diff hint if we have file duplicates
@@ -169,7 +169,7 @@ func (p *TextPrinter) PrintFooter() error {
 
 		file2 := p.diffHintFiles[1]
 		if _, err := fmt.Fprintf(p.w, "\n→ diff %s %s\n", file1, file2); err != nil {
-			return err //nolint:wrapcheck // fmt errors are clear in context
+			return err
 		}
 	}
 
@@ -254,7 +254,7 @@ func (p *TextPrinter) OutputText(threshold int, sortBy SortBy) error {
 					cl.lineStart,
 					cl.lineEnd,
 				); err != nil {
-					return err //nolint:wrapcheck // fmt errors are clear in context
+					return err
 				}
 			} else {
 				err := writeCloneLines(p.w, []clone{cl}, "%s:%d,%d")
