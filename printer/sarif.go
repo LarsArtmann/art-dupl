@@ -65,7 +65,7 @@ type SARIFResult struct {
 	Level        string            `json:"level"`
 	Message      SARIFMessage      `json:"message"`
 	Locations    []SARIFLocation   `json:"locations"`
-	Fingerprints SARIFFingerprints `json:"fingerprints,omitempty"`
+	Fingerprints SARIFFingerprints `json:"fingerprints"`
 }
 
 // SARIFMessage represents a message in a result.

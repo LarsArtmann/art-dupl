@@ -26,3 +26,5 @@ bdd/art-dupl
 node_modules/
 # Sensitive files
 *.db
+# Test coverage
+/coverage

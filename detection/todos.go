@@ -142,6 +142,33 @@ func findIssuesGeneric[T LineExtractor](
 	})
 }
 
+// skipIfInvalidLineNumber returns true and logs if the line number is invalid.
+func skipIfInvalidLineNumber(l logger.Logger, filename string, line any, err error) bool {
+	if err != nil {
+		l.Debug(
+			"skipping issue with invalid line number",
+			"file", filename,
+			"line", line,
+			"err", err,
+		)
+		return true
+	}
+	return false
+}
+
+// skipIfInvalidFilepath returns true and logs if the filepath is invalid.
+func skipIfInvalidFilepath(l logger.Logger, filename string, err error) bool {
+	if err != nil {
+		l.Debug(
+			"skipping issue with invalid filename",
+			"file", filename,
+			"err", err,
+		)
+		return true
+	}
+	return false
+}
+
 // FindTodos finds all TODO-style comments in the provided nodes.
 func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
 	return findIssuesGeneric(data, td.findTodosInFile, "TODO")
@@ -193,30 +220,12 @@ func (td *TodoDetector) findTodosInFile(filename string, nodes []*syntax.Node) [
 					lineNum, err := domain.NewLineNumber(
 						uint16(line),
 					) // #nosec G115 -- Line numbers from parser are within uint16 range
-					if err != nil {
-						logger.Default.Debug(
-							"skipping todo entry with invalid line number",
-							"file",
-							filename,
-							"line",
-							line,
-							"err",
-							err,
-						)
-
+					if skipIfInvalidLineNumber(logger.Default, filename, line, err) {
 						continue
 					}
 
 					file, err := domain.NewFilepath(filename)
-					if err != nil {
-						logger.Default.Debug(
-							"skipping todo entry with invalid filename",
-							"file",
-							filename,
-							"err",
-							err,
-						)
-
+					if skipIfInvalidFilepath(logger.Default, filename, err) {
 						continue
 					}
 
@@ -279,30 +288,12 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 					lineNum, err := domain.NewLineNumber(
 						uint16(node.Pos),
 					) // #nosec G115 -- Node positions are within uint16 range
-					if err != nil {
-						logger.Default.Debug(
-							"skipping legacy issue with invalid line number",
-							"file",
-							filename,
-							"pos",
-							node.Pos,
-							"err",
-							err,
-						)
-
+					if skipIfInvalidLineNumber(logger.Default, filename, node.Pos, err) {
 						continue
 					}
 
 					file, err := domain.NewFilepath(filename)
-					if err != nil {
-						logger.Default.Debug(
-							"skipping legacy issue with invalid filename",
-							"file",
-							filename,
-							"err",
-							err,
-						)
-
+					if skipIfInvalidFilepath(logger.Default, filename, err) {
 						continue
 					}
 

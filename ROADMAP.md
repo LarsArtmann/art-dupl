@@ -26,4 +26,4 @@
 
 ---
 
-*These items are aspirational and have no committed timeline. They represent potential future directions based on user needs and project evolution.*
+_These items are aspirational and have no committed timeline. They represent potential future directions based on user needs and project evolution._

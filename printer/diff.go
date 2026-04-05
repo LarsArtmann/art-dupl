@@ -100,17 +100,27 @@ func splitLines(data []byte) [][]byte {
 	return lines
 }
 
+// markLinesModified marks lines as modified if their trimmed content differs.
+func markLinesModified(baseTrimmed, comparedTrimmed []byte, baseLine, comparedLine *DiffLine) bool {
+	if !bytes.Equal(baseTrimmed, comparedTrimmed) {
+		baseLine.Type = DiffLineModified
+		comparedLine.Type = DiffLineModified
+		return true
+	}
+	return false
+}
+
 // diffSameLength compares lines when both fragments have the same number of lines.
 func diffSameLength(base, compared []DiffLine) bool {
 	hasDiff := false
 
 	for i := range base {
-		baseTrimmed := bytes.TrimSpace([]byte(base[i].Content))
-		comparedTrimmed := bytes.TrimSpace([]byte(compared[i].Content))
-
-		if !bytes.Equal(baseTrimmed, comparedTrimmed) {
-			base[i].Type = DiffLineModified
-			compared[i].Type = DiffLineModified
+		if markLinesModified(
+			bytes.TrimSpace([]byte(base[i].Content)),
+			bytes.TrimSpace([]byte(compared[i].Content)),
+			&base[i],
+			&compared[i],
+		) {
 			hasDiff = true
 		}
 	}
@@ -137,12 +147,12 @@ func diffLargeFiles(baseLines, comparedLines [][]byte, base, compared []DiffLine
 
 	// Compare line by line up to the shorter length
 	for i := range minLen {
-		baseTrimmed := bytes.TrimSpace(baseLines[i])
-		comparedTrimmed := bytes.TrimSpace(comparedLines[i])
-
-		if !bytes.Equal(baseTrimmed, comparedTrimmed) {
-			base[i].Type = DiffLineModified
-			compared[i].Type = DiffLineModified
+		if markLinesModified(
+			bytes.TrimSpace(baseLines[i]),
+			bytes.TrimSpace(comparedLines[i]),
+			&base[i],
+			&compared[i],
+		) {
 			hasDiff = true
 		}
 	}

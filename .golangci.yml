@@ -1,620 +1,620 @@
 version: "2"
 run:
-    timeout: 5m
-    go: 1.26.0
-    build-tags:
-        - goexperiment.goroutineleakprofile
-        - goexperiment.jsonv2
-        - goexperiment.simd
-    allow-parallel-runners: true
-    allow-serial-runners: true
-    tests: true
+  timeout: 5m
+  go: 1.26.0
+  build-tags:
+    - goexperiment.goroutineleakprofile
+    - goexperiment.jsonv2
+    - goexperiment.simd
+  allow-parallel-runners: true
+  allow-serial-runners: true
+  tests: true
 output:
-    formats: {}
+  formats: {}
 linters:
-    enable:
-        - arangolint
-        - asasalint
-        - asciicheck
-        - bidichk
-        - bodyclose
-        - canonicalheader
-        - containedctx
-        - contextcheck
-        - copyloopvar
-        - cyclop
-        - decorder
-        - depguard
-        - dogsled
-        - dupl
-        - dupword
-        - durationcheck
-        - embeddedstructfieldcheck
-        - err113
-        - errcheck
-        - errchkjson
-        - errname
-        - errorlint
-        - exhaustive
-        - exhaustruct
-        - exptostd
-        - fatcontext
-        - forbidigo
-        - forcetypeassert
-        - funlen
-        - ginkgolinter
-        - gocheckcompilerdirectives
-        - gochecknoglobals
-        - gochecknoinits
-        - gochecksumtype
-        - gocognit
-        - goconst
-        - gocritic
-        - gocyclo
-        - godoclint
-        - godot
-        - godox
-        - goheader
-        - gomoddirectives
-        - gomodguard
-        - goprintffuncname
-        - gosec
-        - gosmopolitan
-        - govet
-        - grouper
-        - iface
-        - importas
-        - inamedparam
-        - ineffassign
-        - interfacebloat
-        - intrange
-        - iotamixing
-        - ireturn
-        - loggercheck
-        - maintidx
-        - makezero
-        - mirror
-        - misspell
-        - mnd
-        - modernize
-        - musttag
-        - nakedret
-        - nestif
-        - nilerr
-        - nilnesserr
-        - nilnil
-        - nlreturn
-        - noctx
-        - noinlineerr
-        - nolintlint
-        - nonamedreturns
-        - nosprintfhostport
-        - paralleltest
-        - perfsprint
-        - prealloc
-        - predeclared
-        - promlinter
-        - protogetter
-        - reassign
-        - recvcheck
-        - revive
-        - rowserrcheck
-        - sloglint
-        - spancheck
-        - sqlclosecheck
-        - staticcheck
-        - tagalign
-        - tagliatelle
-        - testableexamples
-        - testifylint
-        - testpackage
-        - thelper
-        - tparallel
-        - unconvert
-        - unparam
-        - unqueryvet
-        - unused
-        - usestdlibvars
-        - usetesting
-        - varnamelen
-        - wastedassign
-        - whitespace
-        - wrapcheck
-        - wsl_v5
-        - zerologlint
-    settings:
-        cyclop:
-            max-complexity: 15
-        dupl:
-            threshold: 100
-        funlen:
-            lines: 80
-            statements: 50
-        gocognit:
-            min-complexity: 35
-        goconst:
-            min-len: 5
-            min-occurrences: 4
-        gocyclo:
-            min-complexity: 15
-        ireturn:
-            allow:
-                - anon
-                - error
-                - empty
-                - stdlib
-                - generic
-                - Printer
-                - Hasher
-                - Detector
-                - Token
-        wrapcheck:
-            ignore-sigs:
-                - errors.Wrap
-                - errors.Wrapf
-                - errors.WrapFile
-                - fmt.Errorf(
-                - errors.New(
-                - stderrors.New(
-                - domain.NewValidationError(
-                - errors.HandleMarshalingError(
-                - errors.WrapIO(
-        gomoddirectives:
-            allow_replacements: true
-    exclusions:
-        rules:
-            - path: _test\.go
-              linters:
-                - funlen
-                - cyclop
-                - gocognit
-                - gocyclo
-                - maintidx
-                - dupl
-                - gosec
-                - err113
-                - paralleltest
-                - testpackage
-                - forcetypeassert
-                - forbidigo
-                - nestif
-                - recvcheck
-                - golines
-            - path: bdd/
-              linters:
-                - funlen
-                - cyclop
-                - gocognit
-                - gocyclo
-                - maintidx
-                - dupl
-                - gosec
-                - err113
-                - paralleltest
-                - testpackage
-                - forcetypeassert
-                - forbidigo
-                - nestif
-                - golines
-            - path: examples/
-              linters:
-                - revive
-            - path: testutils/
-              linters:
-                - revive
-                - gosec
-                - varnamelen
-                - mnd
-                - godox
-            - path: bdd/
-              linters:
-                - wrapcheck
-            - path: migration/
-              linters:
-                - typecheck
-            - path: config/
-              linters:
-                - recvcheck
-            - path: domain/
-              linters:
-                - recvcheck
-            - path: syntax/
-              linters:
-                - varnamelen
-                - gochecknoglobals
-                - mnd
-                - godox
-                - depguard
-                - exhaustruct
-            - path: _test\.go
-              text: dot-imports
-              linters:
-                - revive
-            - path: bdd/
-              text: dot-imports
-              linters:
-                - revive
-            - path: migration/
-              text: dot-imports
-              linters:
-                - revive
-            - path: migration/
-              linters:
-                - recvcheck
-            - path: cache/
-              text: stutters
-              linters:
-                - revive
-            - path: git/
-              text: stutters
-              linters:
-                - revive
-            - path: hash/
-              text: stutters
-              linters:
-                - revive
-            - path: internal/enum/
-              text: stutters
-              linters:
-                - revive
-            - path: migration/
-              text: stutters
-              linters:
-                - revive
-            - path: pkg/filter/
-              text: stutters
-              linters:
-                - revive
-            - path: errors/
-              text: var-naming
-              linters:
-                - revive
-            - path: hash/
-              text: var-naming
-              linters:
-                - revive
-            - path: pkg/format/
-              text: var-naming
-              linters:
-                - revive
-            - path: internal/utils/
-              text: var-naming
-              linters:
-                - revive
-            - path: _test\.go
-              text: empty-block
-              linters:
-                - revive
-            - path: cmd/
-              linters:
-                - containedctx
-            - path: cmd/
-              text: package-comments
-              linters:
-                - revive
-            - path: internal/
-              text: package-comments
-              linters:
-                - revive
-            - path: bdd/
-              text: package-comments
-              linters:
-                - revive
-            - path: pkg/
-              text: package-comments
-              linters:
-                - revive
-            - path: config/
-              text: package-comments
-              linters:
-                - revive
-            - path: domain/
-              text: exported
-              linters:
-                - revive
-            - path: config/
-              text: exported
-              linters:
-                - revive
-            - path: cache/
-              text: exported
-              linters:
-                - revive
-            - path: git/
-              text: exported
-              linters:
-                - revive
-            - path: errors/
-              text: exported
-              linters:
-                - revive
-            - path: pkg/filter/
-              text: exported
-              linters:
-                - revive
-            - path: pkg/logger/
-              text: exported
-              linters:
-                - revive
-            - path: suffixtree/
-              text: exported
-              linters:
-                - revive
-            - path: job/
-              text: exported
-              linters:
-                - revive
-            - path: job/
-              text: package-comments
-              linters:
-                - revive
-            - path: internal/enum/
-              text: exported
-              linters:
-                - revive
-            - path: printer/
-              text: exported
-              linters:
-                - revive
-            - path: printer/
-              text: var-naming
-              linters:
-                - revive
-            - path: printer/common.go
-              text: redefines-builtin-id
-              linters:
-                - revive
-            - path: _test\.go
-              text: unused-parameter
-              linters:
-                - revive
-            - path: internal/testutil/
-              text: unused-parameter
-              linters:
-                - revive
-            - path: printer/
-              text: unused-parameter
-              linters:
-                - revive
-            - path: detection/
-              text: unused-parameter
-              linters:
-                - revive
-            - path: migration/
-              text: unused-parameter
-              linters:
-                - revive
-            - path: syntax/
-              text: exported
-              linters:
-                - revive
-            - path: syntax/
-              text: var-naming
-              linters:
-                - revive
-            - path: printer/common.go
-              linters:
-                - predeclared
-            - path: job/
-              linters:
-                - nonamedreturns
-            - path: pkg/logger/
-              linters:
-                - ireturn
-                - depguard
-            - path: _test\.go
-              linters:
-                - unparam
-            - path: bdd/
-              linters:
-                - unparam
-            - path: cmd/run_analysis.go
-              linters:
-                - unparam
-            - path: hash/file_detector.go
-              linters:
-                - unparam
-            - path: pkg/artdupl/detector_pipeline.go
-              linters:
-                - unparam
-            - path: printer/html.go
-              linters:
-                - unparam
-            - path: printer/stats.go
-              linters:
-                - unparam
-            - path: go.mod
-              linters:
-                - gomoddirectives
-            - path: _test\.go
-              linters:
-                - wrapcheck
-                - varnamelen
-                - exhaustruct
-                - gochecknoglobals
-                - mnd
-            - path: bdd/
-              linters:
-                - wrapcheck
-                - varnamelen
-                - exhaustruct
-                - gochecknoglobals
-                - mnd
-                - depguard
-            - path: internal/testutil/
-              linters:
-                - wrapcheck
-                - varnamelen
-                - depguard
-                - mnd
-            - path: migration/
-              linters:
-                - wrapcheck
-                - varnamelen
-                - exhaustruct
-                - depguard
-                - mnd
-            - path: pkg/artdupl/
-              linters:
-                - wrapcheck
-                - tagliatelle
-                - depguard
-                - mnd
-                - varnamelen
-                - gochecknoglobals
-            - path: pkg/filter/
-              linters:
-                - wrapcheck
-                - depguard
-            - path: printer/
-              linters:
-                - wrapcheck
-                - varnamelen
-                - tagliatelle
-                - depguard
-                - mnd
-                - gochecknoglobals
-                - exhaustruct
-                - funlen
-                - noinlineerr
-                - modernize
-            - path: job/
-              linters:
-                - wrapcheck
-                - varnamelen
-                - mnd
-                - depguard
-            - path: syntax/templ/
-              linters:
-                - depguard
-                - varnamelen
-                - gochecknoglobals
-                - mnd
-                - godox
-                - gocyclo
-                - cyclop
-            - path: domain/
-              linters:
-                - varnamelen
-                - gochecknoglobals
-                - mnd
-                - depguard
-            - path: cache/
-              linters:
-                - varnamelen
-                - exhaustruct
-                - depguard
-            - path: hash/
-              linters:
-                - varnamelen
-                - exhaustruct
-                - depguard
-                - mnd
-            - path: examples/
-              linters:
-                - varnamelen
-                - mnd
-                - exhaustruct
-                - depguard
-            - path: config/
-              linters:
-                - varnamelen
-                - mnd
-                - tagliatelle
-                - depguard
-            - path: detection/
-              linters:
-                - varnamelen
-                - depguard
-                - mnd
-            - path: suffixtree/
-              linters:
-                - varnamelen
-                - gochecknoglobals
-                - depguard
-                - mnd
-            - path: syntax/golang/
-              linters:
-                - depguard
-                - varnamelen
-                - gochecknoglobals
-                - mnd
-                - gocyclo
-                - cyclop
-            - path: syntax/hash_simd.go
-              linters:
-                - depguard
-                - varnamelen
-                - gochecknoglobals
-            - path: syntax/syntax.go
-              linters:
-                - depguard
-                - varnamelen
-                - gochecknoglobals
-                - exhaustruct
-            - path: internal/enum/
-              linters:
-                - depguard
-            - path: internal/filtertest/
-              linters:
-                - depguard
-            - path: cmd/
-              linters:
-                - varnamelen
-                - exhaustruct
-                - mnd
-                - depguard
-            - path: adapter/
-              linters:
-                - exhaustruct
-                - depguard
-                - mnd
-                - varnamelen
-            - path: git/
-              linters:
-                - varnamelen
-                - mnd
-            - path: cli/
-              linters:
-                - exhaustruct
-                - varnamelen
-                - depguard
-            - path: internal/simd/
-              linters:
-                - varnamelen
-                - mnd
-                - godox
-            - path: internal/utils/
-              linters:
-                - varnamelen
-                - depguard
-                - noinlineerr
-            - path: _test\.go
-              linters:
-                - godoclint
-                - tagliatelle
-                - depguard
-                - exhaustruct
-                - noinlineerr
-            - path: godox
-              linters:
-                - godox
-            - path: godoclint
-              linters:
-                - godoclint
-            - path: tagliatelle
-              linters:
-                - tagliatelle
-            - path: noinlineerr
-              linters:
-                - noinlineerr
-            - path: gochecknoglobals
-              linters:
-                - gochecknoglobals
+  enable:
+    - arangolint
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
+    - copyloopvar
+    - cyclop
+    - decorder
+    - depguard
+    - dogsled
+    - dupl
+    - dupword
+    - durationcheck
+    - embeddedstructfieldcheck
+    - err113
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exhaustruct
+    - exptostd
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - ginkgolinter
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gochecknoinits
+    - gochecksumtype
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godoclint
+    - godot
+    - godox
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - gosmopolitan
+    - govet
+    - grouper
+    - iface
+    - importas
+    - inamedparam
+    - ineffassign
+    - interfacebloat
+    - intrange
+    - iotamixing
+    - ireturn
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
+    - misspell
+    - mnd
+    - modernize
+    - musttag
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - nlreturn
+    - noctx
+    - noinlineerr
+    - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - predeclared
+    - promlinter
+    - protogetter
+    - reassign
+    - recvcheck
+    - revive
+    - rowserrcheck
+    - sloglint
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tagalign
+    - tagliatelle
+    - testableexamples
+    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unqueryvet
+    - unused
+    - usestdlibvars
+    - usetesting
+    - varnamelen
+    - wastedassign
+    - whitespace
+    - wrapcheck
+    - wsl_v5
+    - zerologlint
+  settings:
+    cyclop:
+      max-complexity: 15
+    dupl:
+      threshold: 100
+    funlen:
+      lines: 80
+      statements: 50
+    gocognit:
+      min-complexity: 35
+    goconst:
+      min-len: 5
+      min-occurrences: 4
+    gocyclo:
+      min-complexity: 15
+    ireturn:
+      allow:
+        - anon
+        - error
+        - empty
+        - stdlib
+        - generic
+        - Printer
+        - Hasher
+        - Detector
+        - Token
+    wrapcheck:
+      ignore-sigs:
+        - errors.Wrap
+        - errors.Wrapf
+        - errors.WrapFile
+        - fmt.Errorf(
+        - errors.New(
+        - stderrors.New(
+        - domain.NewValidationError(
+        - errors.HandleMarshalingError(
+        - errors.WrapIO(
+    gomoddirectives:
+      allow_replacements: true
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - funlen
+          - cyclop
+          - gocognit
+          - gocyclo
+          - maintidx
+          - dupl
+          - gosec
+          - err113
+          - paralleltest
+          - testpackage
+          - forcetypeassert
+          - forbidigo
+          - nestif
+          - recvcheck
+          - golines
+      - path: bdd/
+        linters:
+          - funlen
+          - cyclop
+          - gocognit
+          - gocyclo
+          - maintidx
+          - dupl
+          - gosec
+          - err113
+          - paralleltest
+          - testpackage
+          - forcetypeassert
+          - forbidigo
+          - nestif
+          - golines
+      - path: examples/
+        linters:
+          - revive
+      - path: testutils/
+        linters:
+          - revive
+          - gosec
+          - varnamelen
+          - mnd
+          - godox
+      - path: bdd/
+        linters:
+          - wrapcheck
+      - path: migration/
+        linters:
+          - typecheck
+      - path: config/
+        linters:
+          - recvcheck
+      - path: domain/
+        linters:
+          - recvcheck
+      - path: syntax/
+        linters:
+          - varnamelen
+          - gochecknoglobals
+          - mnd
+          - godox
+          - depguard
+          - exhaustruct
+      - path: _test\.go
+        text: dot-imports
+        linters:
+          - revive
+      - path: bdd/
+        text: dot-imports
+        linters:
+          - revive
+      - path: migration/
+        text: dot-imports
+        linters:
+          - revive
+      - path: migration/
+        linters:
+          - recvcheck
+      - path: cache/
+        text: stutters
+        linters:
+          - revive
+      - path: git/
+        text: stutters
+        linters:
+          - revive
+      - path: hash/
+        text: stutters
+        linters:
+          - revive
+      - path: internal/enum/
+        text: stutters
+        linters:
+          - revive
+      - path: migration/
+        text: stutters
+        linters:
+          - revive
+      - path: pkg/filter/
+        text: stutters
+        linters:
+          - revive
+      - path: errors/
+        text: var-naming
+        linters:
+          - revive
+      - path: hash/
+        text: var-naming
+        linters:
+          - revive
+      - path: pkg/format/
+        text: var-naming
+        linters:
+          - revive
+      - path: internal/utils/
+        text: var-naming
+        linters:
+          - revive
+      - path: _test\.go
+        text: empty-block
+        linters:
+          - revive
+      - path: cmd/
+        linters:
+          - containedctx
+      - path: cmd/
+        text: package-comments
+        linters:
+          - revive
+      - path: internal/
+        text: package-comments
+        linters:
+          - revive
+      - path: bdd/
+        text: package-comments
+        linters:
+          - revive
+      - path: pkg/
+        text: package-comments
+        linters:
+          - revive
+      - path: config/
+        text: package-comments
+        linters:
+          - revive
+      - path: domain/
+        text: exported
+        linters:
+          - revive
+      - path: config/
+        text: exported
+        linters:
+          - revive
+      - path: cache/
+        text: exported
+        linters:
+          - revive
+      - path: git/
+        text: exported
+        linters:
+          - revive
+      - path: errors/
+        text: exported
+        linters:
+          - revive
+      - path: pkg/filter/
+        text: exported
+        linters:
+          - revive
+      - path: pkg/logger/
+        text: exported
+        linters:
+          - revive
+      - path: suffixtree/
+        text: exported
+        linters:
+          - revive
+      - path: job/
+        text: exported
+        linters:
+          - revive
+      - path: job/
+        text: package-comments
+        linters:
+          - revive
+      - path: internal/enum/
+        text: exported
+        linters:
+          - revive
+      - path: printer/
+        text: exported
+        linters:
+          - revive
+      - path: printer/
+        text: var-naming
+        linters:
+          - revive
+      - path: printer/common.go
+        text: redefines-builtin-id
+        linters:
+          - revive
+      - path: _test\.go
+        text: unused-parameter
+        linters:
+          - revive
+      - path: internal/testutil/
+        text: unused-parameter
+        linters:
+          - revive
+      - path: printer/
+        text: unused-parameter
+        linters:
+          - revive
+      - path: detection/
+        text: unused-parameter
+        linters:
+          - revive
+      - path: migration/
+        text: unused-parameter
+        linters:
+          - revive
+      - path: syntax/
+        text: exported
+        linters:
+          - revive
+      - path: syntax/
+        text: var-naming
+        linters:
+          - revive
+      - path: printer/common.go
+        linters:
+          - predeclared
+      - path: job/
+        linters:
+          - nonamedreturns
+      - path: pkg/logger/
+        linters:
+          - ireturn
+          - depguard
+      - path: _test\.go
+        linters:
+          - unparam
+      - path: bdd/
+        linters:
+          - unparam
+      - path: cmd/run_analysis.go
+        linters:
+          - unparam
+      - path: hash/file_detector.go
+        linters:
+          - unparam
+      - path: pkg/artdupl/detector_pipeline.go
+        linters:
+          - unparam
+      - path: printer/html.go
+        linters:
+          - unparam
+      - path: printer/stats.go
+        linters:
+          - unparam
+      - path: go.mod
+        linters:
+          - gomoddirectives
+      - path: _test\.go
+        linters:
+          - wrapcheck
+          - varnamelen
+          - exhaustruct
+          - gochecknoglobals
+          - mnd
+      - path: bdd/
+        linters:
+          - wrapcheck
+          - varnamelen
+          - exhaustruct
+          - gochecknoglobals
+          - mnd
+          - depguard
+      - path: internal/testutil/
+        linters:
+          - wrapcheck
+          - varnamelen
+          - depguard
+          - mnd
+      - path: migration/
+        linters:
+          - wrapcheck
+          - varnamelen
+          - exhaustruct
+          - depguard
+          - mnd
+      - path: pkg/artdupl/
+        linters:
+          - wrapcheck
+          - tagliatelle
+          - depguard
+          - mnd
+          - varnamelen
+          - gochecknoglobals
+      - path: pkg/filter/
+        linters:
+          - wrapcheck
+          - depguard
+      - path: printer/
+        linters:
+          - wrapcheck
+          - varnamelen
+          - tagliatelle
+          - depguard
+          - mnd
+          - gochecknoglobals
+          - exhaustruct
+          - funlen
+          - noinlineerr
+          - modernize
+      - path: job/
+        linters:
+          - wrapcheck
+          - varnamelen
+          - mnd
+          - depguard
+      - path: syntax/templ/
+        linters:
+          - depguard
+          - varnamelen
+          - gochecknoglobals
+          - mnd
+          - godox
+          - gocyclo
+          - cyclop
+      - path: domain/
+        linters:
+          - varnamelen
+          - gochecknoglobals
+          - mnd
+          - depguard
+      - path: cache/
+        linters:
+          - varnamelen
+          - exhaustruct
+          - depguard
+      - path: hash/
+        linters:
+          - varnamelen
+          - exhaustruct
+          - depguard
+          - mnd
+      - path: examples/
+        linters:
+          - varnamelen
+          - mnd
+          - exhaustruct
+          - depguard
+      - path: config/
+        linters:
+          - varnamelen
+          - mnd
+          - tagliatelle
+          - depguard
+      - path: detection/
+        linters:
+          - varnamelen
+          - depguard
+          - mnd
+      - path: suffixtree/
+        linters:
+          - varnamelen
+          - gochecknoglobals
+          - depguard
+          - mnd
+      - path: syntax/golang/
+        linters:
+          - depguard
+          - varnamelen
+          - gochecknoglobals
+          - mnd
+          - gocyclo
+          - cyclop
+      - path: syntax/hash_simd.go
+        linters:
+          - depguard
+          - varnamelen
+          - gochecknoglobals
+      - path: syntax/syntax.go
+        linters:
+          - depguard
+          - varnamelen
+          - gochecknoglobals
+          - exhaustruct
+      - path: internal/enum/
+        linters:
+          - depguard
+      - path: internal/filtertest/
+        linters:
+          - depguard
+      - path: cmd/
+        linters:
+          - varnamelen
+          - exhaustruct
+          - mnd
+          - depguard
+      - path: adapter/
+        linters:
+          - exhaustruct
+          - depguard
+          - mnd
+          - varnamelen
+      - path: git/
+        linters:
+          - varnamelen
+          - mnd
+      - path: cli/
+        linters:
+          - exhaustruct
+          - varnamelen
+          - depguard
+      - path: internal/simd/
+        linters:
+          - varnamelen
+          - mnd
+          - godox
+      - path: internal/utils/
+        linters:
+          - varnamelen
+          - depguard
+          - noinlineerr
+      - path: _test\.go
+        linters:
+          - godoclint
+          - tagliatelle
+          - depguard
+          - exhaustruct
+          - noinlineerr
+      - path: godox
+        linters:
+          - godox
+      - path: godoclint
+        linters:
+          - godoclint
+      - path: tagliatelle
+        linters:
+          - tagliatelle
+      - path: noinlineerr
+        linters:
+          - noinlineerr
+      - path: gochecknoglobals
+        linters:
+          - gochecknoglobals
 formatters:
-    enable:
-        - gci
-        - goimports
-        - gofumpt
-        - golines
+  enable:
+    - gci
+    - goimports
+    - gofumpt
+    - golines
 issues: {}

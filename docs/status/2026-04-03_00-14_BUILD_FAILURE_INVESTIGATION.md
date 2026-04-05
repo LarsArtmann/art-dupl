@@ -11,6 +11,7 @@
 The attempt to build and install art-dupl locally failed with a **Go toolchain runtime error**, not a code compilation error. The `printer/stats_formatter.go:240` compile error that was reported in the previous status report (2026-04-02) has **already been fixed** in commit `8db9e96` — the user's error message was from an earlier state of the working tree.
 
 **Current Blocker:** Go runtime crash during build:
+
 ```
 runtime: open /Users/larsartmann/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.1.darwin-arm64/src/runtime/tls_arm64.h: no such file or directory
 go: unlinkat /var/folders/.../go-build...: directory not empty
@@ -33,12 +34,14 @@ This appears to be a corrupted Go toolchain or build cache issue. The code itsel
 ### 2. Root Cause Identified
 
 The previous status report mentioned a compile error at `printer/stats_formatter.go:240`. This error was:
+
 ```
 cannot use filename (variable of type string) as FileStatMixin value in struct literal
 too many values in struct literal of type topFileStat
 ```
 
 **This was FIXED** in commit `8db9e96`:
+
 ```go
 // BEFORE (broken):
 files = append(files, topFileStat{filename, lines})
@@ -83,11 +86,13 @@ go: unlinkat /var/folders/07/y9f_lh8s1zq2kr67_k94w22h0000gn/T/go-build3977053258
 ```
 
 **Analysis:**
+
 - The file `tls_arm64.h` is indeed missing from the Go 1.26.1 toolchain
 - This is a corrupted or incomplete Go toolchain installation
 - The `go-build` temp directory cleanup failure is a side effect
 
 **Probable Cause:**
+
 - Go 1.26.1 was auto-downloaded due to `go.work` requiring it
 - The download may have been interrupted or corrupted
 - NixOS system Go (1.26.0 at `/run/current-system/sw/bin/go`) is different from toolchain Go (1.26.1)
@@ -105,6 +110,7 @@ This suggests gopls is using a different Go binary than the shell.
 ### 3. go.work File Complications
 
 The workspace file at `/Users/larsartmann/projects/go.work` forces all projects to use Go 1.26.1, which causes:
+
 - Auto-download of Go toolchain by Go command
 - Potential version conflicts with system Go
 - LSP confusion about which Go version to use
@@ -197,6 +203,7 @@ Status: clean (nothing to commit, working tree clean)
 ### File Verification
 
 **printer/stats_formatter.go:240** (CONFIRMED FIXED):
+
 ```go
 files = append(files, topFileStat{FileStatMixin{filename, lines}})
 ```
@@ -226,20 +233,23 @@ a95d2be docs(status): add comprehensive status report for 2026-04-01
 ## Recommended Immediate Actions
 
 1. **Fix the Go toolchain** (choose one):
+
    ```bash
    # Option A: Remove corrupted toolchain
    rm -rf ~/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.1.darwin-arm64/
-   
+
    # Option B: Full module cache clean
    go clean -modcache
    ```
 
 2. **Retry the build**:
+
    ```bash
    just install-local
    ```
 
 3. **If build succeeds, run full verification**:
+
    ```bash
    just ci
    ```
@@ -270,4 +280,4 @@ a95d2be docs(status): add comprehensive status report for 2026-04-01
 
 ---
 
-*End of Report — 2026-04-03 00:14*
+_End of Report — 2026-04-03 00:14_

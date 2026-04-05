@@ -9,6 +9,7 @@
 ## Executive Summary
 
 Audited the gogenfilter SDK usage in art-dupl. Found and fixed:
+
 1. ✅ **art-dupl**: Deleted dead code (7 unused wrapper functions)
 2. ✅ **gogenfilter**: Fixed compilation-breaking bug (unexported `cause` field)
 
@@ -20,29 +21,29 @@ Both projects now build and pass tests successfully.
 
 ### A. FULLY DONE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Delete dead `pkg/filter/detection.go` wrapper | ✅ DONE | 7 unused functions removed |
-| Fix gogenfilter `Cause` field export | ✅ DONE | Changed `cause` → `Cause` in 3 error structs |
-| Verify art-dupl build | ✅ DONE | `go build ./cmd/art-dupl` passes |
-| Verify gogenfilter build | ✅ DONE | `go build ./...` passes |
-| Verify filter tests | ✅ DONE | 10 tests pass |
+| Task                                          | Status  | Notes                                        |
+| --------------------------------------------- | ------- | -------------------------------------------- |
+| Delete dead `pkg/filter/detection.go` wrapper | ✅ DONE | 7 unused functions removed                   |
+| Fix gogenfilter `Cause` field export          | ✅ DONE | Changed `cause` → `Cause` in 3 error structs |
+| Verify art-dupl build                         | ✅ DONE | `go build ./cmd/art-dupl` passes             |
+| Verify gogenfilter build                      | ✅ DONE | `go build ./...` passes                      |
+| Verify filter tests                           | ✅ DONE | 10 tests pass                                |
 
 ### B. PARTIALLY DONE
 
-| Task | Status | Notes |
-|------|--------|-------|
+| Task                    | Status     | Notes                             |
+| ----------------------- | ---------- | --------------------------------- |
 | LSP diagnostics refresh | ⚠️ PARTIAL | Stale warnings about deleted file |
-| Full CI/lint run | ⚠️ PARTIAL | golangci-lint timeout issues |
+| Full CI/lint run        | ⚠️ PARTIAL | golangci-lint timeout issues      |
 
 ### C. NOT STARTED
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Commit art-dupl changes | 🔲 NOT STARTED | Ready to commit |
-| Commit gogenfilter changes | 🔲 NOT STARTED | Ready to commit |
-| Full integration tests | 🔲 NOT STARTED | Need to run full test suite |
-| CI/CD verification | 🔲 NOT STARTED | Need to verify GitHub Actions |
+| Task                       | Status         | Notes                         |
+| -------------------------- | -------------- | ----------------------------- |
+| Commit art-dupl changes    | 🔲 NOT STARTED | Ready to commit               |
+| Commit gogenfilter changes | 🔲 NOT STARTED | Ready to commit               |
+| Full integration tests     | 🔲 NOT STARTED | Need to run full test suite   |
+| CI/CD verification         | 🔲 NOT STARTED | Need to verify GitHub Actions |
 
 ### D. TOTALLY FUCKED UP (None)
 
@@ -99,8 +100,9 @@ return nil, &errors.SQLCConfigError{
 ```
 
 **Solution:** Changed `cause` → `Cause` (exported) in:
+
 - `BaseError`
-- `ProjectRootError`  
+- `ProjectRootError`
 - `SQLCConfigError`
 
 **Impact:** ✅ Critical fix - without this, gogenfilter wouldn't compile.
@@ -111,41 +113,41 @@ return nil, &errors.SQLCConfigError{
 
 ### What gogenfilter Provides
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Filter core (`NewFilter`, `ShouldFilter`) | ✅ Working | |
-| Detection functions (`IsSQLCGenerated`, etc.) | ✅ Working | |
-| SQLC config parsing (`FindSQLCConfigs`, etc.) | ✅ Working | |
-| Metrics tracking (`GetStats`, `TotalFiltered`) | ✅ Working | |
-| Pattern matching (`MatchPattern`) | ✅ Working | |
-| Project root finding (`FindProjectRoot`) | ✅ Working | |
+| Feature                                        | Status     | Notes |
+| ---------------------------------------------- | ---------- | ----- |
+| Filter core (`NewFilter`, `ShouldFilter`)      | ✅ Working |       |
+| Detection functions (`IsSQLCGenerated`, etc.)  | ✅ Working |       |
+| SQLC config parsing (`FindSQLCConfigs`, etc.)  | ✅ Working |       |
+| Metrics tracking (`GetStats`, `TotalFiltered`) | ✅ Working |       |
+| Pattern matching (`MatchPattern`)              | ✅ Working |       |
+| Project root finding (`FindProjectRoot`)       | ✅ Working |       |
 
 ### art-dupl Usage of gogenfilter
 
-| Function | Usage | Method |
-|----------|-------|--------|
-| `gogenfilter.Filter` | Type alias | ✅ Direct import |
-| `gogenfilter.NewFilter()` | Direct call | ✅ |
-| `filter.ShouldFilter()` | Via type alias | ✅ |
-| `filter.GetStats()` | Via type alias | ✅ |
-| `gogenfilter.MatchPattern()` | Direct call | ✅ Tests only |
-| `gogenfilter.IsSQLCGenerated()` | Direct call | ✅ Tests only |
-| `filter.FindSQLCConfigs()` | Wrapper function | ✅ |
-| `filter.GetSQLOutputDirs()` | Wrapper function | ✅ |
-| `filter.NewMetrics()` | Direct call | ✅ |
+| Function                        | Usage            | Method           |
+| ------------------------------- | ---------------- | ---------------- |
+| `gogenfilter.Filter`            | Type alias       | ✅ Direct import |
+| `gogenfilter.NewFilter()`       | Direct call      | ✅               |
+| `filter.ShouldFilter()`         | Via type alias   | ✅               |
+| `filter.GetStats()`             | Via type alias   | ✅               |
+| `gogenfilter.MatchPattern()`    | Direct call      | ✅ Tests only    |
+| `gogenfilter.IsSQLCGenerated()` | Direct call      | ✅ Tests only    |
+| `filter.FindSQLCConfigs()`      | Wrapper function | ✅               |
+| `filter.GetSQLOutputDirs()`     | Wrapper function | ✅               |
+| `filter.NewMetrics()`           | Direct call      | ✅               |
 
 ---
 
 ## Remaining Files in art-dupl `pkg/filter/`
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `filter.go` | 11 | Type alias + `NewFilter` wrapper |
-| `types.go` | 27 | FilterOption/FilterReason type aliases + constants |
-| `metrics.go` | 13 | Metrics type aliases + `NewMetrics` wrapper |
-| `sqlc_yaml.go` | 24 | SQLC config function wrappers |
-| `filter_wrapper_test.go` | 190 | 10 tests |
-| **Total** | **~265** | Thin wrapper layer |
+| File                     | Lines    | Purpose                                            |
+| ------------------------ | -------- | -------------------------------------------------- |
+| `filter.go`              | 11       | Type alias + `NewFilter` wrapper                   |
+| `types.go`               | 27       | FilterOption/FilterReason type aliases + constants |
+| `metrics.go`             | 13       | Metrics type aliases + `NewMetrics` wrapper        |
+| `sqlc_yaml.go`           | 24       | SQLC config function wrappers                      |
+| `filter_wrapper_test.go` | 190      | 10 tests                                           |
+| **Total**                | **~265** | Thin wrapper layer                                 |
 
 ---
 
@@ -200,16 +202,19 @@ return nil, &errors.SQLCConfigError{
 **Hypothesis:** The Go tooling (LSP, golangci-lint) maintains its own caches that aren't invalidated by file deletions or module changes. The caches may be stale or corrupted.
 
 **What I tried:**
+
 - `go clean -cache` - Failed with "directory not empty" error
 - `go mod tidy` - Succeeded, build passes
 - Direct `go build` - Passes
 
 **What I couldn't verify:**
+
 - Whether `go clean -cache` would fix LSP diagnostics
 - Whether golangci-lint has separate caching
 - Whether LSP restart would help
 
-**Recommendation:** 
+**Recommendation:**
+
 1. Try `go clean -cache && go clean -modcache` (if safe)
 2. Or restart LSP client: `LSP: Restart`
 3. Or wait for automatic cache invalidation
@@ -229,12 +234,14 @@ return nil, &errors.SQLCConfigError{
 ## Files Changed
 
 ### art-dupl
+
 ```
 M  go.mod                      # go.mod tidy changes
 D   pkg/filter/detection.go    # Dead code removed
 ```
 
 ### gogenfilter
+
 ```
 M  README.md                   # Updated docs with new filters
 M  detection.go                # New protobuf/mockgen/stringer/generic detection
