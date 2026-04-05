@@ -1,4 +1,3 @@
-// Package git provides git-based file change detection for incremental analysis.
 package git
 
 import (
@@ -23,7 +22,8 @@ func FindGitRoot(startPath string) string {
 	current := absPath
 	for {
 		gitDir := filepath.Join(current, ".git")
-		if _, err := os.Stat(gitDir); err == nil {
+		_, err := os.Stat(gitDir)
+		if err == nil {
 			return current
 		}
 

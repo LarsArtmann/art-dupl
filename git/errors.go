@@ -1,4 +1,3 @@
-// Package git provides git-based file change detection for incremental analysis.
 package git
 
 import "fmt"

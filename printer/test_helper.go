@@ -6,7 +6,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// TestCloneSorting is a helper function for testing clone sorting algorithms that takes pre-created clones.
+// TestCloneSortingWithData is a helper function for testing clone sorting algorithms that takes pre-created clones.
 func TestCloneSortingWithData(
 	t *testing.T,
 	sortFunc func([][]*syntax.Node) [][]*syntax.Node,

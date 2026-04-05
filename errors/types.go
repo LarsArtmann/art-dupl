@@ -273,7 +273,7 @@ func WrapFile(err error, file, operation string) error {
 	return NewFileError(file, operation, err)
 }
 
-// GetTypeName returns the string name of an ErrorType.
+// String returns the string name of an ErrorType.
 func (et ErrorType) String() string {
 	return string(et)
 }

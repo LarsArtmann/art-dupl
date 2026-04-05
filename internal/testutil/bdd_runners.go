@@ -131,7 +131,9 @@ func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]
 	}
 
 	var result map[string]any
-	if err := json.Unmarshal(output, &result); err != nil {
+
+	err = json.Unmarshal(output, &result)
+	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to unmarshal JSON output: %w\nOutput: %s",
 			err,
@@ -196,7 +198,8 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 		return nil, nil, fmt.Errorf("failed to create stderr pipe: %w", err)
 	}
 
-	if err := cmd.Start(); err != nil {
+	err = cmd.Start()
+	if err != nil {
 		return nil, nil, fmt.Errorf("failed to start command: %w", err)
 	}
 
@@ -210,7 +213,8 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 		return nil, nil, fmt.Errorf("failed to read stderr: %w", err)
 	}
 
-	if err := cmd.Wait(); err != nil {
+	err = cmd.Wait()
+	if err != nil {
 		return stdout, stderr, fmt.Errorf("command failed: %w", err)
 	}
 

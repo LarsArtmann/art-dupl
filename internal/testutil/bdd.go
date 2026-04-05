@@ -100,7 +100,8 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	}
 
 	// Check if binary still exists (may have been cleaned up by OS)
-	if _, statErr := os.Stat(sharedBinary); statErr != nil {
+	_, statErr := os.Stat(sharedBinary)
+	if statErr != nil {
 		// Binary missing, rebuild it
 		buildErr := buildSharedBinary(sharedBinary)
 		if buildErr != nil {

@@ -1,9 +1,6 @@
-// Package domain provides core domain types for clone detection.
 package domain
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Clone represents a code clone with strong typing.
 //

@@ -18,7 +18,9 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 	binaryPath := filepath.Join(b.TempDir(), "art-dupl-bench")
 
 	buildCmd := exec.CommandContext(b.Context(), "go", "build", "-o", binaryPath, "../cmd/art-dupl")
-	if output, err := buildCmd.CombinedOutput(); err != nil {
+
+	output, err := buildCmd.CombinedOutput()
+	if err != nil {
 		b.Fatalf("Failed to build binary: %v\n%s", err, output)
 	}
 
@@ -68,7 +70,9 @@ func BenchmarkSemanticDetectionSynthetic(b *testing.B) {
 	binaryPath := filepath.Join(b.TempDir(), "art-dupl-bench")
 
 	buildCmd := exec.CommandContext(b.Context(), "go", "build", "-o", binaryPath, "../cmd/art-dupl")
-	if output, err := buildCmd.CombinedOutput(); err != nil {
+
+	output, err := buildCmd.CombinedOutput()
+	if err != nil {
 		b.Fatalf("Failed to build binary: %v\n%s", err, output)
 	}
 
@@ -99,7 +103,9 @@ func (s *ServiceB) Validate() bool { return true }
 			cmd := exec.CommandContext(b.Context(), binaryPath, testDir, "--threshold", "10")
 
 			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
-			if output, err := cmd.CombinedOutput(); err != nil {
+
+			output, err := cmd.CombinedOutput()
+			if err != nil {
 				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
 			}
 		}

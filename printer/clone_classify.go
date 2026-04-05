@@ -1,4 +1,3 @@
-// Package printer provides functionality for formatting and outputting code clone reports.
 package printer
 
 import (

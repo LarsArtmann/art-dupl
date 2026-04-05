@@ -1,4 +1,3 @@
-// Package testutil provides testing utilities for art-dupl.
 package testutil
 
 import (

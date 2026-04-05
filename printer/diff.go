@@ -223,7 +223,7 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 	return hasDiff
 }
 
-// ComputeCloneGroupDiff computes diffs between all clones in a group.
+// CloneGroupDiff computes diffs between all clones in a group.
 // Returns the base clone (first) and diffs for all other clones.
 type CloneGroupDiff struct {
 	Base       *CloneWithContent

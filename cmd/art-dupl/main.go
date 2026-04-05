@@ -36,11 +36,13 @@ func main() {
 		}
 
 		renderHelpLink := func(message string) {
-			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-				if _, writeErr := fmt.Fprintln(
+			_, writeErr := fmt.Fprintln(w)
+			if writeErr == nil {
+				_, writeErr = fmt.Fprintln(
 					w,
 					styles.Text.Render(message),
-				); writeErr != nil {
+				)
+				if writeErr != nil {
 					_ = writeErr
 				}
 			}
@@ -53,11 +55,13 @@ func main() {
 		errStr := err.Error()
 		switch errStr {
 		case "flag: help requested":
-			if _, writeErr := fmt.Fprintln(w); writeErr == nil {
-				if _, writeErr := fmt.Fprintln(
+			_, writeErr := fmt.Fprintln(w)
+			if writeErr == nil {
+				_, writeErr = fmt.Fprintln(
 					w,
 					styles.Text.Render("💡 Use examples below to get started:"),
-				); writeErr == nil {
+				)
+				if writeErr == nil {
 					examples := []string{
 						"  art-dupl                    # Analyze current directory",
 						"  art-dupl -t 50 ./src        # Higher threshold for larger clones",
@@ -65,10 +69,11 @@ func main() {
 						"  art-dupl --all --output-dir ./reports # Generate all formats",
 					}
 					for _, ex := range examples {
-						if _, writeErr := fmt.Fprintln(
+						_, writeErr = fmt.Fprintln(
 							w,
 							styles.Codeblock.Program.Name.Render(ex),
-						); writeErr != nil {
+						)
+						if writeErr != nil {
 							break
 						}
 					}

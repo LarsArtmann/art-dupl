@@ -21,7 +21,8 @@ func NodeToDomainClone(node *syntax.Node, filename string) domain.Clone {
 
 	if filename != "" {
 		// #nosec G304 -- filename is controlled input from syntax tree, not user input
-		if content, err := os.ReadFile(filename); err == nil {
+		content, err := os.ReadFile(filename)
+		if err == nil {
 			fileContent = content
 		}
 		// If file doesn't exist or can't be read, continue with empty content
