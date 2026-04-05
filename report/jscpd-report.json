@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-04-05T05:54:04.158Z",
+    "detectionDate": "2026-04-05T18:34:54.156Z",
     "formats": {
       "go": {
         "sources": {
@@ -690,7 +690,7 @@
           },
           "internal/testutil/file.go": {
             "lines": 102,
-            "tokens": 693,
+            "tokens": 691,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2803,7 +2803,7 @@
         },
         "total": {
           "lines": 46443,
-          "tokens": 320410,
+          "tokens": 320408,
           "sources": 233,
           "clones": 93,
           "duplicatedLines": 1108,
@@ -7241,7 +7241,7 @@
     },
     "total": {
       "lines": 162285,
-      "tokens": 1265990,
+      "tokens": 1265988,
       "sources": 591,
       "clones": 138,
       "duplicatedLines": 2048,

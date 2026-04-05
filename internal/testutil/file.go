@@ -87,7 +87,7 @@ func ParseFiles(t *testing.T, filePaths []string) []*syntax.Node {
 // WriteAndParseFile writes a Go file and parses it into an AST node.
 // This is a convenience function that combines os.WriteFile and golang.Parse
 // with proper error handling, commonly used in test files.
-func WriteAndParseFile(t *testing.T, filename string, content string) *syntax.Node {
+func WriteAndParseFile(t *testing.T, filename, content string) *syntax.Node {
 	t.Helper()
 
 	if err := os.WriteFile(filename, []byte(content), 0o644); err != nil {
