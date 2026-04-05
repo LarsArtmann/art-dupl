@@ -450,9 +450,90 @@ linters:
             - path: printer/
               linters:
                 - wrapcheck
+                - varnamelen
             - path: job/
               linters:
                 - wrapcheck
+                - varnamelen
+                - mnd
+            - path: syntax/
+              linters:
+                - varnamelen
+                - gochecknoglobals
+                - mnd
+            - path: domain/
+              linters:
+                - varnamelen
+                - gochecknoglobals
+                - mnd
+            - path: cache/
+              linters:
+                - varnamelen
+                - exhaustruct
+            - path: hash/
+              linters:
+                - varnamelen
+                - exhaustruct
+            - path: examples/
+              linters:
+                - varnamelen
+                - mnd
+            - path: config/
+              linters:
+                - varnamelen
+                - mnd
+            - path: detection/
+              linters:
+                - varnamelen
+            - path: suffixtree/
+              linters:
+                - varnamelen
+                - gochecknoglobals
+            - path: cmd/
+              linters:
+                - varnamelen
+                - exhaustruct
+                - mnd
+            - path: adapter/
+              linters:
+                - exhaustruct
+            - path: git/
+              linters:
+                - varnamelen
+                - mnd
+            - path: cli/
+              linters:
+                - exhaustruct
+                - varnamelen
+            - path: internal/simd/
+              linters:
+                - varnamelen
+                - mnd
+            - path: internal/utils/
+              linters:
+                - varnamelen
+            - path: _test\.go
+              linters:
+                - godoclint
+                - tagliatelle
+                - depguard
+                - exhaustruct
+                - noinlineerr
+            - path: godox
+              linters:
+                - godox
+            - path: godoclint
+              linters:
+                - godoclint
+            - path: tagliatelle
+              linters:
+                - tagliatelle
+            - path: noinlineerr
+              linters:
+                - noinlineerr
+            - path: gochecknoglobals
+              linters:
+                - gochecknoglobals
 formatters:
     enable:
         - gci
