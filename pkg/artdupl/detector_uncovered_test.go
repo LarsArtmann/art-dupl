@@ -194,6 +194,7 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 	testFile := filepath.Join(tmpDir, "test.go")
 
 	content := []byte("line1\nline2\nline3\n")
+
 	err := os.WriteFile(testFile, content, 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
@@ -404,6 +405,7 @@ func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 	testFile := filepath.Join(tmpDir, "test.go")
 
 	content := []byte("line1\nline2\nline3\n")
+
 	err := os.WriteFile(testFile, content, 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)

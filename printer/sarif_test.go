@@ -224,6 +224,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	_ = printer.PrintFooter()
 
 	var output SARIFOutput
+
 	err := json.Unmarshal(buf.Bytes(), &output)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal SARIF output: %v", err)

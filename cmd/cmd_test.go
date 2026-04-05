@@ -334,6 +334,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	files := []string{"test1.go", "test2.go", "test1.templ", "test2.templ"}
 	for _, f := range files {
 		path := filepath.Join(tmpDir, f)
+
 		err := os.WriteFile(path, []byte("content"), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to create test file: %v", err)

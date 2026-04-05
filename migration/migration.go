@@ -42,6 +42,7 @@ func (id MigrationID) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler for MigrationID.
 func (id *MigrationID) UnmarshalJSON(data []byte) error {
 	var s string
+
 	err := json.Unmarshal(data, &s)
 	if err != nil {
 		return err

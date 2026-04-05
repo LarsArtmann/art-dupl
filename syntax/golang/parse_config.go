@@ -29,6 +29,7 @@ func DefaultParseConfig() ParseConfig {
 // Use this for compile-time constants where you know the mode is valid.
 func MustParseConfig(mode DetectionMode) ParseConfig {
 	cfg := ParseConfig{Mode: mode}
+
 	err := cfg.Validate()
 	if err != nil {
 		panic(err)

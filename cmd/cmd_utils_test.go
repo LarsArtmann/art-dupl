@@ -483,6 +483,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 
 	for _, f := range testFiles {
 		path := tempDir + "/" + f
+
 		err := os.WriteFile(path, []byte("test"), 0o644)
 		if err != nil {
 			t.Fatalf("Failed to create file %s: %v", path, err)
@@ -504,6 +505,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 	tempDir := t.TempDir()
 
 	testFile := tempDir + "/test.go"
+
 	err := os.WriteFile(testFile, []byte("package main"), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
