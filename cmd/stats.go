@@ -211,7 +211,8 @@ func runStats(cmd *cobra.Command, args []string) error {
 		mergedConfig.Semantic = false
 	}
 
-	if err = config.ValidateConfig(mergedConfig); err != nil {
+	err = config.ValidateConfig(mergedConfig)
+	if err != nil {
 		return duplerrors.WrapValidation(
 			err,
 			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
@@ -311,7 +312,8 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Using SortByHash for consistent ordering across runs
 	printer.SortCloneGroupKeys(keys, printer.SortByHash, groups, nil)
 
-	if err := p.PrintHeader(); err != nil {
+	err = p.PrintHeader()
+	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats header")
 	}
 
@@ -329,7 +331,8 @@ func runStats(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if err := p.PrintFooter(); err != nil {
+	err = p.PrintFooter()
+	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats footer")
 	}
 

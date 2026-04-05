@@ -219,7 +219,8 @@ func (c *Config) SetThresholdFromDomain(threshold domain.Threshold) error {
 
 // LoadConfig loads configuration from file.
 func LoadConfig(filename string) (*Config, error) {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
 		return nil, errors.NewConfigError("config file not found: "+filename, nil)
 	}
 
@@ -256,7 +257,9 @@ func LoadOptionalConfig(filename string) (*Config, error) {
 func SaveConfig(config *Config, filename string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(filename)
-	if err := os.MkdirAll(dir, 0o750); err != nil {
+
+	err := os.MkdirAll(dir, 0o750)
+	if err != nil {
 		return errors.NewIOError(dir, "failed to create config directory", err)
 	}
 

@@ -145,7 +145,9 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 
 	// Ensure cache directory exists
 	filesDir := filepath.Join(fc.cacheDir, "files")
-	if err := os.MkdirAll(filesDir, cacheDirPerms); err != nil {
+
+	err := os.MkdirAll(filesDir, cacheDirPerms)
+	if err != nil {
 		return errors.NewIOError(filesDir, "failed to create cache directory", err)
 	}
 
@@ -155,7 +157,9 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	}
 
 	cachePath := fc.cachePath(contentHash)
-	if err := os.WriteFile(cachePath, data, cacheFilePerms); err != nil {
+
+	err = os.WriteFile(cachePath, data, cacheFilePerms)
+	if err != nil {
 		return errors.NewIOError(cachePath, "failed to write cache file", err)
 	}
 
@@ -322,7 +326,8 @@ func (fc *FileCache) saveMetadata() error {
 		return errors.Wrap(err, errors.CacheError, "failed to marshal cache metadata")
 	}
 
-	if err := os.WriteFile(metadataPath, data, cacheFilePerms); err != nil {
+	err = os.WriteFile(metadataPath, data, cacheFilePerms)
+	if err != nil {
 		return errors.WrapFile(err, metadataPath, "write")
 	}
 

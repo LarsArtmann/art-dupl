@@ -40,7 +40,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
 
 	// Validate sorting criteria
-	if _, err := printer.ParseSortBy(sortBy); err != nil {
+	_, err := printer.ParseSortBy(sortBy)
+	if err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
 	}
 
@@ -225,7 +226,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.Semantic = false
 	}
 
-	if err = config.ValidateConfig(mergedConfig); err != nil {
+	err = config.ValidateConfig(mergedConfig)
+	if err != nil {
 		return duplerrors.WrapValidation(
 			err,
 			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
@@ -284,14 +286,15 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
-	if err := printDupls(
+	err = printDupls(
 		ctx,
 		p,
 		duplChan,
 		printer.SortBy(sortBy),
 		mergedConfig.Threshold,
 		detectionMethodStr,
-	); err != nil {
+	)
+	if err != nil {
 		return duplerrors.Wrap(
 			err,
 			duplerrors.AnalysisError,

@@ -58,7 +58,8 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	d.started = time.Now()
 
 	// Validate inputs
-	if err := d.validateInputs(ctx, files); err != nil {
+	err := d.validateInputs(ctx, files)
+	if err != nil {
 		return nil, d.wrapValidationError(
 			err,
 			fmt.Sprintf("validation failed for %d files", len(files)),
@@ -129,7 +130,8 @@ func (d *detector) FindClonesStream(
 		}
 
 		// Run detection with streaming
-		if err := d.streamDetectionResults(ctx, data, resultChan); err != nil {
+		err = d.streamDetectionResults(ctx, data, resultChan)
+		if err != nil {
 			d.logger.Error("Streaming detection error: %v", err)
 		}
 

@@ -13,6 +13,8 @@ import (
 )
 
 // runAllModes runs all detection methods and generates all output formats.
+//
+//nolint:funlen // Function orchestrates multi-format output generation
 func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir string) error {
 	// Set detection methods to all available methods
 	cfg.DetectionMethods = config.AllDetectionMethods()
@@ -22,7 +24,8 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 		outputDir = "reports/art-dupl"
 	}
 
-	if err := os.MkdirAll(outputDir, 0o750); err != nil {
+	err := os.MkdirAll(outputDir, 0o750)
+	if err != nil {
 		return fmt.Errorf(
 			"failed to create output directory %q (sortBy=%s): %w",
 			outputDir,
@@ -164,14 +167,15 @@ func writeFormatFile(
 		}
 	}()
 
-	if err := printDupls(
+	err = printDupls(
 		ctx,
 		p,
 		matchChan,
 		sortByEnum,
 		cfg.Threshold,
 		detectionMethodStr,
-	); err != nil {
+	)
+	if err != nil {
 		return fmt.Errorf(
 			"failed to print %s format (matches=%v, parseStats=%v, filename=%s, sortByEnum=%s, detectionMethodStr=%s): %w",
 			format,
