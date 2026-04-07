@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-04-05T18:34:54.156Z",
+    "detectionDate": "2026-04-07T12:40:05.497Z",
     "formats": {
       "go": {
         "sources": {
@@ -353,8 +353,8 @@
             "newClones": 0
           },
           "pkg/filter/sqlc_yaml.go": {
-            "lines": 23,
-            "tokens": 159,
+            "lines": 22,
+            "tokens": 156,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -377,8 +377,8 @@
             "newClones": 0
           },
           "pkg/filter/filter_wrapper_test.go": {
-            "lines": 189,
-            "tokens": 1297,
+            "lines": 180,
+            "tokens": 1228,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1217,14 +1217,14 @@
             "newClones": 0
           },
           "printer/sorter.go": {
-            "lines": 154,
-            "tokens": 1318,
+            "lines": 179,
+            "tokens": 1504,
             "sources": 1,
             "clones": 2,
-            "duplicatedLines": 18,
-            "duplicatedTokens": 196,
-            "percentage": 11.69,
-            "percentageTokens": 14.87,
+            "duplicatedLines": 28,
+            "duplicatedTokens": 274,
+            "percentage": 15.64,
+            "percentageTokens": 18.22,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1445,8 +1445,8 @@
             "newClones": 0
           },
           "printer/diff.go": {
-            "lines": 394,
-            "tokens": 2851,
+            "lines": 396,
+            "tokens": 2853,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2165,8 +2165,8 @@
             "newClones": 0
           },
           "detection/todos.go": {
-            "lines": 347,
-            "tokens": 2416,
+            "lines": 351,
+            "tokens": 2420,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2381,8 +2381,8 @@
             "newClones": 0
           },
           "cmd/run_analysis.go": {
-            "lines": 424,
-            "tokens": 3064,
+            "lines": 423,
+            "tokens": 3060,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2802,14 +2802,14 @@
           }
         },
         "total": {
-          "lines": 46443,
-          "tokens": 320408,
+          "lines": 46463,
+          "tokens": 320524,
           "sources": 233,
           "clones": 93,
-          "duplicatedLines": 1108,
-          "duplicatedTokens": 9517,
-          "percentage": 2.39,
-          "percentageTokens": 2.97,
+          "duplicatedLines": 1113,
+          "duplicatedTokens": 9556,
+          "percentage": 2.4,
+          "percentageTokens": 2.98,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -7240,14 +7240,14 @@
       }
     },
     "total": {
-      "lines": 162285,
-      "tokens": 1265988,
+      "lines": 162305,
+      "tokens": 1266104,
       "sources": 591,
       "clones": 138,
-      "duplicatedLines": 2048,
-      "duplicatedTokens": 18013,
+      "duplicatedLines": 2053,
+      "duplicatedTokens": 18052,
       "percentage": 1.26,
-      "percentageTokens": 1.42,
+      "percentageTokens": 1.43,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -9847,37 +9847,37 @@
     },
     {
       "format": "go",
-      "lines": 10,
-      "fragment": "(dups [][]*syntax.Node) [][]*syntax.Node {\n\tsort.Slice(dups, func(i, j int) bool {\n\t\tif len(dups[i]) == 0 {\n\t\t\treturn true\n\t\t}\n\n\t\tif len(dups[j]) == 0 {\n\t\t\treturn false\n\t\t}\n\t\t// Use filename for sorting since hash isn't available in Node",
+      "lines": 15,
+      "fragment": "(dups [][]*syntax.Node) [][]*syntax.Node {\n\tsort.Slice(dups, func(i, j int) bool {\n\t\ti, j = skipEmptySlices(dups, i, j)\n\t\tif i == -1 && j == -1 {\n\t\t\treturn false\n\t\t}\n\n\t\tif i == -1 {\n\t\t\treturn true\n\t\t}\n\n\t\tif j == -1 {\n\t\t\treturn false\n\t\t}\n\t\t// Use filename for sorting since hash isn't available in Node",
       "tokens": 0,
       "firstFile": {
         "name": "printer/sorter.go",
-        "start": 68,
-        "end": 77,
+        "start": 88,
+        "end": 102,
         "startLoc": {
-          "line": 68,
+          "line": 88,
           "column": 17,
-          "position": 555
+          "position": 702
         },
         "endLoc": {
-          "line": 77,
+          "line": 102,
           "column": 63,
-          "position": 653
+          "position": 839
         }
       },
       "secondFile": {
         "name": "printer/sorter.go",
         "start": 38,
-        "end": 47,
+        "end": 52,
         "startLoc": {
           "line": 38,
           "column": 17,
           "position": 269
         },
         "endLoc": {
-          "line": 47,
+          "line": 52,
           "column": 55,
-          "position": 367
+          "position": 406
         }
       }
     },

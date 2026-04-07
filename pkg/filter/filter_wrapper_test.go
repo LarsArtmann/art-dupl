@@ -134,7 +134,7 @@ func TestMetricsWrapper(t *testing.T) {
 	t.Parallel()
 
 	m := NewMetrics()
-	m.Record("test.go", ReasonSQLC)
+	m.RecordFiltered("test.go", ReasonSQLC)
 
 	stats := m.GetStats()
 	if stats.TotalFilesChecked != 1 {
@@ -168,15 +168,6 @@ sql:
 
 	if len(configs) != 1 {
 		t.Errorf("Expected 1 config, got %d", len(configs))
-	}
-
-	config, err := ParseSQLCConfig(configPath)
-	if err != nil {
-		t.Fatalf("ParseSQLCConfig error: %v", err)
-	}
-
-	if config.Version != "2" {
-		t.Errorf("Expected version 2, got %q", config.Version)
 	}
 
 	dirs, err := GetSQLOutputDirs([]string{tmpDir})

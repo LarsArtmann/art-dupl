@@ -151,8 +151,10 @@ func skipIfInvalidLineNumber(l logger.Logger, filename string, line any, err err
 			"line", line,
 			"err", err,
 		)
+
 		return true
 	}
+
 	return false
 }
 
@@ -164,8 +166,10 @@ func skipIfInvalidFilepath(l logger.Logger, filename string, err error) bool {
 			"file", filename,
 			"err", err,
 		)
+
 		return true
 	}
+
 	return false
 }
 

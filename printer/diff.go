@@ -105,8 +105,10 @@ func markLinesModified(baseTrimmed, comparedTrimmed []byte, baseLine, comparedLi
 	if !bytes.Equal(baseTrimmed, comparedTrimmed) {
 		baseLine.Type = DiffLineModified
 		comparedLine.Type = DiffLineModified
+
 		return true
 	}
+
 	return false
 }
 

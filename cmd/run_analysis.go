@@ -48,6 +48,17 @@ type buildParams struct {
 	outputFormat config.OutputFormat
 }
 
+// getFilesChan creates a channel of file paths based on the build parameters.
+func (p buildParams) getFilesChan() chan string {
+	return filesFeedWithOptions(
+		p.paths,
+		p.cfg.FilesFromStdin,
+		p.filterParam,
+		p.cfg.IncludeVendor,
+		p.cfg.Only,
+	)
+}
+
 // buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(
 	params buildParams,
@@ -84,13 +95,7 @@ func buildSuffixTreeIncremental(
 		params.cfg.Semantic,
 	)
 
-	filesChan := filesFeedWithOptions(
-		params.paths,
-		params.cfg.FilesFromStdin,
-		params.filterParam,
-		params.cfg.IncludeVendor,
-		params.cfg.Only,
-	)
+	filesChan := params.getFilesChan()
 	schan, incStatsChan := incParser.ParseIncremental(params.ctx, filesChan)
 	tree, data, done := job.BuildTree(params.ctx, schan)
 	<-done
@@ -113,13 +118,7 @@ func buildSuffixTreeIncremental(
 func buildSuffixTreeStandard(
 	params buildParams,
 ) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
-	filesChan := filesFeedWithOptions(
-		params.paths,
-		params.cfg.FilesFromStdin,
-		params.filterParam,
-		params.cfg.IncludeVendor,
-		params.cfg.Only,
-	)
+	filesChan := params.getFilesChan()
 
 	var (
 		schan     chan []*syntax.Node

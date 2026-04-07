@@ -4,21 +4,20 @@ import (
 	"github.com/LarsArtmann/gogenfilter"
 )
 
-type (
-	SQLCConfig    = gogenfilter.SQLCConfig
-	SQLCEngine    = gogenfilter.SQLCEngine
-	SQLCGenConfig = gogenfilter.SQLCGenConfig
-	SQLCGoConfig  = gogenfilter.SQLCGoConfig
-)
-
 func FindSQLCConfigs(paths []string) (map[string]string, error) {
-	return gogenfilter.FindSQLCConfigs(paths)
-}
+	configs, err := gogenfilter.FindSQLCConfigs(paths)
+	if err != nil {
+		return nil, err
+	}
 
-func ParseSQLCConfig(configPath string) (*SQLCConfig, error) {
-	return gogenfilter.ParseSQLCConfig(configPath)
+	return configs, nil
 }
 
 func GetSQLOutputDirs(paths []string) ([]string, error) {
-	return gogenfilter.GetSQLOutputDirs(paths)
+	dirs, err := gogenfilter.GetSQLOutputDirs(paths)
+	if err != nil {
+		return nil, err
+	}
+
+	return dirs, nil
 }
