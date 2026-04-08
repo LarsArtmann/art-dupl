@@ -1,7 +1,7 @@
 Metric,Value
 Threshold,15
 Detection Methods,art-dupl
-Semantic Detection,disabled
+Semantic Detection,false
 Timestamp,
 Analysis Time,
 

@@ -34,9 +34,18 @@ func (p *stats) SetDetectionMethods(methods string) {
 	p.statsData.DetectionMethods = methods
 }
 
-// SetSemanticDetection sets whether semantic detection was enabled.
+// SetSemanticDetection sets whether semantic detection was enabled
+// and updates the detection mode description accordingly.
 func (p *stats) SetSemanticDetection(enabled bool) {
 	p.statsData.SemanticDetection = enabled
+
+	if enabled {
+		p.statsData.DetectionMode = "semantic"
+		p.statsData.DetectionModeDesc = "Matches clones by structure AND identifier names (fewer false positives)"
+	} else {
+		p.statsData.DetectionMode = "structural"
+		p.statsData.DetectionModeDesc = "Matches clones by AST structure only (may include code with different identifiers)"
+	}
 }
 
 // SetFormat sets the output format.

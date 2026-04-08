@@ -11,6 +11,8 @@ type jsonStatsOutput struct {
 	Configuration struct {
 		Threshold         int    `json:"threshold"`
 		DetectionMethods  string `json:"detectionMethods"`
+		DetectionMode     string `json:"detectionMode,omitempty"`
+		DetectionModeDesc string `json:"detectionModeDescription,omitempty"`
 		SemanticDetection bool   `json:"semanticDetection"`
 	} `json:"configuration"`
 	Overview struct {
@@ -68,12 +70,15 @@ func (p *stats) printCSV() {
 	_, _ = fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
 	_, _ = fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
 
-	semanticCSV := "disabled"
-	if p.statsData.SemanticDetection {
-		semanticCSV = "enabled"
+	if p.statsData.DetectionMode != "" {
+		_, _ = fmt.Fprintf(p.w, "Detection Mode,%s\n", p.statsData.DetectionMode)
 	}
 
-	_, _ = fmt.Fprintf(p.w, "Semantic Detection,%s\n", semanticCSV)
+	if p.statsData.DetectionModeDesc != "" {
+		_, _ = fmt.Fprintf(p.w, "Detection Mode Description,%s\n", p.statsData.DetectionModeDesc)
+	}
+
+	_, _ = fmt.Fprintf(p.w, "Semantic Detection,%t\n", p.statsData.SemanticDetection)
 	_, _ = fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
 	_, _ = fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
 	_, _ = fmt.Fprintf(p.w, "\n")
@@ -125,12 +130,13 @@ func (p *stats) printTextConfiguration() {
 	p.printMetric("Threshold", fmt.Sprintf("%d tokens", p.threshold))
 	p.printMetric("Detection Methods", p.statsData.DetectionMethods)
 
-	semanticStatus := "disabled"
-	if p.statsData.SemanticDetection {
-		semanticStatus = "enabled"
+	if p.statsData.DetectionMode != "" {
+		p.printMetric("Detection Mode", p.statsData.DetectionMode)
 	}
 
-	p.printMetric("Semantic Detection", semanticStatus)
+	if p.statsData.DetectionModeDesc != "" {
+		p.printLinef("(%s)", p.statsData.DetectionModeDesc)
+	}
 
 	if p.statsData.Timestamp != "" {
 		p.printMetric("Timestamp", p.statsData.Timestamp)
@@ -278,6 +284,8 @@ func (p *stats) buildJSONData() any {
 	jsonData.Configuration.Threshold = p.threshold
 	jsonData.Configuration.DetectionMethods = p.statsData.DetectionMethods
 	jsonData.Configuration.SemanticDetection = p.statsData.SemanticDetection
+	jsonData.Configuration.DetectionMode = p.statsData.DetectionMode
+	jsonData.Configuration.DetectionModeDesc = p.statsData.DetectionModeDesc
 
 	// Fill overview
 	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned

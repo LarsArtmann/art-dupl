@@ -59,6 +59,17 @@ func (p *stats) printRecommendations() {
 		)
 	}
 
+	switch p.statsData.DetectionMode {
+	case "semantic":
+		p.printBulletf("Using semantic mode: clones matched by structure AND identifier names")
+		p.printBulletf("Run with --structural to see all structural matches (may include more results)")
+	case "structural":
+		p.printBulletf("Using structural mode: clones matched by AST structure only")
+		p.printBulletf("Run with --semantic to reduce false positives by matching identifier names")
+	default:
+		p.printBulletf("Run with --semantic for fewer false positives or --structural for more matches")
+	}
+
 	p.printBulletf("Run with --threshold 50 to focus on large duplications only")
 	p.printBulletf("Use --format json for machine-readable output")
 	p.printBulletf("Integrate into CI/CD pipeline for continuous monitoring")

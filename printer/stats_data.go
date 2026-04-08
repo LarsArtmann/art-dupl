@@ -64,6 +64,10 @@ type StatsData struct {
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out
 	FilterBreakdown map[string]int `json:"filter_breakdown,omitempty"` // Reason -> count (e.g., "templ" -> 12)
 
+	// Detection mode
+	DetectionMode     string `json:"detection_mode,omitempty"`             // "semantic" or "structural"
+	DetectionModeDesc string `json:"detection_mode_description,omitempty"` // Human-readable description
+
 	// Metadata
 	DetectionMethods  string `json:"detection_methods"`  // Comma-separated detection methods used
 	SemanticDetection bool   `json:"semantic_detection"` // Whether semantic-aware detection was enabled

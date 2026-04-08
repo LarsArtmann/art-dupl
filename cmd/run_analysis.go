@@ -318,8 +318,10 @@ func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
 }
 
 // executeHashOnlyAnalysis runs hash-based duplicate detection without AST parsing.
-// This is an optimized path that works directly with file paths and content hashes,
-// allowing detection on any file type (not just Go source files).
+// This is an optimized streaming path that hashes files one at a time via io.Copy
+// through xxh3.Hasher — file content is never held in memory.
+// Only (hash, filename, size) is retained per file, yielding O(1) memory per file
+// regardless of file size.
 func executeHashOnlyAnalysis(
 	ctx context.Context,
 	cfg *config.Config,
@@ -334,7 +336,6 @@ func executeHashOnlyAnalysis(
 		"    📖 Hashing files for duplicate detection...",
 	)
 
-	// Inform user that node_modules is excluded by default in hash mode
 	if cfg.Verbose {
 		_, _ = fmt.Fprintln(
 			os.Stderr,
@@ -342,7 +343,6 @@ func executeHashOnlyAnalysis(
 		)
 	}
 
-	// Collect all files (not just .go files) for hash detection
 	filesChan := crawlPathsAllFiles(
 		paths,
 		filterParam,
@@ -351,6 +351,8 @@ func executeHashOnlyAnalysis(
 		cfg.Only,
 	)
 
+	// Collect file paths (just strings — negligible memory) so we can report
+	// file count before streaming results downstream.
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
 		return nil, job.ParseStats{}, filter.FilterStats{}, err
@@ -358,15 +360,12 @@ func executeHashOnlyAnalysis(
 
 	printFileCollectionStatus(cfg, outputFormat, len(files))
 
-	// Run hash detection
-	// Note: For hash detection, threshold is in bytes (file size), not tokens
-	// We use the configured threshold directly as the minimum file size
+	// Stream hash detection: files are hashed one at a time via io.Copy(xxh3, file).
+	// No file content retained in memory — only (hash, filename, size) per file.
 	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
 
-	// Convert FileDuplicate to syntax.Match for consistent output
 	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
 
-	// Get filter statistics if filter was enabled
 	var filterStats filter.FilterStats
 	if filterParam != nil {
 		filterStats = filterParam.GetStats()

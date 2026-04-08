@@ -13,6 +13,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/gogenfilter"
 	"github.com/spf13/cobra"
 )
 
@@ -289,8 +290,13 @@ func runStats(cmd *cobra.Command, args []string) error {
 		if totalFiltered > 0 {
 			breakdown := make(map[string]int)
 
-			for reason, count := range filterStats.FilteredByReason {
-				if reason != "not_filtered" {
+			for _, reason := range gogenfilter.AllFilterReasons() {
+				if reason == "not_filtered" {
+					continue
+				}
+
+				count := filterStats.FilteredBy(reason)
+				if count > 0 {
 					breakdown[string(reason)] = count
 				}
 			}
