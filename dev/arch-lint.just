@@ -12,7 +12,6 @@
 # Available built-in backgrounds: BG_BLACK, BG_RED, BG_GREEN, BG_YELLOW, BG_BLUE, BG_MAGENTA, BG_CYAN, BG_WHITE
 
 # Tool versions
-GOLANGCI_VERSION := "v2.6.0"
 GO_ARCH_LINT_VERSION := "v1.14.0"
 CAPSLOCK_VERSION := "latest"
 
@@ -300,8 +299,6 @@ bootstrap-quick:
 # Install all required linting tools
 install:
     @echo "{{BOLD}}📦 Installing linting tools...{{NORMAL}}"
-    @echo "{{YELLOW}}Installing golangci-lint {{GOLANGCI_VERSION}}...{{NORMAL}}"
-    go get -tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint@{{GOLANGCI_VERSION}}
     @echo "{{YELLOW}}Installing go-arch-lint {{GO_ARCH_LINT_VERSION}}...{{NORMAL}}"
     go get -tool github.com/fe3dback/go-arch-lint@{{GO_ARCH_LINT_VERSION}}
     @echo "{{YELLOW}}Installing capslock {{CAPSLOCK_VERSION}}...{{NORMAL}}"
@@ -338,7 +335,7 @@ lint-arch:
 # Run code quality linting only
 lint-code:
     @echo "{{BOLD}}📝 CODE QUALITY LINTING{{NORMAL}}"
-    @echo "{{CYAN}}Running golangci-lint v2...{{NORMAL}}"
+    @echo "{{CYAN}}Running golangci-lint...{{NORMAL}}"
     @if command -v golangci-lint >/dev/null 2>&1; then \
         if golangci-lint run --config .golangci.yml; then \
             echo "{{GREEN}}✅ Code quality validation passed!{{NORMAL}}"; \
@@ -347,7 +344,7 @@ lint-code:
             exit 1; \
         fi; \
     else \
-        echo "{{RED}}❌ golangci-lint v2 not installed. Run 'just install' first.{{NORMAL}}" >&2; \
+        echo "{{RED}}❌ golangci-lint not installed.{{NORMAL}}" >&2; \
         exit 1; \
     fi
 
@@ -371,7 +368,7 @@ lint-cmd-single:
 fix:
     @echo "{{BOLD}}🔧 AUTO-FIXING ISSUES{{NORMAL}}"
     just format
-    @echo "{{YELLOW}}Running golangci-lint v2 with --fix...{{NORMAL}}"
+    @echo "{{YELLOW}}Running golangci-lint with --fix...{{NORMAL}}"
     @if command -v $(go env GOPATH)/bin/golangci-lint >/dev/null 2>&1; then \
         $(go env GOPATH)/bin/golangci-lint run --fix --config .golangci.yml || true; \
     fi
