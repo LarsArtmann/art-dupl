@@ -15,9 +15,9 @@ var _ = Describe("Stats Semantic Detection", func() {
 		setup = CreateBDDTestSetup()
 	})
 
-	Context("When running stats with --semantic flag", func() {
-		It("should show detection mode as semantic in text output", func() {
-			code := `package main
+	runStatsAndExpectSubstring := func(mode, threshold string, expected ...string) {
+		files := []string{"test1.go", "test2.go"}
+		code := `package main
 
 import "fmt"
 
@@ -27,16 +27,87 @@ func processData(data string) error {
 	}
 	return nil
 }`
+		err := setup.CreateDuplicateFiles(files, code)
+		Expect(err).NotTo(HaveOccurred())
 
-			err := setup.CreateDuplicateFiles([]string{"sem1.go", "sem2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
+		output, err := setup.RunSubcommand("stats", "--"+mode, "--threshold", threshold)
+		Expect(err).ToNot(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--semantic", "--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
+		outputStr := string(output)
+		for _, exp := range expected {
+			Expect(outputStr).To(ContainSubstring(exp))
+		}
+	}
 
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("Detection Mode"))
-			Expect(outputStr).To(ContainSubstring("semantic"))
+	runStatsMinimal := func(mode, filePrefix, expectedSubstring string) {
+		files := []string{filePrefix + "1.go", filePrefix + "2.go"}
+		code := `package main
+
+func minimalFunc() {}`
+		err := setup.CreateDuplicateFiles(files, code)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunSubcommand("stats", "--"+mode, "--threshold", "5")
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(string(output)).To(ContainSubstring(expectedSubstring))
+	}
+
+	runStatsJSON := func(mode string, expectedMode string, expectedSemantic bool) {
+		code := `package main
+
+import "fmt"
+
+func jsonTest(name string) error {
+	if name == "" {
+		return fmt.Errorf("empty name")
+	}
+	fmt.Println(name)
+	return nil
+}`
+		files := []string{"jsontest1.go", "jsontest2.go"}
+		err := setup.CreateDuplicateFiles(files, code)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunSubcommand(
+			"stats", "--"+mode, "--format", "json", "--threshold", "10",
+		)
+		Expect(err).ToNot(HaveOccurred())
+
+		var result map[string]any
+
+		err = json.Unmarshal(output, &result)
+		Expect(err).ToNot(HaveOccurred())
+
+		config := result["configuration"].(map[string]any)
+		Expect(config).To(HaveKeyWithValue("detectionMode", expectedMode))
+
+		if expectedMode == "semantic" {
+			Expect(config).To(HaveKeyWithValue("semanticDetection", true))
+		} else {
+			Expect(config).To(HaveKeyWithValue("semanticDetection", expectedSemantic))
+		}
+	}
+
+	runStatsCSV := func(mode string, expectedSubstring string) {
+		code := `package main
+
+func csvTest() {}`
+		files := []string{"csvtest1.go", "csvtest2.go"}
+		err := setup.CreateDuplicateFiles(files, code)
+		Expect(err).NotTo(HaveOccurred())
+
+		output, err := setup.RunSubcommand(
+			"stats", "--"+mode, "--format", "csv", "--threshold", "5",
+		)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(string(output)).To(ContainSubstring(expectedSubstring))
+	}
+
+	Context("When running stats with --semantic flag", func() {
+		It("should show detection mode as semantic in text output", func() {
+			runStatsAndExpectSubstring("semantic", "10", "Detection Mode", "semantic")
 		})
 
 		It("should include detection mode description in text output", func() {
@@ -50,85 +121,32 @@ func handleRequest(req string) error {
 	}
 	return nil
 }`
-
-			err := setup.CreateDuplicateFiles([]string{"desc1.go", "desc2.go"}, code)
+			files := []string{"desc1.go", "desc2.go"}
+			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunSubcommand("stats", "--semantic", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("identifier names"))
+			Expect(string(output)).To(ContainSubstring("identifier names"))
 		})
 
 		It("should recommend --structural in semantic mode", func() {
-			code := `package main
-
-func semanticRec() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"recom1.go", "recom2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand("stats", "--semantic", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("--structural"))
+			runStatsMinimal("semantic", "rec", "--structural")
 		})
 	})
 
 	Context("When running stats with --structural flag", func() {
 		It("should show detection mode as structural in text output", func() {
-			code := `package main
-
-import "fmt"
-
-func processData(data string) error {
-	if data == "" {
-		return fmt.Errorf("empty data")
-	}
-	return nil
-}`
-
-			err := setup.CreateDuplicateFiles([]string{"struct1.go", "struct2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand("stats", "--structural", "--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("Detection Mode"))
-			Expect(outputStr).To(ContainSubstring("structural"))
+			runStatsAndExpectSubstring("structural", "10", "Detection Mode", "structural")
 		})
 
 		It("should include detection mode description in text output", func() {
-			code := `package main
-
-func structDesc() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"sd1.go", "sd2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand("stats", "--structural", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("AST structure only"))
+			runStatsMinimal("structural", "desc", "AST structure only")
 		})
 
 		It("should recommend --semantic in structural mode", func() {
-			code := `package main
-
-func structRec() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"srec1.go", "srec2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand("stats", "--structural", "--threshold", "5")
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("--semantic"))
+			runStatsMinimal("structural", "srec", "--semantic")
 		})
 	})
 
@@ -145,8 +163,8 @@ func jsonSemanticTest(name string) error {
 	fmt.Println(name)
 	return nil
 }`
-
-			err := setup.CreateDuplicateFiles([]string{"jsonsem1.go", "jsonsem2.go"}, code)
+			files := []string{"jsonsem1.go", "jsonsem2.go"}
+			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunSubcommand(
@@ -155,6 +173,7 @@ func jsonSemanticTest(name string) error {
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -166,24 +185,7 @@ func jsonSemanticTest(name string) error {
 		})
 
 		It("should set semanticDetection to true", func() {
-			code := `package main
-
-func jsonBoolTest() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"jb1.go", "jb2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand(
-				"stats", "--semantic", "--format", "json", "--threshold", "5",
-			)
-			Expect(err).ToNot(HaveOccurred())
-
-			var result map[string]any
-			err = json.Unmarshal(output, &result)
-			Expect(err).ToNot(HaveOccurred())
-
-			config := result["configuration"].(map[string]any)
-			Expect(config).To(HaveKeyWithValue("semanticDetection", true))
+			runStatsJSON("semantic", "semantic", true)
 		})
 	})
 
@@ -199,8 +201,8 @@ func jsonStructTest(data string) error {
 	}
 	return nil
 }`
-
-			err := setup.CreateDuplicateFiles([]string{"jsonst1.go", "jsonst2.go"}, code)
+			files := []string{"jsonst1.go", "jsonst2.go"}
+			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunSubcommand(
@@ -209,6 +211,7 @@ func jsonStructTest(data string) error {
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			err = json.Unmarshal(output, &result)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -217,79 +220,23 @@ func jsonStructTest(data string) error {
 		})
 
 		It("should set semanticDetection to false", func() {
-			code := `package main
-
-func jsonBoolStruct() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"jbs1.go", "jbs2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand(
-				"stats", "--structural", "--format", "json", "--threshold", "5",
-			)
-			Expect(err).ToNot(HaveOccurred())
-
-			var result map[string]any
-			err = json.Unmarshal(output, &result)
-			Expect(err).ToNot(HaveOccurred())
-
-			config := result["configuration"].(map[string]any)
-			Expect(config).To(HaveKeyWithValue("semanticDetection", false))
+			runStatsJSON("structural", "structural", false)
 		})
 	})
 
 	Context("When running stats --semantic with CSV format", func() {
 		It("should include Detection Mode in CSV output", func() {
-			code := `package main
-
-func csvSemTest() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"csvs1.go", "csvs2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand(
-				"stats", "--semantic", "--format", "csv", "--threshold", "5",
-			)
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("Detection Mode,semantic"))
+			runStatsCSV("semantic", "Detection Mode,semantic")
 		})
 
 		It("should include Detection Mode Description in CSV output", func() {
-			code := `package main
-
-func csvSemDesc() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"csvsd1.go", "csvsd2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand(
-				"stats", "--semantic", "--format", "csv", "--threshold", "5",
-			)
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("Detection Mode Description,"))
+			runStatsCSV("semantic", "Detection Mode Description,")
 		})
 	})
 
 	Context("When running stats --structural with CSV format", func() {
 		It("should include Detection Mode as structural in CSV output", func() {
-			code := `package main
-
-func csvStructMode() {}`
-
-			err := setup.CreateDuplicateFiles([]string{"csvsm1.go", "csvsm2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			output, err := setup.RunSubcommand(
-				"stats", "--structural", "--format", "csv", "--threshold", "5",
-			)
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("Detection Mode,structural"))
+			runStatsCSV("structural", "Detection Mode,structural")
 		})
 	})
 
