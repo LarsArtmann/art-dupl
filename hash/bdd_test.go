@@ -9,7 +9,7 @@ import (
 )
 
 // Behavior-Driven Development Tests for Hash Detection
-// These tests verify file-level exact duplicate detection using SHA-256 hashing
+// These tests verify file-level exact duplicate detection using XXH3 hashing
 
 // TestBasicHashDetectionShouldFindExactDuplicates tests that identical files are detected.
 func TestBasicHashDetectionShouldFindExactDuplicates(

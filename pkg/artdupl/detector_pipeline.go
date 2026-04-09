@@ -202,7 +202,7 @@ func (d *detector) runArtDuplDetection(
 	return d.runSuffixTreeDetection(data, threshold)
 }
 
-// runHashDetection executes hash-based detection method using SHA-256 file hashing.
+// runHashDetection executes hash-based detection method using XXH3 streaming file hashing.
 func (d *detector) runHashDetection(
 	_ context.Context,
 	data []*syntax.Node,
