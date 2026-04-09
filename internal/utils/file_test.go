@@ -14,17 +14,20 @@ import (
 func TestFileProcessorWriteFile(t *testing.T) {
 	t.Parallel()
 
-	t.Run("writes file to base directory", func(t *testing.T) {
-		t.Parallel()
-
-		assertWriteFile(t, "test.txt", "hello world")
-	})
-
-	t.Run("creates nested directories", func(t *testing.T) {
-		t.Parallel()
-
-		assertWriteFile(t, "subdir/nested/test.txt", "nested content")
-	})
+	tests := []struct {
+		name        string
+		filename    string
+		content     string
+	}{
+		{"writes file to base directory", "test.txt", "hello world"},
+		{"creates nested directories", "subdir/nested/test.txt", "nested content"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			assertWriteFile(t, tt.filename, tt.content)
+		})
+	}
 
 	t.Run("writes without base directory", func(t *testing.T) {
 		g := gomega.NewWithT(t)

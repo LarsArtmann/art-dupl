@@ -21,6 +21,15 @@ func initializeStringIDMaps(
 	}
 }
 
+// populateSliceMap populates a slice and index map with the specified count and format string.
+func populateSliceMap(slice []string, index map[string]uint32, count int, format string) {
+	for i := range count {
+		s := fmt.Sprintf(format, i)
+		slice[i] = s
+		index[s] = uint32(i)
+	}
+}
+
 // BenchmarkSliceLookup measures slice index access.
 func BenchmarkSliceLookup(b *testing.B) {
 	pool := make([]string, 1000)
@@ -77,11 +86,7 @@ func TestSliceMapEquivalence(t *testing.T) {
 	slice := make([]string, 10)
 	index := make(map[string]uint32)
 
-	for i := range 10 {
-		s := fmt.Sprintf("string_%d", i)
-		slice[i] = s
-		index[s] = uint32(i)
-	}
+	populateSliceMap(slice, index, 10, "string_%d")
 
 	// Test round-trip
 	testString := "string_5"
@@ -136,11 +141,7 @@ func BenchmarkRoundTripSliceMap(b *testing.B) {
 	slice := make([]string, 1000)
 	index := make(map[string]uint32)
 
-	for i := range 1000 {
-		s := fmt.Sprintf("file_%d.go", i)
-		slice[i] = s
-		index[s] = uint32(i)
-	}
+	populateSliceMap(slice, index, 1000, "file_%d.go")
 
 	b.ResetTimer()
 

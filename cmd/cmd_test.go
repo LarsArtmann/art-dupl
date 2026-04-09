@@ -23,6 +23,21 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
+// createTestMatchChannel creates a channel with a single test match.
+func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
+	ch := make(chan syntax.Match, 1)
+	frags := make([][]*syntax.Node, len(files))
+	for i, file := range files {
+		frags[i] = createTestNodes(file, 1, 10)
+	}
+	ch <- syntax.Match{
+		Hash:  hash,
+		Frags: frags,
+	}
+	close(ch)
+	return ch
+}
+
 func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
 	t.Helper()
 
@@ -386,16 +401,7 @@ func TestPrintDupls(t *testing.T) {
 	t.Run("with matches", func(t *testing.T) {
 		mock := &mockPrinter{}
 
-		ch := make(chan syntax.Match, 1)
-		ch <- syntax.Match{
-			Hash: "abc123",
-			Frags: [][]*syntax.Node{
-				createTestNodes("test1.go", 1, 10),
-				createTestNodes("test2.go", 1, 10),
-			},
-		}
-
-		close(ch)
+		ch := createTestMatchChannel("abc123", "test1.go", "test2.go")
 
 		err := printDupls(t.Context(), mock, ch, printer.SortBySize, 15, "art-dupl")
 		if err != nil {
@@ -410,16 +416,7 @@ func TestPrintDupls(t *testing.T) {
 	t.Run("cancelled context returns error", func(t *testing.T) {
 		mock := &mockPrinter{}
 
-		ch := make(chan syntax.Match, 1)
-		ch <- syntax.Match{
-			Hash: "abc123",
-			Frags: [][]*syntax.Node{
-				createTestNodes("test1.go", 1, 10),
-				createTestNodes("test2.go", 1, 10),
-			},
-		}
-
-		close(ch)
+		ch := createTestMatchChannel("abc123", "test1.go", "test2.go")
 
 		ctx, cancel := context.WithCancel(t.Context())
 		cancel()

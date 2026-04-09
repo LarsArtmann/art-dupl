@@ -69,7 +69,7 @@ func jsonTest(name string) error {
 		err := setup.CreateDuplicateFiles(files, code)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunSubcommand(
+		output, err := setup.RunSubcommandOutput(
 			"stats", "--"+mode, "--format", "json", "--threshold", "10",
 		)
 		Expect(err).ToNot(HaveOccurred())
@@ -167,7 +167,7 @@ func jsonSemanticTest(name string) error {
 			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand(
+			output, err := setup.RunSubcommandOutput(
 				"stats", "--semantic", "--format", "json", "--threshold", "10",
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -205,7 +205,7 @@ func jsonStructTest(data string) error {
 			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand(
+			output, err := setup.RunSubcommandOutput(
 				"stats", "--structural", "--format", "json", "--threshold", "10",
 			)
 			Expect(err).ToNot(HaveOccurred())

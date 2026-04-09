@@ -193,15 +193,20 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
 
-	select {
-	case <-schan:
-	case <-time.After(5 * time.Second):
-		t.Error("Should handle nonexistent file gracefully")
-	}
+	waitForChannelOrTimeout(t, schan, 5*time.Second, "Should handle nonexistent file gracefully")
 
 	stats := <-statsChan
 	if stats.FilesCount != 1 {
 		t.Errorf("Expected FilesCount=1, got %d", stats.FilesCount)
+	}
+}
+
+func waitForChannelOrTimeout[T any](t *testing.T, ch <-chan T, timeout time.Duration, timeoutMsg string) {
+	t.Helper()
+	select {
+	case <-ch:
+	case <-time.After(timeout):
+		t.Error(timeoutMsg)
 	}
 }
 

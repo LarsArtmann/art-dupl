@@ -250,44 +250,32 @@ func TestCloneCategoryEmoji(t *testing.T) {
 	}
 }
 
-func TestClonePriorityEmoji(t *testing.T) {
-	tests := []struct {
-		priority ClonePriority
-		want     string
-	}{
-		{PriorityCritical, "🔴"},
-		{PriorityHigh, "🟠"},
-		{PriorityMedium, "🟡"},
-		{PriorityLow, "🟢"},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.priority), func(t *testing.T) {
-			if got := tt.priority.GetPriorityEmoji(); got != tt.want {
-				t.Errorf("GetPriorityEmoji() = %v, want %v", got, tt.want)
+func testClonePriority(t *testing.T, name string, getValue func(ClonePriority) string, expected map[ClonePriority]string) {
+	for priority, want := range expected {
+		t.Run(name+"_"+string(priority), func(t *testing.T) {
+			if got := getValue(priority); got != want {
+				t.Errorf("%s() = %v, want %v", name, got, want)
 			}
 		})
 	}
 }
 
-func TestClonePriorityColor(t *testing.T) {
-	tests := []struct {
-		priority ClonePriority
-		want     string
-	}{
-		{PriorityCritical, "var(--error)"},
-		{PriorityHigh, "var(--warning)"},
-		{PriorityMedium, "var(--accent)"},
-		{PriorityLow, "var(--success)"},
-	}
+func TestClonePriorityEmoji(t *testing.T) {
+	testClonePriority(t, "GetPriorityEmoji", func(p ClonePriority) string { return p.GetPriorityEmoji() }, map[ClonePriority]string{
+		PriorityCritical: "🔴",
+		PriorityHigh:     "🟠",
+		PriorityMedium:   "🟡",
+		PriorityLow:      "🟢",
+	})
+}
 
-	for _, tt := range tests {
-		t.Run(string(tt.priority), func(t *testing.T) {
-			if got := tt.priority.GetPriorityColor(); got != tt.want {
-				t.Errorf("GetPriorityColor() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+func TestClonePriorityColor(t *testing.T) {
+	testClonePriority(t, "GetPriorityColor", func(p ClonePriority) string { return p.GetPriorityColor() }, map[ClonePriority]string{
+		PriorityCritical: "var(--error)",
+		PriorityHigh:      "var(--warning)",
+		PriorityMedium:    "var(--accent)",
+		PriorityLow:       "var(--success)",
+	})
 }
 
 func TestPriorityHigher(t *testing.T) {

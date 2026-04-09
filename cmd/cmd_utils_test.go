@@ -7,18 +7,12 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/pkg/filter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
-
-func writeTestFileSimple(t *testing.T, path, content string) {
-	t.Helper()
-	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
-}
 
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
@@ -538,7 +532,7 @@ func TestHandleWalkEntry(t *testing.T) {
 	tempDir := t.TempDir()
 
 	testFile := tempDir + "/test.go"
-	writeTestFileSimple(t, testFile, "package main")
+	testutil.WriteTestFile(t, testFile, "package main")
 
 	info, err := os.Lstat(testFile)
 	if err != nil {

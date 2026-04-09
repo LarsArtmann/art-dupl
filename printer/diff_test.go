@@ -57,12 +57,10 @@ func TestLineDiff_ModifiedLines(t *testing.T) {
 	}
 
 	// Second and third lines should be equal
-	if result.Base[1].Type != DiffLineEqual {
-		t.Errorf("Expected base line 1 to be Equal, got %d", result.Base[1].Type)
-	}
-
-	if result.Base[2].Type != DiffLineEqual {
-		t.Errorf("Expected base line 2 to be Equal, got %d", result.Base[2].Type)
+	for i := 1; i <= 2; i++ {
+		if result.Base[i].Type != DiffLineEqual {
+			t.Errorf("Expected base line %d to be Equal, got %d", i, result.Base[i].Type)
+		}
 	}
 }
 

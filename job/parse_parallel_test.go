@@ -121,13 +121,7 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	schan, _ := ParseParallel(ctx, fchan, 1, true)
 
-	// Should handle errors gracefully
-	select {
-	case <-schan:
-		// Channel closed without data is fine for error case
-	case <-time.After(5 * time.Second):
-		t.Error("ParseParallel should handle errors gracefully")
-	}
+	waitForChannelOrTimeout(t, schan, 5*time.Second, "ParseParallel should handle errors gracefully")
 }
 
 func TestNormalizeWorkerCount(t *testing.T) {

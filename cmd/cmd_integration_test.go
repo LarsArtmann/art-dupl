@@ -7,6 +7,9 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
 // --- Integration Tests for Command Handlers ---
@@ -16,6 +19,31 @@ func writeTestFile(t *testing.T, path, content string, perm os.FileMode) {
 	if err := os.WriteFile(path, []byte(content), perm); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
+}
+
+func buildSuffixTreeWithFile(t *testing.T, tmpDir string, cfg *config.Config) (*suffixtree.STree, []*syntax.Node, job.ParseStats) {
+	t.Helper()
+	ctx := t.Context()
+	tree, data, parseStats, err := buildSuffixTree(buildParams{
+		ctx:          ctx,
+		paths:        []string{tmpDir},
+		cfg:          cfg,
+		filterParam:  nil,
+		outputFormat: config.OutputFormatText,
+	})
+	if err != nil {
+		t.Fatalf("buildSuffixTree() error = %v", err)
+	}
+	if tree == nil {
+		t.Error("buildSuffixTree() returned nil tree")
+	}
+	if len(data) == 0 {
+		t.Error("buildSuffixTree() returned empty data")
+	}
+	if parseStats.FilesCount < 1 {
+		t.Errorf("Expected at least 1 file parsed, got %d", parseStats.FilesCount)
+	}
+	return tree, data, parseStats
 }
 
 func TestRunCmd_Integration(t *testing.T) {
@@ -312,30 +340,7 @@ func Example() int {
 			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
 		}
 
-		ctx := t.Context()
-
-		tree, data, parseStats, err := buildSuffixTree(buildParams{
-			ctx:          ctx,
-			paths:        []string{tmpDir},
-			cfg:          cfg,
-			filterParam:  nil,
-			outputFormat: config.OutputFormatText,
-		})
-		if err != nil {
-			t.Fatalf("buildSuffixTree() error = %v", err)
-		}
-
-		if tree == nil {
-			t.Error("buildSuffixTree() returned nil tree")
-		}
-
-		if len(data) == 0 {
-			t.Error("buildSuffixTree() returned empty data")
-		}
-
-		if parseStats.FilesCount < 1 {
-			t.Errorf("Expected at least 1 file parsed, got %d", parseStats.FilesCount)
-		}
+		_, _, _ = buildSuffixTreeWithFile(t, tmpDir, cfg)
 	})
 
 	t.Run("verbose output", func(t *testing.T) {
@@ -349,21 +354,7 @@ func Example() int {
 			DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
 		}
 
-		ctx := t.Context()
-
-		tree, _, _, err := buildSuffixTree(buildParams{
-			ctx:          ctx,
-			paths:        []string{tmpDir},
-			cfg:          cfg,
-			filterParam:  nil,
-			outputFormat: config.OutputFormatText,
-		})
-		if err != nil {
-			t.Fatalf("buildSuffixTree() error = %v", err)
-		}
-
-		if tree == nil {
-			t.Error("buildSuffixTree() returned nil tree")
-		}
+		tree, _, _ := buildSuffixTreeWithFile(t, tmpDir, cfg)
+		_ = tree
 	})
 }

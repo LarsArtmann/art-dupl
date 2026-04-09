@@ -185,9 +185,14 @@ func (p *stats) PrintFooter() error {
 	return nil
 }
 
+// printStyledLine prints a styled line with indentation and optional bullet.
+func (p *stats) printStyledLinef(prefix string, format string, args ...any) {
+	_, _ = fmt.Fprintf(p.w, "%s %s\n", prefix, p.base.Render(fmt.Sprintf(format, args...)))
+}
+
 // printLine prints a base-styled line with indentation.
 func (p *stats) printLinef(format string, args ...any) {
-	_, _ = fmt.Fprintf(p.w, "  %s\n", p.base.Render(fmt.Sprintf(format, args...)))
+	p.printStyledLinef("  ", format, args...)
 }
 
 // printSection prints a section header.
@@ -229,5 +234,5 @@ func (p *stats) printHeader(title string) {
 
 // printBullet prints a bullet point with base styling.
 func (p *stats) printBulletf(format string, args ...any) {
-	_, _ = fmt.Fprintf(p.w, "  • %s\n", p.base.Render(fmt.Sprintf(format, args...)))
+	p.printStyledLinef("  •", format, args...)
 }
