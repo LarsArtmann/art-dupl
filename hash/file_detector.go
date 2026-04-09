@@ -1,7 +1,6 @@
 package hash
 
 import (
-	"context"
 	"io"
 	"os"
 
@@ -70,51 +69,6 @@ func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
 	}
 
 	return duplicates
-}
-
-// FindFileDuplicatesStream finds exact file duplicates by streaming file paths from a channel.
-// Files are hashed one at a time using streaming I/O — file content is never held in memory.
-// Only (hash, filename, size) is retained, yielding O(1) memory per file regardless of file size.
-func FindFileDuplicatesStream(
-	ctx context.Context,
-	files <-chan string,
-	threshold int,
-) <-chan FileDuplicate {
-	fd := NewFileDetector(threshold)
-	resultChan := make(chan FileDuplicate)
-
-	go func() {
-		defer close(resultChan)
-
-		groups := make(map[string][]hashEntry)
-
-		for filename := range files {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-			}
-
-			entry, ok := fd.hashFile(filename)
-			if !ok || entry.size < threshold {
-				continue
-			}
-
-			groups[entry.hash] = append(groups[entry.hash], entry)
-		}
-
-		for hash, group := range groups {
-			if len(group) >= 2 {
-				select {
-				case <-ctx.Done():
-					return
-				case resultChan <- fd.convertGroup(hash, group):
-				}
-			}
-		}
-	}()
-
-	return resultChan
 }
 
 // FindDuplOver finds exact file duplicates using XXH3 hashing.
