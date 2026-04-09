@@ -226,11 +226,7 @@ func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod s
 		)
 	}
 
-	if _, err := p.w.Write(data); err != nil {
-		return errors.WrapIO(err, "JSON output", "write")
-	}
-
-	return nil
+	return writeFormattedOutput(p.w, data, "JSON output")
 }
 
 // OutputSimpleJSON generates simple JSON output format (from duplicates project).
@@ -271,9 +267,5 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		)
 	}
 
-	if _, err := p.w.Write(data); err != nil {
-		return errors.WrapIO(err, "simple JSON output", "write")
-	}
-
-	return nil
+	return writeFormattedOutput(p.w, data, "simple JSON output")
 }

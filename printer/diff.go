@@ -175,6 +175,11 @@ func diffLargeFiles(baseLines, comparedLines [][]byte, base, compared []DiffLine
 	return hasDiff
 }
 
+// linesMatch compares two lines after trimming whitespace.
+func linesMatch(line1, line2 []byte) bool {
+	return bytes.Equal(bytes.TrimSpace(line1), bytes.TrimSpace(line2))
+}
+
 // diffLCS performs LCS-based diff for smaller files.
 // Time: O(n*m), Space: O(n*m) - acceptable for files < 100 lines.
 func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool {
@@ -188,7 +193,7 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 
 	for i := 1; i <= m; i++ {
 		for j := 1; j <= n; j++ {
-			if bytes.Equal(bytes.TrimSpace(baseLines[i-1]), bytes.TrimSpace(comparedLines[j-1])) {
+			if linesMatch(baseLines[i-1], comparedLines[j-1]) {
 				dp[i][j] = dp[i-1][j-1] + 1
 			} else {
 				dp[i][j] = max(dp[i-1][j], dp[i][j-1])
@@ -202,7 +207,7 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 
 	for i > 0 && j > 0 {
 		switch {
-		case bytes.Equal(bytes.TrimSpace(baseLines[i-1]), bytes.TrimSpace(comparedLines[j-1])):
+		case linesMatch(baseLines[i-1], comparedLines[j-1]):
 			// Lines match
 			i--
 			j--

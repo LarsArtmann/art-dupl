@@ -21,6 +21,15 @@ func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, chan
 	}
 }
 
+// runGitCommand runs a git command and fails the test if it errors.
+func runGitCommand(t *testing.T, cmd *exec.Cmd, dir, operation string) {
+	t.Helper()
+	cmd.Dir = dir
+	if output, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("Failed to %s: %v, output: %s", operation, err, string(output))
+	}
+}
+
 // Returns the temp directory path and a cleanup function.
 func setupGitRepo(t *testing.T) string {
 	t.Helper()

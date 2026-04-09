@@ -9,6 +9,21 @@ type validatable interface {
 	IsValid() error
 }
 
+// baseAnalysis returns a valid Analysis with customizable overrides.
+func baseAnalysis(overrides ...func(*Analysis)) Analysis {
+	a := Analysis{
+		ID:        "test-1",
+		State:     DetectionStateIdle,
+		Mode:      AnalysisModeFull,
+		Threshold: 15,
+		CreatedAt: "2024-01-01T00:00:00Z",
+	}
+	for _, override := range overrides {
+		override(&a)
+	}
+	return a
+}
+
 // newDetectionOptions creates a DetectionOptions with default values for testing.
 // The threshold parameter allows customizing the threshold value (including 0).
 func newDetectionOptions(threshold Threshold) DetectionOptions {
@@ -46,72 +61,37 @@ func TestAnalysis_IsValid(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "valid analysis",
-			value: Analysis{
-				ID:        "test-1",
-				State:     DetectionStateCompleted,
-				Mode:      AnalysisModeFull,
-				Threshold: 15,
-				CreatedAt: "2024-01-01T00:00:00Z",
-			},
+			name:    "valid analysis",
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-1"; a.State = DetectionStateCompleted }),
 			wantErr: false,
 		},
 		{
-			name: "invalid state",
-			value: Analysis{
-				ID:        "test-2",
-				State:     DetectionState("invalid"),
-				Mode:      AnalysisModeFull,
-				Threshold: 15,
-				CreatedAt: "2024-01-01T00:00:00Z",
-			},
+			name:    "invalid state",
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-2"; a.State = DetectionState("invalid") }),
 			wantErr: true,
 		},
 		{
-			name: "invalid mode",
-			value: Analysis{
-				ID:        "test-3",
-				State:     DetectionStateIdle,
-				Mode:      AnalysisMode("invalid"),
-				Threshold: 15,
-				CreatedAt: "2024-01-01T00:00:00Z",
-			},
+			name:    "invalid mode",
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-3"; a.Mode = AnalysisMode("invalid") }),
 			wantErr: true,
 		},
 		{
-			name: "zero threshold",
-			value: Analysis{
-				ID:        "test-4",
-				State:     DetectionStateIdle,
-				Mode:      AnalysisModeFull,
-				Threshold: 0,
-				CreatedAt: "2024-01-01T00:00:00Z",
-			},
+			name:    "zero threshold",
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-4"; a.Threshold = 0 }),
 			wantErr: true,
 		},
 		{
-			name: "empty created at",
-			value: Analysis{
-				ID:        "test-5",
-				State:     DetectionStateIdle,
-				Mode:      AnalysisModeFull,
-				Threshold: 15,
-				CreatedAt: "",
-			},
+			name:    "empty created at",
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-5"; a.CreatedAt = "" }),
 			wantErr: true,
 		},
 		{
 			name: "invalid clone group",
-			value: Analysis{
-				ID:        "test-6",
-				State:     DetectionStateCompleted,
-				Mode:      AnalysisModeFull,
-				Threshold: 15,
-				CreatedAt: "2024-01-01T00:00:00Z",
-				CloneGroups: []CloneGroup{
-					{ID: "group-1", Clones: nil},
-				},
-			},
+			value: baseAnalysis(func(a *Analysis) {
+				a.ID = "test-6"
+				a.State = DetectionStateCompleted
+				a.CloneGroups = []CloneGroup{{ID: "group-1", Clones: nil}}
+			}),
 			wantErr: true,
 		},
 	}

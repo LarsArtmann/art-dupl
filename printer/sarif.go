@@ -283,9 +283,5 @@ func (p *sarifPrinter) outputSARIF() error {
 		)
 	}
 
-	if _, err := p.w.Write(data); err != nil {
-		return errors.WrapIO(err, "SARIF output", "write")
-	}
-
-	return nil
+	return writeFormattedOutput(p.w, data, "SARIF output")
 }

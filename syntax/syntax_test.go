@@ -1,6 +1,10 @@
 package syntax
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+)
 
 const testFilename = "test.go"
 
@@ -156,11 +160,7 @@ func FuzzSerialize(f *testing.F) {
 		// Parse input to create AST nodes
 		// Since we can't reliably parse all fuzz inputs as Go code,
 		// we'll create synthetic nodes based on input characteristics
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Serialize panicked with input %q: %v", input, r)
-			}
-		}()
+		defer testutil.PanicRecovery(t, input)()
 
 		// Create a simple node tree structure
 		root := createTestNodeTree(input)

@@ -65,6 +65,22 @@ func createTestCloneGroups(groups ...CloneGroupParams) []domain.CloneGroup {
 	return result
 }
 
+// createCloneGroupsForWithCloneGroupsTest creates test groups with specific clone counts.
+func createCloneGroupsForWithCloneGroupsTest() []domain.CloneGroup {
+	return []domain.CloneGroup{
+		{
+			ID:     domain.CloneGroupID("group-1"),
+			Clones: []domain.Clone{{}},
+			Size:   100,
+		},
+		{
+			ID:     domain.CloneGroupID("group-2"),
+			Clones: []domain.Clone{{}, {}},
+			Size:   200,
+		},
+	}
+}
+
 // assertAnalysisThresholdAndCloneGroups validates the threshold and clone groups count of an Analysis.
 func assertAnalysisThresholdAndCloneGroups(
 	t *testing.T,
@@ -316,10 +332,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 	})
 
 	t.Run("with clone groups", func(t *testing.T) {
-		groups := createTestCloneGroups(
-			CloneGroupParams{id: "group-1", clones: 1, size: 100},
-			CloneGroupParams{id: "group-2", clones: 2, size: 200},
-		)
+		groups := createCloneGroupsForWithCloneGroupsTest()
 
 		analysis := CreateAnalysisFromClones(groups, 20)
 
@@ -333,6 +346,11 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 			t.Errorf("Expected 300 total token size, got %d", analysis.Stats.TotalTokenSize)
 		}
 	})
+
+	complexityGroups := createTestCloneGroups(
+		CloneGroupParams{id: "group-1", clones: 1, size: 100},
+		CloneGroupParams{id: "group-2", clones: 1, size: 200},
+	)
 
 	t.Run("stats calculation", func(t *testing.T) {
 		groups := []domain.CloneGroup{
@@ -371,12 +389,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 	})
 
 	t.Run("complexity score", func(t *testing.T) {
-		groups := createTestCloneGroups(
-			CloneGroupParams{id: "group-1", clones: 1, size: 100},
-			CloneGroupParams{id: "group-2", clones: 1, size: 200},
-		)
-
-		analysis := CreateAnalysisFromClones(groups, 15)
+		analysis := CreateAnalysisFromClones(complexityGroups, 15)
 
 		// Complexity = totalSize / (numGroups + 1) = 300 / 3 = 100
 		expectedScore := 100.0

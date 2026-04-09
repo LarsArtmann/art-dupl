@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -172,5 +173,13 @@ func writeCloneLines(w io.Writer, clones []clone, formatStr string) error {
 		}
 	}
 
+	return nil
+}
+
+// writeFormattedOutput writes data to the writer with proper error wrapping.
+func writeFormattedOutput(w io.Writer, data []byte, formatName string) error {
+	if _, err := w.Write(data); err != nil {
+		return duplerrors.WrapIO(err, formatName, "write")
+	}
 	return nil
 }

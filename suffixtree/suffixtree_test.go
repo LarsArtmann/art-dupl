@@ -5,6 +5,8 @@ import (
 	"slices"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 type char rune
@@ -292,11 +294,7 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 		tokens := str2tok(input)
 
 		// This should not panic
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Update panicked with input %q: %v", input, r)
-			}
-		}()
+		defer testutil.PanicRecovery(t, input)()
 
 		// Update tree with tokens
 		tree.Update(tokens...)
