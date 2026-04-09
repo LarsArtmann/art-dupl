@@ -58,13 +58,8 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	d.started = time.Now()
 
 	// Validate inputs
-	err := d.validateInputs(ctx, files)
-	if err != nil {
-		return nil, d.wrapValidationError(
-			err,
-			fmt.Sprintf("validation failed for %d files", len(files)),
-			len(files),
-		)
+	if err := d.validateInputsOrError(ctx, files); err != nil {
+		return nil, err
 	}
 
 	// Process files and build analysis pipeline
@@ -108,10 +103,8 @@ func (d *detector) FindClonesStream(
 	d.started = time.Now()
 
 	// Validate inputs
-	err := d.validateInputs(ctx, files)
-	if err != nil {
-		return nil, d.wrapValidationError(err,
-			fmt.Sprintf("streaming validation failed for %d files", len(files)), len(files))
+	if err := d.validateInputsOrError(ctx, files); err != nil {
+		return nil, err
 	}
 
 	// Create output channel
