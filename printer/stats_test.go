@@ -37,6 +37,13 @@ func assertMapFloat64Equal(t *testing.T, m map[string]any, key string, expected 
 	}
 }
 
+// newTestStatsPrinter creates a stats printer with default test configuration.
+func newTestStatsPrinter() (*stats, *bytes.Buffer) {
+	var buf bytes.Buffer
+	sp := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	return sp, &buf
+}
+
 // createNodeSlice creates a slice of syntax.Node with sequential positions and types.
 // startPos is the starting position (inclusive), endPos is the ending position (inclusive).
 func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
@@ -210,9 +217,7 @@ func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 }
 
 func TestStatsComplexityScore(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 	statsPrinter.SetFilesCount(5)
 
 	// Simulate: 3 clone groups, 9 total clones = complexity 3.0
@@ -239,9 +244,7 @@ func TestStatsComplexityScore(t *testing.T) {
 }
 
 func TestStatsImpactScore(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 	statsPrinter.SetFilesCount(2)
 
 	// Clone group with 4 tokens, appears 3 times
@@ -268,9 +271,7 @@ func TestStatsImpactScore(t *testing.T) {
 }
 
 func TestStatsFileDuplicationTracking(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 	statsPrinter.SetFilesCount(2)
 
 	// Create duplicate in file1.go with multiple nodes
@@ -305,9 +306,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 }
 
 func TestGetSizeRange(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 
 	tests := []struct {
 		lines    int
@@ -338,11 +337,9 @@ func TestGetSizeRange(t *testing.T) {
 }
 
 func TestGetTokenRange(t *testing.T) {
-	var buf bytes.Buffer
-
 	// With threshold=15, ranges are:
 	// 1-15 (t), 16-30 (t*2), 31-45 (t*3), 46-75 (t*5), 76-150 (t*10), 151+ (>t*10)
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 
 	tests := []struct {
 		tokens   int
@@ -459,9 +456,7 @@ func TestPrintTopFilesWithLessThanN(t *testing.T) {
 }
 
 func TestStatsDetectionMethods(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, _ := newTestStatsPrinter()
 	statsPrinter.SetDetectionMethods("hash,art-dupl")
 
 	if statsPrinter.statsData.DetectionMethods != "hash,art-dupl" {
@@ -487,9 +482,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var buf bytes.Buffer
-
-			statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+			statsPrinter, _ := newTestStatsPrinter()
 			statsPrinter.statsData.TotalDuplicateLines = tt.totalLines
 			statsPrinter.statsData.TotalClones = tt.totalClones
 			statsPrinter.statsData.TotalCloneGroups = tt.totalCloneGroups
@@ -512,9 +505,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 }
 
 func TestStatsJSONOutput(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, buf := newTestStatsPrinter()
 
 	// Add some test data
 	statsPrinter.SetDetectionMethods("art-dupl,hash")
@@ -611,9 +602,7 @@ func TestStatsJSONOutput(t *testing.T) {
 }
 
 func TestStatsTextOutput(t *testing.T) {
-	var buf bytes.Buffer
-
-	statsPrinter := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+	statsPrinter, buf := newTestStatsPrinter()
 	statsPrinter.SetFilesCount(5)
 	statsPrinter.SetDetectionMethods("art-dupl")
 
