@@ -149,6 +149,15 @@ func (d *detector) wrapValidationError(err error, operation string, fileCount in
 	)
 }
 
+// validateInputsOrError validates inputs and returns the error if validation fails.
+// This helper deduplicates the common validation + error wrapping pattern.
+func (d *detector) validateInputsOrError(ctx context.Context, files []string) error {
+	if err := d.validateInputs(ctx, files); err != nil {
+		return d.wrapValidationError(err, "validation failed for ", len(files))
+	}
+	return nil
+}
+
 // Close releases any resources held by the detector.
 func (d *detector) Close() error {
 	// No persistent resources to clean up currently
