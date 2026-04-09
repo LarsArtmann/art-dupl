@@ -15,9 +15,9 @@ func TestFileProcessorWriteFile(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		filename    string
-		content     string
+		name     string
+		filename string
+		content  string
 	}{
 		{"writes file to base directory", "test.txt", "hello world"},
 		{"creates nested directories", "subdir/nested/test.txt", "nested content"},

@@ -26,15 +26,19 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 // createTestMatchChannel creates a channel with a single test match.
 func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 	ch := make(chan syntax.Match, 1)
+
 	frags := make([][]*syntax.Node, len(files))
 	for i, file := range files {
 		frags[i] = createTestNodes(file, 1, 10)
 	}
+
 	ch <- syntax.Match{
 		Hash:  hash,
 		Frags: frags,
 	}
+
 	close(ch)
+
 	return ch
 }
 

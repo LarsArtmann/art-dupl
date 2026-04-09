@@ -31,8 +31,14 @@ func TestTextOutputGolden(t *testing.T) {
 func makeTestNodes(filename string, positions ...struct{ pos, end, typ int }) []*syntax.Node {
 	nodes := make([]*syntax.Node, len(positions))
 	for i, p := range positions {
-		nodes[i] = &syntax.Node{Filename: filename, Pos: int32(p.pos), End: int32(p.end), Type: int32(p.typ)}
+		nodes[i] = &syntax.Node{
+			Filename: filename,
+			Pos:      int32(p.pos),
+			End:      int32(p.end),
+			Type:     int32(p.typ),
+		}
 	}
+
 	return nodes
 }
 

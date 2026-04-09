@@ -189,7 +189,9 @@ func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 // hash functions (SHA-256, etc.) - this hash is for deduplication only,
 // not security. See: https://github.com/zeebo/xxh3
 func (f *FileDetector) hashFile(filename string) (hashEntry, bool) {
-	file, err := os.Open(filename) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
+	file, err := os.Open(
+		filename,
+	) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 	if err != nil {
 		logger.Default.Debug("skipping file that cannot be opened", "file", filename, "err", err)
 

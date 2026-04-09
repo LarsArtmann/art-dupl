@@ -53,7 +53,7 @@ func minimalFunc() {}`
 		Expect(string(output)).To(ContainSubstring(expectedSubstring))
 	}
 
-	runStatsJSON := func(mode string, expectedMode string, expectedSemantic bool) {
+	runStatsJSON := func(mode, expectedMode string, expectedSemantic bool) {
 		code := `package main
 
 import "fmt"
@@ -89,7 +89,7 @@ func jsonTest(name string) error {
 		}
 	}
 
-	runStatsCSV := func(mode string, expectedSubstring string) {
+	runStatsCSV := func(mode, expectedSubstring string) {
 		code := `package main
 
 func csvTest() {}`

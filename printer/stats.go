@@ -186,7 +186,7 @@ func (p *stats) PrintFooter() error {
 }
 
 // printStyledLine prints a styled line with indentation and optional bullet.
-func (p *stats) printStyledLinef(prefix string, format string, args ...any) {
+func (p *stats) printStyledLinef(prefix, format string, args ...any) {
 	_, _ = fmt.Fprintf(p.w, "%s %s\n", prefix, p.base.Render(fmt.Sprintf(format, args...)))
 }
 

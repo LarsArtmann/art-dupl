@@ -88,7 +88,8 @@ func ParseFiles(t *testing.T, filePaths []string) []*syntax.Node {
 func WriteTestFile(t *testing.T, filename, content string) {
 	t.Helper()
 
-	if err := os.WriteFile(filename, []byte(content), 0o644); err != nil {
+	err := os.WriteFile(filename, []byte(content), 0o644)
+	if err != nil {
 		t.Fatalf("Failed to write test file %s: %v", filename, err)
 	}
 }

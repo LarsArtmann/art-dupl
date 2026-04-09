@@ -201,8 +201,14 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	}
 }
 
-func waitForChannelOrTimeout[T any](t *testing.T, ch <-chan T, timeout time.Duration, timeoutMsg string) {
+func waitForChannelOrTimeout[T any](
+	t *testing.T,
+	ch <-chan T,
+	timeout time.Duration,
+	timeoutMsg string,
+) {
 	t.Helper()
+
 	select {
 	case <-ch:
 	case <-time.After(timeout):

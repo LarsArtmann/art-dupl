@@ -16,14 +16,20 @@ import (
 
 func writeTestFile(t *testing.T, path, content string, perm os.FileMode) {
 	t.Helper()
+
 	if err := os.WriteFile(path, []byte(content), perm); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 }
 
-func buildSuffixTreeWithFile(t *testing.T, tmpDir string, cfg *config.Config) (*suffixtree.STree, []*syntax.Node, job.ParseStats) {
+func buildSuffixTreeWithFile(
+	t *testing.T,
+	tmpDir string,
+	cfg *config.Config,
+) (*suffixtree.STree, []*syntax.Node, job.ParseStats) {
 	t.Helper()
 	ctx := t.Context()
+
 	tree, data, parseStats, err := buildSuffixTree(buildParams{
 		ctx:          ctx,
 		paths:        []string{tmpDir},
@@ -34,15 +40,19 @@ func buildSuffixTreeWithFile(t *testing.T, tmpDir string, cfg *config.Config) (*
 	if err != nil {
 		t.Fatalf("buildSuffixTree() error = %v", err)
 	}
+
 	if tree == nil {
 		t.Error("buildSuffixTree() returned nil tree")
 	}
+
 	if len(data) == 0 {
 		t.Error("buildSuffixTree() returned empty data")
 	}
+
 	if parseStats.FilesCount < 1 {
 		t.Errorf("Expected at least 1 file parsed, got %d", parseStats.FilesCount)
 	}
+
 	return tree, data, parseStats
 }
 

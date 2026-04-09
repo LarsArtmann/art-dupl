@@ -18,6 +18,7 @@ func main() {
 
 func writeTestFile(t *testing.T, filename, content string) {
 	t.Helper()
+
 	if err := os.WriteFile(filename, []byte(content), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
 	}

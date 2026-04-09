@@ -121,7 +121,12 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	schan, _ := ParseParallel(ctx, fchan, 1, true)
 
-	waitForChannelOrTimeout(t, schan, 5*time.Second, "ParseParallel should handle errors gracefully")
+	waitForChannelOrTimeout(
+		t,
+		schan,
+		5*time.Second,
+		"ParseParallel should handle errors gracefully",
+	)
 }
 
 func TestNormalizeWorkerCount(t *testing.T) {
