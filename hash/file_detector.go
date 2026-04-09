@@ -35,36 +35,28 @@ type FileDuplicate struct {
 	Files []FileHash
 }
 
-// hashEntry is a lightweight record for streaming deduplication.
-// Only stores what's needed: hash value + file metadata. No file content.
-type hashEntry struct {
-	hash     string
-	filename string
-	size     int
-}
-
 // FindFileDuplicates finds exact file duplicates by hashing file contents.
-// This is a convenience function that takes file paths directly without requiring syntax nodes.
-// Files smaller than the threshold (in bytes) are ignored.
+// Files are hashed one at a time via io.Copy through XXH3 — file content is
+// never held in memory. Only (hash, filename, size) is retained per file.
 func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
 	fd := NewFileDetector(threshold)
 
-	groups := make(map[string][]hashEntry)
+	groups := make(map[string][]FileHash)
 
 	for _, filename := range files {
-		entry, ok := fd.hashFile(filename)
-		if !ok || entry.size < threshold {
+		fh, ok := fd.hashFile(filename)
+		if !ok || fh.Size < threshold {
 			continue
 		}
 
-		groups[entry.hash] = append(groups[entry.hash], entry)
+		groups[fh.Hash] = append(groups[fh.Hash], fh)
 	}
 
 	var duplicates []FileDuplicate
 
 	for hash, group := range groups {
 		if len(group) >= 2 {
-			duplicates = append(duplicates, fd.convertGroup(hash, group))
+			duplicates = append(duplicates, FileDuplicate{Hash: hash, Files: group})
 		}
 	}
 
@@ -80,36 +72,36 @@ func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 
 		fileList := f.extractUniqueFiles(data)
 
-		groups := make(map[string][]hashEntry)
+		groups := make(map[string][]FileHash)
 
 		for _, filename := range fileList {
-			entry, ok := f.hashFile(filename)
+			fh, ok := f.hashFile(filename)
 			if !ok {
 				continue
 			}
 
-			groups[entry.hash] = append(groups[entry.hash], entry)
+			groups[fh.Hash] = append(groups[fh.Hash], fh)
 		}
 
 		for _, group := range groups {
-			validFiles := make([]hashEntry, 0, len(group))
+			validFiles := make([]FileHash, 0, len(group))
 
-			for _, entry := range group {
-				if entry.size >= threshold {
-					validFiles = append(validFiles, entry)
+			for _, fh := range group {
+				if fh.Size >= threshold {
+					validFiles = append(validFiles, fh)
 				}
 			}
 
 			if len(validFiles) >= 2 {
 				fragments := make([][]*syntax.Node, 0, len(validFiles))
 
-				for _, entry := range validFiles {
-					node := syntax.NewSyntheticFileNode(entry.filename, entry.size)
+				for _, fh := range validFiles {
+					node := syntax.NewSyntheticFileNode(fh.Filename, fh.Size)
 					fragments = append(fragments, []*syntax.Node{node})
 				}
 
 				resultChan <- syntax.Match{
-					Hash:  validFiles[0].hash,
+					Hash:  validFiles[0].Hash,
 					Frags: fragments,
 				}
 			}
@@ -142,14 +134,14 @@ func (f *FileDetector) extractUniqueFiles(data []*syntax.Node) []string {
 // native ARM64 NEON SIMD optimizations. DO NOT replace with cryptographic
 // hash functions (SHA-256, etc.) - this hash is for deduplication only,
 // not security. See: https://github.com/zeebo/xxh3
-func (f *FileDetector) hashFile(filename string) (hashEntry, bool) {
+func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 	file, err := os.Open(
 		filename,
 	) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 	if err != nil {
 		logger.Default.Debug("skipping file that cannot be opened", "file", filename, "err", err)
 
-		return hashEntry{}, false
+		return FileHash{}, false
 	}
 	defer file.Close()
 
@@ -157,7 +149,7 @@ func (f *FileDetector) hashFile(filename string) (hashEntry, bool) {
 	if err != nil {
 		logger.Default.Debug("skipping file that cannot be stat'd", "file", filename, "err", err)
 
-		return hashEntry{}, false
+		return FileHash{}, false
 	}
 
 	size := int(fi.Size())
@@ -166,30 +158,12 @@ func (f *FileDetector) hashFile(filename string) (hashEntry, bool) {
 	if _, err := io.Copy(hasher, file); err != nil {
 		logger.Default.Debug("skipping file that cannot be read", "file", filename, "err", err)
 
-		return hashEntry{}, false
+		return FileHash{}, false
 	}
 
-	return hashEntry{
-		hash:     format.Hash(hasher.Sum64()),
-		filename: filename,
-		size:     size,
+	return FileHash{
+		Hash:     format.Hash(hasher.Sum64()),
+		Filename: filename,
+		Size:     size,
 	}, true
-}
-
-// convertGroup converts a group of hash entries into a FileDuplicate.
-func (f *FileDetector) convertGroup(hash string, group []hashEntry) FileDuplicate {
-	files := make([]FileHash, len(group))
-
-	for i, entry := range group {
-		files[i] = FileHash{
-			Hash:     entry.hash,
-			Filename: entry.filename,
-			Size:     entry.size,
-		}
-	}
-
-	return FileDuplicate{
-		Hash:  hash,
-		Files: files,
-	}
 }
