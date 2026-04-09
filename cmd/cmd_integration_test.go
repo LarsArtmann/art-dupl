@@ -42,9 +42,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		file1 := filepath.Join(tmpDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\n", 0o600)
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
@@ -93,9 +91,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		file1 := filepath.Join(tmpDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\nfunc main() {}\n", 0o600)
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
@@ -120,9 +116,7 @@ func TestRunCmd_Integration(t *testing.T) {
 		}
 
 		file1 := filepath.Join(vendorDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\n", 0o600)
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
@@ -186,9 +180,7 @@ func TestRunStats_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		file1 := filepath.Join(tmpDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\nfunc main() {}\n", 0o600)
 
 		cmd := NewStatsCommand()
 		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
@@ -276,9 +268,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		tmpDir := t.TempDir()
 
 		file1 := filepath.Join(tmpDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\nfunc main() {}\n", 0o600)
 
 		cfg := &config.Config{
 			Threshold:        10,
@@ -352,9 +342,7 @@ func Example() int {
 		tmpDir := t.TempDir()
 
 		file1 := filepath.Join(tmpDir, "file1.go")
-		if err := os.WriteFile(file1, []byte("package main\n"), 0o600); err != nil {
-			t.Fatalf("Failed to create test file: %v", err)
-		}
+		writeTestFile(t, file1, "package main\n", 0o600)
 
 		cfg := &config.Config{
 			Verbose:          true,

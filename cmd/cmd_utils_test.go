@@ -13,6 +13,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+func writeTestFileSimple(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+}
+
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -531,9 +538,7 @@ func TestHandleWalkEntry(t *testing.T) {
 	tempDir := t.TempDir()
 
 	testFile := tempDir + "/test.go"
-	if err := os.WriteFile(testFile, []byte("package main"), 0o644); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	writeTestFileSimple(t, testFile, "package main")
 
 	info, err := os.Lstat(testFile)
 	if err != nil {

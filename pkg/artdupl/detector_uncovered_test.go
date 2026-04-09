@@ -11,6 +11,13 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+func writeTestFilePkg(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+}
+
 // testNodes returns a slice of test nodes for testing.
 func testNodes() []*syntax.Node {
 	return []*syntax.Node{
@@ -434,9 +441,7 @@ func TestValidateFile_IgnorePatternMatching(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFile := filepath.Join(tmpDir, "test.go")
-	if err := os.WriteFile(testFile, []byte("package test"), 0o644); err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	writeTestFilePkg(t, testFile, "package test")
 
 	d := &detector{
 		opts: &Options{

@@ -11,6 +11,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+func createTestNode(filename string, pos, end int32) *syntax.Node {
+	return &syntax.Node{
+		Filename: filename,
+		Type:     int32(golang.File),
+		Pos:      pos,
+		End:      end,
+	}
+}
+
 // createTestConfig creates a test configuration for MultiDetector tests.
 func createTestConfig() *config.Config {
 	return &config.Config{
@@ -361,9 +370,7 @@ func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
 	}
 
 	tree := suffixtree.New()
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
-	}
+	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
 
@@ -387,9 +394,7 @@ func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
 	}
 
 	tree := suffixtree.New()
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
-	}
+	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
 
@@ -416,9 +421,7 @@ func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 	}
 
 	tree := suffixtree.New()
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
-	}
+	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
 	detector := NewMultiDetector(cfg, data, tree, false)
 
@@ -442,9 +445,7 @@ func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
 	}
 
 	tree := suffixtree.New()
-	data := []*syntax.Node{
-		{Filename: "test.go", Type: int32(golang.File), Pos: 1, End: 10},
-	}
+	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
 	detector := NewMultiDetector(cfg, data, tree, true) // verbose = true
 
@@ -519,9 +520,7 @@ func RegularFunc() {}
 	}
 
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
 
 	todos := detector.findTodosInFile(testFile, nodes)
 
@@ -564,9 +563,7 @@ func DatedFunc() {}
 	}
 
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
 
 	todos := detector.findTodosInFile(testFile, nodes)
 
@@ -611,9 +608,7 @@ func AnotherFunc() {}
 	}
 
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
 
 	todos := detector.findTodosInFile(testFile, nodes)
 
@@ -625,9 +620,7 @@ func AnotherFunc() {}
 // TestTodoDetector_FindTodosInFile_InvalidFile tests with non-existent file.
 func TestTodoDetector_FindTodosInFile_InvalidFile(t *testing.T) {
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: "/nonexistent/path/file.go", Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode("/nonexistent/path/file.go", 1, 100)}
 
 	// Should return nil (no panic) for invalid file
 	todos := detector.findTodosInFile("/nonexistent/path/file.go", nodes)
@@ -661,9 +654,7 @@ func BlockFixmeFunc() {}
 	}
 
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
 
 	todos := detector.findTodosInFile(testFile, nodes)
 
@@ -686,9 +677,7 @@ func runLegacyDetectionTest(t *testing.T, filename, goCode string) []LegacyIssue
 	}
 
 	detector := NewLegacyDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 100},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
 
 	return detector.findLegacyInFile(testFile, nodes)
 }
@@ -795,9 +784,7 @@ func Test() {}
 	}
 
 	detector := NewTodoDetector()
-	nodes := []*syntax.Node{
-		{Filename: testFile, Type: int32(golang.File), Pos: 1, End: 10},
-	}
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 10)}
 
 	return detector, nodes, testFile
 }
