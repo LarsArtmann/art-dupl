@@ -35,6 +35,20 @@ const (
 	PriorityLow      ClonePriority = "low"      // Optional - test helpers, tiny duplications
 )
 
+// priorityData holds display data for priorities.
+type priorityData struct {
+	color string
+	emoji string
+}
+
+// priorityDisplay maps ClonePriority to its display properties.
+var priorityDisplay = map[ClonePriority]priorityData{
+	PriorityCritical: {color: "var(--error)", emoji: "🔴"},
+	PriorityHigh:     {color: "var(--warning)", emoji: "🟠"},
+	PriorityMedium:   {color: "var(--accent)", emoji: "🟡"},
+	PriorityLow:      {color: "var(--success)", emoji: "🟢"},
+}
+
 // CloneClassification provides metadata about a code clone for actionable reports.
 type CloneClassification struct {
 	Category   CloneCategory
@@ -266,34 +280,18 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 
 // GetPriorityColor returns a CSS color variable for the priority.
 func (p ClonePriority) GetPriorityColor() string {
-	switch p {
-	case PriorityCritical:
-		return "var(--error)"
-	case PriorityHigh:
-		return "var(--warning)"
-	case PriorityMedium:
-		return "var(--accent)"
-	case PriorityLow:
-		return "var(--success)"
-	default:
-		return "var(--text-secondary)"
+	if data, ok := priorityDisplay[p]; ok {
+		return data.color
 	}
+	return "var(--text-secondary)"
 }
 
 // GetPriorityEmoji returns an emoji indicator for the priority.
 func (p ClonePriority) GetPriorityEmoji() string {
-	switch p {
-	case PriorityCritical:
-		return "🔴"
-	case PriorityHigh:
-		return "🟠"
-	case PriorityMedium:
-		return "🟡"
-	case PriorityLow:
-		return "🟢"
-	default:
-		return "⚪"
+	if data, ok := priorityDisplay[p]; ok {
+		return data.emoji
 	}
+	return "⚪"
 }
 
 // GetCategoryEmoji returns an emoji indicator for the category.

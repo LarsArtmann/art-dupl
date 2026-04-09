@@ -63,19 +63,11 @@ func setupGitRepo(t *testing.T) string {
 	}
 
 	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "user.name", "Test")
-
-	cmd.Dir = tempDir
-	if output, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to config git name: %v, output: %s", err, string(output))
-	}
+	runGitCommand(t, cmd, tempDir, "config git name")
 
 	// Disable GPG signing for test repos (user may have it enabled globally)
 	cmd = exec.CommandContext(t.Context(), "git", "config", "--local", "commit.gpgsign", "false")
-
-	cmd.Dir = tempDir
-	if output, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to disable gpgsign: %v, output: %s", err, string(output))
-	}
+	runGitCommand(t, cmd, tempDir, "disable gpgsign")
 
 	return tempDir
 }
@@ -87,18 +79,10 @@ func createAndCommitFile(t *testing.T, repoDir, filename, content string) {
 	writeFile(t, repoDir, filename, content)
 
 	cmd := exec.CommandContext(t.Context(), "git", "add", filename)
-
-	cmd.Dir = repoDir
-	if output, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to git add: %v, output: %s", err, string(output))
-	}
+	runGitCommand(t, cmd, repoDir, "git add")
 
 	cmd = exec.CommandContext(t.Context(), "git", "commit", "-m", "Add "+filename)
-
-	cmd.Dir = repoDir
-	if output, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to git commit: %v, output: %s", err, string(output))
-	}
+	runGitCommand(t, cmd, repoDir, "git commit")
 }
 
 // writeFile writes content to a file for testing.
