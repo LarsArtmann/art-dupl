@@ -1,7 +1,6 @@
 package golang
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 )
@@ -68,9 +67,7 @@ type List[T any] struct {
 }
 `
 
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -92,9 +89,7 @@ func TestTypeParamsInTypeSpec(t *testing.T) {
 	//nolint:dupword // "type type" is intentional in test code
 	code := "package test\n\n// Generic stack type\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Generic map with two type parameters\ntype MyMap[K comparable, V any] struct {\n\tdata map[K]V\n}"
 
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -116,9 +111,7 @@ func TestTypeParamsInFuncType(t *testing.T) {
 	//nolint:dupword // "type type" is intentional in test code
 	code := "package test\n\n// Generic function type\ntype FilterFunc[T any] func(items []T) []T\n\n// Generic function type with constraints\ntype Comparator[T comparable] func(a, b T) int"
 
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {

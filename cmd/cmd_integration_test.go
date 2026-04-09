@@ -11,6 +11,13 @@ import (
 
 // --- Integration Tests for Command Handlers ---
 
+func writeTestFile(t *testing.T, path, content string, perm os.FileMode) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), perm); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+}
+
 func TestRunCmd_Integration(t *testing.T) {
 	t.Run("basic execution with duplicate code", func(t *testing.T) {
 		tmpDir := t.TempDir()

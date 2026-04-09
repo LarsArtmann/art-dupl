@@ -2,7 +2,6 @@ package golang
 
 import (
 	"go/ast"
-	"os"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -112,9 +111,7 @@ func ParseSafetyMode(s string) SafetyMode { return SafetyMode(s) }
 	tmpDir := t.TempDir()
 
 	tmpFile := tmpDir + "/test.go"
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {

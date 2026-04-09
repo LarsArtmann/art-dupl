@@ -16,15 +16,20 @@ func main() {
 }
 `
 
+func writeTestFile(t *testing.T, filename, content string) {
+	t.Helper()
+	if err := os.WriteFile(filename, []byte(content), 0o644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+}
+
 func TestParse(t *testing.T) {
 	t.Parallel()
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test.go")
 
 	code := simpleMainCode
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -50,9 +55,7 @@ func TestParseWithLineCount(t *testing.T) {
 	tmpFile := filepath.Join(tmpDir, "test.go")
 
 	code := simpleMainCode
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, lineCount, err := ParseWithLineCount(tmpFile)
 	if err != nil {
@@ -95,9 +98,7 @@ func TestParse_InvalidGoCode(t *testing.T) {
 func main(
 // Missing closing paren and brace
 `
-	if err := os.WriteFile(tmpFile, []byte(invalidCode), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, invalidCode)
 
 	_, err := Parse(tmpFile)
 	if err == nil {
@@ -116,9 +117,7 @@ func add(a, b int) int {
 	return a + b
 }
 `
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -156,9 +155,7 @@ type Person struct {
 	Age  int
 }
 `
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -212,9 +209,7 @@ func main() {
 	fmt.Println("hello")
 }
 `
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -254,9 +249,7 @@ func main() {
 	}
 }
 `
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -274,9 +267,7 @@ func TestNodePositions(t *testing.T) {
 	tmpFile := filepath.Join(tmpDir, "positions.go")
 
 	code := simpleMainCode
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
@@ -311,9 +302,7 @@ func testParseNodeType(t *testing.T, name, code string, nodeType int) {
 	tmpDir := t.TempDir()
 
 	tmpFile := filepath.Join(tmpDir, name+".go")
-	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
-		t.Fatalf("Failed to write test file: %v", err)
-	}
+	writeTestFile(t, tmpFile, code)
 
 	node, err := Parse(tmpFile)
 	if err != nil {
