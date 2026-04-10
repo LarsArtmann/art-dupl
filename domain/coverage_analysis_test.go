@@ -61,18 +61,24 @@ func TestAnalysis_IsValid(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "valid analysis",
-			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-1"; a.State = DetectionStateCompleted }),
+			name: "valid analysis",
+			value: baseAnalysis(
+				func(a *Analysis) { a.ID = "test-1"; a.State = DetectionStateCompleted },
+			),
 			wantErr: false,
 		},
 		{
-			name:    "invalid state",
-			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-2"; a.State = DetectionState("invalid") }),
+			name: "invalid state",
+			value: baseAnalysis(
+				func(a *Analysis) { a.ID = "test-2"; a.State = DetectionState("invalid") },
+			),
 			wantErr: true,
 		},
 		{
-			name:    "invalid mode",
-			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-3"; a.Mode = AnalysisMode("invalid") }),
+			name: "invalid mode",
+			value: baseAnalysis(
+				func(a *Analysis) { a.ID = "test-3"; a.Mode = AnalysisMode("invalid") },
+			),
 			wantErr: true,
 		},
 		{
