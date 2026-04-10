@@ -28,3 +28,5 @@ node_modules/
 *.db
 # Test coverage
 /coverage
+
+/report/jscpd-report.json
