@@ -31,6 +31,19 @@ type DiffResult struct {
 	HasDiff  bool
 }
 
+// initDiffLines converts raw lines into DiffLine structs with line numbers.
+func initDiffLines(lines [][]byte) []DiffLine {
+	result := make([]DiffLine, len(lines))
+	for i, line := range lines {
+		result[i] = DiffLine{
+			Content:    string(line),
+			Type:       DiffLineEqual,
+			LineNumber: i + 1,
+		}
+	}
+	return result
+}
+
 // LineDiff performs a line-by-line diff between two code fragments.
 // It uses a simple but effective algorithm optimized for code comparison:
 // 1. Split into lines
@@ -43,26 +56,8 @@ func LineDiff(base, compared []byte) DiffResult {
 	comparedLines := splitLines(compared)
 
 	result := DiffResult{
-		Base:     make([]DiffLine, len(baseLines)),
-		Compared: make([]DiffLine, len(comparedLines)),
-	}
-
-	// Initialize line numbers and content for base
-	for i, line := range baseLines {
-		result.Base[i] = DiffLine{
-			Content:    string(line),
-			Type:       DiffLineEqual,
-			LineNumber: i + 1,
-		}
-	}
-
-	// Initialize line numbers and content for compared
-	for i, line := range comparedLines {
-		result.Compared[i] = DiffLine{
-			Content:    string(line),
-			Type:       DiffLineEqual,
-			LineNumber: i + 1,
-		}
+		Base:     initDiffLines(baseLines),
+		Compared: initDiffLines(comparedLines),
 	}
 
 	// Simple line-by-line comparison for same-length sequences

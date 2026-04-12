@@ -83,10 +83,9 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string
 	return cmd.CombinedOutput()
 }
 
-// RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
-// The subcommand name should be the first argument, followed by flags and the directory.
-// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10").
-func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
+// prepareSubcommandArgs prepares arguments for a subcommand, adding the temp directory if needed.
+// It returns the prepared arguments and a command ready to be executed.
+func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) ([]string, *exec.Cmd) {
 	if s.T != nil {
 		s.T.Helper()
 	}
@@ -103,26 +102,22 @@ func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
 		s.BinaryPath,
 		args...) // #nosec G204 -- Test helper running project binary
 
+	return args, cmd
+}
+
+// RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
+// The subcommand name should be the first argument, followed by flags and the directory.
+// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10").
+func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
+	_, cmd := s.prepareSubcommandArgs(args...)
+
 	return cmd.CombinedOutput()
 }
 
 // RunSubcommandOutput executes an art-dupl subcommand and returns stdout only.
 // Use this for JSON or other structured output where stderr contamination is undesirable.
 func (s *BDDTestSetup) RunSubcommandOutput(args ...string) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
-
-	hasDir := slices.Contains(args, s.TmpDir)
-
-	if !hasDir {
-		args = append(args, s.TmpDir)
-	}
-
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		args...) // #nosec G204 -- Test helper running project binary
+	_, cmd := s.prepareSubcommandArgs(args...)
 
 	return cmd.Output()
 }
@@ -130,21 +125,7 @@ func (s *BDDTestSetup) RunSubcommandOutput(args ...string) ([]byte, error) {
 // RunStatsSubcommandWithJSON runs the stats subcommand with JSON format and parses the result.
 // The threshold parameter is required and specifies the minimum clone size to report.
 func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]any, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
-
-	args := []string{"stats", "--format", "json", "--threshold", threshold}
-
-	hasDir := slices.Contains(args, s.TmpDir)
-	if !hasDir {
-		args = append(args, s.TmpDir)
-	}
-
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		args...) // #nosec G204 -- Test helper running project binary
+	_, cmd := s.prepareSubcommandArgs("stats", "--format", "json", "--threshold", threshold)
 
 	output, err := cmd.Output()
 	if err != nil {
