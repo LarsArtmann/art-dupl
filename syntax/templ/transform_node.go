@@ -87,24 +87,20 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 		o.End = 0
 	case *templparser.ExpressionAttribute:
 		o.Type = Attribute
-		o.Pos = int32(a.Expression.Range.From.Index) // #nosec G115
-		o.End = int32(a.Expression.Range.To.Index)   // #nosec G115
+		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.BoolConstantAttribute:
 		o.Type = Attribute
 		o.Pos = 0 // No Range field, use 0
 		o.End = 0
 	case *templparser.BoolExpressionAttribute:
 		o.Type = Attribute
-		o.Pos = int32(a.Expression.Range.From.Index) // #nosec G115
-		o.End = int32(a.Expression.Range.To.Index)   // #nosec G115
+		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.SpreadAttributes:
 		o.Type = SpreadAttributes
-		o.Pos = int32(a.Expression.Range.From.Index) // #nosec G115
-		o.End = int32(a.Expression.Range.To.Index)   // #nosec G115
+		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.ConditionalAttribute:
 		o.Type = ConditionalAttributeIfStatement
-		o.Pos = int32(a.Expression.Range.From.Index) // #nosec G115
-		o.End = int32(a.Expression.Range.To.Index)   // #nosec G115
+		t.setNodePosFromRange(o, a.Expression.Range)
 	default:
 		return nil
 	}
@@ -120,4 +116,10 @@ func (t *transformer) addAttributesToNode(attrs []templparser.Attribute, node *s
 			node.AddChildren(attrNode)
 		}
 	}
+}
+
+// setNodePosFromRange sets the Pos and End fields of a node from a Range.
+func (t *transformer) setNodePosFromRange(node *syntax.Node, rng templparser.Range) {
+	node.Pos = int32(rng.From.Index) // #nosec G115
+	node.End = int32(rng.To.Index)   // #nosec G115
 }
