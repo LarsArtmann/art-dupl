@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // hasAllStrings returns a function that checks if all substrings exist in the given text.
@@ -127,8 +129,9 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 			output, err := cmd.CombinedOutput()
 
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
+			wantErrResult := tt.wantErr
+			if (err != nil) != wantErrResult {
+				t.Errorf("Command error = %v, wantErr %v", err, wantErrResult)
 
 				return
 			}
@@ -174,9 +177,7 @@ func TestStatsCommandErrorCases(t *testing.T) {
 			cmd := createTestCommand(t, tt.args)
 
 			_, err = cmd.CombinedOutput()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
-			}
+			testutil.AssertErrorMatches(t, err, tt.wantErr, "Command")
 		})
 	}
 }

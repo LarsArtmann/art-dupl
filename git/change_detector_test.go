@@ -194,9 +194,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 		}
 	})
 
-	t.Run("no changes", func(t *testing.T) {
-		testNoChanges(t, "HEAD")
-	})
+	t.Run("no changes", func(t *testing.T) { testNoChanges(t, "HEAD") })
 
 	t.Run("with modified files", func(t *testing.T) {
 		repoDir := setupGitRepo(t)
@@ -215,9 +213,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 		assertSingleChange(t, changes, "M", "change")
 	})
 
-	t.Run("empty since defaults to HEAD", func(t *testing.T) {
-		testNoChanges(t, "")
-	})
+	t.Run("empty since defaults to HEAD", func(t *testing.T) { testNoChanges(t, "") })
 }
 
 // TestGetChangedGoFiles tests Go file filtering.

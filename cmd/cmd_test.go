@@ -360,13 +360,19 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 		}
 	}
 
-	t.Run("only go files", func(t *testing.T) {
-		testFilesFeedWithExtension(t, tmpDir, "go", 2)
-	})
-
-	t.Run("only templ files", func(t *testing.T) {
-		testFilesFeedWithExtension(t, tmpDir, "templ", 2)
-	})
+	for _, tc := range []struct {
+		name      string
+		extension string
+		expected  int
+	}{
+		{"only go files", "go", 2},
+		{"only templ files", "templ", 2},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			testFilesFeedWithExtension(t, tmpDir, tc.extension, tc.expected)
+		})
+	}
 
 	t.Run("all files with empty filter", func(t *testing.T) {
 		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, "")

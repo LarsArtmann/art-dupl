@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"encoding/json"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 func newRepositoryTestCase(name, path, repoName, language string, wantErr bool) struct {
@@ -40,9 +41,10 @@ func TestRepository_IsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.repo.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Repository.IsValid() error = %v, wantErr %v", err, tt.wantErr)
+			isValidErr := tt.repo.IsValid()
+			expectErr := tt.wantErr
+			if (isValidErr != nil) != expectErr {
+				t.Errorf("Repository.IsValid() error = %v, wantErr %v", isValidErr, expectErr)
 			}
 		})
 	}
@@ -97,9 +99,10 @@ func TestSourceFile_IsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.file.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("SourceFile.IsValid() error = %v, wantErr %v", err, tt.wantErr)
+			chkErr := tt.file.IsValid()
+			chkWantErr := tt.wantErr
+			if (chkErr != nil) != chkWantErr {
+				t.Errorf("SourceFile.IsValid() error = %v, wantErr %v", chkErr, chkWantErr)
 			}
 		})
 	}
@@ -155,8 +158,9 @@ func TestStringID_MarshalJSON(t *testing.T) {
 			defer cleanup()
 
 			got, err := tt.sid.MarshalJSON()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("StringID.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			expectErr := tt.wantErr
+			if (err != nil) != expectErr {
+				t.Errorf("StringID.MarshalJSON() error = %v, wantErr %v", err, expectErr)
 
 				return
 			}
@@ -188,10 +192,7 @@ func TestStringID_UnmarshalJSON(t *testing.T) {
 
 			var sid StringID
 
-			err := sid.UnmarshalJSON([]byte(tt.input))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("StringID.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			testutil.AssertUnmarshalError(t, "StringID.UnmarshalJSON", []byte(tt.input), tt.wantErr, sid.UnmarshalJSON)
 		})
 	}
 }
@@ -298,15 +299,7 @@ func TestAnalysisJSONRoundTrip(t *testing.T) {
 		CreatedAt: "2024-01-01T00:00:00Z",
 	}
 
-	data, err := json.Marshal(original)
-	if err != nil {
-		t.Fatalf("json.Marshal() error = %v", err)
-	}
-
-	var result Analysis
-	if err := json.Unmarshal(data, &result); err != nil {
-		t.Fatalf("json.Unmarshal() error = %v", err)
-	}
+	result := testutil.AssertJSONRoundTrip(t, original)
 
 	if result.ID != original.ID {
 		t.Errorf("ID = %v, want %v", result.ID, original.ID)
@@ -344,15 +337,7 @@ func TestCloneGroupJSONRoundTrip(t *testing.T) {
 		},
 	}
 
-	data, err := json.Marshal(original)
-	if err != nil {
-		t.Fatalf("json.Marshal() error = %v", err)
-	}
-
-	var result CloneGroup
-	if err := json.Unmarshal(data, &result); err != nil {
-		t.Fatalf("json.Unmarshal() error = %v", err)
-	}
+	result := testutil.AssertJSONRoundTrip(t, original)
 
 	if result.ID != original.ID {
 		t.Errorf("ID = %v, want %v", result.ID, original.ID)

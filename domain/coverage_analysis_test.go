@@ -35,6 +35,23 @@ func newDetectionOptions(threshold Threshold) DetectionOptions {
 	}
 }
 
+// analysisStatsCase creates a test case for AnalysisStats validation.
+func analysisStatsCase(name string, files FileCount, time ProcessingTime, complexity, ratio float64, wantErr bool) struct {
+	name    string
+	value   AnalysisStats
+	wantErr bool
+} {
+	return struct {
+		name    string
+		value   AnalysisStats
+		wantErr bool
+	}{
+		name:    name,
+		value:   AnalysisStats{FilesAnalyzed: files, ProcessingTime: time, ComplexityScore: complexity, DuplicationRatio: ratio},
+		wantErr: wantErr,
+	}
+}
+
 func testValidMethods[T validatable](t *testing.T, testCases []struct {
 	name    string
 	value   T
@@ -45,9 +62,9 @@ func testValidMethods[T validatable](t *testing.T, testCases []struct {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.value.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("IsValid() error = %v, wantErr %v", err, tt.wantErr)
+			validationErr := tt.value.IsValid()
+			if (validationErr != nil) != tt.wantErr {
+				t.Errorf("IsValid() validation error = %v, wantErr %v", validationErr, tt.wantErr)
 			}
 		})
 	}
@@ -112,38 +129,9 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		value   AnalysisStats
 		wantErr bool
 	}{
-		{
-			name: "valid stats",
-			value: AnalysisStats{
-				FilesAnalyzed:    10,
-				TotalClones:      5,
-				TotalTokenSize:   100,
-				ComplexityScore:  2.5,
-				DuplicationRatio: 0.3,
-				ProcessingTime:   1000,
-			},
-			wantErr: false,
-		},
-		{
-			name: "zero files analyzed",
-			value: AnalysisStats{
-				FilesAnalyzed:    0,
-				ProcessingTime:   1000,
-				ComplexityScore:  1.0,
-				DuplicationRatio: 0.5,
-			},
-			wantErr: true,
-		},
-		{
-			name: "zero processing time",
-			value: AnalysisStats{
-				FilesAnalyzed:    10,
-				ProcessingTime:   0,
-				ComplexityScore:  1.0,
-				DuplicationRatio: 0.5,
-			},
-			wantErr: true,
-		},
+		{name: "valid stats", value: AnalysisStats{FilesAnalyzed: 10, TotalClones: 5, TotalTokenSize: 100, ComplexityScore: 2.5, DuplicationRatio: 0.3, ProcessingTime: 1000}, wantErr: false},
+		analysisStatsCase("zero files analyzed", 0, 1000, 1.0, 0.5, true),
+		analysisStatsCase("zero processing time", 10, 0, 1.0, 0.5, true),
 		{
 			name: "negative complexity score",
 			value: AnalysisStats{
@@ -220,9 +208,10 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.options.IsValid()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DetectionOptions.IsValid() error = %v, wantErr %v", err, tt.wantErr)
+			chkErr := tt.options.IsValid()
+			wantErr := tt.wantErr
+			if (chkErr != nil) != wantErr {
+				t.Errorf("DetectionOptions.IsValid() error = %v, wantErr %v", chkErr, wantErr)
 			}
 		})
 	}

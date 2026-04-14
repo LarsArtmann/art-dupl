@@ -28,7 +28,7 @@ func makeFrag(filename string, pos, end int32) []*syntax.Node {
 }
 
 // verifyCloneCount verifies the expected number of clones.
-func verifyCloneCount(t *testing.T, got int, expected int) {
+func verifyCloneCount(t *testing.T, got, expected int) {
 	t.Helper()
 	if got != expected {
 		t.Errorf("clone count mismatch: want %d, got %d", expected, got)
@@ -36,7 +36,7 @@ func verifyCloneCount(t *testing.T, got int, expected int) {
 }
 
 // verifyResultCount verifies the expected number of results.
-func verifyResultCount(t *testing.T, got int, expected int) {
+func verifyResultCount(t *testing.T, got, expected int) {
 	t.Helper()
 	if got != expected {
 		t.Errorf("result count mismatch: want %d, got %d", expected, got)
@@ -228,9 +228,7 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 		logger: &testLoggerBasic{},
 	}
 
-	frag := []*syntax.Node{
-		{Type: 1, Filename: testFile, Pos: 1, End: 2},
-	}
+	frag := []*syntax.Node{testutil.CreateNodeWithPos(1, testFile, 1, 2)}
 
 	result := d.extractFragmentContent(frag)
 	if result == "" {
@@ -370,9 +368,7 @@ func TestStreamDetectionResults(t *testing.T) {
 	d := newTestDetector()
 
 	resultChan := make(chan *CloneGroup, 1)
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-	}
+	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
 	ctx := t.Context()
 	// This will run and send results to the channel
@@ -392,9 +388,7 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel() // Cancel immediately
 
-	data := []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-	}
+	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
 	// Should handle cancelled context gracefully
 	_ = d.streamDetectionResults(ctx, data, resultChan)
@@ -419,9 +413,7 @@ func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 		},
 	}
 
-	frag := []*syntax.Node{
-		{Type: 1, Filename: testFile, Pos: 1, End: 2},
-	}
+	frag := []*syntax.Node{testutil.CreateNodeWithPos(1, testFile, 1, 2)}
 
 	clone := d.convertFragmentToClone(frag)
 

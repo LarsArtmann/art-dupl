@@ -22,7 +22,7 @@ func NewStatsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stats [flags] [paths...]",
 		Short: "Show aggregated duplication statistics",
-		Long: "Prints comprehensive duplication statistics: clone counts, token totals, and file impact metrics in text, JSON, or CSV format.",
+		Long:  "Prints comprehensive duplication statistics: clone counts, token totals, and file impact metrics in text, JSON, or CSV format.",
 		Args:  cobra.ArbitraryArgs,
 		RunE:  runStats,
 	}

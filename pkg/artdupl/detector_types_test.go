@@ -25,7 +25,7 @@ func assertCloneGroupBasic(
 }
 
 // assertCloneCount asserts the number of clones matches expected.
-func assertCloneCount(t *testing.T, got int, expected int) {
+func assertCloneCount(t *testing.T, got, expected int) {
 	t.Helper()
 
 	if got != expected {
@@ -34,7 +34,7 @@ func assertCloneCount(t *testing.T, got int, expected int) {
 }
 
 // assertMethodsCount asserts the number of detection methods matches expected.
-func assertMethodsCount(t *testing.T, got int, expected int) {
+func assertMethodsCount(t *testing.T, got, expected int) {
 	t.Helper()
 
 	if got != expected {

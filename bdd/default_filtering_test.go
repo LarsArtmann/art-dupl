@@ -372,21 +372,12 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 		setup = CreateBDDTestSetup()
 	})
 
-	Context("When using JSON output", func() {
-		It("should not include templ files in JSON output by default", func() {
-			assertTemplFilteredWithFormat(setup, "--json")
-		})
-	})
-
-	Context("When using HTML output", func() {
-		It("should not include templ files in HTML output by default", func() {
-			assertTemplFilteredWithFormat(setup, "--html")
-		})
-	})
-
-	Context("When using plumbing output", func() {
-		It("should not include templ files in plumbing output by default", func() {
-			assertTemplFilteredWithFormat(setup, "--plumbing")
-		})
-	})
+	DescribeTable("should not include templ files in various output formats",
+		func(format string) {
+			assertTemplFilteredWithFormat(setup, format)
+		},
+		Entry("with JSON output", "--json"),
+		Entry("with HTML output", "--html"),
+		Entry("with plumbing output", "--plumbing"),
+	)
 })

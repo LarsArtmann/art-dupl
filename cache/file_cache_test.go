@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -119,8 +120,8 @@ func TestFileCache_Get_Set(t *testing.T) {
 		hash1 := CacheKey([]byte("content1"))
 		hash2 := CacheKey([]byte("content2"))
 
-		nodes1 := []*syntax.Node{{Type: 1, Pos: 0, End: 10, Filename: "file1.go"}}
-		nodes2 := []*syntax.Node{{Type: 2, Pos: 5, End: 15, Filename: "file2.go"}}
+		nodes1 := []*syntax.Node{testutil.CreateNodeWithPos(1, "file1.go", 0, 10)}
+		nodes2 := []*syntax.Node{testutil.CreateNodeWithPos(2, "file2.go", 5, 15)}
 
 		err := fc.Set(hash1, nodes1)
 		if err != nil {
