@@ -5,9 +5,19 @@ import (
 	"slices"
 	"testing"
 	"unicode/utf8"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
+
+// panicRecovery returns a defer recover function that reports a panic with the given input.
+// Use in fuzz tests to catch panics and report them with the input that caused the panic.
+func panicRecovery(t *testing.T, input string) func() {
+	t.Helper()
+
+	return func() {
+		if r := recover(); r != nil {
+			t.Errorf("Panicked with input %q: %v", input, r)
+		}
+	}
+}
 
 type char rune
 
@@ -294,7 +304,7 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 		tokens := str2tok(input)
 
 		// This should not panic
-		defer testutil.PanicRecovery(t, input)()
+		defer panicRecovery(t, input)()
 
 		// Update tree with tokens
 		tree.Update(tokens...)
