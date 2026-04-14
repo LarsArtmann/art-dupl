@@ -94,46 +94,41 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 	return dups
 }
 
+// countNonNilNodes counts non-nil nodes in a slice.
+func countNonNilNodes(nodes []*syntax.Node) int {
+	count := 0
+	for _, node := range nodes {
+		if node != nil {
+			count++
+		}
+	}
+	return count
+}
+
 // SortClonesByTotalTokens sorts clone groups by total token count across all files (largest first).
 func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
-		tokensI := 0
-
-		for _, node := range dups[i] {
-			if node != nil {
-				tokensI++
-			}
-		}
-
-		tokensJ := 0
-
-		for _, node := range dups[j] {
-			if node != nil {
-				tokensJ++
-			}
-		}
-
+		tokensI := countNonNilNodes(dups[i])
+		tokensJ := countNonNilNodes(dups[j])
 		return tokensI > tokensJ
 	})
 
 	return dups
 }
 
+// sumFragmentLengths sums the lengths of all clone fragments in a group.
+func sumFragmentLengths(cloneGroups []clone) int {
+	sum := 0
+	for _, cl := range cloneGroups {
+		sum += len(cl.fragment)
+	}
+	return sum
+}
+
 // Helper functions for text.go compatibility.
 func sortCloneGroupsBySize(cloneGroups [][]clone) {
 	sort.Slice(cloneGroups, func(i, j int) bool {
-		// Sort by total size of all clones in group
-		sizeI := 0
-		for _, cl := range cloneGroups[i] {
-			sizeI += len(cl.fragment)
-		}
-
-		sizeJ := 0
-		for _, cl := range cloneGroups[j] {
-			sizeJ += len(cl.fragment)
-		}
-
-		return sizeI > sizeJ
+		return sumFragmentLengths(cloneGroups[i]) > sumFragmentLengths(cloneGroups[j])
 	})
 }
 

@@ -19,6 +19,19 @@ func isValidStringType[T ~string](val T, validValues map[T]bool) bool {
 	return validValues[val]
 }
 
+// isValidable is a constraint for types with an IsValid() method.
+type isValidable interface {
+	IsValid() bool
+}
+
+// isValidMethod returns a function that calls IsValid() on a value.
+// This eliminates duplicate anonymous functions like func(s T) bool { return s.IsValid() }.
+func isValidMethod[T isValidable]() func(T) bool {
+	return func(v T) bool {
+		return v.IsValid()
+	}
+}
+
 // unmarshalStringType unmarshals JSON into a string type with validation.
 func unmarshalStringType[T ~string](
 	data []byte,
@@ -130,7 +143,7 @@ func (dm DetectionMethod) IsValid() bool {
 func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 	return marshalStringType(
 		dm,
-		func(s DetectionMethod) bool { return s.IsValid() },
+		isValidMethod[DetectionMethod](),
 		"detection method",
 	)
 }
@@ -138,7 +151,7 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
 	return unmarshalStringTypeToPointer(data,
-		func(s DetectionMethod) bool { return s.IsValid() },
+		isValidMethod[DetectionMethod](),
 		DetectionMethodArtDupl,
 		"detection method",
 		dm,
@@ -181,13 +194,13 @@ func (of OutputFormat) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler.
 func (of OutputFormat) MarshalJSON() ([]byte, error) {
-	return marshalStringType(of, func(s OutputFormat) bool { return s.IsValid() }, "output format")
+	return marshalStringType(of, isValidMethod[OutputFormat](), "output format")
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
 	return unmarshalStringTypeToPointer(data,
-		func(s OutputFormat) bool { return s.IsValid() },
+		isValidMethod[OutputFormat](),
 		OutputFormatText,
 		"output format",
 		of,
@@ -224,13 +237,13 @@ func (sc SortCriteria) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler.
 func (sc SortCriteria) MarshalJSON() ([]byte, error) {
-	return marshalStringType(sc, func(s SortCriteria) bool { return s.IsValid() }, "sort criteria")
+	return marshalStringType(sc, isValidMethod[SortCriteria](), "sort criteria")
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
 	return unmarshalStringTypeToPointer(data,
-		func(s SortCriteria) bool { return s.IsValid() },
+		isValidMethod[SortCriteria](),
 		SortBySize,
 		"sort criteria",
 		sc,
@@ -361,13 +374,13 @@ func (dm DiffMode) IsEnabled() bool {
 
 // MarshalJSON implements json.Marshaler.
 func (dm DiffMode) MarshalJSON() ([]byte, error) {
-	return marshalStringType(dm, func(s DiffMode) bool { return s.IsValid() }, "diff mode")
+	return marshalStringType(dm, isValidMethod[DiffMode](), "diff mode")
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DiffMode) UnmarshalJSON(data []byte) error {
 	return unmarshalStringTypeToPointer(data,
-		func(s DiffMode) bool { return s.IsValid() },
+		isValidMethod[DiffMode](),
 		DiffModeDisabled,
 		"diff mode",
 		dm,

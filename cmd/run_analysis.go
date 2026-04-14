@@ -149,6 +149,13 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
 
+// verboseFprintf prints a message to stderr if verbose mode is enabled.
+func verboseFprintf(cfg *config.Config, msg string) {
+	if cfg.Verbose {
+		_, _ = fmt.Fprintf(os.Stderr, "%s\n", msg)
+	}
+}
+
 // setupFilter creates a filter based on config settings.
 func setupFilter(cfg *config.Config) *filter.Filter {
 	var filterOptions []filter.FilterOption
@@ -157,20 +164,14 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 	// User can opt-out with --include-sqlc
 	if !cfg.IncludeSQLC {
 		filterOptions = append(filterOptions, filter.FilterSQLC)
-
-		if cfg.Verbose {
-			_, _ = fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (sqlc)\n")
-		}
+		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (sqlc)")
 	}
 
 	// Filter templ files by default (filename-based detection is very fast)
 	// User can opt-out with --include-templ
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, filter.FilterTempl)
-
-		if cfg.Verbose {
-			_, _ = fmt.Fprintf(os.Stderr, "🔍 Auto-generated code filtering enabled (templ)\n")
-		}
+		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (templ)")
 	}
 
 	// Create the filter if there are any options or include/exclude patterns
@@ -180,13 +181,7 @@ func setupFilter(cfg *config.Config) *filter.Filter {
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
 		// IgnoreFiles are treated as exclude patterns
 		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
-
-		if cfg.Verbose {
-			_, _ = fmt.Fprintf(
-				os.Stderr,
-				"🔍 Auto-generated code filtering enabled (templ files filtered by default)\n",
-			)
-		}
+		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (templ files filtered by default)")
 
 		return filterParam
 	}

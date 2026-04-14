@@ -43,7 +43,7 @@ func (ft FileType) MarshalJSON() ([]byte, error) {
 
 	return marshalStringType(
 		ft,
-		func(s FileType) bool { return s.IsValid() },
+		isValidMethod[FileType](),
 		"file type",
 	)
 }
@@ -51,7 +51,7 @@ func (ft FileType) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.
 func (ft *FileType) UnmarshalJSON(data []byte) error {
 	return unmarshalStringTypeToPointer(data,
-		func(s FileType) bool { return s.IsValid() },
+		isValidMethod[FileType](),
 		FileTypeAll,
 		"file type",
 		ft,
