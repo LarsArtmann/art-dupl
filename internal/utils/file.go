@@ -23,13 +23,17 @@ func NewFileProcessor(baseDir ...string) *FileProcessor {
 	return fp
 }
 
+// resolvePath creates full path by joining baseDir with filename if baseDir is set.
+func (fp *FileProcessor) resolvePath(filename string) string {
+	if fp.baseDir != "" {
+		return filepath.Join(fp.baseDir, filename)
+	}
+	return filename
+}
+
 // WriteFile writes content to a file with consistent error handling.
 func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.FileMode) error {
-	// Create full path if base directory is set
-	fullPath := filename
-	if fp.baseDir != "" {
-		fullPath = filepath.Join(fp.baseDir, filename)
-	}
+	fullPath := fp.resolvePath(filename)
 
 	// Ensure directory exists
 	dir := filepath.Dir(fullPath)
@@ -55,11 +59,7 @@ func (fp *FileProcessor) WriteTextFile(filename, content string) error {
 
 // ReadFile reads file content with consistent error handling.
 func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
-	// Create full path if base directory is set
-	fullPath := filename
-	if fp.baseDir != "" {
-		fullPath = filepath.Join(fp.baseDir, filename)
-	}
+	fullPath := fp.resolvePath(filename)
 
 	data, err := os.ReadFile(
 		fullPath,

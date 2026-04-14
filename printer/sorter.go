@@ -34,20 +34,28 @@ func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
 	}
 }
 
+// isEmptyOrLessThanEmpty returns true if:
+// - both slices are empty (equal, return false)
+// - i is non-empty and j is empty (i should come first, return true)
+// - i is empty and j is non-empty (i should come last, return false)
+func isEmptyOrLessThanEmpty[T any](slices [][]T, i, j int) (handled, lessThan bool) {
+	if len(slices[i]) == 0 && len(slices[j]) == 0 {
+		return true, false // Both empty, they're equal
+	}
+	if len(slices[i]) == 0 {
+		return true, false // i is empty, j is not - i should come after j
+	}
+	if len(slices[j]) == 0 {
+		return true, true // j is empty, i is not - i should come before j
+	}
+	return false, false // Neither is empty, continue with normal comparison
+}
+
 // SortClonesBySize sorts clone groups by token count (largest first, descending order).
 func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
-		i, j = skipEmptySlices(dups, i, j)
-		if i == -1 && j == -1 {
-			return false
-		}
-
-		if i == -1 {
-			return true
-		}
-
-		if j == -1 {
-			return false
+		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
+			return lessThan
 		}
 		// Calculate size as end position minus start position
 		sizeI := dups[i][len(dups[i])-1].End - dups[i][0].Pos
@@ -57,21 +65,6 @@ func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
 	})
 
 	return dups
-}
-
-// skipEmptySlices handles empty slice cases for sorting.
-// Returns adjusted indices where empty slices are skipped.
-// Returns -1 for indices that should be sorted to the end.
-func skipEmptySlices(dups [][]*syntax.Node, i, j int) (int, int) {
-	if len(dups[i]) == 0 {
-		i = -1
-	}
-
-	if len(dups[j]) == 0 {
-		j = -1
-	}
-
-	return i, j
 }
 
 // SortClonesByOccurrence sorts clone groups by number of files (most files first, descending order).
@@ -87,17 +80,8 @@ func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node {
 // SortClonesByHash sorts clone groups by hash (alphabetical, ascending order).
 func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
-		i, j = skipEmptySlices(dups, i, j)
-		if i == -1 && j == -1 {
-			return false
-		}
-
-		if i == -1 {
-			return true
-		}
-
-		if j == -1 {
-			return false
+		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
+			return lessThan
 		}
 		// Use filename for sorting since hash isn't available in Node
 		if dups[i][0].Filename == dups[j][0].Filename {
@@ -153,28 +137,25 @@ func sortCloneGroupsBySize(cloneGroups [][]clone) {
 	})
 }
 
+// ExtractSortCriteria extracts the sort criteria from variadic sortBy parameter.
+// Returns SortBySize as default if no criteria is provided.
+func ExtractSortCriteria(sortBy ...SortBy) SortBy {
+	if len(sortBy) > 0 {
+		return sortBy[0]
+	}
+	return SortBySize
+}
+
 func sortClonesByFilename(cloneGroups [][]clone) {
 	sort.Slice(cloneGroups, func(i, j int) bool {
-		if len(cloneGroups[i]) == 0 && len(cloneGroups[j]) == 0 {
-			return false
-		}
-
-		if len(cloneGroups[i]) == 0 {
-			return true
-		}
-
-		if len(cloneGroups[j]) == 0 {
-			return false
+		if len(cloneGroups[i]) == 0 || len(cloneGroups[j]) == 0 {
+			return len(cloneGroups[i]) > 0 && len(cloneGroups[j]) == 0
 		}
 		// Compare by filename of first clone in each group
-		if len(cloneGroups[i]) > 0 && len(cloneGroups[j]) > 0 {
-			if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
-				return cloneGroups[i][0].lineStart < cloneGroups[j][0].lineStart
-			}
-
-			return cloneGroups[i][0].filename < cloneGroups[j][0].filename
+		if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
+			return cloneGroups[i][0].lineStart < cloneGroups[j][0].lineStart
 		}
 
-		return false
+		return cloneGroups[i][0].filename < cloneGroups[j][0].filename
 	})
 }

@@ -72,12 +72,7 @@ func calculateCloneSizes(clones []clone) int {
 func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.cnt++
 
-	sortCriteria := SortBySize
-	if len(sortBy) > 0 {
-		sortCriteria = sortBy[0]
-	}
-
-	sortedDups := SortNodesByCriteria(dups, sortCriteria)
+	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {

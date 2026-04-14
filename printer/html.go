@@ -664,12 +664,7 @@ func (p *htmlprinter) writeMetadata() error {
 func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 	p.iota++
 
-	sortCriteria := SortBySize
-	if len(sortBy) > 0 {
-		sortCriteria = sortBy[0]
-	}
-
-	sortedDups := SortNodesByCriteria(dups, sortCriteria)
+	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
 
 	p.dupMutex.Lock()
 	p.dupls = append(p.dupls, sortedDups)
