@@ -26,7 +26,13 @@ func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 	t.Helper()
 	for i, line := range lines {
 		if line.LineNumber != i+1 {
-			t.Errorf("Expected %s line %d to have LineNumber %d, got %d", label, i, i+1, line.LineNumber)
+			t.Errorf(
+				"Expected %s line %d to have LineNumber %d, got %d",
+				label,
+				i,
+				i+1,
+				line.LineNumber,
+			)
 		}
 	}
 }

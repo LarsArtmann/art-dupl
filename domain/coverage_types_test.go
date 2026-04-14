@@ -192,7 +192,13 @@ func TestStringID_UnmarshalJSON(t *testing.T) {
 
 			var sid StringID
 
-			testutil.AssertUnmarshalError(t, "StringID.UnmarshalJSON", []byte(tt.input), tt.wantErr, sid.UnmarshalJSON)
+			testutil.AssertUnmarshalError(
+				t,
+				"StringID.UnmarshalJSON",
+				[]byte(tt.input),
+				tt.wantErr,
+				sid.UnmarshalJSON,
+			)
 		})
 	}
 }

@@ -8,6 +8,7 @@ import (
 )
 
 // Static errors for config validation.
+// Static errors for config validation.
 var (
 	ErrInvalidDetectionMethod = errors.New("invalid detection method")
 	ErrInvalidType            = errors.New("invalid type")

@@ -202,8 +202,16 @@ func TestClone_IsValid(t *testing.T) {
 		clone   Clone
 		wantErr error
 	}{
-		{name: "valid clone with positions", clone: Clone{StartLine: 1, EndLine: 5, StartPos: 10, EndPos: 50}, wantErr: nil},
-		{clone: Clone{StartLine: 5, EndLine: 5, StartPos: 10, EndPos: 20}, wantErr: nil, name: "valid clone single line"},
+		{
+			name:    "valid clone with positions",
+			clone:   Clone{StartLine: 1, EndLine: 5, StartPos: 10, EndPos: 50},
+			wantErr: nil,
+		},
+		{
+			clone:   Clone{StartLine: 5, EndLine: 5, StartPos: 10, EndPos: 20},
+			wantErr: nil,
+			name:    "valid clone single line",
+		},
 		{
 			name:    "valid clone without positions",
 			clone:   Clone{StartLine: 1, EndLine: 10},
@@ -214,8 +222,16 @@ func TestClone_IsValid(t *testing.T) {
 			clone:   Clone{StartLine: 10, EndLine: 5},
 			wantErr: ErrCloneEndLineBeforeStart,
 		},
-		{clone: Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 50}, wantErr: ErrCloneZeroLength, name: "invalid zero length positions"},
-		{name: "invalid negative length positions", wantErr: ErrCloneZeroLength, clone: Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 30}},
+		{
+			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 50},
+			wantErr: ErrCloneZeroLength,
+			name:    "invalid zero length positions",
+		},
+		{
+			name:    "invalid negative length positions",
+			wantErr: ErrCloneZeroLength,
+			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 30},
+		},
 	}
 
 	for _, tt := range tests {

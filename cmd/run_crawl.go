@@ -189,7 +189,8 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 		return nil
 	}
 
-	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) && shouldIncludeFile(opts.Filter, path) {
+	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) &&
+		shouldIncludeFile(opts.Filter, path) {
 		opts.FChan <- path
 	}
 

@@ -36,7 +36,13 @@ func newDetectionOptions(threshold Threshold) DetectionOptions {
 }
 
 // analysisStatsCase creates a test case for AnalysisStats validation.
-func analysisStatsCase(name string, files FileCount, time ProcessingTime, complexity, ratio float64, wantErr bool) struct {
+func analysisStatsCase(
+	name string,
+	files FileCount,
+	time ProcessingTime,
+	complexity, ratio float64,
+	wantErr bool,
+) struct {
 	name    string
 	value   AnalysisStats
 	wantErr bool
@@ -46,8 +52,13 @@ func analysisStatsCase(name string, files FileCount, time ProcessingTime, comple
 		value   AnalysisStats
 		wantErr bool
 	}{
-		name:    name,
-		value:   AnalysisStats{FilesAnalyzed: files, ProcessingTime: time, ComplexityScore: complexity, DuplicationRatio: ratio},
+		name: name,
+		value: AnalysisStats{
+			FilesAnalyzed:    files,
+			ProcessingTime:   time,
+			ComplexityScore:  complexity,
+			DuplicationRatio: ratio,
+		},
 		wantErr: wantErr,
 	}
 }
@@ -129,7 +140,18 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 		value   AnalysisStats
 		wantErr bool
 	}{
-		{name: "valid stats", value: AnalysisStats{FilesAnalyzed: 10, TotalClones: 5, TotalTokenSize: 100, ComplexityScore: 2.5, DuplicationRatio: 0.3, ProcessingTime: 1000}, wantErr: false},
+		{
+			name: "valid stats",
+			value: AnalysisStats{
+				FilesAnalyzed:    10,
+				TotalClones:      5,
+				TotalTokenSize:   100,
+				ComplexityScore:  2.5,
+				DuplicationRatio: 0.3,
+				ProcessingTime:   1000,
+			},
+			wantErr: false,
+		},
 		analysisStatsCase("zero files analyzed", 0, 1000, 1.0, 0.5, true),
 		analysisStatsCase("zero processing time", 10, 0, 1.0, 0.5, true),
 		{

@@ -115,16 +115,9 @@ func runStats(cmd *cobra.Command, args []string) error {
 		appConfig.Verbose = true
 	}
 
-	// Parse and set detection methods
-	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
-	if err != nil {
-		return duplerrors.WrapValidation(
-			err,
-			fmt.Sprintf("invalid detection methods %q", detectionMethods),
-		)
+	if err := setDetectionMethods(appConfig, detectionMethods); err != nil {
+		return err
 	}
-
-	appConfig.DetectionMethods = parsedMethods
 
 	if threshold != cli.DefaultThreshold {
 		appConfig.Threshold = threshold

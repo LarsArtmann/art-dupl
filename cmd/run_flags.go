@@ -22,6 +22,20 @@ func wrapAnalysisError(err error, paths []string) error {
 	)
 }
 
+// setDetectionMethods parses and sets detection methods from flag value.
+func setDetectionMethods(appConfig *config.Config, detectionMethods string) error {
+	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
+	if err != nil {
+		return duplerrors.WrapValidation(
+			err,
+			fmt.Sprintf("invalid detection methods %q", detectionMethods),
+		)
+	}
+	appConfig.DetectionMethods = parsedMethods
+
+	return nil
+}
+
 // runCmd implements Cobra command execution.
 //
 //nolint:gocyclo,cyclop,funlen,gocognit,maintidx // Command execution requires handling many CLI flags and configuration options
@@ -97,16 +111,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		appConfig.Verbose = true
 	}
 
-	// Parse and set detection methods
-	parsedMethods, err := config.ParseDetectionMethods(detectionMethods)
-	if err != nil {
-		return duplerrors.WrapValidation(
-			err,
-			fmt.Sprintf("invalid detection methods %q", detectionMethods),
-		)
+	if err := setDetectionMethods(appConfig, detectionMethods); err != nil {
+		return err
 	}
-
-	appConfig.DetectionMethods = parsedMethods
 
 	if threshold != cli.DefaultThreshold {
 		appConfig.Threshold = threshold

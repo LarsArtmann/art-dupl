@@ -134,7 +134,13 @@ func FormatGotWant(got, want any) string {
 
 // AssertIsValid asserts that the IsValid() method returns the expected error state.
 // The typeName parameter is used in the error message (e.g., "Analysis", "Clone").
-func AssertIsValid[T any](t *testing.T, typeName string, obj T, wantErr bool, getErr func(T) error) {
+func AssertIsValid[T any](
+	t *testing.T,
+	typeName string,
+	obj T,
+	wantErr bool,
+	getErr func(T) error,
+) {
 	t.Helper()
 
 	err := getErr(obj)
@@ -145,7 +151,13 @@ func AssertIsValid[T any](t *testing.T, typeName string, obj T, wantErr bool, ge
 
 // AssertMarshalJSONError checks that a JSON marshal operation returns the expected error state.
 // The methodName parameter is used in the error message (e.g., "MarshalJSON").
-func AssertMarshalJSONError[T any](t *testing.T, methodName string, obj T, wantError bool, marshalFn func(T) ([]byte, error)) {
+func AssertMarshalJSONError[T any](
+	t *testing.T,
+	methodName string,
+	obj T,
+	wantError bool,
+	marshalFn func(T) ([]byte, error),
+) {
 	t.Helper()
 
 	got, err := marshalFn(obj)
@@ -161,7 +173,13 @@ func AssertMarshalJSONError[T any](t *testing.T, methodName string, obj T, wantE
 
 // AssertUnmarshalJSONError checks that a JSON unmarshal operation returns the expected error state.
 // The methodName parameter is used in the error message (e.g., "UnmarshalJSON").
-func AssertUnmarshalJSONError[T any](t *testing.T, methodName string, data []byte, wantError bool, unmarshalFn func([]byte) error) {
+func AssertUnmarshalJSONError[T any](
+	t *testing.T,
+	methodName string,
+	data []byte,
+	wantError bool,
+	unmarshalFn func([]byte) error,
+) {
 	t.Helper()
 
 	err := unmarshalFn(data)
@@ -204,7 +222,13 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 // AssertUnmarshalError verifies that unmarshaling from JSON produces the expected error state.
 // The methodName is used in error messages (e.g., "StringID.UnmarshalJSON").
 // The data parameter is the JSON bytes to unmarshal.
-func AssertUnmarshalError(t *testing.T, methodName string, data []byte, wantErr bool, unmarshalFn func([]byte) error) {
+func AssertUnmarshalError(
+	t *testing.T,
+	methodName string,
+	data []byte,
+	wantErr bool,
+	unmarshalFn func([]byte) error,
+) {
 	t.Helper()
 
 	err := unmarshalFn(data)
