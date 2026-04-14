@@ -37,3 +37,18 @@ func CreateMockCloneGroup(hash string, size int, filenames []string) []*syntax.N
 
 	return nodes
 }
+
+// CreateMatch creates a syntax.Match with a hash and one or more filenames.
+// Each filename creates a separate fragment containing a single node.
+func CreateMatch(hash string, filenames ...string) syntax.Match {
+	frags := make([][]*syntax.Node, len(filenames))
+	for i, fname := range filenames {
+		frags[i] = []*syntax.Node{{Filename: fname}} //nolint:exhaustruct
+	}
+	return syntax.Match{Hash: hash, Frags: frags}
+}
+
+// CreateMatchWithNodes creates a syntax.Match with explicit node fragments.
+func CreateMatchWithNodes(hash string, fragments [][]*syntax.Node) syntax.Match {
+	return syntax.Match{Hash: hash, Frags: fragments}
+}
