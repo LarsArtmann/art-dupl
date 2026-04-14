@@ -116,7 +116,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 			name: "stats help",
 			args: []string{binaryPath, "stats", "--help"},
 			expectedInOutput: []string{
-				"stats displays aggregated statistics about code duplication",
+				"Prints comprehensive duplication statistics",
 				"art-dupl stats",
 			},
 			wantErr: false,
