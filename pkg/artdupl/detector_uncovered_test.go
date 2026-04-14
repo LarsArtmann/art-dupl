@@ -308,20 +308,9 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 	matchesChan := make(chan syntax.Match, 3)
 
 	// Send test matches
-	matchesChan <- syntax.Match{
-		Hash:  "hash1",
-		Frags: [][]*syntax.Node{{{Filename: "file1.go"}}},
-	}
-
-	matchesChan <- syntax.Match{
-		Hash:  "hash1",
-		Frags: [][]*syntax.Node{{{Filename: "file2.go"}}},
-	}
-
-	matchesChan <- syntax.Match{
-		Hash:  "hash2",
-		Frags: [][]*syntax.Node{{{Filename: "file3.go"}}},
-	}
+	matchesChan <- testutil.CreateMatch("hash1", "file1.go")
+	matchesChan <- testutil.CreateMatch("hash1", "file2.go")
+	matchesChan <- testutil.CreateMatch("hash2", "file3.go")
 
 	close(matchesChan)
 
