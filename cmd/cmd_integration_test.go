@@ -30,30 +30,30 @@ func buildSuffixTreeWithFile(
 	t.Helper()
 	ctx := t.Context()
 
-	tree, data, parseStats, err := buildSuffixTree(buildParams{
+	result := buildSuffixTree(buildParams{
 		ctx:          ctx,
 		paths:        []string{tmpDir},
 		cfg:          cfg,
 		filterParam:  nil,
 		outputFormat: config.OutputFormatText,
 	})
-	if err != nil {
-		t.Fatalf("buildSuffixTree() error = %v", err)
+	if result.err != nil {
+		t.Fatalf("buildSuffixTree() error = %v", result.err)
 	}
 
-	if tree == nil {
+	if result.tree == nil {
 		t.Error("buildSuffixTree() returned nil tree")
 	}
 
-	if len(data) == 0 {
+	if len(result.data) == 0 {
 		t.Error("buildSuffixTree() returned empty data")
 	}
 
-	if parseStats.FilesCount < 1 {
-		t.Errorf("Expected at least 1 file parsed, got %d", parseStats.FilesCount)
+	if result.parseStats.FilesCount < 1 {
+		t.Errorf("Expected at least 1 file parsed, got %d", result.parseStats.FilesCount)
 	}
 
-	return tree, data, parseStats
+	return result.tree, result.data, result.parseStats
 }
 
 func TestRunCmd_Integration(t *testing.T) {

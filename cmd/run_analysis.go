@@ -48,6 +48,14 @@ type buildParams struct {
 	outputFormat config.OutputFormat
 }
 
+// treeBuildResult holds the result of building a suffix tree.
+type treeBuildResult struct {
+	tree       *suffixtree.STree
+	data       []*syntax.Node
+	parseStats job.ParseStats
+	err        error
+}
+
 // getFilesChan creates a channel of file paths based on the build parameters.
 func (p buildParams) getFilesChan() chan string {
 	return filesFeedWithOptions(
@@ -60,9 +68,7 @@ func (p buildParams) getFilesChan() chan string {
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
-func buildSuffixTree(
-	params buildParams,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTree(params buildParams) treeBuildResult {
 	printBuildingStatus(
 		params.cfg,
 		params.outputFormat,
@@ -78,9 +84,7 @@ func buildSuffixTree(
 }
 
 // buildSuffixTreeIncremental builds a suffix tree using incremental parsing with cache.
-func buildSuffixTreeIncremental(
-	params buildParams,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	if params.cfg.Verbose {
 		_, _ = fmt.Fprintf(
 			os.Stderr,
@@ -111,13 +115,11 @@ func buildSuffixTreeIncremental(
 	tree.Update(&syntax.Node{Type: -1})
 	printSearchStatus(params.cfg, params.outputFormat)
 
-	return tree, *data, parseStats, nil
+	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
 
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
-func buildSuffixTreeStandard(
-	params buildParams,
-) (*suffixtree.STree, []*syntax.Node, job.ParseStats, error) {
+func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
 
 	var (
@@ -144,7 +146,7 @@ func buildSuffixTreeStandard(
 	tree.Update(&syntax.Node{Type: -1})
 	printSearchStatus(params.cfg, params.outputFormat)
 
-	return tree, *data, parseStats, nil
+	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
 
 // setupFilter creates a filter based on config settings.
@@ -220,22 +222,22 @@ func executeAnalysis(
 		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, outputFormat)
 	}
 
-	t, data, parseStats, err := buildSuffixTree(buildParams{
+	result := buildSuffixTree(buildParams{
 		ctx:          ctx,
 		paths:        paths,
 		cfg:          cfg,
 		filterParam:  filterParam,
 		outputFormat: outputFormat,
 	})
-	if err != nil {
+	if result.err != nil {
 		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(
-			err,
+			result.err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf("failed to build suffix tree for paths %v", paths),
 		)
 	}
 
-	multiDetector := detection.NewMultiDetector(cfg, data, t, cfg.Verbose)
+	multiDetector := detection.NewMultiDetector(cfg, result.data, result.tree, cfg.Verbose)
 	duplChan := make(chan syntax.Match)
 
 	go func() {
@@ -258,7 +260,7 @@ func executeAnalysis(
 		job.PrintProfileResult(endProfile)
 	}
 
-	return duplChan, parseStats, filterStats, nil
+	return duplChan, result.parseStats, filterStats, nil
 }
 
 // collectFilesFromChannel collects file paths from a channel into a slice,
