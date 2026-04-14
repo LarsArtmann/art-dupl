@@ -22,6 +22,14 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 	}
 }
 
+// checkResultCount verifies the expected number of results.
+func checkResultCount(t *testing.T, got int, expected int) {
+	t.Helper()
+	if got != expected {
+		t.Errorf("results: expected %d, got %d", expected, got)
+	}
+}
+
 func TestNewSARIF(t *testing.T) {
 	var buf bytes.Buffer
 
@@ -65,9 +73,7 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 	}
 
 	// Should have 2 results (one per clone instance)
-	if len(printer.results) != 2 {
-		t.Errorf("Expected 2 results, got %d", len(printer.results))
-	}
+	checkResultCount(t, len(printer.results), 2)
 }
 
 func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
@@ -80,9 +86,7 @@ func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
 		t.Errorf("PrintClones returned error: %v", err)
 	}
 
-	if len(printer.results) != 0 {
-		t.Errorf("Expected 0 results, got %d", len(printer.results))
-	}
+	checkResultCount(t, len(printer.results), 0)
 }
 
 func TestSARIFPrinter_PrintFooter(t *testing.T) {
@@ -205,9 +209,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	}
 
 	// Should still have only 2 results (first group only)
-	if len(printer.results) != 2 {
-		t.Errorf("Expected 2 results after duplicate filtering, got %d", len(printer.results))
-	}
+	checkResultCount(t, len(printer.results), 2)
 }
 
 func TestSARIFOutput_Structure(t *testing.T) {

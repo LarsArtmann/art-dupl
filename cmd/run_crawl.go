@@ -112,11 +112,18 @@ func crawlPathsAllFiles(
 // A nil function accepts all files.
 type fileCheckFunc func(name string) bool
 
-// crawlPathsWithFileCheck walks paths and returns a channel of files that pass the file check.
-// The includeNodeModules parameter controls whether node_modules directories are included.
+// CrawlOptions contains the common options for crawling operations.
+type CrawlOptions struct {
+	Filter          *filter.Filter
+	IncludeVendor   bool
+	IncludeNodeMods bool
+	FileCheck       fileCheckFunc
+	FChan           chan string
+}
+
 func crawlPathsWithFileCheck(
 	paths []string,
-	filter *filter.Filter,
+	f *filter.Filter,
 	includeVendor bool,
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,
@@ -125,7 +132,13 @@ func crawlPathsWithFileCheck(
 
 	go func() {
 		for _, path := range paths {
-			crawlSinglePath(path, filter, includeVendor, includeNodeModules, fileCheck, fchan)
+			crawlSinglePathWithOpts(CrawlOptions{
+				Filter:          f,
+				IncludeVendor:   includeVendor,
+				IncludeNodeMods: includeNodeModules,
+				FileCheck:       fileCheck,
+				FChan:           fchan,
+			}, path)
 		}
 
 		close(fchan)
@@ -134,50 +147,27 @@ func crawlPathsWithFileCheck(
 	return fchan
 }
 
-// crawlSinglePath handles crawling of a single path (file or directory).
-func crawlSinglePath(
-	path string,
-	filter *filter.Filter,
-	includeVendor bool,
-	includeNodeModules bool,
-	fileCheck fileCheckFunc,
-	fchan chan string,
-) {
+// crawlSinglePathWithOpts handles crawling of a single path using CrawlOptions.
+func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	info, err := os.Lstat(path)
 	if err != nil {
 		statError(path, err)
 	}
 
 	if !info.IsDir() {
-		if shouldIncludeFile(filter, path) && passesFileCheck(info.Name(), fileCheck) {
-			fchan <- path
+		if shouldIncludeFile(opts.Filter, path) && passesFileCheck(info.Name(), opts.FileCheck) {
+			opts.FChan <- path
 		}
-
 		return
 	}
 
-	crawlDirectory(path, filter, includeVendor, includeNodeModules, fileCheck, fchan)
+	crawlDirectoryWithOpts(opts, path)
 }
 
-// crawlDirectory walks a directory tree and sends matching files to the channel.
-func crawlDirectory(
-	path string,
-	filter *filter.Filter,
-	includeVendor bool,
-	includeNodeModules bool,
-	fileCheck fileCheckFunc,
-	fchan chan string,
-) {
-	err := filepath.Walk(path, func(path string, info os.FileInfo, _ error) error {
-		return handleWalkEntry(
-			path,
-			info,
-			filter,
-			includeVendor,
-			includeNodeModules,
-			fileCheck,
-			fchan,
-		)
+// crawlDirectoryWithOpts walks a directory tree using CrawlOptions.
+func crawlDirectoryWithOpts(opts CrawlOptions, path string) {
+	err := filepath.Walk(path, func(p string, info os.FileInfo, _ error) error {
+		return handleWalkEntry(opts, p, info)
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
@@ -186,21 +176,12 @@ func crawlDirectory(
 }
 
 // handleWalkEntry processes a single entry during directory walk.
-func handleWalkEntry(
-	path string,
-	info os.FileInfo,
-	filter *filter.Filter,
-	includeVendor bool,
-	includeNodeModules bool,
-	fileCheck fileCheckFunc,
-	fchan chan string,
-) error {
-	// info can be nil if there was an error accessing the file/directory
+func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 	if info == nil {
 		return nil
 	}
 
-	if shouldSkipPath(path, includeVendor, includeNodeModules) {
+	if shouldSkipPath(path, opts.IncludeVendor, opts.IncludeNodeMods) {
 		return nil
 	}
 
@@ -208,8 +189,8 @@ func handleWalkEntry(
 		return nil
 	}
 
-	if !info.IsDir() && passesFileCheck(info.Name(), fileCheck) && shouldIncludeFile(filter, path) {
-		fchan <- path
+	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) && shouldIncludeFile(opts.Filter, path) {
+		opts.FChan <- path
 	}
 
 	return nil

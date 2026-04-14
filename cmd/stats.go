@@ -22,29 +22,9 @@ func NewStatsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stats [flags] [paths...]",
 		Short: "Show aggregated duplication statistics",
-		Long: `stats displays aggregated statistics about code duplication in a project.
-
-The stats command provides a comprehensive overview of duplication levels,
-making it easy to compare different projects or track duplication over time.
-
-Statistics include:
-- Files scanned and clone groups found
-- Total lines of code and duplicate lines
-- Total duplicate tokens and complexity score
-- Average clone size and impact score
-- Clone size distribution
-- Top files with most duplicates
-
-Examples:
-  art-dupl stats                    # Show stats for current directory (text format)
-  art-dupl stats --format json .    # Show stats in JSON format (machine-readable)
-  art-dupl stats --format csv .     # Show stats in CSV format (spreadsheets)
-  art-dupl stats ./src ./lib        # Show stats for specific paths
-  art-dupl stats -t 20 .            # Show stats with higher threshold
-  art-dupl stats -t 50 --format json . | jq '.overview.totalClones'
-                                      # Get total clones from JSON with jq`,
-		Args: cobra.ArbitraryArgs,
-		RunE: runStats,
+		Long: "Prints comprehensive duplication statistics: clone counts, token totals, and file impact metrics in text, JSON, or CSV format.",
+		Args:  cobra.ArbitraryArgs,
+		RunE:  runStats,
 	}
 
 	// Add flags to stats command

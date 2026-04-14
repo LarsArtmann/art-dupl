@@ -20,6 +20,29 @@ func testNodes() []*syntax.Node {
 	}
 }
 
+// makeFrag creates a fragment with the given filename and positions.
+func makeFrag(filename string, pos, end int32) []*syntax.Node {
+	return []*syntax.Node{
+		{Type: 1, Filename: filename, Pos: pos, End: end},
+	}
+}
+
+// verifyCloneCount verifies the expected number of clones.
+func verifyCloneCount(t *testing.T, got int, expected int) {
+	t.Helper()
+	if got != expected {
+		t.Errorf("clone count mismatch: want %d, got %d", expected, got)
+	}
+}
+
+// verifyResultCount verifies the expected number of results.
+func verifyResultCount(t *testing.T, got int, expected int) {
+	t.Helper()
+	if got != expected {
+		t.Errorf("result count mismatch: want %d, got %d", expected, got)
+	}
+}
+
 // newTestDetector creates a detector with default test configuration.
 func newTestDetector() *detector {
 	return &detector{
@@ -85,9 +108,7 @@ func TestConvertToCloneGroup_MaxClonesLimit(t *testing.T) {
 
 	group := d.convertToCloneGroup("hash", frags, MethodArtDupl)
 
-	if len(group.Clones) != 2 {
-		t.Errorf("Expected 2 clones (limited), got %d", len(group.Clones))
-	}
+	verifyCloneCount(t, len(group.Clones), 2)
 }
 
 // TestConvertFragmentToClone tests the convertFragmentToClone function.
@@ -146,9 +167,7 @@ func TestExtractFragmentContent_NotFound(t *testing.T) {
 		logger: &testLoggerBasic{},
 	}
 
-	frag := []*syntax.Node{
-		{Type: 1, Filename: "/nonexistent/file.go", Pos: 1, End: 2},
-	}
+	frag := makeFrag("/nonexistent/file.go", 1, 2)
 
 	content := d.extractFragmentContent(frag)
 	if content != "" {
@@ -319,17 +338,9 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	if len(groups) != 2 {
-		t.Errorf("Expected 2 groups, got %d", len(groups))
-	}
-
-	if len(groups["hash1"]) != 2 {
-		t.Errorf("Expected hash1 to have 2 fragments, got %d", len(groups["hash1"]))
-	}
-
-	if len(groups["hash2"]) != 1 {
-		t.Errorf("Expected hash2 to have 1 fragment, got %d", len(groups["hash2"]))
-	}
+	verifyCloneCount(t, len(groups), 2)
+	verifyCloneCount(t, len(groups["hash1"]), 2)
+	verifyCloneCount(t, len(groups["hash2"]), 1)
 }
 
 // TestCollectMatchesIntoGroups_Cancelled tests collectMatchesIntoGroups with cancelled context.
@@ -453,9 +464,7 @@ func TestConvertToCloneGroup_SingleFragment(t *testing.T) {
 
 	group := d.convertToCloneGroup("single", frag, MethodArtDupl)
 
-	if len(group.Clones) != 1 {
-		t.Errorf("Expected 1 clone, got %d", len(group.Clones))
-	}
+	verifyCloneCount(t, len(group.Clones), 1)
 
 	if group.Clones[0].Filename != "single.go" {
 		t.Errorf("Expected Filename='single.go', got %s", group.Clones[0].Filename)
@@ -469,24 +478,6 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 	data := testNodes()
 
 	matchesChan := d.runSuffixTreeDetection(data, 1)
-
-	if matchesChan == nil {
-		t.Error("Expected non-nil matches channel")
-	}
-
-	// Drain the channel to avoid goroutine leak
-	for range matchesChan {
-	}
-}
-
-// TestRunArtDuplDetection tests the runArtDuplDetection function.
-func TestRunArtDuplDetection(t *testing.T) {
-	d := &detector{}
-
-	data := testNodes()
-
-	ctx := t.Context()
-	matchesChan := d.runArtDuplDetection(ctx, data, 1)
 
 	if matchesChan == nil {
 		t.Error("Expected non-nil matches channel")

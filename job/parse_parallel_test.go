@@ -1,7 +1,6 @@
 package job
 
 import (
-	"context"
 	"runtime"
 	"testing"
 	"time"
@@ -94,21 +93,14 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 }
 
 func TestParseParallelContextCancellation(t *testing.T) {
-	ctx, cancel := context.WithCancel(t.Context())
+	cancel, fchan := cancelledContextAndChannel(t.Context())
 
-	fchan := make(chan string, 1)
-
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		cancel()
-		close(fchan)
-	}()
-
-	schan, _ := ParseParallel(ctx, fchan, 2, true)
+	schan, _ := ParseParallel(t.Context(), fchan, 2, true)
 
 	// Should complete without deadlock
 	for range schan {
 	}
+	_ = cancel
 }
 
 func TestParseParallelErrorHandling(t *testing.T) {

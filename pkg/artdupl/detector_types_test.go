@@ -24,6 +24,47 @@ func assertCloneGroupBasic(
 	}
 }
 
+// assertCloneCount asserts the number of clones matches expected.
+func assertCloneCount(t *testing.T, got int, expected int) {
+	t.Helper()
+
+	if got != expected {
+		t.Errorf("clone count: expected %d, got %d", expected, got)
+	}
+}
+
+// assertMethodsCount asserts the number of detection methods matches expected.
+func assertMethodsCount(t *testing.T, got int, expected int) {
+	t.Helper()
+
+	if got != expected {
+		t.Errorf("methods count: expected %d, got %d", expected, got)
+	}
+}
+
+// assertSummaryFields asserts Summary field values.
+func assertSummaryFields(
+	t *testing.T,
+	summary *Summary,
+	files, clones, groups int,
+	methods int,
+) {
+	t.Helper()
+
+	if summary.TotalFiles != files {
+		t.Errorf("TotalFiles: expected %d, got %d", files, summary.TotalFiles)
+	}
+	if summary.TotalClones != clones {
+		t.Errorf("TotalClones: expected %d, got %d", clones, summary.TotalClones)
+	}
+	if summary.TotalGroups != groups {
+		t.Errorf("TotalGroups: expected %d, got %d", groups, summary.TotalGroups)
+	}
+	if len(summary.MethodsUsed) != methods {
+		t.Errorf("MethodsUsed: expected %d, got %d", methods, len(summary.MethodsUsed))
+	}
+}
+
 // TestCloneGroup_Fields tests CloneGroup field assignments.
 func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
@@ -150,9 +191,7 @@ func TestSummary_Fields(t *testing.T) {
 		t.Errorf("AnalysisTime should be 5s, got %v", summary.AnalysisTime)
 	}
 
-	if len(summary.MethodsUsed) != 2 {
-		t.Errorf("Should have 2 methods, got %d", len(summary.MethodsUsed))
-	}
+	assertMethodsCount(t, len(summary.MethodsUsed), 2)
 
 	if summary.LinesAnalyzed != 10000 {
 		t.Errorf("LinesAnalyzed should be 10000, got %d", summary.LinesAnalyzed)
@@ -323,9 +362,7 @@ func TestCloneGroup_ManyClones(t *testing.T) {
 		Method: MethodHash,
 	}
 
-	if len(group.Clones) != 100 {
-		t.Errorf("Should have 100 clones, got %d", len(group.Clones))
-	}
+	assertCloneCount(t, 100, len(group.Clones))
 }
 
 // TestSummary_AllMethodsUsed tests Summary with all detection methods.
@@ -342,9 +379,7 @@ func TestSummary_AllMethodsUsed(t *testing.T) {
 		},
 	}
 
-	if len(summary.MethodsUsed) != 4 {
-		t.Errorf("Should have 4 methods, got %d", len(summary.MethodsUsed))
-	}
+	assertMethodsCount(t, 4, len(summary.MethodsUsed))
 }
 
 // TestProgress_Zero tests Progress with zero values.
@@ -396,9 +431,7 @@ func TestCloneGroup_EmptyClones(t *testing.T) {
 		Method: MethodArtDupl,
 	}
 
-	if len(group.Clones) != 0 {
-		t.Errorf("Should have 0 clones, got %d", len(group.Clones))
-	}
+	assertCloneCount(t, 0, len(group.Clones))
 }
 
 // TestCloneGroup_NilClones tests CloneGroup with nil clones.

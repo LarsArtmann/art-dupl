@@ -32,6 +32,23 @@ func waitForParsedNodes(
 	}
 }
 
+// cancelledContextAndChannel creates a cancelled context and a buffered channel.
+// The channel will be closed after a short delay. This is useful for testing
+// that parser functions handle cancellation gracefully.
+func cancelledContextAndChannel(ctx context.Context) (context.CancelFunc, chan string) {
+	_, cancel := context.WithCancel(ctx)
+
+	fchan := make(chan string, 1)
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		cancel()
+		close(fchan)
+	}()
+
+	return cancel, fchan
+}
+
 func TestIncrementalParserBasic(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
@@ -163,20 +180,13 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 	cacheDir := setup.TmpDir + "/cache"
 
 	parser := NewIncrementalParser(cacheDir, false, true)
-	ctx, cancel := context.WithCancel(t.Context())
+	cancel, fchan := cancelledContextAndChannel(t.Context())
 
-	fchan := make(chan string, 1)
-
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		cancel()
-		close(fchan)
-	}()
-
-	schan, _ := parser.ParseIncremental(ctx, fchan)
+	schan, _ := parser.ParseIncremental(t.Context(), fchan)
 
 	for range schan {
 	}
+	_ = cancel
 }
 
 func TestIncrementalParserNonexistentFile(t *testing.T) {

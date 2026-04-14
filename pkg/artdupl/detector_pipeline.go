@@ -100,7 +100,7 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 	switch d.opts.DetectionMethods[0] { // Simplified - support single method for now
 	case MethodArtDupl:
 		// Build suffix tree for art-dupl method
-		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
+		matchesChan = d.runSuffixTreeDetection(data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
 	default:
@@ -140,7 +140,7 @@ func (d *detector) streamDetectionResults(
 
 	switch d.opts.DetectionMethods[0] {
 	case MethodArtDupl:
-		matchesChan = d.runArtDuplDetection(ctx, data, threshold)
+		matchesChan = d.runSuffixTreeDetection(data, threshold)
 	case MethodHash:
 		matchesChan = d.runHashDetection(ctx, data, threshold)
 	default:
@@ -193,16 +193,7 @@ func (d *detector) runSuffixTreeDetection(
 	return syntaxMatches
 }
 
-// runArtDuplDetection executes art-dupl (suffix tree) detection method.
-func (d *detector) runArtDuplDetection(
-	_ context.Context,
-	data []*syntax.Node,
-	threshold int,
-) <-chan syntax.Match {
-	return d.runSuffixTreeDetection(data, threshold)
-}
-
-// runHashDetection executes hash-based detection method using XXH3 streaming file hashing.
+// runHashDetection executes hash-based detection using XXH3 streaming hash algorithm.
 func (d *detector) runHashDetection(
 	_ context.Context,
 	data []*syntax.Node,

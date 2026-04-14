@@ -52,9 +52,12 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 // benchmarkFindTranMethod is a helper for benchmarking s.findTran with different parameters.
 func benchmarkFindTranMethod(b *testing.B, stateCount, transPerState int) {
 	b.Helper()
-	benchmarkFindTran(b, stateCount, transPerState, nil, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	benchmarkFindTran(b, stateCount, transPerState, nil, findTranFunc)
+}
+
+// findTranFunc is a helper function that wraps s.findTran for benchmarking.
+func findTranFunc(s *state, t Token) *tran {
+	return s.findTran(t)
 }
 
 // benchmarkFindTran is a helper for benchmarking findTran functions.
@@ -94,9 +97,7 @@ func BenchmarkFindTranSmall(b *testing.B) {
 		tree.Update(tokens...)
 
 		return tree
-	}, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	}, findTranFunc)
 }
 
 // BenchmarkFindTranMedium benchmarks findTran with a medium number of transitions.
@@ -116,9 +117,7 @@ func BenchmarkFindTranVeryLarge(b *testing.B) {
 
 // BenchmarkFindTranMap benchmarks the map-based implementation.
 func BenchmarkFindTranMap(b *testing.B) {
-	benchmarkFindTran(b, 100, 50, nil, func(s *state, t Token) *tran {
-		return s.findTran(t)
-	})
+	benchmarkFindTran(b, 100, 50, nil, findTranFunc)
 }
 
 // benchmarkTreeOperation benchmarks tree-level operations with standard setup.

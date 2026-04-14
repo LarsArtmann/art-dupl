@@ -281,9 +281,13 @@ func TestCollectMatches(t *testing.T) {
 
 	t.Run("multiple matches", func(t *testing.T) {
 		ch := make(chan syntax.Match, 3)
+
 		ch <- testutil.CreateMatch("hash1", "test1.go")
+
 		ch <- testutil.CreateMatch("hash2", "test2.go")
+
 		ch <- testutil.CreateMatch("hash3", "test3.go")
+
 		close(ch)
 
 		result := collectMatches(ch)
@@ -512,7 +516,13 @@ func TestCrawlSinglePath_File(t *testing.T) {
 	f := filter.NewFilter(false, nil)
 	fchan := make(chan string, 10)
 
-	crawlSinglePath(testFile, f, false, false, isSourceFile, fchan)
+	crawlSinglePathWithOpts(CrawlOptions{
+		Filter:          f,
+		IncludeVendor:   false,
+		IncludeNodeMods: false,
+		FileCheck:       isSourceFile,
+		FChan:           fchan,
+	}, testFile)
 	close(fchan)
 
 	files := collectStrings(fchan)
@@ -575,7 +585,13 @@ func TestHandleWalkEntry(t *testing.T) {
 			f := filter.NewFilter(false, nil)
 			fchan := make(chan string, 1)
 
-			err := handleWalkEntry(tt.path, tt.info, f, false, false, tt.fileCheck, fchan)
+			err := handleWalkEntry(CrawlOptions{
+				Filter:          f,
+				IncludeVendor:   false,
+				IncludeNodeMods: false,
+				FileCheck:       tt.fileCheck,
+				FChan:           fchan,
+			}, tt.path, tt.info)
 			close(fchan)
 
 			if (err != nil) != tt.wantErr {
