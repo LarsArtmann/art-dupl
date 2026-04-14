@@ -87,14 +87,19 @@ func (p *stats) getTokenRange(tokens int) string {
 	case tokens <= t*2:
 		return fmt.Sprintf("%d-%d tokens", t+1, t*2)
 	case tokens <= t*3:
-		return fmt.Sprintf("%d-%d tokens", t*2+1, t*3)
+		return p.tokenRangeStr(t*2+1, t*3)
 	case tokens <= t*5:
-		return fmt.Sprintf("%d-%d tokens", t*3+1, t*5)
+		return p.tokenRangeStr(t*3+1, t*5)
 	case tokens <= t*10:
-		return fmt.Sprintf("%d-%d tokens", t*5+1, t*10)
+		return p.tokenRangeStr(t*5+1, t*10)
 	default:
 		return fmt.Sprintf("%d+ tokens", t*10+1)
 	}
+}
+
+// tokenRangeStr returns a formatted token range string.
+func (p *stats) tokenRangeStr(start, end int) string {
+	return fmt.Sprintf("%d-%d tokens", start, end)
 }
 
 // getSeverity returns a severity level based on token count.

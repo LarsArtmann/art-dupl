@@ -18,8 +18,9 @@ func CreateMockNode(nodeType int, filename string, pos, end int) *syntax.Node {
 // CreateMockNodes creates multiple mock nodes for testing.
 func CreateMockNodes(count int, filename string) []*syntax.Node {
 	nodes := make([]*syntax.Node, count)
-	for i := range nodes {
-		nodes[i] = CreateMockNode(golang.FuncDecl, filename, i*10, (i+1)*10)
+	for i := 0; i < count; i++ {
+		offset := i * 10
+		nodes[i] = CreateMockNode(golang.FuncDecl, filename, offset, offset+10)
 	}
 
 	return nodes
@@ -28,8 +29,10 @@ func CreateMockNodes(count int, filename string) []*syntax.Node {
 // CreateMockCloneGroup creates a mock clone group with given files.
 func CreateMockCloneGroup(hash string, size int, filenames []string) []*syntax.Node {
 	nodes := make([]*syntax.Node, len(filenames))
-	for i, filename := range filenames {
-		nodes[i] = CreateMockNode(golang.FuncDecl, filename, i*20, (i+1)*20)
+	for idx, fname := range filenames {
+		step := 25
+		start := idx * step
+		nodes[idx] = CreateMockNode(golang.FuncDecl, fname, start, start+step)
 	}
 
 	return nodes

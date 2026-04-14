@@ -152,9 +152,7 @@ func writeFormatFile(
 
 	p := createPrinter(format, cfg.Threshold, cfg.DiffMode, metadata)(file, os.ReadFile)
 
-	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		jsonPrinter.SetFilesCount(parseStats.FilesCount)
-	}
+	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
 	// Create channel from matches for this printer
 	matchChan := make(chan syntax.Match)

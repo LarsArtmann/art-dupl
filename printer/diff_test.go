@@ -5,6 +5,32 @@ import (
 	"testing"
 )
 
+// assertLineCount checks that a slice has the expected number of lines.
+func assertLineCount(t *testing.T, actual, expected int, label string) {
+	t.Helper()
+	if actual != expected {
+		t.Errorf("Expected %d %s lines, got %d", expected, label, actual)
+	}
+}
+
+// assertCloneCount checks that the number of clones matches expectations.
+func assertCloneCount(t *testing.T, actual, expected int, label string) {
+	t.Helper()
+	if actual != expected {
+		t.Errorf("Expected %d %s, got %d", expected, label, actual)
+	}
+}
+
+// assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
+func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
+	t.Helper()
+	for i, line := range lines {
+		if line.LineNumber != i+1 {
+			t.Errorf("Expected %s line %d to have LineNumber %d, got %d", label, i, i+1, line.LineNumber)
+		}
+	}
+}
+
 func TestLineDiff_EqualContent(t *testing.T) {
 	base := []byte("line1\nline2\nline3")
 	compared := []byte("line1\nline2\nline3")
@@ -15,13 +41,9 @@ func TestLineDiff_EqualContent(t *testing.T) {
 		t.Error("Expected HasDiff to be false for identical content")
 	}
 
-	if len(result.Base) != 3 {
-		t.Errorf("Expected 3 base lines, got %d", len(result.Base))
-	}
-
-	if len(result.Compared) != 3 {
-		t.Errorf("Expected 3 compared lines, got %d", len(result.Compared))
-	}
+	// Verify line counts using a helper to avoid duplication
+	assertLineCount(t, len(result.Base), 3, "base")
+	assertLineCount(t, len(result.Compared), 3, "compared")
 
 	// All lines should be marked as equal
 	for i, line := range result.Base {
@@ -74,10 +96,7 @@ func TestLineDiff_AddedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for added content")
 	}
 
-	// Third line in compared should be marked as added
-	if len(result.Compared) != 3 {
-		t.Errorf("Expected 3 compared lines, got %d", len(result.Compared))
-	}
+	assertLineCount(t, len(result.Compared), 3, "compared")
 
 	if result.Compared[2].Type != DiffLineAdded {
 		t.Errorf("Expected compared line 2 to be Added, got %d", result.Compared[2].Type)
@@ -94,10 +113,7 @@ func TestLineDiff_RemovedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for removed content")
 	}
 
-	// Third line in base should be marked as removed
-	if len(result.Base) != 3 {
-		t.Errorf("Expected 3 base lines, got %d", len(result.Base))
-	}
+	assertLineCount(t, len(result.Base), 3, "base")
 
 	if result.Base[2].Type != DiffLineRemoved {
 		t.Errorf("Expected base line 2 to be Removed, got %d", result.Base[2].Type)
@@ -231,10 +247,7 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 		t.Errorf("Expected base filename to be file1.go, got %s", result.Base.Filename)
 	}
 
-	// Should have 2 other clones
-	if len(result.Others) != 2 {
-		t.Errorf("Expected 2 others, got %d", len(result.Others))
-	}
+	assertCloneCount(t, len(result.Others), 2, "others")
 
 	// Should detect differences
 	if !result.HasAnyDiff {
@@ -285,10 +298,7 @@ func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 		t.Fatal("Expected Base to not be nil")
 	}
 
-	// Should have no others
-	if len(result.Others) != 0 {
-		t.Errorf("Expected 0 others, got %d", len(result.Others))
-	}
+	assertCloneCount(t, len(result.Others), 0, "others")
 }
 
 func TestComputeCloneGroupDiff_EmptyClones(t *testing.T) {
@@ -397,23 +407,9 @@ func TestLineDiff_LineNumbers(t *testing.T) {
 
 	result := LineDiff(base, compared)
 
-	// Verify line numbers are preserved
-	for i, line := range result.Base {
-		if line.LineNumber != i+1 {
-			t.Errorf("Expected base line %d to have LineNumber %d, got %d", i, i+1, line.LineNumber)
-		}
-	}
-
-	for i, line := range result.Compared {
-		if line.LineNumber != i+1 {
-			t.Errorf(
-				"Expected compared line %d to have LineNumber %d, got %d",
-				i,
-				i+1,
-				line.LineNumber,
-			)
-		}
-	}
+	// Verify line numbers are preserved using helper function
+	assertLineNumbersMonotonic(t, result.Base, "base")
+	assertLineNumbersMonotonic(t, result.Compared, "compared")
 }
 
 func TestLineDiff_ContentPreservation(t *testing.T) {

@@ -138,7 +138,9 @@ func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) er
 		return err
 	}
 
-	clones, err := prepareClonesInfo(p.ReadFile, dups)
+	sortedDups := SortNodesByCriteria(dups, sortBy)
+
+	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {
 		return fmt.Errorf(
 			"failed to prepare clones info for sorted output (%d duplicates): %w",
@@ -146,13 +148,6 @@ func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) er
 			err,
 		)
 	}
-
-	// Apply sorting based on criteria
-	_ = SortNodesByCriteria(dups, sortBy) // Sorting applied, result not needed for this output
-
-	sort.Slice(clones, func(i, j int) bool {
-		return len(dups[i]) > len(dups[j])
-	})
 
 	return p.printCloneList(clones)
 }

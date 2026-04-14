@@ -20,6 +20,22 @@ func testCloneGroup(filenames ...string) domain.CloneGroup {
 	return domain.CloneGroup{Clones: clones}
 }
 
+// assertCloneCount verifies the number of clones in a CloneGroup.
+func assertCloneCount(t *testing.T, group domain.CloneGroup, expected int) {
+	t.Helper()
+	if len(group.Clones) != expected {
+		t.Errorf("Expected %d clones, got %d", expected, len(group.Clones))
+	}
+}
+
+// assertTotalClones verifies the total clone count in an analysis.
+func assertTotalClones(t *testing.T, analysis *domain.Analysis, expected domain.CloneCount) {
+	t.Helper()
+	if analysis.Stats.TotalClones != expected {
+		t.Errorf("Expected %d total clones, got %d", expected, analysis.Stats.TotalClones)
+	}
+}
+
 // createTestCloneGroup creates a standardized CloneGroup with 3 clones for testing.
 func createTestCloneGroup(id string, size int, severity domain.CloneSeverity) domain.CloneGroup {
 	return domain.CloneGroup{
@@ -263,9 +279,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 		group := CloneGroupFromNodes("group-1", nodes)
 
 		// Should handle empty groups gracefully
-		if len(group.Clones) != 0 {
-			t.Errorf("Expected 0 clones, got %d", len(group.Clones))
-		}
+		assertCloneCount(t, group, 0)
 	})
 
 	t.Run("mixed empty and filled groups", func(t *testing.T) {
@@ -278,9 +292,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 		group := CloneGroupFromNodes("group-1", nodes)
 
 		// Should only include non-empty groups
-		if len(group.Clones) != 1 {
-			t.Errorf("Expected 1 clone, got %d", len(group.Clones))
-		}
+		assertCloneCount(t, group, 1)
 	})
 
 	t.Run("severity calculation", func(t *testing.T) {
@@ -305,9 +317,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 		group := CloneGroupFromNodes("group-1", nodes)
 
 		// Should have 2 clones
-		if len(group.Clones) != 2 {
-			t.Errorf("Expected 2 clones, got %d", len(group.Clones))
-		}
+		assertCloneCount(t, group, 2)
 	})
 }
 
@@ -337,10 +347,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 		analysis := CreateAnalysisFromClones(groups, 20)
 
 		assertAnalysisThresholdAndCloneGroups(t, &analysis, 20, 2)
-
-		if analysis.Stats.TotalClones != 3 {
-			t.Errorf("Expected 3 total clones, got %d", analysis.Stats.TotalClones)
-		}
+		assertTotalClones(t, &analysis, 3)
 
 		if analysis.Stats.TotalTokenSize != 300 {
 			t.Errorf("Expected 300 total token size, got %d", analysis.Stats.TotalTokenSize)
@@ -359,9 +366,7 @@ func TestCreateAnalysisFromClones(t *testing.T) {
 
 		analysis := CreateAnalysisFromClones(groups, 15)
 
-		if analysis.Stats.TotalClones != 3 {
-			t.Errorf("Expected 3 total clones, got %d", analysis.Stats.TotalClones)
-		}
+		assertTotalClones(t, &analysis, 3)
 
 		if analysis.Stats.FilesAnalyzed == 0 {
 			t.Error("Expected files analyzed to be calculated")

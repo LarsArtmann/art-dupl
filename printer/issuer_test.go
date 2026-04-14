@@ -42,11 +42,11 @@ func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
 
 // createIssuerReadFile creates a ReadFile that returns content matching positions.
 func createIssuerReadFile() ReadFile {
-	// Return content that's at least as long as the largest End position
 	content := "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\n"
+	data := []byte(content)
 
-	return func(filename string) ([]byte, error) {
-		return []byte(content), nil
+	return func(path string) ([]byte, error) {
+		return data, nil
 	}
 }
 

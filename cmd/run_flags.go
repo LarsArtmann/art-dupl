@@ -279,9 +279,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		os.ReadFile,
 	)
 
-	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
-		jsonPrinter.SetFilesCount(parseStats.FilesCount)
-	}
+	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
@@ -307,4 +305,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+// setJSONPrinterFilesCount sets the files count on a JSON printer if the printer is a JSON printer.
+func setJSONPrinterFilesCount(p printer.Printer, filesCount int) {
+	if jsonPrinter, ok := p.(*printer.JSONPrinter); ok {
+		jsonPrinter.SetFilesCount(filesCount)
+	}
 }

@@ -24,7 +24,10 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(deepDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
-		g.Expect(os.WriteFile(goModPath, []byte("module test"), 0o644)).To(gomega.Succeed())
+		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
+		if err != nil {
+			t.Fatalf("failed to write go.mod: %v", err)
+		}
 
 		foundRoot, err := FindProjectRoot(deepDir, []string{"go.mod"})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
@@ -78,7 +81,10 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
-		g.Expect(os.WriteFile(goModPath, []byte("module test"), 0o644)).To(gomega.Succeed())
+		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
+		if err != nil {
+			t.Fatalf("failed to write go.mod: %v", err)
+		}
 
 		gitDir := filepath.Join(rootDir, ".git")
 		g.Expect(os.Mkdir(gitDir, 0o755)).To(gomega.Succeed())
@@ -111,7 +117,10 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.Mkdir(rootDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
-		g.Expect(os.WriteFile(goModPath, []byte("module test"), 0o644)).To(gomega.Succeed())
+		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
+		if err != nil {
+			t.Fatalf("failed to write go.mod: %v", err)
+		}
 
 		foundRoot, err := FindProjectRoot(rootDir, []string{"go.mod"})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
@@ -139,7 +148,10 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
-		g.Expect(os.WriteFile(goModPath, []byte("module test"), 0o644)).To(gomega.Succeed())
+		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
+		if err != nil {
+			t.Fatalf("failed to write go.mod: %v", err)
+		}
 
 		absSubDir, err := filepath.Abs(subDir)
 		g.Expect(err).ToNot(gomega.HaveOccurred())
