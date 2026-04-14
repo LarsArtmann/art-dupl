@@ -281,12 +281,9 @@ func TestCollectMatches(t *testing.T) {
 
 	t.Run("multiple matches", func(t *testing.T) {
 		ch := make(chan syntax.Match, 3)
-		ch <- syntax.Match{Hash: "hash1", Frags: [][]*syntax.Node{{{Filename: "test1.go"}}}}
-
-		ch <- syntax.Match{Hash: "hash2", Frags: [][]*syntax.Node{{{Filename: "test2.go"}}}}
-
-		ch <- syntax.Match{Hash: "hash3", Frags: [][]*syntax.Node{{{Filename: "test3.go"}}}}
-
+		ch <- testutil.CreateMatch("hash1", "test1.go")
+		ch <- testutil.CreateMatch("hash2", "test2.go")
+		ch <- testutil.CreateMatch("hash3", "test3.go")
 		close(ch)
 
 		result := collectMatches(ch)
