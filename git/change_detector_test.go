@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // assertSingleChange asserts that changes has exactly 1 item and verifies its status.
@@ -110,9 +112,7 @@ func assertNoChanges(t *testing.T, repoDir, since string) {
 		t.Fatalf("GetChangedFiles failed: %v", err)
 	}
 
-	if len(changes) != 0 {
-		t.Errorf("Expected 0 changes, got %d", len(changes))
-	}
+	testutil.AssertCount(t, len(changes), 0, "changes")
 }
 
 // TestNewChangeDetector tests ChangeDetector creation.
@@ -189,9 +189,7 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetChangedFiles("HEAD")
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetChangedFiles")
 	})
 
 	t.Run("no changes", func(t *testing.T) { testNoChanges(t, "HEAD") })
@@ -223,9 +221,7 @@ func TestChangeDetector_GetChangedGoFiles(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetChangedGoFiles("HEAD")
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetChangedGoFiles")
 	})
 
 	t.Run("filters only go files", func(t *testing.T) {
@@ -245,9 +241,7 @@ func TestChangeDetector_GetChangedGoFiles(t *testing.T) {
 			t.Fatalf("GetChangedGoFiles failed: %v", err)
 		}
 
-		if len(changes) != 1 {
-			t.Errorf("Expected 1 Go file change, got %d", len(changes))
-		}
+		testutil.AssertCount(t, len(changes), 1, "Go file changes")
 
 		if changes[0].Path != "file.go" {
 			t.Errorf("Expected file.go, got %q", changes[0].Path)
@@ -262,9 +256,7 @@ func TestChangeDetector_GetStagedFiles(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetStagedFiles()
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetStagedFiles")
 	})
 
 	t.Run("with staged files", func(t *testing.T) {
@@ -288,9 +280,7 @@ func TestChangeDetector_GetStagedFiles(t *testing.T) {
 			t.Fatalf("GetStagedFiles failed: %v", err)
 		}
 
-		if len(changes) != 1 {
-			t.Errorf("Expected 1 staged file, got %d", len(changes))
-		}
+		testutil.AssertCount(t, len(changes), 1, "staged files")
 	})
 }
 
@@ -301,9 +291,7 @@ func TestChangeDetector_GetUnstagedFiles(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetUnstagedFiles()
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetUnstagedFiles")
 	})
 
 	t.Run("with unstaged modifications", func(t *testing.T) {
@@ -320,9 +308,7 @@ func TestChangeDetector_GetUnstagedFiles(t *testing.T) {
 			t.Fatalf("GetUnstagedFiles failed: %v", err)
 		}
 
-		if len(changes) != 1 {
-			t.Errorf("Expected 1 unstaged file, got %d", len(changes))
-		}
+		testutil.AssertCount(t, len(changes), 1, "unstaged files")
 	})
 }
 
@@ -333,9 +319,7 @@ func TestChangeDetector_GetUntrackedFiles(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetUntrackedFiles()
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetUntrackedFiles")
 	})
 
 	t.Run("with untracked files", func(t *testing.T) {
@@ -363,9 +347,7 @@ func TestChangeDetector_GetAllChanges(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetAllChanges()
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetAllChanges")
 	})
 
 	t.Run("combines all changes", func(t *testing.T) {
@@ -389,9 +371,7 @@ func TestChangeDetector_GetAllChanges(t *testing.T) {
 			t.Fatalf("GetAllChanges failed: %v", err)
 		}
 		// Should have at least the staged and untracked files
-		if len(changes) < 2 {
-			t.Errorf("Expected at least 2 changes, got %d", len(changes))
-		}
+		testutil.AssertIntInRange(t, len(changes), 2, 99999999, "changes")
 	})
 }
 
@@ -402,9 +382,7 @@ func TestChangeDetector_GetCurrentBranch(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetCurrentBranch()
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetCurrentBranch")
 	})
 
 	t.Run("in git repo with commits", func(t *testing.T) {
@@ -431,9 +409,7 @@ func TestChangeDetector_GetMergeBase(t *testing.T) {
 		detector := NewChangeDetector(tempDir)
 
 		_, err := detector.GetMergeBase("main")
-		if !errors.Is(err, ErrNotGitRepo) {
-			t.Errorf("Expected ErrNotGitRepo, got %v", err)
-		}
+		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetMergeBase")
 	})
 }
 
@@ -441,9 +417,7 @@ func TestChangeDetector_GetMergeBase(t *testing.T) {
 func TestDeduplicateChanges(t *testing.T) {
 	t.Run("empty slice", func(t *testing.T) {
 		result := deduplicateChanges(nil)
-		if len(result) != 0 {
-			t.Errorf("Expected 0 results, got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 0, "results")
 	})
 
 	t.Run("no duplicates", func(t *testing.T) {
@@ -453,9 +427,7 @@ func TestDeduplicateChanges(t *testing.T) {
 		}
 
 		result := deduplicateChanges(changes)
-		if len(result) != 2 {
-			t.Errorf("Expected 2 results, got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 2, "results")
 	})
 
 	t.Run("with duplicates", func(t *testing.T) {
@@ -466,9 +438,7 @@ func TestDeduplicateChanges(t *testing.T) {
 		}
 
 		result := deduplicateChanges(changes)
-		if len(result) != 2 {
-			t.Errorf("Expected 2 results (deduplicated), got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 2, "deduplicated results")
 	})
 
 	t.Run("preserves first occurrence", func(t *testing.T) {
@@ -488,9 +458,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 
 	t.Run("empty output", func(t *testing.T) {
 		result := detector.parseDiffOutput([]byte{})
-		if len(result) != 0 {
-			t.Errorf("Expected 0 results, got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 0, "results")
 	})
 
 	t.Run("single modified file", func(t *testing.T) {
@@ -508,9 +476,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("M\tfile1.go\nA\tfile2.go\nD\tfile3.go\n")
 
 		result := detector.parseDiffOutput(output)
-		if len(result) != 3 {
-			t.Fatalf("Expected 3 results, got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 3, "results")
 
 		if result[0].Status != "M" || result[1].Status != "A" || result[2].Status != "D" {
 			t.Error("Status parsing failed")
@@ -521,9 +487,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("R100\told.go\tnew.go\n")
 
 		result := detector.parseDiffOutput(output)
-		if len(result) != 1 {
-			t.Fatalf("Expected 1 result, got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 1, "results")
 		// Should use the new path (second path)
 		if result[0].Path != "new.go" {
 			t.Errorf("Expected path new.go, got %q", result[0].Path)
@@ -534,9 +498,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("M\tfile.go\ninvalid\nA\tfile2.go\n")
 
 		result := detector.parseDiffOutput(output)
-		if len(result) != 2 {
-			t.Errorf("Expected 2 results (invalid line ignored), got %d", len(result))
-		}
+		testutil.AssertCount(t, len(result), 2, "results (invalid line ignored)")
 	})
 }
 

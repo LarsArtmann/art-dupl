@@ -3,6 +3,7 @@ package printer
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -62,9 +63,7 @@ func TestMakeIssues_NoBidirectionalPairs(t *testing.T) {
 	}
 
 	// With 2 clones, we should get exactly 1 issue (not 2 bidirectional)
-	if len(issues) != 1 {
-		t.Errorf("MakeIssues() returned %d issues, want 1", len(issues))
-	}
+	testutil.AssertCount(t, len(issues), 1, "MakeIssues()")
 }
 
 func TestMakeIssues_ThreeClones(t *testing.T) {
@@ -79,9 +78,7 @@ func TestMakeIssues_ThreeClones(t *testing.T) {
 
 	// With 3 clones, we should get exactly 2 issues (a→b, a→c)
 	// NOT 3 issues with circular wrapping (a→b, b→c, c→a)
-	if len(issues) != 2 {
-		t.Errorf("MakeIssues() returned %d issues, want 2", len(issues))
-	}
+	testutil.AssertCount(t, len(issues), 2, "MakeIssues()")
 
 	// All issues should have the first clone (a.go) as From
 	assertFromFilename(t, issues, "a.go")
@@ -101,9 +98,7 @@ func TestMakeIssues_SingleClone(t *testing.T) {
 		t.Fatalf("MakeIssues() error = %v", err)
 	}
 
-	if len(issues) != 0 {
-		t.Errorf("MakeIssues() returned %d issues, want 0 for single clone", len(issues))
-	}
+	testutil.AssertCount(t, len(issues), 0, "MakeIssues() for single clone")
 }
 
 func TestMakeIssues_SortedByFilename(t *testing.T) {
@@ -135,9 +130,7 @@ func TestMakeIssues_FourClones(t *testing.T) {
 	}
 
 	// With 4 clones, we should get exactly 3 issues (a→b, a→c, a→d)
-	if len(issues) != 3 {
-		t.Errorf("MakeIssues() returned %d issues, want 3", len(issues))
-	}
+	testutil.AssertCount(t, len(issues), 3, "MakeIssues()")
 
 	// All issues should have the first clone (a.go) as From
 	assertFromFilename(t, issues, "a.go")

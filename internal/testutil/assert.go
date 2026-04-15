@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -88,6 +89,15 @@ func AssertError(t *testing.T, err error, what string) {
 
 	if err == nil {
 		t.Errorf("%s: expected error, got nil", what)
+	}
+}
+
+// AssertErrorIs asserts that err wraps the expected error.
+func AssertErrorIs(t *testing.T, err error, want error, what string) {
+	t.Helper()
+
+	if !errors.Is(err, want) {
+		t.Errorf("%s: error %v does not wrap %v", what, err, want)
 	}
 }
 

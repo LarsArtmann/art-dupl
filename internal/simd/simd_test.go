@@ -313,9 +313,7 @@ func TestUnsafeSlice(t *testing.T) {
 
 		slice := UnsafeSlice[uint32](data)
 		// If we get here, it handled empty slice
-		if len(slice) != 0 {
-			t.Errorf("UnsafeSlice() length = %d, want 0", len(slice))
-		}
+		assertSliceLength(t, slice, 0)
 	})
 
 	t.Run("odd length", func(t *testing.T) {
@@ -323,9 +321,7 @@ func TestUnsafeSlice(t *testing.T) {
 		data := []byte{0x01, 0x02, 0x03, 0x04, 0x05}
 		slice := UnsafeSlice[uint32](data)
 
-		if len(slice) != 1 {
-			t.Errorf("UnsafeSlice() length = %d, want 1", len(slice))
-		}
+		assertSliceLength(t, slice, 1)
 	})
 }
 
@@ -406,30 +402,22 @@ func TestUnsafeOperations_TypeSizes(t *testing.T) {
 	// Test different type sizes
 	t.Run("uint8", func(t *testing.T) {
 		slice := UnsafeSlice[uint8](data)
-		if len(slice) != 16 {
-			t.Errorf("uint8 slice length = %d, want 16", len(slice))
-		}
+		assertSliceLength(t, slice, 16)
 	})
 
 	t.Run("uint16", func(t *testing.T) {
 		slice := UnsafeSlice[uint16](data)
-		if len(slice) != 8 {
-			t.Errorf("uint16 slice length = %d, want 8", len(slice))
-		}
+		assertSliceLength(t, slice, 8)
 	})
 
 	t.Run("uint32", func(t *testing.T) {
 		slice := UnsafeSlice[uint32](data)
-		if len(slice) != 4 {
-			t.Errorf("uint32 slice length = %d, want 4", len(slice))
-		}
+		assertSliceLength(t, slice, 4)
 	})
 
 	t.Run("uint64", func(t *testing.T) {
 		slice := UnsafeSlice[uint64](data)
-		if len(slice) != 2 {
-			t.Errorf("uint64 slice length = %d, want 2", len(slice))
-		}
+		assertSliceLength(t, slice, 2)
 	})
 }
 

@@ -258,13 +258,3 @@ func MarshalJSONForInterface[T EnumType](value T, typeName string) ([]byte, erro
 func ValidateEnum[T ~string](value T, validValues ...T) bool {
 	return slices.Contains(validValues, value)
 }
-
-// EnumNames returns string names of enum values.
-func EnumNames[T ~string](enums ...T) []string {
-	names := make([]string, 0, len(enums))
-	for _, e := range enums {
-		names = append(names, string(e))
-	}
-
-	return names
-}

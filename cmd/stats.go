@@ -2,12 +2,9 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/cli"
-	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
@@ -32,7 +29,7 @@ func NewStatsCommand() *cobra.Command {
 	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
 	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	cmd.Flags().
-		IntP("threshold", "t", cli.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
+		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	cmd.Flags().
 		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
@@ -65,38 +62,7 @@ func NewStatsCommand() *cobra.Command {
 //nolint:gocognit,gocyclo,cyclop,funlen,maintidx // Stats command requires handling many CLI flags and configuration options
 func runStats(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
-	configFile, _ := cmd.Flags().GetString("config")
-	vendor, _ := cmd.Flags().GetBool("vendor")
-	verbose, _ := cmd.Flags().GetBool("verbose")
-	threshold, _ := cmd.Flags().GetInt("threshold")
-	files, _ := cmd.Flags().GetBool("files")
-	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
-	profile, _ := cmd.Flags().GetBool("profile")
-	timeoutStr, _ := cmd.Flags().GetString("timeout")
-	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
-	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
-	includeTempl, _ := cmd.Flags().GetBool("include-templ")
-	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
-	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 	formatStr, _ := cmd.Flags().GetString("format")
-	semantic, _ := cmd.Flags().GetBool("semantic")
-	structural, _ := cmd.Flags().GetBool("structural")
-
-	// Validate conflicting flags - only an error if both are explicitly set
-	if semantic && structural {
-		return duplerrors.NewValidationError(
-			"cannot use both --semantic and --structural flags; these are mutually exclusive",
-			nil,
-		)
-	}
-
-	// Warn about --structural flag (opt-out from recommended default)
-	if structural {
-		fmt.Fprintf(
-			os.Stderr,
-			"Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n",
-		)
-	}
 
 	// Parse and validate format
 	format, err := printer.ParseFormat(formatStr)
@@ -104,93 +70,9 @@ func runStats(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, "invalid format value")
 	}
 
-	fileConfig, err := config.LoadOptionalConfig(configFile)
+	mergedConfig, err := BuildConfigFromFlags(cmd, args)
 	if err != nil {
-		return duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", configFile))
-	}
-
-	appConfig := &config.Config{}
-
-	if verbose {
-		appConfig.Verbose = true
-	}
-
-	if err := setDetectionMethods(appConfig, detectionMethods); err != nil {
 		return err
-	}
-
-	if threshold != cli.DefaultThreshold {
-		appConfig.Threshold = threshold
-	}
-
-	if vendor {
-		appConfig.IncludeVendor = vendor
-	}
-
-	if files {
-		appConfig.FilesFromStdin = files
-	}
-
-	if profile {
-		appConfig.Profile = true
-	}
-
-	// Parse timeout duration
-	if timeoutStr != "30m" && timeoutStr != "" {
-		duration, err := parseDuration(timeoutStr)
-		if err != nil {
-			return duplerrors.WrapValidation(
-				err,
-				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", timeoutStr),
-			)
-		}
-
-		appConfig.Timeout = int(duration.Seconds())
-	}
-
-	// Set filter configuration
-	if filterGenerated {
-		appConfig.FilterGenerated = true
-	}
-
-	if includeSQLC {
-		appConfig.IncludeSQLC = true
-	}
-
-	if includeTempl {
-		appConfig.IncludeTempl = true
-	}
-
-	if len(includePatterns) > 0 {
-		appConfig.IncludePatterns = includePatterns
-	}
-
-	if len(excludePatterns) > 0 {
-		appConfig.ExcludePatterns = excludePatterns
-	}
-
-	if semantic {
-		appConfig.Semantic = true
-	}
-	// Note: structural handling moved to after merge to properly override the true default
-
-	if len(args) > 0 {
-		appConfig.Paths = args
-	}
-
-	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
-
-	// Handle --structural flag to explicitly disable semantic detection (opt-out from default)
-	if structural {
-		mergedConfig.Semantic = false
-	}
-
-	err = config.ValidateConfig(mergedConfig)
-	if err != nil {
-		return duplerrors.WrapValidation(
-			err,
-			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
-		)
 	}
 
 	// Add timeout context if specified

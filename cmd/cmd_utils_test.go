@@ -259,9 +259,7 @@ func TestCollectMatches(t *testing.T) {
 		close(ch)
 
 		result := collectMatches(ch)
-		if len(result) != 0 {
-			t.Errorf("collectMatches() returned %d matches, want 0", len(result))
-		}
+		testutil.AssertCount(t, len(result), 0, "collectMatches()")
 	})
 
 	t.Run("single match", func(t *testing.T) {
@@ -274,9 +272,7 @@ func TestCollectMatches(t *testing.T) {
 		close(ch)
 
 		result := collectMatches(ch)
-		if len(result) != 1 {
-			t.Errorf("collectMatches() returned %d matches, want 1", len(result))
-		}
+		testutil.AssertCount(t, len(result), 1, "collectMatches()")
 	})
 
 	t.Run("multiple matches", func(t *testing.T) {
@@ -291,9 +287,7 @@ func TestCollectMatches(t *testing.T) {
 		close(ch)
 
 		result := collectMatches(ch)
-		if len(result) != 3 {
-			t.Errorf("collectMatches() returned %d matches, want 3", len(result))
-		}
+		testutil.AssertCount(t, len(result), 3, "collectMatches()")
 	})
 }
 

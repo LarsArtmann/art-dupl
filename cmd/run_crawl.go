@@ -170,8 +170,7 @@ func crawlDirectoryWithOpts(opts CrawlOptions, path string) {
 		return handleWalkEntry(opts, p, info)
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: cannot walk %s: %v\n", path, err)
-		os.Exit(1)
+		statError(path, err)
 	}
 }
 

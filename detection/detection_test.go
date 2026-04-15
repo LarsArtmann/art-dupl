@@ -6,6 +6,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -760,9 +761,7 @@ func TestLegacyDetector_FindLegacyInFile_EmptyFile(t *testing.T) {
 
 	issues := detector.findLegacyInFile(testFile, nodes)
 
-	if len(issues) != 0 {
-		t.Errorf("Expected no issues for empty file, got %d", len(issues))
-	}
+	testutil.AssertCount(t, len(issues), 0, "issues for empty file")
 }
 
 // setupTodoTest creates a temporary test file with a TODO comment and returns

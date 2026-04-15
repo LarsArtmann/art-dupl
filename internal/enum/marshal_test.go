@@ -331,7 +331,7 @@ func TestValidateEnum(t *testing.T) {
 
 func TestEnumNames(t *testing.T) {
 	enums := []testEnum{testEnumA, testEnumB, testEnumC}
-	result := EnumNames(enums...)
+	result := EnumToStringSlice(enums...)
 
 	expected := []string{"alpha", "beta", "gamma"}
 	assertStringSliceEqual(t, result, expected)
