@@ -920,9 +920,15 @@ func registerBasicUintConstructorTest[T any](
 		},
 	)
 	tests = append(tests, extraTests...)
-	runConstructorTestsWithConverter(t, constructorName, tests, constructorFunc, func(input any) uint {
-		return input.(uint)
-	})
+	runConstructorTestsWithConverter(
+		t,
+		constructorName,
+		tests,
+		constructorFunc,
+		func(input any) uint {
+			return input.(uint)
+		},
+	)
 }
 
 // registerStringConstructorTest creates and runs tests for a string-based constructor.
@@ -935,9 +941,15 @@ func registerStringConstructorTest[T comparable](
 	constructorFunc func(string) (T, error),
 ) {
 	t.Helper()
-	runConstructorTestsWithConverter(t, constructorName, tests, constructorFunc, func(input any) string {
-		return input.(string)
-	})
+	runConstructorTestsWithConverter(
+		t,
+		constructorName,
+		tests,
+		constructorFunc,
+		func(input any) string {
+			return input.(string)
+		},
+	)
 }
 
 // registerBasicStringConstructorTest creates and runs basic tests for a string-based constructor.

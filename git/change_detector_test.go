@@ -11,7 +11,12 @@ import (
 )
 
 // assertSingleChange asserts that changes has exactly 1 item and verifies its status.
-func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, changeType string, expectedPath ...string) {
+func assertSingleChange(
+	t *testing.T,
+	changes []ChangeInfo,
+	expectedStatus, changeType string,
+	expectedPath ...string,
+) {
 	t.Helper()
 
 	if len(changes) != 1 {

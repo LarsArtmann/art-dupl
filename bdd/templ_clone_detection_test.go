@@ -60,7 +60,11 @@ templ %s(%s string) {
 
 	// buttonTemplCode returns a standardized button component template
 	buttonTemplCode := func(componentName, paramName string) string {
-		return createTemplComponent(componentName, paramName, `<button type="button" class="btn">\n\t\t{ %s }\n\t</button>`)
+		return createTemplComponent(
+			componentName,
+			paramName,
+			`<button type="button" class="btn">\n\t\t{ %s }\n\t</button>`,
+		)
 	}
 
 	// inputTemplCode returns a standardized input field component template
