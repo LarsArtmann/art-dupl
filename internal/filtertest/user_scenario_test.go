@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 func writeFile(t *testing.T, path, content string) {
@@ -165,7 +165,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	writeFile(t, filepath.Join(repoDir, "mock_repository.go"), mockRepo)
 
 	// Test FindSQLCConfigs finds the config
-	configs, err := filter.FindSQLCConfigs([]string{tmpDir})
+	configs, err := gogenfilter.FindSQLCConfigs([]string{tmpDir})
 	if err != nil {
 		t.Fatalf("FindSQLCConfigs failed: %v", err)
 	}
@@ -175,7 +175,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Test GetSQLOutputDirs extracts correct output directories
-	outputDirs, err := filter.GetSQLOutputDirs([]string{tmpDir})
+	outputDirs, err := gogenfilter.GetSQLOutputDirs([]string{tmpDir})
 	if err != nil {
 		t.Fatalf("GetSQLOutputDirs failed: %v", err)
 	}
@@ -192,7 +192,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Test that filter correctly identifies SQLC files
-	fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterSQLC})
+	fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterSQLC})
 
 	// SQLC files should be filtered
 	if !fltr.ShouldFilter(filepath.Join(queriesDir, "articles.sql.go")) {
@@ -251,7 +251,7 @@ type User struct {
 	writeFile(t, sqlcFilePath, sqlcFile)
 
 	// Test GetSQLOutputDirs finds the nested directory
-	outputDirs, err := filter.GetSQLOutputDirs([]string{tmpDir})
+	outputDirs, err := gogenfilter.GetSQLOutputDirs([]string{tmpDir})
 	if err != nil {
 		t.Fatalf("GetSQLOutputDirs failed: %v", err)
 	}
@@ -262,7 +262,7 @@ type User struct {
 	}
 
 	// Test filter recognizes SQLC files by both name and content
-	fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterSQLC})
+	fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterSQLC})
 	if !fltr.ShouldFilter(sqlcFilePath) {
 		t.Error("users.sql.go in SQLC output directory should be filtered")
 	}
@@ -307,7 +307,7 @@ type User struct {
 	writeFile(t, sqlcFilePath, sqlcFile)
 
 	// Test that FindSQLCConfigs finds sqlc.yaml even when analyzing subdirectory
-	configs, err := filter.FindSQLCConfigs([]string{subDir})
+	configs, err := gogenfilter.FindSQLCConfigs([]string{subDir})
 	if err != nil {
 		t.Fatalf("FindSQLCConfigs failed: %v", err)
 	}
@@ -317,7 +317,7 @@ type User struct {
 	}
 
 	// Test that output directory is correct (relative to project root)
-	outputDirs, err := filter.GetSQLOutputDirs([]string{subDir})
+	outputDirs, err := gogenfilter.GetSQLOutputDirs([]string{subDir})
 	if err != nil {
 		t.Fatalf("GetSQLOutputDirs failed: %v", err)
 	}

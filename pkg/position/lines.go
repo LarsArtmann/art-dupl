@@ -8,44 +8,26 @@ import (
 
 // ByteRangeToLines converts byte positions to line numbers.
 // Returns (startLine, endLine) where both are 1-indexed.
-// Handles edge cases where positions are at file boundaries.
+// The end position is exclusive (past-the-end), matching Go AST conventions.
 func ByteRangeToLines(content []byte, start, end int) (int, int) {
 	if len(content) == 0 {
 		return 1, 1
 	}
 
-	// Handle same position (single point) - both start and end are the same
 	if start == end {
-		return offsetToLine(content, start), offsetToLine(content, end)
+		line := offsetToLine(content, start)
+		return line, line
 	}
 
-	line := 1
-	lineStart, lineEnd := 0, 0
+	lineStart := offsetToLine(content, start)
 
-	for offset := range content {
-		if content[offset] == '\n' {
-			line++
-		}
-
-		if offset == start {
-			lineStart = line
-		}
-
-		if offset == end-1 {
-			lineEnd = line
-
-			break
-		}
+	// end is exclusive; the last byte in the range is at end-1
+	lastByte := end - 1
+	if lastByte < start {
+		lastByte = start
 	}
 
-	// Default values if positions were not found
-	if lineStart == 0 {
-		lineStart = 1
-	}
-
-	if lineEnd == 0 {
-		lineEnd = lineStart
-	}
+	lineEnd := offsetToLine(content, lastByte)
 
 	return lineStart, lineEnd
 }

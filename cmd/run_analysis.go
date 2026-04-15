@@ -11,7 +11,7 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -44,7 +44,7 @@ type buildParams struct {
 	ctx          context.Context
 	paths        []string
 	cfg          *config.Config
-	filterParam  *filter.Filter
+	filterParam  *gogenfilter.Filter
 	outputFormat config.OutputFormat
 }
 
@@ -157,31 +157,44 @@ func verboseFprintf(cfg *config.Config, msg string) {
 }
 
 // setupFilter creates a filter based on config settings.
-func setupFilter(cfg *config.Config) *filter.Filter {
-	var filterOptions []filter.FilterOption
+func setupFilter(cfg *config.Config) *gogenfilter.Filter {
+	var filterOptions []gogenfilter.FilterOption
 
-	// Filter sqlc files by default (filename-based detection is very fast)
-	// User can opt-out with --include-sqlc
 	if !cfg.IncludeSQLC {
-		filterOptions = append(filterOptions, filter.FilterSQLC)
-		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (sqlc)")
+		filterOptions = append(filterOptions, gogenfilter.FilterSQLC)
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (sqlc)")
 	}
 
 	// Filter templ files by default (filename-based detection is very fast)
 	// User can opt-out with --include-templ
 	if !cfg.IncludeTempl {
-		filterOptions = append(filterOptions, filter.FilterTempl)
-		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (templ)")
+		filterOptions = append(filterOptions, gogenfilter.FilterTempl)
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (templ)")
+	}
+
+	if !cfg.IncludeProtobuf {
+		filterOptions = append(filterOptions, gogenfilter.FilterProtobuf)
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (protobuf)")
+	}
+
+	if !cfg.IncludeMockgen {
+		filterOptions = append(filterOptions, gogenfilter.FilterMockgen)
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (mockgen)")
+	}
+
+	if !cfg.IncludeStringer {
+		filterOptions = append(filterOptions, gogenfilter.FilterStringer)
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (stringer)")
 	}
 
 	// Create the filter if there are any options or include/exclude patterns
 	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
 		len(cfg.IgnoreFiles) > 0 {
-		filterParam := filter.NewFilter(true, filterOptions)
+		filterParam := gogenfilter.NewFilter(true, filterOptions)
 		filterParam.WithIncludePatterns(cfg.IncludePatterns)
 		// IgnoreFiles are treated as exclude patterns
 		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
-		verboseFprintf(cfg, "🔍 Auto-generated code filtering enabled (templ files filtered by default)")
+		verboseFprintf(cfg, "Auto-generated code filtering enabled")
 
 		return filterParam
 	}
@@ -195,7 +208,7 @@ func executeAnalysis(
 	cfg *config.Config,
 	paths []string,
 	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error) {
 	var startProfile job.ProfileResult
 	if cfg.Profile {
 		startProfile = job.StartProfile()
@@ -207,7 +220,7 @@ func executeAnalysis(
 	filterParam := setupFilter(cfg)
 
 	// Get filter statistics if filter was enabled
-	var filterStats filter.FilterStats
+	var filterStats gogenfilter.FilterStats
 	if filterParam != nil {
 		filterStats = filterParam.GetStats()
 	}
@@ -225,7 +238,7 @@ func executeAnalysis(
 		outputFormat: outputFormat,
 	})
 	if result.err != nil {
-		return nil, job.ParseStats{}, filter.FilterStats{}, duplerrors.Wrap(
+		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
 			result.err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf("failed to build suffix tree for paths %v", paths),
@@ -323,9 +336,9 @@ func executeHashOnlyAnalysis(
 	ctx context.Context,
 	cfg *config.Config,
 	paths []string,
-	filterParam *filter.Filter,
+	filterParam *gogenfilter.Filter,
 	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, filter.FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error) {
 	printBuildingStatus(
 		cfg,
 		outputFormat,
@@ -352,7 +365,7 @@ func executeHashOnlyAnalysis(
 	// file count before streaming results downstream.
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
-		return nil, job.ParseStats{}, filter.FilterStats{}, err
+		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, err
 	}
 
 	printFileCollectionStatus(cfg, outputFormat, len(files))
@@ -363,7 +376,7 @@ func executeHashOnlyAnalysis(
 
 	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
 
-	var filterStats filter.FilterStats
+	var filterStats gogenfilter.FilterStats
 	if filterParam != nil {
 		filterStats = filterParam.GetStats()
 	}

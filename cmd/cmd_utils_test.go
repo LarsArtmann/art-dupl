@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -487,7 +487,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 	}
 
 	t.Run("crawls all files with nil check", func(t *testing.T) {
-		f := filter.NewFilter(false, nil)
+		f := gogenfilter.NewFilter(false, nil)
 		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
 
 		// Should find all 3 files
@@ -507,7 +507,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	f := filter.NewFilter(false, nil)
+	f := gogenfilter.NewFilter(false, nil)
 	fchan := make(chan string, 10)
 
 	crawlSinglePathWithOpts(CrawlOptions{
@@ -576,7 +576,7 @@ func TestHandleWalkEntry(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := filter.NewFilter(false, nil)
+			f := gogenfilter.NewFilter(false, nil)
 			fchan := make(chan string, 1)
 
 			err := handleWalkEntry(CrawlOptions{

@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 // detectionMethodsToString converts detection methods to a comma-separated string.
@@ -36,6 +36,6 @@ func detectionMethodsToStringSlice(methods config.DetectionMethods) []string {
 }
 
 // shouldIncludeFile returns true if the file should be included (not filtered).
-func shouldIncludeFile(f *filter.Filter, path string) bool {
+func shouldIncludeFile(f *gogenfilter.Filter, path string) bool {
 	return f == nil || !f.ShouldFilter(path)
 }

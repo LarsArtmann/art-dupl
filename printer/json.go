@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"sort"
-	"strings"
 	"time"
 
 	errors "github.com/LarsArtmann/art-dupl/errors"
@@ -90,15 +89,6 @@ func NewJSON(w io.Writer, fread ReadFile) Printer {
 	}
 }
 
-// countLinesInFragment counts actual lines in a fragment by counting newline characters.
-func countLinesInFragment(fragment string) int {
-	if fragment == "" {
-		return 1 // At least one line even for empty content
-	}
-
-	return strings.Count(fragment, "\n") + 1
-}
-
 func (p *JSONPrinter) PrintHeader() error {
 	p.iota = 0
 	// Don't reset filesCount - it's set once and should persist
@@ -145,11 +135,12 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 		}
 
 		lineStart := fileInfo.LineStart
+		lineEnd := fileInfo.LineEnd
 		content := extractContent(fileInfo, nstart, nend)
 		clones[i] = JSONClone{
 			Filename:  nstart.Filename,
 			LineStart: lineStart,
-			LineEnd:   0, // Will be calculated later
+			LineEnd:   lineEnd,
 			Fragment:  string(deindent(content)),
 		}
 	}
@@ -161,12 +152,6 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 
 		return clones[i].Filename < clones[j].Filename
 	})
-
-	// Calculate line ends - count actual lines, not characters
-	for i := range clones {
-		lines := countLinesInFragment(clones[i].Fragment)
-		clones[i].LineEnd = clones[i].LineStart + lines - 1
-	}
 
 	// Calculate hash (use actual hash instead of counter)
 	hash := p.currentHash

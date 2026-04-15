@@ -106,6 +106,15 @@ type Config struct {
 	// IncludeTempl includes templ.guide generated files (only when filterGenerated is true)
 	IncludeTempl bool `json:"includeTempl,omitempty"`
 
+	// IncludeProtobuf includes protobuf generated files (.pb.go, _grpc.pb.go)
+	IncludeProtobuf bool `json:"includeProtobuf,omitempty"`
+
+	// IncludeMockgen includes mockgen generated files
+	IncludeMockgen bool `json:"includeMockgen,omitempty"`
+
+	// IncludeStringer includes stringer generated files
+	IncludeStringer bool `json:"includeStringer,omitempty"`
+
 	// Only restricts analysis to a specific file type ("go" or "templ")
 	// Empty string means analyze both file types
 	Only string `json:"only,omitempty"`
@@ -173,6 +182,9 @@ func DefaultConfig() *Config {
 		FilterGenerated:    false,
 		IncludeSQLC:        false,
 		IncludeTempl:       false,
+		IncludeProtobuf:    false,
+		IncludeMockgen:     false,
+		IncludeStringer:    false,
 		Only:               "",
 		IncludePatterns:    []string{},
 		ExcludePatterns:    []string{},

@@ -22,6 +22,9 @@ type FlagValues struct {
 	FilterGenerated   bool
 	IncludeSQLC       bool
 	IncludeTempl      bool
+	IncludeProtobuf  bool
+	IncludeMockgen   bool
+	IncludeStringer  bool
 	IncludePatterns   []string
 	ExcludePatterns   []string
 	Semantic          bool
@@ -93,6 +96,9 @@ func extractFlagValues(cmd *cobra.Command, args []string) (*FlagValues, error) {
 	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
 	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
 	includeTempl, _ := cmd.Flags().GetBool("include-templ")
+	includeProtobuf, _ := cmd.Flags().GetBool("include-protobuf")
+	includeMockgen, _ := cmd.Flags().GetBool("include-mockgen")
+	includeStringer, _ := cmd.Flags().GetBool("include-stringer")
 	includePatterns, _ := cmd.Flags().GetStringArray("include-pattern")
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 	semantic, _ := cmd.Flags().GetBool("semantic")
@@ -118,6 +124,9 @@ func extractFlagValues(cmd *cobra.Command, args []string) (*FlagValues, error) {
 		FilterGenerated:   filterGenerated,
 		IncludeSQLC:       includeSQLC,
 		IncludeTempl:      includeTempl,
+		IncludeProtobuf:   includeProtobuf,
+		IncludeMockgen:    includeMockgen,
+		IncludeStringer:   includeStringer,
 		IncludePatterns:   includePatterns,
 		ExcludePatterns:   excludePatterns,
 		Semantic:          semantic,
@@ -207,6 +216,18 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 
 	if flags.IncludeTempl {
 		cfg.IncludeTempl = true
+	}
+
+	if flags.IncludeProtobuf {
+		cfg.IncludeProtobuf = true
+	}
+
+	if flags.IncludeMockgen {
+		cfg.IncludeMockgen = true
+	}
+
+	if flags.IncludeStringer {
+		cfg.IncludeStringer = true
 	}
 
 	if flags.Only != "" {

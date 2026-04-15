@@ -3,11 +3,11 @@ package filtertest
 import (
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 // AssertFileShouldNotBeFiltered asserts that a file should not be filtered.
-func AssertFileShouldNotBeFiltered(t *testing.T, fltr *filter.Filter, filepath string) {
+func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
 	if fltr.ShouldFilter(filepath) {
@@ -16,7 +16,7 @@ func AssertFileShouldNotBeFiltered(t *testing.T, fltr *filter.Filter, filepath s
 }
 
 // AssertFileShouldBeFiltered asserts that a file should be filtered.
-func AssertFileShouldBeFiltered(t *testing.T, fltr *filter.Filter, filepath string) {
+func AssertFileShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
 	if !fltr.ShouldFilter(filepath) {
@@ -25,7 +25,7 @@ func AssertFileShouldBeFiltered(t *testing.T, fltr *filter.Filter, filepath stri
 }
 
 // AssertFilesShouldNotBeFiltered asserts that multiple files should not be filtered.
-func AssertFilesShouldNotBeFiltered(t *testing.T, fltr *filter.Filter, filepaths []string) {
+func AssertFilesShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepaths []string) {
 	t.Helper()
 
 	for _, filepath := range filepaths {
@@ -34,7 +34,7 @@ func AssertFilesShouldNotBeFiltered(t *testing.T, fltr *filter.Filter, filepaths
 }
 
 // AssertFilesShouldBeFiltered asserts that multiple files should be filtered.
-func AssertFilesShouldBeFiltered(t *testing.T, fltr *filter.Filter, filepaths []string) {
+func AssertFilesShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepaths []string) {
 	t.Helper()
 
 	for _, filepath := range filepaths {

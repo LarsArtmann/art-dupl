@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 // Directory exclusion constants.
@@ -38,7 +38,7 @@ func statError(path string, err error) {
 func filesFeedWithOptions(
 	paths []string,
 	fromStdin bool,
-	filter *filter.Filter,
+	filter *gogenfilter.Filter,
 	includeVendor bool,
 	only string,
 ) chan string {
@@ -81,7 +81,7 @@ func filesFeedWithOptions(
 }
 
 // crawlPaths walks paths and returns a channel of Go files.
-func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan string {
+func crawlPaths(paths []string, filter *gogenfilter.Filter, includeVendor bool) chan string {
 	// For Go source file crawling, we don't have a node_modules exclusion config
 	// so we pass true to maintain backward compatibility
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, isSourceFile)
@@ -94,7 +94,7 @@ func crawlPaths(paths []string, filter *filter.Filter, includeVendor bool) chan 
 // The only parameter filters to specific file extensions (".go" or ".templ").
 func crawlPathsAllFiles(
 	paths []string,
-	filter *filter.Filter,
+	filter *gogenfilter.Filter,
 	includeVendor, includeNodeModules bool,
 	only string,
 ) chan string {
@@ -114,7 +114,7 @@ type fileCheckFunc func(name string) bool
 
 // CrawlOptions contains the common options for crawling operations.
 type CrawlOptions struct {
-	Filter          *filter.Filter
+	Filter          *gogenfilter.Filter
 	IncludeVendor   bool
 	IncludeNodeMods bool
 	FileCheck       fileCheckFunc
@@ -123,7 +123,7 @@ type CrawlOptions struct {
 
 func crawlPathsWithFileCheck(
 	paths []string,
-	f *filter.Filter,
+	f *gogenfilter.Filter,
 	includeVendor bool,
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,

@@ -126,6 +126,46 @@ func TestByteRangeToLines(t *testing.T) {
 			wantStart: 1,
 			wantEnd:   1,
 		},
+		{
+			name:      "multi-line end beyond content returns last line not start line",
+			content:   "line1\nline2\nline3\nline4\nline5",
+			start:     6,
+			end:       100,
+			wantStart: 2,
+			wantEnd:   5,
+		},
+		{
+			name:      "multi-line spanning all with end at exact content length",
+			content:   "line1\nline2\nline3",
+			start:     0,
+			end:       17,
+			wantStart: 1,
+			wantEnd:   3,
+		},
+		{
+			name:      "multi-line end one past content length",
+			content:   "line1\nline2\nline3",
+			start:     0,
+			end:       18,
+			wantStart: 1,
+			wantEnd:   3,
+		},
+		{
+			name:      "multi-line both start and end beyond content",
+			content:   "line1\nline2\nline3",
+			start:     100,
+			end:       200,
+			wantStart: 3,
+			wantEnd:   3,
+		},
+		{
+			name:      "negative start clamped",
+			content:   "line1\nline2",
+			start:     -1,
+			end:       5,
+			wantStart: 1,
+			wantEnd:   1,
+		},
 	}
 
 	for _, tt := range tests {

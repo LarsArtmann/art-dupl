@@ -44,6 +44,12 @@ func NewStatsCommand() *cobra.Command {
 	cmd.Flags().
 		Bool("include-templ", false, "include templ.guide generated files (filtered by default)")
 	cmd.Flags().
+		Bool("include-protobuf", false, "include protobuf generated files (.pb.go, _grpc.pb.go)")
+	cmd.Flags().
+		Bool("include-mockgen", false, "include mockgen generated files")
+	cmd.Flags().
+		Bool("include-stringer", false, "include stringer generated files")
+	cmd.Flags().
 		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
 	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
 	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")

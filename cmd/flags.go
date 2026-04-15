@@ -41,6 +41,12 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("include-templ", false, "include templ.guide generated files (override default filtering)")
 	rootCmd.Flags().
+		Bool("include-protobuf", false, "include protobuf generated files (.pb.go, _grpc.pb.go)")
+	rootCmd.Flags().
+		Bool("include-mockgen", false, "include mockgen generated files")
+	rootCmd.Flags().
+		Bool("include-stringer", false, "include stringer generated files")
+	rootCmd.Flags().
 		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
 	rootCmd.Flags().
 		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")

@@ -37,7 +37,7 @@ This document provides essential information for AI agents working on the **art-
 - **domain/**: Domain types and models (Clone, CloneGroup, StringPool)
 - **types/**: Type definitions and shared types
 - **errors/**: Error handling with typed error wrappers
-- **pkg/**: Utility packages (artdupl, position, logger, filter)
+- **pkg/**: Utility packages (artdupl, position, logger)
 - **internal/**: Internal utilities (testutil, enum, utils, simd)
 - **migration/**: Migration utilities for version compatibility
 - **lib/**: Legacy utility functions (being phased out)
@@ -504,7 +504,7 @@ import (
     "github.com/LarsArtmann/art-dupl/errors"
     "github.com/LarsArtmann/art-dupl/pkg/artdupl"
     "github.com/LarsArtmann/art-dupl/pkg/logger"
-    "github.com/LarsArtmann/art-dupl/pkg/filter"
+    "github.com/LarsArtmann/gogenfilter"
     "github.com/LarsArtmann/art-dupl/pkg/position"
 )
 ```
@@ -545,7 +545,6 @@ art-dupl/
 ├── pkg/              # Utility packages
 │   ├── artdupl/
 │   ├── logger/
-│   ├── filter/
 │   └── position/
 ├── internal/         # Internal utilities
 │   ├── testutil/

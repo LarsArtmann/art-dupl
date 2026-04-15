@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 // TestSmartFilteringIntegration is an integration test for smart filtering feature.
@@ -87,8 +87,8 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test that filter correctly identifies files
-		fltr := filter.NewFilter(true, []filter.FilterOption{
-			filter.FilterAll,
+		fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{
+			gogenfilter.FilterAll,
 		})
 
 		// Regular files should NOT be filtered
@@ -127,8 +127,8 @@ func Header() templ.Component { return nil }
 		}
 
 		// Create filter with sqlc included (not filtered)
-		fltr := filter.NewFilter(true, []filter.FilterOption{
-			filter.FilterTempl,
+		fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{
+			gogenfilter.FilterTempl,
 		})
 
 		// sqlc should NOT be filtered (not in options)
@@ -161,9 +161,9 @@ type User struct {}
 			t.Fatalf("CreateTestFiles failed: %v", err)
 		}
 
-		// Create filter with include pattern for vendor
-		fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterAll})
-		fltr.WithIncludePatterns([]string{"vendor/*"})
+		// Create filter with include pattern for vendor (must match absolute path)
+		fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterAll})
+		fltr.WithIncludePatterns([]string{"**/vendor/*"})
 
 		// Vendor file should NOT be filtered due to include pattern
 		if fltr.ShouldFilter(vendorFile) {
@@ -225,9 +225,9 @@ func Authenticate(username, password string) bool {
 
 		// Test FindSQLCConfigs from subdirectory path
 		// Simulate running: art-dupl ./db
-		configs, err := filter.FindSQLCConfigs([]string{setup.GetFilePath("db")})
-		if err != nil {
-			t.Fatalf("FindSQLCConfigs failed: %v", err)
+		configs, findErr := gogenfilter.FindSQLCConfigs([]string{setup.GetFilePath("db")})
+		if findErr != nil {
+			t.Fatalf("FindSQLCConfigs failed: %v", findErr)
 		}
 
 		// Should find sqlc.yaml in parent directory
@@ -256,7 +256,7 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test filtering from subdirectory perspective
-		fltr := filter.NewFilter(true, []filter.FilterOption{filter.FilterSQLC})
+		fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterSQLC})
 
 		// db/models.go should be filtered (sqlc)
 		if !fltr.ShouldFilter(setup.GetFilePath("db/models.go")) {

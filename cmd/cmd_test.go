@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/pkg/filter"
+	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/spf13/cobra"
@@ -239,6 +239,9 @@ func TestAddFlags(t *testing.T) {
 		"filter-generated",
 		"include-sqlc",
 		"include-templ",
+		"include-protobuf",
+		"include-mockgen",
+		"include-stringer",
 		"include-pattern",
 		"exclude-pattern",
 		"incremental",
@@ -322,7 +325,7 @@ func TestCrawlPaths(t *testing.T) {
 
 func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("empty options", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{}, false, (*filter.Filter)(nil), false, "")
+		ch := filesFeedWithOptions([]string{}, false, (*gogenfilter.Filter)(nil), false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -333,7 +336,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 	})
 
 	t.Run("with filter", func(t *testing.T) {
-		f := filter.NewFilter(false, nil)
+		f := gogenfilter.NewFilter(false, nil)
 
 		ch := filesFeedWithOptions([]string{}, false, f, false, "")
 		if ch == nil {
