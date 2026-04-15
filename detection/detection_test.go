@@ -30,6 +30,22 @@ func createTestConfig() *config.Config {
 	}
 }
 
+// createSimpleTestConfig creates a minimal test configuration without verbose logging.
+func createSimpleTestConfig() *config.Config {
+	return &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
+	}
+}
+
+// createHashTestConfig creates a test configuration using hash detection method.
+func createHashTestConfig() *config.Config {
+	return &config.Config{
+		Threshold:        15,
+		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
+	}
+}
+
 // TestNewMultiDetector tests MultiDetector constructor.
 func TestNewMultiDetector(t *testing.T) {
 	cfg := createTestConfig()
@@ -71,10 +87,7 @@ func TestNewMultiDetector_NilConfig(t *testing.T) {
 
 // TestNewMultiDetector_EmptyData tests with empty data.
 func TestNewMultiDetector_EmptyData(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
+	cfg := createSimpleTestConfig()
 	tree := suffixtree.New()
 
 	detector := NewMultiDetector(cfg, []*syntax.Node{}, tree, false)
@@ -224,35 +237,52 @@ func TestCreateIssueMatch(t *testing.T) {
 	}
 }
 
-// TestTodoIssue_GetLine tests TodoIssue GetLine method.
-func TestTodoIssue_GetLine(t *testing.T) {
-	lineNum, _ := domain.NewLineNumber(42)
-	issue := TodoIssue{
-		Filename: domain.Filepath("test.go"),
-		Line:     lineNum,
-		Text:     "Fix this later",
-		Type:     "TODO",
+// TestIssue_GetLine tests that GetLine returns the correct line number.
+func TestIssue_GetLine(t *testing.T) {
+	tests := []struct {
+		name   string
+		issue  LineExtractor
+		lineNum uint16
+	}{
+		{
+			name: "TodoIssue",
+			issue: TodoIssue{
+				Filename: domain.Filepath("test.go"),
+				Line:     mustNewLineNumber(42),
+				Text:     "Fix this later",
+				Type:     "TODO",
+			},
+			lineNum: 42,
+		},
+		{
+			name: "LegacyIssue",
+			issue: LegacyIssue{
+				Filename: domain.Filepath("legacy.go"),
+				Line:     mustNewLineNumber(100),
+				Type:     "deprecated_function",
+				Message:  "Use of deprecated function",
+				Severity: domain.CloneSeverityMedium,
+			},
+			lineNum: 100,
+		},
 	}
 
-	if issue.GetLine() != lineNum {
-		t.Errorf("GetLine() = %d, want %d", issue.GetLine(), lineNum)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.issue.GetLine().Uint16() != tt.lineNum {
+				t.Errorf("GetLine() = %d, want %d", tt.issue.GetLine().Uint16(), tt.lineNum)
+			}
+		})
 	}
 }
 
-// TestLegacyIssue_GetLine tests LegacyIssue GetLine method.
-func TestLegacyIssue_GetLine(t *testing.T) {
-	lineNum, _ := domain.NewLineNumber(100)
-	issue := LegacyIssue{
-		Filename: domain.Filepath("legacy.go"),
-		Line:     lineNum,
-		Type:     "deprecated_function",
-		Message:  "Use of deprecated function",
-		Severity: domain.CloneSeverityMedium,
+// mustNewLineNumber is a helper to create LineNumber and panic on error.
+func mustNewLineNumber(n uint16) domain.LineNumber {
+	lineNum, err := domain.NewLineNumber(n)
+	if err != nil {
+		panic(err)
 	}
-
-	if issue.GetLine() != lineNum {
-		t.Errorf("GetLine() = %d, want %d", issue.GetLine(), lineNum)
-	}
+	return lineNum
 }
 
 // TestLegacyPattern_Defaults tests default legacy patterns.
@@ -365,10 +395,7 @@ func TestFindIssuesGeneric_EmptyData(t *testing.T) {
 
 // TestMultiDetector_FindDuplOver_DefaultMethod tests with default art-dupl method.
 func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
+	cfg := createSimpleTestConfig()
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
@@ -389,10 +416,7 @@ func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
 
 // TestMultiDetector_FindDuplOver_HashMethod tests with hash detection method.
 func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
-	}
+	cfg := createHashTestConfig()
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
@@ -440,10 +464,7 @@ func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 
 // TestMultiDetector_FindDuplOver_Verbose tests verbose mode.
 func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
-	}
+	cfg := createHashTestConfig()
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
@@ -463,10 +484,7 @@ func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
 
 // TestMultiDetector_FindDuplOver_EmptyData tests with empty data.
 func TestMultiDetector_FindDuplOver_EmptyData(t *testing.T) {
-	cfg := &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
+	cfg := createSimpleTestConfig()
 
 	tree := suffixtree.New()
 	data := []*syntax.Node{}

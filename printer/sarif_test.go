@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -19,15 +20,6 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 	return []*syntax.Node{
 		{Type: 1, Filename: filename, Pos: startPos, End: startPos + 10},
 		{Type: 2, Filename: filename, Pos: startPos + 10, End: endPos},
-	}
-}
-
-// checkResultCount verifies the expected number of results.
-func checkResultCount(t *testing.T, got, expected int) {
-	t.Helper()
-
-	if got != expected {
-		t.Errorf("results: expected %d, got %d", expected, got)
 	}
 }
 
@@ -74,7 +66,7 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 	}
 
 	// Should have 2 results (one per clone instance)
-	checkResultCount(t, len(printer.results), 2)
+	testutil.AssertCount(t, len(printer.results), 2, "results")
 }
 
 func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
@@ -87,7 +79,7 @@ func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
 		t.Errorf("PrintClones returned error: %v", err)
 	}
 
-	checkResultCount(t, len(printer.results), 0)
+	testutil.AssertCount(t, len(printer.results), 0, "results")
 }
 
 func TestSARIFPrinter_PrintFooter(t *testing.T) {
@@ -210,7 +202,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	}
 
 	// Should still have only 2 results (first group only)
-	checkResultCount(t, len(printer.results), 2)
+	testutil.AssertCount(t, len(printer.results), 2, "results")
 }
 
 func TestSARIFOutput_Structure(t *testing.T) {
