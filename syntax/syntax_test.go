@@ -2,19 +2,9 @@ package syntax
 
 import (
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testhelpers"
 )
-
-// panicRecovery returns a defer recover function that reports a panic with the given input.
-// Use in fuzz tests to catch panics and report them with the input that caused the panic.
-func panicRecovery(t *testing.T, input string) func() {
-	t.Helper()
-
-	return func() {
-		if r := recover(); r != nil {
-			t.Errorf("Panicked with input %q: %v", input, r)
-		}
-	}
-}
 
 const testFilename = "test.go"
 
@@ -170,7 +160,7 @@ func FuzzSerialize(f *testing.F) {
 		// Parse input to create AST nodes
 		// Since we can't reliably parse all fuzz inputs as Go code,
 		// we'll create synthetic nodes based on input characteristics
-		defer panicRecovery(t, input)()
+		defer testhelpers.PanicRecovery(t, input)()
 
 		// Create a simple node tree structure
 		root := createTestNodeTree(input)
