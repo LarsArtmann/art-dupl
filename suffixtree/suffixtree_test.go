@@ -5,20 +5,11 @@ import (
 	"slices"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/LarsArtmann/art-dupl/internal/testhelpers"
 )
 
-// panicRecovery returns a defer recover function that reports a panic with the given input.
-// Use in fuzz tests to catch panics and report them with the input that caused the panic.
-func panicRecovery(t *testing.T, input string) func() {
-	t.Helper()
-
-	return func() {
-		if r := recover(); r != nil {
-			t.Errorf("Panicked with input %q: %v", input, r)
-		}
-	}
-}
-
+// char is a token type for suffix tree testing.
 type char rune
 
 func (c char) Val() TokenValue {
@@ -304,7 +295,7 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 		tokens := str2tok(input)
 
 		// This should not panic
-		defer panicRecovery(t, input)()
+		defer testhelpers.PanicRecovery(t, input)()
 
 		// Update tree with tokens
 		tree.Update(tokens...)
