@@ -200,6 +200,7 @@ func (d *detector) runHashDetection(
 	threshold int,
 ) <-chan syntax.Match {
 	hashDetector := hash.NewHashDetector(threshold)
+
 	return hashDetector.FindDuplOver(data, threshold)
 }
 

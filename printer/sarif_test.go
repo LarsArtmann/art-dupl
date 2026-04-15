@@ -25,6 +25,7 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 // checkResultCount verifies the expected number of results.
 func checkResultCount(t *testing.T, got, expected int) {
 	t.Helper()
+
 	if got != expected {
 		t.Errorf("results: expected %d, got %d", expected, got)
 	}

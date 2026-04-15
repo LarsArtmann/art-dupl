@@ -21,6 +21,7 @@ func baseAnalysis(overrides ...func(*Analysis)) Analysis {
 	for _, override := range overrides {
 		override(&a)
 	}
+
 	return a
 }
 
@@ -231,6 +232,7 @@ func TestDetectionOptions_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			chkErr := tt.options.IsValid()
+
 			wantErr := tt.wantErr
 			if (chkErr != nil) != wantErr {
 				t.Errorf("DetectionOptions.IsValid() error = %v, wantErr %v", chkErr, wantErr)

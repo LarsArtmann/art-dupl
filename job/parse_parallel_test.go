@@ -100,6 +100,7 @@ func TestParseParallelContextCancellation(t *testing.T) {
 	// Should complete without deadlock
 	for range schan {
 	}
+
 	_ = cancel
 }
 

@@ -139,13 +139,19 @@ func TestUnmarshalStringID(t *testing.T) {
 		}
 	})
 
-	t.Run("empty string", func(t *testing.T) {
-		assertUnmarshalStringIDError(t, `""`, "empty string")
-	})
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{name: "empty string", input: `""`},
+		{name: "invalid JSON", input: `invalid`},
+	}
 
-	t.Run("invalid JSON", func(t *testing.T) {
-		assertUnmarshalStringIDError(t, `invalid`, "invalid JSON")
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertUnmarshalStringIDError(t, tt.input, tt.name)
+		})
+	}
 }
 
 func TestMarshalUint(t *testing.T) {

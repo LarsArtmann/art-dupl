@@ -283,6 +283,7 @@ func (p ClonePriority) GetPriorityColor() string {
 	if data, ok := priorityDisplay[p]; ok {
 		return data.color
 	}
+
 	return "var(--text-secondary)"
 }
 
@@ -291,6 +292,7 @@ func (p ClonePriority) GetPriorityEmoji() string {
 	if data, ok := priorityDisplay[p]; ok {
 		return data.emoji
 	}
+
 	return "⚪"
 }
 

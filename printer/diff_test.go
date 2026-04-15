@@ -8,6 +8,7 @@ import (
 // assertLineCount checks that a slice has the expected number of lines.
 func assertLineCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
+
 	if actual != expected {
 		t.Errorf("Expected %d %s lines, got %d", expected, label, actual)
 	}
@@ -16,6 +17,7 @@ func assertLineCount(t *testing.T, actual, expected int, label string) {
 // assertCloneCount checks that the number of clones matches expectations.
 func assertCloneCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
+
 	if actual != expected {
 		t.Errorf("Expected %d %s, got %d", expected, label, actual)
 	}
@@ -24,6 +26,7 @@ func assertCloneCount(t *testing.T, actual, expected int, label string) {
 // assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
 func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 	t.Helper()
+
 	for i, line := range lines {
 		if line.LineNumber != i+1 {
 			t.Errorf(

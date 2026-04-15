@@ -11,10 +11,10 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 // printSearchStatus outputs the status message after tree building completes.
@@ -162,6 +162,7 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 
 	if !cfg.IncludeSQLC {
 		filterOptions = append(filterOptions, gogenfilter.FilterSQLC)
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (sqlc)")
 	}
 
@@ -169,21 +170,25 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 	// User can opt-out with --include-templ
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, gogenfilter.FilterTempl)
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (templ)")
 	}
 
 	if !cfg.IncludeProtobuf {
 		filterOptions = append(filterOptions, gogenfilter.FilterProtobuf)
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (protobuf)")
 	}
 
 	if !cfg.IncludeMockgen {
 		filterOptions = append(filterOptions, gogenfilter.FilterMockgen)
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (mockgen)")
 	}
 
 	if !cfg.IncludeStringer {
 		filterOptions = append(filterOptions, gogenfilter.FilterStringer)
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (stringer)")
 	}
 

@@ -23,6 +23,7 @@ func testCloneGroup(filenames ...string) domain.CloneGroup {
 // assertCloneCount verifies the number of clones in a CloneGroup.
 func assertCloneCount(t *testing.T, group domain.CloneGroup, expected int) {
 	t.Helper()
+
 	if len(group.Clones) != expected {
 		t.Errorf("Expected %d clones, got %d", expected, len(group.Clones))
 	}
@@ -31,6 +32,7 @@ func assertCloneCount(t *testing.T, group domain.CloneGroup, expected int) {
 // assertTotalClones verifies the total clone count in an analysis.
 func assertTotalClones(t *testing.T, analysis *domain.Analysis, expected domain.CloneCount) {
 	t.Helper()
+
 	if analysis.Stats.TotalClones != expected {
 		t.Errorf("Expected %d total clones, got %d", expected, analysis.Stats.TotalClones)
 	}

@@ -24,6 +24,7 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(deepDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
+
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)
@@ -81,6 +82,7 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
+
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)
@@ -117,6 +119,7 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.Mkdir(rootDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
+
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)
@@ -148,6 +151,7 @@ func TestFindProjectRoot(t *testing.T) {
 		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
 
 		goModPath := filepath.Join(rootDir, "go.mod")
+
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)

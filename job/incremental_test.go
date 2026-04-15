@@ -186,6 +186,7 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 
 	for range schan {
 	}
+
 	_ = cancel
 }
 

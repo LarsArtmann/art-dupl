@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/gogenfilter"
 	"github.com/spf13/cobra"
 )
 
@@ -371,7 +371,6 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 		{"only go files", "go", 2},
 		{"only templ files", "templ", 2},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testFilesFeedWithExtension(t, tmpDir, tc.extension, tc.expected)
 		})

@@ -127,6 +127,7 @@ func TestCloneSeverity_MarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.severity.MarshalJSON()
+
 			expectErr := tt.wantError
 			if (err != nil) != expectErr {
 				t.Errorf("MarshalJSON() error = %v, wantError %v", err, expectErr)
@@ -160,6 +161,7 @@ func TestCloneSeverity_UnmarshalJSON(t *testing.T) {
 			var got CloneSeverity
 
 			err := got.UnmarshalJSON([]byte(tt.input))
+
 			expectErr := tt.wantError
 			if (err != nil) != expectErr {
 				t.Errorf("UnmarshalJSON() error = %v, wantError %v", err, expectErr)

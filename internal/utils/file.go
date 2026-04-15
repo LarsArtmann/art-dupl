@@ -28,6 +28,7 @@ func (fp *FileProcessor) resolvePath(filename string) string {
 	if fp.baseDir != "" {
 		return filepath.Join(fp.baseDir, filename)
 	}
+
 	return filename
 }
 

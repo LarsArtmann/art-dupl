@@ -45,6 +45,7 @@ func CreateMatch(hash string, filenames ...string) syntax.Match {
 	for i, fname := range filenames {
 		frags[i] = []*syntax.Node{{Filename: fname}}
 	}
+
 	return syntax.Match{Hash: hash, Frags: frags}
 }
 
@@ -81,5 +82,6 @@ func CreateNodeSlice(values []struct {
 			End:      v.End,
 		}
 	}
+
 	return nodes
 }

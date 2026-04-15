@@ -103,7 +103,8 @@ func (d *detector) FindClonesStream(
 	d.started = time.Now()
 
 	// Validate inputs
-	if err := d.validateInputsOrError(ctx, files); err != nil {
+	err := d.validateInputsOrError(ctx, files)
+	if err != nil {
 		return nil, err
 	}
 
@@ -145,9 +146,11 @@ func (d *detector) wrapValidationError(err error, operation string, fileCount in
 // validateInputsOrError validates inputs and returns the error if validation fails.
 // This helper deduplicates the common validation + error wrapping pattern.
 func (d *detector) validateInputsOrError(ctx context.Context, files []string) error {
-	if err := d.validateInputs(ctx, files); err != nil {
+	err := d.validateInputs(ctx, files)
+	if err != nil {
 		return d.wrapValidationError(err, "validation failed for ", len(files))
 	}
+
 	return nil
 }
 

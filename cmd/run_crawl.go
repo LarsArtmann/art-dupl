@@ -158,6 +158,7 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 		if shouldIncludeFile(opts.Filter, path) && passesFileCheck(info.Name(), opts.FileCheck) {
 			opts.FChan <- path
 		}
+
 		return
 	}
 

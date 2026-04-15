@@ -237,6 +237,7 @@ func TestClone_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			isValidErr := tt.clone.IsValid()
+
 			expectedErr := tt.wantErr
 			if !errors.Is(isValidErr, expectedErr) {
 				t.Errorf("Clone.IsValid() = %v, want %v", isValidErr, expectedErr)

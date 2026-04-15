@@ -74,6 +74,7 @@ func TestClone_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			validationErr := tt.clone.IsValid()
+
 			expectErr := tt.wantErr
 			if (validationErr != nil) != expectErr {
 				t.Errorf("Clone.IsValid() error = %v, wantErr %v", validationErr, expectErr)
@@ -168,6 +169,7 @@ func TestCloneGroup_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resultErr := tt.cloneGroup.IsValid()
+
 			wantErrResult := tt.wantErr
 			if (resultErr != nil) != wantErrResult {
 				t.Errorf("CloneGroup.IsValid() error = %v, wantErr %v", resultErr, wantErrResult)

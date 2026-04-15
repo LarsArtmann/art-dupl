@@ -29,6 +29,7 @@ func setDetectionMethods(appConfig *config.Config, detectionMethods string) erro
 			fmt.Sprintf("invalid detection methods %q", detectionMethods),
 		)
 	}
+
 	appConfig.DetectionMethods = parsedMethods
 
 	return nil
@@ -107,7 +108,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	metadata := printer.ReportMetadata{
 		Semantic:         mergedConfig.Semantic,
 		DetectionMethods: detectionMethodsToStringSlice(mergedConfig.DetectionMethods),
-		SortBy:          sortBy,
+		SortBy:           sortBy,
 		FilterGenerated:  mergedConfig.FilterGenerated,
 		IncludeSQLC:      mergedConfig.IncludeSQLC,
 		IncludeTempl:     mergedConfig.IncludeTempl,

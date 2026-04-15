@@ -13,33 +13,33 @@ import (
 
 // FlagValues holds the extracted flag values needed for config building.
 type FlagValues struct {
-	ConfigFile        string
-	Vendor            bool
-	Verbose           bool
-	Threshold         int
-	Files             bool
-	Profile           bool
-	FilterGenerated   bool
-	IncludeSQLC       bool
-	IncludeTempl      bool
-	IncludeProtobuf  bool
-	IncludeMockgen   bool
-	IncludeStringer  bool
-	IncludePatterns   []string
-	ExcludePatterns   []string
-	Semantic          bool
-	Structural        bool
-	Paths             []string
-	DetectionMethods  string
-	Timeout           string
+	ConfigFile         string
+	Vendor             bool
+	Verbose            bool
+	Threshold          int
+	Files              bool
+	Profile            bool
+	FilterGenerated    bool
+	IncludeSQLC        bool
+	IncludeTempl       bool
+	IncludeProtobuf    bool
+	IncludeMockgen     bool
+	IncludeStringer    bool
+	IncludePatterns    []string
+	ExcludePatterns    []string
+	Semantic           bool
+	Structural         bool
+	Paths              []string
+	DetectionMethods   string
+	Timeout            string
 	IncludeNodeModules bool
-	Only              string
-	Incremental       bool
-	Since             string
-	CacheDir          string
-	ClearCache        bool
-	Workers           int
-	DiffMode          string
+	Only               string
+	Incremental        bool
+	Since              string
+	CacheDir           string
+	ClearCache         bool
+	Workers            int
+	DiffMode           string
 }
 
 // BuildConfigFromFlags extracts flag values and builds a merged configuration.
@@ -64,7 +64,10 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 
 	fileConfig, err := config.LoadOptionalConfig(flags.ConfigFile)
 	if err != nil {
-		return nil, duplerrors.WrapConfig(err, fmt.Sprintf("loading config from file %q", flags.ConfigFile))
+		return nil, duplerrors.WrapConfig(
+			err,
+			fmt.Sprintf("loading config from file %q", flags.ConfigFile),
+		)
 	}
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
@@ -114,33 +117,33 @@ func extractFlagValues(cmd *cobra.Command, args []string) (*FlagValues, error) {
 	diffMode, _ := cmd.Flags().GetString("diff")
 
 	return &FlagValues{
-		ConfigFile:        configFile,
-		Vendor:            vendor,
-		Verbose:           verbose,
-		Threshold:         threshold,
-		Files:             files,
-		Profile:           profile,
-		Timeout:           timeoutStr,
-		FilterGenerated:   filterGenerated,
-		IncludeSQLC:       includeSQLC,
-		IncludeTempl:      includeTempl,
-		IncludeProtobuf:   includeProtobuf,
-		IncludeMockgen:    includeMockgen,
-		IncludeStringer:   includeStringer,
-		IncludePatterns:   includePatterns,
-		ExcludePatterns:   excludePatterns,
-		Semantic:          semantic,
-		Structural:        structural,
-		Paths:             args,
-		DetectionMethods:  detectionMethods,
+		ConfigFile:         configFile,
+		Vendor:             vendor,
+		Verbose:            verbose,
+		Threshold:          threshold,
+		Files:              files,
+		Profile:            profile,
+		Timeout:            timeoutStr,
+		FilterGenerated:    filterGenerated,
+		IncludeSQLC:        includeSQLC,
+		IncludeTempl:       includeTempl,
+		IncludeProtobuf:    includeProtobuf,
+		IncludeMockgen:     includeMockgen,
+		IncludeStringer:    includeStringer,
+		IncludePatterns:    includePatterns,
+		ExcludePatterns:    excludePatterns,
+		Semantic:           semantic,
+		Structural:         structural,
+		Paths:              args,
+		DetectionMethods:   detectionMethods,
 		IncludeNodeModules: includeNodeModules,
-		Only:              only,
-		Incremental:       incremental,
-		Since:             since,
-		CacheDir:          cacheDir,
-		ClearCache:        clearCache,
-		Workers:           workers,
-		DiffMode:          diffMode,
+		Only:               only,
+		Incremental:        incremental,
+		Since:              since,
+		CacheDir:           cacheDir,
+		ClearCache:         clearCache,
+		Workers:            workers,
+		DiffMode:           diffMode,
 	}, nil
 }
 
@@ -152,6 +155,7 @@ func validateMutualExclusion(semantic, structural bool) error {
 			nil,
 		)
 	}
+
 	return nil
 }
 
@@ -171,7 +175,8 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 		cfg.Verbose = true
 	}
 
-	if err := setDetectionMethods(cfg, flags.DetectionMethods); err != nil {
+	err := setDetectionMethods(cfg, flags.DetectionMethods)
+	if err != nil {
 		return err
 	}
 
@@ -203,6 +208,7 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", flags.Timeout),
 			)
 		}
+
 		cfg.Timeout = int(duration.Seconds())
 	}
 
@@ -274,6 +280,7 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 				fmt.Sprintf("invalid --diff value %q", flags.DiffMode),
 			)
 		}
+
 		cfg.DiffMode = parsedDiffMode
 	}
 

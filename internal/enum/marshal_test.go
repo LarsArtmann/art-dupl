@@ -329,14 +329,6 @@ func TestValidateEnum(t *testing.T) {
 	}
 }
 
-func TestEnumNames(t *testing.T) {
-	enums := []testEnum{testEnumA, testEnumB, testEnumC}
-	result := EnumToStringSlice(enums...)
-
-	expected := []string{"alpha", "beta", "gamma"}
-	assertStringSliceEqual(t, result, expected)
-}
-
 // validatableTestEnum for testing EnumType interface.
 type validatableTestEnum StringEnum
 

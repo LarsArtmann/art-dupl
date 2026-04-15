@@ -42,6 +42,7 @@ func TestRepository_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			isValidErr := tt.repo.IsValid()
+
 			expectErr := tt.wantErr
 			if (isValidErr != nil) != expectErr {
 				t.Errorf("Repository.IsValid() error = %v, wantErr %v", isValidErr, expectErr)
@@ -100,6 +101,7 @@ func TestSourceFile_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			chkErr := tt.file.IsValid()
+
 			chkWantErr := tt.wantErr
 			if (chkErr != nil) != chkWantErr {
 				t.Errorf("SourceFile.IsValid() error = %v, wantErr %v", chkErr, chkWantErr)
@@ -158,6 +160,7 @@ func TestStringID_MarshalJSON(t *testing.T) {
 			defer cleanup()
 
 			got, err := tt.sid.MarshalJSON()
+
 			expectErr := tt.wantErr
 			if (err != nil) != expectErr {
 				t.Errorf("StringID.MarshalJSON() error = %v, wantErr %v", err, expectErr)

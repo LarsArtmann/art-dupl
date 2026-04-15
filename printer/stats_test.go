@@ -40,7 +40,9 @@ func assertMapFloat64Equal(t *testing.T, m map[string]any, key string, expected 
 // newTestStatsPrinter creates a stats printer with default test configuration.
 func newTestStatsPrinter() (*stats, *bytes.Buffer) {
 	var buf bytes.Buffer
+
 	sp := NewStats(&buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+
 	return sp, &buf
 }
 

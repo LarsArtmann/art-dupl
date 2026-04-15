@@ -63,11 +63,7 @@ func TestOccurrenceSorting(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Build groups map like printDupls does
-			groups := make(map[string][][]*syntax.Node)
-			for _, match := range tt.matches {
-				groups[match.Hash] = append(groups[match.Hash], match.Frags...)
-			}
+			groups := buildGroupsFromMatches(tt.matches)
 
 			// Get keys
 			keys := make([]string, 0, len(groups))
@@ -104,6 +100,15 @@ func TestOccurrenceSorting(t *testing.T) {
 			}
 		})
 	}
+}
+
+// buildGroupsFromMatches builds a groups map from matches (like printDupls does).
+func buildGroupsFromMatches(matches []syntax.Match) map[string][][]*syntax.Node {
+	groups := make(map[string][][]*syntax.Node)
+	for _, match := range matches {
+		groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+	}
+	return groups
 }
 
 // assertSortedOrder verifies that the keys are in the expected order.
@@ -146,10 +151,7 @@ func TestSizeSorting(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			groups := make(map[string][][]*syntax.Node)
-			for _, match := range tt.matches {
-				groups[match.Hash] = append(groups[match.Hash], match.Frags...)
-			}
+			groups := buildGroupsFromMatches(tt.matches)
 
 			keys := make([]string, 0, len(groups))
 			for k := range groups {

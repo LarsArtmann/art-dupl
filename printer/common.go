@@ -181,5 +181,6 @@ func writeFormattedOutput(w io.Writer, data []byte, formatName string) error {
 	if _, err := w.Write(data); err != nil {
 		return duplerrors.WrapIO(err, formatName, "write")
 	}
+
 	return nil
 }

@@ -9,9 +9,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/gogenfilter"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/gogenfilter"
 )
 
 func TestDetectionMethodsToString(t *testing.T) {

@@ -30,6 +30,7 @@ func makeFrag(filename string, pos, end int32) []*syntax.Node {
 // verifyCloneCount verifies the expected number of clones.
 func verifyCloneCount(t *testing.T, got, expected int) {
 	t.Helper()
+
 	if got != expected {
 		t.Errorf("clone count mismatch: want %d, got %d", expected, got)
 	}
@@ -38,6 +39,7 @@ func verifyCloneCount(t *testing.T, got, expected int) {
 // verifyResultCount verifies the expected number of results.
 func verifyResultCount(t *testing.T, got, expected int) {
 	t.Helper()
+
 	if got != expected {
 		t.Errorf("result count mismatch: want %d, got %d", expected, got)
 	}
@@ -326,7 +328,9 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 
 	// Send test matches
 	matchesChan <- testutil.CreateMatch("hash1", "file1.go")
+
 	matchesChan <- testutil.CreateMatch("hash1", "file2.go")
+
 	matchesChan <- testutil.CreateMatch("hash2", "file3.go")
 
 	close(matchesChan)

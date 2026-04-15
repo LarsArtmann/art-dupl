@@ -41,6 +41,7 @@ func initDiffLines(lines [][]byte) []DiffLine {
 			LineNumber: i + 1,
 		}
 	}
+
 	return result
 }
 

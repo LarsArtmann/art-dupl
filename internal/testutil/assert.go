@@ -173,6 +173,7 @@ func AssertMarshalJSONError[T any](
 	got, err := marshalFn(obj)
 	if (err != nil) != wantError {
 		t.Errorf("%s() error = %v, wantError %v", methodName, err, wantError)
+
 		return
 	}
 

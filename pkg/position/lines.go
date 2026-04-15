@@ -16,16 +16,14 @@ func ByteRangeToLines(content []byte, start, end int) (int, int) {
 
 	if start == end {
 		line := offsetToLine(content, start)
+
 		return line, line
 	}
 
 	lineStart := offsetToLine(content, start)
 
 	// end is exclusive; the last byte in the range is at end-1
-	lastByte := end - 1
-	if lastByte < start {
-		lastByte = start
-	}
+	lastByte := max(end-1, start)
 
 	lineEnd := offsetToLine(content, lastByte)
 

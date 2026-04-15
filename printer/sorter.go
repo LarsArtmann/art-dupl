@@ -37,17 +37,20 @@ func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
 // isEmptyOrLessThanEmpty returns true if:
 // - both slices are empty (equal, return false)
 // - i is non-empty and j is empty (i should come first, return true)
-// - i is empty and j is non-empty (i should come last, return false)
+// - i is empty and j is non-empty (i should come last, return false).
 func isEmptyOrLessThanEmpty[T any](slices [][]T, i, j int) (handled, lessThan bool) {
 	if len(slices[i]) == 0 && len(slices[j]) == 0 {
 		return true, false // Both empty, they're equal
 	}
+
 	if len(slices[i]) == 0 {
 		return true, false // i is empty, j is not - i should come after j
 	}
+
 	if len(slices[j]) == 0 {
 		return true, true // j is empty, i is not - i should come before j
 	}
+
 	return false, false // Neither is empty, continue with normal comparison
 }
 
@@ -97,11 +100,13 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 // countNonNilNodes counts non-nil nodes in a slice.
 func countNonNilNodes(nodes []*syntax.Node) int {
 	count := 0
+
 	for _, node := range nodes {
 		if node != nil {
 			count++
 		}
 	}
+
 	return count
 }
 
@@ -110,6 +115,7 @@ func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
 	sort.Slice(dups, func(i, j int) bool {
 		tokensI := countNonNilNodes(dups[i])
 		tokensJ := countNonNilNodes(dups[j])
+
 		return tokensI > tokensJ
 	})
 
@@ -122,6 +128,7 @@ func sumFragmentLengths(cloneGroups []clone) int {
 	for _, cl := range cloneGroups {
 		sum += len(cl.fragment)
 	}
+
 	return sum
 }
 
@@ -138,6 +145,7 @@ func ExtractSortCriteria(sortBy ...SortBy) SortBy {
 	if len(sortBy) > 0 {
 		return sortBy[0]
 	}
+
 	return SortBySize
 }
 

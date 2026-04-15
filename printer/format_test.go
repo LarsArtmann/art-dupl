@@ -45,6 +45,7 @@ func TestParseFormat(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseFormat(tt.input)
+
 			expectErr := tt.wantError
 			if (err != nil) != expectErr {
 				t.Errorf("ParseFormat() error = %v, wantError %v", err, expectErr)
