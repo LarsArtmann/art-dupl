@@ -1,10 +1,37 @@
 package domain
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
+
+func assertEqual[T any](t *testing.T, got, want T, name string) {
+	t.Helper()
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("%s = %v, want %v", name, got, want)
+	}
+}
+
+func assertCloneGroupEqual(t *testing.T, result, original CloneGroup) {
+	t.Helper()
+	assertEqual(t, result.ID, original.ID, "ID")
+	assertEqual(t, result.Hash, original.Hash, "Hash")
+	assertEqual(t, result.Size, original.Size, "Size")
+	assertEqual(t, result.Severity, original.Severity, "Severity")
+	assertEqual(t, result.Status, original.Status, "Status")
+}
+
+func assertAnalysisEqual(t *testing.T, result, original Analysis) {
+	t.Helper()
+	assertEqual(t, result.ID, original.ID, "ID")
+	assertEqual(t, result.State, original.State, "State")
+	assertEqual(t, result.Mode, original.Mode, "Mode")
+	assertEqual(t, result.Threshold, original.Threshold, "Threshold")
+}
 
 func newRepositoryTestCase(name, path, repoName, language string, wantErr bool) struct {
 	name    string
@@ -234,12 +261,12 @@ func TestStringInternPool_Intern(t *testing.T) {
 func TestStringInternPool_Lookup(t *testing.T) {
 	pool := NewStringInternPool(10)
 
-	if got := pool.Lookup(StringID(999)); got != "" {
-		t.Errorf("Lookup(non-existent) = %v, want empty string", got)
-	}
-
-	if got := pool.Lookup(StringID(0)); got != "" {
-		t.Errorf("Lookup(0) = %v, want empty string", got)
+	for _, id := range []StringID{999, 0} {
+		t.Run(fmt.Sprintf("id_%d", id), func(t *testing.T) {
+			if got := pool.Lookup(id); got != "" {
+				t.Errorf("Lookup(%d) = %v, want empty string", id, got)
+			}
+		})
 	}
 
 	id := pool.Intern("hello")
@@ -309,22 +336,7 @@ func TestAnalysisJSONRoundTrip(t *testing.T) {
 	}
 
 	result := testutil.AssertJSONRoundTrip(t, original)
-
-	if result.ID != original.ID {
-		t.Errorf("ID = %v, want %v", result.ID, original.ID)
-	}
-
-	if result.State != original.State {
-		t.Errorf("State = %v, want %v", result.State, original.State)
-	}
-
-	if result.Mode != original.Mode {
-		t.Errorf("Mode = %v, want %v", result.Mode, original.Mode)
-	}
-
-	if result.Threshold != original.Threshold {
-		t.Errorf("Threshold = %v, want %v", result.Threshold, original.Threshold)
-	}
+	assertAnalysisEqual(t, result, original)
 }
 
 // TestCloneGroupJSONRoundTrip tests JSON marshaling/unmarshaling for CloneGroup.
@@ -347,16 +359,5 @@ func TestCloneGroupJSONRoundTrip(t *testing.T) {
 	}
 
 	result := testutil.AssertJSONRoundTrip(t, original)
-
-	if result.ID != original.ID {
-		t.Errorf("ID = %v, want %v", result.ID, original.ID)
-	}
-
-	if result.Hash != original.Hash {
-		t.Errorf("Hash = %v, want %v", result.Hash, original.Hash)
-	}
-
-	if result.Severity != original.Severity {
-		t.Errorf("Severity = %v, want %v", result.Severity, original.Severity)
-	}
+	assertCloneGroupEqual(t, result, original)
 }

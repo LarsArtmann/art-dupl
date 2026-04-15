@@ -289,19 +289,16 @@ func buildBinary(outputPath string) error {
 
 // findRepoRoot finds the repository root directory.
 func findRepoRoot() (string, error) {
-	// Start from current directory and look for git repo or go.mod
 	current, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
 	for {
-		if _, err := os.Stat(filepath.Join(current, "go.mod")); err == nil {
-			return current, nil
-		}
-
-		if _, err := os.Stat(filepath.Join(current, ".git")); err == nil {
-			return current, nil
+		for _, name := range []string{"go.mod", ".git"} {
+			if _, err := os.Stat(filepath.Join(current, name)); err == nil {
+				return current, nil
+			}
 		}
 
 		parent := filepath.Dir(current)

@@ -11,7 +11,7 @@ import (
 )
 
 // assertSingleChange asserts that changes has exactly 1 item and verifies its status.
-func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, changeType string) {
+func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, changeType string, expectedPath ...string) {
 	t.Helper()
 
 	if len(changes) != 1 {
@@ -20,6 +20,10 @@ func assertSingleChange(t *testing.T, changes []ChangeInfo, expectedStatus, chan
 
 	if len(changes) > 0 && changes[0].Status != expectedStatus {
 		t.Errorf("Expected status %s for %s, got %q", expectedStatus, changeType, changes[0].Status)
+	}
+
+	if len(expectedPath) > 0 && len(changes) > 0 && changes[0].Path != expectedPath[0] {
+		t.Errorf("Expected path %s, got %q", expectedPath[0], changes[0].Path)
 	}
 }
 
@@ -193,13 +197,22 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 		testutil.AssertErrorIs(t, err, ErrNotGitRepo, "GetChangedFiles")
 	})
 
-	t.Run("no changes", func(t *testing.T) { testNoChanges(t, "HEAD") })
+	t.Run("no changes", func(t *testing.T) {
+		for _, tc := range []struct {
+			name  string
+			since string
+		}{
+			{"with HEAD", "HEAD"},
+			{"empty since defaults to HEAD", ""},
+		} {
+			t.Run(tc.name, func(t *testing.T) { testNoChanges(t, tc.since) })
+		}
+	})
 
 	t.Run("with modified files", func(t *testing.T) {
 		repoDir := setupGitRepo(t)
 		createAndCommitFile(t, repoDir, "file.go", "package main\n")
 
-		// Modify the file
 		writeFile(t, repoDir, "file.go", "package main\n\nfunc main() {}\n")
 
 		detector := NewChangeDetector(repoDir)
@@ -211,8 +224,6 @@ func TestChangeDetector_GetChangedFiles(t *testing.T) {
 
 		assertSingleChange(t, changes, "M", "change")
 	})
-
-	t.Run("empty since defaults to HEAD", func(t *testing.T) { testNoChanges(t, "") })
 }
 
 // TestGetChangedGoFiles tests Go file filtering.
@@ -466,11 +477,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("M\tfile.go\n")
 
 		result := detector.parseDiffOutput(output)
-		assertSingleChange(t, result, "M", "result")
-
-		if result[0].Path != "file.go" {
-			t.Errorf("Expected path file.go, got %q", result[0].Path)
-		}
+		assertSingleChange(t, result, "M", "result", "file.go")
 	})
 
 	t.Run("multiple files", func(t *testing.T) {
@@ -488,11 +495,7 @@ func TestChangeDetector_parseDiffOutput(t *testing.T) {
 		output := []byte("R100\told.go\tnew.go\n")
 
 		result := detector.parseDiffOutput(output)
-		testutil.AssertCount(t, len(result), 1, "results")
-		// Should use the new path (second path)
-		if result[0].Path != "new.go" {
-			t.Errorf("Expected path new.go, got %q", result[0].Path)
-		}
+		assertSingleChange(t, result, "R100", "result", "new.go")
 	})
 
 	t.Run("invalid lines ignored", func(t *testing.T) {

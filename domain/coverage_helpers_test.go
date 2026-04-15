@@ -239,46 +239,34 @@ func testUnmarshalUintNonZero(t *testing.T, input []byte, expectError bool, expe
 }
 
 func TestUnmarshalUintGeneric(t *testing.T) {
-	t.Run("uint16", func(t *testing.T) {
-		var result uint16
+	for _, tc := range []struct {
+		name        string
+		data        []byte
+		expectError bool
+	}{
+		{name: "uint16", data: []byte("42"), expectError: false},
+		{name: "uint32", data: []byte("42"), expectError: false},
+		{name: "invalid JSON", data: []byte("invalid"), expectError: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var result uint16
 
-		err := unmarshalUintGeneric[uint16]([]byte("42"), "TestType", func(n uint16) {
-			result = n
+			err := unmarshalUintGeneric[uint16](tc.data, "TestType", func(n uint16) {
+				result = n
+			})
+
+			if tc.expectError {
+				if err == nil {
+					t.Error("expected error for invalid JSON")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+				if result != 42 {
+					t.Errorf("result = %v, want 42", result)
+				}
+			}
 		})
-		if err != nil {
-			t.Errorf("unmarshalUintGeneric() error = %v", err)
-		}
-
-		if result != 42 {
-			t.Errorf("unmarshalUintGeneric() result = %v, want 42", result)
-		}
-	})
-
-	t.Run("uint32", func(t *testing.T) {
-		var result uint32
-
-		err := unmarshalUintGeneric[uint32]([]byte("42"), "TestType", func(n uint32) {
-			result = n
-		})
-		if err != nil {
-			t.Errorf("unmarshalUintGeneric() error = %v", err)
-		}
-
-		if result != 42 {
-			t.Errorf("unmarshalUintGeneric() result = %v, want 42", result)
-		}
-	})
-
-	t.Run("invalid JSON", func(t *testing.T) {
-		var result uint16
-
-		err := unmarshalUintGeneric[uint16]([]byte("invalid"), "TestType", func(n uint16) {
-			result = n
-		})
-		_ = result
-
-		if err == nil {
-			t.Error("unmarshalUintGeneric() error = nil, want error for invalid JSON")
-		}
-	})
+	}
 }

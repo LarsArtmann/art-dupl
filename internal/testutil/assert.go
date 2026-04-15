@@ -93,7 +93,7 @@ func AssertError(t *testing.T, err error, what string) {
 }
 
 // AssertErrorIs asserts that err wraps the expected error.
-func AssertErrorIs(t *testing.T, err error, want error, what string) {
+func AssertErrorIs(t *testing.T, err, want error, what string) {
 	t.Helper()
 
 	if !errors.Is(err, want) {

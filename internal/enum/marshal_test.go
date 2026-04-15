@@ -236,6 +236,8 @@ func TestUnmarshalJSONFromStrings(t *testing.T) {
 }
 
 func TestParseEnum(t *testing.T) {
+	allValues := []testEnum{testEnumA, testEnumB, testEnumC}
+
 	tests := []struct {
 		name         string
 		input        string
@@ -247,28 +249,28 @@ func TestParseEnum(t *testing.T) {
 			name:         "valid value",
 			input:        "alpha",
 			defaultValue: testEnumC,
-			validValues:  []testEnum{testEnumA, testEnumB, testEnumC},
+			validValues:  allValues,
 			expected:     testEnumA,
 		},
 		{
 			name:         "empty returns default",
 			input:        "",
 			defaultValue: testEnumB,
-			validValues:  []testEnum{testEnumA, testEnumB, testEnumC},
+			validValues:  allValues,
 			expected:     testEnumB,
 		},
 		{
 			name:         "whitespace trimmed",
 			input:        "  beta  ",
 			defaultValue: testEnumC,
-			validValues:  []testEnum{testEnumA, testEnumB, testEnumC},
+			validValues:  allValues,
 			expected:     testEnumB,
 		},
 		{
 			name:         "invalid returns default",
 			input:        "invalid",
 			defaultValue: testEnumC,
-			validValues:  []testEnum{testEnumA, testEnumB, testEnumC},
+			validValues:  allValues,
 			expected:     testEnumC,
 		},
 	}

@@ -5,12 +5,12 @@ import (
 	"testing"
 )
 
-// assertLineCount checks that a slice has the expected number of lines.
-func assertLineCount(t *testing.T, actual, expected int, label string) {
+// assertCount checks that an actual count matches the expected count.
+func assertCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
 
 	if actual != expected {
-		t.Errorf("Expected %d %s lines, got %d", expected, label, actual)
+		t.Errorf("Expected %d %s, got %d", expected, label, actual)
 	}
 }
 
@@ -18,9 +18,7 @@ func assertLineCount(t *testing.T, actual, expected int, label string) {
 func assertCloneCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
 
-	if actual != expected {
-		t.Errorf("Expected %d %s, got %d", expected, label, actual)
-	}
+	assertCount(t, actual, expected, label)
 }
 
 // assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
@@ -51,8 +49,8 @@ func TestLineDiff_EqualContent(t *testing.T) {
 	}
 
 	// Verify line counts using a helper to avoid duplication
-	assertLineCount(t, len(result.Base), 3, "base")
-	assertLineCount(t, len(result.Compared), 3, "compared")
+	assertCount(t, len(result.Base), 3, "base")
+	assertCount(t, len(result.Compared), 3, "compared")
 
 	// All lines should be marked as equal
 	for i, line := range result.Base {
@@ -105,7 +103,7 @@ func TestLineDiff_AddedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for added content")
 	}
 
-	assertLineCount(t, len(result.Compared), 3, "compared")
+	assertCount(t, len(result.Compared), 3, "compared")
 
 	if result.Compared[2].Type != DiffLineAdded {
 		t.Errorf("Expected compared line 2 to be Added, got %d", result.Compared[2].Type)
@@ -122,7 +120,7 @@ func TestLineDiff_RemovedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for removed content")
 	}
 
-	assertLineCount(t, len(result.Base), 3, "base")
+	assertCount(t, len(result.Base), 3, "base")
 
 	if result.Base[2].Type != DiffLineRemoved {
 		t.Errorf("Expected base line 2 to be Removed, got %d", result.Base[2].Type)

@@ -9,6 +9,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
+func validOpts(threshold int) *Options {
+	return &Options{
+		Threshold:        threshold,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+		MaxWorkers:       1,
+	}
+}
+
 // TestDefaultOptions_Values tests that DefaultOptions returns sensible values.
 func TestDefaultOptions_Values(t *testing.T) {
 	opts := DefaultOptions()
@@ -137,22 +145,8 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 		name string
 		opts *Options
 	}{
-		{
-			name: "minimal valid",
-			opts: &Options{
-				Threshold:        1,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-				MaxWorkers:       1,
-			},
-		},
-		{
-			name: "max threshold",
-			opts: &Options{
-				Threshold:        1000,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-				MaxWorkers:       1,
-			},
-		},
+		{name: "min threshold", opts: validOpts(1)},
+		{name: "max threshold", opts: validOpts(1000)},
 		{
 			name: "multiple detection methods",
 			opts: &Options{
@@ -177,21 +171,21 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 		},
 		{
 			name: "zero max file size (unlimited)",
-			opts: &Options{
-				Threshold:        15,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-				MaxFileSize:      0,
-				MaxWorkers:       1,
-			},
+			opts: func() *Options {
+				o := validOpts(15)
+				o.MaxFileSize = 0
+
+				return o
+			}(),
 		},
 		{
 			name: "zero timeout (no timeout)",
-			opts: &Options{
-				Threshold:        15,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-				Timeout:          0,
-				MaxWorkers:       1,
-			},
+			opts: func() *Options {
+				o := validOpts(15)
+				o.Timeout = 0
+
+				return o
+			}(),
 		},
 	}
 

@@ -68,9 +68,16 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 
 // createTestCloneGroups creates a standard set of clone groups for testing.
 func createTestCloneGroups() [][]*syntax.Node {
+	cloneGroup := func(filename string) []*syntax.Node {
+		return []*syntax.Node{
+			{Filename: filename, Pos: 2, End: 3},
+			{Filename: filename, Pos: 2, End: 3},
+		}
+	}
+
 	return [][]*syntax.Node{
-		{{Filename: "file1.go", Pos: 2, End: 3}, {Filename: "file1.go", Pos: 2, End: 3}},
-		{{Filename: "file2.go", Pos: 2, End: 3}, {Filename: "file2.go", Pos: 2, End: 3}},
+		cloneGroup("file1.go"),
+		cloneGroup("file2.go"),
 	}
 }
 

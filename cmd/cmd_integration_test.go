@@ -113,16 +113,19 @@ func TestRunCmd_Integration(t *testing.T) {
 		}
 	})
 
-	t.Run("json output format", func(t *testing.T) {
-		runOutputFormatTest(t, "--json")
-	})
-
-	t.Run("plumbing output format", func(t *testing.T) {
-		runOutputFormatTest(t, "--plumbing")
-	})
-
-	t.Run("html output format", func(t *testing.T) {
-		runOutputFormatTest(t, "--html")
+	t.Run("output format", func(t *testing.T) {
+		for _, tc := range []struct {
+			name       string
+			formatFlag string
+		}{
+			{"json", "--json"},
+			{"plumbing", "--plumbing"},
+			{"html", "--html"},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				runOutputFormatTest(t, tc.formatFlag)
+			})
+		}
 	})
 
 	t.Run("verbose output", func(t *testing.T) {
@@ -190,12 +193,18 @@ func TestRunStats_Integration(t *testing.T) {
 		}
 	})
 
-	t.Run("stats with json format", func(t *testing.T) {
-		runStatsFormatTest(t, "json")
-	})
-
-	t.Run("stats with csv format", func(t *testing.T) {
-		runStatsFormatTest(t, "csv")
+	t.Run("stats format", func(t *testing.T) {
+		for _, tc := range []struct {
+			name   string
+			format string
+		}{
+			{"json", "json"},
+			{"csv", "csv"},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				runStatsFormatTest(t, tc.format)
+			})
+		}
 	})
 
 	t.Run("stats invalid format returns error", func(t *testing.T) {

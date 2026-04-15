@@ -179,11 +179,7 @@ var _ = Describe("Error Handling", func() {
 			// Should fail gracefully
 			Expect(err).To(HaveOccurred())
 			Expect(string(output)).NotTo(BeEmpty())
-			Expect(string(output)).To(SatisfyAny(
-				ContainSubstring("error"),
-				ContainSubstring("not found"),
-				ContainSubstring("no such"),
-			))
+			assertErrorMessage(output)
 		})
 
 		It("should handle config with invalid values gracefully", func() {
