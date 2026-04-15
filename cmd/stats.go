@@ -63,9 +63,32 @@ func NewStatsCommand() *cobra.Command {
 	return cmd
 }
 
+// applyFilterStats applies filter statistics to the stats printer.
+func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterStats) {
+	totalFiltered := filterStats.TotalFiltered()
+	if totalFiltered <= 0 {
+		return
+	}
+
+	breakdown := make(map[string]int)
+
+	for _, reason := range gogenfilter.AllFilterReasons() {
+		if reason == "not_filtered" {
+			continue
+		}
+
+		count := filterStats.FilteredBy(reason)
+		if count > 0 {
+			breakdown[string(reason)] = count
+		}
+	}
+
+	sp.SetFilterStats(totalFiltered, breakdown)
+}
+
 // runStats implements the stats command.
 //
-//nolint:gocognit,gocyclo,cyclop,funlen,maintidx // Stats command requires handling many CLI flags and configuration options
+//nolint:gocyclo,cyclop,funlen // Stats command requires handling many CLI flags and configuration options
 func runStats(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
 	formatStr, _ := cmd.Flags().GetString("format")
@@ -147,23 +170,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	// Set filter statistics
 	if sp, ok := p.(printer.StatsPrinter); ok {
-		totalFiltered := filterStats.TotalFiltered()
-		if totalFiltered > 0 {
-			breakdown := make(map[string]int)
-
-			for _, reason := range gogenfilter.AllFilterReasons() {
-				if reason == "not_filtered" {
-					continue
-				}
-
-				count := filterStats.FilteredBy(reason)
-				if count > 0 {
-					breakdown[string(reason)] = count
-				}
-			}
-
-			sp.SetFilterStats(totalFiltered, breakdown)
-		}
+		applyFilterStats(sp, filterStats)
 	}
 
 	// Build groups from matches

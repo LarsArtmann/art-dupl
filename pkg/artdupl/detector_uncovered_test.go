@@ -36,15 +36,6 @@ func verifyCloneCount(t *testing.T, got, expected int) {
 	}
 }
 
-// verifyResultCount verifies the expected number of results.
-func verifyResultCount(t *testing.T, got, expected int) {
-	t.Helper()
-
-	if got != expected {
-		t.Errorf("result count mismatch: want %d, got %d", expected, got)
-	}
-}
-
 // newTestDetector creates a detector with default test configuration.
 func newTestDetector() *detector {
 	return &detector{

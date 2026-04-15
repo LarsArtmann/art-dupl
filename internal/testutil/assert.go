@@ -129,11 +129,11 @@ func AssertStringPrefix(t *testing.T, got, prefix, what string) {
 }
 
 // AssertIntInRange asserts that got is within min and max (inclusive).
-func AssertIntInRange(t *testing.T, got, min, max int, what string) {
+func AssertIntInRange(t *testing.T, got, minVal, maxVal int, what string) {
 	t.Helper()
 
-	if got < min || got > max {
-		t.Errorf("%s: expected %d to be in range [%d, %d]", what, got, min, max)
+	if got < minVal || got > maxVal {
+		t.Errorf("%s: expected %d to be in range [%d, %d]", what, got, minVal, maxVal)
 	}
 }
 
@@ -223,7 +223,9 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 	}
 
 	var result T
-	if err := json.Unmarshal(data, &result); err != nil {
+
+	err = json.Unmarshal(data, &result)
+	if err != nil {
 		t.Fatalf("json.Unmarshal() error = %v", err)
 	}
 

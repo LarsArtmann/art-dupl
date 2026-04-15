@@ -45,12 +45,10 @@ type FlagValues struct {
 // BuildConfigFromFlags extracts flag values and builds a merged configuration.
 // This function handles the common config-building logic shared between run and stats commands.
 func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, error) {
-	flags, err := extractFlagValues(cmd, args)
-	if err != nil {
-		return nil, err
-	}
+	flags := extractFlagValues(cmd, args)
 
-	if err := validateMutualExclusion(flags.Semantic, flags.Structural); err != nil {
+	err := validateMutualExclusion(flags.Semantic, flags.Structural)
+	if err != nil {
 		return nil, err
 	}
 
@@ -58,7 +56,8 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 
 	appConfig := &config.Config{}
 
-	if err := applyFlagValues(appConfig, flags); err != nil {
+	err = applyFlagValues(appConfig, flags)
+	if err != nil {
 		return nil, err
 	}
 
@@ -76,7 +75,8 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 		mergedConfig.Semantic = false
 	}
 
-	if err := config.ValidateConfig(mergedConfig); err != nil {
+	err = config.ValidateConfig(mergedConfig)
+	if err != nil {
 		return nil, duplerrors.WrapValidation(
 			err,
 			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),
@@ -87,7 +87,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 }
 
 // extractFlagValues extracts all flag values from the command.
-func extractFlagValues(cmd *cobra.Command, args []string) (*FlagValues, error) {
+func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 	configFile, _ := cmd.Flags().GetString("config")
 	vendor, _ := cmd.Flags().GetBool("vendor")
 	verboseCount, _ := cmd.Flags().GetCount("verbose")
@@ -144,7 +144,7 @@ func extractFlagValues(cmd *cobra.Command, args []string) (*FlagValues, error) {
 		ClearCache:         clearCache,
 		Workers:            workers,
 		DiffMode:           diffMode,
-	}, nil
+	}
 }
 
 // validateMutualExclusion checks that semantic and structural are not both set.
@@ -184,6 +184,22 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 		cfg.Threshold = flags.Threshold
 	}
 
+	applyBooleanFlags(cfg, flags)
+	applyPatternFlags(cfg, flags)
+	applyTimeoutFlag(cfg, flags)
+	applyDiffModeFlag(cfg, flags)
+
+	if len(flags.Paths) > 0 {
+		cfg.Paths = flags.Paths
+	}
+
+	return nil
+}
+
+// applyBooleanFlags applies boolean flag values to the config.
+//
+//nolint:gocyclo,cyclop // Boolean flag assignments are inherently branching but straightforward
+func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 	if flags.Vendor {
 		cfg.IncludeVendor = flags.Vendor
 	}
@@ -198,18 +214,6 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 
 	if flags.Profile {
 		cfg.Profile = true
-	}
-
-	if flags.Timeout != "" && flags.Timeout != "30m" {
-		duration, err := time.ParseDuration(flags.Timeout)
-		if err != nil {
-			return duplerrors.WrapValidation(
-				err,
-				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", flags.Timeout),
-			)
-		}
-
-		cfg.Timeout = int(duration.Seconds())
 	}
 
 	if flags.FilterGenerated {
@@ -236,20 +240,16 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 		cfg.IncludeStringer = true
 	}
 
-	if flags.Only != "" {
-		cfg.Only = flags.Only
-	}
-
-	if len(flags.IncludePatterns) > 0 {
-		cfg.IncludePatterns = flags.IncludePatterns
-	}
-
-	if len(flags.ExcludePatterns) > 0 {
-		cfg.ExcludePatterns = flags.ExcludePatterns
-	}
-
 	if flags.Incremental {
 		cfg.Incremental = true
+	}
+
+	if flags.Semantic {
+		cfg.Semantic = true
+	}
+
+	if flags.Workers != 0 {
+		cfg.Workers = flags.Workers
 	}
 
 	if flags.Since != "" {
@@ -263,30 +263,51 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 	if flags.ClearCache {
 		cfg.ClearCache = true
 	}
+}
 
-	if flags.Semantic {
-		cfg.Semantic = true
+// applyPatternFlags applies pattern-related flags to the config.
+func applyPatternFlags(cfg *config.Config, flags *FlagValues) {
+	if flags.Only != "" {
+		cfg.Only = flags.Only
 	}
 
-	if flags.Workers != 0 {
-		cfg.Workers = flags.Workers
+	if len(flags.IncludePatterns) > 0 {
+		cfg.IncludePatterns = flags.IncludePatterns
 	}
 
+	if len(flags.ExcludePatterns) > 0 {
+		cfg.ExcludePatterns = flags.ExcludePatterns
+	}
+}
+
+// applyTimeoutFlag applies the timeout flag to the config.
+func applyTimeoutFlag(cfg *config.Config, flags *FlagValues) {
+	if flags.Timeout != "" && flags.Timeout != "30m" {
+		duration, err := time.ParseDuration(flags.Timeout)
+		if err != nil {
+			err = duplerrors.WrapValidation(
+				err,
+				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", flags.Timeout),
+			)
+			panic(err)
+		}
+
+		cfg.Timeout = int(duration.Seconds())
+	}
+}
+
+// applyDiffModeFlag applies the diff mode flag to the config.
+func applyDiffModeFlag(cfg *config.Config, flags *FlagValues) {
 	if flags.DiffMode != "" {
 		parsedDiffMode, err := config.ParseDiffMode(flags.DiffMode)
 		if err != nil {
-			return duplerrors.WrapValidation(
+			err = duplerrors.WrapValidation(
 				err,
 				fmt.Sprintf("invalid --diff value %q", flags.DiffMode),
 			)
+			panic(err)
 		}
 
 		cfg.DiffMode = parsedDiffMode
 	}
-
-	if len(flags.Paths) > 0 {
-		cfg.Paths = flags.Paths
-	}
-
-	return nil
 }

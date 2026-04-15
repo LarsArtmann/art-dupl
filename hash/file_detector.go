@@ -141,7 +141,8 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 	if err != nil {
 		return f.fileError(filename, err, "skipping file that cannot be opened")
 	}
-	defer file.Close()
+
+	defer func() { _ = file.Close() }()
 
 	fi, err := file.Stat()
 	if err != nil {
@@ -151,7 +152,9 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 	size := int(fi.Size())
 
 	hasher := xxh3.New()
-	if _, err := io.Copy(hasher, file); err != nil {
+
+	_, err = io.Copy(hasher, file)
+	if err != nil {
 		return f.fileError(filename, err, "skipping file that cannot be read")
 	}
 

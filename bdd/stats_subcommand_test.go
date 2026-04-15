@@ -217,21 +217,30 @@ func pkgFunc() {}`
 	})
 
 	Context("When running stats with detection methods", func() {
-		It("should work with hash detection method", func() {
-			code := `package main
+		DescribeTable(
+			"should work with detection method",
+			func(method, code string, filenames []string) {
+				testDetectionMethod(setup, method, code, filenames)
+			},
+			Entry(
+				"hash detection method",
+				"hash",
+				`package main
 func hashTest() string {
 	return "hash"
-}`
-			testDetectionMethod(setup, "hash", code, []string{"hash1.go", "hash2.go"})
-		})
-
-		It("should work with art-dupl detection method", func() {
-			code := `package main
+}`,
+				[]string{"hash1.go", "hash2.go"},
+			),
+			Entry(
+				"art-dupl detection method",
+				"art-dupl",
+				`package main
 func artDuplTest() string {
 	return "art-dupl"
-}`
-			testDetectionMethod(setup, "art-dupl", code, []string{"art1.go", "art2.go"})
-		})
+}`,
+				[]string{"art1.go", "art2.go"},
+			),
+		)
 	})
 
 	Context("When running stats with filter options", func() {

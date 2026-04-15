@@ -166,6 +166,21 @@ func runConstructorTests[T any](
 	}
 }
 
+// runConstructorTestsWithConverter runs constructor tests with a type conversion helper.
+func runConstructorTestsWithConverter[T, U any](
+	t *testing.T,
+	constructorName string,
+	tests []constructorTest[T],
+	constructorFunc func(U) (T, error),
+	inputConverter func(any) U,
+) {
+	t.Helper()
+
+	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
+		return constructorFunc(inputConverter(input))
+	})
+}
+
 // jsonTest is a helper for testing JSON marshaling/unmarshaling.
 type jsonTest[T comparable] struct {
 	name    string
@@ -905,8 +920,8 @@ func registerBasicUintConstructorTest[T any](
 		},
 	)
 	tests = append(tests, extraTests...)
-	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
-		return constructorFunc(input.(uint))
+	runConstructorTestsWithConverter(t, constructorName, tests, constructorFunc, func(input any) uint {
+		return input.(uint)
 	})
 }
 
@@ -920,8 +935,8 @@ func registerStringConstructorTest[T comparable](
 	constructorFunc func(string) (T, error),
 ) {
 	t.Helper()
-	runConstructorTests(t, constructorName, tests, func(input any) (T, error) {
-		return constructorFunc(input.(string))
+	runConstructorTestsWithConverter(t, constructorName, tests, constructorFunc, func(input any) string {
+		return input.(string)
 	})
 }
 

@@ -37,7 +37,7 @@ func setDetectionMethods(appConfig *config.Config, detectionMethods string) erro
 
 // runCmd implements Cobra command execution.
 //
-//nolint:gocyclo,cyclop,funlen,gocognit,maintidx // Command execution requires handling many CLI flags and configuration options
+//nolint:funlen // Command execution requires handling many CLI flags and configuration options
 func runCmd(cmd *cobra.Command, args []string) error {
 	html, _ := cmd.Flags().GetBool("html")
 	jsonFlag, _ := cmd.Flags().GetBool("json")
@@ -72,7 +72,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	// Re-validate after adding output format
-	if err := config.ValidateConfig(mergedConfig); err != nil {
+	err = config.ValidateConfig(mergedConfig)
+	if err != nil {
 		return duplerrors.WrapValidation(
 			err,
 			fmt.Sprintf("configuration validation failed (paths: %v)", mergedConfig.Paths),

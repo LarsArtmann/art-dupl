@@ -256,6 +256,8 @@ func testClonePriority(
 	getValue func(ClonePriority) string,
 	expected map[ClonePriority]string,
 ) {
+	t.Helper()
+
 	for priority, want := range expected {
 		t.Run(name+"_"+string(priority), func(t *testing.T) {
 			if got := getValue(priority); got != want {

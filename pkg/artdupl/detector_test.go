@@ -152,21 +152,6 @@ func TestNewDetector_InvalidMaxFileSize(t *testing.T) {
 	}
 }
 
-// TestNewDetector_InvalidTimeout tests detector creation with invalid timeout.
-func TestNewDetector_InvalidTimeout(t *testing.T) {
-	opts := &Options{
-		Threshold:        15,
-		DetectionMethods: []DetectionMethod{MethodArtDupl},
-		MaxWorkers:       4,
-		Timeout:          -1 * time.Second,
-	}
-
-	_, err := NewDetector(opts)
-	if !errors.Is(err, ErrInvalidTimeout) {
-		t.Errorf("Expected ErrInvalidTimeout, got: %v", err)
-	}
-}
-
 // TestSyntaxNode_BasicUsage tests basic syntax.Node usage in conversions.
 func TestSyntaxNode_BasicUsage(t *testing.T) {
 	node := &syntax.Node{

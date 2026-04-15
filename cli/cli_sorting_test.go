@@ -108,6 +108,7 @@ func buildGroupsFromMatches(matches []syntax.Match) map[string][][]*syntax.Node 
 	for _, match := range matches {
 		groups[match.Hash] = append(groups[match.Hash], match.Frags...)
 	}
+
 	return groups
 }
 

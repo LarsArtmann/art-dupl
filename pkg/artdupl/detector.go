@@ -58,7 +58,8 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	d.started = time.Now()
 
 	// Validate inputs
-	if err := d.validateInputsOrError(ctx, files); err != nil {
+	err := d.validateInputsOrError(ctx, files)
+	if err != nil {
 		return nil, err
 	}
 

@@ -38,7 +38,7 @@ func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
 // - both slices are empty (equal, return false)
 // - i is non-empty and j is empty (i should come first, return true)
 // - i is empty and j is non-empty (i should come last, return false).
-func isEmptyOrLessThanEmpty[T any](slices [][]T, i, j int) (handled, lessThan bool) {
+func isEmptyOrLessThanEmpty[T any](slices [][]T, i, j int) (bool, bool) {
 	if len(slices[i]) == 0 && len(slices[j]) == 0 {
 		return true, false // Both empty, they're equal
 	}

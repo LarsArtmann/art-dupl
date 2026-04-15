@@ -51,16 +51,21 @@ templ %s(%s string) {
 }`, componentName, paramName, htmlBody)
 	}
 
+	// createTemplComponent returns a templ component with the given HTML body template.
+	// The htmlTemplate should be a format string with one %s placeholder for the parameter.
+	createTemplComponent := func(componentName, paramName, htmlTemplate string) string {
+		return templComponentCode(componentName, paramName,
+			fmt.Sprintf(htmlTemplate, paramName))
+	}
+
 	// buttonTemplCode returns a standardized button component template
 	buttonTemplCode := func(componentName, paramName string) string {
-		return templComponentCode(componentName, paramName,
-			fmt.Sprintf(`<button type="button" class="btn">\n\t\t{ %s }\n\t</button>`, paramName))
+		return createTemplComponent(componentName, paramName, `<button type="button" class="btn">\n\t\t{ %s }\n\t</button>`)
 	}
 
 	// inputTemplCode returns a standardized input field component template
 	inputTemplCode := func(componentName, paramName string) string {
-		return templComponentCode(componentName, paramName,
-			fmt.Sprintf(`<input type="text" name={ %s } />`, paramName))
+		return createTemplComponent(componentName, paramName, `<input type="text" name={ %s } />`)
 	}
 
 	Context("When analyzing .templ source files", func() {

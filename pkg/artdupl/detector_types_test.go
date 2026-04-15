@@ -42,32 +42,6 @@ func assertMethodsCount(t *testing.T, got, expected int) {
 	}
 }
 
-// assertSummaryFields asserts Summary field values.
-func assertSummaryFields(
-	t *testing.T,
-	summary *Summary,
-	files, clones, groups int,
-	methods int,
-) {
-	t.Helper()
-
-	if summary.TotalFiles != files {
-		t.Errorf("TotalFiles: expected %d, got %d", files, summary.TotalFiles)
-	}
-
-	if summary.TotalClones != clones {
-		t.Errorf("TotalClones: expected %d, got %d", clones, summary.TotalClones)
-	}
-
-	if summary.TotalGroups != groups {
-		t.Errorf("TotalGroups: expected %d, got %d", groups, summary.TotalGroups)
-	}
-
-	if len(summary.MethodsUsed) != methods {
-		t.Errorf("MethodsUsed: expected %d, got %d", methods, len(summary.MethodsUsed))
-	}
-}
-
 // TestCloneGroup_Fields tests CloneGroup field assignments.
 func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
