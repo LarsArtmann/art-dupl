@@ -81,20 +81,25 @@ func (p *stats) getSizeRange(lines int) string {
 // Ranges are threshold-aware to provide meaningful distribution.
 func (p *stats) getTokenRange(tokens int) string {
 	t := p.threshold
-	switch {
-	case tokens <= t:
-		return fmt.Sprintf("%d-%d tokens", 1, t)
-	case tokens <= t*2:
-		return fmt.Sprintf("%d-%d tokens", t+1, t*2)
-	case tokens <= t*3:
-		return p.tokenRangeStr(t*2+1, t*3)
-	case tokens <= t*5:
-		return p.tokenRangeStr(t*3+1, t*5)
-	case tokens <= t*10:
-		return p.tokenRangeStr(t*5+1, t*10)
-	default:
-		return fmt.Sprintf("%d+ tokens", t*10+1)
+	multipliers := []struct {
+		limit     int
+		startMult int
+		endMult   int
+	}{
+		{t, 0, 1},
+		{t * 2, 1, 2},
+		{t * 3, 2, 3},
+		{t * 5, 3, 5},
+		{t * 10, 5, 10},
 	}
+
+	for _, m := range multipliers {
+		if tokens <= m.limit {
+			return p.tokenRangeStr(t*m.startMult+1, t*m.endMult)
+		}
+	}
+
+	return fmt.Sprintf("%d+ tokens", t*10+1)
 }
 
 // tokenRangeStr returns a formatted token range string.

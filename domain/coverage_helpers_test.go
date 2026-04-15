@@ -263,6 +263,7 @@ func TestUnmarshalUintGeneric(t *testing.T) {
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
 				}
+
 				if result != 42 {
 					t.Errorf("result = %v, want 42", result)
 				}
