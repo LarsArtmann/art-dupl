@@ -151,10 +151,9 @@ func ExtractSortCriteria(sortBy ...SortBy) SortBy {
 
 func sortClonesByFilename(cloneGroups [][]clone) {
 	sort.Slice(cloneGroups, func(i, j int) bool {
-		if len(cloneGroups[i]) == 0 || len(cloneGroups[j]) == 0 {
-			return len(cloneGroups[i]) > 0 && len(cloneGroups[j]) == 0
+		if handled, lessThan := isEmptyOrLessThanEmpty(cloneGroups, i, j); handled {
+			return lessThan
 		}
-		// Compare by filename of first clone in each group
 		if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
 			return cloneGroups[i][0].lineStart < cloneGroups[j][0].lineStart
 		}
