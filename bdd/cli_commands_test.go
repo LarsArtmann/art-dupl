@@ -430,8 +430,8 @@ var _ = Describe("CLI Documentation Quality", func() {
 
 		It("should provide examples in help", func() {
 			outputStr := getHelpOutput(setup)
-			// Should have examples section or usage examples
 			Expect(outputStr).To(SatisfyAny(
+				ContainSubstring("EXAMPLES"),
 				ContainSubstring("Example"),
 				ContainSubstring("example"),
 			))
