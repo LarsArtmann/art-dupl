@@ -40,7 +40,6 @@ import (
 	"io"
 
 	"charm.land/lipgloss/v2"
-
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 

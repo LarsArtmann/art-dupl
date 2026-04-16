@@ -282,6 +282,7 @@ func mustNewLineNumber(n uint16) domain.LineNumber {
 	if err != nil {
 		panic(err)
 	}
+
 	return lineNum
 }
 

@@ -11,6 +11,7 @@ func compareByNameThenPos(nameI, nameJ string, posI, posJ int) bool {
 	if nameI == nameJ {
 		return posI < posJ
 	}
+
 	return nameI < nameJ
 }
 
@@ -94,7 +95,11 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
 			return lessThan
 		}
-		return compareByNameThenPos(dups[i][0].Filename, dups[j][0].Filename, int(dups[i][0].Pos), int(dups[j][0].Pos))
+
+		return compareByNameThenPos(
+			dups[i][0].Filename, dups[j][0].Filename,
+			int(dups[i][0].Pos), int(dups[j][0].Pos),
+		)
 	})
 
 	return dups
@@ -157,6 +162,10 @@ func sortClonesByFilename(cloneGroups [][]clone) {
 		if handled, lessThan := isEmptyOrLessThanEmpty(cloneGroups, i, j); handled {
 			return lessThan
 		}
-		return compareByNameThenPos(cloneGroups[i][0].filename, cloneGroups[j][0].filename, cloneGroups[i][0].lineStart, cloneGroups[j][0].lineStart)
+
+		return compareByNameThenPos(
+			cloneGroups[i][0].filename, cloneGroups[j][0].filename,
+			cloneGroups[i][0].lineStart, cloneGroups[j][0].lineStart,
+		)
 	})
 }

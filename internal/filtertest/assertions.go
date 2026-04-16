@@ -43,7 +43,12 @@ func AssertFilesShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepat
 }
 
 // AssertFilesFiltered asserts that files should (or should not) be filtered based on shouldFilter.
-func AssertFilesFiltered(t *testing.T, fltr *gogenfilter.Filter, filepaths []string, shouldFilter bool) {
+func AssertFilesFiltered(
+	t *testing.T,
+	fltr *gogenfilter.Filter,
+	filepaths []string,
+	shouldFilter bool,
+) {
 	t.Helper()
 
 	for _, filepath := range filepaths {

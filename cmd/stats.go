@@ -88,7 +88,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterSta
 
 // runStats implements the stats command.
 //
-//nolint:gocyclo,cyclop,funlen // Stats command requires handling many CLI flags and configuration options
+//nolint:funlen // Stats command requires handling many CLI flags and configuration options
 func runStats(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
 	formatStr, _ := cmd.Flags().GetString("format")
