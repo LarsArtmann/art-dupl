@@ -218,7 +218,7 @@ The project is in excellent shape. No critical issues, no broken builds, no fail
 
 | #   | Task                             | Effort   | Impact |
 | --- | -------------------------------- | -------- | ------ |
-| 21  | Create VS Code extension         | 8 hours  | MEDIUM |
+| 21 | ~~Create VS Code extension~~         | ~~8 hours~~  | ~~MEDIUM~~ | **REMOVED - not VS Code** |
 | 22  | Create JetBrains plugin          | 16 hours | MEDIUM |
 | 23  | Add incremental clone detection  | 8 hours  | HIGH   |
 | 24  | Create web dashboard for reports | 16 hours | LOW    |

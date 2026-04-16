@@ -5,6 +5,15 @@ import (
 	"testing"
 )
 
+// assertEqual is a generic equality assertion helper.
+func assertEqual[T comparable](t *testing.T, got, expected T, name string) {
+	t.Helper()
+
+	if got != expected {
+		t.Errorf("%s: expected %v, got %v", name, expected, got)
+	}
+}
+
 func TestDuplError(t *testing.T) {
 	cause := errors.New("cause error")
 
@@ -23,21 +32,10 @@ func TestDuplError(t *testing.T) {
 	}
 
 	// Test fields
-	if err.Type != ParseError {
-		t.Errorf("Expected ParseError type, got %s", err.Type)
-	}
-
-	if err.File != "test.go" {
-		t.Errorf("Expected 'test.go', got '%s'", err.File)
-	}
-
-	if err.Line != 42 {
-		t.Errorf("Expected 42, got %d", err.Line)
-	}
-
-	if err.Message != "test message" {
-		t.Errorf("Expected 'test message', got '%s'", err.Message)
-	}
+	assertEqual(t, err.Type, ParseError, "Type")
+	assertEqual(t, err.File, "test.go", "File")
+	assertEqual(t, err.Line, 42, "Line")
+	assertEqual(t, err.Message, "test message", "Message")
 }
 
 func TestErrorTypes(t *testing.T) {

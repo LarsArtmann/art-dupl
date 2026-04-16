@@ -14,6 +14,24 @@ func assertCount(t *testing.T, actual, expected int, label string) {
 	}
 }
 
+// assertStringContains checks that s contains substr.
+func assertStringContains(t *testing.T, s, substr, msg string) {
+	t.Helper()
+
+	if !strings.Contains(s, substr) {
+		t.Error(msg)
+	}
+}
+
+// assertStringNotContains checks that s does not contain substr.
+func assertStringNotContains(t *testing.T, s, substr, msg string) {
+	t.Helper()
+
+	if strings.Contains(s, substr) {
+		t.Error(msg)
+	}
+}
+
 // assertCloneCount checks that the number of clones matches expectations.
 func assertCloneCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
@@ -488,13 +506,8 @@ func TestWordDiff_EqualContent(t *testing.T) {
 	result := WordDiff(base, compared)
 
 	// Should not contain added/removed spans for identical content
-	if strings.Contains(result, `class="word-added"`) {
-		t.Error("Expected no word-added spans for identical content")
-	}
-
-	if strings.Contains(result, `class="word-removed"`) {
-		t.Error("Expected no word-removed spans for identical content")
-	}
+	assertStringNotContains(t, result, `class="word-added"`, "Expected no word-added spans for identical content")
+	assertStringNotContains(t, result, `class="word-removed"`, "Expected no word-removed spans for identical content")
 }
 
 func TestWordDiff_HasChanges(t *testing.T) {
@@ -519,13 +532,8 @@ func TestWordDiff_HasChanges(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := WordDiff(tt.base, tt.compared)
 
-			if !strings.Contains(result, `class="word-added"`) {
-				t.Error("Expected word-added span for changed word")
-			}
-
-			if !strings.Contains(result, `class="word-removed"`) {
-				t.Error("Expected word-removed span for changed word")
-			}
+			assertStringContains(t, result, `class="word-added"`, "Expected word-added span for changed word")
+			assertStringContains(t, result, `class="word-removed"`, "Expected word-removed span for changed word")
 		})
 	}
 }
@@ -536,9 +544,7 @@ func TestWordDiff_EmptyStrings(t *testing.T) {
 
 	result := WordDiff(base, compared)
 
-	if !strings.Contains(result, `class="word-added"`) {
-		t.Error("Expected word-added span for content added to empty base")
-	}
+	assertStringContains(t, result, `class="word-added"`, "Expected word-added span for content added to empty base")
 }
 
 func TestWordDiff_HTMLEscaping(t *testing.T) {

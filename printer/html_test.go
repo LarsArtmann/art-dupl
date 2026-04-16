@@ -8,7 +8,10 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
-func TestHTMLDiffRendering(t *testing.T) {
+// newTestHTMLPrinter creates a configured HTML printer for testing.
+func newTestHTMLPrinter(t *testing.T) (Printer, *bytes.Buffer) {
+	t.Helper()
+
 	var buf bytes.Buffer
 
 	printer := NewHTMLWithOptions(
@@ -19,93 +22,63 @@ func TestHTMLDiffRendering(t *testing.T) {
 		15,
 	)
 
-	err := printer.PrintHeader()
-	if err != nil {
+	if err := printer.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	err = printer.PrintFooter()
-	if err != nil {
+	if err := printer.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
+	return printer, &buf
+}
+
+// assertContains checks that s contains substr.
+func assertContains(t *testing.T, s, substr, msg string) {
+	t.Helper()
+
+	if !strings.Contains(s, substr) {
+		t.Error(msg)
+	}
+}
+
+// assertStringEqual checks that actual equals expected.
+func assertStringEqual(t *testing.T, actual, expected, msg string) {
+	t.Helper()
+
+	if actual != expected {
+		t.Errorf("got '%s', want '%s'", actual, expected)
+	}
+}
+
+func TestHTMLDiffRendering(t *testing.T) {
+	_, buf := newTestHTMLPrinter(t)
 	output := buf.String()
 
 	// Verify CSS classes for word-level diff are present in template
-	if !strings.Contains(output, `.word-added`) {
-		t.Error("Expected word-added CSS class definition")
-	}
-
-	if !strings.Contains(output, `.word-removed`) {
-		t.Error("Expected word-removed CSS class definition")
-	}
+	assertContains(t, output, `.word-added`, "Expected word-added CSS class definition")
+	assertContains(t, output, `.word-removed`, "Expected word-removed CSS class definition")
 
 	// Verify JavaScript for diff mode toggle is present in template
-	if !strings.Contains(output, `toggleDiffView`) {
-		t.Error("Expected toggleDiffView JavaScript function")
-	}
+	assertContains(t, output, `toggleDiffView`, "Expected toggleDiffView JavaScript function")
 
 	// Verify aggregate stats CSS is present
-	if !strings.Contains(output, `.diff-aggregate-stats`) {
-		t.Error("Expected diff-aggregate-stats CSS class definition")
-	}
+	assertContains(t, output, `.diff-aggregate-stats`, "Expected diff-aggregate-stats CSS class definition")
 }
 
 func TestHTMLInlineViewMode(t *testing.T) {
-	var buf bytes.Buffer
-
-	printer := NewHTMLWithOptions(
-		&buf,
-		mockReadFile(""),
-		config.DiffModeSideBySide,
-		ReportMetadata{},
-		15,
-	)
-
-	err := printer.PrintHeader()
-	if err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
-
-	err = printer.PrintFooter()
-	if err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
-
+	_, buf := newTestHTMLPrinter(t)
 	output := buf.String()
 
 	// Verify inline view CSS is present
-	if !strings.Contains(output, `.diff-content.inline`) {
-		t.Error("Expected diff-content.inline CSS class")
-	}
+	assertContains(t, output, `.diff-content.inline`, "Expected diff-content.inline CSS class")
 
 	// Verify JavaScript for localStorage handling
-	if !strings.Contains(output, `localStorage.getItem('artdupl-diff-mode')`) {
-		t.Error("Expected localStorage handling for view mode preference")
-	}
+	assertContains(t, output, `localStorage.getItem('artdupl-diff-mode')`, "Expected localStorage handling for view mode preference")
 }
 
 func TestHTMLDiffJavaScriptFunctions(t *testing.T) {
-	var buf bytes.Buffer
-
-	printer := NewHTMLWithOptions(
-		&buf,
-		mockReadFile(""),
-		config.DiffModeSideBySide,
-		ReportMetadata{},
-		15,
-	)
-
-	err := printer.PrintHeader()
-	if err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
-
-	err = printer.PrintFooter()
-	if err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
-
+	_, buf := newTestHTMLPrinter(t)
 	output := buf.String()
 
 	// Verify all JavaScript functions are present
@@ -136,9 +109,7 @@ func TestToWhitespace(t *testing.T) {
 
 	for _, tc := range testCases {
 		actual := toWhitespace([]byte(tc.in))
-		if tc.expect != string(actual) {
-			t.Errorf("got '%s', want '%s'", actual, tc.expect)
-		}
+		assertStringEqual(t, string(actual), tc.expect, "toWhitespace() mismatch")
 	}
 }
 
@@ -154,8 +125,6 @@ func TestDeindent(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		actual := deindent([]byte(tc.in))
-		if tc.expect != string(actual) {
-			t.Errorf("got '%s', want '%s'", actual, tc.expect)
-		}
+		assertStringEqual(t, string(actual), tc.expect, "deindent() mismatch")
 	}
 }

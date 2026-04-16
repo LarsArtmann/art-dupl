@@ -3,7 +3,6 @@ package printer
 import (
 	"bytes"
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -103,17 +102,9 @@ func foo() {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "\"version\":") {
-		t.Error("JSON output missing version field")
-	}
-
-	if !strings.Contains(output, "\"clone_groups\":") {
-		t.Error("JSON output missing clone_groups field")
-	}
-
-	if !strings.Contains(output, "test-hash") {
-		t.Error("JSON output missing test hash")
-	}
+	assertContains(t, output, "\"version\":", "JSON output missing version field")
+	assertContains(t, output, "\"clone_groups\":", "JSON output missing clone_groups field")
+	assertContains(t, output, "test-hash", "JSON output missing test hash")
 }
 
 func TestJSONPrinter_EmptyOutput(t *testing.T) {

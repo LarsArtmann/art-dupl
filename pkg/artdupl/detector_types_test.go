@@ -42,6 +42,15 @@ func assertMethodsCount(t *testing.T, got, expected int) {
 	}
 }
 
+// assertEqual is a generic equality assertion helper.
+func assertEqual[T comparable](t *testing.T, got, expected T, name string) {
+	t.Helper()
+
+	if got != expected {
+		t.Errorf("%s: expected %v, got %v", name, expected, got)
+	}
+}
+
 // TestCloneGroup_Fields tests CloneGroup field assignments.
 func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
@@ -57,17 +66,9 @@ func TestCloneGroup_Fields(t *testing.T) {
 
 	assertCloneGroupBasic(t, &group, "abc123", 2)
 
-	if group.Size != 100 {
-		t.Errorf("Size should be 100, got %d", group.Size)
-	}
-
-	if group.LineCount != 11 {
-		t.Errorf("LineCount should be 11, got %d", group.LineCount)
-	}
-
-	if group.Method != MethodArtDupl {
-		t.Errorf("Method should be MethodArtDupl, got %v", group.Method)
-	}
+	assertEqual(t, group.Size, 100, "Size")
+	assertEqual(t, group.LineCount, 11, "LineCount")
+	assertEqual(t, group.Method, MethodArtDupl, "Method")
 }
 
 // TestClone_Fields tests Clone field assignments.
@@ -82,33 +83,13 @@ func TestClone_Fields(t *testing.T) {
 		Size:      50,
 	}
 
-	if clone.Filename != "test.go" {
-		t.Errorf("Filename should be 'test.go', got %s", clone.Filename)
-	}
-
-	if clone.StartLine != 10 {
-		t.Errorf("StartLine should be 10, got %d", clone.StartLine)
-	}
-
-	if clone.EndLine != 20 {
-		t.Errorf("EndLine should be 20, got %d", clone.EndLine)
-	}
-
-	if clone.StartPos != 100 {
-		t.Errorf("StartPos should be 100, got %d", clone.StartPos)
-	}
-
-	if clone.EndPos != 200 {
-		t.Errorf("EndPos should be 200, got %d", clone.EndPos)
-	}
-
-	if clone.Fragment != "code here" {
-		t.Errorf("Fragment should be 'code here', got %s", clone.Fragment)
-	}
-
-	if clone.Size != 50 {
-		t.Errorf("Size should be 50, got %d", clone.Size)
-	}
+	assertEqual(t, clone.Filename, "test.go", "Filename")
+	assertEqual(t, clone.StartLine, 10, "StartLine")
+	assertEqual(t, clone.EndLine, 20, "EndLine")
+	assertEqual(t, clone.StartPos, 100, "StartPos")
+	assertEqual(t, clone.EndPos, 200, "EndPos")
+	assertEqual(t, clone.Fragment, "code here", "Fragment")
+	assertEqual(t, clone.Size, 50, "Size")
 }
 
 // TestResult_Fields tests Result field assignments.

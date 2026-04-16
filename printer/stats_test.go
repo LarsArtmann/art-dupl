@@ -37,6 +37,15 @@ func assertMapFloat64Equal(t *testing.T, m map[string]any, key string, expected 
 	}
 }
 
+// assertEqual is a generic equality assertion helper.
+func assertEqual[T comparable](t *testing.T, actual, expected T, name string) {
+	t.Helper()
+
+	if actual != expected {
+		t.Errorf("%s = %v, want %v", name, actual, expected)
+	}
+}
+
 // newTestStatsPrinter creates a stats printer with default test configuration.
 func newTestStatsPrinter() (*stats, *bytes.Buffer) {
 	var buf bytes.Buffer
@@ -111,13 +120,8 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				if stats.TotalCloneGroups != 0 {
-					t.Errorf("TotalCloneGroups = %d, want 0", stats.TotalCloneGroups)
-				}
-
-				if stats.TotalClones != 0 {
-					t.Errorf("TotalClones = %d, want 0", stats.TotalClones)
-				}
+				assertEqual(t, stats.TotalCloneGroups, 0, "TotalCloneGroups")
+				assertEqual(t, stats.TotalClones, 0, "TotalClones")
 			},
 		},
 		{
@@ -139,21 +143,14 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				if stats.TotalCloneGroups != 1 {
-					t.Errorf("TotalCloneGroups = %d, want 1", stats.TotalCloneGroups)
-				}
-
-				if stats.TotalClones != 2 {
-					t.Errorf("TotalClones = %d, want 2", stats.TotalClones)
-				}
+				assertEqual(t, stats.TotalCloneGroups, 1, "TotalCloneGroups")
+				assertEqual(t, stats.TotalClones, 2, "TotalClones")
 				// TotalDuplicateLines depends on actual file content, just verify it's positive
 				if stats.TotalDuplicateLines <= 0 {
 					t.Errorf("TotalDuplicateLines = %d, want > 0", stats.TotalDuplicateLines)
 				}
 
-				if stats.TotalTokens != 4 { // 2 nodes per clone × 2
-					t.Errorf("TotalTokens = %d, want 4", stats.TotalTokens)
-				}
+				assertEqual(t, stats.TotalTokens, 4, "TotalTokens") // 2 nodes per clone × 2
 			},
 		},
 		{
@@ -175,13 +172,8 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				if stats.TotalCloneGroups != 2 {
-					t.Errorf("TotalCloneGroups = %d, want 2", stats.TotalCloneGroups)
-				}
-
-				if stats.TotalClones != 2 {
-					t.Errorf("TotalClones = %d, want 2", stats.TotalClones)
-				}
+				assertEqual(t, stats.TotalCloneGroups, 2, "TotalCloneGroups")
+				assertEqual(t, stats.TotalClones, 2, "TotalClones")
 			},
 		},
 	}
