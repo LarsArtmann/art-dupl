@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-// assertEqual is a generic equality assertion helper.
-func assertEqual[T comparable](t *testing.T, got, expected T, name string) {
+// assertFieldsEqual is a generic equality assertion helper for struct fields.
+func assertFieldsEqual[T comparable](t *testing.T, got, expected T, name string) {
 	t.Helper()
 
 	if got != expected {
@@ -32,10 +32,10 @@ func TestDuplError(t *testing.T) {
 	}
 
 	// Test fields
-	assertEqual(t, err.Type, ParseError, "Type")
-	assertEqual(t, err.File, "test.go", "File")
-	assertEqual(t, err.Line, 42, "Line")
-	assertEqual(t, err.Message, "test message", "Message")
+	assertFieldsEqual(t, err.Type, ParseError, "Type")
+	assertFieldsEqual(t, err.File, "test.go", "File")
+	assertFieldsEqual(t, err.Line, 42, "Line")
+	assertFieldsEqual(t, err.Message, "test message", "Message")
 }
 
 func TestErrorTypes(t *testing.T) {

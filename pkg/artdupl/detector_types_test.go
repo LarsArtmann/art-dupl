@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // assertCloneGroupBasic asserts basic CloneGroup properties (Hash and Clone count).
@@ -42,15 +44,6 @@ func assertMethodsCount(t *testing.T, got, expected int) {
 	}
 }
 
-// assertEqual is a generic equality assertion helper.
-func assertEqual[T comparable](t *testing.T, got, expected T, name string) {
-	t.Helper()
-
-	if got != expected {
-		t.Errorf("%s: expected %v, got %v", name, expected, got)
-	}
-}
-
 // TestCloneGroup_Fields tests CloneGroup field assignments.
 func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
@@ -66,9 +59,9 @@ func TestCloneGroup_Fields(t *testing.T) {
 
 	assertCloneGroupBasic(t, &group, "abc123", 2)
 
-	assertEqual(t, group.Size, 100, "Size")
-	assertEqual(t, group.LineCount, 11, "LineCount")
-	assertEqual(t, group.Method, MethodArtDupl, "Method")
+	testutil.AssertFieldValue(t, group.Size, 100, "Size")
+	testutil.AssertFieldValue(t, group.LineCount, 11, "LineCount")
+	testutil.AssertFieldValue(t, group.Method, MethodArtDupl, "Method")
 }
 
 // TestClone_Fields tests Clone field assignments.
@@ -83,13 +76,13 @@ func TestClone_Fields(t *testing.T) {
 		Size:      50,
 	}
 
-	assertEqual(t, clone.Filename, "test.go", "Filename")
-	assertEqual(t, clone.StartLine, 10, "StartLine")
-	assertEqual(t, clone.EndLine, 20, "EndLine")
-	assertEqual(t, clone.StartPos, 100, "StartPos")
-	assertEqual(t, clone.EndPos, 200, "EndPos")
-	assertEqual(t, clone.Fragment, "code here", "Fragment")
-	assertEqual(t, clone.Size, 50, "Size")
+	testutil.AssertFieldValue(t, clone.Filename, "test.go", "Filename")
+	testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
+	testutil.AssertFieldValue(t, clone.EndLine, 20, "EndLine")
+	testutil.AssertFieldValue(t, clone.StartPos, 100, "StartPos")
+	testutil.AssertFieldValue(t, clone.EndPos, 200, "EndPos")
+	testutil.AssertFieldValue(t, clone.Fragment, "code here", "Fragment")
+	testutil.AssertFieldValue(t, clone.Size, 50, "Size")
 }
 
 // TestResult_Fields tests Result field assignments.
