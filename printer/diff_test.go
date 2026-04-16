@@ -32,6 +32,16 @@ func assertStringNotContains(t *testing.T, s, substr, msg string) {
 	}
 }
 
+// newTestClone creates a clone for testing with the given parameters.
+func newTestClone(filename string, lineStart, lineEnd int, fragment string) clone {
+	return clone{
+		filename:  filename,
+		lineStart: lineStart,
+		lineEnd:   lineEnd,
+		fragment:  []byte(fragment),
+	}
+}
+
 // assertCloneCount checks that the number of clones matches expectations.
 func assertCloneCount(t *testing.T, actual, expected int, label string) {
 	t.Helper()
@@ -241,24 +251,9 @@ func TestLineDiff_RealWorldClone(t *testing.T) {
 
 func TestComputeCloneGroupDiff(t *testing.T) {
 	clones := []clone{
-		{
-			filename:  "file1.go",
-			lineStart: 10,
-			lineEnd:   20,
-			fragment:  []byte("func foo() {}\nfunc bar() {}"),
-		},
-		{
-			filename:  "file2.go",
-			lineStart: 30,
-			lineEnd:   40,
-			fragment:  []byte("func baz() {}\nfunc qux() {}"),
-		},
-		{
-			filename:  "file3.go",
-			lineStart: 50,
-			lineEnd:   60,
-			fragment:  []byte("func foo() {}\nfunc bar() {}"),
-		},
+		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
+		newTestClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -282,18 +277,8 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 
 func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 	clones := []clone{
-		{
-			filename:  "file1.go",
-			lineStart: 10,
-			lineEnd:   20,
-			fragment:  []byte("func foo() {}\nfunc bar() {}"),
-		},
-		{
-			filename:  "file2.go",
-			lineStart: 30,
-			lineEnd:   40,
-			fragment:  []byte("func foo() {}\nfunc bar() {}"),
-		},
+		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -308,12 +293,7 @@ func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 
 func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	clones := []clone{
-		{
-			filename:  "file1.go",
-			lineStart: 10,
-			lineEnd:   20,
-			fragment:  []byte("func foo() {}\nfunc bar() {}"),
-		},
+		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
