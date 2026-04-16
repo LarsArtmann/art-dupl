@@ -404,6 +404,16 @@ func printFileCollectionStatus(
 	}
 }
 
+// withThreshold wraps a printer constructor that needs a threshold parameter.
+func withThreshold(
+	constructor func(io.Writer, printer.ReadFile, int) printer.Printer,
+	threshold int,
+) func(io.Writer, printer.ReadFile) printer.Printer {
+	return func(w io.Writer, fread printer.ReadFile) printer.Printer {
+		return constructor(w, fread, threshold)
+	}
+}
+
 // createPrinter returns the appropriate printer based on output format.
 func createPrinter(
 	outputFormat config.OutputFormat,
@@ -423,13 +433,9 @@ func createPrinter(
 	case config.OutputFormatSimpleJSON:
 		return printer.NewJSON
 	case config.OutputFormatSARIF:
-		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-			return printer.NewSARIF(w, fread, threshold)
-		}
+		return withThreshold(printer.NewSARIF, threshold)
 	case config.OutputFormatCSV:
-		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-			return printer.NewStats(w, fread, threshold)
-		}
+		return withThreshold(printer.NewStats, threshold)
 	case config.OutputFormatText:
 		return printer.NewText
 	default:

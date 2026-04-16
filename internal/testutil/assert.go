@@ -274,7 +274,8 @@ func AssertConfigFieldFunc[T comparable](t *testing.T, msg string, actual, expec
 
 // AssertExpectedGot asserts that got matches the expected value with "Expected X, got Y" format.
 // This helper eliminates AST clone patterns from inline assertions like:
-//   if got != want { t.Errorf("Expected X, got Y", X, got) }
+//
+//	if got != want { t.Errorf("Expected X, got Y", X, got) }
 func AssertExpectedGot[T any](t *testing.T, got T, wantDescription string, wantValue T) {
 	t.Helper()
 

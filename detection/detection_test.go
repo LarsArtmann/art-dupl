@@ -240,8 +240,8 @@ func TestCreateIssueMatch(t *testing.T) {
 // TestIssue_GetLine tests that GetLine returns the correct line number.
 func TestIssue_GetLine(t *testing.T) {
 	tests := []struct {
-		name   string
-		issue  LineExtractor
+		name    string
+		issue   LineExtractor
 		lineNum uint16
 	}{
 		{
