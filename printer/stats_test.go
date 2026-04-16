@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -64,12 +65,7 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 		pos := startPos + i
 		end := pos + 1
 		typ := i + 1
-		nodes = append(nodes, &syntax.Node{
-			Filename: filename,
-			Pos:      int32(pos),
-			End:      int32(end),
-			Type:     int32(typ),
-		})
+		nodes = append(nodes, testutil.CreateNodeWithPos(int32(typ), filename, int32(pos), int32(end)))
 	}
 
 	return nodes
@@ -79,8 +75,8 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 func createTestCloneGroups() [][]*syntax.Node {
 	cloneGroup := func(filename string) []*syntax.Node {
 		return []*syntax.Node{
-			{Filename: filename, Pos: 2, End: 3},
-			{Filename: filename, Pos: 2, End: 3},
+			testutil.CreateNodeWithPos(0, filename, 2, 3),
+			testutil.CreateNodeWithPos(0, filename, 2, 3),
 		}
 	}
 
@@ -129,12 +125,12 @@ func TestStatsDataAggregation(t *testing.T) {
 			duplicates: [][][]*syntax.Node{
 				{
 					{
-						&syntax.Node{Filename: "file1.go", Pos: 1, End: 3, Type: 1},
-						&syntax.Node{Filename: "file1.go", Pos: 2, End: 4, Type: 2},
+						testutil.CreateNodeWithPos(1, "file1.go", 1, 3),
+						testutil.CreateNodeWithPos(2, "file1.go", 2, 4),
 					},
 					{
-						&syntax.Node{Filename: "file2.go", Pos: 10, End: 12, Type: 1},
-						&syntax.Node{Filename: "file2.go", Pos: 11, End: 13, Type: 2},
+						testutil.CreateNodeWithPos(1, "file2.go", 10, 12),
+						testutil.CreateNodeWithPos(2, "file2.go", 11, 13),
 					},
 				},
 			},
@@ -158,12 +154,12 @@ func TestStatsDataAggregation(t *testing.T) {
 			duplicates: [][][]*syntax.Node{
 				{
 					{
-						&syntax.Node{Filename: "file1.go", Pos: 1, End: 2, Type: 1},
+						testutil.CreateNodeWithPos(1, "file1.go", 1, 2),
 					},
 				},
 				{
 					{
-						&syntax.Node{Filename: "file2.go", Pos: 5, End: 6, Type: 2},
+						testutil.CreateNodeWithPos(2, "file2.go", 5, 6),
 					},
 				},
 			},
@@ -208,8 +204,8 @@ func createCloneNodeGroup(filenames []string) [][]*syntax.Node {
 
 	for _, filename := range filenames {
 		nodes := []*syntax.Node{
-			{Filename: filename, Pos: 1, End: 3, Type: 1},
-			{Filename: filename, Pos: 2, End: 4, Type: 2},
+			testutil.CreateNodeWithPos(1, filename, 1, 3),
+			testutil.CreateNodeWithPos(2, filename, 2, 4),
 		}
 		dups = append(dups, nodes)
 	}
@@ -278,9 +274,9 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 	// Create duplicate in file1.go with multiple nodes
 	dups := [][]*syntax.Node{
 		{
-			&syntax.Node{Filename: "file1.go", Pos: 1, End: 3, Type: 1},
-			&syntax.Node{Filename: "file1.go", Pos: 2, End: 4, Type: 2},
-			&syntax.Node{Filename: "file1.go", Pos: 3, End: 5, Type: 3},
+			testutil.CreateNodeWithPos(1, "file1.go", 1, 3),
+			testutil.CreateNodeWithPos(2, "file1.go", 2, 4),
+			testutil.CreateNodeWithPos(3, "file1.go", 3, 5),
 		},
 	}
 
@@ -515,12 +511,12 @@ func TestStatsJSONOutput(t *testing.T) {
 	// Add one clone group with duplicates
 	dups := [][]*syntax.Node{
 		{
-			&syntax.Node{Filename: "file1.go", Pos: 1, End: 3, Type: 1},
-			&syntax.Node{Filename: "file1.go", Pos: 2, End: 4, Type: 2},
+			testutil.CreateNodeWithPos(1, "file1.go", 1, 3),
+			testutil.CreateNodeWithPos(2, "file1.go", 2, 4),
 		},
 		{
-			&syntax.Node{Filename: "file2.go", Pos: 10, End: 12, Type: 1},
-			&syntax.Node{Filename: "file2.go", Pos: 11, End: 13, Type: 2},
+			testutil.CreateNodeWithPos(1, "file2.go", 10, 12),
+			testutil.CreateNodeWithPos(2, "file2.go", 11, 13),
 		},
 	}
 
