@@ -119,6 +119,15 @@ func AssertStringContains(t *testing.T, got, substr, what string) {
 	}
 }
 
+// AssertStringNotContains asserts that a string does not contain a substring.
+func AssertStringNotContains(t *testing.T, got, substr, what string) {
+	t.Helper()
+
+	if strings.Contains(got, substr) {
+		t.Errorf("%s: expected not to contain %q, got %q", what, substr, got)
+	}
+}
+
 // AssertStringPrefix asserts that a string starts with a prefix.
 func AssertStringPrefix(t *testing.T, got, prefix, what string) {
 	t.Helper()

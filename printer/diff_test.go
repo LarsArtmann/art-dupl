@@ -3,34 +3,9 @@ package printer
 import (
 	"strings"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
-
-// assertCount checks that an actual count matches the expected count.
-func assertCount(t *testing.T, actual, expected int, label string) {
-	t.Helper()
-
-	if actual != expected {
-		t.Errorf("Expected %d %s, got %d", expected, label, actual)
-	}
-}
-
-// assertStringContains checks that s contains substr.
-func assertStringContains(t *testing.T, s, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(s, substr) {
-		t.Error(msg)
-	}
-}
-
-// assertStringNotContains checks that s does not contain substr.
-func assertStringNotContains(t *testing.T, s, substr, msg string) {
-	t.Helper()
-
-	if strings.Contains(s, substr) {
-		t.Error(msg)
-	}
-}
 
 // newTestClone creates a clone for testing with the given parameters.
 func newTestClone(filename string, lineStart, lineEnd int, fragment string) clone {
@@ -40,13 +15,6 @@ func newTestClone(filename string, lineStart, lineEnd int, fragment string) clon
 		lineEnd:   lineEnd,
 		fragment:  []byte(fragment),
 	}
-}
-
-// assertCloneCount checks that the number of clones matches expectations.
-func assertCloneCount(t *testing.T, actual, expected int, label string) {
-	t.Helper()
-
-	assertCount(t, actual, expected, label)
 }
 
 // assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
@@ -77,8 +45,8 @@ func TestLineDiff_EqualContent(t *testing.T) {
 	}
 
 	// Verify line counts using a helper to avoid duplication
-	assertCount(t, len(result.Base), 3, "base")
-	assertCount(t, len(result.Compared), 3, "compared")
+	testutil.AssertCount(t, len(result.Base), 3, "base")
+	testutil.AssertCount(t, len(result.Compared), 3, "compared")
 
 	// All lines should be marked as equal
 	for i, line := range result.Base {
@@ -131,7 +99,7 @@ func TestLineDiff_AddedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for added content")
 	}
 
-	assertCount(t, len(result.Compared), 3, "compared")
+	testutil.AssertCount(t, len(result.Compared), 3, "compared")
 
 	if result.Compared[2].Type != DiffLineAdded {
 		t.Errorf("Expected compared line 2 to be Added, got %d", result.Compared[2].Type)
@@ -148,7 +116,7 @@ func TestLineDiff_RemovedLines(t *testing.T) {
 		t.Error("Expected HasDiff to be true for removed content")
 	}
 
-	assertCount(t, len(result.Base), 3, "base")
+	testutil.AssertCount(t, len(result.Base), 3, "base")
 
 	if result.Base[2].Type != DiffLineRemoved {
 		t.Errorf("Expected base line 2 to be Removed, got %d", result.Base[2].Type)
@@ -267,7 +235,7 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 		t.Errorf("Expected base filename to be file1.go, got %s", result.Base.Filename)
 	}
 
-	assertCloneCount(t, len(result.Others), 2, "others")
+	testutil.AssertCount(t, len(result.Others), 2, "others")
 
 	// Should detect differences
 	if !result.HasAnyDiff {
@@ -303,7 +271,7 @@ func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 		t.Fatal("Expected Base to not be nil")
 	}
 
-	assertCloneCount(t, len(result.Others), 0, "others")
+	testutil.AssertCount(t, len(result.Others), 0, "others")
 }
 
 func TestComputeCloneGroupDiff_EmptyClones(t *testing.T) {
@@ -486,8 +454,8 @@ func TestWordDiff_EqualContent(t *testing.T) {
 	result := WordDiff(base, compared)
 
 	// Should not contain added/removed spans for identical content
-	assertStringNotContains(t, result, `class="word-added"`, "Expected no word-added spans for identical content")
-	assertStringNotContains(t, result, `class="word-removed"`, "Expected no word-removed spans for identical content")
+	testutil.AssertStringNotContains(t, result, `class="word-added"`, "Expected no word-added spans for identical content")
+	testutil.AssertStringNotContains(t, result, `class="word-removed"`, "Expected no word-removed spans for identical content")
 }
 
 func TestWordDiff_HasChanges(t *testing.T) {
@@ -512,8 +480,8 @@ func TestWordDiff_HasChanges(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := WordDiff(tt.base, tt.compared)
 
-			assertStringContains(t, result, `class="word-added"`, "Expected word-added span for changed word")
-			assertStringContains(t, result, `class="word-removed"`, "Expected word-removed span for changed word")
+			testutil.AssertStringContains(t, result, `class="word-added"`, "Expected word-added span for changed word")
+			testutil.AssertStringContains(t, result, `class="word-removed"`, "Expected word-removed span for changed word")
 		})
 	}
 }
@@ -524,7 +492,7 @@ func TestWordDiff_EmptyStrings(t *testing.T) {
 
 	result := WordDiff(base, compared)
 
-	assertStringContains(t, result, `class="word-added"`, "Expected word-added span for content added to empty base")
+	testutil.AssertStringContains(t, result, `class="word-added"`, "Expected word-added span for content added to empty base")
 }
 
 func TestWordDiff_HTMLEscaping(t *testing.T) {

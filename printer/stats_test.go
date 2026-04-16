@@ -38,15 +38,6 @@ func assertMapFloat64Equal(t *testing.T, m map[string]any, key string, expected 
 	}
 }
 
-// assertEqual is a generic equality assertion helper.
-func assertEqual[T comparable](t *testing.T, actual, expected T, name string) {
-	t.Helper()
-
-	if actual != expected {
-		t.Errorf("%s = %v, want %v", name, actual, expected)
-	}
-}
-
 // newTestStatsPrinter creates a stats printer with default test configuration.
 func newTestStatsPrinter() (*stats, *bytes.Buffer) {
 	var buf bytes.Buffer
@@ -116,8 +107,8 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				assertEqual(t, stats.TotalCloneGroups, 0, "TotalCloneGroups")
-				assertEqual(t, stats.TotalClones, 0, "TotalClones")
+				testutil.AssertEqual(t, stats.TotalCloneGroups, 0, "TotalCloneGroups")
+				testutil.AssertEqual(t, stats.TotalClones, 0, "TotalClones")
 			},
 		},
 		{
@@ -139,14 +130,14 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				assertEqual(t, stats.TotalCloneGroups, 1, "TotalCloneGroups")
-				assertEqual(t, stats.TotalClones, 2, "TotalClones")
+				testutil.AssertEqual(t, stats.TotalCloneGroups, 1, "TotalCloneGroups")
+				testutil.AssertEqual(t, stats.TotalClones, 2, "TotalClones")
 				// TotalDuplicateLines depends on actual file content, just verify it's positive
 				if stats.TotalDuplicateLines <= 0 {
 					t.Errorf("TotalDuplicateLines = %d, want > 0", stats.TotalDuplicateLines)
 				}
 
-				assertEqual(t, stats.TotalTokens, 4, "TotalTokens") // 2 nodes per clone × 2
+				testutil.AssertEqual(t, stats.TotalTokens, 4, "TotalTokens") // 2 nodes per clone × 2
 			},
 		},
 		{
@@ -168,8 +159,8 @@ func TestStatsDataAggregation(t *testing.T) {
 			checkStats: func(t *testing.T, stats *StatsData) {
 				t.Helper()
 
-				assertEqual(t, stats.TotalCloneGroups, 2, "TotalCloneGroups")
-				assertEqual(t, stats.TotalClones, 2, "TotalClones")
+				testutil.AssertEqual(t, stats.TotalCloneGroups, 2, "TotalCloneGroups")
+				testutil.AssertEqual(t, stats.TotalClones, 2, "TotalClones")
 			},
 		},
 	}
