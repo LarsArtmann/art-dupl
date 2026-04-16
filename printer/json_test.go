@@ -21,9 +21,7 @@ func TestJSONPrinter_PrintHeader(t *testing.T) {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
-	if jsonPrinter.iota != 0 {
-		t.Errorf("Expected iota to be 0, got %d", jsonPrinter.iota)
-	}
+	testutil.AssertFieldValue(t, jsonPrinter.iota, 0, "iota")
 
 	if jsonPrinter.filesCount != 0 {
 		t.Errorf("Expected filesCount to be 0, got %d", jsonPrinter.filesCount)
@@ -63,13 +61,9 @@ func bar() {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
-	if jsonPrinter.iota != 1 {
-		t.Errorf("Expected iota to be 1, got %d", jsonPrinter.iota)
-	}
+	testutil.AssertFieldValue(t, jsonPrinter.iota, 1, "iota")
 
-	if len(jsonPrinter.cloneGroups) != 1 {
-		t.Errorf("Expected 1 clone group, got %d", len(jsonPrinter.cloneGroups))
-	}
+	testutil.AssertFieldValue(t, len(jsonPrinter.cloneGroups), 1, "clone groups")
 }
 
 func TestJSONPrinter_OutputJSON(t *testing.T) {

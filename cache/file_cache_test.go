@@ -33,13 +33,9 @@ func TestNewFileCache(t *testing.T) {
 			t.Fatal("Expected non-nil FileCache")
 		}
 
-		if fc.cacheDir != DefaultCacheDir {
-			t.Errorf("Expected cacheDir=%q, got %q", DefaultCacheDir, fc.cacheDir)
-		}
+		testutil.AssertFieldValue(t, fc.cacheDir, DefaultCacheDir, "cacheDir")
 
-		if fc.metadata.Version != CacheVersion {
-			t.Errorf("Expected Version=%d, got %d", CacheVersion, fc.metadata.Version)
-		}
+		testutil.AssertFieldValue(t, fc.metadata.Version, CacheVersion, "Version")
 	})
 
 	t.Run("custom directory", func(t *testing.T) {
@@ -245,9 +241,7 @@ func TestFileCache_Clear(t *testing.T) {
 
 	// Verify entries exist
 	stats := fc.Stats()
-	if stats.Size != 3 {
-		t.Errorf("Expected 3 entries before clear, got %d", stats.Size)
-	}
+	testutil.AssertFieldValue(t, stats.Size, 3, "entries before clear")
 
 	// Clear cache
 	err := fc.Clear()
@@ -264,9 +258,7 @@ func TestFileCache_Clear(t *testing.T) {
 
 	// Verify stats reset
 	stats = fc.Stats()
-	if stats.Size != 0 {
-		t.Errorf("Expected 0 entries after clear, got %d", stats.Size)
-	}
+	testutil.AssertFieldValue(t, stats.Size, 0, "entries after clear")
 }
 
 // assertCacheStats asserts that cache stats match expected values.

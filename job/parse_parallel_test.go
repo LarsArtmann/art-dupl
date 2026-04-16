@@ -68,9 +68,7 @@ func function3() {
 	}
 
 	stats := <-statsChan
-	if stats.FilesCount != 3 {
-		t.Errorf("Expected FilesCount=3, got %d", stats.FilesCount)
-	}
+	testutil.AssertFieldValue(t, stats.FilesCount, 3, "FilesCount")
 }
 
 func TestParseParallelWithDefaultWorkers(t *testing.T) {
@@ -210,9 +208,7 @@ func TestParseStatsFromSequential(t *testing.T) {
 	}
 
 	stats := <-statsChan
-	if stats.FilesCount != 1 {
-		t.Errorf("Expected FilesCount=1, got %d", stats.FilesCount)
-	}
+	testutil.AssertFieldValue(t, stats.FilesCount, 1, "FilesCount")
 
 	if stats.LinesCount < 4 {
 		t.Errorf("Expected LinesCount >= 4, got %d", stats.LinesCount)

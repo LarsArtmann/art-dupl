@@ -207,9 +207,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	waitForChannelOrTimeout(t, schan, 5*time.Second, "Should handle nonexistent file gracefully")
 
 	stats := <-statsChan
-	if stats.FilesCount != 1 {
-		t.Errorf("Expected FilesCount=1, got %d", stats.FilesCount)
-	}
+	testutil.AssertFieldValue(t, stats.FilesCount, 1, "FilesCount")
 }
 
 func waitForChannelOrTimeout[T any](
@@ -307,7 +305,5 @@ func main() {
 	}
 
 	stats := parser.GetCacheStats()
-	if stats.Size != 1 {
-		t.Errorf("Expected 1 cache entry, got %d", stats.Size)
-	}
+	testutil.AssertFieldValue(t, stats.Size, 1, "cache entry")
 }

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -248,17 +249,9 @@ func TestCloneGroupFromNodes(t *testing.T) {
 			t.Error("Expected at least one clone in group")
 		}
 
-		if group.Hash != "group-hash" {
-			t.Errorf("Expected hash 'group-hash', got %q", group.Hash)
-		}
+		testutil.AssertFieldValue(t, group.Hash, "group-hash", "hash")
 
-		if group.Status != domain.FileProcessingStateCompleted {
-			t.Errorf(
-				"Expected status %s, got %s",
-				domain.FileProcessingStateCompleted,
-				group.Status,
-			)
-		}
+		testutil.AssertFieldValue(t, group.Status, domain.FileProcessingStateCompleted, "status")
 	})
 
 	t.Run("size calculation", func(t *testing.T) {
@@ -267,9 +260,7 @@ func TestCloneGroupFromNodes(t *testing.T) {
 		group := CloneGroupFromNodes("group-1", nodes)
 
 		// Size should be End - Pos = 100
-		if group.Size != 100 {
-			t.Errorf("Expected size 100, got %d", group.Size)
-		}
+		testutil.AssertFieldValue(t, group.Size, 100, "size")
 	})
 
 	t.Run("empty node groups", func(t *testing.T) {

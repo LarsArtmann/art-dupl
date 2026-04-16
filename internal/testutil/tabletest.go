@@ -100,3 +100,35 @@ func AssertEqual[T comparable](t *testing.T, got, want T, messagePrefix string) 
 		t.Errorf("%s = %v, want %v", messagePrefix, got, want)
 	}
 }
+
+// AssertInt asserts that got equals want with an "Expected X, got Y" format.
+// This helper eliminates AST clone patterns from inline assertions.
+func AssertInt(t *testing.T, got, want int, description string) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("Expected %s, got %d", description, got)
+	}
+}
+
+// AssertIntFormatted asserts that got equals want with a custom format string.
+// The format should include %d for both expected and actual values.
+func AssertIntFormatted(t *testing.T, got, want int, format string) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf(format, want, got)
+	}
+}
+
+// AssertString asserts that got equals want.
+// This helper eliminates AST clone patterns from inline string assertions.
+func AssertString(t *testing.T, got, want, description string) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("Expected %s %q, got %q", description, want, got)
+	}
+}
+
+

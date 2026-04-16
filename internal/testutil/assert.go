@@ -271,3 +271,25 @@ func AssertConfigFieldFunc[T comparable](t *testing.T, msg string, actual, expec
 		t.Errorf("%s: expected %v, got %v", msg, expected, actual)
 	}
 }
+
+// AssertExpectedGot asserts that got matches the expected value with "Expected X, got Y" format.
+// This helper eliminates AST clone patterns from inline assertions like:
+//   if got != want { t.Errorf("Expected X, got Y", X, got) }
+func AssertExpectedGot[T any](t *testing.T, got T, wantDescription string, wantValue T) {
+	t.Helper()
+
+	if fmt.Sprintf("%v", got) != fmt.Sprintf("%v", wantValue) {
+		t.Errorf("Expected %s, got %v", wantDescription, got)
+	}
+}
+
+// AssertFieldValue asserts that a field matches the expected value.
+// The fieldName is used in the error message as a description.
+// This helper eliminates AST clone patterns from inline field assertions.
+func AssertFieldValue[T comparable](t *testing.T, got, want T, fieldName string) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("Expected %s %v, got %v", fieldName, want, got)
+	}
+}
