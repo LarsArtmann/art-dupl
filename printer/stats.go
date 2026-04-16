@@ -39,6 +39,8 @@ import (
 	"fmt"
 	"io"
 
+	"charm.land/lipgloss/v2"
+
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -197,7 +199,12 @@ func (p *stats) printLinef(format string, args ...any) {
 
 // printSection prints a section header.
 func (p *stats) printSection(title string) {
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.section.Render(title))
+	p.printWithStyle(p.section, title)
+}
+
+// printWithStyle prints text with the specified style.
+func (p *stats) printWithStyle(style lipgloss.Style, text string) {
+	_, _ = fmt.Fprintf(p.w, "%s\n", style.Render(text))
 }
 
 // printMetric prints a metric label and value.
@@ -229,7 +236,7 @@ func (p *stats) printErrorf(format string, args ...any) {
 
 // printHeader prints a header-styled title.
 func (p *stats) printHeader(title string) {
-	_, _ = fmt.Fprintf(p.w, "%s\n", p.header.Render(title))
+	p.printWithStyle(p.header, title)
 }
 
 // printBullet prints a bullet point with base styling.

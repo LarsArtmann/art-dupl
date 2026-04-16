@@ -249,3 +249,25 @@ func AssertUnmarshalError(
 		t.Errorf("%s() error = %v, wantErr %v", methodName, err, wantErr)
 	}
 }
+
+// AssertConfigField asserts that a config field matches the expected value.
+// The fieldName is used in the error message (e.g., "Threshold").
+// The actual parameter should be the field value, and expected is the expected value.
+func AssertConfigField[T comparable](t *testing.T, fieldName string, actual, expected T) {
+	t.Helper()
+
+	if actual != expected {
+		t.Errorf("Expected %s %v, got %v", fieldName, expected, actual)
+	}
+}
+
+// AssertConfigFieldFunc asserts that a config field matches the expected value using a custom message.
+// The msg parameter is prepended to the error message.
+// The actual parameter should be the field value, and expected is the expected value.
+func AssertConfigFieldFunc[T comparable](t *testing.T, msg string, actual, expected T) {
+	t.Helper()
+
+	if actual != expected {
+		t.Errorf("%s: expected %v, got %v", msg, expected, actual)
+	}
+}

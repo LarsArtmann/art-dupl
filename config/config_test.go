@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // createTempDir creates a temporary directory for testing and returns a cleanup function.
@@ -26,17 +28,9 @@ func TestDefaultConfig(t *testing.T) {
 
 	config := DefaultConfig()
 
-	if config.Threshold != 15 {
-		t.Errorf("Expected default threshold 15, got %d", config.Threshold)
-	}
-
-	if config.IncludeVendor != false {
-		t.Errorf("Expected default IncludeVendor false, got %v", config.IncludeVendor)
-	}
-
-	if config.OutputFormat != "text" {
-		t.Errorf("Expected default OutputFormat text, got %s", config.OutputFormat)
-	}
+	testutil.AssertConfigField(t, "Threshold", config.Threshold, 15)
+	testutil.AssertConfigField(t, "IncludeVendor", config.IncludeVendor, false)
+	testutil.AssertConfigField(t, "OutputFormat", config.OutputFormat, "text")
 
 	if len(config.Paths) != 1 || config.Paths[0] != "." {
 		t.Errorf("Expected default paths [\".\"], got %v", config.Paths)
@@ -68,21 +62,11 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatalf("Failed to load config: %v", err)
 	}
 
-	if config.Threshold != 50 {
-		t.Errorf("Expected threshold 50, got %d", config.Threshold)
-	}
-
-	if config.IncludeVendor != true {
-		t.Errorf("Expected IncludeVendor true, got %v", config.IncludeVendor)
-	}
-
-	if config.OutputFormat != "json" {
-		t.Errorf("Expected OutputFormat json, got %s", config.OutputFormat)
-	}
-
-	if config.Verbose != true {
-		t.Errorf("Expected Verbose true, got %v", config.Verbose)
-	}
+	testutil.AssertConfigField(t, "Threshold", config.Threshold, 50)
+	testutil.AssertConfigField(t, "IncludeVendor", config.IncludeVendor, true)
+	testutil.AssertConfigField(t, "OutputFormat", config.OutputFormat, "json")
+	testutil.AssertConfigField(t, "Verbose", config.Verbose, true)
+	testutil.AssertConfigField(t, "MaxChildrenSerial", config.MaxChildrenSerial, 20000)
 
 	if len(config.Paths) != 2 || config.Paths[0] != "./src" || config.Paths[1] != "./lib" {
 		t.Errorf("Expected paths [\"./src\", \"./lib\"], got %v", config.Paths)
@@ -91,10 +75,6 @@ func TestLoadConfig(t *testing.T) {
 	if len(config.IgnoreFiles) != 2 || config.IgnoreFiles[0] != "*_test.go" ||
 		config.IgnoreFiles[1] != "mock_*.go" {
 		t.Errorf("Expected ignoreFiles [\"*_test.go\", \"mock_*.go\"], got %v", config.IgnoreFiles)
-	}
-
-	if config.MaxChildrenSerial != 20000 {
-		t.Errorf("Expected MaxChildrenSerial 20000, got %d", config.MaxChildrenSerial)
 	}
 }
 
@@ -284,17 +264,9 @@ func TestMergeConfigs(t *testing.T) {
 
 	merged := MergeConfigs(fileConfig, cliConfig)
 
-	if merged.Threshold != 25 {
-		t.Errorf("Expected merged threshold 25, got %d", merged.Threshold)
-	}
-
-	if merged.IncludeVendor != true {
-		t.Errorf("Expected merged IncludeVendor true, got %v", merged.IncludeVendor)
-	}
-
-	if merged.OutputFormat != "html" {
-		t.Errorf("Expected merged OutputFormat html, got %s", merged.OutputFormat)
-	}
+	testutil.AssertConfigField(t, "Threshold", merged.Threshold, 25)
+	testutil.AssertConfigField(t, "IncludeVendor", merged.IncludeVendor, true)
+	testutil.AssertConfigField(t, "OutputFormat", merged.OutputFormat, "html")
 
 	AssertMergedConfig(t, merged, "./cmd", "*_test.go", "merged")
 }
