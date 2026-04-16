@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 func validOpts(threshold int) *Options {
@@ -381,12 +382,12 @@ func TestOptions_WithFileReader(t *testing.T) {
 
 // TestOptions_WithLogger tests custom logger option.
 func TestOptions_WithLogger(t *testing.T) {
-	logger := &testLogger{}
+	log := &logger.NoOpLogger{}
 
 	opts := &Options{
 		Threshold:        15,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
-		Logger:           logger,
+		Logger:           log,
 		MaxWorkers:       4,
 	}
 
@@ -399,14 +400,6 @@ func TestOptions_WithLogger(t *testing.T) {
 		t.Error("Detector should not be nil")
 	}
 }
-
-// testLogger implements Logger interface for testing.
-type testLogger struct{}
-
-func (l *testLogger) Debug(msg string, args ...any) {}
-func (l *testLogger) Info(msg string, args ...any)  {}
-func (l *testLogger) Warn(msg string, args ...any)  {}
-func (l *testLogger) Error(msg string, args ...any) {}
 
 // TestFileReaderFunc tests the FileReaderFunc type.
 func TestFileReaderFunc(t *testing.T) {

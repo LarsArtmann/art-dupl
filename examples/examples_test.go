@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/pkg/artdupl"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // TestExamplesPackage tests examples package functionality.
@@ -258,13 +259,13 @@ func TestExamplesDetector(t *testing.T) {
 // TestExamplesInterfaces tests interface implementations.
 func TestExamplesInterfaces(t *testing.T) {
 	// Test logger interface
-	var logger artdupl.Logger = &testLogger{}
+	var l artdupl.Logger = &logger.NoOpLogger{}
 
 	// Test that all methods are implemented
-	logger.Debug("debug message")
-	logger.Info("info message")
-	logger.Warn("warning message")
-	logger.Error("error message")
+	l.Debug("debug message")
+	l.Info("info message")
+	l.Warn("warning message")
+	l.Error("error message")
 
 	// Test file reader function
 	var fileReader artdupl.FileReaderFunc = func(filename string) ([]byte, error) {
@@ -304,11 +305,3 @@ func TestExamplesInterfaces(t *testing.T) {
 
 	_ = detector.Close()
 }
-
-// testLogger implements Logger interface for testing.
-type testLogger struct{}
-
-func (l *testLogger) Debug(msg string, args ...any) {}
-func (l *testLogger) Info(msg string, args ...any)  {}
-func (l *testLogger) Warn(msg string, args ...any)  {}
-func (l *testLogger) Error(msg string, args ...any) {}

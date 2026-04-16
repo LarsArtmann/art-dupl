@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // newTestConfig creates a config for testing.
@@ -273,21 +274,13 @@ func TestProgress_Validation_Basic(t *testing.T) {
 
 // TestLoggerInterface_Basic tests logger interface compliance.
 func TestLoggerInterface_Basic(t *testing.T) {
-	var logger Logger = &testLoggerBasic{}
+	var l Logger = &logger.NoOpLogger{}
 
 	// Test that all methods are implemented
-	logger.Debug("debug message")
-	logger.Info("info message")
-	logger.Warn("warning message")
-	logger.Error("error message")
+	l.Debug("debug message")
+	l.Info("info message")
+	l.Warn("warning message")
+	l.Error("error message")
 
 	// Should not panic
 }
-
-// testLoggerBasic implements Logger interface for testing.
-type testLoggerBasic struct{}
-
-func (l *testLoggerBasic) Debug(msg string, args ...any) {}
-func (l *testLoggerBasic) Info(msg string, args ...any)  {}
-func (l *testLoggerBasic) Warn(msg string, args ...any)  {}
-func (l *testLoggerBasic) Error(msg string, args ...any) {}

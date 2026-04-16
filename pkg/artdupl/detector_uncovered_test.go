@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -157,7 +158,7 @@ func TestExtractFragmentContent_NotFound(t *testing.T) {
 				return nil, errors.New("file not found")
 			},
 		},
-		logger: &testLoggerBasic{},
+		logger: &logger.NoOpLogger{},
 	}
 
 	frag := makeFrag("/nonexistent/file.go", 1, 2)
@@ -187,7 +188,7 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 				return []byte("line1\nline2\n"), nil
 			},
 		},
-		logger: &testLoggerBasic{},
+		logger: &logger.NoOpLogger{},
 	}
 
 	// Create fragment with out-of-range positions
@@ -218,7 +219,7 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 			IncludeFragments: true,
 			FileReader:       os.ReadFile,
 		},
-		logger: &testLoggerBasic{},
+		logger: &logger.NoOpLogger{},
 	}
 
 	frag := []*syntax.Node{testutil.CreateNodeWithPos(1, testFile, 1, 2)}
@@ -300,7 +301,7 @@ func TestReportProgress_CallbackError(t *testing.T) {
 		return errors.New("callback error")
 	}
 
-	logger := &testLoggerBasic{}
+	logger := &logger.NoOpLogger{}
 	d := &detector{
 		opts: &Options{
 			ProgressCallback: callback,
