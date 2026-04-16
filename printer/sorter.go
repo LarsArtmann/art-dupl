@@ -6,6 +6,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// compareByNameThenPos compares two items by name, then by position for stable ordering.
+func compareByNameThenPos(nameI, nameJ string, posI, posJ int) bool {
+	if nameI == nameJ {
+		return posI < posJ
+	}
+	return nameI < nameJ
+}
+
 // sortCloneGroupsBySizeDescending sorts CloneGroup slice by size (largest first, descending).
 func sortCloneGroupsBySizeDescending(groups []CloneGroup) {
 	sort.Slice(groups, func(i, j int) bool {
@@ -86,12 +94,7 @@ func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
 		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
 			return lessThan
 		}
-		// Use filename for sorting since hash isn't available in Node
-		if dups[i][0].Filename == dups[j][0].Filename {
-			return dups[i][0].Pos < dups[j][0].Pos
-		}
-
-		return dups[i][0].Filename < dups[j][0].Filename
+		return compareByNameThenPos(dups[i][0].Filename, dups[j][0].Filename, int(dups[i][0].Pos), int(dups[j][0].Pos))
 	})
 
 	return dups
@@ -154,10 +157,6 @@ func sortClonesByFilename(cloneGroups [][]clone) {
 		if handled, lessThan := isEmptyOrLessThanEmpty(cloneGroups, i, j); handled {
 			return lessThan
 		}
-		if cloneGroups[i][0].filename == cloneGroups[j][0].filename {
-			return cloneGroups[i][0].lineStart < cloneGroups[j][0].lineStart
-		}
-
-		return cloneGroups[i][0].filename < cloneGroups[j][0].filename
+		return compareByNameThenPos(cloneGroups[i][0].filename, cloneGroups[j][0].filename, cloneGroups[i][0].lineStart, cloneGroups[j][0].lineStart)
 	})
 }

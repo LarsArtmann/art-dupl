@@ -131,45 +131,17 @@ func runStats(cmd *cobra.Command, args []string) error {
 	// Create stats printer
 	p := printer.NewStats(os.Stdout, os.ReadFile, mergedConfig.Threshold)
 
-	// Set file count
-	if sp, ok := p.(printer.StatsPrinter); ok {
-		sp.SetFilesCount(parseStats.FilesCount)
-	}
-
-	// Set format
-	if sp, ok := p.(printer.StatsPrinter); ok {
-		sp.SetFormat(format)
-	}
-
-	// Convert detection methods to comma-separated string
+	// Configure stats printer
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
-	// Set detection methods
 	if sp, ok := p.(printer.StatsPrinter); ok {
+		sp.SetFilesCount(parseStats.FilesCount)
+		sp.SetFormat(format)
 		sp.SetDetectionMethods(detectionMethodStr)
-	}
-
-	// Set semantic detection status
-	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetSemanticDetection(mergedConfig.Semantic)
-	}
-
-	// Set analysis timestamp and duration
-	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetTimestamp(time.Now().UTC().Format(time.RFC3339))
-	}
-
-	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetAnalysisDuration(duration)
-	}
-
-	// Set actual total lines from parsing
-	if sp, ok := p.(printer.StatsPrinter); ok {
 		sp.SetTotalEstimatedLines(parseStats.LinesCount)
-	}
-
-	// Set filter statistics
-	if sp, ok := p.(printer.StatsPrinter); ok {
 		applyFilterStats(sp, filterStats)
 	}
 

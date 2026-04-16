@@ -27,11 +27,7 @@ func (c byNameAndLine) Len() int { return len(c) }
 func (c byNameAndLine) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
 
 func (c byNameAndLine) Less(i, j int) bool {
-	if c[i].filename == c[j].filename {
-		return c[i].lineStart < c[j].lineStart
-	}
-
-	return c[i].filename < c[j].filename
+	return compareByNameThenPos(c[i].filename, c[j].filename, c[i].lineStart, c[j].lineStart)
 }
 
 func findLineBeg(file []byte, index int) int {
