@@ -8,7 +8,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
-
 	"github.com/spf13/cobra"
 )
 
