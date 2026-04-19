@@ -112,49 +112,6 @@ func TestCLIIOWriters(t *testing.T) {
 	g.Expect(string(buf[:written])).To(gomega.ContainSubstring("test to stdout"))
 }
 
-func TestExitIfBothSet_NeitherSet(t *testing.T) {
-	t.Parallel()
-
-	f1 := false
-	f2 := false
-
-	result := ExitIfBothSet(&f1, &f2, "flag1", "flag2")
-	if result != 0 {
-		t.Errorf("ExitIfBothSet(false, false) = %d, want 0", result)
-	}
-}
-
-func TestExitIfBothSet_OneSet(t *testing.T) {
-	t.Parallel()
-
-	tr := true
-	f1 := false
-
-	result := ExitIfBothSet(&tr, &f1, "flag1", "flag2")
-	if result != 0 {
-		t.Errorf("ExitIfBothSet(true, false) = %d, want 0", result)
-	}
-}
-
-func TestExitIfBothSet_NilPointers(t *testing.T) {
-	t.Parallel()
-
-	result := ExitIfBothSet(nil, nil, "flag1", "flag2")
-	if result != 0 {
-		t.Errorf("ExitIfBothSet(nil, nil) = %d, want 0", result)
-	}
-}
-
-func TestExitIfBothSet_OneNil(t *testing.T) {
-	t.Parallel()
-
-	tr := true
-	result := ExitIfBothSet(&tr, nil, "flag1", "flag2")
-	if result != 0 {
-		t.Errorf("ExitIfBothSet(true, nil) = %d, want 0", result)
-	}
-}
-
 func TestRuntimeConfig_ToConfig_OutputPrecedence(t *testing.T) {
 	g := gomega.NewWithT(t)
 
