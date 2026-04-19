@@ -336,7 +336,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 	})
 
 	t.Run("with filter", func(t *testing.T) {
-		f := gogenfilter.NewFilter(false, nil)
+		f := gogenfilter.NewFilter(gogenfilter.Disabled())
 
 		ch := filesFeedWithOptions([]string{}, false, f, false, "")
 		if ch == nil {

@@ -196,23 +196,27 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Test that filter correctly identifies SQLC files
-	fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterSQLC})
+	fltr := gogenfilter.NewFilter(
+		gogenfilter.Enabled(),
+		gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC),
+		gogenfilter.WithFS(os.DirFS("/")),
+	)
 
 	// SQLC files should be filtered
-	if !fltr.ShouldFilter(filepath.Join(queriesDir, "articles.sql.go")) {
+	if filtered, err := fltr.ShouldFilter(toFSPath(filepath.Join(queriesDir, "articles.sql.go"))); err == nil && !filtered {
 		t.Error("articles.sql.go should be filtered (SQLC generated)")
 	}
 
-	if !fltr.ShouldFilter(filepath.Join(queriesDir, "users.sql.go")) {
+	if filtered, err := fltr.ShouldFilter(toFSPath(filepath.Join(queriesDir, "users.sql.go"))); err == nil && !filtered {
 		t.Error("users.sql.go should be filtered (SQLC generated)")
 	}
 
 	// Regular files should NOT be filtered
-	if fltr.ShouldFilter(filepath.Join(repoDir, "article_repository.go")) {
+	if filtered, err := fltr.ShouldFilter(toFSPath(filepath.Join(repoDir, "article_repository.go"))); err == nil && filtered {
 		t.Error("article_repository.go should NOT be filtered (regular Go file)")
 	}
 
-	if fltr.ShouldFilter(filepath.Join(repoDir, "mock_repository.go")) {
+	if filtered, err := fltr.ShouldFilter(toFSPath(filepath.Join(repoDir, "mock_repository.go"))); err == nil && filtered {
 		t.Error("mock_repository.go should NOT be filtered (regular Go file)")
 	}
 }
@@ -264,8 +268,12 @@ type User struct {
 	}
 
 	// Test filter recognizes SQLC files by both name and content
-	fltr := gogenfilter.NewFilter(true, []gogenfilter.FilterOption{gogenfilter.FilterSQLC})
-	if !fltr.ShouldFilter(sqlcFilePath) {
+	fltr := gogenfilter.NewFilter(
+		gogenfilter.Enabled(),
+		gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC),
+		gogenfilter.WithFS(os.DirFS("/")),
+	)
+	if filtered, err := fltr.ShouldFilter(toFSPath(sqlcFilePath)); err == nil && !filtered {
 		t.Error("users.sql.go in SQLC output directory should be filtered")
 	}
 }

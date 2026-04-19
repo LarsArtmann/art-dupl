@@ -1,16 +1,28 @@
 package filtertest
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/gogenfilter"
 )
 
+// toFSPath converts an absolute path to a path usable with os.DirFS("/").
+// Go's fs.ReadFile rejects paths starting with /, so we strip the leading slash.
+func toFSPath(path string) string {
+	return strings.TrimPrefix(path, "/")
+}
+
 // AssertFileShouldNotBeFiltered asserts that a file should not be filtered.
 func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
-	if fltr.ShouldFilter(filepath) {
+	filtered, err := fltr.ShouldFilter(toFSPath(filepath))
+	if err != nil {
+		t.Fatalf("ShouldFilter(%q) error: %v", filepath, err)
+	}
+
+	if filtered {
 		t.Errorf("%s should not be filtered", filepath)
 	}
 }
@@ -19,7 +31,12 @@ func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filep
 func AssertFileShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
-	if !fltr.ShouldFilter(filepath) {
+	filtered, err := fltr.ShouldFilter(toFSPath(filepath))
+	if err != nil {
+		t.Fatalf("ShouldFilter(%q) error: %v", filepath, err)
+	}
+
+	if !filtered {
 		t.Errorf("%s should be filtered", filepath)
 	}
 }

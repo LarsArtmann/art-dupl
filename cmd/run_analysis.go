@@ -195,13 +195,16 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 	// Create the filter if there are any options or include/exclude patterns
 	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
 		len(cfg.IgnoreFiles) > 0 {
-		filterParam := gogenfilter.NewFilter(true, filterOptions)
-		filterParam.WithIncludePatterns(cfg.IncludePatterns)
-		// IgnoreFiles are treated as exclude patterns
-		filterParam.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...))
+		configs := []gogenfilter.FilterConfig{
+			gogenfilter.Enabled(),
+			gogenfilter.WithFilterOptions(filterOptions...),
+			gogenfilter.WithIncludePatterns(cfg.IncludePatterns...),
+			gogenfilter.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...)...),
+		}
+
 		verboseFprintf(cfg, "Auto-generated code filtering enabled")
 
-		return filterParam
+		return gogenfilter.NewFilter(configs...)
 	}
 
 	return nil
