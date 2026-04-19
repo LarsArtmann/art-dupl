@@ -24,41 +24,10 @@ func NewStatsCommand() *cobra.Command {
 		RunE:  runStats,
 	}
 
-	// Add flags to stats command
-	cmd.Flags().StringP("config", "c", "", "path to configuration file (JSON format)")
-	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
-	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
-	cmd.Flags().
-		IntP("threshold", "t", 15, "minimum token sequence size to consider as clone (default: 15)")
-	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
-	cmd.Flags().
-		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")
-	cmd.Flags().Bool("profile", false, "enable performance profiling")
-	cmd.Flags().String("timeout", "30m", "maximum execution time (default: 30m)")
-	_ = cmd.Flags().MarkHidden("profile")
-	_ = cmd.Flags().MarkHidden("timeout")
-	cmd.Flags().
-		Bool("filter-generated", false, "enable filtering of sqlc.dev generated code (auto-detects sqlc.yaml in parent directories)")
-	cmd.Flags().
-		Bool("include-sqlc", false, "include sqlc.dev generated files (override auto-detection)")
-	cmd.Flags().
-		Bool("include-templ", false, "include templ.guide generated files (filtered by default)")
-	cmd.Flags().
-		Bool("include-protobuf", false, "include protobuf generated files (.pb.go, _grpc.pb.go)")
-	cmd.Flags().
-		Bool("include-mockgen", false, "include mockgen generated files")
-	cmd.Flags().
-		Bool("include-stringer", false, "include stringer generated files")
-	cmd.Flags().
-		StringArray("include-pattern", []string{}, "file patterns to always include (takes precedence over filter)")
-	cmd.Flags().StringArray("exclude-pattern", []string{}, "additional file patterns to exclude")
-	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
+	addSharedFlags(cmd)
 
-	// Add semantic-aware detection flags
-	cmd.Flags().
-		Bool("semantic", false, "explicitly enable semantic-aware detection (already the default; use only to override config file)")
-	cmd.Flags().
-		Bool("structural", false, "disable semantic detection and use structural-only matching (may increase false positives) [opt-out from default]")
+	// Stats-specific: output format
+	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
 
 	return cmd
 }
