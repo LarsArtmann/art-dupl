@@ -170,30 +170,45 @@ func warnStructural(structural bool) {
 }
 
 // applyFlagValues applies the extracted flag values to the config.
+//
+//nolint:cyclop // Flag application is inherently branching; each branch is trivial
 func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
-	if flags.Verbose {
-		cfg.Verbose = true
-	}
+	applySimpleFlags(cfg, flags)
 
 	err := setDetectionMethods(cfg, flags.DetectionMethods)
 	if err != nil {
 		return err
 	}
 
-	if flags.Threshold != cli.DefaultThreshold {
-		cfg.Threshold = flags.Threshold
-	}
-
+	applyThresholdFlag(cfg, flags)
 	applyBooleanFlags(cfg, flags)
 	applyPatternFlags(cfg, flags)
 	applyTimeoutFlag(cfg, flags)
 	applyDiffModeFlag(cfg, flags)
+	applyPathsFlag(cfg, flags)
 
+	return nil
+}
+
+// applySimpleFlags applies non-branching simple flag values.
+func applySimpleFlags(cfg *config.Config, flags *FlagValues) {
+	if flags.Verbose {
+		cfg.Verbose = true
+	}
+}
+
+// applyThresholdFlag applies the threshold flag if it differs from default.
+func applyThresholdFlag(cfg *config.Config, flags *FlagValues) {
+	if flags.Threshold != cli.DefaultThreshold {
+		cfg.Threshold = flags.Threshold
+	}
+}
+
+// applyPathsFlag applies the paths flag if paths are provided.
+func applyPathsFlag(cfg *config.Config, flags *FlagValues) {
 	if len(flags.Paths) > 0 {
 		cfg.Paths = flags.Paths
 	}
-
-	return nil
 }
 
 // applyBooleanFlags applies boolean flag values to the config.
@@ -289,6 +304,7 @@ func applyTimeoutFlag(cfg *config.Config, flags *FlagValues) {
 				err,
 				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", flags.Timeout),
 			)
+
 			panic(err)
 		}
 
@@ -305,6 +321,7 @@ func applyDiffModeFlag(cfg *config.Config, flags *FlagValues) {
 				err,
 				fmt.Sprintf("invalid --diff value %q", flags.DiffMode),
 			)
+
 			panic(err)
 		}
 

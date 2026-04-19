@@ -9,13 +9,12 @@ clean:
     find . -name "*.test" -type f -delete 2>/dev/null || true
 
 # Run tests (with coverage if possible, falls back to without)
-test: clean
+test:
     #!/usr/bin/env bash
     set -euo pipefail
     # Try coverage first, silently checking for version mismatch
-    if go test -cover ./... > /tmp/test_cover.log 2>&1; then
-        # Coverage worked, re-run with verbose output
-        go test -v -cover ./...
+    if go test -v -cover ./... > /tmp/test_cover.log 2>&1; then
+        cat /tmp/test_cover.log
     else
         # Coverage failed, check if it's a version mismatch
         if grep -q "go tool version" /tmp/test_cover.log 2>/dev/null || \
@@ -106,9 +105,9 @@ ci: fmt check test
 
 # Build for different platforms
 build-all:
-    GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/dupl-linux-amd64
-    GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/dupl-darwin-amd64
-    GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/dupl-windows-amd64.exe
+    GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/art-dupl-linux-amd64 ./cmd/art-dupl
+    GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/art-dupl-darwin-amd64 ./cmd/art-dupl
+    GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -trimpath -o dist/art-dupl-windows-amd64.exe ./cmd/art-dupl
 
 # Install the binary locally
 install-local:
