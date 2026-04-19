@@ -22,9 +22,6 @@ type RuntimeConfig struct {
 	JSON           bool
 	Plumbing       bool
 	SortBy         string
-	DiffMode       bool   // Enable diff visualization for HTML output
-	All            string // Output directory for "all" mode (empty means disabled)
-	OutputDir      string // Custom output directory
 	Paths          []string
 
 	// Runtime configuration
