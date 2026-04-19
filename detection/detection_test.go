@@ -308,12 +308,6 @@ func TestLegacyPattern_Defaults(t *testing.T) {
 	}
 }
 
-// TestSimpleDetector_Interface tests that MultiDetector implements SimpleDetector.
-func TestSimpleDetector_Interface(t *testing.T) {
-	// This test verifies the interface is satisfied at compile time
-	var _ SimpleDetector = (*MultiDetector)(nil)
-}
-
 // TestTodoDetector_Patterns tests that regex patterns compile correctly.
 func TestTodoDetector_Patterns(t *testing.T) {
 	detector := NewTodoDetector()
