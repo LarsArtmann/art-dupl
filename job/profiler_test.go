@@ -85,15 +85,11 @@ func TestContextTimeout(t *testing.T) {
 }
 
 func TestContextTimeoutExpired(t *testing.T) {
-	// Test that timeout context expires correctly
-	// Use Background to avoid inheriting any deadline from t.Context()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
 
-	// Wait longer than the timeout
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
-	// Context should be cancelled
 	if !errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		t.Errorf("Context should have deadline exceeded error, got %v", ctx.Err())
 	}
