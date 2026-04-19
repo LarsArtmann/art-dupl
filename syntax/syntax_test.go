@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testhelpers"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
 const testFilename = "test.go"
@@ -227,4 +228,102 @@ func createTestNodeTree(input string) *Node {
 	}
 
 	return root
+}
+
+func TestVal(t *testing.T) {
+	t.Parallel()
+
+	n := NewNode()
+	n.Type = 42
+
+	if got := n.Val(); got != suffixtree.TokenValue(42) {
+		t.Errorf("Val() = %v, want %v", got, suffixtree.TokenValue(42))
+	}
+}
+
+func TestNewSyntheticFileNode(t *testing.T) {
+	t.Parallel()
+
+	n := NewSyntheticFileNode("main.go", 500)
+
+	if n.Filename != "main.go" {
+		t.Errorf("Filename = %q, want %q", n.Filename, "main.go")
+	}
+
+	if n.Pos != 0 {
+		t.Errorf("Pos = %d, want 0", n.Pos)
+	}
+
+	if n.End != 500 {
+		t.Errorf("End = %d, want 500", n.End)
+	}
+
+	if n.Type != 1 {
+		t.Errorf("Type = %d, want 1", n.Type)
+	}
+
+	if len(n.Children) != 0 {
+		t.Errorf("Children should be empty, got %d", len(n.Children))
+	}
+}
+
+func TestUnique(t *testing.T) {
+	t.Parallel()
+
+	group := [][]*Node{
+		{{Filename: "a.go", Pos: 1, End: 10}},
+		{{Filename: "a.go", Pos: 1, End: 10}},
+		{{Filename: "b.go", Pos: 1, End: 10}},
+		{{Filename: "a.go", Pos: 5, End: 15}},
+	}
+
+	result := Unique(group)
+
+	if len(result) != 3 {
+		t.Errorf("Unique() returned %d groups, want 3", len(result))
+	}
+}
+
+func TestUniqueEmptyGroup(t *testing.T) {
+	t.Parallel()
+
+	group := [][]*Node{
+		{},
+		{{Filename: "a.go", Pos: 1, End: 10}},
+	}
+
+	result := Unique(group)
+
+	if len(result) != 1 {
+		t.Errorf("Unique() with empty group returned %d, want 1", len(result))
+	}
+}
+
+func TestCountUniqueFiles(t *testing.T) {
+	t.Parallel()
+
+	group := [][]*Node{
+		{{Filename: "a.go"}},
+		{{Filename: "a.go"}},
+		{{Filename: "b.go"}},
+		{{Filename: "c.go"}},
+	}
+
+	if got := CountUniqueFiles(group); got != 3 {
+		t.Errorf("CountUniqueFiles() = %d, want 3", got)
+	}
+}
+
+func TestCountUniqueFilesEmptySequences(t *testing.T) {
+	t.Parallel()
+
+	group := [][]*Node{
+		{},
+		{{Filename: "a.go"}},
+		{},
+	}
+
+	if got := CountUniqueFiles(group); got != 1 {
+		t.Errorf("CountUniqueFiles() = %d, want 1", got)
+	}
 }

@@ -1,0 +1,117 @@
+package printer
+
+import (
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/syntax"
+)
+
+func TestGetCloneSize(t *testing.T) {
+	t.Parallel()
+
+	if got := GetCloneSize(nil); got != 0 {
+		t.Errorf("GetCloneSize(nil) = %d, want 0", got)
+	}
+
+	if got := GetCloneSize([][]*syntax.Node{}); got != 0 {
+		t.Errorf("GetCloneSize(empty) = %d, want 0", got)
+	}
+
+	if got := GetCloneSize([][]*syntax.Node{{}}); got != 0 {
+		t.Errorf("GetCloneSize({empty group}) = %d, want 0", got)
+	}
+
+	node := &syntax.Node{Owns: 42}
+	group := [][]*syntax.Node{{node}}
+	if got := GetCloneSize(group); got != 42 {
+		t.Errorf("GetCloneSize() = %d, want 42", got)
+	}
+}
+
+func TestBuildCloneGroups(t *testing.T) {
+	t.Parallel()
+
+	ch := make(chan syntax.Match, 2)
+	nodeA := &syntax.Node{Filename: "a.go"}
+	nodeB := &syntax.Node{Filename: "b.go"}
+	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeA}}}
+	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeB}}}
+	close(ch)
+
+	groups := BuildCloneGroups(ch)
+	if len(groups) != 1 {
+		t.Fatalf("BuildCloneGroups() returned %d groups, want 1", len(groups))
+	}
+
+	if len(groups["abc"]) != 2 {
+		t.Errorf("group 'abc' has %d entries, want 2", len(groups["abc"]))
+	}
+}
+
+func TestBuildCloneGroups_Empty(t *testing.T) {
+	t.Parallel()
+
+	ch := make(chan syntax.Match)
+	close(ch)
+
+	groups := BuildCloneGroups(ch)
+	if len(groups) != 0 {
+		t.Errorf("BuildCloneGroups(empty) = %d groups, want 0", len(groups))
+	}
+}
+
+func TestComputeUniqueCounts(t *testing.T) {
+	t.Parallel()
+
+	nodeA := &syntax.Node{Filename: "a.go"}
+	nodeA2 := &syntax.Node{Filename: "a.go"}
+	nodeB := &syntax.Node{Filename: "b.go"}
+	nodeC := &syntax.Node{Filename: "c.go"}
+
+	groups := map[string][][]*syntax.Node{
+		"h1": {{nodeA}, {nodeA2}, {nodeB}},
+		"h2": {{nodeC}},
+	}
+
+	counts := ComputeUniqueCounts(groups)
+	if counts["h1"] != 2 {
+		t.Errorf("h1 unique count = %d, want 2", counts["h1"])
+	}
+
+	if counts["h2"] != 1 {
+		t.Errorf("h2 unique count = %d, want 1", counts["h2"])
+	}
+}
+
+func TestSortCloneGroupKeys(t *testing.T) {
+	t.Parallel()
+
+	smallNode := &syntax.Node{Owns: 5}
+	bigNode := &syntax.Node{Owns: 50}
+	medNode := &syntax.Node{Owns: 20}
+
+	groups := map[string][][]*syntax.Node{
+		"small":  {{smallNode}},
+		"big":    {{bigNode}, {smallNode}, {medNode}},
+		"medium": {{medNode}, {smallNode}},
+	}
+	uniqueCounts := map[string]int{"small": 1, "big": 3, "medium": 2}
+
+	keys := []string{"small", "big", "medium"}
+	SortCloneGroupKeys(keys, SortBySize, groups, uniqueCounts)
+	if keys[0] != "big" {
+		t.Errorf("SortBySize: first key = %q, want %q", keys[0], "big")
+	}
+
+	keys = []string{"small", "big", "medium"}
+	SortCloneGroupKeys(keys, SortByOccurrence, groups, uniqueCounts)
+	if keys[0] != "big" {
+		t.Errorf("SortByOccurrence: first key = %q, want %q", keys[0], "big")
+	}
+
+	keys = []string{"small", "big", "medium"}
+	SortCloneGroupKeys(keys, SortByHash, groups, uniqueCounts)
+	if keys[0] != "big" {
+		t.Errorf("SortByHash: first key = %q, want %q", keys[0], "big")
+	}
+}
