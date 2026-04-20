@@ -3,6 +3,7 @@ package printer
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -159,6 +160,172 @@ func createMockNodes(t *testing.T) []*syntax.Node {
 	nodes[1].End = 60
 
 	return nodes
+}
+
+func TestJSONPrinter_SetHash(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(""))
+	jp := p.(*JSONPrinter)
+
+	jp.SetHash("abc123")
+
+	if jp.currentHash != "abc123" {
+		t.Errorf("currentHash = %q, want %q", jp.currentHash, "abc123")
+	}
+}
+
+func TestJSONPrinter_SetFilesCount(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(""))
+	jp := p.(*JSONPrinter)
+
+	jp.SetFilesCount(42)
+
+	if jp.filesCount != 42 {
+		t.Errorf("filesCount = %d, want 42", jp.filesCount)
+	}
+}
+
+func TestJSONPrinter_PrintFooter(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(""))
+
+	err := p.PrintFooter()
+	if err != nil {
+		t.Fatalf("PrintFooter() error: %v", err)
+	}
+}
+
+func TestJSONPrinter_PrintClones_WithHash(t *testing.T) {
+	t.Parallel()
+
+	testContent := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(testContent))
+	jp := p.(*JSONPrinter)
+	jp.SetHash("deadbeef")
+
+	nodes := createMockNodes(t)
+	dups := [][]*syntax.Node{nodes}
+
+	err := p.PrintClones(dups)
+	if err != nil {
+		t.Fatalf("PrintClones() error: %v", err)
+	}
+
+	if len(jp.cloneGroups) != 1 {
+		t.Fatalf("clone groups = %d, want 1", len(jp.cloneGroups))
+	}
+
+	if jp.cloneGroups[0].Hash != "deadbeef" {
+		t.Errorf("hash = %q, want %q", jp.cloneGroups[0].Hash, "deadbeef")
+	}
+}
+
+func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(""))
+	jp := p.(*JSONPrinter)
+
+	jp.cloneGroups = []CloneGroup{
+		{
+			Hash: "abc",
+			Size: 10,
+			Files: []JSONClone{
+				{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"},
+				{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"},
+			},
+		},
+	}
+	jp.totalClones = 2
+
+	err := jp.OutputSimpleJSON()
+	if err != nil {
+		t.Fatalf("OutputSimpleJSON() error: %v", err)
+	}
+
+	output := buf.String()
+
+	if !strings.Contains(output, `"hash"`) {
+		t.Errorf("OutputSimpleJSON() missing hash field: %q", output)
+	}
+
+	if !strings.Contains(output, `"abc"`) {
+		t.Errorf("OutputSimpleJSON() missing hash value: %q", output)
+	}
+
+	if !strings.Contains(output, `"score"`) {
+		t.Errorf("OutputSimpleJSON() missing score field: %q", output)
+	}
+
+	if !strings.Contains(output, `"instances"`) {
+		t.Errorf("OutputSimpleJSON() missing instances field: %q", output)
+	}
+}
+
+func TestJSONPrinter_OutputSimpleJSON_Empty(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(""))
+	jp := p.(*JSONPrinter)
+
+	err := jp.OutputSimpleJSON()
+	if err != nil {
+		t.Fatalf("OutputSimpleJSON(empty) error: %v", err)
+	}
+
+	output := buf.String()
+
+	if output != "[]" && output != "[\n]" {
+		t.Errorf("OutputSimpleJSON(empty) = %q, want empty array", output)
+	}
+}
+
+func TestJSONPrinter_PrintClones_MultipleGroups(t *testing.T) {
+	t.Parallel()
+
+	testContent := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+
+	var buf bytes.Buffer
+
+	p := NewJSON(&buf, mockReadFile(testContent))
+	jp := p.(*JSONPrinter)
+
+	nodes := createMockNodes(t)
+
+	err := p.PrintClones([][]*syntax.Node{nodes})
+	if err != nil {
+		t.Fatalf("PrintClones(1) error: %v", err)
+	}
+
+	err = p.PrintClones([][]*syntax.Node{nodes})
+	if err != nil {
+		t.Fatalf("PrintClones(2) error: %v", err)
+	}
+
+	if len(jp.cloneGroups) != 2 {
+		t.Errorf("clone groups = %d, want 2", len(jp.cloneGroups))
+	}
+
+	if jp.totalClones != 2 {
+		t.Errorf("totalClones = %d, want 2", jp.totalClones)
+	}
 }
 
 func mockReadFile(content string) ReadFile {
