@@ -191,10 +191,10 @@ func TestDetectFileDuplicate(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
-		flag    bool
-		dups    [][]*syntax.Node
-		want    bool
+		name string
+		flag bool
+		dups [][]*syntax.Node
+		want bool
 	}{
 		{
 			name: "flag set",

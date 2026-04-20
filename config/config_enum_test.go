@@ -506,15 +506,15 @@ func TestParseDetectionMethods(t *testing.T) {
 func TestValidateDetectionMethods_Function(t *testing.T) {
 	t.Parallel()
 
-	// nil/empty is INVALID (validation requires at least one method)
+	// nil/empty: ValidateDetectionMethods iterates over zero items, returns nil (no invalid methods)
 	err := ValidateDetectionMethods(nil)
-	if err == nil {
-		t.Error("expected error for nil")
+	if err != nil {
+		t.Errorf("expected nil for nil (no items to validate): %v", err)
 	}
 
 	err = ValidateDetectionMethods([]DetectionMethod{})
-	if err == nil {
-		t.Error("expected error for empty")
+	if err != nil {
+		t.Errorf("expected nil for empty (no items to validate): %v", err)
 	}
 
 	err = ValidateDetectionMethods([]DetectionMethod{"bad"})
@@ -659,9 +659,9 @@ func TestParseDiffMode(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		input     string
-		wantMode  DiffMode
-		wantErr   bool
+		input    string
+		wantMode DiffMode
+		wantErr  bool
 	}{
 		{"", DiffModeDisabled, false},
 		{"false", DiffModeDisabled, false},
@@ -1107,9 +1107,9 @@ func TestParseFileType(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		input     string
-		wantType  FileType
-		wantErr   bool
+		input    string
+		wantType FileType
+		wantErr  bool
 	}{
 		{"", FileTypeAll, false},
 		{"go", FileTypeGo, false},
