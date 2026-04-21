@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+func calcPercentage(count, total int) float64 {
+	if total == 0 {
+		return 0.0
+	}
+	return float64(count) / float64(total) * 100
+}
+
 // printSizeDistribution prints the size distribution with ASCII bar visualization.
 func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	ranges := make([]string, 0, len(distribution))
@@ -32,11 +39,6 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	for _, r := range ranges {
 		count := distribution[r]
 
-		percentage := 0.0
-		if total > 0 {
-			percentage = float64(count) / float64(total) * 100
-		}
-
 		// Create bar (max width 20 characters)
 		barWidth := 0
 		if maxCount > 0 {
@@ -45,7 +47,7 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 
 		bar := strings.Repeat("█", barWidth)
 
-		_, _ = fmt.Fprintf(w, "  %-15s: %4d clones [%s] %.1f%%\n", r, count, bar, percentage)
+		_, _ = fmt.Fprintf(w, "  %-15s: %4d clones [%s] %.1f%%\n", r, count, bar, calcPercentage(count, total))
 	}
 }
 
@@ -95,11 +97,6 @@ func printSeverityDistribution(w io.Writer, distribution map[string]int) {
 			continue
 		}
 
-		percentage := 0.0
-		if total > 0 {
-			percentage = float64(count) / float64(total) * 100
-		}
-
-		_, _ = fmt.Fprintf(w, "  %-10s: %4d clones (%.1f%%)\n", severity, count, percentage)
+		_, _ = fmt.Fprintf(w, "  %-10s: %4d clones (%.1f%%)\n", severity, count, calcPercentage(count, total))
 	}
 }

@@ -39,13 +39,17 @@ func (p *stats) SetDetectionMethods(methods string) {
 func (p *stats) SetSemanticDetection(enabled bool) {
 	p.statsData.SemanticDetection = enabled
 
+	mode, desc := semanticModeConfig(enabled)
+	p.statsData.DetectionMode = mode
+	p.statsData.DetectionModeDesc = desc
+}
+
+func semanticModeConfig(enabled bool) (string, string) {
 	if enabled {
-		p.statsData.DetectionMode = "semantic"
-		p.statsData.DetectionModeDesc = "Matches clones by structure AND identifier names (fewer false positives)"
-	} else {
-		p.statsData.DetectionMode = "structural"
-		p.statsData.DetectionModeDesc = "Matches clones by AST structure only (may include code with different identifiers)"
+		return "semantic", "Matches clones by structure AND identifier names (fewer false positives)"
 	}
+
+	return "structural", "Matches clones by AST structure only (may include code with different identifiers)"
 }
 
 // SetFormat sets the output format.
