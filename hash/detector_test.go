@@ -144,8 +144,6 @@ func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
 
 	all := []string{files["a1.go"], files["a2.go"], files["b1.go"], files["b2.go"]}
 	dups := FindFileDuplicates(all, 1)
-	_ = dups
-
 	if len(dups) != 2 {
 		t.Errorf("expected 2 duplicate groups, got %d", len(dups))
 	}
