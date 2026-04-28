@@ -28,5 +28,9 @@ node_modules/
 *.db
 # Test coverage
 /coverage
+# Nix
+.direnv/
+result
+result-*
 
 /report/jscpd-report.json
