@@ -10,7 +10,11 @@
   };
 
   outputs =
-    { self, nixpkgs, gogenfilter }:
+    {
+      self,
+      nixpkgs,
+      gogenfilter,
+    }:
     let
       systems = [
         "x86_64-linux"
@@ -35,28 +39,50 @@
 
           src = pkgs.lib.cleanSource ./.;
 
-          vendorHash = "sha256-rvzXCdcx2EwxjBYicMkEYV6z/ExZlRQhH09ys4WB/Ms=";
+          # Private Go modules can't be fetched inside the Nix sandbox (no SSH).
+          # Strategy: gogenfilter is pre-fetched as a flake input (via SSH during
+          # evaluation). The goModules derivation uses a dummy local replace so it
+          # can vendor all public deps without network access to the private repo.
+          # The main build then swaps in the real gogenfilter from the flake input.
+          vendorHash = "sha256-+fDTxFD/4M4ba/NEQ54Ge3p1dcXerUmCaFFV9kk4Wpk=";
 
           overrideModAttrs = old: {
             preBuild = ''
               mkdir -p dummy
               cat > dummy/go.mod << 'DUMMYEOF'
               module github.com/LarsArtmann/gogenfilter
-              go 1.26
+              go 1.26.0
+              require (
+                github.com/bmatcuk/doublestar/v4 v4.10.0
+                github.com/go-faster/yaml v0.4.6
+              )
+              require (
+                github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+                github.com/go-faster/errors v0.7.1 // indirect
+                github.com/go-faster/jx v1.2.0 // indirect
+                github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+                github.com/segmentio/asm v1.2.1 // indirect
+                go.uber.org/multierr v1.11.0 // indirect
+                golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
+                golang.org/x/sys v0.43.0 // indirect
+              )
               DUMMYEOF
-              echo 'package gogenfilter' > dummy/dummy.go
+              echo 'package gogenfilter
+              import (
+                _ "github.com/bmatcuk/doublestar/v4"
+                _ "github.com/go-faster/yaml"
+              )' > dummy/dummy.go
               go mod edit -replace=github.com/LarsArtmann/gogenfilter=./dummy
             '';
           };
 
           preBuild = ''
-            cp -rL vendor vendor-tmp
-            chmod -R u+w vendor-tmp
-            rm -rf vendor
-            mv vendor-tmp vendor
+            chmod -R u+w vendor
             rm -rf vendor/github.com/LarsArtmann/gogenfilter
             mkdir -p vendor/github.com/LarsArtmann/gogenfilter
             cp -r ${gogenfilter}/. vendor/github.com/LarsArtmann/gogenfilter/
+            sed -i 's|=> ./dummy|=> ./vendor/github.com/LarsArtmann/gogenfilter|' vendor/modules.txt
+            go mod edit -replace=github.com/LarsArtmann/gogenfilter=./vendor/github.com/LarsArtmann/gogenfilter
           '';
 
           ldflags = [
