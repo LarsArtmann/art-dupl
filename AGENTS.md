@@ -771,10 +771,12 @@ This project follows strict quality standards:
 The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase dummy/replace pattern**:
 
 **Why it's needed:** `buildGoModule` creates two derivations:
+
 1. **goModules** (fixed-output): Runs `go mod vendor` in sandbox (no SSH, no store path refs)
 2. **Main build** (regular): Compiles the binary (CAN reference store paths)
 
 **How it works:**
+
 - `gogenfilter` is a flake input fetched via SSH at evaluation time (`flake = false`)
 - `builtins.readFile "${gogenfilter}/go.mod"` reads the real go.mod at Nix eval time
 - In goModules (`overrideModAttrs`): dummy dir with real go.mod/go.sum + `-replace` to `./dummy`
@@ -783,6 +785,7 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 **Key files:** `flake.nix:27-30` (eval-time reads), `flake.nix:54-70` (overrideModAttrs), `flake.nix:72-79` (preBuild)
 
 **When gogenfilter changes:**
+
 1. Update `rev=` in `flake.nix` line 7
 2. Set `vendorHash = ""` (empty string, NOT null)
 3. Run `nix build` — it will fail with the correct hash
@@ -794,6 +797,7 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 ### Codebase Architecture — Key Decisions
 
 **printer/html.go split (2026-04-30):** Split into 4 files:
+
 - `html.go` (365L): Core struct, constructors, PrintHeader, PrintClones
 - `html_template.go` (523L): CSS/HTML template const
 - `html_diff.go` (315L): Diff visualization functions
