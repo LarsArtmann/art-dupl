@@ -47,7 +47,7 @@ func TestTextPrinter_PrintHeader(t *testing.T) {
 func TestTextPrinter_PrintClones(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	var buf bytes.Buffer
 
@@ -75,7 +75,7 @@ func TestTextPrinter_PrintClones(t *testing.T) {
 func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	var buf bytes.Buffer
 
@@ -275,7 +275,7 @@ func TestCalculateCloneSizes_Empty(t *testing.T) {
 func TestPrepareClonesInfo(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	fread := mockReadFile(content)
 
@@ -369,7 +369,7 @@ func TestTextPrinter_SetFileDuplicate(t *testing.T) {
 func TestTextPrinter_OutputText(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	var buf bytes.Buffer
 
@@ -500,7 +500,7 @@ func TestTextPrinter_OutputText_UnknownSort(t *testing.T) {
 func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	var buf bytes.Buffer
 

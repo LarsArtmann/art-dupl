@@ -170,8 +170,6 @@ func warnStructural(structural bool) {
 }
 
 // applyFlagValues applies the extracted flag values to the config.
-//
-//nolint:cyclop // Flag application is inherently branching; each branch is trivial
 func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 	applySimpleFlags(cfg, flags)
 

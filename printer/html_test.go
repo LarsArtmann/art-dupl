@@ -14,10 +14,10 @@ import (
 var errReadFail = errors.New("read failed")
 
 const (
-	testGoCode       = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
-	testGoMultiCode  = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
-	testPlumbCode    = "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
-	testFilename     = "test.go"
+	testGoCode      = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	testGoMultiCode = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
+	testPlumbCode   = "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	testFilename    = "test.go"
 )
 
 type errorWriter struct{}
@@ -48,15 +48,6 @@ func assertContains(t *testing.T, s, substr, msg string) {
 
 	if !strings.Contains(s, substr) {
 		t.Error(msg)
-	}
-}
-
-// assertStringEqual checks that actual equals expected.
-func assertStringEqual(t *testing.T, actual, expected, msg string) {
-	t.Helper()
-
-	if actual != expected {
-		t.Errorf("got '%s', want '%s'", actual, expected)
 	}
 }
 
@@ -456,6 +447,8 @@ func TestSuggestionHTML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got := suggestionHTML(tt.suggestion)
 			if got != tt.want {
 				t.Errorf("suggestionHTML(%q) = %q, want %q", tt.suggestion, got, tt.want)
@@ -725,6 +718,8 @@ func TestWriteMetadata(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			var buf bytes.Buffer
 			hp := &htmlprinter{
 				w:        &buf,
@@ -896,6 +891,8 @@ func TestLineDiff_LargeFile(t *testing.T) {
 	t.Parallel()
 
 	var baseLines, comparedLines []byte
+	baseLines = make([]byte, 0, 1500)
+	comparedLines = make([]byte, 0, 800)
 	for i := range 150 {
 		baseLines = append(baseLines, []byte("base line\n")...)
 		if i < 80 {
@@ -926,6 +923,8 @@ func TestSplitLines(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			lines := splitLines(tt.input)
 			if len(lines) != tt.want {
 				t.Errorf("splitLines returned %d lines, want %d", len(lines), tt.want)
@@ -971,6 +970,8 @@ func TestHTMLEscape(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			if got := htmlEscape(tt.input); got != tt.want {
 				t.Errorf("htmlEscape(%q) = %q, want %q", tt.input, got, tt.want)
 			}

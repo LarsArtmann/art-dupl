@@ -11,6 +11,7 @@ func calcPercentage(count, total int) float64 {
 	if total == 0 {
 		return 0.0
 	}
+
 	return float64(count) / float64(total) * 100
 }
 
@@ -47,7 +48,13 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 
 		bar := strings.Repeat("█", barWidth)
 
-		_, _ = fmt.Fprintf(w, "  %-15s: %4d clones [%s] %.1f%%\n", r, count, bar, calcPercentage(count, total))
+		pct := calcPercentage(count, total)
+
+		_, _ = fmt.Fprintf(
+			w,
+			"  %-15s: %4d clones [%s] %.1f%%\n",
+			r, count, bar, pct,
+		)
 	}
 }
 
@@ -92,6 +99,12 @@ func printSeverityDistribution(w io.Writer, distribution map[string]int) {
 			continue
 		}
 
-		_, _ = fmt.Fprintf(w, "  %-10s: %4d clones (%.1f%%)\n", severity, count, calcPercentage(count, total))
+		pct := calcPercentage(count, total)
+
+		_, _ = fmt.Fprintf(
+			w,
+			"  %-10s: %4d clones (%.1f%%)\n",
+			severity, count, pct,
+		)
 	}
 }

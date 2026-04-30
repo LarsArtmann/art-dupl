@@ -1,3 +1,4 @@
+// Package cli provides CLI runtime utilities for art-dupl.
 package cli
 
 import (
