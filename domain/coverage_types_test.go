@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
@@ -332,7 +333,7 @@ func TestAnalysisJSONRoundTrip(t *testing.T) {
 			ComplexityScore:  2.5,
 			DuplicationRatio: 0.3,
 		},
-		CreatedAt: "2024-01-01T00:00:00Z",
+		CreatedAt: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 
 	result := testutil.AssertJSONRoundTrip(t, original)

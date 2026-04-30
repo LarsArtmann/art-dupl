@@ -2,6 +2,7 @@ package domain
 
 import (
 	"testing"
+	"time"
 )
 
 // validatable is a type constraint for types with IsValid() error method.
@@ -16,7 +17,7 @@ func baseAnalysis(overrides ...func(*Analysis)) Analysis {
 		State:     DetectionStateIdle,
 		Mode:      AnalysisModeFull,
 		Threshold: 15,
-		CreatedAt: "2024-01-01T00:00:00Z",
+		CreatedAt: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 	for _, override := range overrides {
 		override(&a)
@@ -117,7 +118,7 @@ func TestAnalysis_IsValid(t *testing.T) {
 		},
 		{
 			name:    "empty created at",
-			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-5"; a.CreatedAt = "" }),
+			value:   baseAnalysis(func(a *Analysis) { a.ID = "test-5"; a.CreatedAt = time.Time{} }),
 			wantErr: true,
 		},
 		{

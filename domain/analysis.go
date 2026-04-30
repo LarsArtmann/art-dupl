@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"time"
 )
 
 // Analysis represents main analysis domain object.
@@ -13,8 +14,8 @@ type Analysis struct {
 	CloneGroups []CloneGroup      `json:"cloneGroups"`
 	Stats       AnalysisStats     `json:"stats"`
 	Metadata    map[string]string `json:"metadata"`
-	CreatedAt   string            `json:"createdAt"`
-	CompletedAt *string           `json:"completedAt,omitempty"`
+	CreatedAt   time.Time         `json:"createdAt"`
+	CompletedAt *time.Time        `json:"completedAt,omitempty"`
 }
 
 func (a Analysis) IsValid() error {
@@ -30,7 +31,7 @@ func (a Analysis) IsValid() error {
 		return fmt.Errorf("%w: ID=%s", ErrAnalysisThresholdZero, a.ID)
 	}
 
-	if a.CreatedAt == "" {
+	if a.CreatedAt.IsZero() {
 		return fmt.Errorf("%w: ID=%s", ErrAnalysisCreatedAtEmpty, a.ID)
 	}
 
