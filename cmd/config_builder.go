@@ -181,8 +181,16 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 	applyThresholdFlag(cfg, flags)
 	applyBooleanFlags(cfg, flags)
 	applyPatternFlags(cfg, flags)
-	applyTimeoutFlag(cfg, flags)
-	applyDiffModeFlag(cfg, flags)
+	err = applyTimeoutFlag(cfg, flags)
+	if err != nil {
+		return err
+	}
+
+	err = applyDiffModeFlag(cfg, flags)
+	if err != nil {
+		return err
+	}
+
 	applyPathsFlag(cfg, flags)
 
 	return nil
@@ -268,35 +276,35 @@ func applyPatternFlags(cfg *config.Config, flags *FlagValues) {
 }
 
 // applyTimeoutFlag applies the timeout flag to the config.
-func applyTimeoutFlag(cfg *config.Config, flags *FlagValues) {
+func applyTimeoutFlag(cfg *config.Config, flags *FlagValues) error {
 	if flags.Timeout != "" && flags.Timeout != "30m" {
 		duration, err := time.ParseDuration(flags.Timeout)
 		if err != nil {
-			err = duplerrors.WrapValidation(
+			return duplerrors.WrapValidation(
 				err,
 				fmt.Sprintf("invalid timeout format %q (use '30m', '1h', etc.)", flags.Timeout),
 			)
-
-			panic(err)
 		}
 
 		cfg.Timeout = int(duration.Seconds())
 	}
+
+	return nil
 }
 
 // applyDiffModeFlag applies the diff mode flag to the config.
-func applyDiffModeFlag(cfg *config.Config, flags *FlagValues) {
+func applyDiffModeFlag(cfg *config.Config, flags *FlagValues) error {
 	if flags.DiffMode != "" {
 		parsedDiffMode, err := config.ParseDiffMode(flags.DiffMode)
 		if err != nil {
-			err = duplerrors.WrapValidation(
+			return duplerrors.WrapValidation(
 				err,
 				fmt.Sprintf("invalid --diff value %q", flags.DiffMode),
 			)
-
-			panic(err)
 		}
 
 		cfg.DiffMode = parsedDiffMode
 	}
+
+	return nil
 }
