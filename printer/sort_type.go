@@ -12,9 +12,3 @@ const (
 	SortByHash        = config.SortByHash
 	SortByTotalTokens = config.SortByTotalTokens
 )
-
-// ParseSortBy converts a string to SortBy with validation.
-// Returns an error if the value is not a valid sorting criterion.
-func ParseSortBy(value string) (SortBy, error) {
-	return config.ParseSortCriteria(value)
-}
