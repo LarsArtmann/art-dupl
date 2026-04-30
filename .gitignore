@@ -16,6 +16,7 @@ cover.out
 /art-dupl-test
 *.exe
 *.html
+!site/*.html
 # Output directories for reports
 reports/
 my-reports/

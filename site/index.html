@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>art-dupl — Professional Code Clone Detection for Go</title>
+<meta name="description" content="Find every code clone in your Go projects. AST-based structural detection with suffix tree algorithms. Multiple output formats, semantic awareness, and zero config.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg-deep: #050508;
+  --bg-base: #0a0a10;
+  --bg-elevated: #111119;
+  --bg-card: #14141e;
+  --bg-card-hover: #1a1a26;
+  --border: #1e1e30;
+  --border-light: #2a2a40;
+  --accent: #e8a020;
+  --accent-bright: #f0b840;
+  --accent-dim: #b07818;
+  --accent-glow: rgba(232,160,32,0.15);
+  --mint: #30d8a0;
+  --mint-dim: rgba(48,216,160,0.12);
+  --coral: #f06050;
+  --text: #e4e4ec;
+  --text-secondary: #9898b0;
+  --text-muted: #606078;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --max-width: 1200px;
+  --nav-height: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-deep);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img { max-width: 100%; }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  background: rgba(5,5,8,0.8);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+
+nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.nav-brand .mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--bg-deep);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  font-weight: 400;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+  color: var(--bg-deep);
+  box-shadow: 0 2px 12px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(232,160,32,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--border-light);
+  background: var(--bg-elevated);
+}
+
+.btn-large {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.mobile-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: var(--nav-height);
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-bg canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,160,32,0.06), transparent),
+    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(48,216,160,0.03), transparent),
+    linear-gradient(180deg, var(--bg-deep) 0%, transparent 30%, transparent 70%, var(--bg-deep) 100%);
+  z-index: 1;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+  max-width: 700px;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+.install-cmd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  max-width: 100%;
+  overflow-x: auto;
+  animation: fadeInUp 0.6s ease-out 0.35s both;
+}
+
+.install-cmd .dollar {
+  color: var(--accent);
+  user-select: none;
+}
+
+.install-cmd code {
+  color: var(--mint);
+}
+
+.install-cmd .copy-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.install-cmd .copy-btn:hover {
+  color: var(--text);
+}
+
+.install-cmd .copy-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-stat .value {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hero-stat .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTIONS ===== */
+section {
+  padding: 100px 0;
+  position: relative;
+}
+
+section .section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+section .section-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+section .section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  max-width: 600px;
+  margin: 0 auto 16px;
+}
+
+section .section-desc {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ===== PIPELINE ===== */
+.pipeline-section {
+  background: var(--bg-base);
+}
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  position: relative;
+}
+
+.pipeline-step {
+  background: var(--bg-card);
+  padding: 28px 20px;
+  text-align: center;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.pipeline-step:hover {
+  background: var(--bg-card-hover);
+}
+
+.pipeline-step .step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+}
+
+.pipeline-step:nth-child(1) .step-icon { background: rgba(232,160,32,0.12); color: var(--accent); }
+.pipeline-step:nth-child(2) .step-icon { background: rgba(48,216,160,0.12); color: var(--mint); }
+.pipeline-step:nth-child(3) .step-icon { background: rgba(130,100,255,0.12); color: #8264ff; }
+.pipeline-step:nth-child(4) .step-icon { background: rgba(240,96,80,0.12); color: var(--coral); }
+.pipeline-step:nth-child(5) .step-icon { background: rgba(60,160,255,0.12); color: #3ca0ff; }
+.pipeline-step:nth-child(6) .step-icon { background: rgba(232,160,32,0.12); color: var(--accent); }
+
+.pipeline-step .step-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.pipeline-step .step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.pipeline-step .step-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.pipeline-arrow {
+  display: none;
+}
+
+/* ===== FEATURES ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  padding: 36px 28px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  margin-bottom: 20px;
+  font-size: 1.15rem;
+}
+
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.feature-tag {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tag-default { background: var(--accent-glow); color: var(--accent); }
+.tag-fast { background: var(--mint-dim); color: var(--mint); }
+.tag-new { background: rgba(130,100,255,0.12); color: #8264ff; }
+
+/* ===== METHODS ===== */
+.methods-section {
+  background: var(--bg-base);
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.method-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px 28px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.method-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+}
+
+.method-card.recommended {
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 40px var(--accent-glow);
+}
+
+.method-card.recommended::after {
+  content: 'DEFAULT';
+  position: absolute;
+  top: -1px;
+  right: 20px;
+  padding: 4px 10px;
+  background: var(--accent);
+  color: var(--bg-deep);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  border-radius: 0 0 6px 6px;
+}
+
+.method-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.method-card .method-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.method-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.method-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.method-meta-item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.method-meta-item .check {
+  color: var(--mint);
+}
+
+.method-speed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.speed-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.speed-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+}
+
+.speed-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ===== TERMINAL DEMO ===== */
+.demo-section {
+  background: var(--bg-deep);
+}
+
+.terminal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 780px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot:nth-child(1) { background: #f06050; }
+.terminal-dot:nth-child(2) { background: #e8a020; }
+.terminal-dot:nth-child(3) { background: #30d8a0; }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.terminal-body {
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+
+.terminal-body .prompt {
+  color: var(--accent);
+}
+
+.terminal-body .cmd {
+  color: var(--text);
+}
+
+.terminal-body .output {
+  color: var(--text-muted);
+}
+
+.terminal-body .file {
+  color: var(--mint);
+}
+
+.terminal-body .highlight {
+  color: var(--accent-bright);
+}
+
+.terminal-body .separator {
+  color: var(--border-light);
+}
+
+/* ===== OUTPUT FORMATS ===== */
+.formats-section {
+  background: var(--bg-base);
+}
+
+.formats-showcase {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.format-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+.format-tab {
+  padding: 12px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.format-tab:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.02);
+}
+
+.format-tab.active {
+  color: var(--accent);
+  background: var(--bg-card);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.format-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0 0 12px 12px;
+  padding: 28px;
+  min-height: 200px;
+}
+
+.format-panel {
+  display: none;
+}
+
+.format-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.format-panel pre {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.format-panel .format-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  background: var(--bg-deep);
+  text-align: center;
+}
+
+.cta-box {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.cta-box h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.cta-box p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cta-install {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cta-install code {
+  color: var(--accent);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  padding: 48px 0;
+  border-top: 1px solid var(--border);
+  background: var(--bg-deep);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.footer-brand .mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+  border-radius: 7px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.75rem;
+  color: var(--bg-deep);
+}
+
+.footer-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--text-secondary);
+}
+
+.footer-copy {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .pipeline {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .methods-grid .method-card:last-child {
+    grid-column: span 2;
+    max-width: 50%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  :root { --nav-height: 56px; }
+
+  .nav-links { display: none; }
+  .mobile-toggle { display: block; }
+
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(5,5,8,0.95);
+    backdrop-filter: blur(20px);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .hero h1 { font-size: 2.2rem; }
+  .hero-sub { font-size: 1rem; }
+  .hero-stats { gap: 24px; }
+
+  .pipeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .methods-grid {
+    grid-template-columns: 1fr;
+  }
+  .methods-grid .method-card:last-child {
+    grid-column: span 1;
+    max-width: 100%;
+  }
+
+  .format-tabs {
+    flex-wrap: wrap;
+  }
+  .format-tab {
+    flex: unset;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+  }
+
+  section { padding: 64px 0; }
+  .cta-box { padding: 48px 24px; }
+}
+
+@media (max-width: 480px) {
+  .pipeline {
+    grid-template-columns: 1fr;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .install-cmd { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="container">
+    <a href="#" class="nav-brand">
+      <span class="mark">AD</span>
+      art-dupl
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#methods">Detection</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#output">Output</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="https://github.com/LarsArtmann/art-dupl" target="_blank" rel="noopener" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="#cta" class="btn btn-primary">Get Started</a>
+    </div>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg">
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-gradient"></div>
+  <div class="container">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Open Source Code Clone Detection
+    </div>
+    <h1>
+      Find Every <span class="accent">Clone.</span><br>
+      Miss Nothing.
+    </h1>
+    <p class="hero-sub">
+      Professional AST-based code duplication detection for Go projects. Suffix tree algorithms meet semantic awareness. Zero config required.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn btn-primary btn-large">Get Started &rarr;</a>
+      <a href="https://github.com/LarsArtmann/art-dupl" target="_blank" rel="noopener" class="btn btn-ghost btn-large">View on GitHub</a>
+    </div>
+    <div class="install-cmd">
+      <span class="dollar">$</span>
+      <code>go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest</code>
+      <button class="copy-btn" data-copy="go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest" aria-label="Copy install command">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="value">2</span>
+        <span class="label">Detection Methods</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">5</span>
+        <span class="label">Output Formats</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">0</span>
+        <span class="label">Config Required</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">MIT</span>
+        <span class="label">License</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PIPELINE / HOW IT WORKS ===== -->
+<section class="pipeline-section" id="how-it-works">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">How It Works</span>
+      <h2 class="section-title">From Source to Clones in Six Steps</h2>
+      <p class="section-desc">A concurrent pipeline transforms your Go source into actionable clone detection results.</p>
+    </div>
+    <div class="pipeline reveal">
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="step-num">01</div>
+        <div class="step-title">Source Files</div>
+        <div class="step-desc">Scan Go and Templ files from your project paths</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="step-num">02</div>
+        <div class="step-title">AST Parse</div>
+        <div class="step-desc">Parse into abstract syntax trees with concurrent workers</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </div>
+        <div class="step-num">03</div>
+        <div class="step-title">Transform</div>
+        <div class="step-desc">Serialize AST to language-agnostic token sequences</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </div>
+        <div class="step-num">04</div>
+        <div class="step-title">Suffix Tree</div>
+        <div class="step-desc">Build compressed suffix tree for O(n) duplicate search</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </div>
+        <div class="step-num">05</div>
+        <div class="step-title">Detect</div>
+        <div class="step-desc">Find repeating patterns above the token threshold</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </div>
+        <div class="step-num">06</div>
+        <div class="step-title">Output</div>
+        <div class="step-desc">Format results as text, HTML, JSON, or plumbing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Features</span>
+      <h2 class="section-title">Built for Serious Codebases</h2>
+      <p class="section-desc">Everything you need to find and eliminate code duplication.</p>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </div>
+        <h3>Suffix Tree Detection</h3>
+        <p>AST-level structural analysis using compressed suffix trees. Finds exact and near-miss clones that regex tools miss.</p>
+        <span class="feature-tag tag-default">Core</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <h3>Semantic Awareness</h3>
+        <p>Default mode matches by identifier names and receiver types. Distinguishes <code>CrushMode.IsValid</code> from <code>SafetyMode.IsValid</code>.</p>
+        <span class="feature-tag tag-default">Default</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Multi-Method Detection</h3>
+        <p>Run suffix tree and hash-based detection simultaneously. Combine results for comprehensive coverage.</p>
+        <span class="feature-tag tag-new">Advanced</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3>Smart Filtering</h3>
+        <p>Auto-detects and filters SQLC and Templ generated code. Custom glob patterns for your project's conventions.</p>
+        <span class="feature-tag tag-fast">Smart</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Rich Output Formats</h3>
+        <p>Text, HTML with syntax highlighting, structured JSON for CI/CD, plumbing for scripts, and stats with CSV export.</p>
+        <span class="feature-tag tag-fast">5 Formats</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>Professional CLI</h3>
+        <p>Shell completions for bash, zsh, fish, PowerShell. Man pages. Styled help with examples. Built with Fang.</p>
+        <span class="feature-tag tag-new">CLI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DETECTION METHODS ===== -->
+<section class="methods-section" id="methods">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Detection Methods</span>
+      <h2 class="section-title">Choose Your Detection Strategy</h2>
+      <p class="section-desc">Three modes to match your workflow. Run individually or combine for maximum coverage.</p>
+    </div>
+    <div class="methods-grid reveal">
+      <div class="method-card recommended">
+        <h3>Suffix Tree</h3>
+        <p class="method-desc">AST-based structural analysis using compressed suffix trees. Finds clones by code structure, ignoring literal values.</p>
+        <div class="method-meta">
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Semantic-aware by default
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Structural-only option
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            SIMD-optimized transitions
+          </div>
+        </div>
+        <div class="method-speed">
+          <span class="speed-label">Speed</span>
+          <div class="speed-bar"><div class="speed-fill" style="width: 70%"></div></div>
+          <span class="speed-label">Thorough</span>
+        </div>
+      </div>
+      <div class="method-card">
+        <h3>Hash-Based</h3>
+        <p class="method-desc">SHA1 rolling hash on file content. Faster alternative for quick scans and large codebases.</p>
+        <div class="method-meta">
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Fast file-level detection
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Content-based matching
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Lower memory footprint
+          </div>
+        </div>
+        <div class="method-speed">
+          <span class="speed-label">Speed</span>
+          <div class="speed-bar"><div class="speed-fill" style="width: 95%"></div></div>
+          <span class="speed-label">Fast</span>
+        </div>
+      </div>
+      <div class="method-card">
+        <h3>Combined</h3>
+        <p class="method-desc">Run both methods in parallel via goroutines. Results are combined and deduplicated for comprehensive coverage.</p>
+        <div class="method-meta">
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Maximum coverage
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Parallel execution
+          </div>
+          <div class="method-meta-item">
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Auto-deduplication
+          </div>
+        </div>
+        <div class="method-speed">
+          <span class="speed-label">Speed</span>
+          <div class="speed-bar"><div class="speed-fill" style="width: 80%"></div></div>
+          <span class="speed-label">Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEMO ===== -->
+<section class="demo-section" id="demo">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Live Demo</span>
+      <h2 class="section-title">See It In Action</h2>
+      <p class="section-desc">Real output from scanning a Go project. Every clone found, every location pinpointed.</p>
+    </div>
+    <div class="terminal reveal">
+      <div class="terminal-header">
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-title">art-dupl ./src -t 30</span>
+      </div>
+      <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">art-dupl ./src -t 30</span>
+
+<span class="output">Found 12 clone groups (34 total clones)</span>
+
+<span class="separator">────────────────────────────────────────</span>
+<span class="highlight">Clone Group 1</span> <span class="output">(8 occurrences, 45 tokens)</span>
+
+  <span class="file">src/handlers/user.go:42-58</span>
+  <span class="file">src/handlers/admin.go:128-144</span>
+  <span class="file">src/handlers/auth.go:67-83</span>
+  <span class="file">src/api/v1/user.go:31-47</span>
+  <span class="file">src/api/v2/user.go:31-47</span>
+
+  <span class="output">  func (h *Handler) validateInput(r *http.Request) error {</span>
+  <span class="output">      if r.Body == nil {</span>
+  <span class="output">          return errors.New("request body is required")</span>
+  <span class="output">      }</span>
+  <span class="output">      defer r.Body.Close()</span>
+  <span class="output">      ...</span>
+
+<span class="separator">────────────────────────────────────────</span>
+<span class="highlight">Clone Group 2</span> <span class="output">(5 occurrences, 32 tokens)</span>
+
+  <span class="file">src/models/user.go:15-28</span>
+  <span class="file">src/models/session.go:22-35</span>
+  <span class="file">src/models/token.go:18-31</span>
+
+<span class="separator">────────────────────────────────────────</span>
+<span class="output">Run with <span class="cmd">--json</span> for structured output or <span class="cmd">--html</span> for a full report.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OUTPUT FORMATS ===== -->
+<section class="formats-section" id="output">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Output Formats</span>
+      <h2 class="section-title">Every Format You Need</h2>
+      <p class="section-desc">From quick terminal scans to CI/CD integration to full HTML reports.</p>
+    </div>
+    <div class="formats-showcase reveal">
+      <div class="format-tabs">
+        <button class="format-tab active" data-tab="text">Text</button>
+        <button class="format-tab" data-tab="html">HTML</button>
+        <button class="format-tab" data-tab="json">JSON</button>
+        <button class="format-tab" data-tab="plumbing">Plumbing</button>
+        <button class="format-tab" data-tab="stats">Stats</button>
+      </div>
+      <div class="format-content">
+        <div class="format-panel active" id="panel-text">
+          <div class="format-desc">Human-readable clone listing with file paths and line numbers. The default format for quick analysis.</div>
+<pre>Found 12 clone groups (34 total clones)
+
+Clone Group 1 (8 occurrences, 45 tokens)
+  src/handlers/user.go:42-58
+  src/handlers/admin.go:128-144
+  src/handlers/auth.go:67-83
+
+Clone Group 2 (5 occurrences, 32 tokens)
+  src/models/user.go:15-28
+  src/models/session.go:22-35
+  src/models/token.go:18-31</pre>
+        </div>
+        <div class="format-panel" id="panel-html">
+          <div class="format-desc">Detailed report with syntax-highlighted code fragments. Includes actual duplicate code for review.</div>
+<pre><span style="color:var(--text-muted)">&lt;!DOCTYPE html&gt;</span>
+<span style="color:var(--accent)">&lt;html&gt;</span>
+  <span style="color:var(--mint)">Clone Group 1</span> — 8 occurrences
+  <span style="color:var(--text-secondary)">├─ src/handlers/user.go:42-58</span>
+  <span style="color:var(--text-secondary)">├─ src/handlers/admin.go:128-144</span>
+  <span style="color:var(--text-secondary)">└─ src/handlers/auth.go:67-83</span>
+
+  <span style="color:var(--accent-bright)">Highlighted diff with actual code</span>
+  <span style="color:var(--accent-bright)">Side-by-side or inline comparison</span>
+<span style="color:var(--accent)">&lt;/html&gt;</span></pre>
+        </div>
+        <div class="format-panel" id="panel-json">
+          <div class="format-desc">Structured output with metadata, statistics, and summary. Perfect for CI/CD pipelines and tooling integration.</div>
+<pre>{
+  "summary": {
+    "total_clones": 34,
+    "clone_groups": 12,
+    "files_scanned": 114
+  },
+  "clones": [
+    {
+      "hash": "a1b2c3d4...",
+      "occurrences": 8,
+      "tokens": 45,
+      "files": [
+        {"path": "src/handlers/user.go", "start": 42, "end": 58},
+        {"path": "src/handlers/admin.go", "start": 128, "end": 144}
+      ]
+    }
+  ]
+}</pre>
+        </div>
+        <div class="format-panel" id="panel-plumbing">
+          <div class="format-desc">Machine-readable format for script integration. Parse with awk, sed, or any pipeline tool.</div>
+<pre>a1b2c3d4 src/handlers/user.go 42 58
+a1b2c3d4 src/handlers/admin.go 128 144
+a1b2c3d4 src/handlers/auth.go 67 83
+e5f6g7h8 src/models/user.go 15 28
+e5f6g7h8 src/models/session.go 22 35
+e5f6g7h8 src/models/token.go 18 31
+
+# Use with sort, uniq, awk:
+$ art-dupl --plumbing | sort | uniq -w8 -D</pre>
+        </div>
+        <div class="format-panel" id="panel-stats">
+          <div class="format-desc">Aggregated duplication statistics with distribution analysis. Available in text, JSON, and CSV formats.</div>
+<pre>Code Duplication Statistics
+============================
+
+Overview:
+  Files Scanned: 114
+  Clone Groups: 156
+  Total Clones: 423
+
+Duplicate Code:
+  Total Duplicate Lines: 1,247
+  Average Clone Size: 3 lines
+  Complexity Score: 2.71
+  Impact Score: 18,234
+
+Clone Size Distribution:
+  1-5 lines:   89 clones
+  6-10 lines:  45 clones
+  11-20 lines: 23 clones
+  21-50 lines: 12 clones
+  100+ lines:   2 clones
+
+$ art-dupl stats --format csv > report.csv</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-box reveal">
+      <h2>Stop Guessing.<br>Start Detecting.</h2>
+      <p>Find every code clone in minutes. Ship cleaner, more maintainable Go code.</p>
+      <div class="cta-actions">
+        <a href="https://github.com/LarsArtmann/art-dupl" target="_blank" rel="noopener" class="btn btn-primary btn-large">View on GitHub &rarr;</a>
+        <button class="btn btn-ghost btn-large" onclick="copyInstall()">Copy Install Command</button>
+      </div>
+      <p class="cta-install">
+        <code>go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest</code>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="mark">AD</span>
+        art-dupl
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/LarsArtmann/art-dupl" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#methods">Detection</a></li>
+        <li><a href="https://github.com/LarsArtmann/art-dupl/blob/main/LICENSE">MIT License</a></li>
+      </ul>
+      <span class="footer-copy">&copy; 2026 Lars Artmann. Crafted with care.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== Mobile Nav =====
+const mobileToggle = document.getElementById('mobileToggle');
+const navLinks = document.getElementById('navLinks');
+mobileToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+// ===== Copy to Clipboard =====
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = btn.dataset.copy;
+    navigator.clipboard.writeText(text).then(() => {
+      const original = btn.innerHTML;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => btn.innerHTML = original, 2000);
+    });
+  });
+});
+
+function copyInstall() {
+  navigator.clipboard.writeText('go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest');
+}
+
+// ===== Format Tabs =====
+document.querySelectorAll('.format-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.format-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ===== Scroll Reveal =====
+const revealElements = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revealElements.forEach(el => observer.observe(el));
+
+// ===== Hero Canvas Animation =====
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, nodes, edges, animId;
+  const NODE_COUNT = 60;
+  const CONNECTION_DIST = 150;
+
+  function resize() {
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+
+  function createNodes() {
+    nodes = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 1,
+        depth: Math.random()
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Update positions
+    for (const n of nodes) {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > width) n.vx *= -1;
+      if (n.y < 0 || n.y > height) n.vy *= -1;
+    }
+
+    // Draw edges
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.strokeStyle = `rgba(232, 160, 32, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    for (const n of nodes) {
+      const alpha = 0.2 + n.depth * 0.4;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232, 160, 32, ${alpha})`;
+      ctx.fill();
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  // Check reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  resize();
+  createNodes();
+  if (!prefersReducedMotion) {
+    draw();
+  } else {
+    // Draw single static frame
+    ctx.clearRect(0, 0, width, height);
+    for (const n of nodes) {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232, 160, 32, 0.3)`;
+      ctx.fill();
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    resize();
+    createNodes();
+  });
+})();
+</script>
+
+</body>
+</html>
