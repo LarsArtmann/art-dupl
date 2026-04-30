@@ -67,7 +67,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 
 	// Generate all output formats
 	formats := config.AllOutputFormats()
-	sortByEnum := printer.SortBy(sortBy)
+	sortByEnum := config.SortCriteria(sortBy)
 
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(cfg.DetectionMethods)
@@ -124,7 +124,7 @@ func writeFormatFile(
 	parseStats job.ParseStats,
 	format config.OutputFormat,
 	filename string,
-	sortByEnum printer.SortBy,
+	sortByEnum config.SortCriteria,
 	detectionMethodStr string,
 ) error {
 	// #nosec G304 -- filename is constructed from controlled config output dir and format

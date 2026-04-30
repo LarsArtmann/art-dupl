@@ -46,7 +46,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	sortBy, _ := cmd.Flags().GetString("sort")
 
 	// Validate sorting criteria
-	_, err := printer.ParseSortBy(sortBy)
+	_, err := config.ParseSortCriteria(sortBy)
 	if err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
 	}

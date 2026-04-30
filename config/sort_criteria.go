@@ -1,5 +1,10 @@
 package config
 
+import (
+	"fmt"
+	"strings"
+)
+
 // SortCriteria represents the sort criteria type.
 type SortCriteria string
 
@@ -56,4 +61,19 @@ func AllSortCriteria() []SortCriteria {
 // DefaultSortCriteria returns the default sort criteria.
 func DefaultSortCriteria() SortCriteria {
 	return SortBySize
+}
+
+// ParseSortCriteria converts a string to SortCriteria with validation.
+// Returns an error if the value is not a valid sorting criterion.
+func ParseSortCriteria(value string) (SortCriteria, error) {
+	sc := SortCriteria(strings.ToLower(value))
+
+	if sc.IsValid() {
+		return sc, nil
+	}
+
+	return "", fmt.Errorf( //nolint:err113 // Error needs dynamic context
+		"invalid sort criteria '%s': must be one of (size|occurrence|hash|total-tokens)",
+		value,
+	)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -14,7 +15,7 @@ func printDupls(
 	ctx context.Context,
 	p printer.Printer,
 	duplChan <-chan syntax.Match,
-	sortBy printer.SortBy,
+	sortBy config.SortCriteria,
 	threshold int,
 	detectionMethod string,
 ) error {
@@ -83,7 +84,7 @@ func printCloneGroups(
 	p printer.Printer,
 	groups map[string][][]*syntax.Node,
 	keys []string,
-	sortBy printer.SortBy,
+	sortBy config.SortCriteria,
 ) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
@@ -110,7 +111,7 @@ func printCloneGroups(
 func handleJSONOutput(
 	p printer.Printer,
 	threshold int,
-	sortBy printer.SortBy,
+	sortBy config.SortCriteria,
 	detectionMethod string,
 ) error {
 	jsonPrinter, ok := p.(*printer.JSONPrinter)
