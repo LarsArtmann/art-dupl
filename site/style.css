@@ -1189,3 +1189,128 @@ footer {
   }
   .hero-actions .btn { width: 100%; justify-content: center; }
 }
+
+/* ===== Diff / Before-After ===== */
+.diff-section { background: var(--bg-base); padding: 80px 0; }
+.diff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.diff-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.diff-panel-before { border-radius: 12px 0 0 12px; }
+.diff-panel-after { border-radius: 0 12px 12px 0; border-color: var(--accent-dim); position: relative; }
+.diff-panel-after::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mint), transparent);
+}
+.diff-header {
+  padding: 10px 18px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.diff-header .dot { width: 8px; height: 8px; border-radius: 50%; }
+.diff-header .label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+.diff-panel pre {
+  padding: 18px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.diff-panel-before pre { color: var(--text-muted); }
+.diff-callout {
+  text-align: center;
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.diff-callout code { color: var(--accent); }
+
+/* ===== SDK + Config ===== */
+.sdk-section { background: var(--bg-deep); padding: 80px 0; }
+.sdk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.sdk-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+}
+.sdk-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.sdk-card-header h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; }
+.sdk-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+.sdk-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+.sdk-card pre {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+/* ===== Feature Card Code ===== */
+.feature-card code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  color: var(--accent);
+}
+
+/* ===== Term Line (typewriter) ===== */
+.terminal-body .term-line {
+  min-height: 1.2em;
+}
+
+/* ===== Badges ===== */
+.hero-badges {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0.7;
+}
+.hero-badges img { height: 22px; }
+
+/* ===== Responsive: new sections ===== */
+@media (max-width: 768px) {
+  .diff-grid { grid-template-columns: 1fr; }
+  .diff-panel-before { border-radius: 12px 12px 0 0; }
+  .diff-panel-after { border-radius: 0 0 12px 12px; }
+  .sdk-grid { grid-template-columns: 1fr; }
+  .diff-panel pre { font-size: 0.7rem; }
+  .sdk-section { padding: 48px 0; }
+  .diff-section { padding: 48px 0; }
+}

@@ -235,7 +235,7 @@ revealElements.forEach(el => revealObserver.observe(el));
     const childSpread = spread / Math.max(childKeys.length, 1);
     childKeys.forEach((key, i) => {
       const cx = x - spread / 2 + childSpread * (i + 0.5);
-      const cy = y + 55 + Math.random() * 15;
+      const cy = y + 55 + ((i * 7 + key.charCodeAt(0)) % 15);
       flattenTree(node.children[key], cx, cy, childSpread * 0.7, { x, y });
     });
   }
@@ -335,4 +335,14 @@ revealElements.forEach(el => revealObserver.observe(el));
       buildTree();
     }, 150);
   });
+
+  if (!prefersReducedMotion) {
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animId);
+      } else {
+        animId = requestAnimationFrame(draw);
+      }
+    });
+  }
 })();
