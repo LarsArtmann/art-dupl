@@ -9,27 +9,27 @@
 
 ## Quality Metrics
 
-| Metric | Value | Status |
-|---|---|---|
-| Linter issues | **0** | Clean |
-| Test packages | **23/23 pass** (0 FAIL) | Clean |
-| BDD tests | **Pass** | Clean |
-| Total coverage | **73.2%** | Below 80% target |
-| Total Go lines (excl vendor) | **45,481** | — |
-| Production nolint suppressions | **81** | Manageable |
-| Packages | **27** | — |
-| CI workflows | **5** (build, checks, performance, art-dupl, deploy-site) | — |
-| Nix build | **Fails** (dependency issue) | Broken |
-| `just check` | **0 issues** | Clean |
-| `just test` | **All pass** | Clean |
+| Metric                         | Value                                                     | Status           |
+| ------------------------------ | --------------------------------------------------------- | ---------------- |
+| Linter issues                  | **0**                                                     | Clean            |
+| Test packages                  | **23/23 pass** (0 FAIL)                                   | Clean            |
+| BDD tests                      | **Pass**                                                  | Clean            |
+| Total coverage                 | **73.2%**                                                 | Below 80% target |
+| Total Go lines (excl vendor)   | **45,481**                                                | —                |
+| Production nolint suppressions | **81**                                                    | Manageable       |
+| Packages                       | **27**                                                    | —                |
+| CI workflows                   | **5** (build, checks, performance, art-dupl, deploy-site) | —                |
+| Nix build                      | **Fails** (dependency issue)                              | Broken           |
+| `just check`                   | **0 issues**                                              | Clean            |
+| `just test`                    | **All pass**                                              | Clean            |
 
 ### Coverage by Package (key packages)
 
-| Package | Coverage |
-|---|---|
-| syntax/templ | 85.3% |
-| suffixtree | High (cached) |
-| Overall | 73.2% |
+| Package      | Coverage      |
+| ------------ | ------------- |
+| syntax/templ | 85.3%         |
+| suffixtree   | High (cached) |
+| Overall      | 73.2%         |
 
 ---
 
@@ -99,12 +99,14 @@
 
 **Status:** Analysis complete, implementation NOT started.  
 **What exists:**
+
 - Full analysis of the `PrintClones(dups [][]*syntax.Node)` interface and its 6 implementations
 - Identified that all 6 printers independently call `ProcessNodeRange()` + `extractContent()`
 - Identified 111 test call sites that would need updating
 - Identified `printer/clone_classify.go` as the main coupling point (imports `syntax/golang`)
 
 **What's missing:**
+
 - `ProcessedClone` DTO type definition
 - Printer interface change from `[][]*syntax.Node` to `[]ProcessedCloneGroup`
 - Shared `prepareClonesInfo()` extraction from printer-specific code
@@ -115,10 +117,12 @@
 
 **Status:** Config written, NOT integrated into CI.  
 **What exists:**
+
 - `.go-arch-lint.yml` with project-specific rules
 - Rules enforce: domain must not import syntax, suffixtree must have zero deps
 
 **What's missing:**
+
 - `go-arch-lint` not in CI pipeline
 - No architecture enforcement tests
 - 93 nolint suppressions not reviewed against arch rules (81 remain)
@@ -128,16 +132,16 @@
 **Status:** Analysis complete, implementation NOT started.  
 **Parallel types identified:**
 
-| Type | Package | Fields | Used By |
-|---|---|---|---|
-| `printer.clone` (unexported) | printer/common.go | filename, lineStart, lineEnd, fragment, size, fileSize, classification | All 6 printers |
-| `pkg/artdupl.Clone` | pkg/artdupl/types.go | Filename, StartLine, EndLine, StartPos, EndPos, Fragment, Size | SDK |
-| `printer.JSONClone` | printer/json.go | Filename, LineStart, LineEnd, Fragment | JSON output |
-| `printer.SimpleJSONClone` | printer/json.go | Filename, TokenCount, LineRangeMixin | Simple JSON output |
-| `printer.CloneGroup` | printer/json.go | Hash, Size, Files []JSONClone | JSON output |
-| `pkg/artdupl.CloneGroup` | pkg/artdupl/types.go | Hash, Clones, Size, LineCount, Method | SDK |
-| `printer.CloneWithContentMixin` | printer/diff.go | Filename, LineStart, LineEnd | Diff output |
-| `printer.LineRangeMixin` | printer/json.go | StartLine, EndLine | JSON output |
+| Type                            | Package              | Fields                                                                 | Used By            |
+| ------------------------------- | -------------------- | ---------------------------------------------------------------------- | ------------------ |
+| `printer.clone` (unexported)    | printer/common.go    | filename, lineStart, lineEnd, fragment, size, fileSize, classification | All 6 printers     |
+| `pkg/artdupl.Clone`             | pkg/artdupl/types.go | Filename, StartLine, EndLine, StartPos, EndPos, Fragment, Size         | SDK                |
+| `printer.JSONClone`             | printer/json.go      | Filename, LineStart, LineEnd, Fragment                                 | JSON output        |
+| `printer.SimpleJSONClone`       | printer/json.go      | Filename, TokenCount, LineRangeMixin                                   | Simple JSON output |
+| `printer.CloneGroup`            | printer/json.go      | Hash, Size, Files []JSONClone                                          | JSON output        |
+| `pkg/artdupl.CloneGroup`        | pkg/artdupl/types.go | Hash, Clones, Size, LineCount, Method                                  | SDK                |
+| `printer.CloneWithContentMixin` | printer/diff.go      | Filename, LineStart, LineEnd                                           | Diff output        |
+| `printer.LineRangeMixin`        | printer/json.go      | StartLine, EndLine                                                     | JSON output        |
 
 ---
 
@@ -226,33 +230,33 @@ However, there are two areas of concern:
 
 ## f) TOP 25 THINGS TO DO NEXT (Ranked by Impact × Effort⁻¹)
 
-| # | Task | Impact | Effort | Category |
-|---|---|---|---|---|
-| 1 | **Fix nix build** — investigate dependency error, update vendorHash | High | Low | Infrastructure |
-| 2 | **Delete dead error constructors** — `NewParseError`, `NewDetectionError`, `NewAnalysisError`, `NewCancelledError`, `NewTimeoutError`, `Wrapf` + their tests | Low-Med | Very Low | Cleanup |
-| 3 | **Fix `exhaustruct` on DuplError** — make File/Line optional via builder or functional options, remove 10+ nolint | Med | Low | Code Quality |
-| 4 | **Extract `cmd/run_analysis.go`** — split into run_parser.go, run_tree.go, run_detection.go | Med | Low-Med | Architecture |
-| 5 | **Reduce `config/config_merge.go` complexity** — extract per-field merge helpers | Low-Med | Low | Code Quality |
-| 6 | **Split `printer/` package** — html/ stats/ diff/ subpackages | High | Med-High | Architecture |
-| 7 | **Introduce `ProcessedClone` DTO** — define the type, implement converter from `[][]*syntax.Node` | High | Med | Architecture |
-| 8 | **Migrate Printer interface** to `PrintClones([]ProcessedCloneGroup)` | Very High | High (111 tests) | Architecture |
-| 9 | **Consolidate Clone types** — collapse 3 Clone/CloneGroup hierarchies | High | Med | Architecture |
-| 10 | **Move `clone_classify.go`** out of printer/ — make classification language-agnostic | Med | Med | Architecture |
-| 11 | **Fix coverage to ≥80%** — identify uncovered paths, add tests | Med | Med | Testing |
-| 12 | **Update FEATURES.md** — reflect current capabilities | Low | Very Low | Documentation |
-| 13 | **Update SDK_DESIGN.md** — reflect pipeline unification | Low | Very Low | Documentation |
-| 14 | **Reduce `html_diff.go` complexity** — extract case handlers | Low-Med | Low | Code Quality |
-| 15 | **Consolidate `LineRangeMixin` + `CloneWithContentMixin`** — both provide filename+lineStart+lineEnd | Low | Low | Cleanup |
-| 16 | **Add `go-arch-lint` to CI** — enforce package boundaries automatically | Med | Low | Infrastructure |
-| 17 | **Remove or justify `domain/` package** — only 1 consumer, questionable value | Low | Low-Med | Architecture |
-| 18 | **Write architecture enforcement tests** — verify domain doesn't import syntax, etc. | Med | Low | Testing |
-| 19 | **Fix `funlen` in `cmd/run_flags.go`** — extract flag groups into separate functions | Low | Low | Code Quality |
-| 20 | **Fix `funlen` in `cmd/run_all_modes.go`** — extract format-specific output | Low | Low | Code Quality |
-| 21 | **Delete `domain/analysis_errors.go` dead errors** — only 2 of 17 remain, move to consumers | Low | Very Low | Cleanup |
-| 22 | **Add `//go:build` tags** for SIMD files — separate portable vs platform-specific code | Low | Low | Code Quality |
-| 23 | **Integrate `nix develop` with CI** — reproducible builds in CI | Med | Med | Infrastructure |
-| 24 | **Add `nix flake check` to CI** — automated nix validation | Med | Low | Infrastructure |
-| 25 | **Create CONTRIBUTING.md** — document the development workflow, commit conventions | Low | Low | Documentation |
+| #   | Task                                                                                                                                                         | Impact    | Effort           | Category       |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ---------------- | -------------- |
+| 1   | **Fix nix build** — investigate dependency error, update vendorHash                                                                                          | High      | Low              | Infrastructure |
+| 2   | **Delete dead error constructors** — `NewParseError`, `NewDetectionError`, `NewAnalysisError`, `NewCancelledError`, `NewTimeoutError`, `Wrapf` + their tests | Low-Med   | Very Low         | Cleanup        |
+| 3   | **Fix `exhaustruct` on DuplError** — make File/Line optional via builder or functional options, remove 10+ nolint                                            | Med       | Low              | Code Quality   |
+| 4   | **Extract `cmd/run_analysis.go`** — split into run_parser.go, run_tree.go, run_detection.go                                                                  | Med       | Low-Med          | Architecture   |
+| 5   | **Reduce `config/config_merge.go` complexity** — extract per-field merge helpers                                                                             | Low-Med   | Low              | Code Quality   |
+| 6   | **Split `printer/` package** — html/ stats/ diff/ subpackages                                                                                                | High      | Med-High         | Architecture   |
+| 7   | **Introduce `ProcessedClone` DTO** — define the type, implement converter from `[][]*syntax.Node`                                                            | High      | Med              | Architecture   |
+| 8   | **Migrate Printer interface** to `PrintClones([]ProcessedCloneGroup)`                                                                                        | Very High | High (111 tests) | Architecture   |
+| 9   | **Consolidate Clone types** — collapse 3 Clone/CloneGroup hierarchies                                                                                        | High      | Med              | Architecture   |
+| 10  | **Move `clone_classify.go`** out of printer/ — make classification language-agnostic                                                                         | Med       | Med              | Architecture   |
+| 11  | **Fix coverage to ≥80%** — identify uncovered paths, add tests                                                                                               | Med       | Med              | Testing        |
+| 12  | **Update FEATURES.md** — reflect current capabilities                                                                                                        | Low       | Very Low         | Documentation  |
+| 13  | **Update SDK_DESIGN.md** — reflect pipeline unification                                                                                                      | Low       | Very Low         | Documentation  |
+| 14  | **Reduce `html_diff.go` complexity** — extract case handlers                                                                                                 | Low-Med   | Low              | Code Quality   |
+| 15  | **Consolidate `LineRangeMixin` + `CloneWithContentMixin`** — both provide filename+lineStart+lineEnd                                                         | Low       | Low              | Cleanup        |
+| 16  | **Add `go-arch-lint` to CI** — enforce package boundaries automatically                                                                                      | Med       | Low              | Infrastructure |
+| 17  | **Remove or justify `domain/` package** — only 1 consumer, questionable value                                                                                | Low       | Low-Med          | Architecture   |
+| 18  | **Write architecture enforcement tests** — verify domain doesn't import syntax, etc.                                                                         | Med       | Low              | Testing        |
+| 19  | **Fix `funlen` in `cmd/run_flags.go`** — extract flag groups into separate functions                                                                         | Low       | Low              | Code Quality   |
+| 20  | **Fix `funlen` in `cmd/run_all_modes.go`** — extract format-specific output                                                                                  | Low       | Low              | Code Quality   |
+| 21  | **Delete `domain/analysis_errors.go` dead errors** — only 2 of 17 remain, move to consumers                                                                  | Low       | Very Low         | Cleanup        |
+| 22  | **Add `//go:build` tags** for SIMD files — separate portable vs platform-specific code                                                                       | Low       | Low              | Code Quality   |
+| 23  | **Integrate `nix develop` with CI** — reproducible builds in CI                                                                                              | Med       | Med              | Infrastructure |
+| 24  | **Add `nix flake check` to CI** — automated nix validation                                                                                                   | Med       | Low              | Infrastructure |
+| 25  | **Create CONTRIBUTING.md** — document the development workflow, commit conventions                                                                           | Low       | Low              | Documentation  |
 
 ---
 
@@ -261,6 +265,7 @@ However, there are two areas of concern:
 **What is the strategic intent for the `domain/` package?**
 
 It currently has 225 lines, 3 types (Filepath, LineNumber, CloneSeverity), and only 1 production consumer (`detection/todos.go`). The types provide:
+
 - Non-empty/non-zero validation on construction
 - Custom JSON marshaling
 - Type safety (you can't pass a `Filepath` where a `LineNumber` is expected)
@@ -277,23 +282,23 @@ This decision affects the Printer DTO design (#7-8), the Clone type consolidatio
 
 ## Appendix: Codebase Composition
 
-| Package | Lines | % of Total |
-|---|---|---|
-| printer/ | 10,652 | 23.4% |
-| syntax/ | 4,723 | 10.4% |
-| pkg/ | 4,029 | 8.9% |
-| cmd/ | 3,813 | 8.4% |
-| internal/ | 3,833 | 8.4% |
-| config/ | 2,936 | 6.5% |
-| job/ | 1,525 | 3.4% |
-| detection/ | 1,384 | 3.0% |
-| suffixtree/ | 1,170 | 2.6% |
-| hash/ | 889 | 2.0% |
-| cache/ | 901 | 2.0% |
-| errors/ | 952 | 2.1% |
-| domain/ | 225 | 0.5% |
-| cli/ | 225 | 0.5% |
-| **Total** | **45,481** | **100%** |
+| Package     | Lines      | % of Total |
+| ----------- | ---------- | ---------- |
+| printer/    | 10,652     | 23.4%      |
+| syntax/     | 4,723      | 10.4%      |
+| pkg/        | 4,029      | 8.9%       |
+| cmd/        | 3,813      | 8.4%       |
+| internal/   | 3,833      | 8.4%       |
+| config/     | 2,936      | 6.5%       |
+| job/        | 1,525      | 3.4%       |
+| detection/  | 1,384      | 3.0%       |
+| suffixtree/ | 1,170      | 2.6%       |
+| hash/       | 889        | 2.0%       |
+| cache/      | 901        | 2.0%       |
+| errors/     | 952        | 2.1%       |
+| domain/     | 225        | 0.5%       |
+| cli/        | 225        | 0.5%       |
+| **Total**   | **45,481** | **100%**   |
 
 ### Coupling Map (production imports)
 
@@ -308,21 +313,21 @@ config        ← cmd, cli, pkg/artdupl, detection, printer
 
 ### Nolint Breakdown (production code, 81 total)
 
-| Suppression | Count | Mostly Legitimate? |
-|---|---|---|
-| exhaustruct | 21 | No — `DuplError` design issue |
-| gochecknoglobals | 10 | Yes — lookup tables + build vars |
-| wrapcheck | 9 | Yes — stdlib passthrough |
-| gosec | 7 | Yes — bounded values |
-| nonamedreturns | 5 | Yes — counting functions |
-| funlen | 5 | No — real complexity |
-| mnd | 4 | Yes — file permissions |
-| funcorder | 4 | Partially |
-| forbidigo | 3 | Yes — version/demo output |
-| godox | 2 | Yes — test patterns |
-| gocyclo/cyclop | 2 | No — real complexity |
-| gocognit | 2 | No — real complexity |
-| nilnil | 1 | Yes — intentional nil+nil |
-| nestif | 1 | Yes — HTML generation |
-| maintidx | 1 | No — AST transform |
-| gochecknoinits | 1 | Yes — gob registration |
+| Suppression      | Count | Mostly Legitimate?               |
+| ---------------- | ----- | -------------------------------- |
+| exhaustruct      | 21    | No — `DuplError` design issue    |
+| gochecknoglobals | 10    | Yes — lookup tables + build vars |
+| wrapcheck        | 9     | Yes — stdlib passthrough         |
+| gosec            | 7     | Yes — bounded values             |
+| nonamedreturns   | 5     | Yes — counting functions         |
+| funlen           | 5     | No — real complexity             |
+| mnd              | 4     | Yes — file permissions           |
+| funcorder        | 4     | Partially                        |
+| forbidigo        | 3     | Yes — version/demo output        |
+| godox            | 2     | Yes — test patterns              |
+| gocyclo/cyclop   | 2     | No — real complexity             |
+| gocognit         | 2     | No — real complexity             |
+| nilnil           | 1     | Yes — intentional nil+nil        |
+| nestif           | 1     | Yes — HTML generation            |
+| maintidx         | 1     | No — AST transform               |
+| gochecknoinits   | 1     | Yes — gob registration           |

@@ -822,6 +822,7 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 **Printer ↔ syntax.Node coupling:** `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Each printer independently calls `ProcessNodeRange()` and `extractContent()`. Fix: introduce ProcessedClone DTO, change Printer interface to accept `[]ProcessedCloneGroup`. This touches 111 test call sites — defer to dedicated PR.
 
 **Three parallel Clone types:**
+
 - `printer.clone` (unexported): has fragment, classification — richest for output
 - `pkg/artdupl.Clone`: SDK type with primitives, `IsValid()` validation
 - `printer.CloneGroup` vs `pkg/artdupl.CloneGroup`: different JSON shapes for different consumers
