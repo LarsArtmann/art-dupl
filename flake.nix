@@ -5,7 +5,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     let
       systems = [
         "x86_64-linux"
@@ -15,7 +16,8 @@
       ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
 
-      mkPackage = system:
+      mkPackage =
+        system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
           goPkg = pkgs.go_1_26 or pkgs.go;
@@ -27,17 +29,19 @@
 
           go = goPkg;
 
-          src = ./.;
+          src = pkgs.lib.cleanSource ./.;
 
-          vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-
-          nativeBuildInputs = [ goPkg ];
+          # Vendored dependencies are required because gogenfilter is a
+          # private repository. The vendor/ directory must be kept in sync
+          # with go.mod via `go mod vendor`.
+          vendorHash = null;
 
           ldflags = [
             "-s"
             "-w"
-            "-X main.version=${version}"
-            "-X main.commit=${self.rev or "dirty"}"
+            "-X github.com/LarsArtmann/art-dupl/cmd.Version=${version}"
+            "-X github.com/LarsArtmann/art-dupl/cmd.Commit=${self.rev or "dirty"}"
+            "-X github.com/LarsArtmann/art-dupl/cmd.Date=unknown"
           ];
 
           env.CGO_ENABLED = 0;
@@ -84,7 +88,8 @@
       });
 
       # Dev shell: full development environment
-      devShells = forAllSystems (system:
+      devShells = forAllSystems (
+        system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
           goPkg = pkgs.go_1_26 or pkgs.go;
@@ -118,10 +123,12 @@
               echo ""
             '';
           };
-        });
+        }
+      );
 
       # Checks: run with `nix flake check`
-      checks = forAllSystems (system:
+      checks = forAllSystems (
+        system:
         let
           pkg = self.packages.${system}.default;
         in
@@ -142,7 +149,8 @@
               touch $out
             '';
           });
-        });
+        }
+      );
 
       # Overlay: use with `pkgs.art-dupl` after applying overlay
       overlays.default = final: prev: {
