@@ -2,6 +2,21 @@ package printer
 
 import "time"
 
+// ApplyStatsConfig applies all statistics configuration in one call.
+func (p *stats) ApplyStatsConfig(config StatsConfig) {
+	p.SetFormat(config.Format)
+	p.SetFilesCount(config.FilesCount)
+	p.SetDetectionMethods(config.DetectionMethods)
+	p.SetSemanticDetection(config.SemanticDetection)
+	p.SetTimestamp(config.Timestamp)
+	p.SetAnalysisDuration(config.AnalysisDuration)
+	p.SetTotalEstimatedLines(config.TotalEstimatedLines)
+
+	if config.FilesFiltered > 0 || len(config.FilterBreakdown) > 0 {
+		p.SetFilterStats(config.FilesFiltered, config.FilterBreakdown)
+	}
+}
+
 // SetFilesCount sets the total number of files scanned.
 func (p *stats) SetFilesCount(count int) {
 	p.statsData.TotalFilesScanned = count

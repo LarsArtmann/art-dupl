@@ -19,16 +19,23 @@ type Printer interface {
 	PrintFooter() error
 }
 
-// StatsPrinter extends Printer interface with stats-specific setters.
+// StatsConfig holds configuration for statistics output.
+// Used by StatsPrinter.ApplyStatsConfig to set all stats metadata in one call.
+type StatsConfig struct {
+	Format             Format
+	FilesCount         int
+	DetectionMethods   string
+	SemanticDetection  bool
+	Timestamp          string
+	AnalysisDuration   time.Duration
+	TotalEstimatedLines int
+	FilesFiltered      int
+	FilterBreakdown    map[string]int
+}
+
+// StatsPrinter extends Printer interface with stats configuration.
 type StatsPrinter interface {
 	Printer
-	SetFilesCount(count int)
-	SetDetectionMethods(methods string)
-	SetSemanticDetection(enabled bool)
-	SetFormat(format Format)
-	SetTimestamp(timestamp string)
-	SetAnalysisDuration(duration time.Duration)
-	SetTotalEstimatedLines(lines int)
-	SetFilterStats(filesFiltered int, breakdown map[string]int)
+	ApplyStatsConfig(config StatsConfig)
 	GetStatsData() *StatsData
 }

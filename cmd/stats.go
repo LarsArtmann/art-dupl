@@ -32,7 +32,7 @@ func NewStatsCommand() *cobra.Command {
 	return cmd
 }
 
-// applyFilterStats applies filter statistics to the stats printer.
+// applyFilterStats applies filter statistics to the stats config.
 func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterStats) {
 	totalFiltered := filterStats.TotalFiltered()
 	if totalFiltered <= 0 {
@@ -52,7 +52,10 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterSta
 		}
 	}
 
-	sp.SetFilterStats(totalFiltered, breakdown)
+	sp.ApplyStatsConfig(printer.StatsConfig{
+		FilesFiltered:   totalFiltered,
+		FilterBreakdown: breakdown,
+	})
 }
 
 // runStats implements the stats command.
@@ -104,13 +107,16 @@ func runStats(cmd *cobra.Command, args []string) error {
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
 	if sp, ok := p.(printer.StatsPrinter); ok {
-		sp.SetFilesCount(parseStats.FilesCount)
-		sp.SetFormat(format)
-		sp.SetDetectionMethods(detectionMethodStr)
-		sp.SetSemanticDetection(mergedConfig.Semantic)
-		sp.SetTimestamp(time.Now().UTC().Format(time.RFC3339))
-		sp.SetAnalysisDuration(duration)
-		sp.SetTotalEstimatedLines(parseStats.LinesCount)
+		sp.ApplyStatsConfig(printer.StatsConfig{
+			Format:              format,
+			FilesCount:          parseStats.FilesCount,
+			DetectionMethods:    detectionMethodStr,
+			SemanticDetection:   mergedConfig.Semantic,
+			Timestamp:           time.Now().UTC().Format(time.RFC3339),
+			AnalysisDuration:    duration,
+			TotalEstimatedLines: parseStats.LinesCount,
+		})
+
 		applyFilterStats(sp, filterStats)
 	}
 
