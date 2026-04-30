@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-21  
 **Status:** Draft  
-**Scope:** Replace ad-hoc toolchain management with reproducible Nix Flakes + direnv  
+**Scope:** Replace ad-hoc toolchain management with reproducible Nix Flakes + direnv
 
 ---
 
@@ -29,35 +29,35 @@ A Nix Flakes migration would:
 
 ### 2.1 Build System Inventory
 
-| Component | Current Tool | Version | Source |
-|-----------|-------------|---------|--------|
-| Build runner | `just` (Justfile) | Unknown | Global install |
-| Alternative runner | `make` (Makefile) | Unknown | Global install |
-| Go compiler | `go` | 1.26.0 (system) / 1.26.1 (broken) | Nix system profile |
-| Linter | `golangci-lint` | v1.64.6 (CI pinned) | Global install |
-| Test framework | `ginkgo` | v2.28.1 (via go.mod) | `go install` |
-| Benchmark comparison | `benchstat` | latest | `go install` |
-| Fuzz testing | `go test -fuzz` | Built-in | Go stdlib |
+| Component            | Current Tool      | Version                           | Source             |
+| -------------------- | ----------------- | --------------------------------- | ------------------ |
+| Build runner         | `just` (Justfile) | Unknown                           | Global install     |
+| Alternative runner   | `make` (Makefile) | Unknown                           | Global install     |
+| Go compiler          | `go`              | 1.26.0 (system) / 1.26.1 (broken) | Nix system profile |
+| Linter               | `golangci-lint`   | v1.64.6 (CI pinned)               | Global install     |
+| Test framework       | `ginkgo`          | v2.28.1 (via go.mod)              | `go install`       |
+| Benchmark comparison | `benchstat`       | latest                            | `go install`       |
+| Fuzz testing         | `go test -fuzz`   | Built-in                          | Go stdlib          |
 
 ### 2.2 Justfile Recipes to Preserve
 
 The Justfile is the primary build interface (95% of commands per AGENTS.md). All recipes must continue to work inside `nix develop`:
 
-| Recipe | Purpose | Nix Considerations |
-|--------|---------|-------------------|
-| `default` | clean → check → test → build | All deps must be in PATH |
-| `clean` | Remove dist/, cover.out | No changes needed |
-| `test` | `go test -v -cover ./...` | Go must be correct version |
-| `check` | `golangci-lint run` | golangci-lint in devShell |
-| `build` | `go build -ldflags "-s -w" -trimpath` | CGO_ENABLED=0 |
-| `test-race` | Race detector | Works with Nix Go |
-| `coverage` | Coverage report | Works with Nix Go |
-| `bench` | Benchmarks | Works with Nix Go |
-| `check-coverage` | 80% threshold check | Requires `bc` |
-| `test-fuzz` / `test-fuzz-long` | Fuzz testing | Works with Nix Go |
-| `build-all` | Cross-compile 3 platforms | Requires Nix cross-compilation or keep as-is |
-| `ci` | fmt → check → test | All tools in devShell |
-| `fmt` | `gofmt -s -w .` | Go includes gofmt |
+| Recipe                         | Purpose                               | Nix Considerations                           |
+| ------------------------------ | ------------------------------------- | -------------------------------------------- |
+| `default`                      | clean → check → test → build          | All deps must be in PATH                     |
+| `clean`                        | Remove dist/, cover.out               | No changes needed                            |
+| `test`                         | `go test -v -cover ./...`             | Go must be correct version                   |
+| `check`                        | `golangci-lint run`                   | golangci-lint in devShell                    |
+| `build`                        | `go build -ldflags "-s -w" -trimpath` | CGO_ENABLED=0                                |
+| `test-race`                    | Race detector                         | Works with Nix Go                            |
+| `coverage`                     | Coverage report                       | Works with Nix Go                            |
+| `bench`                        | Benchmarks                            | Works with Nix Go                            |
+| `check-coverage`               | 80% threshold check                   | Requires `bc`                                |
+| `test-fuzz` / `test-fuzz-long` | Fuzz testing                          | Works with Nix Go                            |
+| `build-all`                    | Cross-compile 3 platforms             | Requires Nix cross-compilation or keep as-is |
+| `ci`                           | fmt → check → test                    | All tools in devShell                        |
+| `fmt`                          | `gofmt -s -w .`                       | Go includes gofmt                            |
 
 ### 2.3 Makefile Specifics
 
@@ -65,21 +65,21 @@ The Makefile adds `GOEXPERIMENT=jsonv2` to all commands. This is **not** in the 
 
 ### 2.4 Shell Scripts
 
-| Script | Purpose | Nix Impact |
-|--------|---------|------------|
-| `scripts/issue-diff.sh` | Compare linter issue counts across runs | Requires `golangci-lint` in PATH |
-| `scripts/verify-lint.sh` | Run linter and show issue breakdown | Requires `golangci-lint` in PATH |
+| Script                   | Purpose                                 | Nix Impact                       |
+| ------------------------ | --------------------------------------- | -------------------------------- |
+| `scripts/issue-diff.sh`  | Compare linter issue counts across runs | Requires `golangci-lint` in PATH |
+| `scripts/verify-lint.sh` | Run linter and show issue breakdown     | Requires `golangci-lint` in PATH |
 
 ### 2.5 CI Workflows
 
 Four GitHub Actions workflows currently use `actions/setup-go@v5` and `extractions/setup-just@v2`. After Nix migration, CI can optionally use `nix develop` for full parity, but this is **not required** initially — CI can continue using current actions.
 
-| Workflow | Trigger | Go Versions | OS Matrix | Key Steps |
-|----------|---------|-------------|-----------|-----------|
-| `build.yml` | Push/PR to main/fork | oldstable, stable | ubuntu, macos, windows | test + build |
-| `checks.yml` | Push/PR to main/fork | stable | ubuntu | lint + test + race test |
-| `art-dupl.yml` | Push/PR to main/fork | 1.26rc2 | ubuntu | build + test + race + coverage + self-analysis |
-| `performance.yml` | Push/PR + daily cron | stable | ubuntu | benchmarks + memory profiling |
+| Workflow          | Trigger              | Go Versions       | OS Matrix              | Key Steps                                      |
+| ----------------- | -------------------- | ----------------- | ---------------------- | ---------------------------------------------- |
+| `build.yml`       | Push/PR to main/fork | oldstable, stable | ubuntu, macos, windows | test + build                                   |
+| `checks.yml`      | Push/PR to main/fork | stable            | ubuntu                 | lint + test + race test                        |
+| `art-dupl.yml`    | Push/PR to main/fork | 1.26rc2           | ubuntu                 | build + test + race + coverage + self-analysis |
+| `performance.yml` | Push/PR + daily cron | stable            | ubuntu                 | benchmarks + memory profiling                  |
 
 ### 2.6 Go Module Specifics
 
@@ -126,16 +126,16 @@ flake.nix
 
 The development shell must provide everything needed for the Justfile to work:
 
-| Package | Purpose | nixpkgs Name |
-|---------|---------|--------------|
-| Go 1.26+ | Compiler, gofmt, go test | `go_1_26` or `go` |
-| golangci-lint | Linting | `golangci-lint` |
-| just | Build runner | `just` |
-| ginkgo | BDD test runner | `ginkgo` (via `go install` in shellHook) |
-| benchstat | Benchmark comparison | `benchstat` (via `go install` in shellHook) |
-| bc | Coverage threshold math | `bc` |
-| git | Version control | `git` |
-| gopls | LSP (optional) | `gopls` |
+| Package       | Purpose                  | nixpkgs Name                                |
+| ------------- | ------------------------ | ------------------------------------------- |
+| Go 1.26+      | Compiler, gofmt, go test | `go_1_26` or `go`                           |
+| golangci-lint | Linting                  | `golangci-lint`                             |
+| just          | Build runner             | `just`                                      |
+| ginkgo        | BDD test runner          | `ginkgo` (via `go install` in shellHook)    |
+| benchstat     | Benchmark comparison     | `benchstat` (via `go install` in shellHook) |
+| bc            | Coverage threshold math  | `bc`                                        |
+| git           | Version control          | `git`                                       |
+| gopls         | LSP (optional)           | `gopls`                                     |
 
 ### 3.4 Build Configuration
 
@@ -266,6 +266,7 @@ use flake
 #### Step 1.3: Update `.gitignore`
 
 Add:
+
 ```
 .direnv/
 ```
@@ -476,12 +477,12 @@ replace github.com/LarsArtmann/gogenfilter => ../gogenfilter
 
 ### Impact Assessment
 
-| Scenario | `nix develop` | `nix build` | CI |
-|----------|---------------|-------------|-----|
-| Replace directive active | Works (local path accessible) | Fails (sandboxed build) | Fails (no sibling dir) |
-| Remove replace, use published module | Works | Works | Works |
-| Flake input with path | Works | Works | Fails (no sibling) |
-| Flake input with GitHub URL | Works | Works | Works |
+| Scenario                             | `nix develop`                 | `nix build`             | CI                     |
+| ------------------------------------ | ----------------------------- | ----------------------- | ---------------------- |
+| Replace directive active             | Works (local path accessible) | Fails (sandboxed build) | Fails (no sibling dir) |
+| Remove replace, use published module | Works                         | Works                   | Works                  |
+| Flake input with path                | Works                         | Works                   | Fails (no sibling)     |
+| Flake input with GitHub URL          | Works                         | Works                   | Works                  |
 
 ### Recommendation
 
@@ -585,14 +586,14 @@ This should be resolved automatically — the devShell provides matching `go` an
 
 ## 8. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| gogenfilter replace directive breaks `nix build` | High | High | Flake input or publish module |
-| Go 1.26 not yet in nixpkgs stable | Medium | Medium | Use nixos-unstable or overlay |
-| CI slowdown from Nix installation | Low | Low | Cachix cache, hybrid CI approach |
-| Team members unfamiliar with Nix | Medium | Medium | direnv makes it transparent; fallback to manual installs |
-| flake.lock grows stale | Low | Low | Automated renovate/dependabot for flake.lock |
-| Build sandbox blocks local paths | High | Medium | Flake inputs instead of local paths |
+| Risk                                             | Likelihood | Impact | Mitigation                                               |
+| ------------------------------------------------ | ---------- | ------ | -------------------------------------------------------- |
+| gogenfilter replace directive breaks `nix build` | High       | High   | Flake input or publish module                            |
+| Go 1.26 not yet in nixpkgs stable                | Medium     | Medium | Use nixos-unstable or overlay                            |
+| CI slowdown from Nix installation                | Low        | Low    | Cachix cache, hybrid CI approach                         |
+| Team members unfamiliar with Nix                 | Medium     | Medium | direnv makes it transparent; fallback to manual installs |
+| flake.lock grows stale                           | Low        | Low    | Automated renovate/dependabot for flake.lock             |
+| Build sandbox blocks local paths                 | High       | Medium | Flake inputs instead of local paths                      |
 
 ---
 

@@ -20,6 +20,7 @@
 4. **`vendorHash`** (`flake.nix:42-45`): Proper SRI hash of the vendored output — no more `null`
 
 **Verification**:
+
 - `nix build` — produces working binary (`art-dupl version 6658fa9-dirty`)
 - `nix flake check --no-build` — all checks pass
 - `nix run . -- --help` — runs correctly
@@ -59,15 +60,15 @@
 
 ### Failed Approaches (for the record)
 
-| # | Approach | Why It Failed |
-|---|----------|---------------|
-| 1 | `vendorHash = null` + `go mod vendor` in source tree | No vendor/ existed; broken by design |
-| 2 | `go mod edit -replace` pointing to `${gogenfilter}` Nix store path directly in goModules | Fixed-output derivations cannot reference other store paths |
-| 3 | Dummy with empty go.mod (just `package gogenfilter`) | `go mod vendor` needs actual package files to resolve imports |
-| 4 | `cp -r vendor vendor-tmp` then modify | Symlinks from Nix store are read-only; cp -r preserves them |
-| 5 | `cp -rL vendor vendor-tmp` then modify | Still failed on nested read-only files; `rm -rf` couldn't delete |
-| 6 | Main `preBuild` inherited by goModules | preBuild is inherited; created vendor/ in goModules, triggering "vendor folder exists" check |
-| 7 | Replace in main go.mod without fixing vendor/modules.txt | "inconsistent vendoring" — modules.txt said `./dummy`, go.mod said `./vendor/...` |
+| #   | Approach                                                                                 | Why It Failed                                                                                |
+| --- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | `vendorHash = null` + `go mod vendor` in source tree                                     | No vendor/ existed; broken by design                                                         |
+| 2   | `go mod edit -replace` pointing to `${gogenfilter}` Nix store path directly in goModules | Fixed-output derivations cannot reference other store paths                                  |
+| 3   | Dummy with empty go.mod (just `package gogenfilter`)                                     | `go mod vendor` needs actual package files to resolve imports                                |
+| 4   | `cp -r vendor vendor-tmp` then modify                                                    | Symlinks from Nix store are read-only; cp -r preserves them                                  |
+| 5   | `cp -rL vendor vendor-tmp` then modify                                                   | Still failed on nested read-only files; `rm -rf` couldn't delete                             |
+| 6   | Main `preBuild` inherited by goModules                                                   | preBuild is inherited; created vendor/ in goModules, triggering "vendor folder exists" check |
+| 7   | Replace in main go.mod without fixing vendor/modules.txt                                 | "inconsistent vendoring" — modules.txt said `./dummy`, go.mod said `./vendor/...`            |
 
 ---
 
@@ -136,10 +137,10 @@ This would eliminate the entire maintenance burden of keeping the dummy in sync.
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `flake.nix` | +34/-8 — Added gogenfilter flake input, two-phase private dep handling, proper vendorHash |
-| `flake.lock` | Updated with gogenfilter input (SSH-pinned to rev 5957230e34ed) |
+| File         | Change                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `flake.nix`  | +34/-8 — Added gogenfilter flake input, two-phase private dep handling, proper vendorHash |
+| `flake.lock` | Updated with gogenfilter input (SSH-pinned to rev 5957230e34ed)                           |
 
 ## Build Verification
 

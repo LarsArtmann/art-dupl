@@ -11,62 +11,62 @@
 
 ### Infrastructure & Build
 
-| Item | Commit | Details |
-|------|--------|---------|
-| Nix flake private dep fix | `652b325` | Two-phase dummy/replace pattern for gogenfilter |
-| Auto-synced dummy go.mod | `358c317` | `builtins.readFile` reads real go.mod at eval time |
-| Vendor/ removed from git | `3cf84f5` | Added to .gitignore |
-| CONTRIBUTING.md created | `6d1bcfe` | Full contributor guide |
-| TODO_LIST.md updated | `6d1bcfe` | Removed stale refs, added current items |
-| Execution plan with mermaid | `bcf9632` | docs/planning/2026-04-30_21-39_... |
-| AGENTS.md updated | `e13997b` | Architecture decisions documented |
+| Item                        | Commit    | Details                                            |
+| --------------------------- | --------- | -------------------------------------------------- |
+| Nix flake private dep fix   | `652b325` | Two-phase dummy/replace pattern for gogenfilter    |
+| Auto-synced dummy go.mod    | `358c317` | `builtins.readFile` reads real go.mod at eval time |
+| Vendor/ removed from git    | `3cf84f5` | Added to .gitignore                                |
+| CONTRIBUTING.md created     | `6d1bcfe` | Full contributor guide                             |
+| TODO_LIST.md updated        | `6d1bcfe` | Removed stale refs, added current items            |
+| Execution plan with mermaid | `bcf9632` | docs/planning/2026-04-30*21-39*...                 |
+| AGENTS.md updated           | `e13997b` | Architecture decisions documented                  |
 
 ### Error Handling Modernization
 
-| Item | Commit | Details |
-|------|--------|---------|
-| `errors.As` → `errors.AsType` | `4498343` | 3 instances in errors/types.go (Go 1.24+ idiom) |
-| All `//nolint:err113` removed | `4498343` | Replaced with typed errors (EnumValidationError, sentinel + %w) |
-| Dead `migration/` rules removed | `4498343` | 6 blocks from .golangci.yml |
+| Item                            | Commit    | Details                                                         |
+| ------------------------------- | --------- | --------------------------------------------------------------- |
+| `errors.As` → `errors.AsType`   | `4498343` | 3 instances in errors/types.go (Go 1.24+ idiom)                 |
+| All `//nolint:err113` removed   | `4498343` | Replaced with typed errors (EnumValidationError, sentinel + %w) |
+| Dead `migration/` rules removed | `4498343` | 6 blocks from .golangci.yml                                     |
 
 ### Type Safety Improvements
 
-| Item | Commit | Details |
-|------|--------|---------|
-| `Config.Only` → `config.FileType` | `8aae71c` | Used existing FileType enum, eliminated matchesOnlyFilter() |
-| `Analysis.CreatedAt` → `time.Time` | `d0e5a2d` | String → time.Time, validation uses IsZero() |
-| `Analysis.CompletedAt` → `*time.Time` | `d0e5a2d` | *string → *time.Time |
-| Unused `DetectionOptions` removed | `40c6c5b` | Dead code cleanup |
+| Item                                  | Commit    | Details                                                     |
+| ------------------------------------- | --------- | ----------------------------------------------------------- |
+| `Config.Only` → `config.FileType`     | `8aae71c` | Used existing FileType enum, eliminated matchesOnlyFilter() |
+| `Analysis.CreatedAt` → `time.Time`    | `d0e5a2d` | String → time.Time, validation uses IsZero()                |
+| `Analysis.CompletedAt` → `*time.Time` | `d0e5a2d` | *string → *time.Time                                        |
+| Unused `DetectionOptions` removed     | `40c6c5b` | Dead code cleanup                                           |
 
 ### Structural Improvements
 
-| Item | Commit | Details |
-|------|--------|---------|
-| `printer/html.go` split | `24d1902` | 1484L → 4 files (364L + 523L + 315L + 301L) |
-| Test constant extraction | `b9e33dc` | Repeated string literals → named constants |
-| Error check on json.Marshal | `b9e33dc` | Was discarding error in test |
+| Item                        | Commit    | Details                                     |
+| --------------------------- | --------- | ------------------------------------------- |
+| `printer/html.go` split     | `24d1902` | 1484L → 4 files (364L + 523L + 315L + 301L) |
+| Test constant extraction    | `b9e33dc` | Repeated string literals → named constants  |
+| Error check on json.Marshal | `b9e33dc` | Was discarding error in test                |
 
 ### From Parallel Sessions (not by this conversation)
 
-| Item | Commit | Details |
-|------|--------|---------|
-| gogenfilter updated to v2.1 | `2a2e9f7` | Dependency update |
-| SortBy unified with SortCriteria | `eb30754` | Type alias pattern |
-| Flag-to-config mapping simplified | `528432c` | ReportMetadata derived from Config |
-| Site improvements | `a78c31a`, `4b600b2`, `345670c` | Landing page, visualizations |
-| Comprehensive lint fixes | `6cc7256` | goconst, unused, nolintlint, etc. |
-| Go formatting applied | `1533da5` | Consistent across codebase |
+| Item                              | Commit                          | Details                            |
+| --------------------------------- | ------------------------------- | ---------------------------------- |
+| gogenfilter updated to v2.1       | `2a2e9f7`                       | Dependency update                  |
+| SortBy unified with SortCriteria  | `eb30754`                       | Type alias pattern                 |
+| Flag-to-config mapping simplified | `528432c`                       | ReportMetadata derived from Config |
+| Site improvements                 | `a78c31a`, `4b600b2`, `345670c` | Landing page, visualizations       |
+| Comprehensive lint fixes          | `6cc7256`                       | goconst, unused, nolintlint, etc.  |
+| Go formatting applied             | `1533da5`                       | Consistent across codebase         |
 
 ---
 
 ## B) PARTIALLY DONE
 
-| Item | Current State | Remaining |
-|------|--------------|-----------|
-| CI pipeline | `.github/workflows/` exists with 5 workflows | `art-dupl.yml` uses `go-version: "1.26rc2"` — should be `stable` |
-| Type safety in domain | Threshold, LineNumber, TokenCount, etc. typed | Repository.Path, SourceFile.Path still `string` |
-| Enum consistency | Config uses generic helpers | Domain enums still use switch statements |
-| LSP diagnostics | Build passes, go vet clean | gopls shows stale "duplicate" errors from html.go split (cache issue, not real) |
+| Item                  | Current State                                 | Remaining                                                                       |
+| --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------- |
+| CI pipeline           | `.github/workflows/` exists with 5 workflows  | `art-dupl.yml` uses `go-version: "1.26rc2"` — should be `stable`                |
+| Type safety in domain | Threshold, LineNumber, TokenCount, etc. typed | Repository.Path, SourceFile.Path still `string`                                 |
+| Enum consistency      | Config uses generic helpers                   | Domain enums still use switch statements                                        |
+| LSP diagnostics       | Build passes, go vet clean                    | gopls shows stale "duplicate" errors from html.go split (cache issue, not real) |
 
 ---
 
@@ -74,42 +74,43 @@
 
 ### High Impact, Low Effort
 
-| # | Item | Effort | Impact |
-|---|------|--------|--------|
-| 1 | Fix `GlobalPool()` data race (`sync.OnceValue`) | 5min | High — race condition |
-| 2 | Replace hand-rolled `hasSuffix` with `strings.HasSuffix` | 2min | Low — code clarity |
-| 3 | Fix CI `go-version: "1.26rc2"` → `stable` | 1min | Medium |
-| 4 | Type `Repository.Path` as `domain.Filepath` | 15min | Medium |
-| 5 | Fix `GetStatsData() any` → concrete return type | 20min | Medium |
-| 6 | Use `errors.Join` for multi-rule validation | 10min | Low |
+| #   | Item                                                     | Effort | Impact                |
+| --- | -------------------------------------------------------- | ------ | --------------------- |
+| 1   | Fix `GlobalPool()` data race (`sync.OnceValue`)          | 5min   | High — race condition |
+| 2   | Replace hand-rolled `hasSuffix` with `strings.HasSuffix` | 2min   | Low — code clarity    |
+| 3   | Fix CI `go-version: "1.26rc2"` → `stable`                | 1min   | Medium                |
+| 4   | Type `Repository.Path` as `domain.Filepath`              | 15min  | Medium                |
+| 5   | Fix `GetStatsData() any` → concrete return type          | 20min  | Medium                |
+| 6   | Use `errors.Join` for multi-rule validation              | 10min  | Low                   |
 
 ### Medium Impact, Medium Effort
 
-| # | Item | Effort | Impact |
-|---|------|--------|--------|
-| 7 | Move `NodeToClone` out of `domain/` (break domain→syntax dep) | 30min | High — architecture |
-| 8 | Simplify `StatsPrinter` interface (8 setters → option struct) | 30min | Medium — API design |
-| 9 | `sort.Interface` → `slices.SortFunc` | 15min | Low — modernize |
-| 10 | Unify enum patterns (domain → config generic helpers) | 60min | Medium |
-| 11 | Split `detection/todos.go` (TodoDetector + LegacyDetector) | 20min | Low |
-| 12 | Split `config/config.go` (391L) | 30min | Low |
-| 13 | Resolve or document 6 SIMD TODOs | 30min | Low |
+| #   | Item                                                          | Effort | Impact              |
+| --- | ------------------------------------------------------------- | ------ | ------------------- |
+| 7   | Move `NodeToClone` out of `domain/` (break domain→syntax dep) | 30min  | High — architecture |
+| 8   | Simplify `StatsPrinter` interface (8 setters → option struct) | 30min  | Medium — API design |
+| 9   | `sort.Interface` → `slices.SortFunc`                          | 15min  | Low — modernize     |
+| 10  | Unify enum patterns (domain → config generic helpers)         | 60min  | Medium              |
+| 11  | Split `detection/todos.go` (TodoDetector + LegacyDetector)    | 20min  | Low                 |
+| 12  | Split `config/config.go` (391L)                               | 30min  | Low                 |
+| 13  | Resolve or document 6 SIMD TODOs                              | 30min  | Low                 |
 
 ### High Impact, High Effort
 
-| # | Item | Effort | Impact |
-|---|------|--------|--------|
-| 14 | Evaluate `domain.Clone` — is it dead code in runtime pipeline? | 60min | High |
-| 15 | Split `syntax/golang/transform.go` (355L, 300L switch) | 120min | Medium |
-| 16 | Split `cmd/run_analysis.go` (447L) | 60min | Medium |
-| 17 | Implement TokenValue type (TODO #1 in TODO_LIST.md) | 180min | High |
-| 18 | Archive 304 old docs/status/ files | 15min | Low |
+| #   | Item                                                           | Effort | Impact |
+| --- | -------------------------------------------------------------- | ------ | ------ |
+| 14  | Evaluate `domain.Clone` — is it dead code in runtime pipeline? | 60min  | High   |
+| 15  | Split `syntax/golang/transform.go` (355L, 300L switch)         | 120min | Medium |
+| 16  | Split `cmd/run_analysis.go` (447L)                             | 60min  | Medium |
+| 17  | Implement TokenValue type (TODO #1 in TODO_LIST.md)            | 180min | High   |
+| 18  | Archive 304 old docs/status/ files                             | 15min  | Low    |
 
 ---
 
 ## D) TOTALLY FUCKED UP
 
 **Nothing.** The codebase is in good shape:
+
 - All 24 packages compile and pass tests
 - `go vet` is clean
 - `nix build` and `nix flake check` pass
@@ -158,33 +159,33 @@
 
 Sorted by impact × effort (highest ROI first):
 
-| # | Task | Impact | Effort | ROI |
-|---|------|--------|--------|-----|
-| 1 | Fix `GlobalPool()` data race with `sync.OnceValue` | High | 5min | ★★★★★ |
-| 2 | Fix CI go-version `1.26rc2` → `stable` | Medium | 1min | ★★★★★ |
-| 3 | Replace `hasSuffix` with `strings.HasSuffix` | Low | 2min | ★★★★ |
-| 4 | Use `errors.Join` for `validateFields` | Medium | 10min | ★★★★ |
-| 5 | Type `Repository.Path` and `SourceFile.Path` as `Filepath` | Medium | 15min | ★★★★ |
-| 6 | Type `SourceFile.Hash` as `domain.Hash` | Medium | 10min | ★★★★ |
-| 7 | Fix `GetStatsData()` return type | Medium | 20min | ★★★ |
-| 8 | Fix `buildJSONData()` return type | Medium | 15min | ★★★ |
-| 9 | Simplify `StatsPrinter` with option struct | Medium | 30min | ★★★ |
-| 10 | Move `NodeToClone` out of `domain/` | High | 30min | ★★★ |
-| 11 | Split `detection/todos.go` into separate files | Low | 20min | ★★ |
-| 12 | Modernize `sort.Interface` → `slices.SortFunc` | Low | 15min | ★★ |
-| 13 | Evaluate and document `domain.Clone` dead code question | High | 60min | ★★ |
-| 14 | Consolidate threshold validation to single source | Medium | 30min | ★★ |
-| 15 | Unify enum patterns (domain → config generics) | Medium | 60min | ★★ |
-| 16 | Split `config/config.go` (391L) | Low | 30min | ★★ |
-| 17 | Archive old docs/status/ (304 files → ~10) | Low | 15min | ★ |
-| 18 | Resolve/document 6 SIMD TODOs | Low | 30min | ★ |
-| 19 | Split `cmd/run_analysis.go` (447L) | Low | 60min | ★ |
-| 20 | Split `syntax/golang/transform.go` (355L switch) | Low | 120min | ★ |
-| 21 | Implement TokenValue type (TODO #1 in TODO_LIST) | High | 180min | ★ |
-| 22 | Add justfile recipe for vendor hash updates | Medium | 15min | ★ |
-| 23 | Fix remaining LSP hints (unnecessary type args, unused params) | Low | 20min | ★ |
-| 24 | Type `Repository.LastIndexed` as `time.Time` | Low | 10min | ★ |
-| 25 | Investigate `domain.Clone` → `artdupl.Clone` conversion layer | Medium | 60min | ★ |
+| #   | Task                                                           | Impact | Effort | ROI   |
+| --- | -------------------------------------------------------------- | ------ | ------ | ----- |
+| 1   | Fix `GlobalPool()` data race with `sync.OnceValue`             | High   | 5min   | ★★★★★ |
+| 2   | Fix CI go-version `1.26rc2` → `stable`                         | Medium | 1min   | ★★★★★ |
+| 3   | Replace `hasSuffix` with `strings.HasSuffix`                   | Low    | 2min   | ★★★★  |
+| 4   | Use `errors.Join` for `validateFields`                         | Medium | 10min  | ★★★★  |
+| 5   | Type `Repository.Path` and `SourceFile.Path` as `Filepath`     | Medium | 15min  | ★★★★  |
+| 6   | Type `SourceFile.Hash` as `domain.Hash`                        | Medium | 10min  | ★★★★  |
+| 7   | Fix `GetStatsData()` return type                               | Medium | 20min  | ★★★   |
+| 8   | Fix `buildJSONData()` return type                              | Medium | 15min  | ★★★   |
+| 9   | Simplify `StatsPrinter` with option struct                     | Medium | 30min  | ★★★   |
+| 10  | Move `NodeToClone` out of `domain/`                            | High   | 30min  | ★★★   |
+| 11  | Split `detection/todos.go` into separate files                 | Low    | 20min  | ★★    |
+| 12  | Modernize `sort.Interface` → `slices.SortFunc`                 | Low    | 15min  | ★★    |
+| 13  | Evaluate and document `domain.Clone` dead code question        | High   | 60min  | ★★    |
+| 14  | Consolidate threshold validation to single source              | Medium | 30min  | ★★    |
+| 15  | Unify enum patterns (domain → config generics)                 | Medium | 60min  | ★★    |
+| 16  | Split `config/config.go` (391L)                                | Low    | 30min  | ★★    |
+| 17  | Archive old docs/status/ (304 files → ~10)                     | Low    | 15min  | ★     |
+| 18  | Resolve/document 6 SIMD TODOs                                  | Low    | 30min  | ★     |
+| 19  | Split `cmd/run_analysis.go` (447L)                             | Low    | 60min  | ★     |
+| 20  | Split `syntax/golang/transform.go` (355L switch)               | Low    | 120min | ★     |
+| 21  | Implement TokenValue type (TODO #1 in TODO_LIST)               | High   | 180min | ★     |
+| 22  | Add justfile recipe for vendor hash updates                    | Medium | 15min  | ★     |
+| 23  | Fix remaining LSP hints (unnecessary type args, unused params) | Low    | 20min  | ★     |
+| 24  | Type `Repository.LastIndexed` as `time.Time`                   | Low    | 10min  | ★     |
+| 25  | Investigate `domain.Clone` → `artdupl.Clone` conversion layer  | Medium | 60min  | ★     |
 
 ---
 
@@ -193,12 +194,14 @@ Sorted by impact × effort (highest ROI first):
 **Should `domain.Clone` / `domain.CloneGroup` be removed as dead code, or should the runtime pipeline be refactored to flow through them?**
 
 Evidence that they're dead code in the runtime:
+
 - The SDK (`pkg/artdupl/detector_conversion.go`) converts `syntax.Node` → `artdupl.Clone` directly
 - The printer uses its own internal `clone` struct
 - `domain.Clone` is only used in `domain/conversion.go` (NodeToClone) and domain tests
 - The runtime pipeline never touches domain.Clone
 
 However:
+
 - They represent the "ideal" type-safe model
 - They could serve as the canonical type if we refactor the pipeline
 - Removing them feels like discarding good architecture work

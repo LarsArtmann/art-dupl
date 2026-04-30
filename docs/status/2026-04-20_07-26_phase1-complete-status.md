@@ -13,43 +13,43 @@
 
 ### Session 1 (2026-04-15) — 11 commits, all pushed to origin
 
-| # | Commit | Description |
-|---|--------|-------------|
-| 1 | `bfce6fd` | Migrated gogenfilter API to functional-options (`NewFilter(Disabled())` pattern) |
-| 2 | `b2d72fe` | Deleted dead code: `pkg/errors/`, `testutils/`, `detection/simple_detector.go` |
-| 3 | `42d0e88` | Fixed lint warnings in `cmd/config_builder.go` + justfile issues |
-| 4 | `48f83de` | Extracted `addSharedFlags()` — deduplicated 18 flags between root and stats commands |
-| 5 | `520f219` | Committed `go.mod`/`go.sum` fix — added missing `doublestar/v4` transitive dep |
-| 6 | `6c7755d` | Fixed `job.TestContextTimeoutExpired` timing race (5ms/10ms → 1ms/50ms, 50x margin) |
-| 7 | `3098157` | Fixed gci import grouping in `config_builder.go` |
-| 8 | `b895849` | Improved test coverage: syntax +13.5%, cli +12.5%, printer +3.0% |
-| 9 | `e143dfd` | Wrote comprehensive assessment + execution plan with mermaid.js |
+| #   | Commit    | Description                                                                          |
+| --- | --------- | ------------------------------------------------------------------------------------ |
+| 1   | `bfce6fd` | Migrated gogenfilter API to functional-options (`NewFilter(Disabled())` pattern)     |
+| 2   | `b2d72fe` | Deleted dead code: `pkg/errors/`, `testutils/`, `detection/simple_detector.go`       |
+| 3   | `42d0e88` | Fixed lint warnings in `cmd/config_builder.go` + justfile issues                     |
+| 4   | `48f83de` | Extracted `addSharedFlags()` — deduplicated 18 flags between root and stats commands |
+| 5   | `520f219` | Committed `go.mod`/`go.sum` fix — added missing `doublestar/v4` transitive dep       |
+| 6   | `6c7755d` | Fixed `job.TestContextTimeoutExpired` timing race (5ms/10ms → 1ms/50ms, 50x margin)  |
+| 7   | `3098157` | Fixed gci import grouping in `config_builder.go`                                     |
+| 8   | `b895849` | Improved test coverage: syntax +13.5%, cli +12.5%, printer +3.0%                     |
+| 9   | `e143dfd` | Wrote comprehensive assessment + execution plan with mermaid.js                      |
 
 ### Session 2 (2026-04-15) — Push confirmed
 
-| # | Commit | Description |
-|---|--------|-------------|
-| 10 | `e143dfd` push | All 11 commits pushed to `origin/fork` successfully |
+| #   | Commit         | Description                                         |
+| --- | -------------- | --------------------------------------------------- |
+| 10  | `e143dfd` push | All 11 commits pushed to `origin/fork` successfully |
 
 ### Session 3 (2026-04-20) — 3 commits, NOT yet pushed
 
-| # | Commit | Description |
-|---|--------|-------------|
-| 11 | `40ac57b` | Deleted dead packages: `internal/enum/`, `git/`, `migration/`, `adapter/` (2,983 lines removed) |
-| 12 | `1afe02b` | Deleted dead `cli.ExitIfBothSet` — zero production callers, called `os.Exit(1)` |
-| 13 | `ffdb562` | Removed dead fields from `cli.RuntimeConfig`: `DiffMode`, `All`, `OutputDir` |
+| #   | Commit    | Description                                                                                     |
+| --- | --------- | ----------------------------------------------------------------------------------------------- |
+| 11  | `40ac57b` | Deleted dead packages: `internal/enum/`, `git/`, `migration/`, `adapter/` (2,983 lines removed) |
+| 12  | `1afe02b` | Deleted dead `cli.ExitIfBothSet` — zero production callers, called `os.Exit(1)`                 |
+| 13  | `ffdb562` | Removed dead fields from `cli.RuntimeConfig`: `DiffMode`, `All`, `OutputDir`                    |
 
 ### Total Impact Across All Sessions
 
-| Metric | Value |
-|--------|-------|
-| Total commits | 13 (on fork, since baseline) |
-| Lines deleted | ~3,100+ |
+| Metric                | Value                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Total commits         | 13 (on fork, since baseline)                                                                                                             |
+| Lines deleted         | ~3,100+                                                                                                                                  |
 | Dead packages removed | 8 (`pkg/errors/`, `testutils/`, `detection/simple_detector.go`, `internal/enum/`, `git/`, `migration/`, `adapter/`, `cli/validation.go`) |
-| Dead fields removed | 3 (`DiffMode`, `All`, `OutputDir` from `RuntimeConfig`) |
-| Test coverage gained | +29% across 3 packages |
-| Flag deduplication | 18 shared flags consolidated |
-| Bug fixes | 2 (gogenfilter migration, timing race) |
+| Dead fields removed   | 3 (`DiffMode`, `All`, `OutputDir` from `RuntimeConfig`)                                                                                  |
+| Test coverage gained  | +29% across 3 packages                                                                                                                   |
+| Flag deduplication    | 18 shared flags consolidated                                                                                                             |
+| Bug fixes             | 2 (gogenfilter migration, timing race)                                                                                                   |
 
 ---
 
@@ -74,32 +74,32 @@
 
 ### Phase 2: Type Consolidation (3-5 hours estimated)
 
-| Item | Effort | Impact |
-|------|--------|--------|
-| 2.1 Consolidate Clone types (4 types → 1 canonical) | 2-3h | Very High |
-| 2.2 Consolidate CloneGroup types (3 types → 1 canonical) | 1-2h | High |
-| 2.3 Split `config/detectionmethod.go` (426 lines, 5 enum types) | 30min | Medium |
+| Item                                                            | Effort | Impact    |
+| --------------------------------------------------------------- | ------ | --------- |
+| 2.1 Consolidate Clone types (4 types → 1 canonical)             | 2-3h   | Very High |
+| 2.2 Consolidate CloneGroup types (3 types → 1 canonical)        | 1-2h   | High      |
+| 2.3 Split `config/detectionmethod.go` (426 lines, 5 enum types) | 30min  | Medium    |
 
 ### Phase 3: Test Coverage (4-5 hours estimated)
 
-| Item | Current Coverage | Target |
-|------|-----------------|--------|
-| HTML diff view (11 functions at 0%) | ~0% | >60% |
-| JSON printer (`SetHash`, `PrintFooter`, `OutputSimpleJSON`) | ~30% | >70% |
-| Plumbing printer (`PrintHeader`, `PrintFooter`, `OutputPlumbing`) | ~0% | >70% |
-| Text printer (`PrintHeader`, `PrintFooter`, `OutputText`) | ~20% | >70% |
-| Hash package | 70% | >85% |
-| Config package | 70.4% | >80% |
-| Cmd package | 75.1% | >80% |
+| Item                                                              | Current Coverage | Target |
+| ----------------------------------------------------------------- | ---------------- | ------ |
+| HTML diff view (11 functions at 0%)                               | ~0%              | >60%   |
+| JSON printer (`SetHash`, `PrintFooter`, `OutputSimpleJSON`)       | ~30%             | >70%   |
+| Plumbing printer (`PrintHeader`, `PrintFooter`, `OutputPlumbing`) | ~0%              | >70%   |
+| Text printer (`PrintHeader`, `PrintFooter`, `OutputText`)         | ~20%             | >70%   |
+| Hash package                                                      | 70%              | >85%   |
+| Config package                                                    | 70.4%            | >80%   |
+| Cmd package                                                       | 75.1%            | >80%   |
 
 ### Phase 4: Architecture (6-8 hours estimated)
 
-| Item | Description |
-|------|-------------|
-| 4.1 Unify analysis pipelines | Extract to `internal/analysis/` — merge `cmd/run_analysis.go` and `pkg/artdupl/detector_pipeline.go` |
-| 4.2 Split `printer/html.go` | 1,484 lines with Go+JS+CSS+HTML — split into focused files |
-| 4.3 Nolint directive audit | ~80+ nolint directives across codebase |
-| 4.4 Reduce `config/detectionmethod.go` complexity | 426 lines, 5 enum types in one file |
+| Item                                              | Description                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 4.1 Unify analysis pipelines                      | Extract to `internal/analysis/` — merge `cmd/run_analysis.go` and `pkg/artdupl/detector_pipeline.go` |
+| 4.2 Split `printer/html.go`                       | 1,484 lines with Go+JS+CSS+HTML — split into focused files                                           |
+| 4.3 Nolint directive audit                        | ~80+ nolint directives across codebase                                                               |
+| 4.4 Reduce `config/detectionmethod.go` complexity | 426 lines, 5 enum types in one file                                                                  |
 
 ---
 
@@ -148,53 +148,53 @@ Go 1.26.0 cannot run `go test -cover ./...` — causes setup failures for many p
 
 ### Quick Wins (Phase 1 — COMPLETE ✅)
 
-| # | Task | Status |
-|---|------|--------|
-| ~~1~~ | ~~Delete dead packages (internal/enum, git, migration, adapter)~~ | ✅ Done |
-| ~~2~~ | ~~Delete dead cli.ExitIfBothSet~~ | ✅ Done |
-| ~~3~~ | ~~Remove dead RuntimeConfig fields~~ | ✅ Done |
-| ~~4~~ | ~~Error handling investigation~~ | ✅ Done (no action needed) |
+| #     | Task                                                              | Status                     |
+| ----- | ----------------------------------------------------------------- | -------------------------- |
+| ~~1~~ | ~~Delete dead packages (internal/enum, git, migration, adapter)~~ | ✅ Done                    |
+| ~~2~~ | ~~Delete dead cli.ExitIfBothSet~~                                 | ✅ Done                    |
+| ~~3~~ | ~~Remove dead RuntimeConfig fields~~                              | ✅ Done                    |
+| ~~4~~ | ~~Error handling investigation~~                                  | ✅ Done (no action needed) |
 
 ### Immediate Next Steps (Phase 2 — Type Consolidation)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 5 | **Push 3 unpushed commits to origin** | 1 min | Critical |
-| 6 | **Split `config/detectionmethod.go` into 5 focused files** | 30 min | Medium |
-| 7 | **Add conversion methods to `domain.Clone`** (`ToPrinterClone()`, `ToSDKClone()`) | 1h | High |
-| 8 | **Migrate `printer/` to use `domain.Clone` conversions** | 1-2h | High |
-| 9 | **Migrate `pkg/artdupl/` to use `domain.Clone` directly** | 1h | High |
-| 10 | **Consolidate CloneGroup types** (same pattern as Clone) | 1-2h | High |
+| #   | Task                                                                              | Effort | Impact   |
+| --- | --------------------------------------------------------------------------------- | ------ | -------- |
+| 5   | **Push 3 unpushed commits to origin**                                             | 1 min  | Critical |
+| 6   | **Split `config/detectionmethod.go` into 5 focused files**                        | 30 min | Medium   |
+| 7   | **Add conversion methods to `domain.Clone`** (`ToPrinterClone()`, `ToSDKClone()`) | 1h     | High     |
+| 8   | **Migrate `printer/` to use `domain.Clone` conversions**                          | 1-2h   | High     |
+| 9   | **Migrate `pkg/artdupl/` to use `domain.Clone` directly**                         | 1h     | High     |
+| 10  | **Consolidate CloneGroup types** (same pattern as Clone)                          | 1-2h   | High     |
 
 ### Test Coverage (Phase 3)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 11 | **Add tests for `printer/html.go`** (11 functions at 0%) | 2-3h | Very High |
-| 12 | **Add tests for `printer/plumbing.go`** (PrintHeader, PrintFooter, OutputPlumbing) | 1h | High |
-| 13 | **Add tests for `printer/text.go`** (PrintHeader, PrintFooter, OutputText) | 1h | High |
-| 14 | **Add tests for `printer/json.go`** (SetHash, PrintFooter, OutputSimpleJSON) | 1h | High |
-| 15 | **Increase `hash/` package coverage** (70% → 85%) | 1h | Medium |
-| 16 | **Increase `config/` package coverage** (70.4% → 80%) | 1h | Medium |
-| 17 | **Increase `cmd/` package coverage** (75.1% → 80%) | 1h | Medium |
+| #   | Task                                                                               | Effort | Impact    |
+| --- | ---------------------------------------------------------------------------------- | ------ | --------- |
+| 11  | **Add tests for `printer/html.go`** (11 functions at 0%)                           | 2-3h   | Very High |
+| 12  | **Add tests for `printer/plumbing.go`** (PrintHeader, PrintFooter, OutputPlumbing) | 1h     | High      |
+| 13  | **Add tests for `printer/text.go`** (PrintHeader, PrintFooter, OutputText)         | 1h     | High      |
+| 14  | **Add tests for `printer/json.go`** (SetHash, PrintFooter, OutputSimpleJSON)       | 1h     | High      |
+| 15  | **Increase `hash/` package coverage** (70% → 85%)                                  | 1h     | Medium    |
+| 16  | **Increase `config/` package coverage** (70.4% → 80%)                              | 1h     | Medium    |
+| 17  | **Increase `cmd/` package coverage** (75.1% → 80%)                                 | 1h     | Medium    |
 
 ### Architecture (Phase 4)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 18 | **Split `printer/html.go`** into focused files (html.go, html_css.go, html_js.go, html_diff.go) | 1-2h | High |
-| 19 | **Unify analysis pipelines** — extract shared logic to `internal/analysis/` | 3-4h | Very High |
-| 20 | **Audit and reduce nolint directives** (~80+ across codebase) | 2h | Medium |
-| 21 | **Add `domain.Clone.Size()` method** to eliminate size computation duplication | 30 min | Medium |
+| #   | Task                                                                                            | Effort | Impact    |
+| --- | ----------------------------------------------------------------------------------------------- | ------ | --------- |
+| 18  | **Split `printer/html.go`** into focused files (html.go, html_css.go, html_js.go, html_diff.go) | 1-2h   | High      |
+| 19  | **Unify analysis pipelines** — extract shared logic to `internal/analysis/`                     | 3-4h   | Very High |
+| 20  | **Audit and reduce nolint directives** (~80+ across codebase)                                   | 2h     | Medium    |
+| 21  | **Add `domain.Clone.Size()` method** to eliminate size computation duplication                  | 30 min | Medium    |
 
 ### Quality of Life
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 22 | **Fix Go/Nix build environment** — stop cache corruption | 1h | Critical |
-| 23 | **Add pre-commit hook** to run `go build ./...` before allowing commits | 15 min | Medium |
-| 24 | **Write ADR for error handling strategy** (SDK: fmt.Errorf, CLI: duplerrors) | 30 min | Medium |
-| 25 | **Update AGENTS.md** to reflect deleted packages and current architecture | 15 min | Low |
+| #   | Task                                                                         | Effort | Impact   |
+| --- | ---------------------------------------------------------------------------- | ------ | -------- |
+| 22  | **Fix Go/Nix build environment** — stop cache corruption                     | 1h     | Critical |
+| 23  | **Add pre-commit hook** to run `go build ./...` before allowing commits      | 15 min | Medium   |
+| 24  | **Write ADR for error handling strategy** (SDK: fmt.Errorf, CLI: duplerrors) | 30 min | Medium   |
+| 25  | **Update AGENTS.md** to reflect deleted packages and current architecture    | 15 min | Low      |
 
 ---
 
@@ -205,6 +205,7 @@ Go 1.26.0 cannot run `go test -cover ./...` — causes setup failures for many p
 Three sessions in a row, the Go build cache has corrupted itself. Go 1.26.0 works but `go test -cover ./...` fails. Both Go 1.26.1 installations have broken stdlib packages. The workaround (`rm -rf ~/Library/Caches/go-build/`) takes 2+ minutes each time.
 
 **Question**: Is there a specific reason you're using Go via Nix (e.g., `flake.nix` requirement, team standard)? Would you be open to:
+
 - Installing Go via `go install` or Homebrew as a stable fallback?
 - Running Go in Docker for reproducibility?
 - Fixing the Nix Go derivation to include all stdlib packages?
@@ -215,18 +216,18 @@ This is the single biggest productivity killer — I spend 10-15% of each sessio
 
 ## Current Coverage Snapshot
 
-| Package | Coverage | Trend |
-|---------|----------|-------|
-| domain | 97.0% | Stable |
-| adapter | ~~97.7%~~ | **DELETED** |
-| detection | 83.6% | Stable |
-| syntax | 81.1% | ⬆️ +13.5% (session 1) |
-| job | 76.7% | Stable |
-| cli | 75.0% | ⬆️ +12.5% (session 1) |
-| cmd | 75.1% | Stable |
-| config | 70.4% | Stable |
-| hash | 70.0% | Stable |
-| printer | 66.5% | ⬆️ +3.0% (session 1) |
+| Package   | Coverage  | Trend                 |
+| --------- | --------- | --------------------- |
+| domain    | 97.0%     | Stable                |
+| adapter   | ~~97.7%~~ | **DELETED**           |
+| detection | 83.6%     | Stable                |
+| syntax    | 81.1%     | ⬆️ +13.5% (session 1) |
+| job       | 76.7%     | Stable                |
+| cli       | 75.0%     | ⬆️ +12.5% (session 1) |
+| cmd       | 75.1%     | Stable                |
+| config    | 70.4%     | Stable                |
+| hash      | 70.0%     | Stable                |
+| printer   | 66.5%     | ⬆️ +3.0% (session 1)  |
 
 ## Git Summary
 

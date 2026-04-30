@@ -10,44 +10,45 @@
 
 ### What was done (10 commits)
 
-| Commit | Description |
-|--------|-------------|
-| `bfce6fd` | Fix gogenfilter API migration (functional options) |
+| Commit    | Description                                                                   |
+| --------- | ----------------------------------------------------------------------------- |
+| `bfce6fd` | Fix gogenfilter API migration (functional options)                            |
 | `b2d72fe` | Delete dead code: `pkg/errors/`, `testutils/`, `detection/simple_detector.go` |
-| `42d0e88` | Fix lint warnings in `config_builder.go`, fix justfile issues |
-| `48f83de` | Extract `addSharedFlags()` to deduplicate 18 shared flags |
-| `d245eee` | Add configuration builder module |
-| `520f219` | Add missing `go.sum` entries from `go mod tidy` |
-| `6c7755d` | Fix `TestContextTimeoutExpired` timing race (5ms/10ms → 1ms/50ms) |
-| `3098157` | Fix gci import grouping in `config_builder.go` |
-| `b895849` | Add test coverage for syntax, cli, printer packages |
+| `42d0e88` | Fix lint warnings in `config_builder.go`, fix justfile issues                 |
+| `48f83de` | Extract `addSharedFlags()` to deduplicate 18 shared flags                     |
+| `d245eee` | Add configuration builder module                                              |
+| `520f219` | Add missing `go.sum` entries from `go mod tidy`                               |
+| `6c7755d` | Fix `TestContextTimeoutExpired` timing race (5ms/10ms → 1ms/50ms)             |
+| `3098157` | Fix gci import grouping in `config_builder.go`                                |
+| `b895849` | Add test coverage for syntax, cli, printer packages                           |
 
 ### Key metrics
 
-| Package | Before | After | Delta |
-|---------|--------|-------|-------|
-| syntax | 67.6% | 81.1% | +13.5% |
-| cli | 62.5% | 75.0% | +12.5% |
-| printer | 63.5% | 66.5% | +3.0% |
-| All tests | 2 failures | 0 failures | Fixed |
+| Package   | Before     | After      | Delta  |
+| --------- | ---------- | ---------- | ------ |
+| syntax    | 67.6%      | 81.1%      | +13.5% |
+| cli       | 62.5%      | 75.0%      | +12.5% |
+| printer   | 63.5%      | 66.5%      | +3.0%  |
+| All tests | 2 failures | 0 failures | Fixed  |
 
 ---
 
 ## B. Ghost Systems (Dead Code)
 
 ### Deleted this session
+
 - `pkg/errors/` — zero importers, unused error package
 - `testutils/` — zero importers, unused test utility
 - `detection/simple_detector.go` — zero importers, unused interface implementation
 
 ### Still present (needs user decision)
 
-| Package | Lines | Status | Risk to delete |
-|---------|-------|--------|----------------|
-| `internal/enum/` | ~260 | Zero external imports, dead | Low — only its own tests |
-| `git/` | ~368 | Zero production imports, dead | Low — only its own tests |
-| `migration/` | ~342 | Only imported by `adapter/` (also dead) | Low — dead dependency chain |
-| `adapter/` | ~100 | Only imported by `migration/` (also dead) | Low — dead dependency chain |
+| Package          | Lines | Status                                    | Risk to delete              |
+| ---------------- | ----- | ----------------------------------------- | --------------------------- |
+| `internal/enum/` | ~260  | Zero external imports, dead               | Low — only its own tests    |
+| `git/`           | ~368  | Zero production imports, dead             | Low — only its own tests    |
+| `migration/`     | ~342  | Only imported by `adapter/` (also dead)   | Low — dead dependency chain |
+| `adapter/`       | ~100  | Only imported by `migration/` (also dead) | Low — dead dependency chain |
 
 **Dead dependency chain**: `adapter/` ← `migration/` ← nothing. All four packages are unreachable from production code.
 
@@ -57,12 +58,12 @@
 
 ### SB-1: 4 Clone types + 3 CloneGroup types
 
-| Type | Package | Key difference |
-|------|---------|----------------|
-| `domain.Clone` | `domain` | Strong types (LineNumber, StringID, ComplexityScore) |
-| `artdupl.Clone` | `pkg/artdupl` | Plain primitives, has `Size` field |
-| `printer.clone` | `printer` | Unexported, `fragment []byte`, `fileSize`, `classification` |
-| `printer.JSONClone` | `printer` | Minimal fields for JSON serialization |
+| Type                | Package       | Key difference                                              |
+| ------------------- | ------------- | ----------------------------------------------------------- |
+| `domain.Clone`      | `domain`      | Strong types (LineNumber, StringID, ComplexityScore)        |
+| `artdupl.Clone`     | `pkg/artdupl` | Plain primitives, has `Size` field                          |
+| `printer.clone`     | `printer`     | Unexported, `fragment []byte`, `fileSize`, `classification` |
+| `printer.JSONClone` | `printer`     | Minimal fields for JSON serialization                       |
 
 **Conversion functions**: No unified conversion. `adapter/` package tried to bridge but is dead code. Each consumer does its own manual conversion.
 
@@ -85,11 +86,11 @@ Both parse files, run detection, and produce output. Divergent logic, different 
 
 ## D. Error Handling Inconsistency
 
-| Pattern | Used in | Count |
-|---------|---------|-------|
-| `duplerrors.Wrap*` (structured) | `cmd/`, `printer/` | ~15 sites |
-| `fmt.Errorf("...: %w", err)` | `pkg/artdupl/`, `adapter/`, `job/`, `printer/` | ~13 sites |
-| `errors.New` (sentinels) | `config/`, `domain/`, `pkg/artdupl/` | ~10 sites |
+| Pattern                         | Used in                                        | Count     |
+| ------------------------------- | ---------------------------------------------- | --------- |
+| `duplerrors.Wrap*` (structured) | `cmd/`, `printer/`                             | ~15 sites |
+| `fmt.Errorf("...: %w", err)`    | `pkg/artdupl/`, `adapter/`, `job/`, `printer/` | ~13 sites |
+| `errors.New` (sentinels)        | `config/`, `domain/`, `pkg/artdupl/`           | ~10 sites |
 
 **The `cmd/` package consistently uses `duplerrors.Wrap*`, but most other packages use bare `fmt.Errorf`.** This means callers outside `cmd/` cannot distinguish error types programmatically.
 
@@ -97,12 +98,12 @@ Both parse files, run detection, and produce output. Divergent logic, different 
 
 ## E. Largest Files
 
-| File | Lines | Issue |
-|------|-------|-------|
-| `printer/html.go` | ~1484 | Mixes Go with embedded JS/CSS/HTML, 11 functions at 0% coverage |
-| `config/detectionmethod.go` | ~426 | God file: DetectionMethod, OutputFormat, SortBy, DiffMode, FileType all in one |
-| `printer/diff.go` | ~398 | Complex diff algorithm |
-| `cmd/run_analysis.go` | ~447 | Main pipeline, high cyclomatic complexity |
+| File                        | Lines | Issue                                                                          |
+| --------------------------- | ----- | ------------------------------------------------------------------------------ |
+| `printer/html.go`           | ~1484 | Mixes Go with embedded JS/CSS/HTML, 11 functions at 0% coverage                |
+| `config/detectionmethod.go` | ~426  | God file: DetectionMethod, OutputFormat, SortBy, DiffMode, FileType all in one |
+| `printer/diff.go`           | ~398  | Complex diff algorithm                                                         |
+| `cmd/run_analysis.go`       | ~447  | Main pipeline, high cyclomatic complexity                                      |
 
 ---
 

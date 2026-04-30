@@ -10,15 +10,15 @@
 
 ## Current Health
 
-| Metric | Value |
-|--------|-------|
-| golangci-lint issues | **0** |
-| Test packages passing | **23/23** |
-| Packages with test files | 22/23 (domain has no tests now) |
-| Self-analysis clones | 113 groups (all in test code) |
-| Production code lines | 16,905 |
-| Total Go lines (incl. tests) | 46,292 |
-| Domain package | 6 files, 438 lines (was 16 files, 1,369 lines) |
+| Metric                       | Value                                          |
+| ---------------------------- | ---------------------------------------------- |
+| golangci-lint issues         | **0**                                          |
+| Test packages passing        | **23/23**                                      |
+| Packages with test files     | 22/23 (domain has no tests now)                |
+| Self-analysis clones         | 113 groups (all in test code)                  |
+| Production code lines        | 16,905                                         |
+| Total Go lines (incl. tests) | 46,292                                         |
+| Domain package               | 6 files, 438 lines (was 16 files, 1,369 lines) |
 
 ---
 
@@ -26,33 +26,34 @@
 
 ### 1. Dead Code Elimination (4,307 lines removed)
 
-| Commit | What | Lines |
-|--------|------|-------|
-| `b657700` | Removed `syntax.BatchHash`, `HashSeqWithConfig`, `HashConfig` — zero production callers | -133 |
-| `f8e466e` | Removed `printer.ParseSortBy` — wrapper around `config.ParseSortCriteria`, never called | -120 |
-| `44e736a` | Removed `config.GetThresholdAsDomain`, `SetThresholdFromDomain` — test-only config↔domain bridge | -100 |
+| Commit    | What                                                                                                                                                                                                                                                                          | Lines  |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `b657700` | Removed `syntax.BatchHash`, `HashSeqWithConfig`, `HashConfig` — zero production callers                                                                                                                                                                                       | -133   |
+| `f8e466e` | Removed `printer.ParseSortBy` — wrapper around `config.ParseSortCriteria`, never called                                                                                                                                                                                       | -120   |
+| `44e736a` | Removed `config.GetThresholdAsDomain`, `SetThresholdFromDomain` — test-only config↔domain bridge                                                                                                                                                                              | -100   |
 | `0b88414` | Removed domain dead types: Clone, CloneGroup, Analysis, Repository, SourceFile, StringPool, AnalysisMode, DetectionState, FileProcessingState, CloneGroupID, AnalysisID, Confidence, ComplexityScore, Hash, ProcessingTime, NodeToClone, CalculateSeverity. Removed 22 files. | -3,994 |
-| `daca611` | Removed `config.AssertMergedConfig`, `AssertMergeConfigsWithNil` — exported test-only helpers | -105 |
+| `daca611` | Removed `config.AssertMergedConfig`, `AssertMergeConfigsWithNil` — exported test-only helpers                                                                                                                                                                                 | -105   |
 
 ### 2. Type Architecture Improvements (prior sessions)
 
-| Commit | What |
-|--------|------|
+| Commit    | What                                                                                                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `8aae71c` | Typed `Config.Only` as `config.FileType` instead of `string`. Replaced hand-rolled `matchesOnlyFilter()` with `FileType.Matches()`. |
-| `d0e5a2d` | Typed `Analysis.CreatedAt/CompletedAt` as `time.Time` instead of `string`. |
+| `d0e5a2d` | Typed `Analysis.CreatedAt/CompletedAt` as `time.Time` instead of `string`.                                                          |
 
 ### 3. Lint Cleanup
 
-| Commit | What |
-|--------|------|
+| Commit    | What                                                                                 |
+| --------- | ------------------------------------------------------------------------------------ |
 | `1533da5` | Fixed all 18 remaining lint issues (wsl_v5, nlreturn, gci, err113). Zero issues now. |
-| `40c6c5b` | Removed `domain.DetectionOptions` dead code |
+| `40c6c5b` | Removed `domain.DetectionOptions` dead code                                          |
 
 ---
 
 ## b) PARTIALLY DONE
 
 ### 1. Domain Package Restructuring
+
 **Status:** 68% complete
 
 - **Done:** Removed all dead types, kept only production-used value objects (Threshold, LineNumber, Filepath, CloneSeverity)
@@ -60,6 +61,7 @@
 - **Not done:** `analysis_errors.go` still contains error variables for deleted types (ErrCloneEndLineInvalid, ErrInvalidAnalysisState, etc.) that are only used by `types_severity.go` indirectly
 
 ### 2. Config Package Cleanup
+
 **Status:** 90% complete
 
 - **Done:** Removed test-only exports, threshold bridge methods, domain import
@@ -130,33 +132,33 @@
 
 **Sorted by impact × ease (highest first):**
 
-| # | Task | Impact | Effort | Why |
-|---|------|--------|--------|-----|
-| 1 | Write tests for remaining domain types (Threshold, LineNumber, Filepath, CloneSeverity) | High | Low | Zero test coverage is a regression |
-| 2 | Clean up `analysis_errors.go` — remove errors for deleted types | Low | Trivial | Dead variables |
-| 3 | Remove dead SIMD code from `hashSeqSIMD()` — inline fallback | Low | Low | Dead branching |
-| 4 | Simplify `internal/simd/` — remove or document as intentionally empty | Medium | Low | Dead package |
-| 5 | Update `examples/` to use SDK types instead of deleted domain types | Medium | Low | Misleading docs |
-| 6 | Unexport `config.LoadConfig()` / `config.SaveConfig()` or move to testutil | Low | Low | Test-only exports |
-| 7 | Consolidate `pkg/artdupl.Clone` with `printer.clone` via shared interface | High | Medium | Two type systems |
-| 8 | Make `pkg/artdupl` call `detection.MultiDetector` instead of reimplementing | High | Medium | Duplicate pipeline |
-| 9 | Rename `domain/` to reflect its value-object-only nature (e.g., `types/` or `values/`) | Medium | Medium | Misleading package name |
-| 10 | Extract shared clone interface from printer/ for reuse in SDK | High | Medium | Three parallel types |
-| 11 | Reduce clone groups in `config/config_enum_test.go` — extract shared helpers | Low | Medium | 113 clone groups |
-| 12 | Split `cmd/run_analysis.go` (447L) into focused files | Medium | Medium | Large file |
-| 13 | Split `printer/html.go` (364L) properly this time | Medium | Medium | Was attempted, failed |
-| 14 | Remove `printer.Format` type alias, use `config.OutputFormat` directly | Low | Low | Unnecessary indirection |
-| 15 | Audit and justify remaining nolint directives | Low | Low | 30+ directives |
-| 16 | Add integration test for SDK → printer pipeline | High | Medium | No E2E SDK test |
-| 17 | Replace `samber/do` dependency if unused | Low | Low | Check usage |
-| 18 | Add `//go:build` tags for SIMD if keeping for future | Low | Trivial | Clarity |
-| 19 | Remove `domain/helpers.go` `unmarshalWithValidation` — inline at 3 call sites | Low | Low | Unnecessary abstraction |
-| 20 | Add fuzz tests for remaining domain types | Medium | Medium | Robustness |
-| 21 | Consolidate `printer/stats.go` (244L) sort/filter logic with `printer/sorter.go` | Medium | Medium | Related code |
-| 22 | Move `detection/todos.go` (352L) patterns to config-driven approach | Medium | High | Hardcoded regex |
-| 23 | Add OpenAPI/JSON schema for config file validation | Medium | Medium | External tooling |
-| 24 | Write architecture decision records (ADRs) for type system choices | Medium | Low | Documentation |
-| 25 | Profile and benchmark the SDK pipeline vs CLI pipeline | High | High | Performance |
+| #   | Task                                                                                    | Impact | Effort  | Why                                |
+| --- | --------------------------------------------------------------------------------------- | ------ | ------- | ---------------------------------- |
+| 1   | Write tests for remaining domain types (Threshold, LineNumber, Filepath, CloneSeverity) | High   | Low     | Zero test coverage is a regression |
+| 2   | Clean up `analysis_errors.go` — remove errors for deleted types                         | Low    | Trivial | Dead variables                     |
+| 3   | Remove dead SIMD code from `hashSeqSIMD()` — inline fallback                            | Low    | Low     | Dead branching                     |
+| 4   | Simplify `internal/simd/` — remove or document as intentionally empty                   | Medium | Low     | Dead package                       |
+| 5   | Update `examples/` to use SDK types instead of deleted domain types                     | Medium | Low     | Misleading docs                    |
+| 6   | Unexport `config.LoadConfig()` / `config.SaveConfig()` or move to testutil              | Low    | Low     | Test-only exports                  |
+| 7   | Consolidate `pkg/artdupl.Clone` with `printer.clone` via shared interface               | High   | Medium  | Two type systems                   |
+| 8   | Make `pkg/artdupl` call `detection.MultiDetector` instead of reimplementing             | High   | Medium  | Duplicate pipeline                 |
+| 9   | Rename `domain/` to reflect its value-object-only nature (e.g., `types/` or `values/`)  | Medium | Medium  | Misleading package name            |
+| 10  | Extract shared clone interface from printer/ for reuse in SDK                           | High   | Medium  | Three parallel types               |
+| 11  | Reduce clone groups in `config/config_enum_test.go` — extract shared helpers            | Low    | Medium  | 113 clone groups                   |
+| 12  | Split `cmd/run_analysis.go` (447L) into focused files                                   | Medium | Medium  | Large file                         |
+| 13  | Split `printer/html.go` (364L) properly this time                                       | Medium | Medium  | Was attempted, failed              |
+| 14  | Remove `printer.Format` type alias, use `config.OutputFormat` directly                  | Low    | Low     | Unnecessary indirection            |
+| 15  | Audit and justify remaining nolint directives                                           | Low    | Low     | 30+ directives                     |
+| 16  | Add integration test for SDK → printer pipeline                                         | High   | Medium  | No E2E SDK test                    |
+| 17  | Replace `samber/do` dependency if unused                                                | Low    | Low     | Check usage                        |
+| 18  | Add `//go:build` tags for SIMD if keeping for future                                    | Low    | Trivial | Clarity                            |
+| 19  | Remove `domain/helpers.go` `unmarshalWithValidation` — inline at 3 call sites           | Low    | Low     | Unnecessary abstraction            |
+| 20  | Add fuzz tests for remaining domain types                                               | Medium | Medium  | Robustness                         |
+| 21  | Consolidate `printer/stats.go` (244L) sort/filter logic with `printer/sorter.go`        | Medium | Medium  | Related code                       |
+| 22  | Move `detection/todos.go` (352L) patterns to config-driven approach                     | Medium | High    | Hardcoded regex                    |
+| 23  | Add OpenAPI/JSON schema for config file validation                                      | Medium | Medium  | External tooling                   |
+| 24  | Write architecture decision records (ADRs) for type system choices                      | Medium | Low     | Documentation                      |
+| 25  | Profile and benchmark the SDK pipeline vs CLI pipeline                                  | High   | High    | Performance                        |
 
 ---
 
@@ -165,6 +167,7 @@
 **Should `pkg/artdupl/` (the SDK) be the single source of truth for clone types, or should we create a shared `types/` package?**
 
 The current state:
+
 - `pkg/artdupl.Clone` (with `Filename string, StartLine int, EndLine int, Size int, Hash string`) is the SDK's public API
 - `printer.clone` (private, with `filename string, lineStart int, lineEnd int, fragment []byte, size int, classification CloneClassification`) is the internal printer type
 - `detection.TodoIssue` uses `domain.Filepath` and `domain.LineNumber`
@@ -172,6 +175,7 @@ The current state:
 These three representations cannot be unified without deciding: Does the SDK own the types? Does a shared package? Or does the printer remain independent?
 
 The answer affects whether `pkg/artdupl` should:
+
 - (a) import from a shared `types/` package, or
 - (b) define its own types and provide conversion functions, or
 - (c) become the canonical source and the printer converts from SDK types
@@ -182,11 +186,11 @@ This is a product/architecture decision, not a code decision.
 
 ## Session Metrics
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
-| Lint issues | 18 | 0 | -18 |
-| Domain files | 16 | 6 | -10 |
-| Domain lines | 1,369 | 438 | -931 (68%) |
-| Production Go lines | ~17,400 | 16,905 | ~-495 |
-| Test Go lines | ~33,400 | 29,387 | ~-4,013 |
-| Commits pushed | 0 | 6 | +6 |
+| Metric              | Before  | After  | Delta      |
+| ------------------- | ------- | ------ | ---------- |
+| Lint issues         | 18      | 0      | -18        |
+| Domain files        | 16      | 6      | -10        |
+| Domain lines        | 1,369   | 438    | -931 (68%) |
+| Production Go lines | ~17,400 | 16,905 | ~-495      |
+| Test Go lines       | ~33,400 | 29,387 | ~-4,013    |
+| Commits pushed      | 0       | 6      | +6         |
