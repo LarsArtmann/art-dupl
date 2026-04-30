@@ -54,14 +54,9 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 // printTopFiles prints the top N files with most duplicate lines.
 func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 	// Convert to slice for sorting
-	type fileStat struct {
-		filename string
-		lines    int
-	}
-
-	files := make([]fileStat, 0, len(fileDuplication))
+	files := make([]FileStatMixin, 0, len(fileDuplication))
 	for filename, lines := range fileDuplication {
-		files = append(files, fileStat{filename, lines})
+		files = append(files, FileStatMixin{filename, lines})
 	}
 
 	// Sort by duplicate lines (descending)
