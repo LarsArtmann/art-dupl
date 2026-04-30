@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050508"/>
+      <stop offset="100%" style="stop-color:#0a0a10"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8a020"/>
+      <stop offset="100%" style="stop-color:#f0b840"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Grid pattern -->
+  <g opacity="0.06" stroke="#e8a020" stroke-width="0.5">
+    <line x1="0" y1="0" x2="1200" y2="630"/>
+    <line x1="400" y1="0" x2="1200" y2="400"/>
+    <line x1="0" y1="200" x2="800" y2="630"/>
+    <line x1="800" y1="0" x2="1200" y2="200"/>
+    <line x1="0" y1="400" x2="400" y2="630"/>
+  </g>
+  <!-- AD Mark -->
+  <rect x="80" y="180" width="80" height="80" rx="16" fill="url(#accent)"/>
+  <text x="120" y="236" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="36" fill="#050508">AD</text>
+  <!-- Title -->
+  <text x="200" y="210" font-family="sans-serif" font-weight="800" font-size="56" fill="#e4e4ec">art-dupl</text>
+  <text x="200" y="260" font-family="sans-serif" font-weight="400" font-size="28" fill="#9898b0">Professional Code Clone Detection for Go</text>
+  <!-- Stats -->
+  <text x="200" y="340" font-family="monospace" font-weight="600" font-size="22" fill="#e8a020">7 Output Formats</text>
+  <text x="500" y="340" font-family="monospace" font-weight="600" font-size="22" fill="#e8a020">2 Detection Methods</text>
+  <text x="820" y="340" font-family="monospace" font-weight="600" font-size="22" fill="#e8a020">23.7% Faster</text>
+  <!-- Subtitle -->
+  <text x="200" y="420" font-family="sans-serif" font-weight="400" font-size="20" fill="#8888a0">AST-based structural analysis with suffix tree algorithms</text>
+  <text x="200" y="450" font-family="sans-serif" font-weight="400" font-size="20" fill="#8888a0">Semantic awareness. SARIF integration. Zero config.</text>
+  <!-- Install -->
+  <rect x="200" y="490" width="820" height="50" rx="10" fill="#14141e" stroke="#1e1e30"/>
+  <text x="230" y="522" font-family="monospace" font-size="18" fill="#e8a020">$</text>
+  <text x="260" y="522" font-family="monospace" font-size="18" fill="#30d8a0">go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="610" width="1200" height="20" fill="#14141e"/>
+  <rect x="500" y="610" width="200" height="2" fill="url(#accent)"/>
+  <text x="600" y="625" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8888a0">github.com/LarsArtmann/art-dupl</text>
+</svg>
