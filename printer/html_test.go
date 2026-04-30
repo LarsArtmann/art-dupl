@@ -13,6 +13,13 @@ import (
 
 var errReadFail = errors.New("read failed")
 
+const (
+	testGoCode       = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	testGoMultiCode  = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
+	testPlumbCode    = "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	testFilename     = "test.go"
+)
+
 type errorWriter struct{}
 
 func (errorWriter) Write(_ []byte) (int, error) {
@@ -21,13 +28,17 @@ func (errorWriter) Write(_ []byte) (int, error) {
 
 func htmlPrinterWithContent(content string) (Printer, *bytes.Buffer) {
 	var buf bytes.Buffer
+
 	p := NewHTML(&buf, mockReadFile(content), 15)
+
 	return p, &buf
 }
 
 func htmlPrinterWithMetadata(content string, meta ReportMetadata) (Printer, *bytes.Buffer) {
 	var buf bytes.Buffer
+
 	p := NewHTMLWithOptions(&buf, mockReadFile(content), config.DiffModeSideBySide, meta, 15)
+
 	return p, &buf
 }
 
@@ -214,14 +225,14 @@ func TestHTMLPrintHeader_EmptyMetadata(t *testing.T) {
 func TestHTMLPrintClones(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoCode
 	p, buf := htmlPrinterWithContent(content)
 
 	if err := p.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	nodes := nodesForHTML("test.go")
+	nodes := nodesForHTML(testFilename)
 	dups := [][]*syntax.Node{nodes}
 
 	err := p.PrintClones(dups)
@@ -246,15 +257,15 @@ func TestHTMLPrintClones(t *testing.T) {
 func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoMultiCode
 	p, buf := htmlPrinterWithContent(content)
 
 	if err := p.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	nodes1 := nodesForHTML("test.go")
-	nodes2 := nodesForHTML("test.go")
+	nodes1 := nodesForHTML(testFilename)
+	nodes2 := nodesForHTML(testFilename)
 
 	if err := p.PrintClones([][]*syntax.Node{nodes1}); err != nil {
 		t.Fatalf("PrintClones #1 failed: %v", err)
@@ -277,7 +288,7 @@ func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
 func TestHTMLPrintClones_DiffMode(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoMultiCode
 	p, buf := htmlPrinterWithMetadata(content, ReportMetadata{})
 
 	if err := p.PrintHeader(); err != nil {
@@ -350,14 +361,14 @@ func TestHTMLPrintFooter(t *testing.T) {
 func TestHTMLPrintFooter_WithSummary(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoCode
 	p, buf := htmlPrinterWithContent(content)
 
 	if err := p.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader failed: %v", err)
 	}
 
-	nodes := nodesForHTML("test.go")
+	nodes := nodesForHTML(testFilename)
 	if err := p.PrintClones([][]*syntax.Node{nodes}); err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -404,12 +415,12 @@ func TestHTMLPrintFooter_NoSummaryWhenEmpty(t *testing.T) {
 func TestHTMLOutputHTML(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoCode
 	p, buf := htmlPrinterWithContent(content)
 
 	hp := p.(*htmlprinter)
 
-	nodes1 := nodesForHTML("test.go")
+	nodes1 := nodesForHTML(testFilename)
 	nodes2 := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "other.go", Pos: 39, End: 68},
 		{Type: golang.ExprStmt, Filename: "other.go", Pos: 40, End: 60},
@@ -620,11 +631,11 @@ func TestBuildSummarySection_Empty(t *testing.T) {
 func TestBuildClones(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoCode
 	p, _ := htmlPrinterWithContent(content)
 	hp := p.(*htmlprinter)
 
-	nodes := nodesForHTML("test.go")
+	nodes := nodesForHTML(testFilename)
 	clones, err := hp.buildClones([][]*syntax.Node{nodes})
 	if err != nil {
 		t.Fatalf("buildClones failed: %v", err)
@@ -634,7 +645,7 @@ func TestBuildClones(t *testing.T) {
 		t.Fatalf("expected 1 clone, got %d", len(clones))
 	}
 
-	if clones[0].filename != "test.go" {
+	if clones[0].filename != testFilename {
 		t.Errorf("filename = %q, want 'test.go'", clones[0].filename)
 	}
 }
@@ -766,10 +777,10 @@ func TestHTMLErrorInWriter(t *testing.T) {
 func TestHTMLErrorInPrintClones(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n"
+	content := testGoCode
 	p := NewHTML(&errorWriter{}, mockReadFile(content), 15)
 
-	nodes := nodesForHTML("test.go")
+	nodes := nodesForHTML(testFilename)
 	err := p.PrintClones([][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("expected error from failing writer during PrintClones")

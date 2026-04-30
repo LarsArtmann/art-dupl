@@ -14,6 +14,8 @@ import (
 // DetectionMethods helpers
 // =============================================================================
 
+const validValue = "valid"
+
 func TestDetectionMethods_IsEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -1003,7 +1005,11 @@ func TestFileType_UnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	for _, ft := range []FileType{FileTypeGo, FileTypeTempl} {
-		data, _ := json.Marshal(string(ft))
+		data, err := json.Marshal(string(ft))
+		if err != nil {
+			t.Fatalf("Marshal(%s) error: %v", ft, err)
+		}
+
 		var parsed FileType
 		if err := json.Unmarshal(data, &parsed); err != nil {
 			t.Fatalf("UnmarshalJSON(%s) error: %v", ft, err)
@@ -1159,7 +1165,8 @@ func TestIsValidStringType(t *testing.T) {
 func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == "valid" }
+	isValidFn := func(v string) bool { return v == validValue }
+
 	_, err := unmarshalStringType([]byte("not json"), isValidFn, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid JSON")
@@ -1169,7 +1176,8 @@ func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == "valid" }
+	isValidFn := func(v string) bool { return v == validValue }
+
 	got, err := unmarshalStringType([]byte(`"invalid"`), isValidFn, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid value")
@@ -1183,8 +1191,10 @@ func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 func TestUnmarshalStringTypeToPointer(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == "valid" }
+	isValidFn := func(v string) bool { return v == validValue }
+
 	var target string
+
 	err := unmarshalStringTypeToPointer([]byte(`"valid"`), isValidFn, "default", "string type", &target)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -1198,8 +1208,10 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == "valid" }
+	isValidFn := func(v string) bool { return v == validValue }
+
 	var target string
+
 	err := unmarshalStringTypeToPointer([]byte(`"bad"`), isValidFn, "default", "string type", &target)
 	if err == nil {
 		t.Error("expected error for invalid value")

@@ -63,7 +63,7 @@ func TestPlumbing_PrintFooter(t *testing.T) {
 func TestPlumbing_PrintClones(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
+	content := testPlumbCode
 
 	var buf bytes.Buffer
 
