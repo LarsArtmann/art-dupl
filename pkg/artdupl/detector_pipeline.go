@@ -86,11 +86,24 @@ func (d *detector) buildAnalysisPipeline(
 	return nodeData, fileCount, nil
 }
 
+// processCloneGroups iterates over clone groups and processes each one.
+// The processFn is called for each valid group.
+func (d *detector) processCloneGroups(
+	groups map[string][][]*syntax.Node,
+	processFn func(*CloneGroup),
+) {
+	for hash, frags := range groups {
+		uniq := syntax.Unique(frags)
+		if len(uniq) > 1 {
+			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
+			processFn(group)
+		}
+	}
+}
+
 // runDetection executes the configured detection methods.
 func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
-
-	var allGroups []*CloneGroup
 
 	// Get matches based on detection methods
 	threshold := d.config.Threshold
@@ -114,13 +127,11 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 	}
 
 	// Convert to CloneGroup format
-	for hash, frags := range groups {
-		uniq := syntax.Unique(frags)
-		if len(uniq) > 1 {
-			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
-			allGroups = append(allGroups, group)
-		}
-	}
+	var allGroups []*CloneGroup
+
+	d.processCloneGroups(groups, func(group *CloneGroup) {
+		allGroups = append(allGroups, group)
+	})
 
 	d.reportProgress(90, "Processing results", "")
 
@@ -153,18 +164,12 @@ func (d *detector) streamDetectionResults(
 	}
 
 	// Stream results
-	for hash, frags := range groups {
-		uniq := syntax.Unique(frags)
-		if len(uniq) > 1 {
-			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])
-
-			select {
-			case resultChan <- group:
-			case <-ctx.Done():
-				return ctx.Err()
-			}
+	d.processCloneGroups(groups, func(group *CloneGroup) {
+		select {
+		case resultChan <- group:
+		case <-ctx.Done():
 		}
-	}
+	})
 
 	return nil
 }

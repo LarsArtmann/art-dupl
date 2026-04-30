@@ -9,7 +9,7 @@ import (
 
 // trans transforms given golang AST to uniform tree structure.
 //
-//nolint:gocognit,funlen,maintidx,nonamedreturns // High complexity is inherent to AST transformation
+//nolint:funlen,maintidx,nonamedreturns // High complexity is inherent to AST transformation
 func (t *transformer) trans(
 	node ast.Node,
 ) (o *syntax.Node) {
@@ -69,9 +69,7 @@ func (t *transformer) trans(
 			o.AddChildren(t.trans(e))
 		}
 
-		for _, stmt := range n.Body {
-			o.AddChildren(t.trans(stmt))
-		}
+		t.addBodyStatements(o, n.Body)
 
 	case *ast.ChanType:
 		o.Type = ChanType
@@ -81,9 +79,7 @@ func (t *transformer) trans(
 		o.Type = CommClause
 		t.addWithNilCheck(o, n.Comm)
 
-		for _, stmt := range n.Body {
-			o.AddChildren(t.trans(stmt))
-		}
+		t.addBodyStatements(o, n.Body)
 
 	case *ast.CompositeLit:
 		o.Type = CompositeLit
@@ -114,9 +110,7 @@ func (t *transformer) trans(
 
 	case *ast.Field:
 		o.Type = Field
-		for _, name := range n.Names {
-			o.AddChildren(t.trans(name))
-		}
+		t.addIdentifierNames(o, n.Names)
 
 		o.AddChildren(t.trans(n.Type))
 
@@ -213,7 +207,7 @@ func (t *transformer) trans(
 
 	case *ast.KeyValueExpr:
 		o.Type = KeyValueExpr
-		o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+		t.addKeyValue(o, n.Key, n.Value)
 
 	case *ast.LabeledStmt:
 		o.Type = LabeledStmt
@@ -221,7 +215,7 @@ func (t *transformer) trans(
 
 	case *ast.MapType:
 		o.Type = MapType
-		o.AddChildren(t.trans(n.Key), t.trans(n.Value))
+		t.addKeyValue(o, n.Key, n.Value)
 
 	case *ast.ParenExpr:
 		o.Type = ParenExpr
@@ -295,9 +289,7 @@ func (t *transformer) trans(
 
 	case *ast.ValueSpec:
 		o.Type = ValueSpec
-		for _, name := range n.Names {
-			o.AddChildren(t.trans(name))
-		}
+		t.addIdentifierNames(o, n.Names)
 
 		t.addWithNilCheck(o, n.Type)
 
@@ -341,4 +333,23 @@ func extractReceiverTypeName(recv *ast.FieldList) string {
 	}
 
 	return ""
+}
+
+// addBodyStatements transforms all statements in a body and adds them as children.
+func (t *transformer) addBodyStatements(o *syntax.Node, body []ast.Stmt) {
+	for _, stmt := range body {
+		o.AddChildren(t.trans(stmt))
+	}
+}
+
+// addIdentifierNames transforms all identifier names and adds them as children.
+func (t *transformer) addIdentifierNames(o *syntax.Node, names []*ast.Ident) {
+	for _, name := range names {
+		o.AddChildren(t.trans(name))
+	}
+}
+
+// addKeyValue adds transformed key and value nodes as children.
+func (t *transformer) addKeyValue(o *syntax.Node, key, value ast.Expr) {
+	o.AddChildren(t.trans(key), t.trans(value))
 }
