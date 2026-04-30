@@ -76,7 +76,7 @@ func TestFileCache_Get_Set(t *testing.T) {
 
 	t.Run("cache set and get", func(t *testing.T) {
 		originalNodes := testNodes()
-		contentHash := CacheKey([]byte("test content"))
+		contentHash := Key([]byte("test content"))
 
 		// Set cache entry
 		err := fc.Set(contentHash, originalNodes)
@@ -113,8 +113,8 @@ func TestFileCache_Get_Set(t *testing.T) {
 	})
 
 	t.Run("multiple entries", func(t *testing.T) {
-		hash1 := CacheKey([]byte("content1"))
-		hash2 := CacheKey([]byte("content2"))
+		hash1 := Key([]byte("content1"))
+		hash2 := Key([]byte("content2"))
 
 		nodes1 := []*syntax.Node{testutil.CreateNodeWithPos(1, "file1.go", 0, 10)}
 		nodes2 := []*syntax.Node{testutil.CreateNodeWithPos(2, "file2.go", 5, 15)}
@@ -150,7 +150,7 @@ func TestFileCache_Get_Set(t *testing.T) {
 func TestFileCache_Has(t *testing.T) {
 	tempDir := t.TempDir()
 	fc := NewFileCache(tempDir)
-	contentHash := CacheKey([]byte("test content"))
+	contentHash := Key([]byte("test content"))
 
 	t.Run("not exists initially", func(t *testing.T) {
 		if fc.Has(contentHash) {
@@ -187,7 +187,7 @@ func TestFileCache_Has(t *testing.T) {
 func TestFileCache_Remove(t *testing.T) {
 	tempDir := t.TempDir()
 	fc := NewFileCache(tempDir)
-	contentHash := CacheKey([]byte("test content"))
+	contentHash := Key([]byte("test content"))
 
 	t.Run("remove non-existent entry", func(t *testing.T) {
 		err := fc.Remove("nonexistent-hash")
@@ -226,9 +226,9 @@ func TestFileCache_Clear(t *testing.T) {
 
 	// Add multiple entries
 	hashes := []string{
-		CacheKey([]byte("content1")),
-		CacheKey([]byte("content2")),
-		CacheKey([]byte("content3")),
+		Key([]byte("content1")),
+		Key([]byte("content2")),
+		Key([]byte("content3")),
 	}
 
 	nodes := testNodes()
@@ -289,7 +289,7 @@ func TestFileCache_Stats(t *testing.T) {
 	})
 
 	t.Run("stats after operations", func(t *testing.T) {
-		contentHash := CacheKey([]byte("test content"))
+		contentHash := Key([]byte("test content"))
 		nodes := testNodes()
 
 		// Cache miss
@@ -326,7 +326,7 @@ func TestFileCache_GetStats(t *testing.T) {
 	})
 
 	t.Run("after operations", func(t *testing.T) {
-		contentHash := CacheKey([]byte("test content"))
+		contentHash := Key([]byte("test content"))
 		nodes := testNodes()
 
 		fc.Get("nonexistent") // miss
@@ -349,12 +349,12 @@ func TestFileCache_GetStats(t *testing.T) {
 	})
 }
 
-// TestCacheKey tests hash generation.
-func TestCacheKey(t *testing.T) {
+// TestKey tests hash generation.
+func TestKey(t *testing.T) {
 	t.Run("consistent hashing", func(t *testing.T) {
 		content := []byte("test content")
-		hash1 := CacheKey(content)
-		hash2 := CacheKey(content)
+		hash1 := Key(content)
+		hash2 := Key(content)
 
 		if hash1 != hash2 {
 			t.Errorf("Expected same hash for same content, got %q and %q", hash1, hash2)
@@ -362,8 +362,8 @@ func TestCacheKey(t *testing.T) {
 	})
 
 	t.Run("different content different hash", func(t *testing.T) {
-		hash1 := CacheKey([]byte("content1"))
-		hash2 := CacheKey([]byte("content2"))
+		hash1 := Key([]byte("content1"))
+		hash2 := Key([]byte("content2"))
 
 		if hash1 == hash2 {
 			t.Errorf("Expected different hashes for different content")
@@ -371,7 +371,7 @@ func TestCacheKey(t *testing.T) {
 	})
 
 	t.Run("hash length", func(t *testing.T) {
-		hash := CacheKey([]byte("test"))
+		hash := Key([]byte("test"))
 		// SHA1 produces 20 bytes, hex encoded to 40 characters
 		if len(hash) != 40 {
 			t.Errorf("Expected hash length 40, got %d", len(hash))
@@ -379,7 +379,7 @@ func TestCacheKey(t *testing.T) {
 	})
 
 	t.Run("empty content", func(t *testing.T) {
-		hash := CacheKey([]byte{})
+		hash := Key([]byte{})
 		if hash == "" {
 			t.Error("Expected non-empty hash for empty content")
 		}
@@ -398,7 +398,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	// Concurrent writes
 	for i := range numOps {
 		go func(i int) {
-			hash := CacheKey([]byte{byte(i)})
+			hash := Key([]byte{byte(i)})
 
 			nodes := []*syntax.Node{{Type: int32(i), Filename: "test.go"}}
 
@@ -414,7 +414,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	// Concurrent reads
 	for i := range numOps {
 		go func(i int) {
-			hash := CacheKey([]byte{byte(i)})
+			hash := Key([]byte{byte(i)})
 			fc.Get(hash)
 
 			done <- true
@@ -424,7 +424,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 	// Concurrent Has checks
 	for i := range numOps {
 		go func(i int) {
-			hash := CacheKey([]byte{byte(i)})
+			hash := Key([]byte{byte(i)})
 			fc.Has(hash)
 
 			done <- true
@@ -441,7 +441,7 @@ func TestFileCache_Concurrency(t *testing.T) {
 func TestFileCache_EmptyNodes(t *testing.T) {
 	tempDir := t.TempDir()
 	fc := NewFileCache(tempDir)
-	contentHash := CacheKey([]byte("test content"))
+	contentHash := Key([]byte("test content"))
 
 	t.Run("set and get empty slice", func(t *testing.T) {
 		err := fc.Set(contentHash, []*syntax.Node{})
@@ -464,7 +464,7 @@ func TestFileCache_EmptyNodes(t *testing.T) {
 func TestFileCache_NestedNodes(t *testing.T) {
 	tempDir := t.TempDir()
 	fc := NewFileCache(tempDir)
-	contentHash := CacheKey([]byte("nested test"))
+	contentHash := Key([]byte("nested test"))
 
 	originalNodes := []*syntax.Node{
 		{
@@ -519,7 +519,7 @@ func TestFileCache_NestedNodes(t *testing.T) {
 // TestFileCache_Persistence tests that cache persists across instances.
 func TestFileCache_Persistence(t *testing.T) {
 	tempDir := t.TempDir()
-	contentHash := CacheKey([]byte("persistent test"))
+	contentHash := Key([]byte("persistent test"))
 	nodes := testNodes()
 
 	// Create first cache instance and set data

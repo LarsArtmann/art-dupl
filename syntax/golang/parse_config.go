@@ -52,14 +52,4 @@ func (cfg ParseConfig) IsSemantic() bool {
 	return cfg.Mode.IsSemantic()
 }
 
-// SemanticHashEnabled controls whether semantic-aware hashing is enabled.
-// This is a package-level setting used by the default parser.
-//
-// Deprecated: Use ParseConfig with explicit DetectionMode instead.
-var SemanticHashEnabled bool
 
-// SetDefaultParseConfig sets the default parse configuration for the package.
-// This affects all subsequent Parse() calls that use DefaultParseConfig().
-func SetDefaultParseConfig(cfg ParseConfig) {
-	SemanticHashEnabled = cfg.Mode.IsSemantic()
-}

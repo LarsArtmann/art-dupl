@@ -341,12 +341,6 @@ type cacheEntry struct {
 
 // Key generates a cache key from file content.
 // This uses SHA1 for cache keys (fast and collision-resistant enough for this use case).
-//
-// Deprecated: Use Key instead. CacheKey is kept for backward compatibility.
-func CacheKey(content []byte) string { return Key(content) }
-
-// Key generates a cache key from file content.
-// This uses SHA1 for cache keys (fast and collision-resistant enough for this use case).
 func Key(content []byte) string {
 	// #nosec G401 -- SHA1 used for cache keys, not cryptographic security
 	h := sha1.Sum(content)

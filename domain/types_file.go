@@ -56,13 +56,6 @@ func (ln LineNumber) Uint16() uint16 {
 	return uint16(ln)
 }
 
-// Uint returns the underlying uint value (for backward compatibility).
-//
-// Deprecated: Use Uint16() instead for type safety.
-func (ln LineNumber) Uint() uint {
-	return uint(ln)
-}
-
 // MarshalJSON implements json.Marshaler for LineNumber.
 func (ln LineNumber) MarshalJSON() ([]byte, error) {
 	if ln == 0 {
@@ -102,13 +95,6 @@ func NewBytePosition(pos uint32) BytePosition {
 // Uint32 returns the underlying uint32 value.
 func (bp BytePosition) Uint32() uint32 {
 	return uint32(bp)
-}
-
-// Uint returns the underlying uint value (for backward compatibility).
-//
-// Deprecated: Use Uint32() instead for type safety.
-func (bp BytePosition) Uint() uint {
-	return uint(bp)
 }
 
 // MarshalJSON implements json.Marshaler for BytePosition.

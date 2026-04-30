@@ -204,7 +204,7 @@ func (d *detector) runHashDetection(
 	data []*syntax.Node,
 	threshold int,
 ) <-chan syntax.Match {
-	hashDetector := hash.NewHashDetector(threshold)
+	hashDetector := hash.NewFileDetector(threshold)
 
 	return hashDetector.FindDuplOver(data, threshold)
 }

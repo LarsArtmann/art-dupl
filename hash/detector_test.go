@@ -460,18 +460,18 @@ func TestFileDuplicate_Fields(t *testing.T) {
 	}
 }
 
-// --- HashDetector wrapper ---
+// --- FileDetector ---
 
-func TestNewHashDetector(t *testing.T) {
+func TestNewFileDetector(t *testing.T) {
 	t.Parallel()
 
-	hd := NewHashDetector(42)
+	hd := NewFileDetector(42)
 	if hd == nil {
-		t.Fatal("expected non-nil HashDetector")
+		t.Fatal("expected non-nil FileDetector")
 	}
 }
 
-func TestHashDetector_FindDuplOver_Delegates(t *testing.T) {
+func TestFileDetector_FindDuplOver(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
@@ -494,11 +494,11 @@ func TestHashDetector_FindDuplOver_Delegates(t *testing.T) {
 		syntax.NewSyntheticFileNode(f2, len(content)),
 	}
 
-	hd := NewHashDetector(1)
+	hd := NewFileDetector(1)
 	matches := collectMatches(hd.FindDuplOver(nodes, 1))
 
 	if len(matches) != 1 {
-		t.Errorf("expected 1 match via HashDetector, got %d", len(matches))
+		t.Errorf("expected 1 match via FileDetector, got %d", len(matches))
 	}
 }
 

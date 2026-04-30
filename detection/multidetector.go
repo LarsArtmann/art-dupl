@@ -90,7 +90,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 		if md.config.DetectionMethods.Contains(config.DetectionMethodHash) {
 			md.logVerbose("Running hash-based detection...")
 
-			hashDetector := hash.NewHashDetector(threshold)
+			hashDetector := hash.NewFileDetector(threshold)
 			hashMatches := hashDetector.FindDuplOver(md.data, threshold)
 
 			for match := range hashMatches {
