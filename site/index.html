@@ -503,6 +503,76 @@
   </div>
 </section>
 
+<!-- ===== BEFORE / AFTER ===== -->
+<section style="background:var(--bg-base);padding:80px 0">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Refactoring</span>
+      <h2 class="section-title">See the Difference</h2>
+      <p class="section-desc">art-dupl finds the clones. Your team extracts the shared logic.</p>
+    </div>
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;max-width:900px;margin:0 auto">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px 0 0 12px;overflow:hidden">
+        <div style="padding:10px 18px;background:var(--bg-elevated);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--coral)"></span>
+          <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)">Before — 3 duplicate handlers</span>
+        </div>
+        <pre style="padding:18px;font-family:var(--font-mono);font-size:0.75rem;line-height:1.7;color:var(--text-muted);overflow-x:auto"><span style="color:var(--coral)">handlers/user.go:42</span>
+func (h *Handler) validateInput(
+    r *http.Request,
+) error {
+    if r.Body == nil {
+        return errors.New("body required")
+    }
+    defer r.Body.Close()
+    dec := json.NewDecoder(r.Body)
+    return dec.Decode(&input)
+}
+
+<span style="color:var(--coral)">handlers/admin.go:128</span>
+func (h *Handler) validateInput(
+    r *http.Request,
+) error {
+    if r.Body == nil {
+        return errors.New("body required")
+    }
+    defer r.Body.Close()
+    dec := json.NewDecoder(r.Body)
+    return dec.Decode(&input)
+}</pre>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--accent-dim);border-radius:0 12px 12px 0;overflow:hidden;position:relative">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--mint),transparent)"></div>
+        <div style="padding:10px 18px;background:var(--bg-elevated);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--mint)"></span>
+          <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)">After — single shared function</span>
+        </div>
+        <pre style="padding:18px;font-family:var(--font-mono);font-size:0.75rem;line-height:1.7;overflow-x:auto"><span style="color:var(--mint)">shared/validate.go:1</span>
+<span style="color:var(--text-secondary)">func DecodeJSON</span>(
+    r *http.Request,
+    target any,
+) error {
+    if r.Body == nil {
+        return errors.New("body required")
+    }
+    defer r.Body.Close()
+    dec := json.NewDecoder(r.Body)
+    return dec.Decode(target)
+}
+
+<span style="color:var(--text-muted)">handlers/user.go:42</span>
+<span style="color:var(--text-muted)">  return shared.DecodeJSON(r, &input)</span>
+
+<span style="color:var(--text-muted)">handlers/admin.go:128</span>
+<span style="color:var(--text-muted)">  return shared.DecodeJSON(r, &input)</span></pre>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:24px;font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted)">
+      <code style="color:var(--accent)">$ art-dupl --html --diff</code> generates side-by-side comparisons automatically
+    </p>
+  </div>
+</section>
+
 <!-- ===== OUTPUT FORMATS ===== -->
 <section class="formats-section" id="output">
   <div class="container">
