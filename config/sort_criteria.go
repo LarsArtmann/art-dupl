@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -63,6 +64,8 @@ func DefaultSortCriteria() SortCriteria {
 	return SortBySize
 }
 
+var errInvalidSortCriteria = errors.New("invalid sort criteria")
+
 // ParseSortCriteria converts a string to SortCriteria with validation.
 // Returns an error if the value is not a valid sorting criterion.
 func ParseSortCriteria(value string) (SortCriteria, error) {
@@ -72,8 +75,6 @@ func ParseSortCriteria(value string) (SortCriteria, error) {
 		return sc, nil
 	}
 
-	return "", fmt.Errorf( //nolint:err113 // Error needs dynamic context
-		"invalid sort criteria '%s': must be one of (size|occurrence|hash|total-tokens)",
-		value,
-	)
+	return "", fmt.Errorf("%w: %q must be one of (size|occurrence|hash|total-tokens)",
+		errInvalidSortCriteria, value)
 }

@@ -166,8 +166,8 @@ func (e *DuplError) Unwrap() error {
 
 // Is checks if error matches a specific type.
 func Is(err error, errorType ErrorType) bool {
-	var duplErr *DuplError
-	if errors.As(err, &duplErr) {
+	duplErr, ok := errors.AsType[*DuplError](err)
+	if ok {
 		return duplErr.Type == errorType
 	}
 
@@ -182,8 +182,7 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 	}
 
 	// Don't wrap if already a DuplError
-	var duplErr *DuplError
-	if errors.As(err, &duplErr) {
+	if _, ok := errors.AsType[*DuplError](err); ok {
 		return err
 	}
 
@@ -202,8 +201,7 @@ func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
 	}
 
 	// Don't wrap if already a DuplError
-	var duplErr *DuplError
-	if errors.As(err, &duplErr) {
+	if _, ok := errors.AsType[*DuplError](err); ok {
 		return err
 	}
 

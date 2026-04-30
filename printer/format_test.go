@@ -1,8 +1,11 @@
 package printer
 
 import (
+	"errors"
+	"strings"
 	"testing"
 
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
@@ -66,9 +69,13 @@ func TestParseFormatErrorMessage(t *testing.T) {
 		t.Fatal("ParseFormat() expected error, got nil")
 	}
 
-	expectedMsg := `invalid output format "invalid": must be one of (text|json|csv|html|plumbing|simple-json)`
-	if err.Error() != expectedMsg {
-		t.Errorf("ParseFormat() error = %q, want %q", err.Error(), expectedMsg)
+	if !strings.Contains(err.Error(), "invalid") {
+		t.Errorf("ParseFormat() error = %q, want error containing 'invalid'", err.Error())
+	}
+
+	var enumErr *duplerrors.EnumValidationError
+	if !errors.As(err, &enumErr) {
+		t.Errorf("ParseFormat() error = %q, want EnumValidationError", err.Error())
 	}
 }
 

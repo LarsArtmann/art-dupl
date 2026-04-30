@@ -295,10 +295,9 @@ func (fc *FileCache) deserialize(data []byte) ([]*syntax.Node, error) {
 
 	// Check version compatibility
 	if wrapper.Version != CacheVersion {
-		return nil, fmt.Errorf( //nolint:err113 // Error message needs dynamic values
-			"cache version mismatch: got %d, want %d",
-			wrapper.Version,
-			CacheVersion,
+		return nil, errors.NewValidationError(
+			fmt.Sprintf("cache version mismatch: got %d, want %d", wrapper.Version, CacheVersion),
+			nil,
 		)
 	}
 

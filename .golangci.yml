@@ -209,9 +209,6 @@ linters:
       - path: bdd/
         linters:
           - wrapcheck
-      - path: migration/
-        linters:
-          - typecheck
       - path: config/
         linters:
           - recvcheck
@@ -234,13 +231,6 @@ linters:
         text: dot-imports
         linters:
           - revive
-      - path: migration/
-        text: dot-imports
-        linters:
-          - revive
-      - path: migration/
-        linters:
-          - recvcheck
       - path: cache/
         text: stutters
         linters:
@@ -254,10 +244,6 @@ linters:
         linters:
           - revive
       - path: internal/enum/
-        text: stutters
-        linters:
-          - revive
-      - path: migration/
         text: stutters
         linters:
           - revive
@@ -380,10 +366,6 @@ linters:
         text: unused-parameter
         linters:
           - revive
-      - path: migration/
-        text: unused-parameter
-        linters:
-          - revive
       - path: syntax/
         text: exported
         linters:
@@ -445,13 +427,6 @@ linters:
         linters:
           - wrapcheck
           - varnamelen
-          - depguard
-          - mnd
-      - path: migration/
-        linters:
-          - wrapcheck
-          - varnamelen
-          - exhaustruct
           - depguard
           - mnd
       - path: pkg/artdupl/

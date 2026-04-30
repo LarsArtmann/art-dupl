@@ -3,6 +3,8 @@ package printer
 import (
 	"fmt"
 
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
+
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
@@ -25,9 +27,8 @@ const (
 func ParseFormat(value string) (Format, error) {
 	format := config.OutputFormat(value)
 	if !format.IsValid() {
-		return "", fmt.Errorf( //nolint:err113 // Error needs dynamic context
-			"invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)",
-			value,
+		return "", duplerrors.NewEnumValidationError("OutputFormat", value,
+			fmt.Errorf("invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)", value),
 		)
 	}
 
