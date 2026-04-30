@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     gogenfilter = {
-      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=5957230e34ed14cde1999d7a379ef71a6989e3a1";
+      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=edf3d8d84a2a7956f09e98a37dd6f802d1400132";
       flake = false;
     };
   };
@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-+fDTxFD/4M4ba/NEQ54Ge3p1dcXerUmCaFFV9kk4Wpk=";
+          vendorHash = "sha256-Zri2zWjmhMbBGe9pt88H3XkKh8RZmc5DqigBE7nCL/s=";
 
           overrideModAttrs = old: {
             preBuild = ''

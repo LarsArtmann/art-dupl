@@ -82,7 +82,7 @@ go 1.26.0
 require (
 	charm.land/lipgloss/v2 v2.0.3
 	charm.land/log/v2 v2.0.0
-	github.com/LarsArtmann/gogenfilter v0.1.1-0.20260424213812-5957230e34ed
+	github.com/LarsArtmann/gogenfilter v0.2.1-0.20260430195342-edf3d8d84a2a
 	github.com/a-h/templ v0.3.1001
 	github.com/charmbracelet/fang v1.0.0
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260413165052-6921c759c913
