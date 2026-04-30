@@ -808,3 +808,26 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 **Analysis timestamps as time.Time (2026-04-30):** `domain.Analysis.CreatedAt` changed from `string` to `time.Time`, `CompletedAt` from `*string` to `*time.Time`. Validation uses `IsZero()`.
 
 **Error modernization (2026-04-30):** `errors.As` → `errors.AsType` (Go 1.24+). All `//nolint:err113` replaced with typed errors from the project's error hierarchy.
+
+**Pipeline unification (2026-04-30):** CLI and SDK now share `detection.MultiDetector` dispatch. Fixed critical bug where SDK rebuilt suffix tree from scratch (double CPU/memory). Introduced `pipelineResult` carrying both `data` and `tree`.
+
+**Domain cleanup (2026-04-30):** Removed 6 unused domain types (TokenCount, FileCount, CloneCount, Threshold, BytePosition) and 15 dead error variables. domain/ now contains only production-used types: Filepath, LineNumber, CloneSeverity (consumed by detection/todos.go).
+
+**Config builder safety (2026-04-30):** Replaced `panic(err)` in `cmd/config_builder.go` with proper error returns for `applyTimeoutFlag` and `applyDiffModeFlag`.
+
+**Architecture enforcement (2026-04-30):** Replaced ghost `.go-arch-lint.yml` with project-specific config. Domain must not import syntax, suffixtree must have zero deps. Consolidated `StatsPrinter`'s 8 setters into single `ApplyStatsConfig(StatsConfig)`.
+
+### Architecture — Outstanding Issues
+
+**Printer ↔ syntax.Node coupling:** `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Each printer independently calls `ProcessNodeRange()` and `extractContent()`. Fix: introduce ProcessedClone DTO, change Printer interface to accept `[]ProcessedCloneGroup`. This touches 111 test call sites — defer to dedicated PR.
+
+**Three parallel Clone types:**
+- `printer.clone` (unexported): has fragment, classification — richest for output
+- `pkg/artdupl.Clone`: SDK type with primitives, `IsValid()` validation
+- `printer.CloneGroup` vs `pkg/artdupl.CloneGroup`: different JSON shapes for different consumers
+
+Consolidation depends on Printer DTO change above.
+
+**printer/clone_classify.go imports syntax/golang directly:** Language-specific node type constants mapped to categories. Coupling breaks when supporting non-Go languages. Moves naturally with Printer DTO refactor.
+
+**cmd/run_analysis.go god file:** 7 internal imports, 6 responsibilities. Needs extraction but low priority — functionally correct.
