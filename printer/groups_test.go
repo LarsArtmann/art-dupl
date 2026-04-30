@@ -37,7 +37,9 @@ func TestBuildCloneGroups(t *testing.T) {
 	nodeB := &syntax.Node{Filename: "b.go"}
 
 	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeA}}}
+
 	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeB}}}
+
 	close(ch)
 
 	groups := BuildCloneGroups(ch)

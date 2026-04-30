@@ -137,12 +137,18 @@ func Header() templ.Component { return nil }
 		)
 
 		// sqlc should NOT be filtered (not in options)
-		if filtered, err := fltr.ShouldFilter(toFSPath(setup.GetFilePath("db/models.go"))); err == nil && filtered {
+		if filtered, err := fltr.ShouldFilter(
+			toFSPath(setup.GetFilePath("db/models.go")),
+		); err == nil &&
+			filtered {
 			t.Errorf("db/models.go should not be filtered")
 		}
 
 		// templ SHOULD be filtered
-		if filtered, err := fltr.ShouldFilter(toFSPath(setup.GetFilePath("components/header_templ.go"))); err == nil && !filtered {
+		if filtered, err := fltr.ShouldFilter(
+			toFSPath(setup.GetFilePath("components/header_templ.go")),
+		); err == nil &&
+			!filtered {
 			t.Errorf("components/header_templ.go should be filtered (templ)")
 		}
 	})
@@ -272,7 +278,10 @@ func Authenticate(username, password string) bool {
 		)
 
 		// db/models.go should be filtered (sqlc)
-		if filtered, err := fltr.ShouldFilter(toFSPath(setup.GetFilePath("db/models.go"))); err == nil && !filtered {
+		if filtered, err := fltr.ShouldFilter(
+			toFSPath(setup.GetFilePath("db/models.go")),
+		); err == nil &&
+			!filtered {
 			t.Errorf("db/models.go should be filtered")
 		}
 

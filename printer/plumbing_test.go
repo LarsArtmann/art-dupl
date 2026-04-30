@@ -182,6 +182,7 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 	p := NewPlumbing(&buf, mockReadFile(""))
 
 	pl := p.(*plumbing)
+
 	err := pl.OutputPlumbing(15, SortBySize)
 	if err != nil {
 		t.Fatalf("OutputPlumbing() error: %v", err)

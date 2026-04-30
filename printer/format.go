@@ -1,11 +1,11 @@
 package printer
 
 import (
+	"errors"
 	"fmt"
 
-	duplerrors "github.com/LarsArtmann/art-dupl/errors"
-
 	"github.com/LarsArtmann/art-dupl/config"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 // Format is an alias to config.OutputFormat for backward compatibility.
@@ -22,13 +22,22 @@ const (
 	FormatCSV = config.OutputFormatCSV
 )
 
+// ErrInvalidOutputFormat indicates an unsupported output format was requested.
+var ErrInvalidOutputFormat = errors.New("invalid output format")
+
 // ParseFormat converts a string to a Format with validation.
 // Returns an error if the value is not a valid format.
 func ParseFormat(value string) (Format, error) {
 	format := config.OutputFormat(value)
 	if !format.IsValid() {
-		return "", duplerrors.NewEnumValidationError("OutputFormat", value,
-			fmt.Errorf("invalid output format %q: must be one of (text|json|csv|html|plumbing|simple-json)", value),
+		return "", duplerrors.NewEnumValidationError(
+			"OutputFormat",
+			value,
+			fmt.Errorf(
+				"%w: %q must be one of (text|json|csv|html|plumbing|simple-json)",
+				ErrInvalidOutputFormat,
+				value,
+			),
 		)
 	}
 

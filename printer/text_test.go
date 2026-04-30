@@ -640,5 +640,6 @@ func (fw *firstWriteFailsWriter) Write(p []byte) (int, error) {
 	if fw.calls == 1 {
 		return 0, errors.New("simulated write error")
 	}
+
 	return fw.w.Write(p)
 }

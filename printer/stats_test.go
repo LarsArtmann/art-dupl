@@ -56,7 +56,10 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 		pos := startPos + i
 		end := pos + 1
 		typ := i + 1
-		nodes = append(nodes, testutil.CreateNodeWithPos(int32(typ), filename, int32(pos), int32(end)))
+		nodes = append(
+			nodes,
+			testutil.CreateNodeWithPos(int32(typ), filename, int32(pos), int32(end)),
+		)
 	}
 
 	return nodes
@@ -137,7 +140,12 @@ func TestStatsDataAggregation(t *testing.T) {
 					t.Errorf("TotalDuplicateLines = %d, want > 0", stats.TotalDuplicateLines)
 				}
 
-				testutil.AssertEqual(t, stats.TotalTokens, 4, "TotalTokens") // 2 nodes per clone × 2
+				testutil.AssertEqual(
+					t,
+					stats.TotalTokens,
+					4,
+					"TotalTokens",
+				) // 2 nodes per clone × 2
 			},
 		},
 		{

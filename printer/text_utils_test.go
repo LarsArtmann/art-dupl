@@ -140,6 +140,7 @@ func TestSortCloneGroupsBySize(t *testing.T) {
 	}
 
 	sortCloneGroupsBySize(groups)
+
 	frag0 := string(groups[0][0].fragment)
 	if frag0 != "this is a longer fragment" {
 		t.Errorf("sortCloneGroupsBySize: first = %q, want longest", frag0)

@@ -174,6 +174,13 @@ func Is(err error, errorType ErrorType) bool {
 	return false
 }
 
+// IsDuplError checks if an error is already a DuplError.
+func IsDuplError(err error) bool {
+	_, ok := errors.AsType[*DuplError](err)
+
+	return ok
+}
+
 // Wrap wraps an error with additional context using the specified error type.
 // If the cause is already a DuplError, it returns the original error.
 func Wrap(err error, errorType ErrorType, msg string) error {
@@ -181,8 +188,7 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 		return nil
 	}
 
-	// Don't wrap if already a DuplError
-	if _, ok := errors.AsType[*DuplError](err); ok {
+	if IsDuplError(err) {
 		return err
 	}
 
@@ -200,8 +206,7 @@ func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
 		return nil
 	}
 
-	// Don't wrap if already a DuplError
-	if _, ok := errors.AsType[*DuplError](err); ok {
+	if IsDuplError(err) {
 		return err
 	}
 

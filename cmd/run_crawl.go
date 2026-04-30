@@ -51,9 +51,11 @@ func filesFeedWithOptions(
 			for sc.Scan() {
 				f := sc.Text()
 				path := strings.TrimPrefix(f, "./")
+
 				if !shouldIncludeFile(filter, path) {
 					continue
 				}
+
 				if !only.Matches(path) {
 					continue
 				}

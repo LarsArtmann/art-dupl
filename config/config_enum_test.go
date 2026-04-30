@@ -60,6 +60,7 @@ func TestDetectionMethods_IsHashOnly(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.methods.IsHashOnly()
 			if got != tc.expected {
 				t.Errorf("IsHashOnly() = %v, want %v", got, tc.expected)
@@ -85,6 +86,7 @@ func TestDetectionMethods_IsDefault(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.methods.IsDefault()
 			if got != tc.expected {
 				t.Errorf("IsDefault() = %v, want %v", got, tc.expected)
@@ -103,7 +105,6 @@ func TestConfig_GetThresholdAsDomain(t *testing.T) {
 	cfg := &Config{Threshold: 15}
 
 	dom, err := cfg.GetThresholdAsDomain()
-
 	if err != nil {
 		t.Fatalf("GetThresholdAsDomain() error: %v", err)
 	}
@@ -117,6 +118,7 @@ func TestConfig_GetThresholdAsDomain_Invalid(t *testing.T) {
 	t.Parallel()
 
 	cfg := &Config{Threshold: 0}
+
 	_, err := cfg.GetThresholdAsDomain()
 	if err == nil {
 		t.Error("expected error for threshold 0")
@@ -127,6 +129,7 @@ func TestConfig_SetThresholdFromDomain(t *testing.T) {
 	t.Parallel()
 
 	cfg := &Config{}
+
 	dom, err := domain.NewThreshold(42)
 	if err != nil {
 		t.Fatalf("NewThreshold() error: %v", err)
@@ -166,8 +169,8 @@ func TestLoadOptionalConfig_FileExists(t *testing.T) {
 	cfgFile := filepath.Join(dir, "opt.json")
 
 	cfg := &Config{Threshold: 99}
-	data, err := json.Marshal(cfg)
 
+	data, err := json.Marshal(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -340,6 +343,7 @@ func TestValidateOnly(t *testing.T) {
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
 			}
+
 			if !tc.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
@@ -374,6 +378,7 @@ func TestValidateCacheFlags(t *testing.T) {
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
 			}
+
 			if !tc.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
@@ -393,7 +398,11 @@ func TestDetectionMethod_String(t *testing.T) {
 	}
 
 	if DetectionMethodArtDupl.String() != "art-dupl" {
-		t.Errorf("DetectionMethodArtDupl.String() = %q, want %q", DetectionMethodArtDupl.String(), "art-dupl")
+		t.Errorf(
+			"DetectionMethodArtDupl.String() = %q, want %q",
+			DetectionMethodArtDupl.String(),
+			"art-dupl",
+		)
 	}
 }
 
@@ -438,6 +447,7 @@ func TestDetectionMethod_UnmarshalJSON_Invalid(t *testing.T) {
 	t.Parallel()
 
 	var dm DetectionMethod
+
 	err := dm.UnmarshalJSON([]byte(`"not_a_method"`))
 	if err == nil {
 		t.Error("expected error for invalid detection method")
@@ -453,6 +463,7 @@ func TestDetectionMethod_UnmarshalJSON_Default(t *testing.T) {
 	t.Parallel()
 
 	var dm DetectionMethod
+
 	err := dm.UnmarshalJSON([]byte(`"invalid"`))
 	if err == nil {
 		t.Error("expected error for invalid detection method")
@@ -476,9 +487,24 @@ func TestParseDetectionMethods(t *testing.T) {
 		{"empty", "", []DetectionMethod{DetectionMethodArtDupl}, false},
 		{"hash", "hash", []DetectionMethod{DetectionMethodHash}, false},
 		{"art-dupl", "art-dupl", []DetectionMethod{DetectionMethodArtDupl}, false},
-		{"both comma-separated", "hash, art-dupl ", []DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl}, false},
-		{"with spaces", "hash , art-dupl", []DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl}, false},
-		{"with empty parts", "hash,,art-dupl", []DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl}, false},
+		{
+			"both comma-separated",
+			"hash, art-dupl ",
+			[]DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl},
+			false,
+		},
+		{
+			"with spaces",
+			"hash , art-dupl",
+			[]DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl},
+			false,
+		},
+		{
+			"with empty parts",
+			"hash,,art-dupl",
+			[]DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl},
+			false,
+		},
 		{"invalid", "hash,invalid", nil, true},
 		// todos and legacy are defined but NOT in valid map, so they fail
 		{"invalid todos", "hash,todos", nil, true},
@@ -488,9 +514,10 @@ func TestParseDetectionMethods(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			got, err := ParseDetectionMethods(tc.input)
 
-		if tc.wantErr {
+			if tc.wantErr {
 				if err == nil {
 					t.Error("expected error")
 				}
@@ -504,12 +531,19 @@ func TestParseDetectionMethods(t *testing.T) {
 
 			if len(got) != len(tc.want) {
 				t.Errorf("ParseDetectionMethods(%q) = %v, want %v", tc.input, got, tc.want)
+
 				return
 			}
 
 			for i := range got {
 				if got[i] != tc.want[i] {
-					t.Errorf("ParseDetectionMethods(%q)[%d] = %s, want %s", tc.input, i, got[i], tc.want[i])
+					t.Errorf(
+						"ParseDetectionMethods(%q)[%d] = %s, want %s",
+						tc.input,
+						i,
+						got[i],
+						tc.want[i],
+					)
 				}
 			}
 		})
@@ -545,7 +579,11 @@ func TestDefaultDetectionMethod(t *testing.T) {
 	t.Parallel()
 
 	if DefaultDetectionMethod() != DetectionMethodArtDupl {
-		t.Errorf("DefaultDetectionMethod() = %s, want %s", DefaultDetectionMethod(), DetectionMethodArtDupl)
+		t.Errorf(
+			"DefaultDetectionMethod() = %s, want %s",
+			DefaultDetectionMethod(),
+			DetectionMethodArtDupl,
+		)
 	}
 }
 
@@ -557,7 +595,11 @@ func TestDiffMode_String(t *testing.T) {
 	t.Parallel()
 
 	if DiffModeSideBySide.String() != "side-by-side" {
-		t.Errorf("DiffModeSideBySide.String() = %q, want %q", DiffModeSideBySide.String(), "side-by-side")
+		t.Errorf(
+			"DiffModeSideBySide.String() = %q, want %q",
+			DiffModeSideBySide.String(),
+			"side-by-side",
+		)
 	}
 
 	if DiffModeInline.String() != "inline" {
@@ -586,6 +628,7 @@ func TestDiffMode_IsValid(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.mode), func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.mode.IsValid()
 			if got != tc.valid {
 				t.Errorf("IsValid(%s) = %v, want %v", tc.mode, got, tc.valid)
@@ -610,6 +653,7 @@ func TestDiffMode_IsEnabled(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.mode), func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.mode.IsEnabled()
 			if got != tc.enabled {
 				t.Errorf("IsEnabled(%s) = %v, want %v", tc.mode, got, tc.enabled)
@@ -642,6 +686,7 @@ func TestDiffMode_UnmarshalJSON_Invalid(t *testing.T) {
 	t.Parallel()
 
 	var dm DiffMode
+
 	err := dm.UnmarshalJSON([]byte(`"bad_mode"`))
 	if err == nil {
 		t.Error("expected error for invalid diff mode")
@@ -657,6 +702,7 @@ func TestDiffMode_UnmarshalJSON_Default(t *testing.T) {
 	t.Parallel()
 
 	var dm DiffMode
+
 	err := dm.UnmarshalJSON([]byte(`"invalid"`))
 	if err == nil {
 		t.Error("expected error for invalid diff mode")
@@ -688,14 +734,17 @@ func TestParseDiffMode(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.input, func(t *testing.T) {
 			t.Parallel()
+
 			got, err := ParseDiffMode(tc.input)
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
+
 				return
 			}
 
 			if !tc.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
+
 				return
 			}
 
@@ -759,6 +808,7 @@ func TestSortCriteria_IsValid(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.crit), func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.crit.IsValid()
 			if got != tc.valid {
 				t.Errorf("IsValid(%s) = %v, want %v", tc.crit, got, tc.valid)
@@ -791,6 +841,7 @@ func TestSortCriteria_UnmarshalJSON_Invalid(t *testing.T) {
 	t.Parallel()
 
 	var sc SortCriteria
+
 	err := sc.UnmarshalJSON([]byte(`"bad_criteria"`))
 	if err == nil {
 		t.Error("expected error for invalid sort criteria")
@@ -805,6 +856,7 @@ func TestSortCriteria_UnmarshalJSON_Default(t *testing.T) {
 	t.Parallel()
 
 	var sc SortCriteria
+
 	err := sc.UnmarshalJSON([]byte(`"invalid"`))
 	if err == nil {
 		t.Error("expected error for invalid sort criteria")
@@ -870,6 +922,7 @@ func TestOutputFormat_IsValid(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.fmt), func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.fmt.IsValid()
 			if got != tc.valid {
 				t.Errorf("IsValid(%s) = %v, want %v", tc.fmt, got, tc.valid)
@@ -902,6 +955,7 @@ func TestOutputFormat_UnmarshalJSON_Invalid(t *testing.T) {
 	t.Parallel()
 
 	var of OutputFormat
+
 	err := of.UnmarshalJSON([]byte(`"bad_format"`))
 	if err == nil {
 		t.Error("expected error for invalid output format")
@@ -916,6 +970,7 @@ func TestOutputFormat_UnmarshalJSON_Default(t *testing.T) {
 	t.Parallel()
 
 	var of OutputFormat
+
 	err := of.UnmarshalJSON([]byte(`"invalid"`))
 	if err == nil {
 		t.Error("expected error for invalid output format")
@@ -982,6 +1037,7 @@ func TestFileType_IsValid(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.ft), func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.ft.IsValid()
 			if got != tc.valid {
 				t.Errorf("IsValid(%s) = %v, want %v", tc.ft, got, tc.valid)
@@ -1036,6 +1092,7 @@ func TestFileType_UnmarshalJSON_Invalid(t *testing.T) {
 	t.Parallel()
 
 	var ft FileType
+
 	err := ft.UnmarshalJSON([]byte(`"rust"`))
 	if err == nil {
 		t.Error("expected error for invalid file type")
@@ -1050,6 +1107,7 @@ func TestFileType_UnmarshalJSON_Default(t *testing.T) {
 	t.Parallel()
 
 	var ft FileType
+
 	err := ft.UnmarshalJSON([]byte(`"invalid"`))
 	if err == nil {
 		t.Error("expected error for invalid file type")
@@ -1083,6 +1141,7 @@ func TestFileType_Matches(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(string(tc.ft)+"_"+tc.path, func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.ft.Matches(tc.path)
 			if got != tc.matches {
 				t.Errorf("Matches(%s, %q) = %v, want %v", tc.ft, tc.path, got, tc.matches)
@@ -1112,6 +1171,7 @@ func TestHasSuffix(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.s+"_"+tc.suffix, func(t *testing.T) {
 			t.Parallel()
+
 			got := hasSuffix(tc.s, tc.suffix)
 			if got != tc.want {
 				t.Errorf("hasSuffix(%q, %q) = %v, want %v", tc.s, tc.suffix, got, tc.want)
@@ -1138,14 +1198,17 @@ func TestParseFileType(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.input, func(t *testing.T) {
 			t.Parallel()
+
 			got, err := ParseFileType(tc.input)
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
+
 				return
 			}
 
 			if !tc.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
+
 				return
 			}
 
@@ -1206,7 +1269,13 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 
 	var target string
 
-	err := unmarshalStringTypeToPointer([]byte(`"valid"`), isValidFn, "default", "string type", &target)
+	err := unmarshalStringTypeToPointer(
+		[]byte(`"valid"`),
+		isValidFn,
+		"default",
+		"string type",
+		&target,
+	)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -1223,7 +1292,13 @@ func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 
 	var target string
 
-	err := unmarshalStringTypeToPointer([]byte(`"bad"`), isValidFn, "default", "string type", &target)
+	err := unmarshalStringTypeToPointer(
+		[]byte(`"bad"`),
+		isValidFn,
+		"default",
+		"string type",
+		&target,
+	)
 	if err == nil {
 		t.Error("expected error for invalid value")
 	}
@@ -1238,6 +1313,7 @@ func TestMarshalStringType_Invalid(t *testing.T) {
 	t.Parallel()
 
 	isValidFn := func(v string) bool { return v == "valid" }
+
 	data, err := marshalStringType("invalid", isValidFn, "string type")
 	if err != nil {
 		t.Fatalf("marshalStringType error: %v", err)
@@ -1252,6 +1328,7 @@ func TestMarshalStringType_Valid(t *testing.T) {
 	t.Parallel()
 
 	isValidFn := func(v string) bool { return v == "valid" }
+
 	data, err := marshalStringType("valid", isValidFn, "string type")
 	if err != nil {
 		t.Fatalf("marshalStringType error: %v", err)

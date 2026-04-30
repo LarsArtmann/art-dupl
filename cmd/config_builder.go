@@ -211,8 +211,8 @@ func applyPathsFlag(cfg *config.Config, flags *FlagValues) {
 
 // boolFlag maps a flag field to a config field for boolean flags.
 type boolFlag struct {
-	flagValue  bool
-	configPtr  *bool
+	flagValue bool
+	configPtr *bool
 }
 
 // applyBooleanFlags applies boolean and simple value flag values to the config.

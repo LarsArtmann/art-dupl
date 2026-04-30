@@ -62,6 +62,7 @@ func TestNewHTML(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	p := NewHTML(&buf, mockReadFile(""))
 
 	hp := p.(*htmlprinter)
@@ -92,6 +93,7 @@ func TestNewHTMLWithOptions(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	meta := ReportMetadata{
 		Semantic:         true,
 		DetectionMethods: []string{"suffix-tree"},
@@ -444,7 +446,11 @@ func TestSuggestionHTML(t *testing.T) {
 	}{
 		{"empty", "", ""},
 		{"with text", "Extract helper", `<div class="suggestion">💡 Extract helper</div>`},
-		{"html escape", "<script>alert('x')</script>", `<div class="suggestion">💡 &lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;</div>`},
+		{
+			"html escape",
+			"<script>alert('x')</script>",
+			`<div class="suggestion">💡 &lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;</div>`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -493,7 +499,12 @@ func TestHTMLCountDiffStats_Empty(t *testing.T) {
 	added, removed, modified := countDiffStats(diff)
 
 	if added != 0 || removed != 0 || modified != 0 {
-		t.Errorf("expected all zeros, got added=%d removed=%d modified=%d", added, removed, modified)
+		t.Errorf(
+			"expected all zeros, got added=%d removed=%d modified=%d",
+			added,
+			removed,
+			modified,
+		)
 	}
 }
 
@@ -631,6 +642,7 @@ func TestBuildClones(t *testing.T) {
 	hp := p.(*htmlprinter)
 
 	nodes := nodesForHTML(testFilename)
+
 	clones, err := hp.buildClones([][]*syntax.Node{nodes})
 	if err != nil {
 		t.Fatalf("buildClones failed: %v", err)
@@ -661,12 +673,14 @@ func TestBuildClones_ReadError(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	p := NewHTML(&buf, func(_ string) ([]byte, error) {
 		return nil, errReadFail
 	}, 15)
 	hp := p.(*htmlprinter)
 
 	nodes := nodesForHTML("missing.go")
+
 	_, err := hp.buildClones([][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("expected error for read failure")
@@ -723,6 +737,7 @@ func TestWriteMetadata(t *testing.T) {
 			t.Parallel()
 
 			var buf bytes.Buffer
+
 			hp := &htmlprinter{
 				w:        &buf,
 				metadata: tt.meta,
@@ -744,6 +759,7 @@ func TestWriteMetadata_Empty(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{
 		w:        &buf,
 		metadata: ReportMetadata{},
@@ -778,6 +794,7 @@ func TestHTMLErrorInPrintClones(t *testing.T) {
 	p := NewHTML(&errorWriter{}, mockReadFile(content), 15)
 
 	nodes := nodesForHTML(testFilename)
+
 	err := p.PrintClones([][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("expected error from failing writer during PrintClones")
@@ -810,6 +827,7 @@ func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	clones := []clone{
 		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
 	}
+
 	result := ComputeCloneGroupDiff(clones)
 	if result.Base == nil {
 		t.Fatal("expected non-nil Base")
@@ -831,6 +849,7 @@ func TestHTMLComputeCloneGroupDiff_MultipleClones(t *testing.T) {
 		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
 		{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\n")},
 	}
+
 	result := ComputeCloneGroupDiff(clones)
 	if len(result.Others) != 1 {
 		t.Fatalf("Others length = %d, want 1", len(result.Others))
@@ -895,6 +914,7 @@ func TestLineDiff_LargeFile(t *testing.T) {
 	t.Parallel()
 
 	var baseLines, comparedLines []byte
+
 	baseLines = make([]byte, 0, 1500)
 	comparedLines = make([]byte, 0, 800)
 
@@ -988,6 +1008,7 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1}
 
 	clones := []clone{
@@ -1018,6 +1039,7 @@ func TestHTMLWriteCloneGroupFooter(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf}
 
 	err := hp.writeCloneGroupFooter()
@@ -1034,6 +1056,7 @@ func TestHTMLWriteDiffView_SingleClone(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
 	clones := []clone{
@@ -1055,6 +1078,7 @@ func TestHTMLWriteDiffView_MultipleClones(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
 	clones := []clone{
@@ -1081,6 +1105,7 @@ func TestHTMLWriteDiffView_ThreeClonesWithSelector(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
 	clones := []clone{
@@ -1108,11 +1133,17 @@ func TestHTMLWriteDiffView_AggregateStats(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
 	clones := []clone{
 		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\nline3\n")},
-		{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\nadded\n")},
+		{
+			filename:  "b.go",
+			lineStart: 10,
+			lineEnd:   14,
+			fragment:  []byte("line1\nmodified\nadded\n"),
+		},
 	}
 
 	err := hp.writeDiffView(clones)
@@ -1130,6 +1161,7 @@ func TestHTMLWriteDiffViewToggle(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 5}
 
 	err := hp.writeDiffViewToggle()
@@ -1151,6 +1183,7 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 3}
 
 	groupDiff := CloneGroupDiff{
@@ -1161,14 +1194,20 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 		Others: []CloneDiff{
 			{
 				CloneWithContent: CloneWithContent{
-					CloneWithContentMixin: CloneWithContentMixin{Filename: "other1.go", LineStart: 10},
-					Content:               []byte("other1\n"),
+					CloneWithContentMixin: CloneWithContentMixin{
+						Filename:  "other1.go",
+						LineStart: 10,
+					},
+					Content: []byte("other1\n"),
 				},
 			},
 			{
 				CloneWithContent: CloneWithContent{
-					CloneWithContentMixin: CloneWithContentMixin{Filename: "other2.go", LineStart: 20},
-					Content:               []byte("other2\n"),
+					CloneWithContentMixin: CloneWithContentMixin{
+						Filename:  "other2.go",
+						LineStart: 20,
+					},
+					Content: []byte("other2\n"),
 				},
 			},
 		},
@@ -1197,6 +1236,7 @@ func TestHTMLWriteDiffComparison(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 1}
 
 	base := &CloneWithContent{
@@ -1232,6 +1272,7 @@ func TestHTMLWriteDiffComparison_MultipleComparisons(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf, iota: 2}
 
 	base := &CloneWithContent{
@@ -1264,6 +1305,7 @@ func TestHTMLRenderDiffLines(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf}
 
 	lines := []DiffLine{
@@ -1307,6 +1349,7 @@ func TestHTMLRenderDiffLines_WordDiff(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	hp := &htmlprinter{w: &buf}
 
 	lines := []DiffLine{

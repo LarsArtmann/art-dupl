@@ -454,8 +454,18 @@ func TestWordDiff_EqualContent(t *testing.T) {
 	result := WordDiff(base, compared)
 
 	// Should not contain added/removed spans for identical content
-	testutil.AssertStringNotContains(t, result, `class="word-added"`, "Expected no word-added spans for identical content")
-	testutil.AssertStringNotContains(t, result, `class="word-removed"`, "Expected no word-removed spans for identical content")
+	testutil.AssertStringNotContains(
+		t,
+		result,
+		`class="word-added"`,
+		"Expected no word-added spans for identical content",
+	)
+	testutil.AssertStringNotContains(
+		t,
+		result,
+		`class="word-removed"`,
+		"Expected no word-removed spans for identical content",
+	)
 }
 
 func TestWordDiff_HasChanges(t *testing.T) {
@@ -480,8 +490,18 @@ func TestWordDiff_HasChanges(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := WordDiff(tt.base, tt.compared)
 
-			testutil.AssertStringContains(t, result, `class="word-added"`, "Expected word-added span for changed word")
-			testutil.AssertStringContains(t, result, `class="word-removed"`, "Expected word-removed span for changed word")
+			testutil.AssertStringContains(
+				t,
+				result,
+				`class="word-added"`,
+				"Expected word-added span for changed word",
+			)
+			testutil.AssertStringContains(
+				t,
+				result,
+				`class="word-removed"`,
+				"Expected word-removed span for changed word",
+			)
 		})
 	}
 }
@@ -492,7 +512,12 @@ func TestWordDiff_EmptyStrings(t *testing.T) {
 
 	result := WordDiff(base, compared)
 
-	testutil.AssertStringContains(t, result, `class="word-added"`, "Expected word-added span for content added to empty base")
+	testutil.AssertStringContains(
+		t,
+		result,
+		`class="word-added"`,
+		"Expected word-added span for content added to empty base",
+	)
 }
 
 func TestWordDiff_HTMLEscaping(t *testing.T) {
