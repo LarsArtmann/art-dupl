@@ -78,9 +78,11 @@ func TestNewHTML_CustomThreshold(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	p := NewHTML(&buf, mockReadFile(""), 42)
 
 	hp := p.(*htmlprinter)
+
 	if hp.threshold != 42 {
 		t.Errorf("threshold = %d, want 42", hp.threshold)
 	}
@@ -863,9 +865,11 @@ func TestLineDiff_Different(t *testing.T) {
 	}
 
 	found := false
+
 	for _, line := range result.Base {
 		if line.Type == DiffLineModified {
 			found = true
+
 			break
 		}
 	}
@@ -893,6 +897,7 @@ func TestLineDiff_LargeFile(t *testing.T) {
 	var baseLines, comparedLines []byte
 	baseLines = make([]byte, 0, 1500)
 	comparedLines = make([]byte, 0, 800)
+
 	for i := range 150 {
 		baseLines = append(baseLines, []byte("base line\n")...)
 		if i < 80 {

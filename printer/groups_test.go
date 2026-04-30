@@ -23,6 +23,7 @@ func TestGetCloneSize(t *testing.T) {
 
 	node := &syntax.Node{Owns: 42}
 	group := [][]*syntax.Node{{node}}
+
 	if got := GetCloneSize(group); got != 42 {
 		t.Errorf("GetCloneSize() = %d, want 42", got)
 	}
@@ -34,6 +35,7 @@ func TestBuildCloneGroups(t *testing.T) {
 	ch := make(chan syntax.Match, 2)
 	nodeA := &syntax.Node{Filename: "a.go"}
 	nodeB := &syntax.Node{Filename: "b.go"}
+
 	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeA}}}
 	ch <- syntax.Match{Hash: "abc", Frags: [][]*syntax.Node{{nodeB}}}
 	close(ch)
@@ -99,18 +101,21 @@ func TestSortCloneGroupKeys(t *testing.T) {
 
 	keys := []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, SortBySize, groups, uniqueCounts)
+
 	if keys[0] != "big" {
 		t.Errorf("SortBySize: first key = %q, want %q", keys[0], "big")
 	}
 
 	keys = []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, SortByOccurrence, groups, uniqueCounts)
+
 	if keys[0] != "big" {
 		t.Errorf("SortByOccurrence: first key = %q, want %q", keys[0], "big")
 	}
 
 	keys = []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, SortByHash, groups, uniqueCounts)
+
 	if keys[0] != "big" {
 		t.Errorf("SortByHash: first key = %q, want %q", keys[0], "big")
 	}
