@@ -980,30 +980,6 @@ func TestWordDiff_Identical(t *testing.T) {
 	}
 }
 
-func TestHTMLEscape(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name, input, want string
-	}{
-		{"ampersand", "a&b", "a&amp;b"},
-		{"less than", "a<b", "a&lt;b"},
-		{"greater than", "a>b", "a&gt;b"},
-		{"quote", `a"b`, "a&quot;b"},
-		{"combined", `<div class="x">&</div>`, "&lt;div class=&quot;x&quot;&gt;&amp;&lt;/div&gt;"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			if got := htmlEscape(tt.input); got != tt.want {
-				t.Errorf("htmlEscape(%q) = %q, want %q", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	t.Parallel()
 

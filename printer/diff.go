@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bytes"
+	"html"
 	"strings"
 
 	"github.com/sergi/go-diff/diffmatchpatch"
@@ -372,27 +373,17 @@ func WordDiff(base, compared string) string {
 		switch diff.Type {
 		case diffmatchpatch.DiffDelete:
 			result.WriteString(`<span class="word-removed">`)
-			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(html.EscapeString(diff.Text))
 			result.WriteString(`</span> `)
 		case diffmatchpatch.DiffInsert:
 			result.WriteString(`<span class="word-added">`)
-			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(html.EscapeString(diff.Text))
 			result.WriteString(`</span> `)
 		case diffmatchpatch.DiffEqual:
-			result.WriteString(htmlEscape(diff.Text))
+			result.WriteString(html.EscapeString(diff.Text))
 			result.WriteString(" ")
 		}
 	}
 
 	return strings.TrimSpace(result.String())
-}
-
-// htmlEscape escapes HTML special characters.
-func htmlEscape(s string) string {
-	s = strings.ReplaceAll(s, "&", "&amp;")
-	s = strings.ReplaceAll(s, "<", "&lt;")
-	s = strings.ReplaceAll(s, ">", "&gt;")
-	s = strings.ReplaceAll(s, `"`, "&quot;")
-
-	return s
 }
