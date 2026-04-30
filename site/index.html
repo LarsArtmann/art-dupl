@@ -100,11 +100,11 @@
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
-        <span class="value">2</span>
+        <span class="value" data-count="2">0</span>
         <span class="label">Detection Methods</span>
       </div>
       <div class="hero-stat">
-        <span class="value">7</span>
+        <span class="value" data-count="7">0</span>
         <span class="label">Output Formats</span>
       </div>
       <div class="hero-stat">
@@ -115,6 +115,12 @@
         <span class="value">MIT</span>
         <span class="label">License</span>
       </div>
+    </div>
+  </div>
+  <div class="container" style="margin-top:-20px;position:relative;z-index:2">
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0.7">
+      <img src="https://goreportcard.com/badge/github.com/LarsArtmann/art-dupl" alt="Go Report Card" style="height:22px" loading="lazy">
+      <img src="https://codecov.io/gh/LarsArtmann/art-dupl/graph/badge.svg?token=art-dupl" alt="Code Coverage" style="height:22px" loading="lazy">
     </div>
   </div>
 </section>
@@ -512,6 +518,7 @@
         <button class="format-tab" role="tab" aria-selected="false" aria-controls="panel-json" data-tab="json" id="tab-json">JSON</button>
         <button class="format-tab" role="tab" aria-selected="false" aria-controls="panel-sarif" data-tab="sarif" id="tab-sarif">SARIF</button>
         <button class="format-tab" role="tab" aria-selected="false" aria-controls="panel-plumbing" data-tab="plumbing" id="tab-plumbing">Plumbing</button>
+        <button class="format-tab" role="tab" aria-selected="false" aria-controls="panel-csv" data-tab="csv" id="tab-csv">CSV</button>
         <button class="format-tab" role="tab" aria-selected="false" aria-controls="panel-stats" data-tab="stats" id="tab-stats">Stats</button>
       </div>
       <div class="format-content">
@@ -594,6 +601,17 @@ e5f6g7h8 src/models/token.go 18 31
 # Use with sort, uniq, awk:
 $ art-dupl --plumbing | sort | uniq -w8 -D</pre>
         </div>
+        <div class="format-panel" id="panel-csv" role="tabpanel" aria-labelledby="tab-csv">
+          <div class="format-desc">Spreadsheet-compatible CSV output from the stats subcommand. Import into Excel, Google Sheets, or any data tool.</div>
+<pre>group_hash,occurrences,tokens,files,lines
+a1b2c3d4,8,45,5,17
+e5f6g7h8,5,32,3,14
+i9j0k1l2,4,28,4,12
+m3n4o5p6,3,22,3,11
+
+$ art-dupl stats --format csv > report.csv
+$ art-dupl stats --format csv ./src | column -t -s,</pre>
+        </div>
         <div class="format-panel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
           <div class="format-desc">Aggregated statistics with A&ndash;F health grading, distribution analysis, and actionable recommendations. Available in text, JSON, and CSV.</div>
 <pre>Code Duplication Statistics
@@ -672,6 +690,49 @@ $ art-dupl stats --format csv > report.csv</pre>
 - <span class="key">uses:</span> <span class="string">github/codeql-action/upload-sarif@v3</span></pre>
           <p>JSON output for custom thresholds, SARIF for GitHub Advanced Security integration.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SDK + CONFIG ===== -->
+<section style="background:var(--bg-deep);padding:80px 0">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:900px;margin:0 auto">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px 28px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--accent-glow);color:var(--accent)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </span>
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:600">Go SDK</h3>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:16px">Programmatic access via <code style="color:var(--accent)">pkg/artdupl</code>. Embed clone detection in your own tools.</p>
+<pre style="font-family:var(--font-mono);font-size:0.75rem;line-height:1.7;color:var(--text-secondary);white-space:pre-wrap"><span style="color:var(--accent)">import</span> "github.com/LarsArtmann/art-dupl/pkg/artdupl"
+
+detector, _ := artdupl.<span style="color:var(--mint)">NewDetector</span>(artdupl.Options{
+    Threshold: 30,
+    Semantic:  true,
+})
+result, _ := detector.<span style="color:var(--mint)">FindClones</span>(<span style="color:var(--accent)">"./src"</span>)
+fmt.Println(result.Summary.TotalClones)</pre>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px 28px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--mint-dim);color:var(--mint)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </span>
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:600">Configuration Files</h3>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:16px">JSON config for team consistency. CLI flags always take precedence.</p>
+<pre style="font-family:var(--font-mono);font-size:0.75rem;line-height:1.7;color:var(--text-secondary);white-space:pre-wrap"><span style="color:var(--text-muted)">// dupl.json</span>
+{
+  <span style="color:var(--accent)">"threshold"</span>: 30,
+  <span style="color:var(--accent)">"outputFormat"</span>: <span style="color:var(--mint)">"json"</span>,
+  <span style="color:var(--accent)">"paths"</span>: [<span style="color:var(--mint)">"./src"</span>, <span style="color:var(--mint)">"./lib"</span>],
+  <span style="color:var(--accent)">"detectionMethods"</span>: <span style="color:var(--mint)">"hash,art-dupl"</span>
+}
+
+<span style="color:var(--text-muted)">$ art-dupl -config dupl.json</span></pre>
       </div>
     </div>
   </div>
