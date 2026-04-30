@@ -51,5 +51,3 @@ func (cfg ParseConfig) Validate() error {
 func (cfg ParseConfig) IsSemantic() bool {
 	return cfg.Mode.IsSemantic()
 }
-
-

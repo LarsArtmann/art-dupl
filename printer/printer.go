@@ -22,15 +22,15 @@ type Printer interface {
 // StatsConfig holds configuration for statistics output.
 // Used by StatsPrinter.ApplyStatsConfig to set all stats metadata in one call.
 type StatsConfig struct {
-	Format             Format
-	FilesCount         int
-	DetectionMethods   string
-	SemanticDetection  bool
-	Timestamp          string
-	AnalysisDuration   time.Duration
+	Format              Format
+	FilesCount          int
+	DetectionMethods    string
+	SemanticDetection   bool
+	Timestamp           string
+	AnalysisDuration    time.Duration
 	TotalEstimatedLines int
-	FilesFiltered      int
-	FilterBreakdown    map[string]int
+	FilesFiltered       int
+	FilterBreakdown     map[string]int
 }
 
 // StatsPrinter extends Printer interface with stats configuration.

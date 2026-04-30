@@ -101,7 +101,10 @@ func (d *detector) processCloneGroups(
 }
 
 // runDetection executes the configured detection methods using MultiDetector.
-func (d *detector) runDetection(ctx context.Context, result *pipelineResult) ([]*CloneGroup, error) {
+func (d *detector) runDetection(
+	ctx context.Context,
+	result *pipelineResult,
+) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
 	md := detection.NewMultiDetector(d.config, result.data, result.tree, false)

@@ -74,7 +74,6 @@ func (ft FileType) Matches(path string) bool {
 	}
 }
 
-
 // ErrInvalidFileType is returned when a file type value is invalid.
 var ErrInvalidFileType = errors.New("invalid file type")
 

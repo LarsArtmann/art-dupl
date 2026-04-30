@@ -338,7 +338,11 @@ func TestMergeConfigsWithNil(t *testing.T) {
 
 			if outputFormat, ok := tc.expectedValues["outputFormat"].(string); ok {
 				if merged.OutputFormat.String() != outputFormat {
-					t.Errorf("Expected OutputFormat %s, got %s", outputFormat, merged.OutputFormat.String())
+					t.Errorf(
+						"Expected OutputFormat %s, got %s",
+						outputFormat,
+						merged.OutputFormat.String(),
+					)
 				}
 			}
 
@@ -350,7 +354,11 @@ func TestMergeConfigsWithNil(t *testing.T) {
 
 			if includeVendor, ok := tc.expectedValues["includeVendor"].(bool); ok {
 				if merged.IncludeVendor != includeVendor {
-					t.Errorf("Expected IncludeVendor %v, got %v", includeVendor, merged.IncludeVendor)
+					t.Errorf(
+						"Expected IncludeVendor %v, got %v",
+						includeVendor,
+						merged.IncludeVendor,
+					)
 				}
 			}
 		})
