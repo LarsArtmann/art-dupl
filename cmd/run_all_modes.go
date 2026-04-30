@@ -8,7 +8,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -141,14 +140,7 @@ func writeFormatFile(
 	}()
 
 	// Build metadata for HTML report
-	metadata := printer.ReportMetadata{
-		Semantic:         cfg.Semantic,
-		DetectionMethods: detectionMethodsToStringSlice(cfg.DetectionMethods),
-		SortBy:           sortByEnum.String(),
-		FilterGenerated:  cfg.FilterGenerated,
-		IncludeSQLC:      cfg.IncludeSQLC,
-		IncludeTempl:     cfg.IncludeTempl,
-	}
+	metadata := newReportMetadata(cfg, sortByEnum.String())
 
 	p := createPrinter(format, cfg.Threshold, cfg.DiffMode, metadata)(file, os.ReadFile)
 

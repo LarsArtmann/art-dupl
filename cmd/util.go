@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/gogenfilter"
 )
 
@@ -33,6 +34,18 @@ func detectionMethodsToStringSlice(methods config.DetectionMethods) []string {
 	}
 
 	return result
+}
+
+// newReportMetadata creates ReportMetadata from a Config and sort criteria string.
+func newReportMetadata(cfg *config.Config, sortBy string) printer.ReportMetadata {
+	return printer.ReportMetadata{
+		Semantic:         cfg.Semantic,
+		DetectionMethods: detectionMethodsToStringSlice(cfg.DetectionMethods),
+		SortBy:           sortBy,
+		FilterGenerated:  cfg.FilterGenerated,
+		IncludeSQLC:      cfg.IncludeSQLC,
+		IncludeTempl:     cfg.IncludeTempl,
+	}
 }
 
 // shouldIncludeFile returns true if the file should be included (not filtered).

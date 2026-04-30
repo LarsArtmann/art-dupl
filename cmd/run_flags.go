@@ -106,14 +106,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	// Build metadata for HTML report
-	metadata := printer.ReportMetadata{
-		Semantic:         mergedConfig.Semantic,
-		DetectionMethods: detectionMethodsToStringSlice(mergedConfig.DetectionMethods),
-		SortBy:           sortBy,
-		FilterGenerated:  mergedConfig.FilterGenerated,
-		IncludeSQLC:      mergedConfig.IncludeSQLC,
-		IncludeTempl:     mergedConfig.IncludeTempl,
-	}
+	metadata := newReportMetadata(mergedConfig, sortBy)
 
 	p := createPrinter(
 		mergedConfig.OutputFormat,

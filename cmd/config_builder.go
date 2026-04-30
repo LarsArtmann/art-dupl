@@ -209,56 +209,34 @@ func applyPathsFlag(cfg *config.Config, flags *FlagValues) {
 	}
 }
 
-// applyBooleanFlags applies boolean flag values to the config.
-//
-//nolint:gocyclo,cyclop // Boolean flag assignments are inherently branching but straightforward
+// boolFlag maps a flag field to a config field for boolean flags.
+type boolFlag struct {
+	flagValue  bool
+	configPtr  *bool
+}
+
+// applyBooleanFlags applies boolean and simple value flag values to the config.
 func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
-	if flags.Vendor {
-		cfg.IncludeVendor = flags.Vendor
+	bools := []boolFlag{
+		{flags.Vendor, &cfg.IncludeVendor},
+		{flags.IncludeNodeModules, &cfg.IncludeNodeModules},
+		{flags.Files, &cfg.FilesFromStdin},
+		{flags.Profile, &cfg.Profile},
+		{flags.FilterGenerated, &cfg.FilterGenerated},
+		{flags.IncludeSQLC, &cfg.IncludeSQLC},
+		{flags.IncludeTempl, &cfg.IncludeTempl},
+		{flags.IncludeProtobuf, &cfg.IncludeProtobuf},
+		{flags.IncludeMockgen, &cfg.IncludeMockgen},
+		{flags.IncludeStringer, &cfg.IncludeStringer},
+		{flags.Incremental, &cfg.Incremental},
+		{flags.Semantic, &cfg.Semantic},
+		{flags.ClearCache, &cfg.ClearCache},
 	}
 
-	if flags.IncludeNodeModules {
-		cfg.IncludeNodeModules = flags.IncludeNodeModules
-	}
-
-	if flags.Files {
-		cfg.FilesFromStdin = flags.Files
-	}
-
-	if flags.Profile {
-		cfg.Profile = true
-	}
-
-	if flags.FilterGenerated {
-		cfg.FilterGenerated = true
-	}
-
-	if flags.IncludeSQLC {
-		cfg.IncludeSQLC = true
-	}
-
-	if flags.IncludeTempl {
-		cfg.IncludeTempl = true
-	}
-
-	if flags.IncludeProtobuf {
-		cfg.IncludeProtobuf = true
-	}
-
-	if flags.IncludeMockgen {
-		cfg.IncludeMockgen = true
-	}
-
-	if flags.IncludeStringer {
-		cfg.IncludeStringer = true
-	}
-
-	if flags.Incremental {
-		cfg.Incremental = true
-	}
-
-	if flags.Semantic {
-		cfg.Semantic = true
+	for _, bf := range bools {
+		if bf.flagValue {
+			*bf.configPtr = true
+		}
 	}
 
 	if flags.Workers != 0 {
@@ -271,10 +249,6 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 
 	if flags.CacheDir != "" {
 		cfg.CacheDir = flags.CacheDir
-	}
-
-	if flags.ClearCache {
-		cfg.ClearCache = true
 	}
 }
 
