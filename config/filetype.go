@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 // FileType represents a file type filter for analysis.
@@ -63,9 +64,9 @@ func (ft *FileType) UnmarshalJSON(data []byte) error {
 func (ft FileType) Matches(path string) bool {
 	switch ft {
 	case FileTypeGo:
-		return hasSuffix(path, ".go")
+		return strings.HasSuffix(path, ".go")
 	case FileTypeTempl:
-		return hasSuffix(path, ".templ")
+		return strings.HasSuffix(path, ".templ")
 	case FileTypeAll:
 		return true
 	default:
@@ -73,15 +74,6 @@ func (ft FileType) Matches(path string) bool {
 	}
 }
 
-// hasSuffix is a helper function to check if a string ends with a suffix.
-// Defined here to avoid importing strings package just for this.
-func hasSuffix(s, suffix string) bool {
-	if len(suffix) > len(s) {
-		return false
-	}
-
-	return s[len(s)-len(suffix):] == suffix
-}
 
 // ErrInvalidFileType is returned when a file type value is invalid.
 var ErrInvalidFileType = errors.New("invalid file type")

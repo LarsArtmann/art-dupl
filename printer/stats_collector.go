@@ -58,6 +58,6 @@ func (p *stats) SetFormat(format Format) {
 }
 
 // GetStatsData returns the collected statistics data.
-func (p *stats) GetStatsData() any {
+func (p *stats) GetStatsData() *StatsData {
 	return p.statsData
 }

@@ -30,5 +30,5 @@ type StatsPrinter interface {
 	SetAnalysisDuration(duration time.Duration)
 	SetTotalEstimatedLines(lines int)
 	SetFilterStats(filesFiltered int, breakdown map[string]int)
-	GetStatsData() any
+	GetStatsData() *StatsData
 }

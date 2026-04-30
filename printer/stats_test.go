@@ -91,7 +91,7 @@ func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 
 	data := statsPrinter.GetStatsData()
 
-	return data.(*StatsData)
+	return data
 }
 
 func TestStatsDataAggregation(t *testing.T) {
@@ -192,7 +192,7 @@ func TestStatsDataAggregation(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			tt.checkStats(t, statsPrinter.GetStatsData().(*StatsData))
+			tt.checkStats(t, statsPrinter.GetStatsData())
 		})
 	}
 }
@@ -231,7 +231,7 @@ func TestStatsComplexityScore(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData().(*StatsData)
+	statsData := statsPrinter.GetStatsData()
 
 	expectedComplexity := 9.0 / 3.0 // 9 clones / 3 groups
 	if statsData.ComplexityScore != expectedComplexity {
@@ -289,7 +289,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData().(*StatsData)
+	statsData := statsPrinter.GetStatsData()
 	if len(statsData.FileDuplication) == 0 {
 		t.Fatal("FileDuplication map is empty")
 	}
@@ -488,7 +488,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			statsData := statsPrinter.GetStatsData().(*StatsData)
+			statsData := statsPrinter.GetStatsData()
 			if statsData.AverageCloneSize != tt.expectedAverage {
 				t.Errorf(
 					"AverageCloneSize = %d, want %d",
@@ -878,7 +878,7 @@ func TestSetFilterStats(t *testing.T) {
 
 			sp.SetFilterStats(tt.filesFiltered, tt.breakdown)
 
-			data := sp.GetStatsData().(*StatsData)
+			data := sp.GetStatsData()
 
 			if data.FilesFiltered != tt.wantFiltered {
 				t.Errorf("FilesFiltered = %d, want %d", data.FilesFiltered, tt.wantFiltered)
@@ -925,7 +925,7 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 	}
 
 	// Verify the data was stored correctly
-	data := sp.GetStatsData().(*StatsData)
+	data := sp.GetStatsData()
 	if data.FilesFiltered != 25 {
 		t.Errorf("FilesFiltered = %d, want 25", data.FilesFiltered)
 	}

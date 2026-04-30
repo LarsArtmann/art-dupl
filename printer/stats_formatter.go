@@ -277,7 +277,7 @@ func (p *stats) printJSON() {
 }
 
 // buildJSONData constructs the JSON output structure.
-func (p *stats) buildJSONData() any {
+func (p *stats) buildJSONData() jsonStatsOutput {
 	var jsonData jsonStatsOutput
 
 	// Fill configuration

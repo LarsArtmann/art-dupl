@@ -1098,31 +1098,29 @@ func TestFileType_Matches(t *testing.T) {
 	}
 }
 
-func TestHasSuffix(t *testing.T) {
+func TestFileTypeMatches(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		s      string
-		suffix string
-		want   bool
+		ft   FileType
+		path string
+		want bool
 	}{
-		{"foo.go", ".go", true},
-		{"bar.templ", ".templ", true},
-		{"foo.go", ".templ", false},
-		{"foo", ".go", false},
-		{"", ".go", false},
-		{"foo.go", "", true},
-		{"go", "go", true},
-		{"foo.go.txt", ".go", false},
+		{FileTypeGo, "foo.go", true},
+		{FileTypeGo, "bar.templ", false},
+		{FileTypeTempl, "bar.templ", true},
+		{FileTypeTempl, "foo.go", false},
+		{FileTypeAll, "anything.go", true},
+		{FileTypeAll, "", true},
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.s+"_"+tc.suffix, func(t *testing.T) {
+		t.Run(string(tc.ft)+"_"+tc.path, func(t *testing.T) {
 			t.Parallel()
 
-			got := hasSuffix(tc.s, tc.suffix)
+			got := tc.ft.Matches(tc.path)
 			if got != tc.want {
-				t.Errorf("hasSuffix(%q, %q) = %v, want %v", tc.s, tc.suffix, got, tc.want)
+				t.Errorf("FileType(%q).Matches(%q) = %v, want %v", tc.ft, tc.path, got, tc.want)
 			}
 		})
 	}
