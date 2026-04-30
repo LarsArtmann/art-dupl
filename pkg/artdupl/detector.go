@@ -64,7 +64,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	// Process files and build analysis pipeline
-	data, _, err := d.buildAnalysisPipeline(ctx, files)
+	pipeline, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
 		return nil, errors.Wrap(
 			err,
@@ -79,7 +79,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	// Run detection based on configured methods
-	cloneGroups, err := d.runDetection(ctx, data)
+	cloneGroups, err := d.runDetection(ctx, pipeline)
 	if err != nil {
 		return nil, errors.Wrap(
 			err,
@@ -87,13 +87,13 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 			fmt.Sprintf(
 				"detection failed (methods=%v, nodes=%d)",
 				d.config.DetectionMethods,
-				len(data),
+				len(pipeline.data),
 			),
 		)
 	}
 
 	// Build and return result
-	return d.buildResult(cloneGroups, 0), nil
+	return d.buildResult(cloneGroups, pipeline.fileCount.FilesCount), nil
 }
 
 // FindClonesStream provides streaming results for large projects.
@@ -117,7 +117,7 @@ func (d *detector) FindClonesStream(
 		defer close(resultChan)
 
 		// Process files and build analysis pipeline
-		data, _, err := d.buildAnalysisPipeline(ctx, files)
+		pipeline, err := d.buildAnalysisPipeline(ctx, files)
 		if err != nil {
 			d.logger.Error("Analysis pipeline error: %v", err)
 
@@ -125,7 +125,7 @@ func (d *detector) FindClonesStream(
 		}
 
 		// Run detection with streaming
-		err = d.streamDetectionResults(ctx, data, resultChan)
+		err = d.streamDetectionResults(ctx, pipeline, resultChan)
 		if err != nil {
 			d.logger.Error("Streaming detection error: %v", err)
 		}

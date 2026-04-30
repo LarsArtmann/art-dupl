@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/hash"
+	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+type pipelineResult struct {
+	data      []*syntax.Node
+	tree      *suffixtree.STree
+	fileCount job.ParseStats
+}
+
 // buildAnalysisPipeline processes files and prepares data for analysis.
 func (d *detector) buildAnalysisPipeline(
 	ctx context.Context,
 	files []string,
-) ([]*syntax.Node, job.ParseStats, error) {
+) (*pipelineResult, error) {
 	d.reportProgress(0, "Starting file processing", "")
 
 	// Create file channel
@@ -26,14 +32,12 @@ func (d *detector) buildAnalysisPipeline(
 		defer close(fileChan)
 
 		for i, filename := range files {
-			// Check for context cancellation
 			select {
 			case <-ctx.Done():
 				return
 			default:
 			}
 
-			// Validate file exists and isn't too large
 			err := d.validateFile(filename)
 			if err != nil {
 				d.logger.Warn("Skipping file %s: %v", filename, err)
@@ -43,28 +47,24 @@ func (d *detector) buildAnalysisPipeline(
 
 			fileChan <- filename
 
-			// Report progress
-			progress := float64(i+1) / float64(len(files)) * 50 // Files are 50% of work
+			progress := float64(i+1) / float64(len(files)) * 50
 			d.reportProgress(progress, "Processing files", filename)
 		}
 	}()
 
-	// Parse files and build syntax tree
 	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.config.Semantic)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
-	// Wait for tree building to complete
 	select {
 	case <-done:
-		// Tree building complete
 	case <-ctx.Done():
-		return nil, job.ParseStats{}, fmt.Errorf(
+		return nil, fmt.Errorf(
 			"pipeline canceled after processing %d files: %w",
 			len(files),
 			ctx.Err(),
 		)
 	case <-time.After(d.opts.Timeout):
-		return nil, job.ParseStats{}, fmt.Errorf(
+		return nil, fmt.Errorf(
 			"analysis timed out after %v (processing %d files): %w",
 			d.opts.Timeout,
 			len(files),
@@ -72,18 +72,17 @@ func (d *detector) buildAnalysisPipeline(
 		)
 	}
 
-	// Get file count
 	fileCount := <-fileCountChan
 
-	// Finalize tree
 	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct
-
-	// Convert data slice to pointer
-	nodeData := *data
 
 	d.reportProgress(60, "Building suffix tree", "")
 
-	return nodeData, fileCount, nil
+	return &pipelineResult{
+		data:      *data,
+		tree:      tree,
+		fileCount: fileCount,
+	}, nil
 }
 
 // processCloneGroups iterates over clone groups and processes each one.
@@ -101,32 +100,18 @@ func (d *detector) processCloneGroups(
 	}
 }
 
-// runDetection executes the configured detection methods.
-func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*CloneGroup, error) {
+// runDetection executes the configured detection methods using MultiDetector.
+func (d *detector) runDetection(ctx context.Context, result *pipelineResult) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
-	// Get matches based on detection methods
-	threshold := d.config.Threshold
+	md := detection.NewMultiDetector(d.config, result.data, result.tree, false)
+	matchesChan := md.FindDuplOver(d.config.Threshold)
 
-	var matchesChan <-chan syntax.Match
-
-	switch d.opts.DetectionMethods[0] { // Simplified - support single method for now
-	case MethodArtDupl:
-		// Build suffix tree for art-dupl method
-		matchesChan = d.runSuffixTreeDetection(data, threshold)
-	case MethodHash:
-		matchesChan = d.runHashDetection(ctx, data, threshold)
-	default:
-		return nil, ErrUnsupportedMethod
-	}
-
-	// Collect and process matches
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {
 		return nil, err
 	}
 
-	// Convert to CloneGroup format
 	var allGroups []*CloneGroup
 
 	d.processCloneGroups(groups, func(group *CloneGroup) {
@@ -141,29 +126,17 @@ func (d *detector) runDetection(ctx context.Context, data []*syntax.Node) ([]*Cl
 // streamDetectionResults streams detection results to the provided channel.
 func (d *detector) streamDetectionResults(
 	ctx context.Context,
-	data []*syntax.Node,
+	result *pipelineResult,
 	resultChan chan<- *CloneGroup,
 ) error {
-	// Similar to runDetection but streams results instead of collecting all
-	threshold := d.config.Threshold
-
-	var matchesChan <-chan syntax.Match
-
-	switch d.opts.DetectionMethods[0] {
-	case MethodArtDupl:
-		matchesChan = d.runSuffixTreeDetection(data, threshold)
-	case MethodHash:
-		matchesChan = d.runHashDetection(ctx, data, threshold)
-	default:
-		return ErrUnsupportedMethod
-	}
+	md := detection.NewMultiDetector(d.config, result.data, result.tree, false)
+	matchesChan := md.FindDuplOver(d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {
 		return err
 	}
 
-	// Stream results
 	d.processCloneGroups(groups, func(group *CloneGroup) {
 		select {
 		case resultChan <- group:
@@ -172,51 +145,6 @@ func (d *detector) streamDetectionResults(
 	})
 
 	return nil
-}
-
-// runSuffixTreeDetection executes suffix tree-based detection.
-func (d *detector) runSuffixTreeDetection(
-	data []*syntax.Node,
-	threshold int,
-) <-chan syntax.Match {
-	tree := d.buildSuffixTree(data)
-	suffixMatches := tree.FindDuplOver(threshold)
-
-	syntaxMatches := make(chan syntax.Match)
-
-	go func() {
-		defer close(syntaxMatches)
-
-		for match := range suffixMatches {
-			syntaxMatch := syntax.FindSyntaxUnits(data, match, threshold)
-			if len(syntaxMatch.Frags) > 0 {
-				syntaxMatches <- syntaxMatch
-			}
-		}
-	}()
-
-	return syntaxMatches
-}
-
-// runHashDetection executes hash-based detection using XXH3 streaming hash algorithm.
-func (d *detector) runHashDetection(
-	_ context.Context,
-	data []*syntax.Node,
-	threshold int,
-) <-chan syntax.Match {
-	hashDetector := hash.NewFileDetector(threshold)
-
-	return hashDetector.FindDuplOver(data, threshold)
-}
-
-// buildSuffixTree creates a suffix tree from the provided data.
-func (d *detector) buildSuffixTree(data []*syntax.Node) *suffixtree.STree {
-	tree := suffixtree.New()
-	for _, node := range data {
-		tree.Update(node)
-	}
-
-	return tree
 }
 
 // collectMatchesIntoGroups collects matches from a channel and groups them by hash.

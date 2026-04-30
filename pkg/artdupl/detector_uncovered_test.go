@@ -8,8 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
+	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -230,20 +232,25 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 	}
 }
 
-// TestRunHashDetection tests the runHashDetection function.
+// TestRunHashDetection tests hash-based detection via MultiDetector.
 func TestRunHashDetection(t *testing.T) {
-	d := &detector{}
+	d := newTestDetector()
 
 	data := testNodes()
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
 
-	ctx := t.Context()
-	matchesChan := d.runHashDetection(ctx, data, 1)
+	tree.Update(&syntax.Node{Type: -1})
+
+	md := detection.NewMultiDetector(d.config, data, tree, false)
+	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {
 		t.Error("Expected non-nil matches channel")
 	}
 
-	// Drain the channel to avoid goroutine leak
 	for range matchesChan {
 	}
 }
@@ -365,13 +372,18 @@ func TestStreamDetectionResults(t *testing.T) {
 
 	resultChan := make(chan *CloneGroup, 1)
 	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
+
+	tree.Update(&syntax.Node{Type: -1})
+
+	pipeline := &pipelineResult{data: data, tree: tree}
 
 	ctx := t.Context()
-	// This will run and send results to the channel
-	// We just need to make sure it doesn't panic
-	err := d.streamDetectionResults(ctx, data, resultChan)
+	err := d.streamDetectionResults(ctx, pipeline, resultChan)
 	if err != nil {
-		// May error if no matches found, that's ok
 		t.Logf("streamDetectionResults returned: %v", err)
 	}
 }
@@ -382,12 +394,19 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 
 	resultChan := make(chan *CloneGroup)
 	ctx, cancel := context.WithCancel(t.Context())
-	cancel() // Cancel immediately
+	cancel()
 
 	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
 
-	// Should handle cancelled context gracefully
-	_ = d.streamDetectionResults(ctx, data, resultChan)
+	tree.Update(&syntax.Node{Type: -1})
+
+	pipeline := &pipelineResult{data: data, tree: tree}
+
+	_ = d.streamDetectionResults(ctx, pipeline, resultChan)
 }
 
 // TestConvertFragmentToClone_WithFragments tests convertFragmentToClone with IncludeFragments.
@@ -459,30 +478,38 @@ func TestConvertToCloneGroup_SingleFragment(t *testing.T) {
 	}
 }
 
-// TestRunSuffixTreeDetection tests the runSuffixTreeDetection function.
+// TestRunSuffixTreeDetection tests suffix tree detection via MultiDetector.
 func TestRunSuffixTreeDetection(t *testing.T) {
-	d := &detector{}
+	d := newTestDetector()
 
 	data := testNodes()
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
 
-	matchesChan := d.runSuffixTreeDetection(data, 1)
+	tree.Update(&syntax.Node{Type: -1})
+
+	md := detection.NewMultiDetector(d.config, data, tree, false)
+	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {
 		t.Error("Expected non-nil matches channel")
 	}
 
-	// Drain the channel to avoid goroutine leak
 	for range matchesChan {
 	}
 }
 
-// TestBuildSuffixTree tests the buildSuffixTree function.
+// TestBuildSuffixTree tests building a suffix tree from node data.
 func TestBuildSuffixTree(t *testing.T) {
-	d := &detector{}
-
 	data := testNodes()
 
-	tree := d.buildSuffixTree(data)
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
+
 	if tree == nil {
 		t.Error("Expected non-nil tree")
 	}
