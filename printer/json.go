@@ -64,8 +64,8 @@ type SimpleCloneGroup struct {
 
 // LineRangeMixin provides common line range fields.
 type LineRangeMixin struct {
-	StartLine int
-	EndLine   int
+	StartLine int `json:"startLine"`
+	EndLine   int `json:"endLine,omitempty"`
 }
 
 // SimpleJSONOutput represents the simple JSON output format (from duplicates project).

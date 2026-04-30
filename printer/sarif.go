@@ -91,8 +91,7 @@ type SARIFArtifactLocation struct {
 
 // SARIFRegion represents a region within a file.
 type SARIFRegion struct {
-	StartLine int `json:"startLine"`
-	EndLine   int `json:"endLine,omitempty"`
+	LineRangeMixin
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
@@ -187,8 +186,10 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) erro
 							URI: nstart.Filename,
 						},
 						Region: SARIFRegion{
-							StartLine: fileInfo.LineStart,
-							EndLine:   fileInfo.LineEnd,
+							LineRangeMixin: LineRangeMixin{
+								StartLine: fileInfo.LineStart,
+								EndLine:   fileInfo.LineEnd,
+							},
 						},
 					},
 				},
