@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // =============================================================================
@@ -92,56 +90,6 @@ func TestDetectionMethods_IsDefault(t *testing.T) {
 				t.Errorf("IsDefault() = %v, want %v", got, tc.expected)
 			}
 		})
-	}
-}
-
-// =============================================================================
-// GetThresholdAsDomain / SetThresholdFromDomain
-// =============================================================================
-
-func TestConfig_GetThresholdAsDomain(t *testing.T) {
-	t.Parallel()
-
-	cfg := &Config{Threshold: 15}
-
-	dom, err := cfg.GetThresholdAsDomain()
-	if err != nil {
-		t.Fatalf("GetThresholdAsDomain() error: %v", err)
-	}
-
-	if dom.Uint() != 15 {
-		t.Errorf("domain threshold = %d, want 15", dom.Uint())
-	}
-}
-
-func TestConfig_GetThresholdAsDomain_Invalid(t *testing.T) {
-	t.Parallel()
-
-	cfg := &Config{Threshold: 0}
-
-	_, err := cfg.GetThresholdAsDomain()
-	if err == nil {
-		t.Error("expected error for threshold 0")
-	}
-}
-
-func TestConfig_SetThresholdFromDomain(t *testing.T) {
-	t.Parallel()
-
-	cfg := &Config{}
-
-	dom, err := domain.NewThreshold(42)
-	if err != nil {
-		t.Fatalf("NewThreshold() error: %v", err)
-	}
-
-	err = cfg.SetThresholdFromDomain(dom)
-	if err != nil {
-		t.Fatalf("SetThresholdFromDomain() error: %v", err)
-	}
-
-	if cfg.Threshold != 42 {
-		t.Errorf("Threshold = %d, want 42", cfg.Threshold)
 	}
 }
 

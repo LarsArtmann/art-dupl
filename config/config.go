@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
@@ -37,21 +36,8 @@ func (dm DetectionMethods) IsHashOnly() bool {
 
 // Config represents the dupl configuration with strong typing.
 //
-// DOMAIN TYPES STATUS:
-// ✅ Added domain package import
-// ✅ Threshold field uses int for JSON compatibility
-//
-// Note: Config is used for loading from YAML/JSON files, so we use primitive types
-// (int, string, bool) for JSON marshaling compatibility. For type-safe access,
-// use the helper functions below to convert to/from domain types:
-//
-//	// Get typed threshold
-//	:= cfg.GetThresholdAsDomain()
-//
-//	// Set threshold with validation
-//	err := cfg.SetThresholdFromDomain(domainThreshold)
-//
-// This provides type safety where needed without breaking config file loading.
+// Note: Config uses primitive types (int, string, bool) for JSON marshaling
+// compatibility. Typed enums (FileType, DetectionMethod, etc.) provide validation.
 type Config struct {
 	// Threshold sets the minimum token sequence size to consider as duplicate
 	Threshold int `json:"threshold,omitempty"`
@@ -195,38 +181,6 @@ func DefaultConfig() *Config {
 		Semantic:           false,            // Default: off for backward compatibility (enable with --semantic)
 		DiffMode:           DiffModeDisabled, // Default: diff mode disabled
 	}
-}
-
-// GetThresholdAsDomain converts config threshold to domain.Threshold.
-//
-// Usage:
-//
-//	cfg := config.DefaultConfig()
-//	domainThreshold, err := cfg.GetThresholdAsDomain()
-//	if err != nil { ... }
-func (c *Config) GetThresholdAsDomain() (domain.Threshold, error) {
-	threshold, err := domain.NewThreshold(
-		uint(c.Threshold),
-	) // #nosec G115 -- Threshold values are bounded (0-1000)
-	if err != nil {
-		return 0, errors.NewConfigError("invalid threshold in config", err)
-	}
-
-	return threshold, nil
-}
-
-// SetThresholdFromDomain sets threshold from domain.Threshold with validation.
-//
-// Usage:
-//
-//	domainThreshold, err := domain.NewThreshold(15)
-//	if err != nil { return err }
-//	err := cfg.SetThresholdFromDomain(domainThreshold)
-func (c *Config) SetThresholdFromDomain(threshold domain.Threshold) error {
-	// No validation needed - domain.Threshold already validated
-	c.Threshold = int(threshold.Uint()) // #nosec G115 -- Threshold values are bounded (0-1000)
-
-	return nil
 }
 
 // LoadConfig loads configuration from file.
