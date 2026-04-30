@@ -1,39 +1,40 @@
-.idea/
-dupl
-dist/
-cover.out
-*.test
-*.prof
-*.out
-*.log
-.env
-.DS_Store
+
 *~
-# Go binaries
 /art-dupl
 /art-dupl-*
-/test-art-dupl
 /art-dupl-test
-*.exe
-*.html
-!site/*.html
-# Firebase
-.firebase/
-# Output directories for reports
-reports/
-my-reports/
-# BDD test binaries
-bdd/art-dupl-*
 bdd/art-dupl
-# Dependencies
-node_modules/
-# Sensitive files
-*.db
-# Test coverage
+bdd/art-dupl-*
+# BDD test binaries
 /coverage
-# Nix
+cover.out
+*.db
+# Dependencies
 .direnv/
+dist/
+.DS_Store
+dupl
+.env
+*.exe
+.firebase/
+# Firebase
+# Go binaries
+*.html
+.idea/
+*.log
+my-reports/
+# Nix
+node_modules/
+*.out
+# Output directories for reports
+*.prof
+/report/jscpd-report.json
+reports/
 result
 result-*
-
-/report/jscpd-report.json
+# Sensitive files
+!site/*.html
+*.test
+/test-art-dupl
+# Test coverage
+vendor/
