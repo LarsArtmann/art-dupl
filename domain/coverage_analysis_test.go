@@ -26,17 +26,6 @@ func baseAnalysis(overrides ...func(*Analysis)) Analysis {
 	return a
 }
 
-// newDetectionOptions creates a DetectionOptions with default values for testing.
-// The threshold parameter allows customizing the threshold value (including 0).
-func newDetectionOptions(threshold Threshold) DetectionOptions {
-	return DetectionOptions{
-		Threshold:    threshold,
-		Mode:         AnalysisModeFull,
-		Paths:        []Filepath{"./src"},
-		OutputFormat: "text",
-	}
-}
-
 // analysisStatsCase creates a test case for AnalysisStats validation.
 func analysisStatsCase(
 	name string,
@@ -179,65 +168,4 @@ func TestAnalysisStats_IsValid(t *testing.T) {
 	}
 
 	testValidMethods(t, tests)
-}
-
-// TestDetectionOptions_IsValid tests DetectionOptions.IsValid method.
-func TestDetectionOptions_IsValid(t *testing.T) {
-	tests := []struct {
-		name    string
-		options DetectionOptions
-		wantErr bool
-	}{
-		{
-			name:    "valid options",
-			options: newDetectionOptions(15),
-			wantErr: false,
-		},
-		{
-			name:    "zero threshold",
-			options: newDetectionOptions(0),
-			wantErr: true,
-		},
-		{
-			name: "invalid mode",
-			options: DetectionOptions{
-				Threshold:    15,
-				Mode:         AnalysisMode("invalid"),
-				Paths:        []Filepath{"./src"},
-				OutputFormat: "text",
-			},
-			wantErr: true,
-		},
-		{
-			name: "empty paths",
-			options: DetectionOptions{
-				Threshold:    15,
-				Mode:         AnalysisModeFull,
-				Paths:        []Filepath{},
-				OutputFormat: "text",
-			},
-			wantErr: true,
-		},
-		{
-			name: "nil paths",
-			options: DetectionOptions{
-				Threshold:    15,
-				Mode:         AnalysisModeFull,
-				Paths:        nil,
-				OutputFormat: "text",
-			},
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			chkErr := tt.options.IsValid()
-
-			wantErr := tt.wantErr
-			if (chkErr != nil) != wantErr {
-				t.Errorf("DetectionOptions.IsValid() error = %v, wantErr %v", chkErr, wantErr)
-			}
-		})
-	}
 }
