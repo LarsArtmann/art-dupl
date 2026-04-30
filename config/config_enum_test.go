@@ -32,7 +32,9 @@ func TestDetectionMethods_IsEmpty(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := tc.methods.IsEmpty()
+
 			if got != tc.expected {
 				t.Errorf("IsEmpty() = %v, want %v", got, tc.expected)
 			}
@@ -99,7 +101,9 @@ func TestConfig_GetThresholdAsDomain(t *testing.T) {
 	t.Parallel()
 
 	cfg := &Config{Threshold: 15}
+
 	dom, err := cfg.GetThresholdAsDomain()
+
 	if err != nil {
 		t.Fatalf("GetThresholdAsDomain() error: %v", err)
 	}
@@ -163,6 +167,7 @@ func TestLoadOptionalConfig_FileExists(t *testing.T) {
 
 	cfg := &Config{Threshold: 99}
 	data, err := json.Marshal(cfg)
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -317,19 +322,21 @@ func TestValidateOnly(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		only    string
+		only    FileType
 		wantErr bool
 	}{
-		{"empty", "", false},
-		{"go", "go", false},
-		{"templ", "templ", false},
-		{"invalid", "rust", true},
+		{"empty", FileTypeAll, false},
+		{"go", FileTypeGo, false},
+		{"templ", FileTypeTempl, false},
+		{"invalid", FileType("rust"), true},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			err := validateOnly(tc.only)
+
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
 			}
@@ -361,7 +368,9 @@ func TestValidateCacheFlags(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			err := validateCacheFlags(tc.cacheDir, tc.clear, tc.incr)
+
 			if tc.wantErr && err == nil {
 				t.Error("expected error")
 			}
@@ -480,10 +489,12 @@ func TestParseDetectionMethods(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got, err := ParseDetectionMethods(tc.input)
-			if tc.wantErr {
+
+		if tc.wantErr {
 				if err == nil {
 					t.Error("expected error")
 				}
+
 				return
 			}
 

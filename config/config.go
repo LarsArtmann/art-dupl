@@ -115,9 +115,9 @@ type Config struct {
 	// IncludeStringer includes stringer generated files
 	IncludeStringer bool `json:"includeStringer,omitempty"`
 
-	// Only restricts analysis to a specific file type ("go" or "templ")
-	// Empty string means analyze both file types
-	Only string `json:"only,omitempty"`
+	// Only restricts analysis to a specific file type (FileTypeGo or FileTypeTempl).
+	// FileTypeAll (empty string) means analyze all file types.
+	Only FileType `json:"only,omitempty"`
 
 	// IncludePatterns specifies file patterns to always include (takes precedence over filter)
 	IncludePatterns []string `json:"includePatterns,omitempty"`
@@ -375,12 +375,8 @@ func validateCacheFlags(cacheDir string, clearCache, incremental bool) error {
 	return nil
 }
 
-func validateOnly(only string) error {
-	if only == "" {
-		return nil
-	}
-
-	if only != "go" && only != "templ" {
+func validateOnly(only FileType) error {
+	if !only.IsValid() {
 		return errors.NewValidationError(
 			fmt.Sprintf("invalid --only value: %q (valid: go, templ)", only),
 			nil,

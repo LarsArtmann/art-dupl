@@ -45,7 +45,7 @@ func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
 	t.Helper()
 
-	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, ext)
+	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, config.FileType(ext))
 
 	found := make([]string, 0, expectedCount)
 	for f := range ch {

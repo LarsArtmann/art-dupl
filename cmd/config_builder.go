@@ -255,7 +255,7 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 // applyPatternFlags applies pattern-related flags to the config.
 func applyPatternFlags(cfg *config.Config, flags *FlagValues) {
 	if flags.Only != "" {
-		cfg.Only = flags.Only
+		cfg.Only = config.FileType(flags.Only)
 	}
 
 	if len(flags.IncludePatterns) > 0 {

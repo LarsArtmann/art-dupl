@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/gogenfilter"
 )
 
@@ -40,22 +41,20 @@ func filesFeedWithOptions(
 	fromStdin bool,
 	filter *gogenfilter.Filter,
 	includeVendor bool,
-	only string,
+	only config.FileType,
 ) chan string {
 	if fromStdin {
 		fchan := make(chan string)
 
 		go func() {
-			s := bufio.NewScanner(os.Stdin)
-			for s.Scan() {
-				f := s.Text()
+			sc := bufio.NewScanner(os.Stdin)
+			for sc.Scan() {
+				f := sc.Text()
 				path := strings.TrimPrefix(f, "./")
-				// Apply filter if enabled
 				if !shouldIncludeFile(filter, path) {
 					continue
 				}
-				// Apply "only" filter
-				if only != "" && !matchesOnlyFilter(path, only) {
+				if !only.Matches(path) {
 					continue
 				}
 
@@ -68,13 +67,12 @@ func filesFeedWithOptions(
 		return fchan
 	}
 
-	// Build file check function that combines isSourceFile with only filter
 	fileCheck := func(name string) bool {
 		if !isSourceFile(name) {
 			return false
 		}
 
-		return matchesOnlyFilter(name, only)
+		return only.Matches(name)
 	}
 
 	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, fileCheck)
@@ -96,12 +94,12 @@ func crawlPathsAllFiles(
 	paths []string,
 	filter *gogenfilter.Filter,
 	includeVendor, includeNodeModules bool,
-	only string,
+	only config.FileType,
 ) chan string {
 	var fileCheck fileCheckFunc
-	if only != "" {
+	if only != config.FileTypeAll {
 		fileCheck = func(name string) bool {
-			return matchesOnlyFilter(name, only)
+			return only.Matches(name)
 		}
 	}
 
@@ -205,18 +203,6 @@ func passesFileCheck(name string, fileCheck fileCheckFunc) bool {
 // isSourceFile returns true if the filename has a supported source file extension.
 func isSourceFile(name string) bool {
 	return strings.HasSuffix(name, ".go") || strings.HasSuffix(name, ".templ")
-}
-
-// matchesOnlyFilter returns true if the file matches the "only" filter criteria.
-func matchesOnlyFilter(path, only string) bool {
-	switch only {
-	case "go":
-		return strings.HasSuffix(path, ".go")
-	case "templ":
-		return strings.HasSuffix(path, ".templ")
-	default:
-		return true
-	}
 }
 
 // shouldSkipPath returns true if the path should be skipped due to being a vendor, git, or node_modules directory.
