@@ -366,6 +366,13 @@ nav .container {
 
 .install-alt code { color: var(--accent); }
 
+.install-alt .install-note {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent-dim);
+  opacity: 0.7;
+}
+
 .hero-stats {
   display: flex;
   gap: 40px;

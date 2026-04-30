@@ -13,13 +13,19 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://art-dupl.web.app/">
 <meta property="og:image" content="https://art-dupl.web.app/og-image.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="art-dupl — Professional Code Clone Detection for Go">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="art-dupl — Professional Code Clone Detection for Go">
 <meta name="twitter:description" content="Find every code clone in your Go projects. AST-based structural detection with suffix tree algorithms, semantic awareness, and 7 output formats.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"art-dupl","description":"Professional code clone detection tool for Go projects using suffix tree algorithms","url":"https://github.com/LarsArtmann/art-dupl","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Go","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://goreportcard.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="style.css" as="style">
+<link rel="preload" href="app.js" as="script">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -76,7 +82,7 @@
       Miss Nothing.
     </h1>
     <p class="hero-sub">
-      Professional AST-based code duplication detection for Go projects. Suffix tree algorithms meet semantic awareness. Works out of the box.
+      Professional AST-based code duplication detection for Go projects. Suffix tree algorithms meet optional semantic awareness. Works out of the box.
     </p>
     <div class="hero-actions">
       <a href="#cta" class="btn btn-primary btn-large">Get Started &rarr;</a>
@@ -93,6 +99,7 @@
       <div class="install-alt">
         <span class="prefix">or</span>
         <code>brew install LarsArtmann/art-dupl/art-dupl</code>
+        <span class="install-note">(coming soon)</span>
         <button class="copy-btn" data-copy="brew install LarsArtmann/art-dupl/art-dupl" aria-label="Copy Homebrew install command">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
@@ -119,7 +126,6 @@
   </div>
   <div class="container hero-badges">
     <img src="https://goreportcard.com/badge/github.com/LarsArtmann/art-dupl" alt="Go Report Card" loading="lazy">
-    <img src="https://codecov.io/gh/LarsArtmann/art-dupl/graph/badge.svg?token=art-dupl" alt="Code Coverage" loading="lazy">
   </div>
 </section>
 
@@ -206,8 +212,8 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
         </div>
         <h3>Semantic Awareness</h3>
-        <p>Default mode matches by identifier names and receiver types. Distinguishes <code>CrushMode.IsValid</code> from <code>SafetyMode.IsValid</code>.</p>
-        <span class="feature-tag tag-default">Default</span>
+        <p>Matches by identifier names and receiver types with <code>--semantic</code>. Distinguishes <code>CrushMode.IsValid</code> from <code>SafetyMode.IsValid</code>. Reduces false positives.</p>
+        <span class="feature-tag tag-new">--semantic</span>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -284,7 +290,7 @@
         <div class="method-meta">
           <div class="method-meta-item">
             <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Semantic-aware by default
+            Optional semantic mode (--semantic)
           </div>
           <div class="method-meta-item">
             <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
@@ -377,7 +383,7 @@
           <tr>
             <td>Semantic Awareness</td>
             <td class="dim-cell">No</td>
-            <td class="highlight-cell">Yes (identifier + receiver matching)</td>
+            <td class="highlight-cell">Yes (--semantic flag, identifier + receiver matching)</td>
           </tr>
           <tr>
             <td>Output Formats</td>
@@ -422,7 +428,7 @@
           <tr>
             <td>Pre-commit Hooks</td>
             <td class="dim-cell">No</td>
-            <td class="highlight-cell">4 modes (basic, strict, semantic, filtered)</td>
+            <td class="highlight-cell">4 example configs (basic, strict, semantic, filtered)</td>
           </tr>
           <tr>
             <td>CLI Quality</td>
@@ -564,7 +570,7 @@ func (h *Handler) validateInput(
       </div>
     </div>
     <p class="diff-callout">
-      <code>$ art-dupl --html --diff</code> generates side-by-side comparisons automatically
+      <code>$ art-dupl --html --diff side-by-side</code> generates visual comparisons automatically
     </p>
   </div>
 </section>
@@ -612,7 +618,7 @@ Clone Group 2 (5 occurrences, 32 tokens)
   <span style="color:var(--text-secondary)">└─ src/handlers/auth.go:67-83</span>
 
   <span style="color:var(--accent-bright)">Highlighted diff with actual code</span>
-  <span style="color:var(--accent-bright)">Side-by-side (--diff) or inline comparison</span>
+  <span style="color:var(--accent-bright)">Side-by-side or inline (--diff side-by-side|inline)</span>
 <span style="color:var(--accent)">&lt;/html&gt;</span></pre>
         </div>
         <div class="format-panel" id="panel-json" role="tabpanel" aria-labelledby="tab-json">
@@ -733,7 +739,7 @@ $ art-dupl stats --format csv > report.csv</pre>
         <span class="key">entry:</span> <span class="cmd">art-dupl --plumbing -t 30</span>
         <span class="key">language:</span> <span class="string">system</span>
         <span class="key">types:</span> [<span class="string">go</span>]</pre>
-          <p>4 hook modes: basic, strict, semantic, and filtered. Catches duplicates before they reach main.</p>
+          <p>4 example configurations: basic, strict, semantic, and filtered. Catches duplicates before they reach main.</p>
         </div>
       </div>
       <div class="cicd-card">
@@ -775,11 +781,11 @@ $ art-dupl stats --format csv > report.csv</pre>
         <p>Programmatic access via <code>pkg/artdupl</code>. Embed clone detection in your own tools.</p>
 <pre><span style="color:var(--accent)">import</span> "github.com/LarsArtmann/art-dupl/pkg/artdupl"
 
-detector, _ := artdupl.<span style="color:var(--mint)">NewDetector</span>(artdupl.Options{
-    Threshold: 30,
-    Semantic:  true,
+detector, _ := artdupl.<span style="color:var(--mint)">NewDetector</span>(&amp;artdupl.Options{
+    Threshold:        30,
+    DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodArtDupl},
 })
-result, _ := detector.<span style="color:var(--mint)">FindClones</span>(<span style="color:var(--accent)">"./src"</span>)
+result, _ := detector.<span style="color:var(--mint)">FindClones</span>(ctx, []<span style="color:var(--accent)">string</span>{<span style="color:var(--accent)">"./src"</span>})
 fmt.Println(result.Summary.TotalClones)</pre>
       </div>
       <div class="sdk-card">
