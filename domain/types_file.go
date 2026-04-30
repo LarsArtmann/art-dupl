@@ -82,4 +82,3 @@ func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
-
