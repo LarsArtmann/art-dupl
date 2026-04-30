@@ -84,45 +84,6 @@ func BenchmarkHashSeqFallback(b *testing.B) {
 	}
 }
 
-// BenchmarkBatchHash benchmarks batch hashing of multiple sequences.
-func BenchmarkBatchHash(b *testing.B) {
-	b.ReportAllocs()
-
-	batchSizes := []int{10, 100, 1000}
-
-	for _, batchSize := range batchSizes {
-		b.Run(fmt.Sprintf("Batch%d", batchSize), func(b *testing.B) {
-			sequences := make([][]*Node, batchSize)
-			for i := range sequences {
-				sequences[i] = GenerateNodes(100)
-			}
-
-			b.ResetTimer()
-
-			for b.Loop() {
-				BatchHash(sequences)
-			}
-		})
-	}
-}
-
-// BenchmarkHashSeqWithConfig benchmarks hashSeq with custom configuration.
-func BenchmarkHashSeqWithConfig(b *testing.B) {
-	b.ReportAllocs()
-
-	nodes := GenerateNodes(10000)
-	config := HashConfig{
-		UseSIMD:   false,
-		BatchSize: 64,
-	}
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		HashSeqWithConfig(nodes, config)
-	}
-}
-
 // BenchmarkHashSeqParallel benchmarks parallel hashing.
 func BenchmarkHashSeqParallel(b *testing.B) {
 	b.ReportAllocs()
