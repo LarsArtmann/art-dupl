@@ -237,6 +237,7 @@ func TestRunHashDetection(t *testing.T) {
 	d := newTestDetector()
 
 	data := testNodes()
+
 	tree := suffixtree.New()
 	for _, node := range data {
 		tree.Update(node)
@@ -372,6 +373,7 @@ func TestStreamDetectionResults(t *testing.T) {
 
 	resultChan := make(chan *CloneGroup, 1)
 	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+
 	tree := suffixtree.New()
 	for _, node := range data {
 		tree.Update(node)
@@ -382,6 +384,7 @@ func TestStreamDetectionResults(t *testing.T) {
 	pipeline := &pipelineResult{data: data, tree: tree}
 
 	ctx := t.Context()
+
 	err := d.streamDetectionResults(ctx, pipeline, resultChan)
 	if err != nil {
 		t.Logf("streamDetectionResults returned: %v", err)
@@ -397,6 +400,7 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 	cancel()
 
 	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+
 	tree := suffixtree.New()
 	for _, node := range data {
 		tree.Update(node)
@@ -483,6 +487,7 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 	d := newTestDetector()
 
 	data := testNodes()
+
 	tree := suffixtree.New()
 	for _, node := range data {
 		tree.Update(node)

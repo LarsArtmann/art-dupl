@@ -181,6 +181,7 @@ func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
 	applyThresholdFlag(cfg, flags)
 	applyBooleanFlags(cfg, flags)
 	applyPatternFlags(cfg, flags)
+
 	err = applyTimeoutFlag(cfg, flags)
 	if err != nil {
 		return err

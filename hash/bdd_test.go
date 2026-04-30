@@ -1,3 +1,4 @@
+// Package hash_test tests the hash-based duplicate detection.
 package hash
 
 import (
