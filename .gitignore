@@ -17,6 +17,8 @@ cover.out
 *.exe
 *.html
 !site/*.html
+# Firebase
+.firebase/
 # Output directories for reports
 reports/
 my-reports/
