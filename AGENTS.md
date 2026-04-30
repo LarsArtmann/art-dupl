@@ -790,3 +790,17 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 5. If gogenfilter adds new **direct** deps, add blank imports to `dummy/dummy.go` in `overrideModAttrs`
 
 **Dummy go.mod is auto-synced:** `builtins.readFile` reads the real go.mod at eval time, so indirect dep changes are automatic. Only new **direct** deps in gogenfilter require updating the dummy.go imports (rare).
+
+### Codebase Architecture — Key Decisions
+
+**printer/html.go split (2026-04-30):** Split into 4 files:
+- `html.go` (365L): Core struct, constructors, PrintHeader, PrintClones
+- `html_template.go` (523L): CSS/HTML template const
+- `html_diff.go` (315L): Diff visualization functions
+- `html_summary.go` (302L): Summary, footer with JS, OutputHTML
+
+**Config.Only typed as FileType (2026-04-30):** `config.Config.Only` changed from `string` to `config.FileType`. Uses `FileType.Matches()` instead of hand-rolled `matchesOnlyFilter()`. All callers updated.
+
+**Analysis timestamps as time.Time (2026-04-30):** `domain.Analysis.CreatedAt` changed from `string` to `time.Time`, `CompletedAt` from `*string` to `*time.Time`. Validation uses `IsZero()`.
+
+**Error modernization (2026-04-30):** `errors.As` → `errors.AsType` (Go 1.24+). All `//nolint:err113` replaced with typed errors from the project's error hierarchy.
