@@ -128,13 +128,6 @@ func serial(n *Node, stream *[]*Node) int {
 
 // FindSyntaxUnits finds all complete syntax units in the match group and returns them
 // with the corresponding hash.
-//
-// TODO: TYPE SAFETY ISSUE - This function uses int for positions and thresholds
-// but the domain package has strongly-typed LineNumber, BytePosition, TokenCount, Threshold.
-// Consider:
-// - Accept domain.Threshold instead of int
-// - Return domain types instead of primitive types
-// - Validate threshold at domain boundary.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	if len(m.Ps) == 0 {
 		return Match{}

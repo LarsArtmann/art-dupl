@@ -22,11 +22,6 @@ package printer
 // - Filter metrics: FilesFiltered, FilterBreakdown (NEW)
 // - Metadata: DetectionMethods
 //
-// Domain Types Status:
-// - Uses primitive types (int, float64, string) for JSON compatibility
-// - Could use domain types (FileCount, TokenCount, etc.) in future
-// - See TODO in stats.go for migration path
-//
 // JSON Marshaling:
 // - All fields are JSON tagged for easy marshaling
 // - Use printer.JSONPrinter for formatted JSON output.

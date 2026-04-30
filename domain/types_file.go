@@ -83,28 +83,3 @@ func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// BytePosition represents a byte position in a file.
-// Optimized: uint32 provides 0-4GB range (sufficient for file positions).
-type BytePosition uint32
-
-// NewBytePosition creates a validated BytePosition from a uint32.
-func NewBytePosition(pos uint32) BytePosition {
-	return BytePosition(pos)
-}
-
-// Uint32 returns the underlying uint32 value.
-func (bp BytePosition) Uint32() uint32 {
-	return uint32(bp)
-}
-
-// MarshalJSON implements json.Marshaler for BytePosition.
-func (bp BytePosition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(uint32(bp)) //nolint:wrapcheck // Standard JSON marshaling
-}
-
-// UnmarshalJSON implements json.Unmarshaler for BytePosition.
-func (bp *BytePosition) UnmarshalJSON(data []byte) error {
-	return unmarshalUintGeneric(data, "BytePosition", func(n uint32) {
-		*bp = BytePosition(n)
-	})
-}
