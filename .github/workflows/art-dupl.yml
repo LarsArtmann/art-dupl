@@ -18,7 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26rc2"
+          go-version: "stable"
 
       - name: Build
         run: just build
@@ -40,7 +40,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26rc2"
+          go-version: "stable"
 
       - name: golangci-lint
         run: just check
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26rc2"
+          go-version: "stable"
 
       - name: Generate Coverage
         run: |
@@ -80,7 +80,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26rc2"
+          go-version: "stable"
 
       - name: Build art-dupl
         run: just build
