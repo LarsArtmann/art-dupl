@@ -765,3 +765,28 @@ This project follows strict quality standards:
 - Makefile: Only use if justfile unavailable
 - Makefile uses `GOEXPERIMENT=jsonv2` for JSON v2 support
 - Justfile builds output to `dist/art-dupl` directory
+
+### Nix Flake — Private Dependency Pattern
+
+The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase dummy/replace pattern**:
+
+**Why it's needed:** `buildGoModule` creates two derivations:
+1. **goModules** (fixed-output): Runs `go mod vendor` in sandbox (no SSH, no store path refs)
+2. **Main build** (regular): Compiles the binary (CAN reference store paths)
+
+**How it works:**
+- `gogenfilter` is a flake input fetched via SSH at evaluation time (`flake = false`)
+- `builtins.readFile "${gogenfilter}/go.mod"` reads the real go.mod at Nix eval time
+- In goModules (`overrideModAttrs`): dummy dir with real go.mod/go.sum + `-replace` to `./dummy`
+- In main build (`preBuild`): swap dummy for real gogenfilter from flake input, patch `vendor/modules.txt`
+
+**Key files:** `flake.nix:27-30` (eval-time reads), `flake.nix:54-70` (overrideModAttrs), `flake.nix:72-79` (preBuild)
+
+**When gogenfilter changes:**
+1. Update `rev=` in `flake.nix` line 7
+2. Set `vendorHash = ""` (empty string, NOT null)
+3. Run `nix build` — it will fail with the correct hash
+4. Copy that hash into `vendorHash`
+5. If gogenfilter adds new **direct** deps, add blank imports to `dummy/dummy.go` in `overrideModAttrs`
+
+**Dummy go.mod is auto-synced:** `builtins.readFile` reads the real go.mod at eval time, so indirect dep changes are automatic. Only new **direct** deps in gogenfilter require updating the dummy.go imports (rare).
