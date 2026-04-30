@@ -3,10 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    gogenfilter = {
+      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=5957230e34ed14cde1999d7a379ef71a6989e3a1";
+      flake = false;
+    };
   };
 
   outputs =
-    { self, nixpkgs }:
+    { self, nixpkgs, gogenfilter }:
     let
       systems = [
         "x86_64-linux"
@@ -31,10 +35,29 @@
 
           src = pkgs.lib.cleanSource ./.;
 
-          # Vendored dependencies are required because gogenfilter is a
-          # private repository. The vendor/ directory must be kept in sync
-          # with go.mod via `go mod vendor`.
-          vendorHash = null;
+          vendorHash = "sha256-rvzXCdcx2EwxjBYicMkEYV6z/ExZlRQhH09ys4WB/Ms=";
+
+          overrideModAttrs = old: {
+            preBuild = ''
+              mkdir -p dummy
+              cat > dummy/go.mod << 'DUMMYEOF'
+              module github.com/LarsArtmann/gogenfilter
+              go 1.26
+              DUMMYEOF
+              echo 'package gogenfilter' > dummy/dummy.go
+              go mod edit -replace=github.com/LarsArtmann/gogenfilter=./dummy
+            '';
+          };
+
+          preBuild = ''
+            cp -rL vendor vendor-tmp
+            chmod -R u+w vendor-tmp
+            rm -rf vendor
+            mv vendor-tmp vendor
+            rm -rf vendor/github.com/LarsArtmann/gogenfilter
+            mkdir -p vendor/github.com/LarsArtmann/gogenfilter
+            cp -r ${gogenfilter}/. vendor/github.com/LarsArtmann/gogenfilter/
+          '';
 
           ldflags = [
             "-s"

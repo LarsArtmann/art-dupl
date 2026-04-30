@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "gogenfilter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777066692,
+        "narHash": "sha256-NeHQv1r9vKpQHz9BHCBXuT/cc8TcGFu1Golwh86YQ4c=",
+        "ref": "refs/heads/master",
+        "rev": "5957230e34ed14cde1999d7a379ef71a6989e3a1",
+        "revCount": 249,
+        "type": "git",
+        "url": "ssh://git@github.com/LarsArtmann/gogenfilter"
+      },
+      "original": {
+        "rev": "5957230e34ed14cde1999d7a379ef71a6989e3a1",
+        "type": "git",
+        "url": "ssh://git@github.com/LarsArtmann/gogenfilter"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1777270315,
@@ -18,6 +35,7 @@
     },
     "root": {
       "inputs": {
+        "gogenfilter": "gogenfilter",
         "nixpkgs": "nixpkgs"
       }
     }
