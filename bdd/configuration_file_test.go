@@ -297,11 +297,11 @@ var _ = Describe("Configuration File Loading", func() {
 			runConfigTest(configContent, sqlcCode, []string{"query1.go", "query2.go"})
 		})
 
-		It("should load include-templ setting from config", func() {
+		It("should respect excludeTempl setting from config", func() {
 			configContent := `{
 				"threshold": 15,
 				"filterGenerated": true,
-				"includeTempl": true
+				"excludeTempl": true
 			}`
 			runConfigTest(configContent, templCode, []string{"comp1.go", "comp2.go"})
 		})

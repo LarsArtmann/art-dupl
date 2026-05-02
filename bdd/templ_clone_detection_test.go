@@ -32,7 +32,7 @@ var _ = Describe("Templ Clone Detection", func() {
 		err = setup.CreateTestFile(filename2, templCode2)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--include-templ", formatFlag, "--threshold", threshold)
+		output, err := setup.RunArtDupl(formatFlag, "--threshold", threshold)
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(output)
@@ -114,8 +114,8 @@ templ PageFooter() {
 			err = setup.CreateTestFile("page.templ", templCode2)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run art-dupl with --include-templ flag and low threshold
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "5")
+			// Run art-dupl (templ files included by default)
+			output, err := setup.RunArtDupl("--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -162,7 +162,7 @@ templ Panel(heading string, text string) {
 			err = setup.CreateTestFile("panel.templ", panelCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -196,7 +196,7 @@ templ Menu(options []string) {
 			err = setup.CreateTestFile("menu.templ", menuCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -229,7 +229,7 @@ templ Toggle(visible bool, text string) {
 			err = setup.CreateTestFile("toggle.templ", toggleCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -240,7 +240,7 @@ templ Toggle(visible bool, text string) {
 	})
 
 	Context("When mixing .templ and .go files", func() {
-		It("should process both file types when --include-templ is used", func() {
+		It("should exclude .templ files when --exclude-templ is used", func() {
 			// Create a Go file with duplicate code
 			goCode := `package main
 
@@ -266,13 +266,13 @@ templ Display(name string) {
 			err = setup.CreateTestFile("display.templ", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run without --include-templ - should only analyze .go files
-			output, err := setup.RunArtDupl("--threshold", "3")
+			// Run with --exclude-templ - should only analyze .go files
+			output, err := setup.RunArtDupl("--exclude-templ", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
 
-			// .templ files should not appear without the flag (they're filtered by default)
+			// .templ files should not appear when excluded
 			Expect(outputStr).ToNot(ContainSubstring("display.templ"))
 		})
 	})
@@ -332,7 +332,7 @@ css buttonStyles() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Use a very low threshold to try to detect any clones
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "2")
+			output, err := setup.RunArtDupl("--threshold", "2")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -381,7 +381,7 @@ templ LoginForm(url string) {
 			err = setup.CreateTestFile("login.templ", loginCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--include-templ", "--threshold", "10")
+			output, err := setup.RunArtDupl("--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

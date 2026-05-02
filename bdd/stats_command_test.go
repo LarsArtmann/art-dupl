@@ -14,7 +14,7 @@ import (
 // These tests verify the stats command behavior, including:
 // - Default filtering of generated code (templ, sqlc)
 // - Stats output formats (text, JSON, CSV)
-// - Filter override flags (--include-sqlc, --include-templ)
+// - Filter override flags (--include-sqlc, --exclude-templ)
 // - Stats accuracy and metrics calculation
 
 // testCodeTemplates for reuse across tests to avoid duplication.
@@ -56,7 +56,7 @@ func %s() {
 }`
 )
 
-// assertGeneratedFilesFiltered creates test files and verifies generated files are filtered.
+// assertGeneratedFilesFiltered creates test files and verifies generated files are filtered by default.
 func assertGeneratedFilesFiltered(
 	setup *testutil.BDDTestSetup,
 	regularCode string,
@@ -80,13 +80,13 @@ func assertGeneratedFilesFiltered(
 	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
 }
 
-// assertGeneratedFilesIncluded creates test files and verifies generated files are included when flag is set.
-func assertGeneratedFilesIncluded(
+// assertGeneratedFilesFilteredWithFlag creates test files and verifies generated files are filtered with a specific flag.
+func assertGeneratedFilesFilteredWithFlag(
 	setup *testutil.BDDTestSetup,
 	regularCode string,
 	generatedFilename string,
 	generatedCode string,
-	includeFlag string,
+	filterFlag string,
 ) {
 	GinkgoHelper()
 
@@ -95,7 +95,34 @@ func assertGeneratedFilesIncluded(
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunSubcommand("stats", includeFlag, "--threshold", "5")
+	output, err := setup.RunSubcommand("stats", filterFlag, "--threshold", "5")
+	Expect(err).ToNot(HaveOccurred())
+
+	outputStr := string(output)
+
+	Expect(outputStr).To(ContainSubstring("regular1.go"))
+	Expect(outputStr).To(ContainSubstring("regular2.go"))
+	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
+}
+
+// assertGeneratedFilesIncluded creates test files and verifies generated files are included when flag is set.
+func assertGeneratedFilesIncluded(
+	setup *testutil.BDDTestSetup,
+	regularCode string,
+	generatedFilename string,
+	generatedCode string,
+	includeFlags ...string,
+) {
+	GinkgoHelper()
+
+	err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
+	Expect(err).NotTo(HaveOccurred())
+	err = setup.CreateTestFile(generatedFilename, generatedCode)
+	Expect(err).NotTo(HaveOccurred())
+
+	args := []string{"stats", "--threshold", "5"}
+	args = append(args, includeFlags...)
+	output, err := setup.RunSubcommand(args...)
 	Expect(err).ToNot(HaveOccurred())
 
 	outputStr := string(output)
@@ -111,11 +138,11 @@ var _ = Describe("Stats Command", func() {
 	})
 
 	Context("When running stats with default filtering", func() {
-		It("should filter templ files by default", func() {
+		It("should exclude templ files when --exclude-templ is used", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
-			assertGeneratedFilesFiltered(setup, regularCode, "page_templ.go", templCode)
+			assertGeneratedFilesFilteredWithFlag(setup, regularCode, "page_templ.go", templCode, "--exclude-templ")
 		})
 
 		It("should filter sqlc files by default", func() {
@@ -136,8 +163,8 @@ func Component() templ.Component { return nil }`
 			err = setup.CreateTestFile("page_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with verbose flag
-			output, err := setup.RunSubcommand("stats", "--verbose", "--threshold", "5")
+			// Run with verbose flag and --exclude-templ to filter templ file
+			output, err := setup.RunSubcommand("stats", "--verbose", "--exclude-templ", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -148,7 +175,7 @@ func Component() templ.Component { return nil }`
 	})
 
 	Context("When overriding default filtering", func() {
-		It("should include templ files when --include-templ is specified", func() {
+		It("should include templ files by default", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
@@ -157,7 +184,6 @@ func Component() templ.Component { return nil }`
 				regularCode,
 				"page_templ.go",
 				templCode,
-				"--include-templ",
 			)
 		})
 
@@ -189,7 +215,6 @@ func Component() templ.Component { return nil }`
 			// Run stats with both include flags
 			output, err := setup.RunSubcommand(
 				"stats",
-				"--include-templ",
 				"--include-sqlc",
 				"--threshold",
 				"5",

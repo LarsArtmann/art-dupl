@@ -89,7 +89,7 @@ type Config struct {
 	// IncludeSQLC includes sqlc.dev generated files (only when filterGenerated is true)
 	IncludeSQLC bool `json:"includeSQLC,omitempty"`
 
-	// IncludeTempl includes templ.guide generated files (only when filterGenerated is true)
+	// IncludeTempl includes .templ source files in analysis (default: true)
 	IncludeTempl bool `json:"includeTempl,omitempty"`
 
 	// IncludeProtobuf includes protobuf generated files (.pb.go, _grpc.pb.go)
@@ -167,7 +167,7 @@ func DefaultConfig() *Config {
 		Timeout:            0,
 		FilterGenerated:    false,
 		IncludeSQLC:        false,
-		IncludeTempl:       false,
+		IncludeTempl:       true,
 		IncludeProtobuf:    false,
 		IncludeMockgen:     false,
 		IncludeStringer:    false,

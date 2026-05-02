@@ -166,12 +166,12 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (sqlc)")
 	}
 
-	// Filter templ files by default (filename-based detection is very fast)
-	// User can opt-out with --include-templ
+	// Filter templ files only when --exclude-templ is set
+	// (templ files are included by default)
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, gogenfilter.FilterTempl)
 
-		verboseFprintf(cfg, "Auto-generated code filtering enabled (templ)")
+		verboseFprintf(cfg, "Templ file exclusion enabled (--exclude-templ)")
 	}
 
 	if !cfg.IncludeProtobuf {

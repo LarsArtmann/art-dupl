@@ -30,7 +30,7 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		Bool("include-sqlc", false, "include sqlc.dev generated files (override auto-detection)")
 	cmd.Flags().
-		Bool("include-templ", false, "include templ.guide generated files (override default filtering)")
+		Bool("exclude-templ", false, "exclude .templ source files from analysis")
 	cmd.Flags().
 		Bool("include-protobuf", false, "include protobuf generated files (.pb.go, _grpc.pb.go)")
 	cmd.Flags().

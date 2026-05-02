@@ -238,7 +238,7 @@ func TestAddFlags(t *testing.T) {
 		"output-dir",
 		"filter-generated",
 		"include-sqlc",
-		"include-templ",
+		"exclude-templ",
 		"include-protobuf",
 		"include-mockgen",
 		"include-stringer",
