@@ -329,12 +329,14 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 
 ### File Processing
 
-- Only processes `.go` files by default
+- Only processes `.go` and `.templ` files by default
 - Vendor directory excluded by default (use `-vendor` flag)
 - Can accept file paths from stdin with `-files` flag
 - **Smart filtering** for generated code:
   - SQLC files auto-detected via `sqlc.yaml` in parent directories
-  - Templ files filtered by default (use `-include-templ` to include)
+  - Templ `.templ` files included by default (use `--exclude-templ` to exclude)
+  - Protobuf `.pb.go` files filtered with `--filter-generated`
+  - Mockgen and stringer generated files filtered with `--filter-generated`
   - Custom patterns via `-include-pattern` and `-exclude-pattern`
   - `-filter-generated` enables smart detection for both SQLC and Templ
 
@@ -348,19 +350,21 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 
 ### Semantic Detection
 
-- **Default**: Semantic-aware matching based on identifier names (ON by default)
-- Default behavior: Clones matched by both structure AND identifier semantics
-- With `--structural`: Clones matched by AST structure only (e.g., `a.String()` = `b.Error()`)
-- Example: `a.String()` will NOT match `b.Error()` (different method names) by default
+- **Default**: Structural-only matching (AST structure, ignoring identifier names). Config default: `Semantic: false`
+- With `--semantic`: Clones matched by both structure AND identifier semantics (e.g., `a.String()` ≠ `b.Error()`)
+- With `--structural` (explicit): Same as default — matches by AST structure only (e.g., `a.String()` = `b.Error()`)
+- Example: `a.String()` WILL match `b.Error()` by default (structural-only); with `--semantic`, they will NOT match
 - Useful for reducing false positives from similar-looking but semantically different code
 - Implementation: FNV-1a hash of identifiers encoded into AST node types
 
 ### Output Formats
 
 - **Default**: Text output with file paths and line numbers
-- **HTML**: Includes actual duplicate code fragments with syntax highlighting
+- **HTML**: Includes actual duplicate code fragments with syntax highlighting and diff visualization
 - **JSON**: Structured output with statistics and clone groups (JSONv2)
+- **Simple-JSON**: Simpler JSON format with impact score and instances
 - **Plumbing**: Machine-readable format for script integration
+- **SARIF**: SARIF 2.1.0 for GitHub Advanced Security / CodeQL integration
 - **Stats**: Multiple formats (text, JSON, CSV) via stats subcommand
 - Output directory support via `-all` flag with `--output-dir`
 
@@ -369,6 +373,7 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - **size**: Shows largest clones first (highest token count) - default
 - **occurrence**: Shows most widespread clones first (most files)
 - **hash**: Alphabetical order by hash value
+- **total-tokens**: Highest total token count across all instances
 - Configured via `-sort` flag
 
 ### Threshold Configuration

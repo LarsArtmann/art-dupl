@@ -120,7 +120,8 @@ func assertGeneratedFilesIncluded(
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	args := []string{"stats", "--threshold", "5"}
+	args := make([]string, 0, 3+len(includeFlags))
+	args = append(args, "stats", "--threshold", "5")
 	args = append(args, includeFlags...)
 	output, err := setup.RunSubcommand(args...)
 	Expect(err).ToNot(HaveOccurred())

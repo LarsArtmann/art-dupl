@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-05-01**
+**Last Updated: 2026-05-02**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -15,9 +15,10 @@ Actionable items planned for the next 2-4 weeks.
 - [ ] Update README with new default semantic behavior and install commands
 - [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
 - [ ] Implement CSV output format properly using encoding/csv
-- [ ] Type `domain.Options.OutputFormat` as config.OutputFormat (currently string)
 - [ ] Consolidate threshold validation: 3 error sentinels (pkg/artdupl, domain, config) → 1
 - [ ] Unify enum patterns: domain enums should use config's generic helpers
+- [ ] Add README sections for SARIF, --only, --diff, --exclude-templ, total-tokens sort
+- [ ] Fix semantic default description in README (structural-only is default, not semantic)
 
 ## 🟢 LOW Priority
 

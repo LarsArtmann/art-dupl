@@ -1,0 +1,135 @@
+graph TB
+    subgraph CLI["cmd/"]
+        Root["root command"]
+        Stats["stats command"]
+        ConfigBuilder["config_builder"]
+        RunAnalysis["run_analysis"]
+        RunOutput["run_output"]
+        RunCrawl["run_crawl"]
+        RunFlags["run_flags"]
+    end
+
+    subgraph SDK["pkg/artdupl/"]
+        Detector["detector (SDK)"]
+        Pipeline["detector_pipeline"]
+        Types["types.go"]
+    end
+
+    subgraph Config["config/"]
+        CfgStruct["Config struct<br/>(28 fields)"]
+        Enums["DetectionMethod<br/>OutputFormat<br/>SortCriteria<br/>DiffMode<br/>FileType"]
+    end
+
+    subgraph Detection["detection/"]
+        MultiDet["MultiDetector"]
+        TodoDet["TodoDetector<br/>(not wired)"]
+        LegacyDet["LegacyDetector<br/>(not wired)"]
+    end
+
+    subgraph Job["job/"]
+        Parse["Parse / ParseParallel"]
+        BuildTree["BuildTree"]
+        IncParser["IncrementalParser"]
+    end
+
+    subgraph Syntax["syntax/"]
+        Node["Node struct"]
+        Golang["syntax/golang/<br/>Parse, 45 node types"]
+        Templ["syntax/templ/<br/>Parse, 28 node types"]
+        SemHash["identifier_hash<br/>FNV-1a semantic"]
+    end
+
+    subgraph SuffixTree["suffixtree/"]
+        STree["STree<br/>Ukkonen's algorithm"]
+    end
+
+    subgraph Hash["hash/"]
+        FileDet["FileDetector<br/>XXH3 streaming"]
+    end
+
+    subgraph Printer["printer/"]
+        TextP["TextPrinter"]
+        HTMLP["HTMLPrinter"]
+        JSONP["JSONPrinter"]
+        PlumbP["PlumbingPrinter"]
+        SARIFP["SARIFPrinter"]
+        StatsP["StatsPrinter"]
+        SortMod["sorting (4 files)"]
+        Classify["clone_classify"]
+        DiffMod["diff engine"]
+    end
+
+    subgraph Cache["cache/"]
+        FileCache["FileCache<br/>SHA1 + gob"]
+    end
+
+    subgraph Domain["domain/"]
+        Fpath["Filepath"]
+        LNum["LineNumber"]
+        Severity["CloneSeverity"]
+    end
+
+    subgraph Support["Support"]
+        Errors["errors/<br/>11 error types"]
+        Logger["pkg/logger"]
+        Position["pkg/position"]
+        Format["pkg/format"]
+    end
+
+    CLI --> Config
+    CLI --> Detection
+    CLI --> Job
+    CLI --> Printer
+    CLI --> SuffixTree
+    CLI --> Syntax
+    CLI --> Errors
+
+    SDK --> Config
+    SDK --> Detection
+    SDK --> Job
+    SDK --> Syntax
+    SDK --> SuffixTree
+    SDK --> Errors
+    SDK --> Logger
+    SDK --> Position
+
+    Detection --> Config
+    Detection --> Hash
+    Detection --> SuffixTree
+    Detection --> Syntax
+    Detection --> Logger
+    Detection --> Domain
+
+    Job --> Syntax
+    Job --> SuffixTree
+    Job --> Logger
+    Job --> Cache
+
+    Syntax --> SuffixTree
+
+    Printer --> Config
+    Printer --> Syntax
+    Printer --> Errors
+
+    Hash --> Syntax
+    Hash --> Format
+    Hash --> Logger
+
+    Cache --> Errors
+    Cache --> Syntax
+
+    Config --> Errors
+
+    Golang --> SemHash
+    Golang --> Node
+    Templ --> Node
+
+    classDef godNode fill:#ff6b6b,stroke:#c0392b,color:#fff
+    classDef deadNode fill:#95a5a6,stroke:#7f8c8d,color:#fff
+    classDef shallowNode fill:#f39c12,stroke:#d35400,color:#fff
+
+    class RunAnalysis godNode
+    class CfgStruct godNode
+    class TodoDet deadNode
+    class LegacyDet deadNode
+    class Domain shallowNode

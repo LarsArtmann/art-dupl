@@ -63,6 +63,7 @@ func assertTemplFileFiltered(
 	Expect(err).NotTo(HaveOccurred())
 
 	output, err := setup.RunArtDupl("--exclude-templ", "--threshold", threshold)
+
 	Expect(err).ToNot(HaveOccurred())
 
 	outputStr := string(output)
@@ -70,6 +71,7 @@ func assertTemplFileFiltered(
 	for _, file := range regularFiles {
 		Expect(outputStr).To(ContainSubstring(file))
 	}
+
 	Expect(outputStr).ToNot(ContainSubstring(generatedFile))
 
 	return outputStr
@@ -114,6 +116,7 @@ func assertGeneratedFileIncluded(
 	} else {
 		output, err = setup.RunArtDupl("--threshold", threshold)
 	}
+
 	Expect(err).ToNot(HaveOccurred())
 
 	outputStr := string(output)

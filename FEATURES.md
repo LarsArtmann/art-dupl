@@ -1,258 +1,256 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-02-12  
+> **Last Updated:** 2026-05-02
 > **Version:** Analysis of fork branch
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), and 7 output formats.
+
+---
 
 ## 🚀 Core Features
 
 ### Supported Languages
 
-|           | Language | Extension        | Status                                                              | Description |
-| --------- | -------- | ---------------- | ------------------------------------------------------------------- | ----------- |
-| **Go**    | `.go`    | FULLY_FUNCTIONAL | Primary language with full AST analysis                             |
-| **Templ** | `.templ` | FULLY_FUNCTIONAL | Templ template files via pure Go parser (use `-include-templ` flag) |
+| Language   | Extension | Status           | Notes                                      |
+| ---------- | --------- | ---------------- | ------------------------------------------ |
+| **Go**     | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 45 node types           |
+| **Templ**  | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, 28 node types, ON by default |
 
 ### Detection Methods
 
-| Feature                              | Status           | Description                                                                     |
-| ------------------------------------ | ---------------- | ------------------------------------------------------------------------------- |
-| **Suffix Tree Detection (art-dupl)** | FULLY_FUNCTIONAL | Original detection method using suffix tree algorithms on serialized ASTs       |
-| **Hash-Based Detection**             | FULLY_FUNCTIONAL | Alternative detection method using SHA1 hashing for faster clone identification |
-| **Multi-Detection Mode**             | FULLY_FUNCTIONAL | Run both detection methods simultaneously for comprehensive analysis            |
+| Feature                              | Status           | Description                                                                   |
+| ------------------------------------ | ---------------- | ----------------------------------------------------------------------------- |
+| **Suffix Tree Detection (art-dupl)** | FULLY_FUNCTIONAL | Ukkonen's algorithm on serialized ASTs, O(1) map-based transitions            |
+| **Hash-Based Detection**             | FULLY_FUNCTIONAL | XXH3 streaming hash (~20x faster than SHA-256), content-addressed dedup       |
+| **Multi-Detection Mode**             | FULLY_FUNCTIONAL | Run both methods simultaneously via goroutines, results deduplicated          |
+| **TODO/FIXME Detection**             | DEFINED_ONLY     | `TodoDetector` implemented in detection/todos.go but not wired to CLI         |
+| **Legacy Pattern Detection**         | DEFINED_ONLY     | `LegacyDetector` implemented in detection/todos.go but not wired to CLI       |
 
 ### Output Formats
 
 | Feature                      | Status           | Description                                                             |
 | ---------------------------- | ---------------- | ----------------------------------------------------------------------- |
-| **Text Output**              | FULLY_FUNCTIONAL | Human-readable clone listing with file paths and line numbers (default) |
-| **HTML Output**              | FULLY_FUNCTIONAL | Detailed report with syntax-highlighted code fragments                  |
-| **JSON Output**              | FULLY_FUNCTIONAL | Structured data with metadata, statistics, and summary information      |
-| **Plumbing Output**          | FULLY_FUNCTIONAL | Machine-readable format for script integration and CI/CD                |
-| **Batch Generation (--all)** | FULLY_FUNCTIONAL | Generate all output formats for all detection methods at once           |
+| **Text Output**              | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints  |
+| **HTML Output**              | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization       |
+| **JSON Output**              | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary          |
+| **Simple-JSON Output**       | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count       |
+| **Plumbing Output**          | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD              |
+| **SARIF Output**             | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security / CodeQL integration           |
+| **CSV Output**               | PARTIALLY_FUNCTIONAL | Stats CSV works; general clone CSV uses manual formatting, not encoding/csv |
+
+### Batch & Report Generation
+
+| Feature                      | Status           | Description                                                    |
+| ---------------------------- | ---------------- | -------------------------------------------------------------- |
+| **All Formats (--all)**      | FULLY_FUNCTIONAL | Generate all output formats for all detection methods at once  |
+| **Custom Output Directory**  | FULLY_FUNCTIONAL | `--output-dir` specifies destination for batch generation      |
+| **HTML Diff Visualization**  | FULLY_FUNCTIONAL | Side-by-side or inline diff via LCS algorithm, configurable with `--diff` |
 
 ### Statistics Subcommand
 
 | Feature             | Status           | Description                                            |
 | ------------------- | ---------------- | ------------------------------------------------------ |
-| **Text Stats**      | FULLY_FUNCTIONAL | Human-readable statistics summary (default)            |
+| **Text Stats**      | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                 |
 | **JSON Stats**      | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration            |
 | **CSV Stats**       | FULLY_FUNCTIONAL | Spreadsheet-compatible format for reporting            |
-| **Clone Metrics**   | FULLY_FUNCTIONAL | Total clones, files affected, duplication percentage   |
-| **Estimated Lines** | FULLY_FUNCTIONAL | Actual line count from parsed files (not estimated)    |
-| **Spread Analysis** | FULLY_FUNCTIONAL | Complexity scores showing how widely clones are spread |
-
-### Smart Filtering
-
-| Feature                    | Status           | Description                                                       |
-| -------------------------- | ---------------- | ----------------------------------------------------------------- |
-| **SQLC Detection**         | FULLY_FUNCTIONAL | Auto-detects and filters SQLC generated code                      |
-| **Templ Filtering**        | FULLY_FUNCTIONAL | Filters .templ files by default (use `-include-templ` to include) |
-| **Custom Include/Exclude** | FULLY_FUNCTIONAL | Pattern-based filtering with glob syntax                          |
-| **Filter-Generated Flag**  | FULLY_FUNCTIONAL | Single flag to filter both SQLC and Templ generated code          |
+| **Health Grade**    | FULLY_FUNCTIONAL | A-F health grade based on duplication metrics          |
+| **Clone Metrics**   | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %    |
+| **Spread Analysis** | FULLY_FUNCTIONAL | Complexity scores, severity distributions              |
 
 ### Sorting Options
 
 | Feature                  | Status           | Description                                                  |
 | ------------------------ | ---------------- | ------------------------------------------------------------ |
-| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first)             |
+| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first) — default   |
 | **Occurrence Sorting**   | FULLY_FUNCTIONAL | Sort clone groups by number of files (most widespread first) |
 | **Hash Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical)               |
 | **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort clone groups by total token count (highest total first) |
 
-## 🔧 Configuration Features
+---
 
-| Feature                      | Status           | Description                                          |
-| ---------------------------- | ---------------- | ---------------------------------------------------- |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | All settings configurable via CLI flags              |
-| **JSON Configuration Files** | FULLY_FUNCTIONAL | Persistent configuration in JSON format              |
-| **Configuration Merging**    | FULLY_FUNCTIONAL | Intelligent merging of file and CLI configurations   |
-| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum token sequence size (default: 15) |
-| **Vendor Directory Control** | FULLY_FUNCTIONAL | Option to include/exclude vendor directory           |
-| **File Input from Stdin**    | FULLY_FUNCTIONAL | Read file paths from stdin with `-files` flag        |
+## 🔍 Semantic Detection
 
-## 🖥️ Professional CLI Features (via Fang)
+| Feature                    | Status           | Description                                                  |
+| -------------------------- | ---------------- | ------------------------------------------------------------ |
+| **Semantic-Aware Mode**    | FULLY_FUNCTIONAL | FNV-1a 24-bit hash of identifiers; clones matched by structure + semantics |
+| **Structural-Only Mode**   | FULLY_FUNCTIONAL | `--structural` disables semantic; matches by AST shape only  |
+| **Identifier Hashing**     | FULLY_FUNCTIONAL | Multi-identifier hashing (receiver + method name combined)   |
+
+**Note:** Config default is `Semantic: false` (structural-only). Flag description says "already the default" which is inconsistent — see Known Issues.
+
+---
+
+## 🛡️ Smart Filtering
+
+| Feature                       | Status           | Description                                                        |
+| ----------------------------- | ---------------- | ------------------------------------------------------------------ |
+| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`   |
+| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` files included by default; `--exclude-templ` to exclude   |
+| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                             |
+| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                   |
+| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                  |
+| **Filter-Generated Flag**     | FULLY_FUNCTIONAL | Single `--filter-generated` for sqlc + templ + protobuf + mockgen  |
+| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns            |
+| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default            |
+| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection               |
+| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                            |
+
+---
+
+## ⚡ Performance & Concurrency
+
+| Feature                    | Status           | Description                                                  |
+| -------------------------- | ---------------- | ------------------------------------------------------------ |
+| **Parallel Parsing**       | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)            |
+| **Incremental Analysis**   | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag          |
+| **Git-Aware Incremental**  | FULLY_FUNCTIONAL | `--since <git-ref>` for git-aware incremental mode           |
+| **Cache Management**       | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization |
+| **Execution Timeout**      | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)          |
+| **Performance Profiling**  | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture       |
+| **SIMD Optimizations**     | PARTIALLY_FUNCTIONAL | `internal/simd` exists; 6 SIMD TODOs remain in syntax/hash_simd.go |
+
+---
+
+## 🖥️ Professional CLI (via Fang)
 
 | Feature                     | Status           | Description                                                      |
 | --------------------------- | ---------------- | ---------------------------------------------------------------- |
-| **Styled Help Output**      | FULLY_FUNCTIONAL | Rich, themed help text with examples                             |
-| **Auto-Completion**         | FULLY_FUNCTIONAL | Tab completion for bash, zsh, fish, and powershell shells        |
-| **Man Page Generation**     | FULLY_FUNCTIONAL | Generate manual pages for documentation                          |
-| **Version Information**     | FULLY_FUNCTIONAL | Detailed version, commit, and build information                  |
-| **Error Handling**          | FULLY_FUNCTIONAL | Context-aware error messages with suggestions                    |
-| **Completion Descriptions** | FULLY_FUNCTIONAL | Option to disable completion descriptions with --no-descriptions |
+| **Styled Help Output**      | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                        |
+| **Shell Completion**        | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option      |
+| **Man Page Generation**     | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                            |
+| **Version Information**     | FULLY_FUNCTIONAL | Version, commit, build date                                      |
+| **Configurable Verbosity**  | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose)                            |
 
-## 🔍 Advanced Features
+---
 
-| Feature                     | Status               | Description                                                  |
-| --------------------------- | -------------------- | ------------------------------------------------------------ |
-| **Verbose Logging**         | FULLY_FUNCTIONAL     | Detailed progress information with `-v` flag                 |
-| **Custom Output Directory** | FULLY_FUNCTIONAL     | Specify output directory for batch generation                |
-| **Performance Profiling**   | PARTIALLY_FUNCTIONAL | Hidden `--profile` flag exists but implementation incomplete |
-| **Execution Timeout**       | PARTIALLY_FUNCTIONAL | Hidden `--timeout` flag exists but implementation incomplete |
+## 🔧 Configuration
 
-## 📊 Analysis Features
+| Feature                      | Status           | Description                                          |
+| ---------------------------- | ---------------- | ---------------------------------------------------- |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 30+ flags for full control                           |
+| **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct    |
+| **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults |
+| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum token sequence size (default: 15) |
+| **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory               |
+| **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin         |
 
-| Feature                | Status           | Description                                      |
-| ---------------------- | ---------------- | ------------------------------------------------ |
-| **File Counting**      | FULLY_FUNCTIONAL | Counts and reports total files analyzed          |
-| **Clone Grouping**     | FULLY_FUNCTIONAL | Groups duplicates by hash signature              |
-| **Statistics Summary** | FULLY_FUNCTIONAL | JSON output includes comprehensive statistics    |
-| **Fragment Analysis**  | FULLY_FUNCTIONAL | Analyzes code fragments with start/end positions |
+---
+
+## 📦 SDK / Programmatic API
+
+| Feature                    | Status           | Description                                                |
+| -------------------------- | ---------------- | ---------------------------------------------------------- |
+| **Detector Interface**     | FULLY_FUNCTIONAL | `FindClones()`, `FindClonesStream()`, `Close()`            |
+| **Options Builder**        | FULLY_FUNCTIONAL | Full configuration via `Options` struct                    |
+| **Progress Callbacks**     | FULLY_FUNCTIONAL | Stage, completed, total, percentage, current file          |
+| **Result Type**            | FULLY_FUNCTIONAL | CloneGroups, Summary, Metadata                             |
+| **Validation**             | FULLY_FUNCTIONAL | 20+ sentinel errors, `ValidateOptions()`, `Clone.IsValid()` |
+| **Custom FileReader**      | FULLY_FUNCTIONAL | Injectable file reader for testing/custom sources          |
+
+---
+
+## 🧪 Testing
+
+| Feature                | Status           | Description                                          |
+| ---------------------- | ---------------- | ---------------------------------------------------- |
+| **Unit Tests**         | FULLY_FUNCTIONAL | Standard `testing` package, table-driven tests       |
+| **BDD Tests**          | FULLY_FUNCTIONAL | Ginkgo/Gomega in `bdd/` directory, user-focused      |
+| **Integration Tests**  | FULLY_FUNCTIONAL | CLI integration tests in `cmd/`                      |
+| **Golden File Tests**  | FULLY_FUNCTIONAL | HTML output golden testing                           |
+| **Fuzz Tests**         | FULLY_FUNCTIONAL | Property-based testing in `fuzz/` directory          |
+| **Benchmarks**         | FULLY_FUNCTIONAL | `_bench_test.go` files with allocation reporting     |
+| **Race Detection**     | FULLY_FUNCTIONAL | All tests pass with `-race` flag                     |
+
+---
+
+## 🏗️ Architecture Components
+
+| Component        | Status           | Description                                      |
+| ---------------- | ---------------- | ------------------------------------------------ |
+| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions |
+| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization  |
+| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental  |
+| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification        |
+| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                    |
+| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation              |
+| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines        |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys            |
+| **domain/**      | FULLY_FUNCTIONAL | Value objects: Filepath, LineNumber, CloneSeverity |
+| **errors/**      | FULLY_FUNCTIONAL | 11 error types, typed wrapping, stack traces     |
+| **adapter/**     | FULLY_FUNCTIONAL | Printer adapter pattern for format abstraction   |
+| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface               |
+
+---
+
+## 🔮 Experimental / In Progress
+
+| Feature                   | Status               | Description                                           |
+| ------------------------- | -------------------- | ----------------------------------------------------- |
+| **Performance Profiling** | EXPERIMENTAL         | `--profile` flag exists, pprof capture works          |
+| **SIMD Optimizations**    | PARTIALLY_FUNCTIONAL | Framework in place, 6 items remaining                 |
+| **CSV Clone Output**      | PARTIALLY_FUNCTIONAL | Stats CSV works; clone CSV not using encoding/csv     |
+| **TODO Detector**         | DEFINED_ONLY         | Implemented but not exposed via CLI                   |
+| **Legacy Detector**       | DEFINED_ONLY         | Implemented but not exposed via CLI                   |
+
+---
 
 ## 🚫 Known Limitations
 
-| Limitation          | Impact | Status                                             |
-| ------------------- | ------ | -------------------------------------------------- |
-| **Go & Templ Only** | High   | Only analyzes Go (.go) and Templ (.templ) files    |
-| **Large Files**     | Medium | May have performance issues with very large files  |
-| **Memory Usage**    | Medium | Can consume significant memory for large codebases |
-| **Hash Collision**  | Low    | Theoretical possibility of SHA1 collisions         |
+| Limitation                | Impact | Description                                               |
+| ------------------------- | ------ | --------------------------------------------------------- |
+| **Go & Templ Only**       | High   | Only `.go` and `.templ` files supported                   |
+| **Semantic Default**      | Medium | Flag docs say "already the default" but config default is `false` |
+| **CSV Formatting**        | Low    | Not using `encoding/csv` for clone output                 |
+| **Unexposed Detectors**   | Low    | TodoDetector + LegacyDetector defined but not in CLI      |
 
-## 🔮 Experimental Features
+---
 
-| Feature                   | Status       | Description                                      |
-| ------------------------- | ------------ | ------------------------------------------------ |
-| **Performance Profiling** | EXPERIMENTAL | `--profile` flag exists but needs implementation |
-| **Custom Timeouts**       | EXPERIMENTAL | `--timeout` flag exists but needs implementation |
+## 📋 Quick Reference
 
-## 📋 Feature Usage Examples
-
-### Basic Usage
+### Detection Methods
 
 ```bash
-# Default analysis
-art-dupl
-
-# Higher threshold
-art-dupl -t 50
-
-# Specific paths
-art-dupl ./src ./lib
+art-dupl                       # Default: suffix tree
+art-dupl -m hash               # Hash-based (faster)
+art-dupl -m "hash,art-dupl"    # Both methods
 ```
 
 ### Output Formats
 
 ```bash
-# HTML report
-art-dupl -html > report.html
-
-# JSON with statistics
-art-dupl -json -t 20
-
-# Machine-readable for scripts
-art-dupl -plumbing -sort occurrence
+art-dupl                       # Text (default)
+art-dupl --html                # HTML report
+art-dupl --json                # JSON with statistics
+art-dupl --plumbing            # Machine-readable
+art-dupl --sarif               # SARIF 2.1.0
+art-dupl --all -o ./reports    # All formats to directory
 ```
 
-### Professional Features
+### Filtering
 
 ```bash
-# Generate shell completions
-art-dupl completion bash
-art-dupl completion zsh
-art-dupl completion fish
-
-# Generate man page
-art-dupl man > art-dupl.1
-
-# Check version
-art-dupl --version
+art-dupl --filter-generated    # Filter sqlc/templ/protobuf/mockgen
+art-dupl --exclude-templ       # Exclude .templ files
+art-dupl --only go             # Go files only
+art-dupl --include-pattern "gen/*" --exclude-pattern "mock_*"
 ```
 
-### Advanced Usage
+### Performance
 
 ```bash
-# Configuration file
-art-dupl -config dupl.json
-
-# Batch generation
-art-dupl --all --output-dir ./reports
-
-# Multiple detection methods
-art-dupl -detection-methods "hash,art-dupl"
-
-# Analyze test files only
-find . -name '*_test.go' | art-dupl -files
-
-# Generate completions with no descriptions
-art-dupl completion bash --no-descriptions
-
-# Powershell completion
-art-dupl completion powershell
+art-dupl --workers 8           # 8 parallel workers
+art-dupl --incremental         # AST caching
+art-dupl --since HEAD~10       # Git-aware incremental
+art-dupl --cache-dir /tmp/cache
+art-dupl --clear-cache
 ```
 
-## 🏗️ Architecture Components
+### Stats
 
-| Component       | Status           | Description                                      |
-| --------------- | ---------------- | ------------------------------------------------ |
-| **suffixtree/** | FULLY_FUNCTIONAL | Core suffix tree implementation                  |
-| **syntax/**     | FULLY_FUNCTIONAL | AST handling, serialization, and node processing |
-| **job/**        | FULLY_FUNCTIONAL | Orchestrates file parsing and tree building      |
-| **printer/**    | FULLY_FUNCTIONAL | Output formatting for all supported formats      |
-| **hash/**       | FULLY_FUNCTIONAL | Hash-based detection implementation              |
-| **config/**     | FULLY_FUNCTIONAL | Configuration management with validation         |
-| **detection/**  | FULLY_FUNCTIONAL | Multi-detector coordination                      |
-
-## 🧪 Testing Status
-
-| Test Type             | Coverage | Status                                     |
-| --------------------- | -------- | ------------------------------------------ |
-| **Unit Tests**        | Good     | Comprehensive unit tests for core packages |
-| **Integration Tests** | Good     | End-to-end workflow testing                |
-| **BDD Tests**         | Good     | Behavior-driven development tests          |
-| **Performance Tests** | Limited  | Basic performance testing exists           |
-
-## 📝 Documentation Quality
-
-| Documentation         | Status    | Notes                          |
-| --------------------- | --------- | ------------------------------ |
-| **README.md**         | GOOD      | Comprehensive with examples    |
-| **CLI Help**          | EXCELLENT | Rich, styled help with Fang    |
-| **Code Comments**     | GOOD      | Adequate commenting throughout |
-| **API Documentation** | LIMITED   | No generated API docs          |
-
-## 🔮 Future Roadmap
-
-### High Priority
-
-- [ ] Complete performance profiling implementation
-- [ ] Add execution timeout functionality
-- [ ] Improve memory efficiency for large codebases
-- [ ] Add support for additional languages (TypeScript, JavaScript)
-
-### Medium Priority
-
-- [ ] Generate comprehensive API documentation
-- [ ] Add more sorting criteria options
-- [ ] Implement clone similarity scoring
-- [ ] Add duplicate suppression rules
-
-### Low Priority
-
-- [ ] Web UI for report visualization
-- [ ] Integration with IDE plugins
-- [ ] Historical trend analysis
-- [ ] Clone impact analysis
-
-## 📊 Overall Project Health
-
-| Metric                   | Score | Notes                                           |
-| ------------------------ | ----- | ----------------------------------------------- |
-| **Feature Completeness** | 85%   | Most features fully implemented                 |
-| **Code Quality**         | 85%   | Well-structured, good separation of concerns    |
-| **Documentation**        | 80%   | Good user docs, needs API docs                  |
-| **Testing**              | 75%   | Good coverage, could use more performance tests |
-| **Production Readiness** | 85%   | Ready for production use                        |
-
-## 🔚 Conclusion
-
-art-dupl is a mature, production-ready tool with comprehensive code clone detection capabilities. The core functionality is robust, with multiple detection methods, output formats, and professional CLI features. While there are some incomplete experimental features, the main use cases are well-covered and reliable.
-
-The tool successfully combines the simplicity of the original dupl tool with modern enhancements like JSON output, configuration files, and a professional CLI experience powered by Fang.
-
----
-
-_This documentation reflects the state of the fork branch as of 2026-02-12. For the latest information, check the repository directly._
+```bash
+art-dupl stats                 # Text statistics
+art-dupl stats --format json   # JSON statistics
+art-dupl stats --format csv    # CSV for spreadsheets
+```

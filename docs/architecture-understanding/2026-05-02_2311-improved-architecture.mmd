@@ -1,0 +1,116 @@
+graph TB
+    subgraph API["Public API"]
+        CLI["cmd/<br/>CLI (thin wrapper)"]
+        SDK["pkg/artdupl/<br/>SDK"]
+    end
+
+    subgraph Pipeline["Pipeline (unified)"]
+        Analysis["Analysis<br/>interface {<br/>  Run(ctx, AnalysisConfig) <-chan CloneGroup<br/>}"]
+        Orchestrator["Pipeline<br/>implements Analysis"]
+    end
+
+    subgraph ConfigLayer["Configuration"]
+        DetectionCfg["DetectionConfig<br/>(threshold, methods, semantic)"]
+        FilterCfg["FilterConfig<br/>(vendor, patterns, generated)"]
+        OutputCfg["OutputConfig<br/>(format, diff, sort)"]
+        CacheCfg["CacheConfig<br/>(incremental, dir)"]
+    end
+
+    subgraph Detectors["Detectors (pluggable)"]
+        DetIface["Detector interface {<br/>  FindDuplOver(threshold) <-chan Match<br/>}"]
+        SuffixTreeDet["SuffixTreeDetector"]
+        HashDet["HashDetector"]
+        TodoDet["TodoDetector"]
+        LegacyDet["LegacyDetector"]
+        Registry["Registry<br/>map DetectionMethod → Detector"]
+    end
+
+    subgraph Parsers["Parsers (pluggable)"]
+        ParserIface["Parser interface {<br/>  Parse(filename) (*Node, error)<br/>}"]
+        GoParser["GoParser"]
+        TemplParser["TemplParser"]
+        ParserReg["ParserRegistry<br/>map extension → Parser"]
+    end
+
+    subgraph Output["Output (pluggable)"]
+        PrinterIface["Printer interface {<br/>  PrintHeader()<br/>  PrintClones([]CloneGroup)<br/>  PrintFooter()<br/>}"]
+        TextP["TextPrinter"]
+        HTMLP["HTMLPrinter"]
+        JSONP["JSONPrinter"]
+        PlumbP["PlumbingPrinter"]
+        SARIFP["SARIFPrinter"]
+        StatsP["StatsPrinter"]
+    end
+
+    subgraph SortClassify["Sort & Classify"]
+        SortMod["sorting/<br/>single file, all criteria"]
+        Classify["classify/<br/>clone categories"]
+    end
+
+    subgraph Stats["Statistics"]
+        StatsEng["stats/<br/>collection, health, viz"]
+    end
+
+    subgraph Diff["Diff"]
+        DiffEng["diff/<br/>LCS, word-level"]
+    end
+
+    subgraph Core["Core"]
+        SuffixTree["suffixtree/<br/>Ukkonen's algorithm"]
+        Syntax["syntax/<br/>Node, Match types"]
+        Domain["domain/<br/>CloneGroup, Clone, Filepath"]
+    end
+
+    subgraph Infrastructure["Infrastructure"]
+        Cache["cache/<br/>SHA1 + gob"]
+        Errors["errors/<br/>typed errors"]
+        Logger["logger"]
+        Position["position"]
+    end
+
+    CLI --> Orchestrator
+    SDK --> Orchestrator
+    Orchestrator --> DetectionCfg
+    Orchestrator --> FilterCfg
+    Orchestrator --> Registry
+    Orchestrator --> ParserReg
+    Orchestrator --> Cache
+
+    Registry --> SuffixTreeDet
+    Registry --> HashDet
+    Registry --> TodoDet
+    Registry --> LegacyDet
+
+    SuffixTreeDet --> SuffixTree
+    SuffixTreeDet --> Syntax
+    HashDet --> Syntax
+    TodoDet --> Domain
+
+    ParserReg --> GoParser
+    ParserReg --> TemplParser
+    GoParser --> Syntax
+    TemplParser --> Syntax
+
+    CLI --> OutputCfg
+    CLI --> PrinterIface
+    PrinterIface --> TextP
+    PrinterIface --> HTMLP
+    PrinterIface --> JSONP
+    PrinterIface --> PlumbP
+    PrinterIface --> SARIFP
+    PrinterIface --> StatsP
+
+    HTMLP --> DiffEng
+    StatsP --> StatsEng
+    JSONP --> SortMod
+    TextP --> Classify
+
+    classDef deepNode fill:#2ecc71,stroke:#27ae60,color:#fff
+    classDef ifaceNode fill:#3498db,stroke:#2980b9,color:#fff
+
+    class Analysis deepNode
+    class Orchestrator deepNode
+    class DetIface ifaceNode
+    class ParserIface ifaceNode
+    class PrinterIface ifaceNode
+    class Registry ifaceNode
