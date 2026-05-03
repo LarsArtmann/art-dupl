@@ -432,7 +432,7 @@ art-dupl --vendor
 art-dupl --filter-generated ./src
 
 # Include templ files explicitly
-art-dupl --include-templ ./src
+art-dupl --exclude-templ ./src
 
 # Custom include patterns
 art-dupl --include-pattern "vendor/*" --include-pattern "gen/*" ./src
@@ -821,6 +821,8 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 **Config builder safety (2026-04-30):** Replaced `panic(err)` in `cmd/config_builder.go` with proper error returns for `applyTimeoutFlag` and `applyDiffModeFlag`.
 
 **Architecture enforcement (2026-04-30):** Replaced ghost `.go-arch-lint.yml` with project-specific config. Domain must not import syntax, suffixtree must have zero deps. Consolidated `StatsPrinter`'s 8 setters into single `ApplyStatsConfig(StatsConfig)`.
+
+**Config extraction & printer cleanup (2026-05-03):** Deleted `printer/format.go` (moved `ParseFormat` to `config.ParseOutputFormat`) and `printer/sort_type.go` (moved `SortBy` constants to `config.SortCriteria`). All printer and cmd references updated to use `config.SortCriteria` directly. Printer interface now uses `config.SortCriteria` instead of `printer.SortBy`. Extracted `DetectionConfig` from `config.Config` for the detection layer — `MultiDetector` accepts `DetectionConfig` (Methods + Verbose) instead of the full `*config.Config`. Defined `MethodDetector` interface in `detection/detector.go` for pluggable detectors.
 
 ### Architecture — Outstanding Issues
 

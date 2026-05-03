@@ -40,6 +40,7 @@ import (
 	"io"
 
 	"charm.land/lipgloss/v2"
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -50,7 +51,7 @@ type stats struct {
 
 	w         io.Writer
 	threshold int
-	format    Format
+	format    config.OutputFormat
 	statsData *StatsData
 }
 
@@ -87,7 +88,7 @@ func (p *stats) PrintHeader() error {
 }
 
 // PrintClones collects statistics from the clone groups.
-func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	// Count clone group
 	p.statsData.TotalCloneGroups++
 

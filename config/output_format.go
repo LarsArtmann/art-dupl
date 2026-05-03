@@ -1,5 +1,14 @@
 package config
 
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+// ErrInvalidOutputFormat indicates an unsupported output format was requested.
+var ErrInvalidOutputFormat = errors.New("invalid output format")
+
 // OutputFormat represents the output format type.
 type OutputFormat string
 
@@ -65,4 +74,15 @@ func AllOutputFormats() []OutputFormat {
 // DefaultOutputFormat returns the default output format.
 func DefaultOutputFormat() OutputFormat {
 	return OutputFormatText
+}
+
+// ParseOutputFormat converts a string to OutputFormat with validation.
+func ParseOutputFormat(value string) (OutputFormat, error) {
+	of := OutputFormat(strings.ToLower(value))
+	if of.IsValid() {
+		return of, nil
+	}
+
+	return "", fmt.Errorf("%w: %q must be one of (text|html|json|csv|plumbing|simple-json|sarif)",
+		ErrInvalidOutputFormat, value)
 }

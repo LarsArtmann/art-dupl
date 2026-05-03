@@ -130,7 +130,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		ctx,
 		p,
 		duplChan,
-		printer.SortBy(sortBy),
+		config.SortCriteria(sortBy),
 		mergedConfig.Threshold,
 		detectionMethodStr,
 	)

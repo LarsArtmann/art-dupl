@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -132,7 +133,7 @@ func (p *sarifPrinter) PrintHeader() error {
 	return nil
 }
 
-func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	if len(dups) == 0 {
 		return nil
 	}

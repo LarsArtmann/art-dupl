@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/LarsArtmann/art-dupl/config"
 )
 
 // jsonStatsOutput represents the JSON output structure for statistics.
@@ -52,11 +54,14 @@ type jsonTopFile struct {
 // printStats prints the collected statistics.
 func (p *stats) printStats() {
 	switch p.format {
-	case FormatJSON:
+	case config.OutputFormatJSON:
 		p.printJSON()
-	case FormatCSV:
+	case config.OutputFormatCSV:
 		p.printCSV()
-	case FormatText:
+	case config.OutputFormatText:
+		p.printText()
+	case config.OutputFormatHTML, config.OutputFormatPlumbing,
+		config.OutputFormatSimpleJSON, config.OutputFormatSARIF:
 		p.printText()
 	}
 }

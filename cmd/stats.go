@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
@@ -66,7 +67,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	formatStr, _ := cmd.Flags().GetString("format")
 
 	// Parse and validate format
-	format, err := printer.ParseFormat(formatStr)
+	format, err := config.ParseOutputFormat(formatStr)
 	if err != nil {
 		return duplerrors.WrapValidation(err, "invalid format value")
 	}
@@ -131,7 +132,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 
 	// Sort keys for deterministic output
 	// Using SortByHash for consistent ordering across runs
-	printer.SortCloneGroupKeys(keys, printer.SortByHash, groups, nil)
+	printer.SortCloneGroupKeys(keys, config.SortByHash, groups, nil)
 
 	err = p.PrintHeader()
 	if err != nil {
@@ -141,7 +142,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
-			err := p.PrintClones(uniq, printer.SortByHash)
+			err := p.PrintClones(uniq, config.SortByHash)
 			if err != nil {
 				return duplerrors.Wrap(
 					err,

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
@@ -107,7 +108,10 @@ func (d *detector) runDetection(
 ) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
-	md := detection.NewMultiDetector(d.config, result.data, result.tree, false)
+	md := detection.NewMultiDetector(config.DetectionConfig{
+		Methods: d.config.DetectionMethods,
+		Verbose: false,
+	}, result.data, result.tree)
 	matchesChan := md.FindDuplOver(d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
@@ -132,7 +136,10 @@ func (d *detector) streamDetectionResults(
 	result *pipelineResult,
 	resultChan chan<- *CloneGroup,
 ) error {
-	md := detection.NewMultiDetector(d.config, result.data, result.tree, false)
+	md := detection.NewMultiDetector(config.DetectionConfig{
+		Methods: d.config.DetectionMethods,
+		Verbose: false,
+	}, result.data, result.tree)
 	matchesChan := md.FindDuplOver(d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)

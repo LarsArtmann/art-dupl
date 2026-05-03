@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -65,7 +66,7 @@ func TestStatsJSONOutputGolden(t *testing.T) {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
 
-	statsPrinter.format = FormatJSON
+	statsPrinter.format = config.OutputFormatJSON
 
 	err = statsPrinter.PrintFooter()
 	if err != nil {
@@ -81,7 +82,7 @@ func TestStatsCSVOutputGolden(t *testing.T) {
 	statsPrinter := NewStats(&buf, mockReadFile(testFileContent), 15).(*stats)
 	statsPrinter.SetFilesCount(3)
 	statsPrinter.SetDetectionMethods("art-dupl")
-	statsPrinter.format = FormatCSV
+	statsPrinter.format = config.OutputFormatCSV
 
 	err := statsPrinter.PrintClones(createTestCloneGroups())
 	if err != nil {

@@ -3,6 +3,7 @@ package detection
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -12,14 +13,17 @@ func TestNewMultiDetector_Working(t *testing.T) {
 	cfg := createTestConfig()
 
 	data := []*syntax.Node{
-		{Filename: "test.go", Type: 1}, // Use integer type
+		{Filename: "test.go", Type: 1},
 	}
 
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(cfg, data, tree, true)
+	detector := NewMultiDetector(config.DetectionConfig{
+		Methods: cfg.DetectionMethods,
+		Verbose: true,
+	}, data, tree)
 
-	if detector.config != cfg {
+	if len(detector.detCfg.Methods) != len(cfg.DetectionMethods) {
 		t.Error("Config not set correctly")
 	}
 
@@ -31,7 +35,7 @@ func TestNewMultiDetector_Working(t *testing.T) {
 		t.Error("Tree not set correctly")
 	}
 
-	if detector.verbose != true {
+	if !detector.detCfg.Verbose {
 		t.Error("Verbose flag not set correctly")
 	}
 }
@@ -56,13 +60,11 @@ func TestLegacyDetector_Working(t *testing.T) {
 
 // TestMultiDetector_logVerbose_Working tests verbose logging.
 func TestMultiDetector_logVerbose_Working(t *testing.T) {
-	detector := &MultiDetector{verbose: true}
+	detector := &MultiDetector{detCfg: config.DetectionConfig{Verbose: true}}
 
-	// This should not panic
 	detector.logVerbose("Test message")
 
-	detector = &MultiDetector{verbose: false}
+	detector = &MultiDetector{detCfg: config.DetectionConfig{Verbose: false}}
 
-	// This should not output anything (no panic test needed)
 	detector.logVerbose("Should not print")
 }

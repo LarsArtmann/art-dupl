@@ -3,6 +3,7 @@ package printer
 import (
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -39,22 +40,22 @@ func ComputeUniqueCounts(groups map[string][][]*syntax.Node) map[string]int {
 // SortCloneGroupKeys sorts clone group hashes based on specified criteria.
 func SortCloneGroupKeys(
 	keys []string,
-	sortBy SortBy,
+	sortBy config.SortCriteria,
 	groups map[string][][]*syntax.Node,
 	uniqueCounts map[string]int,
 ) {
 	switch sortBy {
-	case SortByOccurrence:
+	case config.SortByOccurrence:
 		sort.Slice(keys, func(i, j int) bool {
 			return len(groups[keys[i]]) > len(groups[keys[j]])
 		})
-	case SortByHash:
+	case config.SortByHash:
 		sort.Strings(keys)
-	case SortBySize:
+	case config.SortBySize:
 		sort.Slice(keys, func(i, j int) bool {
 			return GetCloneSize(groups[keys[i]]) > GetCloneSize(groups[keys[j]])
 		})
-	case SortByTotalTokens:
+	case config.SortByTotalTokens:
 		sort.Slice(keys, func(i, j int) bool {
 			// Count total tokens across all nodes in each group
 			tokensI := 0

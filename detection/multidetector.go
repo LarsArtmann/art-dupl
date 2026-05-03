@@ -6,30 +6,16 @@
 // Detection Methods Supported:
 // - DetectionMethodArtDupl: Suffix tree algorithm on AST tokens
 // - DetectionMethodHash: Rolling hash on file content
-// - DetectionMethodTodos: Finds TODO comments
-// - DetectionMethodLegacy: Finds legacy code patterns
 //
-// Core Type:
+// Core Types:
 // - MultiDetector: Coordinates multiple detection methods
+// - MethodDetector: Interface for individual detection algorithms
 //
 // Usage:
 //
-//	// Create multi-detector with configuration
-//	md := detection.NewMultiDetector(cfg, data, tree, verbose)
-//
-//	// Run all configured detection methods
+//	cfg := config.DetectionConfig{Methods: methods, Verbose: verbose}
+//	md := detection.NewMultiDetector(cfg, data, tree)
 //	matches := md.FindDuplOver(threshold)
-//
-// Design:
-// - Methods are configured via config.DetectionMethods
-// - Results are combined and deduplicated
-// - Verbose logging available for debugging
-// - Respects config.IsDefault() for optimization
-//
-// Performance:
-// - Runs selected methods in parallel (goroutines)
-// - Channels used for non-blocking result delivery
-// - Each method runs independently, results combined at output
 package detection
 
 import (
@@ -42,32 +28,27 @@ import (
 
 // MultiDetector runs multiple detection methods and combines results.
 type MultiDetector struct {
-	config  *config.Config
-	data    []*syntax.Node
-	tree    *suffixtree.STree
-	verbose bool
+	detCfg config.DetectionConfig
+	data   []*syntax.Node
+	tree   *suffixtree.STree
 }
 
 // NewMultiDetector creates a new multi-method detector.
 func NewMultiDetector(
-	cfg *config.Config,
+	cfg config.DetectionConfig,
 	data []*syntax.Node,
 	tree *suffixtree.STree,
-	verbose bool,
 ) *MultiDetector {
 	return &MultiDetector{
-		config:  cfg,
-		data:    data,
-		tree:    tree,
-		verbose: verbose,
+		detCfg: cfg,
+		data:   data,
+		tree:   tree,
 	}
 }
 
 // FindDuplOver runs all configured detection methods.
 func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
-	// If only art-dupl method is selected, use existing logic
-	if md.config.DetectionMethods.IsDefault() {
-		// Convert suffix tree matches to syntax matches
+	if md.detCfg.Methods.IsDefault() {
 		resultChan := make(chan syntax.Match)
 
 		go func() {
@@ -80,14 +61,12 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 		return resultChan
 	}
 
-	// Create combined channel
 	resultChan := make(chan syntax.Match)
 
 	go func() {
 		defer close(resultChan)
 
-		// Run hash detection if selected
-		if md.config.DetectionMethods.Contains(config.DetectionMethodHash) {
+		if md.detCfg.Methods.Contains(config.DetectionMethodHash) {
 			md.logVerbose("Running hash-based detection...")
 
 			hashDetector := hash.NewFileDetector(threshold)
@@ -100,8 +79,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 			}
 		}
 
-		// Run art-dupl detection if selected
-		if md.config.DetectionMethods.Contains(config.DetectionMethodArtDupl) {
+		if md.detCfg.Methods.Contains(config.DetectionMethodArtDupl) {
 			md.logVerbose("Running suffix tree-based detection...")
 			artDuplMatches := md.tree.FindDuplOver(threshold)
 
@@ -114,7 +92,7 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 
 // logVerbose prints verbose output if enabled.
 func (md *MultiDetector) logVerbose(message string) {
-	if md.verbose {
+	if md.detCfg.Verbose {
 		logger.Default.Info(message)
 	}
 }

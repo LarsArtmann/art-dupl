@@ -171,7 +171,7 @@ func (m *mockPrinter) PrintFooter() error {
 	return nil
 }
 
-func (m *mockPrinter) PrintClones(_ [][]*syntax.Node, _ ...printer.SortBy) error {
+func (m *mockPrinter) PrintClones(_ [][]*syntax.Node, _ ...config.SortCriteria) error {
 	m.clonesCalled = true
 
 	return nil
@@ -396,7 +396,7 @@ func TestPrintDupls(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		err := printDupls(t.Context(), mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(t.Context(), mock, ch, config.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -415,7 +415,7 @@ func TestPrintDupls(t *testing.T) {
 
 		ch := createTestMatchChannel("abc123", "test1.go", "test2.go")
 
-		err := printDupls(t.Context(), mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(t.Context(), mock, ch, config.SortBySize, 15, "art-dupl")
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -433,7 +433,7 @@ func TestPrintDupls(t *testing.T) {
 		ctx, cancel := context.WithCancel(t.Context())
 		cancel()
 
-		err := printDupls(ctx, mock, ch, printer.SortBySize, 15, "art-dupl")
+		err := printDupls(ctx, mock, ch, config.SortBySize, 15, "art-dupl")
 		if err == nil {
 			t.Error("Expected error from cancelled context")
 		}

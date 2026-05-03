@@ -3,6 +3,7 @@ package printer
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -102,23 +103,23 @@ func TestSortCloneGroupKeys(t *testing.T) {
 	uniqueCounts := map[string]int{"small": 1, "big": 3, "medium": 2}
 
 	keys := []string{"small", "big", "medium"}
-	SortCloneGroupKeys(keys, SortBySize, groups, uniqueCounts)
+	SortCloneGroupKeys(keys, config.SortBySize, groups, uniqueCounts)
 
 	if keys[0] != "big" {
-		t.Errorf("SortBySize: first key = %q, want %q", keys[0], "big")
+		t.Errorf("config.SortBySize: first key = %q, want %q", keys[0], "big")
 	}
 
 	keys = []string{"small", "big", "medium"}
-	SortCloneGroupKeys(keys, SortByOccurrence, groups, uniqueCounts)
+	SortCloneGroupKeys(keys, config.SortByOccurrence, groups, uniqueCounts)
 
 	if keys[0] != "big" {
-		t.Errorf("SortByOccurrence: first key = %q, want %q", keys[0], "big")
+		t.Errorf("config.SortByOccurrence: first key = %q, want %q", keys[0], "big")
 	}
 
 	keys = []string{"small", "big", "medium"}
-	SortCloneGroupKeys(keys, SortByHash, groups, uniqueCounts)
+	SortCloneGroupKeys(keys, config.SortByHash, groups, uniqueCounts)
 
 	if keys[0] != "big" {
-		t.Errorf("SortByHash: first key = %q, want %q", keys[0], "big")
+		t.Errorf("config.SortByHash: first key = %q, want %q", keys[0], "big")
 	}
 }

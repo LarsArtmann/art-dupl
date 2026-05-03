@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -85,17 +86,17 @@ func anotherLargeFunction() {
 
 	testCases := []struct {
 		name          string
-		sortBy        SortBy
+		sortBy        config.SortCriteria
 		expectedOrder []string // Expected filenames in order
 	}{
 		{
 			name:          "Sort by size descending",
-			sortBy:        SortBySize,
+			sortBy:        config.SortBySize,
 			expectedOrder: []string{"large.go", "another_large.go", "medium.go", "small.go"},
 		},
 		{
 			name:   "Sort by occurrence (file count, descending)",
-			sortBy: SortByOccurrence,
+			sortBy: config.SortByOccurrence,
 			expectedOrder: []string{
 				"large.go",
 				"another_large.go",
@@ -105,12 +106,12 @@ func anotherLargeFunction() {
 		},
 		{
 			name:          "Sort by hash (filename order)",
-			sortBy:        SortByHash,
+			sortBy:        config.SortByHash,
 			expectedOrder: []string{"another_large.go", "large.go", "medium.go", "small.go"},
 		},
 		{
 			name:   "Sort by total-tokens",
-			sortBy: SortByTotalTokens,
+			sortBy: config.SortByTotalTokens,
 			expectedOrder: []string{
 				"large.go",
 				"another_large.go",
@@ -152,7 +153,7 @@ func anotherLargeFunction() {
 				// For total-tokens sorting, we need special handling since it's the same as size in JSON
 				output := buf.String()
 
-				if tc.sortBy == SortByTotalTokens {
+				if tc.sortBy == config.SortByTotalTokens {
 					// Just check that output contains expected files
 					for _, file := range []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"} {
 						if !strings.Contains(output, file) {
@@ -198,7 +199,7 @@ func testPrinterSorting(
 	constructor func(io.Writer, ReadFile) Printer,
 	testContent string,
 	clones [][]*syntax.Node,
-	sortBy SortBy,
+	sortBy config.SortCriteria,
 	expectedOrder []string,
 	printerName string,
 ) {

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -175,7 +176,7 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, SortBySize)
+	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortBySize)
 	if err != nil {
 		t.Fatalf("PrintClonesSorted() error: %v", err)
 	}
@@ -386,7 +387,7 @@ func TestTextPrinter_OutputText(t *testing.T) {
 
 	tp.cloneGroups = [][]clone{clones}
 
-	err = tp.OutputText(15, SortBySize)
+	err = tp.OutputText(15, config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputText() error: %v", err)
 	}
@@ -406,7 +407,7 @@ func TestTextPrinter_OutputText_Empty(t *testing.T) {
 	p := NewText(&buf, mockReadFile(""))
 	tp := p.(*TextPrinter)
 
-	err := tp.OutputText(15, SortBySize)
+	err := tp.OutputText(15, config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputText(empty) error: %v", err)
 	}
@@ -434,9 +435,9 @@ func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
 	}
 	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, SortByOccurrence)
+	err := tp.OutputText(15, config.SortByOccurrence)
 	if err != nil {
-		t.Fatalf("OutputText(SortByOccurrence) error: %v", err)
+		t.Fatalf("OutputText(config.SortByOccurrence) error: %v", err)
 	}
 }
 
@@ -453,9 +454,9 @@ func TestTextPrinter_OutputText_SortByHash(t *testing.T) {
 	}
 	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, SortByHash)
+	err := tp.OutputText(15, config.SortByHash)
 	if err != nil {
-		t.Fatalf("OutputText(SortByHash) error: %v", err)
+		t.Fatalf("OutputText(config.SortByHash) error: %v", err)
 	}
 }
 
@@ -472,9 +473,9 @@ func TestTextPrinter_OutputText_SortByTotalTokens(t *testing.T) {
 	}
 	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, SortByTotalTokens)
+	err := tp.OutputText(15, config.SortByTotalTokens)
 	if err != nil {
-		t.Fatalf("OutputText(SortByTotalTokens) error: %v", err)
+		t.Fatalf("OutputText(config.SortByTotalTokens) error: %v", err)
 	}
 }
 
@@ -491,7 +492,7 @@ func TestTextPrinter_OutputText_UnknownSort(t *testing.T) {
 	}
 	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, SortBy("unknown_sort_value"))
+	err := tp.OutputText(15, config.SortCriteria("unknown_sort_value"))
 	if err != nil {
 		t.Fatalf("OutputText(unknown) error: %v", err)
 	}
@@ -520,7 +521,7 @@ func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 	fw := &firstWriteFailsWriter{w: &buf}
 	tp.w = fw
 
-	err = tp.OutputText(15, SortBySize)
+	err = tp.OutputText(15, config.SortBySize)
 	if err == nil {
 		t.Error("expected error when PrintFooter write fails")
 	}
@@ -540,7 +541,7 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
 	dups := [][]*syntax.Node{{node}}
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, SortBySize)
+	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortBySize)
 	if err == nil {
 		t.Error("expected error on read failure in PrintClonesSorted")
 	}
@@ -558,9 +559,9 @@ func TestTextPrinter_PrintClonesSorted_SortByOccurrence(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, SortByOccurrence)
+	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortByOccurrence)
 	if err != nil {
-		t.Fatalf("PrintClonesSorted(SortByOccurrence) error: %v", err)
+		t.Fatalf("PrintClonesSorted(config.SortByOccurrence) error: %v", err)
 	}
 
 	output := buf.String()
@@ -581,9 +582,9 @@ func TestTextPrinter_PrintClonesSorted_SortByHash(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, SortByHash)
+	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortByHash)
 	if err != nil {
-		t.Fatalf("PrintClonesSorted(SortByHash) error: %v", err)
+		t.Fatalf("PrintClonesSorted(config.SortByHash) error: %v", err)
 	}
 
 	output := buf.String()
@@ -604,7 +605,7 @@ func TestTextPrinter_PrintClonesSorted_UnknownSort(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, SortBy("unknown"))
+	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortCriteria("unknown"))
 	if err != nil {
 		t.Fatalf("PrintClonesSorted(unknown) error: %v", err)
 	}
@@ -623,7 +624,7 @@ func TestTextPrinter_OutputText_EmptyFragmentWrite(t *testing.T) {
 	}
 	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, SortBySize)
+	err := tp.OutputText(15, config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputText(empty fragment) error: %v", err)
 	}

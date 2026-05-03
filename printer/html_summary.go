@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -269,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 // OutputHTML generates HTML output with sorting.
-func (p *htmlprinter) OutputHTML(threshold int, sortBy SortBy) error {
+func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) error {
 	// Store clones for sorting - flatten the 3D structure to 2D
 	var allDups [][]*syntax.Node
 

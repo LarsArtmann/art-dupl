@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -100,9 +101,9 @@ func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups, SortBySize)
+	err := p.PrintClones(dups, config.SortBySize)
 	if err != nil {
-		t.Fatalf("PrintClones(SortBySize) error: %v", err)
+		t.Fatalf("PrintClones(config.SortBySize) error: %v", err)
 	}
 
 	output := buf.String()
@@ -183,7 +184,7 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 
 	pl := p.(*plumbing)
 
-	err := pl.OutputPlumbing(15, SortBySize)
+	err := pl.OutputPlumbing(15, config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputPlumbing() error: %v", err)
 	}

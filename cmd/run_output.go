@@ -49,7 +49,7 @@ func printDupls(
 }
 
 // getSortedKeys extracts and sorts clone group keys.
-func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []string {
+func getSortedKeys(groups map[string][][]*syntax.Node, sortBy config.SortCriteria) []string {
 	keys := make([]string, 0, len(groups))
 	for k := range groups {
 		keys = append(keys, k)
@@ -62,7 +62,7 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy printer.SortBy) []
 }
 
 // printHeader prints the header with error wrapping.
-func printHeader(p printer.Printer, sortBy printer.SortBy, threshold int) error {
+func printHeader(p printer.Printer, sortBy config.SortCriteria, threshold int) error {
 	err := p.PrintHeader()
 	if err != nil {
 		return errors.Wrap(

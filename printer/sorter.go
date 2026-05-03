@@ -3,6 +3,7 @@ package printer
 import (
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -23,19 +24,19 @@ func sortCloneGroupsBySizeDescending(groups []CloneGroup) {
 }
 
 // SortCloneGroups sorts CloneGroup arrays by specified criteria.
-func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
+func SortCloneGroups(groups []CloneGroup, sortBy config.SortCriteria) {
 	switch sortBy {
-	case SortBySize:
+	case config.SortBySize:
 		sortCloneGroupsBySizeDescending(groups)
-	case SortByOccurrence:
+	case config.SortByOccurrence:
 		sort.Slice(groups, func(i, j int) bool {
 			return len(groups[i].Files) > len(groups[j].Files) // Most files first (descending)
 		})
-	case SortByHash:
+	case config.SortByHash:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Hash < groups[j].Hash // Alphabetical (ascending)
 		})
-	case SortByTotalTokens:
+	case config.SortByTotalTokens:
 		sort.Slice(groups, func(i, j int) bool {
 			return groups[i].Size*len(groups[i].Files) > groups[j].Size*len(groups[j].Files)
 		})
@@ -151,12 +152,12 @@ func sortCloneGroupsBySize(cloneGroups [][]clone) {
 
 // ExtractSortCriteria extracts the sort criteria from variadic sortBy parameter.
 // Returns SortBySize as default if no criteria is provided.
-func ExtractSortCriteria(sortBy ...SortBy) SortBy {
+func ExtractSortCriteria(sortBy ...config.SortCriteria) config.SortCriteria {
 	if len(sortBy) > 0 {
 		return sortBy[0]
 	}
 
-	return SortBySize
+	return config.SortBySize
 }
 
 func sortClonesByFilename(cloneGroups [][]clone) {

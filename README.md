@@ -36,8 +36,8 @@ just build    # Creates ./dist/art-dupl
 # JSON output for CI/CD
 ./art-dupl -json -t 20
 
-# Semantic-aware detection (default, matches by identifier names)
-# Use --structural to disable and get structural-only matching
+# Structural-only detection (default, matches by AST structure only)
+# Use --semantic to enable identifier-aware matching
 ./art-dupl ./src
 
 # Parallel parsing for faster analysis (auto-detect CPU cores)
@@ -61,9 +61,9 @@ source <(./art-dupl completion zsh)
 ## Key Features
 
 - **Structural clone detection** using suffix tree algorithms
-- **Semantic-aware detection** (default) reduces false positives by matching identifier names
+- **Semantic-aware detection** (optional) reduces false positives by matching identifier names
   - Distinguishes methods by receiver type (e.g., `CrushMode.IsValid` vs `SafetyMode.IsValid`)
-  - Use `--structural` to disable and get structural-only matching
+  - Enable with `--semantic`; default is structural-only matching
 - **Smart filtering**: Auto-detects and filters SQLC and Templ generated code with configurable patterns
 - **JSON output** for CI/CD automation
 - **Configuration files** for team consistency
@@ -107,21 +107,27 @@ Use with:
     --include-node-modules      Include node_modules directory in hash-based detection (excluded by default)
     --include-pattern           File patterns to always include (takes precedence over filter)
     --include-sqlc              Include sqlc.dev generated files (override auto-detection)
-    --include-templ             Include templ.guide generated files (override default filtering)
+    --exclude-templ            Exclude .templ source files from analysis
     --incremental               Enable incremental analysis with AST caching
 -j, --json                   Output structured JSON format with metadata and statistics
 -o, --output-dir             Output directory for generated files (used with --all)
 -p, --plumbing               Output machine-readable plumbing format for script integration
-    --semantic               Enable semantic-aware detection (match by identifier names)
+    --semantic               Enable semantic-aware detection (match by identifier names; off by default)
     --since                  Git reference for incremental mode (e.g., HEAD~1, main)
 -s, --sort                   Sort clone groups: size, occurrence, hash, total-tokens (default: size)
-    --structural            Use structural-only matching (may increase false positives)
+    --structural            Use structural-only matching (this is already the default)
 -t, --threshold              Minimum token sequence size (default: 15)
     --vendor                 Include vendor directory in analysis
 -v, --verbose                Enable verbose logging (repeat for more verbosity)
     --version                Version for art-dupl
     --workers                Number of concurrent workers (0 = auto-detect CPU cores)
+    --sarif                  Output SARIF format (GitHub Advanced Security, CodeQL)
+    --simple-json            Output simplified JSON format with impact scores
+    --only string            Only analyze specific file type: 'go' or 'templ' (default: both)
+    --diff string            Enable diff visualization for HTML output (side-by-side, inline)
 ```
+
+**Sort options** (`-s`/`--sort`): `size` (largest first), `occurrence` (most files first), `hash` (alphabetical), `total-tokens` (highest total token count = size × occurrences). Default: `size`.
 
 ### Supported Languages
 
@@ -131,7 +137,7 @@ Use with:
 | Templ    | `.templ`  | Full analysis |
 
 **Note:** `.templ` files (from [templ.guide](https://templ.guide)) are fully analyzed for code clones.
-By default, templ files are filtered as generated code. Use `--include-templ` to analyze them.
+By default, templ files are **included** in analysis. Use `--exclude-templ` to exclude them.
 
 ### Subcommands
 
@@ -245,9 +251,10 @@ Top Files by Duplicate Lines:
 ## Output Formats
 
 - **Text**: Simple clone listing with file paths and line numbers
-- **HTML**: Detailed report with syntax-highlighted code fragments
+- **HTML**: Detailed report with syntax-highlighted code fragments (supports `--diff` visualization)
 - **JSON**: Structured data with metadata and summary statistics
-- **simple-json**: Lightweight JSON output for scripting
+- **Simple JSON**: Lightweight JSON output with impact scores (`--simple-json`)
+- **SARIF**: Static Analysis Results Interchange Format for GitHub Advanced Security (`--sarif`)
 - **Plumbing**: Machine-readable format for scripts
 
 ## Architecture

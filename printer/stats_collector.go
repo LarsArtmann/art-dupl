@@ -1,6 +1,10 @@
 package printer
 
-import "time"
+import (
+	"time"
+
+	"github.com/LarsArtmann/art-dupl/config"
+)
 
 // ApplyStatsConfig applies all statistics configuration in one call.
 func (p *stats) ApplyStatsConfig(config StatsConfig) {
@@ -68,7 +72,7 @@ func semanticModeConfig(enabled bool) (string, string) {
 }
 
 // SetFormat sets the output format.
-func (p *stats) SetFormat(format Format) {
+func (p *stats) SetFormat(format config.OutputFormat) {
 	p.format = format
 }
 

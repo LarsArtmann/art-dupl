@@ -5,6 +5,7 @@ import (
 	"io"
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -69,7 +70,7 @@ func calculateCloneSizes(clones []clone) int {
 	return totalSize
 }
 
-func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.cnt++
 
 	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
@@ -122,7 +123,7 @@ func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error
 }
 
 // PrintClonesSorted prints clones with specified sorting criteria.
-func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy SortBy) error {
+func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy config.SortCriteria) error {
 	p.cnt++
 	if _, err := fmt.Fprintf(
 		p.w,
@@ -201,24 +202,24 @@ func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
 }
 
 // OutputText generates text output with sorting.
-func (p *TextPrinter) OutputText(threshold int, sortBy SortBy) error {
+func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) error {
 	// Sort all clone groups based on the specified criteria
 	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
 	switch sortBy {
-	case SortBySize:
+	case config.SortBySize:
 		// Sort by total token size of each clone group
 		sortCloneGroupsBySize(sortedCloneGroups)
-	case SortByOccurrence:
+	case config.SortByOccurrence:
 		// Sort by number of files in each clone group
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
 			return len(sortedCloneGroups[i]) > len(sortedCloneGroups[j])
 		})
-	case SortByHash:
+	case config.SortByHash:
 		// Sort by filename for deterministic output
 		sortClonesByFilename(sortedCloneGroups)
-	case SortByTotalTokens:
+	case config.SortByTotalTokens:
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
 			return sumFragmentLengths(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
 				sumFragmentLengths(sortedCloneGroups[j])*len(sortedCloneGroups[j])

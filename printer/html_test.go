@@ -425,7 +425,7 @@ func TestHTMLOutputHTML(t *testing.T) {
 		{nodes1, nodes2},
 	}
 
-	err := hp.OutputHTML(15, SortBySize)
+	err := hp.OutputHTML(15, config.SortBySize)
 	if err != nil {
 		t.Fatalf("OutputHTML failed: %v", err)
 	}

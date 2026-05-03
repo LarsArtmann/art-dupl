@@ -5,6 +5,7 @@ import (
 	"io"
 	"sort"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -20,7 +21,7 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 
 func (p *plumbing) PrintHeader() error { return nil }
 
-func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	// Apply sorting to the clone groups
 	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
 
@@ -37,7 +38,7 @@ func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
 func (p *plumbing) PrintFooter() error { return nil }
 
 // OutputPlumbing generates plumbing output with sorting.
-func (p *plumbing) OutputPlumbing(threshold int, sortBy SortBy) error {
+func (p *plumbing) OutputPlumbing(threshold int, sortBy config.SortCriteria) error {
 	// Note: Plumbing output is generated during the normal PrintClones flow
 	// This method exists for consistency with other output formats
 	// The actual sorting is handled in PrintClones method

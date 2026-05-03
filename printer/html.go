@@ -140,7 +140,7 @@ func (p *htmlprinter) writeMetadata() error {
 	return nil
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.iota++
 
 	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))

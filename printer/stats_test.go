@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -525,7 +526,7 @@ func TestStatsJSONOutput(t *testing.T) {
 	}
 
 	// Set format to JSON
-	statsPrinter.format = FormatJSON
+	statsPrinter.format = config.OutputFormatJSON
 
 	err = statsPrinter.PrintFooter()
 	if err != nil {
@@ -603,7 +604,7 @@ func TestStatsTextOutput(t *testing.T) {
 	statsPrinter.SetDetectionMethods("art-dupl")
 
 	// Set format to text
-	statsPrinter.format = FormatText
+	statsPrinter.format = config.OutputFormatText
 
 	err := statsPrinter.PrintFooter()
 	if err != nil {
@@ -632,7 +633,7 @@ func TestStatsCSVOutput(t *testing.T) {
 	var buf bytes.Buffer
 
 	sp := NewStats(&buf, mockReadFile("package main\nfunc foo(){return 0}\nfunc main(){}"), 1).(*stats)
-	sp.SetFormat(FormatCSV)
+	sp.SetFormat(config.OutputFormatCSV)
 	sp.SetFilesCount(3)
 	sp.SetDetectionMethods("art-dupl")
 

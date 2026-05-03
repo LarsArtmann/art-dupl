@@ -302,7 +302,7 @@ func TestWriteFormatFile(t *testing.T) {
 			ParseStatsMixin: job.ParseStatsMixin{FilesCount: 10, LinesCount: 100},
 		}
 		format := config.OutputFormatText
-		sortByEnum := printer.SortBySize
+		sortByEnum := config.SortBySize
 
 		err := writeFormatFile(
 			t.Context(),

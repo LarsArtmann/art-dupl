@@ -56,9 +56,9 @@ func TestNewMultiDetector(t *testing.T) {
 
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(cfg, data, tree, true)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true}, data, tree)
 
-	if detector.config != cfg {
+	if len(detector.detCfg.Methods) != len(cfg.DetectionMethods) {
 		t.Error("Config not set correctly")
 	}
 
@@ -70,7 +70,7 @@ func TestNewMultiDetector(t *testing.T) {
 		t.Error("Tree not set correctly")
 	}
 
-	if !detector.verbose {
+	if !detector.detCfg.Verbose {
 		t.Error("Verbose flag not set correctly")
 	}
 }
@@ -78,10 +78,10 @@ func TestNewMultiDetector(t *testing.T) {
 // TestNewMultiDetector_NilConfig tests with nil config.
 func TestNewMultiDetector_NilConfig(t *testing.T) {
 	tree := suffixtree.New()
-	detector := NewMultiDetector(nil, nil, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{}, nil, tree)
 
-	if detector.config != nil {
-		t.Error("Expected nil config")
+	if detector.detCfg.Methods != nil {
+		t.Error("Expected nil methods in zero-value config")
 	}
 }
 
@@ -90,7 +90,7 @@ func TestNewMultiDetector_EmptyData(t *testing.T) {
 	cfg := createSimpleTestConfig()
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(cfg, []*syntax.Node{}, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, []*syntax.Node{}, tree)
 
 	if len(detector.data) != 0 {
 		t.Error("Expected empty data slice")
@@ -100,13 +100,13 @@ func TestNewMultiDetector_EmptyData(t *testing.T) {
 // TestMultiDetector_logVerbose tests verbose logging.
 func TestMultiDetector_logVerbose(t *testing.T) {
 	t.Run("verbose enabled", func(t *testing.T) {
-		detector := &MultiDetector{verbose: true}
+		detector := &MultiDetector{detCfg: config.DetectionConfig{Verbose: true}}
 		// Should not panic
 		detector.logVerbose("Test message")
 	})
 
 	t.Run("verbose disabled", func(t *testing.T) {
-		detector := &MultiDetector{verbose: false}
+		detector := &MultiDetector{detCfg: config.DetectionConfig{Verbose: false}}
 		// Should not panic or output
 		detector.logVerbose("Should not print")
 	})
@@ -395,7 +395,7 @@ func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
-	detector := NewMultiDetector(cfg, data, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)
@@ -416,7 +416,7 @@ func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
-	detector := NewMultiDetector(cfg, data, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)
@@ -443,7 +443,7 @@ func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
-	detector := NewMultiDetector(cfg, data, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)
@@ -464,7 +464,7 @@ func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
-	detector := NewMultiDetector(cfg, data, tree, true) // verbose = true
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true}, data, tree) // verbose = true
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)
@@ -484,7 +484,7 @@ func TestMultiDetector_FindDuplOver_EmptyData(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{}
 
-	detector := NewMultiDetector(cfg, data, tree, false)
+	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)

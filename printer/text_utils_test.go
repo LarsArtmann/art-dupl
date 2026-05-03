@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -150,11 +151,11 @@ func TestSortCloneGroupsBySize(t *testing.T) {
 func TestExtractSortCriteria(t *testing.T) {
 	t.Parallel()
 
-	if got := ExtractSortCriteria(); got != SortBySize {
-		t.Errorf("ExtractSortCriteria() = %v, want SortBySize", got)
+	if got := ExtractSortCriteria(); got != config.SortBySize {
+		t.Errorf("ExtractSortCriteria() = %v, want config.SortBySize", got)
 	}
 
-	if got := ExtractSortCriteria(SortByHash); got != SortByHash {
-		t.Errorf("ExtractSortCriteria(SortByHash) = %v, want SortByHash", got)
+	if got := ExtractSortCriteria(config.SortByHash); got != config.SortByHash {
+		t.Errorf("ExtractSortCriteria(config.SortByHash) = %v, want config.SortByHash", got)
 	}
 }

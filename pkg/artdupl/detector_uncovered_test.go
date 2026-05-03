@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -245,7 +246,7 @@ func TestRunHashDetection(t *testing.T) {
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	md := detection.NewMultiDetector(d.config, data, tree, false)
+	md := detection.NewMultiDetector(config.DetectionConfig{Methods: d.config.DetectionMethods}, data, tree)
 	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {
@@ -495,7 +496,7 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	md := detection.NewMultiDetector(d.config, data, tree, false)
+	md := detection.NewMultiDetector(config.DetectionConfig{Methods: d.config.DetectionMethods}, data, tree)
 	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {

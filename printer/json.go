@@ -7,6 +7,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -109,7 +110,7 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error {
+func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.iota++
 
 	clones := make([]JSONClone, len(dups))
@@ -182,7 +183,11 @@ func (*JSONPrinter) PrintFooter() error {
 }
 
 // OutputJSON generates the complete JSON output.
-func (p *JSONPrinter) OutputJSON(threshold int, sortBy SortBy, detectionMethod string) error {
+func (p *JSONPrinter) OutputJSON(
+	threshold int,
+	sortBy config.SortCriteria,
+	detectionMethod string,
+) error {
 	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
 

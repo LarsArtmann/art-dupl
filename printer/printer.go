@@ -3,6 +3,7 @@ package printer
 import (
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -15,14 +16,14 @@ type HashSetter interface {
 
 type Printer interface {
 	PrintHeader() error
-	PrintClones(dups [][]*syntax.Node, sortBy ...SortBy) error // Add optional sortBy parameter
+	PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error
 	PrintFooter() error
 }
 
 // StatsConfig holds configuration for statistics output.
 // Used by StatsPrinter.ApplyStatsConfig to set all stats metadata in one call.
 type StatsConfig struct {
-	Format              Format
+	Format              config.OutputFormat
 	FilesCount          int
 	DetectionMethods    string
 	SemanticDetection   bool

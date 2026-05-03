@@ -253,7 +253,10 @@ func executeAnalysis(
 		)
 	}
 
-	multiDetector := detection.NewMultiDetector(cfg, result.data, result.tree, cfg.Verbose)
+	multiDetector := detection.NewMultiDetector(config.DetectionConfig{
+		Methods: cfg.DetectionMethods,
+		Verbose: cfg.Verbose,
+	}, result.data, result.tree)
 	duplChan := make(chan syntax.Match)
 
 	go func() {
