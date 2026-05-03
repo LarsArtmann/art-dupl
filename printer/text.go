@@ -219,8 +219,10 @@ func (p *TextPrinter) OutputText(threshold int, sortBy SortBy) error {
 		// Sort by filename for deterministic output
 		sortClonesByFilename(sortedCloneGroups)
 	case SortByTotalTokens:
-		// Sort by total tokens across all files in each clone group
-		sortCloneGroupsBySize(sortedCloneGroups)
+		sort.Slice(sortedCloneGroups, func(i, j int) bool {
+			return sumFragmentLengths(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
+				sumFragmentLengths(sortedCloneGroups[j])*len(sortedCloneGroups[j])
+		})
 	default:
 		// Default to size sorting
 		sortCloneGroupsBySize(sortedCloneGroups)

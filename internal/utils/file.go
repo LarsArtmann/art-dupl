@@ -115,9 +115,8 @@ func FindProjectRoot(startPath string, markers []string) (string, error) {
 	}
 
 	current := absPath
-	maxDepth := 10 // Prevent infinite loops
 
-	for range maxDepth {
+	for {
 		// Check for marker files in current directory
 		for _, marker := range markers {
 			markerPath := filepath.Join(current, marker)

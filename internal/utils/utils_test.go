@@ -105,7 +105,7 @@ func TestFindProjectRoot(t *testing.T) {
 
 		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
 
-		_, err := FindProjectRoot(subDir, []string{"go.mod", ".git", "sqlc.yaml"})
+		_, err := FindProjectRoot(subDir, []string{"nonexistent-marker-test-only.xyz"})
 		g.Expect(err).To(gomega.HaveOccurred())
 	})
 
@@ -136,7 +136,7 @@ func TestFindProjectRoot(t *testing.T) {
 
 		tmpDir := t.TempDir()
 
-		_, err := FindProjectRoot(tmpDir, []string{"go.mod", ".git"})
+		_, err := FindProjectRoot(tmpDir, []string{"nonexistent-marker-test-only.xyz"})
 		g.Expect(err).To(gomega.HaveOccurred())
 	})
 

@@ -36,7 +36,9 @@ func SortCloneGroups(groups []CloneGroup, sortBy SortBy) {
 			return groups[i].Hash < groups[j].Hash // Alphabetical (ascending)
 		})
 	case SortByTotalTokens:
-		sortCloneGroupsBySizeDescending(groups)
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].Size*len(groups[i].Files) > groups[j].Size*len(groups[j].Files)
+		})
 	default:
 		// Default to size sorting for highest impact
 		sortCloneGroupsBySizeDescending(groups)
