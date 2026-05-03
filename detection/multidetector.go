@@ -6,6 +6,8 @@
 // Detection Methods Supported:
 // - DetectionMethodArtDupl: Suffix tree algorithm on AST tokens
 // - DetectionMethodHash: Rolling hash on file content
+// - DetectionMethodTodos: Find TODO/FIXME/HACK comments
+// - DetectionMethodLegacy: Find deprecated functions and legacy patterns
 //
 // Core Types:
 // - MultiDetector: Coordinates multiple detection methods
@@ -84,6 +86,26 @@ func (md *MultiDetector) FindDuplOver(threshold int) <-chan syntax.Match {
 			artDuplMatches := md.tree.FindDuplOver(threshold)
 
 			md.processSuffixTreeMatches(artDuplMatches, resultChan, threshold)
+		}
+
+		if md.detCfg.Methods.Contains(config.DetectionMethodTodos) {
+			md.logVerbose("Running TODO detection...")
+
+			for match := range NewTodoDetector().FindTodos(md.data) {
+				if len(match.Frags) > 0 {
+					resultChan <- match
+				}
+			}
+		}
+
+		if md.detCfg.Methods.Contains(config.DetectionMethodLegacy) {
+			md.logVerbose("Running legacy pattern detection...")
+
+			for match := range NewLegacyDetector().FindLegacy(md.data) {
+				if len(match.Frags) > 0 {
+					resultChan <- match
+				}
+			}
 		}
 	}()
 

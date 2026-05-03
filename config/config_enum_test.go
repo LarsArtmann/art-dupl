@@ -454,9 +454,10 @@ func TestParseDetectionMethods(t *testing.T) {
 			false,
 		},
 		{"invalid", "hash,invalid", nil, true},
-		// todos and legacy are defined but NOT in valid map, so they fail
-		{"invalid todos", "hash,todos", nil, true},
-		{"invalid legacy", "hash,legacy", nil, true},
+		{"todos", "todos", []DetectionMethod{DetectionMethodTodos}, false},
+		{"legacy", "legacy", []DetectionMethod{DetectionMethodLegacy}, false},
+		{"hash and todos", "hash,todos", []DetectionMethod{DetectionMethodHash, DetectionMethodTodos}, false},
+		{"all methods", "hash,art-dupl,todos,legacy", []DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy}, false},
 	}
 
 	for _, tc := range tests {
