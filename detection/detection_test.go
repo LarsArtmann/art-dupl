@@ -56,7 +56,11 @@ func TestNewMultiDetector(t *testing.T) {
 
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true}, data, tree)
+	detector := NewMultiDetector(
+		config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true},
+		data,
+		tree,
+	)
 
 	if len(detector.detCfg.Methods) != len(cfg.DetectionMethods) {
 		t.Error("Config not set correctly")
@@ -90,7 +94,11 @@ func TestNewMultiDetector_EmptyData(t *testing.T) {
 	cfg := createSimpleTestConfig()
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, []*syntax.Node{}, tree)
+	detector := NewMultiDetector(
+		config.DetectionConfig{Methods: cfg.DetectionMethods},
+		[]*syntax.Node{},
+		tree,
+	)
 
 	if len(detector.data) != 0 {
 		t.Error("Expected empty data slice")
@@ -464,7 +472,11 @@ func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
 	tree := suffixtree.New()
 	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
 
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true}, data, tree) // verbose = true
+	detector := NewMultiDetector(
+		config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true},
+		data,
+		tree,
+	) // verbose = true
 
 	// Should return a channel
 	matches := detector.FindDuplOver(15)

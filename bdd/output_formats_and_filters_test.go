@@ -162,7 +162,10 @@ func processSmall(data string) error {
 		err = setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallClone)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = setup.CreateDuplicateFiles([]string{"extra1.go", "extra2.go", "extra3.go"}, smallClone)
+		err = setup.CreateDuplicateFiles(
+			[]string{"extra1.go", "extra2.go", "extra3.go"},
+			smallClone,
+		)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--sort", "total-tokens", "--threshold", "10")

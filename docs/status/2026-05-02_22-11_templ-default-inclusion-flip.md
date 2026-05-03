@@ -17,27 +17,27 @@ Successfully flipped the default behavior so `.templ` files are **included** in 
 
 ### Core Source Changes (11 files, +117/-59 lines)
 
-| File | Change | Status |
-|------|--------|--------|
-| `config/config.go:92` | `IncludeTempl` default flipped `false` → `true` | ✓ |
-| `config/config.go:170` | Updated comment | ✓ |
-| `cmd/flags.go:33` | Flag renamed `--include-templ` → `--exclude-templ` | ✓ |
-| `cmd/config_builder.go:101` | `includeTempl` → `excludeTempl` flag reading | ✓ |
-| `cmd/config_builder.go:129` | `IncludeTempl: !excludeTempl` (inversion) | ✓ |
-| `cmd/config_builder.go:247-250` | Bug fix: explicit `cfg.IncludeTempl = flags.IncludeTempl` after boolFlag loop | ✓ |
-| `config/config_merge.go:103-106` | Bug fix: unconditional `result.IncludeTempl = cfg.IncludeTempl` | ✓ |
-| `cmd/run_analysis.go:169-176` | Updated comments and verbose messages | ✓ |
-| `cmd/cmd_test.go:241` | Flag name in test assertion | ✓ |
+| File                             | Change                                                                        | Status |
+| -------------------------------- | ----------------------------------------------------------------------------- | ------ |
+| `config/config.go:92`            | `IncludeTempl` default flipped `false` → `true`                               | ✓      |
+| `config/config.go:170`           | Updated comment                                                               | ✓      |
+| `cmd/flags.go:33`                | Flag renamed `--include-templ` → `--exclude-templ`                            | ✓      |
+| `cmd/config_builder.go:101`      | `includeTempl` → `excludeTempl` flag reading                                  | ✓      |
+| `cmd/config_builder.go:129`      | `IncludeTempl: !excludeTempl` (inversion)                                     | ✓      |
+| `cmd/config_builder.go:247-250`  | Bug fix: explicit `cfg.IncludeTempl = flags.IncludeTempl` after boolFlag loop | ✓      |
+| `config/config_merge.go:103-106` | Bug fix: unconditional `result.IncludeTempl = cfg.IncludeTempl`               | ✓      |
+| `cmd/run_analysis.go:169-176`    | Updated comments and verbose messages                                         | ✓      |
+| `cmd/cmd_test.go:241`            | Flag name in test assertion                                                   | ✓      |
 
 ### BDD Test Updates (5 files)
 
-| File | Changes | Status |
-|------|---------|--------|
-| `bdd/templ_clone_detection_test.go` | Removed `--include-templ`, added `--exclude-templ` for exclusion test | ✓ |
-| `bdd/filter_features_test.go` | Renamed tests, updated flags | ✓ |
-| `bdd/default_filtering_test.go` | New `assertTemplFileFiltered` helper, `assertTemplFilteredWithFormat` fixed, `DescribeTable` renamed | ✓ |
-| `bdd/stats_command_test.go` | New `assertGeneratedFilesFilteredWithFlag`, variadic `assertGeneratedFilesIncluded` | ✓ |
-| `bdd/configuration_file_test.go` | Test name + config JSON updated | ✓ |
+| File                                | Changes                                                                                              | Status |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ------ |
+| `bdd/templ_clone_detection_test.go` | Removed `--include-templ`, added `--exclude-templ` for exclusion test                                | ✓      |
+| `bdd/filter_features_test.go`       | Renamed tests, updated flags                                                                         | ✓      |
+| `bdd/default_filtering_test.go`     | New `assertTemplFileFiltered` helper, `assertTemplFilteredWithFormat` fixed, `DescribeTable` renamed | ✓      |
+| `bdd/stats_command_test.go`         | New `assertGeneratedFilesFilteredWithFlag`, variadic `assertGeneratedFilesIncluded`                  | ✓      |
+| `bdd/configuration_file_test.go`    | Test name + config JSON updated                                                                      | ✓      |
 
 ### Critical Bugs Found & Fixed
 

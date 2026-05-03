@@ -456,8 +456,23 @@ func TestParseDetectionMethods(t *testing.T) {
 		{"invalid", "hash,invalid", nil, true},
 		{"todos", "todos", []DetectionMethod{DetectionMethodTodos}, false},
 		{"legacy", "legacy", []DetectionMethod{DetectionMethodLegacy}, false},
-		{"hash and todos", "hash,todos", []DetectionMethod{DetectionMethodHash, DetectionMethodTodos}, false},
-		{"all methods", "hash,art-dupl,todos,legacy", []DetectionMethod{DetectionMethodHash, DetectionMethodArtDupl, DetectionMethodTodos, DetectionMethodLegacy}, false},
+		{
+			"hash and todos",
+			"hash,todos",
+			[]DetectionMethod{DetectionMethodHash, DetectionMethodTodos},
+			false,
+		},
+		{
+			"all methods",
+			"hash,art-dupl,todos,legacy",
+			[]DetectionMethod{
+				DetectionMethodHash,
+				DetectionMethodArtDupl,
+				DetectionMethodTodos,
+				DetectionMethodLegacy,
+			},
+			false,
+		},
 	}
 
 	for _, tc := range tests {

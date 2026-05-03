@@ -8,14 +8,14 @@ Config extraction, dead code elimination, detector wiring, and file splitting. S
 
 ## ✅ COMPLETED (this session)
 
-| # | Task | Commit | Impact |
-|---|------|--------|--------|
-| 1 | **Commit staged changes** — previous session's config/printer/detection refactoring | `508236e` | 41 files, -62 net lines |
-| 2 | **Wire TODO/Legacy detectors** — enabled as valid methods, wired through MultiDetector | `f6466ba` | Users can now use `-m todos`, `-m legacy` |
-| 3 | **Consolidate threshold errors** — moved ErrInvalidThreshold/ErrThresholdTooLarge to config/ as single source of truth | `a834f19` | Eliminated duplicate error definitions |
-| 4 | **Split detection/todos.go** — 352L → 3 focused files (issue_helpers, todo_detector, legacy_detector) | `9049d75` | Clear separation of concerns |
-| 5 | **Split config/config.go** — 344L → 3 files (config, config_io, config_validate) | `fff434b` | Struct/IO/validation separation |
-| 6 | **Split cmd/run_analysis.go** — 450L → 3 files (run_analysis, run_hash, run_printer) | `25a6602` | Core/hash/printer separation |
+| #   | Task                                                                                                                   | Commit    | Impact                                    |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------- |
+| 1   | **Commit staged changes** — previous session's config/printer/detection refactoring                                    | `508236e` | 41 files, -62 net lines                   |
+| 2   | **Wire TODO/Legacy detectors** — enabled as valid methods, wired through MultiDetector                                 | `f6466ba` | Users can now use `-m todos`, `-m legacy` |
+| 3   | **Consolidate threshold errors** — moved ErrInvalidThreshold/ErrThresholdTooLarge to config/ as single source of truth | `a834f19` | Eliminated duplicate error definitions    |
+| 4   | **Split detection/todos.go** — 352L → 3 focused files (issue_helpers, todo_detector, legacy_detector)                  | `9049d75` | Clear separation of concerns              |
+| 5   | **Split config/config.go** — 344L → 3 files (config, config_io, config_validate)                                       | `fff434b` | Struct/IO/validation separation           |
+| 6   | **Split cmd/run_analysis.go** — 450L → 3 files (run_analysis, run_hash, run_printer)                                   | `25a6602` | Core/hash/printer separation              |
 
 ### Session Stats
 
@@ -72,11 +72,11 @@ cmd/
 
 ## ❌ REMAINING (from TODO_LIST.md)
 
-| Priority | Task |
-|----------|------|
-| HIGH | Implement TokenValue type with validation |
-| MEDIUM | Introduce ProcessedClone DTO to decouple Printer from syntax.Node |
-| MEDIUM | Consolidate three parallel Clone types |
-| LOW | Refactor syntax/golang/transform.go (355L switch) |
-| LOW | Implement SIMD TODOs |
-| LOW | Archive old docs/status/ files |
+| Priority | Task                                                              |
+| -------- | ----------------------------------------------------------------- |
+| HIGH     | Implement TokenValue type with validation                         |
+| MEDIUM   | Introduce ProcessedClone DTO to decouple Printer from syntax.Node |
+| MEDIUM   | Consolidate three parallel Clone types                            |
+| LOW      | Refactor syntax/golang/transform.go (355L switch)                 |
+| LOW      | Implement SIMD TODOs                                              |
+| LOW      | Archive old docs/status/ files                                    |

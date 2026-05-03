@@ -246,7 +246,11 @@ func TestRunHashDetection(t *testing.T) {
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	md := detection.NewMultiDetector(config.DetectionConfig{Methods: d.config.DetectionMethods}, data, tree)
+	md := detection.NewMultiDetector(
+		config.DetectionConfig{Methods: d.config.DetectionMethods},
+		data,
+		tree,
+	)
 	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {
@@ -496,7 +500,11 @@ func TestRunSuffixTreeDetection(t *testing.T) {
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	md := detection.NewMultiDetector(config.DetectionConfig{Methods: d.config.DetectionMethods}, data, tree)
+	md := detection.NewMultiDetector(
+		config.DetectionConfig{Methods: d.config.DetectionMethods},
+		data,
+		tree,
+	)
 	matchesChan := md.FindDuplOver(1)
 
 	if matchesChan == nil {

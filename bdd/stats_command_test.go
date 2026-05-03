@@ -143,7 +143,13 @@ var _ = Describe("Stats Command", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
-			assertGeneratedFilesFilteredWithFlag(setup, regularCode, "page_templ.go", templCode, "--exclude-templ")
+			assertGeneratedFilesFilteredWithFlag(
+				setup,
+				regularCode,
+				"page_templ.go",
+				templCode,
+				"--exclude-templ",
+			)
 		})
 
 		It("should filter sqlc files by default", func() {
@@ -165,7 +171,13 @@ func Component() templ.Component { return nil }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with verbose flag and --exclude-templ to filter templ file
-			output, err := setup.RunSubcommand("stats", "--verbose", "--exclude-templ", "--threshold", "5")
+			output, err := setup.RunSubcommand(
+				"stats",
+				"--verbose",
+				"--exclude-templ",
+				"--threshold",
+				"5",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
