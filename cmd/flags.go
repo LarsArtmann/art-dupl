@@ -63,6 +63,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("sarif", false, "output SARIF format for security tool integration (GitHub Advanced Security, CodeQL)")
 	rootCmd.Flags().
+		Bool("simple-json", false, "output simplified JSON format with impact scores")
+	rootCmd.Flags().
 		StringP("sort", "s", "size", "sort clone groups: size (largest first), occurrence (most files first), hash (alphabetical), total-tokens (highest total token count) (default: size)")
 	rootCmd.Flags().
 		BoolP("all", "a", false, "generate all output formats for all detection methods")

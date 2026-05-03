@@ -43,6 +43,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	plumbing, _ := cmd.Flags().GetBool("plumbing")
 	sarif, _ := cmd.Flags().GetBool("sarif")
+	simpleJSON, _ := cmd.Flags().GetBool("simple-json")
 	sortBy, _ := cmd.Flags().GetString("sort")
 
 	// Validate sorting criteria
@@ -67,6 +68,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.OutputFormat = config.OutputFormatPlumbing
 	case sarif:
 		mergedConfig.OutputFormat = config.OutputFormatSARIF
+	case simpleJSON:
+		mergedConfig.OutputFormat = config.OutputFormatSimpleJSON
 	case jsonFlag:
 		mergedConfig.OutputFormat = config.OutputFormatJSON
 	}
