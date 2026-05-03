@@ -3,19 +3,44 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/job"
-	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter"
 )
+
+// treeBuildResult holds the result of a suffix tree build.
+type treeBuildResult struct {
+	tree       *suffixtree.STree
+	data       []*syntax.Node
+	parseStats job.ParseStats
+	err        error
+}
+
+// buildParams holds parameters for suffix tree building.
+type buildParams struct {
+	ctx          context.Context
+	paths        []string
+	cfg          *config.Config
+	filterParam  *gogenfilter.Filter
+	outputFormat config.OutputFormat
+}
+
+// getFilesChan creates a channel of file paths based on the build parameters.
+func (p buildParams) getFilesChan() chan string {
+	return filesFeedWithOptions(
+		p.paths,
+		p.cfg.FilesFromStdin,
+		p.filterParam,
+		p.cfg.IncludeVendor,
+		p.cfg.Only,
+	)
+}
 
 // printSearchStatus outputs the status message after tree building completes.
 func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
@@ -30,41 +55,14 @@ func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
 func printBuildingStatus(
 	cfg *config.Config,
 	outputFormat config.OutputFormat,
-	verboseMsg, textMsg string,
+	verboseMsg string,
+	textMsg string,
 ) {
 	if cfg.Verbose {
 		_, _ = fmt.Fprintln(os.Stderr, verboseMsg)
 	} else if outputFormat == config.OutputFormatText {
-		_, _ = fmt.Fprint(os.Stderr, textMsg)
+		_, _ = fmt.Fprintln(os.Stderr, textMsg)
 	}
-}
-
-// buildParams holds common parameters for building a suffix tree.
-type buildParams struct {
-	ctx          context.Context
-	paths        []string
-	cfg          *config.Config
-	filterParam  *gogenfilter.Filter
-	outputFormat config.OutputFormat
-}
-
-// treeBuildResult holds the result of building a suffix tree.
-type treeBuildResult struct {
-	tree       *suffixtree.STree
-	data       []*syntax.Node
-	parseStats job.ParseStats
-	err        error
-}
-
-// getFilesChan creates a channel of file paths based on the build parameters.
-func (p buildParams) getFilesChan() chan string {
-	return filesFeedWithOptions(
-		p.paths,
-		p.cfg.FilesFromStdin,
-		p.filterParam,
-		p.cfg.IncludeVendor,
-		p.cfg.Only,
-	)
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
@@ -166,8 +164,6 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (sqlc)")
 	}
 
-	// Filter templ files only when --exclude-templ is set
-	// (templ files are included by default)
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, gogenfilter.FilterTempl)
 
@@ -192,7 +188,6 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 		verboseFprintf(cfg, "Auto-generated code filtering enabled (stringer)")
 	}
 
-	// Create the filter if there are any options or include/exclude patterns
 	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
 		len(cfg.IgnoreFiles) > 0 {
 		configs := []gogenfilter.FilterConfig{
@@ -224,16 +219,13 @@ func executeAnalysis(
 		_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
-	// Create filter based on config
 	filterParam := setupFilter(cfg)
 
-	// Get filter statistics if filter was enabled
 	var filterStats gogenfilter.FilterStats
 	if filterParam != nil {
 		filterStats = filterParam.GetStats()
 	}
 
-	// For hash-only detection, skip AST parsing and work directly with file paths
 	if cfg.DetectionMethods.IsHashOnly() {
 		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, outputFormat)
 	}
@@ -280,171 +272,4 @@ func executeAnalysis(
 	}
 
 	return duplChan, result.parseStats, filterStats, nil
-}
-
-// collectFilesFromChannel collects file paths from a channel into a slice,
-// respecting context cancellation.
-func collectFilesFromChannel(ctx context.Context, filesChan <-chan string) ([]string, error) {
-	var files []string
-
-	for file := range filesChan {
-		select {
-		case <-ctx.Done():
-			return nil, fmt.Errorf("context cancelled: %w", ctx.Err())
-		default:
-			files = append(files, file)
-		}
-	}
-
-	return files, nil
-}
-
-// convertFileDuplicatesToMatches converts hash.FileDuplicate slices to syntax.Match channel.
-func convertFileDuplicatesToMatches(
-	ctx context.Context,
-	fileDuplicates []hash.FileDuplicate,
-) chan syntax.Match {
-	duplChan := make(chan syntax.Match)
-
-	go func() {
-		defer close(duplChan)
-
-		for _, fileDup := range fileDuplicates {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-			}
-
-			match := syntax.Match{
-				Hash:  fileDup.Hash,
-				Frags: createFragmentsFromFileHashes(fileDup.Files),
-			}
-			duplChan <- match
-		}
-	}()
-
-	return duplChan
-}
-
-// createFragmentsFromFileHashes converts file hashes to syntax.Node fragments.
-func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
-	fragments := make([][]*syntax.Node, len(files))
-	for i, fileHash := range files {
-		node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)
-		fragments[i] = []*syntax.Node{node}
-	}
-
-	return fragments
-}
-
-// executeHashOnlyAnalysis runs hash-based duplicate detection without AST parsing.
-// This is an optimized streaming path that hashes files one at a time via io.Copy
-// through xxh3.Hasher — file content is never held in memory.
-// Only (hash, filename, size) is retained per file, yielding O(1) memory per file
-// regardless of file size.
-func executeHashOnlyAnalysis(
-	ctx context.Context,
-	cfg *config.Config,
-	paths []string,
-	filterParam *gogenfilter.Filter,
-	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error) {
-	printBuildingStatus(
-		cfg,
-		outputFormat,
-		"Running hash-only duplicate detection",
-		"    📖 Hashing files for duplicate detection...",
-	)
-
-	if cfg.Verbose {
-		_, _ = fmt.Fprintln(
-			os.Stderr,
-			"🔍 Excluding node_modules/ directory (use --include-node-modules to include)",
-		)
-	}
-
-	filesChan := crawlPathsAllFiles(
-		paths,
-		filterParam,
-		cfg.IncludeVendor,
-		cfg.IncludeNodeModules,
-		cfg.Only,
-	)
-
-	// Collect file paths (just strings — negligible memory) so we can report
-	// file count before streaming results downstream.
-	files, err := collectFilesFromChannel(ctx, filesChan)
-	if err != nil {
-		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, err
-	}
-
-	printFileCollectionStatus(cfg, outputFormat, len(files))
-
-	// Stream hash detection: files are hashed one at a time via io.Copy(xxh3, file).
-	// No file content retained in memory — only (hash, filename, size) per file.
-	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
-
-	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
-
-	var filterStats gogenfilter.FilterStats
-	if filterParam != nil {
-		filterStats = filterParam.GetStats()
-	}
-
-	return duplChan, job.ParseStats{
-		ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0},
-	}, filterStats, nil
-}
-
-// printFileCollectionStatus outputs status after file collection.
-func printFileCollectionStatus(
-	cfg *config.Config,
-	outputFormat config.OutputFormat,
-	fileCount int,
-) {
-	if cfg.Verbose {
-		fmt.Fprintf(os.Stderr, "Found %d files to hash\n", fileCount)
-	} else if outputFormat == config.OutputFormatText {
-		fmt.Fprintln(os.Stderr, " ✅")
-	}
-}
-
-// withThreshold wraps a printer constructor that needs a threshold parameter.
-func withThreshold(
-	constructor func(io.Writer, printer.ReadFile, int) printer.Printer,
-	threshold int,
-) func(io.Writer, printer.ReadFile) printer.Printer {
-	return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-		return constructor(w, fread, threshold)
-	}
-}
-
-// createPrinter returns the appropriate printer based on output format.
-func createPrinter(
-	outputFormat config.OutputFormat,
-	threshold int,
-	diffMode config.DiffMode,
-	metadata printer.ReportMetadata,
-) func(io.Writer, printer.ReadFile) printer.Printer {
-	switch outputFormat {
-	case config.OutputFormatHTML:
-		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
-			return printer.NewHTMLWithOptions(w, fread, diffMode, metadata, threshold)
-		}
-	case config.OutputFormatPlumbing:
-		return printer.NewPlumbing
-	case config.OutputFormatJSON:
-		return printer.NewJSON
-	case config.OutputFormatSimpleJSON:
-		return printer.NewJSON
-	case config.OutputFormatSARIF:
-		return withThreshold(printer.NewSARIF, threshold)
-	case config.OutputFormatCSV:
-		return withThreshold(printer.NewStats, threshold)
-	case config.OutputFormatText:
-		return printer.NewText
-	default:
-		return printer.NewText
-	}
 }
