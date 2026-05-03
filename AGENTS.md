@@ -824,6 +824,8 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 
 **Config extraction & printer cleanup (2026-05-03):** Deleted `printer/format.go` (moved `ParseFormat` to `config.ParseOutputFormat`) and `printer/sort_type.go` (moved `SortBy` constants to `config.SortCriteria`). All printer and cmd references updated to use `config.SortCriteria` directly. Printer interface now uses `config.SortCriteria` instead of `printer.SortBy`. Extracted `DetectionConfig` from `config.Config` for the detection layer — `MultiDetector` accepts `DetectionConfig` (Methods + Verbose) instead of the full `*config.Config`. Defined `MethodDetector` interface in `detection/detector.go` for pluggable detectors.
 
+**Detector wiring & file splits (2026-05-03):** Wired `TodoDetector` and `LegacyDetector` through `MultiDetector.FindDuplOver()` — all 4 detection methods now accessible via `-m` flag. Consolidated threshold error sentinels into `config/enum_helpers.go` as single source of truth. Split `detection/todos.go` (352L → 3 files), `config/config.go` (344L → 3 files), `cmd/run_analysis.go` (450L → 3 files).
+
 ### Architecture — Outstanding Issues
 
 **Printer ↔ syntax.Node coupling:** `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Each printer independently calls `ProcessNodeRange()` and `extractContent()`. Fix: introduce ProcessedClone DTO, change Printer interface to accept `[]ProcessedCloneGroup`. This touches 111 test call sites — defer to dedicated PR.
@@ -837,5 +839,3 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 Consolidation depends on Printer DTO change above.
 
 **printer/clone_classify.go imports syntax/golang directly:** Language-specific node type constants mapped to categories. Coupling breaks when supporting non-Go languages. Moves naturally with Printer DTO refactor.
-
-**cmd/run_analysis.go god file:** 7 internal imports, 6 responsibilities. Needs extraction but low priority — functionally correct.
