@@ -10,6 +10,8 @@ import (
 var (
 	ErrInvalidDetectionMethod = errors.New("invalid detection method")
 	ErrInvalidType            = errors.New("invalid type")
+	ErrInvalidThreshold       = errors.New("threshold must be >= 1")
+	ErrThresholdTooLarge      = errors.New("threshold too large (max 1000)")
 )
 
 // isValidStringType validates a string type against a set of valid values.

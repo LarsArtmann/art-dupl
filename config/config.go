@@ -268,11 +268,11 @@ func ValidateConfig(cfg *Config) error {
 
 func validateThreshold(threshold int) error {
 	if threshold < 1 {
-		return errors.NewValidationError("threshold must be greater than 0", nil)
+		return fmt.Errorf("%w: %d", ErrInvalidThreshold, threshold)
 	}
 
 	if threshold > 1000 {
-		return errors.NewValidationError("threshold seems too large (max 1000)", nil)
+		return fmt.Errorf("%w: %d", ErrThresholdTooLarge, threshold)
 	}
 
 	return nil

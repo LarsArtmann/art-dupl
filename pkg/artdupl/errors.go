@@ -1,6 +1,10 @@
 package artdupl
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/LarsArtmann/art-dupl/config"
+)
 
 // SDK-specific sentinel errors for simple error comparison via errors.Is().
 //
@@ -15,10 +19,10 @@ var (
 	ErrNilOptions = errors.New("options cannot be nil")
 
 	// ErrInvalidThreshold is returned when threshold is invalid.
-	ErrInvalidThreshold = errors.New("threshold must be >= 1")
+	ErrInvalidThreshold = config.ErrInvalidThreshold
 
 	// ErrThresholdTooLarge is returned when threshold exceeds maximum.
-	ErrThresholdTooLarge = errors.New("threshold too large (max 1000)")
+	ErrThresholdTooLarge = config.ErrThresholdTooLarge
 
 	// ErrNoDetectionMethods is returned when no detection methods are specified.
 	ErrNoDetectionMethods = errors.New("at least one detection method must be specified")
