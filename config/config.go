@@ -148,6 +148,9 @@ type Config struct {
 	DiffMode DiffMode `json:"diffMode,omitempty"`
 }
 
+// DefaultThreshold is the default minimum token sequence size for clone detection.
+const DefaultThreshold = 15
+
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
 	return &Config{ //nolint:exhaustruct

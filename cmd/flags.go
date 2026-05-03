@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/LarsArtmann/art-dupl/cli"
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
 	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	cmd.Flags().
-		IntP("threshold", "t", cli.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
+		IntP("threshold", "t", config.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	cmd.Flags().
 		StringP("detection-methods", "m", "art-dupl", "detection methods: hash, art-dupl, or hash,art-dupl (default: art-dupl)")

@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/cli"
 	"github.com/LarsArtmann/art-dupl/config"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/spf13/cobra"
@@ -206,7 +205,7 @@ func applySimpleFlags(cfg *config.Config, flags *FlagValues) {
 
 // applyThresholdFlag applies the threshold flag if it differs from default.
 func applyThresholdFlag(cfg *config.Config, flags *FlagValues) {
-	if flags.Threshold != cli.DefaultThreshold {
+	if flags.Threshold != config.DefaultThreshold {
 		cfg.Threshold = flags.Threshold
 	}
 }
