@@ -40,7 +40,7 @@ func filesFeedWithOptions(
 	paths []string,
 	fromStdin bool,
 	filter *gogenfilter.Filter,
-	includeVendor bool,
+	includeVendor, includeNodeModules bool,
 	only config.FileType,
 ) chan string {
 	if fromStdin {
@@ -77,14 +77,16 @@ func filesFeedWithOptions(
 		return only.Matches(name)
 	}
 
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, fileCheck)
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, fileCheck)
 }
 
 // crawlPaths walks paths and returns a channel of Go files.
-func crawlPaths(paths []string, filter *gogenfilter.Filter, includeVendor bool) chan string {
-	// For Go source file crawling, we don't have a node_modules exclusion config
-	// so we pass true to maintain backward compatibility
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, true, isSourceFile)
+func crawlPaths(
+	paths []string,
+	filter *gogenfilter.Filter,
+	includeVendor, includeNodeModules bool,
+) chan string {
+	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, isSourceFile)
 }
 
 // crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).

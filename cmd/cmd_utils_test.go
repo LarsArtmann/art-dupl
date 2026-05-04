@@ -491,6 +491,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
+
 		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
 
 		// Should find all 3 files
@@ -514,6 +515,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewFilter() error: %v", err)
 	}
+
 	fchan := make(chan string, 10)
 
 	crawlSinglePathWithOpts(CrawlOptions{
@@ -586,6 +588,7 @@ func TestHandleWalkEntry(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewFilter() error: %v", err)
 			}
+
 			fchan := make(chan string, 1)
 
 			err = handleWalkEntry(CrawlOptions{

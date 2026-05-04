@@ -92,6 +92,7 @@ func Authenticate(username, password string) bool {
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
+
 		fltr, err := gogenfilter.NewFilter(
 			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
@@ -140,6 +141,7 @@ func Header() templ.Component { return nil }
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
+
 		fltr, err := gogenfilter.NewFilter(
 			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
@@ -189,6 +191,7 @@ func Helper() {}
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
+
 		fltr, err := gogenfilter.NewFilter(
 			filterConfig,
 			gogenfilter.WithIncludePatterns("**/vendor/*"),
@@ -293,6 +296,7 @@ func Authenticate(username, password string) bool {
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
+
 		fltr, err := gogenfilter.NewFilter(
 			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),

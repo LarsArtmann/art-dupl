@@ -196,16 +196,17 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Test that filter correctly identifies SQLC files
-	filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
-	if err != nil {
-		t.Fatalf("WithFilterOptions() error: %v", err)
+	filterConfig, filterErr := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+	if filterErr != nil {
+		t.Fatalf("WithFilterOptions() error: %v", filterErr)
 	}
-	fltr, err := gogenfilter.NewFilter(
+
+	fltr, filterErr := gogenfilter.NewFilter(
 		filterConfig,
 		gogenfilter.WithFS(os.DirFS("/")),
 	)
-	if err != nil {
-		t.Fatalf("NewFilter() error: %v", err)
+	if filterErr != nil {
+		t.Fatalf("NewFilter() error: %v", filterErr)
 	}
 
 	// SQLC files should be filtered
@@ -286,18 +287,20 @@ type User struct {
 	}
 
 	// Test filter recognizes SQLC files by both name and content
-	filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
-	if err != nil {
-		t.Fatalf("WithFilterOptions() error: %v", err)
+	filterConfig, filterErr := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+	if filterErr != nil {
+		t.Fatalf("WithFilterOptions() error: %v", filterErr)
 	}
-	fltr, err := gogenfilter.NewFilter(
+
+	fltr, filterErr := gogenfilter.NewFilter(
 		filterConfig,
 		gogenfilter.WithFS(os.DirFS("/")),
 	)
-	if err != nil {
-		t.Fatalf("NewFilter() error: %v", err)
+	if filterErr != nil {
+		t.Fatalf("NewFilter() error: %v", filterErr)
 	}
-	if filtered, err := fltr.Filter(toFSPath(sqlcFilePath)); err == nil && !filtered {
+
+	if filtered, filterErr := fltr.Filter(toFSPath(sqlcFilePath)); filterErr == nil && !filtered {
 		t.Error("users.sql.go in SQLC output directory should be filtered")
 	}
 }

@@ -38,6 +38,7 @@ func (p buildParams) getFilesChan() chan string {
 		p.cfg.FilesFromStdin,
 		p.filterParam,
 		p.cfg.IncludeVendor,
+		p.cfg.IncludeNodeModules,
 		p.cfg.Only,
 	)
 }
@@ -200,15 +201,26 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 			if err != nil {
 				return nil, fmt.Errorf("failed to create filter options: %w", err)
 			}
+
 			configs = append(configs, filterConfig)
 		}
 
 		verboseFprintf(cfg, "Auto-generated code filtering enabled")
 
-		return gogenfilter.NewFilter(configs...)
+		fltr, err := gogenfilter.NewFilter(configs...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create filter: %w", err)
+		}
+
+		return fltr, nil
 	}
 
-	return gogenfilter.NewFilter()
+	fltr, err := gogenfilter.NewFilter()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create filter: %w", err)
+	}
+
+	return fltr, nil
 }
 
 // executeAnalysis runs the core duplicate analysis logic.
