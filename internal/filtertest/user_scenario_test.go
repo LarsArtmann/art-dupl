@@ -196,21 +196,27 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Test that filter correctly identifies SQLC files
-	fltr := gogenfilter.NewFilter(
-		gogenfilter.Enabled(),
-		gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC),
+	filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+	if err != nil {
+		t.Fatalf("WithFilterOptions() error: %v", err)
+	}
+	fltr, err := gogenfilter.NewFilter(
+		filterConfig,
 		gogenfilter.WithFS(os.DirFS("/")),
 	)
+	if err != nil {
+		t.Fatalf("NewFilter() error: %v", err)
+	}
 
 	// SQLC files should be filtered
-	if filtered, err := fltr.ShouldFilter(
+	if filtered, err := fltr.Filter(
 		toFSPath(filepath.Join(queriesDir, "articles.sql.go")),
 	); err == nil &&
 		!filtered {
 		t.Error("articles.sql.go should be filtered (SQLC generated)")
 	}
 
-	if filtered, err := fltr.ShouldFilter(
+	if filtered, err := fltr.Filter(
 		toFSPath(filepath.Join(queriesDir, "users.sql.go")),
 	); err == nil &&
 		!filtered {
@@ -218,14 +224,14 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Regular files should NOT be filtered
-	if filtered, err := fltr.ShouldFilter(
+	if filtered, err := fltr.Filter(
 		toFSPath(filepath.Join(repoDir, "article_repository.go")),
 	); err == nil &&
 		filtered {
 		t.Error("article_repository.go should NOT be filtered (regular Go file)")
 	}
 
-	if filtered, err := fltr.ShouldFilter(
+	if filtered, err := fltr.Filter(
 		toFSPath(filepath.Join(repoDir, "mock_repository.go")),
 	); err == nil &&
 		filtered {
@@ -280,12 +286,18 @@ type User struct {
 	}
 
 	// Test filter recognizes SQLC files by both name and content
-	fltr := gogenfilter.NewFilter(
-		gogenfilter.Enabled(),
-		gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC),
+	filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+	if err != nil {
+		t.Fatalf("WithFilterOptions() error: %v", err)
+	}
+	fltr, err := gogenfilter.NewFilter(
+		filterConfig,
 		gogenfilter.WithFS(os.DirFS("/")),
 	)
-	if filtered, err := fltr.ShouldFilter(toFSPath(sqlcFilePath)); err == nil && !filtered {
+	if err != nil {
+		t.Fatalf("NewFilter() error: %v", err)
+	}
+	if filtered, err := fltr.Filter(toFSPath(sqlcFilePath)); err == nil && !filtered {
 		t.Error("users.sql.go in SQLC output directory should be filtered")
 	}
 }

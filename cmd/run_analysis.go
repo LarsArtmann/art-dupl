@@ -155,7 +155,7 @@ func verboseFprintf(cfg *config.Config, msg string) {
 }
 
 // setupFilter creates a filter based on config settings.
-func setupFilter(cfg *config.Config) *gogenfilter.Filter {
+func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 	var filterOptions []gogenfilter.FilterOption
 
 	if !cfg.IncludeSQLC {
@@ -191,10 +191,16 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
 		len(cfg.IgnoreFiles) > 0 {
 		configs := []gogenfilter.FilterConfig{
-			gogenfilter.Enabled(),
-			gogenfilter.WithFilterOptions(filterOptions...),
 			gogenfilter.WithIncludePatterns(cfg.IncludePatterns...),
 			gogenfilter.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...)...),
+		}
+
+		if len(filterOptions) > 0 {
+			filterConfig, err := gogenfilter.WithFilterOptions(filterOptions...)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create filter options: %w", err)
+			}
+			configs = append(configs, filterConfig)
 		}
 
 		verboseFprintf(cfg, "Auto-generated code filtering enabled")
@@ -202,7 +208,7 @@ func setupFilter(cfg *config.Config) *gogenfilter.Filter {
 		return gogenfilter.NewFilter(configs...)
 	}
 
-	return nil
+	return gogenfilter.NewFilter()
 }
 
 // executeAnalysis runs the core duplicate analysis logic.
@@ -219,7 +225,14 @@ func executeAnalysis(
 		_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
 	}
 
-	filterParam := setupFilter(cfg)
+	filterParam, err := setupFilter(cfg)
+	if err != nil {
+		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
+			err,
+			duplerrors.AnalysisError,
+			"failed to setup filter",
+		)
+	}
 
 	var filterStats gogenfilter.FilterStats
 	if filterParam != nil {

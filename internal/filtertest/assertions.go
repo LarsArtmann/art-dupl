@@ -17,9 +17,9 @@ func toFSPath(path string) string {
 func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
-	filtered, err := fltr.ShouldFilter(toFSPath(filepath))
+	filtered, err := fltr.Filter(toFSPath(filepath))
 	if err != nil {
-		t.Fatalf("ShouldFilter(%q) error: %v", filepath, err)
+		t.Fatalf("Filter(%q) error: %v", filepath, err)
 	}
 
 	if filtered {
@@ -31,9 +31,9 @@ func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filep
 func AssertFileShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
 	t.Helper()
 
-	filtered, err := fltr.ShouldFilter(toFSPath(filepath))
+	filtered, err := fltr.Filter(toFSPath(filepath))
 	if err != nil {
-		t.Fatalf("ShouldFilter(%q) error: %v", filepath, err)
+		t.Fatalf("Filter(%q) error: %v", filepath, err)
 	}
 
 	if !filtered {

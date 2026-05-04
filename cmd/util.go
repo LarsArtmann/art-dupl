@@ -54,7 +54,7 @@ func shouldIncludeFile(f *gogenfilter.Filter, path string) bool {
 		return true
 	}
 
-	filtered, err := f.ShouldFilter(path)
+	filtered, err := f.Filter(path)
 	if err != nil {
 		return true
 	}

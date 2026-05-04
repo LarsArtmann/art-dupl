@@ -88,11 +88,17 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test that filter correctly identifies files
-		fltr := gogenfilter.NewFilter(
-			gogenfilter.Enabled(),
-			gogenfilter.WithFilterOptions(gogenfilter.FilterAll),
+		filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
+		if err != nil {
+			t.Fatalf("WithFilterOptions() error: %v", err)
+		}
+		fltr, err := gogenfilter.NewFilter(
+			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 
 		// Regular files should NOT be filtered
 		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("main.go"))
@@ -130,14 +136,20 @@ func Header() templ.Component { return nil }
 		}
 
 		// Create filter with sqlc included (not filtered)
-		fltr := gogenfilter.NewFilter(
-			gogenfilter.Enabled(),
-			gogenfilter.WithFilterOptions(gogenfilter.FilterTempl),
+		filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterTempl)
+		if err != nil {
+			t.Fatalf("WithFilterOptions() error: %v", err)
+		}
+		fltr, err := gogenfilter.NewFilter(
+			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 
 		// sqlc should NOT be filtered (not in options)
-		if filtered, err := fltr.ShouldFilter(
+		if filtered, err := fltr.Filter(
 			toFSPath(setup.GetFilePath("db/models.go")),
 		); err == nil &&
 			filtered {
@@ -145,7 +157,7 @@ func Header() templ.Component { return nil }
 		}
 
 		// templ SHOULD be filtered
-		if filtered, err := fltr.ShouldFilter(
+		if filtered, err := fltr.Filter(
 			toFSPath(setup.GetFilePath("components/header_templ.go")),
 		); err == nil &&
 			!filtered {
@@ -173,15 +185,21 @@ func Helper() {}
 			t.Fatalf("CreateTestFiles failed: %v", err)
 		}
 
-		fltr := gogenfilter.NewFilter(
-			gogenfilter.Enabled(),
-			gogenfilter.WithFilterOptions(gogenfilter.FilterAll),
+		filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
+		if err != nil {
+			t.Fatalf("WithFilterOptions() error: %v", err)
+		}
+		fltr, err := gogenfilter.NewFilter(
+			filterConfig,
 			gogenfilter.WithIncludePatterns("**/vendor/*"),
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 
 		// Vendor file should NOT be filtered - non-generated code that matches include pattern
-		if filtered, err := fltr.ShouldFilter(toFSPath(vendorFile)); err == nil && filtered {
+		if filtered, err := fltr.Filter(toFSPath(vendorFile)); err == nil && filtered {
 			t.Errorf("vendor/helpers.go should not be filtered (include pattern, non-generated)")
 		}
 	})
@@ -271,14 +289,20 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test filtering from subdirectory perspective
-		fltr := gogenfilter.NewFilter(
-			gogenfilter.Enabled(),
-			gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC),
+		filterConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+		if err != nil {
+			t.Fatalf("WithFilterOptions() error: %v", err)
+		}
+		fltr, err := gogenfilter.NewFilter(
+			filterConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 
 		// db/models.go should be filtered (sqlc)
-		if filtered, err := fltr.ShouldFilter(
+		if filtered, err := fltr.Filter(
 			toFSPath(setup.GetFilePath("db/models.go")),
 		); err == nil &&
 			!filtered {

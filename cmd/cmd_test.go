@@ -336,7 +336,10 @@ func TestFilesFeedWithOptions(t *testing.T) {
 	})
 
 	t.Run("with filter", func(t *testing.T) {
-		f := gogenfilter.NewFilter(gogenfilter.Disabled())
+		f, err := gogenfilter.NewFilter()
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 
 		ch := filesFeedWithOptions([]string{}, false, f, false, "")
 		if ch == nil {
@@ -452,7 +455,10 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("empty config returns filter", func(t *testing.T) {
 		cfg := &config.Config{}
 
-		f := setupFilter(cfg)
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
 		if f == nil {
 			t.Error("setupFilter() returned nil")
 		}
@@ -461,7 +467,10 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("with filter generated", func(t *testing.T) {
 		cfg := &config.Config{FilterGenerated: true}
 
-		f := setupFilter(cfg)
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
 		if f == nil {
 			t.Error("setupFilter() returned nil")
 		}
@@ -470,7 +479,10 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("with include sqlc", func(t *testing.T) {
 		cfg := &config.Config{IncludeSQLC: true}
 
-		f := setupFilter(cfg)
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
 		if f == nil {
 			t.Error("setupFilter() returned nil")
 		}
@@ -479,7 +491,10 @@ func TestSetupFilter(t *testing.T) {
 	t.Run("with include templ", func(t *testing.T) {
 		cfg := &config.Config{IncludeTempl: true}
 
-		f := setupFilter(cfg)
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
 		if f == nil {
 			t.Error("setupFilter() returned nil")
 		}

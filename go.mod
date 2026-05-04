@@ -82,10 +82,10 @@ go 1.26.2
 require (
 	charm.land/lipgloss/v2 v2.0.3
 	charm.land/log/v2 v2.0.0
-	github.com/LarsArtmann/gogenfilter v0.2.1-0.20260430213720-248c8406223f
+	github.com/LarsArtmann/gogenfilter v0.2.1-0.20260504155943-46aedffcd5db
 	github.com/a-h/templ v0.3.1001
 	github.com/charmbracelet/fang v1.0.0
-	github.com/charmbracelet/x/exp/golden v0.0.0-20260430013151-79116d1f37bd
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260503005035-c113ba3d2310
 	github.com/onsi/ginkgo/v2 v2.28.3
 	github.com/onsi/gomega v1.40.0
 	github.com/sergi/go-diff v1.4.0
@@ -101,7 +101,7 @@ require (
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260428153724-66037269d7be // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260430013151-79116d1f37bd // indirect
+	github.com/charmbracelet/x/exp/charmtone v0.0.0-20260503005035-c113ba3d2310 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.2.2 // indirect

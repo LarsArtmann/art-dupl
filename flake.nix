@@ -2,7 +2,7 @@
   description = "art-dupl — Fast, type-safe code duplication detector for Go projects";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     gogenfilter = {
       url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=edf3d8d84a2a7956f09e98a37dd6f802d1400132";
       flake = false;

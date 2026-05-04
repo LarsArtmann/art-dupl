@@ -487,7 +487,10 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 	}
 
 	t.Run("crawls all files with nil check", func(t *testing.T) {
-		f := gogenfilter.NewFilter(gogenfilter.Disabled())
+		f, err := gogenfilter.NewFilter()
+		if err != nil {
+			t.Fatalf("NewFilter() error: %v", err)
+		}
 		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
 
 		// Should find all 3 files
@@ -507,7 +510,10 @@ func TestCrawlSinglePath_File(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	f := gogenfilter.NewFilter(gogenfilter.Disabled())
+	f, err := gogenfilter.NewFilter()
+	if err != nil {
+		t.Fatalf("NewFilter() error: %v", err)
+	}
 	fchan := make(chan string, 10)
 
 	crawlSinglePathWithOpts(CrawlOptions{
@@ -576,10 +582,13 @@ func TestHandleWalkEntry(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := gogenfilter.NewFilter(gogenfilter.Disabled())
+			f, err := gogenfilter.NewFilter()
+			if err != nil {
+				t.Fatalf("NewFilter() error: %v", err)
+			}
 			fchan := make(chan string, 1)
 
-			err := handleWalkEntry(CrawlOptions{
+			err = handleWalkEntry(CrawlOptions{
 				Filter:          f,
 				IncludeVendor:   false,
 				IncludeNodeMods: false,
