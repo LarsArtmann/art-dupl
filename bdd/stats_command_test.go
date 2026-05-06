@@ -80,31 +80,6 @@ func assertGeneratedFilesFiltered(
 	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
 }
 
-// assertGeneratedFilesFilteredWithFlag creates test files and verifies generated files are filtered with a specific flag.
-func assertGeneratedFilesFilteredWithFlag(
-	setup *testutil.BDDTestSetup,
-	regularCode string,
-	generatedFilename string,
-	generatedCode string,
-	filterFlag string,
-) {
-	GinkgoHelper()
-
-	err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
-	Expect(err).NotTo(HaveOccurred())
-	err = setup.CreateTestFile(generatedFilename, generatedCode)
-	Expect(err).NotTo(HaveOccurred())
-
-	output, err := setup.RunSubcommand("stats", filterFlag, "--threshold", "5")
-	Expect(err).ToNot(HaveOccurred())
-
-	outputStr := string(output)
-
-	Expect(outputStr).To(ContainSubstring("regular1.go"))
-	Expect(outputStr).To(ContainSubstring("regular2.go"))
-	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
-}
-
 // assertGeneratedFilesIncluded creates test files and verifies generated files are included when flag is set.
 func assertGeneratedFilesIncluded(
 	setup *testutil.BDDTestSetup,
