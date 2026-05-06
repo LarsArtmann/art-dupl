@@ -105,6 +105,21 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.IncludeTempl = cfg.IncludeTempl
 	}
 
+	// IncludeProtobuf (bool)
+	if !skipZeroValues || cfg.IncludeProtobuf {
+		result.IncludeProtobuf = cfg.IncludeProtobuf
+	}
+
+	// IncludeMockgen (bool)
+	if !skipZeroValues || cfg.IncludeMockgen {
+		result.IncludeMockgen = cfg.IncludeMockgen
+	}
+
+	// IncludeStringer (bool)
+	if !skipZeroValues || cfg.IncludeStringer {
+		result.IncludeStringer = cfg.IncludeStringer
+	}
+
 	// Only (string) - apply if set (filters to specific file type)
 	if !skipZeroValues || cfg.Only != "" {
 		result.Only = cfg.Only
