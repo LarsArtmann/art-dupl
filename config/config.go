@@ -160,7 +160,7 @@ func DefaultConfig() *Config {
 		Profile:            false,
 		Timeout:            0,
 		IncludeSQLC:        false,
-		IncludeTempl:        false,
+		IncludeTempl:       false,
 		IncludeProtobuf:    false,
 		IncludeMockgen:     false,
 		IncludeStringer:    false,
