@@ -240,7 +240,7 @@ templ Toggle(visible bool, text string) {
 	})
 
 	Context("When mixing .templ and .go files", func() {
-		It("should exclude .templ files when --exclude-templ is used", func() {
+		It("should exclude *_templ.go files by default", func() {
 			// Create a Go file with duplicate code
 			goCode := `package main
 
@@ -266,13 +266,13 @@ templ Display(name string) {
 			err = setup.CreateTestFile("display.templ", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with --exclude-templ - should only analyze .go files
-			output, err := setup.RunArtDupl("--exclude-templ", "--threshold", "3")
+			// *_templ.go files are filtered by default
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
 
-			// .templ files should not appear when excluded
+			// *_templ.go files should not appear (filtered by default)
 			Expect(outputStr).ToNot(ContainSubstring("display.templ"))
 		})
 	})

@@ -14,7 +14,7 @@ import (
 // These tests verify the stats command behavior, including:
 // - Default filtering of generated code (templ, sqlc)
 // - Stats output formats (text, JSON, CSV)
-// - Filter override flags (--include-sqlc, --exclude-templ)
+// - Filter override flags (--include-sqlc, --include-templ)
 // - Stats accuracy and metrics calculation
 
 // testCodeTemplates for reuse across tests to avoid duplication.
@@ -139,16 +139,15 @@ var _ = Describe("Stats Command", func() {
 	})
 
 	Context("When running stats with default filtering", func() {
-		It("should exclude templ files when --exclude-templ is used", func() {
+		It("should exclude templ files by default", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
-			assertGeneratedFilesFilteredWithFlag(
+			assertGeneratedFilesFiltered(
 				setup,
 				regularCode,
 				"page_templ.go",
 				templCode,
-				"--exclude-templ",
 			)
 		})
 
@@ -170,11 +169,9 @@ func Component() templ.Component { return nil }`
 			err = setup.CreateTestFile("page_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run with verbose flag and --exclude-templ to filter templ file
 			output, err := setup.RunSubcommand(
 				"stats",
 				"--verbose",
-				"--exclude-templ",
 				"--threshold",
 				"5",
 			)
@@ -188,7 +185,7 @@ func Component() templ.Component { return nil }`
 	})
 
 	Context("When overriding default filtering", func() {
-		It("should include templ files by default", func() {
+		It("should include templ files when --include-templ is used", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 
@@ -197,6 +194,7 @@ func Component() templ.Component { return nil }`
 				regularCode,
 				"page_templ.go",
 				templCode,
+				"--include-templ",
 			)
 		})
 
@@ -213,7 +211,7 @@ func Component() templ.Component { return nil }`
 			)
 		})
 
-		It("should include both when both flags are specified", func() {
+		It("should include both when both include flags are specified", func() {
 			regularCode := fmt.Sprintf(regularCodeTemplate, "process")
 			templCode := fmt.Sprintf(templCodeTemplate, "process")
 			sqlcCode := fmt.Sprintf(sqlcCodeTemplate, "process")
@@ -225,9 +223,9 @@ func Component() templ.Component { return nil }`
 			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Run stats with both include flags
 			output, err := setup.RunSubcommand(
 				"stats",
+				"--include-templ",
 				"--include-sqlc",
 				"--threshold",
 				"5",

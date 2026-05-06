@@ -280,10 +280,9 @@ var _ = Describe("Configuration File Loading", func() {
 	}
 
 	Context("When configuration file has filtering settings", func() {
-		It("should load filter-generated setting from config", func() {
+		It("should filter generated code by default without config field", func() {
 			configContent := `{
-				"threshold": 15,
-				"filterGenerated": true
+				"threshold": 15
 			}`
 			runConfigTest(configContent, filterGenCode, []string{"filter1.go", "filter2.go"})
 		})
@@ -291,17 +290,15 @@ var _ = Describe("Configuration File Loading", func() {
 		It("should load include-sqlc setting from config", func() {
 			configContent := `{
 				"threshold": 15,
-				"filterGenerated": true,
 				"includeSqlc": true
 			}`
 			runConfigTest(configContent, sqlcCode, []string{"query1.go", "query2.go"})
 		})
 
-		It("should respect excludeTempl setting from config", func() {
+		It("should respect includeTempl setting from config", func() {
 			configContent := `{
 				"threshold": 15,
-				"filterGenerated": true,
-				"excludeTempl": true
+				"includeTempl": true
 			}`
 			runConfigTest(configContent, templCode, []string{"comp1.go", "comp2.go"})
 		})

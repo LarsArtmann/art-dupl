@@ -262,7 +262,7 @@ func process() error {
 
 var _ = Describe("Protobuf/Mockgen/Stringer Filtering", func() {
 	Context("When filtering protobuf generated files", func() {
-		It("should exclude .pb.go files with --filter-generated", func() {
+		It("should exclude .pb.go files by default", func() {
 			setup := CreateBDDTestSetup()
 
 			pbCode := `package proto
@@ -280,7 +280,7 @@ func (m *Message) Reset() {
 			err = setup.CreateTestFile("message.pb.go", pbCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--filter-generated", "--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -290,7 +290,7 @@ func (m *Message) Reset() {
 	})
 
 	Context("When filtering mockgen generated files", func() {
-		It("should exclude mock files with --filter-generated", func() {
+		It("should exclude mock files by default", func() {
 			setup := CreateBDDTestSetup()
 
 			mockCode := `package mock
@@ -310,7 +310,7 @@ func (m *MockService) GetSomething() string {
 			err = setup.CreateTestFile("mock_service.go", mockCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--filter-generated", "--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

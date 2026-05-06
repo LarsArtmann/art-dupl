@@ -48,7 +48,7 @@ func assertGeneratedFileFiltered(
 	return outputStr
 }
 
-// assertTemplFileFiltered verifies templ files are filtered out when --exclude-templ is used.
+// assertTemplFileFiltered verifies templ files are filtered out by default.
 func assertTemplFileFiltered(
 	setup *testutil.BDDTestSetup,
 	regularFiles []string,
@@ -62,7 +62,7 @@ func assertTemplFileFiltered(
 	err = setup.CreateTestFile(generatedFile, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl("--exclude-templ", "--threshold", threshold)
+	output, err := setup.RunArtDupl("--threshold", threshold)
 
 	Expect(err).ToNot(HaveOccurred())
 
@@ -135,7 +135,7 @@ var _ = Describe("Default Filtering Behavior", func() {
 	})
 
 	Context("When analyzing code with templ generated files", func() {
-		It("should exclude *_templ.go files when --exclude-templ is used", func() {
+		It("should exclude *_templ.go files by default", func() {
 			regularCode := `package main
 
 import "fmt"
@@ -169,7 +169,7 @@ func process() {
 			)
 		})
 
-		It("should exclude multiple templ files when --exclude-templ is used", func() {
+		It("should exclude multiple templ files by default", func() {
 			regularCode := `package main
 func common() { println(1) }`
 
@@ -190,7 +190,7 @@ func common() { println(1) }`
 			err = setup.CreateTestFile("layout_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--exclude-templ", "--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -202,14 +202,14 @@ func common() { println(1) }`
 			Expect(outputStr).ToNot(ContainSubstring("layout_templ.go"))
 		})
 
-		It("should include templ files by default", func() {
+		It("should include templ files when --include-templ is used", func() {
 			assertGeneratedFileIncluded(
 				setup,
 				[]string{"regular1.go", "regular2.go"},
 				testRegularCode,
 				"page_templ.go",
 				testTemplCode,
-				"",
+				"--include-templ",
 				"3",
 			)
 		})
@@ -277,7 +277,7 @@ func query() { println(1) }`
 	})
 
 	Context("When both templ and sqlc files are present", func() {
-		It("should filter both with --exclude-templ and sqlc by default", func() {
+		It("should filter both templ and sqlc files by default", func() {
 			regularCode := `package main
 func process() { println(1) }`
 			templCode := `package main
@@ -298,7 +298,7 @@ func process() { println(1) }`
 			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--exclude-templ", "--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -309,7 +309,7 @@ func process() { println(1) }`
 			Expect(outputStr).ToNot(ContainSubstring("queries.sql.go"))
 		})
 
-		It("should include both when both flags are used", func() {
+		It("should include both when both include flags are used", func() {
 			regularCode := `package main
 func process() { println(1) }`
 			templCode := `package main
@@ -328,7 +328,7 @@ func process() { println(1) }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include flags
-			output, err := setup.RunArtDupl("--include-sqlc", "--threshold", "3")
+			output, err := setup.RunArtDupl("--include-templ", "--include-sqlc", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -394,7 +394,7 @@ func assertTemplFilteredWithFormat(
 	err = setup.CreateTestFile("page_templ.go", testTemplCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl("--exclude-templ", outputFormatFlag, "--threshold", "3")
+	output, err := setup.RunArtDupl(outputFormatFlag, "--threshold", "3")
 	Expect(err).ToNot(HaveOccurred())
 
 	Expect(string(output)).ToNot(ContainSubstring("page_templ.go"))
@@ -407,7 +407,7 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 		setup = CreateBDDTestSetup()
 	})
 
-	DescribeTable("should not include templ files with --exclude-templ in various output formats",
+	DescribeTable("should not include templ files by default in various output formats",
 		func(format string) {
 			assertTemplFilteredWithFormat(setup, format)
 		},

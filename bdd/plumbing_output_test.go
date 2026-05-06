@@ -268,13 +268,12 @@ func %s() {}`, funcName)
 			)
 		})
 
-		It("should work with filter-generated flag", func() {
+		It("should work with generated file filtering by default", func() {
 			code := testutil.SimpleCodeTemplate("filterGenPlumb")
 			_ = setup.CreateAndRunDuplExpectSuccess(
 				[]string{"filter1.go", "filter2.go"},
 				code,
 				"--plumbing",
-				"--filter-generated",
 				"--threshold",
 				testutil.ThresholdSmall,
 			)
