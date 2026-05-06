@@ -160,7 +160,12 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Type), t.trans(n.Body))
 
 	case *ast.FuncType:
-		o.Type = FuncType
+		if t.config.Mode.IsSemantic() && t.inInterface {
+			o.Type = encodeSemanticType(FuncType, "~interface~", true)
+		} else {
+			o.Type = FuncType
+		}
+
 		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Params))
 		t.addWithNilCheck(o, n.Results)
@@ -203,7 +208,10 @@ func (t *transformer) trans(
 
 	case *ast.InterfaceType:
 		o.Type = InterfaceType
+		prev := t.inInterface
+		t.inInterface = true
 		o.AddChildren(t.trans(n.Methods))
+		t.inInterface = prev
 
 	case *ast.KeyValueExpr:
 		o.Type = KeyValueExpr

@@ -49,9 +49,10 @@ func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, i
 }
 
 type transformer struct {
-	fileset  *token.FileSet
-	filename string
-	config   ParseConfig
+	fileset     *token.FileSet
+	filename    string
+	config      ParseConfig
+	inInterface bool
 }
 
 // addWithNilCheck adds a child to o if not nil and valid.

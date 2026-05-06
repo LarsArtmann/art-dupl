@@ -216,6 +216,7 @@ func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 	_ = printer.PrintFooter()
 
 	var output SARIFOutput
+
 	err := json.Unmarshal(buf.Bytes(), &output)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal SARIF output: %v", err)
@@ -234,12 +235,18 @@ func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 	}
 
 	if result.Fingerprints.ContentFingerprint != "abc123def456" {
-		t.Errorf("Expected contentFingerprint 'abc123def456', got '%s'", result.Fingerprints.ContentFingerprint)
+		t.Errorf(
+			"Expected contentFingerprint 'abc123def456', got '%s'",
+			result.Fingerprints.ContentFingerprint,
+		)
 	}
 
 	// partialFingerprint should be first 8 chars of contentFingerprint
 	if result.Fingerprints.PartialFingerprint != "abc123de" {
-		t.Errorf("Expected partialFingerprint 'abc123de', got '%s'", result.Fingerprints.PartialFingerprint)
+		t.Errorf(
+			"Expected partialFingerprint 'abc123de', got '%s'",
+			result.Fingerprints.PartialFingerprint,
+		)
 	}
 }
 

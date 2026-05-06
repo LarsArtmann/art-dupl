@@ -142,7 +142,16 @@ func writeFormatFile(
 	// Build metadata for HTML report
 	metadata := newReportMetadata(cfg, sortByEnum.String())
 
-	p := createPrinter(format, cfg.Threshold, cfg.DiffMode, metadata, GetVersion())(file, os.ReadFile)
+	p := createPrinter(
+		format,
+		cfg.Threshold,
+		cfg.DiffMode,
+		metadata,
+		GetVersion(),
+	)(
+		file,
+		os.ReadFile,
+	)
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 

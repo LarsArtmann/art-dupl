@@ -220,7 +220,7 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortC
 				},
 			},
 			Fingerprints: SARIFFingerprints{
-				ContentFingerprint:   hash,
+				ContentFingerprint: hash,
 				PartialFingerprint: hash[:8],
 			},
 		}
