@@ -96,8 +96,12 @@ type SARIFRegion struct {
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
+// SARIF spec: fingerprints are short strings that can be used to relate related results.
 type SARIFFingerprints struct {
-	CloneHash string `json:"cloneHash,omitempty"`
+	// ContentFingerprint is a hash that uniquely identifies the duplicate content.
+	ContentFingerprint string `json:"contentFingerprint,omitempty"`
+	// PartialFingerprint provides approximate matching for related content.
+	PartialFingerprint string `json:"partialFingerprint,omitempty"`
 }
 
 // SARIFInvocation represents an invocation of the tool.
@@ -115,17 +119,34 @@ type sarifPrinter struct {
 	results         []SARIFResult
 	processedHashes map[string]bool // Track processed hashes to avoid duplicates
 	startTime       time.Time
+	currentHash     string // Hash for the current clone group
+	version         string // Tool version for SARIF output
 }
 
-// NewSARIF creates a new SARIF format printer.
+// NewSARIF creates a new SARIF format printer with default settings.
 func NewSARIF(w io.Writer, fread ReadFile, threshold int) Printer {
+	return NewSARIFWithConfig(w, fread, SARIFConfig{
+		Threshold: threshold,
+		Version:   "dev",
+	})
+}
+
+// SARIFConfig contains configuration for SARIF output.
+type SARIFConfig struct {
+	Threshold int
+	Version   string
+}
+
+// NewSARIFWithConfig creates a new SARIF format printer with explicit config.
+func NewSARIFWithConfig(w io.Writer, fread ReadFile, cfg SARIFConfig) Printer {
 	return &sarifPrinter{
 		w:               w,
 		ReadFile:        fread,
-		threshold:       threshold,
+		threshold:       cfg.Threshold,
 		results:         []SARIFResult{},
 		processedHashes: make(map[string]bool),
 		startTime:       time.Now(),
+		version:         cfg.Version,
 	}
 }
 
@@ -138,8 +159,11 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortC
 		return nil
 	}
 
-	// Generate a hash for this clone group
-	hash := generateCloneHash(dups)
+	// Use hash from caller via SetHash
+	hash := p.currentHash
+	if hash == "" {
+		return nil
+	}
 
 	// Skip if we've already processed this hash
 	if p.processedHashes[hash] {
@@ -196,7 +220,8 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortC
 				},
 			},
 			Fingerprints: SARIFFingerprints{
-				CloneHash: hash,
+				ContentFingerprint:   hash,
+				PartialFingerprint: hash[:8],
 			},
 		}
 
@@ -222,16 +247,9 @@ func (p *sarifPrinter) determineLevel(size int) string {
 	}
 }
 
-// generateCloneHash generates a hash for a clone group.
-func generateCloneHash(dups [][]*syntax.Node) string {
-	if len(dups) == 0 || len(dups[0]) == 0 {
-		return ""
-	}
-
-	// Use filename and position of first clone as hash basis
-	first := dups[0][0]
-
-	return fmt.Sprintf("%s:%d:%d", first.Filename, first.Pos, first.End)
+// SetHash sets the hash for the current clone group.
+func (p *sarifPrinter) SetHash(hash string) {
+	p.currentHash = hash
 }
 
 // outputSARIF generates and writes the SARIF output.
@@ -244,7 +262,7 @@ func (p *sarifPrinter) outputSARIF() error {
 				Tool: SARIFTool{
 					Driver: SARIFDriver{
 						Name:           "art-dupl",
-						Version:        "1.0.0",
+						Version:        p.version,
 						InformationURI: "https://github.com/LarsArtmann/art-dupl",
 						Rules: []SARIFRule{
 							{

@@ -55,6 +55,8 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Create test clone group
+	printer.SetHash("test-hash")
+
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 50),
 		createTestSARIFNodes("test2.go", 0, 50),
@@ -88,6 +90,8 @@ func TestSARIFPrinter_PrintFooter(t *testing.T) {
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
 	// Add some test data
+	printer.SetHash("test-hash")
+
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 50),
 	}
@@ -141,38 +145,23 @@ func TestSARIFPrinter_DetermineLevel(t *testing.T) {
 	}
 }
 
-func TestGenerateCloneHash(t *testing.T) {
-	tests := []struct {
-		name     string
-		dups     [][]*syntax.Node
-		expected string
-	}{
-		{
-			name:     "empty dups",
-			dups:     [][]*syntax.Node{},
-			expected: "",
-		},
-		{
-			name:     "empty inner slice",
-			dups:     [][]*syntax.Node{{}},
-			expected: "",
-		},
-		{
-			name: "valid dups",
-			dups: [][]*syntax.Node{
-				{{Type: 1, Filename: "test.go", Pos: 10, End: 50}},
-			},
-			expected: "test.go:10:50",
-		},
+func TestSARIFPrinter_SetHash(t *testing.T) {
+	var buf bytes.Buffer
+
+	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
+
+	// Test SetHash stores the hash
+	printer.SetHash("abc123")
+
+	if printer.currentHash != "abc123" {
+		t.Errorf("SetHash() = %s, expected %s", printer.currentHash, "abc123")
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			hash := generateCloneHash(tt.dups)
-			if hash != tt.expected {
-				t.Errorf("generateCloneHash() = %s, expected %s", hash, tt.expected)
-			}
-		})
+	// Test that empty hash is handled
+	printer.SetHash("")
+
+	if printer.currentHash != "" {
+		t.Errorf("SetHash() empty = %s, expected %s", printer.currentHash, "")
 	}
 }
 
@@ -185,7 +174,9 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	nodes1 := createTestSARIFNodes("test.go", 0, 50)
 	nodes2 := createTestSARIFNodes("test2.go", 0, 50)
 
-	// First group
+	// First group with hash "same-hash"
+	printer.SetHash("same-hash")
+
 	dups1 := [][]*syntax.Node{nodes1, nodes2}
 
 	err := printer.PrintClones(dups1)
@@ -194,6 +185,8 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	}
 
 	// Second group with same hash (should be filtered)
+	printer.SetHash("same-hash")
+
 	dups2 := [][]*syntax.Node{nodes1, nodes2}
 
 	err = printer.PrintClones(dups2)
@@ -205,12 +198,76 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 	testutil.AssertCount(t, len(printer.results), 2, "results")
 }
 
+func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
+	var buf bytes.Buffer
+
+	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+		Threshold: 15,
+		Version:   "1.0.0",
+	}).(*sarifPrinter)
+
+	// Add test data with a known hash
+	printer.SetHash("abc123def456")
+
+	dups := [][]*syntax.Node{
+		createTestSARIFNodes("test.go", 0, 100),
+	}
+	_ = printer.PrintClones(dups)
+	_ = printer.PrintFooter()
+
+	var output SARIFOutput
+	err := json.Unmarshal(buf.Bytes(), &output)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal SARIF output: %v", err)
+	}
+
+	// Verify results exist
+	if len(output.Runs) == 0 || len(output.Runs[0].Results) == 0 {
+		t.Fatal("Expected at least one result")
+	}
+
+	result := output.Runs[0].Results[0]
+
+	// Verify fingerprint fields per SARIF spec
+	if result.Fingerprints.ContentFingerprint == "" {
+		t.Error("Expected non-empty contentFingerprint")
+	}
+
+	if result.Fingerprints.ContentFingerprint != "abc123def456" {
+		t.Errorf("Expected contentFingerprint 'abc123def456', got '%s'", result.Fingerprints.ContentFingerprint)
+	}
+
+	// partialFingerprint should be first 8 chars of contentFingerprint
+	if result.Fingerprints.PartialFingerprint != "abc123de" {
+		t.Errorf("Expected partialFingerprint 'abc123de', got '%s'", result.Fingerprints.PartialFingerprint)
+	}
+}
+
+func TestSARIFOutput_VersionFromConfig(t *testing.T) {
+	var buf bytes.Buffer
+
+	// Test that version is properly set from SARIFConfig
+	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+		Threshold: 15,
+		Version:   "2.0.0-test",
+	}).(*sarifPrinter)
+
+	if printer.version != "2.0.0-test" {
+		t.Errorf("Expected version '2.0.0-test', got '%s'", printer.version)
+	}
+}
+
 func TestSARIFOutput_Structure(t *testing.T) {
 	var buf bytes.Buffer
 
-	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
+	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+		Threshold: 15,
+		Version:   "1.0.0",
+	}).(*sarifPrinter)
 
 	// Add test data
+	printer.SetHash("test-hash-123")
+
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("main.go", 0, 100),
 		createTestSARIFNodes("utils.go", 0, 100),

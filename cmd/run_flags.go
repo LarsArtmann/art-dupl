@@ -116,6 +116,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.Threshold,
 		mergedConfig.DiffMode,
 		metadata,
+		GetVersion(),
 	)(
 		os.Stdout,
 		os.ReadFile,

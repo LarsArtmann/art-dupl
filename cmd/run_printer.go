@@ -23,6 +23,7 @@ func createPrinter(
 	threshold int,
 	diffMode config.DiffMode,
 	metadata printer.ReportMetadata,
+	version string,
 ) func(io.Writer, printer.ReadFile) printer.Printer {
 	switch outputFormat {
 	case config.OutputFormatHTML:
@@ -36,7 +37,12 @@ func createPrinter(
 	case config.OutputFormatSimpleJSON:
 		return printer.NewJSON
 	case config.OutputFormatSARIF:
-		return withThreshold(printer.NewSARIF, threshold)
+		return func(w io.Writer, fread printer.ReadFile) printer.Printer {
+			return printer.NewSARIFWithConfig(w, fread, printer.SARIFConfig{
+				Threshold: threshold,
+				Version:   version,
+			})
+		}
 	case config.OutputFormatCSV:
 		return withThreshold(printer.NewStats, threshold)
 	case config.OutputFormatText:
