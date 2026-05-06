@@ -76,10 +76,7 @@ type Config struct {
 	// Timeout specifies maximum execution time in seconds (0 = no timeout)
 	Timeout int `json:"timeout,omitempty"`
 
-	// FilterGenerated enables smart filtering of auto-generated code
-	FilterGenerated bool `json:"filterGenerated,omitempty"`
-
-	// IncludeSQLC includes sqlc.dev generated files (only when filterGenerated is true)
+	// IncludeSQLC includes sqlc.dev generated files in analysis (default: false, filtered)
 	IncludeSQLC bool `json:"includeSQLC,omitempty"`
 
 	// IncludeTempl includes templ-generated *_templ.go files in analysis (default: false, filtered).
@@ -162,7 +159,6 @@ func DefaultConfig() *Config {
 		DetectionMethods:   DetectionMethods{DetectionMethodArtDupl},
 		Profile:            false,
 		Timeout:            0,
-		FilterGenerated:    false,
 		IncludeSQLC:        false,
 		IncludeTempl:        false,
 		IncludeProtobuf:    false,

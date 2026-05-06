@@ -29,7 +29,6 @@ type ReportMetadata struct {
 	Semantic         bool
 	DetectionMethods []string
 	SortBy           string
-	FilterGenerated  bool
 	IncludeSQLC      bool
 	IncludeTempl     bool
 }
@@ -112,16 +111,12 @@ func (p *htmlprinter) writeMetadata() error {
 			html.EscapeString(p.metadata.SortBy)))
 	}
 
-	if p.metadata.FilterGenerated {
-		parts = append(parts, `<span class="metadata-badge">🚫 Filter Generated</span>`)
-	}
-
 	if p.metadata.IncludeSQLC {
 		parts = append(parts, `<span class="metadata-badge">📦 Include SQLC</span>`)
 	}
 
 	if p.metadata.IncludeTempl {
-		parts = append(parts, `<span class="metadata-badge">📦 Include Templ</span>`)
+		parts = append(parts, `<span class="metadata-badge">📝 Include Templ</span>`)
 	}
 
 	if len(parts) == 0 {

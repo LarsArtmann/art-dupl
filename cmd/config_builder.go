@@ -18,7 +18,6 @@ type FlagValues struct {
 	Threshold          int
 	Files              bool
 	Profile            bool
-	FilterGenerated    bool
 	IncludeSQLC        bool
 	IncludeTempl       bool
 	IncludeProtobuf    bool
@@ -95,7 +94,6 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 	files, _ := cmd.Flags().GetBool("files")
 	profile, _ := cmd.Flags().GetBool("profile")
 	timeoutStr, _ := cmd.Flags().GetString("timeout")
-	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
 	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
 	includeTempl, _ := cmd.Flags().GetBool("include-templ")
 	includeProtobuf, _ := cmd.Flags().GetBool("include-protobuf")
@@ -123,7 +121,6 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 		Files:              files,
 		Profile:            profile,
 		Timeout:            timeoutStr,
-		FilterGenerated:    filterGenerated,
 		IncludeSQLC:        includeSQLC,
 		IncludeTempl:       includeTempl,
 		IncludeProtobuf:    includeProtobuf,
@@ -230,7 +227,6 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 		{flags.IncludeNodeModules, &cfg.IncludeNodeModules},
 		{flags.Files, &cfg.FilesFromStdin},
 		{flags.Profile, &cfg.Profile},
-		{flags.FilterGenerated, &cfg.FilterGenerated},
 		{flags.IncludeSQLC, &cfg.IncludeSQLC},
 		{flags.IncludeTempl, &cfg.IncludeTempl},
 		{flags.IncludeProtobuf, &cfg.IncludeProtobuf},

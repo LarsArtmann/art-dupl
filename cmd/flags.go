@@ -26,8 +26,6 @@ func addSharedFlags(cmd *cobra.Command) {
 
 	// Smart filtering flags
 	cmd.Flags().
-		Bool("filter-generated", false, "enable filtering of sqlc.dev and templ.guide generated code (auto-detects sqlc.yaml in parent directories)")
-	cmd.Flags().
 		Bool("include-sqlc", false, "include sqlc.dev generated files (override auto-detection)")
 	cmd.Flags().
 		Bool("include-templ", false, "include templ-generated *_templ.go files in analysis (default: filtered)")

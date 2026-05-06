@@ -236,9 +236,8 @@ func TestAddFlags(t *testing.T) {
 		"detection-methods",
 		"all",
 		"output-dir",
-		"filter-generated",
 		"include-sqlc",
-		"exclude-templ",
+		"include-templ",
 		"include-protobuf",
 		"include-mockgen",
 		"include-stringer",
@@ -454,19 +453,6 @@ func TestPrintDupls(t *testing.T) {
 func TestSetupFilter(t *testing.T) {
 	t.Run("empty config returns filter", func(t *testing.T) {
 		cfg := &config.Config{}
-
-		f, err := setupFilter(cfg)
-		if err != nil {
-			t.Fatalf("setupFilter() error: %v", err)
-		}
-
-		if f == nil {
-			t.Error("setupFilter() returned nil")
-		}
-	})
-
-	t.Run("with filter generated", func(t *testing.T) {
-		cfg := &config.Config{FilterGenerated: true}
 
 		f, err := setupFilter(cfg)
 		if err != nil {

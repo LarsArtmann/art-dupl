@@ -42,7 +42,6 @@ func newReportMetadata(cfg *config.Config, sortBy string) printer.ReportMetadata
 		Semantic:         cfg.Semantic,
 		DetectionMethods: detectionMethodsToStringSlice(cfg.DetectionMethods),
 		SortBy:           sortBy,
-		FilterGenerated:  cfg.FilterGenerated,
 		IncludeSQLC:      cfg.IncludeSQLC,
 		IncludeTempl:     cfg.IncludeTempl,
 	}

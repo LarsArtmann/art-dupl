@@ -90,11 +90,6 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.Timeout = cfg.Timeout
 	}
 
-	// FilterGenerated (bool)
-	if !skipZeroValues || cfg.FilterGenerated {
-		result.FilterGenerated = cfg.FilterGenerated
-	}
-
 	// IncludeSQLC (bool)
 	if !skipZeroValues || cfg.IncludeSQLC {
 		result.IncludeSQLC = cfg.IncludeSQLC

@@ -146,7 +146,6 @@ func TestHTMLPrintHeader_WithMetadata(t *testing.T) {
 		Semantic:         true,
 		DetectionMethods: []string{"suffix-tree", "hash"},
 		SortBy:           "size",
-		FilterGenerated:  true,
 		IncludeSQLC:      true,
 		IncludeTempl:     true,
 	}
@@ -168,10 +167,6 @@ func TestHTMLPrintHeader_WithMetadata(t *testing.T) {
 
 	if !strings.Contains(output, "size") {
 		t.Error("Expected SortBy badge in output")
-	}
-
-	if !strings.Contains(output, "Filter Generated") {
-		t.Error("Expected FilterGenerated badge in output")
 	}
 
 	if !strings.Contains(output, "Include SQLC") {
@@ -714,11 +709,6 @@ func TestWriteMetadata(t *testing.T) {
 			"sort by",
 			ReportMetadata{SortBy: "occurrence"},
 			"occurrence",
-		},
-		{
-			"filter generated",
-			ReportMetadata{FilterGenerated: true},
-			"Filter Generated",
 		},
 		{
 			"include sqlc",
