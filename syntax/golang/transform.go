@@ -109,9 +109,12 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.Field:
-		o.Type = Field
+		if t.config.Mode.IsSemantic() && t.inInterface {
+			o.Type = encodeSemanticType(Field, "~interface~", true)
+		} else {
+			o.Type = Field
+		}
 		t.addIdentifierNames(o, n.Names)
-
 		o.AddChildren(t.trans(n.Type))
 
 	case *ast.FieldList:
