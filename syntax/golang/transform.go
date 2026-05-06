@@ -114,6 +114,7 @@ func (t *transformer) trans(
 		} else {
 			o.Type = Field
 		}
+
 		t.addIdentifierNames(o, n.Names)
 		o.AddChildren(t.trans(n.Type))
 
