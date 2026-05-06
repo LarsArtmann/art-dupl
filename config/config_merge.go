@@ -100,8 +100,10 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 		result.IncludeSQLC = cfg.IncludeSQLC
 	}
 
-	// IncludeTempl (bool) — always apply; defaults to true, so false (from --exclude-templ) must not be skipped
-	result.IncludeTempl = cfg.IncludeTempl
+	// IncludeTempl (bool)
+	if !skipZeroValues || cfg.IncludeTempl {
+		result.IncludeTempl = cfg.IncludeTempl
+	}
 
 	// Only (string) - apply if set (filters to specific file type)
 	if !skipZeroValues || cfg.Only != "" {

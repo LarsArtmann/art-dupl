@@ -168,7 +168,7 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 	if !cfg.IncludeTempl {
 		filterOptions = append(filterOptions, gogenfilter.FilterTempl)
 
-		verboseFprintf(cfg, "Templ file exclusion enabled (--exclude-templ)")
+		verboseFprintf(cfg, "Auto-generated code filtering enabled (templ, default)")
 	}
 
 	if !cfg.IncludeProtobuf {

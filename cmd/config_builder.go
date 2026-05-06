@@ -97,7 +97,7 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 	timeoutStr, _ := cmd.Flags().GetString("timeout")
 	filterGenerated, _ := cmd.Flags().GetBool("filter-generated")
 	includeSQLC, _ := cmd.Flags().GetBool("include-sqlc")
-	excludeTempl, _ := cmd.Flags().GetBool("exclude-templ")
+	includeTempl, _ := cmd.Flags().GetBool("include-templ")
 	includeProtobuf, _ := cmd.Flags().GetBool("include-protobuf")
 	includeMockgen, _ := cmd.Flags().GetBool("include-mockgen")
 	includeStringer, _ := cmd.Flags().GetBool("include-stringer")
@@ -125,7 +125,7 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 		Timeout:            timeoutStr,
 		FilterGenerated:    filterGenerated,
 		IncludeSQLC:        includeSQLC,
-		IncludeTempl:       !excludeTempl,
+		IncludeTempl:       includeTempl,
 		IncludeProtobuf:    includeProtobuf,
 		IncludeMockgen:     includeMockgen,
 		IncludeStringer:    includeStringer,
@@ -232,7 +232,7 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 		{flags.Profile, &cfg.Profile},
 		{flags.FilterGenerated, &cfg.FilterGenerated},
 		{flags.IncludeSQLC, &cfg.IncludeSQLC},
-		{flags.IncludeTempl, &cfg.IncludeTempl}, // also handled below for false case
+		{flags.IncludeTempl, &cfg.IncludeTempl},
 		{flags.IncludeProtobuf, &cfg.IncludeProtobuf},
 		{flags.IncludeMockgen, &cfg.IncludeMockgen},
 		{flags.IncludeStringer, &cfg.IncludeStringer},
@@ -247,8 +247,6 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 		}
 	}
 
-	// IncludeTempl defaults to true; --exclude-templ must explicitly set it to false.
-	// The loop above only sets true values, so handle the false case here.
 	cfg.IncludeTempl = flags.IncludeTempl
 
 	if flags.Workers != 0 {
