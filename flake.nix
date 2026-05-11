@@ -199,7 +199,7 @@
 
       # Overlay: use with `pkgs.art-dupl` after applying overlay
       overlays.default = final: prev: {
-        art-dupl = self.packages.${prev.system}.default;
+        art-dupl = self.packages.${prev.stdenv.hostPlatform.system}.default;
       };
 
       # Formatter: `nix fmt` formats .nix files
