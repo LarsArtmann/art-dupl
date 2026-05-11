@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     gogenfilter = {
-      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=edf3d8d84a2a7956f09e98a37dd6f802d1400132";
+      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=235fb88077c78a5aa78d142e474154218bb98e89";
       flake = false;
     };
   };
@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-Zri2zWjmhMbBGe9pt88H3XkKh8RZmc5DqigBE7nCL/s=";
+          vendorHash = "sha256-TD7Mv45gS9mbpJi37iRviW+rUpUYoxkUeVyErzpLY44=";
 
           overrideModAttrs = old: {
             preBuild = ''
@@ -149,11 +149,14 @@
               gopls
             ];
 
-            env.CGO_ENABLED = 0;
+            env = {
+              CGO_ENABLED = 0;
+              GOTOOLCHAIN = "local";
+              GOWORK = "off";
+              GOPRIVATE = "github.com/LarsArtmann/*";
+            };
 
             shellHook = ''
-              export GOTOOLCHAIN=local
-              export GOWORK=off
               echo ""
               echo "art-dupl development shell"
               echo "=========================="

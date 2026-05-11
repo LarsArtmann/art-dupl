@@ -3,16 +3,16 @@
     "gogenfilter": {
       "flake": false,
       "locked": {
-        "lastModified": 1777578822,
-        "narHash": "sha256-+YtmPTGtCkcH49WOTYDZ2xDzO3G5aTHNl0A6dUbOlrc=",
+        "lastModified": 1777917982,
+        "narHash": "sha256-gtMTEnL0uQ7OXVbFpIkRgNhostduN+xoEg+MADWsSS8=",
         "ref": "refs/heads/master",
-        "rev": "edf3d8d84a2a7956f09e98a37dd6f802d1400132",
-        "revCount": 254,
+        "rev": "235fb88077c78a5aa78d142e474154218bb98e89",
+        "revCount": 520,
         "type": "git",
         "url": "ssh://git@github.com/LarsArtmann/gogenfilter"
       },
       "original": {
-        "rev": "edf3d8d84a2a7956f09e98a37dd6f802d1400132",
+        "rev": "235fb88077c78a5aa78d142e474154218bb98e89",
         "type": "git",
         "url": "ssh://git@github.com/LarsArtmann/gogenfilter"
       }
