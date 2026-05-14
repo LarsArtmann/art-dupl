@@ -101,6 +101,14 @@ func (d *detector) processCloneGroups(
 	}
 }
 
+// createMultiDetector creates a MultiDetector with the detector's configuration.
+func (d *detector) createMultiDetector(data []*syntax.Node, tree *suffixtree.STree) *detection.MultiDetector {
+	return detection.NewMultiDetector(config.DetectionConfig{
+		Methods: d.config.DetectionMethods,
+		Verbose: false,
+	}, data, tree)
+}
+
 // runDetection executes the configured detection methods using MultiDetector.
 func (d *detector) runDetection(
 	ctx context.Context,
@@ -108,10 +116,7 @@ func (d *detector) runDetection(
 ) ([]*CloneGroup, error) {
 	d.reportProgress(70, "Starting duplicate detection", "")
 
-	md := detection.NewMultiDetector(config.DetectionConfig{
-		Methods: d.config.DetectionMethods,
-		Verbose: false,
-	}, result.data, result.tree)
+	md := d.createMultiDetector(result.data, result.tree)
 	matchesChan := md.FindDuplOver(d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
@@ -136,10 +141,7 @@ func (d *detector) streamDetectionResults(
 	result *pipelineResult,
 	resultChan chan<- *CloneGroup,
 ) error {
-	md := detection.NewMultiDetector(config.DetectionConfig{
-		Methods: d.config.DetectionMethods,
-		Verbose: false,
-	}, result.data, result.tree)
+	md := d.createMultiDetector(result.data, result.tree)
 	matchesChan := md.FindDuplOver(d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)

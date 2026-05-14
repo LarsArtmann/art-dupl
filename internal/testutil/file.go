@@ -85,10 +85,19 @@ func ParseFiles(t *testing.T, filePaths []string) []*syntax.Node {
 }
 
 // WriteTestFile writes content to a file and fails the test if it fails.
+// Uses 0o600 permissions for secure default.
 func WriteTestFile(t *testing.T, filename, content string) {
 	t.Helper()
 
-	err := os.WriteFile(filename, []byte(content), 0o600)
+	WriteTestFileWithPerm(t, filename, content, 0o600)
+}
+
+// WriteTestFileWithPerm writes content to a file with specified permissions
+// and fails the test if it fails.
+func WriteTestFileWithPerm(t *testing.T, filename string, content string, perm os.FileMode) {
+	t.Helper()
+
+	err := os.WriteFile(filename, []byte(content), perm)
 	if err != nil {
 		t.Fatalf("Failed to write test file %s: %v", filename, err)
 	}
