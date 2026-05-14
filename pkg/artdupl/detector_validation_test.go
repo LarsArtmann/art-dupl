@@ -432,49 +432,48 @@ func TestDetector_Close(t *testing.T) {
 	}
 }
 
-// TestDetector_FindClones_NoFiles tests FindClones with no files.
-func TestDetector_FindClones_NoFiles(t *testing.T) {
-	opts := DefaultOptions()
+// mustCreateDetector creates a detector with the given options or fails the test.
+func mustCreateDetector(t *testing.T, opts *Options) Detector {
+	t.Helper()
 
 	detector, err := NewDetector(opts)
 	if err != nil {
 		t.Fatalf("Failed to create detector: %v", err)
 	}
 
-	_, err = detector.FindClones(t.Context(), []string{})
-	if !errors.Is(err, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
-	}
+	return detector
 }
 
-// TestDetector_FindClones_NilFiles tests FindClones with nil files slice.
-func TestDetector_FindClones_NilFiles(t *testing.T) {
-	opts := DefaultOptions()
-
-	detector, err := NewDetector(opts)
-	if err != nil {
-		t.Fatalf("Failed to create detector: %v", err)
+// TestDetector_FindClones_NoFiles tests FindClones with no files.
+func TestDetector_FindClones_NoFiles(t *testing.T) {
+	tests := []struct {
+		name  string
+		files []string
+	}{
+		{"empty files", []string{}},
+		{"nil files", nil},
 	}
 
-	_, err = detector.FindClones(t.Context(), nil)
-	if !errors.Is(err, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			detector := mustCreateDetector(t, DefaultOptions())
+
+			_, err := detector.FindClones(t.Context(), tt.files)
+			if !errors.Is(err, ErrNoFilesProvided) {
+				t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
+			}
+		})
 	}
 }
 
 // TestDetector_FindClones_ContextCanceled tests FindClones with canceled context.
 func TestDetector_FindClones_ContextCanceled(t *testing.T) {
-	opts := DefaultOptions()
-
-	detector, err := NewDetector(opts)
-	if err != nil {
-		t.Fatalf("Failed to create detector: %v", err)
-	}
+	 detector := mustCreateDetector(t, DefaultOptions())
 
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
-	_, err = detector.FindClones(ctx, []string{"some_file.go"})
+	_, err := detector.FindClones(ctx, []string{"some_file.go"})
 	if err == nil {
 		t.Error("Expected error with canceled context")
 	}
