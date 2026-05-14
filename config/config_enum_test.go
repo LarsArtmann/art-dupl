@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // =============================================================================
@@ -136,9 +138,7 @@ func TestLoadOptionalConfig_FileExists(t *testing.T) {
 		t.Fatal("expected non-nil config")
 	}
 
-	if loaded.Threshold != 99 {
-		t.Errorf("Threshold = %d, want 99", loaded.Threshold)
-	}
+	testutil.AssertFieldValue(t, loaded.Threshold, 99, "Threshold")
 }
 
 // =============================================================================
@@ -169,9 +169,7 @@ func TestLoadConfig_EmptyFile(t *testing.T) {
 		t.Fatalf("LoadConfig(empty) error: %v", err)
 	}
 
-	if cfg.Threshold != 15 {
-		t.Errorf("empty file should use defaults, Threshold = %d, want 15", cfg.Threshold)
-	}
+	testutil.AssertFieldValue(t, cfg.Threshold, 15, "Threshold")
 }
 
 func TestLoadConfig_InvalidJSON(t *testing.T) {
@@ -226,9 +224,7 @@ func TestSaveConfig_FileExists(t *testing.T) {
 		t.Fatalf("LoadConfig after save error: %v", err)
 	}
 
-	if loaded.Threshold != 77 {
-		t.Errorf("Threshold = %d, want 77", loaded.Threshold)
-	}
+	testutil.AssertFieldValue(t, loaded.Threshold, 77, "Threshold")
 }
 
 // =============================================================================
