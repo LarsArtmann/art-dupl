@@ -8,6 +8,20 @@ import (
 	"github.com/onsi/gomega"
 )
 
+// assertMkdirAll creates a directory tree and asserts success.
+func assertMkdirAll(t *testing.T, dir string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	g.Expect(os.MkdirAll(dir, 0o755)).To(gomega.Succeed())
+}
+
+// assertMkdir creates a directory and asserts success.
+func assertMkdir(t *testing.T, dir string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	g.Expect(os.Mkdir(dir, 0o755)).To(gomega.Succeed())
+}
+
 // TestFindProjectRoot tests func FindProjectRoot function.
 func TestFindProjectRoot(t *testing.T) {
 	t.Parallel()
@@ -21,7 +35,7 @@ func TestFindProjectRoot(t *testing.T) {
 		subDir := filepath.Join(rootDir, "subdir")
 		deepDir := filepath.Join(subDir, "deep")
 
-		g.Expect(os.MkdirAll(deepDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, deepDir)
 
 		goModPath := filepath.Join(rootDir, "go.mod")
 
@@ -43,10 +57,10 @@ func TestFindProjectRoot(t *testing.T) {
 		rootDir := filepath.Join(tmpDir, "project")
 		subDir := filepath.Join(rootDir, "subdir")
 
-		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, subDir)
 
 		gitDir := filepath.Join(rootDir, ".git")
-		g.Expect(os.Mkdir(gitDir, 0o755)).To(gomega.Succeed())
+		assertMkdir(t, gitDir)
 
 		foundRoot, err := FindProjectRoot(subDir, []string{".git"})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
@@ -61,7 +75,7 @@ func TestFindProjectRoot(t *testing.T) {
 		rootDir := filepath.Join(tmpDir, "project")
 		dbDir := filepath.Join(rootDir, "db")
 
-		g.Expect(os.MkdirAll(dbDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, dbDir)
 
 		sqlcPath := filepath.Join(rootDir, "sqlc.yaml")
 		g.Expect(os.WriteFile(sqlcPath, []byte("version: 2"), 0o644)).To(gomega.Succeed())
@@ -79,7 +93,7 @@ func TestFindProjectRoot(t *testing.T) {
 		rootDir := filepath.Join(tmpDir, "project")
 		subDir := filepath.Join(rootDir, "subdir")
 
-		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, subDir)
 
 		goModPath := filepath.Join(rootDir, "go.mod")
 
@@ -89,7 +103,7 @@ func TestFindProjectRoot(t *testing.T) {
 		}
 
 		gitDir := filepath.Join(rootDir, ".git")
-		g.Expect(os.Mkdir(gitDir, 0o755)).To(gomega.Succeed())
+		assertMkdir(t, gitDir)
 
 		foundRoot, err := FindProjectRoot(subDir, []string{"go.mod", ".git"})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
@@ -103,7 +117,7 @@ func TestFindProjectRoot(t *testing.T) {
 		tmpDir := t.TempDir()
 		subDir := filepath.Join(tmpDir, "project", "subdir")
 
-		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, subDir)
 
 		_, err := FindProjectRoot(subDir, []string{"nonexistent-marker-test-only.xyz"})
 		g.Expect(err).To(gomega.HaveOccurred())
@@ -116,7 +130,7 @@ func TestFindProjectRoot(t *testing.T) {
 		tmpDir := t.TempDir()
 		rootDir := filepath.Join(tmpDir, "project")
 
-		g.Expect(os.Mkdir(rootDir, 0o755)).To(gomega.Succeed())
+		assertMkdir(t, rootDir)
 
 		goModPath := filepath.Join(rootDir, "go.mod")
 
@@ -148,7 +162,7 @@ func TestFindProjectRoot(t *testing.T) {
 		rootDir := filepath.Join(tmpDir, "project")
 		subDir := filepath.Join(rootDir, "subdir")
 
-		g.Expect(os.MkdirAll(subDir, 0o755)).To(gomega.Succeed())
+		assertMkdirAll(t, subDir)
 
 		goModPath := filepath.Join(rootDir, "go.mod")
 

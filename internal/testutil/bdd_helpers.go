@@ -71,23 +71,7 @@ func (s *BDDTestSetup) CreateDuplicateFilesAndRun(content string, args ...string
 
 // CreateNamedDuplicateFilesAndRun creates duplicate files with specific names and content, then runs art-dupl.
 // Returns the command output for assertions. This helper reduces boilerplate in BDD tests.
-// Delegates to CreateAndRunDupl for implementation.
 func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(
-	filenames []string,
-	content string,
-	args ...string,
-) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
-
-	return s.CreateAndRunDupl(filenames, content, args...)
-}
-
-// CreateAndRunDupl creates duplicate files with the given content and runs art-dupl with specified arguments.
-// This is a convenience helper that combines CreateDuplicateFiles and RunArtDupl.
-// Returns the command output and any error that occurred.
-func (s *BDDTestSetup) CreateAndRunDupl(
 	filenames []string,
 	content string,
 	args ...string,
@@ -208,7 +192,7 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(
 		s.T.Helper()
 	}
 
-	output, err := s.CreateAndRunDupl(filenames, content, args...)
+	output, err := s.CreateNamedDuplicateFilesAndRun(filenames, content, args...)
 	if err != nil {
 		if s.T != nil {
 			s.T.Fatalf("art-dupl command failed: %v\nOutput: %s", err, string(output))

@@ -130,7 +130,7 @@ func lineNumberTest() {
 	fmt.Println("line 3")
 }`
 
-			output, err := setup.CreateAndRunDupl(
+			output, err := setup.CreateNamedDuplicateFilesAndRun(
 				[]string{"line1.go", "line2.go"},
 				code,
 				"--plumbing",

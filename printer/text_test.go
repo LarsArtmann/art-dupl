@@ -11,6 +11,37 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// errorReadFile creates a ReadFile that always returns the given error.
+func errorReadFile(msg string) ReadFile {
+	return func(filename string) ([]byte, error) {
+		return nil, errors.New(msg)
+	}
+}
+
+// mustPrintClones calls PrintClones and fails the test if there's an error.
+func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
+	t.Helper()
+	if err := p.PrintClones(dups); err != nil {
+		t.Fatalf("PrintClones() error: %v", err)
+	}
+}
+
+// mustPrintHeader calls PrintHeader and fails the test if there's an error.
+func mustPrintHeader(t *testing.T, p Printer) {
+	t.Helper()
+	if err := p.PrintHeader(); err != nil {
+		t.Fatalf("PrintHeader() error: %v", err)
+	}
+}
+
+// mustPrintFooter calls PrintFooter and fails the test if there's an error.
+func mustPrintFooter(t *testing.T, p Printer) {
+	t.Helper()
+	if err := p.PrintFooter(); err != nil {
+		t.Fatalf("PrintFooter() error: %v", err)
+	}
+}
+
 func TestNewText(t *testing.T) {
 	t.Parallel()
 
@@ -28,20 +59,34 @@ func TestNewText(t *testing.T) {
 	}
 }
 
-func TestTextPrinter_PrintHeader(t *testing.T) {
+func TestTextPrinter_PrintHeaderAndFooter(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewText(&buf, mockReadFile(""))
-
-	err := p.PrintHeader()
-	if err != nil {
-		t.Fatalf("PrintHeader() error: %v", err)
+	tests := []struct {
+		name string
+		call func(p Printer) error
+	}{
+		{"PrintHeader", func(p Printer) error { return p.PrintHeader() }},
+		{"PrintFooter", func(p Printer) error { return p.PrintFooter() }},
 	}
 
-	if buf.Len() != 0 {
-		t.Errorf("PrintHeader() wrote %d bytes, want 0", buf.Len())
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+
+			p := NewText(&buf, mockReadFile(""))
+
+			err := tc.call(p)
+			if err != nil {
+				t.Fatalf("%s() error: %v", tc.name, err)
+			}
+
+			if tc.name == "PrintHeader" && buf.Len() != 0 {
+				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
+			}
+		})
 	}
 }
 
@@ -99,9 +144,7 @@ func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	fread := func(filename string) ([]byte, error) {
-		return nil, errors.New("file not found")
-	}
+	fread := errorReadFile("file not found")
 
 	p := NewText(&buf, fread)
 
@@ -230,32 +273,26 @@ func TestDetectFileDuplicate(t *testing.T) {
 func TestCalculateCloneSizes(t *testing.T) {
 	t.Parallel()
 
-	clones := []clone{
-		{fragment: []byte("hello")},
-		{fragment: []byte("world!")},
+	tests := []struct {
+		name   string
+		clones []clone
+		want   int
+	}{
+		{"nil", nil, 0},
+		{"two fragments", []clone{
+			{fragment: []byte("hello")},
+			{fragment: []byte("world!")},
+		}, 11},
 	}
 
-	total := calculateCloneSizes(clones)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-	if total != 11 {
-		t.Errorf("calculateCloneSizes() = %d, want 11", total)
-	}
-
-	if clones[0].size != 5 {
-		t.Errorf("clones[0].size = %d, want 5", clones[0].size)
-	}
-
-	if clones[1].size != 6 {
-		t.Errorf("clones[1].size = %d, want 6", clones[1].size)
-	}
-}
-
-func TestCalculateCloneSizes_Empty(t *testing.T) {
-	t.Parallel()
-
-	total := calculateCloneSizes(nil)
-	if total != 0 {
-		t.Errorf("calculateCloneSizes(nil) = %d, want 0", total)
+			if got := calculateCloneSizes(tc.clones); got != tc.want {
+				t.Errorf("calculateCloneSizes() = %d, want %d", got, tc.want)
+			}
+		})
 	}
 }
 
@@ -304,9 +341,7 @@ func TestPrepareClonesInfo_EmptyDup(t *testing.T) {
 func TestPrepareClonesInfo_ReadError(t *testing.T) {
 	t.Parallel()
 
-	fread := func(filename string) ([]byte, error) {
-		return nil, errors.New("read error")
-	}
+	fread := errorReadFile("read error")
 
 	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
 	dups := [][]*syntax.Node{{node}}
@@ -423,60 +458,38 @@ func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
 	}
 }
 
-func TestTextPrinter_OutputText_SortByHash(t *testing.T) {
+func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewText(&buf, mockReadFile(""))
-	tp := p.(*TextPrinter)
-
-	clones := []clone{
-		{filename: "b.go", lineStart: 1, lineEnd: 3, fragment: []byte("code")},
+	tests := []struct {
+		name     string
+		sortBy   config.SortCriteria
+		filename string
+	}{
+		{"SortByHash", config.SortByHash, "b.go"},
+		{"SortByTotalTokens", config.SortByTotalTokens, "a.go"},
+		{"UnknownSort", config.SortCriteria("unknown_sort_value"), "a.go"},
 	}
-	tp.cloneGroups = [][]clone{clones}
 
-	err := tp.OutputText(15, config.SortByHash)
-	if err != nil {
-		t.Fatalf("OutputText(config.SortByHash) error: %v", err)
-	}
-}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestTextPrinter_OutputText_SortByTotalTokens(t *testing.T) {
-	t.Parallel()
+			var buf bytes.Buffer
 
-	var buf bytes.Buffer
+			p := NewText(&buf, mockReadFile(""))
+			tp := p.(*TextPrinter)
 
-	p := NewText(&buf, mockReadFile(""))
-	tp := p.(*TextPrinter)
+			clones := []clone{
+				{filename: tc.filename, lineStart: 1, lineEnd: 3, fragment: []byte("code")},
+			}
+			tp.cloneGroups = [][]clone{clones}
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 3, fragment: []byte("code")},
-	}
-	tp.cloneGroups = [][]clone{clones}
-
-	err := tp.OutputText(15, config.SortByTotalTokens)
-	if err != nil {
-		t.Fatalf("OutputText(config.SortByTotalTokens) error: %v", err)
-	}
-}
-
-func TestTextPrinter_OutputText_UnknownSort(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	p := NewText(&buf, mockReadFile(""))
-	tp := p.(*TextPrinter)
-
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 3, fragment: []byte("code")},
-	}
-	tp.cloneGroups = [][]clone{clones}
-
-	err := tp.OutputText(15, config.SortCriteria("unknown_sort_value"))
-	if err != nil {
-		t.Fatalf("OutputText(unknown) error: %v", err)
+			err := tp.OutputText(15, tc.sortBy)
+			if err != nil {
+				t.Fatalf("OutputText(%s) error: %v", tc.sortBy, err)
+			}
+		})
 	}
 }
 
@@ -514,9 +527,7 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	fread := func(filename string) ([]byte, error) {
-		return nil, errors.New("simulated read error")
-	}
+	fread := errorReadFile("simulated read error")
 
 	p := NewText(&buf, fread)
 
@@ -529,63 +540,40 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 	}
 }
 
-func TestTextPrinter_PrintClonesSorted_SortByOccurrence(t *testing.T) {
+func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 	t.Parallel()
 
-	content := "package main\n\nfunc foo() {}\nfunc bar() {}\n"
-
-	var buf bytes.Buffer
-
-	p := NewText(&buf, mockReadFile(content))
-
-	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
-
-	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortByOccurrence)
-	if err != nil {
-		t.Fatalf("PrintClonesSorted(config.SortByOccurrence) error: %v", err)
+	tests := []struct {
+		name       string
+		content    string
+		sortBy     config.SortCriteria
+		wantSubstr string
+	}{
+		{"SortByOccurrence", "package main\n\nfunc foo() {}\nfunc bar() {}\n", config.SortByOccurrence, "sorted by occurrence"},
+		{"SortByHash", "package main\n\nfunc foo() {}\n", config.SortByHash, "sorted by hash"},
+		{"UnknownSort", "package main\n\nfunc foo() {}\n", config.SortCriteria("unknown"), ""},
 	}
 
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "sorted by occurrence", "PrintClonesSorted missing sort info")
-}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestTextPrinter_PrintClonesSorted_SortByHash(t *testing.T) {
-	t.Parallel()
+			var buf bytes.Buffer
 
-	content := "package main\n\nfunc foo() {}\n"
+			p := NewText(&buf, mockReadFile(tc.content))
 
-	var buf bytes.Buffer
+			nodes := createMockNodes(t)
+			dups := [][]*syntax.Node{nodes}
 
-	p := NewText(&buf, mockReadFile(content))
+			err := p.(*TextPrinter).PrintClonesSorted(dups, tc.sortBy)
+			if err != nil {
+				t.Fatalf("PrintClonesSorted(%s) error: %v", tc.sortBy, err)
+			}
 
-	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
-
-	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortByHash)
-	if err != nil {
-		t.Fatalf("PrintClonesSorted(config.SortByHash) error: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "sorted by hash", "PrintClonesSorted missing sort info")
-}
-
-func TestTextPrinter_PrintClonesSorted_UnknownSort(t *testing.T) {
-	t.Parallel()
-
-	content := "package main\n\nfunc foo() {}\n"
-
-	var buf bytes.Buffer
-
-	p := NewText(&buf, mockReadFile(content))
-
-	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
-
-	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortCriteria("unknown"))
-	if err != nil {
-		t.Fatalf("PrintClonesSorted(unknown) error: %v", err)
+			if tc.wantSubstr != "" {
+				testutil.AssertStringContains(t, buf.String(), tc.wantSubstr, tc.name+" missing sort info")
+			}
+		})
 	}
 }
 

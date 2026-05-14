@@ -31,13 +31,38 @@ func makeFrag(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
-// verifyCloneCount verifies the expected number of clones.
-func verifyCloneCount(t *testing.T, got, expected int) {
+// drainMatchesChannel builds a test pipeline and drains the MultiDetector matches channel.
+func drainMatchesChannel(t *testing.T) {
 	t.Helper()
 
-	if got != expected {
-		t.Errorf("clone count mismatch: want %d, got %d", expected, got)
+	d := newTestDetector()
+	data := testNodes()
+	tree := buildTestSuffixTree(data)
+
+	md := detection.NewMultiDetector(
+		config.DetectionConfig{Methods: d.config.DetectionMethods},
+		data,
+		tree,
+	)
+	matchesChan := md.FindDuplOver(1)
+
+	if matchesChan == nil {
+		t.Error("Expected non-nil matches channel")
 	}
+
+	for range matchesChan {
+	}
+}
+
+// buildTestSuffixTree builds a suffix tree from nodes with a sentinel.
+func buildTestSuffixTree(data []*syntax.Node) *suffixtree.STree {
+	tree := suffixtree.New()
+	for _, node := range data {
+		tree.Update(node)
+	}
+	tree.Update(&syntax.Node{Type: -1})
+
+	return tree
 }
 
 // newTestDetector creates a detector with default test configuration.
@@ -105,7 +130,7 @@ func TestConvertToCloneGroup_MaxClonesLimit(t *testing.T) {
 
 	group := d.convertToCloneGroup("hash", frags, MethodArtDupl)
 
-	verifyCloneCount(t, len(group.Clones), 2)
+	assertCloneCount(t, len(group.Clones), 2)
 }
 
 // TestConvertFragmentToClone tests the convertFragmentToClone function.
@@ -233,31 +258,15 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 	}
 }
 
-// TestRunHashDetection tests hash-based detection via MultiDetector.
-func TestRunHashDetection(t *testing.T) {
-	d := newTestDetector()
+func TestRunDetectionMethods(t *testing.T) {
+	t.Parallel()
 
-	data := testNodes()
+	for _, name := range []string{"hash", "suffix-tree"} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	tree := suffixtree.New()
-	for _, node := range data {
-		tree.Update(node)
-	}
-
-	tree.Update(&syntax.Node{Type: -1})
-
-	md := detection.NewMultiDetector(
-		config.DetectionConfig{Methods: d.config.DetectionMethods},
-		data,
-		tree,
-	)
-	matchesChan := md.FindDuplOver(1)
-
-	if matchesChan == nil {
-		t.Error("Expected non-nil matches channel")
-	}
-
-	for range matchesChan {
+			drainMatchesChannel(t)
+			})
 	}
 }
 
@@ -345,9 +354,9 @@ func TestCollectMatchesIntoGroups(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	verifyCloneCount(t, len(groups), 2)
-	verifyCloneCount(t, len(groups["hash1"]), 2)
-	verifyCloneCount(t, len(groups["hash2"]), 1)
+	assertCloneCount(t, len(groups), 2)
+	assertCloneCount(t, len(groups["hash1"]), 2)
+	assertCloneCount(t, len(groups["hash2"]), 1)
 }
 
 // TestCollectMatchesIntoGroups_Cancelled tests collectMatchesIntoGroups with cancelled context.
@@ -480,49 +489,15 @@ func TestConvertToCloneGroup_SingleFragment(t *testing.T) {
 
 	group := d.convertToCloneGroup("single", frag, MethodArtDupl)
 
-	verifyCloneCount(t, len(group.Clones), 1)
+	assertCloneCount(t, len(group.Clones), 1)
 
 	if group.Clones[0].Filename != "single.go" {
 		t.Errorf("Expected Filename='single.go', got %s", group.Clones[0].Filename)
 	}
 }
 
-// TestRunSuffixTreeDetection tests suffix tree detection via MultiDetector.
-func TestRunSuffixTreeDetection(t *testing.T) {
-	d := newTestDetector()
-
-	data := testNodes()
-
-	tree := suffixtree.New()
-	for _, node := range data {
-		tree.Update(node)
-	}
-
-	tree.Update(&syntax.Node{Type: -1})
-
-	md := detection.NewMultiDetector(
-		config.DetectionConfig{Methods: d.config.DetectionMethods},
-		data,
-		tree,
-	)
-	matchesChan := md.FindDuplOver(1)
-
-	if matchesChan == nil {
-		t.Error("Expected non-nil matches channel")
-	}
-
-	for range matchesChan {
-	}
-}
-
-// TestBuildSuffixTree tests building a suffix tree from node data.
 func TestBuildSuffixTree(t *testing.T) {
-	data := testNodes()
-
-	tree := suffixtree.New()
-	for _, node := range data {
-		tree.Update(node)
-	}
+	tree := buildTestSuffixTree(testNodes())
 
 	if tree == nil {
 		t.Error("Expected non-nil tree")

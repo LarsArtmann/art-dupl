@@ -19,14 +19,7 @@ func TestFindFileDuplicates_IdenticalFiles(t *testing.T) {
 
 	f1 := filepath.Join(dir, "a.go")
 	f2 := filepath.Join(dir, "b.go")
-
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, f1, f2, content)
 
 	dups := FindFileDuplicates([]string{f1, f2}, 10)
 	if len(dups) != 1 {
@@ -46,13 +39,8 @@ func TestFindFileDuplicates_DifferentFiles(t *testing.T) {
 	f1 := filepath.Join(dir, "a.go")
 	f2 := filepath.Join(dir, "b.go")
 
-	if err := os.WriteFile(f1, []byte("package a\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, []byte("package b\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeFile(t, f1, []byte("package a\n"))
+	writeFile(t, f2, []byte("package b\n"))
 
 	dups := FindFileDuplicates([]string{f1, f2}, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for different files, got %d")
@@ -66,14 +54,7 @@ func TestFindFileDuplicates_SkipsSmallFiles(t *testing.T) {
 	content := []byte("tiny")
 	f1 := filepath.Join(dir, "a.go")
 	f2 := filepath.Join(dir, "b.go")
-
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, f1, f2, content)
 
 	dups := FindFileDuplicates([]string{f1, f2}, 100)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates (files below threshold), got %d")
@@ -87,9 +68,7 @@ func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
 	content := []byte("package main\nfunc main() {}\n")
 
 	good := filepath.Join(dir, "exists.go")
-	if err := os.WriteFile(good, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeFile(t, good, content)
 
 	bad := filepath.Join(dir, "nope.go")
 
@@ -119,21 +98,8 @@ func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
 		"b2.go": filepath.Join(dir, "b2.go"),
 	}
 
-	if err := os.WriteFile(files["a1.go"], contentA, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(files["a2.go"], contentA, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(files["b1.go"], contentB, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(files["b2.go"], contentB, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, files["a1.go"], files["a2.go"], contentA)
+	writeDuplicateFiles(t, files["b1.go"], files["b2.go"], contentB)
 
 	all := []string{files["a1.go"], files["a2.go"], files["b1.go"], files["b2.go"]}
 	dups := FindFileDuplicates(all, 1)
@@ -152,14 +118,7 @@ func TestFileDetector_FindDuplOver_BasicDuplicate(t *testing.T) {
 
 	f1 := filepath.Join(dir, "dup1.go")
 	f2 := filepath.Join(dir, "dup2.go")
-
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, f1, f2, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -185,14 +144,7 @@ func TestFileDetector_FindDuplOver_SkipsBelowThreshold(t *testing.T) {
 
 	f1 := filepath.Join(dir, "small1.go")
 	f2 := filepath.Join(dir, "small2.go")
-
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, f1, f2, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -250,9 +202,7 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	content := []byte("package main\n\nfunc main() { println(\"dedup test content\") }\n")
 
 	f1 := filepath.Join(dir, "same.go")
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeFile(t, f1, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -364,9 +314,7 @@ func TestHashFile_ValidFile(t *testing.T) {
 	f := filepath.Join(dir, "valid.go")
 	content := []byte("package main\n\nfunc main() {}\n")
 
-	if err := os.WriteFile(f, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeFile(t, f, content)
 
 	fd := NewFileDetector(1)
 
@@ -456,14 +404,7 @@ func TestFileDetector_FindDuplOver(t *testing.T) {
 
 	f1 := filepath.Join(dir, "d1.go")
 	f2 := filepath.Join(dir, "d2.go")
-
-	if err := os.WriteFile(f1, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := os.WriteFile(f2, content, 0o644); err != nil {
-		t.Fatal(err)
-	}
+	writeDuplicateFiles(t, f1, f2, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -486,4 +427,18 @@ func collectMatches(ch <-chan syntax.Match) []syntax.Match {
 	}
 
 	return matches
+}
+
+func writeFile(t *testing.T, path string, content []byte) {
+	t.Helper()
+
+	if err := os.WriteFile(path, content, 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeDuplicateFiles(t *testing.T, f1, f2 string, content []byte) {
+	t.Helper()
+	writeFile(t, f1, content)
+	writeFile(t, f2, content)
 }

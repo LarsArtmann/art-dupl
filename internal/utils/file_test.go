@@ -30,38 +30,78 @@ func TestFileProcessorWriteFile(t *testing.T) {
 	}
 
 	t.Run("writes without base directory", func(t *testing.T) {
-		g := gomega.NewWithT(t)
 		t.Parallel()
-
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor()
-
-		filePath := filepath.Join(tmpDir, "test.txt")
-		err := fp.WriteFile(filePath, []byte("absolute path"), 0o644)
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-
-		content, err := os.ReadFile(filePath)
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(string(content)).To(gomega.Equal("absolute path"))
+		assertFileContentAbsolute(t, "test.txt", "absolute path")
 	})
+}
+
+// assertFileContentAbsolute writes a file without base directory and asserts content.
+func assertFileContentAbsolute(t *testing.T, filename, expectedContent string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	tmpDir := t.TempDir()
+	fp := NewFileProcessor()
+
+	filePath := filepath.Join(tmpDir, filename)
+	err := fp.WriteFile(filePath, []byte(expectedContent), 0o644)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+
+	content, err := os.ReadFile(filePath)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+	g.Expect(string(content)).To(gomega.Equal(expectedContent))
+}
+
+// assertFileContentWithBase writes a file with base directory and asserts content.
+func assertFileContentWithBase(t *testing.T, filename, expectedContent string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	tmpDir := t.TempDir()
+	fp := NewFileProcessor(tmpDir)
+
+	err := fp.WriteTextFile(filename, expectedContent)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+
+	content, err := os.ReadFile(filepath.Join(tmpDir, filename))
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+	g.Expect(string(content)).To(gomega.Equal(expectedContent))
+}
+
+// assertReadFile writes a file to base dir and reads it back via fp.ReadFile.
+func assertReadFile(t *testing.T, filename, content string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	tmpDir := t.TempDir()
+	fp := NewFileProcessor(tmpDir)
+
+	g.Expect(os.WriteFile(filepath.Join(tmpDir, filename), []byte(content), 0o644)).
+		To(gomega.Succeed())
+
+	read, err := fp.ReadFile(filename)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+	g.Expect(string(read)).To(gomega.Equal(content))
+}
+
+// assertReadFileAbsolute writes a file without base dir and reads it back via fp.ReadFile.
+func assertReadFileAbsolute(t *testing.T, filename, content string) {
+	t.Helper()
+	g := gomega.NewWithT(t)
+	tmpDir := t.TempDir()
+	fp := NewFileProcessor()
+
+	filePath := filepath.Join(tmpDir, filename)
+	g.Expect(os.WriteFile(filePath, []byte(content), 0o644)).To(gomega.Succeed())
+
+	read, err := fp.ReadFile(filePath)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+	g.Expect(string(read)).To(gomega.Equal(content))
 }
 
 func TestFileProcessorWriteTextFile(t *testing.T) {
 	t.Parallel()
 
 	t.Run("writes text file", func(t *testing.T) {
-		g := gomega.NewWithT(t)
 		t.Parallel()
-
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor(tmpDir)
-
-		err := fp.WriteTextFile("test.txt", "text content")
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-
-		content, err := os.ReadFile(filepath.Join(tmpDir, "test.txt"))
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(string(content)).To(gomega.Equal("text content"))
+		assertFileContentWithBase(t, "test.txt", "text content")
 	})
 }
 
@@ -69,18 +109,8 @@ func TestFileProcessorReadFile(t *testing.T) {
 	t.Parallel()
 
 	t.Run("reads file from base directory", func(t *testing.T) {
-		g := gomega.NewWithT(t)
 		t.Parallel()
-
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor(tmpDir)
-
-		g.Expect(os.WriteFile(filepath.Join(tmpDir, "test.txt"), []byte("read me"), 0o644)).
-			To(gomega.Succeed())
-
-		content, err := fp.ReadFile("test.txt")
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(string(content)).To(gomega.Equal("read me"))
+		assertReadFile(t, "test.txt", "read me")
 	})
 
 	t.Run("returns error for nonexistent file", func(t *testing.T) {
@@ -95,18 +125,8 @@ func TestFileProcessorReadFile(t *testing.T) {
 	})
 
 	t.Run("reads without base directory", func(t *testing.T) {
-		g := gomega.NewWithT(t)
 		t.Parallel()
-
-		tmpDir := t.TempDir()
-		fp := NewFileProcessor()
-
-		filePath := filepath.Join(tmpDir, "test.txt")
-		g.Expect(os.WriteFile(filePath, []byte("absolute"), 0o644)).To(gomega.Succeed())
-
-		content, err := fp.ReadFile(filePath)
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(string(content)).To(gomega.Equal("absolute"))
+		assertReadFileAbsolute(t, "test.txt", "absolute")
 	})
 }
 
@@ -133,9 +153,7 @@ func helper() {}`,
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 
 		for filename, expectedContent := range files {
-			content, err := os.ReadFile(filepath.Join(tmpDir, filename))
-			g.Expect(err).ToNot(gomega.HaveOccurred())
-			g.Expect(string(content)).To(gomega.Equal(expectedContent))
+			assertFileContent(t, filepath.Join(tmpDir, filename), expectedContent)
 		}
 	})
 }
@@ -161,9 +179,7 @@ func duplicate() {
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 
 		for _, filename := range filenames {
-			actualContent, err := os.ReadFile(filepath.Join(tmpDir, filename))
-			g.Expect(err).ToNot(gomega.HaveOccurred())
-			g.Expect(string(actualContent)).To(gomega.Equal(content))
+			assertFileContent(t, filepath.Join(tmpDir, filename), content)
 		}
 	})
 }
@@ -189,18 +205,26 @@ func TestFileProcessorRoundTrip(t *testing.T) {
 	})
 }
 
-func assertWriteFile(t *testing.T, filename, expectedContent string) {
+// assertFileContent reads a file and asserts its content equals expectedContent.
+func assertFileContent(t *testing.T, filePath, expectedContent string) {
 	t.Helper()
 	g := gomega.NewWithT(t)
+	content, err := os.ReadFile(filePath)
+	g.Expect(err).ToNot(gomega.HaveOccurred())
+	g.Expect(string(content)).To(gomega.Equal(expectedContent))
+}
+
+func assertWriteFile(t *testing.T, filename, expectedContent string) {
+	t.Helper()
 	tmpDir := t.TempDir()
 	fp := NewFileProcessor(tmpDir)
 
 	err := fp.WriteFile(filename, []byte(expectedContent), 0o644)
-	g.Expect(err).ToNot(gomega.HaveOccurred())
+	if err != nil {
+		t.Fatalf("WriteFile() error: %v", err)
+	}
 
-	content, err := os.ReadFile(filepath.Join(tmpDir, filename))
-	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(content)).To(gomega.Equal(expectedContent))
+	assertFileContent(t, filepath.Join(tmpDir, filename), expectedContent)
 }
 
 func TestApplyTimeout(t *testing.T) {

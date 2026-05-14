@@ -256,13 +256,17 @@ func test() {}
 	})
 
 	Context("When using hash-based detection with node_modules", func() {
-		It("should exclude node_modules by default", func() {
-			// Create node_modules directory with duplicate files
-			nodeModulesDir := filepath.Join(setup.TmpDir, "node_modules", "somepackage")
+		var (
+			nodeModulesDir string
+			nodeModulesCode string
+		)
+
+		BeforeEach(func() {
+			nodeModulesDir = filepath.Join(setup.TmpDir, "node_modules", "somepackage")
 			err := os.MkdirAll(nodeModulesDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
-			nodeModulesCode := `package somepackage
+			nodeModulesCode = `package somepackage
 
 import "fmt"
 
@@ -284,9 +288,11 @@ func NodeModulesFunc() {
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
+		})
 
+		It("should exclude node_modules by default", func() {
 			// Create regular files with same content (duplicates)
-			err = setup.CreateDuplicateFiles(
+			err := setup.CreateDuplicateFiles(
 				[]string{"regular1.go", "regular2.go"},
 				nodeModulesCode,
 			)
@@ -311,34 +317,6 @@ func NodeModulesFunc() {
 		})
 
 		It("should include node_modules when --include-node-modules is specified", func() {
-			// Create node_modules directory with duplicate files
-			nodeModulesDir := filepath.Join(setup.TmpDir, "node_modules", "somepackage")
-			err := os.MkdirAll(nodeModulesDir, 0o755)
-			Expect(err).NotTo(HaveOccurred())
-
-			nodeModulesCode := `package somepackage
-
-import "fmt"
-
-func NodeModulesFunc() {
-	for i := 0; i < 5; i++ {
-		fmt.Println(i)
-	}
-}`
-
-			err = os.WriteFile(
-				filepath.Join(nodeModulesDir, "file1.go"),
-				[]byte(nodeModulesCode),
-				0o644,
-			)
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(
-				filepath.Join(nodeModulesDir, "file2.go"),
-				[]byte(nodeModulesCode),
-				0o644,
-			)
-			Expect(err).NotTo(HaveOccurred())
-
 			// Run hash detection with include-node-modules flag
 			output, err := setup.RunArtDupl(
 				"--detection-methods",

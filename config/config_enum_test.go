@@ -391,35 +391,24 @@ func TestDetectionMethod_MarshalUnmarshal(t *testing.T) {
 	}
 }
 
-func TestDetectionMethod_UnmarshalJSON_Invalid(t *testing.T) {
+func TestDetectionMethod_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	var dm DetectionMethod
+	for _, input := range []string{`"not_a_method"`, `"invalid"`} {
+		t.Run(input, func(t *testing.T) {
+			t.Parallel()
 
-	err := dm.UnmarshalJSON([]byte(`"not_a_method"`))
-	if err == nil {
-		t.Error("expected error for invalid detection method")
-	}
+			var dm DetectionMethod
 
-	// Value is NOT set when error is returned (pointer unchanged)
-	if dm != "" {
-		t.Errorf("dm = %q on error, want empty string", dm)
-	}
-}
+			err := dm.UnmarshalJSON([]byte(input))
+			if err == nil {
+				t.Errorf("expected error for input %s", input)
+			}
 
-func TestDetectionMethod_UnmarshalJSON_Default(t *testing.T) {
-	t.Parallel()
-
-	var dm DetectionMethod
-
-	err := dm.UnmarshalJSON([]byte(`"invalid"`))
-	if err == nil {
-		t.Error("expected error for invalid detection method")
-	}
-
-	// Value remains empty on error
-	if dm != "" {
-		t.Errorf("dm = %q on error, want empty string", dm)
+			if dm != "" {
+				t.Errorf("dm = %q on error, want empty string", dm)
+			}
+		})
 	}
 }
 
@@ -646,35 +635,24 @@ func TestDiffMode_MarshalUnmarshal(t *testing.T) {
 	}
 }
 
-func TestDiffMode_UnmarshalJSON_Invalid(t *testing.T) {
+func TestDiffMode_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	var dm DiffMode
+	for _, input := range []string{`"bad_mode"`, `"invalid"`} {
+		t.Run(input, func(t *testing.T) {
+			t.Parallel()
 
-	err := dm.UnmarshalJSON([]byte(`"bad_mode"`))
-	if err == nil {
-		t.Error("expected error for invalid diff mode")
-	}
+			var dm DiffMode
 
-	// Value remains empty on error
-	if dm != "" {
-		t.Errorf("dm = %q on error, want empty string", dm)
-	}
-}
+			err := dm.UnmarshalJSON([]byte(input))
+			if err == nil {
+				t.Errorf("expected error for input %s", input)
+			}
 
-func TestDiffMode_UnmarshalJSON_Default(t *testing.T) {
-	t.Parallel()
-
-	var dm DiffMode
-
-	err := dm.UnmarshalJSON([]byte(`"invalid"`))
-	if err == nil {
-		t.Error("expected error for invalid diff mode")
-	}
-
-	// Value remains empty on error
-	if dm != "" {
-		t.Errorf("dm = %q on error, want empty string", dm)
+			if dm != "" {
+				t.Errorf("dm = %q on error, want empty string", dm)
+			}
+		})
 	}
 }
 
@@ -801,33 +779,24 @@ func TestSortCriteria_MarshalUnmarshal(t *testing.T) {
 	}
 }
 
-func TestSortCriteria_UnmarshalJSON_Invalid(t *testing.T) {
+func TestSortCriteria_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	var sc SortCriteria
+	for _, input := range []string{`"bad_criteria"`, `"invalid"`} {
+		t.Run(input, func(t *testing.T) {
+			t.Parallel()
 
-	err := sc.UnmarshalJSON([]byte(`"bad_criteria"`))
-	if err == nil {
-		t.Error("expected error for invalid sort criteria")
-	}
+			var sc SortCriteria
 
-	if sc != "" {
-		t.Errorf("sc = %q on error, want empty string", sc)
-	}
-}
+			err := sc.UnmarshalJSON([]byte(input))
+			if err == nil {
+				t.Errorf("expected error for input %s", input)
+			}
 
-func TestSortCriteria_UnmarshalJSON_Default(t *testing.T) {
-	t.Parallel()
-
-	var sc SortCriteria
-
-	err := sc.UnmarshalJSON([]byte(`"invalid"`))
-	if err == nil {
-		t.Error("expected error for invalid sort criteria")
-	}
-
-	if sc != "" {
-		t.Errorf("sc = %q on error, want empty string", sc)
+			if sc != "" {
+				t.Errorf("sc = %q on error, want empty string", sc)
+			}
+		})
 	}
 }
 
@@ -915,33 +884,24 @@ func TestOutputFormat_MarshalUnmarshal(t *testing.T) {
 	}
 }
 
-func TestOutputFormat_UnmarshalJSON_Invalid(t *testing.T) {
+func TestOutputFormat_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	var of OutputFormat
+	for _, input := range []string{`"bad_format"`, `"invalid"`} {
+		t.Run(input, func(t *testing.T) {
+			t.Parallel()
 
-	err := of.UnmarshalJSON([]byte(`"bad_format"`))
-	if err == nil {
-		t.Error("expected error for invalid output format")
-	}
+			var of OutputFormat
 
-	if of != "" {
-		t.Errorf("of = %q on error, want empty string", of)
-	}
-}
+			err := of.UnmarshalJSON([]byte(input))
+			if err == nil {
+				t.Errorf("expected error for input %s", input)
+			}
 
-func TestOutputFormat_UnmarshalJSON_Default(t *testing.T) {
-	t.Parallel()
-
-	var of OutputFormat
-
-	err := of.UnmarshalJSON([]byte(`"invalid"`))
-	if err == nil {
-		t.Error("expected error for invalid output format")
-	}
-
-	if of != "" {
-		t.Errorf("of = %q on error, want empty string", of)
+			if of != "" {
+				t.Errorf("of = %q on error, want empty string", of)
+			}
+		})
 	}
 }
 
@@ -1052,33 +1012,24 @@ func TestFileType_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func TestFileType_UnmarshalJSON_Invalid(t *testing.T) {
+func TestFileType_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	var ft FileType
+	for _, input := range []string{`"rust"`, `"invalid"`} {
+		t.Run(input, func(t *testing.T) {
+			t.Parallel()
 
-	err := ft.UnmarshalJSON([]byte(`"rust"`))
-	if err == nil {
-		t.Error("expected error for invalid file type")
-	}
+			var ft FileType
 
-	if ft != "" {
-		t.Errorf("ft = %q on error, want empty string", ft)
-	}
-}
+			err := ft.UnmarshalJSON([]byte(input))
+			if err == nil {
+				t.Errorf("expected error for input %s", input)
+			}
 
-func TestFileType_UnmarshalJSON_Default(t *testing.T) {
-	t.Parallel()
-
-	var ft FileType
-
-	err := ft.UnmarshalJSON([]byte(`"invalid"`))
-	if err == nil {
-		t.Error("expected error for invalid file type")
-	}
-
-	if ft != "" {
-		t.Errorf("ft = %q on error, want empty string", ft)
+			if ft != "" {
+				t.Errorf("ft = %q on error, want empty string", ft)
+			}
+		})
 	}
 }
 
@@ -1271,33 +1222,33 @@ func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 	}
 }
 
-func TestMarshalStringType_Invalid(t *testing.T) {
+func TestMarshalStringType_Variants(t *testing.T) {
 	t.Parallel()
 
 	isValidFn := func(v string) bool { return v == "valid" }
 
-	data, err := marshalStringType("invalid", isValidFn, "string type")
-	if err != nil {
-		t.Fatalf("marshalStringType error: %v", err)
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"invalid_returns_null", "invalid", "null"},
+		{"valid_returns_quoted", "valid", `"valid"`},
 	}
 
-	if string(data) != "null" {
-		t.Errorf("marshalStringType(invalid) = %s, want %q", data, "null")
-	}
-}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestMarshalStringType_Valid(t *testing.T) {
-	t.Parallel()
+			data, err := marshalStringType(tc.input, isValidFn, "string type")
+			if err != nil {
+				t.Fatalf("marshalStringType error: %v", err)
+			}
 
-	isValidFn := func(v string) bool { return v == "valid" }
-
-	data, err := marshalStringType("valid", isValidFn, "string type")
-	if err != nil {
-		t.Fatalf("marshalStringType error: %v", err)
-	}
-
-	if string(data) != `"valid"` {
-		t.Errorf("marshalStringType(valid) = %s, want %q", data, `"valid"`)
+			if string(data) != tc.want {
+				t.Errorf("marshalStringType(%s) = %s, want %q", tc.input, data, tc.want)
+			}
+		})
 	}
 }
 

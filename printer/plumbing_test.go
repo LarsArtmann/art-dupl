@@ -2,7 +2,6 @@ package printer
 
 import (
 	"bytes"
-	"errors"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -27,37 +26,34 @@ func TestNewPlumbing(t *testing.T) {
 	}
 }
 
-func TestPlumbing_PrintHeader(t *testing.T) {
+func TestPlumbing_PrintHeaderAndFooter(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewPlumbing(&buf, mockReadFile(""))
-
-	err := p.PrintHeader()
-	if err != nil {
-		t.Fatalf("PrintHeader() error: %v", err)
+	tests := []struct {
+		name string
+		call func(p Printer) error
+	}{
+		{"PrintHeader", func(p Printer) error { return p.PrintHeader() }},
+		{"PrintFooter", func(p Printer) error { return p.PrintFooter() }},
 	}
 
-	if buf.Len() != 0 {
-		t.Errorf("PrintHeader() wrote %d bytes, want 0", buf.Len())
-	}
-}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestPlumbing_PrintFooter(t *testing.T) {
-	t.Parallel()
+			var buf bytes.Buffer
 
-	var buf bytes.Buffer
+			p := NewPlumbing(&buf, mockReadFile(""))
 
-	p := NewPlumbing(&buf, mockReadFile(""))
+			err := tc.call(p)
+			if err != nil {
+				t.Fatalf("%s() error: %v", tc.name, err)
+			}
 
-	err := p.PrintFooter()
-	if err != nil {
-		t.Fatalf("PrintFooter() error: %v", err)
-	}
-
-	if buf.Len() != 0 {
-		t.Errorf("PrintFooter() wrote %d bytes, want 0", buf.Len())
+			if buf.Len() != 0 {
+				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
+			}
+		})
 	}
 }
 
@@ -112,9 +108,7 @@ func TestPlumbing_PrintClones_ReadError(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	fread := func(filename string) ([]byte, error) {
-		return nil, errors.New("file not found")
-	}
+	fread := errorReadFile("file not found")
 
 	p := NewPlumbing(&buf, fread)
 

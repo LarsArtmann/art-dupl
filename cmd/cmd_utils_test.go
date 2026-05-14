@@ -160,15 +160,7 @@ func TestUnique(t *testing.T) {
 }
 
 func TestVersionFunctions(t *testing.T) {
-	origVersion := Version
-	origCommit := Commit
-	origDate := Date
-
-	t.Cleanup(func() {
-		Version = origVersion
-		Commit = origCommit
-		Date = origDate
-	})
+	saveVersionGlobals(t)
 
 	t.Run("GetVersion with dev", func(t *testing.T) {
 		Version = "dev"

@@ -21,16 +21,20 @@ const (
 	testFilename    = "test.go"
 )
 
+// cloneFixture creates a clone fixture for testing.
+func cloneFixture(filename string, start, end int, fragment string) clone {
+	return clone{filename: filename, lineStart: start, lineEnd: end, fragment: []byte(fragment)}
+}
+
 // Shared test clone fixtures to reduce duplication
 var (
-	testCloneA1to5Line1Line2 = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")}
-	testCloneB1to5Line1Line2 = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\n")}
-	testCloneA1to5Code       = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("code\n")}
-	testCloneB1to5Code       = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("code\n")}
-	testCloneA1to5CodeLines  = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\nline3\n")}
-	testCloneA10to20Code     = clone{filename: "a.go", lineStart: 10, lineEnd: 20, fragment: []byte("code here")}
-	testCloneB10to14Code     = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nchanged\n")}
-	testCloneB10to14Added    = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\nadded\n")}
+	testCloneA1to5Line1Line2 = cloneFixture("a.go", 1, 5, "line1\nline2\n")
+	testCloneB1to5Line1Line2 = cloneFixture("b.go", 10, 14, "line1\nmodified\n")
+	testCloneA1to5Code       = cloneFixture("a.go", 1, 5, "code\n")
+	testCloneA1to5CodeLines  = cloneFixture("a.go", 1, 5, "line1\nline2\nline3\n")
+	testCloneA10to20Code     = cloneFixture("a.go", 10, 20, "code here")
+	testCloneB10to14Code     = cloneFixture("b.go", 10, 14, "line1\nchanged\n")
+	testCloneB10to14Added    = cloneFixture("b.go", 10, 14, "line1\nmodified\nadded\n")
 )
 
 type errorWriter struct{}
@@ -62,60 +66,67 @@ func nodesForHTML(filename string) []*syntax.Node {
 	}
 }
 
-func TestNewHTML(t *testing.T) {
+func TestNewHTML_Variants(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewHTML(&buf, mockReadFile(""))
-
-	hp := p.(*htmlprinter)
-	if hp.threshold != 15 {
-		t.Errorf("default threshold = %d, want 15", hp.threshold)
+	tests := []struct {
+		name              string
+		create            func() Printer
+		wantThreshold     int
+		wantDiffMode      config.DiffMode
+		wantSemantic      bool
+		checkSemanticOnly bool
+	}{
+		{
+			"default",
+			func() Printer {
+				var buf bytes.Buffer
+				return NewHTML(&buf, mockReadFile(""))
+			},
+			15, config.DiffModeDisabled, false, false,
+		},
+		{
+			"custom threshold",
+			func() Printer {
+				var buf bytes.Buffer
+				return NewHTML(&buf, mockReadFile(""), 42)
+			},
+			42, config.DiffModeDisabled, false, false,
+		},
+		{
+			"with options",
+			func() Printer {
+				var buf bytes.Buffer
+				meta := ReportMetadata{
+					Semantic:         true,
+					DetectionMethods: []string{"suffix-tree"},
+					SortBy:           "size",
+				}
+				return NewHTMLWithOptions(&buf, mockReadFile(""), config.DiffModeSideBySide, meta, 30)
+			},
+			30, config.DiffModeSideBySide, true, true,
+		},
 	}
 
-	if hp.diffMode != config.DiffModeDisabled {
-		t.Errorf("diffMode = %v, want disabled", hp.diffMode)
-	}
-}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestNewHTML_CustomThreshold(t *testing.T) {
-	t.Parallel()
+			p := tc.create()
+			hp := p.(*htmlprinter)
 
-	var buf bytes.Buffer
+			if hp.threshold != tc.wantThreshold {
+				t.Errorf("threshold = %d, want %d", hp.threshold, tc.wantThreshold)
+			}
 
-	p := NewHTML(&buf, mockReadFile(""), 42)
+			if !tc.checkSemanticOnly && hp.diffMode != tc.wantDiffMode {
+				t.Errorf("diffMode = %v, want %v", hp.diffMode, tc.wantDiffMode)
+			}
 
-	hp := p.(*htmlprinter)
-
-	if hp.threshold != 42 {
-		t.Errorf("threshold = %d, want 42", hp.threshold)
-	}
-}
-
-func TestNewHTMLWithOptions(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	meta := ReportMetadata{
-		Semantic:         true,
-		DetectionMethods: []string{"suffix-tree"},
-		SortBy:           "size",
-	}
-	p := NewHTMLWithOptions(&buf, mockReadFile(""), config.DiffModeSideBySide, meta, 30)
-
-	hp := p.(*htmlprinter)
-	if hp.threshold != 30 {
-		t.Errorf("threshold = %d, want 30", hp.threshold)
-	}
-
-	if hp.diffMode != config.DiffModeSideBySide {
-		t.Errorf("diffMode = %v, want side-by-side", hp.diffMode)
-	}
-
-	if !hp.metadata.Semantic {
-		t.Error("metadata.Semantic = false, want true")
+			if tc.checkSemanticOnly && !hp.metadata.Semantic {
+				t.Error("metadata.Semantic = false, want true")
+			}
+		})
 	}
 }
 
@@ -202,17 +213,12 @@ func TestHTMLPrintClones(t *testing.T) {
 	content := testGoCode
 	p, buf := htmlPrinterWithContent(content)
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	mustPrintHeader(t, p)
 
 	nodes := nodesForHTML(testFilename)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups)
-	if err != nil {
-		t.Fatalf("PrintClones failed: %v", err)
-	}
+	mustPrintClones(t, p, dups)
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "clone-group", "Expected clone-group div in output")
@@ -228,20 +234,13 @@ func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
 	content := testGoMultiCode
 	p, buf := htmlPrinterWithContent(content)
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	mustPrintHeader(t, p)
 
 	nodes1 := nodesForHTML(testFilename)
 	nodes2 := nodesForHTML(testFilename)
 
-	if err := p.PrintClones([][]*syntax.Node{nodes1}); err != nil {
-		t.Fatalf("PrintClones #1 failed: %v", err)
-	}
-
-	if err := p.PrintClones([][]*syntax.Node{nodes2}); err != nil {
-		t.Fatalf("PrintClones #2 failed: %v", err)
-	}
+	mustPrintClones(t, p, [][]*syntax.Node{nodes1})
+	mustPrintClones(t, p, [][]*syntax.Node{nodes2})
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "Clone Group #1", "Expected 'Clone Group #1'")
@@ -255,9 +254,7 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 	content := testGoMultiCode
 	p, buf := htmlPrinterWithMetadata(content, ReportMetadata{})
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	mustPrintHeader(t, p)
 
 	nodes1 := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "a.go", Pos: 14, End: 44},
@@ -280,13 +277,9 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 }
 
 func TestHTMLPrintClones_EmptyDups(t *testing.T) {
-	t.Parallel()
-
 	p, _ := htmlPrinterWithContent("")
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	mustPrintHeader(t, p)
 
 	err := p.PrintClones([][]*syntax.Node{{}})
 	if err == nil {
@@ -299,14 +292,8 @@ func TestHTMLPrintFooter(t *testing.T) {
 
 	p, buf := htmlPrinterWithContent("")
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
-
-	err := p.PrintFooter()
-	if err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
+	mustPrintHeader(t, p)
+	mustPrintFooter(t, p)
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "</html>", "Expected closing </html> in footer")
@@ -320,18 +307,12 @@ func TestHTMLPrintFooter_WithSummary(t *testing.T) {
 	content := testGoCode
 	p, buf := htmlPrinterWithContent(content)
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	mustPrintHeader(t, p)
 
 	nodes := nodesForHTML(testFilename)
-	if err := p.PrintClones([][]*syntax.Node{nodes}); err != nil {
-		t.Fatalf("PrintClones failed: %v", err)
-	}
+	mustPrintClones(t, p, [][]*syntax.Node{nodes})
 
-	if err := p.PrintFooter(); err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
+	mustPrintFooter(t, p)
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "Summary", "Expected Summary section when clones were printed")
@@ -759,13 +740,7 @@ func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	clones := []clone{testCloneA1to5Line1Line2}
 
 	result := ComputeCloneGroupDiff(clones)
-	if result.Base == nil {
-		t.Fatal("expected non-nil Base")
-	}
-
-	if result.Base.Filename != "a.go" {
-		t.Errorf("Base.Filename = %q, want 'a.go'", result.Base.Filename)
-	}
+	assertBaseFilename(t, &result, "a.go")
 
 	if len(result.Others) != 0 {
 		t.Errorf("Others length = %d, want 0", len(result.Others))
@@ -903,6 +878,13 @@ func TestWordDiff_Identical(t *testing.T) {
 	}
 }
 
+// newDiffHTMLPrinter creates an htmlprinter with side-by-side diff mode for testing.
+func newDiffHTMLPrinter() (*htmlprinter, *bytes.Buffer) {
+	var buf bytes.Buffer
+
+	return &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}, &buf
+}
+
 func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	t.Parallel()
 
@@ -945,82 +927,53 @@ func TestHTMLWriteCloneGroupFooter(t *testing.T) {
 	}
 }
 
-func TestHTMLWriteDiffView_SingleClone(t *testing.T) {
+func TestHTMLWriteDiffView_Variants(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
-
-	clones := []clone{
-		testCloneA1to5Code,
+	tests := []struct {
+		name       string
+		clones     []clone
+		wantSubstr []string
+	}{
+		{
+			"single clone falls through",
+			[]clone{testCloneA1to5Code},
+			[]string{"occurrence"},
+		},
+		{
+			"multiple clones",
+			[]clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2},
+			[]string{"BASE REFERENCE", "diff-legend"},
+		},
+		{
+			"three clones with selector",
+			[]clone{testCloneA1to5Line1Line2, testCloneB10to14Code, {filename: "c.go", lineStart: 20, lineEnd: 24, fragment: []byte("line1\nother\n")}},
+			[]string{"diff-select", "Compare with..."},
+		},
+		{
+			"aggregate stats",
+			[]clone{testCloneA1to5CodeLines, testCloneB10to14Added},
+			[]string{"diff-aggregate-stats"},
+		},
 	}
 
-	err := hp.writeDiffView(clones)
-	if err != nil {
-		t.Fatalf("writeDiffView with single clone failed: %v", err)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			hp, buf := newDiffHTMLPrinter()
+
+			err := hp.writeDiffView(tc.clones)
+			if err != nil {
+				t.Fatalf("writeDiffView failed: %v", err)
+			}
+
+			output := buf.String()
+			for _, want := range tc.wantSubstr {
+				testutil.AssertStringContains(t, output, want, tc.name+" missing "+want)
+			}
+		})
 	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "occurrence", "single clone should fall through to writeCloneOccurrences")
-}
-
-func TestHTMLWriteDiffView_MultipleClones(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
-
-	clones := []clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2}
-
-	err := hp.writeDiffView(clones)
-	if err != nil {
-		t.Fatalf("writeDiffView with multiple clones failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "BASE REFERENCE", "expected BASE REFERENCE header")
-
-	testutil.AssertStringContains(t, output, "diff-legend", "expected diff legend")
-}
-
-func TestHTMLWriteDiffView_ThreeClonesWithSelector(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
-
-	clones := []clone{testCloneA1to5Line1Line2, testCloneB10to14Code, {filename: "c.go", lineStart: 20, lineEnd: 24, fragment: []byte("line1\nother\n")}}
-
-	err := hp.writeDiffView(clones)
-	if err != nil {
-		t.Fatalf("writeDiffView with three clones failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "diff-select", "expected diff selector dropdown for >2 clones")
-
-	testutil.AssertStringContains(t, output, "Compare with...", "expected selector placeholder text")
-}
-
-func TestHTMLWriteDiffView_AggregateStats(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
-
-	clones := []clone{testCloneA1to5CodeLines, testCloneB10to14Added}
-
-	err := hp.writeDiffView(clones)
-	if err != nil {
-		t.Fatalf("writeDiffView failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "diff-aggregate-stats", "expected aggregate stats section")
 }
 
 func TestHTMLWriteDiffViewToggle(t *testing.T) {
@@ -1088,127 +1041,114 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 	testutil.AssertStringContains(t, output, "other2.go", "expected other2.go in selector options")
 }
 
-func TestHTMLWriteDiffComparison(t *testing.T) {
+func TestHTMLWriteDiffComparison_Variants(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 1}
-
-	base := &CloneWithContent{
-		CloneWithContentMixin: CloneWithContentMixin{Filename: "base.go", LineStart: 1},
-		Content:               []byte("line1\nline2\n"),
+	tests := []struct {
+		name        string
+		iota        int
+		compIdx     int
+		groupID     int
+		wantSubstr  string
+		wantNoMatch string
+	}{
+		{"first_comparison", 1, 0, 1, "diff-compare-1-0", ""},
+		{"second_comparison_inactive", 2, 1, 2, "", "active"},
 	}
 
-	diff := LineDiff([]byte("line1\nline2\n"), []byte("line1\nmodified\n"))
-	other := CloneDiff{
-		CloneWithContent: CloneWithContent{
-			CloneWithContentMixin: CloneWithContentMixin{Filename: "other.go", LineStart: 10},
-			Content:               []byte("line1\nmodified\n"),
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+
+			hp := &htmlprinter{w: &buf, iota: tc.iota}
+
+			base := &CloneWithContent{
+				CloneWithContentMixin: CloneWithContentMixin{Filename: "base.go", LineStart: 1},
+				Content:               []byte("code\n"),
+			}
+
+			diff := LineDiff([]byte("code\n"), []byte("different\n"))
+			other := CloneDiff{
+				CloneWithContent: CloneWithContent{
+					CloneWithContentMixin: CloneWithContentMixin{Filename: "other.go", LineStart: 5},
+					Content:               []byte("different\n"),
+				},
+				Diff: diff,
+			}
+
+			err := hp.writeDiffComparison(base, other, tc.compIdx, tc.groupID)
+			if err != nil {
+				t.Fatalf("writeDiffComparison failed: %v", err)
+			}
+
+			output := buf.String()
+			if tc.wantSubstr != "" {
+				testutil.AssertStringContains(t, output, tc.wantSubstr, tc.name+" missing "+tc.wantSubstr)
+			}
+
+			if tc.wantNoMatch != "" && strings.Contains(output, tc.wantNoMatch) {
+				t.Errorf("comparison should not contain %q", tc.wantNoMatch)
+			}
+		})
+	}
+}
+
+func TestHTMLRenderDiffLines_Variants(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		lines      []DiffLine
+		opposite   []DiffLine
+		wantSubstr []string
+	}{
+		{
+			"all types",
+			[]DiffLine{
+				{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
+				{Content: "added line", Type: DiffLineAdded, LineNumber: 2},
+				{Content: "removed line", Type: DiffLineRemoved, LineNumber: 3},
+				{Content: "modified line", Type: DiffLineModified, LineNumber: 4},
+			},
+			[]DiffLine{
+				{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
+				{Content: "base added", Type: DiffLineAdded, LineNumber: 2},
+				{Content: "base removed", Type: DiffLineRemoved, LineNumber: 3},
+				{Content: "original modified", Type: DiffLineModified, LineNumber: 4},
+			},
+			[]string{"equal", "added", "removed", "modified"},
 		},
-		Diff: diff,
-	}
-
-	err := hp.writeDiffComparison(base, other, 0, 1)
-	if err != nil {
-		t.Fatalf("writeDiffComparison failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "diff-compare-1-0", "expected diff comparison with id 1-0")
-
-	testutil.AssertStringContains(t, output, "other.go", "expected other.go in comparison header")
-}
-
-func TestHTMLWriteDiffComparison_MultipleComparisons(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf, iota: 2}
-
-	base := &CloneWithContent{
-		CloneWithContentMixin: CloneWithContentMixin{Filename: "base.go", LineStart: 1},
-		Content:               []byte("code\n"),
-	}
-
-	diff := LineDiff([]byte("code\n"), []byte("different\n"))
-	other := CloneDiff{
-		CloneWithContent: CloneWithContent{
-			CloneWithContentMixin: CloneWithContentMixin{Filename: "other.go", LineStart: 5},
-			Content:               []byte("different\n"),
+		{
+			"word diff",
+			[]DiffLine{
+				{Content: "hello world", Type: DiffLineModified, LineNumber: 1},
+			},
+			[]DiffLine{
+				{Content: "hello earth", Type: DiffLineModified, LineNumber: 1},
+			},
+			[]string{"word-removed", "word-added"},
 		},
-		Diff: diff,
 	}
 
-	err := hp.writeDiffComparison(base, other, 1, 2)
-	if err != nil {
-		t.Fatalf("writeDiffComparison failed: %v", err)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+
+			hp := &htmlprinter{w: &buf}
+
+			err := hp.renderDiffLines(tc.lines, tc.opposite, true)
+			if err != nil {
+				t.Fatalf("renderDiffLines failed: %v", err)
+			}
+
+			output := buf.String()
+			for _, want := range tc.wantSubstr {
+				testutil.AssertStringContains(t, output, want, tc.name+" missing "+want)
+			}
+		})
 	}
-
-	output := buf.String()
-	// Second comparison (index>0) should NOT have active class
-	if strings.Contains(output, "active") {
-		t.Error("second comparison should not be active")
-	}
-}
-
-func TestHTMLRenderDiffLines(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf}
-
-	lines := []DiffLine{
-		{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
-		{Content: "added line", Type: DiffLineAdded, LineNumber: 2},
-		{Content: "removed line", Type: DiffLineRemoved, LineNumber: 3},
-		{Content: "modified line", Type: DiffLineModified, LineNumber: 4},
-	}
-
-	opposite := []DiffLine{
-		{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
-		{Content: "base added", Type: DiffLineAdded, LineNumber: 2},
-		{Content: "base removed", Type: DiffLineRemoved, LineNumber: 3},
-		{Content: "original modified", Type: DiffLineModified, LineNumber: 4},
-	}
-
-	err := hp.renderDiffLines(lines, opposite, true)
-	if err != nil {
-		t.Fatalf("renderDiffLines failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "equal", "expected equal class")
-
-	testutil.AssertStringContains(t, output, "added", "expected added class")
-
-	testutil.AssertStringContains(t, output, "removed", "expected removed class")
-
-	testutil.AssertStringContains(t, output, "modified", "expected modified class")
-}
-
-func TestHTMLRenderDiffLines_WordDiff(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	hp := &htmlprinter{w: &buf}
-
-	lines := []DiffLine{
-		{Content: "hello world", Type: DiffLineModified, LineNumber: 1},
-	}
-	opposite := []DiffLine{
-		{Content: "hello earth", Type: DiffLineModified, LineNumber: 1},
-	}
-
-	err := hp.renderDiffLines(lines, opposite, true)
-	if err != nil {
-		t.Fatalf("renderDiffLines failed: %v", err)
-	}
-
-	output := buf.String()
-	testutil.AssertStringContains(t, output, "word-removed", "expected word-level diff highlighting for modified lines")
-	testutil.AssertStringContains(t, output, "word-added", "expected word-level diff highlighting for modified lines")
 }

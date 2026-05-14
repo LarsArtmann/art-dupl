@@ -1,17 +1,21 @@
 package printer
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// testNode creates a syntax.Node for testing.
+func testNode(filename string, pos, end int) *syntax.Node {
+	return &syntax.Node{Filename: filename, Pos: int32(pos), End: int32(end)}
+}
+
 func TestProcessFileContent(t *testing.T) {
 	t.Parallel()
 
-	node := &syntax.Node{Filename: "test.go", Pos: 0, End: 5}
+	node := testNode("test.go", 0, 5)
 	fread := func(filename string) ([]byte, error) {
 		return []byte("hello"), nil
 	}
@@ -44,10 +48,8 @@ func TestProcessFileContent_NilNode(t *testing.T) {
 func TestProcessFileContent_ReadError(t *testing.T) {
 	t.Parallel()
 
-	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 5}
-	fread := func(filename string) ([]byte, error) {
-		return nil, errors.New("file not found")
-	}
+	node := testNode("missing.go", 0, 5)
+	fread := errorReadFile("file not found")
 
 	_, err := ProcessFileContent(fread, node)
 	if err == nil {
@@ -58,8 +60,8 @@ func TestProcessFileContent_ReadError(t *testing.T) {
 func TestProcessNodeRange(t *testing.T) {
 	t.Parallel()
 
-	startNode := &syntax.Node{Filename: "test.go", Pos: 0, End: 5}
-	endNode := &syntax.Node{Filename: "test.go", Pos: 5, End: 10}
+	startNode := testNode("test.go", 0, 5)
+	endNode := testNode("test.go", 5, 10)
 	fread := func(filename string) ([]byte, error) {
 		return []byte("hello world"), nil
 	}

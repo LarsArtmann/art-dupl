@@ -520,60 +520,18 @@ func test() {
 	})
 
 	Context("When filtering vendor directory", func() {
-		It("should exclude vendor directory by default", func() {
-			// Create vendor directory
-			vendorDir := filepath.Join(setup.TmpDir, "vendor")
+		var (
+			vendorDir   string
+			vendorCode  string
+			buildBinary string
+		)
+
+		BeforeEach(func() {
+			vendorDir = filepath.Join(setup.TmpDir, "vendor")
 			err := os.MkdirAll(vendorDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Create files in vendor and main with enough tokens
-			code := `package main
-
-import "fmt"
-
-func duplicate() {
-	for i := 0; i < 5; i++ {
-		fmt.Println(i)
-	}
-}`
-
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor1.go"), []byte(code), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor2.go"), []byte(code), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = setup.FileProcessor.WriteDuplicateFiles([]string{"main1.go", "main2.go"}, code)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
-
-			// Run without vendor flag (should exclude vendor)
-			cmd = exec.Command("./art-dupl-filter_features-test", setup.TmpDir, "--threshold", "10")
-			output, err := cmd.CombinedOutput()
-			Expect(err).ToNot(HaveOccurred())
-
-			outputStr := string(output)
-			// Should only analyze main files
-			Expect(outputStr).To(ContainSubstring("main"))
-			Expect(outputStr).ToNot(ContainSubstring("vendor"))
-		})
-
-		It("should include vendor directory when --vendor is specified", func() {
-			// Create vendor directory
-			vendorDir := filepath.Join(setup.TmpDir, "vendor")
-			err := os.MkdirAll(vendorDir, 0o755)
-			Expect(err).NotTo(HaveOccurred())
-
-			// Create files in vendor with enough tokens
-			vendorCode := `package vendor
+			vendorCode = `package vendor
 
 import "fmt"
 
@@ -598,10 +556,38 @@ func vendorFunc() {
 			)
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
+			buildBinary = "./art-dupl-filter_features-test"
+		})
 
+		It("should exclude vendor directory by default", func() {
+			code := `package main
+
+import "fmt"
+
+func duplicate() {
+	for i := 0; i < 5; i++ {
+		fmt.Println(i)
+	}
+}`
+
+			err := setup.FileProcessor.WriteDuplicateFiles([]string{"main1.go", "main2.go"}, code)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Run without vendor flag (should exclude vendor)
+			cmd := exec.Command(buildBinary, setup.TmpDir, "--threshold", "10")
+			output, err := cmd.CombinedOutput()
+			Expect(err).ToNot(HaveOccurred())
+
+			outputStr := string(output)
+			// Should only analyze main files
+			Expect(outputStr).To(ContainSubstring("main"))
+			Expect(outputStr).ToNot(ContainSubstring("vendor"))
+		})
+
+		It("should include vendor directory when --vendor is specified", func() {
 			// Run with vendor flag
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				buildBinary,
 				setup.TmpDir,
 				"--vendor",
 				"--threshold",

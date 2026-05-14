@@ -34,6 +34,17 @@ func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 	}
 }
 
+// assertBaseFilename verifies the base filename in a CloneGroupDiff result.
+func assertBaseFilename(t *testing.T, result *CloneGroupDiff, expectedFilename string) {
+	t.Helper()
+	if result.Base == nil {
+		t.Fatal("Expected Base to not be nil")
+	}
+	if result.Base.Filename != expectedFilename {
+		t.Errorf("Expected base filename to be %s, got %s", expectedFilename, result.Base.Filename)
+	}
+}
+
 func TestLineDiff_EqualContent(t *testing.T) {
 	base := []byte("line1\nline2\nline3")
 	compared := []byte("line1\nline2\nline3")
@@ -227,13 +238,7 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 	result := ComputeCloneGroupDiff(clones)
 
 	// Base should be the first clone
-	if result.Base == nil {
-		t.Fatal("Expected Base to not be nil")
-	}
-
-	if result.Base.Filename != "file1.go" {
-		t.Errorf("Expected base filename to be file1.go, got %s", result.Base.Filename)
-	}
+	assertBaseFilename(t, &result, "file1.go")
 
 	testutil.AssertCount(t, len(result.Others), 2, "others")
 

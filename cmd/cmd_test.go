@@ -23,6 +23,21 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
+// saveVersionGlobals saves and auto-restores Version, Commit, Date via t.Cleanup.
+func saveVersionGlobals(t *testing.T) {
+	t.Helper()
+	origVersion, origCommit, origDate := Version, Commit, Date
+	t.Cleanup(func() {
+		Version, Commit, Date = origVersion, origCommit, origDate
+	})
+}
+
+// testPrintDupls calls printDupls with default test arguments.
+func testPrintDupls(t *testing.T, ctx context.Context, mock printer.Printer, ch chan syntax.Match) error {
+	t.Helper()
+	return printDupls(ctx, mock, ch, config.SortBySize, 15, "art-dupl")
+}
+
 // createTestMatchChannel creates a channel with a single test match.
 func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 	ch := make(chan syntax.Match, 1)
@@ -262,15 +277,7 @@ func TestAddFlags(t *testing.T) {
 }
 
 func TestPrintVersion(t *testing.T) {
-	origVersion := Version
-	origCommit := Commit
-	origDate := Date
-
-	t.Cleanup(func() {
-		Version = origVersion
-		Commit = origCommit
-		Date = origDate
-	})
+	saveVersionGlobals(t)
 
 	Version = "1.0.0"
 	Commit = "abc123"
@@ -398,7 +405,7 @@ func TestPrintDupls(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		err := printDupls(t.Context(), mock, ch, config.SortBySize, 15, "art-dupl")
+		err := testPrintDupls(t, t.Context(), mock, ch)
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -417,7 +424,7 @@ func TestPrintDupls(t *testing.T) {
 
 		ch := createTestMatchChannel("abc123", "test1.go", "test2.go")
 
-		err := printDupls(t.Context(), mock, ch, config.SortBySize, 15, "art-dupl")
+		err := testPrintDupls(t, t.Context(), mock, ch)
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}

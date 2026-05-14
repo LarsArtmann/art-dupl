@@ -38,14 +38,6 @@ func createSimpleTestConfig() *config.Config {
 	}
 }
 
-// createHashTestConfig creates a test configuration using hash detection method.
-func createHashTestConfig() *config.Config {
-	return &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
-	}
-}
-
 // TestNewMultiDetector tests MultiDetector constructor.
 func TestNewMultiDetector(t *testing.T) {
 	cfg := createTestConfig()
@@ -358,154 +350,92 @@ func TestTodoDetector_Patterns(t *testing.T) {
 }
 
 // TestFindIssuesInFile_EmptyData tests findIssuesInFile with empty data.
-func TestFindIssuesInFile_EmptyData(t *testing.T) {
-	finder := func(filename string, nodes []*syntax.Node) []string {
-		return nil
-	}
-	matchCreator := func(issue, filename string) syntax.Match {
-		return syntax.Match{Hash: issue}
-	}
+func TestFindIssues_EmptyData(t *testing.T) {
+	t.Parallel()
 
-	matches := findIssuesInFile([]*syntax.Node{}, finder, matchCreator)
-
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	if matchCount != 0 {
-		t.Errorf("Expected 0 matches for empty data, got %d", matchCount)
-	}
-}
-
-// TestFindIssuesGeneric_EmptyData tests findIssuesGeneric with empty data.
-func TestFindIssuesGeneric_EmptyData(t *testing.T) {
-	finder := func(filename string, nodes []*syntax.Node) []TodoIssue {
-		return nil
-	}
-
-	matches := findIssuesGeneric([]*syntax.Node{}, finder, "TODO")
-
-	matchCount := 0
-	for range matches {
-		matchCount++
-	}
-
-	if matchCount != 0 {
-		t.Errorf("Expected 0 matches for empty data, got %d", matchCount)
-	}
-}
-
-// TestMultiDetector_FindDuplOver_DefaultMethod tests with default art-dupl method.
-func TestMultiDetector_FindDuplOver_DefaultMethod(t *testing.T) {
-	cfg := createSimpleTestConfig()
-
-	tree := suffixtree.New()
-	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
-
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
-
-	// Should return a channel
-	matches := detector.FindDuplOver(15)
-	if matches == nil {
-		t.Error("FindDuplOver() returned nil channel")
-	}
-
-	// Drain the channel
-	for range matches {
-		// Drain
-	}
-}
-
-// TestMultiDetector_FindDuplOver_HashMethod tests with hash detection method.
-func TestMultiDetector_FindDuplOver_HashMethod(t *testing.T) {
-	cfg := createHashTestConfig()
-
-	tree := suffixtree.New()
-	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
-
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
-
-	// Should return a channel
-	matches := detector.FindDuplOver(15)
-	if matches == nil {
-		t.Error("FindDuplOver() returned nil channel")
-	}
-
-	// Drain the channel
-	for range matches {
-		// Drain
-	}
-}
-
-// TestMultiDetector_FindDuplOver_BothMethods tests with both detection methods.
-func TestMultiDetector_FindDuplOver_BothMethods(t *testing.T) {
-	cfg := &config.Config{
-		Threshold: 15,
-		DetectionMethods: config.DetectionMethods{
-			config.DetectionMethodArtDupl,
-			config.DetectionMethodHash,
+	tests := []struct {
+		name string
+		run  func() <-chan syntax.Match
+	}{
+		{
+			"findIssuesInFile",
+			func() <-chan syntax.Match {
+				return findIssuesInFile(
+					[]*syntax.Node{},
+					func(filename string, nodes []*syntax.Node) []string { return nil },
+					func(issue, filename string) syntax.Match { return syntax.Match{Hash: issue} },
+				)
+			},
+		},
+		{
+			"findIssuesGeneric",
+			func() <-chan syntax.Match {
+				return findIssuesGeneric(
+					[]*syntax.Node{},
+					func(filename string, nodes []*syntax.Node) []TodoIssue { return nil },
+					"TODO",
+				)
+			},
 		},
 	}
 
-	tree := suffixtree.New()
-	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
+			matchCount := 0
+			for range tc.run() {
+				matchCount++
+			}
 
-	// Should return a channel
-	matches := detector.FindDuplOver(15)
-	if matches == nil {
-		t.Error("FindDuplOver() returned nil channel")
-	}
-
-	// Drain the channel
-	for range matches {
-		// Drain
-	}
-}
-
-// TestMultiDetector_FindDuplOver_Verbose tests verbose mode.
-func TestMultiDetector_FindDuplOver_Verbose(t *testing.T) {
-	cfg := createHashTestConfig()
-
-	tree := suffixtree.New()
-	data := []*syntax.Node{createTestNode("test.go", 1, 10)}
-
-	detector := NewMultiDetector(
-		config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true},
-		data,
-		tree,
-	) // verbose = true
-
-	// Should return a channel
-	matches := detector.FindDuplOver(15)
-	if matches == nil {
-		t.Error("FindDuplOver() returned nil channel")
-	}
-
-	// Drain the channel
-	for range matches {
+			if matchCount != 0 {
+				t.Errorf("Expected 0 matches for empty data, got %d", matchCount)
+			}
+		})
 	}
 }
 
-// TestMultiDetector_FindDuplOver_EmptyData tests with empty data.
-func TestMultiDetector_FindDuplOver_EmptyData(t *testing.T) {
-	cfg := createSimpleTestConfig()
+func TestMultiDetector_FindDuplOver(t *testing.T) {
+	t.Parallel()
 
-	tree := suffixtree.New()
-	data := []*syntax.Node{}
-
-	detector := NewMultiDetector(config.DetectionConfig{Methods: cfg.DetectionMethods}, data, tree)
-
-	// Should return a channel
-	matches := detector.FindDuplOver(15)
-	if matches == nil {
-		t.Error("FindDuplOver() returned nil channel")
+	tests := []struct {
+		name    string
+		methods config.DetectionMethods
+		verbose bool
+		empty   bool
+	}{
+		{"default method", config.DetectionMethods{config.DetectionMethodArtDupl}, false, false},
+		{"hash method", config.DetectionMethods{config.DetectionMethodHash}, false, false},
+		{"both methods", config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash}, false, false},
+		{"verbose", config.DetectionMethods{config.DetectionMethodHash}, true, false},
+		{"empty data", config.DetectionMethods{config.DetectionMethodArtDupl}, false, true},
 	}
 
-	// Drain the channel
-	for range matches {
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tree := suffixtree.New()
+
+			var data []*syntax.Node
+			if !tc.empty {
+				data = []*syntax.Node{createTestNode("test.go", 1, 10)}
+			}
+
+			detector := NewMultiDetector(
+				config.DetectionConfig{Methods: tc.methods, Verbose: tc.verbose},
+				data,
+				tree,
+			)
+
+			matches := detector.FindDuplOver(15)
+			if matches == nil {
+				t.Error("FindDuplOver() returned nil channel")
+			}
+
+			for range matches {
+			}
+		})
 	}
 }
 
@@ -829,14 +759,15 @@ func assertTodoMatches(t *testing.T, detector *TodoDetector, nodes []*syntax.Nod
 	}
 }
 
-// TestFindIssuesInFile_WithData tests findIssuesInFile with actual data.
-func TestFindIssuesInFile_WithData(t *testing.T) {
-	detector, nodes, _ := setupTodoTest(t)
-	assertTodoMatches(t, detector, nodes, "Expected at least one match from FindTodos")
-}
+func TestFindIssues_WithData(t *testing.T) {
+	t.Parallel()
 
-// TestFindIssuesGeneric_WithData tests findIssuesGeneric with actual data.
-func TestFindIssuesGeneric_WithData(t *testing.T) {
-	detector, nodes, _ := setupTodoTest(t)
-	assertTodoMatches(t, detector, nodes, "Expected matches from findIssuesGeneric")
+	for _, name := range []string{"FindTodos", "findIssuesGeneric"} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			detector, nodes, _ := setupTodoTest(t)
+			assertTodoMatches(t, detector, nodes, "Expected matches from "+name)
+		})
+	}
 }

@@ -118,3 +118,13 @@ func WriteAndParseFile(t *testing.T, filename, content string) *syntax.Node {
 
 	return node
 }
+
+// WriteFile writes byte content to a file with 0o600 permissions.
+// Fails the test if writing fails.
+func WriteFile(t *testing.T, path string, content []byte) {
+	t.Helper()
+
+	if err := os.WriteFile(path, content, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}

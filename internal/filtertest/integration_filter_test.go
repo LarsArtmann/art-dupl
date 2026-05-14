@@ -159,12 +159,7 @@ func Header() templ.Component { return nil }
 		}
 
 		// templ SHOULD be filtered
-		if filtered, err := fltr.Filter(
-			toFSPath(setup.GetFilePath("components/header_templ.go")),
-		); err == nil &&
-			!filtered {
-			t.Errorf("components/header_templ.go should be filtered (templ)")
-		}
+		AssertFileShouldBeFiltered(t, fltr, setup.GetFilePath("components/header_templ.go"))
 	})
 
 	t.Run("include pattern takes precedence", func(t *testing.T) {
@@ -306,12 +301,7 @@ func Authenticate(username, password string) bool {
 		}
 
 		// db/models.go should be filtered (sqlc)
-		if filtered, err := fltr.Filter(
-			toFSPath(setup.GetFilePath("db/models.go")),
-		); err == nil &&
-			!filtered {
-			t.Errorf("db/models.go should be filtered")
-		}
+		AssertFileShouldBeFiltered(t, fltr, setup.GetFilePath("db/models.go"))
 
 		// db/user.go should NOT be filtered (regular)
 		AssertFileShouldNotBeFiltered(t, fltr, setup.GetFilePath("db/user.go"))

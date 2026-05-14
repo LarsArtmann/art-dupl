@@ -429,6 +429,7 @@ linters:
           - varnamelen
           - depguard
           - mnd
+          - noinlineerr
       - path: pkg/artdupl/
         linters:
           - wrapcheck
