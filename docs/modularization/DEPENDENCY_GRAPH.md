@@ -98,17 +98,17 @@ Layer 7 — Entry points:
 
 ### Coupling Severity Matrix
 
-| Coupling Point | Severity | Packages Coupled | Key Type |
-|---|---|---|---|
-| `syntax.Node` as pipeline data carrier | 🔴 TIGHT | suffixtree, detection, job, printer, hash, cache, artdupl, cmd | `*syntax.Node` |
-| `syntax` → `suffixtree.Match` | 🔴 TIGHT | syntax ↔ suffixtree | `suffixtree.Match` param in `FindSyntaxUnits()` |
-| `printer` → `syntax/golang` | 🔴 TIGHT | printer → syntax/golang | 50+ hardcoded node type constants |
-| `MultiDetector` switch/case | 🟠 MEDIUM | detection → hash, suffixtree | Unused `MethodDetector` interface |
-| `cmd` god orchestrator | 🟠 MEDIUM | cmd → 7+ packages | Direct wiring, type assertions |
-| `printer.Printer` interface | 🟡 LOOSE | 6 implementations | Clean abstraction |
-| `suffixtree.Token` interface | 🟡 LOOSE | suffixtree ← syntax.Node | `Val() TokenValue` |
-| `domain` value objects | 🟡 LOOSE | detection, pkg/artdupl | `Filepath`, `LineNumber`, `CloneSeverity` |
-| `pkg/artdupl` SDK API | 🟡 LOOSE | external consumers | `Detector` interface |
+| Coupling Point                         | Severity  | Packages Coupled                                               | Key Type                                        |
+| -------------------------------------- | --------- | -------------------------------------------------------------- | ----------------------------------------------- |
+| `syntax.Node` as pipeline data carrier | 🔴 TIGHT  | suffixtree, detection, job, printer, hash, cache, artdupl, cmd | `*syntax.Node`                                  |
+| `syntax` → `suffixtree.Match`          | 🔴 TIGHT  | syntax ↔ suffixtree                                            | `suffixtree.Match` param in `FindSyntaxUnits()` |
+| `printer` → `syntax/golang`            | 🔴 TIGHT  | printer → syntax/golang                                        | 50+ hardcoded node type constants               |
+| `MultiDetector` switch/case            | 🟠 MEDIUM | detection → hash, suffixtree                                   | Unused `MethodDetector` interface               |
+| `cmd` god orchestrator                 | 🟠 MEDIUM | cmd → 7+ packages                                              | Direct wiring, type assertions                  |
+| `printer.Printer` interface            | 🟡 LOOSE  | 6 implementations                                              | Clean abstraction                               |
+| `suffixtree.Token` interface           | 🟡 LOOSE  | suffixtree ← syntax.Node                                       | `Val() TokenValue`                              |
+| `domain` value objects                 | 🟡 LOOSE  | detection, pkg/artdupl                                         | `Filepath`, `LineNumber`, `CloneSeverity`       |
+| `pkg/artdupl` SDK API                  | 🟡 LOOSE  | external consumers                                             | `Detector` interface                            |
 
 ---
 
@@ -160,13 +160,13 @@ Layer 7 — Entry points:
 
 ### Module Detail Table
 
-| Module | Path | Internal Deps | External Deps | Packages |
-|---|---|---|---|---|
-| **core** | `./` | None (root) | `xxh3`, `a-h/templ`, `charm.land/log/v2`, `ginkgo/gomega` (test) | 17 production + 4 test + 2 entry |
-| **detection** | `./detection/` | core | None | 1 package (5 prod files, 2 test files) |
-| **printer** | `./printer/` | core | `sergi/go-diff` | 1 package (21 prod files, 10 test files) |
-| **sdk** | `./pkg/artdupl/` | core, detection | None | 1 package (8 prod files, 4 test files) |
-| **cli** | `./cmd/` | core, detection, printer | `cobra`, `fang`, `lipgloss/v2`, `gogenfilter` | 2 packages (15 prod files, 4 test files) |
+| Module        | Path             | Internal Deps            | External Deps                                                    | Packages                                 |
+| ------------- | ---------------- | ------------------------ | ---------------------------------------------------------------- | ---------------------------------------- |
+| **core**      | `./`             | None (root)              | `xxh3`, `a-h/templ`, `charm.land/log/v2`, `ginkgo/gomega` (test) | 17 production + 4 test + 2 entry         |
+| **detection** | `./detection/`   | core                     | None                                                             | 1 package (5 prod files, 2 test files)   |
+| **printer**   | `./printer/`     | core                     | `sergi/go-diff`                                                  | 1 package (21 prod files, 10 test files) |
+| **sdk**       | `./pkg/artdupl/` | core, detection          | None                                                             | 1 package (8 prod files, 4 test files)   |
+| **cli**       | `./cmd/`         | core, detection, printer | `cobra`, `fang`, `lipgloss/v2`, `gogenfilter`                    | 2 packages (15 prod files, 4 test files) |
 
 ### Import Flow After Modularization
 
@@ -189,39 +189,39 @@ These must happen BEFORE module creation due to Go's `internal/` visibility rule
 
 ### 3.1 Production code promotions
 
-| Package | Current | Target | Files Affected |
-|---|---|---|---|
+| Package          | Current          | Target      | Files Affected                                  |
+| ---------------- | ---------------- | ----------- | ----------------------------------------------- |
 | `internal/utils` | `internal/utils` | `pkg/utils` | `cmd/run_flags.go`, `cmd/stats.go` (production) |
 
 ### 3.2 Test code promotions
 
-| Package | Current | Target | Files Affected |
-|---|---|---|---|
-| `internal/testutil` | `internal/testutil` | `testutil` | 13 test files across detection, printer, sdk, cmd, suffixtree, config, cache, hash |
-| `internal/testhelpers` | `internal/testhelpers` | `testhelpers` | 1 test file: `suffixtree/suffixtree_test.go` |
+| Package                | Current                | Target        | Files Affected                                                                     |
+| ---------------------- | ---------------------- | ------------- | ---------------------------------------------------------------------------------- |
+| `internal/testutil`    | `internal/testutil`    | `testutil`    | 13 test files across detection, printer, sdk, cmd, suffixtree, config, cache, hash |
+| `internal/testhelpers` | `internal/testhelpers` | `testhelpers` | 1 test file: `suffixtree/suffixtree_test.go`                                       |
 
 ### 3.3 Packages staying internal
 
-| Package | Reason |
-|---|---|
-| `internal/simd` | Only used by `syntax/hash_simd.go` — both stay in root module |
-| `internal/configtest` | Dead code — only used by config tests in root |
-| `internal/filtertest` | Dead code — only used by filter tests in root |
+| Package               | Reason                                                        |
+| --------------------- | ------------------------------------------------------------- |
+| `internal/simd`       | Only used by `syntax/hash_simd.go` — both stay in root module |
+| `internal/configtest` | Dead code — only used by config tests in root                 |
+| `internal/filtertest` | Dead code — only used by filter tests in root                 |
 
 ---
 
 ## 4. External Dependency Distribution
 
-| External Dep | Version | Used By | Module | Production/Test |
-|---|---|---|---|---|
-| `charm.land/lipgloss/v2` | v2.0.3 | cmd | cli | Production |
-| `charm.land/log/v2` | v2.0.0 | pkg/logger | core | Production |
-| `LarsArtmann/gogenfilter` | v0.2.1 | cmd | cli | Production |
-| `a-h/templ` | v0.3.1001 | syntax/templ | core | Production |
-| `charmbracelet/fang` | v1.0.0 | cmd/art-dupl | cli | Production |
-| `charmbracelet/x/exp/golden` | v0.0.0 | bdd, testutil | core | Test |
-| `onsi/ginkgo/v2` | v2.28.3 | bdd, testutil | core | Test |
-| `onsi/gomega` | v1.40.0 | bdd, testutil | core | Test |
-| `sergi/go-diff` | v1.4.0 | printer | printer | Production |
-| `spf13/cobra` | v1.10.2 | cmd | cli | Production |
-| `zeebo/xxh3` | v1.1.0 | syntax, hash | core | Production |
+| External Dep                 | Version   | Used By       | Module  | Production/Test |
+| ---------------------------- | --------- | ------------- | ------- | --------------- |
+| `charm.land/lipgloss/v2`     | v2.0.3    | cmd           | cli     | Production      |
+| `charm.land/log/v2`          | v2.0.0    | pkg/logger    | core    | Production      |
+| `LarsArtmann/gogenfilter`    | v0.2.1    | cmd           | cli     | Production      |
+| `a-h/templ`                  | v0.3.1001 | syntax/templ  | core    | Production      |
+| `charmbracelet/fang`         | v1.0.0    | cmd/art-dupl  | cli     | Production      |
+| `charmbracelet/x/exp/golden` | v0.0.0    | bdd, testutil | core    | Test            |
+| `onsi/ginkgo/v2`             | v2.28.3   | bdd, testutil | core    | Test            |
+| `onsi/gomega`                | v1.40.0   | bdd, testutil | core    | Test            |
+| `sergi/go-diff`              | v1.4.0    | printer       | printer | Production      |
+| `spf13/cobra`                | v1.10.2   | cmd           | cli     | Production      |
+| `zeebo/xxh3`                 | v1.1.0    | syntax, hash  | core    | Production      |

@@ -32,17 +32,17 @@ art-dupl is a Go code duplication detection tool currently structured as a singl
 
 ### 2.1 Module Landscape
 
-| Property | Value |
-|---|---|
-| go.mod files | 1 (root only) |
-| go.work | None |
-| Go version | 1.26.2 |
-| Total packages | 26 |
-| Production LOC | ~16,300 |
-| Test LOC | ~29,500 |
-| Direct external deps | 10 |
-| Transitive external deps | 42 |
-| Import cycles | None (verified) |
+| Property                 | Value           |
+| ------------------------ | --------------- |
+| go.mod files             | 1 (root only)   |
+| go.work                  | None            |
+| Go version               | 1.26.2          |
+| Total packages           | 26              |
+| Production LOC           | ~16,300         |
+| Test LOC                 | ~29,500         |
+| Direct external deps     | 10              |
+| Transitive external deps | 42              |
+| Import cycles            | None (verified) |
 
 ### 2.2 Current Dependency Graph (Layered)
 
@@ -84,23 +84,23 @@ Layer 7 (entry points):
 
 ### 2.3 Coupling Hotspots
 
-| Hotspot | Severity | Description |
-|---|---|---|
-| `syntax.Node` as universal data carrier | **TIGHT** | Flows through every pipeline stage: suffixtree, detection, job, printer, hash, cache, artdupl |
-| `syntax` → `suffixtree.Match` type | **TIGHT** | `FindSyntaxUnits()` takes `suffixtree.Match` as parameter — conceptual circular dependency |
-| `printer` → `syntax/golang` constants | **TIGHT** | 50+ hardcoded Go AST node type constants in `clone_classify.go` |
-| `MultiDetector` concrete wiring | **MEDIUM** | `MethodDetector` interface defined but unused — switch/case on method strings |
-| `cmd` as god orchestrator | **MEDIUM** | Imports 7+ packages, does type assertions to concrete printer types |
-| `pkg/artdupl` SDK internal coupling | **MEDIUM** | Exposes clean external API but directly constructs `detection.MultiDetector` and `job.BuildTree` |
+| Hotspot                                 | Severity   | Description                                                                                      |
+| --------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| `syntax.Node` as universal data carrier | **TIGHT**  | Flows through every pipeline stage: suffixtree, detection, job, printer, hash, cache, artdupl    |
+| `syntax` → `suffixtree.Match` type      | **TIGHT**  | `FindSyntaxUnits()` takes `suffixtree.Match` as parameter — conceptual circular dependency       |
+| `printer` → `syntax/golang` constants   | **TIGHT**  | 50+ hardcoded Go AST node type constants in `clone_classify.go`                                  |
+| `MultiDetector` concrete wiring         | **MEDIUM** | `MethodDetector` interface defined but unused — switch/case on method strings                    |
+| `cmd` as god orchestrator               | **MEDIUM** | Imports 7+ packages, does type assertions to concrete printer types                              |
+| `pkg/artdupl` SDK internal coupling     | **MEDIUM** | Exposes clean external API but directly constructs `detection.MultiDetector` and `job.BuildTree` |
 
 ### 2.4 God-Package Analysis
 
-| Package | Files | Concerns | Verdict |
-|---|---|---|---|
-| **printer** | **41** | 6 output formats, stats collection/formatting/visualization, sorting, diffing, clone classification | **God package** — needs splitting within module |
-| **cmd** | **18** | CLI orchestration, flags, config building, crawling, analysis, output | Large but coherent |
-| **bdd** | **22** | BDD integration tests | Large but coherent (test-only) |
-| **syntax/golang** | **15** | Go AST parsing, transform, node types, identifier hashing | Borderline |
+| Package           | Files  | Concerns                                                                                            | Verdict                                         |
+| ----------------- | ------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **printer**       | **41** | 6 output formats, stats collection/formatting/visualization, sorting, diffing, clone classification | **God package** — needs splitting within module |
+| **cmd**           | **18** | CLI orchestration, flags, config building, crawling, analysis, output                               | Large but coherent                              |
+| **bdd**           | **22** | BDD integration tests                                                                               | Large but coherent (test-only)                  |
+| **syntax/golang** | **15** | Go AST parsing, transform, node types, identifier hashing                                           | Borderline                                      |
 
 ---
 
@@ -114,14 +114,14 @@ Layer 7 (entry points):
 
 This is the root module, keeping the existing module path for backward compatibility.
 
-| Field | Content |
-|---|---|
-| **Module path** | `github.com/LarsArtmann/art-dupl` |
-| **Contains packages** | `domain/`, `errors/`, `suffixtree/`, `syntax/`, `syntax/golang/`, `syntax/templ/`, `config/`, `internal/simd/`, `internal/utils/`, `internal/testhelpers/`, `pkg/format/`, `pkg/logger/`, `pkg/position/`, `cache/`, `hash/`, `job/`, `internal/testutil/` |
-| **Production deps (internal)** | None (root module) |
-| **Production deps (external)** | `zeebo/xxh3`, `a-h/templ`, `go/ast`, `go/parser`, `go/token` |
-| **Test deps (external)** | `onsi/ginkgo/v2`, `onsi/gomega`, `charmbracelet/x/exp/golden` |
-| **Public API** | `suffixtree.STree`, `suffixtree.Match`, `syntax.Node`, `syntax.Match`, `syntax.Serialize()`, `syntax.FindSyntaxUnits()`, `config.Config`, `domain.*`, `errors.*`, `job.Parse()`, `job.BuildTree()`, `hash.*` |
+| Field                          | Content                                                                                                                                                                                                                                                    |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Module path**                | `github.com/LarsArtmann/art-dupl`                                                                                                                                                                                                                          |
+| **Contains packages**          | `domain/`, `errors/`, `suffixtree/`, `syntax/`, `syntax/golang/`, `syntax/templ/`, `config/`, `internal/simd/`, `internal/utils/`, `internal/testhelpers/`, `pkg/format/`, `pkg/logger/`, `pkg/position/`, `cache/`, `hash/`, `job/`, `internal/testutil/` |
+| **Production deps (internal)** | None (root module)                                                                                                                                                                                                                                         |
+| **Production deps (external)** | `zeebo/xxh3`, `a-h/templ`, `go/ast`, `go/parser`, `go/token`                                                                                                                                                                                               |
+| **Test deps (external)**       | `onsi/ginkgo/v2`, `onsi/gomega`, `charmbracelet/x/exp/golden`                                                                                                                                                                                              |
+| **Public API**                 | `suffixtree.STree`, `suffixtree.Match`, `syntax.Node`, `syntax.Match`, `syntax.Serialize()`, `syntax.FindSyntaxUnits()`, `config.Config`, `domain.*`, `errors.*`, `job.Parse()`, `job.BuildTree()`, `hash.*`                                               |
 
 **Rationale:** These packages form a coherent "engine" — they handle parsing, tree building, and detection primitives. They share `syntax.Node` as the core data type and cannot be meaningfully separated without introducing a complex interface layer for `Node` (which would add overhead to every pipeline stage). Keeping them together avoids premature abstraction while still establishing boundaries against higher-level modules.
 
@@ -129,13 +129,13 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** Multi-method detection coordination — orchestrates art-dupl, hash, TODO, and legacy detectors.
 
-| Field | Content |
-|---|---|
-| **Module path** | `github.com/LarsArtmann/art-dupl/detection` |
-| **Contains packages** | `detection/` (single package) |
-| **Production deps (internal)** | `art-dupl-core` (syntax, domain, config, hash, suffixtree, pkg/logger) |
-| **Production deps (external)** | None beyond what core provides |
-| **Public API** | `MultiDetector`, `MethodDetector` interface, `TodoDetector`, `LegacyDetector`, `TodoIssue`, `LegacyIssue` |
+| Field                          | Content                                                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **Module path**                | `github.com/LarsArtmann/art-dupl/detection`                                                               |
+| **Contains packages**          | `detection/` (single package)                                                                             |
+| **Production deps (internal)** | `art-dupl-core` (syntax, domain, config, hash, suffixtree, pkg/logger)                                    |
+| **Production deps (external)** | None beyond what core provides                                                                            |
+| **Public API**                 | `MultiDetector`, `MethodDetector` interface, `TodoDetector`, `LegacyDetector`, `TodoIssue`, `LegacyIssue` |
 
 **Rationale:** Detection is a separate concern from parsing or output. It consumes the suffix tree and produces matches. Isolating it means detection methods can be added/modified without touching the core engine or output layer.
 
@@ -143,13 +143,13 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** All output formatting — text, HTML, JSON, SARIF, plumbing, statistics, sorting, and diff visualization.
 
-| Field | Content |
-|---|---|
-| **Module path** | `github.com/LarsArtmann/art-dupl/printer` |
-| **Contains packages** | `printer/` (single package) |
-| **Production deps (internal)** | `art-dupl-core` (config, errors, syntax, syntax/golang, pkg/position) |
-| **Production deps (external)** | `sergi/go-diff` |
-| **Public API** | `Printer` interface, `StatsPrinter` interface, `BuildCloneGroups()`, `SortCloneGroups()`, `ClassifyClone()`, all format-specific constructors |
+| Field                          | Content                                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Module path**                | `github.com/LarsArtmann/art-dupl/printer`                                                                                                     |
+| **Contains packages**          | `printer/` (single package)                                                                                                                   |
+| **Production deps (internal)** | `art-dupl-core` (config, errors, syntax, syntax/golang, pkg/position)                                                                         |
+| **Production deps (external)** | `sergi/go-diff`                                                                                                                               |
+| **Public API**                 | `Printer` interface, `StatsPrinter` interface, `BuildCloneGroups()`, `SortCloneGroups()`, `ClassifyClone()`, all format-specific constructors |
 
 **Rationale:** The printer is the god-package and the worst coupling offender (imports `syntax/golang` constants). Making it a separate module forces its public API to be explicit. Future work can split `syntax/golang` constant mapping into a registry pattern to break the language-specific coupling.
 
@@ -157,14 +157,14 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** Public SDK for programmatic use — clean API surface wrapping internal pipeline.
 
-| Field | Content |
-|---|---|
-| **Module path** | `github.com/LarsArtmann/art-dupl/pkg/artdupl` |
-| **Contains packages** | `pkg/artdupl/` (single package) |
-| **Production deps (internal)** | `art-dupl-core` (config, errors, pkg/logger, suffixtree, syntax, pkg/position), `art-dupl-detection` |
-| **Test deps (internal)** | `art-dupl-core` (internal/testutil) |
-| **Production deps (external)** | None beyond what core provides |
-| **Public API** | `Detector` interface, `NewDetector()`, `Result`, `CloneGroup`, `Clone`, `Options`, `Summary`, `Metadata`, `Progress` |
+| Field                          | Content                                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| **Module path**                | `github.com/LarsArtmann/art-dupl/pkg/artdupl`                                                                        |
+| **Contains packages**          | `pkg/artdupl/` (single package)                                                                                      |
+| **Production deps (internal)** | `art-dupl-core` (config, errors, pkg/logger, suffixtree, syntax, pkg/position), `art-dupl-detection`                 |
+| **Test deps (internal)**       | `art-dupl-core` (internal/testutil)                                                                                  |
+| **Production deps (external)** | None beyond what core provides                                                                                       |
+| **Public API**                 | `Detector` interface, `NewDetector()`, `Result`, `CloneGroup`, `Clone`, `Options`, `Summary`, `Metadata`, `Progress` |
 
 **Rationale:** The SDK already has a clean external API. Making it a module means consumers import only the SDK without pulling CLI, printer, or BDD dependencies. This is the most impactful split for external users.
 
@@ -172,25 +172,25 @@ This is the root module, keeping the existing module path for backward compatibi
 
 **Purpose:** CLI application — Cobra commands, flag parsing, and analysis orchestration.
 
-| Field | Content |
-|---|---|
-| **Module path** | `github.com/LarsArtmann/art-dupl/cmd` |
-| **Contains packages** | `cmd/`, `cmd/art-dupl/` |
+| Field                          | Content                                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Module path**                | `github.com/LarsArtmann/art-dupl/cmd`                                                                                     |
+| **Contains packages**          | `cmd/`, `cmd/art-dupl/`                                                                                                   |
 | **Production deps (internal)** | `art-dupl-core` (config, errors, syntax, suffixtree, hash, job, internal/utils), `art-dupl-detection`, `art-dupl-printer` |
-| **Test deps (internal)** | `art-dupl-core` (internal/testutil, config, job, printer, syntax, suffixtree) |
-| **Production deps (external)** | `spf13/cobra`, `charmbracelet/fang`, `charm.land/lipgloss/v2`, `LarsArtmann/gogenfilter` |
-| **Public API** | None (entry point only) |
+| **Test deps (internal)**       | `art-dupl-core` (internal/testutil, config, job, printer, syntax, suffixtree)                                             |
+| **Production deps (external)** | `spf13/cobra`, `charmbracelet/fang`, `charm.land/lipgloss/v2`, `LarsArtmann/gogenfilter`                                  |
+| **Public API**                 | None (entry point only)                                                                                                   |
 
 **Rationale:** The CLI is the top-level orchestrator. It's the only module that depends on everything else. Isolating it means CLI deps (cobra, fang, lipgloss) don't leak into the SDK or core.
 
 ### 3.2 Additional Directories (not modules)
 
-| Directory | Treatment |
-|---|---|
-| `bdd/` | Stays in root module — tests cross all modules, needs `internal/testutil` |
-| `examples/` | Stays in root module — demo code, not a library |
-| `internal/configtest/` | Stays in root module — test helper |
-| `internal/filtertest/` | Stays in root module — test helper |
+| Directory              | Treatment                                                                 |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `bdd/`                 | Stays in root module — tests cross all modules, needs `internal/testutil` |
+| `examples/`            | Stays in root module — demo code, not a library                           |
+| `internal/configtest/` | Stays in root module — test helper                                        |
+| `internal/filtertest/` | Stays in root module — test helper                                        |
 
 ### 3.3 Dependency DAG
 
@@ -229,14 +229,14 @@ This is the root module, keeping the existing module path for backward compatibi
 
 ### 4.2 Corrected pre-work requirements
 
-| Package | Current | Target | Affected Files | Why |
-|---|---|---|---|---|
-| `internal/testutil` | `internal/testutil` | `testutil` | 13 test files across 5 packages | Cross-module test visibility |
-| `internal/utils` | `internal/utils` | `pkg/utils` | 2 production files in cmd | Cross-module production visibility |
-| `internal/testhelpers` | `internal/testhelpers` | `testhelpers` | 1 test file in suffixtree | Consistency (root module, technically fine, but promotes consistency) |
-| `internal/simd` | `internal/simd` | `internal/simd` | 1 production file in syntax | **NO CHANGE NEEDED** — syntax stays in root |
-| `internal/configtest` | `internal/configtest` | `internal/configtest` | 0 imports | **NO CHANGE** — dead code, stays in root |
-| `internal/filtertest` | `internal/filtertest` | `internal/filtertest` | 0 imports | **NO CHANGE** — dead code, stays in root |
+| Package                | Current                | Target                | Affected Files                  | Why                                                                   |
+| ---------------------- | ---------------------- | --------------------- | ------------------------------- | --------------------------------------------------------------------- |
+| `internal/testutil`    | `internal/testutil`    | `testutil`            | 13 test files across 5 packages | Cross-module test visibility                                          |
+| `internal/utils`       | `internal/utils`       | `pkg/utils`           | 2 production files in cmd       | Cross-module production visibility                                    |
+| `internal/testhelpers` | `internal/testhelpers` | `testhelpers`         | 1 test file in suffixtree       | Consistency (root module, technically fine, but promotes consistency) |
+| `internal/simd`        | `internal/simd`        | `internal/simd`       | 1 production file in syntax     | **NO CHANGE NEEDED** — syntax stays in root                           |
+| `internal/configtest`  | `internal/configtest`  | `internal/configtest` | 0 imports                       | **NO CHANGE** — dead code, stays in root                              |
+| `internal/filtertest`  | `internal/filtertest`  | `internal/filtertest` | 0 imports                       | **NO CHANGE** — dead code, stays in root                              |
 
 ### 4.3 Is the granularity right?
 
@@ -282,11 +282,11 @@ Since every edge points from a higher layer to a strictly lower layer, the graph
 
 **Chosen: `go.work` at repo root**
 
-| Factor | Decision |
-|---|---|
-| All modules in same repo | Yes — `go.work` is ideal |
-| Published to proxy | No (internal tool) — no need for versioned imports |
-| Module count | 5 — above the threshold where `go.work` is cleaner than per-module replace |
+| Factor                   | Decision                                                                   |
+| ------------------------ | -------------------------------------------------------------------------- |
+| All modules in same repo | Yes — `go.work` is ideal                                                   |
+| Published to proxy       | No (internal tool) — no need for versioned imports                         |
+| Module count             | 5 — above the threshold where `go.work` is cleaner than per-module replace |
 
 ### go.work file
 
@@ -310,25 +310,25 @@ use (
 
 ### Per-module go.mod external dependencies
 
-| Module | External deps |
-|---|---|
+| Module        | External deps                                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `core` (root) | `zeebo/xxh3`, `a-h/templ`, `charm.land/log/v2`, `charmbracelet/x/exp/golden` (test), `onsi/ginkgo/v2` (test), `onsi/gomega` (test) |
-| `detection` | None beyond core |
-| `printer` | `sergi/go-diff` |
-| `sdk` | None beyond core + detection |
-| `cli` | `spf13/cobra`, `charmbracelet/fang`, `charm.land/lipgloss/v2`, `LarsArtmann/gogenfilter` |
+| `detection`   | None beyond core                                                                                                                   |
+| `printer`     | `sergi/go-diff`                                                                                                                    |
+| `sdk`         | None beyond core + detection                                                                                                       |
+| `cli`         | `spf13/cobra`, `charmbracelet/fang`, `charm.land/lipgloss/v2`, `LarsArtmann/gogenfilter`                                           |
 
 ---
 
 ## 7. Test Dependency Isolation
 
-| Module | Production Deps | Test-Only Deps |
-|---|---|---|
-| `core` | None (root) | All internal testutil/testhelpers |
-| `detection` | `core` | `core` (testutil for integration tests) |
-| `printer` | `core` | `core` (testutil), `core` (syntax/golang for golden tests) |
-| `sdk` | `core`, `detection` | `core` (testutil) |
-| `cli` | `core`, `detection`, `printer` | `core` (testutil), `detection`, `printer` |
+| Module      | Production Deps                | Test-Only Deps                                             |
+| ----------- | ------------------------------ | ---------------------------------------------------------- |
+| `core`      | None (root)                    | All internal testutil/testhelpers                          |
+| `detection` | `core`                         | `core` (testutil for integration tests)                    |
+| `printer`   | `core`                         | `core` (testutil), `core` (syntax/golang for golden tests) |
+| `sdk`       | `core`, `detection`            | `core` (testutil)                                          |
+| `cli`       | `core`, `detection`, `printer` | `core` (testutil), `detection`, `printer`                  |
 
 **Test helpers strategy:**
 
@@ -346,12 +346,12 @@ Cross-module test dependencies are acceptable in `_test.go` files (imported via 
 
 ### 7.1 Current state
 
-| Module boundary | Current interface | Needed |
-|---|---|---|
-| `printer` → `syntax` | Direct struct access (`*syntax.Node`) | **No change yet** — too many call sites (111+) |
-| `detection` → `suffixtree` | `suffixtree.Token` interface (already clean) | Already good |
-| `sdk` → `detection` | `detection.MultiDetector` concrete type | Acceptable for now |
-| `cli` → `printer` | `printer.Printer` interface | Already good |
+| Module boundary            | Current interface                            | Needed                                         |
+| -------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| `printer` → `syntax`       | Direct struct access (`*syntax.Node`)        | **No change yet** — too many call sites (111+) |
+| `detection` → `suffixtree` | `suffixtree.Token` interface (already clean) | Already good                                   |
+| `sdk` → `detection`        | `detection.MultiDetector` concrete type      | Acceptable for now                             |
+| `cli` → `printer`          | `printer.Printer` interface                  | Already good                                   |
 
 ### 7.2 Future extraction (post-modularization)
 
@@ -375,11 +375,11 @@ The existing public API surfaces are sufficient. Each module's `go.mod` enforces
 
 **Chosen: Root-only versioning**
 
-| Factor | Decision |
-|---|---|
+| Factor        | Decision                                     |
+| ------------- | -------------------------------------------- |
 | Internal tool | Yes — no external consumers publish to proxy |
-| Single team | Yes — no need for independent versioning |
-| go.work usage | Yes — `go.work` + root tags is the simplest |
+| Single team   | Yes — no need for independent versioning     |
+| go.work usage | Yes — `go.work` + root tags is the simplest  |
 
 **Strategy:**
 
@@ -432,15 +432,15 @@ Each step leaves the project in a buildable, testable state. Each step is a sing
 
 ## 11. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Import path breakage | Medium | High | Use `go.work` for development; verify `go mod tidy` per module |
-| Circular dependency discovered during split | Low | High | DAG verified above; if found, merge modules |
-| `internal/` package visibility | Medium | Medium | `internal/` packages only visible within their module — move `internal/testutil` tests to root module |
-| `flake.nix` complexity increases | Medium | Medium | Keep root build aggregating sub-modules |
-| External consumers of SDK broken | Low | Critical | SDK import path unchanged (`github.com/LarsArtmann/art-dupl/pkg/artdupl`) |
-| Test dependencies leak into production go.mod | Low | Medium | Audit each module's go.mod after creation |
-| BDD tests can't import across modules | Medium | Medium | BDD stays in root module which uses go.work — all imports resolve |
+| Risk                                          | Likelihood | Impact   | Mitigation                                                                                            |
+| --------------------------------------------- | ---------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| Import path breakage                          | Medium     | High     | Use `go.work` for development; verify `go mod tidy` per module                                        |
+| Circular dependency discovered during split   | Low        | High     | DAG verified above; if found, merge modules                                                           |
+| `internal/` package visibility                | Medium     | Medium   | `internal/` packages only visible within their module — move `internal/testutil` tests to root module |
+| `flake.nix` complexity increases              | Medium     | Medium   | Keep root build aggregating sub-modules                                                               |
+| External consumers of SDK broken              | Low        | Critical | SDK import path unchanged (`github.com/LarsArtmann/art-dupl/pkg/artdupl`)                             |
+| Test dependencies leak into production go.mod | Low        | Medium   | Audit each module's go.mod after creation                                                             |
+| BDD tests can't import across modules         | Medium     | Medium   | BDD stays in root module which uses go.work — all imports resolve                                     |
 
 ### Critical constraint: `internal/` package scoping
 
@@ -493,47 +493,47 @@ The current `flake.nix` uses `buildGoModule` for the root module. With multi-mod
 
 ## Appendix A: Package-to-Module Mapping
 
-| Package | Module | Rationale |
-|---|---|---|
-| `domain/` | core | Domain types, zero deps beyond errors |
-| `errors/` | core | Foundation error types |
-| `suffixtree/` | core | Core algorithm, depends only on errors |
-| `syntax/` | core | AST processing, depends on suffixtree |
-| `syntax/golang/` | core | Go language parser |
-| `syntax/templ/` | core | Templ language parser |
-| `config/` | core | Configuration used by all layers |
-| `internal/simd/` | core | SIMD optimizations for syntax |
-| `internal/utils/` | **promote to `pkg/utils/`** | Used by cmd across module boundary |
-| `internal/testhelpers/` | **promote to `testhelpers/`** | Used by suffixtree tests |
-| `internal/testutil/` | **promote to `testutil/`** | Used by tests across modules |
-| `internal/configtest/` | core | Only used by config tests |
-| `internal/filtertest/` | core | Only used by filter tests |
-| `pkg/format/` | core | Utility package |
-| `pkg/logger/` | core | Utility package |
-| `pkg/position/` | core | Utility package |
-| `cache/` | core | File caching for job |
-| `hash/` | core | Hash-based detection (consumed by detection module) |
-| `job/` | core | Parse + build orchestration |
-| `detection/` | **detection** | Multi-method detection coordination |
-| `printer/` | **printer** | Output formatting |
-| `pkg/artdupl/` | **sdk** | Public SDK |
-| `cmd/` | **cli** | CLI application |
-| `cmd/art-dupl/` | **cli** | CLI entry point |
-| `bdd/` | core | Cross-module BDD tests |
-| `examples/` | core | Demo code |
+| Package                 | Module                        | Rationale                                           |
+| ----------------------- | ----------------------------- | --------------------------------------------------- |
+| `domain/`               | core                          | Domain types, zero deps beyond errors               |
+| `errors/`               | core                          | Foundation error types                              |
+| `suffixtree/`           | core                          | Core algorithm, depends only on errors              |
+| `syntax/`               | core                          | AST processing, depends on suffixtree               |
+| `syntax/golang/`        | core                          | Go language parser                                  |
+| `syntax/templ/`         | core                          | Templ language parser                               |
+| `config/`               | core                          | Configuration used by all layers                    |
+| `internal/simd/`        | core                          | SIMD optimizations for syntax                       |
+| `internal/utils/`       | **promote to `pkg/utils/`**   | Used by cmd across module boundary                  |
+| `internal/testhelpers/` | **promote to `testhelpers/`** | Used by suffixtree tests                            |
+| `internal/testutil/`    | **promote to `testutil/`**    | Used by tests across modules                        |
+| `internal/configtest/`  | core                          | Only used by config tests                           |
+| `internal/filtertest/`  | core                          | Only used by filter tests                           |
+| `pkg/format/`           | core                          | Utility package                                     |
+| `pkg/logger/`           | core                          | Utility package                                     |
+| `pkg/position/`         | core                          | Utility package                                     |
+| `cache/`                | core                          | File caching for job                                |
+| `hash/`                 | core                          | Hash-based detection (consumed by detection module) |
+| `job/`                  | core                          | Parse + build orchestration                         |
+| `detection/`            | **detection**                 | Multi-method detection coordination                 |
+| `printer/`              | **printer**                   | Output formatting                                   |
+| `pkg/artdupl/`          | **sdk**                       | Public SDK                                          |
+| `cmd/`                  | **cli**                       | CLI application                                     |
+| `cmd/art-dupl/`         | **cli**                       | CLI entry point                                     |
+| `bdd/`                  | core                          | Cross-module BDD tests                              |
+| `examples/`             | core                          | Demo code                                           |
 
 ## Appendix B: External Dependency Mapping
 
-| External Dep | Used By | Module |
-|---|---|---|
-| `charm.land/lipgloss/v2` | cmd | cli |
-| `charm.land/log/v2` | pkg/logger | core |
-| `LarsArtmann/gogenfilter` | cmd | cli |
-| `a-h/templ` | syntax/templ | core |
-| `charmbracelet/fang` | cmd/art-dupl | cli |
-| `charmbracelet/x/exp/golden` | bdd, internal/testutil | core |
-| `onsi/ginkgo/v2` | bdd, internal/testutil | core |
-| `onsi/gomega` | bdd, internal/testutil | core |
-| `sergi/go-diff` | printer | printer |
-| `spf13/cobra` | cmd | cli |
-| `zeebo/xxh3` | syntax, hash | core |
+| External Dep                 | Used By                | Module  |
+| ---------------------------- | ---------------------- | ------- |
+| `charm.land/lipgloss/v2`     | cmd                    | cli     |
+| `charm.land/log/v2`          | pkg/logger             | core    |
+| `LarsArtmann/gogenfilter`    | cmd                    | cli     |
+| `a-h/templ`                  | syntax/templ           | core    |
+| `charmbracelet/fang`         | cmd/art-dupl           | cli     |
+| `charmbracelet/x/exp/golden` | bdd, internal/testutil | core    |
+| `onsi/ginkgo/v2`             | bdd, internal/testutil | core    |
+| `onsi/gomega`                | bdd, internal/testutil | core    |
+| `sergi/go-diff`              | printer                | printer |
+| `spf13/cobra`                | cmd                    | cli     |
+| `zeebo/xxh3`                 | syntax, hash           | core    |
