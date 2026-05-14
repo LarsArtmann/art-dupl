@@ -3,7 +3,6 @@ package printer
 import (
 	"bytes"
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -103,9 +102,9 @@ func foo() {
 	}
 
 	output := buf.String()
-	assertContains(t, output, "\"version\":", "JSON output missing version field")
-	assertContains(t, output, "\"clone_groups\":", "JSON output missing clone_groups field")
-	assertContains(t, output, "test-hash", "JSON output missing test hash")
+	testutil.AssertStringContains(t, output, "\"version\":", "JSON output missing version field")
+	testutil.AssertStringContains(t, output, "\"clone_groups\":", "JSON output missing clone_groups field")
+	testutil.AssertStringContains(t, output, "test-hash", "JSON output missing test hash")
 }
 
 func TestJSONPrinter_EmptyOutput(t *testing.T) {
@@ -260,21 +259,13 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, `"hash"`) {
-		t.Errorf("OutputSimpleJSON() missing hash field: %q", output)
-	}
+	testutil.AssertStringContains(t, output, `"hash"`, "OutputSimpleJSON() missing hash field")
 
-	if !strings.Contains(output, `"abc"`) {
-		t.Errorf("OutputSimpleJSON() missing hash value: %q", output)
-	}
+	testutil.AssertStringContains(t, output, `"abc"`, "OutputSimpleJSON() missing hash value")
 
-	if !strings.Contains(output, `"score"`) {
-		t.Errorf("OutputSimpleJSON() missing score field: %q", output)
-	}
+	testutil.AssertStringContains(t, output, `"score"`, "OutputSimpleJSON() missing score field")
 
-	if !strings.Contains(output, `"instances"`) {
-		t.Errorf("OutputSimpleJSON() missing instances field: %q", output)
-	}
+	testutil.AssertStringContains(t, output, `"instances"`, "OutputSimpleJSON() missing instances field")
 }
 
 func TestJSONPrinter_OutputSimpleJSON_Empty(t *testing.T) {

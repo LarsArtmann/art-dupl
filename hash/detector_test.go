@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -54,9 +55,7 @@ func TestFindFileDuplicates_DifferentFiles(t *testing.T) {
 	}
 
 	dups := FindFileDuplicates([]string{f1, f2}, 1)
-	if len(dups) != 0 {
-		t.Errorf("expected 0 duplicates for different files, got %d", len(dups))
-	}
+	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for different files, got %d")
 }
 
 func TestFindFileDuplicates_SkipsSmallFiles(t *testing.T) {
@@ -77,9 +76,7 @@ func TestFindFileDuplicates_SkipsSmallFiles(t *testing.T) {
 	}
 
 	dups := FindFileDuplicates([]string{f1, f2}, 100)
-	if len(dups) != 0 {
-		t.Errorf("expected 0 duplicates (files below threshold), got %d", len(dups))
-	}
+	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates (files below threshold), got %d")
 }
 
 func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
@@ -97,18 +94,14 @@ func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
 	bad := filepath.Join(dir, "nope.go")
 
 	dups := FindFileDuplicates([]string{good, bad}, 1)
-	if len(dups) != 0 {
-		t.Errorf("expected 0 duplicates with missing file, got %d", len(dups))
-	}
+	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates with missing file, got %d")
 }
 
 func TestFindFileDuplicates_EmptyInput(t *testing.T) {
 	t.Parallel()
 
 	dups := FindFileDuplicates(nil, 1)
-	if len(dups) != 0 {
-		t.Errorf("expected 0 duplicates for nil input, got %d", len(dups))
-	}
+	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for nil input, got %d")
 }
 
 func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
@@ -145,9 +138,7 @@ func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
 	all := []string{files["a1.go"], files["a2.go"], files["b1.go"], files["b2.go"]}
 	dups := FindFileDuplicates(all, 1)
 
-	if len(dups) != 2 {
-		t.Errorf("expected 2 duplicate groups, got %d", len(dups))
-	}
+	testutil.AssertCountf(t, len(dups), 2, "expected 2 duplicate groups, got %d")
 }
 
 // --- FileDetector.FindDuplOver via node pipeline ---
@@ -178,9 +169,7 @@ func TestFileDetector_FindDuplOver_BasicDuplicate(t *testing.T) {
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
 
-	if len(matches) != 1 {
-		t.Fatalf("expected 1 match, got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 1, "expected 1 match, got %d")
 
 	if len(matches[0].Frags) != 2 {
 		t.Errorf("expected 2 fragments, got %d", len(matches[0].Frags))
@@ -213,9 +202,7 @@ func TestFileDetector_FindDuplOver_SkipsBelowThreshold(t *testing.T) {
 	fd := NewFileDetector(1000)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1000))
 
-	if len(matches) != 0 {
-		t.Errorf("expected 0 matches (below threshold), got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches (below threshold), got %d")
 }
 
 func TestFileDetector_FindDuplOver_EmptyNodes(t *testing.T) {
@@ -224,9 +211,7 @@ func TestFileDetector_FindDuplOver_EmptyNodes(t *testing.T) {
 	fd := NewFileDetector(5)
 	matches := collectMatches(fd.FindDuplOver(nil, 5))
 
-	if len(matches) != 0 {
-		t.Errorf("expected 0 matches for empty input, got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for empty input, got %d")
 }
 
 func TestFileDetector_FindDuplOver_NodesWithoutFilename(t *testing.T) {
@@ -240,9 +225,7 @@ func TestFileDetector_FindDuplOver_NodesWithoutFilename(t *testing.T) {
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
 
-	if len(matches) != 0 {
-		t.Errorf("expected 0 matches for empty filenames, got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for empty filenames, got %d")
 }
 
 func TestFileDetector_FindDuplOver_NonexistentFiles(t *testing.T) {
@@ -256,9 +239,7 @@ func TestFileDetector_FindDuplOver_NonexistentFiles(t *testing.T) {
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
 
-	if len(matches) != 0 {
-		t.Errorf("expected 0 matches for nonexistent files, got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for nonexistent files, got %d")
 }
 
 func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
@@ -282,12 +263,7 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
 
-	if len(matches) != 0 {
-		t.Errorf(
-			"expected 0 matches for same file referenced 3x (only 1 unique file), got %d",
-			len(matches),
-		)
-	}
+	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for same file referenced 3x (only 1 unique file), got %d")
 }
 
 // --- extractUniqueFiles ---
@@ -497,9 +473,7 @@ func TestFileDetector_FindDuplOver(t *testing.T) {
 	hd := NewFileDetector(1)
 	matches := collectMatches(hd.FindDuplOver(nodes, 1))
 
-	if len(matches) != 1 {
-		t.Errorf("expected 1 match via FileDetector, got %d", len(matches))
-	}
+	testutil.AssertCountf(t, len(matches), 1, "expected 1 match via FileDetector, got %d")
 }
 
 // --- helper ---

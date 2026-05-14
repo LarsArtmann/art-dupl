@@ -3,10 +3,10 @@ package printer
 import (
 	"bytes"
 	"errors"
-	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -80,13 +80,9 @@ func TestPlumbing_PrintClones(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "test.go") {
-		t.Errorf("PrintClones() output missing filename: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "test.go", "PrintClones() output missing filename")
 
-	if !strings.Contains(output, ":") {
-		t.Errorf("PrintClones() output missing colon separator: %q", output)
-	}
+	testutil.AssertStringContains(t, output, ":", "PrintClones() output missing colon separator")
 }
 
 func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
@@ -108,9 +104,7 @@ func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "test.go") {
-		t.Errorf("PrintClones(sorted) output missing filename: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "test.go", "PrintClones(sorted) output missing filename")
 }
 
 func TestPlumbing_PrintClones_ReadError(t *testing.T) {
@@ -166,13 +160,9 @@ func TestPlumbing_PrintClones_MultipleGroups(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "a.go") {
-		t.Errorf("output missing a.go: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "a.go", "output missing a.go")
 
-	if !strings.Contains(output, "b.go") {
-		t.Errorf("output missing b.go: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "b.go", "output missing b.go")
 }
 
 func TestPlumbing_OutputPlumbing(t *testing.T) {
@@ -191,13 +181,9 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "size") {
-		t.Errorf("OutputPlumbing() output missing sort criteria: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "size", "OutputPlumbing() output missing sort criteria")
 
-	if !strings.Contains(output, "# Plumbing output sorted by") {
-		t.Errorf("OutputPlumbing() output missing header: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "# Plumbing output sorted by", "OutputPlumbing() output missing header")
 }
 
 func testNodesAt(filename string, pos, end int32) []*syntax.Node {

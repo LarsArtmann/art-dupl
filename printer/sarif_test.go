@@ -3,7 +3,6 @@ package printer
 import (
 	"bytes"
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -290,9 +289,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	}
 
 	// Check schema
-	if !strings.Contains(output.Schema, "sarif-schema-2.1.0") {
-		t.Errorf("Schema should contain sarif-schema-2.1.0, got: %s", output.Schema)
-	}
+	testutil.AssertStringContains(t, output.Schema, "sarif-schema-2.1.0", "Schema should contain sarif-schema-2.1.0")
 
 	// Check tool info
 	if len(output.Runs) == 0 {

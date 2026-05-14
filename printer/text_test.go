@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -64,13 +64,9 @@ func TestTextPrinter_PrintClones(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "found") {
-		t.Errorf("PrintClones() output missing 'found': %q", output)
-	}
+	testutil.AssertStringContains(t, output, "found", "PrintClones() output missing 'found'")
 
-	if !strings.Contains(output, "clones") {
-		t.Errorf("PrintClones() output missing 'clones': %q", output)
-	}
+	testutil.AssertStringContains(t, output, "clones", "PrintClones() output missing 'clones'")
 }
 
 func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
@@ -95,9 +91,7 @@ func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "FILE DUPLICATE") {
-		t.Errorf("PrintClones(file dupe) missing FILE DUPLICATE: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "FILE DUPLICATE", "PrintClones(file dupe) missing FILE DUPLICATE")
 }
 
 func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
@@ -134,13 +128,9 @@ func TestTextPrinter_PrintFooter(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "Found total") {
-		t.Errorf("PrintFooter() missing summary: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "Found total", "PrintFooter() missing summary")
 
-	if !strings.Contains(output, "clone groups") {
-		t.Errorf("PrintFooter() missing 'clone groups': %q", output)
-	}
+	testutil.AssertStringContains(t, output, "clone groups", "PrintFooter() missing 'clone groups'")
 }
 
 func TestTextPrinter_PrintFooter_DiffHint(t *testing.T) {
@@ -159,9 +149,7 @@ func TestTextPrinter_PrintFooter_DiffHint(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "diff a.go b.go") {
-		t.Errorf("PrintFooter() missing diff hint: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "diff a.go b.go", "PrintFooter() missing diff hint")
 }
 
 func TestTextPrinter_PrintClonesSorted(t *testing.T) {
@@ -183,9 +171,7 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "sorted by size") {
-		t.Errorf("PrintClonesSorted() missing sort info: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "sorted by size", "PrintClonesSorted() missing sort info")
 }
 
 func TestDetectFileDuplicate(t *testing.T) {
@@ -394,9 +380,7 @@ func TestTextPrinter_OutputText(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "Found total") {
-		t.Errorf("OutputText() missing footer: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "Found total", "OutputText() missing footer")
 }
 
 func TestTextPrinter_OutputText_Empty(t *testing.T) {
@@ -414,9 +398,7 @@ func TestTextPrinter_OutputText_Empty(t *testing.T) {
 
 	output := buf.String()
 
-	if !strings.Contains(output, "Found total 0 clone groups") {
-		t.Errorf("OutputText(empty) missing summary: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "Found total 0 clone groups", "OutputText(empty) missing summary")
 }
 
 func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
@@ -565,9 +547,7 @@ func TestTextPrinter_PrintClonesSorted_SortByOccurrence(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "sorted by occurrence") {
-		t.Errorf("PrintClonesSorted missing sort info: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "sorted by occurrence", "PrintClonesSorted missing sort info")
 }
 
 func TestTextPrinter_PrintClonesSorted_SortByHash(t *testing.T) {
@@ -588,9 +568,7 @@ func TestTextPrinter_PrintClonesSorted_SortByHash(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "sorted by hash") {
-		t.Errorf("PrintClonesSorted missing sort info: %q", output)
-	}
+	testutil.AssertStringContains(t, output, "sorted by hash", "PrintClonesSorted missing sort info")
 }
 
 func TestTextPrinter_PrintClonesSorted_UnknownSort(t *testing.T) {

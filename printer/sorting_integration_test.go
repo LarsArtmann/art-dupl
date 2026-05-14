@@ -156,9 +156,11 @@ func anotherLargeFunction() {
 				if tc.sortBy == config.SortByTotalTokens {
 					// Just check that output contains expected files
 					for _, file := range []string{"large.go", "another_large.go", "multi.go", "medium.go", "small.go"} {
-						if !strings.Contains(output, file) {
-							t.Errorf("Expected file %s not found in JSON output", file)
-						}
+						t.Run(file, func(t *testing.T) {
+							if !strings.Contains(output, file) {
+								t.Errorf("Expected file %s not found in JSON output", file)
+							}
+						})
 					}
 				}
 			})

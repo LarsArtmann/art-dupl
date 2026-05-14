@@ -393,13 +393,9 @@ func TestLineDiff_ContentPreservation(t *testing.T) {
 
 	// Verify original content is preserved (note: splitLines preserves newlines)
 	// First line should contain "func foo() {" or "func foo() {\n"
-	if !strings.Contains(result.Base[0].Content, "func foo() {") {
-		t.Errorf("Base content not preserved: %q", result.Base[0].Content)
-	}
+	testutil.AssertStringContains(t, result.Base[0].Content, "func foo() {", "Base content not preserved")
 
-	if !strings.Contains(result.Compared[0].Content, "func bar() {") {
-		t.Errorf("Compared content not preserved: %q", result.Compared[0].Content)
-	}
+	testutil.AssertStringContains(t, result.Compared[0].Content, "func bar() {", "Compared content not preserved")
 }
 
 func BenchmarkLineDiff_Small(b *testing.B) {

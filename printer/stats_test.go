@@ -25,9 +25,8 @@ func main() {
 func assertFileContains(t *testing.T, output, filename, value string) {
 	t.Helper()
 
-	if !strings.Contains(output, filename) || !strings.Contains(output, value) {
-		t.Errorf("Output should contain %s with %s", filename, value)
-	}
+	testutil.AssertStringContains(t, output, filename, "Output should contain "+filename)
+	testutil.AssertStringContains(t, output, value, "Output should contain "+value)
 }
 
 // assertMapFloat64Equal asserts that a float64 value in a map equals the expected value.
@@ -389,15 +388,11 @@ func TestPrintSizeDistribution(t *testing.T) {
 	}
 
 	for _, expected := range expectedRanges {
-		if !strings.Contains(output, expected) {
-			t.Errorf("Output missing expected range: %s", expected)
-		}
+		testutil.AssertStringContains(t, output, expected, "Output missing expected range: "+expected)
 	}
 
 	// Check that output contains bars
-	if !strings.Contains(output, "█") {
-		t.Error("Output doesn't contain ASCII bars")
-	}
+	testutil.AssertStringContains(t, output, "█", "Output doesn't contain ASCII bars")
 
 	// Check that output is sorted (1-5 should come before 6-10)
 	idx1 := strings.Index(output, "1-5 lines")
@@ -430,9 +425,8 @@ func TestPrintTopFiles(t *testing.T) {
 	// Check that top 2 files are in correct order (fileA.go: 100, fileC.go: 75)
 	assertFileContains(t, lines[0], "fileA.go", "100")
 
-	if !strings.Contains(lines[1], "fileC.go") || !strings.Contains(lines[1], "75") {
-		t.Errorf("Second file should be fileC.go with 75 lines, got: %s", lines[1])
-	}
+	testutil.AssertStringContains(t, lines[1], "fileC.go", "Second file should be fileC.go with 75 lines")
+	testutil.AssertStringContains(t, lines[1], "75", "Second file should contain 75")
 }
 
 func TestPrintTopFilesWithLessThanN(t *testing.T) {
@@ -623,9 +617,7 @@ func TestStatsTextOutput(t *testing.T) {
 	}
 
 	for _, section := range expectedSections {
-		if !strings.Contains(output, section) {
-			t.Errorf("Output missing section: %q", section)
-		}
+		testutil.AssertStringContains(t, output, section, "Output missing section: "+section)
 	}
 }
 
@@ -665,9 +657,7 @@ func TestStatsCSVOutput(t *testing.T) {
 	}
 
 	for _, header := range expectedHeaders {
-		if !strings.Contains(output, header) {
-			t.Errorf("CSV output missing header: %q", header)
-		}
+		testutil.AssertStringContains(t, output, header, "CSV output missing header: "+header)
 	}
 
 	// Verify CSV has proper structure (lines separated by commas)
@@ -685,9 +675,7 @@ func TestStatsCSVOutput(t *testing.T) {
 	}
 
 	// Verify Health Score is present
-	if !strings.Contains(output, "Health Score,A") && !strings.Contains(output, "Health Score,") {
-		t.Error("CSV output should contain Health Score")
-	}
+	testutil.AssertStringContains(t, output, "Health Score", "CSV output should contain Health Score")
 }
 
 func TestHealthScoreCalculation(t *testing.T) {
@@ -813,13 +801,7 @@ func TestPrintRecommendations(t *testing.T) {
 
 			// Check that all expected strings are present
 			for _, expected := range tt.shouldContain {
-				if !strings.Contains(output, expected) {
-					t.Errorf(
-						"Recommendations output missing expected text: %q\nGot: %s",
-						expected,
-						output,
-					)
-				}
+				testutil.AssertStringContains(t, output, expected, "Recommendations output missing expected text: "+expected)
 			}
 
 			// Check that unexpected strings are NOT present
@@ -834,9 +816,7 @@ func TestPrintRecommendations(t *testing.T) {
 			}
 
 			// Verify next steps section is present
-			if !strings.Contains(output, "Next Steps:") {
-				t.Error("Recommendations should include 'Next Steps:' section")
-			}
+			testutil.AssertStringContains(t, output, "Next Steps:", "Recommendations should include 'Next Steps:' section")
 		})
 	}
 }

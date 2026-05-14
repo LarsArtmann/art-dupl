@@ -2,8 +2,9 @@ package logger
 
 import (
 	"bytes"
-	"strings"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 func TestDefaultConfig(t *testing.T) {
@@ -106,9 +107,7 @@ func TestCharmLogger_Methods(t *testing.T) {
 			tt.method(logger, tt.msg)
 
 			output := buf.String()
-			if !strings.Contains(output, tt.msg) {
-				t.Errorf("Expected output to contain '%s', got '%s'", tt.msg, output)
-			}
+			testutil.AssertStringContains(t, output, tt.msg, "Expected output to contain '"+tt.msg+"'")
 		})
 	}
 }
@@ -124,13 +123,10 @@ func TestCharmLogger_WithArgs(t *testing.T) {
 	logger.Info("test message", "key", "value")
 
 	output := buf.String()
-	if !strings.Contains(output, "test message") {
-		t.Errorf("Expected output to contain 'test message', got '%s'", output)
-	}
+	testutil.AssertStringContains(t, output, "test message", "Expected output to contain 'test message'")
 
-	if !strings.Contains(output, "key") || !strings.Contains(output, "value") {
-		t.Errorf("Expected output to contain key/value, got '%s'", output)
-	}
+	testutil.AssertStringContains(t, output, "key", "Expected output to contain key")
+	testutil.AssertStringContains(t, output, "value", "Expected output to contain value")
 }
 
 func TestCharmLogger_WithoutArgs(t *testing.T) {
@@ -144,9 +140,7 @@ func TestCharmLogger_WithoutArgs(t *testing.T) {
 	logger.Info("test message")
 
 	output := buf.String()
-	if !strings.Contains(output, "test message") {
-		t.Errorf("Expected output to contain 'test message', got '%s'", output)
-	}
+	testutil.AssertStringContains(t, output, "test message", "Expected output to contain 'test message'")
 }
 
 func TestNoOpLogger(t *testing.T) {
@@ -209,9 +203,7 @@ func TestNewLogger_WithPrefix(t *testing.T) {
 	logger.Info("test message")
 
 	output := buf.String()
-	if !strings.Contains(output, "MYPREFIX") {
-		t.Errorf("Expected output to contain prefix 'MYPREFIX', got '%s'", output)
-	}
+	testutil.AssertStringContains(t, output, "MYPREFIX", "Expected output to contain prefix 'MYPREFIX'")
 }
 
 func TestNewLogger_WithReportCaller(t *testing.T) {

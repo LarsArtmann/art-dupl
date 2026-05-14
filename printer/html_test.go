@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -18,6 +19,18 @@ const (
 	testGoMultiCode = "package main\n\nfunc foo() {\n\tfmt.Println(\"hello\")\n}\n\nfunc bar() {\n\tfmt.Println(\"hello\")\n}\n"
 	testPlumbCode   = "package main\n\nfunc foo() {\n\tprintln(\"hello\")\n}\n"
 	testFilename    = "test.go"
+)
+
+// Shared test clone fixtures to reduce duplication
+var (
+	testCloneA1to5Line1Line2 = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")}
+	testCloneB1to5Line1Line2 = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\n")}
+	testCloneA1to5Code       = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("code\n")}
+	testCloneB1to5Code       = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("code\n")}
+	testCloneA1to5CodeLines  = clone{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\nline3\n")}
+	testCloneA10to20Code     = clone{filename: "a.go", lineStart: 10, lineEnd: 20, fragment: []byte("code here")}
+	testCloneB10to14Code     = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nchanged\n")}
+	testCloneB10to14Added    = clone{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\nadded\n")}
 )
 
 type errorWriter struct{}
@@ -40,15 +53,6 @@ func htmlPrinterWithMetadata(content string, meta ReportMetadata) (Printer, *byt
 	p := NewHTMLWithOptions(&buf, mockReadFile(content), config.DiffModeSideBySide, meta, 15)
 
 	return p, &buf
-}
-
-// assertContains checks that s contains substr.
-func assertContains(t *testing.T, s, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(s, substr) {
-		t.Error(msg)
-	}
 }
 
 func nodesForHTML(filename string) []*syntax.Node {
@@ -126,17 +130,11 @@ func TestHTMLPrintHeader(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Code Duplication Report") {
-		t.Error("Expected report title in header")
-	}
+	testutil.AssertStringContains(t, output, "Code Duplication Report", "Expected report title in header")
 
-	if !strings.Contains(output, "Threshold (tokens)") {
-		t.Error("Expected threshold card in header")
-	}
+	testutil.AssertStringContains(t, output, "Threshold (tokens)", "Expected threshold card in header")
 
-	if !strings.Contains(output, "15") {
-		t.Error("Expected threshold value 15 in header")
-	}
+	testutil.AssertStringContains(t, output, "15", "Expected threshold value 15 in header")
 }
 
 func TestHTMLPrintHeader_WithMetadata(t *testing.T) {
@@ -157,25 +155,15 @@ func TestHTMLPrintHeader_WithMetadata(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Semantic") {
-		t.Error("Expected Semantic badge in output")
-	}
+	testutil.AssertStringContains(t, output, "Semantic", "Expected Semantic badge in output")
 
-	if !strings.Contains(output, "suffix-tree, hash") {
-		t.Error("Expected detection methods in output")
-	}
+	testutil.AssertStringContains(t, output, "suffix-tree, hash", "Expected detection methods in output")
 
-	if !strings.Contains(output, "size") {
-		t.Error("Expected SortBy badge in output")
-	}
+	testutil.AssertStringContains(t, output, "size", "Expected SortBy badge in output")
 
-	if !strings.Contains(output, "Include SQLC") {
-		t.Error("Expected IncludeSQLC badge in output")
-	}
+	testutil.AssertStringContains(t, output, "Include SQLC", "Expected IncludeSQLC badge in output")
 
-	if !strings.Contains(output, "Include Templ") {
-		t.Error("Expected IncludeTempl badge in output")
-	}
+	testutil.AssertStringContains(t, output, "Include Templ", "Expected IncludeTempl badge in output")
 }
 
 func TestHTMLPrintHeader_MetadataStructural(t *testing.T) {
@@ -190,9 +178,7 @@ func TestHTMLPrintHeader_MetadataStructural(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Structural") {
-		t.Error("Expected Structural badge when Semantic=false")
-	}
+	testutil.AssertStringContains(t, output, "Structural", "Expected Structural badge when Semantic=false")
 }
 
 func TestHTMLPrintHeader_EmptyMetadata(t *testing.T) {
@@ -207,9 +193,7 @@ func TestHTMLPrintHeader_EmptyMetadata(t *testing.T) {
 
 	output := buf.String()
 	// Empty metadata still writes Structural badge (Semantic=false default)
-	if !strings.Contains(output, "Structural") {
-		t.Error("Expected Structural badge in output for default metadata")
-	}
+	testutil.AssertStringContains(t, output, "Structural", "Expected Structural badge in output for default metadata")
 }
 
 func TestHTMLPrintClones(t *testing.T) {
@@ -231,17 +215,11 @@ func TestHTMLPrintClones(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "clone-group") {
-		t.Error("Expected clone-group div in output")
-	}
+	testutil.AssertStringContains(t, output, "clone-group", "Expected clone-group div in output")
 
-	if !strings.Contains(output, "Clone Group #1") {
-		t.Error("Expected 'Clone Group #1' header")
-	}
+	testutil.AssertStringContains(t, output, "Clone Group #1", "Expected 'Clone Group #1' header")
 
-	if !strings.Contains(output, "occurrences") {
-		t.Error("Expected occurrences badge")
-	}
+	testutil.AssertStringContains(t, output, "occurrences", "Expected occurrences badge")
 }
 
 func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
@@ -266,13 +244,9 @@ func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Clone Group #1") {
-		t.Error("Expected 'Clone Group #1'")
-	}
+	testutil.AssertStringContains(t, output, "Clone Group #1", "Expected 'Clone Group #1'")
 
-	if !strings.Contains(output, "Clone Group #2") {
-		t.Error("Expected 'Clone Group #2'")
-	}
+	testutil.AssertStringContains(t, output, "Clone Group #2", "Expected 'Clone Group #2'")
 }
 
 func TestHTMLPrintClones_DiffMode(t *testing.T) {
@@ -300,13 +274,9 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-mode") {
-		t.Error("Expected diff-mode section in output")
-	}
+	testutil.AssertStringContains(t, output, "diff-mode", "Expected diff-mode section in output")
 
-	if !strings.Contains(output, "BASE REFERENCE") {
-		t.Error("Expected BASE REFERENCE in diff output")
-	}
+	testutil.AssertStringContains(t, output, "BASE REFERENCE", "Expected BASE REFERENCE in diff output")
 }
 
 func TestHTMLPrintClones_EmptyDups(t *testing.T) {
@@ -339,13 +309,9 @@ func TestHTMLPrintFooter(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "</html>") {
-		t.Error("Expected closing </html> in footer")
-	}
+	testutil.AssertStringContains(t, output, "</html>", "Expected closing </html> in footer")
 
-	if !strings.Contains(output, "Generated by art-dupl") {
-		t.Error("Expected 'Generated by art-dupl' in footer")
-	}
+	testutil.AssertStringContains(t, output, "Generated by art-dupl", "Expected 'Generated by art-dupl' in footer")
 }
 
 func TestHTMLPrintFooter_WithSummary(t *testing.T) {
@@ -368,13 +334,9 @@ func TestHTMLPrintFooter_WithSummary(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Summary") {
-		t.Error("Expected Summary section when clones were printed")
-	}
+	testutil.AssertStringContains(t, output, "Summary", "Expected Summary section when clones were printed")
 
-	if !strings.Contains(output, "Total Clones") {
-		t.Error("Expected 'Total Clones' in summary")
-	}
+	testutil.AssertStringContains(t, output, "Total Clones", "Expected 'Total Clones' in summary")
 }
 
 func TestHTMLPrintFooter_NoSummaryWhenEmpty(t *testing.T) {
@@ -397,9 +359,7 @@ func TestHTMLPrintFooter_NoSummaryWhenEmpty(t *testing.T) {
 	}
 
 	// Footer still contains the closing tags
-	if !strings.Contains(output, "</html>") {
-		t.Error("Expected closing html tag")
-	}
+	testutil.AssertStringContains(t, output, "</html>", "Expected closing html tag")
 }
 
 func TestHTMLOutputHTML(t *testing.T) {
@@ -426,9 +386,7 @@ func TestHTMLOutputHTML(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "Clone Group #") {
-		t.Error("Expected clone groups in OutputHTML output")
-	}
+	testutil.AssertStringContains(t, output, "Clone Group #", "Expected clone groups in OutputHTML output")
 }
 
 func TestSuggestionHTML(t *testing.T) {
@@ -592,29 +550,17 @@ func TestBuildSummarySection(t *testing.T) {
 	}
 
 	summary := hp.buildSummarySection()
-	if !strings.Contains(summary, "Total Clones") {
-		t.Error("Expected 'Total Clones' in summary")
-	}
+	testutil.AssertStringContains(t, summary, "Total Clones", "Expected 'Total Clones' in summary")
 
-	if !strings.Contains(summary, "150") {
-		t.Error("Expected total tokens in summary")
-	}
+	testutil.AssertStringContains(t, summary, "150", "Expected total tokens in summary")
 
-	if !strings.Contains(summary, "Production") {
-		t.Error("Expected 'Production' in summary")
-	}
+	testutil.AssertStringContains(t, summary, "Production", "Expected 'Production' in summary")
 
-	if !strings.Contains(summary, "Test Code") {
-		t.Error("Expected 'Test Code' in summary")
-	}
+	testutil.AssertStringContains(t, summary, "Test Code", "Expected 'Test Code' in summary")
 
-	if !strings.Contains(summary, "function") {
-		t.Error("Expected function category in summary")
-	}
+	testutil.AssertStringContains(t, summary, "function", "Expected function category in summary")
 
-	if !strings.Contains(summary, "critical") {
-		t.Error("Expected critical priority in summary")
-	}
+	testutil.AssertStringContains(t, summary, "critical", "Expected critical priority in summary")
 }
 
 func TestBuildSummarySection_Empty(t *testing.T) {
@@ -738,9 +684,7 @@ func TestWriteMetadata(t *testing.T) {
 				t.Fatalf("writeMetadata failed: %v", err)
 			}
 
-			if !strings.Contains(buf.String(), tt.contains) {
-				t.Errorf("expected %q in output, got %q", tt.contains, buf.String())
-			}
+			testutil.AssertStringContains(t, buf.String(), tt.contains, "expected "+tt.contains+" in output")
 		})
 	}
 }
@@ -761,9 +705,7 @@ func TestWriteMetadata_Empty(t *testing.T) {
 	}
 
 	// Even empty metadata writes the Structural badge (Semantic=false default)
-	if !strings.Contains(buf.String(), "Structural") {
-		t.Error("expected Structural badge for default metadata")
-	}
+	testutil.AssertStringContains(t, buf.String(), "Structural", "expected Structural badge for default metadata")
 }
 
 func TestHTMLErrorInWriter(t *testing.T) {
@@ -814,9 +756,7 @@ func TestHTMLComputeCloneGroupDiff_Empty(t *testing.T) {
 func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	t.Parallel()
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
-	}
+	clones := []clone{testCloneA1to5Line1Line2}
 
 	result := ComputeCloneGroupDiff(clones)
 	if result.Base == nil {
@@ -835,10 +775,7 @@ func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 func TestHTMLComputeCloneGroupDiff_MultipleClones(t *testing.T) {
 	t.Parallel()
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
-		{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\n")},
-	}
+	clones := []clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2}
 
 	result := ComputeCloneGroupDiff(clones)
 	if len(result.Others) != 1 {
@@ -952,13 +889,9 @@ func TestWordDiff(t *testing.T) {
 	t.Parallel()
 
 	result := WordDiff("hello world", "hello earth")
-	if !strings.Contains(result, "word-removed") {
-		t.Error("expected word-removed class in diff")
-	}
+	testutil.AssertStringContains(t, result, "word-removed", "expected word-removed class in diff")
 
-	if !strings.Contains(result, "word-added") {
-		t.Error("expected word-added class in diff")
-	}
+	testutil.AssertStringContains(t, result, "word-added", "expected word-added class in diff")
 }
 
 func TestWordDiff_Identical(t *testing.T) {
@@ -978,7 +911,7 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	hp := &htmlprinter{w: &buf, iota: 1}
 
 	clones := []clone{
-		{filename: "a.go", lineStart: 10, lineEnd: 20, fragment: []byte("code here")},
+		testCloneA10to20Code,
 		{filename: "b.go", lineStart: 30, lineEnd: 40, fragment: []byte("more code")},
 	}
 
@@ -988,17 +921,11 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "a.go") {
-		t.Error("expected a.go in occurrence output")
-	}
+	testutil.AssertStringContains(t, output, "a.go", "expected a.go in occurrence output")
 
-	if !strings.Contains(output, "b.go") {
-		t.Error("expected b.go in occurrence output")
-	}
+	testutil.AssertStringContains(t, output, "b.go", "expected b.go in occurrence output")
 
-	if !strings.Contains(output, "vscode://") {
-		t.Error("Expected VSCode link in output")
-	}
+	testutil.AssertStringContains(t, output, "vscode://", "Expected VSCode link in output")
 }
 
 func TestHTMLWriteCloneGroupFooter(t *testing.T) {
@@ -1026,7 +953,7 @@ func TestHTMLWriteDiffView_SingleClone(t *testing.T) {
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
 	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("code\n")},
+		testCloneA1to5Code,
 	}
 
 	err := hp.writeDiffView(clones)
@@ -1035,9 +962,7 @@ func TestHTMLWriteDiffView_SingleClone(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "occurrence") {
-		t.Error("single clone should fall through to writeCloneOccurrences")
-	}
+	testutil.AssertStringContains(t, output, "occurrence", "single clone should fall through to writeCloneOccurrences")
 }
 
 func TestHTMLWriteDiffView_MultipleClones(t *testing.T) {
@@ -1047,10 +972,7 @@ func TestHTMLWriteDiffView_MultipleClones(t *testing.T) {
 
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
-		{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nmodified\n")},
-	}
+	clones := []clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2}
 
 	err := hp.writeDiffView(clones)
 	if err != nil {
@@ -1058,13 +980,9 @@ func TestHTMLWriteDiffView_MultipleClones(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "BASE REFERENCE") {
-		t.Error("expected BASE REFERENCE header")
-	}
+	testutil.AssertStringContains(t, output, "BASE REFERENCE", "expected BASE REFERENCE header")
 
-	if !strings.Contains(output, "diff-legend") {
-		t.Error("expected diff legend")
-	}
+	testutil.AssertStringContains(t, output, "diff-legend", "expected diff legend")
 }
 
 func TestHTMLWriteDiffView_ThreeClonesWithSelector(t *testing.T) {
@@ -1074,11 +992,7 @@ func TestHTMLWriteDiffView_ThreeClonesWithSelector(t *testing.T) {
 
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\n")},
-		{filename: "b.go", lineStart: 10, lineEnd: 14, fragment: []byte("line1\nchanged\n")},
-		{filename: "c.go", lineStart: 20, lineEnd: 24, fragment: []byte("line1\nother\n")},
-	}
+	clones := []clone{testCloneA1to5Line1Line2, testCloneB10to14Code, {filename: "c.go", lineStart: 20, lineEnd: 24, fragment: []byte("line1\nother\n")}}
 
 	err := hp.writeDiffView(clones)
 	if err != nil {
@@ -1086,13 +1000,9 @@ func TestHTMLWriteDiffView_ThreeClonesWithSelector(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-select") {
-		t.Error("expected diff selector dropdown for >2 clones")
-	}
+	testutil.AssertStringContains(t, output, "diff-select", "expected diff selector dropdown for >2 clones")
 
-	if !strings.Contains(output, "Compare with...") {
-		t.Error("expected selector placeholder text")
-	}
+	testutil.AssertStringContains(t, output, "Compare with...", "expected selector placeholder text")
 }
 
 func TestHTMLWriteDiffView_AggregateStats(t *testing.T) {
@@ -1102,15 +1012,7 @@ func TestHTMLWriteDiffView_AggregateStats(t *testing.T) {
 
 	hp := &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 5, fragment: []byte("line1\nline2\nline3\n")},
-		{
-			filename:  "b.go",
-			lineStart: 10,
-			lineEnd:   14,
-			fragment:  []byte("line1\nmodified\nadded\n"),
-		},
-	}
+	clones := []clone{testCloneA1to5CodeLines, testCloneB10to14Added}
 
 	err := hp.writeDiffView(clones)
 	if err != nil {
@@ -1118,9 +1020,7 @@ func TestHTMLWriteDiffView_AggregateStats(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-aggregate-stats") {
-		t.Error("expected aggregate stats section")
-	}
+	testutil.AssertStringContains(t, output, "diff-aggregate-stats", "expected aggregate stats section")
 }
 
 func TestHTMLWriteDiffViewToggle(t *testing.T) {
@@ -1136,13 +1036,9 @@ func TestHTMLWriteDiffViewToggle(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-toggle-5-side") {
-		t.Error("expected side toggle button with group id 5")
-	}
+	testutil.AssertStringContains(t, output, "diff-toggle-5-side", "expected side toggle button with group id 5")
 
-	if !strings.Contains(output, "diff-toggle-5-inline") {
-		t.Error("expected inline toggle button with group id 5")
-	}
+	testutil.AssertStringContains(t, output, "diff-toggle-5-inline", "expected inline toggle button with group id 5")
 }
 
 func TestHTMLWriteDiffSelector(t *testing.T) {
@@ -1185,17 +1081,11 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-select-3") {
-		t.Error("expected selector with group id 3")
-	}
+	testutil.AssertStringContains(t, output, "diff-select-3", "expected selector with group id 3")
 
-	if !strings.Contains(output, "other1.go") {
-		t.Error("expected other1.go in selector options")
-	}
+	testutil.AssertStringContains(t, output, "other1.go", "expected other1.go in selector options")
 
-	if !strings.Contains(output, "other2.go") {
-		t.Error("expected other2.go in selector options")
-	}
+	testutil.AssertStringContains(t, output, "other2.go", "expected other2.go in selector options")
 }
 
 func TestHTMLWriteDiffComparison(t *testing.T) {
@@ -1225,13 +1115,9 @@ func TestHTMLWriteDiffComparison(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "diff-compare-1-0") {
-		t.Error("expected diff comparison with id 1-0")
-	}
+	testutil.AssertStringContains(t, output, "diff-compare-1-0", "expected diff comparison with id 1-0")
 
-	if !strings.Contains(output, "other.go") {
-		t.Error("expected other.go in comparison header")
-	}
+	testutil.AssertStringContains(t, output, "other.go", "expected other.go in comparison header")
 }
 
 func TestHTMLWriteDiffComparison_MultipleComparisons(t *testing.T) {
@@ -1294,21 +1180,13 @@ func TestHTMLRenderDiffLines(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "equal") {
-		t.Error("expected equal class")
-	}
+	testutil.AssertStringContains(t, output, "equal", "expected equal class")
 
-	if !strings.Contains(output, "added") {
-		t.Error("expected added class")
-	}
+	testutil.AssertStringContains(t, output, "added", "expected added class")
 
-	if !strings.Contains(output, "removed") {
-		t.Error("expected removed class")
-	}
+	testutil.AssertStringContains(t, output, "removed", "expected removed class")
 
-	if !strings.Contains(output, "modified") {
-		t.Error("expected modified class")
-	}
+	testutil.AssertStringContains(t, output, "modified", "expected modified class")
 }
 
 func TestHTMLRenderDiffLines_WordDiff(t *testing.T) {
@@ -1331,7 +1209,6 @@ func TestHTMLRenderDiffLines_WordDiff(t *testing.T) {
 	}
 
 	output := buf.String()
-	if !strings.Contains(output, "word-removed") || !strings.Contains(output, "word-added") {
-		t.Error("expected word-level diff highlighting for modified lines")
-	}
+	testutil.AssertStringContains(t, output, "word-removed", "expected word-level diff highlighting for modified lines")
+	testutil.AssertStringContains(t, output, "word-added", "expected word-level diff highlighting for modified lines")
 }
