@@ -161,6 +161,10 @@ func TestSyntaxNode_BasicUsage(t *testing.T) {
 		End:      20,
 	}
 
+	if node.Type != 1 {
+		t.Errorf("Type should be 1, got %d", node.Type)
+	}
+
 	if node.Filename != "test.go" {
 		t.Errorf("Filename should be 'test.go', got %s", node.Filename)
 	}

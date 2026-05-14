@@ -403,7 +403,7 @@ func TestOptions_WithLogger(t *testing.T) {
 
 // TestFileReaderFunc tests the FileReaderFunc type.
 func TestFileReaderFunc(t *testing.T) {
-	var reader FileReaderFunc = func(filename string) ([]byte, error) {
+	var reader FileReaderFunc = func(_ string) ([]byte, error) {
 		return []byte("test content"), nil
 	}
 

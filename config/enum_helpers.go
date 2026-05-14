@@ -75,7 +75,7 @@ func unmarshalStringTypeToPointer[T ~string](
 	typeName string,
 	target *T,
 ) error {
-	val, err := unmarshalStringType[T](data, isValid, defaultVal, typeName)
+	val, err := unmarshalStringType(data, isValid, defaultVal, typeName)
 	if err != nil {
 		return fmt.Errorf(
 			"unmarshal to %s failed (target=%v, defaultVal=%v): %w",

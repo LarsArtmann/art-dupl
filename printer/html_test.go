@@ -26,7 +26,7 @@ func cloneFixture(filename string, start, end int, fragment string) clone {
 	return clone{filename: filename, lineStart: start, lineEnd: end, fragment: []byte(fragment)}
 }
 
-// Shared test clone fixtures to reduce duplication
+// Shared test clone fixtures to reduce duplication.
 var (
 	testCloneA1to5Line1Line2 = cloneFixture("a.go", 1, 5, "line1\nline2\n")
 	testCloneB1to5Line1Line2 = cloneFixture("b.go", 10, 14, "line1\nmodified\n")

@@ -126,17 +126,9 @@ func TestSummary_Fields(t *testing.T) {
 		LinesAnalyzed: 10000,
 	}
 
-	if summary.TotalFiles != 100 {
-		t.Errorf("TotalFiles should be 100, got %d", summary.TotalFiles)
-	}
-
-	if summary.TotalClones != 50 {
-		t.Errorf("TotalClones should be 50, got %d", summary.TotalClones)
-	}
-
-	if summary.TotalGroups != 25 {
-		t.Errorf("TotalGroups should be 25, got %d", summary.TotalGroups)
-	}
+	testutil.AssertFieldValue(t, summary.TotalFiles, 100, "TotalFiles")
+	testutil.AssertFieldValue(t, summary.TotalClones, 50, "TotalClones")
+	testutil.AssertFieldValue(t, summary.TotalGroups, 25, "TotalGroups")
 
 	if summary.AnalysisTime != 5*time.Second {
 		t.Errorf("AnalysisTime should be 5s, got %v", summary.AnalysisTime)
@@ -144,9 +136,7 @@ func TestSummary_Fields(t *testing.T) {
 
 	assertMethodsCount(t, len(summary.MethodsUsed), 2)
 
-	if summary.LinesAnalyzed != 10000 {
-		t.Errorf("LinesAnalyzed should be 10000, got %d", summary.LinesAnalyzed)
-	}
+	testutil.AssertFieldValue(t, summary.LinesAnalyzed, 10000, "LinesAnalyzed")
 }
 
 // TestMetadata_Fields tests Metadata field assignments.
@@ -159,21 +149,10 @@ func TestMetadata_Fields(t *testing.T) {
 		Toolchain:  "go1.21",
 	}
 
-	if metadata.Version != "2.0.0" {
-		t.Errorf("Version should be '2.0.0', got %s", metadata.Version)
-	}
-
-	if !metadata.Timestamp.Equal(now) {
-		t.Errorf("Timestamp should be %v, got %v", now, metadata.Timestamp)
-	}
-
-	if metadata.ConfigHash != "config-hash-123" {
-		t.Errorf("ConfigHash should be 'config-hash-123', got %s", metadata.ConfigHash)
-	}
-
-	if metadata.Toolchain != "go1.21" {
-		t.Errorf("Toolchain should be 'go1.21', got %s", metadata.Toolchain)
-	}
+	testutil.AssertFieldValue(t, metadata.Version, "2.0.0", "Version")
+	testutil.AssertFieldValue(t, metadata.Timestamp, now, "Timestamp")
+	testutil.AssertFieldValue(t, metadata.ConfigHash, "config-hash-123", "ConfigHash")
+	testutil.AssertFieldValue(t, metadata.Toolchain, "go1.21", "Toolchain")
 }
 
 // TestProgress_Fields tests Progress field assignments.
@@ -289,6 +268,11 @@ func TestClone_LargeFragment(t *testing.T) {
 		Size:      len(largeFragment),
 	}
 
+	testutil.AssertFieldValue(t, clone.Filename, "large.go", "Filename")
+	testutil.AssertFieldValue(t, clone.StartLine, 1, "StartLine")
+	testutil.AssertFieldValue(t, clone.EndLine, 1000, "EndLine")
+	testutil.AssertFieldValue(t, clone.Size, len(largeFragment), "Size")
+
 	if len(clone.Fragment) != 10000 {
 		t.Errorf("Fragment should be 10000 bytes, got %d", len(clone.Fragment))
 	}
@@ -313,6 +297,9 @@ func TestCloneGroup_ManyClones(t *testing.T) {
 		Method: MethodHash,
 	}
 
+	testutil.AssertFieldValue(t, group.Hash, "many-clones", "Hash")
+	testutil.AssertFieldValue(t, group.Size, 5000, "Size")
+	testutil.AssertFieldValue(t, group.Method, MethodHash, "Method")
 	assertCloneCount(t, 100, len(group.Clones))
 }
 
@@ -330,6 +317,9 @@ func TestSummary_AllMethodsUsed(t *testing.T) {
 		},
 	}
 
+	testutil.AssertFieldValue(t, summary.TotalFiles, 10, "TotalFiles")
+	testutil.AssertFieldValue(t, summary.TotalClones, 20, "TotalClones")
+	testutil.AssertFieldValue(t, summary.TotalGroups, 5, "TotalGroups")
 	assertMethodsCount(t, 4, len(summary.MethodsUsed))
 }
 
@@ -368,6 +358,9 @@ func TestClone_EdgeCases(t *testing.T) {
 		Size:      1,
 	}
 
+	testutil.AssertFieldValue(t, clone.Filename, "single.go", "Filename")
+	testutil.AssertFieldValue(t, clone.Size, 1, "Size")
+
 	if clone.StartLine != clone.EndLine {
 		t.Error("Single-line clone should have same start and end line")
 	}
@@ -382,6 +375,9 @@ func TestCloneGroup_EmptyClones(t *testing.T) {
 		Method: MethodArtDupl,
 	}
 
+	testutil.AssertFieldValue(t, group.Hash, "empty", "Hash")
+	testutil.AssertFieldValue(t, group.Size, 0, "Size")
+	testutil.AssertFieldValue(t, group.Method, MethodArtDupl, "Method")
 	assertCloneCount(t, 0, len(group.Clones))
 }
 
@@ -393,6 +389,10 @@ func TestCloneGroup_NilClones(t *testing.T) {
 		Size:   0,
 		Method: MethodArtDupl,
 	}
+
+	testutil.AssertFieldValue(t, group.Hash, "nil-clones", "Hash")
+	testutil.AssertFieldValue(t, group.Size, 0, "Size")
+	testutil.AssertFieldValue(t, group.Method, MethodArtDupl, "Method")
 
 	if group.Clones != nil {
 		t.Error("Clones should be nil")
