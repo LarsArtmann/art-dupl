@@ -94,7 +94,7 @@ func WriteTestFile(t *testing.T, filename, content string) {
 
 // WriteTestFileWithPerm writes content to a file with specified permissions
 // and fails the test if it fails.
-func WriteTestFileWithPerm(t *testing.T, filename string, content string, perm os.FileMode) {
+func WriteTestFileWithPerm(t *testing.T, filename, content string, perm os.FileMode) {
 	t.Helper()
 
 	err := os.WriteFile(filename, []byte(content), perm)

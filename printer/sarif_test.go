@@ -289,7 +289,12 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	}
 
 	// Check schema
-	testutil.AssertStringContains(t, output.Schema, "sarif-schema-2.1.0", "Schema should contain sarif-schema-2.1.0")
+	testutil.AssertStringContains(
+		t,
+		output.Schema,
+		"sarif-schema-2.1.0",
+		"Schema should contain sarif-schema-2.1.0",
+	)
 
 	// Check tool info
 	if len(output.Runs) == 0 {

@@ -37,9 +37,11 @@ func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 // assertBaseFilename verifies the base filename in a CloneGroupDiff result.
 func assertBaseFilename(t *testing.T, result *CloneGroupDiff, expectedFilename string) {
 	t.Helper()
+
 	if result.Base == nil {
 		t.Fatal("Expected Base to not be nil")
 	}
+
 	if result.Base.Filename != expectedFilename {
 		t.Errorf("Expected base filename to be %s, got %s", expectedFilename, result.Base.Filename)
 	}
@@ -398,9 +400,19 @@ func TestLineDiff_ContentPreservation(t *testing.T) {
 
 	// Verify original content is preserved (note: splitLines preserves newlines)
 	// First line should contain "func foo() {" or "func foo() {\n"
-	testutil.AssertStringContains(t, result.Base[0].Content, "func foo() {", "Base content not preserved")
+	testutil.AssertStringContains(
+		t,
+		result.Base[0].Content,
+		"func foo() {",
+		"Base content not preserved",
+	)
 
-	testutil.AssertStringContains(t, result.Compared[0].Content, "func bar() {", "Compared content not preserved")
+	testutil.AssertStringContains(
+		t,
+		result.Compared[0].Content,
+		"func bar() {",
+		"Compared content not preserved",
+	)
 }
 
 func BenchmarkLineDiff_Small(b *testing.B) {

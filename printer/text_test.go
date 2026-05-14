@@ -21,6 +21,7 @@ func errorReadFile(msg string) ReadFile {
 // mustPrintClones calls PrintClones and fails the test if there's an error.
 func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
 	t.Helper()
+
 	if err := p.PrintClones(dups); err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
@@ -29,6 +30,7 @@ func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
 // mustPrintHeader calls PrintHeader and fails the test if there's an error.
 func mustPrintHeader(t *testing.T, p Printer) {
 	t.Helper()
+
 	if err := p.PrintHeader(); err != nil {
 		t.Fatalf("PrintHeader() error: %v", err)
 	}
@@ -37,6 +39,7 @@ func mustPrintHeader(t *testing.T, p Printer) {
 // mustPrintFooter calls PrintFooter and fails the test if there's an error.
 func mustPrintFooter(t *testing.T, p Printer) {
 	t.Helper()
+
 	if err := p.PrintFooter(); err != nil {
 		t.Fatalf("PrintFooter() error: %v", err)
 	}
@@ -136,7 +139,12 @@ func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 
 	output := buf.String()
 
-	testutil.AssertStringContains(t, output, "FILE DUPLICATE", "PrintClones(file dupe) missing FILE DUPLICATE")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"FILE DUPLICATE",
+		"PrintClones(file dupe) missing FILE DUPLICATE",
+	)
 }
 
 func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
@@ -214,7 +222,12 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 
 	output := buf.String()
 
-	testutil.AssertStringContains(t, output, "sorted by size", "PrintClonesSorted() missing sort info")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"sorted by size",
+		"PrintClonesSorted() missing sort info",
+	)
 }
 
 func TestDetectFileDuplicate(t *testing.T) {
@@ -433,7 +446,12 @@ func TestTextPrinter_OutputText_Empty(t *testing.T) {
 
 	output := buf.String()
 
-	testutil.AssertStringContains(t, output, "Found total 0 clone groups", "OutputText(empty) missing summary")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"Found total 0 clone groups",
+		"OutputText(empty) missing summary",
+	)
 }
 
 func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
@@ -549,7 +567,12 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 		sortBy     config.SortCriteria
 		wantSubstr string
 	}{
-		{"SortByOccurrence", "package main\n\nfunc foo() {}\nfunc bar() {}\n", config.SortByOccurrence, "sorted by occurrence"},
+		{
+			"SortByOccurrence",
+			"package main\n\nfunc foo() {}\nfunc bar() {}\n",
+			config.SortByOccurrence,
+			"sorted by occurrence",
+		},
 		{"SortByHash", "package main\n\nfunc foo() {}\n", config.SortByHash, "sorted by hash"},
 		{"UnknownSort", "package main\n\nfunc foo() {}\n", config.SortCriteria("unknown"), ""},
 	}
@@ -571,7 +594,12 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 			}
 
 			if tc.wantSubstr != "" {
-				testutil.AssertStringContains(t, buf.String(), tc.wantSubstr, tc.name+" missing sort info")
+				testutil.AssertStringContains(
+					t,
+					buf.String(),
+					tc.wantSubstr,
+					tc.name+" missing sort info",
+				)
 			}
 		})
 	}

@@ -26,15 +26,23 @@ func createTestNodes(filename string, pos, end int32) []*syntax.Node {
 // saveVersionGlobals saves and auto-restores Version, Commit, Date via t.Cleanup.
 func saveVersionGlobals(t *testing.T) {
 	t.Helper()
+
 	origVersion, origCommit, origDate := Version, Commit, Date
+
 	t.Cleanup(func() {
 		Version, Commit, Date = origVersion, origCommit, origDate
 	})
 }
 
 // testPrintDupls calls printDupls with default test arguments.
-func testPrintDupls(t *testing.T, ctx context.Context, mock printer.Printer, ch chan syntax.Match) error {
+func testPrintDupls(
+	t *testing.T,
+	ctx context.Context,
+	mock printer.Printer,
+	ch chan syntax.Match,
+) error {
 	t.Helper()
+
 	return printDupls(ctx, mock, ch, config.SortBySize, 15, "art-dupl")
 }
 

@@ -79,6 +79,7 @@ func TestFallbackHasher_Hash(t *testing.T) {
 // assertAllHashSliceResultsNil asserts all elements in a hash slice result are nil.
 func assertAllHashSliceResultsNil(t *testing.T, result []byte) {
 	t.Helper()
+
 	if result != nil {
 		t.Errorf("HashSlice() element = %v, want nil", result)
 	}
@@ -103,13 +104,16 @@ func TestFallbackHasher_HashSlice(t *testing.T) {
 			result := hasher.HashSlice(tt.data)
 			if result == nil {
 				t.Error("HashSlice() returned nil slice")
+
 				return
 			}
 
 			if len(result) != len(tt.data) {
 				t.Errorf("HashSlice() returned %d elements, want %d", len(result), len(tt.data))
+
 				return
 			}
+
 			for _, r := range result {
 				assertAllHashSliceResultsNil(t, r)
 			}
@@ -131,11 +135,13 @@ func TestSimdHasher_HashSlice(t *testing.T) {
 
 	if result == nil {
 		t.Error("HashSlice() returned nil slice")
+
 		return
 	}
 
 	if len(result) != len(data) {
 		t.Errorf("HashSlice() returned %d elements, want %d", len(result), len(data))
+
 		return
 	}
 

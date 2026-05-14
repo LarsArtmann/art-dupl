@@ -110,16 +110,22 @@ var _ = Describe("Semantic Detection", func() {
 	})
 
 	Context("When comparing structural vs semantic detection", func() {
-		DescribeTable("should distinguish structural duplicates from semantic duplicates",
-			func(file1, file2, code1, code2, threshold string, structExpected []string, semanticAbsent []string) {
+		DescribeTable(
+			"should distinguish structural duplicates from semantic duplicates",
+			func(file1, file2, code1, code2, threshold string, structExpected, semanticAbsent []string) {
 				err := setup.FileProcessor.WriteFile(file1, []byte(code1), 0o644)
 				Expect(err).NotTo(HaveOccurred())
 				err = setup.FileProcessor.WriteFile(file2, []byte(code2), 0o644)
 				Expect(err).NotTo(HaveOccurred())
 
 				if len(structExpected) > 0 {
-					structuralOutput, err := setup.RunArtDupl("--threshold", threshold, "--structural")
+					structuralOutput, err := setup.RunArtDupl(
+						"--threshold",
+						threshold,
+						"--structural",
+					)
 					Expect(err).ToNot(HaveOccurred())
+
 					structuralStr := string(structuralOutput)
 					for _, expected := range structExpected {
 						Expect(structuralStr).To(ContainSubstring(expected))
@@ -129,6 +135,7 @@ var _ = Describe("Semantic Detection", func() {
 				if len(semanticAbsent) > 0 {
 					semanticOutput, err := setup.RunArtDupl("--threshold", threshold, "--semantic")
 					Expect(err).ToNot(HaveOccurred())
+
 					semanticStr := string(semanticOutput)
 					for _, absent := range semanticAbsent {
 						Expect(semanticStr).ToNot(ContainSubstring(absent))

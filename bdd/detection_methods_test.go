@@ -257,7 +257,7 @@ func test() {}
 
 	Context("When using hash-based detection with node_modules", func() {
 		var (
-			nodeModulesDir string
+			nodeModulesDir  string
 			nodeModulesCode string
 		)
 

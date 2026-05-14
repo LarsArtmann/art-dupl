@@ -103,7 +103,12 @@ func foo() {
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "\"version\":", "JSON output missing version field")
-	testutil.AssertStringContains(t, output, "\"clone_groups\":", "JSON output missing clone_groups field")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"\"clone_groups\":",
+		"JSON output missing clone_groups field",
+	)
 	testutil.AssertStringContains(t, output, "test-hash", "JSON output missing test hash")
 }
 
@@ -265,7 +270,12 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 
 	testutil.AssertStringContains(t, output, `"score"`, "OutputSimpleJSON() missing score field")
 
-	testutil.AssertStringContains(t, output, `"instances"`, "OutputSimpleJSON() missing instances field")
+	testutil.AssertStringContains(
+		t,
+		output,
+		`"instances"`,
+		"OutputSimpleJSON() missing instances field",
+	)
 }
 
 func TestJSONPrinter_OutputSimpleJSON_Empty(t *testing.T) {

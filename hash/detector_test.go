@@ -213,7 +213,12 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
 
-	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for same file referenced 3x (only 1 unique file), got %d")
+	testutil.AssertCountf(
+		t,
+		len(matches),
+		0,
+		"expected 0 matches for same file referenced 3x (only 1 unique file), got %d",
+	)
 }
 
 // --- extractUniqueFiles ---

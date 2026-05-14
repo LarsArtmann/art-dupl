@@ -107,7 +107,12 @@ func TestCharmLogger_Methods(t *testing.T) {
 			tt.method(logger, tt.msg)
 
 			output := buf.String()
-			testutil.AssertStringContains(t, output, tt.msg, "Expected output to contain '"+tt.msg+"'")
+			testutil.AssertStringContains(
+				t,
+				output,
+				tt.msg,
+				"Expected output to contain '"+tt.msg+"'",
+			)
 		})
 	}
 }
@@ -123,7 +128,12 @@ func TestCharmLogger_WithArgs(t *testing.T) {
 	logger.Info("test message", "key", "value")
 
 	output := buf.String()
-	testutil.AssertStringContains(t, output, "test message", "Expected output to contain 'test message'")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"test message",
+		"Expected output to contain 'test message'",
+	)
 
 	testutil.AssertStringContains(t, output, "key", "Expected output to contain key")
 	testutil.AssertStringContains(t, output, "value", "Expected output to contain value")
@@ -140,7 +150,12 @@ func TestCharmLogger_WithoutArgs(t *testing.T) {
 	logger.Info("test message")
 
 	output := buf.String()
-	testutil.AssertStringContains(t, output, "test message", "Expected output to contain 'test message'")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"test message",
+		"Expected output to contain 'test message'",
+	)
 }
 
 func TestNoOpLogger(t *testing.T) {
@@ -203,7 +218,12 @@ func TestNewLogger_WithPrefix(t *testing.T) {
 	logger.Info("test message")
 
 	output := buf.String()
-	testutil.AssertStringContains(t, output, "MYPREFIX", "Expected output to contain prefix 'MYPREFIX'")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"MYPREFIX",
+		"Expected output to contain prefix 'MYPREFIX'",
+	)
 }
 
 func TestNewLogger_WithReportCaller(t *testing.T) {

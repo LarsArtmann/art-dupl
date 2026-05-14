@@ -388,7 +388,12 @@ func TestPrintSizeDistribution(t *testing.T) {
 	}
 
 	for _, expected := range expectedRanges {
-		testutil.AssertStringContains(t, output, expected, "Output missing expected range: "+expected)
+		testutil.AssertStringContains(
+			t,
+			output,
+			expected,
+			"Output missing expected range: "+expected,
+		)
 	}
 
 	// Check that output contains bars
@@ -425,7 +430,12 @@ func TestPrintTopFiles(t *testing.T) {
 	// Check that top 2 files are in correct order (fileA.go: 100, fileC.go: 75)
 	assertFileContains(t, lines[0], "fileA.go", "100")
 
-	testutil.AssertStringContains(t, lines[1], "fileC.go", "Second file should be fileC.go with 75 lines")
+	testutil.AssertStringContains(
+		t,
+		lines[1],
+		"fileC.go",
+		"Second file should be fileC.go with 75 lines",
+	)
 	testutil.AssertStringContains(t, lines[1], "75", "Second file should contain 75")
 }
 
@@ -675,7 +685,12 @@ func TestStatsCSVOutput(t *testing.T) {
 	}
 
 	// Verify Health Score is present
-	testutil.AssertStringContains(t, output, "Health Score", "CSV output should contain Health Score")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"Health Score",
+		"CSV output should contain Health Score",
+	)
 }
 
 func TestHealthScoreCalculation(t *testing.T) {
@@ -801,7 +816,12 @@ func TestPrintRecommendations(t *testing.T) {
 
 			// Check that all expected strings are present
 			for _, expected := range tt.shouldContain {
-				testutil.AssertStringContains(t, output, expected, "Recommendations output missing expected text: "+expected)
+				testutil.AssertStringContains(
+					t,
+					output,
+					expected,
+					"Recommendations output missing expected text: "+expected,
+				)
 			}
 
 			// Check that unexpected strings are NOT present
@@ -816,7 +836,12 @@ func TestPrintRecommendations(t *testing.T) {
 			}
 
 			// Verify next steps section is present
-			testutil.AssertStringContains(t, output, "Next Steps:", "Recommendations should include 'Next Steps:' section")
+			testutil.AssertStringContains(
+				t,
+				output,
+				"Next Steps:",
+				"Recommendations should include 'Next Steps:' section",
+			)
 		})
 	}
 }

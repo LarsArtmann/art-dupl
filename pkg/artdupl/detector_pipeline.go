@@ -102,7 +102,10 @@ func (d *detector) processCloneGroups(
 }
 
 // createMultiDetector creates a MultiDetector with the detector's configuration.
-func (d *detector) createMultiDetector(data []*syntax.Node, tree *suffixtree.STree) *detection.MultiDetector {
+func (d *detector) createMultiDetector(
+	data []*syntax.Node,
+	tree *suffixtree.STree,
+) *detection.MultiDetector {
 	return detection.NewMultiDetector(config.DetectionConfig{
 		Methods: d.config.DetectionMethods,
 		Verbose: false,

@@ -406,7 +406,12 @@ func TestMultiDetector_FindDuplOver(t *testing.T) {
 	}{
 		{"default method", config.DetectionMethods{config.DetectionMethodArtDupl}, false, false},
 		{"hash method", config.DetectionMethods{config.DetectionMethodHash}, false, false},
-		{"both methods", config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash}, false, false},
+		{
+			"both methods",
+			config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash},
+			false,
+			false,
+		},
 		{"verbose", config.DetectionMethods{config.DetectionMethodHash}, true, false},
 		{"empty data", config.DetectionMethods{config.DetectionMethodArtDupl}, false, true},
 	}

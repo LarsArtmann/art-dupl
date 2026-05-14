@@ -22,14 +22,49 @@ func TestByteRangeToLines(t *testing.T) {
 		{"two lines second line", "line1\nline2", 6, 11, 2, 2},
 		{"three lines middle line", "line1\nline2\nline3", 6, 11, 2, 2},
 		{"three lines spanning all", "line1\nline2\nline3", 0, 17, 1, 3},
-		{"start at newline", "line1\nline2", 5, 11, 2, 2}, // newline at position 5 increments line to 2 before recording
+		{
+			"start at newline",
+			"line1\nline2",
+			5,
+			11,
+			2,
+			2,
+		}, // newline at position 5 increments line to 2 before recording
 		{"end beyond content uses last line", "line1\nline2", 6, 100, 2, 2},
 		{"position not found defaults to 1", "hello", 100, 200, 1, 1},
-		{"same position single point on line 2", "line1\nline2\nline3", 10, 10, 2, 2}, // middle of "line2"
-		{"same position at newline", "line1\nline2", 5, 5, 2, 2},         // the newline character
+		{
+			"same position single point on line 2",
+			"line1\nline2\nline3",
+			10,
+			10,
+			2,
+			2,
+		}, // middle of "line2"
+		{
+			"same position at newline",
+			"line1\nline2",
+			5,
+			5,
+			2,
+			2,
+		}, // the newline character
 		{"same position on first line", "hello world", 3, 3, 1, 1},
-		{"multi-line end beyond content returns last line not start line", "line1\nline2\nline3\nline4\nline5", 6, 100, 2, 5},
-		{"multi-line spanning all with end at exact content length", "line1\nline2\nline3", 0, 17, 1, 3},
+		{
+			"multi-line end beyond content returns last line not start line",
+			"line1\nline2\nline3\nline4\nline5",
+			6,
+			100,
+			2,
+			5,
+		},
+		{
+			"multi-line spanning all with end at exact content length",
+			"line1\nline2\nline3",
+			0,
+			17,
+			1,
+			3,
+		},
 		{"multi-line end one past content length", "line1\nline2\nline3", 0, 18, 1, 3},
 		{"multi-line both start and end beyond content", "line1\nline2\nline3", 100, 200, 3, 3},
 		{"negative start clamped", "line1\nline2", -1, 5, 1, 1},

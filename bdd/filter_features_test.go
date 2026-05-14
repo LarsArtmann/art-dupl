@@ -556,6 +556,7 @@ func vendorFunc() {
 			)
 			err = cmd.Run()
 			Expect(err).NotTo(HaveOccurred())
+
 			buildBinary = "./art-dupl-filter_features-test"
 		})
 

@@ -100,7 +100,12 @@ func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
 
 	output := buf.String()
 
-	testutil.AssertStringContains(t, output, "test.go", "PrintClones(sorted) output missing filename")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"test.go",
+		"PrintClones(sorted) output missing filename",
+	)
 }
 
 func TestPlumbing_PrintClones_ReadError(t *testing.T) {
@@ -175,9 +180,19 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 
 	output := buf.String()
 
-	testutil.AssertStringContains(t, output, "size", "OutputPlumbing() output missing sort criteria")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"size",
+		"OutputPlumbing() output missing sort criteria",
+	)
 
-	testutil.AssertStringContains(t, output, "# Plumbing output sorted by", "OutputPlumbing() output missing header")
+	testutil.AssertStringContains(
+		t,
+		output,
+		"# Plumbing output sorted by",
+		"OutputPlumbing() output missing header",
+	)
 }
 
 func testNodesAt(filename string, pos, end int32) []*syntax.Node {
