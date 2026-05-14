@@ -60,6 +60,7 @@ func buildTestSuffixTree(data []*syntax.Node) *suffixtree.STree {
 	for _, node := range data {
 		tree.Update(node)
 	}
+
 	tree.Update(&syntax.Node{Type: -1})
 
 	return tree
@@ -266,7 +267,7 @@ func TestRunDetectionMethods(t *testing.T) {
 			t.Parallel()
 
 			drainMatchesChannel(t)
-			})
+		})
 	}
 }
 
