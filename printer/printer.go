@@ -4,19 +4,18 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 type ReadFile func(filename string) ([]byte, error)
 
-// HashSetter is an optional interface for printers that support hash metadata.
 type HashSetter interface {
 	SetHash(hash string)
 }
 
 type Printer interface {
 	PrintHeader() error
-	PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error
+	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error
 	PrintFooter() error
 }
 

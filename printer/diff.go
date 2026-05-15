@@ -5,6 +5,7 @@ import (
 	"html"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
@@ -271,7 +272,7 @@ type CloneDiff struct {
 }
 
 // ComputeCloneGroupDiff computes diffs for a group of clones.
-func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
+func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 	if len(clones) == 0 {
 		return CloneGroupDiff{}
 	}
@@ -279,24 +280,21 @@ func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 	result := CloneGroupDiff{
 		Base: &CloneWithContent{
 			CloneWithContentMixin: CloneWithContentMixin{
-				Filename:  clones[0].filename,
-				LineStart: clones[0].lineStart,
-				LineEnd:   clones[0].lineEnd,
+				Filename:  clones[0].Filename,
+				LineStart: clones[0].LineStart,
+				LineEnd:   clones[0].LineEnd,
 			},
-			Content: clones[0].fragment,
+			Content: clones[0].Fragment,
 		},
 		Others: make([]CloneDiff, 0, len(clones)-1),
 	}
 
-	// Compute diff for each other clone against base
 	for idx := 1; idx < len(clones); idx++ {
-		//nolint:gosec // G602: Bounds checked above (len(clones) > 0, idx < len(clones))
-		diff := LineDiff(clones[0].fragment, clones[idx].fragment)
+		diff := LineDiff(clones[0].Fragment, clones[idx].Fragment)
 		if diff.HasDiff {
 			result.HasAnyDiff = true
 		}
 
-		// Aggregate diff stats
 		added, removed, modified := countDiffLineStats(diff)
 		result.TotalAdded += added
 		result.TotalRemoved += removed
@@ -305,11 +303,11 @@ func ComputeCloneGroupDiff(clones []clone) CloneGroupDiff {
 		result.Others = append(result.Others, CloneDiff{
 			CloneWithContent: CloneWithContent{
 				CloneWithContentMixin: CloneWithContentMixin{
-					Filename:  clones[idx].filename,
-					LineStart: clones[idx].lineStart,
-					LineEnd:   clones[idx].lineEnd,
+					Filename:  clones[idx].Filename,
+					LineStart: clones[idx].LineStart,
+					LineEnd:   clones[idx].LineEnd,
 				},
-				Content: clones[idx].fragment,
+				Content: clones[idx].Fragment,
 			},
 			Diff: diff,
 		})

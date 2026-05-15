@@ -130,6 +130,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	err = printDupls(
 		ctx,
 		p,
+		os.ReadFile,
 		duplChan,
 		config.SortCriteria(sortBy),
 		mergedConfig.Threshold,

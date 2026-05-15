@@ -1,9 +1,33 @@
 package printer
 
 import (
+	"sort"
+
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+func SortProcessedClonesByCriteria(clones []domain.ProcessedClone, sortBy config.SortCriteria) {
+	switch sortBy {
+	case config.SortBySize:
+		sort.Slice(clones, func(i, j int) bool {
+			return clones[i].Size > clones[j].Size
+		})
+	case config.SortByOccurrence:
+		sort.Slice(clones, func(i, j int) bool {
+			return clones[i].Filename < clones[j].Filename
+		})
+	case config.SortByHash:
+		sort.Slice(clones, func(i, j int) bool {
+			return clones[i].Filename < clones[j].Filename
+		})
+	default:
+		sort.Slice(clones, func(i, j int) bool {
+			return clones[i].Size > clones[j].Size
+		})
+	}
+}
 
 // SortNodesByCriteria applies sorting criteria to node arrays using a unified switch.
 func SortNodesByCriteria(dups [][]*syntax.Node, sortBy config.SortCriteria) [][]*syntax.Node {

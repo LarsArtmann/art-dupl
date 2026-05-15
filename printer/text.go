@@ -6,87 +6,44 @@ import (
 	"sort"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// TextPrinter implements text-based output for duplicate detection.
 type TextPrinter struct {
 	ReadFile
 
 	cnt           int
 	w             io.Writer
 	totalSize     int
-	cloneGroups   [][]clone
-	currentHash   string   // Hash for the current clone group (for hash detection)
-	isFileDupe    bool     // True if current group is an entire file duplicate
-	diffHintFiles []string // Files to show diff hint for
+	cloneGroups   [][]domain.ProcessedClone
+	currentHash   string
+	isFileDupe    bool
+	diffHintFiles []string
 }
 
-// SetHash sets the hash for the current clone group.
 func (p *TextPrinter) SetHash(hash string) {
 	p.currentHash = hash
 }
 
-// SetFileDuplicate marks the current group as a file duplicate.
 func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 	p.isFileDupe = isDupe
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
-	return &TextPrinter{w: w, ReadFile: fread, cloneGroups: make([][]clone, 0)}
+	return &TextPrinter{w: w, ReadFile: fread, cloneGroups: make([][]domain.ProcessedClone, 0)}
 }
 
 func (p *TextPrinter) PrintHeader() error { return nil }
 
-// detectFileDuplicate checks if all fragments are entire file duplicates.
-func detectFileDuplicate(isFileDupeFlag bool, dups [][]*syntax.Node) bool {
-	if isFileDupeFlag {
-		return true
-	}
-
-	if len(dups) == 0 {
-		return false
-	}
-
-	for _, frag := range dups {
-		if len(frag) != 1 || frag[0].Pos != 0 {
-			return false
-		}
-	}
-
-	return true
-}
-
-// calculateCloneSizes calculates fragment sizes and total size for clones.
-func calculateCloneSizes(clones []clone) int {
-	totalSize := 0
-
-	for i := range clones {
-		clones[i].size = len(clones[i].fragment)
-		totalSize += clones[i].size
-	}
-
-	return totalSize
-}
-
-func (p *TextPrinter) PrintClones(nodeGroups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *TextPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
 	p.cnt++
 
-	sortedDups := SortNodesByCriteria(nodeGroups, ExtractSortCriteria(sortBy...))
+	clones := group.Clones
+	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
 
-	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
-	if err != nil {
-		return fmt.Errorf(
-			"failed to prepare clones info for %d duplicates: %w",
-			len(sortedDups),
-			err,
-		)
-	}
+	groupCloneSize := calculateProcessedCloneSizes(clones)
 
-	groupCloneSize := calculateCloneSizes(clones)
-
-	isFileDupe := detectFileDuplicate(p.isFileDupe, sortedDups)
+	isFileDupe := detectProcessedFileDuplicate(p.isFileDupe, clones)
 
 	if isFileDupe && p.currentHash != "" {
 		hashPrefix := p.currentHash
@@ -94,22 +51,22 @@ func (p *TextPrinter) PrintClones(nodeGroups [][]*syntax.Node, sortBy ...config.
 			hashPrefix = hashPrefix[:12]
 		}
 
-		fileSizeStr := formatBytes(clones[0].fileSize)
+		fileSizeStr := formatBytes(clones[0].FileSize)
 		if _, err := fmt.Fprintf(
 			p.w,
-			"📄 FILE DUPLICATE | 🔗 [%s...] | %d files | %s\n\n",
+			"\U0001f4c4 FILE DUPLICATE | \U0001f517 [%s...] | %d files | %s\n\n",
 			hashPrefix,
-			len(sortedDups),
+			len(clones),
 			fileSizeStr,
 		); err != nil {
 			return err
 		}
 
 		for _, cl := range clones {
-			p.diffHintFiles = append(p.diffHintFiles, cl.filename)
+			p.diffHintFiles = append(p.diffHintFiles, cl.Filename)
 		}
 	} else {
-		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(sortedDups)); err != nil {
+		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
 			return err
 		}
 	}
@@ -117,33 +74,7 @@ func (p *TextPrinter) PrintClones(nodeGroups [][]*syntax.Node, sortBy ...config.
 	p.cloneGroups = append(p.cloneGroups, clones)
 	p.totalSize += groupCloneSize
 
-	sort.Sort(byNameAndLine(clones))
-
-	return p.printCloneList(clones)
-}
-
-// PrintClonesSorted prints clones with specified sorting criteria.
-func (p *TextPrinter) PrintClonesSorted(dups [][]*syntax.Node, sortBy config.SortCriteria) error {
-	p.cnt++
-	if _, err := fmt.Fprintf(
-		p.w,
-		"found %d clones (sorted by %s):\n",
-		len(dups),
-		sortBy,
-	); err != nil {
-		return err
-	}
-
-	sortedDups := SortNodesByCriteria(dups, sortBy)
-
-	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
-	if err != nil {
-		return fmt.Errorf(
-			"failed to prepare clones info for sorted output (%d duplicates): %w",
-			len(dups),
-			err,
-		)
-	}
+	sort.Sort(byNameAndLineProcessed(clones))
 
 	return p.printCloneList(clones)
 }
@@ -153,13 +84,11 @@ func (p *TextPrinter) PrintFooter() error {
 		return err
 	}
 
-	// Add diff hint if we have file duplicates
 	if len(p.diffHintFiles) >= 2 {
-		// Use first two files for diff hint
 		file1 := p.diffHintFiles[0]
-
 		file2 := p.diffHintFiles[1]
-		if _, err := fmt.Fprintf(p.w, "\n→ diff %s %s\n", file1, file2); err != nil {
+
+		if _, err := fmt.Fprintf(p.w, "\n\u2192 diff %s %s\n", file1, file2); err != nil {
 			return err
 		}
 	}
@@ -167,91 +96,68 @@ func (p *TextPrinter) PrintFooter() error {
 	return nil
 }
 
-func prepareClonesInfo(fread ReadFile, dups [][]*syntax.Node) ([]clone, error) {
-	clones := make([]clone, len(dups))
-	for i, dup := range dups {
-		cnt := len(dup)
-		if cnt == 0 {
-			return nil, errors.NewInternalError("zero length duplicate found", nil)
+func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
+	for _, cl := range clones {
+		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
+			return err
 		}
-
-		nstart := dup[0]
-		nend := dup[cnt-1]
-
-		// Use unified file processor to get file info
-		fileInfo, err := ProcessNodeRange(fread, nstart, nend)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"failed to read file %s for clone info: %w",
-				nstart.Filename,
-				err,
-			)
-		}
-
-		cl := clone{
-			filename:  fileInfo.Filename,
-			lineStart: fileInfo.LineStart,
-			lineEnd:   fileInfo.LineEnd,
-		}
-		cl.fragment = extractContent(fileInfo, nstart, nend)
-		cl.fileSize = len(fileInfo.Content)
-		clones[i] = cl
 	}
 
-	return clones, nil
+	return nil
 }
 
-// OutputText generates text output with sorting.
 func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) error {
-	// Sort all clone groups based on the specified criteria
-	sortedCloneGroups := make([][]clone, len(p.cloneGroups))
+	sortedCloneGroups := make([][]domain.ProcessedClone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
 	switch sortBy {
 	case config.SortBySize:
-		// Sort by total token size of each clone group
-		sortCloneGroupsBySize(sortedCloneGroups)
+		sort.Slice(sortedCloneGroups, func(i, j int) bool {
+			return totalFragmentSize(sortedCloneGroups[i]) > totalFragmentSize(sortedCloneGroups[j])
+		})
 	case config.SortByOccurrence:
-		// Sort by number of files in each clone group
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
 			return len(sortedCloneGroups[i]) > len(sortedCloneGroups[j])
 		})
 	case config.SortByHash:
-		// Sort by filename for deterministic output
-		sortClonesByFilename(sortedCloneGroups)
+		sort.Slice(sortedCloneGroups, func(i, j int) bool {
+			if len(sortedCloneGroups[i]) == 0 || len(sortedCloneGroups[j]) == 0 {
+				return false
+			}
+
+			return sortedCloneGroups[i][0].Filename < sortedCloneGroups[j][0].Filename
+		})
 	case config.SortByTotalTokens:
 		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return sumFragmentLengths(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
-				sumFragmentLengths(sortedCloneGroups[j])*len(sortedCloneGroups[j])
+			return totalFragmentSize(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
+				totalFragmentSize(sortedCloneGroups[j])*len(sortedCloneGroups[j])
 		})
 	default:
-		// Default to size sorting
-		sortCloneGroupsBySize(sortedCloneGroups)
+		sort.Slice(sortedCloneGroups, func(i, j int) bool {
+			return totalFragmentSize(sortedCloneGroups[i]) > totalFragmentSize(sortedCloneGroups[j])
+		})
 	}
 
-	// Print header
 	err := p.PrintHeader()
 	if err != nil {
 		return err
 	}
 
-	// Print sorted clone groups
 	for _, cloneGroup := range sortedCloneGroups {
 		for _, cl := range cloneGroup {
-			if len(cl.fragment) > 0 {
+			if len(cl.Fragment) > 0 {
 				if _, err := fmt.Fprintf(
 					p.w,
 					"%s\n%s:%d-%d\n\n",
-					cl.fragment,
-					cl.filename,
-					cl.lineStart,
-					cl.lineEnd,
+					cl.Fragment,
+					cl.Filename,
+					cl.LineStart,
+					cl.LineEnd,
 				); err != nil {
 					return err
 				}
 			} else {
-				err := writeCloneLines(p.w, []clone{cl}, "%s:%d,%d")
-				if err != nil {
+				if _, err := fmt.Fprintf(p.w, "%s:%d,%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
 					return err
 				}
 			}
@@ -261,11 +167,6 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 	return p.PrintFooter()
 }
 
-func (p *TextPrinter) printCloneList(clones []clone) error {
-	return writeCloneLines(p.w, clones, "  %s:%d,%d")
-}
-
-// formatBytes converts bytes to human-readable format (KB, MB, etc.).
 func formatBytes(bytes int) string {
 	const (
 		KB = 1024
@@ -283,4 +184,39 @@ func formatBytes(bytes int) string {
 	default:
 		return fmt.Sprintf("%d B", bytes)
 	}
+}
+
+func calculateProcessedCloneSizes(clones []domain.ProcessedClone) int {
+	total := 0
+	for i := range clones {
+		clones[i].Size = len(clones[i].Fragment)
+		total += clones[i].Size
+	}
+
+	return total
+}
+
+func detectProcessedFileDuplicate(flag bool, clones []domain.ProcessedClone) bool {
+	if flag {
+		return true
+	}
+
+	return false
+}
+
+func totalFragmentSize(clones []domain.ProcessedClone) int {
+	total := 0
+	for _, cl := range clones {
+		total += len(cl.Fragment)
+	}
+
+	return total
+}
+
+type byNameAndLineProcessed []domain.ProcessedClone
+
+func (c byNameAndLineProcessed) Len() int      { return len(c) }
+func (c byNameAndLineProcessed) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
+func (c byNameAndLineProcessed) Less(i, j int) bool {
+	return compareByNameThenPos(c[i].Filename, c[j].Filename, c[i].LineStart, c[j].LineStart)
 }

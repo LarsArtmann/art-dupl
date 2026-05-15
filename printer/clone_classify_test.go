@@ -3,6 +3,7 @@ package printer
 import (
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -24,9 +25,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncDecl,
 			tokens:         40,
 			lines:          10,
-			wantCategory:   CategoryFunction,
+			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   PriorityHigh, // tokens > 25
+			wantPriority:   domain.PriorityHigh, // tokens > 25
 			wantSuggestion: "Extract to shared utility function",
 		},
 		{
@@ -35,9 +36,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncDecl,
 			tokens:         45,
 			lines:          12,
-			wantCategory:   CategoryFunction,
+			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     true,
-			wantPriority:   PriorityLow,
+			wantPriority:   domain.PriorityLow,
 			wantSuggestion: "Consider extracting to shared test utility",
 		},
 		{
@@ -46,9 +47,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncLit,
 			tokens:         95,
 			lines:          20,
-			wantCategory:   CategoryMethod,
+			wantCategory:   domain.CategoryMethod,
 			wantIsTest:     false,
-			wantPriority:   PriorityCritical, // tokens > 50
+			wantPriority:   domain.PriorityCritical, // tokens > 50
 			wantSuggestion: "Extract to shared utility function",
 		},
 		{
@@ -57,9 +58,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.StructType,
 			tokens:         29,
 			lines:          8,
-			wantCategory:   CategoryStruct,
+			wantCategory:   domain.CategoryStruct,
 			wantIsTest:     false,
-			wantPriority:   PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens < 30
 			wantSuggestion: "Consider composition or shared base struct",
 		},
 		{
@@ -68,9 +69,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.InterfaceType,
 			tokens:         39,
 			lines:          12,
-			wantCategory:   CategoryInterface,
+			wantCategory:   domain.CategoryInterface,
 			wantIsTest:     false,
-			wantPriority:   PriorityHigh, // tokens > 30
+			wantPriority:   domain.PriorityHigh, // tokens > 30
 			wantSuggestion: "Extract common interface definition",
 		},
 		{
@@ -79,9 +80,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.ForStmt,
 			tokens:         40,
 			lines:          15,
-			wantCategory:   CategoryLoop,
+			wantCategory:   domain.CategoryLoop,
 			wantIsTest:     false,
-			wantPriority:   PriorityHigh, // tokens > 30
+			wantPriority:   domain.PriorityHigh, // tokens > 30
 			wantSuggestion: "Extract loop body to helper function",
 		},
 		{
@@ -90,9 +91,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.RangeStmt,
 			tokens:         25,
 			lines:          8,
-			wantCategory:   CategoryLoop,
+			wantCategory:   domain.CategoryLoop,
 			wantIsTest:     false,
-			wantPriority:   PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens < 30
 			wantSuggestion: "Extract loop body to helper function",
 		},
 		{
@@ -101,9 +102,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.IfStmt,
 			tokens:         25,
 			lines:          10,
-			wantCategory:   CategoryConditional,
+			wantCategory:   domain.CategoryConditional,
 			wantIsTest:     false,
-			wantPriority:   PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens < 30
 			wantSuggestion: "Consider strategy pattern or early returns",
 		},
 		{
@@ -112,9 +113,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.SwitchStmt,
 			tokens:         50,
 			lines:          15,
-			wantCategory:   CategoryConditional,
+			wantCategory:   domain.CategoryConditional,
 			wantIsTest:     false,
-			wantPriority:   PriorityHigh, // tokens > 30
+			wantPriority:   domain.PriorityHigh, // tokens > 30
 			wantSuggestion: "Consider strategy pattern or early returns",
 		},
 		{
@@ -123,9 +124,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.AssignStmt,
 			tokens:         9,
 			lines:          3,
-			wantCategory:   CategoryAssignment,
+			wantCategory:   domain.CategoryAssignment,
 			wantIsTest:     false,
-			wantPriority:   PriorityLow, // tokens < 25
+			wantPriority:   domain.PriorityLow, // tokens < 25
 			wantSuggestion: "Review and extract common logic",
 		},
 		{
@@ -134,9 +135,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.CallExpr,
 			tokens:         15,
 			lines:          5,
-			wantCategory:   CategoryUnknown, // CallExpr not in nodeTypeToCategory switch
+			wantCategory:   domain.CategoryUnknown, // CallExpr not in nodeTypeToCategory switch
 			wantIsTest:     false,
-			wantPriority:   PriorityLow, // tokens < 25
+			wantPriority:   domain.PriorityLow, // tokens < 25
 			wantSuggestion: "Review and extract common logic",
 		},
 		{
@@ -145,9 +146,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.BadNode,
 			tokens:         20,
 			lines:          6,
-			wantCategory:   CategoryUnknown,
+			wantCategory:   domain.CategoryUnknown,
 			wantIsTest:     false,
-			wantPriority:   PriorityLow, // tokens < 25
+			wantPriority:   domain.PriorityLow, // tokens < 25
 			wantSuggestion: "Review and extract common logic",
 		},
 		{
@@ -156,9 +157,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncDecl,
 			tokens:         120,
 			lines:          40,
-			wantCategory:   CategoryFunction,
+			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   PriorityCritical,
+			wantPriority:   domain.PriorityCritical,
 			wantSuggestion: "Extract to shared utility function",
 		},
 		{
@@ -167,9 +168,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncDecl,
 			tokens:         120,
 			lines:          35,
-			wantCategory:   CategoryFunction,
+			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     true,
-			wantPriority:   PriorityMedium, // test file with tokens > 100
+			wantPriority:   domain.PriorityMedium, // test file with tokens > 100
 			wantSuggestion: "Extract test helper function or use table-driven tests",
 		},
 		{
@@ -178,9 +179,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.FuncDecl,
 			tokens:         20,
 			lines:          8,
-			wantCategory:   CategoryFunction,
+			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   PriorityMedium, // tokens < 25
+			wantPriority:   domain.PriorityMedium, // tokens < 25
 			wantSuggestion: "Extract to shared utility function",
 		},
 		{
@@ -189,9 +190,9 @@ func TestClassifyClone(t *testing.T) {
 			nodeType:       golang.GenDecl,
 			tokens:         30,
 			lines:          10,
-			wantCategory:   CategoryExpression,
+			wantCategory:   domain.CategoryExpression,
 			wantIsTest:     false,
-			wantPriority:   PriorityMedium, // tokens 25-50
+			wantPriority:   domain.PriorityMedium, // tokens 25-50
 			wantSuggestion: "Review and extract common logic",
 		},
 	}
@@ -228,17 +229,17 @@ func TestCloneCategoryEmoji(t *testing.T) {
 		category CloneCategory
 		want     string
 	}{
-		{CategoryFunction, "⚡"},
-		{CategoryMethod, "🔧"},
-		{CategoryTest, "🧪"},
-		{CategoryStruct, "📦"},
-		{CategoryInterface, "🔌"},
-		{CategoryHandler, "🎯"},
-		{CategoryLoop, "🔄"},
-		{CategoryConditional, "🔀"},
-		{CategoryAssignment, "📝"},
-		{CategoryExpression, "📊"},
-		{CategoryUnknown, "📄"},
+		{domain.CategoryFunction, "⚡"},
+		{domain.CategoryMethod, "🔧"},
+		{domain.CategoryTest, "🧪"},
+		{domain.CategoryStruct, "📦"},
+		{domain.CategoryInterface, "🔌"},
+		{domain.CategoryHandler, "🎯"},
+		{domain.CategoryLoop, "🔄"},
+		{domain.CategoryConditional, "🔀"},
+		{domain.CategoryAssignment, "📝"},
+		{domain.CategoryExpression, "📊"},
+		{domain.CategoryUnknown, "📄"},
 	}
 
 	for _, tt := range tests {
@@ -273,10 +274,10 @@ func TestClonePriorityEmoji(t *testing.T) {
 		"GetPriorityEmoji",
 		func(p ClonePriority) string { return p.GetPriorityEmoji() },
 		map[ClonePriority]string{
-			PriorityCritical: "🔴",
-			PriorityHigh:     "🟠",
-			PriorityMedium:   "🟡",
-			PriorityLow:      "🟢",
+			domain.PriorityCritical: "🔴",
+			domain.PriorityHigh:     "🟠",
+			domain.PriorityMedium:   "🟡",
+			domain.PriorityLow:      "🟢",
 		},
 	)
 }
@@ -287,10 +288,10 @@ func TestClonePriorityColor(t *testing.T) {
 		"GetPriorityColor",
 		func(p ClonePriority) string { return p.GetPriorityColor() },
 		map[ClonePriority]string{
-			PriorityCritical: "var(--error)",
-			PriorityHigh:     "var(--warning)",
-			PriorityMedium:   "var(--accent)",
-			PriorityLow:      "var(--success)",
+			domain.PriorityCritical: "var(--error)",
+			domain.PriorityHigh:     "var(--warning)",
+			domain.PriorityMedium:   "var(--accent)",
+			domain.PriorityLow:      "var(--success)",
 		},
 	)
 }
@@ -300,12 +301,12 @@ func TestPriorityHigher(t *testing.T) {
 		a, b   ClonePriority
 		result bool
 	}{
-		{PriorityCritical, PriorityHigh, true},
-		{PriorityCritical, PriorityCritical, false},
-		{PriorityHigh, PriorityMedium, true},
-		{PriorityMedium, PriorityLow, true},
-		{PriorityLow, PriorityLow, false},
-		{PriorityLow, PriorityCritical, false},
+		{domain.PriorityCritical, domain.PriorityHigh, true},
+		{domain.PriorityCritical, domain.PriorityCritical, false},
+		{domain.PriorityHigh, domain.PriorityMedium, true},
+		{domain.PriorityMedium, domain.PriorityLow, true},
+		{domain.PriorityLow, domain.PriorityLow, false},
+		{domain.PriorityLow, domain.PriorityCritical, false},
 	}
 
 	for _, tt := range tests {

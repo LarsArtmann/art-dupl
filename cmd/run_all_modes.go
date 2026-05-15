@@ -169,6 +169,7 @@ func writeFormatFile(
 	err = printDupls(
 		ctx,
 		p,
+		os.ReadFile,
 		matchChan,
 		sortByEnum,
 		cfg.Threshold,

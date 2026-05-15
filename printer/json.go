@@ -2,17 +2,15 @@ package printer
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"sort"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// JSONOutput represents the structured JSON output.
 type JSONOutput struct {
 	Version         string       `json:"version"`
 	Timestamp       time.Time    `json:"timestamp"`
@@ -23,14 +21,12 @@ type JSONOutput struct {
 	Summary         Summary      `json:"summary"`
 }
 
-// CloneGroup represents a group of duplicate code fragments.
 type CloneGroup struct {
 	Hash  string      `json:"hash"`
 	Size  int         `json:"size"`
 	Files []JSONClone `json:"files"`
 }
 
-// JSONClone represents a single code fragment duplicate for JSON output.
 type JSONClone struct {
 	Filename  string `json:"filename"`
 	LineStart int    `json:"line_start"`
@@ -38,17 +34,13 @@ type JSONClone struct {
 	Fragment  string `json:"fragment"`
 }
 
-// Summary provides analysis summary statistics.
 type Summary struct {
 	TotalCloneGroups int     `json:"total_clone_groups"`
 	TotalClones      int     `json:"total_clones"`
 	ComplexityScore  float64 `json:"complexity_score"`
-	// ImpactScore represents total duplicated code volume (tokens × instances)
-	// This is the simple scoring metric from the duplicates project
-	ImpactScore int `json:"impact_score,omitempty"`
+	ImpactScore      int     `json:"impact_score,omitempty"`
 }
 
-// SimpleJSONClone represents a single code clone instance in simple format (from duplicates project).
 type SimpleJSONClone struct {
 	LineRangeMixin
 
@@ -56,20 +48,17 @@ type SimpleJSONClone struct {
 	TokenCount int    `json:"token_count"`
 }
 
-// SimpleCloneGroup represents a clone group in simple format (from duplicates project).
 type SimpleCloneGroup struct {
 	Hash      string            `json:"hash"`
-	Score     int               `json:"score"` // Impact score: tokens × instances
+	Score     int               `json:"score"`
 	Instances []SimpleJSONClone `json:"instances"`
 }
 
-// LineRangeMixin provides common line range fields.
 type LineRangeMixin struct {
 	StartLine int `json:"startLine"`
 	EndLine   int `json:"endLine,omitempty"`
 }
 
-// SimpleJSONOutput represents the simple JSON output format (from duplicates project).
 type SimpleJSONOutput []SimpleCloneGroup
 
 type JSONPrinter struct {
@@ -80,7 +69,7 @@ type JSONPrinter struct {
 	filesCount  int
 	totalClones int
 	cloneGroups []CloneGroup
-	currentHash string // Hash for the current clone group
+	currentHash string
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
@@ -92,103 +81,68 @@ func NewJSON(w io.Writer, fread ReadFile) Printer {
 
 func (p *JSONPrinter) PrintHeader() error {
 	p.iota = 0
-	// Don't reset filesCount - it's set once and should persist
-	// p.filesCount = 0
 	p.totalClones = 0
 	p.cloneGroups = []CloneGroup{}
 
 	return nil
 }
 
-// SetHash sets the current hash for the clone group being processed.
 func (p *JSONPrinter) SetHash(hash string) {
 	p.currentHash = hash
 }
 
-// SetFilesCount sets the total number of files analyzed.
 func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(groups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *JSONPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
 	p.iota++
 
-	clones := make([]JSONClone, len(groups))
-	for i, dup := range groups {
-		cnt := len(dup)
-		if cnt == 0 {
-			return errors.NewInternalError("zero length duplicate found", nil)
-		}
-
-		nstart := dup[0]
-		nend := dup[cnt-1]
-
-		// Use unified file processor
-		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
-		if err != nil {
-			return fmt.Errorf(
-				"failed to process node range for file %s (clone %d of %d): %w",
-				nstart.Filename,
-				i+1,
-				len(groups),
-				err,
-			)
-		}
-
-		lineStart := fileInfo.LineStart
-		lineEnd := fileInfo.LineEnd
-		content := extractContent(fileInfo, nstart, nend)
-		clones[i] = JSONClone{
-			Filename:  nstart.Filename,
-			LineStart: lineStart,
-			LineEnd:   lineEnd,
-			Fragment:  string(deindent(content)),
+	clones := group.Clones
+	jsonClones := make([]JSONClone, len(clones))
+	for i, cl := range clones {
+		jsonClones[i] = JSONClone{
+			Filename:  cl.Filename,
+			LineStart: cl.LineStart,
+			LineEnd:   cl.LineEnd,
+			Fragment:  string(deindent(cl.Fragment)),
 		}
 	}
 
-	sort.Slice(clones, func(i, j int) bool {
-		if clones[i].Filename == clones[j].Filename {
-			return clones[i].LineStart < clones[j].LineStart
+	sort.Slice(jsonClones, func(i, j int) bool {
+		if jsonClones[i].Filename == jsonClones[j].Filename {
+			return jsonClones[i].LineStart < jsonClones[j].LineStart
 		}
 
-		return clones[i].Filename < clones[j].Filename
+		return jsonClones[i].Filename < jsonClones[j].Filename
 	})
 
-	// Calculate hash (use actual hash instead of counter)
-	hash := p.currentHash
-
-	// Calculate size (use actual token count)
 	size := 0
-	for _, dup := range groups {
-		// Each dup is a sequence of []*Node, where each node is a token
-		size += len(dup)
+	for _, cl := range clones {
+		size += cl.Size
 	}
 
 	cloneGroup := CloneGroup{
-		Hash:  hash,
+		Hash:  p.currentHash,
 		Size:  size,
-		Files: clones,
+		Files: jsonClones,
 	}
 
 	p.cloneGroups = append(p.cloneGroups, cloneGroup)
-	p.totalClones += len(clones)
+	p.totalClones += len(jsonClones)
 
 	return nil
 }
 
 func (*JSONPrinter) PrintFooter() error {
-	// This would be called at the end, but we need to access printer state
-	// We'll handle JSON output in a separate flush method
 	return nil
 }
 
-// OutputJSON generates the complete JSON output.
 func (p *JSONPrinter) OutputJSON(
 	threshold int,
 	sortBy config.SortCriteria,
 	detectionMethod string,
 ) error {
-	// Sort clone groups before generating JSON
 	SortCloneGroups(p.cloneGroups, sortBy)
 
 	output := JSONOutput{
@@ -204,31 +158,22 @@ func (p *JSONPrinter) OutputJSON(
 		},
 	}
 
-	// Always use detection_method (singular) for consistency
 	output.DetectionMethod = detectionMethod
 
 	data, err := json.MarshalIndent(&output, "", "  ")
 	if err != nil {
-		return errors.HandleMarshalingError(
-			"encode",
-			"JSON output",
-			err,
-		)
+		return errors.HandleMarshalingError("encode", "JSON output", err)
 	}
 
 	return writeFormattedOutput(p.w, data, "JSON output")
 }
 
-// OutputSimpleJSON generates simple JSON output format (from duplicates project).
-// This provides a simpler, more straightforward JSON format for users who prefer it.
 func (p *JSONPrinter) OutputSimpleJSON() error {
 	simpleOutput := make(SimpleJSONOutput, len(p.cloneGroups))
 
 	for i, group := range p.cloneGroups {
-		// Calculate impact score: tokens × instances
 		impactScore := group.Size * len(group.Files)
 
-		// Convert to simple format
 		simpleInstances := make([]SimpleJSONClone, len(group.Files))
 		for j, file := range group.Files {
 			simpleInstances[j] = SimpleJSONClone{
@@ -237,7 +182,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 					EndLine:   file.LineEnd,
 				},
 				Filename:   file.Filename,
-				TokenCount: group.Size, // Each clone in group has same size
+				TokenCount: group.Size,
 			}
 		}
 
@@ -250,11 +195,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 
 	data, err := json.MarshalIndent(simpleOutput, "", "  ")
 	if err != nil {
-		return errors.HandleMarshalingError(
-			"encode",
-			"simple JSON output",
-			err,
-		)
+		return errors.HandleMarshalingError("encode", "simple JSON output", err)
 	}
 
 	return writeFormattedOutput(p.w, data, "simple JSON output")

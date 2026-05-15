@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"html"
 	"strconv"
+
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 //
 //nolint:gocyclo,cyclop // High cyclomatic complexity is inherent to HTML generation with multiple cases
-func (p *htmlprinter) writeDiffView(clones []clone) error {
+func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 	groupDiff := ComputeCloneGroupDiff(clones)
 
 	if len(groupDiff.Others) == 0 {

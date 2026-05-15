@@ -10,8 +10,7 @@ import (
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	errors "github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // classificationStats tracks counts for HTML summary.
@@ -41,8 +40,8 @@ type htmlprinter struct {
 	w         io.Writer
 	threshold int
 	dupMutex  sync.Mutex
-	dupls     [][][]*syntax.Node
-	diffMode  config.DiffMode // Enable diff visualization mode
+	dupls     [][]domain.ProcessedClone
+	diffMode  config.DiffMode
 	stats     classificationStats
 	metadata  ReportMetadata
 }
@@ -72,7 +71,7 @@ func NewHTMLWithOptions(
 		w:         w,
 		ReadFile:  fread,
 		threshold: thresh,
-		dupls:     make([][][]*syntax.Node, 0),
+		dupls:     make([][]domain.ProcessedClone, 0),
 		diffMode:  diffMode,
 		stats: classificationStats{
 			categoryCounts: make(map[CloneCategory]int),
@@ -135,26 +134,21 @@ func (p *htmlprinter) writeMetadata() error {
 	return nil
 }
 
-func (p *htmlprinter) PrintClones(cloneGroups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *htmlprinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
 	p.iota++
 
-	sortedDups := SortNodesByCriteria(cloneGroups, ExtractSortCriteria(sortBy...))
+	clones := group.Clones
+	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
 
 	p.dupMutex.Lock()
-	p.dupls = append(p.dupls, sortedDups)
+	p.dupls = append(p.dupls, clones)
 	p.dupMutex.Unlock()
-
-	// Build clones first so we can extract classification data for the header
-	clones, err := p.buildClones(sortedDups)
-	if err != nil {
-		return err
-	}
 
 	if err := p.writeCloneGroupHeader(clones); err != nil {
 		return err
 	}
 
-	sort.Sort(byNameAndLine(clones))
+	sort.Sort(byNameAndLineProcessed(clones))
 
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
 		err := p.writeDiffView(clones)
@@ -171,32 +165,29 @@ func (p *htmlprinter) PrintClones(cloneGroups [][]*syntax.Node, sortBy ...config
 	return p.writeCloneGroupFooter()
 }
 
-func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
+func (p *htmlprinter) writeCloneGroupHeader(clones []domain.ProcessedClone) error {
 	// Calculate aggregate metrics from clones
 	occurrences := len(clones)
 	totalTokens := 0
 	hasTest := false
-	highestPriority := PriorityLow
-	primaryCategory := CategoryUnknown
+	highestPriority := domain.PriorityLow
+	primaryCategory := domain.CategoryUnknown
 	categoryCounts := make(map[CloneCategory]int)
 
 	for _, cl := range clones {
-		totalTokens += cl.classification.Tokens
-		if cl.classification.IsTest {
+		totalTokens += cl.Classification.Tokens
+		if cl.Classification.IsTest {
 			hasTest = true
 		}
 
-		categoryCounts[cl.classification.Category]++
-		// Track highest priority
-		if priorityHigher(cl.classification.Priority, highestPriority) {
-			highestPriority = cl.classification.Priority
+		categoryCounts[cl.Classification.Category]++
+		if priorityHigher(cl.Classification.Priority, highestPriority) {
+			highestPriority = cl.Classification.Priority
 		}
 
-		// Update global stats
-		p.stats.categoryCounts[cl.classification.Category]++
-
-		p.stats.priorityCounts[cl.classification.Priority]++
-		if cl.classification.IsTest {
+		p.stats.categoryCounts[cl.Classification.Category]++
+		p.stats.priorityCounts[cl.Classification.Priority]++
+		if cl.Classification.IsTest {
 			p.stats.testCount++
 		} else {
 			p.stats.prodCount++
@@ -218,7 +209,7 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 	// Get first clone's suggestion (they're usually similar)
 	suggestion := ""
 	if len(clones) > 0 {
-		suggestion = clones[0].classification.Suggestion
+		suggestion = clones[0].Classification.Suggestion
 	}
 
 	// Build badges HTML
@@ -263,10 +254,10 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []clone) error {
 // priorityHigher returns true if p1 is higher priority than p2.
 func priorityHigher(p1, p2 ClonePriority) bool {
 	priorityOrder := map[ClonePriority]int{
-		PriorityCritical: 4,
-		PriorityHigh:     3,
-		PriorityMedium:   2,
-		PriorityLow:      1,
+		domain.PriorityCritical: 4,
+		domain.PriorityHigh:     3,
+		domain.PriorityMedium:   2,
+		domain.PriorityLow:      1,
 	}
 
 	return priorityOrder[p1] > priorityOrder[p2]
@@ -280,58 +271,9 @@ func suggestionHTML(suggestion string) string {
 	return fmt.Sprintf(`<div class="suggestion">💡 %s</div>`, html.EscapeString(suggestion))
 }
 
-func (p *htmlprinter) buildClones(dups [][]*syntax.Node) ([]clone, error) {
-	clones := make([]clone, len(dups))
-	for i, dup := range dups {
-		cnt := len(dup)
-		if cnt == 0 {
-			return nil, errors.NewInternalError(
-				fmt.Sprintf("zero length duplicate found in clone group #%d (index=%d)", p.iota, i),
-				nil,
-			)
-		}
-
-		nstart := dup[0]
-		nend := dup[cnt-1]
-
-		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
-		if err != nil {
-			return nil, errors.Wrap(
-				err,
-				errors.AnalysisError,
-				fmt.Sprintf(
-					"failed to process clone in group #%d (index=%d, file=%s)",
-					p.iota,
-					i,
-					nstart.Filename,
-				),
-			)
-		}
-
-		// Calculate clone metrics for classification
-		tokens := cnt
-		lines := fileInfo.LineEnd - fileInfo.LineStart + 1
-		nodeType := nstart.Type
-
-		// Classify the clone for actionable reporting
-		classification := ClassifyClone(fileInfo.Filename, nodeType, tokens, lines)
-
-		clones[i] = clone{
-			filename:       fileInfo.Filename,
-			lineStart:      fileInfo.LineStart,
-			lineEnd:        fileInfo.LineEnd,
-			fragment:       extractContent(fileInfo, nstart, nend),
-			size:           cnt,
-			classification: classification,
-		}
-	}
-
-	return clones, nil
-}
-
-func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
+func (p *htmlprinter) writeCloneOccurrences(clones []domain.ProcessedClone) error {
 	for i, cl := range clones {
-		vscodeLink := fmt.Sprintf("vscode://file/%s:%d", cl.filename, cl.lineStart)
+		vscodeLink := fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)
 
 		_, err := fmt.Fprintf(p.w, `<div class="occurrence">
 <div class="file-link">
@@ -340,8 +282,8 @@ func (p *htmlprinter) writeCloneOccurrences(clones []clone) error {
 </div>
 <pre><code id="code-%d-%d">%s</code></pre>
 </div>
-`, vscodeLink, html.EscapeString(cl.filename), cl.lineStart, p.iota, i, p.iota, i,
-			html.EscapeString(string(cl.fragment)))
+`, vscodeLink, html.EscapeString(cl.Filename), cl.LineStart, p.iota, i, p.iota, i,
+			html.EscapeString(string(cl.Fragment)))
 		if err != nil {
 			return err
 		}

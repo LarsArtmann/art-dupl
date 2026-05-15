@@ -41,7 +41,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // stats provides aggregated statistics about code duplication.
@@ -88,62 +88,36 @@ func (p *stats) PrintHeader() error {
 }
 
 // PrintClones collects statistics from the clone groups.
-func (p *stats) PrintClones(cloneData [][]*syntax.Node, sortBy ...config.SortCriteria) error {
-	// Count clone group
+func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
 	p.statsData.TotalCloneGroups++
 
-	// Count tokens in this clone group
 	tokensInGroup := 0
-
-	// Track unique duplicate lines (pattern counted once, not per instance)
 	uniqueLineCount := 0
 
-	// Process each clone in the group
-	for _, dup := range cloneData {
-		if len(dup) == 0 {
-			continue
-		}
+	for _, cl := range group.Clones {
+		lineCount := cl.LineEnd - cl.LineStart + 1
+		tokensInGroup += cl.Size
 
-		// Get file and line information using shared processor
-		nstart := dup[0]
-		nend := dup[len(dup)-1]
-
-		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
-		if err != nil {
-			return fmt.Errorf("failed to process node range for file %s: %w", nstart.Filename, err)
-		}
-
-		lineCount := fileInfo.LineEnd - fileInfo.LineStart + 1
-		tokensInGroup += len(dup)
-
-		// Update statistics
 		p.statsData.TotalClones++
-		// Use unique line count from first clone (all clones in group have same pattern)
 		if uniqueLineCount == 0 {
 			uniqueLineCount = lineCount
 		}
 
-		p.statsData.TotalTokens += len(dup)
+		p.statsData.TotalTokens += cl.Size
 
-		// Track file-level duplication
-		p.statsData.FileDuplication[nstart.Filename] += lineCount
+		p.statsData.FileDuplication[cl.Filename] += lineCount
 
-		// Track size distribution
 		sizeRange := p.getSizeRange(lineCount)
 		p.statsData.SizeDistribution[sizeRange]++
 
-		// Track token distribution
-		tokenRange := p.getTokenRange(len(dup))
+		tokenRange := p.getTokenRange(cl.Size)
 		p.statsData.TokenDistribution[tokenRange]++
 	}
 
-	// Add unique line count once per clone group (not once per clone instance)
 	p.statsData.TotalDuplicateLines += uniqueLineCount
 
-	// Update impact score (tokens × instances)
-	p.statsData.ImpactScore += tokensInGroup * len(cloneData)
+	p.statsData.ImpactScore += tokensInGroup * len(group.Clones)
 
-	// Track severity based on tokens in the clone group (once per group)
 	severity := p.getSeverity(tokensInGroup)
 	p.statsData.SeverityBreakdown[severity]++
 

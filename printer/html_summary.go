@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 func (p *htmlprinter) buildSummarySection() string {
@@ -120,27 +120,27 @@ func (p *htmlprinter) buildSummarySection() string {
 // orderedCategories returns categories in a stable order for display.
 func orderedCategories() []CloneCategory {
 	return []CloneCategory{
-		CategoryFunction,
-		CategoryMethod,
-		CategoryHandler,
-		CategoryStruct,
-		CategoryInterface,
-		CategoryLoop,
-		CategoryConditional,
-		CategoryAssignment,
-		CategoryExpression,
-		CategoryTest,
-		CategoryUnknown,
+		domain.CategoryFunction,
+		domain.CategoryMethod,
+		domain.CategoryHandler,
+		domain.CategoryStruct,
+		domain.CategoryInterface,
+		domain.CategoryLoop,
+		domain.CategoryConditional,
+		domain.CategoryAssignment,
+		domain.CategoryExpression,
+		domain.CategoryTest,
+		domain.CategoryUnknown,
 	}
 }
 
 // orderedPriorities returns priorities in a stable order for display.
 func orderedPriorities() []ClonePriority {
 	return []ClonePriority{
-		PriorityCritical,
-		PriorityHigh,
-		PriorityMedium,
-		PriorityLow,
+		domain.PriorityCritical,
+		domain.PriorityHigh,
+		domain.PriorityMedium,
+		domain.PriorityLow,
 	}
 }
 
@@ -272,27 +272,20 @@ document.addEventListener('DOMContentLoaded', function() {
 // OutputHTML generates HTML output with sorting.
 func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) error {
 	// Store clones for sorting - flatten the 3D structure to 2D
-	var allDups [][]*syntax.Node
+	var allClones []domain.ProcessedClone
 
 	p.dupMutex.Lock()
 	for i := range len(p.dupls) {
-		// p.dupls[i] is [][]*syntax.Node, add each clone group to allDups
-		for j := range len(p.dupls[i]) {
-			allDups = append(allDups, p.dupls[i][j])
-		}
+		allClones = append(allClones, p.dupls[i]...)
 	}
 	p.dupMutex.Unlock()
 
-	// Apply sorting based on the specified criteria
-	// Apply sorting based on specified criteria
-	allDups = SortNodesByCriteria(allDups, sortBy)
+	SortProcessedClonesByCriteria(allClones, sortBy)
 
-	// Clear previous output
 	p.iota = 0
 
-	// Print sorted clones
-	for _, dup := range allDups {
-		err := p.PrintClones([][]*syntax.Node{dup}, sortBy)
+	for _, cl := range allClones {
+		err := p.PrintClones(domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cl}}, sortBy)
 		if err != nil {
 			return err
 		}

@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 type plumbing struct {
@@ -21,29 +21,23 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 
 func (p *plumbing) PrintHeader() error { return nil }
 
-func (p *plumbing) PrintClones(matches [][]*syntax.Node, sortBy ...config.SortCriteria) error {
-	// Apply sorting to the clone groups
-	sortedDups := SortNodesByCriteria(matches, ExtractSortCriteria(sortBy...))
+func (p *plumbing) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+	clones := group.Clones
+	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
+	sort.Sort(byNameAndLineProcessed(clones))
 
-	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
-	if err != nil {
-		return err
+	for _, cl := range clones {
+		if _, err := fmt.Fprintf(p.w, "%s:%d-%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
+			return err
+		}
 	}
 
-	sort.Sort(byNameAndLine(clones))
-
-	return writeCloneLines(p.w, clones, "%s:%d-%d")
+	return nil
 }
 
 func (p *plumbing) PrintFooter() error { return nil }
 
-// OutputPlumbing generates plumbing output with sorting.
 func (p *plumbing) OutputPlumbing(threshold int, sortBy config.SortCriteria) error {
-	// Note: Plumbing output is generated during the normal PrintClones flow
-	// This method exists for consistency with other output formats
-	// The actual sorting is handled in PrintClones method
-
-	// For now, just indicate the sorting criteria used
 	_, _ = fmt.Fprintf(p.w, "# Plumbing output sorted by %s\n", sortBy.String())
 
 	return nil

@@ -5,15 +5,16 @@ import (
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// printDupls prints duplicates using the specified printer.
 func printDupls(
 	ctx context.Context,
 	p printer.Printer,
+	fread printer.ReadFile,
 	duplChan <-chan syntax.Match,
 	sortBy config.SortCriteria,
 	threshold int,
@@ -31,7 +32,7 @@ func printDupls(
 		return err
 	}
 
-	err = printCloneGroups(p, groups, keys, sortBy)
+	err = printCloneGroups(p, fread, groups, keys, sortBy)
 	if err != nil {
 		return err
 	}
@@ -48,7 +49,6 @@ func printDupls(
 	return printFooter(p)
 }
 
-// getSortedKeys extracts and sorts clone group keys.
 func getSortedKeys(groups map[string][][]*syntax.Node, sortBy config.SortCriteria) []string {
 	keys := make([]string, 0, len(groups))
 	for k := range groups {
@@ -61,7 +61,6 @@ func getSortedKeys(groups map[string][][]*syntax.Node, sortBy config.SortCriteri
 	return keys
 }
 
-// printHeader prints the header with error wrapping.
 func printHeader(p printer.Printer, sortBy config.SortCriteria, threshold int) error {
 	err := p.PrintHeader()
 	if err != nil {
@@ -79,9 +78,9 @@ func printHeader(p printer.Printer, sortBy config.SortCriteria, threshold int) e
 	return nil
 }
 
-// printCloneGroups iterates over clone groups and prints them.
 func printCloneGroups(
 	p printer.Printer,
+	fread printer.ReadFile,
 	groups map[string][][]*syntax.Node,
 	keys []string,
 	sortBy config.SortCriteria,
@@ -92,12 +91,21 @@ func printCloneGroups(
 			continue
 		}
 
-		// Set hash for printers that support HashSetter interface
 		if hs, ok := p.(printer.HashSetter); ok {
 			hs.SetHash(k)
 		}
 
-		err := p.PrintClones(uniq, sortBy)
+		clones, err := printer.ProcessClones(fread, uniq)
+		if err != nil {
+			return errors.Wrap(err, errors.AnalysisError,
+				fmt.Sprintf("failed to process clones for hash %s", k))
+		}
+
+		err = p.PrintClones(domain.ProcessedCloneGroup{
+			Hash:   k,
+			Size:   totalSize(clones),
+			Clones: clones,
+		}, sortBy)
 		if err != nil {
 			return errors.Wrap(err, errors.AnalysisError,
 				fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
@@ -107,7 +115,15 @@ func printCloneGroups(
 	return nil
 }
 
-// handleJSONOutput handles JSON-specific output if the printer is a JSONPrinter.
+func totalSize(clones []domain.ProcessedClone) int {
+	total := 0
+	for _, c := range clones {
+		total += c.Size
+	}
+
+	return total
+}
+
 func handleJSONOutput(
 	p printer.Printer,
 	threshold int,
@@ -128,7 +144,6 @@ func handleJSONOutput(
 	return nil
 }
 
-// printFooter prints the footer with error wrapping.
 func printFooter(p printer.Printer) error {
 	err := p.PrintFooter()
 	if err != nil {

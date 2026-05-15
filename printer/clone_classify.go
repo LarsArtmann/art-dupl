@@ -3,64 +3,16 @@ package printer
 import (
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-// CloneCategory represents the category of code that was duplicated.
-type CloneCategory string
-
-// Clone categories for classifying duplicate code.
-const (
-	CategoryFunction    CloneCategory = "function"    // Function declarations
-	CategoryMethod      CloneCategory = "method"      // Method/function literals
-	CategoryTest        CloneCategory = "test"        // Test code
-	CategoryStruct      CloneCategory = "struct"      // Struct types
-	CategoryInterface   CloneCategory = "interface"   // Interface types
-	CategoryHandler     CloneCategory = "handler"     // HTTP handlers
-	CategoryLoop        CloneCategory = "loop"        // Loop constructs
-	CategoryConditional CloneCategory = "conditional" // Conditionals/switches
-	CategoryAssignment  CloneCategory = "assignment"  // Variable assignments
-	CategoryExpression  CloneCategory = "expression"  // Generic expressions
-	CategoryUnknown     CloneCategory = "unknown"     // Unknown/other
+type (
+	CloneCategory    = domain.CloneCategory
+	ClonePriority    = domain.ClonePriority
+	CloneClassification = domain.CloneClassification
 )
 
-// ClonePriority represents how important it is to address this clone.
-type ClonePriority string
-
-// Clone priority levels for actionability.
-const (
-	PriorityCritical ClonePriority = "critical" // Must fix - production code, large duplication
-	PriorityHigh     ClonePriority = "high"     // Should fix - production code, medium duplication
-	PriorityMedium   ClonePriority = "medium"   // Consider fixing - test code or small production
-	PriorityLow      ClonePriority = "low"      // Optional - test helpers, tiny duplications
-)
-
-// priorityData holds display data for priorities.
-type priorityData struct {
-	color string
-	emoji string
-}
-
-// priorityDisplay maps ClonePriority to its display properties.
-var priorityDisplay = map[ClonePriority]priorityData{
-	PriorityCritical: {color: "var(--error)", emoji: "🔴"},
-	PriorityHigh:     {color: "var(--warning)", emoji: "🟠"},
-	PriorityMedium:   {color: "var(--accent)", emoji: "🟡"},
-	PriorityLow:      {color: "var(--success)", emoji: "🟢"},
-}
-
-// CloneClassification provides metadata about a code clone for actionable reports.
-type CloneClassification struct {
-	Category   CloneCategory
-	IsTest     bool
-	Priority   ClonePriority
-	Tokens     int
-	Lines      int
-	NodeType   string
-	Suggestion string
-}
-
-// nodeTypeNames maps AST node types to human-readable names.
 var nodeTypeNames = map[int32]string{
 	golang.BadNode:        "BadNode",
 	golang.File:           "File",
@@ -112,7 +64,6 @@ var nodeTypeNames = map[int32]string{
 	golang.ValueSpec:      "ValueSpec",
 }
 
-// ClassifyClone analyzes a clone and returns its classification.
 func ClassifyClone(filename string, nodeType int32, tokens, lines int) CloneClassification {
 	category := nodeTypeToCategory(nodeType)
 	isTest := isTestFile(filename)
@@ -130,31 +81,29 @@ func ClassifyClone(filename string, nodeType int32, tokens, lines int) CloneClas
 	}
 }
 
-// nodeTypeToCategory maps AST node types to human-readable categories.
 func nodeTypeToCategory(nodeType int32) CloneCategory {
 	switch nodeType {
 	case golang.FuncDecl:
-		return CategoryFunction
+		return domain.CategoryFunction
 	case golang.FuncLit:
-		return CategoryMethod
+		return domain.CategoryMethod
 	case golang.StructType:
-		return CategoryStruct
+		return domain.CategoryStruct
 	case golang.InterfaceType:
-		return CategoryInterface
+		return domain.CategoryInterface
 	case golang.ForStmt, golang.RangeStmt:
-		return CategoryLoop
+		return domain.CategoryLoop
 	case golang.IfStmt, golang.SwitchStmt, golang.TypeSwitchStmt, golang.SelectStmt:
-		return CategoryConditional
+		return domain.CategoryConditional
 	case golang.AssignStmt, golang.ValueSpec:
-		return CategoryAssignment
+		return domain.CategoryAssignment
 	case golang.GenDecl:
-		return CategoryExpression
+		return domain.CategoryExpression
 	default:
-		return CategoryUnknown
+		return domain.CategoryUnknown
 	}
 }
 
-// nodeTypeToString returns a human-readable name for the node type.
 func nodeTypeToString(nodeType int32) string {
 	if name, ok := nodeTypeNames[nodeType]; ok {
 		return name
@@ -163,12 +112,10 @@ func nodeTypeToString(nodeType int32) string {
 	return "Unknown"
 }
 
-// isTestFile detects if a file is a test file.
 func isTestFile(filename string) bool {
 	return strings.HasSuffix(filename, "_test.go")
 }
 
-// calculatePriority determines the priority level based on category, test status, and size.
 func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) ClonePriority {
 	if isTest {
 		return calculateTestPriority(tokens, lines)
@@ -177,78 +124,71 @@ func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) C
 	return calculateProductionPriority(category, tokens, lines)
 }
 
-// calculateTestPriority returns priority for test files.
 func calculateTestPriority(tokens, lines int) ClonePriority {
 	if tokens > 100 || lines > 30 {
-		return PriorityMedium
+		return domain.PriorityMedium
 	}
 
-	return PriorityLow
+	return domain.PriorityLow
 }
 
-// calculateProductionPriority returns priority for production code.
 func calculateProductionPriority(category CloneCategory, tokens, lines int) ClonePriority {
 	switch category {
-	case CategoryFunction, CategoryMethod:
+	case domain.CategoryFunction, domain.CategoryMethod:
 		return functionPriority(tokens, lines)
-	case CategoryStruct, CategoryInterface:
+	case domain.CategoryStruct, domain.CategoryInterface:
 		return typePriority(tokens)
-	case CategoryHandler:
-		return PriorityHigh
-	case CategoryLoop, CategoryConditional:
+	case domain.CategoryHandler:
+		return domain.PriorityHigh
+	case domain.CategoryLoop, domain.CategoryConditional:
 		return controlFlowPriority(tokens)
-	case CategoryTest, CategoryAssignment, CategoryExpression, CategoryUnknown:
+	case domain.CategoryTest, domain.CategoryAssignment, domain.CategoryExpression, domain.CategoryUnknown:
 		return otherPriority(tokens)
 	default:
 		return otherPriority(tokens)
 	}
 }
 
-// functionPriority calculates priority for function/method clones.
 func functionPriority(tokens, lines int) ClonePriority {
 	if tokens > 50 || lines > 20 {
-		return PriorityCritical
+		return domain.PriorityCritical
 	}
 
 	if tokens > 25 || lines > 10 {
-		return PriorityHigh
+		return domain.PriorityHigh
 	}
 
-	return PriorityMedium
+	return domain.PriorityMedium
 }
 
-// typePriority calculates priority for struct/interface clones.
 func typePriority(tokens int) ClonePriority {
 	if tokens > 30 {
-		return PriorityHigh
+		return domain.PriorityHigh
 	}
 
-	return PriorityMedium
+	return domain.PriorityMedium
 }
 
-// controlFlowPriority calculates priority for loop/conditional clones.
 func controlFlowPriority(tokens int) ClonePriority {
 	if tokens > 30 {
-		return PriorityHigh
+		return domain.PriorityHigh
 	}
 
-	return PriorityMedium
+	return domain.PriorityMedium
 }
 
-// otherPriority calculates priority for other category clones.
 func otherPriority(tokens int) ClonePriority {
 	if tokens > 50 {
-		return PriorityHigh
+		return domain.PriorityHigh
 	}
 
 	if tokens > 25 {
-		return PriorityMedium
+		return domain.PriorityMedium
 	}
 
-	return PriorityLow
+	return domain.PriorityLow
 }
 
-// getSuggestion returns an actionable suggestion for the clone.
 func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	if isTest {
 		if tokens > 50 {
@@ -259,69 +199,21 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	}
 
 	switch category {
-	case CategoryFunction, CategoryMethod:
+	case domain.CategoryFunction, domain.CategoryMethod:
 		return "Extract to shared utility function"
-	case CategoryStruct:
+	case domain.CategoryStruct:
 		return "Consider composition or shared base struct"
-	case CategoryInterface:
+	case domain.CategoryInterface:
 		return "Extract common interface definition"
-	case CategoryHandler:
+	case domain.CategoryHandler:
 		return "Extract handler logic to service layer"
-	case CategoryLoop:
+	case domain.CategoryLoop:
 		return "Extract loop body to helper function"
-	case CategoryConditional:
+	case domain.CategoryConditional:
 		return "Consider strategy pattern or early returns"
-	case CategoryTest, CategoryAssignment, CategoryExpression, CategoryUnknown:
+	case domain.CategoryTest, domain.CategoryAssignment, domain.CategoryExpression, domain.CategoryUnknown:
 		return "Review and extract common logic"
 	default:
 		return "Review and extract common logic"
-	}
-}
-
-// GetPriorityColor returns a CSS color variable for the priority.
-func (p ClonePriority) GetPriorityColor() string {
-	if data, ok := priorityDisplay[p]; ok {
-		return data.color
-	}
-
-	return "var(--text-secondary)"
-}
-
-// GetPriorityEmoji returns an emoji indicator for the priority.
-func (p ClonePriority) GetPriorityEmoji() string {
-	if data, ok := priorityDisplay[p]; ok {
-		return data.emoji
-	}
-
-	return "⚪"
-}
-
-// GetCategoryEmoji returns an emoji indicator for the category.
-func (c CloneCategory) GetCategoryEmoji() string {
-	switch c {
-	case CategoryFunction:
-		return "⚡"
-	case CategoryMethod:
-		return "🔧"
-	case CategoryTest:
-		return "🧪"
-	case CategoryStruct:
-		return "📦"
-	case CategoryInterface:
-		return "🔌"
-	case CategoryHandler:
-		return "🎯"
-	case CategoryLoop:
-		return "🔄"
-	case CategoryConditional:
-		return "🔀"
-	case CategoryAssignment:
-		return "📝"
-	case CategoryExpression:
-		return "📊"
-	case CategoryUnknown:
-		return "📄"
-	default:
-		return "📄"
 	}
 }

@@ -4,16 +4,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // newTestClone creates a clone for testing with the given parameters.
-func newTestClone(filename string, lineStart, lineEnd int, fragment string) clone {
-	return clone{
-		filename:  filename,
-		lineStart: lineStart,
-		lineEnd:   lineEnd,
-		fragment:  []byte(fragment),
+// newTestClone creates a domain.ProcessedClone for testing.
+func newTestDiffClone(filename string, lineStart, lineEnd int, fragment string) domain.ProcessedClone {
+	return domain.ProcessedClone{
+		Filename:  filename,
+		LineStart: lineStart,
+		LineEnd:   lineEnd,
+		Fragment:  []byte(fragment),
 	}
 }
 
@@ -231,10 +233,10 @@ func TestLineDiff_RealWorldClone(t *testing.T) {
 }
 
 func TestComputeCloneGroupDiff(t *testing.T) {
-	clones := []clone{
-		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
-		newTestClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
-		newTestClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
+	clones := []domain.ProcessedClone{
+		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestDiffClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
+		newTestDiffClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -251,9 +253,9 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 }
 
 func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
-	clones := []clone{
-		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
-		newTestClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
+	clones := []domain.ProcessedClone{
+		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestDiffClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -267,8 +269,8 @@ func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 }
 
 func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
-	clones := []clone{
-		newTestClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+	clones := []domain.ProcessedClone{
+		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -282,7 +284,7 @@ func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 }
 
 func TestComputeCloneGroupDiff_EmptyClones(t *testing.T) {
-	result := ComputeCloneGroupDiff([]clone{})
+	result := ComputeCloneGroupDiff([]domain.ProcessedClone{})
 
 	if result.Base != nil {
 		t.Error("Expected Base to be nil for empty clones")

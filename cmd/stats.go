@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
@@ -142,7 +143,17 @@ func runStats(c *cobra.Command, arguments []string) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) > 1 {
-			err := p.PrintClones(uniq, config.SortByHash)
+			clones, convErr := printer.ProcessClones(os.ReadFile, uniq)
+			if convErr != nil {
+				return duplerrors.Wrap(convErr, duplerrors.AnalysisError,
+					"failed to process clones for hash "+k)
+			}
+
+			err := p.PrintClones(domain.ProcessedCloneGroup{
+				Hash:   k,
+				Size:   totalSize(clones),
+				Clones: clones,
+			}, config.SortByHash)
 			if err != nil {
 				return duplerrors.Wrap(
 					err,

@@ -8,7 +8,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	errors "github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // SARIFOutput represents the SARIF (Static Analysis Results Interchange Format) output.
@@ -154,49 +154,28 @@ func (p *sarifPrinter) PrintHeader() error {
 	return nil
 }
 
-func (p *sarifPrinter) PrintClones(entries [][]*syntax.Node, sortBy ...config.SortCriteria) error {
-	if len(entries) == 0 {
+func (p *sarifPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+	if len(group.Clones) == 0 {
 		return nil
 	}
 
-	// Use hash from caller via SetHash
 	hash := p.currentHash
 	if hash == "" {
 		return nil
 	}
 
-	// Skip if we've already processed this hash
 	if p.processedHashes[hash] {
 		return nil
 	}
 
 	p.processedHashes[hash] = true
 
-	// Calculate size (token count)
-	size := 0
-	if len(entries) > 0 && len(entries[0]) > 0 {
-		size = len(entries[0])
-	}
+	size := group.Size
 
-	// Create a result for each clone instance
-	for _, dup := range entries {
-		if len(dup) == 0 {
-			continue
-		}
-
-		nstart := dup[0]
-		nend := dup[len(dup)-1]
-
-		// Get file and line information
-		fileInfo, err := ProcessNodeRange(p.ReadFile, nstart, nend)
-		if err != nil {
-			// Log warning but continue
-			continue
-		}
-
+	for _, cl := range group.Clones {
 		level := p.determineLevel(size)
 		msg := fmt.Sprintf("Duplicate code: %d tokens in %d instances",
-			size, len(entries))
+		size, len(group.Clones))
 
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",
@@ -208,12 +187,12 @@ func (p *sarifPrinter) PrintClones(entries [][]*syntax.Node, sortBy ...config.So
 				{
 					PhysicalLocation: SARIFPhysicalLocation{
 						ArtifactLocation: SARIFArtifactLocation{
-							URI: nstart.Filename,
+							URI: cl.Filename,
 						},
 						Region: SARIFRegion{
 							LineRangeMixin: LineRangeMixin{
-								StartLine: fileInfo.LineStart,
-								EndLine:   fileInfo.LineEnd,
+								StartLine: cl.LineStart,
+								EndLine:   cl.LineEnd,
 							},
 						},
 					},

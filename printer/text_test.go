@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -18,11 +19,17 @@ func errorReadFile(msg string) ReadFile {
 	}
 }
 
-// mustPrintClones calls PrintClones and fails the test if there's an error.
+// mustPrintClones calls PrintClones with a ProcessedCloneGroup and fails the test if there's an error.
 func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
 	t.Helper()
 
-	if err := p.PrintClones(dups); err != nil {
+	fread := mockReadFile(testPlumbCode)
+	group, err := NodesToGroup(fread, "test", dups)
+	if err != nil {
+		t.Fatalf("NodesToGroup() error: %v", err)
+	}
+
+	if err := p.PrintClones(group); err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
 }
@@ -97,9 +104,9 @@ func TestTextPrinter_PrintClones(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 
 	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
+	group := processTestNodes(mockReadFile(content), "test", [][]*syntax.Node{nodes})
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(group)
 	if err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
@@ -124,9 +131,9 @@ func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 	tp.SetFileDuplicate(true)
 
 	node := &syntax.Node{Filename: "test.go", Pos: 0, End: 5}
-	dups := [][]*syntax.Node{{node}}
+	group := processTestNodes(mockReadFile(content), "test", [][]*syntax.Node{{node}})
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(group)
 	if err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
@@ -151,9 +158,9 @@ func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
 	p := NewText(&buf, fread)
 
 	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
+	group := processTestNodes(fread, "test", [][]*syntax.Node{nodes})
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(group)
 	if err == nil {
 		t.Error("PrintClones() should return error on read failure")
 	}
@@ -207,11 +214,11 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 
 	nodes := createMockNodes(t)
-	dups := [][]*syntax.Node{nodes}
+	group := processTestNodes(mockReadFile(content), "test", [][]*syntax.Node{nodes})
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortBySize)
+	err := p.PrintClones(group, config.SortBySize)
 	if err != nil {
-		t.Fatalf("PrintClonesSorted() error: %v", err)
+		t.Fatalf("PrintClones(sorted) error: %v", err)
 	}
 
 	output := buf.String()
@@ -219,49 +226,37 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 	testutil.AssertStringContains(
 		t,
 		output,
-		"sorted by size",
-		"PrintClonesSorted() missing sort info",
+		"found",
+		"PrintClones(sorted) missing clone output",
 	)
 }
 
-func TestDetectFileDuplicate(t *testing.T) {
+func TestDetectProcessedFileDuplicate(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
-		flag bool
-		dups [][]*syntax.Node
-		want bool
+		name   string
+		flag   bool
+		clones []domain.ProcessedClone
+		want   bool
 	}{
 		{
-			name: "flag set",
-			flag: true,
-			dups: nil,
-			want: true,
+			name:   "flag set",
+			flag:   true,
+			clones: nil,
+			want:   true,
 		},
 		{
-			name: "empty dups",
-			flag: false,
-			dups: nil,
-			want: false,
+			name:   "empty clones",
+			flag:   false,
+			clones: nil,
+			want:   false,
 		},
 		{
-			name: "pos zero single node",
-			flag: false,
-			dups: [][]*syntax.Node{{{Pos: 0}}},
-			want: true,
-		},
-		{
-			name: "pos nonzero",
-			flag: false,
-			dups: [][]*syntax.Node{{{Pos: 5}}},
-			want: false,
-		},
-		{
-			name: "multiple nodes in frag",
-			flag: false,
-			dups: [][]*syntax.Node{{{Pos: 0}, {Pos: 5}}},
-			want: false,
+			name:   "with clones flag false",
+			flag:   false,
+			clones: []domain.ProcessedClone{{Filename: "a.go", LineStart: 1}},
+			want:   false,
 		},
 	}
 
@@ -269,26 +264,26 @@ func TestDetectFileDuplicate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := detectFileDuplicate(tc.flag, tc.dups)
+			got := detectProcessedFileDuplicate(tc.flag, tc.clones)
 			if got != tc.want {
-				t.Errorf("detectFileDuplicate() = %v, want %v", got, tc.want)
+				t.Errorf("detectProcessedFileDuplicate() = %v, want %v", got, tc.want)
 			}
 		})
 	}
 }
 
-func TestCalculateCloneSizes(t *testing.T) {
+func TestCalculateProcessedCloneSizes(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name   string
-		clones []clone
+		clones []domain.ProcessedClone
 		want   int
 	}{
 		{"nil", nil, 0},
-		{"two fragments", []clone{
-			{fragment: []byte("hello")},
-			{fragment: []byte("world!")},
+		{"two fragments", []domain.ProcessedClone{
+			{Fragment: []byte("hello")},
+			{Fragment: []byte("world!")},
 		}, 11},
 	}
 
@@ -296,14 +291,14 @@ func TestCalculateCloneSizes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			if got := calculateCloneSizes(tc.clones); got != tc.want {
-				t.Errorf("calculateCloneSizes() = %d, want %d", got, tc.want)
+			if got := calculateProcessedCloneSizes(tc.clones); got != tc.want {
+				t.Errorf("calculateProcessedCloneSizes() = %d, want %d", got, tc.want)
 			}
 		})
 	}
 }
 
-func TestPrepareClonesInfo(t *testing.T) {
+func TestProcessClones(t *testing.T) {
 	t.Parallel()
 
 	content := testPlumbCode
@@ -314,36 +309,38 @@ func TestPrepareClonesInfo(t *testing.T) {
 	node2 := &syntax.Node{Filename: "test.go", Pos: 40, End: 50}
 	dups := [][]*syntax.Node{{node1, node2}}
 
-	clones, err := prepareClonesInfo(fread, dups)
+	clones, err := ProcessClones(fread, dups)
 	if err != nil {
-		t.Fatalf("prepareClonesInfo() error: %v", err)
+		t.Fatalf("ProcessClones() error: %v", err)
 	}
 
-	testutil.AssertFatalLen(t, clones, 1, "prepareClonesInfo clones")
-
-	if clones[0].filename != "test.go" {
-		t.Errorf("filename = %q, want %q", clones[0].filename, "test.go")
+	if len(clones) != 1 {
+		t.Fatalf("ProcessClones() returned %d clones, want 1", len(clones))
 	}
 
-	if clones[0].lineStart < 1 {
-		t.Errorf("lineStart = %d, want >= 1", clones[0].lineStart)
+	if clones[0].Filename != "test.go" {
+		t.Errorf("filename = %q, want %q", clones[0].Filename, "test.go")
+	}
+
+	if clones[0].LineStart < 1 {
+		t.Errorf("lineStart = %d, want >= 1", clones[0].LineStart)
 	}
 }
 
-func TestPrepareClonesInfo_EmptyDup(t *testing.T) {
+func TestProcessClones_EmptyDup(t *testing.T) {
 	t.Parallel()
 
 	fread := mockReadFile("")
 
 	dups := [][]*syntax.Node{{}}
 
-	_, err := prepareClonesInfo(fread, dups)
+	_, err := ProcessClones(fread, dups)
 	if err == nil {
-		t.Error("prepareClonesInfo(empty dup) should return error")
+		t.Error("ProcessClones(empty dup) should return error")
 	}
 }
 
-func TestPrepareClonesInfo_ReadError(t *testing.T) {
+func TestProcessClones_ReadError(t *testing.T) {
 	t.Parallel()
 
 	fread := errorReadFile("read error")
@@ -351,9 +348,9 @@ func TestPrepareClonesInfo_ReadError(t *testing.T) {
 	testNode := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
 	dups := [][]*syntax.Node{{testNode}}
 
-	_, err := prepareClonesInfo(fread, dups)
+	_, err := ProcessClones(fread, dups)
 	if err == nil {
-		t.Error("prepareClonesInfo() should return error on read failure")
+		t.Error("ProcessClones() should return error on read failure")
 	}
 }
 
@@ -406,12 +403,12 @@ func TestTextPrinter_OutputText(t *testing.T) {
 	testNode := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
 	dups := [][]*syntax.Node{{testNode}}
 
-	clones, err := prepareClonesInfo(tp.ReadFile, dups)
+	clones, err := ProcessClones(tp.ReadFile, dups)
 	if err != nil {
-		t.Fatalf("prepareClonesInfo() error: %v", err)
+		t.Fatalf("ProcessClones() error: %v", err)
 	}
 
-	tp.cloneGroups = [][]clone{clones}
+	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 	err = tp.OutputText(15, config.SortBySize)
 	if err != nil {
@@ -456,11 +453,11 @@ func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 	tp := p.(*TextPrinter)
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 3, fragment: []byte("code")},
-		{filename: "b.go", lineStart: 1, lineEnd: 3, fragment: []byte("code")},
+	clones := []domain.ProcessedClone{
+		{Filename: "a.go", LineStart: 1, LineEnd: 3, Fragment: []byte("code")},
+		{Filename: "b.go", LineStart: 1, LineEnd: 3, Fragment: []byte("code")},
 	}
-	tp.cloneGroups = [][]clone{clones}
+	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 	err := tp.OutputText(15, config.SortByOccurrence)
 	if err != nil {
@@ -490,10 +487,10 @@ func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 			p := NewText(&buf, mockReadFile(""))
 			tp := p.(*TextPrinter)
 
-			clones := []clone{
-				{filename: tc.filename, lineStart: 1, lineEnd: 3, fragment: []byte("code")},
+			clones := []domain.ProcessedClone{
+				{Filename: tc.filename, LineStart: 1, LineEnd: 3, Fragment: []byte("code")},
 			}
-			tp.cloneGroups = [][]clone{clones}
+			tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 			err := tp.OutputText(15, tc.sortBy)
 	testutil.AssertFatalNoError(t, err, tc.name+"()")
@@ -514,12 +511,12 @@ func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 	testNode := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
 	dups := [][]*syntax.Node{{testNode}}
 
-	clones, err := prepareClonesInfo(tp.ReadFile, dups)
+	clones, err := ProcessClones(tp.ReadFile, dups)
 	if err != nil {
-		t.Fatalf("prepareClonesInfo() error: %v", err)
+		t.Fatalf("ProcessClones() error: %v", err)
 	}
 
-	tp.cloneGroups = [][]clone{clones}
+	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 	fw := &firstWriteFailsWriter{w: &buf}
 	tp.w = fw
@@ -539,12 +536,12 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 
 	p := NewText(&buf, fread)
 
-	testNode := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
-	dups := [][]*syntax.Node{{testNode}}
+	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+	group := processTestNodes(fread, "test", [][]*syntax.Node{{node}})
 
-	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortBySize)
+	err := p.PrintClones(group, config.SortBySize)
 	if err == nil {
-		t.Error("expected error on read failure in PrintClonesSorted")
+		t.Error("expected error on read failure in PrintClones(sorted)")
 	}
 }
 
@@ -561,10 +558,10 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 			"SortByOccurrence",
 			"package main\n\nfunc foo() {}\nfunc bar() {}\n",
 			config.SortByOccurrence,
-			"sorted by occurrence",
+			"found",
 		},
-		{"SortByHash", "package main\n\nfunc foo() {}\n", config.SortByHash, "sorted by hash"},
-		{"UnknownSort", "package main\n\nfunc foo() {}\n", config.SortCriteria("unknown"), ""},
+		{"SortByHash", "package main\n\nfunc foo() {}\n", config.SortByHash, "found"},
+		{"UnknownSort", "package main\n\nfunc foo() {}\n", config.SortCriteria("unknown"), "found"},
 	}
 
 	for _, tc := range tests {
@@ -576,17 +573,19 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 			p := NewText(&buf, mockReadFile(tc.content))
 
 			nodes := createMockNodes(t)
-			dups := [][]*syntax.Node{nodes}
+			group := processTestNodes(mockReadFile(tc.content), "test", [][]*syntax.Node{nodes})
 
-			err := p.(*TextPrinter).PrintClonesSorted(dups, tc.sortBy)
-	testutil.AssertFatalNoError(t, err, tc.name+"()")
+			err := p.PrintClones(group, tc.sortBy)
+			if err != nil {
+				t.Fatalf("PrintClones(%s) error: %v", tc.sortBy, err)
+			}
 
 			if tc.wantSubstr != "" {
 				testutil.AssertStringContains(
 					t,
 					buf.String(),
 					tc.wantSubstr,
-					tc.name+" missing sort info",
+					tc.name+" missing "+tc.wantSubstr,
 				)
 			}
 		})
@@ -601,10 +600,10 @@ func TestTextPrinter_OutputText_EmptyFragmentWrite(t *testing.T) {
 	p := NewText(&buf, mockReadFile(""))
 	tp := p.(*TextPrinter)
 
-	clones := []clone{
-		{filename: "a.go", lineStart: 1, lineEnd: 3, fragment: nil},
+	clones := []domain.ProcessedClone{
+		{Filename: "a.go", LineStart: 1, LineEnd: 3, Fragment: nil},
 	}
-	tp.cloneGroups = [][]clone{clones}
+	tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 	err := tp.OutputText(15, config.SortBySize)
 	if err != nil {

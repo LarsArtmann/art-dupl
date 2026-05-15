@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -534,8 +535,8 @@ func TestOrderedCategories(t *testing.T) {
 		t.Errorf("want 11 categories, got %d", len(cats))
 	}
 
-	if cats[0] != CategoryFunction {
-		t.Errorf("first category = %v, want CategoryFunction", cats[0])
+	if cats[0] != domain.CategoryFunction {
+		t.Errorf("first category = %v, want domain.CategoryFunction", cats[0])
 	}
 
 	seen := make(map[CloneCategory]bool)
@@ -556,12 +557,12 @@ func TestOrderedPriorities(t *testing.T) {
 		t.Errorf("want 4 priorities, got %d", len(pris))
 	}
 
-	if pris[0] != PriorityCritical {
-		t.Errorf("first priority = %v, want PriorityCritical", pris[0])
+	if pris[0] != domain.PriorityCritical {
+		t.Errorf("first priority = %v, want domain.PriorityCritical", pris[0])
 	}
 
-	if pris[len(pris)-1] != PriorityLow {
-		t.Errorf("last priority = %v, want PriorityLow", pris[len(pris)-1])
+	if pris[len(pris)-1] != domain.PriorityLow {
+		t.Errorf("last priority = %v, want domain.PriorityLow", pris[len(pris)-1])
 	}
 }
 
@@ -573,12 +574,12 @@ func TestBuildSummarySection(t *testing.T) {
 
 	hp.stats = classificationStats{
 		categoryCounts: map[CloneCategory]int{
-			CategoryFunction: 5,
-			CategoryLoop:     2,
+			domain.CategoryFunction: 5,
+			domain.CategoryLoop:     2,
 		},
 		priorityCounts: map[ClonePriority]int{
-			PriorityCritical: 1,
-			PriorityMedium:   3,
+			domain.PriorityCritical: 1,
+			domain.PriorityMedium:   3,
 		},
 		testCount:   2,
 		prodCount:   5,

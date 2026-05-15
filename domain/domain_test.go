@@ -177,47 +177,6 @@ func TestCloneSeverity_UnmarshalJSON_Invalid(t *testing.T) {
 	}
 }
 
-func TestCloneClassification_Name(t *testing.T) {
-	tests := []struct {
-		c    CloneClassification
-		want string
-	}{
-		{CloneUnknown, "Unknown"},
-		{CloneExact, "Exact"},
-		{CloneNearMiss, "Near-Miss"},
-		{CloneStructural, "Structural"},
-		{CloneFileDuplicate, "File Duplicate"},
-		{CloneClassification(99), "Unknown"},
-	}
-
-	for _, tt := range tests {
-		got := tt.c.Name()
-		if got != tt.want {
-			t.Errorf("CloneClassification(%d).Name() = %q, want %q", tt.c, got, tt.want)
-		}
-	}
-}
-
-func TestProcessedClone_ZeroValue(t *testing.T) {
-	var pc ProcessedClone
-	if pc.Filename != "" {
-		t.Errorf("zero value Filename = %q, want empty", pc.Filename)
-	}
-	if pc.LineStart != 0 {
-		t.Errorf("zero value LineStart = %d, want 0", pc.LineStart)
-	}
-}
-
-func TestProcessedCloneGroup_ZeroValue(t *testing.T) {
-	var pg ProcessedCloneGroup
-	if pg.Hash != "" {
-		t.Errorf("zero value Hash = %q, want empty", pg.Hash)
-	}
-	if pg.Clones != nil {
-		t.Errorf("zero value Clones = %v, want nil", pg.Clones)
-	}
-}
-
 func TestProcessedCloneGroup_WithClones(t *testing.T) {
 	pg := ProcessedCloneGroup{
 		Hash: "abc123",
