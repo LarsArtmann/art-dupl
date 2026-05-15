@@ -62,9 +62,9 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterSta
 // runStats implements the stats command.
 //
 //nolint:funlen // Stats command requires handling many CLI flags and configuration options
-func runStats(cmd *cobra.Command, args []string) error {
-	ctx := cmd.Context()
-	formatStr, _ := cmd.Flags().GetString("format")
+func runStats(c *cobra.Command, arguments []string) error {
+	ctx := c.Context()
+	formatStr, _ := c.Flags().GetString("format")
 
 	// Parse and validate format
 	format, err := config.ParseOutputFormat(formatStr)
@@ -72,7 +72,7 @@ func runStats(cmd *cobra.Command, args []string) error {
 		return duplerrors.WrapValidation(err, "invalid format value")
 	}
 
-	mergedConfig, err := BuildConfigFromFlags(cmd, args)
+	mergedConfig, err := BuildConfigFromFlags(c, arguments)
 	if err != nil {
 		return err
 	}
@@ -153,9 +153,8 @@ func runStats(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	err = p.PrintFooter()
-	if err != nil {
-		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats footer")
+	if footerErr := p.PrintFooter(); footerErr != nil {
+		return duplerrors.Wrap(footerErr, duplerrors.AnalysisError, "failed to print stats footer")
 	}
 
 	return nil

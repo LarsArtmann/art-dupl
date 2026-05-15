@@ -476,7 +476,7 @@ type PlumbingEntry struct {
 
 // parsePlumbingLine parses a single plumbing output line.
 func parsePlumbingLine(line string) (PlumbingEntry, error) {
-	entry := PlumbingEntry{}
+	result := PlumbingEntry{}
 
 	// Common format: filename:startLine,startCol-endLine,endCol
 	// Or: filename:startLine-endLine
@@ -485,10 +485,10 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 	// Find the last colon (separates filename from position)
 	lastColon := strings.LastIndex(line, ":")
 	if lastColon == -1 {
-		return entry, fmt.Errorf("no colon found in line: %s", line)
+		return result, fmt.Errorf("no colon found in line: %s", line)
 	}
 
-	entry.Filename = line[:lastColon]
+	result.Filename = line[:lastColon]
 	position := line[lastColon+1:]
 
 	// Try to parse position
@@ -496,7 +496,7 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 		// Range format: start-end or start,startCol-end,endCol
 		parts := strings.Split(position, "-")
 		if len(parts) != 2 {
-			return entry, fmt.Errorf("invalid range format: %s", position)
+			return result, fmt.Errorf("invalid range format: %s", position)
 		}
 
 		startParts := strings.Split(parts[0], ",")
@@ -504,47 +504,47 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 
 		startLine, err := strconv.Atoi(startParts[0])
 		if err != nil {
-			return entry, fmt.Errorf("invalid start line: %s", startParts[0])
+			return result, fmt.Errorf("invalid start line: %s", startParts[0])
 		}
 
-		entry.StartLine = startLine
+		result.StartLine = startLine
 
 		if len(startParts) > 1 {
 			startCol, err := strconv.Atoi(startParts[1])
 			if err != nil {
-				return entry, fmt.Errorf("invalid start column: %s", startParts[1])
+				return result, fmt.Errorf("invalid start column: %s", startParts[1])
 			}
 
-			entry.StartCol = startCol
+			result.StartCol = startCol
 		}
 
 		endLine, err := strconv.Atoi(endParts[0])
 		if err != nil {
-			return entry, fmt.Errorf("invalid end line: %s", endParts[0])
+			return result, fmt.Errorf("invalid end line: %s", endParts[0])
 		}
 
-		entry.EndLine = endLine
+		result.EndLine = endLine
 
 		if len(endParts) > 1 {
 			endCol, err := strconv.Atoi(endParts[1])
 			if err != nil {
-				return entry, fmt.Errorf("invalid end column: %s", endParts[1])
+				return result, fmt.Errorf("invalid end column: %s", endParts[1])
 			}
 
-			entry.EndCol = endCol
+			result.EndCol = endCol
 		}
 	} else {
 		// Simple line number
 		lineNum, err := strconv.Atoi(position)
 		if err != nil {
-			return entry, fmt.Errorf("invalid line number: %s", position)
+			return result, fmt.Errorf("invalid line number: %s", position)
 		}
 
-		entry.StartLine = lineNum
-		entry.EndLine = lineNum
+		result.StartLine = lineNum
+		result.EndLine = lineNum
 	}
 
-	return entry, nil
+	return result, nil
 }
 
 var _ = Describe("Plumbing Output Advanced Parsing", func() {

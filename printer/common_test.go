@@ -1,6 +1,10 @@
 package printer
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
+)
 
 func TestCanStripTabs(t *testing.T) {
 	t.Parallel()
@@ -24,10 +28,8 @@ func TestCanStripTabs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := canStripTabs(tt.block, tt.start, tt.count)
-			if got != tt.want {
-				t.Errorf("canStripTabs() = %v, want %v", got, tt.want)
-			}
+			actual := canStripTabs(tt.block, tt.start, tt.count)
+			testutil.ExpectTrue(t, actual == tt.want, "canStripTabs")
 		})
 	}
 }

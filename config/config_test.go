@@ -434,15 +434,10 @@ func TestOutputFormats(t *testing.T) {
 	t.Parallel()
 	// Test AllOutputFormats
 	formats := AllOutputFormats()
-	if len(formats) != 7 {
-		t.Errorf("Expected 7 formats, got %d", len(formats))
-	}
-
+	testutil.AssertLen(t, formats, 7, "output formats")
 	// Test AllSortCriteria
 	criteria := AllSortCriteria()
-	if len(criteria) != 4 {
-		t.Errorf("Expected 4 sort criteria, got %d", len(criteria))
-	}
+	testutil.AssertLen(t, criteria, 4, "sort criteria")
 }
 
 func TestJSONMarshalUnmarshal(t *testing.T) {
@@ -491,9 +486,7 @@ func TestSemanticField(t *testing.T) {
 
 	// Test default value is false
 	cfg := DefaultConfig()
-	if cfg.Semantic != false {
-		t.Errorf("Expected default Semantic false, got %v", cfg.Semantic)
-	}
+	testutil.AssertFieldValue(t, cfg.Semantic, false, "Semantic")
 
 	// Test Semantic can be loaded from config file
 	t.Run("LoadFromConfigFile", func(t *testing.T) {
@@ -518,9 +511,7 @@ func TestSemanticField(t *testing.T) {
 			t.Fatalf("Failed to load config: %v", err)
 		}
 
-		if loaded.Semantic != true {
-			t.Errorf("Expected Semantic true, got %v", loaded.Semantic)
-		}
+		testutil.AssertFieldValue(t, loaded.Semantic, true, "Semantic")
 	})
 
 	// Test Semantic is preserved in save/load round trip

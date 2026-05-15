@@ -16,15 +16,15 @@ func Parse(filename string) (*syntax.Node, error) {
 }
 
 // ParseWithLineCount parses the given templ file and returns the syntax tree along with the line count.
-func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
+func ParseWithLineCount(filepath string) (*syntax.Node, int, error) {
 	content, err := os.ReadFile(
-		filename,
-	) // #nosec G304 -- filename comes from controlled file system walk
+		filepath,
+	) // #nosec G304 -- filepath comes from controlled file system walk
 	if err != nil {
 		return nil, 0, err //nolint:wrapcheck // Pass through os.ReadFile error
 	}
 
-	return ParseBytes(filename, content)
+	return ParseBytes(filepath, content)
 }
 
 // ParseBytes parses templ content and returns the syntax tree along with the line count.

@@ -108,9 +108,7 @@ func TestSARIFPrinter_PrintFooter(t *testing.T) {
 	}
 
 	// Verify SARIF structure
-	if sarifOutput.Version != "2.1.0" {
-		t.Errorf("Expected version 2.1.0, got %s", sarifOutput.Version)
-	}
+	testutil.AssertFieldValue(t, sarifOutput.Version, "2.1.0", "Version")
 
 	if len(sarifOutput.Runs) != 1 {
 		t.Errorf("Expected 1 run, got %d", len(sarifOutput.Runs))
@@ -152,9 +150,7 @@ func TestSARIFPrinter_SetHash(t *testing.T) {
 	// Test SetHash stores the hash
 	printer.SetHash("abc123")
 
-	if printer.currentHash != "abc123" {
-		t.Errorf("SetHash() = %s, expected %s", printer.currentHash, "abc123")
-	}
+	testutil.AssertFieldValue(t, printer.currentHash, "abc123", "currentHash")
 
 	// Test that empty hash is handled
 	printer.SetHash("")
@@ -258,9 +254,7 @@ func TestSARIFOutput_VersionFromConfig(t *testing.T) {
 		Version:   "2.0.0-test",
 	}).(*sarifPrinter)
 
-	if printer.version != "2.0.0-test" {
-		t.Errorf("Expected version '2.0.0-test', got '%s'", printer.version)
-	}
+	testutil.AssertFieldValue(t, printer.version, "2.0.0-test", "version")
 }
 
 func TestSARIFOutput_Structure(t *testing.T) {
@@ -302,13 +296,9 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	}
 
 	tool := output.Runs[0].Tool.Driver
-	if tool.Name != "art-dupl" {
-		t.Errorf("Expected tool name 'art-dupl', got '%s'", tool.Name)
-	}
+	testutil.AssertFieldValue(t, tool.Name, "art-dupl", "Name")
 
-	if tool.Version != "1.0.0" {
-		t.Errorf("Expected version '1.0.0', got '%s'", tool.Version)
-	}
+	testutil.AssertFieldValue(t, tool.Version, "1.0.0", "Version")
 
 	// Check rules
 	if len(tool.Rules) != 1 {
@@ -316,9 +306,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	}
 
 	rule := tool.Rules[0]
-	if rule.ID != "art-dupl/duplicate-code" {
-		t.Errorf("Expected rule ID 'art-dupl/duplicate-code', got '%s'", rule.ID)
-	}
+	testutil.AssertFieldValue(t, rule.ID, "art-dupl/duplicate-code", "ID")
 
 	// Check results
 	results := output.Runs[0].Results
@@ -328,9 +316,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 
 	// Check result structure
 	for _, result := range results {
-		if result.RuleID != "art-dupl/duplicate-code" {
-			t.Errorf("Expected RuleID 'art-dupl/duplicate-code', got '%s'", result.RuleID)
-		}
+		testutil.AssertFieldValue(t, result.RuleID, "art-dupl/duplicate-code", "RuleID")
 
 		if len(result.Locations) != 1 {
 			t.Errorf("Expected 1 location, got %d", len(result.Locations))

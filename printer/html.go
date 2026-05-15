@@ -135,10 +135,10 @@ func (p *htmlprinter) writeMetadata() error {
 	return nil
 }
 
-func (p *htmlprinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *htmlprinter) PrintClones(cloneGroups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.iota++
 
-	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
+	sortedDups := SortNodesByCriteria(cloneGroups, ExtractSortCriteria(sortBy...))
 
 	p.dupMutex.Lock()
 	p.dupls = append(p.dupls, sortedDups)

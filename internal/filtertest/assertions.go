@@ -28,16 +28,16 @@ func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filep
 }
 
 // AssertFileShouldBeFiltered asserts that a file should be filtered.
-func AssertFileShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
+func AssertFileShouldBeFiltered(t *testing.T, f *gogenfilter.Filter, path string) {
 	t.Helper()
 
-	filtered, err := fltr.Filter(toFSPath(filepath))
-	if err != nil {
-		t.Fatalf("Filter(%q) error: %v", filepath, err)
+	isFiltered, ferr := f.Filter(toFSPath(path))
+	if ferr != nil {
+		t.Fatalf("Filter(%q) error: %v", path, ferr)
 	}
 
-	if !filtered {
-		t.Errorf("%s should be filtered", filepath)
+	if !isFiltered {
+		t.Errorf("%s should be filtered", path)
 	}
 }
 
@@ -51,11 +51,11 @@ func AssertFilesShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, file
 }
 
 // AssertFilesShouldBeFiltered asserts that multiple files should be filtered.
-func AssertFilesShouldBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepaths []string) {
+func AssertFilesShouldBeFiltered(t *testing.T, f *gogenfilter.Filter, paths []string) {
 	t.Helper()
 
-	for _, filepath := range filepaths {
-		AssertFileShouldBeFiltered(t, fltr, filepath)
+	for _, p := range paths {
+		AssertFileShouldBeFiltered(t, f, p)
 	}
 }
 

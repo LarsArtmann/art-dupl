@@ -130,9 +130,7 @@ func TestSummary_Fields(t *testing.T) {
 	testutil.AssertFieldValue(t, summary.TotalClones, 50, "TotalClones")
 	testutil.AssertFieldValue(t, summary.TotalGroups, 25, "TotalGroups")
 
-	if summary.AnalysisTime != 5*time.Second {
-		t.Errorf("AnalysisTime should be 5s, got %v", summary.AnalysisTime)
-	}
+	testutil.AssertFieldValue(t, summary.AnalysisTime, 5*time.Second, "AnalysisTime")
 
 	assertMethodsCount(t, len(summary.MethodsUsed), 2)
 
@@ -159,63 +157,41 @@ func TestMetadata_Fields(t *testing.T) {
 func TestProgress_Fields(t *testing.T) {
 	progress := newTestProgress("parsing", 75, 100, 75.5, "Processing files", "main.go")
 
-	if progress.Stage != "parsing" {
-		t.Errorf("Stage should be 'parsing', got %s", progress.Stage)
-	}
+	testutil.AssertFieldValue(t, progress.Stage, "parsing", "Stage")
 
-	if progress.Completed != 75 {
-		t.Errorf("Completed should be 75, got %d", progress.Completed)
-	}
+	testutil.AssertFieldValue(t, progress.Completed, 75, "Completed")
 
-	if progress.Total != 100 {
-		t.Errorf("Total should be 100, got %d", progress.Total)
-	}
+	testutil.AssertFieldValue(t, progress.Total, 100, "Total")
 
-	if progress.Percentage != 75.5 {
-		t.Errorf("Percentage should be 75.5, got %f", progress.Percentage)
-	}
+	testutil.AssertFieldValue(t, progress.Percentage, 75.5, "Percentage")
 
-	if progress.Message != "Processing files" {
-		t.Errorf("Message should be 'Processing files', got %s", progress.Message)
-	}
+	testutil.AssertFieldValue(t, progress.Message, "Processing files", "Message")
 
-	if progress.CurrentFile != "main.go" {
-		t.Errorf("CurrentFile should be 'main.go', got %s", progress.CurrentFile)
-	}
+	testutil.AssertFieldValue(t, progress.CurrentFile, "main.go", "CurrentFile")
 }
 
 // TestClone_Empty tests empty Clone struct.
 func TestClone_Empty(t *testing.T) {
 	var clone Clone
 
-	if clone.Filename != "" {
-		t.Errorf("Empty Clone Filename should be empty string, got %s", clone.Filename)
-	}
+	testutil.AssertFieldValue(t, clone.Filename, "", "Filename")
 
-	if clone.StartLine != 0 {
-		t.Errorf("Empty Clone StartLine should be 0, got %d", clone.StartLine)
-	}
+	testutil.AssertFieldValue(t, clone.StartLine, 0, "StartLine")
 
-	if clone.Size != 0 {
-		t.Errorf("Empty Clone Size should be 0, got %d", clone.Size)
-	}
+	testutil.AssertFieldValue(t, clone.Size, 0, "Size")
 }
 
 // TestCloneGroup_Empty tests empty CloneGroup struct.
 func TestCloneGroup_Empty(t *testing.T) {
 	var group CloneGroup
 
-	if group.Hash != "" {
-		t.Errorf("Empty CloneGroup Hash should be empty string, got %s", group.Hash)
-	}
+	testutil.AssertFieldValue(t, group.Hash, "", "Hash")
 
 	if group.Clones != nil {
-		t.Errorf("Empty CloneGroup Clones should be nil, got %v", group.Clones)
+		t.Errorf("Expected nil Clones, got %v", group.Clones)
 	}
 
-	if group.Size != 0 {
-		t.Errorf("Empty CloneGroup Size should be 0, got %d", group.Size)
-	}
+	testutil.AssertFieldValue(t, group.Size, 0, "Size")
 }
 
 // TestResult_Empty tests empty Result struct.
@@ -223,16 +199,12 @@ func TestResult_Empty(t *testing.T) {
 	var result Result
 
 	if result.CloneGroups != nil {
-		t.Errorf("Empty Result CloneGroups should be nil, got %v", result.CloneGroups)
+		t.Errorf("Expected nil CloneGroups, got %v", result.CloneGroups)
 	}
 
-	if result.Summary != nil {
-		t.Errorf("Empty Result Summary should be nil, got %v", result.Summary)
-	}
+	testutil.AssertFieldValue(t, result.Summary, nil, "Summary")
 
-	if result.Metadata != nil {
-		t.Errorf("Empty Result Metadata should be nil, got %v", result.Metadata)
-	}
+	testutil.AssertFieldValue(t, result.Metadata, nil, "Metadata")
 }
 
 // TestClone_WithFragment tests Clone with fragment.
@@ -248,9 +220,7 @@ func TestClone_WithFragment(t *testing.T) {
 func TestClone_WithoutFragment(t *testing.T) {
 	clone := createTestClone(t, "")
 
-	if clone.Fragment != "" {
-		t.Errorf("Clone without fragment should have empty Fragment, got %s", clone.Fragment)
-	}
+	testutil.AssertFieldValue(t, clone.Fragment, "", "Fragment")
 }
 
 // TestClone_LargeFragment tests Clone with large fragment.
@@ -327,22 +297,16 @@ func TestSummary_AllMethodsUsed(t *testing.T) {
 func TestProgress_Zero(t *testing.T) {
 	progress := Progress{}
 
-	if progress.Stage != "" {
-		t.Errorf("Zero Progress Stage should be empty, got %s", progress.Stage)
-	}
+	testutil.AssertFieldValue(t, progress.Stage, "", "Stage")
 
-	if progress.Percentage != 0 {
-		t.Errorf("Zero Progress Percentage should be 0, got %f", progress.Percentage)
-	}
+	testutil.AssertFieldValue(t, progress.Percentage, 0, "Percentage")
 }
 
 // TestProgress_Full tests Progress at 100%.
 func TestProgress_Full(t *testing.T) {
 	progress := newTestProgress("complete", 100, 100, 100.0, "Done", "")
 
-	if progress.Percentage != 100.0 {
-		t.Errorf("Progress at 100%% should be 100.0, got %f", progress.Percentage)
-	}
+	testutil.AssertFieldValue(t, progress.Percentage, 100.0, "Percentage")
 
 	if progress.Completed != progress.Total {
 		t.Error("At 100%, Completed should equal Total")

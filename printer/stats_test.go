@@ -892,8 +892,8 @@ func TestSetFilterStats(t *testing.T) {
 
 			if tt.wantBreakdown == nil {
 				if data.FilterBreakdown != nil {
-					t.Errorf("FilterBreakdown = %v, want nil", data.FilterBreakdown)
-				}
+				t.Errorf("Expected nil FilterBreakdown, got %v", data.FilterBreakdown)
+			}
 			} else {
 				if len(data.FilterBreakdown) != len(tt.wantBreakdown) {
 					t.Errorf(
@@ -932,9 +932,7 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 
 	// Verify the data was stored correctly
 	data := sp.GetStatsData()
-	if data.FilesFiltered != 25 {
-		t.Errorf("FilesFiltered = %d, want 25", data.FilesFiltered)
-	}
+	testutil.AssertFieldValue(t, data.FilesFiltered, 25, "FilesFiltered")
 
 	if len(data.FilterBreakdown) != 3 {
 		t.Errorf("FilterBreakdown length = %d, want 3", len(data.FilterBreakdown))

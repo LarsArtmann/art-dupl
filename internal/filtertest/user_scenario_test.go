@@ -201,7 +201,7 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 		t.Fatalf("WithFilterOptions() error: %v", filterErr)
 	}
 
-	fltr, filterErr := gogenfilter.NewFilter(
+	f, filterErr := gogenfilter.NewFilter(
 		filterConfig,
 		gogenfilter.WithFS(os.DirFS("/")),
 	)
@@ -210,14 +210,14 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// SQLC files should be filtered
-	if filtered, err := fltr.Filter(
+	if filtered, err := f.Filter(
 		toFSPath(filepath.Join(queriesDir, "articles.sql.go")),
 	); err == nil &&
 		!filtered {
 		t.Error("articles.sql.go should be filtered (SQLC generated)")
 	}
 
-	if filtered, err := fltr.Filter(
+	if filtered, err := f.Filter(
 		toFSPath(filepath.Join(queriesDir, "users.sql.go")),
 	); err == nil &&
 		!filtered {
@@ -225,14 +225,14 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 	}
 
 	// Regular files should NOT be filtered
-	if filtered, err := fltr.Filter(
+	if filtered, err := f.Filter(
 		toFSPath(filepath.Join(repoDir, "article_repository.go")),
 	); err == nil &&
 		filtered {
 		t.Error("article_repository.go should NOT be filtered (regular Go file)")
 	}
 
-	if filtered, err := fltr.Filter(
+	if filtered, err := f.Filter(
 		toFSPath(filepath.Join(repoDir, "mock_repository.go")),
 	); err == nil &&
 		filtered {

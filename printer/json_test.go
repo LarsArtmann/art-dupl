@@ -22,13 +22,9 @@ func TestJSONPrinter_PrintHeader(t *testing.T) {
 	jsonPrinter := printer.(*JSONPrinter)
 	testutil.AssertFieldValue(t, jsonPrinter.iota, 0, "iota")
 
-	if jsonPrinter.filesCount != 0 {
-		t.Errorf("Expected filesCount to be 0, got %d", jsonPrinter.filesCount)
-	}
+	testutil.AssertFieldValue(t, jsonPrinter.filesCount, 0, "filesCount")
 
-	if jsonPrinter.totalClones != 0 {
-		t.Errorf("Expected totalClones to be 0, got %d", jsonPrinter.totalClones)
-	}
+	testutil.AssertFieldValue(t, jsonPrinter.totalClones, 0, "totalClones")
 }
 
 func TestJSONPrinter_PrintClones(t *testing.T) {
@@ -191,9 +187,7 @@ func TestJSONPrinter_SetFilesCount(t *testing.T) {
 
 	jp.SetFilesCount(42)
 
-	if jp.filesCount != 42 {
-		t.Errorf("filesCount = %d, want 42", jp.filesCount)
-	}
+	testutil.AssertFieldValue(t, jp.filesCount, 42, "filesCount")
 }
 
 func TestJSONPrinter_PrintFooter(t *testing.T) {
@@ -324,9 +318,7 @@ func TestJSONPrinter_PrintClones_MultipleGroups(t *testing.T) {
 		t.Errorf("clone groups = %d, want 2", len(jp.cloneGroups))
 	}
 
-	if jp.totalClones != 2 {
-		t.Errorf("totalClones = %d, want 2", jp.totalClones)
-	}
+	testutil.AssertFieldValue(t, jp.totalClones, 2, "totalClones")
 }
 
 func mockReadFile(content string) ReadFile {

@@ -1,6 +1,7 @@
 package configtest
 
 import (
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -32,17 +33,11 @@ func TestConfigurationIntegration(t *testing.T) {
 	merged := config.MergeConfigs(fileConfig, cliConfig)
 
 	// Test CLI overrides
-	if merged.Threshold != 50 {
-		t.Errorf("Expected threshold 50 (CLI override), got %d", merged.Threshold)
-	}
+	testutil.AssertFieldValue(t, merged.Threshold, 50, "Threshold")
 
-	if merged.OutputFormat != "html" {
-		t.Errorf("Expected outputFormat html (CLI override), got %s", merged.OutputFormat)
-	}
+	testutil.AssertFieldValue(t, merged.OutputFormat, "html", "OutputFormat")
 
-	if merged.IncludeVendor != true {
-		t.Errorf("Expected IncludeVendor true (CLI override), got %v", merged.IncludeVendor)
-	}
+	testutil.AssertFieldValue(t, merged.IncludeVendor, true, "IncludeVendor")
 
 	// Test file config values preserved
 	if !merged.Verbose {
@@ -57,13 +52,9 @@ func TestConfigurationIntegration(t *testing.T) {
 		t.Errorf("Expected merged ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
 	}
 
-	if merged.MaxChildrenSerial != 20000 {
-		t.Errorf("Expected MaxChildrenSerial 20000, got %d", merged.MaxChildrenSerial)
-	}
+	testutil.AssertFieldValue(t, merged.MaxChildrenSerial, 20000, "MaxChildrenSerial")
 
-	if merged.OutputFile != "output.json" {
-		t.Errorf("Expected OutputFile output.json, got %s", merged.OutputFile)
-	}
+	testutil.AssertFieldValue(t, merged.OutputFile, "output.json", "OutputFile")
 
 	if len(merged.DetectionMethods) != 1 ||
 		merged.DetectionMethods[0] != config.DetectionMethodArtDupl {

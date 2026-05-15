@@ -21,9 +21,9 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 
 func (p *plumbing) PrintHeader() error { return nil }
 
-func (p *plumbing) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *plumbing) PrintClones(matches [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	// Apply sorting to the clone groups
-	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
+	sortedDups := SortNodesByCriteria(matches, ExtractSortCriteria(sortBy...))
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {

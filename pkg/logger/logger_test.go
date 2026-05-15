@@ -10,9 +10,7 @@ import (
 func TestDefaultConfig(t *testing.T) {
 	cfg := DefaultConfig()
 
-	if cfg.Level != "info" {
-		t.Errorf("Expected level 'info', got '%s'", cfg.Level)
-	}
+	testutil.AssertFieldValue(t, cfg.Level, "info", "Level")
 
 	if cfg.Output == nil {
 		t.Error("Expected output to be non-nil")
@@ -22,9 +20,7 @@ func TestDefaultConfig(t *testing.T) {
 		t.Error("Expected ReportCaller to be false")
 	}
 
-	if cfg.Prefix != "" {
-		t.Errorf("Expected empty prefix, got '%s'", cfg.Prefix)
-	}
+	testutil.AssertFieldValue(t, cfg.Prefix, "", "Prefix")
 }
 
 func TestNewLogger_NilConfig(t *testing.T) {

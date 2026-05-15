@@ -1181,7 +1181,7 @@ func TestHTMLWriteDiffComparison_Variants(t *testing.T) {
 			}
 
 			if tc.wantNoMatch != "" && strings.Contains(output, tc.wantNoMatch) {
-				t.Errorf("comparison should not contain %q", tc.wantNoMatch)
+				t.Errorf("Expected no match for %q in output", tc.wantNoMatch)
 			}
 		})
 	}

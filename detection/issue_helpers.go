@@ -54,7 +54,7 @@ type LineExtractor interface {
 // findIssuesInFile is a generic function that finds issues in a file and returns them.
 func findIssuesInFile[T any](
 	data []*syntax.Node,
-	finder func(filename string, nodes []*syntax.Node) []T,
+	finder func(filePath string, nodeList []*syntax.Node) []T,
 	matchCreator func(issue T, filename string) syntax.Match,
 ) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)

@@ -7,18 +7,18 @@ import (
 
 func TestMarshalError(t *testing.T) {
 	cause := errors.New("json syntax error")
-	err := &MarshalError{
+	unwrapErr := &MarshalError{
 		Operation: "marshal",
 		Context:   "test data",
 		Cause:     cause,
 	}
 
-	msg := err.Error()
+	msg := unwrapErr.Error()
 	if msg == "" {
 		t.Error("Error message should not be empty")
 	}
 
-	if !errors.Is(err, cause) {
+	if !errors.Is(unwrapErr, cause) {
 		t.Error("Should unwrap to cause")
 	}
 }

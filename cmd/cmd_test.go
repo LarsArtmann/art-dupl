@@ -203,25 +203,25 @@ func (m *mockPrinter) PrintClones(_ [][]*syntax.Node, _ ...config.SortCriteria) 
 var _ printer.Printer = (*mockPrinter)(nil)
 
 func TestNewRootCommand(t *testing.T) {
-	cmd := NewRootCommand()
+	c := NewRootCommand()
 
-	if cmd == nil {
+	if c == nil {
 		t.Fatal("NewRootCommand() returned nil")
 	}
 
-	if cmd.Use != "art-dupl [flags] [paths...]" {
-		t.Errorf("Use = %q, want %q", cmd.Use, "art-dupl [flags] [paths...]")
+	if c.Use != "art-dupl [flags] [paths...]" {
+		t.Errorf("Use = %q, want %q", c.Use, "art-dupl [flags] [paths...]")
 	}
 
-	if cmd.Short != "Find code clones" {
-		t.Errorf("Short = %q, want %q", cmd.Short, "Find code clones")
+	if c.Short != "Find code clones" {
+		t.Errorf("Short = %q, want %q", c.Short, "Find code clones")
 	}
 
-	if cmd.Commands() == nil {
+	if c.Commands() == nil {
 		t.Error("Expected commands to be registered")
 	}
 
-	if cmd.RunE == nil {
+	if c.RunE == nil {
 		t.Error("Expected RunE to be set")
 	}
 }

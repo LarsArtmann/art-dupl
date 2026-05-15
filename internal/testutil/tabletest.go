@@ -73,13 +73,13 @@ func RunTableTestWithName[T any](
 	t *testing.T,
 	tests []T,
 	getName func(T) string,
-	assertion func(t *testing.T, tt T),
+	verify func(t *testing.T, tc T),
 ) {
 	t.Helper()
 
-	for _, tt := range tests {
-		t.Run(getName(tt), func(t *testing.T) {
-			assertion(t, tt)
+	for _, tc := range tests {
+		t.Run(getName(tc), func(t *testing.T) {
+			verify(t, tc)
 		})
 	}
 }

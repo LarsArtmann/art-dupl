@@ -42,10 +42,8 @@ func TestDetectionMethodsToString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := detectionMethodsToString(tt.methods)
-			if result != tt.expected {
-				t.Errorf("detectionMethodsToString() = %q, want %q", result, tt.expected)
-			}
+			actual := detectionMethodsToString(tt.methods)
+			testutil.ExpectTrue(t, actual == tt.expected, "detectionMethodsToString")
 		})
 	}
 }
@@ -233,7 +231,7 @@ func TestCreatePrinter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 
-			readFile := func(filename string) ([]byte, error) { return nil, nil }
+			mockRead := func(path string) ([]byte, error) { return nil, nil }
 
 			fn := createPrinter(
 				tt.format,
@@ -242,7 +240,7 @@ func TestCreatePrinter(t *testing.T) {
 				printer.ReportMetadata{},
 				"test-version",
 			)
-			p := fn(&buf, readFile)
+			p := fn(&buf, mockRead)
 
 			if p == nil {
 				t.Error("createPrinter() returned nil printer")
@@ -404,10 +402,8 @@ func TestPassesFileCheck(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := passesFileCheck("test.go", tt.fileCheck)
-			if got != tt.want {
-				t.Errorf("passesFileCheck() = %v, want %v", got, tt.want)
-			}
+			actual := passesFileCheck("test.go", tt.fileCheck)
+			testutil.ExpectTrue(t, actual == tt.want, "passesFileCheck")
 		})
 	}
 }

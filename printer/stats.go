@@ -56,14 +56,14 @@ type stats struct {
 }
 
 // NewStats creates a new stats printer.
-func NewStats(w io.Writer, fread ReadFile, threshold int) Printer {
+func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
 	// Initialize styles
 	styles := initStyles()
 
 	return &stats{
-		w:         w,
-		ReadFile:  fread,
-		threshold: threshold,
+		w:         writer,
+		ReadFile:  fileReader,
+		threshold: minTokens,
 		statsData: &StatsData{
 			FileDuplication:   make(map[string]int),
 			SizeDistribution:  make(map[string]int),
@@ -88,7 +88,7 @@ func (p *stats) PrintHeader() error {
 }
 
 // PrintClones collects statistics from the clone groups.
-func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *stats) PrintClones(cloneData [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	// Count clone group
 	p.statsData.TotalCloneGroups++
 
@@ -99,7 +99,7 @@ func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria
 	uniqueLineCount := 0
 
 	// Process each clone in the group
-	for _, dup := range dups {
+	for _, dup := range cloneData {
 		if len(dup) == 0 {
 			continue
 		}
@@ -141,7 +141,7 @@ func (p *stats) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria
 	p.statsData.TotalDuplicateLines += uniqueLineCount
 
 	// Update impact score (tokens × instances)
-	p.statsData.ImpactScore += tokensInGroup * len(dups)
+	p.statsData.ImpactScore += tokensInGroup * len(cloneData)
 
 	// Track severity based on tokens in the clone group (once per group)
 	severity := p.getSeverity(tokensInGroup)

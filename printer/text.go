@@ -70,10 +70,10 @@ func calculateCloneSizes(clones []clone) int {
 	return totalSize
 }
 
-func (p *TextPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *TextPrinter) PrintClones(nodeGroups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.cnt++
 
-	sortedDups := SortNodesByCriteria(dups, ExtractSortCriteria(sortBy...))
+	sortedDups := SortNodesByCriteria(nodeGroups, ExtractSortCriteria(sortBy...))
 
 	clones, err := prepareClonesInfo(p.ReadFile, sortedDups)
 	if err != nil {

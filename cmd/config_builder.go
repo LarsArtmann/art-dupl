@@ -166,29 +166,29 @@ func warnStructural(structural bool) {
 }
 
 // applyFlagValues applies the extracted flag values to the config.
-func applyFlagValues(cfg *config.Config, flags *FlagValues) error {
-	applySimpleFlags(cfg, flags)
+func applyFlagValues(c *config.Config, fv *FlagValues) error {
+	applySimpleFlags(c, fv)
 
-	err := setDetectionMethods(cfg, flags.DetectionMethods)
+	err := setDetectionMethods(c, fv.DetectionMethods)
 	if err != nil {
 		return err
 	}
 
-	applyThresholdFlag(cfg, flags)
-	applyBooleanFlags(cfg, flags)
-	applyPatternFlags(cfg, flags)
+	applyThresholdFlag(c, fv)
+	applyBooleanFlags(c, fv)
+	applyPatternFlags(c, fv)
 
-	err = applyTimeoutFlag(cfg, flags)
+	err = applyTimeoutFlag(c, fv)
 	if err != nil {
 		return err
 	}
 
-	err = applyDiffModeFlag(cfg, flags)
+	err = applyDiffModeFlag(c, fv)
 	if err != nil {
 		return err
 	}
 
-	applyPathsFlag(cfg, flags)
+	applyPathsFlag(c, fv)
 
 	return nil
 }
@@ -291,17 +291,17 @@ func applyTimeoutFlag(cfg *config.Config, flags *FlagValues) error {
 }
 
 // applyDiffModeFlag applies the diff mode flag to the config.
-func applyDiffModeFlag(cfg *config.Config, flags *FlagValues) error {
-	if flags.DiffMode != "" {
-		parsedDiffMode, err := config.ParseDiffMode(flags.DiffMode)
+func applyDiffModeFlag(c *config.Config, fv *FlagValues) error {
+	if fv.DiffMode != "" {
+		parsedDiffMode, err := config.ParseDiffMode(fv.DiffMode)
 		if err != nil {
 			return duplerrors.WrapValidation(
 				err,
-				fmt.Sprintf("invalid --diff value %q", flags.DiffMode),
+				fmt.Sprintf("invalid --diff value %q", fv.DiffMode),
 			)
 		}
 
-		cfg.DiffMode = parsedDiffMode
+		c.DiffMode = parsedDiffMode
 	}
 
 	return nil

@@ -123,9 +123,7 @@ func main() {
 	}
 
 	stats := <-statsChan
-	if stats.CacheHits != 1 {
-		t.Errorf("Expected CacheHits=1 (second run), got %d", stats.CacheHits)
-	}
+	testutil.AssertFieldValue(t, stats.CacheHits, 1, "CacheHits")
 }
 
 func TestIncrementalParserClearCache(t *testing.T) {
@@ -170,9 +168,7 @@ func main() {
 	}
 
 	stats := <-statsChan
-	if stats.CacheMisses != 1 {
-		t.Errorf("Expected CacheMisses=1 (after clear), got %d", stats.CacheMisses)
-	}
+	testutil.AssertFieldValue(t, stats.CacheMisses, 1, "CacheMisses")
 }
 
 func TestIncrementalParserContextCancellation(t *testing.T) {

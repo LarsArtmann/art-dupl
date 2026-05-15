@@ -33,11 +33,9 @@ func TestDetectionMethods_IsEmpty(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := tc.methods.IsEmpty()
+			result := tc.methods.IsEmpty()
 
-			if got != tc.expected {
-				t.Errorf("IsEmpty() = %v, want %v", got, tc.expected)
-			}
+			testutil.ExpectTrue(t, result == tc.expected, "IsEmpty")
 		})
 	}
 }
@@ -61,10 +59,8 @@ func TestDetectionMethods_IsHashOnly(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := tc.methods.IsHashOnly()
-			if got != tc.expected {
-				t.Errorf("IsHashOnly() = %v, want %v", got, tc.expected)
-			}
+			result := tc.methods.IsHashOnly()
+			testutil.ExpectTrue(t, result == tc.expected, "IsHashOnly")
 		})
 	}
 }
@@ -87,10 +83,8 @@ func TestDetectionMethods_IsDefault(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := tc.methods.IsDefault()
-			if got != tc.expected {
-				t.Errorf("IsDefault() = %v, want %v", got, tc.expected)
-			}
+			result := tc.methods.IsDefault()
+			testutil.ExpectTrue(t, result == tc.expected, "IsDefault")
 		})
 	}
 }
@@ -800,15 +794,7 @@ func TestAllSortCriteria(t *testing.T) {
 	t.Parallel()
 
 	criteria := AllSortCriteria()
-	if len(criteria) != 4 {
-		t.Errorf("AllSortCriteria() returned %d criteria, want 4", len(criteria))
-	}
-
-	for _, sc := range criteria {
-		if !sc.IsValid() {
-			t.Errorf("AllSortCriteria() contains invalid: %s", sc)
-		}
-	}
+	testutil.AssertLen(t, criteria, 4, "AllSortCriteria")
 }
 
 func TestDefaultSortCriteria(t *testing.T) {
@@ -905,10 +891,7 @@ func TestAllOutputFormats(t *testing.T) {
 	t.Parallel()
 
 	formats := AllOutputFormats()
-	if len(formats) != 7 {
-		t.Errorf("AllOutputFormats() returned %d formats, want 7", len(formats))
-	}
-
+	testutil.AssertLen(t, formats, 7, "AllOutputFormats")
 	for _, fmt := range formats {
 		if !fmt.IsValid() {
 			t.Errorf("AllOutputFormats() contains invalid: %s", fmt)
@@ -1148,9 +1131,9 @@ func TestIsValidStringType(t *testing.T) {
 func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == validValue }
+	validateFn := func(v string) bool { return v == validValue }
 
-	_, err := unmarshalStringType([]byte("not json"), isValidFn, "default", "string type")
+	_, err := unmarshalStringType([]byte("not json"), validateFn, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid JSON")
 	}
@@ -1159,9 +1142,9 @@ func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == validValue }
+	checkFn := func(v string) bool { return v == validValue }
 
-	got, err := unmarshalStringType([]byte(`"invalid"`), isValidFn, "default", "string type")
+	got, err := unmarshalStringType([]byte(`"invalid"`), checkFn, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid value")
 	}
@@ -1174,13 +1157,13 @@ func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 func TestUnmarshalStringTypeToPointer(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == validValue }
+	validateFn := func(v string) bool { return v == validValue }
 
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"valid"`),
-		isValidFn,
+		validateFn,
 		"default",
 		"string type",
 		&target,
@@ -1197,13 +1180,13 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == validValue }
+	checkFn := func(v string) bool { return v == validValue }
 
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"bad"`),
-		isValidFn,
+		checkFn,
 		"default",
 		"string type",
 		&target,

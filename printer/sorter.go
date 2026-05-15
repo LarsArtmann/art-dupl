@@ -67,45 +67,45 @@ func isEmptyOrLessThanEmpty[T any](slices [][]T, i, j int) (bool, bool) {
 }
 
 // SortClonesBySize sorts clone groups by token count (largest first, descending order).
-func SortClonesBySize(dups [][]*syntax.Node) [][]*syntax.Node {
-	sort.Slice(dups, func(i, j int) bool {
-		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
+func SortClonesBySize(cloneGroups [][]*syntax.Node) [][]*syntax.Node {
+	sort.Slice(cloneGroups, func(i, j int) bool {
+		if handled, lessThan := isEmptyOrLessThanEmpty(cloneGroups, i, j); handled {
 			return lessThan
 		}
 		// Calculate size as end position minus start position
-		sizeI := dups[i][len(dups[i])-1].End - dups[i][0].Pos
-		sizeJ := dups[j][len(dups[j])-1].End - dups[j][0].Pos
+		sizeI := cloneGroups[i][len(cloneGroups[i])-1].End - cloneGroups[i][0].Pos
+		sizeJ := cloneGroups[j][len(cloneGroups[j])-1].End - cloneGroups[j][0].Pos
 
 		return sizeI > sizeJ
 	})
 
-	return dups
+	return cloneGroups
 }
 
 // SortClonesByOccurrence sorts clone groups by number of files (most files first, descending order).
-func SortClonesByOccurrence(dups [][]*syntax.Node) [][]*syntax.Node {
-	sort.Slice(dups, func(i, j int) bool {
+func SortClonesByOccurrence(groups [][]*syntax.Node) [][]*syntax.Node {
+	sort.Slice(groups, func(i, j int) bool {
 		// Sort by number of occurrences (files in each clone group)
-		return len(dups[i]) > len(dups[j])
+		return len(groups[i]) > len(groups[j])
 	})
 
-	return dups
+	return groups
 }
 
 // SortClonesByHash sorts clone groups by hash (alphabetical, ascending order).
-func SortClonesByHash(dups [][]*syntax.Node) [][]*syntax.Node {
-	sort.Slice(dups, func(i, j int) bool {
-		if handled, lessThan := isEmptyOrLessThanEmpty(dups, i, j); handled {
+func SortClonesByHash(sorted [][]*syntax.Node) [][]*syntax.Node {
+	sort.Slice(sorted, func(i, j int) bool {
+		if handled, lessThan := isEmptyOrLessThanEmpty(sorted, i, j); handled {
 			return lessThan
 		}
 
 		return compareByNameThenPos(
-			dups[i][0].Filename, dups[j][0].Filename,
-			int(dups[i][0].Pos), int(dups[j][0].Pos),
+			sorted[i][0].Filename, sorted[j][0].Filename,
+			int(sorted[i][0].Pos), int(sorted[j][0].Pos),
 		)
 	})
 
-	return dups
+	return sorted
 }
 
 // countNonNilNodes counts non-nil nodes in a slice.
@@ -122,15 +122,15 @@ func countNonNilNodes(nodes []*syntax.Node) int {
 }
 
 // SortClonesByTotalTokens sorts clone groups by total token count across all files (largest first).
-func SortClonesByTotalTokens(dups [][]*syntax.Node) [][]*syntax.Node {
-	sort.Slice(dups, func(i, j int) bool {
-		tokensI := countNonNilNodes(dups[i])
-		tokensJ := countNonNilNodes(dups[j])
+func SortClonesByTotalTokens(nodeGroups [][]*syntax.Node) [][]*syntax.Node {
+	sort.Slice(nodeGroups, func(i, j int) bool {
+		tokensI := countNonNilNodes(nodeGroups[i])
+		tokensJ := countNonNilNodes(nodeGroups[j])
 
 		return tokensI > tokensJ
 	})
 
-	return dups
+	return nodeGroups
 }
 
 // sumFragmentLengths sums the lengths of all clone fragments in a group.

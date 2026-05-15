@@ -1,6 +1,7 @@
 package job
 
 import (
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"context"
 	"errors"
 	"testing"
@@ -23,9 +24,7 @@ func TestProfile(t *testing.T) {
 func TestStartProfile(t *testing.T) {
 	start := StartProfile()
 
-	if start.Duration != 0 {
-		t.Errorf("StartProfile duration should be 0 initially, got %v", start.Duration)
-	}
+	testutil.AssertFieldValue(t, start.Duration, 0, "Duration")
 
 	// Wait a bit
 	time.Sleep(10 * time.Millisecond)

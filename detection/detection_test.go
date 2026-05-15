@@ -362,7 +362,7 @@ func TestFindIssues_EmptyData(t *testing.T) {
 			func() <-chan syntax.Match {
 				return findIssuesInFile(
 					[]*syntax.Node{},
-					func(filename string, nodes []*syntax.Node) []string { return nil },
+					func(fname string, astNodes []*syntax.Node) []string { return nil },
 					func(issue, filename string) syntax.Match { return syntax.Match{Hash: issue} },
 				)
 			},
@@ -372,7 +372,7 @@ func TestFindIssues_EmptyData(t *testing.T) {
 			func() <-chan syntax.Match {
 				return findIssuesGeneric(
 					[]*syntax.Node{},
-					func(filename string, nodes []*syntax.Node) []TodoIssue { return nil },
+					func(file string, nodeSlice []*syntax.Node) []TodoIssue { return nil },
 					"TODO",
 				)
 			},

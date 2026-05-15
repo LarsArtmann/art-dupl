@@ -130,41 +130,41 @@ func diffSameLength(base, compared []DiffLine) bool {
 // diffDifferentLength handles fragments with different line counts.
 // Uses a simple LCS (Longest Common Subsequence) approach for small files,
 // falls back to line-by-line for performance with large files.
-func diffDifferentLength(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool {
+func diffDifferentLength(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 	// For performance, use simple heuristic for large files (>100 lines)
-	if len(baseLines) > 100 || len(comparedLines) > 100 {
-		return diffLargeFiles(baseLines, comparedLines, base, compared)
+	if len(srcRows) > 100 || len(dstRows) > 100 {
+		return diffLargeFiles(srcRows, dstRows, left, right)
 	}
 
-	return diffLCS(baseLines, comparedLines, base, compared)
+	return diffLCS(srcRows, dstRows, left, right)
 }
 
 // diffLargeFiles uses a faster heuristic for large files.
-func diffLargeFiles(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool {
+func diffLargeFiles(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 	hasDiff := false
-	minLen := min(len(comparedLines), len(baseLines))
+	minLen := min(len(dstRows), len(srcRows))
 
 	// Compare line by line up to the shorter length
 	for i := range minLen {
 		if markLinesModified(
-			bytes.TrimSpace(baseLines[i]),
-			bytes.TrimSpace(comparedLines[i]),
-			&base[i],
-			&compared[i],
+			bytes.TrimSpace(srcRows[i]),
+			bytes.TrimSpace(dstRows[i]),
+			&left[i],
+			&right[i],
 		) {
 			hasDiff = true
 		}
 	}
 
 	// Mark extra lines as added/removed
-	if len(baseLines) > len(comparedLines) {
-		for i := len(comparedLines); i < len(baseLines); i++ {
-			base[i].Type = DiffLineRemoved
+	if len(srcRows) > len(dstRows) {
+		for i := len(dstRows); i < len(srcRows); i++ {
+			left[i].Type = DiffLineRemoved
 			hasDiff = true
 		}
-	} else if len(comparedLines) > len(baseLines) {
-		for i := len(baseLines); i < len(comparedLines); i++ {
-			compared[i].Type = DiffLineAdded
+	} else if len(dstRows) > len(srcRows) {
+		for i := len(srcRows); i < len(dstRows); i++ {
+			right[i].Type = DiffLineAdded
 			hasDiff = true
 		}
 	}
@@ -179,8 +179,8 @@ func linesMatch(line1, line2 []byte) bool {
 
 // diffLCS performs LCS-based diff for smaller files.
 // Time: O(n*m), Space: O(n*m) - acceptable for files < 100 lines.
-func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool {
-	m, n := len(baseLines), len(comparedLines)
+func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
+	m, n := len(srcRows), len(dstRows)
 
 	// Build LCS matrix
 	dp := make([][]int, m+1)
@@ -190,7 +190,7 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 
 	for i := 1; i <= m; i++ {
 		for j := 1; j <= n; j++ {
-			if linesMatch(baseLines[i-1], comparedLines[j-1]) {
+			if linesMatch(srcRows[i-1], dstRows[j-1]) {
 				dp[i][j] = dp[i-1][j-1] + 1
 			} else {
 				dp[i][j] = max(dp[i-1][j], dp[i][j-1])
@@ -204,18 +204,18 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 
 	for i > 0 && j > 0 {
 		switch {
-		case linesMatch(baseLines[i-1], comparedLines[j-1]):
+		case linesMatch(srcRows[i-1], dstRows[j-1]):
 			// Lines match
 			i--
 			j--
 		case dp[i-1][j] >= dp[i][j-1]:
 			// Line removed from base
-			base[i-1].Type = DiffLineRemoved
+			left[i-1].Type = DiffLineRemoved
 			hasDiff = true
 			i--
 		default:
 			// Line added in compared
-			compared[j-1].Type = DiffLineAdded
+			right[j-1].Type = DiffLineAdded
 			hasDiff = true
 			j--
 		}
@@ -223,13 +223,13 @@ func diffLCS(baseLines, comparedLines [][]byte, base, compared []DiffLine) bool 
 
 	// Mark remaining lines
 	for i > 0 {
-		base[i-1].Type = DiffLineRemoved
+		left[i-1].Type = DiffLineRemoved
 		hasDiff = true
 		i--
 	}
 
 	for j > 0 {
-		compared[j-1].Type = DiffLineAdded
+		right[j-1].Type = DiffLineAdded
 		hasDiff = true
 		j--
 	}

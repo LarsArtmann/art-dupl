@@ -110,11 +110,11 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+func (p *JSONPrinter) PrintClones(groups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
 	p.iota++
 
-	clones := make([]JSONClone, len(dups))
-	for i, dup := range dups {
+	clones := make([]JSONClone, len(groups))
+	for i, dup := range groups {
 		cnt := len(dup)
 		if cnt == 0 {
 			return errors.NewInternalError("zero length duplicate found", nil)
@@ -130,7 +130,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCr
 				"failed to process node range for file %s (clone %d of %d): %w",
 				nstart.Filename,
 				i+1,
-				len(dups),
+				len(groups),
 				err,
 			)
 		}
@@ -159,7 +159,7 @@ func (p *JSONPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCr
 
 	// Calculate size (use actual token count)
 	size := 0
-	for _, dup := range dups {
+	for _, dup := range groups {
 		// Each dup is a sequence of []*Node, where each node is a token
 		size += len(dup)
 	}

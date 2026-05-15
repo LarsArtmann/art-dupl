@@ -16,7 +16,7 @@ func TestProcessFileContent(t *testing.T) {
 	t.Parallel()
 
 	node := testNode("test.go", 0, 5)
-	fread := func(filename string) ([]byte, error) {
+	fread := func(name string) ([]byte, error) {
 		return []byte("hello"), nil
 	}
 
@@ -24,7 +24,6 @@ func TestProcessFileContent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ProcessFileContent() error: %v", err)
 	}
-
 	if info.Filename != "test.go" {
 		t.Errorf("Filename = %q, want %q", info.Filename, "test.go")
 	}
@@ -37,7 +36,7 @@ func TestProcessFileContent(t *testing.T) {
 func TestProcessFileContent_NilNode(t *testing.T) {
 	t.Parallel()
 
-	fread := func(filename string) ([]byte, error) { return nil, nil }
+	fread := func(fname string) ([]byte, error) { return nil, nil }
 
 	_, err := ProcessFileContent(fread, nil)
 	if err == nil {

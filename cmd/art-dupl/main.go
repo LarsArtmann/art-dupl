@@ -25,12 +25,12 @@ func main() {
 	errorHandler := func(w io.Writer, styles fang.Styles, err error) {
 		// Special handling for context cancellation (Ctrl+C)
 		if errors.Is(err, context.Canceled) {
-			canceledStyle := lipgloss.NewStyle().
+			cancelMsg := lipgloss.NewStyle().
 				Foreground(lipgloss.Color("196")).
 				Bold(true).
 				Render("⏹ CANCELED")
 
-			_, _ = fmt.Fprintln(w, canceledStyle)
+			_, _ = fmt.Fprintln(w, cancelMsg)
 
 			return
 		}

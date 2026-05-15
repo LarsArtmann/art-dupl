@@ -154,8 +154,8 @@ func (p *sarifPrinter) PrintHeader() error {
 	return nil
 }
 
-func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortCriteria) error {
-	if len(dups) == 0 {
+func (p *sarifPrinter) PrintClones(entries [][]*syntax.Node, sortBy ...config.SortCriteria) error {
+	if len(entries) == 0 {
 		return nil
 	}
 
@@ -174,12 +174,12 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortC
 
 	// Calculate size (token count)
 	size := 0
-	if len(dups) > 0 && len(dups[0]) > 0 {
-		size = len(dups[0])
+	if len(entries) > 0 && len(entries[0]) > 0 {
+		size = len(entries[0])
 	}
 
 	// Create a result for each clone instance
-	for _, dup := range dups {
+	for _, dup := range entries {
 		if len(dup) == 0 {
 			continue
 		}
@@ -196,7 +196,7 @@ func (p *sarifPrinter) PrintClones(dups [][]*syntax.Node, sortBy ...config.SortC
 
 		level := p.determineLevel(size)
 		msg := fmt.Sprintf("Duplicate code: %d tokens in %d instances",
-			size, len(dups))
+			size, len(entries))
 
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",

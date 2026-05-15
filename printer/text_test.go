@@ -32,7 +32,7 @@ func mustPrintHeader(t *testing.T, p Printer) {
 	t.Helper()
 
 	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader() error: %v", err)
+		t.Fatalf("PrintHeader failed: %v", err)
 	}
 }
 
@@ -41,7 +41,7 @@ func mustPrintFooter(t *testing.T, p Printer) {
 	t.Helper()
 
 	if err := p.PrintFooter(); err != nil {
-		t.Fatalf("PrintFooter() error: %v", err)
+		t.Fatalf("PrintFooter failed: %v", err)
 	}
 }
 
@@ -82,9 +82,9 @@ func TestTextPrinter_PrintHeaderAndFooter(t *testing.T) {
 			p := NewText(&buf, mockReadFile(""))
 
 			err := tc.call(p)
-			if err != nil {
-				t.Fatalf("%s() error: %v", tc.name, err)
-			}
+	if err != nil {
+		t.Fatalf("%s() error: %v", tc.name, err)
+	}
 
 			if tc.name == "PrintHeader" && buf.Len() != 0 {
 				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
@@ -356,8 +356,8 @@ func TestPrepareClonesInfo_ReadError(t *testing.T) {
 
 	fread := errorReadFile("read error")
 
-	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
-	dups := [][]*syntax.Node{{node}}
+	testNode := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+	dups := [][]*syntax.Node{{testNode}}
 
 	_, err := prepareClonesInfo(fread, dups)
 	if err == nil {
@@ -411,8 +411,8 @@ func TestTextPrinter_OutputText(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 	tp := p.(*TextPrinter)
 
-	node := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
-	dups := [][]*syntax.Node{{node}}
+	testNode := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
+	dups := [][]*syntax.Node{{testNode}}
 
 	clones, err := prepareClonesInfo(tp.ReadFile, dups)
 	if err != nil {
@@ -504,9 +504,9 @@ func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 			tp.cloneGroups = [][]clone{clones}
 
 			err := tp.OutputText(15, tc.sortBy)
-			if err != nil {
-				t.Fatalf("OutputText(%s) error: %v", tc.sortBy, err)
-			}
+	if err != nil {
+		t.Fatalf("%s() error: %v", tc.name, err)
+	}
 		})
 	}
 }
@@ -521,8 +521,8 @@ func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 	tp := p.(*TextPrinter)
 
-	node := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
-	dups := [][]*syntax.Node{{node}}
+	testNode := &syntax.Node{Filename: "test.go", Pos: 15, End: 40}
+	dups := [][]*syntax.Node{{testNode}}
 
 	clones, err := prepareClonesInfo(tp.ReadFile, dups)
 	if err != nil {
@@ -549,8 +549,8 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 
 	p := NewText(&buf, fread)
 
-	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
-	dups := [][]*syntax.Node{{node}}
+	testNode := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+	dups := [][]*syntax.Node{{testNode}}
 
 	err := p.(*TextPrinter).PrintClonesSorted(dups, config.SortBySize)
 	if err == nil {
@@ -589,9 +589,9 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 			dups := [][]*syntax.Node{nodes}
 
 			err := p.(*TextPrinter).PrintClonesSorted(dups, tc.sortBy)
-			if err != nil {
-				t.Fatalf("PrintClonesSorted(%s) error: %v", tc.sortBy, err)
-			}
+	if err != nil {
+		t.Fatalf("%s() error: %v", tc.name, err)
+	}
 
 			if tc.wantSubstr != "" {
 				testutil.AssertStringContains(

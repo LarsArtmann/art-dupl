@@ -268,7 +268,7 @@ func TestExamplesInterfaces(t *testing.T) {
 	l.Error("error message")
 
 	// Test file reader function
-	var fileReader artdupl.FileReaderFunc = func(filename string) ([]byte, error) {
+	var fileReader artdupl.FileReaderFunc = func(path string) ([]byte, error) {
 		return []byte("test content"), nil
 	}
 

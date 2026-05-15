@@ -22,8 +22,8 @@ func NewLegacyDetector() *LegacyDetector {
 }
 
 // FindLegacy finds all legacy patterns in provided nodes.
-func (ld *LegacyDetector) FindLegacy(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, ld.findLegacyInFile, "LEGACY")
+func (ld *LegacyDetector) FindLegacy(nodes []*syntax.Node) <-chan syntax.Match {
+	return findIssuesGeneric(nodes, ld.findLegacyInFile, "LEGACY")
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.

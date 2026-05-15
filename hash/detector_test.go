@@ -306,9 +306,7 @@ func TestHashFile_UnreadableFile(t *testing.T) {
 		t.Error("expected ok=false for unreadable file")
 	}
 
-	if fh.Hash != "" {
-		t.Errorf("expected empty hash, got %q", fh.Hash)
-	}
+	testutil.AssertFieldValue(t, fh.Hash, "", "Hash")
 }
 
 func TestHashFile_ValidFile(t *testing.T) {
@@ -380,9 +378,7 @@ func TestFileDuplicate_Fields(t *testing.T) {
 		},
 	}
 
-	if fd.Hash != "deadbeef" {
-		t.Errorf("expected Hash 'deadbeef', got %q", fd.Hash)
-	}
+	testutil.AssertFieldValue(t, fd.Hash, "deadbeef", "Hash")
 
 	if len(fd.Files) != 2 {
 		t.Errorf("expected 2 files, got %d", len(fd.Files))

@@ -1,6 +1,7 @@
 package artdupl
 
 import (
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"context"
 	"errors"
 	"testing"
@@ -22,9 +23,7 @@ func validOpts(threshold int) *Options {
 func TestDefaultOptions_Values(t *testing.T) {
 	opts := DefaultOptions()
 
-	if opts.Threshold != 15 {
-		t.Errorf("Default threshold should be 15, got %d", opts.Threshold)
-	}
+	testutil.AssertFieldValue(t, opts.Threshold, 15, "Threshold")
 
 	if len(opts.DetectionMethods) != 1 {
 		t.Errorf("Default should have 1 detection method, got %d", len(opts.DetectionMethods))
@@ -34,21 +33,13 @@ func TestDefaultOptions_Values(t *testing.T) {
 		t.Errorf("Default method should be MethodArtDupl, got %v", opts.DetectionMethods[0])
 	}
 
-	if opts.MaxFileSize != 10*1024*1024 {
-		t.Errorf("Default max file size should be 10MB, got %d", opts.MaxFileSize)
-	}
+	testutil.AssertFieldValue(t, opts.MaxFileSize, 10*1024*1024, "MaxFileSize")
 
-	if opts.MaxWorkers != 4 {
-		t.Errorf("Default max workers should be 4, got %d", opts.MaxWorkers)
-	}
+	testutil.AssertFieldValue(t, opts.MaxWorkers, 4, "MaxWorkers")
 
-	if opts.Timeout != 30*time.Minute {
-		t.Errorf("Default timeout should be 30m, got %v", opts.Timeout)
-	}
+	testutil.AssertFieldValue(t, opts.Timeout, 30*time.Minute, "Timeout")
 
-	if opts.MaxClonesPerGroup != 50 {
-		t.Errorf("Default max clones per group should be 50, got %d", opts.MaxClonesPerGroup)
-	}
+	testutil.AssertFieldValue(t, opts.MaxClonesPerGroup, 50, "MaxClonesPerGroup")
 }
 
 // TestValidateOptions_AllErrors tests all validation errors.
@@ -265,9 +256,7 @@ func TestConvertOptionsToConfig(t *testing.T) {
 
 	cfg := convertOptionsToConfig(opts)
 
-	if cfg.Threshold != 25 {
-		t.Errorf("Threshold should be 25, got %d", cfg.Threshold)
-	}
+	testutil.AssertFieldValue(t, cfg.Threshold, 25, "Threshold")
 
 	if len(cfg.DetectionMethods) != 2 {
 		t.Errorf("Should have 2 detection methods, got %d", len(cfg.DetectionMethods))
@@ -359,14 +348,14 @@ func TestProgressCallback(t *testing.T) {
 
 // TestOptions_WithFileReader tests custom file reader option.
 func TestOptions_WithFileReader(t *testing.T) {
-	customReader := func(filename string) ([]byte, error) {
+	testReader := func(fname string) ([]byte, error) {
 		return []byte("custom content"), nil
 	}
 
 	opts := &Options{
 		Threshold:        15,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
-		FileReader:       customReader,
+		FileReader:       testReader,
 		MaxWorkers:       4,
 	}
 
@@ -436,9 +425,9 @@ func TestDetector_Close(t *testing.T) {
 func mustCreateDetector(t *testing.T, opts *Options) Detector {
 	t.Helper()
 
-	detector, err := NewDetector(opts)
-	if err != nil {
-		t.Fatalf("Failed to create detector: %v", err)
+	detector, actualErr := NewDetector(opts)
+	if actualErr != nil {
+		t.Fatalf("Failed to create detector: %v", actualErr)
 	}
 
 	return detector
@@ -458,9 +447,9 @@ func TestDetector_FindClones_NoFiles(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			detector := mustCreateDetector(t, DefaultOptions())
 
-			_, err := detector.FindClones(t.Context(), tt.files)
-			if !errors.Is(err, ErrNoFilesProvided) {
-				t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
+			_, returnedErr := detector.FindClones(t.Context(), tt.files)
+			if !errors.Is(returnedErr, ErrNoFilesProvided) {
+				t.Errorf("Expected ErrNoFilesProvided, got: %v", returnedErr)
 			}
 		})
 	}
@@ -483,14 +472,14 @@ func TestDetector_FindClones_ContextCanceled(t *testing.T) {
 func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
 	opts := DefaultOptions()
 
-	detector, err := NewDetector(opts)
-	if err != nil {
-		t.Fatalf("Failed to create detector: %v", err)
+	detector, actualErr := NewDetector(opts)
+	if actualErr != nil {
+		t.Fatalf("Failed to create detector: %v", actualErr)
 	}
 
-	_, err = detector.FindClonesStream(t.Context(), []string{})
-	if !errors.Is(err, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
+	_, actualErr = detector.FindClonesStream(t.Context(), []string{})
+	if !errors.Is(actualErr, ErrNoFilesProvided) {
+		t.Errorf("Expected ErrNoFilesProvided, got: %v", actualErr)
 	}
 }
 
@@ -520,22 +509,22 @@ func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 func TestDetector_Reuse(t *testing.T) {
 	opts := DefaultOptions()
 
-	detector, err := NewDetector(opts)
-	if err != nil {
-		t.Fatalf("Failed to create detector: %v", err)
+	detector, returnedErr := NewDetector(opts)
+	if returnedErr != nil {
+		t.Fatalf("Failed to create detector: %v", returnedErr)
 	}
 
 	t.Cleanup(func() {
 		cleanupDetector(t, detector)
 	})
 
-	_, err = detector.FindClones(t.Context(), []string{})
-	if !errors.Is(err, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided, got: %v", err)
+	_, returnedErr = detector.FindClones(t.Context(), []string{})
+	if !errors.Is(returnedErr, ErrNoFilesProvided) {
+		t.Errorf("Expected ErrNoFilesProvided, got: %v", returnedErr)
 	}
 
-	_, err = detector.FindClones(t.Context(), []string{})
-	if !errors.Is(err, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided on reuse, got: %v", err)
+	_, returnedErr = detector.FindClones(t.Context(), []string{})
+	if !errors.Is(returnedErr, ErrNoFilesProvided) {
+		t.Errorf("Expected ErrNoFilesProvided on reuse, got: %v", returnedErr)
 	}
 }

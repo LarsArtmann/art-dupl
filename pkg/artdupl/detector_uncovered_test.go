@@ -100,13 +100,9 @@ func TestConvertToCloneGroup(t *testing.T) {
 
 	assertCloneGroupBasic(t, group, "test-hash", 2)
 
-	if group.Method != MethodArtDupl {
-		t.Errorf("Expected Method=MethodArtDupl, got %v", group.Method)
-	}
+	testutil.AssertFieldValue(t, group.Method, MethodArtDupl, "Method")
 
-	if group.Size != 4 {
-		t.Errorf("Expected Size=4, got %d", group.Size)
-	}
+	testutil.AssertFieldValue(t, group.Size, 4, "Size")
 
 	if group.LineCount == 0 {
 		t.Error("Expected LineCount > 0")
@@ -146,21 +142,13 @@ func TestConvertFragmentToClone(t *testing.T) {
 
 		clone := d.convertFragmentToClone(frag)
 
-		if clone.Filename != "test.go" {
-			t.Errorf("Expected Filename='test.go', got %s", clone.Filename)
-		}
+		testutil.AssertFieldValue(t, clone.Filename, "test.go", "Filename")
 
-		if clone.StartLine != 10 {
-			t.Errorf("Expected StartLine=10, got %d", clone.StartLine)
-		}
+		testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
 
-		if clone.EndLine != 22 {
-			t.Errorf("Expected EndLine=22, got %d", clone.EndLine)
-		}
+		testutil.AssertFieldValue(t, clone.EndLine, 22, "EndLine")
 
-		if clone.Size != 3 {
-			t.Errorf("Expected Size=3, got %d", clone.Size)
-		}
+		testutil.AssertFieldValue(t, clone.Size, 3, "Size")
 
 		if clone.Fragment != "" {
 			t.Error("Expected no fragment content when IncludeFragments=false")
@@ -293,17 +281,11 @@ func TestReportProgress(t *testing.T) {
 		t.Fatal("Progress callback was not called")
 	}
 
-	if receivedProgress.Stage != "Analyzing" {
-		t.Errorf("Expected Stage='Analyzing', got %s", receivedProgress.Stage)
-	}
+	testutil.AssertFieldValue(t, receivedProgress.Stage, "Analyzing", "Stage")
 
-	if receivedProgress.Completed != 75 {
-		t.Errorf("Expected Completed=75, got %d", receivedProgress.Completed)
-	}
+	testutil.AssertFieldValue(t, receivedProgress.Completed, 75, "Completed")
 
-	if receivedProgress.CurrentFile != "current.go" {
-		t.Errorf("Expected CurrentFile='current.go', got %s", receivedProgress.CurrentFile)
-	}
+	testutil.AssertFieldValue(t, receivedProgress.CurrentFile, "current.go", "CurrentFile")
 }
 
 // TestReportProgress_NoCallback tests reportProgress with no callback.

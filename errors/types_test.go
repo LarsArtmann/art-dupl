@@ -18,24 +18,24 @@ func TestDuplError(t *testing.T) {
 	cause := errors.New("cause error")
 
 	// Test error creation
-	err := NewParseError("test.go", 42, "test message", cause)
+	unwrapErr := NewParseError("test.go", 42, "test message", cause)
 
 	// Test error message
 	expected := "parse error at test.go:42: test message"
-	if err.Error() != expected {
-		t.Errorf("Expected '%s', got '%s'", expected, err.Error())
+	if unwrapErr.Error() != expected {
+		t.Errorf("Expected '%s', got '%s'", expected, unwrapErr.Error())
 	}
 
 	// Test unwrap
-	if !errors.Is(err, cause) {
+	if !errors.Is(unwrapErr, cause) {
 		t.Error("Unwrap should return cause error")
 	}
 
 	// Test fields
-	assertFieldsEqual(t, err.Type, ParseError, "Type")
-	assertFieldsEqual(t, err.File, "test.go", "File")
-	assertFieldsEqual(t, err.Line, 42, "Line")
-	assertFieldsEqual(t, err.Message, "test message", "Message")
+	assertFieldsEqual(t, unwrapErr.Type, ParseError, "Type")
+	assertFieldsEqual(t, unwrapErr.File, "test.go", "File")
+	assertFieldsEqual(t, unwrapErr.Line, 42, "Line")
+	assertFieldsEqual(t, unwrapErr.Message, "test message", "Message")
 }
 
 func TestErrorTypes(t *testing.T) {

@@ -46,9 +46,9 @@ func TestPlumbing_PrintHeaderAndFooter(t *testing.T) {
 			p := NewPlumbing(&buf, mockReadFile(""))
 
 			err := tc.call(p)
-			if err != nil {
-				t.Fatalf("%s() error: %v", tc.name, err)
-			}
+	if err != nil {
+		t.Fatalf("%s() error: %v", tc.name, err)
+	}
 
 			if buf.Len() != 0 {
 				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())

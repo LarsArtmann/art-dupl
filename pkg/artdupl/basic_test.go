@@ -7,6 +7,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // newTestConfig creates a config for testing.
@@ -134,19 +135,13 @@ func TestValidateOptions_Invalid_Basic(t *testing.T) {
 
 // TestErrorComparison_Basic tests error comparison behavior.
 func TestErrorComparison_Basic(t *testing.T) {
-	// Test error comparison using errors.Is (handles wrapped errors)
-	if !errors.Is(ErrNilOptions, ErrNilOptions) {
-		t.Error("Error should match itself")
-	}
+	testutil.AssertErrorIs(t, ErrNilOptions, ErrNilOptions, "Error should match itself")
 
 	if errors.Is(ErrNilOptions, ErrInvalidThreshold) {
 		t.Error("Different errors should not match")
 	}
 
-	// Test errors.Is compatibility
-	if !errors.Is(ErrNilOptions, ErrNilOptions) {
-		t.Error("errors.Is should match same error")
-	}
+	testutil.AssertErrorIs(t, ErrNilOptions, ErrNilOptions, "errors.Is should match same")
 
 	if errors.Is(ErrNilOptions, ErrInvalidThreshold) {
 		t.Error("errors.Is should not match different errors")
@@ -211,7 +206,7 @@ func TestClone_IsValid(t *testing.T) {
 		{
 			clone:   Clone{StartLine: 5, EndLine: 5, StartPos: 10, EndPos: 20},
 			wantErr: nil,
-			name:    "valid clone single line",
+			name:    "valid testClone single line",
 		},
 		{
 			name:    "valid clone without positions",

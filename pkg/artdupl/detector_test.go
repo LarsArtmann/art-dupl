@@ -1,6 +1,7 @@
 package artdupl
 
 import (
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"errors"
 	"testing"
 	"time"
@@ -161,21 +162,13 @@ func TestSyntaxNode_BasicUsage(t *testing.T) {
 		End:      20,
 	}
 
-	if node.Type != 1 {
-		t.Errorf("Type should be 1, got %d", node.Type)
-	}
+	testutil.AssertFieldValue(t, node.Type, 1, "Type")
 
-	if node.Filename != "test.go" {
-		t.Errorf("Filename should be 'test.go', got %s", node.Filename)
-	}
+	testutil.AssertFieldValue(t, node.Filename, "test.go", "Filename")
 
-	if node.Pos != 10 {
-		t.Errorf("Pos should be 10, got %d", node.Pos)
-	}
+	testutil.AssertFieldValue(t, node.Pos, 10, "Pos")
 
-	if node.End != 20 {
-		t.Errorf("End should be 20, got %d", node.End)
-	}
+	testutil.AssertFieldValue(t, node.End, 20, "End")
 }
 
 // TestDetector_FindClones_NonExistentFile tests FindClones with non-existent file.

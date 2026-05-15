@@ -29,7 +29,7 @@ func initStyles() styleConfig {
 
 	// Create styles
 	headerStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Bold(true)
-	sectionStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00E676")).Bold(true)
+	sectionStyle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#00E676"))
 	metricStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#738ADB"))
 	successStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00C853"))
 	warningStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
