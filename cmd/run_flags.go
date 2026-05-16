@@ -124,6 +124,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
+	if mergedConfig.RichText {
+		if rts, ok := p.(printer.RichTextSetter); ok {
+			rts.SetRichText(true)
+		}
+	}
+
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 

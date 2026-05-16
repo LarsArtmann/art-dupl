@@ -39,7 +39,7 @@ func testPrintDupls(
 ) error {
 	t.Helper()
 
-	return printDupls(ctx, mock, fread, ch, config.SortBySize, 15, "art-dupl")
+	return printDupls(ctx, mock, fread, ch, config.SortBySize, 15, "art-dupl", false)
 }
 
 var testFread printer.ReadFile = func(_ string) ([]byte, error) {
@@ -449,7 +449,7 @@ func TestPrintDupls(t *testing.T) {
 		ctx, cancel := context.WithCancel(t.Context())
 		cancel()
 
-		err := printDupls(ctx, mock, testFread, ch, config.SortBySize, 15, "art-dupl")
+		err := printDupls(ctx, mock, testFread, ch, config.SortBySize, 15, "art-dupl", false)
 		if err == nil {
 			t.Error("Expected error from cancelled context")
 		}

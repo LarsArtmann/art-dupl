@@ -39,7 +39,7 @@ func printDupls(
 		)
 	}
 
-	err = printCloneGroups(p, fread, groups, keys, sortBy)
+	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic)
 	if err != nil {
 		return fmt.Errorf(
 			"print clone groups (fread: %v, sortBy: %s): %w",
@@ -107,11 +107,18 @@ func printCloneGroups(
 	groups map[string][][]*syntax.Node,
 	keys []string,
 	sortBy config.SortCriteria,
+	semantic bool,
 ) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
 		if len(uniq) <= 1 {
 			continue
+		}
+
+		if semantic {
+			if printer.EvaluateActionability(uniq) == domain.NonActionable {
+				continue
+			}
 		}
 
 		if hs, ok := p.(printer.HashSetter); ok {

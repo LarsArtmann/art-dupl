@@ -27,6 +27,7 @@ type FlagValues struct {
 	ExcludePatterns    []string
 	Semantic           bool
 	Structural         bool
+	RichText           bool
 	Paths              []string
 	DetectionMethods   string
 	Timeout            string
@@ -103,6 +104,7 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 	excludePatterns, _ := cmd.Flags().GetStringArray("exclude-pattern")
 	semantic, _ := cmd.Flags().GetBool("semantic")
 	structural, _ := cmd.Flags().GetBool("structural")
+	richText, _ := cmd.Flags().GetBool("rich-text")
 	detectionMethods, _ := cmd.Flags().GetString("detection-methods")
 	includeNodeModules, _ := cmd.Flags().GetBool("include-node-modules")
 	only, _ := cmd.Flags().GetString("only")
@@ -130,6 +132,7 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 		ExcludePatterns:    excludePatterns,
 		Semantic:           semantic,
 		Structural:         structural,
+		RichText:           richText,
 		Paths:              args,
 		DetectionMethods:   detectionMethods,
 		IncludeNodeModules: includeNodeModules,
@@ -234,6 +237,7 @@ func applyBooleanFlags(cfg *config.Config, flags *FlagValues) {
 		{flags.IncludeStringer, &cfg.IncludeStringer},
 		{flags.Incremental, &cfg.Incremental},
 		{flags.Semantic, &cfg.Semantic},
+		{flags.RichText, &cfg.RichText},
 		{flags.ClearCache, &cfg.ClearCache},
 	}
 

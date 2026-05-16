@@ -13,6 +13,11 @@ type HashSetter interface {
 	SetHash(hash string)
 }
 
+// RichTextSetter enables enhanced text output with classification badges.
+type RichTextSetter interface {
+	SetRichText(enabled bool)
+}
+
 type Printer interface {
 	PrintHeader() error
 	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error

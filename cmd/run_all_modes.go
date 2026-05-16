@@ -174,6 +174,7 @@ func writeFormatFile(
 		sortByEnum,
 		cfg.Threshold,
 		detectionMethodStr,
+		cfg.Semantic,
 	)
 	if err != nil {
 		return fmt.Errorf(

@@ -92,4 +92,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	// Root-only: diff mode flag for HTML output
 	rootCmd.Flags().
 		String("diff", "", "enable diff visualization for HTML output (values: side-by-side, inline, or true for side-by-side)")
+
+	// Root-only: rich text output with classification badges and priority
+	rootCmd.Flags().
+		Bool("rich-text", false, "enable enhanced text output with [PRIORITY] [category] badges and actionable suggestions")
 }

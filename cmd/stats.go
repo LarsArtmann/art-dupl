@@ -129,7 +129,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats header")
 	}
 
-	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash)
+	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash, mergedConfig.Semantic)
 	if err != nil {
 		return err
 	}

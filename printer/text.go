@@ -18,6 +18,7 @@ type TextPrinter struct {
 	cloneGroups   [][]domain.ProcessedClone
 	currentHash   string
 	isFileDupe    bool
+	richText      bool
 	diffHintFiles []string
 }
 
@@ -27,6 +28,10 @@ func (p *TextPrinter) SetHash(hash string) {
 
 func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 	p.isFileDupe = isDupe
+}
+
+func (p *TextPrinter) SetRichText(enabled bool) {
+	p.richText = enabled
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
@@ -69,8 +74,14 @@ func (p *TextPrinter) PrintClones(
 			p.diffHintFiles = append(p.diffHintFiles, cl.Filename)
 		}
 	} else {
-		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
-			return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
+		if p.richText && len(clones) > 0 {
+			if err := p.writeRichGroupHeader(len(clones), clones[0].Classification); err != nil {
+				return err
+			}
+		} else {
+			if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
+				return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
+			}
 		}
 	}
 
@@ -101,6 +112,23 @@ func (p *TextPrinter) PrintFooter() error {
 
 func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
 	return writeCloneLines(p.w, clones, "  %s:%d,%d\n")
+}
+
+func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {
+	if _, err := fmt.Fprintf(
+		p.w,
+		"found %d clones: [%s] %s (%d tokens, %d lines) suggestion: %s\n",
+		count,
+		cls.Priority,
+		cls.Category,
+		cls.Tokens,
+		cls.Lines,
+		cls.Suggestion,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func writeCloneLines(w io.Writer, clones []domain.ProcessedClone, format string) error {

@@ -137,6 +137,10 @@ type Config struct {
 	// DiffMode enables diff visualization for HTML output.
 	// When enabled, duplicate occurrences are shown with visual diff highlighting.
 	DiffMode DiffMode `json:"diffMode,omitempty"`
+
+	// RichText enables enhanced text output with classification badges,
+	// priority indicators, and actionable suggestions.
+	RichText bool `json:"richText,omitempty"`
 }
 
 // DefaultThreshold is the default minimum token sequence size for clone detection.
