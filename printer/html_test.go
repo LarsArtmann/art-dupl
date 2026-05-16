@@ -1170,6 +1170,15 @@ func TestHTMLWriteDiffComparison_Variants(t *testing.T) {
 func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 	t.Parallel()
 
+	diffLines := func(contents []string, types []DiffLineType, startLineNum int) []DiffLine {
+		lines := make([]DiffLine, len(contents))
+		for i, content := range contents {
+			lines[i] = DiffLine{Content: content, Type: types[i], LineNumber: startLineNum + i}
+		}
+
+		return lines
+	}
+
 	tests := []struct {
 		name       string
 		lines      []DiffLine
@@ -1177,30 +1186,16 @@ func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 		wantSubstr []string
 	}{
 		{
-			"all types",
-			[]DiffLine{
-				{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
-				{Content: "added line", Type: DiffLineAdded, LineNumber: 2},
-				{Content: "removed line", Type: DiffLineRemoved, LineNumber: 3},
-				{Content: "modified line", Type: DiffLineModified, LineNumber: 4},
-			},
-			[]DiffLine{
-				{Content: "equal line", Type: DiffLineEqual, LineNumber: 1},
-				{Content: "base added", Type: DiffLineAdded, LineNumber: 2},
-				{Content: "base removed", Type: DiffLineRemoved, LineNumber: 3},
-				{Content: "original modified", Type: DiffLineModified, LineNumber: 4},
-			},
-			[]string{"equal", "added", "removed", "modified"},
+			name:       "all types",
+			lines:      diffLines([]string{"equal line", "added line", "removed line", "modified line"}, []DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified}, 1),
+			opposite:   diffLines([]string{"equal line", "base added", "base removed", "original modified"}, []DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified}, 1),
+			wantSubstr: []string{"equal", "added", "removed", "modified"},
 		},
 		{
-			"word diff",
-			[]DiffLine{
-				{Content: "hello world", Type: DiffLineModified, LineNumber: 1},
-			},
-			[]DiffLine{
-				{Content: "hello earth", Type: DiffLineModified, LineNumber: 1},
-			},
-			[]string{"word-removed", "word-added"},
+			name:       "word diff",
+			lines:      diffLines([]string{"hello world"}, []DiffLineType{DiffLineModified}, 1),
+			opposite:   diffLines([]string{"hello earth"}, []DiffLineType{DiffLineModified}, 1),
+			wantSubstr: []string{"word-removed", "word-added"},
 		},
 	}
 
