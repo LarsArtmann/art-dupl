@@ -83,7 +83,7 @@ func (u *User) Validate() bool {
 }`
 
 			err := setup.FileProcessor.WriteDuplicateFiles(
-				[]string{"regular1.go", "regular2.go"},
+				[]string{"regular1.go", regularFile2},
 				regularCode,
 			)
 			Expect(err).NotTo(HaveOccurred())

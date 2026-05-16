@@ -11,6 +11,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+const testTempl = "templ"
+
 // mockReadFileContent provides a mock file content for testing.
 func mockReadFileContent() []byte {
 	// Return minimal Go code for testing
@@ -308,12 +310,12 @@ func TestGetSizeRange(t *testing.T) {
 		lines    int
 		expected string
 	}{
-		{1, "1-5 lines"},
-		{5, "1-5 lines"},
-		{6, "6-10 lines"},
-		{10, "6-10 lines"},
-		{11, "11-20 lines"},
-		{20, "11-20 lines"},
+		{1, sizeRange1to5},
+		{5, sizeRange1to5},
+		{6, sizeRange6to10},
+		{10, sizeRange6to10},
+		{11, sizeRange11to20},
+		{20, sizeRange11to20},
 		{21, "21-50 lines"},
 		{50, "21-50 lines"},
 		{51, "51-100 lines"},
@@ -369,9 +371,9 @@ func TestPrintSizeDistribution(t *testing.T) {
 	var buf bytes.Buffer
 
 	distribution := map[string]int{
-		"1-5 lines":   10,
-		"6-10 lines":  5,
-		"11-20 lines": 3,
+		sizeRange1to5:   10,
+		sizeRange6to10:  5,
+		sizeRange11to20: 3,
 	}
 
 	printSizeDistribution(&buf, distribution)
@@ -379,11 +381,11 @@ func TestPrintSizeDistribution(t *testing.T) {
 	output := buf.String()
 	// Expected format: "  1-5 lines      :   10 clones [████████████████████] 55.6%"
 	expectedRanges := []string{
-		"1-5 lines",
+		sizeRange1to5,
 		"10 clones",
-		"6-10 lines",
+		sizeRange6to10,
 		"5 clones",
-		"11-20 lines",
+		sizeRange11to20,
 		"3 clones",
 	}
 
@@ -400,9 +402,9 @@ func TestPrintSizeDistribution(t *testing.T) {
 	testutil.AssertStringContains(t, output, "█", "Output doesn't contain ASCII bars")
 
 	// Check that output is sorted (1-5 should come before 6-10)
-	idx1 := strings.Index(output, "1-5 lines")
+	idx1 := strings.Index(output, sizeRange1to5)
 
-	idx2 := strings.Index(output, "6-10 lines")
+	idx2 := strings.Index(output, sizeRange6to10)
 	if idx1 == -1 || idx2 == -1 || idx1 > idx2 {
 		t.Error("Output is not properly sorted")
 	}
@@ -864,16 +866,16 @@ func TestSetFilterStats(t *testing.T) {
 		{
 			name:          "templ files filtered",
 			filesFiltered: 12,
-			breakdown:     map[string]int{"templ": 12},
+			breakdown:     map[string]int{testTempl: 12},
 			wantFiltered:  12,
-			wantBreakdown: map[string]int{"templ": 12},
+			wantBreakdown: map[string]int{testTempl: 12},
 		},
 		{
 			name:          "multiple filter types",
 			filesFiltered: 45,
-			breakdown:     map[string]int{"templ": 12, "sqlc": 8, "vendor": 25},
+			breakdown:     map[string]int{testTempl: 12, "sqlc": 8, "vendor": 25},
 			wantFiltered:  45,
-			wantBreakdown: map[string]int{"templ": 12, "sqlc": 8, "vendor": 25},
+			wantBreakdown: map[string]int{testTempl: 12, "sqlc": 8, "vendor": 25},
 		},
 	}
 
@@ -919,7 +921,7 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 
 	// Set up stats with filter information
 	sp.SetFilesCount(100)
-	sp.SetFilterStats(25, map[string]int{"templ": 10, "sqlc": 8, "vendor": 7})
+	sp.SetFilterStats(25, map[string]int{testTempl: 10, "sqlc": 8, "vendor": 7})
 	sp.statsData.TotalCloneGroups = 5
 	sp.statsData.TotalClones = 10
 	sp.statsData.DetectionMethods = "art-dupl"
@@ -938,7 +940,7 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 		t.Errorf("FilterBreakdown length = %d, want 3", len(data.FilterBreakdown))
 	}
 
-	if data.FilterBreakdown["templ"] != 10 {
-		t.Errorf("FilterBreakdown[templ] = %d, want 10", data.FilterBreakdown["templ"])
+	if data.FilterBreakdown[testTempl] != 10 {
+		t.Errorf("FilterBreakdown[templ] = %d, want 10", data.FilterBreakdown[testTempl])
 	}
 }

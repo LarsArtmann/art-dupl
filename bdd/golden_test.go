@@ -30,7 +30,7 @@ func process() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{"file1.go", goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run the tool

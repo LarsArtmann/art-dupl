@@ -81,7 +81,7 @@ func processItem(data string, index int) error {
 func small() {
 	println(1)
 }`
-		err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallCode)
+		err := setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, smallCode)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--sarif", "--threshold", "50")
@@ -157,9 +157,9 @@ func processSmall(data string) error {
 	return nil
 }`
 
-		err := setup.CreateDuplicateFiles([]string{"large1.go", "large2.go"}, largeClone)
+		err := setup.CreateDuplicateFiles([]string{"large1.go", largeFile2}, largeClone)
 		Expect(err).NotTo(HaveOccurred())
-		err = setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallClone)
+		err = setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, smallClone)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = setup.CreateDuplicateFiles(
@@ -182,13 +182,13 @@ var _ = Describe("File Type Filter (--only)", func() {
 	It("should restrict analysis to Go files only with --only go", func() {
 		setup := CreateBDDTestSetup()
 
-		err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, simpleGoCode)
+		err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, simpleGoCode)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--only", "go", "--threshold", "10")
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(string(output)).To(ContainSubstring("file1.go"))
+		Expect(string(output)).To(ContainSubstring(goldenFile1))
 	})
 
 	It("should restrict analysis to templ files only with --only templ", func() {
@@ -207,7 +207,7 @@ templ page(name string) {
 		err := setup.CreateDuplicateFiles([]string{"page1.templ", "page2.templ"}, templCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, simpleGoCode)
+		err = setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, simpleGoCode)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--only", "templ", "--threshold", "5")
@@ -215,7 +215,7 @@ templ page(name string) {
 
 		outputStr := string(output)
 		Expect(outputStr).To(ContainSubstring("page1.templ"))
-		Expect(outputStr).ToNot(ContainSubstring("file1.go"))
+		Expect(outputStr).ToNot(ContainSubstring(goldenFile1))
 	})
 })
 
@@ -275,7 +275,7 @@ func (m *Message) Reset() {
 	*m = Message{}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, simpleGoCode)
+			err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, simpleGoCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("message.pb.go", pbCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -284,7 +284,7 @@ func (m *Message) Reset() {
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("regular1.go"))
+			Expect(outputStr).To(ContainSubstring(regularFile1))
 			Expect(outputStr).ToNot(ContainSubstring("message.pb.go"))
 		})
 	})
@@ -305,7 +305,7 @@ func (m *MockService) GetSomething() string {
 	return ""
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, simpleGoCode)
+			err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, simpleGoCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("mock_service.go", mockCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -314,7 +314,7 @@ func (m *MockService) GetSomething() string {
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("regular1.go"))
+			Expect(outputStr).To(ContainSubstring(regularFile1))
 		})
 	})
 })

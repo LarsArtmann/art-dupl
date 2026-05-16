@@ -10,6 +10,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
+const testFilename = "test.go"
+
 // newTestConfig creates a config for testing.
 func newTestConfig() *config.Config {
 	cfg := config.DefaultConfig()

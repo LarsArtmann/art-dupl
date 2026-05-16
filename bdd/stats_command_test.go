@@ -65,7 +65,7 @@ func assertGeneratedFilesFiltered(
 ) {
 	GinkgoHelper()
 
-	err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
+	err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, regularCode)
 	Expect(err).NotTo(HaveOccurred())
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
@@ -75,7 +75,7 @@ func assertGeneratedFilesFiltered(
 
 	outputStr := string(output)
 
-	Expect(outputStr).To(ContainSubstring("regular1.go"))
+	Expect(outputStr).To(ContainSubstring(regularFile1))
 	Expect(outputStr).To(ContainSubstring("regular2.go"))
 	Expect(outputStr).ToNot(ContainSubstring(generatedFilename))
 }
@@ -90,7 +90,7 @@ func assertGeneratedFilesIncluded(
 ) {
 	GinkgoHelper()
 
-	err := setup.CreateDuplicateFiles([]string{"regular1.go", "regular2.go"}, regularCode)
+	err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, regularCode)
 	Expect(err).NotTo(HaveOccurred())
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())

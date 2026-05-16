@@ -293,7 +293,7 @@ func NodeModulesFunc() {
 		It("should exclude node_modules by default", func() {
 			// Create regular files with same content (duplicates)
 			err := setup.CreateDuplicateFiles(
-				[]string{"regular1.go", "regular2.go"},
+				[]string{"regular1.go", regularFile2},
 				generatedCode,
 			)
 			Expect(err).NotTo(HaveOccurred())
@@ -313,7 +313,7 @@ func NodeModulesFunc() {
 			Expect(runOutput).To(ContainSubstring("node_modules"))
 			// Should detect regular files but not node_modules
 			Expect(runOutput).To(ContainSubstring("regular1.go"))
-			Expect(runOutput).To(ContainSubstring("regular2.go"))
+			Expect(runOutput).To(ContainSubstring(regularFile2))
 		})
 
 		It("should include node_modules when --include-node-modules is specified", func() {

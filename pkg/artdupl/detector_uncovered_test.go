@@ -135,14 +135,14 @@ func TestConvertFragmentToClone(t *testing.T) {
 	t.Run("with nodes", func(t *testing.T) {
 		d := &detector{opts: &Options{IncludeFragments: false}}
 		frag := []*syntax.Node{
-			{Type: 1, Filename: "test.go", Pos: 10, End: 20},
-			{Type: 2, Filename: "test.go", Pos: 11, End: 21},
-			{Type: 3, Filename: "test.go", Pos: 12, End: 22},
+			{Type: 1, Filename: testFilename, Pos: 10, End: 20},
+			{Type: 2, Filename: testFilename, Pos: 11, End: 21},
+			{Type: 3, Filename: testFilename, Pos: 12, End: 22},
 		}
 
 		clone := d.convertFragmentToClone(frag)
 
-		testutil.AssertFieldValue(t, clone.Filename, "test.go", "Filename")
+		testutil.AssertFieldValue(t, clone.Filename, testFilename, "Filename")
 
 		testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
 
@@ -210,7 +210,7 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 
 	// Create fragment with out-of-range positions
 	frag := []*syntax.Node{
-		{Type: 1, Filename: "test.go", Pos: 100, End: 200}, // Way beyond file
+		{Type: 1, Filename: testFilename, Pos: 100, End: 200}, // Way beyond file
 	}
 
 	content := d.extractFragmentContent(frag)
@@ -222,7 +222,7 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 // TestExtractFragmentContent_WithFragments tests extractFragmentContent with IncludeFragments.
 func TestExtractFragmentContent_WithFragments(t *testing.T) {
 	tmpDir := t.TempDir()
-	testFile := filepath.Join(tmpDir, "test.go")
+	testFile := filepath.Join(tmpDir, testFilename)
 
 	content := []byte("line1\nline2\nline3\n")
 
@@ -413,7 +413,7 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 // TestConvertFragmentToClone_WithFragments tests convertFragmentToClone with IncludeFragments.
 func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 	tmpDir := t.TempDir()
-	testFile := filepath.Join(tmpDir, "test.go")
+	testFile := filepath.Join(tmpDir, testFilename)
 
 	content := []byte("line1\nline2\nline3\n")
 
@@ -442,13 +442,13 @@ func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 func TestValidateFile_IgnorePatternMatching(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	testFile := filepath.Join(tmpDir, "test.go")
+	testFile := filepath.Join(tmpDir, testFilename)
 	testutil.WriteTestFile(t, testFile, "package test")
 
 	d := &detector{
 		opts: &Options{
 			MaxFileSize: 1024 * 1024,
-			IgnoreFiles: []string{"test.go"}, // Exact match
+			IgnoreFiles: []string{testFilename}, // Exact match
 		},
 	}
 

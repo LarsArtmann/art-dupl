@@ -163,7 +163,7 @@ func large() {
 			// Create files with both small and large duplicates
 			err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateDuplicateFiles([]string{"large1.go", "large2.go"}, largeCode)
+			err = setup.CreateDuplicateFiles([]string{"large1.go", largeFile2}, largeCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with high threshold - should filter out small clones

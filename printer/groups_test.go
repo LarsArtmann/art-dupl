@@ -97,23 +97,23 @@ func TestSortCloneGroupKeys(t *testing.T) {
 	medNode := &syntax.Node{Owns: 20}
 
 	groups := map[string][][]*syntax.Node{
-		"small":  {{smallNode}},
+		healthSmall:  {{smallNode}},
 		"big":    {{bigNode}, {smallNode}, {medNode}},
-		"medium": {{medNode}, {smallNode}},
+		healthMedium: {{medNode}, {smallNode}},
 	}
-	uniqueCounts := map[string]int{"small": 1, "big": 3, "medium": 2}
+	uniqueCounts := map[string]int{healthSmall: 1, "big": 3, healthMedium: 2}
 
-	keys := []string{"small", "big", "medium"}
+	keys := []string{healthSmall, "big", healthMedium}
 	SortCloneGroupKeys(keys, config.SortBySize, groups, uniqueCounts)
 
 	testutil.AssertFieldValue(t, keys[0], "big", "config.SortBySize first key")
 
-	keys = []string{"small", "big", "medium"}
+	keys = []string{healthSmall, "big", healthMedium}
 	SortCloneGroupKeys(keys, config.SortByOccurrence, groups, uniqueCounts)
 
 	testutil.AssertFieldValue(t, keys[0], "big", "config.SortByOccurrence first key")
 
-	keys = []string{"small", "big", "medium"}
+	keys = []string{healthSmall, "big", healthMedium}
 	SortCloneGroupKeys(keys, config.SortByHash, groups, uniqueCounts)
 
 	testutil.AssertFieldValue(t, keys[0], "big", "config.SortByHash first key")

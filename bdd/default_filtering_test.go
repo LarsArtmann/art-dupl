@@ -181,7 +181,7 @@ func common() { println(1) }`
 			// Create TWO regular files with duplicate code (required for clone detection)
 			err := setup.CreateTestFile("regular1.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("regular2.go", regularCode)
+			err = setup.CreateTestFile(regularFile2, regularCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("header_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -205,7 +205,7 @@ func common() { println(1) }`
 		It("should include templ files when --include-templ is used", func() {
 			assertGeneratedFileIncluded(
 				setup,
-				[]string{"regular1.go", "regular2.go"},
+				[]string{"regular1.go", regularFile2},
 				testRegularCode,
 				"page_templ.go",
 				testTemplCode,
@@ -291,7 +291,7 @@ func process() { println(1) }`
 			// Create TWO regular files with duplicate code (required for clone detection)
 			err := setup.CreateTestFile("regular1.go", regularCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("regular2.go", regularCode)
+			err = setup.CreateTestFile(regularFile2, regularCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("page_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())

@@ -255,7 +255,7 @@ func hello() {
 	println("hello")
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{"test1.go", testFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid sort option - should default to size

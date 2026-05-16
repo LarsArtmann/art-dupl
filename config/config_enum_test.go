@@ -14,7 +14,14 @@ import (
 // DetectionMethods helpers
 // =============================================================================
 
-const validValue = "valid"
+const (
+	testEmpty      = "empty"
+	testInvalid    = "invalid"
+	testFooFile    = "foo.go"
+	testValidValue = "valid"
+)
+
+const validValue = testValidValue
 
 func TestDetectionMethods_IsEmpty(t *testing.T) {
 	t.Parallel()
@@ -1119,8 +1126,8 @@ func TestParseFileType(t *testing.T) {
 func TestIsValidStringType(t *testing.T) {
 	t.Parallel()
 
-	validMap := map[string]bool{"valid": true, "also_valid": true}
-	if !isValidStringType("valid", validMap) {
+	validMap := map[string]bool{testValidValue: true, "also_valid": true}
+	if !isValidStringType(testValidValue, validMap) {
 		t.Error("expected 'valid' to be valid")
 	}
 
@@ -1173,8 +1180,8 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if target != "valid" {
-		t.Errorf("target = %q, want %q", target, "valid")
+	if target != testValidValue {
+		t.Errorf("target = %q, want %q", target, testValidValue)
 	}
 }
 
@@ -1205,7 +1212,7 @@ func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 func TestMarshalStringType_Variants(t *testing.T) {
 	t.Parallel()
 
-	isValidFn := func(v string) bool { return v == "valid" }
+	isValidFn := func(v string) bool { return v == testValidValue }
 
 	tests := []struct {
 		name  string
@@ -1213,7 +1220,7 @@ func TestMarshalStringType_Variants(t *testing.T) {
 		want  string
 	}{
 		{"invalid_returns_null", "invalid", "null"},
-		{"valid_returns_quoted", "valid", `"valid"`},
+		{"valid_returns_quoted", testValidValue, `"valid"`},
 	}
 
 	for _, tc := range tests {

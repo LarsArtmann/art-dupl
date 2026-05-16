@@ -28,7 +28,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityHigh, // tokens > 25
-			wantSuggestion: "Extract to shared utility function",
+			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "function in test file",
@@ -50,7 +50,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryMethod,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityCritical, // tokens > 50
-			wantSuggestion: "Extract to shared utility function",
+			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "struct type in production - small",
@@ -127,7 +127,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryAssignment,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityLow, // tokens < 25
-			wantSuggestion: "Review and extract common logic",
+			wantSuggestion: suggestReviewExtract,
 		},
 		{
 			name:           "call expression - unmapped node type",
@@ -138,7 +138,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryUnknown, // CallExpr not in nodeTypeToCategory switch
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityLow, // tokens < 25
-			wantSuggestion: "Review and extract common logic",
+			wantSuggestion: suggestReviewExtract,
 		},
 		{
 			name:           "unknown node type",
@@ -149,7 +149,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryUnknown,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityLow, // tokens < 25
-			wantSuggestion: "Review and extract common logic",
+			wantSuggestion: suggestReviewExtract,
 		},
 		{
 			name:           "handler in production - large",
@@ -160,7 +160,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityCritical,
-			wantSuggestion: "Extract to shared utility function",
+			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "test file with large duplication",
@@ -182,7 +182,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityMedium, // tokens < 25
-			wantSuggestion: "Extract to shared utility function",
+			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "gen decl maps to expression",
@@ -193,7 +193,7 @@ func TestClassifyClone(t *testing.T) {
 			wantCategory:   domain.CategoryExpression,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityMedium, // tokens 25-50
-			wantSuggestion: "Review and extract common logic",
+			wantSuggestion: suggestReviewExtract,
 		},
 	}
 

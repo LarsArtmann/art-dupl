@@ -396,7 +396,7 @@ func TestFileReaderFunc(t *testing.T) {
 		return []byte("test content"), nil
 	}
 
-	content, err := reader("test.go")
+	content, err := reader(testFilename)
 	if err != nil {
 		t.Errorf("FileReaderFunc should not error, got: %v", err)
 	}
@@ -499,7 +499,7 @@ func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
-	_, err = detector.FindClonesStream(ctx, []string{"test.go"})
+	_, err = detector.FindClonesStream(ctx, []string{testFilename})
 	if err == nil {
 		t.Error("Expected error with canceled context")
 	}

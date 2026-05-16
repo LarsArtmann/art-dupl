@@ -104,7 +104,7 @@ var _ = Describe("Configuration File Loading", func() {
 			output, err := runWithConfig(
 				configContent,
 				simpleTestCode,
-				[]string{"test1.go", "test2.go"},
+				[]string{"test1.go", testFile2},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())

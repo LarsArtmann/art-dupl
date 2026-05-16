@@ -81,7 +81,7 @@ func foo() {
 			Size: 100,
 			Files: []JSONClone{
 				{
-					Filename:  "test.go",
+					Filename:  testFilename,
 					LineStart: 1,
 					LineEnd:   5,
 					Fragment:  "test fragment",
@@ -151,7 +151,7 @@ func createMockNodes(t *testing.T) []*syntax.Node {
 	t.Helper()
 	// Create a simple mock node structure
 	// In practice, these would be real AST nodes from parsed Go code
-	nodes := testutil.CreateMockNodes(2, "test.go")
+	nodes := testutil.CreateMockNodes(2, testFilename)
 
 	// Adjust positions for specific test requirements
 	nodes[0].Pos = 10

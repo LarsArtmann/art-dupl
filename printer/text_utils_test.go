@@ -15,7 +15,7 @@ func testNode(filename string, pos, end int) *syntax.Node {
 func TestProcessFileContent(t *testing.T) {
 	t.Parallel()
 
-	node := testNode("test.go", 0, 5)
+	node := testNode(testFilename, 0, 5)
 	fread := func(name string) ([]byte, error) {
 		return []byte("hello"), nil
 	}
@@ -25,8 +25,8 @@ func TestProcessFileContent(t *testing.T) {
 		t.Fatalf("ProcessFileContent() error: %v", err)
 	}
 
-	if meta.Filename != "test.go" {
-		t.Errorf("Filename = %q, want %q", meta.Filename, "test.go")
+	if meta.Filename != testFilename {
+		t.Errorf("Filename = %q, want %q", meta.Filename, testFilename)
 	}
 
 	if string(meta.Content) != "hello" {
@@ -60,8 +60,8 @@ func TestProcessFileContent_ReadError(t *testing.T) {
 func TestProcessNodeRange(t *testing.T) {
 	t.Parallel()
 
-	startNode := testNode("test.go", 0, 5)
-	endNode := testNode("test.go", 5, 10)
+	startNode := testNode(testFilename, 0, 5)
+	endNode := testNode(testFilename, 5, 10)
 	fread := func(filename string) ([]byte, error) {
 		return []byte("hello world"), nil
 	}
@@ -71,8 +71,8 @@ func TestProcessNodeRange(t *testing.T) {
 		t.Fatalf("ProcessNodeRange() error: %v", err)
 	}
 
-	if info.Filename != "test.go" {
-		t.Errorf("Filename = %q, want %q", info.Filename, "test.go")
+	if info.Filename != testFilename {
+		t.Errorf("Filename = %q, want %q", info.Filename, testFilename)
 	}
 }
 

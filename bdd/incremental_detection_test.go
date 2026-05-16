@@ -47,7 +47,7 @@ func ModifiedTest() {
 	Context("When using incremental mode for the first time", func() {
 		It("should create cache directory and cache entries", func() {
 			// Create test files
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, incrementalTestCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, incrementalTestCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Use a custom cache directory in temp dir

@@ -84,7 +84,7 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 }
 
 // severityOrder defines the display order for severity levels.
-var severityOrder = []string{"small", "medium", "large", "huge"}
+var severityOrder = []string{healthSmall, healthMedium, healthLarge, healthHuge}
 
 // printSeverityDistribution prints the severity breakdown with visualization.
 func printSeverityDistribution(w io.Writer, distribution map[string]int) {
