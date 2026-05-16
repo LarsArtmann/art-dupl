@@ -934,6 +934,23 @@ func newDiffHTMLPrinter() (*htmlprinter, *bytes.Buffer) {
 	return &htmlprinter{w: &buf, iota: 1, diffMode: config.DiffModeSideBySide}, &buf
 }
 
+func newCloneWithContent(filename string, lineStart int, content string) *CloneWithContent {
+	return &CloneWithContent{
+		CloneWithContentMixin: CloneWithContentMixin{Filename: filename, LineStart: lineStart},
+		Content:               []byte(content),
+	}
+}
+
+func newCloneDiff(filename string, lineStart int, content string, diff DiffResult) CloneDiff {
+	return CloneDiff{
+		CloneWithContent: CloneWithContent{
+			CloneWithContentMixin: CloneWithContentMixin{Filename: filename, LineStart: lineStart},
+			Content:               []byte(content),
+		},
+		Diff: diff,
+	}
+}
+
 func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	t.Parallel()
 
@@ -1071,29 +1088,10 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 	hp := &htmlprinter{w: &buf, iota: 3}
 
 	groupDiff := CloneGroupDiff{
-		Base: &CloneWithContent{
-			CloneWithContentMixin: CloneWithContentMixin{Filename: "base.go", LineStart: 1},
-			Content:               []byte("base\n"),
-		},
+		Base: newCloneWithContent("base.go", 1, "base\n"),
 		Others: []CloneDiff{
-			{
-				CloneWithContent: CloneWithContent{
-					CloneWithContentMixin: CloneWithContentMixin{
-						Filename:  "other1.go",
-						LineStart: 10,
-					},
-					Content: []byte("other1\n"),
-				},
-			},
-			{
-				CloneWithContent: CloneWithContent{
-					CloneWithContentMixin: CloneWithContentMixin{
-						Filename:  "other2.go",
-						LineStart: 20,
-					},
-					Content: []byte("other2\n"),
-				},
-			},
+			newCloneDiff("other1.go", 10, "other1\n", DiffResult{}),
+			newCloneDiff("other2.go", 20, "other2\n", DiffResult{}),
 		},
 	}
 
@@ -1133,22 +1131,10 @@ func TestHTMLWriteDiffComparison_Variants(t *testing.T) {
 
 			hp := &htmlprinter{w: &buf, iota: tc.iota}
 
-			base := &CloneWithContent{
-				CloneWithContentMixin: CloneWithContentMixin{Filename: "base.go", LineStart: 1},
-				Content:               []byte("code\n"),
-			}
+			base := newCloneWithContent("base.go", 1, "code\n")
 
 			diff := LineDiff([]byte("code\n"), []byte("different\n"))
-			other := CloneDiff{
-				CloneWithContent: CloneWithContent{
-					CloneWithContentMixin: CloneWithContentMixin{
-						Filename:  "other.go",
-						LineStart: 5,
-					},
-					Content: []byte("different\n"),
-				},
-				Diff: diff,
-			}
+			other := newCloneDiff("other.go", 5, "different\n", diff)
 
 			err := hp.writeDiffComparison(base, other, tc.compIdx, tc.groupID)
 			if err != nil {

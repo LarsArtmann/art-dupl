@@ -11,7 +11,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-const largeFile = "large.go"
+const (
+	largeFile        = "large.go"
+	anotherLargeFile = "another_large.go"
+	mediumFile       = "medium.go"
+	smallFile        = "small.go"
+)
 
 // validateCloneSorting checks if the sorted clone groups match the expected order.
 func validateCloneSorting(
@@ -68,17 +73,17 @@ func anotherLargeFunction() {
 }`
 
 	// Create mock clone groups with different sizes and characteristics
-	smallClone := createMockCloneGroup(t, "small.go", 10, 2) // Small size, 2 tokens
+	smallClone := createMockCloneGroup(t, smallFile, 10, 2) // Small size, 2 tokens
 	mediumClone := createMockCloneGroup(
 		t,
-		"medium.go",
+		mediumFile,
 		30,
 		5,
 	) // Medium size, 5 tokens
 	largeClone := createMockCloneGroup(t, largeFile, 60, 8) // Large size, 8 tokens
 	anotherLargeClone := createMockCloneGroup(
 		t,
-		"another_large.go",
+		anotherLargeFile,
 		100,
 		8,
 	) // Same size as largeClone, 8 tokens
@@ -94,32 +99,32 @@ func anotherLargeFunction() {
 		{
 			name:          "Sort by size descending",
 			sortBy:        config.SortBySize,
-			expectedOrder: []string{largeFile, "another_large.go", "medium.go", "small.go"},
+			expectedOrder: []string{largeFile, anotherLargeFile, mediumFile, smallFile},
 		},
 		{
 			name:   "Sort by occurrence (file count, descending)",
 			sortBy: config.SortByOccurrence,
 			expectedOrder: []string{
 				largeFile,
-				"another_large.go",
-				"medium.go",
-				"small.go",
+				anotherLargeFile,
+				mediumFile,
+				smallFile,
 			}, // All have same occurrence (1), falls back to hash sort which is alphabetical
 		},
 		{
 			name:          "Sort by hash (filename order)",
 			sortBy:        config.SortByHash,
-			expectedOrder: []string{"another_large.go", largeFile, "medium.go", "small.go"},
+			expectedOrder: []string{anotherLargeFile, largeFile, mediumFile, smallFile},
 		},
 		{
 			name:   "Sort by total-tokens",
 			sortBy: config.SortByTotalTokens,
 			expectedOrder: []string{
 				largeFile,
-				"another_large.go",
+				anotherLargeFile,
 				"multi.go",
-				"medium.go",
-				"small.go",
+				mediumFile,
+				smallFile,
 			}, // multi.go has 5 occurrences of 3 tokens = 15 total
 		},
 	}
@@ -160,7 +165,7 @@ func anotherLargeFunction() {
 
 				if tc.sortBy == config.SortByTotalTokens {
 					// Just check that output contains expected files
-					for _, file := range []string{largeFile, "another_large.go", "multi.go", "medium.go", "small.go"} {
+					for _, file := range []string{largeFile, anotherLargeFile, "multi.go", mediumFile, "small.go"} {
 						t.Run(file, func(t *testing.T) {
 							if !strings.Contains(output, file) {
 								t.Errorf("Expected file %s not found in JSON output", file)
@@ -263,8 +268,8 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, numTokens int
 
 // TestCommonSortingUtilities tests the common sorting functions directly.
 func TestCommonSortingUtilities(t *testing.T) {
-	smallClone := createMockCloneGroup(t, "small.go", 10, 2)
-	mediumClone := createMockCloneGroup(t, "medium.go", 30, 5)
+	smallClone := createMockCloneGroup(t, smallFile, 10, 2)
+	mediumClone := createMockCloneGroup(t, mediumFile, 30, 5)
 	largeClone := createMockCloneGroup(t, largeFile, 60, 8)
 
 	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
@@ -284,7 +289,7 @@ func TestCommonSortingUtilities(t *testing.T) {
 		sorted := SortClonesByHash(clones)
 
 		// Should be sorted alphabetically by filename
-		expectedOrder := []string{largeFile, "medium.go", "small.go"}
+		expectedOrder := []string{largeFile, mediumFile, "small.go"}
 		validateCloneSorting(t, sorted, expectedOrder, "Hash")
 	})
 
@@ -298,16 +303,16 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// In real usage, the function receives a group of clones
 		// where each inner slice is a separate occurrence
 		// For testing, we'll simulate sorting multiple groups separately
-		group1 := createMockCloneGroup(t, "small.go", 10, 2)  // 2 tokens
-		group2 := createMockCloneGroup(t, "medium.go", 30, 5) // 5 tokens
-		group3 := createMockCloneGroup(t, largeFile, 60, 8)   // 8 tokens
+		group1 := createMockCloneGroup(t, smallFile, 10, 2)  // 2 tokens
+		group2 := createMockCloneGroup(t, mediumFile, 30, 5) // 5 tokens
+		group3 := createMockCloneGroup(t, largeFile, 60, 8)  // 8 tokens
 
 		clones := [][]*syntax.Node{group1, group2, group3}
 		sorted := SortClonesByTotalTokens(clones)
 
 		// Since SortClonesByTotalTokens counts all nodes, and we have single occurrences,
 		// it should sort by the number of nodes in each group
-		expectedOrder := []string{largeFile, "medium.go", "small.go"}
+		expectedOrder := []string{largeFile, mediumFile, "small.go"}
 		validateCloneSorting(t, sorted, expectedOrder, "Total-tokens")
 	})
 }

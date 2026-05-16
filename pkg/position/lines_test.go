@@ -7,6 +7,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+const (
+	testTwoLines   = "line1\nline2"
+	testThreeLines = "line1\nline2\nline3"
+	testHello      = "hello"
+)
+
 func TestByteRangeToLines(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -19,24 +25,24 @@ func TestByteRangeToLines(t *testing.T) {
 		{"empty content", "", 0, 0, 1, 1},
 		{"single line no newline", "hello world", 0, 5, 1, 1},
 		{"single line entire content", "hello world", 0, 11, 1, 1},
-		{"two lines start line", "line1\nline2", 0, 5, 1, 1},
-		{"two lines spanning newline", "line1\nline2", 3, 8, 1, 2},
-		{"two lines second line", "line1\nline2", 6, 11, 2, 2},
-		{"three lines middle line", "line1\nline2\nline3", 6, 11, 2, 2},
-		{"three lines spanning all", "line1\nline2\nline3", 0, 17, 1, 3},
+		{"two lines start line", testTwoLines, 0, 5, 1, 1},
+		{"two lines spanning newline", testTwoLines, 3, 8, 1, 2},
+		{"two lines second line", testTwoLines, 6, 11, 2, 2},
+		{"three lines middle line", testThreeLines, 6, 11, 2, 2},
+		{"three lines spanning all", testThreeLines, 0, 17, 1, 3},
 		{
 			"start at newline",
-			"line1\nline2",
+			testTwoLines,
 			5,
 			11,
 			2,
 			2,
 		}, // newline at position 5 increments line to 2 before recording
-		{"end beyond content uses last line", "line1\nline2", 6, 100, 2, 2},
-		{"position not found defaults to 1", "hello", 100, 200, 1, 1},
+		{"end beyond content uses last line", testTwoLines, 6, 100, 2, 2},
+		{"position not found defaults to 1", testHello, 100, 200, 1, 1},
 		{
 			"same position single point on line 2",
-			"line1\nline2\nline3",
+			testThreeLines,
 			10,
 			10,
 			2,
@@ -44,7 +50,7 @@ func TestByteRangeToLines(t *testing.T) {
 		}, // middle of "line2"
 		{
 			"same position at newline",
-			"line1\nline2",
+			testTwoLines,
 			5,
 			5,
 			2,
@@ -96,8 +102,8 @@ func TestSplitLines(t *testing.T) {
 		},
 		{
 			name:    "single line",
-			content: "hello",
-			want:    []string{"hello"},
+			content: testHello,
+			want:    []string{testHello},
 		},
 		{
 			name:    "two lines",
@@ -147,8 +153,8 @@ func TestJoinLines(t *testing.T) {
 		},
 		{
 			name:  "single line",
-			lines: []string{"hello"},
-			want:  "hello",
+			lines: []string{testHello},
+			want:  testHello,
 		},
 		{
 			name:  "two lines",

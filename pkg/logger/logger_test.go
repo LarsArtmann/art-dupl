@@ -7,6 +7,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+const testDebugLevel = "debug"
+
 func TestDefaultConfig(t *testing.T) {
 	cfg := DefaultConfig()
 
@@ -37,7 +39,7 @@ func TestNewLogger_NilConfig(t *testing.T) {
 
 func TestNewLogger_ValidConfig(t *testing.T) {
 	cfg := &Config{
-		Level:        "debug",
+		Level:        testDebugLevel,
 		Output:       &bytes.Buffer{},
 		ReportCaller: false,
 		Prefix:       "test",
@@ -95,7 +97,7 @@ func TestCharmLogger_Methods(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := &bytes.Buffer{}
 			cfg := &Config{
-				Level:  "debug",
+				Level:  testDebugLevel,
 				Output: buf,
 			}
 			logger := NewLogger(cfg)
@@ -116,7 +118,7 @@ func TestCharmLogger_Methods(t *testing.T) {
 func TestCharmLogger_WithArgs(t *testing.T) {
 	buf := &bytes.Buffer{}
 	cfg := &Config{
-		Level:  "debug",
+		Level:  testDebugLevel,
 		Output: buf,
 	}
 	logger := NewLogger(cfg)
@@ -138,7 +140,7 @@ func TestCharmLogger_WithArgs(t *testing.T) {
 func TestCharmLogger_WithoutArgs(t *testing.T) {
 	buf := &bytes.Buffer{}
 	cfg := &Config{
-		Level:  "debug",
+		Level:  testDebugLevel,
 		Output: buf,
 	}
 	logger := NewLogger(cfg)
@@ -158,7 +160,7 @@ func TestNoOpLogger(t *testing.T) {
 	logger := &NoOpLogger{}
 
 	// These should not panic
-	logger.Debug("debug")
+	logger.Debug(testDebugLevel)
 	logger.Info("info")
 	logger.Warn("warn")
 	logger.Error("error")
@@ -178,7 +180,7 @@ func TestDefaultLogger(t *testing.T) {
 	}
 
 	// Default is NoOpLogger, these should not panic
-	Default.Debug("debug")
+	Default.Debug(testDebugLevel)
 	Default.Info("info")
 	Default.Warn("warn")
 	Default.Error("error")

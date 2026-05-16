@@ -7,6 +7,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
+const testFile = "test.go"
+
 // TestExamplesPackage tests examples package functionality.
 func TestExamplesPackage(t *testing.T) {
 	// Test default options
@@ -101,7 +103,7 @@ func TestExamplesTypes(t *testing.T) {
 	// Test clone group structure
 	cloneGroup := &artdupl.CloneGroup{
 		Hash:   "test-hash",
-		Clones: []*artdupl.Clone{{Filename: "test.go"}},
+		Clones: []*artdupl.Clone{{Filename: testFile}},
 		Size:   10,
 		Method: artdupl.MethodArtDupl,
 	}
@@ -124,7 +126,7 @@ func TestExamplesTypes(t *testing.T) {
 
 	// Test clone structure
 	clone := &artdupl.Clone{
-		Filename:  "test.go",
+		Filename:  testFile,
 		StartLine: 1,
 		EndLine:   10,
 		StartPos:  0,
@@ -193,7 +195,7 @@ func TestExamplesTypes(t *testing.T) {
 		Total:       100,
 		Percentage:  50.0,
 		Message:     "test message",
-		CurrentFile: "test.go",
+		CurrentFile: testFile,
 	}
 
 	if progress.Stage == "" {

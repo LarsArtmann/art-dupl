@@ -7,6 +7,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+const testTypeName = "MyType"
+
 func TestExtractReceiverTypeName(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -28,11 +30,11 @@ func TestExtractReceiverTypeName(t *testing.T) {
 			recv: &ast.FieldList{
 				List: []*ast.Field{
 					{
-						Type: &ast.Ident{Name: "MyType"},
+						Type: &ast.Ident{Name: testTypeName},
 					},
 				},
 			},
-			expected: "MyType",
+			expected: testTypeName,
 		},
 		{
 			name: "pointer receiver",
@@ -40,12 +42,12 @@ func TestExtractReceiverTypeName(t *testing.T) {
 				List: []*ast.Field{
 					{
 						Type: &ast.StarExpr{
-							X: &ast.Ident{Name: "MyType"},
+							X: &ast.Ident{Name: testTypeName},
 						},
 					},
 				},
 			},
-			expected: "MyType",
+			expected: testTypeName,
 		},
 		{
 			name: "receiver with names",
@@ -53,11 +55,11 @@ func TestExtractReceiverTypeName(t *testing.T) {
 				List: []*ast.Field{
 					{
 						Names: []*ast.Ident{{Name: "m"}},
-						Type:  &ast.Ident{Name: "MyType"},
+						Type:  &ast.Ident{Name: testTypeName},
 					},
 				},
 			},
-			expected: "MyType",
+			expected: testTypeName,
 		},
 		{
 			name: "nil type in field",

@@ -381,7 +381,10 @@ func unique() {
 				setup.GetFilePath("target1.go"),
 				setup.GetFilePath("target2.go"),
 			)
-			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{flagKeyThreshold: "10"})
+			output, err := setup.RunArtDuplWithStdin(
+				stdin,
+				map[string]string{flagKeyThreshold: "10"},
+			)
 
 			// Verify - should find duplicates between target files
 			Expect(err).ToNot(HaveOccurred())

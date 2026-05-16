@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+const (
+	testString = "String"
+	testError  = "Error"
+)
+
 // compareDecodeResult is a test helper for comparing decode function results.
 func compareDecodeResult(t *testing.T, funcName string, input, result, expected int32) {
 	t.Helper()
@@ -22,8 +27,8 @@ func TestHashIdentifierFast_Consistency(t *testing.T) {
 		{"empty", "", 0},
 		{"single char", "a", 0x1B3E6B},
 		{"short identifier", "foo", 0x2E39B8},
-		{"method name", "String", 0x72F941},
-		{"common method", "Error", 0x5C20A9},
+		{"method name", testString, 0x72F941},
+		{"common method", testError, 0x5C20A9},
 		{"camelCase", "getValue", 0x1D7D1F8},
 		{"with numbers", "test123", 0x517D9A1},
 		{"longer name", "GetUserByID", 0x7E4CC74},
@@ -58,7 +63,7 @@ func TestHashIdentifierFast_DifferentInputs(t *testing.T) {
 	// Different inputs should (almost always) produce different outputs
 	inputs := []string{
 		"foo", "bar", "baz", "qux",
-		"String", "Error", "Format", "Parse",
+		testString, testError, "Format", "Parse",
 		"Get", "Set", "Add", "Delete",
 		"getUser", "setUser", "addUser", "deleteUser",
 	}
@@ -196,8 +201,8 @@ func TestEncodeDecodeRoundTrip(t *testing.T) {
 		identifierName string
 	}{
 		{1, "foo"},
-		{42, "String"},
-		{255, "Error"},
+		{42, testString},
+		{255, testError},
 		{128, "longerIdentifierName"},
 	}
 
@@ -270,7 +275,7 @@ func TestCollisionBehavior(t *testing.T) {
 		name1, name2 string
 	}{
 		{"Get", "Set"},
-		{"String", "Error"},
+		{testString, testError},
 		{"foo", "bar"},
 		{"getUser", "setUser"},
 		{"User", "Users"},
@@ -433,7 +438,7 @@ func TestEncodeSemanticTypeMulti_Disabled(t *testing.T) {
 
 func BenchmarkHashIdentifierFast(b *testing.B) {
 	identifiers := []string{
-		"String", "Error", "Format", "Parse",
+		testString, testError, "Format", "Parse",
 		"getUser", "setUser", "deleteUser",
 		"short", "mediumLengthName", "veryLongIdentifierNameHere",
 	}

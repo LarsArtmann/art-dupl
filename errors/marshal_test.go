@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const testValue = "value"
+
 func TestMarshalError(t *testing.T) {
 	cause := errors.New("json syntax error")
 	unwrapErr := &MarshalError{
@@ -66,8 +68,6 @@ func TestHandleMarshalingError(t *testing.T) {
 }
 
 func TestSafeMarshal(t *testing.T) {
-	const testValue = "value"
-
 	t.Run("successful marshal", func(t *testing.T) {
 		data := map[string]string{"key": testValue}
 
@@ -94,7 +94,7 @@ func TestSafeMarshal(t *testing.T) {
 
 func TestSafeMarshalNilSafe(t *testing.T) {
 	t.Run("successful marshal", func(t *testing.T) {
-		data := map[string]string{"key": "value"}
+		data := map[string]string{"key": testValue}
 
 		result, err := SafeMarshalNilSafe(data, "nil error")
 		if err != nil {

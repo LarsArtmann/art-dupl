@@ -8,6 +8,8 @@ import (
 	"github.com/onsi/gomega"
 )
 
+const goModFile = "go.mod"
+
 // assertMkdirAll creates a directory tree and asserts success.
 func assertMkdirAll(t *testing.T, dir string) {
 	t.Helper()
@@ -37,14 +39,14 @@ func TestFindProjectRoot(t *testing.T) {
 
 		assertMkdirAll(t, deepDir)
 
-		goModPath := filepath.Join(rootDir, "go.mod")
+		goModPath := filepath.Join(rootDir, goModFile)
 
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)
 		}
 
-		foundRoot, err := FindProjectRoot(deepDir, []string{"go.mod"})
+		foundRoot, err := FindProjectRoot(deepDir, []string{goModFile})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 		g.Expect(foundRoot).To(gomega.Equal(rootDir))
 	})
@@ -95,7 +97,7 @@ func TestFindProjectRoot(t *testing.T) {
 
 		assertMkdirAll(t, subDir)
 
-		goModPath := filepath.Join(rootDir, "go.mod")
+		goModPath := filepath.Join(rootDir, goModFile)
 
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
@@ -105,7 +107,7 @@ func TestFindProjectRoot(t *testing.T) {
 		gitDir := filepath.Join(rootDir, ".git")
 		assertMkdir(t, gitDir)
 
-		foundRoot, err := FindProjectRoot(subDir, []string{"go.mod", ".git"})
+		foundRoot, err := FindProjectRoot(subDir, []string{goModFile, ".git"})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 		g.Expect(foundRoot).To(gomega.Equal(rootDir))
 	})
@@ -132,14 +134,14 @@ func TestFindProjectRoot(t *testing.T) {
 
 		assertMkdir(t, rootDir)
 
-		goModPath := filepath.Join(rootDir, "go.mod")
+		goModPath := filepath.Join(rootDir, goModFile)
 
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
 			t.Fatalf("failed to write go.mod: %v", err)
 		}
 
-		foundRoot, err := FindProjectRoot(rootDir, []string{"go.mod"})
+		foundRoot, err := FindProjectRoot(rootDir, []string{goModFile})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 		g.Expect(foundRoot).To(gomega.Equal(rootDir))
 	})
@@ -164,7 +166,7 @@ func TestFindProjectRoot(t *testing.T) {
 
 		assertMkdirAll(t, subDir)
 
-		goModPath := filepath.Join(rootDir, "go.mod")
+		goModPath := filepath.Join(rootDir, goModFile)
 
 		err := os.WriteFile(goModPath, []byte("module test"), 0o644)
 		if err != nil {
@@ -174,7 +176,7 @@ func TestFindProjectRoot(t *testing.T) {
 		absSubDir, err := filepath.Abs(subDir)
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 
-		foundRoot, err := FindProjectRoot(absSubDir, []string{"go.mod"})
+		foundRoot, err := FindProjectRoot(absSubDir, []string{goModFile})
 		g.Expect(err).ToNot(gomega.HaveOccurred())
 		g.Expect(foundRoot).To(gomega.Equal(rootDir))
 	})

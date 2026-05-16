@@ -104,11 +104,7 @@ func TestIsSourceFile(t *testing.T) {
 }
 
 func TestUnique(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    [][]*syntax.Node
-		expected int
-	}{
+	tests := []uniqueTestCase{
 		{
 			name:     "empty input",
 			input:    nil,

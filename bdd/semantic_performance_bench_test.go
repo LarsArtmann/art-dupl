@@ -9,12 +9,9 @@ import (
 	"testing"
 )
 
-// BenchmarkSemanticDetectionRealWorld benchmarks semantic detection
-// using the actual art-dupl codebase as test data.
-//
-// This provides a realistic performance measurement for the --semantic flag.
-func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
-	// Build binary once before benchmark
+func buildBenchBinary(b *testing.B) string {
+	b.Helper()
+
 	binaryPath := filepath.Join(b.TempDir(), "art-dupl-bench")
 
 	buildCmd := exec.CommandContext(b.Context(), "go", "build", "-o", binaryPath, "../cmd/art-dupl")
@@ -24,59 +21,63 @@ func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
 		b.Fatalf("Failed to build binary: %v\n%s", err, output)
 	}
 
-	// Get project root (two levels up from bdd/)
-	//nolint:dogsled // Standard pattern for getting current file path
+	return binaryPath
+}
+
+func runBenchBinary(b *testing.B, binaryPath, target, threshold string, extraArgs ...string) {
+	b.Helper()
+
+	args := append([]string{target, "--threshold", threshold}, extraArgs...)
+	cmd := exec.CommandContext(b.Context(), binaryPath, args...)
+
+	cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
+	}
+}
+
+func getProjectRoot() string {
+	//nolint:dogsled // runtime.Caller returns (pc, file, line, function) - we only need file
 	_, currentFile, _, _ := runtime.Caller(0)
-	projectRoot := filepath.Join(filepath.Dir(currentFile), "..")
+
+	return filepath.Join(filepath.Dir(currentFile), "..")
+}
+
+func writeBenchFiles(b *testing.B, dir string, count int, content string) {
+	b.Helper()
+
+	for i := range count {
+		filename := filepath.Join(dir, fmt.Sprintf("file%d.go", i))
+
+		err := os.WriteFile(filename, []byte(content), 0o644)
+		if err != nil {
+			b.Fatalf("Failed to write test file: %v", err)
+		}
+	}
+}
+
+func BenchmarkSemanticDetectionRealWorld(b *testing.B) {
+	binaryPath := buildBenchBinary(b)
+	projectRoot := getProjectRoot()
 
 	b.Run("WithoutSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(b.Context(), binaryPath, projectRoot, "--threshold", "50")
-
-			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
-
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
-			}
+			runBenchBinary(b, binaryPath, projectRoot, "50")
 		}
 	})
 
 	b.Run("WithSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(
-				b.Context(),
-				binaryPath,
-				projectRoot,
-				"--threshold",
-				"50",
-				"--semantic",
-			)
-
-			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
-
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
-			}
+			runBenchBinary(b, binaryPath, projectRoot, "50", "--semantic")
 		}
 	})
 }
 
-// BenchmarkSemanticDetectionSynthetic benchmarks on synthetic test data
-// to measure overhead without the noise of large file I/O.
 func BenchmarkSemanticDetectionSynthetic(b *testing.B) {
-	// Build binary once before benchmark
-	binaryPath := filepath.Join(b.TempDir(), "art-dupl-bench")
+	binaryPath := buildBenchBinary(b)
 
-	buildCmd := exec.CommandContext(b.Context(), "go", "build", "-o", binaryPath, "../cmd/art-dupl")
-
-	output, err := buildCmd.CombinedOutput()
-	if err != nil {
-		b.Fatalf("Failed to build binary: %v\n%s", err, output)
-	}
-
-	// Create test directory with synthetic code
 	testDir := b.TempDir()
 	code := `package test
 
@@ -86,46 +87,19 @@ func (s *ServiceA) Validate() bool { return true }
 
 type ServiceB struct{}
 func (s *ServiceB) Process() error { return nil }
-func (s *ServiceB) Validate() bool { return true }
-`
-	// Create 20 test files
-	for i := range 20 {
-		filename := filepath.Join(testDir, fmt.Sprintf("file%d.go", i))
+func (s *ServiceB) Validate() bool { return true }`
 
-		err := os.WriteFile(filename, []byte(code), 0o644)
-		if err != nil {
-			b.Fatalf("Failed to write test file: %v", err)
-		}
-	}
+	writeBenchFiles(b, testDir, 20, code)
 
 	b.Run("WithoutSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(b.Context(), binaryPath, testDir, "--threshold", "10")
-
-			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
-
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
-			}
+			runBenchBinary(b, binaryPath, testDir, "10")
 		}
 	})
 
 	b.Run("WithSemantic", func(b *testing.B) {
 		for range b.N {
-			cmd := exec.CommandContext(
-				b.Context(),
-				binaryPath,
-				testDir,
-				"--threshold",
-				"10",
-				"--semantic",
-			)
-
-			cmd.Env = append(os.Environ(), "ARTDUPL_NO_PROGRESS=1")
-			if output, err := cmd.CombinedOutput(); err != nil {
-				b.Fatalf("art-dupl failed: %v\nOutput: %s", err, string(output))
-			}
+			runBenchBinary(b, binaryPath, testDir, "10", "--semantic")
 		}
 	})
 }

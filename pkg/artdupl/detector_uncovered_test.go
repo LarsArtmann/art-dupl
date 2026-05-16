@@ -18,9 +18,14 @@ import (
 
 // testNodes returns a slice of test nodes for testing.
 func testNodes() []*syntax.Node {
+	return makeNodePair("file.go", 10, 20)
+}
+
+// makeNodePair creates a pair of test nodes with sequential positions.
+func makeNodePair(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
-		{Type: 1, Filename: "file.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file.go", Pos: 11, End: 21},
+		{Type: 1, Filename: filename, Pos: pos, End: end},
+		{Type: 2, Filename: filename, Pos: pos + 1, End: end + 1},
 	}
 }
 
@@ -85,14 +90,8 @@ func TestConvertToCloneGroup(t *testing.T) {
 	}
 
 	// Create test fragments
-	frag1 := []*syntax.Node{
-		{Type: 1, Filename: "file1.go", Pos: 10, End: 20},
-		{Type: 2, Filename: "file1.go", Pos: 11, End: 21},
-	}
-	frag2 := []*syntax.Node{
-		{Type: 1, Filename: "file2.go", Pos: 30, End: 40},
-		{Type: 2, Filename: "file2.go", Pos: 31, End: 41},
-	}
+	frag1 := makeNodePair("file1.go", 10, 20)
+	frag2 := makeNodePair("file2.go", 30, 40)
 
 	frags := [][]*syntax.Node{frag1, frag2}
 

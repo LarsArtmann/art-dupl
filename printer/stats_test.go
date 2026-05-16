@@ -224,9 +224,7 @@ func TestStatsComplexityScore(t *testing.T) {
 	for range 3 {
 		dups := createCloneNodeGroup([]string{"file1.go", "file2.go", "file3.go"})
 
-		err := statsPrinter.PrintClones(
-			processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups),
-		)
+		err := printTestClones(statsPrinter, mockReadFile(string(mockReadFileContent())), dups)
 		if err != nil {
 			t.Fatalf("PrintClones failed: %v", err)
 		}

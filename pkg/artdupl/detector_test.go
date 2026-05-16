@@ -49,7 +49,7 @@ func createTestClone(t *testing.T, fragment string) Clone {
 	t.Helper()
 
 	return Clone{
-		Filename:  "test.go",
+		Filename:  testFilename,
 		StartLine: 1,
 		EndLine:   5,
 		Fragment:  fragment,

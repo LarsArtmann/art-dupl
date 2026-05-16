@@ -67,7 +67,7 @@ func TestCloneGroup_Fields(t *testing.T) {
 // TestClone_Fields tests Clone field assignments.
 func TestClone_Fields(t *testing.T) {
 	clone := Clone{
-		Filename:  "test.go",
+		Filename:  testFilename,
 		StartLine: 10,
 		EndLine:   20,
 		StartPos:  100,
@@ -76,7 +76,7 @@ func TestClone_Fields(t *testing.T) {
 		Size:      50,
 	}
 
-	testutil.AssertFieldValue(t, clone.Filename, "test.go", "Filename")
+	testutil.AssertFieldValue(t, clone.Filename, testFilename, "Filename")
 	testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
 	testutil.AssertFieldValue(t, clone.EndLine, 20, "EndLine")
 	testutil.AssertFieldValue(t, clone.StartPos, 100, "StartPos")

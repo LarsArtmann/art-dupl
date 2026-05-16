@@ -11,6 +11,8 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
+const demoTestFile = "test.go"
+
 func RunSDKDemo() {
 	fmt.Println("=== dupl SDK Demo ===")
 
@@ -194,7 +196,7 @@ func errorExample() {
 		{
 			name:  "Invalid threshold",
 			opts:  &artdupl.Options{Threshold: 0},
-			files: []string{"test.go"},
+			files: []string{demoTestFile},
 		},
 		{
 			name:  "No files",
@@ -207,7 +209,7 @@ func errorExample() {
 				Threshold:        10,
 				DetectionMethods: []artdupl.DetectionMethod{"invalid"},
 			},
-			files: []string{"test.go"},
+			files: []string{demoTestFile},
 		},
 	}
 

@@ -479,6 +479,16 @@ type PlumbingEntry struct {
 	EndCol    int
 }
 
+// parseIntField parses a string as int, returning a descriptive error on failure.
+func parseIntField(s, label string) (int, error) {
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, fmt.Errorf("invalid %s: %s", label, s)
+	}
+
+	return v, nil
+}
+
 // parsePlumbingLine parses a single plumbing output line.
 func parsePlumbingLine(line string) (PlumbingEntry, error) {
 	parsedLine := PlumbingEntry{}
@@ -507,33 +517,33 @@ func parsePlumbingLine(line string) (PlumbingEntry, error) {
 		startParts := strings.Split(parts[0], ",")
 		endParts := strings.Split(parts[1], ",")
 
-		startLine, err := strconv.Atoi(startParts[0])
+		startLine, err := parseIntField(startParts[0], "start line")
 		if err != nil {
-			return parsedLine, fmt.Errorf("invalid start line: %s", startParts[0])
+			return parsedLine, err
 		}
 
 		parsedLine.StartLine = startLine
 
 		if len(startParts) > 1 {
-			startCol, err := strconv.Atoi(startParts[1])
+			startCol, err := parseIntField(startParts[1], "start column")
 			if err != nil {
-				return parsedLine, fmt.Errorf("invalid start column: %s", startParts[1])
+				return parsedLine, err
 			}
 
 			parsedLine.StartCol = startCol
 		}
 
-		endLine, err := strconv.Atoi(endParts[0])
+		endLine, err := parseIntField(endParts[0], "end line")
 		if err != nil {
-			return parsedLine, fmt.Errorf("invalid end line: %s", endParts[0])
+			return parsedLine, err
 		}
 
 		parsedLine.EndLine = endLine
 
 		if len(endParts) > 1 {
-			endCol, err := strconv.Atoi(endParts[1])
+			endCol, err := parseIntField(endParts[1], "end column")
 			if err != nil {
-				return parsedLine, fmt.Errorf("invalid end column: %s", endParts[1])
+				return parsedLine, err
 			}
 
 			parsedLine.EndCol = endCol

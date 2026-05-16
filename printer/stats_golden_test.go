@@ -61,9 +61,7 @@ func TestStatsJSONOutputGolden(t *testing.T) {
 		makeTestNodePair("file2.go", pos(10, 12, 1), pos(11, 13, 2)),
 	}
 
-	err := statsPrinter.PrintClones(
-		processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups),
-	)
+	err := printTestClones(statsPrinter, mockReadFile(string(mockReadFileContent())), dups)
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
