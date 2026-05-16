@@ -83,12 +83,8 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 			wantErr: ErrNoDetectionMethods,
 		},
 		{
-			name: "negative max file size",
-			opts: &Options{
-				Threshold:        15,
-				DetectionMethods: []DetectionMethod{MethodArtDupl},
-				MaxFileSize:      -1,
-			},
+			name:    "negative max file size",
+			opts:    invalidMaxFileSizeOptions(),
 			wantErr: ErrInvalidMaxFileSize,
 		},
 		{

@@ -10,6 +10,11 @@ import (
 	"strings"
 )
 
+// commandError wraps a command error with output context.
+func commandError(msg string, err error, output []byte) error {
+	return fmt.Errorf("%s: %w\nOutput: %s", msg, err, string(output))
+}
+
 // RunArtDupl executes art-dupl binary with given arguments and returns combined stdout/stderr.
 func (s *BDDTestSetup) RunArtDupl(args ...string) ([]byte, error) {
 	return s.RunArtDuplOnDir(s.TmpDir, args...)
@@ -129,18 +134,14 @@ func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("stats execution failed: %w\nOutput: %s", err, string(output))
+		return nil, commandError("stats execution failed", err, output)
 	}
 
 	var result map[string]any
 
 	err = json.Unmarshal(output, &result)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"failed to unmarshal JSON output: %w\nOutput: %s",
-			err,
-			string(output),
-		)
+		return nil, commandError("failed to unmarshal JSON output", err, output)
 	}
 
 	return result, nil

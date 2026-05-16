@@ -45,6 +45,18 @@ func makeFrag(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
+// buildTreeFromFrag creates a suffix tree populated from the given fragment nodes.
+func buildTreeFromFrag(frag []*syntax.Node) *suffixtree.STree {
+	tree := suffixtree.New()
+	for _, node := range frag {
+		tree.Update(node)
+	}
+
+	tree.Update(&syntax.Node{Type: -1})
+
+	return tree
+}
+
 // drainMatchesChannel builds a test pipeline and drains the MultiDetector matches channel.
 func drainMatchesChannel(t *testing.T) {
 	t.Helper()
@@ -87,6 +99,17 @@ func newTestDetector() *detector {
 			DetectionMethods: []DetectionMethod{MethodArtDupl},
 		},
 		config: newTestConfig(),
+	}
+}
+
+// newFragmentDetector creates a detector configured for fragment extraction.
+func newFragmentDetector() *detector {
+	return &detector{
+		opts: &Options{
+			IncludeFragments: true,
+			FileReader:       os.ReadFile,
+		},
+		logger: &logger.NoOpLogger{},
 	}
 }
 
@@ -239,13 +262,7 @@ func TestExtractFragmentContent_WithFragments(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	d := &detector{
-		opts: &Options{
-			IncludeFragments: true,
-			FileReader:       os.ReadFile,
-		},
-		logger: &logger.NoOpLogger{},
-	}
+	d := newFragmentDetector()
 
 	frag := []*syntax.Node{testutil.CreateNodeWithPos(1, testFile, 1, 2)}
 
@@ -373,12 +390,7 @@ func TestStreamDetectionResults(t *testing.T) {
 	resultChan := make(chan *CloneGroup, 1)
 	testFrag := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
-	tree := suffixtree.New()
-	for _, node := range testFrag {
-		tree.Update(node)
-	}
-
-	tree.Update(&syntax.Node{Type: -1})
+	tree := buildTreeFromFrag(testFrag)
 
 	pipeline := &pipelineResult{data: testFrag, tree: tree}
 
@@ -400,12 +412,7 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 
 	fragNodes := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
-	tree := suffixtree.New()
-	for _, node := range fragNodes {
-		tree.Update(node)
-	}
-
-	tree.Update(&syntax.Node{Type: -1})
+	tree := buildTreeFromFrag(fragNodes)
 
 	pipeline := &pipelineResult{data: fragNodes, tree: tree}
 
@@ -424,12 +431,7 @@ func TestConvertFragmentToClone_WithFragments(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	d := &detector{
-		opts: &Options{
-			IncludeFragments: true,
-			FileReader:       os.ReadFile,
-		},
-	}
+	d := newFragmentDetector()
 
 	frag := []*syntax.Node{testutil.CreateNodeWithPos(1, testFile, 1, 2)}
 

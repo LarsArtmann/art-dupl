@@ -13,6 +13,9 @@ var testData16Bytes = []byte{
 	0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
 }
 
+// testABC is a simple three-element byte slice used across tests.
+var testABC = [][]byte{[]byte("a"), []byte("b"), []byte("c")}
+
 // assertSliceLength is a test helper that asserts a slice has the expected length.
 func assertSliceLength(t *testing.T, slice any, length int) {
 	t.Helper()
@@ -94,7 +97,7 @@ func TestFallbackHasher_HashSlice(t *testing.T) {
 	}{
 		{"empty slice", [][]byte{}},
 		{"single element", [][]byte{[]byte("test")}},
-		{"multiple elements", [][]byte{[]byte("a"), []byte("b"), []byte("c")}},
+		{"multiple elements", testABC},
 		{"with nil elements", [][]byte{nil, []byte("test"), nil}},
 		{"large slice", make([][]byte, 100)},
 	}
@@ -130,7 +133,7 @@ func TestSimdHasher_HashSlice(t *testing.T) {
 	// simdHasher delegates to fallbackHasher
 	hasher := &simdHasher{}
 
-	data := [][]byte{[]byte("a"), []byte("b"), []byte("c")}
+	data := testABC
 	result := hasher.HashSlice(data)
 
 	if result == nil {

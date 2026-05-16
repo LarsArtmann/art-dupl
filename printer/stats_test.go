@@ -70,7 +70,7 @@ func createNodeSlice(filename string, startPos, endPos int) []*syntax.Node {
 // createTestCloneGroups creates a standard set of clone groups for testing.
 func createTestCloneGroups() [][]*syntax.Node {
 	cloneGroup := func(filename string) []*syntax.Node {
-		return makeDupNodePair(0, filename, 2, 3)
+		return makeDupNodePair(filename, 2, 3)
 	}
 
 	return [][]*syntax.Node{
@@ -80,10 +80,10 @@ func createTestCloneGroups() [][]*syntax.Node {
 }
 
 // makeDupNodePair creates a pair of duplicate nodes at the same position.
-func makeDupNodePair(nodeType int32, filename string, pos, end int32) []*syntax.Node {
+func makeDupNodePair(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
-		testutil.CreateNodeWithPos(nodeType, filename, pos, end),
-		testutil.CreateNodeWithPos(nodeType, filename, pos, end),
+		testutil.CreateNodeWithPos(0, filename, pos, end),
+		testutil.CreateNodeWithPos(0, filename, pos, end),
 	}
 }
 

@@ -227,13 +227,20 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 		t.Fatalf("NewFilter() error: %v", filterErr)
 	}
 
-	// SQLC files should be kept
-	assertFilterResult(t, f, toFSPath(filepath.Join(queriesDir, "articles.sql.go")), "SQLC generated", true)
-	assertFilterResult(t, f, toFSPath(filepath.Join(queriesDir, "users.sql.go")), "SQLC generated", true)
-
-	// Regular files should NOT be kept
-	assertFilterResult(t, f, toFSPath(filepath.Join(repoDir, "article_repository.go")), "regular Go file", false)
-	assertFilterResult(t, f, toFSPath(filepath.Join(repoDir, "mock_repository.go")), "regular Go file", false)
+	// Verify filter results
+	type filterCheck struct {
+		path     string
+		desc     string
+		wantKeep bool
+	}
+	for _, fc := range []filterCheck{
+		{filepath.Join(queriesDir, "articles.sql.go"), "SQLC generated", true},
+		{filepath.Join(queriesDir, "users.sql.go"), "SQLC generated", true},
+		{filepath.Join(repoDir, "article_repository.go"), "regular Go file", false},
+		{filepath.Join(repoDir, "mock_repository.go"), "regular Go file", false},
+	} {
+		assertFilterResult(t, f, toFSPath(fc.path), fc.desc, fc.wantKeep)
+	}
 }
 
 // TestSQLCOutputDirectoryFiltering tests that files in SQLC output directories are wasKept.

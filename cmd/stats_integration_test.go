@@ -14,27 +14,31 @@ import (
 // hasAllStrings returns a function that checks if all substrings exist in the given text.
 func hasAllStrings(output string, substrings ...string) func() bool {
 	return func() bool {
-		for _, substring := range substrings {
-			if !strings.Contains(output, substring) {
-				return false
-			}
-		}
-
-		return true
+		return checkSubstrings(output, false, substrings)
 	}
 }
 
 // containsAnySubstring returns a function that checks if any substring exists in given output.
 func containsAnySubstring(output string, substrings ...string) func() bool {
 	return func() bool {
-		for _, substring := range substrings {
-			if strings.Contains(output, substring) {
-				return true
-			}
+		return checkSubstrings(output, true, substrings)
+	}
+}
+
+// checkSubstrings checks if any (anyMode=true) or all (anyMode=false) substrings exist in output.
+func checkSubstrings(output string, anyMode bool, substrings []string) bool {
+	for _, sub := range substrings {
+		found := strings.Contains(output, sub)
+		if anyMode && found {
+			return true
 		}
 
-		return false
+		if !anyMode && !found {
+			return false
+		}
 	}
+
+	return !anyMode
 }
 
 const (

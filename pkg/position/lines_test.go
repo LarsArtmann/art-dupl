@@ -206,14 +206,15 @@ func TestLineIndex(t *testing.T) {
 func TestByteRangeToLinesProperty(t *testing.T) {
 	t.Parallel()
 
+	// isValidRange guards against invalid quick.Check inputs.
+	isValidRange := func(content string, lo, end int) bool {
+		return lo >= 0 && end >= 0 && lo <= end && end <= len(content)
+	}
+
 	// Property 1: Line numbers are always positive
 	f1 := func(content string, lo, end int) bool {
-		if lo < 0 || end < 0 || lo > end {
-			return true // Invalid input, skip
-		}
-
-		if end > len(content) {
-			return true // End beyond content, skip
+		if !isValidRange(content, lo, end) {
+			return true
 		}
 
 		loLine, endLine := ByteRangeToLines([]byte(content), lo, end)
@@ -228,12 +229,8 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 
 	// Property 2: End line >= lo line
 	f2 := func(content string, lo, end int) bool {
-		if lo < 0 || end < 0 || lo > end {
-			return true // Invalid input, skip
-		}
-
-		if end > len(content) {
-			return true // End beyond content, skip
+		if !isValidRange(content, lo, end) {
+			return true
 		}
 
 		loLine, endLine := ByteRangeToLines([]byte(content), lo, end)
