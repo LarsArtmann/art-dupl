@@ -7,6 +7,18 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+const (
+	suggestExtractUtility    = "Extract to shared utility function"
+	suggestReviewExtract     = "Review and extract common logic"
+	suggestComposition       = "Consider composition or shared base struct"
+	suggestInterface         = "Extract common interface definition"
+	suggestHandler           = "Extract handler logic to service layer"
+	suggestLoopHelper        = "Extract loop body to helper function"
+	suggestStrategy          = "Consider strategy pattern or early returns"
+	suggestTestHelper        = "Extract test helper function or use table-driven tests"
+	suggestSharedTestUtility = "Consider extracting to shared test utility"
+)
+
 type (
 	CloneCategory       = domain.CloneCategory
 	ClonePriority       = domain.ClonePriority
