@@ -141,7 +141,10 @@ func anotherLargeFunction() {
 
 				printer := NewJSON(&buf, mockReadFile(testContent))
 
-				err := printer.PrintClones(processTestNodes(mockReadFile(testContent), "test", clones), tc.sortBy)
+				err := printer.PrintClones(
+					processTestNodes(mockReadFile(testContent), "test", clones),
+					tc.sortBy,
+				)
 				if err != nil {
 					t.Fatalf("JSONPrinter.PrintClones failed: %v", err)
 				}
@@ -297,7 +300,7 @@ func TestCommonSortingUtilities(t *testing.T) {
 		// For testing, we'll simulate sorting multiple groups separately
 		group1 := createMockCloneGroup(t, "small.go", 10, 2)  // 2 tokens
 		group2 := createMockCloneGroup(t, "medium.go", 30, 5) // 5 tokens
-		group3 := createMockCloneGroup(t, largeFile, 60, 8)  // 8 tokens
+		group3 := createMockCloneGroup(t, largeFile, 60, 8)   // 8 tokens
 
 		clones := [][]*syntax.Node{group1, group2, group3}
 		sorted := SortClonesByTotalTokens(clones)

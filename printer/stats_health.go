@@ -6,10 +6,10 @@ const (
 	sizeRange1to5   = "1-5 lines"
 	sizeRange6to10  = "6-10 lines"
 	sizeRange11to20 = "11-20 lines"
-	healthSmall  = "small"
-	healthMedium = "medium"
-	healthLarge  = "large"
-	healthHuge   = "huge"
+	healthSmall     = "small"
+	healthMedium    = "medium"
+	healthLarge     = "large"
+	healthHuge      = "huge"
 )
 
 // calculateHealthScore calculates an A-F grade based on duplication, complexity, and impact metrics.

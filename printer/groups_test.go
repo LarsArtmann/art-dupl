@@ -98,7 +98,7 @@ func TestSortCloneGroupKeys(t *testing.T) {
 
 	groups := map[string][][]*syntax.Node{
 		healthSmall:  {{smallNode}},
-		"big":    {{bigNode}, {smallNode}, {medNode}},
+		"big":        {{bigNode}, {smallNode}, {medNode}},
 		healthMedium: {{medNode}, {smallNode}},
 	}
 	uniqueCounts := map[string]int{healthSmall: 1, "big": 3, healthMedium: 2}
