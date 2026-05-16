@@ -48,25 +48,25 @@ func TestNewMultiDetector(t *testing.T) {
 
 	tree := suffixtree.New()
 
-	detector := NewMultiDetector(
+	det := NewMultiDetector(
 		config.DetectionConfig{Methods: cfg.DetectionMethods, Verbose: true},
 		data,
 		tree,
 	)
 
-	if len(detector.detCfg.Methods) != len(cfg.DetectionMethods) {
+	if len(det.detCfg.Methods) != len(cfg.DetectionMethods) {
 		t.Error("Config not set correctly")
 	}
 
-	if len(detector.data) != len(data) {
+	if len(det.data) != len(data) {
 		t.Error("Data not set correctly")
 	}
 
-	if detector.tree != tree {
+	if det.tree != tree {
 		t.Error("Tree not set correctly")
 	}
 
-	if !detector.detCfg.Verbose {
+	if !det.detCfg.Verbose {
 		t.Error("Verbose flag not set correctly")
 	}
 }
@@ -114,20 +114,20 @@ func TestMultiDetector_logVerbose(t *testing.T) {
 
 // TestNewTodoDetector tests TODO detector creation.
 func TestNewTodoDetector(t *testing.T) {
-	detector := NewTodoDetector()
+	d := NewTodoDetector()
 
-	if detector.patterns == nil {
+	if d.patterns == nil {
 		t.Error("Patterns should not be nil")
 	}
 
-	if len(detector.patterns) == 0 {
+	if len(d.patterns) == 0 {
 		t.Error("Patterns should not be empty")
 	}
 
 	// Check for expected patterns
 	expectedPatterns := []string{"TODO", "FIXME", "XXX", "HACK", "NOTE"}
 	for _, pattern := range expectedPatterns {
-		if _, exists := detector.patterns[pattern]; !exists {
+		if _, exists := d.patterns[pattern]; !exists {
 			t.Errorf("Expected pattern %s not found", pattern)
 		}
 	}

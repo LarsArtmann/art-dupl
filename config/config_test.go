@@ -26,14 +26,14 @@ func createTempDir(t *testing.T) (string, func()) {
 func TestDefaultConfig(t *testing.T) {
 	t.Parallel()
 
-	config := DefaultConfig()
+	cfg := DefaultConfig()
 
-	testutil.AssertConfigField(t, "Threshold", config.Threshold, 15)
-	testutil.AssertConfigField(t, "IncludeVendor", config.IncludeVendor, false)
-	testutil.AssertConfigField(t, "OutputFormat", config.OutputFormat, "text")
+	testutil.AssertConfigField(t, "Threshold", cfg.Threshold, 15)
+	testutil.AssertConfigField(t, "IncludeVendor", cfg.IncludeVendor, false)
+	testutil.AssertConfigField(t, "OutputFormat", cfg.OutputFormat, "text")
 
-	if len(config.Paths) != 1 || config.Paths[0] != "." {
-		t.Errorf("Expected default paths [\".\"], got %v", config.Paths)
+	if len(cfg.Paths) != 1 || cfg.Paths[0] != "." {
+		t.Errorf("Expected default paths [\".\"], got %v", cfg.Paths)
 	}
 }
 

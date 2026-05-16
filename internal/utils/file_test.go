@@ -76,9 +76,9 @@ func assertReadFile(t *testing.T, filename, fileData string) {
 	g.Expect(os.WriteFile(filepath.Join(tmpDir, filename), []byte(fileData), 0o644)).
 		To(gomega.Succeed())
 
-	read, err := fp.ReadFile(filename)
+	loaded, err := fp.ReadFile(filename)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(read)).To(gomega.Equal(fileData))
+	g.Expect(string(loaded)).To(gomega.Equal(fileData))
 }
 
 // assertReadFileAbsolute writes a file without base dir and reads it back via fp.ReadFile.

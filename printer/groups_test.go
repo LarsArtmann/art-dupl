@@ -79,13 +79,13 @@ func TestComputeUniqueCounts(t *testing.T) {
 		"h2": {{nodeC}},
 	}
 
-	counts := ComputeUniqueCounts(groups)
-	if counts["h1"] != 2 {
-		t.Errorf("h1 unique count = %d, want 2", counts["h1"])
+	totals := ComputeUniqueCounts(groups)
+	if totals["h1"] != 2 {
+		t.Errorf("h1 unique count = %d, want 2", totals["h1"])
 	}
 
-	if counts["h2"] != 1 {
-		t.Errorf("h2 unique count = %d, want 1", counts["h2"])
+	if totals["h2"] != 1 {
+		t.Errorf("h2 unique count = %d, want 1", totals["h2"])
 	}
 }
 

@@ -27,11 +27,11 @@ func assertCloneGroupBasic(
 }
 
 // assertCloneCount asserts the number of clones matches expected.
-func assertCloneCount(t *testing.T, got, expected int) {
+func assertCloneCount(t *testing.T, actual, expected int) {
 	t.Helper()
 
-	if got != expected {
-		t.Errorf("clone count: expected %d, got %d", expected, got)
+	if actual != expected {
+		t.Errorf("clone count: expected %d, actual %d", expected, actual)
 	}
 }
 

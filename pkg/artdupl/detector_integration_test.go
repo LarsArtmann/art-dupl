@@ -161,8 +161,8 @@ func TestDetector_Integration_NonExistentFile(t *testing.T) {
 		cleanupDetector(t, detector)
 	})
 
-	result, err := detector.FindClones(t.Context(), []string{"nonexistent_file.go"})
-	if err == nil && result != nil {
+	found, err := detector.FindClones(t.Context(), []string{"nonexistent_file.go"})
+	if err == nil && found != nil {
 		return
 	}
 }

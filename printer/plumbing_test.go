@@ -29,7 +29,7 @@ func TestNewPlumbing(t *testing.T) {
 func TestPlumbing_PrintHeaderAndFooter(t *testing.T) {
 	t.Parallel()
 
-	printerTests := []struct {
+	methodChecks := []struct {
 		name string
 		call func(p Printer) error
 	}{
@@ -37,7 +37,7 @@ func TestPlumbing_PrintHeaderAndFooter(t *testing.T) {
 		{"PrintFooter", func(p Printer) error { return p.PrintFooter() }},
 	}
 
-	for _, tc := range printerTests {
+	for _, tc := range methodChecks {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 

@@ -952,22 +952,22 @@ func TestFileType_IsValid(t *testing.T) {
 func TestFileType_MarshalJSON(t *testing.T) {
 	t.Parallel()
 
-	data, err := FileTypeGo.MarshalJSON()
+	raw, err := FileTypeGo.MarshalJSON()
 	if err != nil {
 		t.Fatalf("MarshalJSON(FileTypeGo) error: %v", err)
 	}
 
-	if string(data) != `"go"` {
-		t.Errorf("MarshalJSON(FileTypeGo) = %s, want %q", data, `"go"`)
+	if string(raw) != `"go"` {
+		t.Errorf("MarshalJSON(FileTypeGo) = %s, want %q", raw, `"go"`)
 	}
 
-	data, err = FileTypeAll.MarshalJSON()
+	raw, err = FileTypeAll.MarshalJSON()
 	if err != nil {
 		t.Fatalf("MarshalJSON(FileTypeAll) error: %v", err)
 	}
 
-	if string(data) != "null" {
-		t.Errorf("MarshalJSON(FileTypeAll) = %s, want %q", data, "null")
+	if string(raw) != "null" {
+		t.Errorf("MarshalJSON(FileTypeAll) = %s, want %q", raw, "null")
 	}
 }
 

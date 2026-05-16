@@ -277,13 +277,13 @@ func TestHashFile_NonexistentFile(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fileHash, ok := fd.hashFile("/nonexistent/path/file.go")
+	hashEntry, ok := fd.hashFile("/nonexistent/path/file.go")
 	if ok {
 		t.Error("expected ok=false for nonexistent file")
 	}
 
-	if fileHash.Hash != "" || fileHash.Filename != "" || fileHash.Size != 0 {
-		t.Errorf("expected zero FileHash, got %+v", fileHash)
+	if hashEntry.Hash != "" || hashEntry.Filename != "" || hashEntry.Size != 0 {
+		t.Errorf("expected zero FileHash, got %+v", hashEntry)
 	}
 }
 

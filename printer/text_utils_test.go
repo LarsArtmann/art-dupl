@@ -20,16 +20,16 @@ func TestProcessFileContent(t *testing.T) {
 		return []byte("hello"), nil
 	}
 
-	info, err := ProcessFileContent(fread, node)
+	meta, err := ProcessFileContent(fread, node)
 	if err != nil {
 		t.Fatalf("ProcessFileContent() error: %v", err)
 	}
-	if info.Filename != "test.go" {
-		t.Errorf("Filename = %q, want %q", info.Filename, "test.go")
+	if meta.Filename != "test.go" {
+		t.Errorf("Filename = %q, want %q", meta.Filename, "test.go")
 	}
 
-	if string(info.Content) != "hello" {
-		t.Errorf("Content = %q, want %q", string(info.Content), "hello")
+	if string(meta.Content) != "hello" {
+		t.Errorf("Content = %q, want %q", string(meta.Content), "hello")
 	}
 }
 

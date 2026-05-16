@@ -48,8 +48,8 @@ func assertBaseFilename(t *testing.T, result *CloneGroupDiff, expectedFilename s
 }
 
 func TestLineDiff_EqualContent(t *testing.T) {
-	base := []byte("diffEntry1\ndiffEntry2\ndiffEntry3")
-	compared := []byte("diffEntry1\ndiffEntry2\ndiffEntry3")
+	base := []byte("dLine1\ndLine2\ndLine3")
+	compared := []byte("dLine1\ndLine2\ndLine3")
 
 	result := LineDiff(base, compared)
 
@@ -57,20 +57,20 @@ func TestLineDiff_EqualContent(t *testing.T) {
 		t.Error("Expected HasDiff to be false for identical content")
 	}
 
-	// Verify diffEntry counts using a helper to avoid duplication
+	// Verify dLine counts using a helper to avoid duplication
 	testutil.AssertCount(t, len(result.Base), 3, "base")
 	testutil.AssertCount(t, len(result.Compared), 3, "compared")
 
-	// All diffEntrys should be marked as equal
-	for i, diffEntry := range result.Base {
-		if diffEntry.Type != DiffLineEqual {
-			t.Errorf("Expected base diffEntry %d to be Equal, got %d", i, diffEntry.Type)
+	// All dLines should be marked as equal
+	for i, dLine := range result.Base {
+		if dLine.Type != DiffLineEqual {
+			t.Errorf("Expected base dLine %d to be Equal, got %d", i, dLine.Type)
 		}
 	}
 
-	for i, diffEntry := range result.Compared {
-		if diffEntry.Type != DiffLineEqual {
-			t.Errorf("Expected compared diffEntry %d to be Equal, got %d", i, diffEntry.Type)
+	for i, dLine := range result.Compared {
+		if dLine.Type != DiffLineEqual {
+			t.Errorf("Expected compared dLine %d to be Equal, got %d", i, dLine.Type)
 		}
 	}
 }

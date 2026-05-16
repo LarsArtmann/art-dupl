@@ -879,8 +879,8 @@ func TestSetFilterStats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := &bytes.Buffer{}
-			sp := NewStats(buf, mockReadFile(string(mockReadFileContent())), 15).(*stats)
+			w := &bytes.Buffer{}
+			sp := NewStats(w, mockReadFile(string(mockReadFileContent())), 15).(*stats)
 
 			sp.SetFilterStats(tt.filesFiltered, tt.breakdown)
 

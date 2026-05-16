@@ -200,8 +200,8 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 	t.Parallel()
 
 	// Property 1: Line numbers are always positive
-	f1 := func(content string, start, end int) bool {
-		if start < 0 || end < 0 || start > end {
+	f1 := func(content string, lo, end int) bool {
+		if lo < 0 || end < 0 || lo > end {
 			return true // Invalid input, skip
 		}
 
@@ -209,9 +209,9 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 			return true // End beyond content, skip
 		}
 
-		startLine, endLine := ByteRangeToLines([]byte(content), start, end)
+		loLine, endLine := ByteRangeToLines([]byte(content), lo, end)
 
-		return startLine > 0 && endLine > 0
+		return loLine > 0 && endLine > 0
 	}
 
 	err := quick.Check(f1, nil)
@@ -219,9 +219,9 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 		t.Errorf("Positive line numbers property failed: %v", err)
 	}
 
-	// Property 2: End line >= start line
-	f2 := func(content string, start, end int) bool {
-		if start < 0 || end < 0 || start > end {
+	// Property 2: End line >= lo line
+	f2 := func(content string, lo, end int) bool {
+		if lo < 0 || end < 0 || lo > end {
 			return true // Invalid input, skip
 		}
 
@@ -229,25 +229,25 @@ func TestByteRangeToLinesProperty(t *testing.T) {
 			return true // End beyond content, skip
 		}
 
-		startLine, endLine := ByteRangeToLines([]byte(content), start, end)
+		loLine, endLine := ByteRangeToLines([]byte(content), lo, end)
 
-		return endLine >= startLine
+		return endLine >= loLine
 	}
 
 	err = quick.Check(f2, nil)
 	if err != nil {
-		t.Errorf("End line >= start line property failed: %v", err)
+		t.Errorf("End line >= lo line property failed: %v", err)
 	}
 
 	// Property 3: Empty content returns 1,1
-	f3 := func(start, end int) bool {
-		if start != 0 || end != 0 {
+	f3 := func(lo, end int) bool {
+		if lo != 0 || end != 0 {
 			return true // Non-zero offset, skip
 		}
 
-		startLine, endLine := ByteRangeToLines([]byte(""), start, end)
+		loLine, endLine := ByteRangeToLines([]byte(""), lo, end)
 
-		return startLine == 1 && endLine == 1
+		return loLine == 1 && endLine == 1
 	}
 
 	err = quick.Check(f3, nil)

@@ -201,7 +201,7 @@ func TestExtractFragmentContent_InvalidRange(t *testing.T) {
 	d := &detector{
 		opts: &Options{
 			IncludeFragments: true,
-			FileReader: func(filename string) ([]byte, error) {
+			FileReader: func(fn string) ([]byte, error) {
 				return []byte("line1\nline2\n"), nil
 			},
 		},
@@ -263,7 +263,7 @@ func TestRunDetectionMethods(t *testing.T) {
 func TestReportProgress(t *testing.T) {
 	var receivedProgress *Progress
 
-	progressCB := func(p *Progress) error {
+	onProgress := func(p *Progress) error {
 		receivedProgress = p
 
 		return nil
@@ -271,14 +271,14 @@ func TestReportProgress(t *testing.T) {
 
 	d := &detector{
 		opts: &Options{
-			ProgressCallback: progressCB,
+			ProgressCallback: onProgress,
 		},
 	}
 
 	d.reportProgress(75.5, "Analyzing", "current.go")
 
 	if receivedProgress == nil {
-		t.Fatal("Progress progressCB was not called")
+		t.Fatal("Progress onProgress was not called")
 	}
 
 	testutil.AssertFieldValue(t, receivedProgress.Stage, "Analyzing", "Stage")
