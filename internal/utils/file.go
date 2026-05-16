@@ -66,7 +66,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 		fullPath,
 	) // #nosec G304 -- Path is constructed from base directory and validated filename
 	if err != nil {
-		return nil, errors.NewIOError(fullPath, fmt.Sprintf("failed to read file %s", filename), err)
+		return nil, errors.NewIOError(fullPath, "failed to read file "+filename, err)
 	}
 
 	return data, nil

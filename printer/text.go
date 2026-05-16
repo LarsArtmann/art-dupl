@@ -67,7 +67,12 @@ func (p *TextPrinter) PrintClones(
 			len(clones),
 			fileSizeStr,
 		); err != nil {
-			return fmt.Errorf("write file duplicate header (hash: %s, files: %d): %w", hashPrefix, len(clones), err)
+			return fmt.Errorf(
+				"write file duplicate header (hash: %s, files: %d): %w",
+				hashPrefix,
+				len(clones),
+				err,
+			)
 		}
 
 		for _, cl := range clones {

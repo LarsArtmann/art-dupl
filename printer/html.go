@@ -148,7 +148,13 @@ func (p *htmlprinter) PrintClones(
 	p.dupMutex.Unlock()
 
 	if err := p.writeCloneGroupHeader(clones); err != nil {
-		return fmt.Errorf("print clone group #%d (hash: %s, clones: %d): %w", p.iota, group.Hash, len(clones), err)
+		return fmt.Errorf(
+			"print clone group #%d (hash: %s, clones: %d): %w",
+			p.iota,
+			group.Hash,
+			len(clones),
+			err,
+		)
 	}
 
 	sort.Sort(byNameAndLineProcessed(clones))
@@ -156,12 +162,22 @@ func (p *htmlprinter) PrintClones(
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
 		err := p.writeDiffView(clones)
 		if err != nil {
-			return fmt.Errorf("diff view for clone group #%d (hash: %s): %w", p.iota, group.Hash, err)
+			return fmt.Errorf(
+				"diff view for clone group #%d (hash: %s): %w",
+				p.iota,
+				group.Hash,
+				err,
+			)
 		}
 	} else {
 		err := p.writeCloneOccurrences(clones)
 		if err != nil {
-			return fmt.Errorf("clone occurrences for clone group #%d (hash: %s): %w", p.iota, group.Hash, err)
+			return fmt.Errorf(
+				"clone occurrences for clone group #%d (hash: %s): %w",
+				p.iota,
+				group.Hash,
+				err,
+			)
 		}
 	}
 

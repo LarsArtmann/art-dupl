@@ -102,7 +102,6 @@ func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 </div>
 </div>
 `)
-
 	if err != nil {
 		return fmt.Errorf("write diff legend for base %s:%d: %w",
 			groupDiff.Base.Filename, groupDiff.Base.LineStart, err)

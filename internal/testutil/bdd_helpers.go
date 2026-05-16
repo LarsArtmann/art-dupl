@@ -108,7 +108,12 @@ func (s *BDDTestSetup) RunWithConfigFile(
 
 	err = s.CreateDuplicateFiles(fileNames, code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create %d duplicate files (%d bytes): %w", len(fileNames), len(code), err)
+		return nil, fmt.Errorf(
+			"failed to create %d duplicate files (%d bytes): %w",
+			len(fileNames),
+			len(code),
+			err,
+		)
 	}
 
 	return s.RunArtDupl("--config", configPath, s.TmpDir)
@@ -264,7 +269,12 @@ func (s *BDDTestSetup) RunVendorTest(
 
 	err := s.CreateVendorDuplicateFiles("vendor/example", code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vendor duplicate files (subcommand: %s, includeVendor: %t): %w", subcommand, includeVendor, err)
+		return nil, fmt.Errorf(
+			"failed to create vendor duplicate files (subcommand: %s, includeVendor: %t): %w",
+			subcommand,
+			includeVendor,
+			err,
+		)
 	}
 
 	// Build arguments

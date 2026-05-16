@@ -105,7 +105,10 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, NewConfigError(fmt.Sprintf("failed to marshal value with indent (prefix: %q)", prefix), err)
+		return nil, NewConfigError(
+			fmt.Sprintf("failed to marshal value with indent (prefix: %q)", prefix),
+			err,
+		)
 	}
 
 	return data, nil

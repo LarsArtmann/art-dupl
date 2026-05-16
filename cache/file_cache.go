@@ -193,7 +193,11 @@ func (fc *FileCache) Remove(contentHash string) error {
 
 	err := os.Remove(cachePath)
 	if err != nil && !os.IsNotExist(err) {
-		return errors.NewIOError(cachePath, fmt.Sprintf("failed to remove cache entry for hash %s", contentHash), err)
+		return errors.NewIOError(
+			cachePath,
+			"failed to remove cache entry for hash "+contentHash,
+			err,
+		)
 	}
 
 	return nil
