@@ -159,6 +159,16 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if !skipZeroValues || cfg.DiffMode.IsEnabled() {
 		result.DiffMode = cfg.DiffMode
 	}
+
+	// Workers (int)
+	if !skipZeroValues || cfg.Workers != 0 {
+		result.Workers = cfg.Workers
+	}
+
+	// RichText (bool)
+	if !skipZeroValues || cfg.RichText {
+		result.RichText = cfg.RichText
+	}
 }
 
 func mergeFileConfig(result, cfg *Config) {
