@@ -263,7 +263,7 @@ func TestRunDetectionMethods(t *testing.T) {
 func TestReportProgress(t *testing.T) {
 	var receivedProgress *Progress
 
-	callback := func(p *Progress) error {
+	progressCB := func(p *Progress) error {
 		receivedProgress = p
 
 		return nil
@@ -271,14 +271,14 @@ func TestReportProgress(t *testing.T) {
 
 	d := &detector{
 		opts: &Options{
-			ProgressCallback: callback,
+			ProgressCallback: progressCB,
 		},
 	}
 
 	d.reportProgress(75.5, "Analyzing", "current.go")
 
 	if receivedProgress == nil {
-		t.Fatal("Progress callback was not called")
+		t.Fatal("Progress progressCB was not called")
 	}
 
 	testutil.AssertFieldValue(t, receivedProgress.Stage, "Analyzing", "Stage")
@@ -302,14 +302,14 @@ func TestReportProgress_NoCallback(t *testing.T) {
 
 // TestReportProgress_CallbackError tests reportProgress when callback returns error.
 func TestReportProgress_CallbackError(t *testing.T) {
-	callback := func(p *Progress) error {
-		return errors.New("callback error")
+	progressHandler := func(p *Progress) error {
+		return errors.New("progressHandler error")
 	}
 
 	logger := &logger.NoOpLogger{}
 	d := &detector{
 		opts: &Options{
-			ProgressCallback: callback,
+			ProgressCallback: progressHandler,
 			Logger:           logger,
 		},
 		logger: logger,
@@ -369,16 +369,16 @@ func TestStreamDetectionResults(t *testing.T) {
 	d := newTestDetector()
 
 	resultChan := make(chan *CloneGroup, 1)
-	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+	testFrag := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
 	tree := suffixtree.New()
-	for _, node := range data {
+	for _, node := range testFrag {
 		tree.Update(node)
 	}
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	pipeline := &pipelineResult{data: data, tree: tree}
+	pipeline := &pipelineResult{data: testFrag, tree: tree}
 
 	ctx := t.Context()
 
@@ -396,16 +396,16 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
-	data := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
+	fragNodes := []*syntax.Node{testutil.CreateNodeWithPos(1, "file.go", 10, 20)}
 
 	tree := suffixtree.New()
-	for _, node := range data {
+	for _, node := range fragNodes {
 		tree.Update(node)
 	}
 
 	tree.Update(&syntax.Node{Type: -1})
 
-	pipeline := &pipelineResult{data: data, tree: tree}
+	pipeline := &pipelineResult{data: fragNodes, tree: tree}
 
 	_ = d.streamDetectionResults(ctx, pipeline, resultChan)
 }

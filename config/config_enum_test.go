@@ -142,9 +142,9 @@ func TestLoadOptionalConfig_FileExists(t *testing.T) {
 func TestLoadConfig_StatError(t *testing.T) {
 	t.Parallel()
 
-	_, err := LoadConfig("/proc/fake/file.json")
-	if err == nil {
-		t.Error("expected error for nonexistent path")
+	_, loadErr := LoadConfig("/proc/fake/file.json")
+	if loadErr == nil {
+		t.Error("expected loadError for nonexistent path")
 	}
 }
 
@@ -272,17 +272,17 @@ func TestValidateOnly(t *testing.T) {
 		{"invalid", FileType("rust"), true},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, entry := range tests {
+		t.Run(entry.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := validateOnly(tc.only)
+			err := validateOnly(entry.only)
 
-			if tc.wantErr && err == nil {
+			if entry.wantErr && err == nil {
 				t.Error("expected error")
 			}
 
-			if !tc.wantErr && err != nil {
+			if !entry.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
 		})
@@ -663,25 +663,25 @@ func TestParseDiffMode(t *testing.T) {
 		{"invalid_value", DiffModeDisabled, true},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.input, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.input, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := ParseDiffMode(tc.input)
-			if tc.wantErr && err == nil {
+			got, err := ParseDiffMode(testCase.input)
+			if testCase.wantErr && err == nil {
 				t.Error("expected error")
 
 				return
 			}
 
-			if !tc.wantErr && err != nil {
+			if !testCase.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
 
 				return
 			}
 
-			if got != tc.wantMode {
-				t.Errorf("ParseDiffMode(%q) = %s, want %s", tc.input, got, tc.wantMode)
+			if got != testCase.wantMode {
+				t.Errorf("ParseDiffMode(%q) = %s, want %s", testCase.input, got, testCase.wantMode)
 			}
 		})
 	}
@@ -1131,9 +1131,9 @@ func TestIsValidStringType(t *testing.T) {
 func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 	t.Parallel()
 
-	validateFn := func(v string) bool { return v == validValue }
+	acceptValue := func(v string) bool { return v == validValue }
 
-	_, err := unmarshalStringType([]byte("not json"), validateFn, "default", "string type")
+	_, err := unmarshalStringType([]byte("not json"), acceptValue, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid JSON")
 	}
@@ -1142,9 +1142,9 @@ func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	checkFn := func(v string) bool { return v == validValue }
+	isAllowed := func(v string) bool { return v == validValue }
 
-	got, err := unmarshalStringType([]byte(`"invalid"`), checkFn, "default", "string type")
+	got, err := unmarshalStringType([]byte(`"invalid"`), isAllowed, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid value")
 	}
@@ -1157,13 +1157,13 @@ func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 func TestUnmarshalStringTypeToPointer(t *testing.T) {
 	t.Parallel()
 
-	validateFn := func(v string) bool { return v == validValue }
+	verifyInput := func(v string) bool { return v == validValue }
 
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"valid"`),
-		validateFn,
+		verifyInput,
 		"default",
 		"string type",
 		&target,
@@ -1180,13 +1180,13 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	checkFn := func(v string) bool { return v == validValue }
+	matchesExpected := func(v string) bool { return v == validValue }
 
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"bad"`),
-		checkFn,
+		matchesExpected,
 		"default",
 		"string type",
 		&target,

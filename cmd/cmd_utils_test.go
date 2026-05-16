@@ -128,12 +128,12 @@ func TestUnique(t *testing.T) {
 			expected: 1,
 		},
 		createTestCase("duplicate entries same position", [][]*syntax.Node{
-			createTestNodes("test.go", 1, 10),
-			createTestNodes("test.go", 1, 10),
+			buildNodeSlice("test.go", 1, 10),
+			buildNodeSlice("test.go", 1, 10),
 		}, 1),
 		createTestCase("different positions", [][]*syntax.Node{
-			createTestNodes("test1.go", 1, 10),
-			createTestNodes("test2.go", 1, 10),
+			buildNodeSlice("test1.go", 1, 10),
+			buildNodeSlice("test2.go", 1, 10),
 		}, 2),
 		{
 			name: "empty inner slice",
@@ -480,17 +480,17 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 		}
 	}
 
-	t.Run("crawls all files with nil check", func(t *testing.T) {
+	t.Run("crawls all fileList with nil check", func(t *testing.T) {
 		f, err := gogenfilter.NewFilter()
 		if err != nil {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		files := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
+		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
 
-		// Should find all 3 files
-		if len(files) != 3 {
-			t.Errorf("Expected 3 files, got %d: %v", len(files), files)
+		// Should find all 3 fileList
+		if len(fileList) != 3 {
+			t.Errorf("Expected 3 fileList, got %d: %v", len(fileList), fileList)
 		}
 	})
 }

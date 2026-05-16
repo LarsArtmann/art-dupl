@@ -31,18 +31,14 @@ func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
 func mustPrintHeader(t *testing.T, p Printer) {
 	t.Helper()
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	testutil.AssertFatalNoError(t, p.PrintHeader(), "PrintHeader")
 }
 
 // mustPrintFooter calls PrintFooter and fails the test if there's an error.
 func mustPrintFooter(t *testing.T, p Printer) {
 	t.Helper()
 
-	if err := p.PrintFooter(); err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
+	testutil.AssertFatalNoError(t, p.PrintFooter(), "PrintFooter")
 }
 
 func TestNewText(t *testing.T) {
@@ -82,9 +78,7 @@ func TestTextPrinter_PrintHeaderAndFooter(t *testing.T) {
 			p := NewText(&buf, mockReadFile(""))
 
 			err := tc.call(p)
-	if err != nil {
-		t.Fatalf("%s() error: %v", tc.name, err)
-	}
+	testutil.AssertFatalNoError(t, err, tc.name+"()")
 
 			if tc.name == "PrintHeader" && buf.Len() != 0 {
 				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
@@ -325,9 +319,7 @@ func TestPrepareClonesInfo(t *testing.T) {
 		t.Fatalf("prepareClonesInfo() error: %v", err)
 	}
 
-	if len(clones) != 1 {
-		t.Fatalf("prepareClonesInfo() returned %d clones, want 1", len(clones))
-	}
+	testutil.AssertFatalLen(t, clones, 1, "prepareClonesInfo clones")
 
 	if clones[0].filename != "test.go" {
 		t.Errorf("filename = %q, want %q", clones[0].filename, "test.go")
@@ -504,9 +496,7 @@ func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 			tp.cloneGroups = [][]clone{clones}
 
 			err := tp.OutputText(15, tc.sortBy)
-	if err != nil {
-		t.Fatalf("%s() error: %v", tc.name, err)
-	}
+	testutil.AssertFatalNoError(t, err, tc.name+"()")
 		})
 	}
 }
@@ -589,9 +579,7 @@ func TestTextPrinter_PrintClonesSorted_Variants(t *testing.T) {
 			dups := [][]*syntax.Node{nodes}
 
 			err := p.(*TextPrinter).PrintClonesSorted(dups, tc.sortBy)
-	if err != nil {
-		t.Fatalf("%s() error: %v", tc.name, err)
-	}
+	testutil.AssertFatalNoError(t, err, tc.name+"()")
 
 			if tc.wantSubstr != "" {
 				testutil.AssertStringContains(

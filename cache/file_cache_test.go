@@ -116,15 +116,15 @@ func TestFileCache_Get_Set(t *testing.T) {
 		hash1 := Key([]byte("content1"))
 		hash2 := Key([]byte("content2"))
 
-		nodes1 := []*syntax.Node{testutil.CreateNodeWithPos(1, "file1.go", 0, 10)}
-		nodes2 := []*syntax.Node{testutil.CreateNodeWithPos(2, "file2.go", 5, 15)}
+		primaryNodes := []*syntax.Node{testutil.CreateNodeWithPos(1, "file1.go", 0, 10)}
+		secondaryNodes := []*syntax.Node{testutil.CreateNodeWithPos(2, "file2.go", 5, 15)}
 
-		err := fc.Set(hash1, nodes1)
+		err := fc.Set(hash1, primaryNodes)
 		if err != nil {
 			t.Fatalf("Set hash1 failed: %v", err)
 		}
 
-		err = fc.Set(hash2, nodes2)
+		err = fc.Set(hash2, secondaryNodes)
 		if err != nil {
 			t.Fatalf("Set hash2 failed: %v", err)
 		}
@@ -136,12 +136,12 @@ func TestFileCache_Get_Set(t *testing.T) {
 			t.Error("Expected both entries to be cache hits")
 		}
 
-		if retrieved1[0].Type != nodes1[0].Type {
-			t.Errorf("hash1: Expected Type=%d, got %d", nodes1[0].Type, retrieved1[0].Type)
+		if retrieved1[0].Type != primaryNodes[0].Type {
+			t.Errorf("hash1: Expected Type=%d, got %d", primaryNodes[0].Type, retrieved1[0].Type)
 		}
 
-		if retrieved2[0].Type != nodes2[0].Type {
-			t.Errorf("hash2: Expected Type=%d, got %d", nodes2[0].Type, retrieved2[0].Type)
+		if retrieved2[0].Type != secondaryNodes[0].Type {
+			t.Errorf("hash2: Expected Type=%d, got %d", secondaryNodes[0].Type, retrieved2[0].Type)
 		}
 	})
 }

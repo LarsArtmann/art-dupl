@@ -40,18 +40,18 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 
 	data[10].Owns = 2 // Different ownership at same relative position
 
-	// Create a match spanning positions with different ownership
-	match := suffixtree.Match{
+	// Create a found spanning positions with different ownership
+	found := suffixtree.Match{
 		Ps:  []suffixtree.Pos{0, 10},
 		Len: 5,
 	}
 
-	result := FindSyntaxUnits(data, match, 3)
+	result := FindSyntaxUnits(data, found, 3)
 
-	// The function should handle the ownership mismatch gracefully
-	// and either return an empty match or remove the problematic index
+	// The function should handle the ownership misfound gracefully
+	// and either return an empty found or remove the problematic index
 	if len(result.Frags) > 0 && len(result.Frags[0]) > 0 {
-		t.Logf("Found syntax units with ownership mismatch: %d fragments", len(result.Frags))
+		t.Logf("Found syntax units with ownership misfound: %d fragments", len(result.Frags))
 	}
 }
 
@@ -80,14 +80,14 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	data = append(data, nodes2...)
 	_ = data
 
-	match := suffixtree.Match{
+	searchResult := suffixtree.Match{
 		Ps:  []suffixtree.Pos{0, 10},
 		Len: 8,
 	}
 
-	result := FindSyntaxUnits(data, match, 3)
+	result := FindSyntaxUnits(data, searchResult, 3)
 
-	// Should find the match since ownership is consistent
+	// Should find the searchResult since ownership is consistent
 	if len(result.Frags) == 0 {
 		t.Error("Expected to find syntax units with consistent ownership")
 		t.Logf("Result: %+v", result)

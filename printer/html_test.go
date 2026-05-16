@@ -296,7 +296,7 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 
 	mustPrintHeader(t, p)
 
-	nodes1 := []*syntax.Node{
+	sourceNodes := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "a.go", Pos: 14, End: 44},
 		{Type: golang.ExprStmt, Filename: "a.go", Pos: 15, End: 35},
 	}
@@ -305,7 +305,7 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 		{Type: golang.ExprStmt, Filename: "b.go", Pos: 15, End: 35},
 	}
 
-	err := p.PrintClones([][]*syntax.Node{nodes1, nodes2})
+	err := p.PrintClones([][]*syntax.Node{sourceNodes, nodes2})
 	if err != nil {
 		t.Fatalf("PrintClones with diff mode failed: %v", err)
 	}
@@ -380,13 +380,9 @@ func TestHTMLPrintFooter_NoSummaryWhenEmpty(t *testing.T) {
 
 	p, buf := htmlPrinterWithContent("")
 
-	if err := p.PrintHeader(); err != nil {
-		t.Fatalf("PrintHeader failed: %v", err)
-	}
+	testutil.AssertFatalNoError(t, p.PrintHeader(), "PrintHeader")
 
-	if err := p.PrintFooter(); err != nil {
-		t.Fatalf("PrintFooter failed: %v", err)
-	}
+	testutil.AssertFatalNoError(t, p.PrintFooter(), "PrintFooter")
 
 	output := buf.String()
 	// buildSummarySection returns "" when totalClones==0, so no summary data div
@@ -406,14 +402,14 @@ func TestHTMLOutputHTML(t *testing.T) {
 
 	hp := p.(*htmlprinter)
 
-	nodes1 := nodesForHTML(testFilename)
+	fragSlice := nodesForHTML(testFilename)
 	nodes2 := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "other.go", Pos: 39, End: 68},
 		{Type: golang.ExprStmt, Filename: "other.go", Pos: 40, End: 60},
 	}
 
 	hp.dupls = [][][]*syntax.Node{
-		{nodes1, nodes2},
+		{fragSlice, nodes2},
 	}
 
 	err := hp.OutputHTML(15, config.SortBySize)
@@ -494,7 +490,7 @@ func TestHTMLCountDiffStats_Empty(t *testing.T) {
 
 	if added != 0 || removed != 0 || modified != 0 {
 		t.Errorf(
-			"expected all zeros, got added=%d removed=%d modified=%d",
+			"want all zeros, got added=%d removed=%d modified=%d",
 			added,
 			removed,
 			modified,
@@ -535,7 +531,7 @@ func TestOrderedCategories(t *testing.T) {
 
 	cats := orderedCategories()
 	if len(cats) != 11 {
-		t.Errorf("expected 11 categories, got %d", len(cats))
+		t.Errorf("want 11 categories, got %d", len(cats))
 	}
 
 	if cats[0] != CategoryFunction {
@@ -557,7 +553,7 @@ func TestOrderedPriorities(t *testing.T) {
 
 	pris := orderedPriorities()
 	if len(pris) != 4 {
-		t.Errorf("expected 4 priorities, got %d", len(pris))
+		t.Errorf("want 4 priorities, got %d", len(pris))
 	}
 
 	if pris[0] != PriorityCritical {
@@ -612,7 +608,7 @@ func TestBuildSummarySection_Empty(t *testing.T) {
 
 	summary := hp.buildSummarySection()
 	if summary != "" {
-		t.Errorf("expected empty summary for no clones, got %q", summary)
+		t.Errorf("want empty summary for no clones, got %q", summary)
 	}
 }
 
@@ -630,9 +626,7 @@ func TestBuildClones(t *testing.T) {
 		t.Fatalf("buildClones failed: %v", err)
 	}
 
-	if len(clones) != 1 {
-		t.Fatalf("expected 1 clone, got %d", len(clones))
-	}
+	testutil.AssertFatalLen(t, clones, 1, "clones")
 
 	if clones[0].filename != testFilename {
 		t.Errorf("filename = %q, want 'test.go'", clones[0].filename)
@@ -647,7 +641,7 @@ func TestBuildClones_EmptyDup(t *testing.T) {
 
 	_, err := hp.buildClones([][]*syntax.Node{{}})
 	if err == nil {
-		t.Error("expected error for empty node slice")
+		t.Error("want error for empty node slice")
 	}
 }
 
@@ -665,7 +659,7 @@ func TestBuildClones_ReadError(t *testing.T) {
 
 	_, err := hp.buildClones([][]*syntax.Node{nodes})
 	if err == nil {
-		t.Error("expected error for read failure")
+		t.Error("want error for read failure")
 	}
 }
 
@@ -729,7 +723,7 @@ func TestWriteMetadata(t *testing.T) {
 				t,
 				buf.String(),
 				tt.contains,
-				"expected "+tt.contains+" in output",
+				"want "+tt.contains+" in output",
 			)
 		})
 	}
@@ -755,7 +749,7 @@ func TestWriteMetadata_Empty(t *testing.T) {
 		t,
 		buf.String(),
 		"Structural",
-		"expected Structural badge for default metadata",
+		"want Structural badge for default metadata",
 	)
 }
 
@@ -766,7 +760,7 @@ func TestHTMLErrorInWriter(t *testing.T) {
 
 	err := p.PrintHeader()
 	if err == nil {
-		t.Error("expected error from failing writer")
+		t.Error("want error from failing writer")
 	}
 }
 
@@ -780,7 +774,7 @@ func TestHTMLErrorInPrintClones(t *testing.T) {
 
 	err := p.PrintClones([][]*syntax.Node{nodes})
 	if err == nil {
-		t.Error("expected error from failing writer during PrintClones")
+		t.Error("want error from failing writer during PrintClones")
 	}
 }
 
@@ -791,7 +785,7 @@ func TestHTMLErrorInPrintFooter(t *testing.T) {
 
 	err := p.PrintFooter()
 	if err == nil {
-		t.Error("expected error from failing writer during PrintFooter")
+		t.Error("want error from failing writer during PrintFooter")
 	}
 }
 
@@ -800,7 +794,7 @@ func TestHTMLComputeCloneGroupDiff_Empty(t *testing.T) {
 
 	result := ComputeCloneGroupDiff(nil)
 	if result.Base != nil {
-		t.Error("expected nil Base for empty clones")
+		t.Error("want nil Base for empty clones")
 	}
 }
 
@@ -840,7 +834,7 @@ func TestLineDiff_Equal(t *testing.T) {
 
 	result := LineDiff(base, compared)
 	if result.HasDiff {
-		t.Error("expected no diff for identical content")
+		t.Error("want no diff for identical content")
 	}
 }
 
@@ -852,7 +846,7 @@ func TestLineDiff_Different(t *testing.T) {
 
 	result := LineDiff(base, compared)
 	if !result.HasDiff {
-		t.Error("expected diff for different content")
+		t.Error("want diff for different content")
 	}
 
 	found := false
@@ -866,7 +860,7 @@ func TestLineDiff_Different(t *testing.T) {
 	}
 
 	if !found {
-		t.Error("expected at least one modified line")
+		t.Error("want at least one modified line")
 	}
 }
 
@@ -878,7 +872,7 @@ func TestLineDiff_DifferentLength(t *testing.T) {
 
 	result := LineDiff(base, compared)
 	if !result.HasDiff {
-		t.Error("expected diff for different-length content")
+		t.Error("want diff for different-length content")
 	}
 }
 
@@ -899,7 +893,7 @@ func TestLineDiff_LargeFile(t *testing.T) {
 
 	result := LineDiff(baseLines, comparedLines)
 	if !result.HasDiff {
-		t.Error("expected diff for large files with different content")
+		t.Error("want diff for large files with different content")
 	}
 }
 
@@ -934,9 +928,9 @@ func TestWordDiff(t *testing.T) {
 	t.Parallel()
 
 	result := WordDiff("hello world", "hello earth")
-	testutil.AssertStringContains(t, result, "word-removed", "expected word-removed class in diff")
+	testutil.AssertStringContains(t, result, "word-removed", "want word-removed class in diff")
 
-	testutil.AssertStringContains(t, result, "word-added", "expected word-added class in diff")
+	testutil.AssertStringContains(t, result, "word-added", "want word-added class in diff")
 }
 
 func TestWordDiff_Identical(t *testing.T) {
@@ -944,7 +938,7 @@ func TestWordDiff_Identical(t *testing.T) {
 
 	result := WordDiff("hello world", "hello world")
 	if strings.Contains(result, "word-removed") || strings.Contains(result, "word-added") {
-		t.Error("expected no word-level diff for identical content")
+		t.Error("want no word-level diff for identical content")
 	}
 }
 
@@ -973,9 +967,9 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	}
 
 	output := buf.String()
-	testutil.AssertStringContains(t, output, "a.go", "expected a.go in occurrence output")
+	testutil.AssertStringContains(t, output, "a.go", "want a.go in occurrence output")
 
-	testutil.AssertStringContains(t, output, "b.go", "expected b.go in occurrence output")
+	testutil.AssertStringContains(t, output, "b.go", "want b.go in occurrence output")
 
 	testutil.AssertStringContains(t, output, "vscode://", "Expected VSCode link in output")
 }
@@ -993,7 +987,7 @@ func TestHTMLWriteCloneGroupFooter(t *testing.T) {
 	}
 
 	if buf.String() != "</div></div>\n" {
-		t.Errorf("unexpected footer: %q", buf.String())
+		t.Errorf("unwant footer: %q", buf.String())
 	}
 }
 
@@ -1067,14 +1061,14 @@ func TestHTMLWriteDiffViewToggle(t *testing.T) {
 		t,
 		output,
 		"diff-toggle-5-side",
-		"expected side toggle button with group id 5",
+		"want side toggle button with group id 5",
 	)
 
 	testutil.AssertStringContains(
 		t,
 		output,
 		"diff-toggle-5-inline",
-		"expected inline toggle button with group id 5",
+		"want inline toggle button with group id 5",
 	)
 }
 
@@ -1118,11 +1112,11 @@ func TestHTMLWriteDiffSelector(t *testing.T) {
 	}
 
 	output := buf.String()
-	testutil.AssertStringContains(t, output, "diff-select-3", "expected selector with group id 3")
+	testutil.AssertStringContains(t, output, "diff-select-3", "want selector with group id 3")
 
-	testutil.AssertStringContains(t, output, "other1.go", "expected other1.go in selector options")
+	testutil.AssertStringContains(t, output, "other1.go", "want other1.go in selector options")
 
-	testutil.AssertStringContains(t, output, "other2.go", "expected other2.go in selector options")
+	testutil.AssertStringContains(t, output, "other2.go", "want other2.go in selector options")
 }
 
 func TestHTMLWriteDiffComparison_Variants(t *testing.T) {

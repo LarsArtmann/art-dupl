@@ -302,14 +302,14 @@ func TestUniqueEmptyGroup(t *testing.T) {
 func TestCountUniqueFiles(t *testing.T) {
 	t.Parallel()
 
-	group := [][]*Node{
+	testGroup := [][]*Node{
 		{{Filename: "a.go"}},
 		{{Filename: "a.go"}},
 		{{Filename: "b.go"}},
 		{{Filename: "c.go"}},
 	}
 
-	if got := CountUniqueFiles(group); got != 3 {
+	if got := CountUniqueFiles(testGroup); got != 3 {
 		t.Errorf("CountUniqueFiles() = %d, want 3", got)
 	}
 }

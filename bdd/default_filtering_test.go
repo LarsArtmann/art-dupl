@@ -17,10 +17,10 @@ import (
 // - Templ: *_templ.go files (templ.guide)
 // - SQLC: *.sql.go, models.go, querier.go, batch.go files (sqlc.dev)
 
-// assertGeneratedFileFiltered is a helper to verify generated files are filtered out.
+// assertGenFileFiltered is a helper to verify generated files are filtered out.
 // It creates duplicate regular files, a generated file, runs art-dupl, and verifies
 // that regular files appear in output while the generated file does not.
-func assertGeneratedFileFiltered(
+func assertGenFileFiltered(
 	setup *testutil.BDDTestSetup,
 	regularFiles []string,
 	regularCode string,
@@ -48,8 +48,8 @@ func assertGeneratedFileFiltered(
 	return outputStr
 }
 
-// assertTemplFileFiltered verifies templ files are filtered out by default.
-func assertTemplFileFiltered(
+// assertFilteredTempl verifies templ files are filtered out by default.
+func assertFilteredTempl(
 	setup *testutil.BDDTestSetup,
 	regularFiles []string,
 	regularCode string,
@@ -83,7 +83,7 @@ func assertSQLCFileFiltered(setup *testutil.BDDTestSetup, filename, functionName
 	regularCode := fmt.Sprintf("package main\nfunc %s() { println(1) }", functionName)
 	generatedCode := fmt.Sprintf("package db\nfunc %s() { println(1) }", functionName)
 
-	assertGeneratedFileFiltered(
+	assertGenFileFiltered(
 		setup,
 		[]string{"service1.go", "service2.go"},
 		regularCode,
@@ -159,7 +159,7 @@ func process() {
 	}
 }`
 
-			assertTemplFileFiltered(
+			assertFilteredTempl(
 				setup,
 				[]string{"handler1.go", "handler2.go"},
 				regularCode,
@@ -235,7 +235,7 @@ func query() {
 	}
 }`
 
-			assertGeneratedFileFiltered(
+			assertGenFileFiltered(
 				setup,
 				[]string{"service1.go", "service2.go"},
 				regularCode,

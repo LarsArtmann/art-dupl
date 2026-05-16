@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -105,21 +106,15 @@ func TestSortCloneGroupKeys(t *testing.T) {
 	keys := []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, config.SortBySize, groups, uniqueCounts)
 
-	if keys[0] != "big" {
-		t.Errorf("config.SortBySize: first key = %q, want %q", keys[0], "big")
-	}
+	testutil.AssertFieldValue(t, keys[0], "big", "config.SortBySize first key")
 
 	keys = []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, config.SortByOccurrence, groups, uniqueCounts)
 
-	if keys[0] != "big" {
-		t.Errorf("config.SortByOccurrence: first key = %q, want %q", keys[0], "big")
-	}
+	testutil.AssertFieldValue(t, keys[0], "big", "config.SortByOccurrence first key")
 
 	keys = []string{"small", "big", "medium"}
 	SortCloneGroupKeys(keys, config.SortByHash, groups, uniqueCounts)
 
-	if keys[0] != "big" {
-		t.Errorf("config.SortByHash: first key = %q, want %q", keys[0], "big")
-	}
+	testutil.AssertFieldValue(t, keys[0], "big", "config.SortByHash first key")
 }

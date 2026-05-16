@@ -57,10 +57,10 @@ func main() {
 			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("exact1.go"))
-			Expect(outputStr).To(ContainSubstring("exact2.go"))
-			Expect(outputStr).To(ContainSubstring("exact3.go"))
+			runOutput := string(output)
+			Expect(runOutput).To(ContainSubstring("exact1.go"))
+			Expect(runOutput).To(ContainSubstring("exact2.go"))
+			Expect(runOutput).To(ContainSubstring("exact3.go"))
 		})
 
 		It("should provide JSON output with hash detection statistics", func() {
@@ -130,9 +130,9 @@ func processProduct(name string, price int) error {
 			output, err := setup.RunArtDupl("--detection-methods", "art-dupl", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("user.go"))
-			Expect(outputStr).To(ContainSubstring("product.go"))
+			runOutput := string(output)
+			Expect(runOutput).To(ContainSubstring("user.go"))
+			Expect(runOutput).To(ContainSubstring("product.go"))
 		})
 
 		It("should be default detection method", func() {
@@ -151,9 +151,9 @@ func test() error {
 			output, err := setup.RunArtDupl("--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("default1.go"))
-			Expect(outputStr).To(ContainSubstring("default2.go"))
+			runOutput := string(output)
+			Expect(runOutput).To(ContainSubstring("default1.go"))
+			Expect(runOutput).To(ContainSubstring("default2.go"))
 		})
 	})
 
@@ -198,8 +198,8 @@ func structuralB(value string) error {
 			)
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).To(SatisfyAny(
+			runOutput := string(output)
+			Expect(runOutput).To(SatisfyAny(
 				ContainSubstring("exact1.go"),
 				ContainSubstring("structural1.go"),
 			))
@@ -250,15 +250,15 @@ func test() {}
 			Expect(err).To(HaveOccurred())
 
 			// Should have error message
-			outputStr := string(output)
-			Expect(outputStr).ToNot(BeEmpty())
+			runOutput := string(output)
+			Expect(runOutput).ToNot(BeEmpty())
 		})
 	})
 
 	Context("When using hash-based detection with node_modules", func() {
 		var (
 			nodeModulesDir  string
-			nodeModulesCode string
+			generatedCode string
 		)
 
 		BeforeEach(func() {
@@ -266,7 +266,7 @@ func test() {}
 			err := os.MkdirAll(nodeModulesDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
-			nodeModulesCode = `package somepackage
+			generatedCode = `package somepackage
 
 import "fmt"
 
@@ -278,13 +278,13 @@ func NodeModulesFunc() {
 
 			err = os.WriteFile(
 				filepath.Join(nodeModulesDir, "file1.go"),
-				[]byte(nodeModulesCode),
+				[]byte(generatedCode),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			err = os.WriteFile(
 				filepath.Join(nodeModulesDir, "file2.go"),
-				[]byte(nodeModulesCode),
+				[]byte(generatedCode),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
@@ -294,7 +294,7 @@ func NodeModulesFunc() {
 			// Create regular files with same content (duplicates)
 			err := setup.CreateDuplicateFiles(
 				[]string{"regular1.go", "regular2.go"},
-				nodeModulesCode,
+				generatedCode,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -308,12 +308,12 @@ func NodeModulesFunc() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
+			runOutput := string(output)
 			// Should contain the exclusion message
-			Expect(outputStr).To(ContainSubstring("node_modules"))
+			Expect(runOutput).To(ContainSubstring("node_modules"))
 			// Should detect regular files but not node_modules
-			Expect(outputStr).To(ContainSubstring("regular1.go"))
-			Expect(outputStr).To(ContainSubstring("regular2.go"))
+			Expect(runOutput).To(ContainSubstring("regular1.go"))
+			Expect(runOutput).To(ContainSubstring("regular2.go"))
 		})
 
 		It("should include node_modules when --include-node-modules is specified", func() {
@@ -327,9 +327,9 @@ func NodeModulesFunc() {
 			)
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
+			runOutput := string(output)
 			// Should detect files in node_modules
-			Expect(outputStr).To(ContainSubstring("node_modules"))
+			Expect(runOutput).To(ContainSubstring("node_modules"))
 		})
 	})
 })

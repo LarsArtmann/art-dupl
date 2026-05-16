@@ -48,8 +48,8 @@ func assertBaseFilename(t *testing.T, result *CloneGroupDiff, expectedFilename s
 }
 
 func TestLineDiff_EqualContent(t *testing.T) {
-	base := []byte("line1\nline2\nline3")
-	compared := []byte("line1\nline2\nline3")
+	base := []byte("diffEntry1\ndiffEntry2\ndiffEntry3")
+	compared := []byte("diffEntry1\ndiffEntry2\ndiffEntry3")
 
 	result := LineDiff(base, compared)
 
@@ -57,20 +57,20 @@ func TestLineDiff_EqualContent(t *testing.T) {
 		t.Error("Expected HasDiff to be false for identical content")
 	}
 
-	// Verify line counts using a helper to avoid duplication
+	// Verify diffEntry counts using a helper to avoid duplication
 	testutil.AssertCount(t, len(result.Base), 3, "base")
 	testutil.AssertCount(t, len(result.Compared), 3, "compared")
 
-	// All lines should be marked as equal
-	for i, line := range result.Base {
-		if line.Type != DiffLineEqual {
-			t.Errorf("Expected base line %d to be Equal, got %d", i, line.Type)
+	// All diffEntrys should be marked as equal
+	for i, diffEntry := range result.Base {
+		if diffEntry.Type != DiffLineEqual {
+			t.Errorf("Expected base diffEntry %d to be Equal, got %d", i, diffEntry.Type)
 		}
 	}
 
-	for i, line := range result.Compared {
-		if line.Type != DiffLineEqual {
-			t.Errorf("Expected compared line %d to be Equal, got %d", i, line.Type)
+	for i, diffEntry := range result.Compared {
+		if diffEntry.Type != DiffLineEqual {
+			t.Errorf("Expected compared diffEntry %d to be Equal, got %d", i, diffEntry.Type)
 		}
 	}
 }
@@ -290,7 +290,7 @@ func TestComputeCloneGroupDiff_EmptyClones(t *testing.T) {
 }
 
 func TestDiffSameLength(t *testing.T) {
-	base := []DiffLine{
+	srcDiffs := []DiffLine{
 		{Content: "line1", Type: DiffLineEqual},
 		{Content: "line2", Type: DiffLineEqual},
 	}
@@ -299,17 +299,17 @@ func TestDiffSameLength(t *testing.T) {
 		{Content: "modified", Type: DiffLineEqual},
 	}
 
-	hasDiff := diffSameLength(base, compared)
+	hasDiff := diffSameLength(srcDiffs, compared)
 
 	if !hasDiff {
 		t.Error("Expected hasDiff to be true")
 	}
 
-	if base[0].Type != DiffLineEqual {
+	if srcDiffs[0].Type != DiffLineEqual {
 		t.Error("First line should still be Equal")
 	}
 
-	if base[1].Type != DiffLineModified {
+	if srcDiffs[1].Type != DiffLineModified {
 		t.Error("Second line should be Modified")
 	}
 }
@@ -444,19 +444,19 @@ func makeLineDiffTestData(numLines, diffPos int) ([]byte, []byte) {
 
 func BenchmarkLineDiff_Medium(b *testing.B) {
 	// 50 lines - triggers LCS path
-	base, compared := makeLineDiffTestData(50, 25)
+	srcLines, compared := makeLineDiffTestData(50, 25)
 
 	for b.Loop() {
-		LineDiff(base, compared)
+		LineDiff(srcLines, compared)
 	}
 }
 
 func BenchmarkLineDiff_Large(b *testing.B) {
 	// 150 lines - triggers large file heuristic
-	base, compared := makeLineDiffTestData(150, 75)
+	originLines, compared := makeLineDiffTestData(150, 75)
 
 	for b.Loop() {
-		LineDiff(base, compared)
+		LineDiff(originLines, compared)
 	}
 }
 

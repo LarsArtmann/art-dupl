@@ -119,8 +119,8 @@ func processUser(name string) error {
 
 			// Verify overview contains clone-related fields
 			Expect(result).To(HaveKey("overview"))
-			overview := result["overview"].(map[string]any)
-			Expect(overview).To(SatisfyAll(
+			statsOverview := result["overview"].(map[string]any)
+			Expect(statsOverview).To(SatisfyAll(
 				HaveKey("totalClones"),
 				HaveKey("cloneGroups"),
 			))
@@ -462,8 +462,8 @@ func commonUtility(message string) {
 
 			// Verify overview contains clone-related fields
 			Expect(result).To(HaveKey("overview"))
-			overview := result["overview"].(map[string]any)
-			Expect(overview).To(SatisfyAll(
+			summaryData := result["overview"].(map[string]any)
+			Expect(summaryData).To(SatisfyAll(
 				HaveKey("filesScanned"),
 				HaveKey("totalClones"),
 			))

@@ -39,8 +39,8 @@ func TestFindFileDuplicates_DifferentFiles(t *testing.T) {
 	f1 := filepath.Join(dir, "a.go")
 	f2 := filepath.Join(dir, "b.go")
 
-	writeFile(t, f1, []byte("package a\n"))
-	writeFile(t, f2, []byte("package b\n"))
+	writeTestFile(t, f1, []byte("package a\n"))
+	writeTestFile(t, f2, []byte("package b\n"))
 
 	dups := FindFileDuplicates([]string{f1, f2}, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for different files, got %d")
@@ -68,7 +68,7 @@ func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
 	content := []byte("package main\nfunc main() {}\n")
 
 	good := filepath.Join(dir, "exists.go")
-	writeFile(t, good, content)
+	writeTestFile(t, good, content)
 
 	bad := filepath.Join(dir, "nope.go")
 
@@ -202,7 +202,7 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	content := []byte("package main\n\nfunc main() { println(\"dedup test content\") }\n")
 
 	f1 := filepath.Join(dir, "same.go")
-	writeFile(t, f1, content)
+	writeTestFile(t, f1, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -236,9 +236,9 @@ func TestExtractUniqueFiles_Deduplicates(t *testing.T) {
 		{Filename: "b.go"},
 	}
 
-	files := fd.extractUniqueFiles(nodes)
-	if len(files) != 3 {
-		t.Errorf("expected 3 unique files, got %d: %v", len(files), files)
+	uniqueFiles := fd.extractUniqueFiles(nodes)
+	if len(uniqueFiles) != 3 {
+		t.Errorf("expected 3 unique uniqueFiles, got %d: %v", len(uniqueFiles), uniqueFiles)
 	}
 }
 
@@ -317,7 +317,7 @@ func TestHashFile_ValidFile(t *testing.T) {
 	f := filepath.Join(dir, "valid.go")
 	content := []byte("package main\n\nfunc main() {}\n")
 
-	writeFile(t, f, content)
+	writeTestFile(t, f, content)
 
 	fd := NewFileDetector(1)
 
@@ -430,16 +430,16 @@ func collectMatches(ch <-chan syntax.Match) []syntax.Match {
 	return matches
 }
 
-func writeFile(t *testing.T, path string, content []byte) {
+func writeTestFile(t *testing.T, path string, fileContent []byte) {
 	t.Helper()
 
-	if err := os.WriteFile(path, content, 0o644); err != nil {
+	if err := os.WriteFile(path, fileContent, 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func writeDuplicateFiles(t *testing.T, f1, f2 string, content []byte) {
 	t.Helper()
-	writeFile(t, f1, content)
-	writeFile(t, f2, content)
+	writeTestFile(t, f1, content)
+	writeTestFile(t, f2, content)
 }

@@ -29,14 +29,14 @@ func assertCommandOutput(
 	output, err := setup.RunArtDupl(args...)
 	Expect(err).ToNot(HaveOccurred())
 
-	outputStr := string(output)
-	Expect(outputStr).To(SatisfyAny(matchers...))
+	cmdOutput := string(output)
+	Expect(cmdOutput).To(SatisfyAny(matchers...))
 }
 
 // assertHelpOutput verifies help output contains expected patterns.
 func assertHelpOutput(setup *testutil.BDDTestSetup, matchers ...types.GomegaMatcher) {
-	outputStr := getHelpOutput(setup)
-	Expect(outputStr).To(SatisfyAny(matchers...))
+	cmdOutput := getHelpOutput(setup)
+	Expect(cmdOutput).To(SatisfyAny(matchers...))
 }
 
 // setupBDDTest creates and configures a BDDTestSetup for Ginkgo tests.
@@ -60,16 +60,16 @@ func getHelpOutput(setup *testutil.BDDTestSetup) string {
 	return string(output)
 }
 
-// verifyHelpContent checks that help output contains at least one of the expected substrings.
-func verifyHelpContent(setup *testutil.BDDTestSetup, substrings []string) {
-	outputStr := getHelpOutput(setup)
+// checkHelpOutput checks that help output contains at least one of the expected substrings.
+func checkHelpOutput(setup *testutil.BDDTestSetup, substrings []string) {
+	cmdOutput := getHelpOutput(setup)
 
 	expectations := make([]types.GomegaMatcher, 0, len(substrings))
 	for _, substr := range substrings {
 		expectations = append(expectations, ContainSubstring(substr))
 	}
 
-	Expect(outputStr).To(SatisfyAny(expectations...))
+	Expect(cmdOutput).To(SatisfyAny(expectations...))
 }
 
 var _ = Describe("Version Command", func() {
@@ -147,7 +147,7 @@ var _ = Describe("Help Command", func() {
 		})
 
 		It("should describe available commands", func() {
-			verifyHelpContent(setup, []string{"stats", "Commands:", "Available"})
+			checkHelpOutput(setup, []string{"stats", "Commands:", "Available"})
 		})
 	})
 
@@ -156,9 +156,9 @@ var _ = Describe("Help Command", func() {
 			output, err := setup.RunArtDupl("stats", "--help")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
+			cmdOutput := string(output)
 			// Stats help should contain stats-specific information
-			Expect(outputStr).To(SatisfyAny(
+			Expect(cmdOutput).To(SatisfyAny(
 				ContainSubstring("stats"),
 				ContainSubstring("statistics"),
 			))
@@ -168,9 +168,9 @@ var _ = Describe("Help Command", func() {
 			output, err := setup.RunArtDupl("stats", "--help")
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
+			cmdOutput := string(output)
 			// Stats should have its own flags
-			Expect(outputStr).ToNot(BeEmpty())
+			Expect(cmdOutput).ToNot(BeEmpty())
 		})
 	})
 })
@@ -368,8 +368,8 @@ var _ = Describe("CLI Completion Commands", func() {
 				output, err := setup.RunArtDupl("completion", shell)
 				// May or may not be available
 				if err == nil {
-					outputStr := string(output)
-					Expect(outputStr).To(SatisfyAny(
+					cmdOutput := string(output)
+					Expect(cmdOutput).To(SatisfyAny(
 						ContainSubstring(shell),
 						ContainSubstring("completion"),
 					))
@@ -383,9 +383,9 @@ var _ = Describe("CLI Completion Commands", func() {
 			output, err := setup.RunArtDupl("man")
 			// May or may not be available
 			if err == nil {
-				outputStr := string(output)
+				cmdOutput := string(output)
 				// Man page typically starts with .TH
-				Expect(outputStr).To(SatisfyAny(
+				Expect(cmdOutput).To(SatisfyAny(
 					HavePrefix(".TH"),
 					ContainSubstring("art-dupl"),
 				))
@@ -417,20 +417,20 @@ var _ = Describe("CLI Documentation Quality", func() {
 		})
 
 		It("should describe output formats in help", func() {
-			verifyHelpContent(setup, []string{"json", "html", "output"})
+			checkHelpOutput(setup, []string{"json", "html", "output"})
 		})
 
 		It("should describe sorting options in help", func() {
-			outputStr := getHelpOutput(setup)
+			cmdOutput := getHelpOutput(setup)
 			// Should mention sorting
-			Expect(outputStr).To(SatisfyAny(
+			Expect(cmdOutput).To(SatisfyAny(
 				ContainSubstring("sort"),
 			))
 		})
 
 		It("should provide examples in help", func() {
-			outputStr := getHelpOutput(setup)
-			Expect(outputStr).To(SatisfyAny(
+			cmdOutput := getHelpOutput(setup)
+			Expect(cmdOutput).To(SatisfyAny(
 				ContainSubstring("EXAMPLES"),
 				ContainSubstring("Example"),
 				ContainSubstring("example"),

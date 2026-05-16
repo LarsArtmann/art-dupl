@@ -56,12 +56,12 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 	// Create test clone group
 	printer.SetHash("test-hash")
 
-	dups := [][]*syntax.Node{
+	sarifDups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 50),
 		createTestSARIFNodes("test2.go", 0, 50),
 	}
 
-	err := printer.PrintClones(dups)
+	err := printer.PrintClones(sarifDups)
 	if err != nil {
 		t.Errorf("PrintClones returned error: %v", err)
 	}
@@ -196,19 +196,19 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 	var buf bytes.Buffer
 
-	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+	sarifPrinter := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
 		Threshold: 15,
 		Version:   "1.0.0",
 	}).(*sarifPrinter)
 
 	// Add test data with a known hash
-	printer.SetHash("abc123def456")
+	sarifPrinter.SetHash("abc123def456")
 
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 100),
 	}
-	_ = printer.PrintClones(dups)
-	_ = printer.PrintFooter()
+	_ = sarifPrinter.PrintClones(dups)
+	_ = sarifPrinter.PrintFooter()
 
 	var output SARIFOutput
 
@@ -249,31 +249,31 @@ func TestSARIFOutput_VersionFromConfig(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Test that version is properly set from SARIFConfig
-	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+	sarifPrinter := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
 		Threshold: 15,
 		Version:   "2.0.0-test",
 	}).(*sarifPrinter)
 
-	testutil.AssertFieldValue(t, printer.version, "2.0.0-test", "version")
+	testutil.AssertFieldValue(t, sarifPrinter.version, "2.0.0-test", "version")
 }
 
 func TestSARIFOutput_Structure(t *testing.T) {
 	var buf bytes.Buffer
 
-	printer := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
+	sarifInstance := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
 		Threshold: 15,
 		Version:   "1.0.0",
 	}).(*sarifPrinter)
 
 	// Add test data
-	printer.SetHash("test-hash-123")
+	sarifInstance.SetHash("test-hash-123")
 
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("main.go", 0, 100),
 		createTestSARIFNodes("utils.go", 0, 100),
 	}
-	_ = printer.PrintClones(dups)
-	_ = printer.PrintFooter()
+	_ = sarifInstance.PrintClones(dups)
+	_ = sarifInstance.PrintFooter()
 
 	var output SARIFOutput
 

@@ -130,41 +130,41 @@ func diffSameLength(base, compared []DiffLine) bool {
 // diffDifferentLength handles fragments with different line counts.
 // Uses a simple LCS (Longest Common Subsequence) approach for small files,
 // falls back to line-by-line for performance with large files.
-func diffDifferentLength(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
+func diffDifferentLength(leftRows, rightRows [][]byte, left, right []DiffLine) bool {
 	// For performance, use simple heuristic for large files (>100 lines)
-	if len(srcRows) > 100 || len(dstRows) > 100 {
-		return diffLargeFiles(srcRows, dstRows, left, right)
+	if len(leftRows) > 100 || len(rightRows) > 100 {
+		return diffLargeFiles(leftRows, rightRows, left, right)
 	}
 
-	return diffLCS(srcRows, dstRows, left, right)
+	return diffLCS(leftRows, rightRows, left, right)
 }
 
 // diffLargeFiles uses a faster heuristic for large files.
-func diffLargeFiles(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
+func diffLargeFiles(srcData, dstData [][]byte, srcDiffs, dstDiffs []DiffLine) bool {
 	hasDiff := false
-	minLen := min(len(dstRows), len(srcRows))
+	minLen := min(len(dstData), len(srcData))
 
 	// Compare line by line up to the shorter length
 	for i := range minLen {
 		if markLinesModified(
-			bytes.TrimSpace(srcRows[i]),
-			bytes.TrimSpace(dstRows[i]),
-			&left[i],
-			&right[i],
+			bytes.TrimSpace(srcData[i]),
+			bytes.TrimSpace(dstData[i]),
+			&srcDiffs[i],
+			&dstDiffs[i],
 		) {
 			hasDiff = true
 		}
 	}
 
 	// Mark extra lines as added/removed
-	if len(srcRows) > len(dstRows) {
-		for i := len(dstRows); i < len(srcRows); i++ {
-			left[i].Type = DiffLineRemoved
+	if len(srcData) > len(dstData) {
+		for i := len(dstData); i < len(srcData); i++ {
+			srcDiffs[i].Type = DiffLineRemoved
 			hasDiff = true
 		}
-	} else if len(dstRows) > len(srcRows) {
-		for i := len(srcRows); i < len(dstRows); i++ {
-			right[i].Type = DiffLineAdded
+	} else if len(dstData) > len(srcData) {
+		for i := len(srcData); i < len(dstData); i++ {
+			dstDiffs[i].Type = DiffLineAdded
 			hasDiff = true
 		}
 	}

@@ -58,7 +58,7 @@ func basicExample() {
 	}
 
 	fmt.Printf(
-		"Found %d clone groups in %v\n",
+		"Found %d clone cloneGroups in %v\n",
 		len(result.CloneGroups),
 		result.Summary.AnalysisTime,
 	)
@@ -66,9 +66,9 @@ func basicExample() {
 		result.Summary.TotalFiles, result.Summary.TotalClones)
 
 	if len(result.CloneGroups) > 0 {
-		group := result.CloneGroups[0]
-		fmt.Printf("  First group: %s with %d clones\n", group.Hash[:8]+"...", len(group.Clones))
-		fmt.Printf("    Method: %s, Size: %d tokens\n", group.Method, group.Size)
+		cloneGroup := result.CloneGroups[0]
+		fmt.Printf("  First cloneGroup: %s with %d clones\n", cloneGroup.Hash[:8]+"...", len(cloneGroup.Clones))
+		fmt.Printf("    Method: %s, Size: %d tokens\n", cloneGroup.Method, cloneGroup.Size)
 	}
 }
 

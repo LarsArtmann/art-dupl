@@ -257,8 +257,8 @@ func function2() {
 
 	count := 0
 
-	for seq := range schan {
-		if len(seq) == 0 {
+	for nodeSeq := range schan {
+		if len(nodeSeq) == 0 {
 			t.Error("Expected parsed nodes")
 		}
 
@@ -266,7 +266,7 @@ func function2() {
 	}
 
 	if count != 2 {
-		t.Errorf("Expected 2 sequences, got %d", count)
+		t.Errorf("Expected 2 nodeSequences, got %d", count)
 	}
 
 	stats := <-statsChan

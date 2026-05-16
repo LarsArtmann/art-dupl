@@ -18,7 +18,7 @@ func TestByteRangeToLines(t *testing.T) {
 		{"empty content", "", 0, 0, 1, 1},
 		{"single line no newline", "hello world", 0, 5, 1, 1},
 		{"single line entire content", "hello world", 0, 11, 1, 1},
-		{"two lines first line", "line1\nline2", 0, 5, 1, 1},
+		{"two lines start line", "line1\nline2", 0, 5, 1, 1},
 		{"two lines spanning newline", "line1\nline2", 3, 8, 1, 2},
 		{"two lines second line", "line1\nline2", 6, 11, 2, 2},
 		{"three lines middle line", "line1\nline2\nline3", 6, 11, 2, 2},
@@ -49,7 +49,7 @@ func TestByteRangeToLines(t *testing.T) {
 			2,
 			2,
 		}, // the newline character
-		{"same position on first line", "hello world", 3, 3, 1, 1},
+		{"same position on start line", "hello world", 3, 3, 1, 1},
 		{
 			"multi-line end beyond content returns last line not start line",
 			"line1\nline2\nline3\nline4\nline5",

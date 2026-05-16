@@ -95,7 +95,7 @@ func processItem(data string, index int) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with default sorting (size)
-			sortOutput, err := setup.RunArtDuplWithFlags(map[string]string{
+			sizeSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "15",
 				"sort":      "size",
 			})
@@ -103,13 +103,13 @@ func processItem(data string, index int) error {
 			if err != nil {
 				fmt.Printf(
 					"DEBUG: Command failed with output: %s\n",
-					string(sortOutput),
+					string(sizeSortedOutput),
 				)
 			}
 
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(sortOutput)
+			outputStr := string(sizeSortedOutput)
 
 			// Large clones should appear before medium clones in output
 			// The first occurrence of "large" should come before "medium"
@@ -138,12 +138,12 @@ func process(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with size sorting
-			sortOutput, err := setup.RunArtDuplWithFlags(map[string]string{
+			resultOutput, err := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "10",
 				"sort":      "size",
 			})
 			Expect(err).ToNot(HaveOccurred())
-			Expect(string(sortOutput)).To(ContainSubstring("size1.go"))
+			Expect(string(resultOutput)).To(ContainSubstring("size1.go"))
 		})
 	})
 
@@ -185,13 +185,13 @@ func lessCommonFunction(id int, name string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with occurrence sorting
-			sortOutput, err := setup.RunArtDuplWithFlags(map[string]string{
+			occurrenceOutput, err := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "5",
 				"sort":      "occurrence",
 			})
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(sortOutput)
+			outputStr := string(occurrenceOutput)
 
 			// Widespread clone (4 files) should appear before less common clone (2 files)
 			widespreadIndex := strings.Index(outputStr, "wide")
@@ -232,13 +232,13 @@ func functionB() error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with hash sorting
-			sortOutput, err := setup.RunArtDuplWithFlags(map[string]string{
+			hashSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "10",
 				"sort":      "hash",
 			})
 			Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(sortOutput)
+			outputStr := string(hashSortedOutput)
 
 			// Both clones should be found
 			Expect(outputStr).To(ContainSubstring("fileA"))
@@ -259,14 +259,14 @@ func hello() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid sort option - should default to size
-			sortOutput, _ := setup.RunArtDuplWithFlags(map[string]string{
+			sortResult, _ := setup.RunArtDuplWithFlags(map[string]string{
 				"threshold": "5",
 				"sort":      "invalid",
 			})
 
 			// Should handle the error gracefully
 			// Either by showing error message or defaulting to size sorting
-			Expect(sortOutput).ToNot(BeEmpty(), "Should produce some sortOutput")
+			Expect(sortResult).ToNot(BeEmpty(), "Should produce some sortResult")
 		})
 	})
 })

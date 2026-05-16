@@ -101,6 +101,34 @@ func AssertErrorIs(t *testing.T, err, want error, what string) {
 	}
 }
 
+// AssertFatalNoError asserts that no error occurred, calling t.Fatalf on failure.
+func AssertFatalNoError(t *testing.T, err error, what string) {
+	t.Helper()
+
+	if err != nil {
+		t.Fatalf("%s: %v", what, err)
+	}
+}
+
+// AssertFatalLen asserts that the length of a slice matches the expected value.
+// On mismatch, calls t.Fatalf to stop the test immediately.
+func AssertFatalLen[T any](t *testing.T, got []T, want int, what string) {
+	t.Helper()
+
+	if len(got) != want {
+		t.Fatalf("%s: expected length %d, got %d", what, want, len(got))
+	}
+}
+
+// AssertErrorIsFatal asserts that err wraps the target error, calling t.Fatalf on mismatch.
+func AssertErrorIsFatal(t *testing.T, err, target error, what string) {
+	t.Helper()
+
+	if !errors.Is(err, target) {
+		t.Fatalf("%s: error %v does not wrap %v", what, err, target)
+	}
+}
+
 // AssertNoError asserts that no error occurred.
 func AssertNoError(t *testing.T, err error, what string) {
 	t.Helper()

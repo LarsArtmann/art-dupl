@@ -522,7 +522,7 @@ func test() {
 	Context("When filtering vendor directory", func() {
 		var (
 			vendorDir   string
-			vendorCode  string
+			excludedCode  string
 			buildBinary string
 		)
 
@@ -531,7 +531,7 @@ func test() {
 			err := os.MkdirAll(vendorDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
-			vendorCode = `package vendor
+			excludedCode = `package vendor
 
 import "fmt"
 
@@ -541,9 +541,9 @@ func vendorFunc() {
 	}
 }`
 
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor1.go"), []byte(vendorCode), 0o644)
+			err = os.WriteFile(filepath.Join(vendorDir, "vendor1.go"), []byte(excludedCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor2.go"), []byte(vendorCode), 0o644)
+			err = os.WriteFile(filepath.Join(vendorDir, "vendor2.go"), []byte(excludedCode), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Build art-dupl binary

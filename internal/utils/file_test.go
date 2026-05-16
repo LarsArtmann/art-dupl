@@ -46,12 +46,12 @@ func assertFileContentAbsolute(t *testing.T, filename, expectedContent string) {
 	err := fp.WriteFile(filePath, []byte(expectedContent), 0o644)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
 
-	fileBytes, err := os.ReadFile(filePath)
+	rawBytes, err := os.ReadFile(filePath)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(fileBytes)).To(gomega.Equal(expectedContent))
+	g.Expect(string(rawBytes)).To(gomega.Equal(expectedContent))
 }
 
-// assertFileContentWithBase writes a file with base directory and asserts fileBytes.
+// assertFileContentWithBase writes a file with base directory and asserts rawBytes.
 func assertFileContentWithBase(t *testing.T, filename, expectedContent string) {
 	t.Helper()
 	g := gomega.NewWithT(t)
@@ -61,39 +61,39 @@ func assertFileContentWithBase(t *testing.T, filename, expectedContent string) {
 	err := fp.WriteTextFile(filename, expectedContent)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
 
-	fileBytes, err := os.ReadFile(filepath.Join(tmpDir, filename))
+	readContent, err := os.ReadFile(filepath.Join(tmpDir, filename))
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(fileBytes)).To(gomega.Equal(expectedContent))
+	g.Expect(string(readContent)).To(gomega.Equal(expectedContent))
 }
 
 // assertReadFile writes a file to base dir and reads it back via fp.ReadFile.
-func assertReadFile(t *testing.T, filename, fileBytes string) {
+func assertReadFile(t *testing.T, filename, fileData string) {
 	t.Helper()
 	g := gomega.NewWithT(t)
 	tmpDir := t.TempDir()
 	fp := NewFileProcessor(tmpDir)
 
-	g.Expect(os.WriteFile(filepath.Join(tmpDir, filename), []byte(fileBytes), 0o644)).
+	g.Expect(os.WriteFile(filepath.Join(tmpDir, filename), []byte(fileData), 0o644)).
 		To(gomega.Succeed())
 
 	read, err := fp.ReadFile(filename)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(read)).To(gomega.Equal(fileBytes))
+	g.Expect(string(read)).To(gomega.Equal(fileData))
 }
 
 // assertReadFileAbsolute writes a file without base dir and reads it back via fp.ReadFile.
-func assertReadFileAbsolute(t *testing.T, filename, fileBytes string) {
+func assertReadFileAbsolute(t *testing.T, filename, loadedBytes string) {
 	t.Helper()
 	g := gomega.NewWithT(t)
 	tmpDir := t.TempDir()
 	fp := NewFileProcessor()
 
 	filePath := filepath.Join(tmpDir, filename)
-	g.Expect(os.WriteFile(filePath, []byte(fileBytes), 0o644)).To(gomega.Succeed())
+	g.Expect(os.WriteFile(filePath, []byte(loadedBytes), 0o644)).To(gomega.Succeed())
 
 	read, err := fp.ReadFile(filePath)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(read)).To(gomega.Equal(fileBytes))
+	g.Expect(string(read)).To(gomega.Equal(loadedBytes))
 }
 
 func TestFileProcessorWriteTextFile(t *testing.T) {
@@ -209,9 +209,9 @@ func TestFileProcessorRoundTrip(t *testing.T) {
 func assertFileContent(t *testing.T, filePath, expectedContent string) {
 	t.Helper()
 	g := gomega.NewWithT(t)
-	fileBytes, err := os.ReadFile(filePath)
+	diskContent, err := os.ReadFile(filePath)
 	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(string(fileBytes)).To(gomega.Equal(expectedContent))
+	g.Expect(string(diskContent)).To(gomega.Equal(expectedContent))
 }
 
 func assertWriteFile(t *testing.T, filename, expectedContent string) {
@@ -236,11 +236,11 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		resultCtx, cancel := ApplyTimeout(ctx, 0)
+		zeroTimeoutCtx, cancel := ApplyTimeout(ctx, 0)
 		defer cancel()
 
-		g.Expect(resultCtx).To(gomega.Equal(ctx))
-		g.Expect(resultCtx.Err()).ToNot(gomega.HaveOccurred())
+		g.Expect(zeroTimeoutCtx).To(gomega.Equal(ctx))
+		g.Expect(zeroTimeoutCtx.Err()).ToNot(gomega.HaveOccurred())
 	})
 
 	t.Run("returns original context when timeout is negative", func(t *testing.T) {
@@ -249,11 +249,11 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		resultCtx, cancel := ApplyTimeout(ctx, -1)
+		negTimeoutCtx, cancel := ApplyTimeout(ctx, -1)
 		defer cancel()
 
-		g.Expect(resultCtx).To(gomega.Equal(ctx))
-		g.Expect(resultCtx.Err()).ToNot(gomega.HaveOccurred())
+		g.Expect(negTimeoutCtx).To(gomega.Equal(ctx))
+		g.Expect(negTimeoutCtx.Err()).ToNot(gomega.HaveOccurred())
 	})
 
 	t.Run("creates timeout context when positive", func(t *testing.T) {
@@ -262,12 +262,12 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		resultCtx, cancel := ApplyTimeout(ctx, 5)
+		deadlineCtx, cancel := ApplyTimeout(ctx, 5)
 		defer cancel()
 
-		g.Expect(resultCtx).ToNot(gomega.Equal(ctx))
+		g.Expect(deadlineCtx).ToNot(gomega.Equal(ctx))
 
-		deadline, hasDeadline := resultCtx.Deadline()
+		deadline, hasDeadline := deadlineCtx.Deadline()
 		g.Expect(hasDeadline).To(gomega.BeTrue())
 		g.Expect(time.Now().Before(deadline)).To(gomega.BeTrue())
 	})
@@ -278,19 +278,19 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		resultCtx, cancel := ApplyTimeout(ctx, 1)
+		deadlineCtx, cancel := ApplyTimeout(ctx, 1)
 		defer cancel()
 
 		select {
-		case <-resultCtx.Done():
+		case <-deadlineCtx.Done():
 			t.Error("context should not be done immediately")
 		default:
 		}
 
 		time.Sleep(1100 * time.Millisecond)
 
-		g.Expect(resultCtx.Err()).To(gomega.HaveOccurred())
-		g.Expect(resultCtx.Err()).To(gomega.Equal(context.DeadlineExceeded))
+		g.Expect(deadlineCtx.Err()).To(gomega.HaveOccurred())
+		g.Expect(deadlineCtx.Err()).To(gomega.Equal(context.DeadlineExceeded))
 	})
 
 	t.Run("cancel function works", func(t *testing.T) {
@@ -298,11 +298,11 @@ func TestApplyTimeout(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		resultCtx, cancel := ApplyTimeout(ctx, 10)
+		cancelableCtx, cancel := ApplyTimeout(ctx, 10)
 
 		cancel()
 
-		g.Expect(resultCtx.Err()).To(gomega.HaveOccurred())
-		g.Expect(resultCtx.Err()).To(gomega.Equal(context.Canceled))
+		g.Expect(cancelableCtx.Err()).To(gomega.HaveOccurred())
+		g.Expect(cancelableCtx.Err()).To(gomega.Equal(context.Canceled))
 	})
 }

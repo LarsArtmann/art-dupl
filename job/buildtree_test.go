@@ -59,7 +59,7 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 	schan := make(chan []*syntax.Node)
 	close(schan)
 
-	tree, data, done := BuildTree(ctx, schan)
+	tree, treeData, done := BuildTree(ctx, schan)
 
 	// Wait for processing
 	waitForCompletion(t, done, "BuildTree with empty input should not time out")
@@ -70,8 +70,8 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 	}
 
 	// Data should be empty
-	if len(*data) != 0 {
-		t.Errorf("Expected empty data, got %d nodes", len(*data))
+	if len(*treeData) != 0 {
+		t.Errorf("Expected empty treeData, got %d nodes", len(*treeData))
 	}
 }
 
@@ -94,14 +94,14 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 
 	close(schan)
 
-	tree, data, done := BuildTree(ctx, schan)
+	tree, builtData, done := BuildTree(ctx, schan)
 
 	// Wait for processing
 	waitForCompletion(t, done, "BuildTree with multiple sequences timed out")
 
 	// Should contain all nodes from both sequences
-	if len(*data) != 4 {
-		t.Errorf("Expected 4 nodes total, got %d", len(*data))
+	if len(*builtData) != 4 {
+		t.Errorf("Expected 4 nodes total, got %d", len(*builtData))
 	}
 
 	// We don't need to use tree variable, but verify it exists

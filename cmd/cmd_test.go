@@ -17,7 +17,7 @@ import (
 )
 
 // createTestNodes creates a test node slice with the specified filename and position.
-func createTestNodes(filename string, pos, end int32) []*syntax.Node {
+func buildNodeSlice(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
 		{Filename: filename, Pos: pos, End: end},
 	}
@@ -52,7 +52,7 @@ func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 
 	frags := make([][]*syntax.Node, len(files))
 	for i, file := range files {
-		frags[i] = createTestNodes(file, 1, 10)
+		frags[i] = buildNodeSlice(file, 1, 10)
 	}
 
 	ch <- syntax.Match{

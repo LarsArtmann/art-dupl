@@ -150,9 +150,9 @@ func TestNormalizeWorkerCount(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := normalizeWorkerCount(tt.input)
-			if result != tt.expected {
-				t.Errorf("normalizeWorkerCount(%d) = %d, want %d", tt.input, result, tt.expected)
+			workerCount := normalizeWorkerCount(tt.input)
+			if workerCount != tt.expected {
+				t.Errorf("normalizeWorkerCount(%d) = %d, want %d", tt.input, workerCount, tt.expected)
 			}
 		})
 	}

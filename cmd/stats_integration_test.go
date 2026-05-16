@@ -12,10 +12,10 @@ import (
 )
 
 // hasAllStrings returns a function that checks if all substrings exist in the given text.
-func hasAllStrings(text string, substrings ...string) func() bool {
+func hasAllStrings(output string, substrings ...string) func() bool {
 	return func() bool {
 		for _, substring := range substrings {
-			if !strings.Contains(text, substring) {
+			if !strings.Contains(output, substring) {
 				return false
 			}
 		}
@@ -24,11 +24,11 @@ func hasAllStrings(text string, substrings ...string) func() bool {
 	}
 }
 
-// hasAnyStrings returns a function that checks if any substring exists in given text.
-func hasAnyStrings(text string, substrings ...string) func() bool {
+// hasAnyStrings returns a function that checks if any substring exists in given output.
+func hasAnyStrings(output string, substrings ...string) func() bool {
 	return func() bool {
 		for _, substring := range substrings {
-			if strings.Contains(text, substring) {
+			if strings.Contains(output, substring) {
 				return true
 			}
 		}

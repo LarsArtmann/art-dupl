@@ -262,22 +262,22 @@ func TestMergeConfigs(t *testing.T) {
 		// IgnoreFiles: not set, should keep file config value
 	}
 
-	merged := MergeConfigs(fileConfig, cliConfig)
+	combined := MergeConfigs(fileConfig, cliConfig)
 
-	testutil.AssertConfigField(t, "Threshold", merged.Threshold, 25)
-	testutil.AssertConfigField(t, "IncludeVendor", merged.IncludeVendor, true)
-	testutil.AssertConfigField(t, "OutputFormat", merged.OutputFormat, "html")
+	testutil.AssertConfigField(t, "Threshold", combined.Threshold, 25)
+	testutil.AssertConfigField(t, "IncludeVendor", combined.IncludeVendor, true)
+	testutil.AssertConfigField(t, "OutputFormat", combined.OutputFormat, "html")
 
-	if !merged.Verbose {
-		t.Error("Expected merged Verbose true")
+	if !combined.Verbose {
+		t.Error("Expected combined Verbose true")
 	}
 
-	if len(merged.Paths) != 1 || merged.Paths[0] != "./cmd" {
-		t.Errorf("Expected merged paths [\"./cmd\"], got %v", merged.Paths)
+	if len(combined.Paths) != 1 || combined.Paths[0] != "./cmd" {
+		t.Errorf("Expected combined paths [\"./cmd\"], got %v", combined.Paths)
 	}
 
-	if len(merged.IgnoreFiles) != 1 || merged.IgnoreFiles[0] != "*_test.go" {
-		t.Errorf("Expected merged ignoreFiles [\"*_test.go\"], got %v", merged.IgnoreFiles)
+	if len(combined.IgnoreFiles) != 1 || combined.IgnoreFiles[0] != "*_test.go" {
+		t.Errorf("Expected combined ignoreFiles [\"*_test.go\"], got %v", combined.IgnoreFiles)
 	}
 }
 
@@ -286,7 +286,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 		name            string
 		config          *Config
 		isNilFileConfig bool
-		expectedValues  map[string]any
+		expectedFields  map[string]any
 	}{
 		{
 			name: "NilFileConfig",
@@ -296,7 +296,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 				IncludeVendor: true,
 			},
 			isNilFileConfig: true,
-			expectedValues: map[string]any{
+			expectedFields: map[string]any{
 				"threshold":     30,
 				"outputFormat":  "json",
 				"includeVendor": true,
@@ -311,7 +311,7 @@ func TestMergeConfigsWithNil(t *testing.T) {
 				Verbose:      true,
 			},
 			isNilFileConfig: false,
-			expectedValues: map[string]any{
+			expectedFields: map[string]any{
 				"threshold":     40,
 				"outputFormat":  "html",
 				"verbose":       true,
@@ -330,13 +330,13 @@ func TestMergeConfigsWithNil(t *testing.T) {
 				merged = MergeConfigs(tc.config, nil)
 			}
 
-			if threshold, ok := tc.expectedValues["threshold"].(int); ok {
+			if threshold, ok := tc.expectedFields["threshold"].(int); ok {
 				if merged.Threshold != threshold {
 					t.Errorf("Expected threshold %d, got %d", threshold, merged.Threshold)
 				}
 			}
 
-			if outputFormat, ok := tc.expectedValues["outputFormat"].(string); ok {
+			if outputFormat, ok := tc.expectedFields["outputFormat"].(string); ok {
 				if merged.OutputFormat.String() != outputFormat {
 					t.Errorf(
 						"Expected OutputFormat %s, got %s",
@@ -346,13 +346,13 @@ func TestMergeConfigsWithNil(t *testing.T) {
 				}
 			}
 
-			if verbose, ok := tc.expectedValues["verbose"].(bool); ok {
+			if verbose, ok := tc.expectedFields["verbose"].(bool); ok {
 				if merged.Verbose != verbose {
 					t.Errorf("Expected Verbose %v, got %v", verbose, merged.Verbose)
 				}
 			}
 
-			if includeVendor, ok := tc.expectedValues["includeVendor"].(bool); ok {
+			if includeVendor, ok := tc.expectedFields["includeVendor"].(bool); ok {
 				if merged.IncludeVendor != includeVendor {
 					t.Errorf(
 						"Expected IncludeVendor %v, got %v",
