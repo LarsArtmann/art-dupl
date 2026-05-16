@@ -23,6 +23,8 @@ const (
 
 const validValue = testValidValue
 
+var isValidValue = func(v string) bool { return v == validValue }
+
 func TestDetectionMethods_IsEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -1139,9 +1141,7 @@ func TestIsValidStringType(t *testing.T) {
 func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 	t.Parallel()
 
-	acceptValue := func(v string) bool { return v == validValue }
-
-	_, err := unmarshalStringType([]byte("not json"), acceptValue, "default", "string type")
+	_, err := unmarshalStringType([]byte("not json"), isValidValue, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid JSON")
 	}
@@ -1150,9 +1150,7 @@ func TestUnmarshalStringType_InvalidJSON(t *testing.T) {
 func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	isAllowed := func(v string) bool { return v == validValue }
-
-	got, err := unmarshalStringType([]byte(`"invalid"`), isAllowed, "default", "string type")
+	got, err := unmarshalStringType([]byte(`"invalid"`), isValidValue, "default", "string type")
 	if err == nil {
 		t.Error("expected error for invalid value")
 	}
@@ -1165,13 +1163,11 @@ func TestUnmarshalStringType_InvalidValue(t *testing.T) {
 func TestUnmarshalStringTypeToPointer(t *testing.T) {
 	t.Parallel()
 
-	verifyInput := func(v string) bool { return v == validValue }
-
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"valid"`),
-		verifyInput,
+		isValidValue,
 		"default",
 		"string type",
 		&target,
@@ -1188,13 +1184,11 @@ func TestUnmarshalStringTypeToPointer(t *testing.T) {
 func TestUnmarshalStringTypeToPointer_InvalidValue(t *testing.T) {
 	t.Parallel()
 
-	matchesExpected := func(v string) bool { return v == validValue }
-
 	var target string
 
 	err := unmarshalStringTypeToPointer(
 		[]byte(`"bad"`),
-		matchesExpected,
+		isValidValue,
 		"default",
 		"string type",
 		&target,

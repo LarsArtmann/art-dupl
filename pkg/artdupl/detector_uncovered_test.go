@@ -29,6 +29,15 @@ func makeNodePair(filename string, pos, end int32) []*syntax.Node {
 	}
 }
 
+// captureProgress returns a progress callback that stores the received Progress.
+func captureProgress(received **Progress) func(*Progress) error {
+	return func(p *Progress) error {
+		*received = p
+
+		return nil
+	}
+}
+
 // makeFrag creates a fragment with the given filename and positions.
 func makeFrag(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
@@ -262,15 +271,9 @@ func TestRunDetectionMethods(t *testing.T) {
 func TestReportProgress(t *testing.T) {
 	var receivedProgress *Progress
 
-	onProgress := func(p *Progress) error {
-		receivedProgress = p
-
-		return nil
-	}
-
 	d := &detector{
 		opts: &Options{
-			ProgressCallback: onProgress,
+			ProgressCallback: captureProgress(&receivedProgress),
 		},
 	}
 

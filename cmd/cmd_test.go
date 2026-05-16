@@ -11,17 +11,16 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter"
 	"github.com/spf13/cobra"
 )
 
-// createTestNodes creates a test node slice with the specified filename and position.
+// buildNodeSlice creates a test node slice with the specified filename and position.
 func buildNodeSlice(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{
-		{Filename: filename, Pos: pos, End: end},
-	}
+	return []*syntax.Node{testutil.CreateNodeWithPos(0, filename, pos, end)}
 }
 
 // saveVersionGlobals saves and auto-restores Version, Commit, Date via t.Cleanup.

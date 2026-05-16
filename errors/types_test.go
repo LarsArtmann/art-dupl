@@ -27,9 +27,7 @@ func TestDuplError(t *testing.T) {
 	}
 
 	// Test unwrap
-	if !errors.Is(unwrapErr, cause) {
-		t.Error("Unwrap should return cause error")
-	}
+	assertUnwrapsToCause(t, unwrapErr, cause, "Unwrap should return cause error")
 
 	// Test fields
 	assertFieldsEqual(t, unwrapErr.Type, ParseError, "Type")
@@ -121,9 +119,7 @@ func TestWrap(t *testing.T) {
 			t.Fatal("Wrapped error should not be nil")
 		}
 
-		if !errors.Is(wrapped, cause) {
-			t.Error("Wrapped error should contain cause")
-		}
+		assertUnwrapsToCause(t, wrapped, cause, "Wrapped error should contain cause")
 
 		if !Is(wrapped, InternalError) {
 			t.Error("Wrapped error should be InternalError type")
@@ -156,9 +152,7 @@ func TestWrapf(t *testing.T) {
 			t.Fatal("Wrapped error should not be nil")
 		}
 
-		if !errors.Is(wrapped, cause) {
-			t.Error("Wrapped error should contain cause")
-		}
+		assertUnwrapsToCause(t, wrapped, cause, "Wrapped error should contain cause")
 	})
 }
 

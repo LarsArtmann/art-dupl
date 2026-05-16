@@ -541,10 +541,10 @@ func vendorFunc() {
 	}
 }`
 
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor1.go"), []byte(excludedCode), 0o644)
-			Expect(err).NotTo(HaveOccurred())
-			err = os.WriteFile(filepath.Join(vendorDir, "vendor2.go"), []byte(excludedCode), 0o644)
-			Expect(err).NotTo(HaveOccurred())
+			for _, name := range []string{"vendor1.go", "vendor2.go"} {
+				err = os.WriteFile(filepath.Join(vendorDir, name), []byte(excludedCode), 0o644)
+				Expect(err).NotTo(HaveOccurred())
+			}
 
 			// Build art-dupl binary
 			cmd := exec.Command(

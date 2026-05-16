@@ -12,9 +12,19 @@ import (
 // If the assertion fails, it reports the actual length.
 func AssertLen[T any](t *testing.T, got []T, want int, what string) {
 	t.Helper()
+	assertLen(t.Errorf, got, want, what)
+}
 
+// AssertFatalLen asserts that the length of a slice matches the expected value.
+// On mismatch, calls t.Fatalf to stop the test immediately.
+func AssertFatalLen[T any](t *testing.T, got []T, want int, what string) {
+	t.Helper()
+	assertLen(t.Fatalf, got, want, what)
+}
+
+func assertLen[T any](failFunc func(string, ...any), got []T, want int, what string) {
 	if len(got) != want {
-		t.Errorf("%s: expected length %d, got %d", what, want, len(got))
+		failFunc("%s: expected length %d, got %d", what, want, len(got))
 	}
 }
 
@@ -107,16 +117,6 @@ func AssertFatalNoError(t *testing.T, err error, what string) {
 
 	if err != nil {
 		t.Fatalf("%s: %v", what, err)
-	}
-}
-
-// AssertFatalLen asserts that the length of a slice matches the expected value.
-// On mismatch, calls t.Fatalf to stop the test immediately.
-func AssertFatalLen[T any](t *testing.T, got []T, want int, what string) {
-	t.Helper()
-
-	if len(got) != want {
-		t.Fatalf("%s: expected length %d, got %d", what, want, len(got))
 	}
 }
 

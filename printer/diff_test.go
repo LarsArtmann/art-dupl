@@ -53,15 +53,16 @@ func TestLineDiff_EqualContent(t *testing.T) {
 	testutil.AssertCount(t, len(result.Compared), 3, "compared")
 
 	// All dLines should be marked as equal
-	for i, dLine := range result.Base {
-		if dLine.Type != DiffLineEqual {
-			t.Errorf("Expected base dLine %d to be Equal, got %d", i, dLine.Type)
-		}
-	}
+	assertAllDiffLineTypes(t, "base", result.Base, DiffLineEqual)
+	assertAllDiffLineTypes(t, "compared", result.Compared, DiffLineEqual)
+}
 
-	for i, dLine := range result.Compared {
-		if dLine.Type != DiffLineEqual {
-			t.Errorf("Expected compared dLine %d to be Equal, got %d", i, dLine.Type)
+func assertAllDiffLineTypes(t *testing.T, label string, lines []DiffLine, wantType DiffLineType) {
+	t.Helper()
+
+	for i, dLine := range lines {
+		if dLine.Type != wantType {
+			t.Errorf("Expected %s dLine %d to be %d, got %d", label, i, wantType, dLine.Type)
 		}
 	}
 }

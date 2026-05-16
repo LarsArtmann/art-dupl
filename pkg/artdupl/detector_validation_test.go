@@ -309,11 +309,7 @@ func TestErrors_AllErrors(t *testing.T) {
 func TestProgressCallback(t *testing.T) {
 	var receivedProgress *Progress
 
-	progressHandler := func(p *Progress) error {
-		receivedProgress = p
-
-		return nil
-	}
+	progressHandler := captureProgress(&receivedProgress)
 
 	opts := &Options{
 		Threshold:        15,
@@ -518,13 +514,15 @@ func TestDetector_Reuse(t *testing.T) {
 		cleanupDetector(t, detector)
 	})
 
-	_, returnedErr = detector.FindClones(t.Context(), []string{})
-	if !errors.Is(returnedErr, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided, got: %v", returnedErr)
-	}
+	assertNoFilesProvided(t, detector, "ErrNoFilesProvided")
+	assertNoFilesProvided(t, detector, "ErrNoFilesProvided on reuse")
+}
 
-	_, returnedErr = detector.FindClones(t.Context(), []string{})
+func assertNoFilesProvided(t *testing.T, det Detector, errMsg string) {
+	t.Helper()
+
+	_, returnedErr := det.FindClones(t.Context(), []string{})
 	if !errors.Is(returnedErr, ErrNoFilesProvided) {
-		t.Errorf("Expected ErrNoFilesProvided on reuse, got: %v", returnedErr)
+		t.Errorf("Expected %s, got: %v", errMsg, returnedErr)
 	}
 }

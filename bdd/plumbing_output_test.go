@@ -34,6 +34,17 @@ func assertLinesContainGoFiles(output []byte) {
 	}
 }
 
+func runPlumbingFilterTest(setup *testutil.BDDTestSetup, funcName, file1, file2 string) {
+	code := testutil.SimpleCodeTemplate(funcName)
+	_ = setup.CreateAndRunDuplExpectSuccess(
+		[]string{file1, file2},
+		code,
+		"--plumbing",
+		"--threshold",
+		testutil.ThresholdSmall,
+	)
+}
+
 var _ = Describe("Plumbing Output Format", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -263,25 +274,11 @@ func %s() {}`, funcName)
 
 	Context("When using plumbing with file filtering", func() {
 		It("should work with vendor exclusion", func() {
-			code := testutil.SimpleCodeTemplate("vendorPlumb")
-			_ = setup.CreateAndRunDuplExpectSuccess(
-				[]string{"main1.go", "main2.go"},
-				code,
-				"--plumbing",
-				"--threshold",
-				testutil.ThresholdSmall,
-			)
+			runPlumbingFilterTest(setup, "vendorPlumb", "main1.go", "main2.go")
 		})
 
 		It("should work with generated file filtering by default", func() {
-			code := testutil.SimpleCodeTemplate("filterGenPlumb")
-			_ = setup.CreateAndRunDuplExpectSuccess(
-				[]string{"filter1.go", "filter2.go"},
-				code,
-				"--plumbing",
-				"--threshold",
-				testutil.ThresholdSmall,
-			)
+			runPlumbingFilterTest(setup, "filterGenPlumb", "filter1.go", "filter2.go")
 		})
 
 		It("should work with include patterns", func() {

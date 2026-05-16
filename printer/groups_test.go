@@ -80,13 +80,8 @@ func TestComputeUniqueCounts(t *testing.T) {
 	}
 
 	totals := ComputeUniqueCounts(groups)
-	if totals["h1"] != 2 {
-		t.Errorf("h1 unique count = %d, want 2", totals["h1"])
-	}
-
-	if totals["h2"] != 1 {
-		t.Errorf("h2 unique count = %d, want 1", totals["h2"])
-	}
+	testutil.AssertFieldValue(t, totals["h1"], 2, "h1 unique count")
+	testutil.AssertFieldValue(t, totals["h2"], 1, "h2 unique count")
 }
 
 func TestSortCloneGroupKeys(t *testing.T) {

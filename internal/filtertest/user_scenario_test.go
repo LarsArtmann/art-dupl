@@ -9,6 +9,24 @@ import (
 	"github.com/LarsArtmann/gogenfilter"
 )
 
+// assertFilterResult checks that a file is kept or not kept by the filter.
+func assertFilterResult(t *testing.T, f *gogenfilter.Filter, fsPath, description string, wantKept bool) {
+	t.Helper()
+
+	wasKept, err := f.Filter(fsPath)
+	if err != nil {
+		return
+	}
+
+	if wasKept != wantKept {
+		if wantKept {
+			t.Errorf("%s should be kept (%s)", filepath.Base(fsPath), description)
+		} else {
+			t.Errorf("%s should NOT be kept (%s)", filepath.Base(fsPath), description)
+		}
+	}
+}
+
 func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 
@@ -209,35 +227,13 @@ func (m *MockRepository) SaveArticle(article ArticleModel) error {
 		t.Fatalf("NewFilter() error: %v", filterErr)
 	}
 
-	// SQLC files should be wasKept
-	if wasKept, err := f.Filter(
-		toFSPath(filepath.Join(queriesDir, "articles.sql.go")),
-	); err == nil &&
-		!wasKept {
-		t.Error("articles.sql.go should be wasKept (SQLC generated)")
-	}
+	// SQLC files should be kept
+	assertFilterResult(t, f, toFSPath(filepath.Join(queriesDir, "articles.sql.go")), "SQLC generated", true)
+	assertFilterResult(t, f, toFSPath(filepath.Join(queriesDir, "users.sql.go")), "SQLC generated", true)
 
-	if wasKept, err := f.Filter(
-		toFSPath(filepath.Join(queriesDir, "users.sql.go")),
-	); err == nil &&
-		!wasKept {
-		t.Error("users.sql.go should be wasKept (SQLC generated)")
-	}
-
-	// Regular files should NOT be wasKept
-	if wasKept, err := f.Filter(
-		toFSPath(filepath.Join(repoDir, "article_repository.go")),
-	); err == nil &&
-		wasKept {
-		t.Error("article_repository.go should NOT be wasKept (regular Go file)")
-	}
-
-	if wasKept, err := f.Filter(
-		toFSPath(filepath.Join(repoDir, "mock_repository.go")),
-	); err == nil &&
-		wasKept {
-		t.Error("mock_repository.go should NOT be wasKept (regular Go file)")
-	}
+	// Regular files should NOT be kept
+	assertFilterResult(t, f, toFSPath(filepath.Join(repoDir, "article_repository.go")), "regular Go file", false)
+	assertFilterResult(t, f, toFSPath(filepath.Join(repoDir, "mock_repository.go")), "regular Go file", false)
 }
 
 // TestSQLCOutputDirectoryFiltering tests that files in SQLC output directories are wasKept.

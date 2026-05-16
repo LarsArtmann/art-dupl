@@ -178,7 +178,5 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 }
 
 func makeASTNodes(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{
-		{Filename: filename, Pos: pos, End: end},
-	}
+	return []*syntax.Node{testutil.CreateNodeWithPos(0, filename, pos, end)}
 }

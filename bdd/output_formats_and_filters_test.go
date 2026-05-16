@@ -232,33 +232,27 @@ func process() error {
 }`
 
 	It("should produce HTML output with side-by-side diff", func() {
-		setup := CreateBDDTestSetup()
-
-		err := setup.CreateDuplicateFiles([]string{"diff1.go", "diff2.go"}, diffCode)
-		Expect(err).NotTo(HaveOccurred())
-
-		output, err := setup.RunArtDupl("--html", "--diff", "side-by-side", "--threshold", "10")
-		Expect(err).ToNot(HaveOccurred())
-
-		outputStr := string(output)
-		Expect(outputStr).To(ContainSubstring("<html"))
-		Expect(outputStr).To(ContainSubstring("diff1.go"))
+		testHTMLDiffOutput("diff1.go", "diff2.go", "side-by-side", "diff1.go", diffCode)
 	})
 
 	It("should produce HTML output with inline diff", func() {
-		setup := CreateBDDTestSetup()
-
-		err := setup.CreateDuplicateFiles([]string{"inline1.go", "inline2.go"}, diffCode)
-		Expect(err).NotTo(HaveOccurred())
-
-		output, err := setup.RunArtDupl("--html", "--diff", "inline", "--threshold", "10")
-		Expect(err).ToNot(HaveOccurred())
-
-		outputStr := string(output)
-		Expect(outputStr).To(ContainSubstring("<html"))
-		Expect(outputStr).To(ContainSubstring("inline1.go"))
+		testHTMLDiffOutput("inline1.go", "inline2.go", "inline", "inline1.go", diffCode)
 	})
 })
+
+func testHTMLDiffOutput(file1, file2, diffMode, expectedFile, code string) {
+	setup := CreateBDDTestSetup()
+
+	err := setup.CreateDuplicateFiles([]string{file1, file2}, code)
+	Expect(err).NotTo(HaveOccurred())
+
+	output, err := setup.RunArtDupl("--html", "--diff", diffMode, "--threshold", "10")
+	Expect(err).ToNot(HaveOccurred())
+
+	outputStr := string(output)
+	Expect(outputStr).To(ContainSubstring("<html"))
+	Expect(outputStr).To(ContainSubstring(expectedFile))
+}
 
 var _ = Describe("Protobuf/Mockgen/Stringer Filtering", func() {
 	Context("When filtering protobuf generated files", func() {

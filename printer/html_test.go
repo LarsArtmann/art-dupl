@@ -13,6 +13,27 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// assertOutputContainsAll checks that the output string contains all wanted substrings.
+func assertOutputContainsAll(t *testing.T, output, testName string, wantSubstr []string) {
+	t.Helper()
+
+	for _, want := range wantSubstr {
+		testutil.AssertStringContains(t, output, want, testName+" missing "+want)
+	}
+}
+
+// makeNodePairForFiles creates two syntax.Node slices for two files with the same structure.
+func makeNodePairForFiles(file1, file2 string) ([]*syntax.Node, []*syntax.Node) {
+	return []*syntax.Node{
+			{Type: golang.FuncDecl, Filename: file1, Pos: 14, End: 44},
+			{Type: golang.ExprStmt, Filename: file1, Pos: 15, End: 35},
+		},
+		[]*syntax.Node{
+			{Type: golang.FuncDecl, Filename: file2, Pos: 14, End: 44},
+			{Type: golang.ExprStmt, Filename: file2, Pos: 15, End: 35},
+		}
+}
+
 var errReadFail = errors.New("read failed")
 
 const (
@@ -281,14 +302,7 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 
 	mustPrintHeader(t, p)
 
-	sourceNodes := []*syntax.Node{
-		{Type: golang.FuncDecl, Filename: "a.go", Pos: 14, End: 44},
-		{Type: golang.ExprStmt, Filename: "a.go", Pos: 15, End: 35},
-	}
-	secondNodes := []*syntax.Node{
-		{Type: golang.FuncDecl, Filename: "b.go", Pos: 14, End: 44},
-		{Type: golang.ExprStmt, Filename: "b.go", Pos: 15, End: 35},
-	}
+	sourceNodes, secondNodes := makeNodePairForFiles("a.go", "b.go")
 
 	fread := mockReadFile(content)
 
@@ -943,11 +957,8 @@ func newCloneWithContent(filename string, lineStart int, content string) *CloneW
 
 func newCloneDiff(filename string, lineStart int, content string, diff DiffResult) CloneDiff {
 	return CloneDiff{
-		CloneWithContent: CloneWithContent{
-			CloneWithContentMixin: CloneWithContentMixin{Filename: filename, LineStart: lineStart},
-			Content:               []byte(content),
-		},
-		Diff: diff,
+		CloneWithContent: *newCloneWithContent(filename, lineStart, content),
+		Diff:             diff,
 	}
 }
 
@@ -1045,9 +1056,7 @@ func TestHTMLWriteDiffView_Variants(t *testing.T) {
 			}
 
 			output := buf.String()
-			for _, want := range tc.wantSubstr {
-				testutil.AssertStringContains(t, output, want, tc.name+" missing "+want)
-			}
+			assertOutputContainsAll(t, output, tc.name, tc.wantSubstr)
 		})
 	}
 }
@@ -1209,9 +1218,7 @@ func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 			}
 
 			output := buf.String()
-			for _, want := range tc.wantSubstr {
-				testutil.AssertStringContains(t, output, want, tc.name+" missing "+want)
-			}
+			assertOutputContainsAll(t, output, tc.name, tc.wantSubstr)
 		})
 	}
 }

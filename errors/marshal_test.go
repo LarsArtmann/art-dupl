@@ -7,6 +7,15 @@ import (
 
 const testValue = "value"
 
+// assertUnwrapsToCause asserts that err unwraps to the expected cause.
+func assertUnwrapsToCause(t *testing.T, err, cause error, msg string) {
+	t.Helper()
+
+	if !errors.Is(err, cause) {
+		t.Error(msg)
+	}
+}
+
 func TestMarshalError(t *testing.T) {
 	cause := errors.New("json syntax error")
 	unwrapErr := &MarshalError{
@@ -20,9 +29,7 @@ func TestMarshalError(t *testing.T) {
 		t.Error("Error message should not be empty")
 	}
 
-	if !errors.Is(unwrapErr, cause) {
-		t.Error("Should unwrap to cause")
-	}
+	assertUnwrapsToCause(t, unwrapErr, cause, "Should unwrap to cause")
 }
 
 func TestHandleMarshalingError(t *testing.T) {

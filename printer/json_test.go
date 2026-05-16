@@ -304,18 +304,13 @@ func TestJSONPrinter_PrintClones_MultipleGroups(t *testing.T) {
 
 	nodes := createMockNodes(t)
 
-	err := p.PrintClones(
-		processTestNodes(mockReadFile(testContent), "test", [][]*syntax.Node{nodes}),
-	)
-	if err != nil {
-		t.Fatalf("PrintClones(1) error: %v", err)
-	}
-
-	err = p.PrintClones(
-		processTestNodes(mockReadFile(testContent), "test", [][]*syntax.Node{nodes}),
-	)
-	if err != nil {
-		t.Fatalf("PrintClones(2) error: %v", err)
+	for range 2 {
+		err := p.PrintClones(
+			processTestNodes(mockReadFile(testContent), "test", [][]*syntax.Node{nodes}),
+		)
+		if err != nil {
+			t.Fatalf("PrintClones error: %v", err)
+		}
 	}
 
 	if len(jp.cloneGroups) != 2 {
