@@ -783,7 +783,7 @@ func TestHTMLComputeCloneGroupDiff_Empty(t *testing.T) {
 func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	t.Parallel()
 
-	clones := []domain.ProcessedClone{processedCloneFixture("a.go", 1, 5, "line1\nline2\n")}
+	clones := []domain.ProcessedClone{newTestProcessedClone("a.go", 1, 5, "line1\nline2\n")}
 
 	result := ComputeCloneGroupDiff(clones)
 	assertBaseFilename(t, &result, "a.go")
@@ -797,8 +797,8 @@ func TestHTMLComputeCloneGroupDiff_MultipleClones(t *testing.T) {
 	t.Parallel()
 
 	clones := []domain.ProcessedClone{
-		processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
-		processedCloneFixture("b.go", 10, 14, "line1\nmodified\n"),
+		newTestProcessedClone("a.go", 1, 5, "line1\nline2\n"),
+		newTestProcessedClone("b.go", 10, 14, "line1\nmodified\n"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -942,8 +942,8 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 	hp := &htmlprinter{w: &buf, iota: 1}
 
 	clones := []domain.ProcessedClone{
-		processedCloneFixture("a.go", 10, 20, "code here"),
-		processedCloneFixture("b.go", 30, 40, "more code"),
+		newTestProcessedClone("a.go", 10, 20, "code here"),
+		newTestProcessedClone("b.go", 30, 40, "more code"),
 	}
 
 	err := hp.writeCloneOccurrences(clones)
@@ -986,31 +986,31 @@ func TestHTMLWriteDiffView_Variants(t *testing.T) {
 	}{
 		{
 			"single clone falls through",
-			[]domain.ProcessedClone{processedCloneFixture("a.go", 1, 5, "code\n")},
+			[]domain.ProcessedClone{newTestProcessedClone("a.go", 1, 5, "code\n")},
 			[]string{"occurrence"},
 		},
 		{
 			"multiple clones",
 			[]domain.ProcessedClone{
-				processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
-				processedCloneFixture("b.go", 10, 14, "line1\nmodified\n"),
+				newTestProcessedClone("a.go", 1, 5, "line1\nline2\n"),
+				newTestProcessedClone("b.go", 10, 14, "line1\nmodified\n"),
 			},
 			[]string{"BASE REFERENCE", "diff-legend"},
 		},
 		{
 			"three clones with selector",
 			[]domain.ProcessedClone{
-				processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
-				processedCloneFixture("b.go", 10, 14, "line1\nchanged\n"),
-				processedCloneFixture("c.go", 20, 24, "line1\nother\n"),
+				newTestProcessedClone("a.go", 1, 5, "line1\nline2\n"),
+				newTestProcessedClone("b.go", 10, 14, "line1\nchanged\n"),
+				newTestProcessedClone("c.go", 20, 24, "line1\nother\n"),
 			},
 			[]string{"diff-select", "Compare with..."},
 		},
 		{
 			"aggregate stats",
 			[]domain.ProcessedClone{
-				processedCloneFixture("a.go", 1, 5, "line1\nline2\nline3\n"),
-				processedCloneFixture("b.go", 10, 14, "line1\nmodified\nadded\n"),
+				newTestProcessedClone("a.go", 1, 5, "line1\nline2\nline3\n"),
+				newTestProcessedClone("b.go", 10, 14, "line1\nmodified\nadded\n"),
 			},
 			[]string{"diff-aggregate-stats"},
 		},

@@ -14,6 +14,8 @@ import (
 	"github.com/LarsArtmann/gogenfilter"
 )
 
+const testFile = "test.go"
+
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -121,15 +123,15 @@ func TestUnique(t *testing.T) {
 			name: "single duplicate group",
 			input: [][]*syntax.Node{
 				{
-					{Filename: "test.go", Pos: 1, End: 10},
-					{Filename: "test.go", Pos: 11, End: 20},
+					{Filename: testFile, Pos: 1, End: 10},
+					{Filename: testFile, Pos: 11, End: 20},
 				},
 			},
 			expected: 1,
 		},
 		newTableTest("duplicate entries same position", [][]*syntax.Node{
-			buildNodeSlice("test.go", 1, 10),
-			buildNodeSlice("test.go", 1, 10),
+			buildNodeSlice(testFile, 1, 10),
+			buildNodeSlice(testFile, 1, 10),
 		}, 1),
 		newTableTest("different positions", [][]*syntax.Node{
 			buildNodeSlice("test1.go", 1, 10),
@@ -140,7 +142,7 @@ func TestUnique(t *testing.T) {
 			input: [][]*syntax.Node{
 				{},
 				{
-					{Filename: "test.go", Pos: 1, End: 10},
+					{Filename: testFile, Pos: 1, End: 10},
 				},
 			},
 			expected: 1,
@@ -262,7 +264,7 @@ func TestCollectMatches(t *testing.T) {
 		ch := make(chan syntax.Match, 1)
 		ch <- syntax.Match{
 			Hash:  "abc123",
-			Frags: [][]*syntax.Node{{{Filename: "test.go", Pos: 1, End: 10}}},
+			Frags: [][]*syntax.Node{{{Filename: testFile, Pos: 1, End: 10}}},
 		}
 
 		close(ch)
@@ -324,7 +326,7 @@ func TestShouldIncludeFile(t *testing.T) {
 	}{
 		{
 			name:     "nil filter includes all",
-			path:     "test.go",
+			path:     testFile,
 			expected: true,
 		},
 	}
@@ -402,7 +404,7 @@ func TestPassesFileCheck(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := passesFileCheck("test.go", tt.fileCheck)
+			actual := passesFileCheck(testFile, tt.fileCheck)
 			testutil.ExpectTrue(t, actual == tt.want, "passesFileCheck")
 		})
 	}

@@ -5,6 +5,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+var printerMethodChecks = []struct {
+	name string
+	call func(p Printer) error
+}{
+	{"PrintHeader", func(p Printer) error { return p.PrintHeader() }},
+	{"PrintFooter", func(p Printer) error { return p.PrintFooter() }},
+}
+
 // newTestProcessedClone creates a domain.ProcessedClone for testing.
 func newTestProcessedClone(
 	filename string,
@@ -15,16 +23,6 @@ func newTestProcessedClone(
 		Filename:  filename,
 		LineStart: lineStart,
 		LineEnd:   lineEnd,
-		Fragment:  []byte(fragment),
-	}
-}
-
-// processedCloneFixture creates a clone fixture for testing.
-func processedCloneFixture(filename string, start, end int, fragment string) domain.ProcessedClone {
-	return domain.ProcessedClone{
-		Filename:  filename,
-		LineStart: start,
-		LineEnd:   end,
 		Fragment:  []byte(fragment),
 	}
 }

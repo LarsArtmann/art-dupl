@@ -100,14 +100,12 @@ func (p *TextPrinter) PrintFooter() error {
 }
 
 func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
+	return writeCloneLines(p.w, clones, "  %s:%d,%d\n")
+}
+
+func writeCloneLines(w io.Writer, clones []domain.ProcessedClone, format string) error {
 	for _, cl := range clones {
-		if _, err := fmt.Fprintf(
-			p.w,
-			"  %s:%d,%d\n",
-			cl.Filename,
-			cl.LineStart,
-			cl.LineEnd,
-		); err != nil {
+		if _, err := fmt.Fprintf(w, format, cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
 			return err
 		}
 	}
@@ -141,10 +139,6 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 			return totalFragmentSize(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
 				totalFragmentSize(sortedCloneGroups[j])*len(sortedCloneGroups[j])
 		})
-	default:
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalFragmentSize(sortedCloneGroups[i]) > totalFragmentSize(sortedCloneGroups[j])
-		})
 	}
 
 	err := p.PrintHeader()
@@ -166,12 +160,10 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					return err
 				}
 			} else {
-				if _, err := fmt.Fprintf(
+				if err := writeCloneLines(
 					p.w,
+					[]domain.ProcessedClone{cl},
 					"%s:%d,%d\n",
-					cl.Filename,
-					cl.LineStart,
-					cl.LineEnd,
 				); err != nil {
 					return err
 				}

@@ -49,7 +49,7 @@ var _ = Describe("Plumbing Output Format", func() {
 		It("should produce machine-readable output", func() {
 			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
@@ -91,7 +91,7 @@ var _ = Describe("Plumbing Output Format", func() {
 		It("should not include headers or formatting", func() {
 			duplicateCode := duplicateTestCode
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
@@ -142,7 +142,7 @@ func large() {
 		It("should work with sorting options", func() {
 			duplicateCode := duplicateTestCode
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing and sort
@@ -310,7 +310,7 @@ func %s() { println(1) }`, funcName)
 
 			err = setup.CreateFileWithContent(filepath.Join(subDir, goldenFile1), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateFileWithContent(filepath.Join(subDir, "file2.go"), duplicateCode)
+			err = setup.CreateFileWithContent(filepath.Join(subDir, goldenFile2), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl(setup.GetFilePath(runPath), "--threshold", "3")
@@ -332,7 +332,7 @@ func %s() { println(1) }`, funcName)
 			duplicateCode := `package main
 func root() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl(runPath, "--threshold", "3")

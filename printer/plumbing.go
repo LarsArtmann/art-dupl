@@ -29,19 +29,7 @@ func (p *plumbing) PrintClones(
 	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
 	sort.Sort(byNameAndLineProcessed(clones))
 
-	for _, cl := range clones {
-		if _, err := fmt.Fprintf(
-			p.w,
-			"%s:%d-%d\n",
-			cl.Filename,
-			cl.LineStart,
-			cl.LineEnd,
-		); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return writeCloneLines(p.w, clones, "%s:%d-%d\n")
 }
 
 func (p *plumbing) PrintFooter() error { return nil }

@@ -22,6 +22,13 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 	}
 }
 
+func newTestSARIFPrinter(buf *bytes.Buffer, version string) *sarifPrinter {
+	return NewSARIFWithConfig(buf, mockSARIFReadFile, SARIFConfig{
+		Threshold: 15,
+		Version:   version,
+	}).(*sarifPrinter)
+}
+
 func TestNewSARIF(t *testing.T) {
 	var buf bytes.Buffer
 
@@ -196,10 +203,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 	var buf bytes.Buffer
 
-	sarifPrinter := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
-		Threshold: 15,
-		Version:   "1.0.0",
-	}).(*sarifPrinter)
+	sarifPrinter := newTestSARIFPrinter(&buf, "1.0.0")
 
 	// Add test data with a known hash
 	sarifPrinter.SetHash("abc123def456")
@@ -248,11 +252,7 @@ func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 func TestSARIFOutput_VersionFromConfig(t *testing.T) {
 	var buf bytes.Buffer
 
-	// Test that version is properly set from SARIFConfig
-	sarifPrinter := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
-		Threshold: 15,
-		Version:   "2.0.0-test",
-	}).(*sarifPrinter)
+	sarifPrinter := newTestSARIFPrinter(&buf, "2.0.0-test")
 
 	testutil.AssertFieldValue(t, sarifPrinter.version, "2.0.0-test", "version")
 }
@@ -260,10 +260,7 @@ func TestSARIFOutput_VersionFromConfig(t *testing.T) {
 func TestSARIFOutput_Structure(t *testing.T) {
 	var buf bytes.Buffer
 
-	sarifInstance := NewSARIFWithConfig(&buf, mockSARIFReadFile, SARIFConfig{
-		Threshold: 15,
-		Version:   "1.0.0",
-	}).(*sarifPrinter)
+	sarifInstance := newTestSARIFPrinter(&buf, "1.0.0")
 
 	// Add test data
 	sarifInstance.SetHash("test-hash-123")

@@ -55,7 +55,7 @@ func TestDetectionMethods_IsHashOnly(t *testing.T) {
 		methods  DetectionMethods
 		expected bool
 	}{
-		{"empty", DetectionMethods{}, false},
+		{testEmpty, DetectionMethods{}, false},
 		{"hash only", DetectionMethods{DetectionMethodHash}, true},
 		{"art-dupl only", DetectionMethods{DetectionMethodArtDupl}, false},
 		{"both methods", DetectionMethods{DetectionMethodHash, DetectionMethodArtDupl}, false},
@@ -80,7 +80,7 @@ func TestDetectionMethods_IsDefault(t *testing.T) {
 		methods  DetectionMethods
 		expected bool
 	}{
-		{"empty", DetectionMethods{}, false},
+		{testEmpty, DetectionMethods{}, false},
 		{"art-dupl only", DetectionMethods{DetectionMethodArtDupl}, true},
 		{"hash only", DetectionMethods{DetectionMethodHash}, false},
 		{"both", DetectionMethods{DetectionMethodArtDupl, DetectionMethodHash}, false},
@@ -273,7 +273,7 @@ func TestValidateOnly(t *testing.T) {
 		only    FileType
 		wantErr bool
 	}{
-		{"empty", FileTypeAll, false},
+		{testEmpty, FileTypeAll, false},
 		{"go", FileTypeGo, false},
 		{"templ", FileTypeTempl, false},
 		{"invalid", FileType("rust"), true},
@@ -391,7 +391,7 @@ func TestDetectionMethod_MarshalUnmarshal(t *testing.T) {
 func TestDetectionMethod_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	for _, input := range []string{`"not_a_method"`, `"invalid"`} {
+	for _, input := range []string{`"not_a_method"`, `"invalid_value"`} {
 		t.Run(input, func(t *testing.T) {
 			t.Parallel()
 
@@ -418,7 +418,7 @@ func TestParseDetectionMethods(t *testing.T) {
 		want    []DetectionMethod
 		wantErr bool
 	}{
-		{"empty", "", []DetectionMethod{DetectionMethodArtDupl}, false},
+		{testEmpty, "", []DetectionMethod{DetectionMethodArtDupl}, false},
 		{"hash", "hash", []DetectionMethod{DetectionMethodHash}, false},
 		{"art-dupl", "art-dupl", []DetectionMethod{DetectionMethodArtDupl}, false},
 		{
@@ -635,7 +635,7 @@ func TestDiffMode_MarshalUnmarshal(t *testing.T) {
 func TestDiffMode_UnmarshalJSON_InvalidInputs(t *testing.T) {
 	t.Parallel()
 
-	for _, input := range []string{`"bad_mode"`, `"invalid"`} {
+	for _, input := range []string{`"bad_mode"`, testInvalid} {
 		t.Run(input, func(t *testing.T) {
 			t.Parallel()
 
@@ -1028,7 +1028,7 @@ func TestFileType_Matches(t *testing.T) {
 		path    string
 		matches bool
 	}{
-		{FileTypeGo, "foo.go", true},
+		{FileTypeGo, testFooFile, true},
 		{FileTypeGo, "bar.go", true},
 		{FileTypeGo, "foo.templ", false},
 		{FileTypeGo, "foo.go.txt", false},
@@ -1037,7 +1037,7 @@ func TestFileType_Matches(t *testing.T) {
 		{FileTypeAll, "anything.go", true},
 		{FileTypeAll, "anything.templ", true},
 		{FileTypeAll, "anything.anything", true},
-		{FileType("unknown"), "foo.go", true},
+		{FileType("unknown"), testFooFile, true},
 	}
 
 	for _, tc := range tests {
@@ -1060,10 +1060,10 @@ func TestFileTypeMatches(t *testing.T) {
 		path string
 		want bool
 	}{
-		{FileTypeGo, "foo.go", true},
+		{FileTypeGo, testFooFile, true},
 		{FileTypeGo, "bar.templ", false},
 		{FileTypeTempl, "bar.templ", true},
-		{FileTypeTempl, "foo.go", false},
+		{FileTypeTempl, testFooFile, false},
 		{FileTypeAll, "anything.go", true},
 		{FileTypeAll, "", true},
 	}

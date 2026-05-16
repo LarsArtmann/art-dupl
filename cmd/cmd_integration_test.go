@@ -14,6 +14,8 @@ import (
 
 // --- Integration Tests for Command Handlers ---
 
+const flagKeyThreshold = "--threshold"
+
 func writeTestFile(t *testing.T, path, content string, perm os.FileMode) {
 	t.Helper()
 
@@ -64,7 +66,7 @@ func TestRunCmd_Integration(t *testing.T) {
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
-		cmd.SetArgs([]string{"--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -136,7 +138,7 @@ func TestRunCmd_Integration(t *testing.T) {
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
-		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{"--verbose", flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -161,7 +163,7 @@ func TestRunCmd_Integration(t *testing.T) {
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
-		cmd.SetArgs([]string{"--vendor", "--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{"--vendor", flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -181,7 +183,7 @@ func TestRunStats_Integration(t *testing.T) {
 		createDuplicateTestFiles(t, tmpDir)
 
 		cmd := NewStatsCommand()
-		cmd.SetArgs([]string{"--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -230,7 +232,7 @@ func TestRunStats_Integration(t *testing.T) {
 		writeTestFile(t, file1, "package main\nfunc main() {}\n", 0o600)
 
 		cmd := NewStatsCommand()
-		cmd.SetArgs([]string{"--verbose", "--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{"--verbose", flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)
@@ -252,7 +254,7 @@ func TestRunAllModes_Integration(t *testing.T) {
 
 		cmd := NewRootCommand()
 		AddFlags(cmd)
-		cmd.SetArgs([]string{"--all", "--output-dir", outputDir, "--threshold", "10", tmpDir})
+		cmd.SetArgs([]string{"--all", "--output-dir", outputDir, flagKeyThreshold, "10", tmpDir})
 
 		buf := &bytes.Buffer{}
 		cmd.SetOut(buf)

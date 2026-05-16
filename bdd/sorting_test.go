@@ -96,8 +96,8 @@ func processItem(data string, index int) error {
 
 			// Run with default sorting (size)
 			sizeSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": testThreshold15,
-				"sort":      "size",
+				flagKeyThreshold: testThreshold15,
+				"sort":           "size",
 			})
 			// Print debug info on error
 			if err != nil {
@@ -139,8 +139,8 @@ func process(data string) error {
 
 			// Run with size sorting
 			resultOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "10",
-				"sort":      "size",
+				flagKeyThreshold: "10",
+				"sort":           "size",
 			})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(resultOutput)).To(ContainSubstring("size1.go"))
@@ -186,8 +186,8 @@ func lessCommonFunction(id int, name string) error {
 
 			// Run with occurrence sorting
 			occurrenceOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "5",
-				"sort":      "occurrence",
+				flagKeyThreshold: "5",
+				"sort":           "occurrence",
 			})
 			Expect(err).ToNot(HaveOccurred())
 
@@ -233,8 +233,8 @@ func functionB() error {
 
 			// Run with hash sorting
 			hashSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "10",
-				"sort":      "hash",
+				flagKeyThreshold: "10",
+				"sort":           "hash",
 			})
 			Expect(err).ToNot(HaveOccurred())
 
@@ -260,8 +260,8 @@ func hello() {
 
 			// Run with invalid sort option - should default to size
 			sortResult, _ := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "5",
-				"sort":      "invalid",
+				flagKeyThreshold: "5",
+				"sort":           "invalid",
 			})
 
 			// Should handle the error gracefully

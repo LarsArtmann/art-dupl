@@ -48,35 +48,6 @@ func assertGenFileFiltered(
 	return outputStr
 }
 
-// assertFilteredTempl verifies templ files are filtered out by default.
-func assertFilteredTempl(
-	setup *testutil.BDDTestSetup,
-	regularFiles []string,
-	regularCode string,
-	generatedFile string,
-	generatedCode string,
-	threshold string,
-) string {
-	err := setup.CreateDuplicateFiles(regularFiles, regularCode)
-	Expect(err).NotTo(HaveOccurred())
-	err = setup.CreateTestFile(generatedFile, generatedCode)
-	Expect(err).NotTo(HaveOccurred())
-
-	output, err := setup.RunArtDupl("--threshold", threshold)
-
-	Expect(err).ToNot(HaveOccurred())
-
-	outputStr := string(output)
-
-	for _, file := range regularFiles {
-		Expect(outputStr).To(ContainSubstring(file))
-	}
-
-	Expect(outputStr).ToNot(ContainSubstring(generatedFile))
-
-	return outputStr
-}
-
 // assertSQLCFileFiltered tests that a specific SQLC generated file type is filtered out.
 // It uses a standardized code pattern with the provided functionName.
 func assertSQLCFileFiltered(setup *testutil.BDDTestSetup, filename, functionName string) {
@@ -159,7 +130,7 @@ func process() {
 	}
 }`
 
-			assertFilteredTempl(
+			assertGenFileFiltered(
 				setup,
 				[]string{"handler1.go", "handler2.go"},
 				regularCode,

@@ -66,8 +66,10 @@ func TestHandleMarshalingError(t *testing.T) {
 }
 
 func TestSafeMarshal(t *testing.T) {
+	const testValue = "value"
+
 	t.Run("successful marshal", func(t *testing.T) {
-		data := map[string]string{"key": "value"}
+		data := map[string]string{"key": testValue}
 
 		result, err := SafeMarshal(data, "test data")
 		if err != nil {

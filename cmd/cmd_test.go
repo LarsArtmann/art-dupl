@@ -131,7 +131,7 @@ func runOutputFormatTest(t *testing.T, formatFlag string) {
 
 	cmd := NewRootCommand()
 	AddFlags(cmd)
-	cmd.SetArgs([]string{formatFlag, "--threshold", "10", tmpDir})
+	cmd.SetArgs([]string{formatFlag, flagKeyThreshold, "10", tmpDir})
 
 	buf := &bytes.Buffer{}
 	cmd.SetOut(buf)
@@ -152,7 +152,7 @@ func runStatsFormatTest(t *testing.T, format string) {
 	createDuplicateTestFiles(t, tmpDir)
 
 	cmd := NewStatsCommand()
-	cmd.SetArgs([]string{"--format", format, "--threshold", "10", tmpDir})
+	cmd.SetArgs([]string{"--format", format, flagKeyThreshold, "10", tmpDir})
 
 	buf := &bytes.Buffer{}
 	cmd.SetOut(buf)

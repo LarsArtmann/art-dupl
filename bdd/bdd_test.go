@@ -228,7 +228,7 @@ func (v *Validator) lessCommon(id int) error {
 		It("should respect threshold settings to filter noise", func() {
 			// Run with high threshold
 			output, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": testThreshold50,
+				flagKeyThreshold: testThreshold50,
 			})
 			// Print debug information if there's an error
 			if err != nil {
@@ -381,7 +381,7 @@ func unique() {
 				setup.GetFilePath("target1.go"),
 				setup.GetFilePath("target2.go"),
 			)
-			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{"threshold": "10"})
+			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{flagKeyThreshold: "10"})
 
 			// Verify - should find duplicates between target files
 			Expect(err).ToNot(HaveOccurred())

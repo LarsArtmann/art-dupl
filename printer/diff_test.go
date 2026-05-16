@@ -8,21 +8,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
-// newTestClone creates a clone for testing with the given parameters.
-// newTestClone creates a domain.ProcessedClone for testing.
-func newTestDiffClone(
-	filename string,
-	lineStart, lineEnd int,
-	fragment string,
-) domain.ProcessedClone {
-	return domain.ProcessedClone{
-		Filename:  filename,
-		LineStart: lineStart,
-		LineEnd:   lineEnd,
-		Fragment:  []byte(fragment),
-	}
-}
-
 // assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
 func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 	t.Helper()
@@ -238,9 +223,9 @@ func TestLineDiff_RealWorldClone(t *testing.T) {
 
 func TestComputeCloneGroupDiff(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
-		newTestDiffClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
-		newTestDiffClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
+		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestProcessedClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
+		newTestProcessedClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -258,8 +243,8 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 
 func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
-		newTestDiffClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
+		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestProcessedClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)
@@ -274,7 +259,7 @@ func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 
 func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestDiffClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
 	}
 
 	result := ComputeCloneGroupDiff(clones)

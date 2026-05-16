@@ -462,6 +462,8 @@ func TestFileCache_EmptyNodes(t *testing.T) {
 
 // TestFileCache_NestedNodes tests handling of nested node structures.
 func TestFileCache_NestedNodes(t *testing.T) {
+	const parentFile = "parent.go"
+
 	tempDir := t.TempDir()
 	fc := NewFileCache(tempDir)
 	contentHash := Key([]byte("nested test"))
@@ -472,17 +474,17 @@ func TestFileCache_NestedNodes(t *testing.T) {
 			Pos:      0,
 			End:      100,
 			Owns:     50,
-			Filename: "parent.go",
+			Filename: parentFile,
 			Children: []*syntax.Node{
 				{
 					Type:     2,
 					Pos:      10,
 					End:      50,
 					Owns:     20,
-					Filename: "parent.go",
+					Filename: parentFile,
 					Children: []*syntax.Node{
-						{Type: 3, Pos: 15, End: 25, Filename: "parent.go"},
-						{Type: 4, Pos: 30, End: 45, Filename: "parent.go"},
+						{Type: 3, Pos: 15, End: 25, Filename: parentFile},
+						{Type: 4, Pos: 30, End: 45, Filename: parentFile},
 					},
 				},
 			},

@@ -120,10 +120,7 @@ func TestFileDetector_FindDuplOver_BasicDuplicate(t *testing.T) {
 	f2 := filepath.Join(dir, "dup2.go")
 	writeDuplicateFiles(t, f1, f2, content)
 
-	nodes := []*syntax.Node{
-		syntax.NewSyntheticFileNode(f1, len(content)),
-		syntax.NewSyntheticFileNode(f2, len(content)),
-	}
+	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	fd := NewFileDetector(1)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1))
@@ -146,10 +143,7 @@ func TestFileDetector_FindDuplOver_SkipsBelowThreshold(t *testing.T) {
 	f2 := filepath.Join(dir, "small2.go")
 	writeDuplicateFiles(t, f1, f2, content)
 
-	nodes := []*syntax.Node{
-		syntax.NewSyntheticFileNode(f1, len(content)),
-		syntax.NewSyntheticFileNode(f2, len(content)),
-	}
+	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	fd := NewFileDetector(1000)
 	matches := collectMatches(fd.FindDuplOver(nodes, 1000))
@@ -407,10 +401,7 @@ func TestFileDetector_FindDuplOver(t *testing.T) {
 	f2 := filepath.Join(dir, "d2.go")
 	writeDuplicateFiles(t, f1, f2, content)
 
-	nodes := []*syntax.Node{
-		syntax.NewSyntheticFileNode(f1, len(content)),
-		syntax.NewSyntheticFileNode(f2, len(content)),
-	}
+	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	hd := NewFileDetector(1)
 	matches := collectMatches(hd.FindDuplOver(nodes, 1))
@@ -442,4 +433,11 @@ func writeDuplicateFiles(t *testing.T, f1, f2 string, content []byte) {
 	t.Helper()
 	writeTestFile(t, f1, content)
 	writeTestFile(t, f2, content)
+}
+
+func newSyntheticNodePair(f1, f2 string, contentLen int) []*syntax.Node {
+	return []*syntax.Node{
+		syntax.NewSyntheticFileNode(f1, contentLen),
+		syntax.NewSyntheticFileNode(f2, contentLen),
+	}
 }

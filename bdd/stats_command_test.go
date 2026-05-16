@@ -227,7 +227,7 @@ func duplicate() {
 	}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, regularCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, regularCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON format
@@ -298,7 +298,7 @@ func processData() {
 	fmt.Println("line5")
 }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
@@ -319,7 +319,7 @@ func processData() {
 		It("should calculate health score correctly", func() {
 			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "duplicate")
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
@@ -342,7 +342,7 @@ func a() { println(1) }`
 func a() { println(1) }
 func b() { println(2) }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, code1)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, code1)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateDuplicateFiles([]string{"file3.go", "file4.go"}, code2)
 			Expect(err).NotTo(HaveOccurred())
@@ -406,7 +406,7 @@ func unique2() { println("unique2") }`
 
 			err := setup.CreateTestFile(goldenFile1, uniqueCode1)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateTestFile("file2.go", uniqueCode2)
+			err = setup.CreateTestFile(goldenFile2, uniqueCode2)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
@@ -493,7 +493,7 @@ func main() {}`
 			duplicateCode := `package main
 func small() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with very high threshold (pass tmpDir explicitly)

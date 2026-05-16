@@ -6,12 +6,10 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
-	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter"
 	"github.com/spf13/cobra"
 )
@@ -62,7 +60,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterSta
 
 // runStats implements the stats command.
 //
-//nolint:funlen // Stats command requires handling many CLI flags and configuration options
+
 func runStats(c *cobra.Command, arguments []string) error {
 	ctx := c.Context()
 	formatStr, _ := c.Flags().GetString("format")
@@ -122,46 +120,18 @@ func runStats(c *cobra.Command, arguments []string) error {
 		applyFilterStats(sp, filterStats)
 	}
 
-	// Build groups from matches
+	// Build groups from matches and print
 	groups := printer.BuildCloneGroups(duplChan)
+	keys := getSortedKeys(groups, config.SortByHash)
 
-	// Print stats
-	keys := make([]string, 0, len(groups))
-	for k := range groups {
-		keys = append(keys, k)
-	}
-
-	// Sort keys for deterministic output
-	// Using SortByHash for consistent ordering across runs
-	printer.SortCloneGroupKeys(keys, config.SortByHash, groups, nil)
-
-	err = p.PrintHeader()
+	err = printHeader(p, config.SortByHash, mergedConfig.Threshold)
 	if err != nil {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats header")
 	}
 
-	for _, k := range keys {
-		uniq := syntax.Unique(groups[k])
-		if len(uniq) > 1 {
-			clones, convErr := printer.ProcessClones(os.ReadFile, uniq)
-			if convErr != nil {
-				return duplerrors.Wrap(convErr, duplerrors.AnalysisError,
-					"failed to process clones for hash "+k)
-			}
-
-			err := p.PrintClones(domain.ProcessedCloneGroup{
-				Hash:   k,
-				Size:   totalSize(clones),
-				Clones: clones,
-			}, config.SortByHash)
-			if err != nil {
-				return duplerrors.Wrap(
-					err,
-					duplerrors.AnalysisError,
-					"failed to process clones for hash "+k,
-				)
-			}
-		}
+	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash)
+	if err != nil {
+		return err
 	}
 
 	footerErr := p.PrintFooter()

@@ -69,15 +69,7 @@ func TestNewText(t *testing.T) {
 func TestTextPrinter_PrintHeaderAndFooter(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name string
-		call func(p Printer) error
-	}{
-		{"PrintHeader", func(p Printer) error { return p.PrintHeader() }},
-		{"PrintFooter", func(p Printer) error { return p.PrintFooter() }},
-	}
-
-	for _, tc := range tests {
+	for _, tc := range printerMethodChecks {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 

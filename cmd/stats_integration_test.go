@@ -37,6 +37,11 @@ func containsAnySubstring(output string, substrings ...string) func() bool {
 	}
 }
 
+const (
+	statsSubCommand = "stats"
+	statsHeaderText = "Code Duplication Statistics"
+)
+
 // createTestCommand creates a Command for testing with the given arguments.
 // It finds the repo root for relative path resolution.
 func createTestCommand(t *testing.T, args []string) *Command {
@@ -71,9 +76,9 @@ func TestStatsCommandIntegration(t *testing.T) {
 	}{
 		{
 			name: "stats on current directory",
-			args: []string{binaryPath, "stats", "."},
+			args: []string{binaryPath, statsSubCommand, "."},
 			expectedInOutput: []string{
-				"Code Duplication Statistics",
+				statsHeaderText,
 				"Files Scanned:",
 				"Clone Groups:",
 				"Total Clones:",
@@ -86,9 +91,9 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats on printer directory",
-			args: []string{binaryPath, "stats", "./printer"},
+			args: []string{binaryPath, statsSubCommand, "./printer"},
 			expectedInOutput: []string{
-				"Code Duplication Statistics",
+				statsHeaderText,
 				"Files Scanned:",
 				"Top Files by Duplicate Lines:",
 			},
@@ -96,25 +101,25 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats with threshold flag",
-			args: []string{binaryPath, "stats", "-t", "20", "."},
+			args: []string{binaryPath, statsSubCommand, "-t", "20", "."},
 			expectedInOutput: []string{
 				"Threshold: 20 tokens",
-				"Code Duplication Statistics",
+				statsHeaderText,
 			},
 			wantErr: false,
 		},
 		{
 			name: "stats with multiple paths",
-			args: []string{binaryPath, "stats", "./cmd", "./printer"},
+			args: []string{binaryPath, statsSubCommand, "./cmd", "./printer"},
 			expectedInOutput: []string{
-				"Code Duplication Statistics",
+				statsHeaderText,
 				"Files Scanned:",
 			},
 			wantErr: false,
 		},
 		{
 			name: "stats help",
-			args: []string{binaryPath, "stats", "--help"},
+			args: []string{binaryPath, statsSubCommand, "--help"},
 			expectedInOutput: []string{
 				"Prints comprehensive duplication statistics",
 				"art-dupl stats",
@@ -162,12 +167,12 @@ func TestStatsCommandErrorCases(t *testing.T) {
 	}{
 		{
 			name:    "stats with non-existent path",
-			args:    []string{binaryPath, "stats", "/non/existent/path"},
+			args:    []string{binaryPath, statsSubCommand, "/non/existent/path"},
 			wantErr: true,
 		},
 		{
 			name:    "stats with invalid threshold",
-			args:    []string{binaryPath, "stats", "-t", "-5", "."},
+			args:    []string{binaryPath, statsSubCommand, "-t", "-5", "."},
 			wantErr: true,
 		},
 	}
@@ -197,7 +202,7 @@ func TestStatsOutputFormat(t *testing.T) {
 	// Test that stats output has structured format
 	cmd := &Command{
 		Path: binaryPath,
-		Args: []string{binaryPath, "stats", "./printer"},
+		Args: []string{binaryPath, statsSubCommand, "./printer"},
 		Dir:  repoRoot,
 	}
 
@@ -217,7 +222,7 @@ func TestStatsOutputFormat(t *testing.T) {
 			name: "has header section",
 			check: hasAllStrings(
 				outputStr,
-				"Code Duplication Statistics",
+				statsHeaderText,
 				"============================",
 			),
 		},

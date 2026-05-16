@@ -14,19 +14,11 @@ func SortProcessedClonesByCriteria(clones []domain.ProcessedClone, sortBy config
 		sort.Slice(clones, func(i, j int) bool {
 			return clones[i].Size > clones[j].Size
 		})
-	case config.SortByOccurrence:
-		sort.Slice(clones, func(i, j int) bool {
-			return clones[i].Filename < clones[j].Filename
-		})
-	case config.SortByHash:
+	case config.SortByOccurrence, config.SortByHash:
 		sort.Slice(clones, func(i, j int) bool {
 			return clones[i].Filename < clones[j].Filename
 		})
 	case config.SortByTotalTokens:
-		sort.Slice(clones, func(i, j int) bool {
-			return clones[i].Size > clones[j].Size
-		})
-	default:
 		sort.Slice(clones, func(i, j int) bool {
 			return clones[i].Size > clones[j].Size
 		})

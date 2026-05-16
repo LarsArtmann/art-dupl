@@ -222,7 +222,12 @@ func combinedPlumb() string {
 		}
 		for _, tt := range tests {
 			It(fmt.Sprintf("should work with %s detection method", tt.name), func() {
-				output, err := runPlumbingTestWithDetection(tt.files, tt.code, testThreshold10, tt.method)
+				output, err := runPlumbingTestWithDetection(
+					tt.files,
+					tt.code,
+					testThreshold10,
+					tt.method,
+				)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(output).ToNot(BeNil())
 			})
@@ -433,8 +438,8 @@ func stdinPlumb() {}`
 
 			// Run with --files and plumbing
 			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{
-				"threshold": "5",
-				"plumbing":  "",
+				flagKeyThreshold: "5",
+				"plumbing":       "",
 			})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
