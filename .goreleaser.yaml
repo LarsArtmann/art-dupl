@@ -151,7 +151,7 @@ docker_manifests:
 nfpms:
   - id: default
     package_name: art-dupl
-    file_name_template: "{"{"} .ConventionalFileName {"}"}"
+    file_name_template: "{{ .ConventionalFileName }}
     homepage: https://github.com/LarsArtmann/art-dupl
     description: "Fast, type-safe code duplication detector for Go projects"
     license: MIT
