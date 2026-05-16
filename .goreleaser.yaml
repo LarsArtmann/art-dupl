@@ -147,6 +147,27 @@ docker_manifests:
       - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
       - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
 
+
+nfpms:
+  - id: default
+    package_name: art-dupl
+    file_name_template: "{"{"} .ConventionalFileName {"}"}"
+    homepage: https://github.com/LarsArtmann/art-dupl
+    description: "Fast, type-safe code duplication detector for Go projects"
+    license: MIT
+    maintainer: "Lars Artmann <lars@larsartmann.com>"
+    formats:
+      - deb
+      - rpm
+      - apk
+    contents:
+      - src: LICENSE
+        dst: /usr/share/doc/art-dupl/LICENSE
+      - src: README.md
+        dst: /usr/share/doc/art-dupl/README.md
+    deb:
+      fields:
+        Bugs: https://github.com/LarsArtmann/art-dupl/issues
 nix:
   - name: art-dupl
     repository:
@@ -155,10 +176,25 @@ nix:
     homepage: https://github.com/LarsArtmann/art-dupl
     description: "Fast, type-safe code duplication detector for Go projects"
     license: mit
+    formatter: nixfmt
     path: pkgs/art-dupl/default.nix
     install: |
       mkdir -p $out/bin
       cp -vr ./{binary} $out/bin/art-dupl
+
+
+scoops:
+  - name: art-dupl
+    repository:
+      owner: LarsArtmann
+      name: homebrew-tap
+    folder: Scoop
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@larsartmann.com
+    homepage: "https://github.com/LarsArtmann/art-dupl"
+    description: "Fast, type-safe code duplication detector for Go projects"
+    license: MIT
 
 release:
   github:
