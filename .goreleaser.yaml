@@ -1,0 +1,190 @@
+# GoReleaser configuration
+# Documentation: https://goreleaser.com
+
+version: 2
+
+project_name: art-dupl
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: art-dupl
+    main: ./cmd/art-dupl
+    binary: art-dupl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: windows
+        goarch: arm64
+    tags:
+      - netgo
+      - osusergo
+    ldflags:
+      - -s -w
+      - -X github.com/LarsArtmann/art-dupl/cmd.Version={{.Version}}
+      - -X github.com/LarsArtmann/art-dupl/cmd.Commit={{.Commit}}
+      - -X github.com/LarsArtmann/art-dupl/cmd.Date={{.Date}}
+
+archives:
+  - id: default
+    name_template: >-
+      {{ .ProjectName }}_
+      {{ .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+        {{- else if eq .Arch "386" }}i386
+        {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+signs:
+  - cmd: cosign
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--oidc-issuer=https://token.actions.githubusercontent.com"
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+    artifacts: all
+    output: true
+
+sboms:
+  - artifacts: archive
+
+brews:
+  - name: art-dupl
+    homepage: https://github.com/LarsArtmann/art-dupl
+    description: "Fast, type-safe code duplication detector for Go projects"
+    license: MIT
+    repository:
+      owner: LarsArtmann
+      name: homebrew-tap
+    folder: Formula
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@larsartmann.com
+    install: |
+      bin.install "art-dupl"
+    test: |
+      system "#{bin}/art-dupl --version"
+
+dockers:
+  - image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
+    dockerfile: Dockerfile
+    goarch: amd64
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
+    dockerfile: Dockerfile
+    goarch: arm64
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
+
+docker_manifests:
+  - name_template: "ghcr.io/larsartmann/art-dupl:{{ .Tag }}"
+    image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
+  - name_template: "ghcr.io/larsartmann/art-dupl:v{{ .Major }}"
+    image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
+  - name_template: "ghcr.io/larsartmann/art-dupl:v{{ .Major }}.{{ .Minor }}"
+    image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
+  - name_template: "ghcr.io/larsartmann/art-dupl:latest"
+    image_templates:
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
+      - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
+
+nix:
+  - name: art-dupl
+    repository:
+      owner: LarsArtmann
+      name: nur-packages
+    homepage: https://github.com/LarsArtmann/art-dupl
+    description: "Fast, type-safe code duplication detector for Go projects"
+    license: mit
+    path: pkgs/art-dupl/default.nix
+    install: |
+      mkdir -p $out/bin
+      cp -vr ./{binary} $out/bin/art-dupl
+
+release:
+  github:
+    owner: LarsArtmann
+    name: art-dupl
+  draft: false
+  prerelease: auto
+  name_template: "art-dupl v{{.Version}}"
+  footer: |
+    ## Installation
+
+    **Homebrew:**
+    ```bash
+    brew tap LarsArtmann/tap
+    brew install art-dupl
+    ```
+
+    **Nix:**
+    ```bash
+    nix run github:LarsArtmann/nur-packages#art-dupl
+    nix run github:LarsArtmann/art-dupl
+    ```
+
+    **Docker:**
+    ```bash
+    docker pull ghcr.io/larsartmann/art-dupl:{{.Version}}
+    ```
+
+    Download the appropriate binary for your platform from the assets below.
