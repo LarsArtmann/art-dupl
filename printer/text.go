@@ -120,12 +120,18 @@ func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
 }
 
 func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {
+	actionabilityBadge := ""
+	if cls.Actionability == domain.NonActionable {
+		actionabilityBadge = " [non-actionable]"
+	}
+
 	if _, err := fmt.Fprintf(
 		p.w,
-		"found %d clones: [%s] %s (%d tokens, %d lines) suggestion: %s\n",
+		"found %d clones: [%s] %s%s (%d tokens, %d lines) suggestion: %s\n",
 		count,
 		cls.Priority,
 		cls.Category,
+		actionabilityBadge,
 		cls.Tokens,
 		cls.Lines,
 		cls.Suggestion,
