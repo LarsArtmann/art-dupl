@@ -91,3 +91,16 @@ func CreateNodeSlice(values []struct {
 
 	return nodes
 }
+
+// CreateSingleNode creates a slice containing a single node with type=0.
+func CreateSingleNode(filename string, pos, end int32) []*syntax.Node {
+	return []*syntax.Node{CreateNodeWithPos(0, filename, pos, end)}
+}
+
+// CreateNodePair creates a slice with two nodes at different positions.
+func CreateNodePair(filename string, pos1, end1, pos2, end2 int32) []*syntax.Node {
+	return []*syntax.Node{
+		CreateNodeWithPos(1, filename, pos1, end1),
+		CreateNodeWithPos(2, filename, pos2, end2),
+	}
+}

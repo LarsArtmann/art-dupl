@@ -81,10 +81,15 @@ func createTestCloneGroups() [][]*syntax.Node {
 
 // makeDupNodePair creates a pair of duplicate nodes at the same position.
 func makeDupNodePair(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{
-		testutil.CreateNodeWithPos(0, filename, pos, end),
-		testutil.CreateNodeWithPos(0, filename, pos, end),
-	}
+	return testutil.CreateNodeSlice([]struct {
+		Type     int32
+		Filename string
+		Pos      int32
+		End      int32
+	}{
+		{Type: 0, Filename: filename, Pos: pos, End: end},
+		{Type: 0, Filename: filename, Pos: pos, End: end},
+	})
 }
 
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.

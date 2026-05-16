@@ -18,11 +18,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// buildNodeSlice creates a test node slice with the specified filename and position.
-func buildNodeSlice(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{testutil.CreateNodeWithPos(0, filename, pos, end)}
-}
-
 // saveVersionGlobals saves and auto-restores Version, Commit, Date via t.Cleanup.
 func saveVersionGlobals(t *testing.T) {
 	t.Helper()
@@ -57,7 +52,7 @@ func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 
 	frags := make([][]*syntax.Node, len(files))
 	for i, file := range files {
-		frags[i] = buildNodeSlice(file, 1, 10)
+		frags[i] = testutil.CreateSingleNode(file, 1, 10)
 	}
 
 	ch <- syntax.Match{

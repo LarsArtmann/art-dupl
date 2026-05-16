@@ -130,8 +130,8 @@ func TestPlumbing_PrintClones_MultipleGroups(t *testing.T) {
 
 	p := NewPlumbing(&buf, mockReadFile(content))
 
-	group1 := makeASTNodes("a.go", 0, 20)
-	group2 := makeASTNodes("b.go", 25, 50)
+	group1 := testutil.CreateSingleNode("a.go", 0, 20)
+	group2 := testutil.CreateSingleNode("b.go", 25, 50)
 	dups := [][]*syntax.Node{group1, group2}
 
 	err := p.PrintClones(processTestNodes(mockReadFile(content), "test", dups))
@@ -175,8 +175,4 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 		"# Plumbing output sorted by",
 		"OutputPlumbing() output missing header",
 	)
-}
-
-func makeASTNodes(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{testutil.CreateNodeWithPos(0, filename, pos, end)}
 }

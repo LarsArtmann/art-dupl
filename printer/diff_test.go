@@ -8,6 +8,11 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+// Shared test fixtures for CloneGroupDiff tests.
+var (
+	testCloneFooBar = newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}")
+)
+
 // assertLineNumbersMonotonic verifies that line numbers increment correctly from 1.
 func assertLineNumbersMonotonic(t *testing.T, lines []DiffLine, label string) {
 	t.Helper()
@@ -224,7 +229,7 @@ func TestLineDiff_RealWorldClone(t *testing.T) {
 
 func TestComputeCloneGroupDiff(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		testCloneFooBar,
 		newTestProcessedClone("file2.go", 30, 40, "func baz() {}\nfunc qux() {}"),
 		newTestProcessedClone("file3.go", 50, 60, "func foo() {}\nfunc bar() {}"),
 	}
@@ -244,7 +249,7 @@ func TestComputeCloneGroupDiff(t *testing.T) {
 
 func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		testCloneFooBar,
 		newTestProcessedClone("file2.go", 30, 40, "func foo() {}\nfunc bar() {}"),
 	}
 
@@ -260,7 +265,7 @@ func TestComputeCloneGroupDiff_IdenticalClones(t *testing.T) {
 
 func TestComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	clones := []domain.ProcessedClone{
-		newTestProcessedClone("file1.go", 10, 20, "func foo() {}\nfunc bar() {}"),
+		testCloneFooBar,
 	}
 
 	result := ComputeCloneGroupDiff(clones)

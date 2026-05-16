@@ -126,12 +126,12 @@ func TestUnique(t *testing.T) {
 			expected: 1,
 		},
 		newTableTest("duplicate entries same position", [][]*syntax.Node{
-			buildNodeSlice(testFile, 1, 10),
-			buildNodeSlice(testFile, 1, 10),
+			testutil.CreateSingleNode(testFile, 1, 10),
+			testutil.CreateSingleNode(testFile, 1, 10),
 		}, 1),
 		newTableTest("different positions", [][]*syntax.Node{
-			buildNodeSlice("test1.go", 1, 10),
-			buildNodeSlice("test2.go", 1, 10),
+			testutil.CreateSingleNode("test1.go", 1, 10),
+			testutil.CreateSingleNode("test2.go", 1, 10),
 		}, 2),
 		{
 			name: "empty inner slice",

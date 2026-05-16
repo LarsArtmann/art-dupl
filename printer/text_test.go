@@ -123,7 +123,7 @@ func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 	tp.SetHash("abcdef123456")
 	tp.SetFileDuplicate(true)
 
-	node := &syntax.Node{Filename: testFilename, Pos: 0, End: 5}
+	node := testutil.CreateNodeWithPos(0, testFilename, 0, 5)
 	group := processTestNodes(mockReadFile(content), "test", [][]*syntax.Node{{node}})
 
 	err := p.PrintClones(group)
@@ -252,8 +252,8 @@ func TestProcessClones(t *testing.T) {
 
 	fread := mockReadFile(content)
 
-	node1 := &syntax.Node{Filename: testFilename, Pos: 15, End: 40}
-	node2 := &syntax.Node{Filename: testFilename, Pos: 40, End: 50}
+	node1 := testutil.CreateNodeWithPos(0, testFilename, 15, 40)
+	node2 := testutil.CreateNodeWithPos(0, testFilename, 40, 50)
 	dups := [][]*syntax.Node{{node1, node2}}
 
 	clones, err := ProcessClones(fread, dups)
@@ -292,7 +292,7 @@ func TestProcessClones_ReadError(t *testing.T) {
 
 	fread := errorReadFile("read error")
 
-	testNode := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+	testNode := testutil.CreateNodeWithPos(0, "missing.go", 0, 10)
 	dups := [][]*syntax.Node{{testNode}}
 
 	_, err := ProcessClones(fread, dups)
@@ -347,7 +347,7 @@ func TestTextPrinter_OutputText(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 	tp := p.(*TextPrinter)
 
-	testNode := &syntax.Node{Filename: testFilename, Pos: 15, End: 40}
+	testNode := testutil.CreateNodeWithPos(0, testFilename, 15, 40)
 	dups := [][]*syntax.Node{{testNode}}
 
 	clones, err := ProcessClones(tp.ReadFile, dups)
@@ -401,7 +401,7 @@ func TestTextPrinter_OutputText_SortByOccurrence(t *testing.T) {
 	tp := p.(*TextPrinter)
 
 	clones := []domain.ProcessedClone{
-		{Filename: "a.go", LineStart: 1, LineEnd: 3, Fragment: []byte("code")},
+		newTestProcessedClone("a.go", 1, 3, "code"),
 		{Filename: "b.go", LineStart: 1, LineEnd: 3, Fragment: []byte("code")},
 	}
 	tp.cloneGroups = [][]domain.ProcessedClone{clones}
@@ -455,7 +455,7 @@ func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 	p := NewText(&buf, mockReadFile(content))
 	tp := p.(*TextPrinter)
 
-	testNode := &syntax.Node{Filename: testFilename, Pos: 15, End: 40}
+	testNode := testutil.CreateNodeWithPos(0, testFilename, 15, 40)
 	dups := [][]*syntax.Node{{testNode}}
 
 	clones, err := ProcessClones(tp.ReadFile, dups)
@@ -479,7 +479,7 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 
 	fread := errorReadFile("simulated read error")
 
-	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+	node := testutil.CreateNodeWithPos(0, "missing.go", 0, 10)
 
 	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{{node}})
 	if err == nil {

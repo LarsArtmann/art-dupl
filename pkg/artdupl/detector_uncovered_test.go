@@ -23,10 +23,15 @@ func testNodes() []*syntax.Node {
 
 // makeNodePair creates a pair of test nodes with sequential positions.
 func makeNodePair(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{
+	return testutil.CreateNodeSlice([]struct {
+		Type     int32
+		Filename string
+		Pos      int32
+		End      int32
+	}{
 		{Type: 1, Filename: filename, Pos: pos, End: end},
 		{Type: 2, Filename: filename, Pos: pos + 1, End: end + 1},
-	}
+	})
 }
 
 // captureProgress returns a progress callback that stores the received Progress.
@@ -40,9 +45,14 @@ func captureProgress(received **Progress) func(*Progress) error {
 
 // makeFrag creates a fragment with the given filename and positions.
 func makeFrag(filename string, pos, end int32) []*syntax.Node {
-	return []*syntax.Node{
+	return testutil.CreateNodeSlice([]struct {
+		Type     int32
+		Filename string
+		Pos      int32
+		End      int32
+	}{
 		{Type: 1, Filename: filename, Pos: pos, End: end},
-	}
+	})
 }
 
 // buildTreeFromFrag creates a suffix tree populated from the given fragment nodes.
