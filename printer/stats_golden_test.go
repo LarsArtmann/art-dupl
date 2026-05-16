@@ -61,7 +61,9 @@ func TestStatsJSONOutputGolden(t *testing.T) {
 		makeTestNodePair("file2.go", pos(10, 12, 1), pos(11, 13, 2)),
 	}
 
-	err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups))
+	err := statsPrinter.PrintClones(
+		processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups),
+	)
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -84,7 +86,13 @@ func TestStatsCSVOutputGolden(t *testing.T) {
 	statsPrinter.SetDetectionMethods("art-dupl")
 	statsPrinter.format = config.OutputFormatCSV
 
-	err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", createTestCloneGroups()))
+	err := statsPrinter.PrintClones(
+		processTestNodes(
+			mockReadFile(string(mockReadFileContent())),
+			"test",
+			createTestCloneGroups(),
+		),
+	)
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
