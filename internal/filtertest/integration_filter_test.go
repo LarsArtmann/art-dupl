@@ -88,13 +88,13 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test that filter correctly identifies files
-		filterCfg_13, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
+		baseConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
 
 		filter, err := gogenfilter.NewFilter(
-			filterCfg_13,
+			baseConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
 		if err != nil {
@@ -137,13 +137,13 @@ func Header() templ.Component { return nil }
 		}
 
 		// Create filter with sqlc included (not filtered)
-		filterCfg_118, err := gogenfilter.WithFilterOptions(gogenfilter.FilterTempl)
+		templConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterTempl)
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
 
 		filter, err := gogenfilter.NewFilter(
-			filterCfg_118,
+			templConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
 		if err != nil {
@@ -182,13 +182,13 @@ func Helper() {}
 			t.Fatalf("CreateTestFiles failed: %v", err)
 		}
 
-		filterCfg_164, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
+		allConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterAll)
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
 
 		filter, err := gogenfilter.NewFilter(
-			filterCfg_164,
+			allConfig,
 			gogenfilter.WithIncludePatterns("**/vendor/*"),
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
@@ -287,13 +287,13 @@ func Authenticate(username, password string) bool {
 		}
 
 		// Test filtering from subdirectory perspective
-		filterCfg_204, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
+		sqlcConfig, err := gogenfilter.WithFilterOptions(gogenfilter.FilterSQLC)
 		if err != nil {
 			t.Fatalf("WithFilterOptions() error: %v", err)
 		}
 
 		filter, err := gogenfilter.NewFilter(
-			filterCfg_204,
+			sqlcConfig,
 			gogenfilter.WithFS(os.DirFS("/")),
 		)
 		if err != nil {

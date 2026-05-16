@@ -129,7 +129,7 @@ func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]
 
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("failed to run stats command: %w\nOutput: %s", err, string(output))
+		return nil, fmt.Errorf("stats execution failed: %w\nOutput: %s", err, string(output))
 	}
 
 	var result map[string]any

@@ -305,11 +305,11 @@ func TestErrors_AllErrors(t *testing.T) {
 	}
 }
 
-// TestProgressCallback tests progress callback functionality.
+// TestProgressCallback tests progress progressHandler functionality.
 func TestProgressCallback(t *testing.T) {
 	var receivedProgress *Progress
 
-	callback := func(p *Progress) error {
+	progressHandler := func(p *Progress) error {
 		receivedProgress = p
 
 		return nil
@@ -318,7 +318,7 @@ func TestProgressCallback(t *testing.T) {
 	opts := &Options{
 		Threshold:        15,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
-		ProgressCallback: callback,
+		ProgressCallback: progressHandler,
 		MaxWorkers:       4,
 		Timeout:          time.Minute,
 	}
@@ -336,7 +336,7 @@ func TestProgressCallback(t *testing.T) {
 		Message:    "Testing",
 	}
 
-	err = callback(testProgress)
+	err = progressHandler(testProgress)
 	if err != nil {
 		t.Errorf("Callback should not error, got: %v", err)
 	}

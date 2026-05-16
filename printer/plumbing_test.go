@@ -146,8 +146,8 @@ func TestPlumbing_PrintClones_MultipleGroups(t *testing.T) {
 
 	p := NewPlumbing(&buf, mockReadFile(content))
 
-	group1 := testNodesAt("a.go", 0, 20)
-	group2 := testNodesAt("b.go", 25, 50)
+	group1 := makeASTNodes("a.go", 0, 20)
+	group2 := makeASTNodes("b.go", 25, 50)
 	dups := [][]*syntax.Node{group1, group2}
 
 	err := p.PrintClones(dups)
@@ -193,7 +193,7 @@ func TestPlumbing_OutputPlumbing(t *testing.T) {
 	)
 }
 
-func testNodesAt(filename string, pos, end int32) []*syntax.Node {
+func makeASTNodes(filename string, pos, end int32) []*syntax.Node {
 	return []*syntax.Node{
 		{Filename: filename, Pos: pos, End: end},
 	}

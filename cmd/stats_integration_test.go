@@ -24,8 +24,8 @@ func hasAllStrings(output string, substrings ...string) func() bool {
 	}
 }
 
-// hasAnyStrings returns a function that checks if any substring exists in given output.
-func hasAnyStrings(output string, substrings ...string) func() bool {
+// containsAnySubstring returns a function that checks if any substring exists in given output.
+func containsAnySubstring(output string, substrings ...string) func() bool {
 	return func() bool {
 		for _, substring := range substrings {
 			if strings.Contains(output, substring) {
@@ -235,7 +235,7 @@ func TestStatsOutputFormat(t *testing.T) {
 		},
 		{
 			name: "has size distribution section",
-			check: hasAnyStrings(
+			check: containsAnySubstring(
 				outputStr,
 				"Clone Size Distribution:",
 				"Top Files by Duplicate Lines:",

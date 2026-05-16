@@ -277,10 +277,10 @@ func TestHTMLPrintClones_MultipleGroups(t *testing.T) {
 	mustPrintHeader(t, p)
 
 	nodes1 := nodesForHTML(testFilename)
-	nodes2 := nodesForHTML(testFilename)
+	secondNodes := nodesForHTML(testFilename)
 
 	mustPrintClones(t, p, [][]*syntax.Node{nodes1})
-	mustPrintClones(t, p, [][]*syntax.Node{nodes2})
+	mustPrintClones(t, p, [][]*syntax.Node{secondNodes})
 
 	output := buf.String()
 	testutil.AssertStringContains(t, output, "Clone Group #1", "Expected 'Clone Group #1'")
@@ -300,12 +300,12 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 		{Type: golang.FuncDecl, Filename: "a.go", Pos: 14, End: 44},
 		{Type: golang.ExprStmt, Filename: "a.go", Pos: 15, End: 35},
 	}
-	nodes2 := []*syntax.Node{
+	secondNodes := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "b.go", Pos: 14, End: 44},
 		{Type: golang.ExprStmt, Filename: "b.go", Pos: 15, End: 35},
 	}
 
-	err := p.PrintClones([][]*syntax.Node{sourceNodes, nodes2})
+	err := p.PrintClones([][]*syntax.Node{sourceNodes, secondNodes})
 	if err != nil {
 		t.Fatalf("PrintClones with diff mode failed: %v", err)
 	}
@@ -403,13 +403,13 @@ func TestHTMLOutputHTML(t *testing.T) {
 	hp := p.(*htmlprinter)
 
 	fragSlice := nodesForHTML(testFilename)
-	nodes2 := []*syntax.Node{
+	secondNodes := []*syntax.Node{
 		{Type: golang.FuncDecl, Filename: "other.go", Pos: 39, End: 68},
 		{Type: golang.ExprStmt, Filename: "other.go", Pos: 40, End: 60},
 	}
 
 	hp.dupls = [][][]*syntax.Node{
-		{fragSlice, nodes2},
+		{fragSlice, secondNodes},
 	}
 
 	err := hp.OutputHTML(15, config.SortBySize)

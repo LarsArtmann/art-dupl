@@ -257,13 +257,13 @@ func test() {}
 
 	Context("When using hash-based detection with node_modules", func() {
 		var (
-			nodeModulesDir  string
+			nmDir  string
 			generatedCode string
 		)
 
 		BeforeEach(func() {
-			nodeModulesDir = filepath.Join(setup.TmpDir, "node_modules", "somepackage")
-			err := os.MkdirAll(nodeModulesDir, 0o755)
+			nmDir = filepath.Join(setup.TmpDir, "node_modules", "somepackage")
+			err := os.MkdirAll(nmDir, 0o755)
 			Expect(err).NotTo(HaveOccurred())
 
 			generatedCode = `package somepackage
@@ -277,13 +277,13 @@ func NodeModulesFunc() {
 }`
 
 			err = os.WriteFile(
-				filepath.Join(nodeModulesDir, "file1.go"),
+				filepath.Join(nmDir, "file1.go"),
 				[]byte(generatedCode),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			err = os.WriteFile(
-				filepath.Join(nodeModulesDir, "file2.go"),
+				filepath.Join(nmDir, "file2.go"),
 				[]byte(generatedCode),
 				0o644,
 			)
