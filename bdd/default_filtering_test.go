@@ -389,7 +389,7 @@ func assertTemplFilteredWithFormat(
 	setup *testutil.BDDTestSetup,
 	outputFormatFlag string,
 ) {
-	err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, testRegularCode)
+	err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, testRegularCode)
 	Expect(err).NotTo(HaveOccurred())
 	err = setup.CreateTestFile("page_templ.go", testTemplCode)
 	Expect(err).NotTo(HaveOccurred())

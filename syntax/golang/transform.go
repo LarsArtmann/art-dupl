@@ -9,7 +9,7 @@ import (
 
 // trans transforms given golang AST to uniform tree structure.
 //
-//nolint:funlen,maintidx,nonamedreturns // High complexity is inherent to AST transformation
+//nolint:funlen,maintidx,nonamedreturns,gocognit // High complexity is inherent to AST transformation
 func (t *transformer) trans(
 	node ast.Node,
 ) (o *syntax.Node) {

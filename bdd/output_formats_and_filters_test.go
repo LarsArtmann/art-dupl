@@ -157,7 +157,7 @@ func processSmall(data string) error {
 	return nil
 }`
 
-		err := setup.CreateDuplicateFiles([]string{"large1.go", largeFile2}, largeClone)
+		err := setup.CreateDuplicateFiles([]string{goldenLargeFile1, largeFile2}, largeClone)
 		Expect(err).NotTo(HaveOccurred())
 		err = setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, smallClone)
 		Expect(err).NotTo(HaveOccurred())
@@ -182,7 +182,7 @@ var _ = Describe("File Type Filter (--only)", func() {
 	It("should restrict analysis to Go files only with --only go", func() {
 		setup := CreateBDDTestSetup()
 
-		err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, simpleGoCode)
+		err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, simpleGoCode)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--only", "go", "--threshold", "10")
@@ -207,7 +207,7 @@ templ page(name string) {
 		err := setup.CreateDuplicateFiles([]string{"page1.templ", "page2.templ"}, templCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		err = setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, simpleGoCode)
+		err = setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, simpleGoCode)
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunArtDupl("--only", "templ", "--threshold", "5")
@@ -275,7 +275,7 @@ func (m *Message) Reset() {
 	*m = Message{}
 }`
 
-			err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, simpleGoCode)
+			err := setup.CreateDuplicateFiles([]string{regularFile1, regularFile2}, simpleGoCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("message.pb.go", pbCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -305,7 +305,7 @@ func (m *MockService) GetSomething() string {
 	return ""
 }`
 
-			err := setup.CreateDuplicateFiles([]string{regularFile1, "regular2.go"}, simpleGoCode)
+			err := setup.CreateDuplicateFiles([]string{regularFile1, regularFile2}, simpleGoCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateTestFile("mock_service.go", mockCode)
 			Expect(err).NotTo(HaveOccurred())

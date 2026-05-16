@@ -48,7 +48,7 @@ func ModifiedTest() {
 		It("should create cache directory and cache entries", func() {
 			// Create test files
 			err := setup.CreateDuplicateFiles(
-				[]string{goldenFile1, "file2.go"},
+				[]string{goldenFile1, goldenFile2},
 				incrementalTestCode,
 			)
 			Expect(err).NotTo(HaveOccurred())

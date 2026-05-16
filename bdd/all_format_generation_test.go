@@ -39,7 +39,7 @@ func process(data string) error {
 	return nil
 }`
 
-			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all flag
@@ -118,7 +118,7 @@ func duplicate() {}`
 
 func test() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"test1.go", testFile2}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenTestFile1, testFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Specify a non-existent output directory
@@ -151,7 +151,7 @@ func test() {}`
 
 func test() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"test1.go", testFile2}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenTestFile1, testFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Output directory already exists
@@ -231,7 +231,7 @@ func multiDetect() string {
 
 func small() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenSmallFile1, smallFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --all and high threshold

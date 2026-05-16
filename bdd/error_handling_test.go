@@ -325,7 +325,7 @@ var _ = Describe("Error Handling", func() {
 		It("should handle empty stdin gracefully", func() {
 			// Use --files flag with empty stdin
 			output, err := setup.RunArtDuplWithStdin("", map[string]string{
-				"threshold": "10",
+				"threshold": testThreshold10,
 			})
 
 			// Should handle gracefully
@@ -337,7 +337,7 @@ var _ = Describe("Error Handling", func() {
 			// Use --files flag with invalid file paths
 			invalidPaths := "/nonexistent/file1.go\n/nonexistent/file2.go\n"
 			output, err := setup.RunArtDuplWithStdin(invalidPaths, map[string]string{
-				"threshold": "10",
+				"threshold": testThreshold10,
 			})
 
 			// Should handle gracefully

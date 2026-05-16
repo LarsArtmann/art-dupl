@@ -70,7 +70,7 @@ func duplicate() string {
 	return "duplicate"
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			cmd := createDetectionCmd("hash")
@@ -277,13 +277,13 @@ func NodeModulesFunc() {
 }`
 
 			err = os.WriteFile(
-				filepath.Join(nmDir, "file1.go"),
+				filepath.Join(nmDir, goldenFile1),
 				[]byte(generatedCode),
 				0o644,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			err = os.WriteFile(
-				filepath.Join(nmDir, "file2.go"),
+				filepath.Join(nmDir, goldenFile2),
 				[]byte(generatedCode),
 				0o644,
 			)

@@ -96,7 +96,7 @@ func processItem(data string, index int) error {
 
 			// Run with default sorting (size)
 			sizeSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "15",
+				"threshold": testThreshold15,
 				"sort":      "size",
 			})
 			// Print debug info on error

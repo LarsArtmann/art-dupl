@@ -16,7 +16,7 @@ var _ = Describe("Stats Semantic Detection", func() {
 	})
 
 	runStatsAndExpectSubstring := func(mode, threshold string, expected ...string) {
-		files := []string{"test1.go", "test2.go"}
+		files := []string{goldenTestFile1, testFile2}
 		code := `package main
 
 import "fmt"

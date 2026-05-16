@@ -99,7 +99,7 @@ func processData(data string) error {
 	return nil
 }`,
 				files:      []string{"plumb1.go", "plumb2.go"},
-				threshold:  "10",
+				threshold:  testThreshold10,
 				assertions: []string{":", "\t"},
 			},
 			{
@@ -135,7 +135,7 @@ func lineNumberTest() {
 				code,
 				"--plumbing",
 				"--threshold",
-				"10",
+				testThreshold10,
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
@@ -161,9 +161,9 @@ func large() {
 }`
 
 			// Create files with both small and large duplicates
-			err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, smallCode)
+			err := setup.CreateDuplicateFiles([]string{goldenSmallFile1, smallFile2}, smallCode)
 			Expect(err).NotTo(HaveOccurred())
-			err = setup.CreateDuplicateFiles([]string{"large1.go", largeFile2}, largeCode)
+			err = setup.CreateDuplicateFiles([]string{goldenLargeFile1, largeFile2}, largeCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with high threshold - should filter out small clones
@@ -222,7 +222,7 @@ func combinedPlumb() string {
 		}
 		for _, tt := range tests {
 			It(fmt.Sprintf("should work with %s detection method", tt.name), func() {
-				output, err := runPlumbingTestWithDetection(tt.files, tt.code, "10", tt.method)
+				output, err := runPlumbingTestWithDetection(tt.files, tt.code, testThreshold10, tt.method)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(output).ToNot(BeNil())
 			})
@@ -320,7 +320,7 @@ func ciCdFunction() error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", testThreshold10)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Each line should be parseable
@@ -341,7 +341,7 @@ func positionTest() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", testThreshold10)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -568,7 +568,7 @@ func parseableClone() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "10")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", testThreshold10)
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse the output

@@ -228,7 +228,7 @@ func (v *Validator) lessCommon(id int) error {
 		It("should respect threshold settings to filter noise", func() {
 			// Run with high threshold
 			output, err := setup.RunArtDuplWithFlags(map[string]string{
-				"threshold": "50",
+				"threshold": testThreshold50,
 			})
 			// Print debug information if there's an error
 			if err != nil {

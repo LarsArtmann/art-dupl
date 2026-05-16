@@ -49,7 +49,7 @@ var _ = Describe("Plumbing Output Format", func() {
 		It("should produce machine-readable output", func() {
 			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
@@ -91,7 +91,7 @@ var _ = Describe("Plumbing Output Format", func() {
 		It("should not include headers or formatting", func() {
 			duplicateCode := duplicateTestCode
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
@@ -121,10 +121,10 @@ func large() {
 }`
 
 			// Create small duplicates
-			err := setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, smallCode)
+			err := setup.CreateDuplicateFiles([]string{goldenSmallFile1, smallFile2}, smallCode)
 			Expect(err).NotTo(HaveOccurred())
 			// Create large duplicates
-			err = setup.CreateDuplicateFiles([]string{"large1.go", largeFile2}, largeCode)
+			err = setup.CreateDuplicateFiles([]string{goldenLargeFile1, largeFile2}, largeCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with threshold that filters small but shows large
@@ -142,7 +142,7 @@ func large() {
 		It("should work with sorting options", func() {
 			duplicateCode := duplicateTestCode
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing and sort
@@ -308,7 +308,7 @@ var _ = Describe("Path Edge Cases", func() {
 			duplicateCode := fmt.Sprintf(`package main
 func %s() { println(1) }`, funcName)
 
-			err = setup.CreateFileWithContent(filepath.Join(subDir, "file1.go"), duplicateCode)
+			err = setup.CreateFileWithContent(filepath.Join(subDir, goldenFile1), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateFileWithContent(filepath.Join(subDir, "file2.go"), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -332,13 +332,13 @@ func %s() { println(1) }`, funcName)
 			duplicateCode := `package main
 func root() { println(1) }`
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, duplicateCode)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, "file2.go"}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunArtDupl(runPath, "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(string(output)).To(ContainSubstring("file1.go"))
+			Expect(string(output)).To(ContainSubstring(goldenFile1))
 		}
 
 		It("should handle current directory", func() {

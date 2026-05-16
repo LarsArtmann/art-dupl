@@ -41,7 +41,7 @@ func processData(data string) error {
 	return nil
 }`
 
-			err := setup.CreateDuplicateFiles([]string{"file1.go", "file2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats subcommand
@@ -152,7 +152,7 @@ func test() {}`
 			code := `package main
 func small() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"small1.go", "small2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenSmallFile1, smallFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with high threshold
@@ -391,7 +391,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 			code := `package main
 func test() {}`
 
-			err := setup.CreateDuplicateFiles([]string{"test1.go", "test2.go"}, code)
+			err := setup.CreateDuplicateFiles([]string{goldenTestFile1, "test2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with invalid format
