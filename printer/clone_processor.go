@@ -60,6 +60,13 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		}
 	}
 
+	// Populate group-level Actionability after all per-instance
+	// classifications are computed.
+	actionability := EvaluateActionability(dups)
+	for i := range clones {
+		clones[i].Classification.Actionability = actionability
+	}
+
 	return clones, nil
 }
 
