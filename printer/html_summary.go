@@ -285,7 +285,10 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) erro
 	p.iota = 0
 
 	for _, cl := range allClones {
-		err := p.PrintClones(domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cl}}, sortBy)
+		err := p.PrintClones(
+			domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cl}},
+			sortBy,
+		)
 		if err != nil {
 			return err
 		}

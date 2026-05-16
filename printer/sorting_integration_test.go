@@ -139,7 +139,7 @@ func anotherLargeFunction() {
 
 				printer := NewJSON(&buf, mockReadFile(testContent))
 
-				err := printer.PrintClones(clones, tc.sortBy)
+				err := printer.PrintClones(processTestNodes(mockReadFile(testContent), "test", clones), tc.sortBy)
 				if err != nil {
 					t.Fatalf("JSONPrinter.PrintClones failed: %v", err)
 				}
@@ -211,7 +211,7 @@ func testPrinterSorting(
 
 	printer := constructor(&buf, mockReadFile(testContent))
 
-	err := printer.PrintClones(clones, sortBy)
+	err := printer.PrintClones(processTestNodes(mockReadFile(testContent), "test", clones), sortBy)
 	if err != nil {
 		t.Fatalf("%s.PrintClones failed: %v", printerName, err)
 	}

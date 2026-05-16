@@ -11,6 +11,7 @@
 ## A) Fully Done ✅
 
 ### Production Code Parameter Renames (12 groups eliminated or weakened)
+
 - **`printer/diff.go`** — Renamed `diffDifferentLength` and `diffLCS` params: `baseLines→srcRows`, `comparedLines→dstRows`, `base→left`, `compared→right`. Eliminated G32 (n=3).
 - **`cmd/run_printer.go`** — Renamed closure params to unique names per closure: `writer/fileReader`, `out/reader`, `dst/src`. Broke G36 (n=3) and G91 (n=2).
 - **`cmd/config_builder.go`** — Renamed `applyDiffModeFlag` params: `cfg→c`, `flags→fv`. Broke G90 (n=2).
@@ -22,16 +23,19 @@
 - **`internal/testutil/tabletest.go`** — Renamed `assertion→verify`, `tt→tc` in `RunTableTestWithName`. Broke G107 (n=2).
 
 ### Test Helper Replacements (6 groups eliminated)
+
 - **`testutil.AssertLen`** — Replaced `if len(X) != N { t.Errorf(...) }` with single-line helper in 7 locations across `config_enum_test.go`, `config_test.go`, `syntax_test.go`. Eliminated parts of G2 (n=8).
 - **`testutil.ExpectTrue`** — Replaced `if X != Y { t.Errorf(...) }` with single-line helper in 8 locations across `cmd_utils_test.go`, `config_enum_test.go`, `parse_parallel_test.go`, `lines_test.go`, `common_test.go`. Eliminated parts of G1 (n=8).
 - **`testutil.AssertErrorIs`** — Replaced `if !errors.Is(X, Y) { t.Error(...) }` in `basic_test.go` (2 locations). Reduced G4 (n=6).
 
 ### Variable Renames from Previous Batch (carried forward)
+
 - Renamed `result→got`, `criteria→sortOptions`, `node→testNode`, `output→sortOutput`, `content→fileBytes`, `isValidFn→validateFn`, `parsed→result`, `unwrapErr→unwrapped`, `err→unwrapErr/actualErr/returnedErr`, `cmd→c/rootCmd` across 30+ test files.
 - Added `printerConstructor` type alias in `cmd/run_printer.go`.
 - Renamed closure params (`filename→path/name/fname`, `readFile→mockRead`, `customReader→testReader`) across test files.
 
 ### Committed and Stable
+
 - **Commit `fdf68d8`**: `refactor: reduce semantic clone groups from 125 to 107 across 52 files`
 - All 23 test packages pass (`go test ./...`)
 - Build clean (`just build`)
@@ -42,12 +46,15 @@
 ## B) Partially Done 🔶
 
 ### Batch 8 Targeted Renames (attempted, reverted)
+
 Attempted to rename variables in specific function scopes for remaining high-n groups. All renames were reverted because:
+
 - Variable declarations were outside the rename range, causing "declared and not used" errors
 - The `re.sub(r'\bdata\b', ...)` pattern was too aggressive, matching in unintended locations
 - The `diff.go` rename of `diffLargeFiles` body references created type mismatches
 
 **What was tried:**
+
 - `sorting_test.go`: `sortOutput→cmdOutput/execOutput/runResult` (partially renamed)
 - `file_test.go`: `fileBytes→readContent/rawBytes/fileData/data` (partially renamed)
 - `semantic_performance_bench_test.go`: `output→perfOutput/benchResult` (partially renamed)
@@ -59,7 +66,9 @@ Attempted to rename variables in specific function scopes for remaining high-n g
 **Lesson:** Line-range-based renames are fragile. Must include the full function scope (declaration through all usages). A Python function-boundary-aware renamer would be needed.
 
 ### Helper Replacement Rollout
+
 Only partially rolled out because:
+
 - `errors/`, `suffixtree/`, `syntax/` packages have import cycle constraints — cannot import `testutil`
 - Some replacements broke tests because they changed side effects (e.g., replacing `p.PrintHeader()` with `AssertNoError` skipped the actual header write)
 - `AssertFieldValue` replacements in `text_utils_test.go` targeted wrong test functions
@@ -70,22 +79,27 @@ Only partially rolled out because:
 ## C) Not Started 🔲
 
 ### Systematic n=2 Group Elimination (74 groups)
+
 The bulk of remaining work. 74 groups of size=2. These are cross-file pairs that need individual treatment. No automated approach has been attempted.
 
 ### Production Code Group Elimination
+
 - **G24** (n=3): `run_analysis.go` vs `run_hash.go` return type `(chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error)` — identical return type, can't be renamed
 - **G96** (n=2): `run_printer.go` type alias pattern — same `func(io.Writer, printer.ReadFile) printer.Printer` signature
 
 ### Import Cycle Package Treatment
+
 - `errors/`, `suffixtree/`, `syntax/`, `syntax/golang/`, `syntax/templ/`, `internal/utils/`, `internal/simd/`, `pkg/format/`, `domain/`, `examples/`
 - These packages cannot import `internal/testutil` — need package-local helpers or inline restructuring
 
 ### BDD/Ginkgo Pattern Restructuring
+
 - G8 (n=4), G14 (n=4), G21 (n=4) — Ginkgo `It("should...", func() { ... })` patterns
 - G20 (n=3) — `Expect(outputStr).To(SatisfyAny(...))` patterns
 - Would need to change test framework usage or extract helper functions within the `bdd/` package
 
 ### Gomega Pattern Restructuring
+
 - G5 (n=5), G17 (n=4) — `g.Expect(X).To(gomega.Equal(Y))` patterns in `file_test.go`
 - Framework-driven, would need custom wrappers
 
@@ -94,24 +108,31 @@ The bulk of remaining work. 74 groups of size=2. These are cross-file pairs that
 ## D) Totally Fucked Up 💥
 
 ### mustPrintFooter Bug (FIXED)
+
 Replaced `mustPrintFooter`'s `p.PrintFooter()` call with `p.PrintHeader()` during AssertNoError replacement. This caused `TestHTMLPrintFooter_*` tests to produce double HTML headers instead of header+footer. Fixed by restoring the correct call.
 
 ### AssertNoError for Side-Effect Functions (FIXED, reverted)
+
 Replaced `if err := p.PrintHeader(); err != nil { t.Fatalf(...) }` with `testutil.AssertNoError(t, p.PrintHeader(), "PrintHeader")`. The problem: `PrintHeader()` writes HTML to a buffer — the replacement still called it but some test logic depended on the specific error message format. All reverted.
 
 ### AssertFieldValue Wrong Targets (FIXED, reverted)
+
 Replaced `if info.Filename != "test.go" { ... }` in `text_utils_test.go` with `AssertFieldValue(t, printer.currentHash, "abc123", ...)`. The replacement targeted the wrong line numbers — `printer.currentHash` was from a different test function. All reverted.
 
 ### sarif_test.go Wrong Expected Value (FIXED)
+
 `AssertFieldValue` replacement changed the expected value for the second `SetHash` check from `""` (empty) to `"abc123"`. The original test verified that calling `SetHash("")` leaves the hash unchanged — the replacement broke this assertion. Fixed inline.
 
 ### config_test.go / config_enum_test.go Stray Braces (FIXED)
+
 When replacing 3-line `if/errorf/}` blocks with 1-line helper calls, the closing `}` of the enclosing function was sometimes included in the replacement range or left behind. Required multiple fix-up rounds to restore correct brace balance. Root cause: off-by-one line range errors in the batch replacement script.
 
 ### syntax_test.go Import Cycle (FIXED, reverted)
+
 Added `testutil.AssertLen` calls to `syntax/syntax_test.go` but `syntax/` package cannot import `internal/testutil` due to import cycle. Reverted to original inline checks.
 
 ### Batch 8 Variable Renames (FIXED, reverted)
+
 All batch 8 renames were reverted because the Python `rename_in_range` function only renamed within specified line ranges but missed variable declarations that were outside the range. This caused "declared and not used" and "undefined" compilation errors across 5 packages.
 
 ---
@@ -119,31 +140,39 @@ All batch 8 renames were reverted because the Python `rename_in_range` function 
 ## E) What We Should Improve
 
 ### 1. Function-Boundary-Aware Renamer
+
 The current `rename_in_range(start, end)` approach is fragile. We need a Python tool that:
+
 - Finds function boundaries by brace counting from a hint line
 - Renames ALL occurrences of a variable within the full function scope
 - Handles subtests (`t.Run`) that share parent scope
 
 ### 2. Safer Helper Replacement
+
 The `if X != Y { t.Errorf(...) }` → `testutil.Helper(...)` replacement needs:
+
 - Exact matching of the 3-line pattern (if + errorf + close-brace)
 - Verification that no side effects exist in the condition
 - Automatic handling of the closing brace (include it in the replacement range)
 - Post-replacement syntax validation
 
 ### 3. Side-Effect-Aware Refactoring
+
 Never replace function calls that have side effects (like `PrintHeader()` which writes to a buffer) with assertion helpers. The helper still calls the function but the test logic may depend on specific error message formats or call sequencing.
 
 ### 4. Import Cycle Awareness
+
 Maintain a hardcoded list of packages that cannot import `testutil`:
 `errors/`, `suffixtree/`, `syntax/`, `syntax/golang/`, `syntax/templ/`, `internal/utils/`, `internal/simd/`, `pkg/format/`, `domain/`, `examples/`
 
 ### 5. Better Commit Granularity
+
 Instead of one massive 52-file commit, break into:
+
 - Production code renames (separate commit per package)
 - Helper replacements (separate commit)
 - Test variable renames (separate commit)
-This makes rollback easier when things break.
+  This makes rollback easier when things break.
 
 ---
 
@@ -225,27 +254,27 @@ Alternatively: **Should we focus exclusively on AST structure changes** (replaci
 
 ## Current State Snapshot
 
-| Metric | Value |
-|--------|-------|
-| Clone groups (started) | 125 |
-| Clone groups (current) | **107** |
-| Groups eliminated | **18** (14.4%) |
-| Test packages passing | **23/23** |
-| Uncommitted changes | **0** |
-| HEAD commit | `fdf68d8` |
-| Base commit | `8f9f179` (pre-DTO) |
+| Metric                 | Value               |
+| ---------------------- | ------------------- |
+| Clone groups (started) | 125                 |
+| Clone groups (current) | **107**             |
+| Groups eliminated      | **18** (14.4%)      |
+| Test packages passing  | **23/23**           |
+| Uncommitted changes    | **0**               |
+| HEAD commit            | `fdf68d8`           |
+| Base commit            | `8f9f179` (pre-DTO) |
 
 ### Clone Group Distribution
 
-| Instance count | Groups | Category |
-|---------------|--------|----------|
-| n=7 | 1 | syntax.Node literals |
-| n=6 | 1 | refPair literals |
-| n=5 | 3 | gomega/BDD/CloneWithContent |
-| n=4 | 14 | mixed patterns |
-| n=3 | 14 | mixed patterns |
-| n=2 | 74 | bulk (individual pairs) |
-| **Total** | **107** | |
+| Instance count | Groups  | Category                    |
+| -------------- | ------- | --------------------------- |
+| n=7            | 1       | syntax.Node literals        |
+| n=6            | 1       | refPair literals            |
+| n=5            | 3       | gomega/BDD/CloneWithContent |
+| n=4            | 14      | mixed patterns              |
+| n=3            | 14      | mixed patterns              |
+| n=2            | 74      | bulk (individual pairs)     |
+| **Total**      | **107** |                             |
 
 ### Files Modified This Session (52 files in commit)
 

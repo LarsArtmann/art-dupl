@@ -156,7 +156,6 @@ func UnsafeSlice[T any](data []byte) []T {
 	header := (*[1 << 30]T)(
 		unsafe.Pointer(&data[0]),
 	) // #nosec G103 -- SIMD helper requires unsafe pointer operations
-	//nolint:gosec // G115: Safe - len(data) bounded, sizeof(T) >= 1
 	n := len(data) / int(unsafe.Sizeof(t))
 
 	return header[:n:n]

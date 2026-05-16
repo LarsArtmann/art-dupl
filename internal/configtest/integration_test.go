@@ -1,10 +1,10 @@
 package configtest
 
 import (
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 func TestConfigurationIntegration(t *testing.T) {

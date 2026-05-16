@@ -10,7 +10,6 @@ import (
 // printerConstructor is the function signature for creating a Printer.
 type printerConstructor func(io.Writer, printer.ReadFile) printer.Printer
 
-
 // withThreshold wraps a printer constructor that needs a threshold parameter.
 func withThreshold(
 	constructor func(io.Writer, printer.ReadFile, int) printer.Printer,

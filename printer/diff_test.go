@@ -10,7 +10,11 @@ import (
 
 // newTestClone creates a clone for testing with the given parameters.
 // newTestClone creates a domain.ProcessedClone for testing.
-func newTestDiffClone(filename string, lineStart, lineEnd int, fragment string) domain.ProcessedClone {
+func newTestDiffClone(
+	filename string,
+	lineStart, lineEnd int,
+	fragment string,
+) domain.ProcessedClone {
 	return domain.ProcessedClone{
 		Filename:  filename,
 		LineStart: lineStart,

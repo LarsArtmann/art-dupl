@@ -1,11 +1,11 @@
 package artdupl
 
 import (
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"errors"
 	"testing"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/domain"
+	errors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 type JSONOutput struct {
@@ -95,7 +95,10 @@ func (p *JSONPrinter) SetFilesCount(count int) {
 	p.filesCount = count
 }
 
-func (p *JSONPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+func (p *JSONPrinter) PrintClones(
+	group domain.ProcessedCloneGroup,
+	sortBy ...config.SortCriteria,
+) error {
 	p.iota++
 
 	clones := group.Clones

@@ -134,7 +134,10 @@ func (p *htmlprinter) writeMetadata() error {
 	return nil
 }
 
-func (p *htmlprinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+func (p *htmlprinter) PrintClones(
+	group domain.ProcessedCloneGroup,
+	sortBy ...config.SortCriteria,
+) error {
 	p.iota++
 
 	clones := group.Clones

@@ -50,7 +50,7 @@ func bar() {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := printer.PrintClones(dups)
+	err := printer.PrintClones(processTestNodes(mockReadFile(testContent), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -217,7 +217,7 @@ func TestJSONPrinter_PrintClones_WithHash(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(processTestNodes(mockReadFile(testContent), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
@@ -304,12 +304,12 @@ func TestJSONPrinter_PrintClones_MultipleGroups(t *testing.T) {
 
 	nodes := createMockNodes(t)
 
-	err := p.PrintClones([][]*syntax.Node{nodes})
+	err := p.PrintClones(processTestNodes(mockReadFile(testContent), "test", [][]*syntax.Node{nodes}))
 	if err != nil {
 		t.Fatalf("PrintClones(1) error: %v", err)
 	}
 
-	err = p.PrintClones([][]*syntax.Node{nodes})
+	err = p.PrintClones(processTestNodes(mockReadFile(testContent), "test", [][]*syntax.Node{nodes}))
 	if err != nil {
 		t.Fatalf("PrintClones(2) error: %v", err)
 	}

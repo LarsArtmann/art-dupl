@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	errors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/domain"
+	errors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 // SARIFOutput represents the SARIF (Static Analysis Results Interchange Format) output.
@@ -154,7 +154,10 @@ func (p *sarifPrinter) PrintHeader() error {
 	return nil
 }
 
-func (p *sarifPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+func (p *sarifPrinter) PrintClones(
+	group domain.ProcessedCloneGroup,
+	sortBy ...config.SortCriteria,
+) error {
 	if len(group.Clones) == 0 {
 		return nil
 	}
@@ -175,7 +178,7 @@ func (p *sarifPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...c
 	for _, cl := range group.Clones {
 		level := p.determineLevel(size)
 		msg := fmt.Sprintf("Duplicate code: %d tokens in %d instances",
-		size, len(group.Clones))
+			size, len(group.Clones))
 
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",

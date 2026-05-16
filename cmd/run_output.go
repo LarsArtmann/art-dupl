@@ -98,7 +98,7 @@ func printCloneGroups(
 		clones, err := printer.ProcessClones(fread, uniq)
 		if err != nil {
 			return errors.Wrap(err, errors.AnalysisError,
-				fmt.Sprintf("failed to process clones for hash %s", k))
+				"failed to process clones for hash "+k)
 		}
 
 		err = p.PrintClones(domain.ProcessedCloneGroup{

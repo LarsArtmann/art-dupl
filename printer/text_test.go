@@ -85,7 +85,7 @@ func TestTextPrinter_PrintHeaderAndFooter(t *testing.T) {
 			p := NewText(&buf, mockReadFile(""))
 
 			err := tc.call(p)
-	testutil.AssertFatalNoError(t, err, tc.name+"()")
+			testutil.AssertFatalNoError(t, err, tc.name+"()")
 
 			if tc.name == "PrintHeader" && buf.Len() != 0 {
 				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
@@ -151,16 +151,10 @@ func TestTextPrinter_PrintClones_FileDuplicate(t *testing.T) {
 func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
 	fread := errorReadFile("file not found")
 
-	p := NewText(&buf, fread)
-
 	nodes := createMockNodes(t)
-	group := processTestNodes(fread, "test", [][]*syntax.Node{nodes})
-
-	err := p.PrintClones(group)
+	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("PrintClones() should return error on read failure")
 	}
@@ -229,47 +223,6 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 		"found",
 		"PrintClones(sorted) missing clone output",
 	)
-}
-
-func TestDetectProcessedFileDuplicate(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name   string
-		flag   bool
-		clones []domain.ProcessedClone
-		want   bool
-	}{
-		{
-			name:   "flag set",
-			flag:   true,
-			clones: nil,
-			want:   true,
-		},
-		{
-			name:   "empty clones",
-			flag:   false,
-			clones: nil,
-			want:   false,
-		},
-		{
-			name:   "with clones flag false",
-			flag:   false,
-			clones: []domain.ProcessedClone{{Filename: "a.go", LineStart: 1}},
-			want:   false,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
-			got := detectProcessedFileDuplicate(tc.flag, tc.clones)
-			if got != tc.want {
-				t.Errorf("detectProcessedFileDuplicate() = %v, want %v", got, tc.want)
-			}
-		})
-	}
 }
 
 func TestCalculateProcessedCloneSizes(t *testing.T) {
@@ -493,7 +446,7 @@ func TestTextPrinter_OutputText_SortVariants(t *testing.T) {
 			tp.cloneGroups = [][]domain.ProcessedClone{clones}
 
 			err := tp.OutputText(15, tc.sortBy)
-	testutil.AssertFatalNoError(t, err, tc.name+"()")
+			testutil.AssertFatalNoError(t, err, tc.name+"()")
 		})
 	}
 }
@@ -530,16 +483,10 @@ func TestTextPrinter_OutputText_PrintFooterError(t *testing.T) {
 func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
 	fread := errorReadFile("simulated read error")
 
-	p := NewText(&buf, fread)
-
 	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
-	group := processTestNodes(fread, "test", [][]*syntax.Node{{node}})
-
-	err := p.PrintClones(group, config.SortBySize)
+	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{{node}})
 	if err == nil {
 		t.Error("expected error on read failure in PrintClones(sorted)")
 	}

@@ -22,22 +22,6 @@ const (
 	testFilename    = "test.go"
 )
 
-// cloneFixture creates a clone fixture for testing.
-func cloneFixture(filename string, start, end int, fragment string) clone {
-	return clone{filename: filename, lineStart: start, lineEnd: end, fragment: []byte(fragment)}
-}
-
-// Shared test clone fixtures to reduce duplication.
-var (
-	testCloneA1to5Line1Line2 = cloneFixture("a.go", 1, 5, "line1\nline2\n")
-	testCloneB1to5Line1Line2 = cloneFixture("b.go", 10, 14, "line1\nmodified\n")
-	testCloneA1to5Code       = cloneFixture("a.go", 1, 5, "code\n")
-	testCloneA1to5CodeLines  = cloneFixture("a.go", 1, 5, "line1\nline2\nline3\n")
-	testCloneA10to20Code     = cloneFixture("a.go", 10, 20, "code here")
-	testCloneB10to14Code     = cloneFixture("b.go", 10, 14, "line1\nchanged\n")
-	testCloneB10to14Added    = cloneFixture("b.go", 10, 14, "line1\nmodified\nadded\n")
-)
-
 type errorWriter struct{}
 
 func (errorWriter) Write(_ []byte) (int, error) {
@@ -306,7 +290,8 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 		{Type: golang.ExprStmt, Filename: "b.go", Pos: 15, End: 35},
 	}
 
-	err := p.PrintClones([][]*syntax.Node{sourceNodes, secondNodes})
+	fread := mockReadFile(content)
+	err := p.PrintClones(processTestNodes(fread, "test", [][]*syntax.Node{sourceNodes, secondNodes}))
 	if err != nil {
 		t.Fatalf("PrintClones with diff mode failed: %v", err)
 	}
@@ -324,10 +309,9 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 
 func TestHTMLPrintClones_EmptyDups(t *testing.T) {
 	p, _ := htmlPrinterWithContent("")
-
 	mustPrintHeader(t, p)
 
-	err := p.PrintClones([][]*syntax.Node{{}})
+	_, err := NodesToGroup(mockReadFile(""), "test", [][]*syntax.Node{{}})
 	if err == nil {
 		t.Error("Expected error for empty node slice")
 	}
@@ -403,14 +387,11 @@ func TestHTMLOutputHTML(t *testing.T) {
 
 	hp := p.(*htmlprinter)
 
-	fragSlice := nodesForHTML(testFilename)
-	secondNodes := []*syntax.Node{
-		{Type: golang.FuncDecl, Filename: "other.go", Pos: 39, End: 68},
-		{Type: golang.ExprStmt, Filename: "other.go", Pos: 40, End: 60},
-	}
-
-	hp.dupls = [][][]*syntax.Node{
-		{fragSlice, secondNodes},
+	hp.dupls = [][]domain.ProcessedClone{
+		{
+			newTestProcessedClone(testFilename, 1, 5, testGoCode),
+			newTestProcessedClone("other.go", 3, 5, testGoCode),
+		},
 	}
 
 	err := hp.OutputHTML(15, config.SortBySize)
@@ -617,30 +598,28 @@ func TestBuildClones(t *testing.T) {
 	t.Parallel()
 
 	content := testGoCode
-	p, _ := htmlPrinterWithContent(content)
-	hp := p.(*htmlprinter)
+	fread := mockReadFile(content)
 
 	nodes := nodesForHTML(testFilename)
 
-	clones, err := hp.buildClones([][]*syntax.Node{nodes})
+	group, err := NodesToGroup(fread, "test", [][]*syntax.Node{nodes})
 	if err != nil {
-		t.Fatalf("buildClones failed: %v", err)
+		t.Fatalf("NodesToGroup failed: %v", err)
 	}
 
-	testutil.AssertFatalLen(t, clones, 1, "clones")
+	testutil.AssertFatalLen(t, group.Clones, 1, "clones")
 
-	if clones[0].filename != testFilename {
-		t.Errorf("filename = %q, want 'test.go'", clones[0].filename)
+	if group.Clones[0].Filename != testFilename {
+		t.Errorf("filename = %q, want 'test.go'", group.Clones[0].Filename)
 	}
 }
 
 func TestBuildClones_EmptyDup(t *testing.T) {
 	t.Parallel()
 
-	p, _ := htmlPrinterWithContent("")
-	hp := p.(*htmlprinter)
+	fread := mockReadFile("")
 
-	_, err := hp.buildClones([][]*syntax.Node{{}})
+	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{{}})
 	if err == nil {
 		t.Error("want error for empty node slice")
 	}
@@ -649,16 +628,13 @@ func TestBuildClones_EmptyDup(t *testing.T) {
 func TestBuildClones_ReadError(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewHTML(&buf, func(_ string) ([]byte, error) {
+	fread := func(_ string) ([]byte, error) {
 		return nil, errReadFail
-	}, 15)
-	hp := p.(*htmlprinter)
+	}
 
 	nodes := nodesForHTML("missing.go")
 
-	_, err := hp.buildClones([][]*syntax.Node{nodes})
+	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("want error for read failure")
 	}
@@ -773,7 +749,8 @@ func TestHTMLErrorInPrintClones(t *testing.T) {
 
 	nodes := nodesForHTML(testFilename)
 
-	err := p.PrintClones([][]*syntax.Node{nodes})
+	fread := mockReadFile(content)
+	err := p.PrintClones(processTestNodes(fread, "test", [][]*syntax.Node{nodes}))
 	if err == nil {
 		t.Error("want error from failing writer during PrintClones")
 	}
@@ -802,7 +779,7 @@ func TestHTMLComputeCloneGroupDiff_Empty(t *testing.T) {
 func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 	t.Parallel()
 
-	clones := []clone{testCloneA1to5Line1Line2}
+	clones := []domain.ProcessedClone{processedCloneFixture("a.go", 1, 5, "line1\nline2\n")}
 
 	result := ComputeCloneGroupDiff(clones)
 	assertBaseFilename(t, &result, "a.go")
@@ -815,7 +792,10 @@ func TestHTMLComputeCloneGroupDiff_SingleClone(t *testing.T) {
 func TestHTMLComputeCloneGroupDiff_MultipleClones(t *testing.T) {
 	t.Parallel()
 
-	clones := []clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2}
+	clones := []domain.ProcessedClone{
+		processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
+		processedCloneFixture("b.go", 10, 14, "line1\nmodified\n"),
+	}
 
 	result := ComputeCloneGroupDiff(clones)
 	if len(result.Others) != 1 {
@@ -957,9 +937,9 @@ func TestHTMLWriteCloneOccurrences(t *testing.T) {
 
 	hp := &htmlprinter{w: &buf, iota: 1}
 
-	clones := []clone{
-		testCloneA10to20Code,
-		{filename: "b.go", lineStart: 30, lineEnd: 40, fragment: []byte("more code")},
+	clones := []domain.ProcessedClone{
+		processedCloneFixture("a.go", 10, 20, "code here"),
+		processedCloneFixture("b.go", 30, 40, "more code"),
 	}
 
 	err := hp.writeCloneOccurrences(clones)
@@ -997,31 +977,37 @@ func TestHTMLWriteDiffView_Variants(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		clones     []clone
+		clones     []domain.ProcessedClone
 		wantSubstr []string
 	}{
 		{
 			"single clone falls through",
-			[]clone{testCloneA1to5Code},
+			[]domain.ProcessedClone{processedCloneFixture("a.go", 1, 5, "code\n")},
 			[]string{"occurrence"},
 		},
 		{
 			"multiple clones",
-			[]clone{testCloneA1to5Line1Line2, testCloneB1to5Line1Line2},
+			[]domain.ProcessedClone{
+				processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
+				processedCloneFixture("b.go", 10, 14, "line1\nmodified\n"),
+			},
 			[]string{"BASE REFERENCE", "diff-legend"},
 		},
 		{
 			"three clones with selector",
-			[]clone{
-				testCloneA1to5Line1Line2,
-				testCloneB10to14Code,
-				{filename: "c.go", lineStart: 20, lineEnd: 24, fragment: []byte("line1\nother\n")},
+			[]domain.ProcessedClone{
+				processedCloneFixture("a.go", 1, 5, "line1\nline2\n"),
+				processedCloneFixture("b.go", 10, 14, "line1\nchanged\n"),
+				processedCloneFixture("c.go", 20, 24, "line1\nother\n"),
 			},
 			[]string{"diff-select", "Compare with..."},
 		},
 		{
 			"aggregate stats",
-			[]clone{testCloneA1to5CodeLines, testCloneB10to14Added},
+			[]domain.ProcessedClone{
+				processedCloneFixture("a.go", 1, 5, "line1\nline2\nline3\n"),
+				processedCloneFixture("b.go", 10, 14, "line1\nmodified\nadded\n"),
+			},
 			[]string{"diff-aggregate-stats"},
 		},
 	}

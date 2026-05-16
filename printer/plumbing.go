@@ -21,13 +21,22 @@ func NewPlumbing(w io.Writer, fread ReadFile) Printer {
 
 func (p *plumbing) PrintHeader() error { return nil }
 
-func (p *plumbing) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+func (p *plumbing) PrintClones(
+	group domain.ProcessedCloneGroup,
+	sortBy ...config.SortCriteria,
+) error {
 	clones := group.Clones
 	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
 	sort.Sort(byNameAndLineProcessed(clones))
 
 	for _, cl := range clones {
-		if _, err := fmt.Fprintf(p.w, "%s:%d-%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
+		if _, err := fmt.Fprintf(
+			p.w,
+			"%s:%d-%d\n",
+			cl.Filename,
+			cl.LineStart,
+			cl.LineEnd,
+		); err != nil {
 			return err
 		}
 	}

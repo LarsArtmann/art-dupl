@@ -46,7 +46,7 @@ func TestPlumbing_PrintHeaderAndFooter(t *testing.T) {
 			p := NewPlumbing(&buf, mockReadFile(""))
 
 			err := tc.call(p)
-	testutil.AssertFatalNoError(t, err, tc.name+"()")
+			testutil.AssertFatalNoError(t, err, tc.name+"()")
 
 			if buf.Len() != 0 {
 				t.Errorf("%s() wrote %d bytes, want 0", tc.name, buf.Len())
@@ -67,7 +67,7 @@ func TestPlumbing_PrintClones(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(processTestNodes(mockReadFile(content), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones() error: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups, config.SortBySize)
+	err := p.PrintClones(processTestNodes(mockReadFile(content), "test", dups), config.SortBySize)
 	if err != nil {
 		t.Fatalf("PrintClones(config.SortBySize) error: %v", err)
 	}
@@ -109,16 +109,12 @@ func TestPlumbing_PrintClones_SortedBySize(t *testing.T) {
 func TestPlumbing_PrintClones_ReadError(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
 	fread := errorReadFile("file not found")
-
-	p := NewPlumbing(&buf, fread)
 
 	nodes := createMockNodes(t)
 	dups := [][]*syntax.Node{nodes}
 
-	err := p.PrintClones(dups)
+	_, err := NodesToGroup(fread, "test", dups)
 	if err == nil {
 		t.Error("PrintClones() should return error on read failure")
 	}
@@ -127,11 +123,7 @@ func TestPlumbing_PrintClones_ReadError(t *testing.T) {
 func TestPlumbing_PrintClones_EmptyDups(t *testing.T) {
 	t.Parallel()
 
-	var buf bytes.Buffer
-
-	p := NewPlumbing(&buf, mockReadFile(""))
-
-	err := p.PrintClones([][]*syntax.Node{{}})
+	_, err := NodesToGroup(mockReadFile(""), "test", [][]*syntax.Node{{}})
 	if err == nil {
 		t.Error("PrintClones(empty dup) should return error")
 	}
@@ -150,7 +142,7 @@ func TestPlumbing_PrintClones_MultipleGroups(t *testing.T) {
 	group2 := makeASTNodes("b.go", 25, 50)
 	dups := [][]*syntax.Node{group1, group2}
 
-	err := p.PrintClones(dups)
+	err := p.PrintClones(processTestNodes(mockReadFile(content), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones(multiple) error: %v", err)
 	}

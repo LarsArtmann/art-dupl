@@ -521,9 +521,9 @@ func test() {
 
 	Context("When filtering vendor directory", func() {
 		var (
-			vendorDir   string
-			excludedCode  string
-			buildBinary string
+			vendorDir    string
+			excludedCode string
+			buildBinary  string
 		)
 
 		BeforeEach(func() {

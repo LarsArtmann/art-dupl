@@ -181,7 +181,7 @@ func TestStatsDataAggregation(t *testing.T) {
 			statsPrinter.SetFilesCount(tt.filesCount)
 
 			for _, dupGroup := range tt.duplicates {
-				err := statsPrinter.PrintClones(dupGroup)
+				err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dupGroup))
 				if err != nil {
 					t.Fatalf("PrintClones failed: %v", err)
 				}
@@ -220,7 +220,7 @@ func TestStatsComplexityScore(t *testing.T) {
 	for range 3 {
 		dups := createCloneNodeGroup([]string{"file1.go", "file2.go", "file3.go"})
 
-		err := statsPrinter.PrintClones(dups)
+		err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups))
 		if err != nil {
 			t.Fatalf("PrintClones failed: %v", err)
 		}
@@ -250,7 +250,7 @@ func TestStatsImpactScore(t *testing.T) {
 		createNodeSlice("file3.go", 20, 23),
 	}
 
-	err := statsPrinter.PrintClones(dups)
+	err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -279,7 +279,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 		},
 	}
 
-	err := statsPrinter.PrintClones(dups)
+	err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -524,7 +524,7 @@ func TestStatsJSONOutput(t *testing.T) {
 		},
 	}
 
-	err := statsPrinter.PrintClones(dups)
+	err := statsPrinter.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups))
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -642,7 +642,7 @@ func TestStatsCSVOutput(t *testing.T) {
 	// Create some clones
 	dups1 := createTestCloneGroups()
 
-	err := sp.PrintClones(dups1)
+	err := sp.PrintClones(processTestNodes(mockReadFile(string(mockReadFileContent())), "test", dups1))
 	if err != nil {
 		t.Fatalf("PrintClones failed: %v", err)
 	}
@@ -892,8 +892,8 @@ func TestSetFilterStats(t *testing.T) {
 
 			if tt.wantBreakdown == nil {
 				if data.FilterBreakdown != nil {
-				t.Errorf("Expected nil FilterBreakdown, got %v", data.FilterBreakdown)
-			}
+					t.Errorf("Expected nil FilterBreakdown, got %v", data.FilterBreakdown)
+				}
 			} else {
 				if len(data.FilterBreakdown) != len(tt.wantBreakdown) {
 					t.Errorf(

@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	CloneCategory    = domain.CloneCategory
-	ClonePriority    = domain.ClonePriority
+	CloneCategory       = domain.CloneCategory
+	ClonePriority       = domain.ClonePriority
 	CloneClassification = domain.CloneClassification
 )
 
@@ -142,7 +142,10 @@ func calculateProductionPriority(category CloneCategory, tokens, lines int) Clon
 		return domain.PriorityHigh
 	case domain.CategoryLoop, domain.CategoryConditional:
 		return controlFlowPriority(tokens)
-	case domain.CategoryTest, domain.CategoryAssignment, domain.CategoryExpression, domain.CategoryUnknown:
+	case domain.CategoryTest,
+		domain.CategoryAssignment,
+		domain.CategoryExpression,
+		domain.CategoryUnknown:
 		return otherPriority(tokens)
 	default:
 		return otherPriority(tokens)
@@ -192,28 +195,31 @@ func otherPriority(tokens int) ClonePriority {
 func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	if isTest {
 		if tokens > 50 {
-			return "Extract test helper function or use table-driven tests"
+			return suggestTestHelper
 		}
 
-		return "Consider extracting to shared test utility"
+		return suggestSharedTestUtility
 	}
 
 	switch category {
 	case domain.CategoryFunction, domain.CategoryMethod:
-		return "Extract to shared utility function"
+		return suggestExtractUtility
 	case domain.CategoryStruct:
-		return "Consider composition or shared base struct"
+		return suggestComposition
 	case domain.CategoryInterface:
-		return "Extract common interface definition"
+		return suggestInterface
 	case domain.CategoryHandler:
-		return "Extract handler logic to service layer"
+		return suggestHandler
 	case domain.CategoryLoop:
-		return "Extract loop body to helper function"
+		return suggestLoopHelper
 	case domain.CategoryConditional:
-		return "Consider strategy pattern or early returns"
-	case domain.CategoryTest, domain.CategoryAssignment, domain.CategoryExpression, domain.CategoryUnknown:
-		return "Review and extract common logic"
+		return suggestStrategy
+	case domain.CategoryTest,
+		domain.CategoryAssignment,
+		domain.CategoryExpression,
+		domain.CategoryUnknown:
+		return suggestReviewExtract
 	default:
-		return "Review and extract common logic"
+		return suggestReviewExtract
 	}
 }

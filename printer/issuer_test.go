@@ -12,8 +12,8 @@ func assertToFilename(t *testing.T, issues []Issue, expected []string) {
 	t.Helper()
 
 	for i, issue := range issues {
-		if issue.To.Filename() != expected[i] {
-			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename(), expected[i])
+		if issue.To.Filename != expected[i] {
+			t.Errorf("Issue[%d].To.Filename() = %q, want %q", i, issue.To.Filename, expected[i])
 		}
 	}
 }
@@ -23,8 +23,8 @@ func assertFromFilename(t *testing.T, issues []Issue, expected string) {
 	t.Helper()
 
 	for i, issue := range issues {
-		if issue.From.Filename() != expected {
-			t.Errorf("Issue[%d].From.Filename() = %q, want %q", i, issue.From.Filename(), expected)
+		if issue.From.Filename != expected {
+			t.Errorf("Issue[%d].From.Filename() = %q, want %q", i, issue.From.Filename, expected)
 		}
 	}
 }

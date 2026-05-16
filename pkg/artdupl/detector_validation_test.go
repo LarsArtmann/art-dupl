@@ -1,13 +1,13 @@
 package artdupl
 
 import (
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"context"
 	"errors"
 	"testing"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
@@ -457,7 +457,7 @@ func TestDetector_FindClones_NoFiles(t *testing.T) {
 
 // TestDetector_FindClones_ContextCanceled tests FindClones with canceled context.
 func TestDetector_FindClones_ContextCanceled(t *testing.T) {
-	 detector := mustCreateDetector(t, DefaultOptions())
+	detector := mustCreateDetector(t, DefaultOptions())
 
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()

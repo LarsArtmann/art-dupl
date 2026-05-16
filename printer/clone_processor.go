@@ -1,11 +1,15 @@
 package printer
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
+
+// ErrZeroLengthDuplicate indicates a duplicate group with no nodes was encountered.
+var ErrZeroLengthDuplicate = errors.New("zero length duplicate found")
 
 // ProcessClones converts raw syntax.Node groups into ProcessedClone slices.
 // This is the single point where [][]*syntax.Node is decoded into domain types,
@@ -16,7 +20,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	for i, dup := range dups {
 		cnt := len(dup)
 		if cnt == 0 {
-			return nil, fmt.Errorf("zero length duplicate found at index %d", i)
+			return nil, fmt.Errorf("%w at index %d", ErrZeroLengthDuplicate, i)
 		}
 
 		nstart := dup[0]
@@ -24,7 +28,11 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 
 		fileInfo, err := ProcessNodeRange(fread, nstart, nend)
 		if err != nil {
-			return nil, fmt.Errorf("failed to process node range for file %s: %w", nstart.Filename, err)
+			return nil, fmt.Errorf(
+				"failed to process node range for file %s: %w",
+				nstart.Filename,
+				err,
+			)
 		}
 
 		fragment := extractContent(fileInfo, nstart, nend)
@@ -51,7 +59,11 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 }
 
 // NodesToGroup converts raw syntax.Node groups into a ProcessedCloneGroup.
-func NodesToGroup(fread ReadFile, hash string, dups [][]*syntax.Node) (domain.ProcessedCloneGroup, error) {
+func NodesToGroup(
+	fread ReadFile,
+	hash string,
+	dups [][]*syntax.Node,
+) (domain.ProcessedCloneGroup, error) {
 	clones, err := ProcessClones(fread, dups)
 	if err != nil {
 		return domain.ProcessedCloneGroup{}, err

@@ -160,15 +160,4 @@ func ExtractSortCriteria(sortBy ...config.SortCriteria) config.SortCriteria {
 	return config.SortBySize
 }
 
-func sortClonesByFilename(cloneGroups [][]clone) {
-	sort.Slice(cloneGroups, func(i, j int) bool {
-		if handled, lessThan := isEmptyOrLessThanEmpty(cloneGroups, i, j); handled {
-			return lessThan
-		}
 
-		return compareByNameThenPos(
-			cloneGroups[i][0].filename, cloneGroups[j][0].filename,
-			cloneGroups[i][0].lineStart, cloneGroups[j][0].lineStart,
-		)
-	})
-}

@@ -67,7 +67,11 @@ func basicExample() {
 
 	if len(result.CloneGroups) > 0 {
 		cloneGroup := result.CloneGroups[0]
-		fmt.Printf("  First cloneGroup: %s with %d clones\n", cloneGroup.Hash[:8]+"...", len(cloneGroup.Clones))
+		fmt.Printf(
+			"  First cloneGroup: %s with %d clones\n",
+			cloneGroup.Hash[:8]+"...",
+			len(cloneGroup.Clones),
+		)
 		fmt.Printf("    Method: %s, Size: %d tokens\n", cloneGroup.Method, cloneGroup.Size)
 	}
 }

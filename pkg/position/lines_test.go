@@ -3,6 +3,7 @@ package position
 import (
 	"testing"
 	"testing/quick"
+
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
@@ -162,7 +163,7 @@ func TestJoinLines(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-			actual := JoinLines(tt.lines)
+		actual := JoinLines(tt.lines)
 		t.Run(tt.name, func(t *testing.T) {
 			testutil.ExpectTrue(t, actual == tt.want, "JoinLines")
 		})

@@ -164,7 +164,8 @@ func runStats(c *cobra.Command, arguments []string) error {
 		}
 	}
 
-	if footerErr := p.PrintFooter(); footerErr != nil {
+	footerErr := p.PrintFooter()
+	if footerErr != nil {
 		return duplerrors.Wrap(footerErr, duplerrors.AnalysisError, "failed to print stats footer")
 	}
 

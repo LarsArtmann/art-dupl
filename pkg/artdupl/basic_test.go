@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // newTestConfig creates a config for testing.

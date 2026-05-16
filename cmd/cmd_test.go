@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter"
@@ -36,14 +37,19 @@ func saveVersionGlobals(t *testing.T) {
 
 // testPrintDupls calls printDupls with default test arguments.
 func testPrintDupls(
-	t *testing.T,
 	ctx context.Context,
+	t *testing.T,
 	mock printer.Printer,
+	fread printer.ReadFile,
 	ch chan syntax.Match,
 ) error {
 	t.Helper()
 
-	return printDupls(ctx, mock, ch, config.SortBySize, 15, "art-dupl")
+	return printDupls(ctx, mock, fread, ch, config.SortBySize, 15, "art-dupl")
+}
+
+var testFread printer.ReadFile = func(_ string) ([]byte, error) {
+	return []byte("package test\n\nfunc test() {\n\tx := 1\n\treturn x\n}\n"), nil
 }
 
 // createTestMatchChannel creates a channel with a single test match.
@@ -194,7 +200,7 @@ func (m *mockPrinter) PrintFooter() error {
 	return nil
 }
 
-func (m *mockPrinter) PrintClones(_ [][]*syntax.Node, _ ...config.SortCriteria) error {
+func (m *mockPrinter) PrintClones(_ domain.ProcessedCloneGroup, _ ...config.SortCriteria) error {
 	m.clonesCalled = true
 
 	return nil
@@ -413,7 +419,7 @@ func TestPrintDupls(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		err := testPrintDupls(t, t.Context(), mock, ch)
+		err := testPrintDupls(t.Context(), t, mock, testFread, ch)
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -432,7 +438,7 @@ func TestPrintDupls(t *testing.T) {
 
 		ch := createTestMatchChannel("abc123", "test1.go", "test2.go")
 
-		err := testPrintDupls(t, t.Context(), mock, ch)
+		err := testPrintDupls(t.Context(), t, mock, testFread, ch)
 		if err != nil {
 			t.Errorf("printDupls() error = %v", err)
 		}
@@ -450,7 +456,7 @@ func TestPrintDupls(t *testing.T) {
 		ctx, cancel := context.WithCancel(t.Context())
 		cancel()
 
-		err := printDupls(ctx, mock, ch, config.SortBySize, 15, "art-dupl")
+		err := printDupls(ctx, mock, testFread, ch, config.SortBySize, 15, "art-dupl")
 		if err == nil {
 			t.Error("Expected error from cancelled context")
 		}

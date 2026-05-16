@@ -35,7 +35,10 @@ func NewText(w io.Writer, fread ReadFile) Printer {
 
 func (p *TextPrinter) PrintHeader() error { return nil }
 
-func (p *TextPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error {
+func (p *TextPrinter) PrintClones(
+	group domain.ProcessedCloneGroup,
+	sortBy ...config.SortCriteria,
+) error {
 	p.cnt++
 
 	clones := group.Clones
@@ -43,7 +46,7 @@ func (p *TextPrinter) PrintClones(group domain.ProcessedCloneGroup, sortBy ...co
 
 	groupCloneSize := calculateProcessedCloneSizes(clones)
 
-	isFileDupe := detectProcessedFileDuplicate(p.isFileDupe, clones)
+	isFileDupe := p.isFileDupe
 
 	if isFileDupe && p.currentHash != "" {
 		hashPrefix := p.currentHash
@@ -98,7 +101,13 @@ func (p *TextPrinter) PrintFooter() error {
 
 func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
 	for _, cl := range clones {
-		if _, err := fmt.Fprintf(p.w, "  %s:%d,%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
+		if _, err := fmt.Fprintf(
+			p.w,
+			"  %s:%d,%d\n",
+			cl.Filename,
+			cl.LineStart,
+			cl.LineEnd,
+		); err != nil {
 			return err
 		}
 	}
@@ -157,7 +166,13 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					return err
 				}
 			} else {
-				if _, err := fmt.Fprintf(p.w, "%s:%d,%d\n", cl.Filename, cl.LineStart, cl.LineEnd); err != nil {
+				if _, err := fmt.Fprintf(
+					p.w,
+					"%s:%d,%d\n",
+					cl.Filename,
+					cl.LineStart,
+					cl.LineEnd,
+				); err != nil {
 					return err
 				}
 			}
@@ -194,14 +209,6 @@ func calculateProcessedCloneSizes(clones []domain.ProcessedClone) int {
 	}
 
 	return total
-}
-
-func detectProcessedFileDuplicate(flag bool, clones []domain.ProcessedClone) bool {
-	if flag {
-		return true
-	}
-
-	return false
 }
 
 func totalFragmentSize(clones []domain.ProcessedClone) int {

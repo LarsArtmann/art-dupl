@@ -1,11 +1,12 @@
 package job
 
 import (
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"context"
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 func TestProfile(t *testing.T) {

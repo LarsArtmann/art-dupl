@@ -61,7 +61,7 @@ func TestSARIFPrinter_PrintClones(t *testing.T) {
 		createTestSARIFNodes("test2.go", 0, 50),
 	}
 
-	err := printer.PrintClones(sarifDups)
+	err := printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", sarifDups))
 	if err != nil {
 		t.Errorf("PrintClones returned error: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestSARIFPrinter_PrintClones_Empty(t *testing.T) {
 
 	printer := NewSARIF(&buf, mockSARIFReadFile, 15).(*sarifPrinter)
 
-	err := printer.PrintClones([][]*syntax.Node{})
+	err := printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", [][]*syntax.Node{}))
 	if err != nil {
 		t.Errorf("PrintClones returned error: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestSARIFPrinter_PrintFooter(t *testing.T) {
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 50),
 	}
-	_ = printer.PrintClones(dups)
+	_ = printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups))
 
 	err := printer.PrintFooter()
 	if err != nil {
@@ -174,7 +174,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 
 	dups1 := [][]*syntax.Node{nodes1, nodes2}
 
-	err := printer.PrintClones(dups1)
+	err := printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups1))
 	if err != nil {
 		t.Errorf("First PrintClones returned error: %v", err)
 	}
@@ -184,7 +184,7 @@ func TestSARIFPrinter_DuplicateHashFiltering(t *testing.T) {
 
 	dups2 := [][]*syntax.Node{nodes1, nodes2}
 
-	err = printer.PrintClones(dups2)
+	err = printer.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups2))
 	if err != nil {
 		t.Errorf("Second PrintClones returned error: %v", err)
 	}
@@ -207,7 +207,7 @@ func TestSARIFOutput_FingerprintCompliance(t *testing.T) {
 	dups := [][]*syntax.Node{
 		createTestSARIFNodes("test.go", 0, 100),
 	}
-	_ = sarifPrinter.PrintClones(dups)
+	_ = sarifPrinter.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups))
 	_ = sarifPrinter.PrintFooter()
 
 	var output SARIFOutput
@@ -272,7 +272,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 		createTestSARIFNodes("main.go", 0, 100),
 		createTestSARIFNodes("utils.go", 0, 100),
 	}
-	_ = sarifInstance.PrintClones(dups)
+	_ = sarifInstance.PrintClones(processTestNodes(mockSARIFReadFile, "test", dups))
 	_ = sarifInstance.PrintFooter()
 
 	var output SARIFOutput
