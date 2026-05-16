@@ -2,6 +2,14 @@ package printer
 
 import "fmt"
 
+const (
+	sizeRange1to5   = "1-5 lines"
+	sizeRange6to10  = "6-10 lines"
+	sizeRange11to20 = "11-20 lines"
+	healthSmall     = "small"
+	healthMedium    = "medium"
+)
+
 // calculateHealthScore calculates an A-F grade based on duplication, complexity, and impact metrics.
 //
 // Scoring philosophy:
@@ -63,11 +71,11 @@ func scoreToGrade(score float64) string {
 func (p *stats) getSizeRange(lines int) string {
 	switch {
 	case lines <= 5:
-		return "1-5 lines"
+		return sizeRange1to5
 	case lines <= 10:
-		return "6-10 lines"
+		return sizeRange6to10
 	case lines <= 20:
-		return "11-20 lines"
+		return sizeRange11to20
 	case lines <= 50:
 		return "21-50 lines"
 	case lines <= 100:
@@ -112,9 +120,9 @@ func (p *stats) tokenRangeStr(start, end int) string {
 func (p *stats) getSeverity(tokens int) string {
 	switch {
 	case tokens <= 30:
-		return "small"
+		return healthSmall
 	case tokens <= 50:
-		return "medium"
+		return healthMedium
 	case tokens <= 100:
 		return "large"
 	default:
