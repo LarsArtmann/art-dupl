@@ -29,10 +29,13 @@ type CloneGroup struct {
 }
 
 type JSONClone struct {
-	Filename  string `json:"filename"`
-	LineStart int    `json:"line_start"`
-	LineEnd   int    `json:"line_end"`
-	Fragment  string `json:"fragment"`
+	Filename      string `json:"filename"`
+	LineStart     int    `json:"line_start"`
+	LineEnd       int    `json:"line_end"`
+	Fragment      string `json:"fragment"`
+	Category      string `json:"category,omitempty"`
+	Priority      string `json:"priority,omitempty"`
+	Actionability string `json:"actionability,omitempty"`
 }
 
 type Summary struct {
@@ -107,10 +110,13 @@ func (p *JSONPrinter) PrintClones(
 	jsonClones := make([]JSONClone, len(clones))
 	for i, cl := range clones {
 		jsonClones[i] = JSONClone{
-			Filename:  cl.Filename,
-			LineStart: cl.LineStart,
-			LineEnd:   cl.LineEnd,
-			Fragment:  string(deindent(cl.Fragment)),
+			Filename:      cl.Filename,
+			LineStart:     cl.LineStart,
+			LineEnd:       cl.LineEnd,
+			Fragment:      string(deindent(cl.Fragment)),
+			Category:      string(cl.Classification.Category),
+			Priority:      string(cl.Classification.Priority),
+			Actionability: string(cl.Classification.Actionability),
 		}
 	}
 
