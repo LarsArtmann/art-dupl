@@ -41,7 +41,7 @@ func (fp *FileProcessor) WriteFile(filename string, content []byte, perm os.File
 
 	err := os.MkdirAll(dir, 0o750) //nolint:mnd // Standard directory permission
 	if err != nil {
-		return errors.NewIOError(dir, "failed to create directory", err)
+		return errors.NewIOError(dir, "failed to create directory for "+filename, err)
 	}
 
 	// Write file
@@ -66,7 +66,7 @@ func (fp *FileProcessor) ReadFile(filename string) ([]byte, error) {
 		fullPath,
 	) // #nosec G304 -- Path is constructed from base directory and validated filename
 	if err != nil {
-		return nil, errors.NewIOError(fullPath, "failed to read file", err)
+		return nil, errors.NewIOError(fullPath, fmt.Sprintf("failed to read file %s", filename), err)
 	}
 
 	return data, nil

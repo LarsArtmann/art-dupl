@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/cache"
@@ -143,7 +144,11 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 	ast, lines, err = ParseFileByExtensionWithConfig(file, ip.semantic)
 	if err != nil {
-		return ip.handleFileError(file, err, "parse")
+		return ip.handleFileError(
+			file,
+			fmt.Errorf("parse file (lines: %d): %w", lines, err),
+			"parse",
+		)
 	}
 
 	// Serialize AST to nodes

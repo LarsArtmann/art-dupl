@@ -15,6 +15,10 @@ var ErrZeroLengthDuplicate = errors.New("zero length duplicate found")
 // This is the single point where [][]*syntax.Node is decoded into domain types,
 // eliminating the need for each printer to understand AST internals.
 func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClone, error) {
+	if len(dups) == 0 {
+		return nil, nil
+	}
+
 	clones := make([]domain.ProcessedClone, len(dups))
 
 	for i, dup := range dups {
@@ -29,8 +33,9 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		fileInfo, err := ProcessNodeRange(fread, nstart, nend)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"failed to process node range for file %s: %w",
+				"failed to process node range for file %s (index %d): %w",
 				nstart.Filename,
+				i,
 				err,
 			)
 		}
@@ -66,7 +71,7 @@ func NodesToGroup(
 ) (domain.ProcessedCloneGroup, error) {
 	clones, err := ProcessClones(fread, dups)
 	if err != nil {
-		return domain.ProcessedCloneGroup{}, err
+		return domain.ProcessedCloneGroup{}, fmt.Errorf("process clones for hash %s: %w", hash, err)
 	}
 
 	size := 0

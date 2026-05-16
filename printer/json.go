@@ -2,6 +2,7 @@ package printer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"sort"
 	"time"
@@ -166,7 +167,13 @@ func (p *JSONPrinter) OutputJSON(
 
 	data, err := json.MarshalIndent(&output, "", "  ")
 	if err != nil {
-		return errors.HandleMarshalingError("encode", "JSON output", err)
+		return fmt.Errorf(
+			"encode JSON output (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold,
+			sortBy.String(),
+			detectionMethod,
+			errors.HandleMarshalingError("encode", "JSON output", err),
+		)
 	}
 
 	return writeFormattedOutput(p.w, data, "JSON output")

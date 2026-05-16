@@ -19,6 +19,7 @@ func printDupls(
 	sortBy config.SortCriteria,
 	threshold int,
 	detectionMethod string,
+	semantic bool,
 ) error {
 	if ctx.Err() != nil {
 		return ctx.Err() //nolint:wrapcheck
@@ -29,21 +30,43 @@ func printDupls(
 
 	err := printHeader(p, sortBy, threshold)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"print header (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold,
+			sortBy.String(),
+			detectionMethod,
+			err,
+		)
 	}
 
 	err = printCloneGroups(p, fread, groups, keys, sortBy)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"print clone groups (fread: %v, sortBy: %s): %w",
+			fread,
+			sortBy.String(),
+			err,
+		)
 	}
 
 	err = handleJSONOutput(p, threshold, sortBy, detectionMethod)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"json output (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold,
+			sortBy.String(),
+			detectionMethod,
+			err,
+		)
 	}
 
 	if ctx.Err() != nil {
-		return ctx.Err() //nolint:wrapcheck
+		return fmt.Errorf(
+			"context cancelled after output (threshold: %d, sortBy: %s): %w",
+			threshold,
+			sortBy.String(),
+			ctx.Err(),
+		)
 	}
 
 	return printFooter(p)
@@ -97,8 +120,8 @@ func printCloneGroups(
 
 		clones, err := printer.ProcessClones(fread, uniq)
 		if err != nil {
-			return errors.Wrap(err, errors.AnalysisError,
-				"failed to process clones for hash "+k)
+			return errors.Wrapf(err, errors.AnalysisError,
+				"failed to process clones for hash %s", k)
 		}
 
 		err = p.PrintClones(domain.ProcessedCloneGroup{
@@ -137,8 +160,8 @@ func handleJSONOutput(
 
 	err := jsonPrinter.OutputJSON(threshold, sortBy, detectionMethod)
 	if err != nil {
-		return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s): %w",
-			threshold, sortBy.String(), err)
+		return fmt.Errorf("failed to output JSON (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold, sortBy.String(), detectionMethod, err)
 	}
 
 	return nil

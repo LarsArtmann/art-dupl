@@ -89,7 +89,8 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, HandleMarshalingError("marshal indent", context, err)
+		return nil, fmt.Errorf("marshal indent (prefix: %q, context: %s): %w",
+			prefix, context, HandleMarshalingError("marshal indent", context, err))
 	}
 
 	return data, nil
@@ -104,7 +105,7 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, NewConfigError("failed to marshal value with indent", err)
+		return nil, NewConfigError(fmt.Sprintf("failed to marshal value with indent (prefix: %q)", prefix), err)
 	}
 
 	return data, nil

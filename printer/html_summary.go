@@ -290,7 +290,12 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) erro
 			sortBy,
 		)
 		if err != nil {
-			return err
+			return fmt.Errorf(
+				"output HTML (threshold: %d, sortBy: %s): %w",
+				threshold,
+				sortBy.String(),
+				err,
+			)
 		}
 	}
 

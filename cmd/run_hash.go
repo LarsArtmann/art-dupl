@@ -48,7 +48,9 @@ func executeHashOnlyAnalysis(
 
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
-		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, err
+		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, fmt.Errorf(
+			"hash-only analysis (outputFormat: %s): %w", outputFormat, err,
+		)
 	}
 
 	printFileCollectionStatus(cfg, outputFormat, len(files))

@@ -148,12 +148,16 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 
 	err := os.MkdirAll(filesDir, cacheDirPerms)
 	if err != nil {
-		return errors.NewIOError(filesDir, "failed to create cache directory", err)
+		return errors.NewIOError(
+			filesDir,
+			"failed to create cache directory for "+contentHash,
+			err,
+		)
 	}
 
 	data, err := fc.serialize(nodes)
 	if err != nil {
-		return err
+		return fmt.Errorf("serialize nodes for hash %s: %w", contentHash, err)
 	}
 
 	cachePath := fc.cachePath(contentHash)
@@ -189,7 +193,7 @@ func (fc *FileCache) Remove(contentHash string) error {
 
 	err := os.Remove(cachePath)
 	if err != nil && !os.IsNotExist(err) {
-		return errors.NewIOError(cachePath, "failed to remove cache entry", err)
+		return errors.NewIOError(cachePath, fmt.Sprintf("failed to remove cache entry for hash %s", contentHash), err)
 	}
 
 	return nil

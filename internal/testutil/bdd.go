@@ -137,7 +137,8 @@ func buildSharedBinary(binaryPath string) error {
 	output, buildErr := cmd.CombinedOutput()
 	if buildErr != nil {
 		return fmt.Errorf(
-			"failed to build art-dupl binary: %w\nOutput: %s",
+			"failed to build art-dupl binary at %s: %w\nOutput: %s",
+			binaryPath,
 			buildErr,
 			string(output),
 		)

@@ -242,7 +242,7 @@ func executeAnalysis(
 		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
 			err,
 			duplerrors.AnalysisError,
-			"failed to setup filter",
+			fmt.Sprintf("failed to setup filter (outputFormat: %s)", outputFormat),
 		)
 	}
 
@@ -266,7 +266,11 @@ func executeAnalysis(
 		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
 			result.err,
 			duplerrors.AnalysisError,
-			fmt.Sprintf("failed to build suffix tree for paths %v", paths),
+			fmt.Sprintf(
+				"failed to build suffix tree for paths %v (outputFormat: %s)",
+				paths,
+				outputFormat,
+			),
 		)
 	}
 

@@ -87,7 +87,9 @@ func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 			len(groupDiff.Others),
 		)
 		if err != nil {
-			return err
+			return fmt.Errorf("diff comparison %d/%d for base %s:%d: %w",
+				idx, len(groupDiff.Others),
+				groupDiff.Base.Filename, groupDiff.Base.LineStart, err)
 		}
 	}
 
@@ -101,7 +103,12 @@ func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 </div>
 `)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("write diff legend for base %s:%d: %w",
+			groupDiff.Base.Filename, groupDiff.Base.LineStart, err)
+	}
+
+	return nil
 }
 
 // writeDiffViewToggle writes the view mode toggle buttons (side-by-side vs inline).
@@ -112,8 +119,11 @@ func (p *htmlprinter) writeDiffViewToggle() error {
 <button id="diff-toggle-%d-inline" data-mode="inline" onclick="toggleDiffView(%d, 'inline')">▣ Inline</button>
 </div>
 `, p.iota, p.iota, p.iota, p.iota)
+	if err != nil {
+		return fmt.Errorf("write diff view toggle for group %d: %w", p.iota, err)
+	}
 
-	return err
+	return nil
 }
 
 // writeDiffSelector writes the dropdown for selecting which clone to compare.
@@ -124,14 +134,15 @@ func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 <option value="" disabled selected>Compare with...</option>
 `)
 	if err != nil {
-		return err
+		return fmt.Errorf("write diff selector header for group %d: %w", p.iota, err)
 	}
 
 	for idx, other := range groupDiff.Others {
 		_, err := fmt.Fprintf(p.w, `<option value="%d">%s:%d</option>
 `, idx, html.EscapeString(other.Filename), other.LineStart)
 		if err != nil {
-			return err
+			return fmt.Errorf("write diff selector option %d for %s:%d: %w",
+				idx, other.Filename, other.LineStart, err)
 		}
 	}
 
@@ -165,7 +176,8 @@ func (p *htmlprinter) writeDiffComparison(
 <span class="diff-stats">
 `, activeClass, p.iota, index, otherVSCode, html.EscapeString(other.Filename), other.LineStart)
 	if err != nil {
-		return err
+		return fmt.Errorf("write diff comparison header for %s:%d (index %d/%d): %w",
+			other.Filename, other.LineStart, index, total, err)
 	}
 
 	// Write stats
@@ -186,12 +198,13 @@ func (p *htmlprinter) writeDiffComparison(
 <div class="diff-content" data-diff-index="`+strconv.Itoa(index)+`">
 `)
 	if err != nil {
-		return err
+		return fmt.Errorf("write diff content wrapper for %s:%d (index %d/%d): %w",
+			other.Filename, other.LineStart, index, total, err)
 	}
 
 	// Write base and compared panels with word-level highlighting
 	if err := p.writeDiffPanelsWithWordDiff(base, other); err != nil {
-		return err
+		return fmt.Errorf("write diff panels for %s:%d: %w", other.Filename, other.LineStart, err)
 	}
 
 	_, err = fmt.Fprint(p.w, `</div>
@@ -213,12 +226,22 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"write base panel header for %s:%d: %w",
+			other.Filename,
+			other.LineStart,
+			err,
+		)
 	}
 
 	// Render base panel
 	if err := p.renderDiffLines(baseLines, comparedLines, true); err != nil {
-		return err
+		return fmt.Errorf(
+			"render base diff lines for %s:%d: %w",
+			other.Filename,
+			other.LineStart,
+			err,
+		)
 	}
 
 	// Close base panel, start compared panel
@@ -229,19 +252,32 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"write compared panel header for %s:%d: %w",
+			other.Filename,
+			other.LineStart,
+			err,
+		)
 	}
 
 	// Render compared panel
 	if err := p.renderDiffLines(comparedLines, baseLines, false); err != nil {
-		return err
+		return fmt.Errorf(
+			"render compared diff lines for %s:%d: %w",
+			other.Filename,
+			other.LineStart,
+			err,
+		)
 	}
 
 	_, err = fmt.Fprint(p.w, `</code></pre>
 </div>
 `)
+	if err != nil {
+		return fmt.Errorf("close diff panels for %s:%d: %w", other.Filename, other.LineStart, err)
+	}
 
-	return err
+	return nil
 }
 
 // renderDiffLines renders diff lines with optional word-level highlighting for modified lines.
@@ -285,7 +321,7 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 			content,
 		)
 		if err != nil {
-			return err
+			return fmt.Errorf("write diff line %d: %w", line.LineNumber, err)
 		}
 	}
 

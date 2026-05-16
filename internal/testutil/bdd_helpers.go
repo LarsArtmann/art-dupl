@@ -19,7 +19,7 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 
 		err := os.MkdirAll(fullPath, 0o750)
 		if err != nil {
-			return fmt.Errorf("failed to create directory %s: %w", path, err)
+			return fmt.Errorf("failed to create directory %s (for paths %v): %w", path, paths, err)
 		}
 	}
 
@@ -39,13 +39,13 @@ func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
 	// Ensure directory exists
 	err := os.MkdirAll(dir, 0o750)
 	if err != nil {
-		return fmt.Errorf("failed to create directory %s: %w", dir, err)
+		return fmt.Errorf("failed to create directory %s (for %s): %w", dir, subpath, err)
 	}
 
 	// Write file
 	err = os.WriteFile(fullPath, []byte(content), 0o600)
 	if err != nil {
-		return fmt.Errorf("failed to write file %s: %w", subpath, err)
+		return fmt.Errorf("failed to write file %s (%d bytes): %w", subpath, len(content), err)
 	}
 
 	return nil
@@ -103,12 +103,12 @@ func (s *BDDTestSetup) RunWithConfigFile(
 
 	err := os.WriteFile(configPath, []byte(configContent), 0o600)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write config file: %w", err)
+		return nil, fmt.Errorf("failed to write config file %s: %w", configFileName, err)
 	}
 
 	err = s.CreateDuplicateFiles(fileNames, code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
+		return nil, fmt.Errorf("failed to create %d duplicate files (%d bytes): %w", len(fileNames), len(code), err)
 	}
 
 	return s.RunArtDupl("--config", configPath, s.TmpDir)
@@ -264,7 +264,7 @@ func (s *BDDTestSetup) RunVendorTest(
 
 	err := s.CreateVendorDuplicateFiles("vendor/example", code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
+		return nil, fmt.Errorf("failed to create vendor duplicate files (subcommand: %s, includeVendor: %t): %w", subcommand, includeVendor, err)
 	}
 
 	// Build arguments
@@ -305,7 +305,7 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	// Create vendor directory with duplicate files
 	err := s.CreateVendorDuplicateFiles(vendorPath, code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vendor duplicate files: %w", err)
+		return nil, fmt.Errorf("failed to create vendor duplicate files in %s: %w", vendorPath, err)
 	}
 
 	// Build arguments

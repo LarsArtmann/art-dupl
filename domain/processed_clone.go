@@ -27,6 +27,18 @@ const (
 	PriorityLow      ClonePriority = "low"
 )
 
+// CloneActionability indicates whether a clone can realistically be deduplicated.
+type CloneActionability string
+
+const (
+	// Actionable clones represent real logic duplication that can be extracted,
+	// composed, or otherwise refactored to reduce duplication.
+	Actionable CloneActionability = "actionable"
+	// NonActionable clones are idiomatic patterns that cannot be deduplicated
+	// without breaking Go semantics, interfaces, or standard conventions.
+	NonActionable CloneActionability = "non-actionable"
+)
+
 // priorityData holds display data for priorities.
 type priorityData struct {
 	color string
@@ -87,13 +99,14 @@ func (c CloneCategory) GetCategoryEmoji() string {
 
 // CloneClassification provides metadata about a code clone for actionable reports.
 type CloneClassification struct {
-	Category   CloneCategory
-	IsTest     bool
-	Priority   ClonePriority
-	Tokens     int
-	Lines      int
-	NodeType   string
-	Suggestion string
+	Category      CloneCategory
+	IsTest        bool
+	Priority      ClonePriority
+	Actionability CloneActionability
+	Tokens        int
+	Lines         int
+	NodeType      string
+	Suggestion    string
 }
 
 // ProcessedClone represents a single clone instance with extracted fragment data.

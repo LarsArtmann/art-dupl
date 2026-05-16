@@ -74,7 +74,12 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 
 		dm := DetectionMethod(method)
 		if !dm.IsValid() {
-			return nil, fmt.Errorf("%w: %s", ErrInvalidDetectionMethod, method)
+			return nil, fmt.Errorf(
+				"%w: %s (input: %q)",
+				ErrInvalidDetectionMethod,
+				method,
+				methodsStr,
+			)
 		}
 
 		result = append(result, dm)

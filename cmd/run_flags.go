@@ -135,6 +135,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		config.SortCriteria(sortBy),
 		mergedConfig.Threshold,
 		detectionMethodStr,
+		mergedConfig.Semantic,
 	)
 	if err != nil {
 		return duplerrors.Wrap(

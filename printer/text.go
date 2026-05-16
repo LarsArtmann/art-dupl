@@ -62,7 +62,7 @@ func (p *TextPrinter) PrintClones(
 			len(clones),
 			fileSizeStr,
 		); err != nil {
-			return err
+			return fmt.Errorf("write file duplicate header (hash: %s, files: %d): %w", hashPrefix, len(clones), err)
 		}
 
 		for _, cl := range clones {
@@ -70,7 +70,7 @@ func (p *TextPrinter) PrintClones(
 		}
 	} else {
 		if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
-			return err
+			return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
 		}
 	}
 
@@ -143,7 +143,12 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 
 	err := p.PrintHeader()
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"print header (threshold: %d, sortBy: %s): %w",
+			threshold,
+			sortBy.String(),
+			err,
+		)
 	}
 
 	for _, cloneGroup := range sortedCloneGroups {
@@ -157,7 +162,13 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					cl.LineStart,
 					cl.LineEnd,
 				); err != nil {
-					return err
+					return fmt.Errorf(
+						"write clone fragment %s:%d-%d: %w",
+						cl.Filename,
+						cl.LineStart,
+						cl.LineEnd,
+						err,
+					)
 				}
 			} else {
 				if err := writeCloneLines(
@@ -165,7 +176,13 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					[]domain.ProcessedClone{cl},
 					"%s:%d,%d\n",
 				); err != nil {
-					return err
+					return fmt.Errorf(
+						"write clone line %s:%d-%d: %w",
+						cl.Filename,
+						cl.LineStart,
+						cl.LineEnd,
+						err,
+					)
 				}
 			}
 		}
