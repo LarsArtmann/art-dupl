@@ -116,7 +116,7 @@ func (p *TextPrinter) PrintFooter() error {
 }
 
 func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
-	return writeCloneLines(p.w, clones, "  %s:%d,%d\n")
+	return writeCloneLines(p.w, clones, "  %s:%d-%d\n")
 }
 
 func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {
@@ -207,7 +207,7 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 				if err := writeCloneLines(
 					p.w,
 					[]domain.ProcessedClone{cl},
-					"%s:%d,%d\n",
+					"%s:%d-%d\n",
 				); err != nil {
 					return fmt.Errorf(
 						"write clone line %s:%d-%d: %w",

@@ -28,7 +28,7 @@ func TestEvaluateActionability(t *testing.T) {
 			expected: domain.NonActionable,
 		},
 		{
-			name: "single DeferStmt is non-actionable",
+			name: "bare DeferStmt without children is non-actionable",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.DeferStmt, Owns: 1}},
 				{{Type: golang.DeferStmt, Owns: 1}},
@@ -36,12 +36,12 @@ func TestEvaluateActionability(t *testing.T) {
 			expected: domain.NonActionable,
 		},
 		{
-			name: "single IfStmt is non-actionable (error propagation)",
+			name: "bare IfStmt without children is actionable (cannot verify pattern)",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.IfStmt, Owns: 1}},
 				{{Type: golang.IfStmt, Owns: 1}},
 			},
-			expected: domain.NonActionable,
+			expected: domain.Actionable,
 		},
 		{
 			name: "FuncDecl with body is actionable",
@@ -71,6 +71,94 @@ func TestEvaluateActionability(t *testing.T) {
 			name: "only one sequence with FuncDecl is still non-actionable",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.FuncDecl, Owns: 1}},
+			},
+			expected: domain.NonActionable,
+		},
+		{
+			name: "defer mu.Unlock is non-actionable",
+			seqs: [][]*syntax.Node{
+				{
+					{
+						Type: golang.DeferStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Children: []*syntax.Node{
+											{Type: golang.Ident},
+											{Type: golang.Ident},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					{
+						Type: golang.DeferStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Children: []*syntax.Node{
+											{Type: golang.Ident},
+											{Type: golang.Ident},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: domain.NonActionable,
+		},
+		{
+			name: "if err != nil { return err } is non-actionable",
+			seqs: [][]*syntax.Node{
+				{
+					{
+						Type: golang.IfStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.BinaryExpr,
+								Children: []*syntax.Node{
+									{Type: golang.Ident},
+								},
+							},
+							{
+								Type: golang.BlockStmt,
+								Children: []*syntax.Node{
+									{Type: golang.ReturnStmt},
+								},
+							},
+						},
+					},
+				},
+				{
+					{
+						Type: golang.IfStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.BinaryExpr,
+								Children: []*syntax.Node{
+									{Type: golang.Ident},
+								},
+							},
+							{
+								Type: golang.BlockStmt,
+								Children: []*syntax.Node{
+									{Type: golang.ReturnStmt},
+								},
+							},
+						},
+					},
+				},
 			},
 			expected: domain.NonActionable,
 		},
