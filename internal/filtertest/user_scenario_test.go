@@ -10,7 +10,12 @@ import (
 )
 
 // assertFilterResult checks that a file is kept or not kept by the filter.
-func assertFilterResult(t *testing.T, f *gogenfilter.Filter, fsPath, description string, wantKept bool) {
+func assertFilterResult(
+	t *testing.T,
+	f *gogenfilter.Filter,
+	fsPath, description string,
+	wantKept bool,
+) {
 	t.Helper()
 
 	wasKept, err := f.Filter(fsPath)
