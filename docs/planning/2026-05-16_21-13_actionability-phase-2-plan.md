@@ -7,11 +7,11 @@
 
 ## Pareto Breakdown
 
-| Tier | % Work | % Result | What |
-|---|---|---|---|
-| **1%** | 3 fixes | **51%** | Populate Actionability field + fix text notation + fix gci |
-| **4%** | 3 fixes | **64%** | Real error propagation + real defer detection + JSON serialization |
-| **20%** | 8 tasks | **80%** | HTML badges + BDD tests + priority adjustment + docs |
+| Tier    | % Work  | % Result | What                                                               |
+| ------- | ------- | -------- | ------------------------------------------------------------------ |
+| **1%**  | 3 fixes | **51%**  | Populate Actionability field + fix text notation + fix gci         |
+| **4%**  | 3 fixes | **64%**  | Real error propagation + real defer detection + JSON serialization |
+| **20%** | 8 tasks | **80%**  | HTML badges + BDD tests + priority adjustment + docs               |
 
 ---
 
@@ -34,6 +34,7 @@
 **Decision:** Do NOT remove semantic filtering from `cmd`. Filtering at `cmd` layer skips file I/O for non-actionable groups (performance win). Filtering at printer layer would require reading files first.
 
 **Architecture:**
+
 - `ProcessClones` → ALWAYS populates `Actionability` (data completeness)
 - `cmd/printCloneGroups` → Filters when `semantic == true` (performance)
 - `TextPrinter` → Can show `[non-actionable]` badge when `richText == true` AND `Actionability == NonActionable`
@@ -59,6 +60,7 @@
 **File:** `printer/actionability.go`  
 **Current:** `len(seq) == 1 && seq[0].Type == golang.IfStmt`
 **Real:** An error propagation match spans multiple nodes:
+
 ```
 IfStmt
 ├── BinaryExpr (err != nil)
@@ -68,6 +70,7 @@ IfStmt
     └── ReturnStmt
         └── Ident (err)
 ```
+
 **Fix:** Inspect `seq[0].Children` for `BinaryExpr` (with `Ident/err` and `Ident/nil`) AND `ReturnStmt` child.
 
 ### 2.2 Implement `isPureDeferPattern`
@@ -75,9 +78,10 @@ IfStmt
 **File:** `printer/actionability.go`  
 **Current:** `len(seq) == 1 && seq[0].Type == golang.DeferStmt`
 **Real:** Need to distinguish:
+
 - `defer mu.Unlock()` → NonActionable (RAII)
 - `defer expensiveCleanup()` → Actionable (could be extracted)
-**Fix:** Inspect `DeferStmt.Children` for `CallExpr` → `SelectorExpr` with method names like `Unlock`, `RLock`, `Close`, `UnlockMutex`.
+  **Fix:** Inspect `DeferStmt.Children` for `CallExpr` → `SelectorExpr` with method names like `Unlock`, `RLock`, `Close`, `UnlockMutex`.
 
 ### 2.3 Add `Actionability` to JSON output
 

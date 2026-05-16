@@ -19,21 +19,23 @@ effectively.
 
 ### Clone Group Reduction
 
-| Mode | Threshold | Clone Groups | Reduction |
-|---|---|---|---|
-| --structural | 25 | 244 | baseline |
-| --semantic | 25 | 78 | **68% fewer** |
+| Mode         | Threshold | Clone Groups | Reduction     |
+| ------------ | --------- | ------------ | ------------- |
+| --structural | 25        | 244          | baseline      |
+| --semantic   | 25        | 78           | **68% fewer** |
 
 **Validation: PASS.** Matches the reported ~60-70% false positive rate.
 
 ### What Semantic Mode Filters Out
 
 Structural mode (244 groups) includes:
+
 - Interface method signatures: `event_store.go` ↔ `sqlite_event_store.go`
 - Storage wrappers: `checkpoint.go` ↔ `sqlite_checkpoint.go`
 - Transactional store boilerplate: `transactional_store.go` ↔ `sqlite_transactional_store.go`
 
 Semantic mode (78 groups) keeps only:
+
 - Test fixture duplicates: `*_test.go` patterns
 - Actual logic duplication across test suites
 - Cyclic patterns in test data generation
@@ -92,14 +94,14 @@ way to discover this.
 
 ## What Works
 
-| Feature | Status | Evidence |
-|---|---|---|
-| --semantic suppresses boilerplate | ✅ | 244 → 78 groups (68% reduction) |
-| --rich-text shows badges | ✅ | [medium] function (2 tokens, 60 lines) suggestion: ... |
-| JSON includes classification | ✅ | category, priority, actionability fields present |
-| Text line notation -- | ✅ | store.go:97-103 (not 97,103) |
-| Actionability field populated | ✅ | ProcessClones sets it for all clones |
-| BDD tests pass | ✅ | 253 specs, all green |
+| Feature                           | Status | Evidence                                               |
+| --------------------------------- | ------ | ------------------------------------------------------ |
+| --semantic suppresses boilerplate | ✅     | 244 → 78 groups (68% reduction)                        |
+| --rich-text shows badges          | ✅     | [medium] function (2 tokens, 60 lines) suggestion: ... |
+| JSON includes classification      | ✅     | category, priority, actionability fields present       |
+| Text line notation --             | ✅     | store.go:97-103 (not 97,103)                           |
+| Actionability field populated     | ✅     | ProcessClones sets it for all clones                   |
+| BDD tests pass                    | ✅     | 253 specs, all green                                   |
 
 ---
 
