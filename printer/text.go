@@ -203,6 +203,7 @@ func formatBytes(bytes int) string {
 
 func calculateProcessedCloneSizes(clones []domain.ProcessedClone) int {
 	total := 0
+
 	for i := range clones {
 		clones[i].Size = len(clones[i].Fragment)
 		total += clones[i].Size

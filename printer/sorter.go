@@ -159,5 +159,3 @@ func ExtractSortCriteria(sortBy ...config.SortCriteria) config.SortCriteria {
 
 	return config.SortBySize
 }
-
-

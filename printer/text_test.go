@@ -24,6 +24,7 @@ func mustPrintClones(t *testing.T, p Printer, dups [][]*syntax.Node) {
 	t.Helper()
 
 	fread := mockReadFile(testPlumbCode)
+
 	group, err := NodesToGroup(fread, "test", dups)
 	if err != nil {
 		t.Fatalf("NodesToGroup() error: %v", err)
@@ -154,6 +155,7 @@ func TestTextPrinter_PrintClones_ReadError(t *testing.T) {
 	fread := errorReadFile("file not found")
 
 	nodes := createMockNodes(t)
+
 	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{nodes})
 	if err == nil {
 		t.Error("PrintClones() should return error on read failure")
@@ -486,6 +488,7 @@ func TestTextPrinter_PrintClonesSorted_ReadError(t *testing.T) {
 	fread := errorReadFile("simulated read error")
 
 	node := &syntax.Node{Filename: "missing.go", Pos: 0, End: 10}
+
 	_, err := NodesToGroup(fread, "test", [][]*syntax.Node{{node}})
 	if err == nil {
 		t.Error("expected error on read failure in PrintClones(sorted)")

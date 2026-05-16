@@ -25,6 +25,7 @@ func TestFilepath_Empty(t *testing.T) {
 
 func TestFilepath_MarshalJSON(t *testing.T) {
 	fp := Filepath("test.go")
+
 	data, err := json.Marshal(fp)
 	if err != nil {
 		t.Fatalf("MarshalJSON() error: %v", err)
@@ -37,6 +38,7 @@ func TestFilepath_MarshalJSON(t *testing.T) {
 
 func TestFilepath_UnmarshalJSON(t *testing.T) {
 	var fp Filepath
+
 	err := json.Unmarshal([]byte(`"test.go"`), &fp)
 	if err != nil {
 		t.Fatalf("UnmarshalJSON() error: %v", err)
@@ -49,8 +51,8 @@ func TestFilepath_UnmarshalJSON(t *testing.T) {
 
 func TestFilepath_UnmarshalJSON_Empty(t *testing.T) {
 	var fp Filepath
-	err := json.Unmarshal([]byte(`""`), &fp)
 
+	err := json.Unmarshal([]byte(`""`), &fp)
 	if err == nil {
 		t.Error("UnmarshalJSON(\"\") expected error, got nil")
 	}
@@ -76,6 +78,7 @@ func TestLineNumber_Zero(t *testing.T) {
 
 func TestLineNumber_MarshalJSON(t *testing.T) {
 	ln := LineNumber(100)
+
 	data, err := json.Marshal(ln)
 	if err != nil {
 		t.Fatalf("MarshalJSON() error: %v", err)
@@ -88,8 +91,8 @@ func TestLineNumber_MarshalJSON(t *testing.T) {
 
 func TestLineNumber_MarshalJSON_Zero(t *testing.T) {
 	ln := LineNumber(0)
-	_, err := json.Marshal(ln)
 
+	_, err := json.Marshal(ln)
 	if err == nil {
 		t.Error("MarshalJSON(0) expected error, got nil")
 	}
@@ -97,6 +100,7 @@ func TestLineNumber_MarshalJSON_Zero(t *testing.T) {
 
 func TestLineNumber_UnmarshalJSON(t *testing.T) {
 	var ln LineNumber
+
 	err := json.Unmarshal([]byte("200"), &ln)
 	if err != nil {
 		t.Fatalf("UnmarshalJSON() error: %v", err)
@@ -109,6 +113,7 @@ func TestLineNumber_UnmarshalJSON(t *testing.T) {
 
 func TestLineNumber_UnmarshalJSON_Zero(t *testing.T) {
 	var ln LineNumber
+
 	err := json.Unmarshal([]byte("0"), &ln)
 	if err == nil {
 		t.Error("UnmarshalJSON(0) expected error, got nil")
@@ -137,6 +142,7 @@ func TestCloneSeverity_Invalid(t *testing.T) {
 
 func TestCloneSeverity_MarshalJSON(t *testing.T) {
 	sev := CloneSeverityHigh
+
 	data, err := json.Marshal(sev)
 	if err != nil {
 		t.Fatalf("MarshalJSON() error: %v", err)
@@ -149,8 +155,8 @@ func TestCloneSeverity_MarshalJSON(t *testing.T) {
 
 func TestCloneSeverity_MarshalJSON_Invalid(t *testing.T) {
 	sev := CloneSeverity("bad")
-	_, err := json.Marshal(sev)
 
+	_, err := json.Marshal(sev)
 	if err == nil {
 		t.Error("MarshalJSON('bad') expected error, got nil")
 	}
@@ -158,6 +164,7 @@ func TestCloneSeverity_MarshalJSON_Invalid(t *testing.T) {
 
 func TestCloneSeverity_UnmarshalJSON(t *testing.T) {
 	var sev CloneSeverity
+
 	err := json.Unmarshal([]byte(`"medium"`), &sev)
 	if err != nil {
 		t.Fatalf("UnmarshalJSON() error: %v", err)
@@ -170,8 +177,8 @@ func TestCloneSeverity_UnmarshalJSON(t *testing.T) {
 
 func TestCloneSeverity_UnmarshalJSON_Invalid(t *testing.T) {
 	var sev CloneSeverity
-	err := json.Unmarshal([]byte(`"unknown"`), &sev)
 
+	err := json.Unmarshal([]byte(`"unknown"`), &sev)
 	if err == nil {
 		t.Error("UnmarshalJSON('unknown') expected error, got nil")
 	}

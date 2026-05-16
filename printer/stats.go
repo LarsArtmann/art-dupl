@@ -99,6 +99,7 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 		tokensInGroup += cl.Size
 
 		p.statsData.TotalClones++
+
 		if uniqueLineCount == 0 {
 			uniqueLineCount = lineCount
 		}

@@ -291,7 +291,10 @@ func TestHTMLPrintClones_DiffMode(t *testing.T) {
 	}
 
 	fread := mockReadFile(content)
-	err := p.PrintClones(processTestNodes(fread, "test", [][]*syntax.Node{sourceNodes, secondNodes}))
+
+	err := p.PrintClones(
+		processTestNodes(fread, "test", [][]*syntax.Node{sourceNodes, secondNodes}),
+	)
 	if err != nil {
 		t.Fatalf("PrintClones with diff mode failed: %v", err)
 	}
@@ -750,6 +753,7 @@ func TestHTMLErrorInPrintClones(t *testing.T) {
 	nodes := nodesForHTML(testFilename)
 
 	fread := mockReadFile(content)
+
 	err := p.PrintClones(processTestNodes(fread, "test", [][]*syntax.Node{nodes}))
 	if err == nil {
 		t.Error("want error from failing writer during PrintClones")

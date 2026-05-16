@@ -102,6 +102,7 @@ func (p *JSONPrinter) PrintClones(
 	p.iota++
 
 	clones := group.Clones
+
 	jsonClones := make([]JSONClone, len(clones))
 	for i, cl := range clones {
 		jsonClones[i] = JSONClone{

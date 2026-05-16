@@ -24,6 +24,7 @@ func TestProcessFileContent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ProcessFileContent() error: %v", err)
 	}
+
 	if meta.Filename != "test.go" {
 		t.Errorf("Filename = %q, want %q", meta.Filename, "test.go")
 	}

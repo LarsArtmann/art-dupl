@@ -892,6 +892,7 @@ func TestAllOutputFormats(t *testing.T) {
 
 	formats := AllOutputFormats()
 	testutil.AssertLen(t, formats, 7, "AllOutputFormats")
+
 	for _, fmt := range formats {
 		if !fmt.IsValid() {
 			t.Errorf("AllOutputFormats() contains invalid: %s", fmt)

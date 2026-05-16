@@ -189,6 +189,7 @@ func (p *htmlprinter) writeCloneGroupHeader(clones []domain.ProcessedClone) erro
 		}
 
 		p.stats.categoryCounts[cl.Classification.Category]++
+
 		p.stats.priorityCounts[cl.Classification.Priority]++
 		if cl.Classification.IsTest {
 			p.stats.testCount++
