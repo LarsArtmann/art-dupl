@@ -58,8 +58,8 @@ templ %s(%s string) {
 			fmt.Sprintf(htmlTemplate, paramName))
 	}
 
-	// buttonTemplCode returns a standardized button component template
-	buttonTemplCode := func(componentName, paramName string) string {
+	// btnCode returns a standardized button component template
+	btnCode := func(componentName, paramName string) string {
 		return createTemplComponent(
 			componentName,
 			paramName,
@@ -280,8 +280,8 @@ templ Display(name string) {
 	Context("When using different output formats with .templ files", func() {
 		It("should produce valid JSON output including .templ files", func() {
 			runTemplOutputTest(
-				buttonTemplCode("Button", "text"),
-				buttonTemplCode("Submit", "label"),
+				btnCode("Button", "text"),
+				btnCode("Submit", "label"),
 				"button.templ", "submit.templ",
 				"--json", "3",
 				[]string{"button.templ", "submit.templ", `"clone_groups"`},

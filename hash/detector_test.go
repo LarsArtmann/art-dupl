@@ -277,13 +277,13 @@ func TestHashFile_NonexistentFile(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fh, ok := fd.hashFile("/nonexistent/path/file.go")
+	fileHash, ok := fd.hashFile("/nonexistent/path/file.go")
 	if ok {
 		t.Error("expected ok=false for nonexistent file")
 	}
 
-	if fh.Hash != "" || fh.Filename != "" || fh.Size != 0 {
-		t.Errorf("expected zero FileHash, got %+v", fh)
+	if fileHash.Hash != "" || fileHash.Filename != "" || fileHash.Size != 0 {
+		t.Errorf("expected zero FileHash, got %+v", fileHash)
 	}
 }
 
@@ -300,13 +300,13 @@ func TestHashFile_UnreadableFile(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fh, ok := fd.hashFile(f)
+	fileHash, ok := fd.hashFile(f)
 
 	if ok {
 		t.Error("expected ok=false for unreadable file")
 	}
 
-	testutil.AssertFieldValue(t, fh.Hash, "", "Hash")
+	testutil.AssertFieldValue(t, fileHash.Hash, "", "Hash")
 }
 
 func TestHashFile_ValidFile(t *testing.T) {
@@ -321,20 +321,20 @@ func TestHashFile_ValidFile(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fh, ok := fd.hashFile(f)
+	fileHash, ok := fd.hashFile(f)
 	if !ok {
 		t.Fatal("expected ok=true for valid file")
 	}
 
-	if fh.Filename != f {
-		t.Errorf("expected filename %q, got %q", f, fh.Filename)
+	if fileHash.Filename != f {
+		t.Errorf("expected filename %q, got %q", f, fileHash.Filename)
 	}
 
-	if fh.Size != len(content) {
-		t.Errorf("expected size %d, got %d", len(content), fh.Size)
+	if fileHash.Size != len(content) {
+		t.Errorf("expected size %d, got %d", len(content), fileHash.Size)
 	}
 
-	if fh.Hash == "" {
+	if fileHash.Hash == "" {
 		t.Error("expected non-empty hash")
 	}
 }
@@ -346,13 +346,13 @@ func TestFileError_ReturnsZeroState(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fh, ok := fd.fileError("test.go", os.ErrNotExist, "file not found")
+	fileHash, ok := fd.fileError("test.go", os.ErrNotExist, "file not found")
 	if ok {
 		t.Error("expected ok=false")
 	}
 
-	if fh != (FileHash{}) {
-		t.Errorf("expected zero FileHash, got %+v", fh)
+	if fileHash != (FileHash{}) {
+		t.Errorf("expected zero FileHash, got %+v", fileHash)
 	}
 }
 
@@ -361,9 +361,9 @@ func TestFileError_ReturnsZeroState(t *testing.T) {
 func TestFileHash_Fields(t *testing.T) {
 	t.Parallel()
 
-	fh := FileHash{Hash: "abc123", Filename: "test.go", Size: 42}
-	if fh.Hash != "abc123" || fh.Filename != "test.go" || fh.Size != 42 {
-		t.Errorf("FileHash fields not set correctly: %+v", fh)
+	fileHash := FileHash{Hash: "abc123", Filename: "test.go", Size: 42}
+	if fileHash.Hash != "abc123" || fileHash.Filename != "test.go" || fileHash.Size != 42 {
+		t.Errorf("FileHash fields not set correctly: %+v", fileHash)
 	}
 }
 

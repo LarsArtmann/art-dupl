@@ -127,11 +127,11 @@ func TestUnique(t *testing.T) {
 			},
 			expected: 1,
 		},
-		createTestCase("duplicate entries same position", [][]*syntax.Node{
+		newTableTest("duplicate entries same position", [][]*syntax.Node{
 			buildNodeSlice("test.go", 1, 10),
 			buildNodeSlice("test.go", 1, 10),
 		}, 1),
-		createTestCase("different positions", [][]*syntax.Node{
+		newTableTest("different positions", [][]*syntax.Node{
 			buildNodeSlice("test1.go", 1, 10),
 			buildNodeSlice("test2.go", 1, 10),
 		}, 2),

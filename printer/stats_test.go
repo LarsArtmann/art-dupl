@@ -764,7 +764,7 @@ type gradeRecommendationTestCase struct {
 }
 
 func TestPrintRecommendations(t *testing.T) {
-	newGradeTest := func(name, healthScore string, totalCloneGroups, averageCloneSize int, complexityScore float64, shouldContain, shouldNotContain []string) gradeRecommendationTestCase {
+	gradeTestCase := func(name, healthScore string, totalCloneGroups, averageCloneSize int, complexityScore float64, shouldContain, shouldNotContain []string) gradeRecommendationTestCase {
 		return gradeRecommendationTestCase{
 			name:             name,
 			healthScore:      healthScore,
@@ -786,10 +786,10 @@ func TestPrintRecommendations(t *testing.T) {
 			shouldContain:    []string{"Excellent", "Keep up the good work"},
 			shouldNotContain: []string{"action needed", "Critical"},
 		},
-		newGradeTest("Grade C recommendations with metrics", "C", 15, 60, 3.5,
+		gradeTestCase("Grade C recommendations with metrics", "C", 15, 60, 3.5,
 			[]string{"Moderate", "50+ lines", "15 clone groups"},
 			[]string{"Excellent", "Critical"}),
-		newGradeTest("Grade F critical recommendations", "F", 30, 80, 6.0,
+		gradeTestCase("Grade F critical recommendations", "F", 30, 80, 6.0,
 			[]string{"Critical", "immediate action", "Halt new feature"},
 			[]string{"Excellent", "minor"}),
 	}

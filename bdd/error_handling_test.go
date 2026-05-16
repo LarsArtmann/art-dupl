@@ -50,9 +50,9 @@ func assertErrorMessage(output []byte) {
 	))
 }
 
-// testInvalidFlag is a helper that tests art-dupl with an invalid flag
+// verifyBadFlag is a helper that tests art-dupl with an invalid flag
 // and verifies it handles the error gracefully.
-func testInvalidFlag(setup *testutil.BDDTestSetup, pattern, flagName, flagValue string) {
+func verifyBadFlag(setup *testutil.BDDTestSetup, pattern, flagName, flagValue string) {
 	tempDir := createTempTestFile(pattern)
 
 	defer func() { _ = os.RemoveAll(tempDir) }() // test cleanup
@@ -217,11 +217,11 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle invalid sorting option gracefully", func() {
-			testInvalidFlag(setup, "art-dupl-sort-error-bdd-*", "--sort", "invalid_sort_option")
+			verifyBadFlag(setup, "art-dupl-sort-error-bdd-*", "--sort", "invalid_sort_option")
 		})
 
 		It("should handle invalid detection method gracefully", func() {
-			testInvalidFlag(
+			verifyBadFlag(
 				setup,
 				"art-dupl-method-error-bdd-*",
 				"--detection-methods",

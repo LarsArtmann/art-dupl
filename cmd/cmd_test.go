@@ -158,8 +158,8 @@ func runStatsFormatTest(t *testing.T, format string) {
 	}
 }
 
-// createTestCase creates a test case for the unique function.
-func createTestCase(name string, input [][]*syntax.Node, expected int) struct {
+// newTableTest creates a test case for the unique function.
+func newTableTest(name string, input [][]*syntax.Node, expected int) struct {
 	name     string
 	input    [][]*syntax.Node
 	expected int

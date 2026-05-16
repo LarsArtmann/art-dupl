@@ -316,16 +316,16 @@ func TestDiffSameLength(t *testing.T) {
 
 func TestDiffLargeFiles(t *testing.T) {
 	// Create base and compared with different lengths (>100 triggers large file path)
-	baseLines := make([][]byte, 150)
-	comparedLines := make([][]byte, 150)
+	srcRows := make([][]byte, 150)
+	dstRows := make([][]byte, 150)
 
 	for i := range 150 {
 		if i == 75 {
-			baseLines[i] = []byte("func processUser() {\n")
-			comparedLines[i] = []byte("func processAdmin() {\n")
+			srcRows[i] = []byte("func processUser() {\n")
+			dstRows[i] = []byte("func processAdmin() {\n")
 		} else {
-			baseLines[i] = []byte("    line\n")
-			comparedLines[i] = []byte("    line\n")
+			srcRows[i] = []byte("    line\n")
+			dstRows[i] = []byte("    line\n")
 		}
 	}
 
@@ -333,15 +333,15 @@ func TestDiffLargeFiles(t *testing.T) {
 	compared := make([]DiffLine, 150)
 
 	for i := range 150 {
-		base[i] = DiffLine{Content: string(baseLines[i]), Type: DiffLineEqual, LineNumber: i + 1}
+		base[i] = DiffLine{Content: string(srcRows[i]), Type: DiffLineEqual, LineNumber: i + 1}
 		compared[i] = DiffLine{
-			Content:    string(comparedLines[i]),
+			Content:    string(dstRows[i]),
 			Type:       DiffLineEqual,
 			LineNumber: i + 1,
 		}
 	}
 
-	hasDiff := diffLargeFiles(baseLines, comparedLines, base, compared)
+	hasDiff := diffLargeFiles(srcRows, dstRows, base, compared)
 
 	if !hasDiff {
 		t.Error("Expected hasDiff to be true")
