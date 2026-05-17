@@ -148,7 +148,7 @@ const DefaultThreshold = 15
 
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
-	return &Config{ //nolint:exhaustruct
+	return &Config{
 		Threshold:          15,
 		IncludeVendor:      false,
 		IncludeNodeModules: false,
@@ -176,6 +176,8 @@ func DefaultConfig() *Config {
 		CacheDir:           "",
 		ClearCache:         false,
 		Semantic:           true,
+		Workers:            0,
 		DiffMode:           DiffModeDisabled,
+		RichText:           false,
 	}
 }
