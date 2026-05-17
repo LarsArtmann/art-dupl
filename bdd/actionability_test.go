@@ -16,7 +16,7 @@ var _ = Describe("Actionability Filtering", func() {
 	BeforeEach(func() {
 		setup = CreateBDDTestSetup()
 
-		setup.CreateTestFiles(map[string]string{
+		err := setup.CreateTestFiles(map[string]string{
 			"store1.go": `package main
 
 import "context"
@@ -54,6 +54,7 @@ func (s *OrderStore) Save(ctx context.Context, name string) error {
 	return nil
 }`,
 		})
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	Context("When using --semantic mode", func() {
@@ -80,7 +81,7 @@ var _ = Describe("Rich Text Output", func() {
 	BeforeEach(func() {
 		setup = CreateBDDTestSetup()
 
-		setup.CreateTestFiles(map[string]string{
+		err := setup.CreateTestFiles(map[string]string{
 			"dup1.go": `package main
 
 import "fmt"
@@ -100,6 +101,7 @@ func logError(err error) {
 	}
 }`,
 		})
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	Context("When using --rich-text flag", func() {
@@ -120,6 +122,7 @@ func logError(err error) {
 
 		It("should include actionability in JSON output", func() {
 			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--json", "--threshold", "5")
+
 			output, err := cmd.Output()
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
@@ -128,15 +131,16 @@ func logError(err error) {
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
+
 			jsonErr := json.Unmarshal(output, &result)
 			Expect(jsonErr).ToNot(HaveOccurred())
 
 			cloneGroups := result["clone_groups"].([]any)
-			Expect(len(cloneGroups)).To(BeNumerically(">", 0))
+			Expect(cloneGroups).ToNot(BeEmpty())
 
 			group := cloneGroups[0].(map[string]any)
 			files := group["files"].([]any)
-			Expect(len(files)).To(BeNumerically(">", 0))
+			Expect(files).ToNot(BeEmpty())
 
 			file := files[0].(map[string]any)
 			Expect(file).To(HaveKey("category"))
