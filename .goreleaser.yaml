@@ -88,6 +88,7 @@ sboms:
 
 brews:
   - name: art-dupl
+    skip_upload: auto
     homepage: https://github.com/LarsArtmann/art-dupl
     description: "Fast, type-safe code duplication detector for Go projects"
     license: MIT
@@ -170,6 +171,7 @@ nfpms:
         Bugs: https://github.com/LarsArtmann/art-dupl/issues
 nix:
   - name: art-dupl
+    skip_upload: auto
     repository:
       owner: LarsArtmann
       name: nur-packages
@@ -185,6 +187,7 @@ nix:
 
 scoops:
   - name: art-dupl
+    skip_upload: auto
     repository:
       owner: LarsArtmann
       name: homebrew-tap
