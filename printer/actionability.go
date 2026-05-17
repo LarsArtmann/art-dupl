@@ -84,8 +84,8 @@ func hasRealBody(node *syntax.Node) bool {
 // `defer mu.Unlock()` from `defer expensiveCleanup()`, so we treat any
 // bare DeferStmt as potentially non-actionable.
 //
-// TODO: Extend syntax.Node with an IdentName field (or use source position
-// lookup) to distinguish RAII Unlock/Close from business-logic defer.
+// Future improvement: extend syntax.Node with an IdentName field (or use source
+// position lookup) to distinguish RAII Unlock/Close from business-logic defer.
 func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 	for _, seq := range nodeSeqs {
 		if len(seq) != 1 {
