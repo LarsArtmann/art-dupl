@@ -332,13 +332,13 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - Only processes `.go` and `.templ` files by default
 - Vendor directory excluded by default (use `-vendor` flag)
 - Can accept file paths from stdin with `-files` flag
-- **Smart filtering** for generated code:
+- **Smart filtering** for generated code (filtered by default):
   - SQLC files auto-detected via `sqlc.yaml` in parent directories
-  - Templ `.templ` files included by default (use `--exclude-templ` to exclude)
-  - Protobuf `.pb.go` files filtered with `--filter-generated`
-  - Mockgen and stringer generated files filtered with `--filter-generated`
+  - Templ-generated `*_templ.go` files filtered (source `.templ` files included by default)
+  - Protobuf `.pb.go` files filtered by default
+  - Mockgen and stringer generated files filtered by default
+  - Override with `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`
   - Custom patterns via `-include-pattern` and `-exclude-pattern`
-  - `-filter-generated` enables smart detection for both SQLC and Templ
 
 ### Detection Methods
 
@@ -428,11 +428,11 @@ find . -name '*_test.go' | art-dupl --files
 # Include vendor directory
 art-dupl --vendor
 
-# Filter generated code (SQLC, templ)
-art-dupl --filter-generated ./src
+# Override: include sqlc-generated files
+art-dupl --include-sqlc ./src
 
-# Include templ files explicitly
-art-dupl --exclude-templ ./src
+# Override: include templ-generated files
+art-dupl --include-templ ./src
 
 # Custom include patterns
 art-dupl --include-pattern "vendor/*" --include-pattern "gen/*" ./src
