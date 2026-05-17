@@ -8,17 +8,17 @@ A fork of [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https:/
 
 ## Why art-dupl?
 
-| Capability | Original dupl | art-dupl |
-|---|---|---|
-| Detection algorithm | Suffix tree only | Suffix tree + hash-based + multi-method |
-| Semantic matching | No | Yes — distinguishes identifiers by name |
-| Output formats | Text, HTML | Text, HTML, JSON, Simple-JSON, SARIF, plumbing, rich-text |
-| Stats subcommand | No | Yes — with health grades, CSV, JSON |
-| Templ support | No | Full `.templ` AST analysis |
-| Generated code filtering | No | Auto-detects sqlc, protobuf, mockgen, stringer |
-| Incremental analysis | No | AST caching with git-aware mode |
-| Diff visualization | No | Side-by-side and inline diffs in HTML |
-| Parallel parsing | No | Worker pool with auto-detect |
+| Capability               | Original dupl    | art-dupl                                                  |
+| ------------------------ | ---------------- | --------------------------------------------------------- |
+| Detection algorithm      | Suffix tree only | Suffix tree + hash-based + multi-method                   |
+| Semantic matching        | No               | Yes — distinguishes identifiers by name                   |
+| Output formats           | Text, HTML       | Text, HTML, JSON, Simple-JSON, SARIF, plumbing, rich-text |
+| Stats subcommand         | No               | Yes — with health grades, CSV, JSON                       |
+| Templ support            | No               | Full `.templ` AST analysis                                |
+| Generated code filtering | No               | Auto-detects sqlc, protobuf, mockgen, stringer            |
+| Incremental analysis     | No               | AST caching with git-aware mode                           |
+| Diff visualization       | No               | Side-by-side and inline diffs in HTML                     |
+| Parallel parsing         | No               | Worker pool with auto-detect                              |
 
 ## Installation
 
@@ -75,10 +75,10 @@ art-dupl stats --format json
 
 ## Supported Languages
 
-| Language | Extension | Notes |
-|---|---|---|
-| Go | `.go` | Full AST analysis |
-| Templ | `.templ` | Full AST analysis via official templ parser |
+| Language | Extension | Notes                                       |
+| -------- | --------- | ------------------------------------------- |
+| Go       | `.go`     | Full AST analysis                           |
+| Templ    | `.templ`  | Full AST analysis via official templ parser |
 
 `.templ` source files are included by default. Templ-generated `*_templ.go` files are filtered by default (use `--include-templ` to include them). Use `--only go` or `--only templ` to restrict analysis to a single file type.
 
@@ -86,11 +86,11 @@ art-dupl stats --format json
 
 Controlled with `-m` / `--detection-methods`:
 
-| Method | Flag | Description |
-|---|---|---|
+| Method      | Flag                    | Description                                                      |
+| ----------- | ----------------------- | ---------------------------------------------------------------- |
 | Suffix tree | `-m art-dupl` (default) | Ukkonen's algorithm on serialized ASTs — finds structural clones |
-| Hash-based | `-m hash` | Rolling hash on file content — faster, different tradeoffs |
-| Combined | `-m "hash,art-dupl"` | Runs both in parallel, deduplicates results |
+| Hash-based  | `-m hash`               | Rolling hash on file content — faster, different tradeoffs       |
+| Combined    | `-m "hash,art-dupl"`    | Runs both in parallel, deduplicates results                      |
 
 ### Semantic vs. Structural Matching
 
@@ -99,15 +99,15 @@ Controlled with `-m` / `--detection-methods`:
 
 ## Output Formats
 
-| Format | Flag | Use case |
-|---|---|---|
-| Text | *(default)* | Quick terminal review |
-| Rich text | `--rich-text` | Enhanced text with priority badges and suggestions |
-| HTML | `--html` | Detailed report with syntax highlighting and diff visualization |
-| JSON | `--json` / `-j` | CI/CD integration with metadata and summary |
-| Simple JSON | `--simple-json` | Lightweight JSON with impact scores |
-| SARIF | `--sarif` | GitHub Advanced Security / CodeQL integration |
-| Plumbing | `--plumbing` / `-p` | Machine-readable `file:startLine-endLine` for scripts |
+| Format      | Flag                | Use case                                                        |
+| ----------- | ------------------- | --------------------------------------------------------------- |
+| Text        | _(default)_         | Quick terminal review                                           |
+| Rich text   | `--rich-text`       | Enhanced text with priority badges and suggestions              |
+| HTML        | `--html`            | Detailed report with syntax highlighting and diff visualization |
+| JSON        | `--json` / `-j`     | CI/CD integration with metadata and summary                     |
+| Simple JSON | `--simple-json`     | Lightweight JSON with impact scores                             |
+| SARIF       | `--sarif`           | GitHub Advanced Security / CodeQL integration                   |
+| Plumbing    | `--plumbing` / `-p` | Machine-readable `file:startLine-endLine` for scripts           |
 
 Sort results with `-s` / `--sort`: `size` (default), `occurrence`, `hash`, `total-tokens`.
 
@@ -121,55 +121,55 @@ art-dupl completion [bash|zsh|fish|powershell]
 
 ### Core Flags
 
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--threshold` | `-t` | `15` | Minimum token sequence size |
-| `--detection-methods` | `-m` | `art-dupl` | Detection method(s) |
-| `--sort` | `-s` | `size` | Sort: size, occurrence, hash, total-tokens |
-| `--semantic` | | `false` | Match by structure AND identifier names |
-| `--config` | `-c` | | Path to JSON config file |
-| `--verbose` | `-v` | | Verbose logging (repeat for more) |
-| `--version` | | | Show version |
+| Flag                  | Short | Default    | Description                                |
+| --------------------- | ----- | ---------- | ------------------------------------------ |
+| `--threshold`         | `-t`  | `15`       | Minimum token sequence size                |
+| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                        |
+| `--sort`              | `-s`  | `size`     | Sort: size, occurrence, hash, total-tokens |
+| `--semantic`          |       | `false`    | Match by structure AND identifier names    |
+| `--config`            | `-c`  |            | Path to JSON config file                   |
+| `--verbose`           | `-v`  |            | Verbose logging (repeat for more)          |
+| `--version`           |       |            | Show version                               |
 
 ### Output Flags
 
-| Flag | Short | Description |
-|---|---|---|
-| `--html` | | HTML report with syntax highlighting |
-| `--json` | `-j` | Structured JSON with statistics |
-| `--simple-json` | | Lightweight JSON with impact scores |
-| `--sarif` | | SARIF 2.1.0 format |
-| `--plumbing` | `-p` | Machine-readable format |
-| `--rich-text` | | Enhanced text with badges |
-| `--all` | `-a` | Generate all formats |
-| `--output-dir` | `-o` | Output directory (with `--all`) |
-| `--diff` | | Diff visualization: `side-by-side`, `inline`, or `true` |
+| Flag            | Short | Description                                             |
+| --------------- | ----- | ------------------------------------------------------- |
+| `--html`        |       | HTML report with syntax highlighting                    |
+| `--json`        | `-j`  | Structured JSON with statistics                         |
+| `--simple-json` |       | Lightweight JSON with impact scores                     |
+| `--sarif`       |       | SARIF 2.1.0 format                                      |
+| `--plumbing`    | `-p`  | Machine-readable format                                 |
+| `--rich-text`   |       | Enhanced text with badges                               |
+| `--all`         | `-a`  | Generate all formats                                    |
+| `--output-dir`  | `-o`  | Output directory (with `--all`)                         |
+| `--diff`        |       | Diff visualization: `side-by-side`, `inline`, or `true` |
 
 ### Filtering Flags
 
-| Flag | Default | Description |
-|---|---|---|
-| `--vendor` | `false` | Include vendor directory |
-| `--include-node-modules` | `false` | Include node_modules (hash detection) |
-| `--include-sqlc` | `false` | Include sqlc-generated files (filtered by default) |
-| `--include-templ` | `false` | Include `*_templ.go` generated files (filtered by default) |
-| `--include-protobuf` | `false` | Include `.pb.go` files (filtered by default) |
-| `--include-mockgen` | `false` | Include mockgen-generated files (filtered by default) |
-| `--include-stringer` | `false` | Include stringer-generated files (filtered by default) |
-| `--include-pattern` | `[]` | Glob patterns to include (overrides filters) |
-| `--exclude-pattern` | `[]` | Glob patterns to exclude |
-| `--only` | `""` | Restrict to `go` or `templ` file type |
-| `--files` | `-f` | Read file paths from stdin |
+| Flag                     | Default | Description                                                |
+| ------------------------ | ------- | ---------------------------------------------------------- |
+| `--vendor`               | `false` | Include vendor directory                                   |
+| `--include-node-modules` | `false` | Include node_modules (hash detection)                      |
+| `--include-sqlc`         | `false` | Include sqlc-generated files (filtered by default)         |
+| `--include-templ`        | `false` | Include `*_templ.go` generated files (filtered by default) |
+| `--include-protobuf`     | `false` | Include `.pb.go` files (filtered by default)               |
+| `--include-mockgen`      | `false` | Include mockgen-generated files (filtered by default)      |
+| `--include-stringer`     | `false` | Include stringer-generated files (filtered by default)     |
+| `--include-pattern`      | `[]`    | Glob patterns to include (overrides filters)               |
+| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                   |
+| `--only`                 | `""`    | Restrict to `go` or `templ` file type                      |
+| `--files`                | `-f`    | Read file paths from stdin                                 |
 
 ### Performance Flags
 
-| Flag | Default | Description |
-|---|---|---|
-| `--workers` | `0` | Concurrent workers (`0` = auto-detect CPU cores) |
-| `--incremental` | `false` | Enable AST caching for incremental analysis |
-| `--since` | `""` | Git ref for incremental mode (e.g., `HEAD~1`, `main`) |
-| `--cache-dir` | `""` | Cache directory (default: `.cache/art-dupl`) |
-| `--clear-cache` | `false` | Clear cache before running |
+| Flag            | Default | Description                                           |
+| --------------- | ------- | ----------------------------------------------------- |
+| `--workers`     | `0`     | Concurrent workers (`0` = auto-detect CPU cores)      |
+| `--incremental` | `false` | Enable AST caching for incremental analysis           |
+| `--since`       | `""`    | Git ref for incremental mode (e.g., `HEAD~1`, `main`) |
+| `--cache-dir`   | `""`    | Cache directory (default: `.cache/art-dupl`)          |
+| `--clear-cache` | `false` | Clear cache before running                            |
 
 ### Stats Subcommand
 
@@ -179,9 +179,9 @@ art-dupl stats [flags] [paths...]
 
 Supports all shared flags plus:
 
-| Flag | Default | Description |
-|---|---|---|
-| `--format` | `text` | Output format: `text`, `json`, `csv` |
+| Flag       | Default | Description                          |
+| ---------- | ------- | ------------------------------------ |
+| `--format` | `text`  | Output format: `text`, `json`, `csv` |
 
 Statistics include files scanned, clone groups, duplicate lines/tokens, complexity score, impact score, clone size distribution, health grade (A–F), and top files by duplication.
 
@@ -248,18 +248,18 @@ Output Formatting (text, HTML, JSON, SARIF, plumbing)
 
 ### Key Packages
 
-| Package | Purpose |
-|---|---|
-| `suffixtree/` | Ukkonen's suffix tree with O(1) map-based transitions |
-| `syntax/` | AST handling, Go and Templ parsers, serialization |
-| `detection/` | Multi-method detection coordination via goroutines |
-| `hash/` | XXH3 rolling hash-based detection |
-| `job/` | File parsing pipeline with parallel workers |
-| `printer/` | 7 output formats with sorting and classification |
-| `domain/` | Domain types: `Filepath`, `LineNumber`, `CloneSeverity`, `ProcessedClone` |
-| `config/` | Multi-source configuration with typed enums |
-| `errors/` | 11 typed error categories with stack traces |
-| `pkg/artdupl/` | Public SDK with `Detector` interface for programmatic use |
+| Package        | Purpose                                                                   |
+| -------------- | ------------------------------------------------------------------------- |
+| `suffixtree/`  | Ukkonen's suffix tree with O(1) map-based transitions                     |
+| `syntax/`      | AST handling, Go and Templ parsers, serialization                         |
+| `detection/`   | Multi-method detection coordination via goroutines                        |
+| `hash/`        | XXH3 rolling hash-based detection                                         |
+| `job/`         | File parsing pipeline with parallel workers                               |
+| `printer/`     | 7 output formats with sorting and classification                          |
+| `domain/`      | Domain types: `Filepath`, `LineNumber`, `CloneSeverity`, `ProcessedClone` |
+| `config/`      | Multi-source configuration with typed enums                               |
+| `errors/`      | 11 typed error categories with stack traces                               |
+| `pkg/artdupl/` | Public SDK with `Detector` interface for programmatic use                 |
 
 ## Development
 

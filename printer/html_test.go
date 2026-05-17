@@ -1186,9 +1186,17 @@ func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 		wantSubstr []string
 	}{
 		{
-			name:       "all types",
-			lines:      diffLines([]string{"equal line", "added line", "removed line", "modified line"}, []DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified}, 1),
-			opposite:   diffLines([]string{"equal line", "base added", "base removed", "original modified"}, []DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified}, 1),
+			name: "all types",
+			lines: diffLines(
+				[]string{"equal line", "added line", "removed line", "modified line"},
+				[]DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified},
+				1,
+			),
+			opposite: diffLines(
+				[]string{"equal line", "base added", "base removed", "original modified"},
+				[]DiffLineType{DiffLineEqual, DiffLineAdded, DiffLineRemoved, DiffLineModified},
+				1,
+			),
 			wantSubstr: []string{"equal", "added", "removed", "modified"},
 		},
 		{

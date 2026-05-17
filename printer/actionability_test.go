@@ -46,8 +46,18 @@ func TestEvaluateActionability(t *testing.T) {
 		{
 			name: "FuncDecl with body is actionable",
 			seqs: [][]*syntax.Node{
-				{{Type: golang.FuncDecl, Owns: 5}, {Type: golang.BlockStmt}, {Type: golang.IfStmt}, {Type: golang.ReturnStmt}},
-				{{Type: golang.FuncDecl, Owns: 5}, {Type: golang.BlockStmt}, {Type: golang.IfStmt}, {Type: golang.ReturnStmt}},
+				{
+					{Type: golang.FuncDecl, Owns: 5},
+					{Type: golang.BlockStmt},
+					{Type: golang.IfStmt},
+					{Type: golang.ReturnStmt},
+				},
+				{
+					{Type: golang.FuncDecl, Owns: 5},
+					{Type: golang.BlockStmt},
+					{Type: golang.IfStmt},
+					{Type: golang.ReturnStmt},
+				},
 			},
 			expected: domain.Actionable,
 		},
