@@ -97,6 +97,16 @@ func (c CloneCategory) GetCategoryEmoji() string {
 	}
 }
 
+// ClassificationInput holds the data needed to classify a clone.
+// Using a struct instead of primitives ensures the compiler catches missing fields
+// when new classification inputs are added.
+type ClassificationInput struct {
+	Filename string
+	NodeType int32
+	Tokens   int
+	Lines    int
+}
+
 // CloneClassification provides metadata about a code clone for actionable reports.
 type CloneClassification struct {
 	Category      CloneCategory

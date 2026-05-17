@@ -76,19 +76,19 @@ var nodeTypeNames = map[int32]string{
 	golang.ValueSpec:      "ValueSpec",
 }
 
-func ClassifyClone(filename string, nodeType int32, tokens, lines int) CloneClassification {
-	category := nodeTypeToCategory(nodeType)
-	isTest := isTestFile(filename)
-	priority := calculatePriority(category, isTest, tokens, lines)
-	suggestion := getSuggestion(category, isTest, tokens)
+func ClassifyClone(input domain.ClassificationInput) CloneClassification {
+	category := nodeTypeToCategory(input.NodeType)
+	isTest := isTestFile(input.Filename)
+	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
+	suggestion := getSuggestion(category, isTest, input.Tokens)
 
 	return CloneClassification{
 		Category:   category,
 		IsTest:     isTest,
 		Priority:   priority,
-		Tokens:     tokens,
-		Lines:      lines,
-		NodeType:   nodeTypeToString(nodeType),
+		Tokens:     input.Tokens,
+		Lines:      input.Lines,
+		NodeType:   nodeTypeToString(input.NodeType),
 		Suggestion: suggestion,
 	}
 }

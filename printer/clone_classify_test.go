@@ -199,7 +199,12 @@ func TestClassifyClone(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ClassifyClone(tt.filename, tt.nodeType, tt.tokens, tt.lines)
+			got := ClassifyClone(domain.ClassificationInput{
+				Filename: tt.filename,
+				NodeType: tt.nodeType,
+				Tokens:   tt.tokens,
+				Lines:    tt.lines,
+			})
 
 			if got.Category != tt.wantCategory {
 				t.Errorf("ClassifyClone().Category = %v, want %v", got.Category, tt.wantCategory)

@@ -51,12 +51,12 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 			Fragment:  fragment,
 			Size:      tokens,
 			FileSize:  len(fileInfo.Content),
-			Classification: ClassifyClone(
-				fileInfo.Filename,
-				nstart.Type,
-				tokens,
-				lines,
-			),
+			Classification: ClassifyClone(domain.ClassificationInput{
+				Filename: fileInfo.Filename,
+				NodeType: nstart.Type,
+				Tokens:   tokens,
+				Lines:    lines,
+			}),
 		}
 	}
 
