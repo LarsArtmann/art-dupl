@@ -148,7 +148,6 @@ docker_manifests:
       - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-amd64"
       - "ghcr.io/larsartmann/art-dupl:{{ .Tag }}-arm64"
 
-
 nfpms:
   - id: default
     package_name: art-dupl
@@ -183,7 +182,6 @@ nix:
     install: |
       mkdir -p $out/bin
       cp -vr ./{binary} $out/bin/art-dupl
-
 
 scoops:
   - name: art-dupl

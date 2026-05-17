@@ -19,13 +19,13 @@ The project is in excellent shape: clean build, clean lint, all tests passing, a
 
 ### Session Commit History (5 commits)
 
-| Commit | Type | Description |
-|---|---|---|
-| `18cc2ef` | docs(readme) | Complete rewrite — fix 10+ fabricated types, correct flags, restructure |
-| `b863acd` | refactor(printer) | Extract nested blocks in text.go to fix nestif lint (complexity 9 → 1) |
-| `60bbf16` | fix(bdd) | Check CreateTestFiles error return in actionability tests |
-| `ee95a3f` | style(printer) | Convert TODO comment to non-godox format |
-| `0d6277b` | fix(domain) | Read Hash and Size fields in ProcessedCloneGroup test |
+| Commit    | Type              | Description                                                             |
+| --------- | ----------------- | ----------------------------------------------------------------------- |
+| `18cc2ef` | docs(readme)      | Complete rewrite — fix 10+ fabricated types, correct flags, restructure |
+| `b863acd` | refactor(printer) | Extract nested blocks in text.go to fix nestif lint (complexity 9 → 1)  |
+| `60bbf16` | fix(bdd)          | Check CreateTestFiles error return in actionability tests               |
+| `ee95a3f` | style(printer)    | Convert TODO comment to non-godox format                                |
+| `0d6277b` | fix(domain)       | Read Hash and Size fields in ProcessedCloneGroup test                   |
 
 ### README Overhaul
 
@@ -43,12 +43,12 @@ The project is in excellent shape: clean build, clean lint, all tests passing, a
 
 ### Lint Cleanup (CI → Green)
 
-| Issue | File | Fix |
-|---|---|---|
-| `nestif` (complexity 9) | `printer/text.go:56` | Extracted `writeGroupHeader`, `writeFileDupeHeader`, `writeCloneHeader` methods |
-| `errcheck` (2×) | `bdd/actionability_test.go:19,83` | Added `err :=` + `Expect(err).NotTo(HaveOccurred())` |
-| `godox` (TODO) | `printer/actionability.go:87` | Converted "TODO:" to "Future improvement:" |
-| `unusedwrite` (2×) | `domain/domain_test.go:189,190` | Added assertions for Hash and Size fields |
+| Issue                   | File                              | Fix                                                                             |
+| ----------------------- | --------------------------------- | ------------------------------------------------------------------------------- |
+| `nestif` (complexity 9) | `printer/text.go:56`              | Extracted `writeGroupHeader`, `writeFileDupeHeader`, `writeCloneHeader` methods |
+| `errcheck` (2×)         | `bdd/actionability_test.go:19,83` | Added `err :=` + `Expect(err).NotTo(HaveOccurred())`                            |
+| `godox` (TODO)          | `printer/actionability.go:87`     | Converted "TODO:" to "Future improvement:"                                      |
+| `unusedwrite` (2×)      | `domain/domain_test.go:189,190`   | Added assertions for Hash and Size fields                                       |
 
 ### Uncommitted Formatting Improvements
 
@@ -61,29 +61,29 @@ The project is in excellent shape: clean build, clean lint, all tests passing, a
 
 ## b) PARTIALLY DONE
 
-| Item | Status | Remaining |
-|---|---|---|
-| **FEATURES.md stale flags** | Not started | `--exclude-templ` (2 occurrences), `--filter-generated` (2 occurrences) need updating |
-| **AGENTS.md stale flags** | Not started | `--exclude-templ` (2 occurrences), `--filter-generated` (4 occurrences) need updating |
+| Item                                   | Status            | Remaining                                                                                                                                         |
+| -------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **FEATURES.md stale flags**            | Not started       | `--exclude-templ` (2 occurrences), `--filter-generated` (2 occurrences) need updating                                                             |
+| **AGENTS.md stale flags**              | Not started       | `--exclude-templ` (2 occurrences), `--filter-generated` (4 occurrences) need updating                                                             |
 | **Printer architecture clarification** | Done (documented) | The Printer interface is already decoupled from syntax.Node. Coupling is in conversion layer only (4 files in printer/). No urgent action needed. |
 
 ---
 
 ## c) NOT STARTED
 
-| Item | Priority | Effort |
-|---|---|---|
-| Fix stale flag names in FEATURES.md | MEDIUM | S |
-| Fix stale flag names in AGENTS.md | MEDIUM | S |
-| Wire TODO/Legacy detectors to CLI (`-m todos`, `-m legacy`) | MEDIUM | M |
-| Extract `printer/clone_classify.go` language coupling | LOW | M |
-| TokenValue type validation | LOW | S |
-| Archive old docs/status/ files (304+ files) | LOW | S |
-| SIMD remaining TODOs (6 items) | LOW | M |
-| Man page generation (`art-dupl man`) | LOW | M |
-| CSV clone output using `encoding/csv` | LOW | S |
-| `-o` short flag inconsistency (root: `--output-dir` vs stats: `--format`) | LOW | XS |
-| Upgrade gomodguard → gomodguard_v2 in `.golangci.yml` | LOW | XS |
+| Item                                                                      | Priority | Effort |
+| ------------------------------------------------------------------------- | -------- | ------ |
+| Fix stale flag names in FEATURES.md                                       | MEDIUM   | S      |
+| Fix stale flag names in AGENTS.md                                         | MEDIUM   | S      |
+| Wire TODO/Legacy detectors to CLI (`-m todos`, `-m legacy`)               | MEDIUM   | M      |
+| Extract `printer/clone_classify.go` language coupling                     | LOW      | M      |
+| TokenValue type validation                                                | LOW      | S      |
+| Archive old docs/status/ files (304+ files)                               | LOW      | S      |
+| SIMD remaining TODOs (6 items)                                            | LOW      | M      |
+| Man page generation (`art-dupl man`)                                      | LOW      | M      |
+| CSV clone output using `encoding/csv`                                     | LOW      | S      |
+| `-o` short flag inconsistency (root: `--output-dir` vs stats: `--format`) | LOW      | XS     |
+| Upgrade gomodguard → gomodguard_v2 in `.golangci.yml`                     | LOW      | XS     |
 
 ---
 
@@ -130,48 +130,48 @@ The LSP warnings showing `nestif`, `godox`, `errcheck` in `golangci_lint_ls` are
 
 ### P0 — Immediate (5 minutes each)
 
-| # | Task | Impact |
-|---|---|---|
-| 1 | Fix `--exclude-templ` → `--include-templ` in FEATURES.md (2 occurrences) | Accurate docs |
-| 2 | Remove `--filter-generated` references from FEATURES.md (2 occurrences) | Accurate docs |
-| 3 | Fix `--exclude-templ` → `--include-templ` in AGENTS.md (2 occurrences) | Accurate AI context |
-| 4 | Remove `--filter-generated` references from AGENTS.md (4 occurrences) | Accurate AI context |
-| 5 | Upgrade `gomodguard` → `gomodguard_v2` in `.golangci.yml` | Clean lint output |
+| #   | Task                                                                     | Impact              |
+| --- | ------------------------------------------------------------------------ | ------------------- |
+| 1   | Fix `--exclude-templ` → `--include-templ` in FEATURES.md (2 occurrences) | Accurate docs       |
+| 2   | Remove `--filter-generated` references from FEATURES.md (2 occurrences)  | Accurate docs       |
+| 3   | Fix `--exclude-templ` → `--include-templ` in AGENTS.md (2 occurrences)   | Accurate AI context |
+| 4   | Remove `--filter-generated` references from AGENTS.md (4 occurrences)    | Accurate AI context |
+| 5   | Upgrade `gomodguard` → `gomodguard_v2` in `.golangci.yml`                | Clean lint output   |
 
 ### P1 — High Impact (1-2 hours each)
 
-| # | Task | Impact |
-|---|---|---|
-| 6 | Wire `TodoDetector` to CLI via `-m todos` flag | Unlock implemented feature |
-| 7 | Wire `LegacyDetector` to CLI via `-m legacy` flag | Unlock implemented feature |
-| 8 | Fix `-o` short flag collision (stats `--format` vs root `--output-dir`) | UX consistency |
-| 9 | Add integration tests for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` | Coverage for new flags |
-| 10 | Increase `domain/` test coverage from 67.2% to 80%+ | Type safety |
+| #   | Task                                                                                                         | Impact                     |
+| --- | ------------------------------------------------------------------------------------------------------------ | -------------------------- |
+| 6   | Wire `TodoDetector` to CLI via `-m todos` flag                                                               | Unlock implemented feature |
+| 7   | Wire `LegacyDetector` to CLI via `-m legacy` flag                                                            | Unlock implemented feature |
+| 8   | Fix `-o` short flag collision (stats `--format` vs root `--output-dir`)                                      | UX consistency             |
+| 9   | Add integration tests for `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer` | Coverage for new flags     |
+| 10  | Increase `domain/` test coverage from 67.2% to 80%+                                                          | Type safety                |
 
 ### P2 — Medium Impact (2-4 hours each)
 
-| # | Task | Impact |
-|---|---|---|
-| 11 | Extract `printer/clone_classify.go` language coupling → interface-based classifier | Multi-language prep |
-| 12 | Use `encoding/csv` for clone CSV output (not just stats CSV) | Consistency |
-| 13 | Add BDD tests for TODO/Legacy detector workflows | Feature coverage |
-| 14 | Implement `art-dupl man` subcommand (BDD test already exists) | CLI completeness |
-| 15 | Add `TokenValue` type validation (bounds checking) | Type safety |
+| #   | Task                                                                               | Impact              |
+| --- | ---------------------------------------------------------------------------------- | ------------------- |
+| 11  | Extract `printer/clone_classify.go` language coupling → interface-based classifier | Multi-language prep |
+| 12  | Use `encoding/csv` for clone CSV output (not just stats CSV)                       | Consistency         |
+| 13  | Add BDD tests for TODO/Legacy detector workflows                                   | Feature coverage    |
+| 14  | Implement `art-dupl man` subcommand (BDD test already exists)                      | CLI completeness    |
+| 15  | Add `TokenValue` type validation (bounds checking)                                 | Type safety         |
 
 ### P3 — Lower Impact (varies)
 
-| # | Task | Impact |
-|---|---|---|
-| 16 | Archive old docs/status/ files (keep last 30 days) | Repo cleanliness |
-| 17 | Implement remaining 6 SIMD TODOs in `hash_simd.go` | Performance |
-| 18 | Review and reduce `//nolint:` directives (45+ across codebase) | Code cleanliness |
-| 19 | Add changelog (CHANGELOG.md) | Release management |
-| 20 | SDK examples in `pkg/artdupl/` documentation | Developer experience |
-| 21 | Benchmark art-dupl vs original dupl | Performance visibility |
-| 22 | Consider extracting `internal/testutil/` into shared test library | Reusability |
-| 23 | Investigate `state` struct memory layout optimization | Performance |
-| 24 | Add GitHub Actions for automated README link checking | CI quality |
-| 25 | Set up automated docs freshness check (skills-based) | Doc accuracy |
+| #   | Task                                                              | Impact                 |
+| --- | ----------------------------------------------------------------- | ---------------------- |
+| 16  | Archive old docs/status/ files (keep last 30 days)                | Repo cleanliness       |
+| 17  | Implement remaining 6 SIMD TODOs in `hash_simd.go`                | Performance            |
+| 18  | Review and reduce `//nolint:` directives (45+ across codebase)    | Code cleanliness       |
+| 19  | Add changelog (CHANGELOG.md)                                      | Release management     |
+| 20  | SDK examples in `pkg/artdupl/` documentation                      | Developer experience   |
+| 21  | Benchmark art-dupl vs original dupl                               | Performance visibility |
+| 22  | Consider extracting `internal/testutil/` into shared test library | Reusability            |
+| 23  | Investigate `state` struct memory layout optimization             | Performance            |
+| 24  | Add GitHub Actions for automated README link checking             | CI quality             |
+| 25  | Set up automated docs freshness check (skills-based)              | Doc accuracy           |
 
 ---
 
@@ -185,43 +185,43 @@ Currently `-o` is short for `--output-dir` on the root command and `--format` on
 
 ## Project Metrics Dashboard
 
-| Metric | Value | Previous | Trend |
-|---|---|---|---|
-| Go files | 213 | 213 | → |
-| Packages | 23 | 23 | → |
-| Packages passing | 23/23 | 23/23 | ✅ |
-| Packages failing | 0 | 0 | ✅ |
-| Lint issues | **0** | 8 | ↑ **FIXED** |
-| LSP errors | 0 | 0 | ✅ |
-| Coverage (avg) | ~85% | ~85% | → |
-| `just check` | **0 issues** | 8 issues | ↑ **GREEN** |
-| Commits ahead | 5 | 0 | (not pushed) |
-| README accuracy | ✅ Verified | ❌ 10+ fabrications | ↑ **FIXED** |
+| Metric           | Value        | Previous            | Trend        |
+| ---------------- | ------------ | ------------------- | ------------ |
+| Go files         | 213          | 213                 | →            |
+| Packages         | 23           | 23                  | →            |
+| Packages passing | 23/23        | 23/23               | ✅           |
+| Packages failing | 0            | 0                   | ✅           |
+| Lint issues      | **0**        | 8                   | ↑ **FIXED**  |
+| LSP errors       | 0            | 0                   | ✅           |
+| Coverage (avg)   | ~85%         | ~85%                | →            |
+| `just check`     | **0 issues** | 8 issues            | ↑ **GREEN**  |
+| Commits ahead    | 5            | 0                   | (not pushed) |
+| README accuracy  | ✅ Verified  | ❌ 10+ fabrications | ↑ **FIXED**  |
 
 ### Test Coverage Per Package
 
-| Package | Coverage | Change |
-|---|---|---|
-| `pkg/format/` | 100.0% | → |
-| `pkg/position/` | 100.0% | → |
-| `hash/` | 96.6% | → |
-| `internal/simd/` | 95.8% | → |
-| `config/` | 94.9% | → |
-| `syntax/golang/` | 94.5% | → |
-| `pkg/artdupl/` | 92.2% | → |
-| `syntax/` | 91.6% | → |
-| `suffixtree/` | 91.0% | → |
-| `errors/` | 89.4% | → |
-| `cache/` | 87.3% | → |
-| `pkg/logger/` | 87.5% | → |
-| `syntax/templ/` | 85.3% | → |
-| `printer/` | **82.7%** | ↑ (was 82.6%) |
-| `job/` | 76.7% | → |
-| `cmd/` | 75.0% | → |
-| `detection/` | 78.3% | → |
-| `bdd/` | 70.0% | → |
-| `domain/` | 67.2% | → |
+| Package          | Coverage  | Change        |
+| ---------------- | --------- | ------------- |
+| `pkg/format/`    | 100.0%    | →             |
+| `pkg/position/`  | 100.0%    | →             |
+| `hash/`          | 96.6%     | →             |
+| `internal/simd/` | 95.8%     | →             |
+| `config/`        | 94.9%     | →             |
+| `syntax/golang/` | 94.5%     | →             |
+| `pkg/artdupl/`   | 92.2%     | →             |
+| `syntax/`        | 91.6%     | →             |
+| `suffixtree/`    | 91.0%     | →             |
+| `errors/`        | 89.4%     | →             |
+| `cache/`         | 87.3%     | →             |
+| `pkg/logger/`    | 87.5%     | →             |
+| `syntax/templ/`  | 85.3%     | →             |
+| `printer/`       | **82.7%** | ↑ (was 82.6%) |
+| `job/`           | 76.7%     | →             |
+| `cmd/`           | 75.0%     | →             |
+| `detection/`     | 78.3%     | →             |
+| `bdd/`           | 70.0%     | →             |
+| `domain/`        | 67.2%     | →             |
 
 ---
 
-*Report generated at 2026-05-17 03:59 by Crush (GLM-5.1)*
+_Report generated at 2026-05-17 03:59 by Crush (GLM-5.1)_
