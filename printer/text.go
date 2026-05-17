@@ -53,41 +53,8 @@ func (p *TextPrinter) PrintClones(
 
 	isFileDupe := p.isFileDupe
 
-	if isFileDupe && p.currentHash != "" {
-		hashPrefix := p.currentHash
-		if len(hashPrefix) > 12 {
-			hashPrefix = hashPrefix[:12]
-		}
-
-		fileSizeStr := formatBytes(clones[0].FileSize)
-		if _, err := fmt.Fprintf(
-			p.w,
-			"\U0001f4c4 FILE DUPLICATE | \U0001f517 [%s...] | %d files | %s\n\n",
-			hashPrefix,
-			len(clones),
-			fileSizeStr,
-		); err != nil {
-			return fmt.Errorf(
-				"write file duplicate header (hash: %s, files: %d): %w",
-				hashPrefix,
-				len(clones),
-				err,
-			)
-		}
-
-		for _, cl := range clones {
-			p.diffHintFiles = append(p.diffHintFiles, cl.Filename)
-		}
-	} else {
-		if p.richText && len(clones) > 0 {
-			if err := p.writeRichGroupHeader(len(clones), clones[0].Classification); err != nil {
-				return err
-			}
-		} else {
-			if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
-				return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
-			}
-		}
+	if err := p.writeGroupHeader(isFileDupe, clones); err != nil {
+		return err
 	}
 
 	p.cloneGroups = append(p.cloneGroups, clones)
@@ -96,6 +63,55 @@ func (p *TextPrinter) PrintClones(
 	sort.Sort(byNameAndLineProcessed(clones))
 
 	return p.printCloneList(clones)
+}
+
+func (p *TextPrinter) writeGroupHeader(isFileDupe bool, clones []domain.ProcessedClone) error {
+	if !isFileDupe || p.currentHash == "" {
+		return p.writeCloneHeader(clones)
+	}
+
+	return p.writeFileDupeHeader(clones)
+}
+
+func (p *TextPrinter) writeFileDupeHeader(clones []domain.ProcessedClone) error {
+	hashPrefix := p.currentHash
+	if len(hashPrefix) > 12 {
+		hashPrefix = hashPrefix[:12]
+	}
+
+	fileSizeStr := formatBytes(clones[0].FileSize)
+	if _, err := fmt.Fprintf(
+		p.w,
+		"\U0001f4c4 FILE DUPLICATE | \U0001f517 [%s...] | %d files | %s\n\n",
+		hashPrefix,
+		len(clones),
+		fileSizeStr,
+	); err != nil {
+		return fmt.Errorf(
+			"write file duplicate header (hash: %s, files: %d): %w",
+			hashPrefix,
+			len(clones),
+			err,
+		)
+	}
+
+	for _, cl := range clones {
+		p.diffHintFiles = append(p.diffHintFiles, cl.Filename)
+	}
+
+	return nil
+}
+
+func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
+	if p.richText && len(clones) > 0 {
+		return p.writeRichGroupHeader(len(clones), clones[0].Classification)
+	}
+
+	if _, err := fmt.Fprintf(p.w, "found %d clones:\n", len(clones)); err != nil {
+		return fmt.Errorf("write clone count header (%d clones): %w", len(clones), err)
+	}
+
+	return nil
 }
 
 func (p *TextPrinter) PrintFooter() error {
