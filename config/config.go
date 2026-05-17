@@ -121,12 +121,12 @@ type Config struct {
 	// When true, identifier names are included in the type hash, reducing false positives
 	// from structurally similar but semantically different code.
 	//
-	// Default is false (structural-only matching). Enable with --semantic flag when
-	// you want to reduce false positives from similar-looking but different code.
+	// Default is true (semantic matching). Use --structural flag to disable
+	// and match by structure only (more potential matches, more noise).
 	//
 	// Example: Expect(x).To(Equal(y)) vs Expect(z).To(Equal(w))
-	// - Semantic=true: Only matches if method names are the same (e.g., Equal vs Equal)
-	// - Semantic=false (default): Matches based on structure only (more potential matches)
+	// - Semantic=true (default): Only matches if method names are the same
+	// - Semantic=false: Matches based on structure only (more potential matches)
 	Semantic bool `json:"semantic,omitempty"`
 
 	// Workers specifies the number of concurrent workers for file parsing.
@@ -175,7 +175,7 @@ func DefaultConfig() *Config {
 		Since:              "",
 		CacheDir:           "",
 		ClearCache:         false,
-		Semantic:           false,
+		Semantic:           true,
 		DiffMode:           DiffModeDisabled,
 	}
 }

@@ -42,9 +42,9 @@ func addSharedFlags(cmd *cobra.Command) {
 
 	// Semantic-aware detection flags
 	cmd.Flags().
-		Bool("semantic", false, "enable semantic-aware detection (off by default; matches by structure AND identifier names)")
+		Bool("semantic", true, "enable semantic-aware detection (on by default; matches by structure AND identifier names)")
 	cmd.Flags().
-		Bool("structural", false, "explicitly use structural-only matching (this is already the default; only needed to override config file)")
+		Bool("structural", false, "disable semantic detection; match by structure only (increases false positives from similar-looking but semantically different code)")
 }
 
 // AddFlags adds all flags to the root command.

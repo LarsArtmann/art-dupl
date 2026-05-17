@@ -484,9 +484,9 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 func TestSemanticField(t *testing.T) {
 	t.Parallel()
 
-	// Test default value is false
+	// Test default value is true (semantic matching is the default)
 	cfg := DefaultConfig()
-	testutil.AssertFieldValue(t, cfg.Semantic, false, "Semantic")
+	testutil.AssertFieldValue(t, cfg.Semantic, true, "Semantic")
 
 	// Test Semantic can be loaded from config file
 	t.Run("LoadFromConfigFile", func(t *testing.T) {

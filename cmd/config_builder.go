@@ -39,6 +39,12 @@ type FlagValues struct {
 	ClearCache         bool
 	Workers            int
 	DiffMode           string
+
+	// Explicitly tracks which bool flags the user explicitly set.
+	// This is necessary because bool flags default to a value but we need
+	// to distinguish "user didn't touch this flag" from "user explicitly set false".
+	SemanticSet   bool
+	StructuralSet bool
 }
 
 // BuildConfigFromFlags extracts flag values and builds a merged configuration.
@@ -46,7 +52,7 @@ type FlagValues struct {
 func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, error) {
 	flags := extractFlagValues(cmd, args)
 
-	err := validateMutualExclusion(flags.Semantic, flags.Structural)
+	err := validateMutualExclusion(flags.SemanticSet, flags.StructuralSet)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +76,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
-	if flags.Structural {
+	if flags.StructuralSet {
 		mergedConfig.Semantic = false
 	}
 
@@ -143,12 +149,14 @@ func extractFlagValues(cmd *cobra.Command, args []string) *FlagValues {
 		ClearCache:         clearCache,
 		Workers:            workers,
 		DiffMode:           diffMode,
+		SemanticSet:        cmd.Flags().Changed("semantic"),
+		StructuralSet:      cmd.Flags().Changed("structural"),
 	}
 }
 
-// validateMutualExclusion checks that semantic and structural are not both set.
-func validateMutualExclusion(semantic, structural bool) error {
-	if semantic && structural {
+// validateMutualExclusion checks that semantic and structural are not both explicitly set.
+func validateMutualExclusion(semanticSet, structuralSet bool) error {
+	if semanticSet && structuralSet {
 		return duplerrors.NewValidationError(
 			"cannot use both --semantic and --structural flags; these are mutually exclusive",
 			nil,

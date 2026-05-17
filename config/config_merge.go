@@ -1,5 +1,7 @@
 package config
 
+import "reflect"
+
 // MergeConfigs merges two configurations, with command line config taking precedence.
 func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 	result := DefaultConfig()
@@ -12,162 +14,42 @@ func MergeConfigs(fileConfig, cliConfig *Config) *Config {
 
 // mergeConfig merges source config into result config.
 // If skipZeroValues is true, fields with zero/empty values are skipped.
-// This provides a single source of truth for config merging.
-//
-//nolint:funlen,gocognit,gocyclo,cyclop // Config merging requires handling each field independently
+// Uses reflection to automatically handle all Config fields — adding a new field
+// to Config struct is automatically picked up without touching this function.
 func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	if cfg == nil {
 		return
 	}
 
-	// Threshold (int)
-	if !skipZeroValues || cfg.Threshold != 0 {
-		result.Threshold = cfg.Threshold
-	}
+	resultVal := reflect.ValueOf(result).Elem()
+	cfgVal := reflect.ValueOf(cfg).Elem()
 
-	// IncludeVendor (bool)
-	if !skipZeroValues || cfg.IncludeVendor {
-		result.IncludeVendor = cfg.IncludeVendor
-	}
+	for i := 0; i < cfgVal.NumField(); i++ {
+		srcField := cfgVal.Field(i)
+		fieldKind := srcField.Kind()
 
-	// IncludeNodeModules (bool)
-	if !skipZeroValues || cfg.IncludeNodeModules {
-		result.IncludeNodeModules = cfg.IncludeNodeModules
-	}
+		if skipZeroValues && isFieldZero(srcField, fieldKind) {
+			continue
+		}
 
-	// FilesFromStdin (bool)
-	if !skipZeroValues || cfg.FilesFromStdin {
-		result.FilesFromStdin = cfg.FilesFromStdin
+		resultVal.Field(i).Set(srcField)
 	}
+}
 
-	// OutputFormat (OutputFormat)
-	if !skipZeroValues || cfg.OutputFormat != "" {
-		result.OutputFormat = cfg.OutputFormat
-	}
-
-	// Verbose (bool)
-	if !skipZeroValues || cfg.Verbose {
-		result.Verbose = cfg.Verbose
-	}
-
-	// Paths ([]string)
-	if !skipZeroValues || len(cfg.Paths) > 0 {
-		result.Paths = cfg.Paths
-	}
-
-	// IgnoreFiles ([]string)
-	if !skipZeroValues || len(cfg.IgnoreFiles) > 0 {
-		result.IgnoreFiles = cfg.IgnoreFiles
-	}
-
-	// MaxChildrenSerial (int)
-	if !skipZeroValues || cfg.MaxChildrenSerial != 0 {
-		result.MaxChildrenSerial = cfg.MaxChildrenSerial
-	}
-
-	// OutputFile (string)
-	if !skipZeroValues || cfg.OutputFile != "" {
-		result.OutputFile = cfg.OutputFile
-	}
-
-	// SortBy (SortCriteria)
-	if !skipZeroValues || cfg.SortBy != "" {
-		result.SortBy = cfg.SortBy
-	}
-
-	// DetectionMethods (DetectionMethods)
-	if !skipZeroValues || len(cfg.DetectionMethods) > 0 {
-		result.DetectionMethods = cfg.DetectionMethods
-	}
-
-	// Profile (bool)
-	if !skipZeroValues || cfg.Profile {
-		result.Profile = cfg.Profile
-	}
-
-	// Timeout (int)
-	if !skipZeroValues || cfg.Timeout != 0 {
-		result.Timeout = cfg.Timeout
-	}
-
-	// IncludeSQLC (bool)
-	if !skipZeroValues || cfg.IncludeSQLC {
-		result.IncludeSQLC = cfg.IncludeSQLC
-	}
-
-	// IncludeTempl (bool)
-	if !skipZeroValues || cfg.IncludeTempl {
-		result.IncludeTempl = cfg.IncludeTempl
-	}
-
-	// IncludeProtobuf (bool)
-	if !skipZeroValues || cfg.IncludeProtobuf {
-		result.IncludeProtobuf = cfg.IncludeProtobuf
-	}
-
-	// IncludeMockgen (bool)
-	if !skipZeroValues || cfg.IncludeMockgen {
-		result.IncludeMockgen = cfg.IncludeMockgen
-	}
-
-	// IncludeStringer (bool)
-	if !skipZeroValues || cfg.IncludeStringer {
-		result.IncludeStringer = cfg.IncludeStringer
-	}
-
-	// Only (string) - apply if set (filters to specific file type)
-	if !skipZeroValues || cfg.Only != "" {
-		result.Only = cfg.Only
-	}
-
-	// IncludePatterns ([]string)
-	if !skipZeroValues || len(cfg.IncludePatterns) > 0 {
-		result.IncludePatterns = cfg.IncludePatterns
-	}
-
-	// ExcludePatterns ([]string)
-	if !skipZeroValues || len(cfg.ExcludePatterns) > 0 {
-		result.ExcludePatterns = cfg.ExcludePatterns
-	}
-
-	// Incremental (bool)
-	if !skipZeroValues || cfg.Incremental {
-		result.Incremental = cfg.Incremental
-	}
-
-	// Since (string)
-	if !skipZeroValues || cfg.Since != "" {
-		result.Since = cfg.Since
-	}
-
-	// CacheDir (string)
-	if !skipZeroValues || cfg.CacheDir != "" {
-		result.CacheDir = cfg.CacheDir
-	}
-
-	// ClearCache (bool)
-	if !skipZeroValues || cfg.ClearCache {
-		result.ClearCache = cfg.ClearCache
-	}
-
-	// Semantic (bool) - apply if set (semantic is now default true)
-	if !skipZeroValues || cfg.Semantic {
-		result.Semantic = cfg.Semantic
-	}
-
-	// DiffMode (DiffMode) - apply if set
-	if !skipZeroValues || cfg.DiffMode.IsEnabled() {
-		result.DiffMode = cfg.DiffMode
-	}
-
-	// Workers (int)
-	if !skipZeroValues || cfg.Workers != 0 {
-		result.Workers = cfg.Workers
-	}
-
-	// RichText (bool)
-	if !skipZeroValues || cfg.RichText {
-		result.RichText = cfg.RichText
+// isFieldZero reports whether a reflect.Value should be treated as "unset"
+// for the purpose of config merging.
+func isFieldZero(v reflect.Value, kind reflect.Kind) bool {
+	switch kind {
+	case reflect.Bool:
+		return !v.Bool()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.String:
+		return v.String() == ""
+	case reflect.Slice:
+		return v.IsNil() || v.Len() == 0
+	default:
+		return v.IsZero()
 	}
 }
 
