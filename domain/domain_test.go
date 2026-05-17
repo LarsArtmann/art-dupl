@@ -194,6 +194,14 @@ func TestProcessedCloneGroup_WithClones(t *testing.T) {
 		},
 	}
 
+	if pg.Hash != "abc123" {
+		t.Errorf("Hash = %q, want 'abc123'", pg.Hash)
+	}
+
+	if pg.Size != 50 {
+		t.Errorf("Size = %d, want 50", pg.Size)
+	}
+
 	if len(pg.Clones) != 2 {
 		t.Fatalf("len(Clones) = %d, want 2", len(pg.Clones))
 	}
