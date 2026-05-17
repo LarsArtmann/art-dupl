@@ -66,10 +66,11 @@ components:
 
   # Test utilities
   testutil:
-    in: internal/testutil/**
-    in: internal/testhelpers/**
-    in: internal/filtertest/**
-    in: internal/configtest/**
+    in:
+      - internal/testutil/**
+      - internal/testhelpers/**
+      - internal/filtertest/**
+      - internal/configtest/**
 
 deps:
   main:
