@@ -56,8 +56,8 @@ art-dupl --html --diff side-by-side > report.html
 # JSON for CI/CD pipelines
 art-dupl --json -t 20
 
-# Semantic-aware detection (reduces false positives)
-art-dupl --semantic ./src
+# Structural-only matching (shows more results, including noise)
+art-dupl --structural ./src
 
 # Hash-based detection (faster)
 art-dupl -m hash ./src
@@ -94,8 +94,8 @@ Controlled with `-m` / `--detection-methods`:
 
 ### Semantic vs. Structural Matching
 
-- **Default** (structural): Matches by AST shape only. `a.String()` matches `b.Error()`.
-- **`--semantic`**: Matches by structure AND identifier names. `a.String()` does NOT match `b.Error()`. Distinguishes methods by receiver type. Reduces false positives.
+- **Default** (semantic): Matches by structure AND identifier names. `a.String()` does NOT match `b.Error()`. Distinguishes methods by receiver type.
+- **`--structural`**: Matches by AST shape only. `a.String()` matches `b.Error()`. Use for raw structural analysis.
 
 ## Output Formats
 
@@ -126,7 +126,7 @@ art-dupl completion [bash|zsh|fish|powershell]
 | `--threshold`         | `-t`  | `15`       | Minimum token sequence size                |
 | `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                        |
 | `--sort`              | `-s`  | `size`     | Sort: size, occurrence, hash, total-tokens |
-| `--semantic`          |       | `false`    | Match by structure AND identifier names    |
+| `--semantic`          |       | `true`     | Match by structure AND identifier names (default) |
 | `--config`            | `-c`  |            | Path to JSON config file                   |
 | `--verbose`           | `-v`  |            | Verbose logging (repeat for more)          |
 | `--version`           |       |            | Show version                               |

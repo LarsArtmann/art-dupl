@@ -74,11 +74,10 @@
 
 | Feature                  | Status           | Description                                                                |
 | ------------------------ | ---------------- | -------------------------------------------------------------------------- |
-| **Semantic-Aware Mode**  | FULLY_FUNCTIONAL | FNV-1a 24-bit hash of identifiers; clones matched by structure + semantics |
+| **Semantic-Aware Mode**  | FULLY_FUNCTIONAL | FNV-1a 24-bit hash of identifiers; clones matched by structure + semantics (default) |
 | **Structural-Only Mode** | FULLY_FUNCTIONAL | `--structural` disables semantic; matches by AST shape only                |
-| **Identifier Hashing**   | FULLY_FUNCTIONAL | Multi-identifier hashing (receiver + method name combined)                 |
 
-**Note:** Config default is `Semantic: false` (structural-only). Flag description says "already the default" which is inconsistent — see Known Issues.
+**Note:** Config default is `Semantic: true` (semantic matching). Use `--structural` for raw structural analysis.
 
 ---
 

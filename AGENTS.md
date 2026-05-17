@@ -350,11 +350,10 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 
 ### Semantic Detection
 
-- **Default**: Structural-only matching (AST structure, ignoring identifier names). Config default: `Semantic: false`
-- With `--semantic`: Clones matched by both structure AND identifier semantics (e.g., `a.String()` ≠ `b.Error()`)
-- With `--structural` (explicit): Same as default — matches by AST structure only (e.g., `a.String()` = `b.Error()`)
-- Example: `a.String()` WILL match `b.Error()` by default (structural-only); with `--semantic`, they will NOT match
-- Useful for reducing false positives from similar-looking but semantically different code
+- **Default**: Semantic matching (AST structure AND identifier names). Config default: `Semantic: true`
+- With `--structural`: Clones matched by structure only, ignoring identifier names (e.g., `a.String()` = `b.Error()`)
+- Example: `a.String()` will NOT match `b.Error()` by default (semantic); with `--structural`, they WILL match
+- Semantic mode reduces false positives from similar-looking but semantically different code
 - Implementation: FNV-1a hash of identifiers encoded into AST node types
 
 ### Output Formats
@@ -825,6 +824,8 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 **Config extraction & printer cleanup (2026-05-03):** Deleted `printer/format.go` (moved `ParseFormat` to `config.ParseOutputFormat`) and `printer/sort_type.go` (moved `SortBy` constants to `config.SortCriteria`). All printer and cmd references updated to use `config.SortCriteria` directly. Printer interface now uses `config.SortCriteria` instead of `printer.SortBy`. Extracted `DetectionConfig` from `config.Config` for the detection layer — `MultiDetector` accepts `DetectionConfig` (Methods + Verbose) instead of the full `*config.Config`. Defined `MethodDetector` interface in `detection/detector.go` for pluggable detectors.
 
 **Detector wiring & file splits (2026-05-03):** Wired `TodoDetector` and `LegacyDetector` through `MultiDetector.FindDuplOver()` — all 4 detection methods now accessible via `-m` flag. Consolidated threshold error sentinels into `config/enum_helpers.go` as single source of truth. Split `detection/todos.go` (352L → 3 files), `config/config.go` (344L → 3 files), `cmd/run_analysis.go` (450L → 3 files).
+
+**Semantic default & reflection merge (2026-05-17):** `DefaultConfig.Semantic` changed from `false` to `true` — semantic matching is now the default, reducing first-use noise by 68%. `--structural` disables it. `mergeConfig()` replaced from 170-line manual field list to 30-line reflection-based merge — adding Config fields no longer requires touching merge code. `Changed()` tracking added for semantic/structural flags to fix mutual exclusion with the new `true` default.
 
 ### Architecture — Outstanding Issues
 
