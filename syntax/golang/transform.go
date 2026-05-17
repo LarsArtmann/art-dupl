@@ -185,6 +185,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Call))
 
 	case *ast.Ident:
+		o.Name = n.Name
 		o.Type = encodeSemanticType(Ident, n.Name, t.config.Mode.IsSemantic())
 
 	case *ast.IfStmt:
@@ -250,6 +251,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.SelectorExpr:
+		o.Name = n.Sel.Name
 		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.X), t.trans(n.Sel))
 
@@ -284,7 +286,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Type)
 
 	case *ast.TypeSpec:
-		// Semantic hashing: encode type name to differentiate type declarations
+		o.Name = n.Name.Name
 		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.Name))
 		t.addWithNilCheck(o, n.TypeParams)

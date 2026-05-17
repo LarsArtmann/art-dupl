@@ -77,15 +77,12 @@ func hasRealBody(node *syntax.Node) bool {
 	return false
 }
 
-// isPureDeferPattern reports whether every clone is a DeferStmt.
+// isPureDeferPattern reports whether every clone is a DeferStmt
+// wrapping a RAII-style call (Unlock, Close, etc.).
 //
-// In practice, a bare DeferStmt match across files means identical defer
-// calls (e.g., defer Unlock()). Without source text we cannot distinguish
-// `defer mu.Unlock()` from `defer expensiveCleanup()`, so we treat any
-// bare DeferStmt as potentially non-actionable.
-//
-// Future improvement: extend syntax.Node with an IdentName field (or use source
-// position lookup) to distinguish RAII Unlock/Close from business-logic defer.
+// Using the Name field on child nodes, we can now distinguish
+// `defer mu.Unlock()` from `defer processOrder()` — the former is
+// idiomatic RAII cleanup (non-actionable), the latter is real duplication.
 func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 	for _, seq := range nodeSeqs {
 		if len(seq) != 1 {
@@ -95,9 +92,38 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 		if seq[0].Type != golang.DeferStmt {
 			return false
 		}
+
+		if !isRAIIDeferCall(seq[0]) {
+			return false
+		}
 	}
 
 	return true
+}
+
+// isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
+func isRAIIDeferCall(node *syntax.Node) bool {
+	for _, child := range node.Children {
+		if child.Type == golang.CallExpr {
+			for _, arg := range child.Children {
+				if arg.Type == golang.SelectorExpr && isCleanupMethod(arg.Name) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+// isCleanupMethod reports whether a method name is a known RAII cleanup.
+func isCleanupMethod(name string) bool {
+	switch name {
+	case "Unlock", "Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free":
+		return true
+	default:
+		return false
+	}
 }
 
 // isPureErrorPropagation reports whether every clone is an IfStmt
@@ -161,11 +187,11 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 }
 
 // containsNilIdentifier checks if a BinaryExpr compares against nil.
+// Uses the Name field to verify an identifier named "nil" is present,
+// rather than just checking for any Ident node.
 func containsNilIdentifier(node *syntax.Node) bool {
 	for _, child := range node.Children {
-		if child.Type == golang.Ident {
-			// Cannot check actual name without source text.
-			// Presence of Ident alongside BinaryExpr is a heuristic.
+		if child.Type == golang.Ident && child.Name == "nil" {
 			return true
 		}
 	}

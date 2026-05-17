@@ -28,12 +28,12 @@ func TestEvaluateActionability(t *testing.T) {
 			expected: domain.NonActionable,
 		},
 		{
-			name: "bare DeferStmt without children is non-actionable",
+			name: "bare DeferStmt without children is actionable (unknown defer)",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.DeferStmt, Owns: 1}},
 				{{Type: golang.DeferStmt, Owns: 1}},
 			},
-			expected: domain.NonActionable,
+			expected: domain.Actionable,
 		},
 		{
 			name: "bare IfStmt without children is actionable (cannot verify pattern)",
@@ -96,9 +96,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
+										Name: "Unlock",
 										Children: []*syntax.Node{
-											{Type: golang.Ident},
-											{Type: golang.Ident},
+											{Type: golang.Ident, Name: "mu"},
+											{Type: golang.Ident, Name: "Unlock"},
 										},
 									},
 								},
@@ -115,9 +116,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
+										Name: "Unlock",
 										Children: []*syntax.Node{
-											{Type: golang.Ident},
-											{Type: golang.Ident},
+											{Type: golang.Ident, Name: "mu"},
+											{Type: golang.Ident, Name: "Unlock"},
 										},
 									},
 								},
@@ -129,6 +131,52 @@ func TestEvaluateActionability(t *testing.T) {
 			expected: domain.NonActionable,
 		},
 		{
+			name: "defer processOrder is actionable (not RAII)",
+			seqs: [][]*syntax.Node{
+				{
+					{
+						Type: golang.DeferStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Name: "processOrder",
+										Children: []*syntax.Node{
+											{Type: golang.Ident, Name: "svc"},
+											{Type: golang.Ident, Name: "processOrder"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					{
+						Type: golang.DeferStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Name: "processOrder",
+										Children: []*syntax.Node{
+											{Type: golang.Ident, Name: "svc"},
+											{Type: golang.Ident, Name: "processOrder"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: domain.Actionable,
+		},
+		{
 			name: "if err != nil { return err } is non-actionable",
 			seqs: [][]*syntax.Node{
 				{
@@ -138,7 +186,8 @@ func TestEvaluateActionability(t *testing.T) {
 							{
 								Type: golang.BinaryExpr,
 								Children: []*syntax.Node{
-									{Type: golang.Ident},
+									{Type: golang.Ident, Name: "err"},
+									{Type: golang.Ident, Name: "nil"},
 								},
 							},
 							{
@@ -157,7 +206,8 @@ func TestEvaluateActionability(t *testing.T) {
 							{
 								Type: golang.BinaryExpr,
 								Children: []*syntax.Node{
-									{Type: golang.Ident},
+									{Type: golang.Ident, Name: "err"},
+									{Type: golang.Ident, Name: "nil"},
 								},
 							},
 							{

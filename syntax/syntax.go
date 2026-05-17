@@ -55,8 +55,13 @@ const maxChildrenSerial = 10_000
 // Memory Layout Optimized with int32 fields:
 // - int32 fields grouped for cache efficiency (4B each, 16B total)
 // - pointer field (8B)
-// - string header at end (16B)
-// Total: 40B (37.5% reduction from 64B).
+// - string headers at end (32B: Filename + Name)
+// Total: 56B.
+//
+// The Name field stores the original Go identifier for Ident, SelectorExpr,
+// and FuncDecl nodes. It enables actionability analysis to distinguish
+// `nil` from `err`, `Unlock` from `Close`, etc.
+// Empty string means "not an identifier-bearing node" or structural-only mode.
 type Node struct {
 	Type     int32
 	Pos      int32
@@ -64,6 +69,7 @@ type Node struct {
 	Owns     int32
 	Children []*Node
 	Filename string
+	Name     string
 }
 
 func NewNode() *Node {
