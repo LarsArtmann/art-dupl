@@ -27,7 +27,7 @@ func NewStatsCommand() *cobra.Command {
 	addSharedFlags(cmd)
 
 	// Stats-specific: output format
-	cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (default: text)")
+	cmd.Flags().String("format", "text", "output format: text, json, csv (default: text)")
 
 	return cmd
 }
