@@ -11,7 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 const testFile = "test.go"
@@ -329,7 +329,7 @@ func TestShouldIncludeFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := shouldIncludeFile(nil, tt.path)
+			result := shouldIncludeFile(nil, tt.path, nil)
 			if result != tt.expected {
 				t.Errorf("shouldIncludeFile(nil, %q) = %v, want %v", tt.path, result, tt.expected)
 			}
@@ -484,7 +484,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, true, true, ""))
+		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, nil, true, true, ""))
 
 		// Should find all 3 fileList
 		if len(fileList) != 3 {

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // toFSPath converts an absolute path to a path usable with os.DirFS("/").

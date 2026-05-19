@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // Directory exclusion constants.
@@ -40,6 +40,7 @@ func filesFeedWithOptions(
 	paths []string,
 	fromStdin bool,
 	filter *gogenfilter.Filter,
+	filterStats *FilterStats,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 ) chan string {
@@ -52,7 +53,7 @@ func filesFeedWithOptions(
 				f := sc.Text()
 				path := strings.TrimPrefix(f, "./")
 
-				if !shouldIncludeFile(filter, path) {
+				if !shouldIncludeFile(filter, path, filterStats) {
 					continue
 				}
 
@@ -77,16 +78,17 @@ func filesFeedWithOptions(
 		return only.Matches(name)
 	}
 
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, fileCheck)
+	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, fileCheck)
 }
 
 // crawlPaths walks paths and returns a channel of Go files.
 func crawlPaths(
 	paths []string,
 	filter *gogenfilter.Filter,
+	filterStats *FilterStats,
 	includeVendor, includeNodeModules bool,
 ) chan string {
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, isSourceFile)
+	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, isSourceFile)
 }
 
 // crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
@@ -97,6 +99,7 @@ func crawlPaths(
 func crawlPathsAllFiles(
 	paths []string,
 	filter *gogenfilter.Filter,
+	filterStats *FilterStats,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 ) chan string {
@@ -107,7 +110,7 @@ func crawlPathsAllFiles(
 		}
 	}
 
-	return crawlPathsWithFileCheck(paths, filter, includeVendor, includeNodeModules, fileCheck)
+	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, fileCheck)
 }
 
 // fileCheckFunc returns true if a file should be included based on its name.
@@ -117,6 +120,7 @@ type fileCheckFunc func(name string) bool
 // CrawlOptions contains the common options for crawling operations.
 type CrawlOptions struct {
 	Filter          *gogenfilter.Filter
+	FilterStats     *FilterStats
 	IncludeVendor   bool
 	IncludeNodeMods bool
 	FileCheck       fileCheckFunc
@@ -126,6 +130,7 @@ type CrawlOptions struct {
 func crawlPathsWithFileCheck(
 	paths []string,
 	f *gogenfilter.Filter,
+	filterStats *FilterStats,
 	includeVendor bool,
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,
@@ -136,6 +141,7 @@ func crawlPathsWithFileCheck(
 		for _, path := range paths {
 			crawlSinglePathWithOpts(CrawlOptions{
 				Filter:          f,
+				FilterStats:     filterStats,
 				IncludeVendor:   includeVendor,
 				IncludeNodeMods: includeNodeModules,
 				FileCheck:       fileCheck,
@@ -157,7 +163,7 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	}
 
 	if !info.IsDir() {
-		if shouldIncludeFile(opts.Filter, path) && passesFileCheck(info.Name(), opts.FileCheck) {
+		if shouldIncludeFile(opts.Filter, path, opts.FilterStats) && passesFileCheck(info.Name(), opts.FileCheck) {
 			opts.FChan <- path
 		}
 
@@ -192,7 +198,7 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 	}
 
 	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) &&
-		shouldIncludeFile(opts.Filter, path) {
+		shouldIncludeFile(opts.Filter, path, opts.FilterStats) {
 		opts.FChan <- path
 	}
 

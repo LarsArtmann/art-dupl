@@ -9,7 +9,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // executeHashOnlyAnalysis runs hash-based duplicate detection without AST parsing.
@@ -22,8 +22,9 @@ func executeHashOnlyAnalysis(
 	cfg *config.Config,
 	paths []string,
 	filterParam *gogenfilter.Filter,
+	filterStats *FilterStats,
 	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
 	printBuildingStatus(
 		cfg,
 		outputFormat,
@@ -41,6 +42,7 @@ func executeHashOnlyAnalysis(
 	filesChan := crawlPathsAllFiles(
 		paths,
 		filterParam,
+		filterStats,
 		cfg.IncludeVendor,
 		cfg.IncludeNodeModules,
 		cfg.Only,
@@ -48,7 +50,7 @@ func executeHashOnlyAnalysis(
 
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
-		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, fmt.Errorf(
+		return nil, job.ParseStats{}, nil, fmt.Errorf(
 			"hash-only analysis (outputFormat: %s): %w", outputFormat, err,
 		)
 	}
@@ -58,11 +60,6 @@ func executeHashOnlyAnalysis(
 	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
 
 	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
-
-	var filterStats gogenfilter.FilterStats
-	if filterParam != nil {
-		filterStats = filterParam.GetStats()
-	}
 
 	return duplChan, job.ParseStats{
 		ParseStatsMixin: job.ParseStatsMixin{FilesCount: len(files), LinesCount: 0},

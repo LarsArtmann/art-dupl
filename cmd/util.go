@@ -5,7 +5,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/printer"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // detectionMethodsToString converts detection methods to a comma-separated string.
@@ -48,15 +48,18 @@ func newReportMetadata(cfg *config.Config, sortBy string) printer.ReportMetadata
 }
 
 // shouldIncludeFile returns true if the file should be included (not filtered).
-func shouldIncludeFile(f *gogenfilter.Filter, path string) bool {
+// When stats is non-nil, the filter result is recorded for aggregation.
+func shouldIncludeFile(f *gogenfilter.Filter, path string, stats *FilterStats) bool {
 	if f == nil {
 		return true
 	}
 
-	filtered, err := f.Filter(path)
+	result, err := f.FilterDetailed(path)
 	if err != nil {
 		return true
 	}
 
-	return !filtered
+	stats.Record(result)
+
+	return !result.Filtered
 }

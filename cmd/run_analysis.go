@@ -11,7 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // treeBuildResult holds the result of a suffix tree build.
@@ -28,6 +28,7 @@ type buildParams struct {
 	paths        []string
 	cfg          *config.Config
 	filterParam  *gogenfilter.Filter
+	filterStats  *FilterStats
 	outputFormat config.OutputFormat
 }
 
@@ -37,6 +38,7 @@ func (p buildParams) getFilesChan() chan string {
 		p.paths,
 		p.cfg.FilesFromStdin,
 		p.filterParam,
+		p.filterStats,
 		p.cfg.IncludeVendor,
 		p.cfg.IncludeNodeModules,
 		p.cfg.Only,
@@ -229,7 +231,7 @@ func executeAnalysis(
 	cfg *config.Config,
 	paths []string,
 	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, gogenfilter.FilterStats, error) {
+) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
 	var startProfile job.ProfileResult
 	if cfg.Profile {
 		startProfile = job.StartProfile()
@@ -239,20 +241,20 @@ func executeAnalysis(
 
 	filterParam, err := setupFilter(cfg)
 	if err != nil {
-		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
+		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf("failed to setup filter (outputFormat: %s)", outputFormat),
 		)
 	}
 
-	var filterStats gogenfilter.FilterStats
+	var filterStats *FilterStats
 	if filterParam != nil {
-		filterStats = filterParam.GetStats()
+		filterStats = NewFilterStats(filterParam.FilterReasons())
 	}
 
 	if cfg.DetectionMethods.IsHashOnly() {
-		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, outputFormat)
+		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat)
 	}
 
 	result := buildSuffixTree(buildParams{
@@ -260,10 +262,11 @@ func executeAnalysis(
 		paths:        paths,
 		cfg:          cfg,
 		filterParam:  filterParam,
+		filterStats:  filterStats,
 		outputFormat: outputFormat,
 	})
 	if result.err != nil {
-		return nil, job.ParseStats{}, gogenfilter.FilterStats{}, duplerrors.Wrap(
+		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			result.err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf(

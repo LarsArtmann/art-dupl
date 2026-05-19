@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // assertFilterResult checks that a file is kept or not kept by the filter.

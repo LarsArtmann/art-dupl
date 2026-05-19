@@ -14,7 +14,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/printer"
 	"github.com/LarsArtmann/art-dupl/syntax"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -68,7 +68,7 @@ func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
 	t.Helper()
 
-	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, false, config.FileType(ext))
+	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, false, false, config.FileType(ext))
 
 	found := make([]string, 0, expectedCount)
 	for f := range ch {
@@ -295,7 +295,7 @@ func TestPrintVersion(t *testing.T) {
 
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
-		result := crawlPaths([]string{}, nil, false, false)
+		result := crawlPaths([]string{}, nil, nil, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -320,7 +320,7 @@ func TestCrawlPaths(t *testing.T) {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
-		result := crawlPaths([]string{tmpFile}, nil, false, false)
+		result := crawlPaths([]string{tmpFile}, nil, nil, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -338,7 +338,7 @@ func TestCrawlPaths(t *testing.T) {
 
 func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("empty options", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{}, false, (*gogenfilter.Filter)(nil), false, false, "")
+		ch := filesFeedWithOptions([]string{}, false, (*gogenfilter.Filter)(nil), nil, false, false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -354,7 +354,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		ch := filesFeedWithOptions([]string{}, false, f, false, false, "")
+		ch := filesFeedWithOptions([]string{}, false, f, nil, false, false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -393,7 +393,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	}
 
 	t.Run("all files with empty filter", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, false, false, "")
+		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, false, false, "")
 
 		found := make([]string, 0, 4)
 		for f := range ch {

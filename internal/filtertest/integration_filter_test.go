@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
 // TestSmartFilteringIntegration is an integration test for smart filtering feature.

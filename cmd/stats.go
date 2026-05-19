@@ -10,7 +10,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/printer"
-	"github.com/LarsArtmann/gogenfilter"
+	"github.com/LarsArtmann/gogenfilter/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,11 @@ func NewStatsCommand() *cobra.Command {
 }
 
 // applyFilterStats applies filter statistics to the stats config.
-func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterStats) {
+func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
+	if filterStats == nil {
+		return
+	}
+
 	totalFiltered := filterStats.TotalFiltered()
 	if totalFiltered <= 0 {
 		return
@@ -46,7 +50,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats gogenfilter.FilterSta
 			continue
 		}
 
-		count := filterStats.FilteredBy(reason)
+		count := filterStats.FilteredBy(string(reason))
 		if count > 0 {
 			breakdown[string(reason)] = count
 		}
