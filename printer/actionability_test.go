@@ -96,10 +96,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
-										Name: "Unlock",
+										Name: cleanupMethodName,
 										Children: []*syntax.Node{
 											{Type: golang.Ident, Name: "mu"},
-											{Type: golang.Ident, Name: "Unlock"},
+											{Type: golang.Ident, Name: cleanupMethodName},
 										},
 									},
 								},
@@ -116,10 +116,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
-										Name: "Unlock",
+										Name: cleanupMethodName,
 										Children: []*syntax.Node{
 											{Type: golang.Ident, Name: "mu"},
-											{Type: golang.Ident, Name: "Unlock"},
+											{Type: golang.Ident, Name: cleanupMethodName},
 										},
 									},
 								},
@@ -142,10 +142,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
-										Name: "processOrder",
+										Name: processOrderMethodName,
 										Children: []*syntax.Node{
 											{Type: golang.Ident, Name: "svc"},
-											{Type: golang.Ident, Name: "processOrder"},
+											{Type: golang.Ident, Name: processOrderMethodName},
 										},
 									},
 								},
@@ -162,10 +162,10 @@ func TestEvaluateActionability(t *testing.T) {
 								Children: []*syntax.Node{
 									{
 										Type: golang.SelectorExpr,
-										Name: "processOrder",
+										Name: processOrderMethodName,
 										Children: []*syntax.Node{
 											{Type: golang.Ident, Name: "svc"},
-											{Type: golang.Ident, Name: "processOrder"},
+											{Type: golang.Ident, Name: processOrderMethodName},
 										},
 									},
 								},

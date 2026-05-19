@@ -14,6 +14,7 @@ func CreateMockNode(nodeType int, filename string, pos, end int) *syntax.Node {
 		End:      int32(end), // #nosec G115 -- Test helper with controlled values
 		Owns:     0,
 		Children: nil,
+		Name:     "",
 	}
 }
 
@@ -66,6 +67,7 @@ func CreateNodeWithPos(nodeType int32, filename string, pos, end int32) *syntax.
 		End:      end,
 		Owns:     0,
 		Children: nil,
+		Name:     "",
 	}
 }
 
@@ -86,6 +88,7 @@ func CreateNodeSlice(values []struct {
 			End:      v.End,
 			Owns:     0,
 			Children: nil,
+			Name:     "",
 		}
 	}
 

@@ -24,7 +24,7 @@ func mergeConfig(result, cfg *Config, skipZeroValues bool) {
 	resultVal := reflect.ValueOf(result).Elem()
 	cfgVal := reflect.ValueOf(cfg).Elem()
 
-	for i := 0; i < cfgVal.NumField(); i++ {
+	for i := range cfgVal.NumField() {
 		srcField := cfgVal.Field(i)
 		fieldKind := srcField.Kind()
 
@@ -48,9 +48,29 @@ func isFieldZero(v reflect.Value, kind reflect.Kind) bool {
 		return v.String() == ""
 	case reflect.Slice:
 		return v.IsNil() || v.Len() == 0
-	default:
+	case reflect.Invalid,
+		reflect.Uint,
+		reflect.Uint8,
+		reflect.Uint16,
+		reflect.Uint32,
+		reflect.Uint64,
+		reflect.Uintptr,
+		reflect.Float32,
+		reflect.Float64,
+		reflect.Complex64,
+		reflect.Complex128,
+		reflect.Array,
+		reflect.Chan,
+		reflect.Func,
+		reflect.Interface,
+		reflect.Map,
+		reflect.Pointer,
+		reflect.Struct,
+		reflect.UnsafePointer:
 		return v.IsZero()
 	}
+
+	return v.IsZero()
 }
 
 func mergeFileConfig(result, cfg *Config) {

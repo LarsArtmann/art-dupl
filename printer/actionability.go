@@ -6,6 +6,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// RAII cleanup method names that indicate non-actionable patterns.
+const cleanupMethodName = "Unlock"
+
+// processOrderMethodName is a non-RAII method name for testing.
+const processOrderMethodName = "processOrder"
+
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
 //
@@ -119,7 +125,7 @@ func isRAIIDeferCall(node *syntax.Node) bool {
 // isCleanupMethod reports whether a method name is a known RAII cleanup.
 func isCleanupMethod(name string) bool {
 	switch name {
-	case "Unlock", "Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free":
+	case cleanupMethodName, "Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free":
 		return true
 	default:
 		return false
