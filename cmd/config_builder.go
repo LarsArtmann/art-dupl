@@ -164,6 +164,7 @@ func applyChangedStringArrayFlags(cmd *cobra.Command, cfg *config.Config) {
 // configFile returns the config file path from the --config flag.
 func configFile(cmd *cobra.Command) string {
 	val, _ := cmd.Flags().GetString("config")
+
 	return val
 }
 
@@ -199,6 +200,7 @@ func applyDetectionMethods(cmd *cobra.Command, cfg *config.Config) error {
 	}
 
 	val, _ := cmd.Flags().GetString("detection-methods")
+
 	return setDetectionMethods(cfg, val)
 }
 

@@ -23,6 +23,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 **What was wrong:** `DefaultConfig.Semantic = false`. Dogfooding on go-cqrs-lite showed 244 clone groups (structural) vs 78 (semantic) — 68% noise. Every new user's first experience was garbage output.
 
 **What changed:**
+
 - `DefaultConfig().Semantic` changed from `false` to `true`
 - `--semantic` flag default changed from `false` to `true`
 - `--structural` flag help text rewritten: "disable semantic detection; match by structure only (increases false positives)"
@@ -41,6 +42,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 **What was wrong:** `mergeConfig()` had `//nolint:funlen,gocognit,gocyclo,cyclop` confession. Every new Config field MUST be added here or it silently vanishes. RichText and Workers were already forgotten once. The compiler can't save you.
 
 **What changed:**
+
 - Replaced 170-line manual field-by-field merge with 30-line reflection-based implementation
 - `mergeConfig()` now iterates `reflect.ValueOf(cfg).Elem()` fields automatically
 - `isFieldZero()` handles bool/int/string/slice with explicit zero-value detection
@@ -61,6 +63,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 **What was wrong:** `mergeCLIConfig` uses `skipZeroValues=true`. For bool fields, `false` is the zero value, so CLI `false` can never override a file config `true`. The `--structural` band-aid at `config_builder.go:73` proved the general case was broken.
 
 **What changed (partial fix):**
+
 - Added `SemanticSet` and `StructuralSet` bool fields to `FlagValues`
 - `extractFlagValues` now tracks `cmd.Flags().Changed("semantic")` and `cmd.Flags().Changed("structural")`
 - `validateMutualExclusion` now uses `*Set` fields (only errors when BOTH explicitly set)
@@ -68,6 +71,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 - The `--structural` band-aid now works correctly with `--semantic` as default `true`
 
 **What remains broken:**
+
 - The GENERAL case is still broken. Any future "disable-X" bool flag will silently lose to file config
 - `applyBooleanFlags` in config_builder.go:244 still only propagates `true` values
 - 13 other bool flags (`--vendor`, `--include-sqlc`, `--profile`, etc.) all have the same potential issue
@@ -87,6 +91,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 **Original claim:** "Partially inaccurate" — `encodeSemanticType` DOES hash names into the Type field in semantic mode. But `Node` has no `Name` field, so downstream analysis like `containsNilIdentifier` can't distinguish `nil` from `err`.
 
 **What needs to happen:**
+
 1. Add `Name string` field to `syntax.Node` (memory cost: ~16 bytes per node)
 2. Populate `Name` in `transform.go` for `*ast.Ident` nodes (`n.Name`)
 3. Use `Name` in `actionability.go` for real identifier matching
@@ -105,6 +110,7 @@ User provided 5 deep architecture issues ("why this is stupid" analysis). After 
 **Original claim:** "True, but mitigated" — `EvaluateActionability` IS called in `clone_processor.go:65`. The two-step design is correct. But `ClassifyClone`'s primitive signature is fragile.
 
 **What needs to happen:**
+
 1. Define `ClassificationInput` struct in `domain/` with: `Filename string`, `NodeType int32`, `Tokens int`, `Lines int`
 2. Change `ClassifyClone(input ClassificationInput) CloneClassification`
 3. Update `clone_processor.go:54` to construct `ClassificationInput` from node data
@@ -148,53 +154,53 @@ Nothing totally fucked up. All changes compile and pass tests. However:
 
 ### P0 — Complete this session's work
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Generalize `Changed()` tracking for all bool flags in `FlagValues` | High | 1h |
-| 2 | Add `ClassificationInput` struct, change `ClassifyClone` signature (#4) | Medium | 30min |
-| 3 | Add `Name string` to `syntax.Node`, populate in transform.go (#3) | High | 2h |
-| 4 | Use `Name` in `actionability.go` for real identifier matching | High | 1h |
-| 5 | Add round-trip merge test for reflection-based `mergeConfig` | Medium | 30min |
+| #   | Task                                                                    | Impact | Effort |
+| --- | ----------------------------------------------------------------------- | ------ | ------ |
+| 1   | Generalize `Changed()` tracking for all bool flags in `FlagValues`      | High   | 1h     |
+| 2   | Add `ClassificationInput` struct, change `ClassifyClone` signature (#4) | Medium | 30min  |
+| 3   | Add `Name string` to `syntax.Node`, populate in transform.go (#3)       | High   | 2h     |
+| 4   | Use `Name` in `actionability.go` for real identifier matching           | High   | 1h     |
+| 5   | Add round-trip merge test for reflection-based `mergeConfig`            | Medium | 30min  |
 
 ### P1 — Architecture cleanup
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 6 | Change Printer interface to accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node` | High | 4h |
-| 7 | Consolidate three parallel Clone types into unified domain types | High | 3h |
-| 8 | Remove `printer.clone` unexported type, use `domain.ProcessedClone` everywhere | Medium | 2h |
-| 9 | Extract `actionability.go` patterns to language-agnostic strategy | Medium | 2h |
-| 10 | Remove `printer/clone_classify.go` direct import of `syntax/golang` | Medium | 1h |
+| #   | Task                                                                                     | Impact | Effort |
+| --- | ---------------------------------------------------------------------------------------- | ------ | ------ |
+| 6   | Change Printer interface to accept `[]ProcessedCloneGroup` instead of `[][]*syntax.Node` | High   | 4h     |
+| 7   | Consolidate three parallel Clone types into unified domain types                         | High   | 3h     |
+| 8   | Remove `printer.clone` unexported type, use `domain.ProcessedClone` everywhere           | Medium | 2h     |
+| 9   | Extract `actionability.go` patterns to language-agnostic strategy                        | Medium | 2h     |
+| 10  | Remove `printer/clone_classify.go` direct import of `syntax/golang`                      | Medium | 1h     |
 
 ### P2 — Config system hardening
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 11 | Add struct tags for merge behavior (`merge:"skip"` / `merge:"always"`) | Low | 2h |
-| 12 | Add exhaustive config merge property test (all fields, all combinations) | Medium | 1h |
-| 13 | Add `--no-semantic` as alias for `--structural` (clearer UX) | Low | 15min |
-| 14 | Deprecation warning when `--structural` is used (suggest it's the power-user mode) | Low | 15min |
-| 15 | Config migration guide: document that `semantic` default changed from `false` to `true` | Medium | 30min |
+| #   | Task                                                                                    | Impact | Effort |
+| --- | --------------------------------------------------------------------------------------- | ------ | ------ |
+| 11  | Add struct tags for merge behavior (`merge:"skip"` / `merge:"always"`)                  | Low    | 2h     |
+| 12  | Add exhaustive config merge property test (all fields, all combinations)                | Medium | 1h     |
+| 13  | Add `--no-semantic` as alias for `--structural` (clearer UX)                            | Low    | 15min  |
+| 14  | Deprecation warning when `--structural` is used (suggest it's the power-user mode)      | Low    | 15min  |
+| 15  | Config migration guide: document that `semantic` default changed from `false` to `true` | Medium | 30min  |
 
 ### P3 — Testing and documentation
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 16 | BDD test: `--structural=false` overrides `config.json: semantic: true` | Medium | 30min |
-| 17 | BDD test: new Config field is automatically merged by reflection | Medium | 30min |
-| 18 | Update README.md: `--semantic` is now default | Medium | 15min |
-| 19 | Update HOW_TO_USE.md with new default behavior | Low | 30min |
-| 20 | Update AGENTS.md with new default and reflection merge info | Medium | 15min |
+| #   | Task                                                                   | Impact | Effort |
+| --- | ---------------------------------------------------------------------- | ------ | ------ |
+| 16  | BDD test: `--structural=false` overrides `config.json: semantic: true` | Medium | 30min  |
+| 17  | BDD test: new Config field is automatically merged by reflection       | Medium | 30min  |
+| 18  | Update README.md: `--semantic` is now default                          | Medium | 15min  |
+| 19  | Update HOW_TO_USE.md with new default behavior                         | Low    | 30min  |
+| 20  | Update AGENTS.md with new default and reflection merge info            | Medium | 15min  |
 
 ### P4 — Performance and quality
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 21 | Benchmark reflection-based merge vs old manual merge | Low | 30min |
-| 22 | Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation | Low | 1h |
-| 23 | String pool integration for `syntax.Node.Name` field | Low | 1h |
-| 24 | Profile memory impact of `Name string` on large codebases | Medium | 1h |
-| 25 | Add `golangci-lint` `exhaustruct` check for `CloneClassification` | Low | 15min |
+| #   | Task                                                                     | Impact | Effort |
+| --- | ------------------------------------------------------------------------ | ------ | ------ |
+| 21  | Benchmark reflection-based merge vs old manual merge                     | Low    | 30min  |
+| 22  | Consider `sync.Pool` for syntax.Node to amortize `Name` field allocation | Low    | 1h     |
+| 23  | String pool integration for `syntax.Node.Name` field                     | Low    | 1h     |
+| 24  | Profile memory impact of `Name string` on large codebases                | Medium | 1h     |
+| 25  | Add `golangci-lint` `exhaustruct` check for `CloneClassification`        | Low    | 15min  |
 
 ---
 
@@ -205,6 +211,7 @@ Nothing totally fucked up. All changes compile and pass tests. However:
 Specifically: `DiffMode` currently checks `IsEnabled()` (which checks `!= "disabled" && IsValid()`). The reflection code uses `v.IsZero()` for the `default` case, which works because `DiffModeDisabled = ""` is the string zero value. But if someone changes `DiffModeDisabled` to `"off"`, the reflection code silently breaks.
 
 Options:
+
 1. **Keep as-is** — implicit correctness via string zero values. Works today, fragile tomorrow.
 2. **Add `merge:"custom"` struct tag** — fields with this tag use a custom `IsSet() bool` method. Explicit but more code.
 3. **Make all custom types implement `IsZero() bool`** — convention-based, Go-idiomatic. Requires adding methods to `DiffMode`, `OutputFormat`, `SortCriteria`, etc.
@@ -229,10 +236,10 @@ ok  github.com/LarsArtmann/art-dupl/printer       0.011s
 
 ## Files Changed This Session
 
-| File | Lines Changed | Description |
-|------|--------------|-------------|
-| `config/config.go` | +5/-5 | Semantic default true, updated docs |
-| `config/config_merge.go` | +46/-174 | Reflection-based merge replacing 170-line manual field list |
-| `config/config_test.go` | +2/-2 | Updated semantic default assertion |
-| `cmd/flags.go` | +2/-2 | Semantic default true, structural help text |
-| `cmd/config_builder.go` | +12/-6 | Changed() tracking for semantic/structural flags |
+| File                     | Lines Changed | Description                                                 |
+| ------------------------ | ------------- | ----------------------------------------------------------- |
+| `config/config.go`       | +5/-5         | Semantic default true, updated docs                         |
+| `config/config_merge.go` | +46/-174      | Reflection-based merge replacing 170-line manual field list |
+| `config/config_test.go`  | +2/-2         | Updated semantic default assertion                          |
+| `cmd/flags.go`           | +2/-2         | Semantic default true, structural help text                 |
+| `cmd/config_builder.go`  | +12/-6        | Changed() tracking for semantic/structural flags            |

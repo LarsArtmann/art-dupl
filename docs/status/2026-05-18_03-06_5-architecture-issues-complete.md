@@ -4,7 +4,7 @@
 **Session:** Complete resolution of 5 critical architecture issues  
 **Branch:** fork  
 **Commits:** 6 new, already pushed to origin/fork  
-**Working tree:** clean  
+**Working tree:** clean
 
 ---
 
@@ -125,53 +125,53 @@ Nothing.
 
 ### P0 — Critical (do next session)
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Pass DetectionConfig through job/ pipeline instead of bare bool | High | 2h |
-| 2 | Property test: reflection merge automatically picks up new Config fields | Medium | 1h |
-| 3 | Add string pool for syntax.Node.Name (reduce allocations) | Medium | 1h |
+| #   | Task                                                                     | Impact | Effort |
+| --- | ------------------------------------------------------------------------ | ------ | ------ |
+| 1   | Pass DetectionConfig through job/ pipeline instead of bare bool          | High   | 2h     |
+| 2   | Property test: reflection merge automatically picks up new Config fields | Medium | 1h     |
+| 3   | Add string pool for syntax.Node.Name (reduce allocations)                | Medium | 1h     |
 
 ### P1 — Architecture
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 4 | Printer interface → accept ProcessedCloneGroup[] | High | 4h |
-| 5 | Consolidate three Clone types | High | 3h |
-| 6 | Remove printer.clone unexported type | Medium | 2h |
-| 7 | NodeCategory field on syntax.Node for language-agnostic actionability | Medium | 2h |
-| 8 | Remove actionability.go import of syntax/golang | Medium | 1h |
-| 9 | Benchmark Name field memory impact on large project | Low | 30min |
-| 10 | Add exhaustruct linter check back with Config whitelist | Low | 15min |
+| #   | Task                                                                  | Impact | Effort |
+| --- | --------------------------------------------------------------------- | ------ | ------ |
+| 4   | Printer interface → accept ProcessedCloneGroup[]                      | High   | 4h     |
+| 5   | Consolidate three Clone types                                         | High   | 3h     |
+| 6   | Remove printer.clone unexported type                                  | Medium | 2h     |
+| 7   | NodeCategory field on syntax.Node for language-agnostic actionability | Medium | 2h     |
+| 8   | Remove actionability.go import of syntax/golang                       | Medium | 1h     |
+| 9   | Benchmark Name field memory impact on large project                   | Low    | 30min  |
+| 10  | Add exhaustruct linter check back with Config whitelist               | Low    | 15min  |
 
 ### P2 — Quality
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 11 | BDD test: --structural=false overrides config.json semantic: true | Medium | 30min |
-| 12 | BDD test: --vendor=false overrides file vendor: true | Low | 30min |
-| 13 | Fuzz test for MergeConfigs with all field combinations | Medium | 1h |
-| 14 | Add --no-semantic alias for --structural (clearer UX) | Low | 15min |
-| 15 | Migrate from gob cache to custom binary format (faster, smaller) | Medium | 3h |
+| #   | Task                                                              | Impact | Effort |
+| --- | ----------------------------------------------------------------- | ------ | ------ |
+| 11  | BDD test: --structural=false overrides config.json semantic: true | Medium | 30min  |
+| 12  | BDD test: --vendor=false overrides file vendor: true              | Low    | 30min  |
+| 13  | Fuzz test for MergeConfigs with all field combinations            | Medium | 1h     |
+| 14  | Add --no-semantic alias for --structural (clearer UX)             | Low    | 15min  |
+| 15  | Migrate from gob cache to custom binary format (faster, smaller)  | Medium | 3h     |
 
 ### P3 — Polish
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 16 | Update CHANGELOG.md with semantic default breaking change | Medium | 30min |
-| 17 | MIGRATION_GUIDE.md section: v1→v2 semantic default change | Medium | 30min |
-| 18 | README screenshot/asciinema with new default behavior | Low | 30min |
-| 19 | Deprecation warning for --structural (suggest it's power-user mode) | Low | 15min |
-| 20 | Config file template: semantic: true for new users | Low | 15min |
+| #   | Task                                                                | Impact | Effort |
+| --- | ------------------------------------------------------------------- | ------ | ------ |
+| 16  | Update CHANGELOG.md with semantic default breaking change           | Medium | 30min  |
+| 17  | MIGRATION_GUIDE.md section: v1→v2 semantic default change           | Medium | 30min  |
+| 18  | README screenshot/asciinema with new default behavior               | Low    | 30min  |
+| 19  | Deprecation warning for --structural (suggest it's power-user mode) | Low    | 15min  |
+| 20  | Config file template: semantic: true for new users                  | Low    | 15min  |
 
 ### P4 — Performance
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 21 | Profile: where is Name string allocation heaviest? | Medium | 30min |
-| 22 | Consider arena allocation for syntax.Node in transform | Low | 2h |
-| 23 | SIMD-optimized string comparison for Name matching | Low | 2h |
-| 24 | Parallel transform.go (per-file goroutines) | Medium | 2h |
-| 25 | Memory-mapped AST cache for incremental mode | Low | 4h |
+| #   | Task                                                   | Impact | Effort |
+| --- | ------------------------------------------------------ | ------ | ------ |
+| 21  | Profile: where is Name string allocation heaviest?     | Medium | 30min  |
+| 22  | Consider arena allocation for syntax.Node in transform | Low    | 2h     |
+| 23  | SIMD-optimized string comparison for Name matching     | Low    | 2h     |
+| 24  | Parallel transform.go (per-file goroutines)            | Medium | 2h     |
+| 25  | Memory-mapped AST cache for incremental mode           | Low    | 4h     |
 
 ---
 
@@ -180,6 +180,7 @@ Nothing.
 **How do we cleanly migrate `job/` from `bool` to `DetectionConfig` without breaking the incremental parser cache format?**
 
 The current chain is:
+
 ```
 config.Config.Semantic (bool)
   → job.Parse() → job.ParseParallel() → job.ParseFileByExtensionWithConfig() → bool
@@ -218,11 +219,11 @@ ok  github.com/LarsArtmann/art-dupl/syntax/golang  0.010s
 
 ## Commit History
 
-| Hash | Files | Description |
-|------|-------|-------------|
-| `66cb17b` | 4 | feat(syntax): Name field + actionability improvement |
-| `87902c3` | 4 | refactor(printer): ClassificationInput struct |
-| `d437f16` | 1 | refactor(cmd): Eliminate FlagValues split brain |
-| `89e62b2` | 1 | fix(config): Complete DefaultConfig |
-| `f425695` | 4 | docs: Update docs for semantic default |
-| `1ea1a7b` | 6 | fix(config): Semantic default + reflection merge |
+| Hash      | Files | Description                                          |
+| --------- | ----- | ---------------------------------------------------- |
+| `66cb17b` | 4     | feat(syntax): Name field + actionability improvement |
+| `87902c3` | 4     | refactor(printer): ClassificationInput struct        |
+| `d437f16` | 1     | refactor(cmd): Eliminate FlagValues split brain      |
+| `89e62b2` | 1     | fix(config): Complete DefaultConfig                  |
+| `f425695` | 4     | docs: Update docs for semantic default               |
+| `1ea1a7b` | 6     | fix(config): Semantic default + reflection merge     |

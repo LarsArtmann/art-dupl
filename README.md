@@ -121,15 +121,15 @@ art-dupl completion [bash|zsh|fish|powershell]
 
 ### Core Flags
 
-| Flag                  | Short | Default    | Description                                |
-| --------------------- | ----- | ---------- | ------------------------------------------ |
-| `--threshold`         | `-t`  | `15`       | Minimum token sequence size                |
-| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                        |
-| `--sort`              | `-s`  | `size`     | Sort: size, occurrence, hash, total-tokens |
+| Flag                  | Short | Default    | Description                                       |
+| --------------------- | ----- | ---------- | ------------------------------------------------- |
+| `--threshold`         | `-t`  | `15`       | Minimum token sequence size                       |
+| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                               |
+| `--sort`              | `-s`  | `size`     | Sort: size, occurrence, hash, total-tokens        |
 | `--semantic`          |       | `true`     | Match by structure AND identifier names (default) |
-| `--config`            | `-c`  |            | Path to JSON config file                   |
-| `--verbose`           | `-v`  |            | Verbose logging (repeat for more)          |
-| `--version`           |       |            | Show version                               |
+| `--config`            | `-c`  |            | Path to JSON config file                          |
+| `--verbose`           | `-v`  |            | Verbose logging (repeat for more)                 |
+| `--version`           |       |            | Show version                                      |
 
 ### Output Flags
 
