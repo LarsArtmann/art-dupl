@@ -56,10 +56,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
 		}
 	}
 
-	sp.ApplyStatsConfig(printer.StatsConfig{
-		FilesFiltered:   totalFiltered,
-		FilterBreakdown: breakdown,
-	})
+	sp.SetFilterStats(totalFiltered, breakdown)
 }
 
 // runStats implements the stats command.

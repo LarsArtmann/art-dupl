@@ -42,5 +42,6 @@ type StatsConfig struct {
 type StatsPrinter interface {
 	Printer
 	ApplyStatsConfig(config StatsConfig)
+	SetFilterStats(filesFiltered int, breakdown map[string]int)
 	GetStatsData() *StatsData
 }
