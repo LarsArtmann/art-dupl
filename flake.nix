@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-If6Pv6oepH9GAopFtsJRd2d8QfgPkfm2qnwKgS1gNJM=";
+          vendorHash = "sha256-AvWWRKQ2VyZoTfTmXbWrOFd8nA28wKT0NrP7tzcNUS4=";
 
           overrideModAttrs = old: {
             preBuild = ''
