@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     gogenfilter = {
-      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=235fb88077c78a5aa78d142e474154218bb98e89";
+      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=a518808ace31cf52382849a6432e1e69083f3cca";
       flake = false;
     };
   };
@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-AvWWRKQ2VyZoTfTmXbWrOFd8nA28wKT0NrP7tzcNUS4=";
+          vendorHash = "sha256-arF9PWi3ncaDOjnsMcNvZ+Mj0umRxjytebSS4aQkeA0=";
 
           overrideModAttrs = old: {
             preBuild = ''
@@ -65,17 +65,17 @@
                 _ "github.com/bmatcuk/doublestar/v4"
                 _ "github.com/go-faster/yaml"
               )' > dummy/dummy.go
-              go mod edit -replace=github.com/LarsArtmann/gogenfilter=./dummy
+              go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./dummy
             '';
           };
 
           preBuild = ''
             chmod -R u+w vendor
-            rm -rf vendor/github.com/LarsArtmann/gogenfilter
-            mkdir -p vendor/github.com/LarsArtmann/gogenfilter
-            cp -r ${gogenfilter}/. vendor/github.com/LarsArtmann/gogenfilter/
-            sed -i 's|=> ./dummy|=> ./vendor/github.com/LarsArtmann/gogenfilter|' vendor/modules.txt
-            go mod edit -replace=github.com/LarsArtmann/gogenfilter=./vendor/github.com/LarsArtmann/gogenfilter
+            rm -rf vendor/github.com/LarsArtmann/gogenfilter/v3
+            mkdir -p vendor/github.com/LarsArtmann/gogenfilter/v3
+            cp -r ${gogenfilter}/. vendor/github.com/LarsArtmann/gogenfilter/v3/
+            sed -i 's|=> ./dummy|=> ./vendor/github.com/LarsArtmann/gogenfilter/v3|' vendor/modules.txt
+            go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./vendor/github.com/LarsArtmann/gogenfilter/v3
           '';
 
           ldflags = [
