@@ -38,7 +38,8 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 
 	// Transform to unified syntax tree
 	t := &transformer{
-		filename: filename,
+		filename:   filename,
+		contentLen: len(content),
 	}
 
 	node := t.transformTemplateFile(tf)
@@ -50,5 +51,6 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 }
 
 type transformer struct {
-	filename string
+	filename   string
+	contentLen int
 }

@@ -868,3 +868,88 @@ templ component() {
 		})
 	}
 }
+
+// TestFileRootNodeBytePosition verifies that the File root node's End field
+// uses actual byte length (not node count), preventing false-positive
+// "line 1" clone positions when the file root is part of a suffix tree match.
+func TestFileRootNodeBytePosition(t *testing.T) {
+	input := `package templates
+
+templ hello() {
+	<div>Hello</div>
+}
+`
+
+	node, _, err := ParseBytes("test.templ", []byte(input))
+	if err != nil {
+		t.Fatalf("ParseBytes() error = %v", err)
+	}
+
+	if node == nil {
+		t.Fatal("ParseBytes() returned nil node")
+	}
+
+	if node.Type != File {
+		t.Fatalf("root node type = %d, want File(%d)", node.Type, File)
+	}
+
+	expectedEnd := int32(len(input))
+	if node.End != expectedEnd {
+		t.Errorf("root node End = %d (node count?), want %d (byte length of content)",
+			node.End, expectedEnd)
+	}
+
+	if node.Pos != 0 {
+		t.Errorf("root node Pos = %d, want 0", node.Pos)
+	}
+}
+
+// TestFileRootNodeEndEqualsContentLength verifies the fix for the bug where
+// root.End was set to len(tf.Nodes) instead of the actual byte length.
+func TestFileRootNodeEndEqualsContentLength(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{
+			name:  "single_component",
+			input: "package main\n\ntempl hello() {\n\t<div>Hello</div>\n}\n",
+		},
+		{
+			name:  "empty_except_package",
+			input: "package main\n",
+		},
+		{
+			name: "two_components",
+			input: `package main
+
+templ a() {
+	<div>A</div>
+}
+
+templ b() {
+	<span>B</span>
+}
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			node, _, err := ParseBytes("test.templ", []byte(tt.input))
+			if err != nil {
+				t.Fatalf("ParseBytes() error = %v", err)
+			}
+
+			if node == nil {
+				t.Fatal("ParseBytes() returned nil node")
+			}
+
+			expectedEnd := int32(len(tt.input))
+			if node.End != expectedEnd {
+				t.Errorf("root.End = %d, want %d (byte length of content)",
+					node.End, expectedEnd)
+			}
+		})
+	}
+}

@@ -42,12 +42,14 @@ func (t *transformer) transformTemplateFile(tf *templparser.TemplateFile) *synta
 		return nil
 	}
 
-	// Create root node
+	// Create root node with correct byte positions.
+	// Use contentLen (actual byte length) for End, matching how the Go parser
+	// uses ast.File.End() — not the node count.
 	root := syntax.NewNode()
 	root.Type = File
 	root.Filename = t.filename
 	root.Pos = 0
-	root.End = int32(len(tf.Nodes)) // #nosec G115 -- File sizes bounded by int32 in practice
+	root.End = int32(t.contentLen) // #nosec G115 -- File sizes bounded by int32 in practice
 
 	// Process all top-level nodes
 	for _, node := range tf.Nodes {
