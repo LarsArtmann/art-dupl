@@ -36,7 +36,7 @@ func (t *transformer) transformChildrenExpression(ce *templparser.ChildrenExpres
 		return nil
 	}
 
-	return t.createNode(ComponentChildrenExpression, 0, 0)
+	return t.createNodeFromRange(ComponentChildrenExpression, ce.Range)
 }
 
 // transformScriptElement converts a ScriptElement to a syntax.Node.

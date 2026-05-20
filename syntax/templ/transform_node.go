@@ -83,15 +83,13 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 	switch a := attr.(type) {
 	case *templparser.ConstantAttribute:
 		o.Type = Attribute
-		o.Pos = 0 // No Range field, use 0
-		o.End = 0
+		t.setNodePosFromRange(o, a.Range)
 	case *templparser.ExpressionAttribute:
 		o.Type = Attribute
 		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.BoolConstantAttribute:
 		o.Type = Attribute
-		o.Pos = 0 // No Range field, use 0
-		o.End = 0
+		t.setNodePosFromRange(o, a.Range)
 	case *templparser.BoolExpressionAttribute:
 		o.Type = Attribute
 		t.setNodePosFromRange(o, a.Expression.Range)

@@ -54,7 +54,7 @@ func (t *transformer) transformSwitchExpression(se *templparser.SwitchExpression
 
 // transformCaseExpression converts a CaseExpression to a syntax.Node.
 func (t *transformer) transformCaseExpression(ce templparser.CaseExpression) *syntax.Node {
-	o := t.createNode(ComponentSwitchExpressionCase, 0, 0)
+	o := t.createNodeFromRange(ComponentSwitchExpressionCase, ce.Expression.Range)
 	t.addChildren(o, ce.Children)
 
 	return o
