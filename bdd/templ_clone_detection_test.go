@@ -392,8 +392,10 @@ templ LoginForm(url string) {
 	})
 
 	Context("package declaration false positives", func() {
-		It("should not flag structurally different .templ files as clones based on package declarations", func() {
-			agreementCode := `package templates
+		It(
+			"should not flag structurally different .templ files as clones based on package declarations",
+			func() {
+				agreementCode := `package templates
 
 templ capitalAgreement(name string, amount float64) {
 	<div class="agreement">
@@ -402,24 +404,25 @@ templ capitalAgreement(name string, amount float64) {
 		<p>Amount: { fmt.Sprintf("%.2f", amount) }</p>
 	</div>
 }`
-			nettingCode := `package templates
+				nettingCode := `package templates
 
 templ personalNetting(name string) {
 	<span>Simple netting view</span>
 }`
-			err := setup.CreateTestFile("agreement.templ", agreementCode)
-			Expect(err).NotTo(HaveOccurred())
+				err := setup.CreateTestFile("agreement.templ", agreementCode)
+				Expect(err).NotTo(HaveOccurred())
 
-			err = setup.CreateTestFile("netting.templ", nettingCode)
-			Expect(err).NotTo(HaveOccurred())
+				err = setup.CreateTestFile("netting.templ", nettingCode)
+				Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "10")
-			Expect(err).ToNot(HaveOccurred())
+				output, err := setup.RunArtDupl("--threshold", "10")
+				Expect(err).ToNot(HaveOccurred())
 
-			outputStr := string(output)
-			Expect(outputStr).ToNot(ContainSubstring("agreement.templ"))
-			Expect(outputStr).ToNot(ContainSubstring("netting.templ"))
-		})
+				outputStr := string(output)
+				Expect(outputStr).ToNot(ContainSubstring("agreement.templ"))
+				Expect(outputStr).ToNot(ContainSubstring("netting.templ"))
+			},
+		)
 
 		It("should report correct line ranges for legitimate .templ clones", func() {
 			duplicateCode1 := `package templates
