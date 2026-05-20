@@ -827,6 +827,15 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 
 **Semantic default & reflection merge (2026-05-17):** `DefaultConfig.Semantic` changed from `false` to `true` — semantic matching is now the default, reducing first-use noise by 68%. `--structural` disables it. `mergeConfig()` replaced from 170-line manual field list to 30-line reflection-based merge — adding Config fields no longer requires touching merge code. `Changed()` tracking added for semantic/structural flags to fix mutual exclusion with the new `true` default.
 
+**Templ position audit & fix (2026-05-20):** Fixed 5 position bugs in `syntax/templ/` where nodes had hardcoded `Pos=0,End=0` despite `Range` data available from `a-h/templ/parser/v2`:
+
+- File root `End`: `len(tf.Nodes)` (node count) → `len(content)` (byte length)
+- `ConstantAttribute`, `BoolConstantAttribute`: had Range, comment said "No Range field"
+- `ChildrenExpression`: had Range, used `createNode(type, 0, 0)`
+- `CaseExpression`: used `Expression.Range` instead of `createNode(type, 0, 0)`
+
+Root cause: `NewNode()` returns zero-value struct with no position validation. Bug class prevented by `TestNodePositionsNonZero` regression test. Known upstream limitation: `ConstantCSSProperty` has no Range field (mitigated by inheriting parent CSSTemplate position).
+
 ### Architecture — Outstanding Issues
 
 **Printer ↔ syntax.Node coupling:** `Printer.PrintClones(dups [][]*syntax.Node)` forces all 6 implementations to depend on AST internals. Each printer independently calls `ProcessNodeRange()` and `extractContent()`. Fix: introduce ProcessedClone DTO, change Printer interface to accept `[]ProcessedCloneGroup`. This touches 111 test call sites — defer to dedicated PR.
@@ -840,3 +849,5 @@ The `flake.nix` handles the private `gogenfilter` dependency using a **two-phase
 Consolidation depends on Printer DTO change above.
 
 **printer/clone_classify.go imports syntax/golang directly:** Language-specific node type constants mapped to categories. Coupling breaks when supporting non-Go languages. Moves naturally with Printer DTO refactor.
+
+**ConstantCSSProperty Pos=0,End=0 (upstream limitation):** `a-h/templ`'s `ConstantCSSProperty` has no `Range` field — only `Name` and `Value` strings. Mitigated by inheriting parent `CSSTemplate` range in `transformCSSProperty`. Could still cause inaccurate line reporting if a `ConstantCSSProperty` is the first/last node in a matched fragment.
