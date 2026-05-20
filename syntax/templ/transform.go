@@ -104,7 +104,7 @@ func (t *transformer) transformCSSTemplate(css *templparser.CSSTemplate) *syntax
 	o := t.createNodeFromRange(CSSDeclaration, css.Range)
 	// Process CSS properties as children
 	for _, prop := range css.Properties {
-		propNode := t.transformCSSProperty(prop)
+		propNode := t.transformCSSProperty(prop, css.Range)
 		if propNode != nil {
 			o.AddChildren(propNode)
 		}
@@ -123,7 +123,12 @@ func (t *transformer) transformScriptTemplate(script *templparser.ScriptTemplate
 }
 
 // transformCSSProperty converts a CSSProperty to a syntax.Node.
-func (t *transformer) transformCSSProperty(prop templparser.CSSProperty) *syntax.Node {
+// parentRange is the range of the containing CSSTemplate, used as
+// fallback position for ConstantCSSProperty (which has no Range in upstream).
+func (t *transformer) transformCSSProperty(
+	prop templparser.CSSProperty,
+	parentRange templparser.Range,
+) *syntax.Node {
 	if prop == nil {
 		return nil
 	}
@@ -136,12 +141,14 @@ func (t *transformer) transformCSSProperty(prop templparser.CSSProperty) *syntax
 
 	switch p := prop.(type) {
 	case *templparser.ConstantCSSProperty:
-		// Constant properties don't have position info, use 0
-		_ = p.Name
+		// ConstantCSSProperty has no Range in upstream a-h/templ.
+		// Inherit parent CSSTemplate range as best available position.
+		t.setNodePosFromRange(o, parentRange)
 	case *templparser.ExpressionCSSProperty:
 		if p.Value != nil {
-			o.Pos = int32(p.Value.Expression.Range.From.Index) // #nosec G115
-			o.End = int32(p.Value.Expression.Range.To.Index)   // #nosec G115
+			t.setNodePosFromRange(o, p.Value.Expression.Range)
+		} else {
+			t.setNodePosFromRange(o, parentRange)
 		}
 	}
 

@@ -978,6 +978,11 @@ templ withSwitch(val int) {
 			<p>Two</p>
 	}
 }
+
+css styles() {
+	color: red;
+	background: { "blue" };
+}
 `
 
 	node, _, err := ParseBytes("test.templ", []byte(input))
