@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"maps"
 	"sync"
 
 	"github.com/LarsArtmann/gogenfilter/v3"
@@ -10,10 +11,10 @@ import (
 // Replaces the removed gogenfilter.FilterStats type — stats aggregation
 // is now the caller's responsibility per gogenfilter's API redesign.
 type FilterStats struct {
-	mu         sync.Mutex
-	total      int
-	byReason   map[string]int
-	reasons    []gogenfilter.FilterReason
+	mu       sync.Mutex
+	total    int
+	byReason map[string]int
+	reasons  []gogenfilter.FilterReason
 }
 
 // NewFilterStats creates a new FilterStats with the given filter reasons.
@@ -73,9 +74,7 @@ func (s *FilterStats) Breakdown() map[string]int {
 	defer s.mu.Unlock()
 
 	result := make(map[string]int, len(s.byReason))
-	for k, v := range s.byReason {
-		result[k] = v
-	}
+	maps.Copy(result, s.byReason)
 
 	return result
 }

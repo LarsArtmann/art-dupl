@@ -78,7 +78,10 @@ func filesFeedWithOptions(
 		return only.Matches(name)
 	}
 
-	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, fileCheck)
+	return crawlPathsWithFileCheck(
+		paths, filter, filterStats,
+		includeVendor, includeNodeModules, fileCheck,
+	)
 }
 
 // crawlPaths walks paths and returns a channel of Go files.
@@ -88,7 +91,10 @@ func crawlPaths(
 	filterStats *FilterStats,
 	includeVendor, includeNodeModules bool,
 ) chan string {
-	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, isSourceFile)
+	return crawlPathsWithFileCheck(
+		paths, filter, filterStats,
+		includeVendor, includeNodeModules, isSourceFile,
+	)
 }
 
 // crawlPathsAllFiles walks paths and returns a channel of all files (not just source files).
@@ -110,7 +116,10 @@ func crawlPathsAllFiles(
 		}
 	}
 
-	return crawlPathsWithFileCheck(paths, filter, filterStats, includeVendor, includeNodeModules, fileCheck)
+	return crawlPathsWithFileCheck(
+		paths, filter, filterStats,
+		includeVendor, includeNodeModules, fileCheck,
+	)
 }
 
 // fileCheckFunc returns true if a file should be included based on its name.
@@ -163,7 +172,8 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	}
 
 	if !info.IsDir() {
-		if shouldIncludeFile(opts.Filter, path, opts.FilterStats) && passesFileCheck(info.Name(), opts.FileCheck) {
+		if shouldIncludeFile(opts.Filter, path, opts.FilterStats) &&
+			passesFileCheck(info.Name(), opts.FileCheck) {
 			opts.FChan <- path
 		}
 

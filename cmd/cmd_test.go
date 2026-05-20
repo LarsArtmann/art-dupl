@@ -68,7 +68,15 @@ func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount int) {
 	t.Helper()
 
-	ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, false, false, config.FileType(ext))
+	ch := filesFeedWithOptions(
+		[]string{tmpDir},
+		false,
+		nil,
+		nil,
+		false,
+		false,
+		config.FileType(ext),
+	)
 
 	found := make([]string, 0, expectedCount)
 	for f := range ch {
@@ -338,7 +346,15 @@ func TestCrawlPaths(t *testing.T) {
 
 func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("empty options", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{}, false, (*gogenfilter.Filter)(nil), nil, false, false, "")
+		ch := filesFeedWithOptions(
+			[]string{},
+			false,
+			(*gogenfilter.Filter)(nil),
+			nil,
+			false,
+			false,
+			"",
+		)
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
