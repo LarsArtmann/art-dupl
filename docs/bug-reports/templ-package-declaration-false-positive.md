@@ -139,9 +139,27 @@ art-dupl -t 10 /tmp/templ-repro-diff --only templ
 
 ## Files Changed
 
+### Initial Fix (File root node position)
+
 - `syntax/templ/parser.go` — Added `contentLen` field to `transformer`, pass `len(content)` in `ParseBytes`
 - `syntax/templ/transform.go` — Changed `root.End` from `int32(len(tf.Nodes))` to `int32(t.contentLen)`
-- `syntax/templ/templ_test.go` — Added 2 test functions
+- `syntax/templ/templ_test.go` — Added `TestFileRootNodeBytePosition` + `TestFileRootNodeEndEqualsContentLength`
+
+### Additional Position Fixes (same root cause: hardcoded Pos=0 End=0)
+
+During review, found 4 more node types with the same pattern — hardcoded `Pos=0, End=0` despite the upstream `a-h/templ/parser/v2` providing `Range` data:
+
+- `syntax/templ/transform_node.go` — `ConstantAttribute`: had `Pos=0, End=0` with comment "No Range field" — `Range` field exists on upstream type
+- `syntax/templ/transform_node.go` — `BoolConstantAttribute`: same issue, same wrong comment
+- `syntax/templ/transform_components.go` — `ChildrenExpression`: used `createNode(type, 0, 0)` despite having `Range`
+- `syntax/templ/transform_expressions.go` — `CaseExpression`: used `createNode(type, 0, 0)` despite `Expression.Range` being available
+
+All fixed to use `setNodePosFromRange` / `createNodeFromRange` instead of hardcoded zeros.
+
+### Additional Tests
+
+- `syntax/templ/templ_test.go` — Added `TestNodePositionsNonZero` (walks full tree, flags any node with Pos=0 End=0)
+- `bdd/templ_clone_detection_test.go` — Added "package declaration false positives" context with 2 BDD specs
 
 ## References
 

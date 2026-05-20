@@ -1,8 +1,10 @@
 package templ
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -951,5 +953,60 @@ templ b() {
 					node.End, expectedEnd)
 			}
 		})
+	}
+}
+
+// TestNodePositionsNonZero verifies that parsed nodes have non-zero byte
+// positions where the upstream templ parser provides Range information.
+// This catches regressions where a node type gets hardcoded Pos=0/End=0
+// despite the upstream parser providing position data.
+func TestNodePositionsNonZero(t *testing.T) {
+	input := `package main
+
+templ withAttrs(name string, show bool) {
+	<div class="container" disabled?={ show }>
+		<input type="text" name={ name } />
+		{ children... }
+	</div>
+}
+
+templ withSwitch(val int) {
+	switch val {
+		case 1:
+			<p>One</p>
+		case 2:
+			<p>Two</p>
+	}
+}
+`
+
+	node, _, err := ParseBytes("test.templ", []byte(input))
+	if err != nil {
+		t.Fatalf("ParseBytes() error = %v", err)
+	}
+
+	if node == nil {
+		t.Fatal("ParseBytes() returned nil node")
+	}
+
+	var zeroPosNodes []string
+
+	var walk func(n *syntax.Node, path string)
+
+	walk = func(n *syntax.Node, path string) {
+		if n.Pos == 0 && n.End == 0 && n.Type != BadNode {
+			zeroPosNodes = append(zeroPosNodes,
+				fmt.Sprintf("%s (type=%d)", path, n.Type))
+		}
+
+		for i, child := range n.Children {
+			walk(child, fmt.Sprintf("%s[%d]", path, i))
+		}
+	}
+	walk(node, "root")
+
+	if len(zeroPosNodes) > 0 {
+		t.Errorf("Found %d node(s) with Pos=0 End=0 (should have real positions):\n  %s",
+			len(zeroPosNodes), strings.Join(zeroPosNodes, "\n  "))
 	}
 }
