@@ -45,6 +45,10 @@ func addSharedFlags(cmd *cobra.Command) {
 		Bool("semantic", true, "enable semantic-aware detection (on by default; matches by structure AND identifier names)")
 	cmd.Flags().
 		Bool("structural", false, "disable semantic detection; match by structure only (increases false positives from similar-looking but semantically different code)")
+
+	// File type filter
+	cmd.Flags().
+		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
 }
 
 // AddFlags adds all flags to the root command.
@@ -69,11 +73,9 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		StringP("output-dir", "o", "reports/art-dupl", "output directory for generated files (used with --all)")
 
-	// Root-only: scope and file type flags
+	// Root-only: scope flags
 	rootCmd.Flags().
 		Bool("include-node-modules", false, "include node_modules directory in hash-based detection (excluded by default)")
-	rootCmd.Flags().
-		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
 
 	// Root-only: incremental analysis flags
 	rootCmd.Flags().
