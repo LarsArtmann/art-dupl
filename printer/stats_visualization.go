@@ -95,6 +95,38 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 	}
 }
 
+// categoryOrder defines a stable display order for clone categories.
+var categoryOrder = []string{
+	"function", "method", "handler", "test",
+	"struct", "interface",
+	"loop", "conditional",
+	"assignment", "expression",
+	"unknown",
+}
+
+// printCategoryDistribution prints the category breakdown with percentages.
+func printCategoryDistribution(w io.Writer, distribution map[string]int) {
+	total := 0
+	for _, count := range distribution {
+		total += count
+	}
+
+	for _, category := range categoryOrder {
+		count, exists := distribution[category]
+		if !exists {
+			continue
+		}
+
+		pct := calcPercentage(count, total)
+
+		_, _ = fmt.Fprintf(
+			w,
+			"  %-12s: %4d groups (%.1f%%)\n",
+			category, count, pct,
+		)
+	}
+}
+
 // severityOrder defines the display order for severity levels.
 var severityOrder = []string{healthSmall, healthMedium, healthLarge, healthHuge}
 

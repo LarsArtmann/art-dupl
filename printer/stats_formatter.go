@@ -50,6 +50,7 @@ type jsonStatsOutput struct {
 	SizeDistribution  map[string]int `json:"sizeDistribution"`
 	TokenDistribution map[string]int `json:"tokenDistribution"`
 	SeverityBreakdown map[string]int `json:"severityBreakdown"`
+	CategoryBreakdown map[string]int `json:"categoryBreakdown,omitempty"`
 	TopFiles          []jsonTopFile  `json:"topFiles"`
 }
 
@@ -229,6 +230,12 @@ func (p *stats) printTextDistributions() {
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
+	if len(p.statsData.CategoryBreakdown) > 0 {
+		p.printSection("Clone Categories:")
+		printCategoryDistribution(p.w, p.statsData.CategoryBreakdown)
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
@@ -346,6 +353,11 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 
 	// Fill severity breakdown
 	jsonData.SeverityBreakdown = p.statsData.SeverityBreakdown
+
+	// Fill category breakdown
+	if len(p.statsData.CategoryBreakdown) > 0 {
+		jsonData.CategoryBreakdown = p.statsData.CategoryBreakdown
+	}
 
 	// Add methodology note
 	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."

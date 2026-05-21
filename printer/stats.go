@@ -69,6 +69,7 @@ func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
 			SizeDistribution:  make(map[string]int),
 			TokenDistribution: make(map[string]int),
 			SeverityBreakdown: make(map[string]int),
+			CategoryBreakdown: make(map[string]int),
 		},
 		StyleMixin: StyleMixin{
 			base:    styles.base,
@@ -121,6 +122,11 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 
 	severity := p.getSeverity(tokensInGroup)
 	p.statsData.SeverityBreakdown[severity]++
+
+	if len(group.Clones) > 0 {
+		category := string(group.Clones[0].Classification.Category)
+		p.statsData.CategoryBreakdown[category]++
+	}
 
 	return nil
 }

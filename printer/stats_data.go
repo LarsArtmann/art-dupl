@@ -54,6 +54,7 @@ type StatsData struct {
 	SizeDistribution  map[string]int `json:"size_distribution"`  // size range -> count (lines)
 	TokenDistribution map[string]int `json:"token_distribution"` // token range -> count
 	SeverityBreakdown map[string]int `json:"severity_breakdown"` // severity -> count (small/medium/large/huge)
+	CategoryBreakdown map[string]int `json:"category_breakdown,omitempty"` // category -> count (function/test/struct/etc)
 
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out

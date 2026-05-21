@@ -30,6 +30,9 @@
   "severityBreakdown": {
     "small": 1
   },
+  "categoryBreakdown": {
+    "unknown": 1
+  },
   "topFiles": [
     {
       "filename": "file2.go",
