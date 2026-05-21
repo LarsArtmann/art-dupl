@@ -25,11 +25,12 @@ func assertParseBytesSuccess(t *testing.T, input string) *syntax.Node {
 	return node
 }
 
-func runParseTests(t *testing.T, tests []struct {
+type parseTest struct {
 	name  string
 	input string
-},
-) {
+}
+
+func runParseTests(t *testing.T, tests []parseTest) {
 	t.Helper()
 
 	for _, tt := range tests {
@@ -729,10 +730,7 @@ templ Button(text string) {
 
 // TestParseGoCode tests parsing of Go code blocks inside templ components.
 func TestParseGoCode(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-	}{
+	tests := []parseTest{
 		{
 			name: "variable_declaration",
 			input: `package main
@@ -760,10 +758,7 @@ templ withMultipleVars() {
 
 // TestParseComplexAttributes tests various attribute types.
 func TestParseComplexAttributes(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-	}{
+	tests := []parseTest{
 		{
 			name: "spread_attributes",
 			input: `package main
@@ -798,10 +793,7 @@ templ withMultiple(id string, active bool) {
 
 // TestParseEdgeCases tests edge cases and unusual but valid syntax.
 func TestParseEdgeCases(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-	}{
+	tests := []parseTest{
 		{
 			name: "empty_file_except_package",
 			input: `package main
@@ -909,10 +901,7 @@ templ hello() {
 // TestFileRootNodeEndEqualsContentLength verifies the fix for the bug where
 // root.End was set to len(tf.Nodes) instead of the actual byte length.
 func TestFileRootNodeEndEqualsContentLength(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-	}{
+	tests := []parseTest{
 		{
 			name:  "single_component",
 			input: "package main\n\ntempl hello() {\n\t<div>Hello</div>\n}\n",
