@@ -103,6 +103,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"include-protobuf":     &cfg.IncludeProtobuf,
 		"include-mockgen":      &cfg.IncludeMockgen,
 		"include-stringer":     &cfg.IncludeStringer,
+		"include-generic":      &cfg.IncludeGeneric,
 		"incremental":          &cfg.Incremental,
 		"semantic":             &cfg.Semantic,
 		"rich-text":            &cfg.RichText,
