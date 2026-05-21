@@ -38,6 +38,7 @@ package printer
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/config"
@@ -144,7 +145,60 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 		}
 	}
 
+	p.trackTopClone(group, uniqueLineCount)
+
 	return nil
+}
+
+// trackTopClone maintains the top 5 most impactful actionable clones.
+func (p *stats) trackTopClone(group domain.ProcessedCloneGroup, lines int) {
+	if len(group.Clones) == 0 {
+		return
+	}
+
+	cls := group.Clones[0].Classification
+	if cls.Actionability != domain.Actionable {
+		return
+	}
+
+	top := TopCloneGroup{
+		Priority:       string(cls.Priority),
+		Category:       string(cls.Category),
+		Lines:          lines,
+		Files:          len(group.Clones),
+		Suggestion:     cls.Suggestion,
+		FirstFile:      group.Clones[0].Filename,
+		FirstLineStart: group.Clones[0].LineStart,
+	}
+
+	p.statsData.TopClones = append(p.statsData.TopClones, top)
+
+	// Keep only top 5 by score (priority * lines)
+	if len(p.statsData.TopClones) > 5 {
+		p.statsData.TopClones = sortTopClones(p.statsData.TopClones)[:5]
+	}
+}
+
+func sortTopClones(clones []TopCloneGroup) []TopCloneGroup {
+	sort.Slice(clones, func(i, j int) bool {
+		scoreI := priorityScore(clones[i].Priority) * clones[i].Lines
+		scoreJ := priorityScore(clones[j].Priority) * clones[j].Lines
+		return scoreI > scoreJ
+	})
+	return clones
+}
+
+func priorityScore(priority string) int {
+	switch priority {
+	case "critical":
+		return 4
+	case "high":
+		return 3
+	case "medium":
+		return 2
+	default:
+		return 1
+	}
 }
 
 // PrintFooter prints the aggregated statistics.

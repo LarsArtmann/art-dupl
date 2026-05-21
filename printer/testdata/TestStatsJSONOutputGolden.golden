@@ -42,6 +42,17 @@
   "testVsProduction": {
     "production": 1
   },
+  "topClones": [
+    {
+      "priority": "low",
+      "category": "unknown",
+      "lines": 1,
+      "files": 2,
+      "suggestion": "Review and extract common logic",
+      "firstFile": "file1.go",
+      "firstLineStart": 1
+    }
+  ],
   "topFiles": [
     {
       "filename": "file2.go",

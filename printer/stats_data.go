@@ -10,6 +10,17 @@ package printer
 // - No methods here, just data definition
 // - Formatting and calculation logic are in separate files
 
+// TopCloneGroup represents a high-impact clone group for the "top clones to fix" preview.
+type TopCloneGroup struct {
+	Priority     string `json:"priority"`
+	Category     string `json:"category"`
+	Lines        int    `json:"lines"`
+	Files        int    `json:"files"`
+	Suggestion   string `json:"suggestion"`
+	FirstFile    string `json:"firstFile"`
+	FirstLineStart int `json:"firstLineStart"`
+}
+
 // StatsData holds all aggregated statistics about code duplication analysis.
 //
 // Fields:
@@ -64,6 +75,9 @@ type StatsData struct {
 	// Test vs production separation
 	TestCloneGroups       int `json:"test_clone_groups,omitempty"`       // Groups found in test files
 	ProductionCloneGroups int `json:"production_clone_groups,omitempty"` // Groups found in production files
+
+	// Top impactful clones to fix
+	TopClones []TopCloneGroup `json:"top_clones,omitempty"` // Highest priority actionable clones
 
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out

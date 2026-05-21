@@ -60,7 +60,8 @@ type jsonStatsOutput struct {
 		Production int `json:"production,omitempty"`
 		Test       int `json:"test,omitempty"`
 	} `json:"testVsProduction,omitempty"`
-	TopFiles          []jsonTopFile  `json:"topFiles"`
+	TopClones         []TopCloneGroup `json:"topClones,omitempty"`
+	TopFiles          []jsonTopFile   `json:"topFiles"`
 }
 
 type jsonTopFile struct {
@@ -267,9 +268,23 @@ func (p *stats) printTextDistributions() {
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
+	if len(p.statsData.TopClones) > 0 {
+		p.printSection("Top Clones to Fix:")
+		p.printTopClones()
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
+	}
+}
+
+func (p *stats) printTopClones() {
+	for i, clone := range p.statsData.TopClones {
+		badge := fmt.Sprintf("[%s] %s", clone.Priority, clone.Category)
+		_, _ = fmt.Fprintf(p.w, "  %d. %s | %d lines in %d files\n", i+1, badge, clone.Lines, clone.Files)
+		_, _ = fmt.Fprintf(p.w, "     %s:%d  →  %s\n", clone.FirstFile, clone.FirstLineStart, clone.Suggestion)
 	}
 }
 
@@ -405,6 +420,11 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	if p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0 {
 		jsonData.TestVsProduction.Production = p.statsData.ProductionCloneGroups
 		jsonData.TestVsProduction.Test = p.statsData.TestCloneGroups
+	}
+
+	// Fill top clones
+	if len(p.statsData.TopClones) > 0 {
+		jsonData.TopClones = p.statsData.TopClones
 	}
 
 	// Add methodology note
