@@ -10,16 +10,16 @@
 
 The project is in **strong shape** with 23/25 packages fully passing, 72% total test coverage, and the in-process BDD test migration complete. One pre-existing test failure remains in `cmd` (`os.Exit(1)` in `statError`). Additionally, a critical **flaky test** issue was discovered: `os.Exit(1)` in `statError()` causes random BDD suite death depending on Ginkgo's random seed — sometimes killing the entire test process after just 20-30 specs.
 
-| Metric | Value | Trend |
-|--------|-------|-------|
-| Total Go files | 214 | Stable |
-| Production lines | 16,912 | Growing |
-| Test lines | 29,315 | Growing |
-| Total coverage | 72.0% | Improving |
-| cmd tests | 28/29 (97%) | 1 failure: `os.Exit` in `statError` |
-| BDD specs (deterministic) | 255/255 (100%) | Fixed (version template) |
-| Open TODOs | 10 | Declining |
-| Recent commits (since May 17) | 30 | Active |
+| Metric                        | Value          | Trend                               |
+| ----------------------------- | -------------- | ----------------------------------- |
+| Total Go files                | 214            | Stable                              |
+| Production lines              | 16,912         | Growing                             |
+| Test lines                    | 29,315         | Growing                             |
+| Total coverage                | 72.0%          | Improving                           |
+| cmd tests                     | 28/29 (97%)    | 1 failure: `os.Exit` in `statError` |
+| BDD specs (deterministic)     | 255/255 (100%) | Fixed (version template)            |
+| Open TODOs                    | 10             | Declining                           |
+| Recent commits (since May 17) | 30             | Active                              |
 
 ---
 
@@ -30,16 +30,19 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 **What:** Replaced the subprocess binary execution model (`go build` + `exec.Command`) with direct in-process Cobra command execution across the entire BDD test suite.
 
 **Commits:**
+
 - `2c7517c` feat(bdd): replace subprocess execution with in-process Cobra command execution
 - `a5ec860` chore: apply code formatting, error handling improvements, and documentation polish
 
 **Impact:**
+
 - Removed `internal/testutil/binary.go` entirely (83 lines deleted)
 - Net deletion: 689 lines removed, 356 added — **333 lines net reduction**
 - All 13 BDD test files migrated to use `setup.Executor(args...)` pattern
 - `cmd/stats_integration_test.go` migrated with `syscall.Dup2` output capture
 
 **Key architecture decisions:**
+
 1. **`syscall.Dup2` for output capture** — Redirects at FD level, preserves Ginkgo's `os.Stdout`
 2. **`Executor`/`ExecutorResult` dual fields** — Backward compatibility + stdout/stderr separation
 3. **`CommandResult` struct** — Clean `Stdout`/`Stderr` separation for JSON parsing tests
@@ -48,12 +51,14 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 ### Stats Output Improvements (Session 2026-05-21)
 
 **Commits:**
+
 - `6e188bf` → `840bcf3`: Category breakdown, priority/actionability, test vs production separation, top actionable clones, relative severity thresholds
 - `e896739`, `e3ff2d8`: Numeric sort for size distribution, float rounding
 
 ### Templ Position Fix (Session 2026-05-20)
 
 **Commits:**
+
 - `ab92d64` → `8390608`: Fixed 5 position bugs in `syntax/templ/` where nodes had hardcoded `Pos=0, End=0`
 - Root cause: `NewNode()` returns zero-value struct with no position validation
 - Added `TestNodePositionsNonZero` regression test
@@ -100,15 +105,15 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 
 ## c) NOT STARTED
 
-| Item | Priority | Complexity | Notes |
-|------|----------|------------|-------|
-| `ProcessedClone` DTO | MEDIUM | High (111 test call sites) | Decouples Printer from `syntax.Node` |
-| Consolidate 3 Clone types | MEDIUM | High | Blocked by ProcessedClone DTO |
-| `TokenValue` type with validation | HIGH | Medium | Refactor suffixtree/syntax |
-| Unify enum patterns | MEDIUM | Medium | Domain → config generic helpers |
-| Refactor `transform.go` 355L/300L switch | LOW | Medium | Extract visitors or table-driven |
-| Archive old `docs/status/` files (304) | LOW | Low | Move to `docs/status/archive/` |
-| String interning | MEDIUM | Low | Memory optimization |
+| Item                                     | Priority | Complexity                 | Notes                                |
+| ---------------------------------------- | -------- | -------------------------- | ------------------------------------ |
+| `ProcessedClone` DTO                     | MEDIUM   | High (111 test call sites) | Decouples Printer from `syntax.Node` |
+| Consolidate 3 Clone types                | MEDIUM   | High                       | Blocked by ProcessedClone DTO        |
+| `TokenValue` type with validation        | HIGH     | Medium                     | Refactor suffixtree/syntax           |
+| Unify enum patterns                      | MEDIUM   | Medium                     | Domain → config generic helpers      |
+| Refactor `transform.go` 355L/300L switch | LOW      | Medium                     | Extract visitors or table-driven     |
+| Archive old `docs/status/` files (304)   | LOW      | Low                        | Move to `docs/status/archive/`       |
+| String interning                         | MEDIUM   | Low                        | Memory optimization                  |
 
 ---
 
@@ -122,6 +127,7 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 
 **Impact:** 1/255 BDD specs fail (0.4%)
 **Fix needed:** Either:
+
 1. Add `rootCmd.Version = version` in `NewRootCommand()` and register `--version` flag there, OR
 2. Create a test helper that wraps `fang.Execute()` behavior
 
@@ -136,6 +142,7 @@ The project is in **strong shape** with 23/25 packages fully passing, 72% total 
 ### Stale Documentation
 
 `docs/status/README.md` is 4 months out of date. It claims:
+
 - 65-75% coverage (reality: 72%)
 - 181 lint violations (reality: ~5)
 - 54/54 tests (reality: 255 BDD specs + unit tests across 25 packages)
@@ -176,33 +183,33 @@ This is misleading for anyone reading project docs.
 
 ## f) Top 25 Things to Do Next
 
-| # | Item | Impact | Effort | Category |
-|---|------|--------|--------|----------|
-| 1 | Fix `os.Exit(1)` in `statError()` → return error | Critical | Small | Bug fix |
-| 2 | Move `--version` flag to `NewRootCommand()` | Critical | Small | Bug fix |
-| 3 | Update `docs/status/README.md` with real metrics | High | Small | Docs |
-| 4 | Implement `TokenValue` type with validation | High | Medium | Architecture |
-| 5 | Create `ProcessedClone` DTO for printer decoupling | High | High | Architecture |
-| 6 | Consolidate 3 Clone types into unified types | High | High | Architecture |
-| 7 | Move `clone_classify.go` language maps behind interface | Medium | Medium | Architecture |
-| 8 | Archive old `docs/status/` files (304) | Medium | Small | Cleanup |
-| 9 | Add `ConstantCSSProperty` position tracking upstream issue | Medium | Small | Upstream |
-| 10 | Unify enum patterns across config/ | Medium | Medium | Refactor |
-| 11 | Refactor `transform.go` 300-line switch to table-driven | Medium | Medium | Refactor |
-| 12 | Implement remaining 6 SIMD optimizations | Medium | Medium | Performance |
-| 13 | Use `encoding/csv` for clone CSV output | Low | Small | Quality |
-| 14 | String interning for suffix tree tokens | Medium | Medium | Performance |
-| 15 | Add integration test for `--all` flag with multiple output formats | Medium | Small | Testing |
-| 16 | Add fuzz tests for templ parser edge cases | Medium | Small | Testing |
-| 17 | Wire TODO/Legacy detectors to CLI flags (if still desired) | Low | Small | Feature |
-| 18 | Fix remaining LSP hints (unused params, unnecessary type args) | Low | Small | Quality |
-| 19 | Add benchmark comparison: in-process vs subprocess BDD execution | Medium | Small | Testing |
-| 20 | Profile memory usage during large repo analysis | Medium | Medium | Performance |
-| 21 | Consider `go:embed` for HTML template instead of const | Low | Small | Quality |
-| 22 | Add SARIF output integration test | Low | Small | Testing |
-| 23 | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments | Low | Small | Docs |
-| 24 | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field | Low | Small | Upstream |
-| 25 | Create GitHub release workflow (tag → binary → release) | Medium | Medium | CI/CD |
+| #   | Item                                                               | Impact   | Effort | Category     |
+| --- | ------------------------------------------------------------------ | -------- | ------ | ------------ |
+| 1   | Fix `os.Exit(1)` in `statError()` → return error                   | Critical | Small  | Bug fix      |
+| 2   | Move `--version` flag to `NewRootCommand()`                        | Critical | Small  | Bug fix      |
+| 3   | Update `docs/status/README.md` with real metrics                   | High     | Small  | Docs         |
+| 4   | Implement `TokenValue` type with validation                        | High     | Medium | Architecture |
+| 5   | Create `ProcessedClone` DTO for printer decoupling                 | High     | High   | Architecture |
+| 6   | Consolidate 3 Clone types into unified types                       | High     | High   | Architecture |
+| 7   | Move `clone_classify.go` language maps behind interface            | Medium   | Medium | Architecture |
+| 8   | Archive old `docs/status/` files (304)                             | Medium   | Small  | Cleanup      |
+| 9   | Add `ConstantCSSProperty` position tracking upstream issue         | Medium   | Small  | Upstream     |
+| 10  | Unify enum patterns across config/                                 | Medium   | Medium | Refactor     |
+| 11  | Refactor `transform.go` 300-line switch to table-driven            | Medium   | Medium | Refactor     |
+| 12  | Implement remaining 6 SIMD optimizations                           | Medium   | Medium | Performance  |
+| 13  | Use `encoding/csv` for clone CSV output                            | Low      | Small  | Quality      |
+| 14  | String interning for suffix tree tokens                            | Medium   | Medium | Performance  |
+| 15  | Add integration test for `--all` flag with multiple output formats | Medium   | Small  | Testing      |
+| 16  | Add fuzz tests for templ parser edge cases                         | Medium   | Small  | Testing      |
+| 17  | Wire TODO/Legacy detectors to CLI flags (if still desired)         | Low      | Small  | Feature      |
+| 18  | Fix remaining LSP hints (unused params, unnecessary type args)     | Low      | Small  | Quality      |
+| 19  | Add benchmark comparison: in-process vs subprocess BDD execution   | Medium   | Small  | Testing      |
+| 20  | Profile memory usage during large repo analysis                    | Medium   | Medium | Performance  |
+| 21  | Consider `go:embed` for HTML template instead of const             | Low      | Small  | Quality      |
+| 22  | Add SARIF output integration test                                  | Low      | Small  | Testing      |
+| 23  | Document `syscall.Dup2` pattern in `bdd/execute.go` with comments  | Low      | Small  | Docs         |
+| 24  | Evaluate `a-h/templ` v3 for `ConstantCSSProperty` Range field      | Low      | Small  | Upstream     |
+| 25  | Create GitHub release workflow (tag → binary → release)            | Medium   | Medium | CI/CD        |
 
 ---
 
@@ -211,6 +218,7 @@ This is misleading for anyone reading project docs.
 **Should the `--version` flag behavior match `fang.Execute()` exactly (which uses `charmbracelet/fang`'s version rendering), or is a simpler implementation acceptable?**
 
 The current `main.go` uses `fang.Execute()` which registers a `--version` flag with custom rendering. If we move version registration to `NewRootCommand()`, we need to decide:
+
 1. Keep the `fang` version rendering (adds `fang` as a runtime dependency of `cmd` package)
 2. Use simpler Cobra-native version rendering (different output format than production)
 3. Make the executor in `bdd/execute.go` wrap `fang.Execute()` instead of `rootCmd.Execute()` (more complex but matches production exactly)
@@ -251,13 +259,13 @@ PASS  syntax/templ  (84.6% coverage)
 
 ### Coverage by Package (Notable)
 
-| Package | Coverage |
-|---------|----------|
-| syntax/golang | 94.6% |
-| syntax | 91.6% |
-| suffixtree | 91.0% |
-| syntax/templ | 84.6% |
-| **Total** | **72.0%** |
+| Package       | Coverage  |
+| ------------- | --------- |
+| syntax/golang | 94.6%     |
+| syntax        | 91.6%     |
+| suffixtree    | 91.0%     |
+| syntax/templ  | 84.6%     |
+| **Total**     | **72.0%** |
 
 ---
 
