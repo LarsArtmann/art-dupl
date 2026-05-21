@@ -328,8 +328,8 @@ func TestGetSizeRange(t *testing.T) {
 		{10, sizeRange6to10},
 		{11, sizeRange11to20},
 		{20, sizeRange11to20},
-		{21, "21-50 lines"},
-		{50, "21-50 lines"},
+		{21, sizeRange21to50},
+		{50, sizeRange21to50},
 		{51, "51-100 lines"},
 		{100, "51-100 lines"},
 		{101, "100+ lines"},
@@ -386,6 +386,7 @@ func TestPrintSizeDistribution(t *testing.T) {
 		sizeRange1to5:   10,
 		sizeRange6to10:  5,
 		sizeRange11to20: 3,
+		sizeRange21to50: 1,
 	}
 
 	printSizeDistribution(&buf, distribution)
@@ -399,6 +400,8 @@ func TestPrintSizeDistribution(t *testing.T) {
 		"5 clones",
 		sizeRange11to20,
 		"3 clones",
+		sizeRange21to50,
+		"1 clone",
 	}
 
 	for _, expected := range expectedRanges {
@@ -413,12 +416,24 @@ func TestPrintSizeDistribution(t *testing.T) {
 	// Check that output contains bars
 	testutil.AssertStringContains(t, output, "█", "Output doesn't contain ASCII bars")
 
-	// Check that output is sorted (1-5 should come before 6-10)
+	// Verify numeric sort order: 1-5 < 6-10 < 11-20 < 21-50 (not lexicographic)
 	idx1 := strings.Index(output, sizeRange1to5)
-
 	idx2 := strings.Index(output, sizeRange6to10)
-	if idx1 == -1 || idx2 == -1 || idx1 > idx2 {
-		t.Error("Output is not properly sorted")
+	idx3 := strings.Index(output, sizeRange11to20)
+	idx4 := strings.Index(output, sizeRange21to50)
+
+	if idx1 == -1 || idx2 == -1 || idx3 == -1 || idx4 == -1 {
+		t.Fatal("One or more ranges not found in output")
+	}
+
+	if idx1 >= idx2 || idx2 >= idx3 || idx3 >= idx4 {
+		t.Errorf(
+			"Output is not properly sorted by range start. Positions: 1-5=%d, 6-10=%d, 11-20=%d, 21-50=%d",
+			idx1,
+			idx2,
+			idx3,
+			idx4,
+		)
 	}
 }
 

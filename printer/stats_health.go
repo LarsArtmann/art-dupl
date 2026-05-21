@@ -6,6 +6,7 @@ const (
 	sizeRange1to5   = "1-5 lines"
 	sizeRange6to10  = "6-10 lines"
 	sizeRange11to20 = "11-20 lines"
+	sizeRange21to50 = "21-50 lines"
 	healthSmall     = "small"
 	healthMedium    = "medium"
 	healthLarge     = "large"
@@ -79,7 +80,7 @@ func (p *stats) getSizeRange(lines int) string {
 	case lines <= 20:
 		return sizeRange11to20
 	case lines <= 50:
-		return "21-50 lines"
+		return sizeRange21to50
 	case lines <= 100:
 		return "51-100 lines"
 	default:

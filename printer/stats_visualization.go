@@ -15,6 +15,16 @@ func calcPercentage(count, total int) float64 {
 	return float64(count) / float64(total) * 100
 }
 
+// rangeStart extracts the starting number from a size range string.
+// Handles formats like "1-5 lines", "6-10 lines", "100+ lines".
+func rangeStart(r string) int {
+	var n int
+
+	_, _ = fmt.Sscanf(r, "%d", &n)
+
+	return n
+}
+
 // printSizeDistribution prints the size distribution with ASCII bar visualization.
 func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	ranges := make([]string, 0, len(distribution))
@@ -22,7 +32,9 @@ func printSizeDistribution(w io.Writer, distribution map[string]int) {
 		ranges = append(ranges, r)
 	}
 
-	sort.Strings(ranges)
+	sort.Slice(ranges, func(i, j int) bool {
+		return rangeStart(ranges[i]) < rangeStart(ranges[j])
+	})
 
 	// Find max count for scaling bars
 	maxCount := 0
