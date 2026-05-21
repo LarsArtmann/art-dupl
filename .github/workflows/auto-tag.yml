@@ -2,7 +2,7 @@ name: Auto-tag on version change
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, fork]
   workflow_dispatch:
 
 permissions:
