@@ -34,7 +34,7 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
           goPkg = pkgs.go_1_26 or pkgs.go;
-          version = "0.1.0";
+          version = "0.2.0";
         in
         pkgs.buildGoModule {
           pname = "art-dupl";
