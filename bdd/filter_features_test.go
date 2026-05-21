@@ -151,19 +151,9 @@ func Body() templ.Component {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				setup.BinaryPath,
 				setup.TmpDir,
 				"--threshold",
 				"10",
@@ -200,20 +190,10 @@ func (q *Query) Validate() bool {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include-sqlc
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				setup.BinaryPath,
 				setup.TmpDir,
 				"--include-sqlc",
 				"--threshold",
@@ -250,20 +230,10 @@ func Link() string {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --include-templ to include templ files
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				setup.BinaryPath,
 				setup.TmpDir,
 				"--include-templ",
 				"--threshold",
@@ -312,20 +282,10 @@ func exclude() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include pattern for pkg1
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				setup.BinaryPath,
 				setup.TmpDir,
 				"--include-pattern",
 				"pkg1/*",
@@ -374,20 +334,10 @@ func two() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with multiple include patterns
-			cmd = buildFilterCmd(
-				"./art-dupl-filter_features-test",
+			cmd := buildFilterCmd(
+				setup.BinaryPath,
 				setup.TmpDir,
 				10,
 				[]string{"pkg1/*", "pkg2/*"},
@@ -437,20 +387,10 @@ func discard() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with exclude pattern for pkg2
-			cmd = exec.Command(
-				"./art-dupl-filter_features-test",
+			cmd := exec.Command(
+				setup.BinaryPath,
 				setup.TmpDir,
 				"--exclude-pattern",
 				"pkg2/*",
@@ -491,20 +431,10 @@ func test() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include and exclude - include should take precedence
-			cmd = buildFilterCmd(
-				"./art-dupl-filter_features-test",
+			cmd := buildFilterCmd(
+				setup.BinaryPath,
 				setup.TmpDir,
 				10,
 				[]string{"specific/*"},
@@ -546,18 +476,8 @@ func vendorFunc() {
 				Expect(err).NotTo(HaveOccurred())
 			}
 
-			// Build art-dupl binary
-			cmd := exec.Command(
-				"go",
-				"build",
-				"-o",
-				"./art-dupl-filter_features-test",
-				"../cmd/art-dupl/main.go",
-			)
-			err = cmd.Run()
-			Expect(err).NotTo(HaveOccurred())
 
-			buildBinary = "./art-dupl-filter_features-test"
+			buildBinary = setup.BinaryPath
 		})
 
 		It("should exclude vendor directory by default", func() {
