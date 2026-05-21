@@ -118,15 +118,16 @@ func (p *stats) tokenRangeStr(start, end int) string {
 	return fmt.Sprintf("%d-%d tokens", start, end)
 }
 
-// getSeverity returns a severity level based on token count.
-// Categories: small (threshold-30), medium (31-50), large (51-100), huge (100+).
+// getSeverity returns a severity level based on token count relative to threshold.
+// Categories: small (<=threshold*2), medium (<=threshold*5), large (<=threshold*10), huge (>threshold*10).
 func (p *stats) getSeverity(tokens int) string {
+	t := p.threshold
 	switch {
-	case tokens <= 30:
+	case tokens <= t*2:
 		return healthSmall
-	case tokens <= 50:
+	case tokens <= t*5:
 		return healthMedium
-	case tokens <= 100:
+	case tokens <= t*10:
 		return healthLarge
 	default:
 		return healthHuge
