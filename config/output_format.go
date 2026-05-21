@@ -50,7 +50,8 @@ func (of OutputFormat) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (of *OutputFormat) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(data,
+	return unmarshalStringTypeToPointer(
+		data,
 		isValidMethod[OutputFormat](),
 		OutputFormatText,
 		"output format",

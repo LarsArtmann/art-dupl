@@ -101,7 +101,8 @@ func compareTrees(t *testing.T, expected, actual *state) {
 		}
 
 		if etran.start != atran.start || etran.ActEnd() != atran.ActEnd() {
-			t.Errorf("got transition (%d, %d) '%s', want (%d, %d) '%s'",
+			t.Errorf(
+				"got transition (%d, %d) '%s', want (%d, %d) '%s'",
 				atran.start, atran.ActEnd(), actual.tree.data[atran.start:atran.ActEnd()+1],
 				etran.start, etran.ActEnd(), expected.tree.data[etran.start:etran.ActEnd()+1],
 			)
@@ -196,7 +197,8 @@ func TestCanonize(t *testing.T) {
 		}
 
 		if s != tc.expected.s || start != tc.expected.start {
-			t.Errorf("for origin ref. pair (%d, (%d, %d)) got (%d, %d), want (%d, %d)",
+			t.Errorf(
+				"for origin ref. pair (%d, (%d, %d)) got (%d, %d), want (%d, %d)",
 				find(tc.origin.s), tc.origin.start, tc.origin.end,
 				find(s), start,
 				find(tc.expected.s), tc.expected.start,

@@ -378,7 +378,8 @@ var _ = Describe("Filtering in Different Output Formats", func() {
 		setup = CreateBDDTestSetup()
 	})
 
-	DescribeTable("should not include templ files by default in various output formats",
+	DescribeTable(
+		"should not include templ files by default in various output formats",
 		func(format string) {
 			assertTemplFilteredWithFormat(setup, format)
 		},

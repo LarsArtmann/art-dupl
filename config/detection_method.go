@@ -48,7 +48,8 @@ func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(data,
+	return unmarshalStringTypeToPointer(
+		data,
 		isValidMethod[DetectionMethod](),
 		DetectionMethodArtDupl,
 		"detection method",

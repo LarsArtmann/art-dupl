@@ -88,7 +88,8 @@ var _ = Describe("Version Command", func() {
 
 	Context("When running version command", func() {
 		It("should display version information", func() {
-			assertCommandOutput(setup, []string{"--version"},
+			assertCommandOutput(
+				setup, []string{"--version"},
 				ContainSubstring("art-dupl"),
 				ContainSubstring("version"),
 				MatchRegexp(`\d+\.\d+`),
@@ -107,7 +108,8 @@ var _ = Describe("Version Command", func() {
 
 	Context("When checking version format", func() {
 		It("should follow semantic versioning format", func() {
-			assertCommandOutput(setup, []string{"--version"},
+			assertCommandOutput(
+				setup, []string{"--version"},
 				MatchRegexp(`v?\d+\.\d+\.?\d*`),
 				ContainSubstring("version"),
 			)
@@ -131,7 +133,8 @@ var _ = Describe("Help Command", func() {
 
 	Context("When running help command", func() {
 		It("should display usage information", func() {
-			assertCommandOutput(setup, []string{"--help"},
+			assertCommandOutput(
+				setup, []string{"--help"},
 				ContainSubstring("Usage:"),
 				ContainSubstring("usage:"),
 				ContainSubstring("art-dupl"),
@@ -139,7 +142,8 @@ var _ = Describe("Help Command", func() {
 		})
 
 		It("should list available flags", func() {
-			assertHelpOutput(setup,
+			assertHelpOutput(
+				setup,
 				ContainSubstring("--threshold"),
 				ContainSubstring("--json"),
 				ContainSubstring("--html"),
@@ -410,7 +414,8 @@ var _ = Describe("CLI Documentation Quality", func() {
 
 	Context("When reviewing help documentation", func() {
 		It("should describe detection methods in help", func() {
-			assertCommandOutput(setup, []string{"--help"},
+			assertCommandOutput(
+				setup, []string{"--help"},
 				ContainSubstring("detection"),
 				ContainSubstring("method"),
 			)

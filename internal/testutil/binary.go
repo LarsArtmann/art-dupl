@@ -48,7 +48,8 @@ func RunArtDuplBinary(t *testing.T, binaryPath string, args ...string) ([]byte, 
 	cmd := exec.CommandContext(
 		t.Context(),
 		binaryPath,
-		args...)
+		args...,
+	)
 
 	return cmd.CombinedOutput()
 }

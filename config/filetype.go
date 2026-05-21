@@ -51,7 +51,8 @@ func (ft FileType) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (ft *FileType) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(data,
+	return unmarshalStringTypeToPointer(
+		data,
 		isValidMethod[FileType](),
 		FileTypeAll,
 		"file type",

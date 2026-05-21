@@ -142,14 +142,16 @@ var _ = Describe("Semantic Detection", func() {
 					}
 				}
 			},
-			Entry("handler tests",
+			Entry(
+				"handler tests",
 				"user_handler_test.go", "order_handler_test.go",
 				handlerTestCode1, handlerTestCode2,
 				"15",
 				[]string{"user_handler_test.go"},
 				[]string{"user_handler_test.go", "order_handler_test.go"},
 			),
-			Entry("enum pattern methods",
+			Entry(
+				"enum pattern methods",
 				"crush_mode.go", "safety_mode.go",
 				enumPatternCode1, enumPatternCode2,
 				"10",

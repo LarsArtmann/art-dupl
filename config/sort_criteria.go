@@ -41,7 +41,8 @@ func (sc SortCriteria) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (sc *SortCriteria) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(data,
+	return unmarshalStringTypeToPointer(
+		data,
 		isValidMethod[SortCriteria](),
 		SortBySize,
 		"sort criteria",

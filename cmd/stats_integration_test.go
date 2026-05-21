@@ -336,7 +336,8 @@ func (c *Command) buildCmd() *exec.Cmd {
 	cmd := exec.CommandContext(
 		context.Background(),
 		c.Path,
-		c.Args[1:]...) // Args[0] is the binary path
+		c.Args[1:]...,
+	) // Args[0] is the binary path
 	if c.Dir != "" {
 		cmd.Dir = c.Dir
 	}

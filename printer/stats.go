@@ -183,8 +183,10 @@ func sortTopClones(clones []TopCloneGroup) []TopCloneGroup {
 	sort.Slice(clones, func(i, j int) bool {
 		scoreI := priorityScore(clones[i].Priority) * clones[i].Lines
 		scoreJ := priorityScore(clones[j].Priority) * clones[j].Lines
+
 		return scoreI > scoreJ
 	})
+
 	return clones
 }
 

@@ -12,6 +12,7 @@ import (
 // roundFloat rounds a float64 to the specified number of decimal places.
 func roundFloat(v float64, decimals int) float64 {
 	multiplier := math.Pow(10, float64(decimals))
+
 	return math.Round(v*multiplier) / multiplier
 }
 
@@ -55,13 +56,13 @@ type jsonStatsOutput struct {
 	Actionability     struct {
 		Actionable    int `json:"actionable,omitempty"`
 		NonActionable int `json:"nonActionable,omitempty"`
-	} `json:"actionability,omitempty"`
-	TestVsProduction  struct {
+	} `json:"actionability"`
+	TestVsProduction struct {
 		Production int `json:"production,omitempty"`
 		Test       int `json:"test,omitempty"`
-	} `json:"testVsProduction,omitempty"`
-	TopClones         []TopCloneGroup `json:"topClones,omitempty"`
-	TopFiles          []jsonTopFile   `json:"topFiles"`
+	} `json:"testVsProduction"`
+	TopClones []TopCloneGroup `json:"topClones,omitempty"`
+	TopFiles  []jsonTopFile   `json:"topFiles"`
 }
 
 type jsonTopFile struct {
@@ -255,9 +256,11 @@ func (p *stats) printTextDistributions() {
 	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
 		p.printSection("Actionability:")
 		p.printMetric("Actionable Groups", strconv.Itoa(p.statsData.ActionableGroups))
+
 		if p.statsData.NonActionableGroups > 0 {
 			p.printMetric("Non-Actionable Groups", strconv.Itoa(p.statsData.NonActionableGroups))
 		}
+
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
@@ -283,8 +286,21 @@ func (p *stats) printTextDistributions() {
 func (p *stats) printTopClones() {
 	for i, clone := range p.statsData.TopClones {
 		badge := fmt.Sprintf("[%s] %s", clone.Priority, clone.Category)
-		_, _ = fmt.Fprintf(p.w, "  %d. %s | %d lines in %d files\n", i+1, badge, clone.Lines, clone.Files)
-		_, _ = fmt.Fprintf(p.w, "     %s:%d  →  %s\n", clone.FirstFile, clone.FirstLineStart, clone.Suggestion)
+		_, _ = fmt.Fprintf(
+			p.w,
+			"  %d. %s | %d lines in %d files\n",
+			i+1,
+			badge,
+			clone.Lines,
+			clone.Files,
+		)
+		_, _ = fmt.Fprintf(
+			p.w,
+			"     %s:%d  →  %s\n",
+			clone.FirstFile,
+			clone.FirstLineStart,
+			clone.Suggestion,
+		)
 	}
 }
 

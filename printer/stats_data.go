@@ -12,13 +12,13 @@ package printer
 
 // TopCloneGroup represents a high-impact clone group for the "top clones to fix" preview.
 type TopCloneGroup struct {
-	Priority     string `json:"priority"`
-	Category     string `json:"category"`
-	Lines        int    `json:"lines"`
-	Files        int    `json:"files"`
-	Suggestion   string `json:"suggestion"`
-	FirstFile    string `json:"firstFile"`
-	FirstLineStart int `json:"firstLineStart"`
+	Priority       string `json:"priority"`
+	Category       string `json:"category"`
+	Lines          int    `json:"lines"`
+	Files          int    `json:"files"`
+	Suggestion     string `json:"suggestion"`
+	FirstFile      string `json:"firstFile"`
+	FirstLineStart int    `json:"firstLineStart"`
 }
 
 // StatsData holds all aggregated statistics about code duplication analysis.
@@ -61,10 +61,10 @@ type StatsData struct {
 	Timestamp        string `json:"timestamp"`         // ISO 8601 timestamp
 
 	// Aggregation metrics
-	FileDuplication   map[string]int `json:"file_duplication"`   // filename -> duplicate line count
-	SizeDistribution  map[string]int `json:"size_distribution"`  // size range -> count (lines)
-	TokenDistribution map[string]int `json:"token_distribution"` // token range -> count
-	SeverityBreakdown map[string]int `json:"severity_breakdown"` // severity -> count (small/medium/large/huge)
+	FileDuplication   map[string]int `json:"file_duplication"`             // filename -> duplicate line count
+	SizeDistribution  map[string]int `json:"size_distribution"`            // size range -> count (lines)
+	TokenDistribution map[string]int `json:"token_distribution"`           // token range -> count
+	SeverityBreakdown map[string]int `json:"severity_breakdown"`           // severity -> count (small/medium/large/huge)
 	CategoryBreakdown map[string]int `json:"category_breakdown,omitempty"` // category -> count (function/test/struct/etc)
 	PriorityBreakdown map[string]int `json:"priority_breakdown,omitempty"` // priority -> count (critical/high/medium/low)
 

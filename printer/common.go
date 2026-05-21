@@ -40,7 +40,8 @@ func extractContent(fileInfo *FileInfo, nstart, nend *syntax.Node) []byte {
 		if start < startPos {
 			content = append(
 				toWhitespace(fileInfo.Content[start:startPos]),
-				fileInfo.Content[startPos:endPos]...)
+				fileInfo.Content[startPos:endPos]...,
+			)
 		} else {
 			content = fileInfo.Content[startPos:endPos]
 		}

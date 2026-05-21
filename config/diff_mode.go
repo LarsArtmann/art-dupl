@@ -43,7 +43,8 @@ func (dm DiffMode) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (dm *DiffMode) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(data,
+	return unmarshalStringTypeToPointer(
+		data,
 		isValidMethod[DiffMode](),
 		DiffModeDisabled,
 		"diff mode",

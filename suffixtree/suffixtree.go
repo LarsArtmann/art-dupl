@@ -154,7 +154,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 			if tr == nil {
 				return nil, 0, errors.NewInternalError(
 					fmt.Sprintf("no transition for token '%d' at position %d",
-						t.data[start].Val(), start), nil)
+						t.data[start].Val(), start), nil,
+				)
 			}
 		}
 
@@ -168,7 +169,8 @@ func (t *STree) canonize(s *state, start, end Pos) (*state, Pos, error) {
 
 	if s == nil {
 		return nil, 0, errors.NewInternalError(
-			fmt.Sprintf("no suffix link resolution found: start=%d, end=%d", start, end), nil)
+			fmt.Sprintf("no suffix link resolution found: start=%d, end=%d", start, end), nil,
+		)
 	}
 
 	return s, start, nil

@@ -42,9 +42,10 @@
 ### 6. Pre-existing Lint Issues from gogenfilter v3 Migration — FIXED ✅
 
 **Bugs from remote commits** (not ours but blocking CI):
+
 - `cmd/filter_stats.go`: gci import ordering + `mapsloop` modernize → use `maps.Copy`
 - `cmd/run_crawl.go`: golines line-too-long → split long lines  
-**Commit:** pending (this session)
+  **Commit:** pending (this session)
 
 ### 7. Comprehensive Test Coverage Added ✅
 
@@ -52,7 +53,7 @@
 - `TestFileRootNodeEndEqualsContentLength` — table-driven (3 cases)
 - `TestNodePositionsNonZero` — walks full tree, flags any Pos=0 End=0 regression
 - 2 BDD specs: false positive rejection + correct line range verification
-**Commit:** `9495c82`
+  **Commit:** `9495c82`
 
 ### 8. Bug Report Fully Documented ✅
 
@@ -72,18 +73,18 @@ Rebased 7 local commits on top of 4 remote gogenfilter v3 commits. Clean push to
 
 From TODO_LIST.md (priority order):
 
-| # | Task | Impact | Status |
-|---|------|--------|--------|
-| 1 | `ProcessedClone` DTO — decouple Printer from `syntax.Node` (111 test call sites) | Unblocks multi-lang, Clone consolidation | Not started |
-| 2 | Consolidate 3 parallel Clone types | Eliminates split brain | Blocked by #1 |
-| 3 | `printer/clone_classify.go` decouple from `syntax/golang` | Multi-language prep | Blocked by #1 |
-| 4 | `TokenValue` type with validation | Type safety | Not started |
-| 5 | CSV output via `encoding/csv` | Format compliance | Not started |
-| 6 | SIMD hash implementations (6 TODOs) | Performance | Not started |
-| 7 | Memory layout optimization — SIMD-friendly structs, string interning | Performance | Not started |
-| 8 | Unify enum patterns | Consistency | Not started |
-| 9 | Refactor `syntax/golang/transform.go` (355L, 300L switch) | Readability | Not started |
-| 10 | Archive old docs/status/ (304 files) | Repo hygiene | Not started |
+| #   | Task                                                                             | Impact                                   | Status        |
+| --- | -------------------------------------------------------------------------------- | ---------------------------------------- | ------------- |
+| 1   | `ProcessedClone` DTO — decouple Printer from `syntax.Node` (111 test call sites) | Unblocks multi-lang, Clone consolidation | Not started   |
+| 2   | Consolidate 3 parallel Clone types                                               | Eliminates split brain                   | Blocked by #1 |
+| 3   | `printer/clone_classify.go` decouple from `syntax/golang`                        | Multi-language prep                      | Blocked by #1 |
+| 4   | `TokenValue` type with validation                                                | Type safety                              | Not started   |
+| 5   | CSV output via `encoding/csv`                                                    | Format compliance                        | Not started   |
+| 6   | SIMD hash implementations (6 TODOs)                                              | Performance                              | Not started   |
+| 7   | Memory layout optimization — SIMD-friendly structs, string interning             | Performance                              | Not started   |
+| 8   | Unify enum patterns                                                              | Consistency                              | Not started   |
+| 9   | Refactor `syntax/golang/transform.go` (355L, 300L switch)                        | Readability                              | Not started   |
+| 10  | Archive old docs/status/ (304 files)                                             | Repo hygiene                             | Not started   |
 
 ---
 
@@ -122,53 +123,53 @@ From TODO_LIST.md (priority order):
 
 ### P0 — Immediate
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Archive old docs/status/ (304 → keep 30 days) | Repo hygiene | S |
-| 2 | Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP | Developer experience | S |
-| 3 | Update AGENTS.md with templ position fix learnings | Knowledge persistence | S |
+| #   | Task                                                              | Impact                | Effort |
+| --- | ----------------------------------------------------------------- | --------------------- | ------ |
+| 1   | Archive old docs/status/ (304 → keep 30 days)                     | Repo hygiene          | S      |
+| 2   | Fix pre-commit hook: allowlist for existing TODOs and gitleaks FP | Developer experience  | S      |
+| 3   | Update AGENTS.md with templ position fix learnings                | Knowledge persistence | S      |
 
 ### P1 — High Impact Architecture
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 4 | Introduce `ProcessedClone` DTO | Unblocks 5,6,7,multi-lang | L |
-| 5 | Consolidate 3 Clone types → single type | Eliminates split brain | M |
-| 6 | Decouple `printer/clone_classify.go` from `syntax/golang` | Multi-language prep | M |
-| 7 | Change Printer interface → accept `[]ProcessedCloneGroup` | Clean architecture | M |
-| 8 | Update 111 test call sites for new Printer interface | Complete the refactor | L |
+| #   | Task                                                      | Impact                    | Effort |
+| --- | --------------------------------------------------------- | ------------------------- | ------ |
+| 4   | Introduce `ProcessedClone` DTO                            | Unblocks 5,6,7,multi-lang | L      |
+| 5   | Consolidate 3 Clone types → single type                   | Eliminates split brain    | M      |
+| 6   | Decouple `printer/clone_classify.go` from `syntax/golang` | Multi-language prep       | M      |
+| 7   | Change Printer interface → accept `[]ProcessedCloneGroup` | Clean architecture        | M      |
+| 8   | Update 111 test call sites for new Printer interface      | Complete the refactor     | L      |
 
 ### P1 — Code Quality
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 9 | Implement `TokenValue` type with validation | Type safety | M |
-| 10 | Unify enum patterns — domain enums use config's generic helpers | Consistency | S |
-| 11 | Refactor `syntax/golang/transform.go` — extract switch arms | Readability | M |
-| 12 | Fix remaining LSP hints — unused params, type args in tests | Clean output | S |
+| #   | Task                                                            | Impact       | Effort |
+| --- | --------------------------------------------------------------- | ------------ | ------ |
+| 9   | Implement `TokenValue` type with validation                     | Type safety  | M      |
+| 10  | Unify enum patterns — domain enums use config's generic helpers | Consistency  | S      |
+| 11  | Refactor `syntax/golang/transform.go` — extract switch arms     | Readability  | M      |
+| 12  | Fix remaining LSP hints — unused params, type args in tests     | Clean output | S      |
 
 ### P2 — Feature Completeness
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 13 | CSV output via `encoding/csv` | Format compliance | S |
-| 14 | Wire TodoDetector through CLI (`-m todos`) | Feature parity | S |
-| 15 | Wire LegacyDetector through CLI (`-m legacy`) | Feature parity | S |
-| 16 | SIMD hash implementations — complete 6 TODOs | Performance | M |
-| 17 | Memory layout optimization — SIMD-friendly structs | Performance | M |
+| #   | Task                                               | Impact            | Effort |
+| --- | -------------------------------------------------- | ----------------- | ------ |
+| 13  | CSV output via `encoding/csv`                      | Format compliance | S      |
+| 14  | Wire TodoDetector through CLI (`-m todos`)         | Feature parity    | S      |
+| 15  | Wire LegacyDetector through CLI (`-m legacy`)      | Feature parity    | S      |
+| 16  | SIMD hash implementations — complete 6 TODOs       | Performance       | M      |
+| 17  | Memory layout optimization — SIMD-friendly structs | Performance       | M      |
 
 ### P2 — Infrastructure
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 18 | Bump BDD test coverage to 80%+ (currently 70%) | Reliability | M |
-| 19 | Add fuzz tests for templ parser | Robustness | S |
-| 20 | CI pipeline audit — verify all checks run on PR | Process | S |
-| 21 | Update FEATURES.md — reflect templ position fixes | Docs accuracy | S |
-| 22 | SDK dogfooding — run art-dupl on itself | Self-validation | M |
-| 23 | Performance benchmarking — pre/post SIMD | Data-driven | M |
-| 24 | Nix flake check — verify `nix build` with latest | Alternative build | S |
-| 25 | Update HOW_TO_USE.md — add templ FAQ section | User education | S |
+| #   | Task                                              | Impact            | Effort |
+| --- | ------------------------------------------------- | ----------------- | ------ |
+| 18  | Bump BDD test coverage to 80%+ (currently 70%)    | Reliability       | M      |
+| 19  | Add fuzz tests for templ parser                   | Robustness        | S      |
+| 20  | CI pipeline audit — verify all checks run on PR   | Process           | S      |
+| 21  | Update FEATURES.md — reflect templ position fixes | Docs accuracy     | S      |
+| 22  | SDK dogfooding — run art-dupl on itself           | Self-validation   | M      |
+| 23  | Performance benchmarking — pre/post SIMD          | Data-driven       | M      |
+| 24  | Nix flake check — verify `nix build` with latest  | Alternative build | S      |
+| 25  | Update HOW_TO_USE.md — add templ FAQ section      | User education    | S      |
 
 ---
 
@@ -187,16 +188,16 @@ This requires user input because it's an architecture decision with significant 
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Bugs found & fixed | 5 (1 original + 4 additional) |
-| Commits pushed | 8 (7 ours + rebased on 4 remote) |
-| Test files changed | 2 (unit + BDD) |
-| New tests added | 4 unit + 2 BDD |
-| Source files changed | 6 |
-| Lint issues resolved | 3 pre-existing + 0 new |
-| Packages passing | 25/25 |
-| Lint issues | 0 |
+| Metric               | Value                            |
+| -------------------- | -------------------------------- |
+| Bugs found & fixed   | 5 (1 original + 4 additional)    |
+| Commits pushed       | 8 (7 ours + rebased on 4 remote) |
+| Test files changed   | 2 (unit + BDD)                   |
+| New tests added      | 4 unit + 2 BDD                   |
+| Source files changed | 6                                |
+| Lint issues resolved | 3 pre-existing + 0 new           |
+| Packages passing     | 25/25                            |
+| Lint issues          | 0                                |
 
 ---
 
