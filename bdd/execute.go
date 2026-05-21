@@ -19,7 +19,7 @@ func executeInProcess(args ...string) (*testutil.CommandResult, error) {
 	cmd.AddFlags(rootCmd)
 
 	rootCmd.Version = cmd.GetVersion()
-	rootCmd.SetVersionTemplate(cmd.GetVersion() + "\n")
+	rootCmd.SetVersionTemplate("art-dupl version " + cmd.GetVersion() + "\n")
 
 	rootCmd.SetArgs(args)
 
