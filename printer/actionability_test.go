@@ -87,138 +87,24 @@ func TestEvaluateActionability(t *testing.T) {
 		{
 			name: "defer mu.Unlock is non-actionable",
 			seqs: [][]*syntax.Node{
-				{
-					{
-						Type: golang.DeferStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.CallExpr,
-								Children: []*syntax.Node{
-									{
-										Type: golang.SelectorExpr,
-										Name: cleanupMethodName,
-										Children: []*syntax.Node{
-											{Type: golang.Ident, Name: "mu"},
-											{Type: golang.Ident, Name: cleanupMethodName},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				{
-					{
-						Type: golang.DeferStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.CallExpr,
-								Children: []*syntax.Node{
-									{
-										Type: golang.SelectorExpr,
-										Name: cleanupMethodName,
-										Children: []*syntax.Node{
-											{Type: golang.Ident, Name: "mu"},
-											{Type: golang.Ident, Name: cleanupMethodName},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				{mustDeferSelectorCall("mu", cleanupMethodName)},
+				{mustDeferSelectorCall("mu", cleanupMethodName)},
 			},
 			expected: domain.NonActionable,
 		},
 		{
 			name: "defer processOrder is actionable (not RAII)",
 			seqs: [][]*syntax.Node{
-				{
-					{
-						Type: golang.DeferStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.CallExpr,
-								Children: []*syntax.Node{
-									{
-										Type: golang.SelectorExpr,
-										Name: processOrderMethodName,
-										Children: []*syntax.Node{
-											{Type: golang.Ident, Name: "svc"},
-											{Type: golang.Ident, Name: processOrderMethodName},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				{
-					{
-						Type: golang.DeferStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.CallExpr,
-								Children: []*syntax.Node{
-									{
-										Type: golang.SelectorExpr,
-										Name: processOrderMethodName,
-										Children: []*syntax.Node{
-											{Type: golang.Ident, Name: "svc"},
-											{Type: golang.Ident, Name: processOrderMethodName},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				{mustDeferSelectorCall("svc", processOrderMethodName)},
+				{mustDeferSelectorCall("svc", processOrderMethodName)},
 			},
 			expected: domain.Actionable,
 		},
 		{
 			name: "if err != nil { return err } is non-actionable",
 			seqs: [][]*syntax.Node{
-				{
-					{
-						Type: golang.IfStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.BinaryExpr,
-								Children: []*syntax.Node{
-									{Type: golang.Ident, Name: "err"},
-									{Type: golang.Ident, Name: "nil"},
-								},
-							},
-							{
-								Type: golang.BlockStmt,
-								Children: []*syntax.Node{
-									{Type: golang.ReturnStmt},
-								},
-							},
-						},
-					},
-				},
-				{
-					{
-						Type: golang.IfStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.BinaryExpr,
-								Children: []*syntax.Node{
-									{Type: golang.Ident, Name: "err"},
-									{Type: golang.Ident, Name: "nil"},
-								},
-							},
-							{
-								Type: golang.BlockStmt,
-								Children: []*syntax.Node{
-									{Type: golang.ReturnStmt},
-								},
-							},
-						},
-					},
-				},
+				{mustIfErrReturnNil()},
+				{mustIfErrReturnNil()},
 			},
 			expected: domain.NonActionable,
 		},
@@ -231,5 +117,47 @@ func TestEvaluateActionability(t *testing.T) {
 				t.Errorf("EvaluateActionability() = %q, want %q", result, tc.expected)
 			}
 		})
+	}
+}
+
+func mustDeferSelectorCall(receiver, method string) *syntax.Node {
+	return &syntax.Node{
+		Type: golang.DeferStmt,
+		Children: []*syntax.Node{
+			{
+				Type: golang.CallExpr,
+				Children: []*syntax.Node{
+					{
+						Type: golang.SelectorExpr,
+						Name: method,
+						Children: []*syntax.Node{
+							{Type: golang.Ident, Name: receiver},
+							{Type: golang.Ident, Name: method},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustIfErrReturnNil() *syntax.Node {
+	return &syntax.Node{
+		Type: golang.IfStmt,
+		Children: []*syntax.Node{
+			{
+				Type: golang.BinaryExpr,
+				Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "err"},
+					{Type: golang.Ident, Name: "nil"},
+				},
+			},
+			{
+				Type: golang.BlockStmt,
+				Children: []*syntax.Node{
+					{Type: golang.ReturnStmt},
+				},
+			},
+		},
 	}
 }
