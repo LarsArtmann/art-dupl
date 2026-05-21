@@ -56,6 +56,10 @@ type jsonStatsOutput struct {
 		Actionable    int `json:"actionable,omitempty"`
 		NonActionable int `json:"nonActionable,omitempty"`
 	} `json:"actionability,omitempty"`
+	TestVsProduction  struct {
+		Production int `json:"production,omitempty"`
+		Test       int `json:"test,omitempty"`
+	} `json:"testVsProduction,omitempty"`
 	TopFiles          []jsonTopFile  `json:"topFiles"`
 }
 
@@ -256,6 +260,13 @@ func (p *stats) printTextDistributions() {
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
+	if p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0 {
+		p.printSection("Test vs Production:")
+		p.printMetric("Production Groups", strconv.Itoa(p.statsData.ProductionCloneGroups))
+		p.printMetric("Test Groups", strconv.Itoa(p.statsData.TestCloneGroups))
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
@@ -388,6 +399,12 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
 		jsonData.Actionability.Actionable = p.statsData.ActionableGroups
 		jsonData.Actionability.NonActionable = p.statsData.NonActionableGroups
+	}
+
+	// Fill test vs production
+	if p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0 {
+		jsonData.TestVsProduction.Production = p.statsData.ProductionCloneGroups
+		jsonData.TestVsProduction.Test = p.statsData.TestCloneGroups
 	}
 
 	// Add methodology note

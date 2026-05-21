@@ -136,6 +136,12 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 		} else {
 			p.statsData.NonActionableGroups++
 		}
+
+		if group.Clones[0].Classification.IsTest {
+			p.statsData.TestCloneGroups++
+		} else {
+			p.statsData.ProductionCloneGroups++
+		}
 	}
 
 	return nil

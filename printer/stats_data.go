@@ -61,6 +61,10 @@ type StatsData struct {
 	ActionableGroups    int `json:"actionable_groups,omitempty"`     // Groups that can be refactored
 	NonActionableGroups int `json:"non_actionable_groups,omitempty"` // Groups that are idiomatic boilerplate
 
+	// Test vs production separation
+	TestCloneGroups       int `json:"test_clone_groups,omitempty"`       // Groups found in test files
+	ProductionCloneGroups int `json:"production_clone_groups,omitempty"` // Groups found in production files
+
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out
 	FilterBreakdown map[string]int `json:"filter_breakdown,omitempty"` // Reason -> count (e.g., "templ" -> 12)

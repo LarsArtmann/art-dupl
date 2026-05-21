@@ -39,6 +39,9 @@
   "actionability": {
     "actionable": 1
   },
+  "testVsProduction": {
+    "production": 1
+  },
   "topFiles": [
     {
       "filename": "file2.go",
