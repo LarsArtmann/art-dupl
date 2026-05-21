@@ -3,10 +3,17 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
 )
+
+// roundFloat rounds a float64 to the specified number of decimal places.
+func roundFloat(v float64, decimals int) float64 {
+	multiplier := math.Pow(10, float64(decimals))
+	return math.Round(v*multiplier) / multiplier
+}
 
 // jsonStatsOutput represents the JSON output structure for statistics.
 type jsonStatsOutput struct {
@@ -309,12 +316,12 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	jsonData.DuplicateCode.TotalLines = p.statsData.TotalDuplicateLines
 	jsonData.DuplicateCode.TotalTokens = p.statsData.TotalTokens
 	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
-	jsonData.DuplicateCode.ComplexityScore = p.statsData.ComplexityScore
+	jsonData.DuplicateCode.ComplexityScore = roundFloat(p.statsData.ComplexityScore, 2)
 
 	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
 	if p.statsData.TotalEstimatedLines > 0 {
 		jsonData.DuplicateCode.EstimatedLines = p.statsData.TotalEstimatedLines
-		jsonData.DuplicateCode.DuplicationRatio = p.statsData.DuplicationRatio
+		jsonData.DuplicateCode.DuplicationRatio = roundFloat(p.statsData.DuplicationRatio, 2)
 	}
 
 	// Fill metrics
