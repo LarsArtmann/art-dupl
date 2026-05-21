@@ -39,19 +39,6 @@ func assertHelpOutput(setup *testutil.BDDTestSetup, matchers ...types.GomegaMatc
 	Expect(cmdOutput).To(SatisfyAny(matchers...))
 }
 
-// setupBDDTest creates and configures a BDDTestSetup for Ginkgo tests.
-// Returns the setup instance and cleanup function for use in BeforeEach/AfterEach.
-func setupBDDTest() (*testutil.BDDTestSetup, func()) {
-	setup, err := testutil.NewBDDTestSetupForGinkgo()
-	Expect(err).NotTo(HaveOccurred())
-
-	cleanup := func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
-	}
-
-	return setup, cleanup
-}
-
 // getHelpOutput runs art-dupl --help and returns the output string.
 func getHelpOutput(setup *testutil.BDDTestSetup) string {
 	output, err := setup.RunArtDupl("--help")
@@ -73,17 +60,10 @@ func checkHelpOutput(setup *testutil.BDDTestSetup, substrings []string) {
 }
 
 var _ = Describe("Version Command", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When running version command", func() {
@@ -118,17 +98,10 @@ var _ = Describe("Version Command", func() {
 })
 
 var _ = Describe("Help Command", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When running help command", func() {
@@ -180,17 +153,10 @@ var _ = Describe("Help Command", func() {
 })
 
 var _ = Describe("CLI Flag Validation", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When using invalid flags", func() {
@@ -235,17 +201,10 @@ var _ = Describe("CLI Flag Validation", func() {
 })
 
 var _ = Describe("Verbose Flag Behavior", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When using verbose flags", func() {
@@ -295,17 +254,10 @@ func %s() {}`, funcName)
 })
 
 var _ = Describe("CLI Error Handling", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When no arguments provided", func() {
@@ -352,17 +304,10 @@ func multiDir() {}`
 })
 
 var _ = Describe("CLI Completion Commands", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When requesting shell completion", func() {
@@ -399,17 +344,10 @@ var _ = Describe("CLI Completion Commands", func() {
 })
 
 var _ = Describe("CLI Documentation Quality", func() {
-	var (
-		setup   *testutil.BDDTestSetup
-		cleanup func()
-	)
+	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup, cleanup = setupBDDTest()
-	})
-
-	AfterEach(func() {
-		cleanup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When reviewing help documentation", func() {

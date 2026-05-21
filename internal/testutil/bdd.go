@@ -1,180 +1,112 @@
 package testutil
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"sync"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 )
 
-// sharedBinary holds the path to a pre-built binary shared across all test suites.
-// This avoids concurrent go build commands which can cause hangs.
-//
-//nolint:gochecknoglobals // Shared binary path for test efficiency
-var (
-	sharedBinary     string
-	sharedBinaryOnce sync.Once
-	errSharedBinary  error
-)
+// CommandResult holds the captured stdout and stderr from command execution.
+type CommandResult struct {
+	Stdout []byte
+	Stderr []byte
+}
 
-// BDDTestSetup provides complete BDD test infrastructure with temporary directory and binary management.
+// Combined returns stdout + stderr concatenated.
+func (r *CommandResult) Combined() []byte {
+	out := make([]byte, 0, len(r.Stdout)+len(r.Stderr))
+	out = append(out, r.Stdout...)
+	out = append(out, r.Stderr...)
+
+	return out
+}
+
+// BDDTestSetup provides complete BDD test infrastructure with temporary directory.
+//
+// Execution is done in-process via the Executor field (set by the bdd package)
+// instead of building and running a separate binary. This is faster and avoids
+// race conditions like "text file busy".
 type BDDTestSetup struct {
 	T             *testing.T
 	TmpDir        string
 	FileProcessor *utils.FileProcessor
-	BinaryPath    string
+	// Executor runs art-dupl in-process and returns combined stdout+stderr output.
+	// Set by the bdd package.
+	Executor func(args ...string) ([]byte, error)
+	// ExecutorResult runs art-dupl in-process and returns separated stdout/stderr.
+	// Set by the bdd package. Used by RunSubcommandOutput for JSON parsing.
+	ExecutorResult func(args ...string) (*CommandResult, error)
 }
 
-// createBuildCommand creates a command to build the art-dupl binary.
-func createBuildCommand(binaryPath string) *exec.Cmd {
-	return exec.CommandContext(
-		context.Background(),
-		"go",
-		"build",
-		"-o",
-		binaryPath,
-		"../cmd/art-dupl/main.go",
-	) // #nosec G204 -- Test helper building project binary
-}
-
-// NewBDDTestSetup creates a new BDD test setup with temporary directory and builds art-dupl binary.
-// The caller is responsible for cleaning up the temporary directory using Cleanup() or manually.
+// NewBDDTestSetup creates a new BDD test setup with temporary directory.
+// The caller is responsible for cleaning up using Cleanup() or manually.
+//
+// Note: The Executor field must be set before calling Run* methods.
 func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 	t.Helper()
 
 	tmpDir := t.TempDir()
 
-	binaryPath := filepath.Join(tmpDir, "art-dupl-test")
-	cmd := createBuildCommand(binaryPath)
-
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf(
-			"Failed to build art-dupl binary at %s: %v\nOutput: %s",
-			binaryPath,
-			err,
-			string(output),
-		)
-	}
-
 	return &BDDTestSetup{
 		T:             t,
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
-		BinaryPath:    binaryPath,
 	}
 }
 
 // NewBDDTestSetupForGinkgo creates a new BDD test setup without requiring *testing.T.
 // Designed for use with Ginkgo's BeforeEach/AfterEach pattern.
 // The caller must call Cleanup() in an AfterEach block.
-// Uses a shared binary to avoid concurrent build hangs.
+//
+// Note: The Executor field must be set before calling Run* methods.
 func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 	tmpDir, err := os.MkdirTemp("", "art-dupl-bdd-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
-	// Build binary once using sync.Once to avoid concurrent builds
-	sharedBinaryOnce.Do(func() {
-		sharedBinary = filepath.Join(os.TempDir(), "art-dupl-bdd-shared")
-		errSharedBinary = buildSharedBinary(sharedBinary)
-	})
-
-	if errSharedBinary != nil {
-		cleanupErr := os.RemoveAll(tmpDir)
-		if cleanupErr != nil {
-			return nil, fmt.Errorf(
-				"shared binary build failed: %w; additionally temp dir cleanup failed: %w",
-				errSharedBinary,
-				cleanupErr,
-			)
-		}
-
-		return nil, fmt.Errorf("shared binary build failed: %w", errSharedBinary)
-	}
-
-	// Check if binary still exists (may have been cleaned up by OS)
-	_, statErr := os.Stat(sharedBinary)
-	if statErr != nil {
-		// Binary missing, rebuild it
-		buildErr := buildSharedBinary(sharedBinary)
-		if buildErr != nil {
-			cleanupErr := os.RemoveAll(tmpDir)
-			if cleanupErr != nil {
-				return nil, fmt.Errorf(
-					"binary rebuild failed: %w; additionally temp dir %s cleanup failed: %w",
-					buildErr,
-					tmpDir,
-					cleanupErr,
-				)
-			}
-
-			return nil, fmt.Errorf(
-				"binary rebuild failed (was missing from %s): %w",
-				sharedBinary,
-				buildErr,
-			)
-		}
-	}
-
-	return &BDDTestSetup{ //nolint:exhaustruct
+	return &BDDTestSetup{
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
-		BinaryPath:    sharedBinary,
 	}, nil
-}
-
-// buildSharedBinary builds the art-dupl binary at the given path.
-func buildSharedBinary(binaryPath string) error {
-	cmd := createBuildCommand(binaryPath)
-
-	output, buildErr := cmd.CombinedOutput()
-	if buildErr != nil {
-		return fmt.Errorf(
-			"failed to build art-dupl binary at %s: %w\nOutput: %s",
-			binaryPath,
-			buildErr,
-			string(output),
-		)
-	}
-
-	return nil
 }
 
 // Cleanup removes the temporary directory and all its contents.
 func (s *BDDTestSetup) Cleanup() error {
-	return os.RemoveAll(
-		s.TmpDir,
-	)
+	return os.RemoveAll(s.TmpDir)
 }
 
 // CreateDuplicateFiles creates multiple files with identical content.
 func (s *BDDTestSetup) CreateDuplicateFiles(filenames []string, content string) error {
-	return s.FileProcessor.WriteDuplicateFiles(
-		filenames,
-		content,
-	)
+	return s.FileProcessor.WriteDuplicateFiles(filenames, content)
 }
 
 // CreateTestFile creates a single test file with given content.
 func (s *BDDTestSetup) CreateTestFile(filename, content string) error {
-	return s.FileProcessor.WriteTextFile(
-		filename,
-		content,
-	)
+	return s.FileProcessor.WriteTextFile(filename, content)
 }
 
 // CreateTestFiles creates multiple test files from a map.
 func (s *BDDTestSetup) CreateTestFiles(files map[string]string) error {
-	return s.FileProcessor.WriteTestFiles(
-		files,
-	)
+	return s.FileProcessor.WriteTestFiles(files)
+}
+
+// BuildArgsFromFlags converts a map of flags to command line arguments.
+func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
+	args := baseArgs
+
+	for flag, value := range flags {
+		if value != "" {
+			args = append(args, "--"+flag, value)
+		} else {
+			args = append(args, "--"+flag)
+		}
+	}
+
+	return args
 }
 
 // GetFilePath returns full path for a file in test directory.

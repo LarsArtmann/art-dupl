@@ -11,16 +11,7 @@ import (
 // It automatically registers cleanup with Ginkgo's DeferCleanup, so you only
 // need to call this in BeforeEach - no AfterEach needed.
 //
-// Usage:
-//
-//	var setup *testutil.BDDTestSetup
-//	BeforeEach(func() {
-//	    setup = bdd.CreateBDDTestSetup()
-//	})
-//
-//	It("should do something", func() {
-//	    // use setup...
-//	})
+// Execution is done in-process (no binary building) for speed and reliability.
 func CreateBDDTestSetup() *testutil.BDDTestSetup {
 	setup, err := testutil.NewBDDTestSetupForGinkgo()
 
@@ -37,6 +28,19 @@ func CreateBDDTestSetup() *testutil.BDDTestSetup {
 			ginkgoFail(fmt.Sprintf("Failed to cleanup BDD test setup: %v", cleanupErr))
 		}
 	})
+
+	// Wire in-process execution (combined output for backward compatibility)
+	setup.Executor = func(args ...string) ([]byte, error) {
+		result, err := executeInProcess(args...)
+		if err != nil {
+			return result.Combined(), err
+		}
+
+		return result.Combined(), nil
+	}
+
+	// Wire in-process execution (separated stdout/stderr for JSON parsing)
+	setup.ExecutorResult = executeInProcess
 
 	return setup
 }

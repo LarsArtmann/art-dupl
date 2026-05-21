@@ -1,41 +1,72 @@
 package testutil
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"os/exec"
-	"slices"
 	"strings"
 )
+
+// splitLines splits content by newlines, trimming whitespace and removing empty lines.
+func splitLines(content string) []string {
+	var lines []string
+
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed != "" {
+			lines = append(lines, trimmed)
+		}
+	}
+
+	return lines
+}
 
 // commandError wraps a command error with output context.
 func commandError(msg string, err error, output []byte) error {
 	return fmt.Errorf("%s: %w\nOutput: %s", msg, err, string(output))
 }
 
-// RunArtDupl executes art-dupl binary with given arguments and returns combined stdout/stderr.
+// runExecutor executes the in-process command and returns combined stdout+stderr.
+func (s *BDDTestSetup) runExecutor(args ...string) ([]byte, error) {
+	if s.Executor == nil {
+		return nil, fmt.Errorf("BDDTestSetup.Executor is nil — must be set before running commands")
+	}
+
+	return s.Executor(args...)
+}
+
+// runExecutorStdout executes the in-process command and returns stdout only.
+// Uses ExecutorResult for separated stdout/stderr, falls back to Executor if not set.
+func (s *BDDTestSetup) runExecutorStdout(args ...string) ([]byte, error) {
+	if s.ExecutorResult != nil {
+		result, err := s.ExecutorResult(args...)
+		if err != nil {
+			return result.Stdout, err
+		}
+
+		return result.Stdout, nil
+	}
+
+	// Fallback: use combined executor (may include stderr noise)
+	return s.runExecutor(args...)
+}
+
+// RunArtDupl executes art-dupl with given arguments and returns combined stdout/stderr.
 func (s *BDDTestSetup) RunArtDupl(args ...string) ([]byte, error) {
 	return s.RunArtDuplOnDir(s.TmpDir, args...)
 }
 
-// RunArtDuplOnDir executes art-dupl binary on a specific directory with given arguments.
+// RunArtDuplOnDir executes art-dupl on a specific directory with given arguments.
 func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		append([]string{dir}, args...)...,
-	) // #nosec G204 -- Test helper running project binary
+	allArgs := append([]string{dir}, args...)
 
-	return cmd.CombinedOutput()
+	return s.runExecutor(allArgs...)
 }
 
-// RunArtDuplWithFlags executes art-dupl binary with flag map and returns combined output.
+// RunArtDuplWithFlags executes art-dupl with flag map and returns combined output.
 func (s *BDDTestSetup) RunArtDuplWithFlags(flags map[string]string) ([]byte, error) {
 	return s.RunArtDuplOnDirWithFlags(s.TmpDir, flags)
 }
@@ -51,17 +82,10 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(
 
 	args := BuildArgsFromFlags([]string{dir}, flags)
 
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		args...,
-	) // #nosec G204 -- Test helper running project binary
-
-	return cmd.CombinedOutput()
+	return s.runExecutor(args...)
 }
 
 // RunArtDuplAllFormat runs art-dupl with --all flag to generate all output formats.
-// The output directory will be created if it doesn't exist.
 func (s *BDDTestSetup) RunArtDuplAllFormat(outputDir, threshold string) ([]byte, error) {
 	return s.RunArtDuplOnDir(
 		s.TmpDir,
@@ -74,69 +98,76 @@ func (s *BDDTestSetup) RunArtDuplAllFormat(outputDir, threshold string) ([]byte,
 }
 
 // RunArtDuplWithStdin executes art-dupl with stdin input.
-func (s *BDDTestSetup) RunArtDuplWithStdin(stdin string, flags map[string]string) ([]byte, error) {
+// For in-process execution, stdin content (file paths) is parsed and passed
+// as positional arguments directly, since we can't pipe to os.Stdin.
+func (s *BDDTestSetup) RunArtDuplWithStdin(stdinContent string, flags map[string]string) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	args := BuildArgsFromFlags([]string{"--files"}, flags)
+	// Parse file paths from stdin content
+	lines := splitLines(stdinContent)
 
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		args...,
-	) // #nosec G204 -- Test helper running project binary
-	cmd.Stdin = strings.NewReader(stdin)
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("no file paths provided in stdin content")
+	}
 
-	return cmd.CombinedOutput()
+	// Build args from file paths + flags
+	args := lines
+	for flag, value := range flags {
+		if value != "" {
+			args = append(args, "--"+flag, value)
+		} else {
+			args = append(args, "--"+flag)
+		}
+	}
+
+	return s.runExecutor(args...)
 }
 
 // prepareSubcommandArgs prepares arguments for a subcommand, adding the temp directory if needed.
-// It returns a command ready to be executed.
-func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) *exec.Cmd {
+// Only appends TmpDir if no path-like argument is found (i.e., no non-flag arg besides subcommand names).
+func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) []string {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	// Append the temp directory at the end if not already specified
-	hasDir := slices.Contains(args, s.TmpDir)
-
-	if !hasDir {
-		args = append(args, s.TmpDir)
+	// Subcommand names that should not be treated as paths
+	subcommands := map[string]bool{
+		"stats": true, "version": true, "completion": true, "man": true,
 	}
 
-	cmd := exec.CommandContext(
-		context.Background(),
-		s.BinaryPath,
-		args...,
-	) // #nosec G204 -- Test helper running project binary
+	// Check if any arg looks like a path (doesn't start with "-" and isn't a subcommand name)
+	for _, arg := range args {
+		if !strings.HasPrefix(arg, "-") && !subcommands[arg] {
+			return args
+		}
+	}
 
-	return cmd
+	// No path found — append TmpDir
+	return append(args, s.TmpDir)
 }
 
 // RunSubcommand executes an art-dupl subcommand (e.g., "stats") with given arguments.
-// The subcommand name should be the first argument, followed by flags and the directory.
-// Example: RunSubcommand("stats", "--format", "json", "--threshold", "10").
 func (s *BDDTestSetup) RunSubcommand(args ...string) ([]byte, error) {
-	cmd := s.prepareSubcommandArgs(args...)
+	allArgs := s.prepareSubcommandArgs(args...)
 
-	return cmd.CombinedOutput()
+	return s.runExecutor(allArgs...)
 }
 
 // RunSubcommandOutput executes an art-dupl subcommand and returns stdout only.
 // Use this for JSON or other structured output where stderr contamination is undesirable.
 func (s *BDDTestSetup) RunSubcommandOutput(args ...string) ([]byte, error) {
-	cmd := s.prepareSubcommandArgs(args...)
+	allArgs := s.prepareSubcommandArgs(args...)
 
-	return cmd.Output()
+	return s.runExecutorStdout(allArgs...)
 }
 
 // RunStatsSubcommandWithJSON runs the stats subcommand with JSON format and parses the result.
-// The threshold parameter is required and specifies the minimum clone size to report.
 func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]any, error) {
-	cmd := s.prepareSubcommandArgs("stats", "--format", "json", "--threshold", threshold)
+	args := s.prepareSubcommandArgs("stats", "--format", "json", "--threshold", threshold)
 
-	output, err := cmd.Output()
+	output, err := s.runExecutorStdout(args...)
 	if err != nil {
 		return nil, commandError(
 			fmt.Sprintf("stats execution failed (threshold: %s)", threshold),
@@ -188,7 +219,6 @@ func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) str
 }
 
 // RunArtDuplAndCapture executes art-dupl and captures stdout and stderr separately.
-// Returns both outputs and any error that occurred.
 //
 //nolint:nonamedreturns // Multiple return values for stdout/stderr
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
@@ -196,38 +226,14 @@ func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []by
 		s.T.Helper()
 	}
 
-	// #nosec G204 -- Test helper running project binary
-	cmd := exec.CommandContext(context.Background(), s.BinaryPath, args...)
+	if s.ExecutorResult != nil {
+		result, execErr := s.ExecutorResult(args...)
 
-	stdoutPipe, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create stdout pipe: %w", err)
+		return result.Stdout, result.Stderr, execErr
 	}
 
-	stderrPipe, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create stderr pipe: %w", err)
-	}
+	// Fallback: can't separate
+	output, execErr := s.runExecutor(args...)
 
-	err = cmd.Start()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to start command: %w", err)
-	}
-
-	stdout, err = io.ReadAll(stdoutPipe)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read stdout: %w", err)
-	}
-
-	stderr, err = io.ReadAll(stderrPipe)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read stderr: %w", err)
-	}
-
-	err = cmd.Wait()
-	if err != nil {
-		return stdout, stderr, fmt.Errorf("command failed: %w", err)
-	}
-
-	return stdout, stderr, nil
+	return output, nil, execErr
 }

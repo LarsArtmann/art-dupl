@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -18,17 +17,16 @@ var _ = Describe("Detection Methods", func() {
 		setup = CreateBDDTestSetup()
 	})
 
-	// Helper function to create command with detection methods
-	createDetectionCmd := func(detectionMethods string) *exec.Cmd {
-		return exec.Command(
-			setup.BinaryPath,
+	// Helper function to create args for detection methods
+	createDetectionArgs := func(detectionMethods string) []string {
+		return []string{
 			setup.TmpDir,
 			"--detection-methods",
 			detectionMethods,
 			"--json",
 			"--threshold",
 			"5",
-		)
+		}
 	}
 
 	Context("When using hash-based detection", func() {
@@ -73,8 +71,7 @@ func duplicate() string {
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := createDetectionCmd("hash")
-			output, err := cmd.Output()
+			output, err := setup.Executor(createDetectionArgs("hash")...)
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
@@ -215,8 +212,7 @@ func test() string {
 			err := setup.CreateDuplicateFiles([]string{"combine1.go", "combine2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := createDetectionCmd("hash,art-dupl")
-			output, err := cmd.Output()
+			output, err := setup.Executor(createDetectionArgs("hash,art-dupl")...)
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any

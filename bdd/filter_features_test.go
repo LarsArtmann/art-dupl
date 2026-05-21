@@ -1,9 +1,7 @@
 package bdd
 
 import (
-	"context"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 
@@ -12,12 +10,12 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// buildFilterCmd creates an exec.CommandContext for running art-dupl with filter patterns.
-func buildFilterCmd(
-	binaryPath, tmpDir string,
+// buildFilterArgs constructs arguments for running art-dupl with filter patterns.
+func buildFilterArgs(
+	tmpDir string,
 	threshold int,
 	includePatterns, excludePatterns []string,
-) *exec.Cmd {
+) []string {
 	args := make([]string, 0, 1+2*len(includePatterns)+2*len(excludePatterns)+2)
 
 	args = append(args, tmpDir)
@@ -31,7 +29,7 @@ func buildFilterCmd(
 
 	args = append(args, "--threshold", strconv.Itoa(threshold))
 
-	return exec.CommandContext(context.Background(), binaryPath, args...)
+	return args
 }
 
 // BDD Test Suite for Filter Features
@@ -93,13 +91,7 @@ func (u *User) Validate() bool {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -151,14 +143,7 @@ func Body() templ.Component {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -190,16 +175,8 @@ func (q *Query) Validate() bool {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with include-sqlc
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--include-sqlc",
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--include-sqlc", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -230,16 +207,8 @@ func Link() string {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with --include-templ to include templ files
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--include-templ",
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--include-templ", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -282,17 +251,8 @@ func exclude() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with include pattern for pkg1
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--include-pattern",
-				"pkg1/*",
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--include-pattern", "pkg1/*", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -334,16 +294,9 @@ func two() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with multiple include patterns
-			cmd := buildFilterCmd(
-				setup.BinaryPath,
-				setup.TmpDir,
-				10,
-				[]string{"pkg1/*", "pkg2/*"},
-				nil,
-			)
-			output, err := cmd.CombinedOutput()
+			args := buildFilterArgs(setup.TmpDir, 10, []string{"pkg1/*", "pkg2/*"}, nil)
+			output, err := setup.Executor(args...)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -387,17 +340,8 @@ func discard() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with exclude pattern for pkg2
-			cmd := exec.Command(
-				setup.BinaryPath,
-				setup.TmpDir,
-				"--exclude-pattern",
-				"pkg2/*",
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--exclude-pattern", "pkg2/*", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -431,16 +375,9 @@ func test() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-
 			// Run with both include and exclude - include should take precedence
-			cmd := buildFilterCmd(
-				setup.BinaryPath,
-				setup.TmpDir,
-				10,
-				[]string{"specific/*"},
-				[]string{"*/file.go"},
-			)
-			output, err := cmd.CombinedOutput()
+			args := buildFilterArgs(setup.TmpDir, 10, []string{"specific/*"}, []string{"*/file.go"})
+			output, err := setup.Executor(args...)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -453,7 +390,6 @@ func test() {
 		var (
 			vendorDir    string
 			excludedCode string
-			buildBinary  string
 		)
 
 		BeforeEach(func() {
@@ -475,9 +411,6 @@ func vendorFunc() {
 				err = os.WriteFile(filepath.Join(vendorDir, name), []byte(excludedCode), 0o644)
 				Expect(err).NotTo(HaveOccurred())
 			}
-
-
-			buildBinary = setup.BinaryPath
 		})
 
 		It("should exclude vendor directory by default", func() {
@@ -495,8 +428,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run without vendor flag (should exclude vendor)
-			cmd := exec.Command(buildBinary, setup.TmpDir, "--threshold", "10")
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -507,14 +439,7 @@ func duplicate() {
 
 		It("should include vendor directory when --vendor is specified", func() {
 			// Run with vendor flag
-			cmd := exec.Command(
-				buildBinary,
-				setup.TmpDir,
-				"--vendor",
-				"--threshold",
-				"10",
-			)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor(setup.TmpDir, "--vendor", "--threshold", "10")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

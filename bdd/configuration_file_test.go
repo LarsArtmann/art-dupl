@@ -72,22 +72,11 @@ func unicodeConfig() {}`
 // - Invalid configuration handling
 // - Configuration validation
 
-// newBDDTestSetup creates a new BDDTestSetup and registers cleanup for Ginkgo tests.
-func newBDDTestSetup() *testutil.BDDTestSetup {
-	setup, err := testutil.NewBDDTestSetupForGinkgo()
-	Expect(err).NotTo(HaveOccurred())
-	DeferCleanup(func() {
-		Expect(setup.Cleanup()).NotTo(HaveOccurred())
-	})
-
-	return setup
-}
-
 var _ = Describe("Configuration File Loading", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup = newBDDTestSetup()
+		setup = CreateBDDTestSetup()
 	})
 
 	// runWithConfig creates a config file, test files, and runs art-dupl
@@ -368,7 +357,7 @@ var _ = Describe("Configuration File Edge Cases", func() {
 	var setup *testutil.BDDTestSetup
 
 	BeforeEach(func() {
-		setup = newBDDTestSetup()
+		setup = CreateBDDTestSetup()
 	})
 
 	Context("When configuration file is empty", func() {

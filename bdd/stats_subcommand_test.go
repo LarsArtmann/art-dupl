@@ -379,9 +379,7 @@ var _ = Describe("Stats Subcommand Edge Cases", func() {
 
 	Context("When running stats with invalid inputs", func() {
 		It("should handle non-existent path gracefully", func() {
-			// Run stats on non-existent path
 			output, err := setup.RunSubcommand("stats", "/nonexistent/path")
-			// May error but should not panic
 			_ = err
 
 			Expect(string(output)).ToNot(BeEmpty())

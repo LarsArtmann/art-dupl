@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"fmt"
-	"os/exec"
 	"strings"
 	"testing"
 	"time"
@@ -250,9 +249,8 @@ func (v *Validator) lessCommon(id int) error {
 
 	Context("When generating reports", func() {
 		It("should produce valid JSON output with statistics", func() {
-			// Run with JSON output on current directory - use Output() to get only stdout (no stderr)
-			cmd := exec.Command(setup.BinaryPath, ".", "--json", "--threshold", "10")
-			output, err := cmd.Output()
+			// Run with JSON output on current directory - use Executor to get stdout
+			output, err := setup.Executor(".", "--json", "--threshold", "10")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf(
@@ -442,9 +440,11 @@ func (s *Service) processInternal(data string) error {
 			err = setup.CreateFileWithContent("service2.go", orderServiceCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Execute with JSON output - separate stdout from stderr to avoid JSON corruption
-			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--json", "--threshold", "15")
-			output, err := cmd.Output() // Use Output() instead of CombinedOutput() to avoid stderr contamination
+			// Execute with JSON output
+			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "15")
+			if err != nil {
+				fmt.Printf("Command failed with output: %s\n", string(output))
+			}
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response

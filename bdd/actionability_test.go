@@ -3,7 +3,6 @@ package bdd
 import (
 	"encoding/json"
 	"fmt"
-	"os/exec"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
@@ -121,9 +120,7 @@ func logError(err error) {
 		})
 
 		It("should include actionability in JSON output", func() {
-			cmd := exec.Command(setup.BinaryPath, setup.TmpDir, "--json", "--threshold", "5")
-
-			output, err := cmd.Output()
+			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "5")
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}

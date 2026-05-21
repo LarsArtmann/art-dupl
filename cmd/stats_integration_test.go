@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	"context"
+	"bytes"
+	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // hasAllStrings returns a function that checks if all substrings exist in the given text.
@@ -46,9 +45,9 @@ const (
 	statsHeaderText = "Code Duplication Statistics"
 )
 
-// createTestCommand creates a Command for testing with the given arguments.
-// It finds the repo root for relative path resolution.
-func createTestCommand(t *testing.T, args []string) *Command {
+// executeTestCommand runs art-dupl in-process with the given arguments.
+// It resolves relative paths against the repo root and captures output via fd duplication.
+func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	t.Helper()
 
 	repoRoot, err := findRepoRoot()
@@ -56,22 +55,65 @@ func createTestCommand(t *testing.T, args []string) *Command {
 		t.Fatalf("Failed to find repo root: %v", err)
 	}
 
-	return &Command{
-		Path: args[0],
-		Args: args,
-		Dir:  repoRoot,
+	// Resolve relative paths against repo root
+	resolved := make([]string, len(args))
+	for i, arg := range args {
+		if !strings.HasPrefix(arg, "-") && strings.Contains(arg, "/") && !filepath.IsAbs(arg) {
+			resolved[i] = filepath.Join(repoRoot, arg)
+		} else {
+			resolved[i] = arg
+		}
 	}
+
+	rootCmd := NewRootCommand()
+	AddFlags(rootCmd)
+	rootCmd.SetArgs(resolved[1:])
+
+	// Capture output via fd duplication (subcommands write to os.Stdout directly)
+	savedStdout, _ := syscall.Dup(1)
+	savedStderr, _ := syscall.Dup(2)
+
+	stdoutR, stdoutW, _ := os.Pipe()
+	stderrR, stderrW, _ := os.Pipe()
+
+	syscall.Dup2(int(stdoutW.Fd()), 1)
+	syscall.Dup2(int(stderrW.Fd()), 2)
+
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
+
+	stdoutDone := make(chan struct{})
+	go func() {
+		_, _ = io.Copy(&stdoutBuf, stdoutR)
+		close(stdoutDone)
+	}()
+
+	stderrDone := make(chan struct{})
+	go func() {
+		_, _ = io.Copy(&stderrBuf, stderrR)
+		close(stderrDone)
+	}()
+
+	execErr := rootCmd.Execute()
+
+	syscall.Dup2(savedStdout, 1)
+	syscall.Dup2(savedStderr, 2)
+
+	syscall.Close(savedStdout)
+	syscall.Close(savedStderr)
+
+	stdoutW.Close()
+	stderrW.Close()
+
+	<-stdoutDone
+	<-stderrDone
+
+	output := append(stdoutBuf.Bytes(), stderrBuf.Bytes()...)
+
+	return output, execErr
 }
 
 func TestStatsCommandIntegration(t *testing.T) {
-	// Build the binary first
-	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
-
-	err := buildBinary(binaryPath)
-	if err != nil {
-		t.Fatalf("Failed to build binary: %v", err)
-	}
-
 	tests := []struct {
 		name             string
 		args             []string
@@ -80,7 +122,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 	}{
 		{
 			name: "stats on current directory",
-			args: []string{binaryPath, statsSubCommand, "."},
+			args: []string{"art-dupl", statsSubCommand, "."},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -95,7 +137,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats on printer directory",
-			args: []string{binaryPath, statsSubCommand, "./printer"},
+			args: []string{"art-dupl", statsSubCommand, "./printer"},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -105,7 +147,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats with threshold flag",
-			args: []string{binaryPath, statsSubCommand, "-t", "20", "."},
+			args: []string{"art-dupl", statsSubCommand, "-t", "20", "."},
 			expectedInOutput: []string{
 				"Threshold: 20 tokens",
 				statsHeaderText,
@@ -114,7 +156,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats with multiple paths",
-			args: []string{binaryPath, statsSubCommand, "./cmd", "./printer"},
+			args: []string{"art-dupl", statsSubCommand, "./cmd", "./printer"},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -123,7 +165,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats help",
-			args: []string{binaryPath, statsSubCommand, "--help"},
+			args: []string{"art-dupl", statsSubCommand, "--help"},
 			expectedInOutput: []string{
 				"Prints comprehensive duplication statistics",
 				"art-dupl stats",
@@ -134,13 +176,10 @@ func TestStatsCommandIntegration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := createTestCommand(t, tt.args)
+			output, err := executeTestCommand(t, tt.args)
 
-			output, err := cmd.CombinedOutput()
-
-			wantErrResult := tt.wantErr
-			if (err != nil) != wantErrResult {
-				t.Errorf("Command error = %v, wantErr %v", err, wantErrResult)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
@@ -157,13 +196,6 @@ func TestStatsCommandIntegration(t *testing.T) {
 }
 
 func TestStatsCommandErrorCases(t *testing.T) {
-	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
-
-	err := buildBinary(binaryPath)
-	if err != nil {
-		t.Fatalf("Failed to build binary: %v", err)
-	}
-
 	tests := []struct {
 		name    string
 		args    []string
@@ -171,53 +203,35 @@ func TestStatsCommandErrorCases(t *testing.T) {
 	}{
 		{
 			name:    "stats with non-existent path",
-			args:    []string{binaryPath, statsSubCommand, "/non/existent/path"},
+			args:    []string{"art-dupl", statsSubCommand, "/non/existent/path"},
 			wantErr: true,
 		},
 		{
 			name:    "stats with invalid threshold",
-			args:    []string{binaryPath, statsSubCommand, "-t", "-5", "."},
+			args:    []string{"art-dupl", statsSubCommand, "-t", "-5", "."},
 			wantErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := createTestCommand(t, tt.args)
+			_, err := executeTestCommand(t, tt.args)
 
-			_, err = cmd.CombinedOutput()
-			testutil.AssertErrorMatches(t, err, tt.wantErr, "Command")
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Command error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }
 
 func TestStatsOutputFormat(t *testing.T) {
-	binaryPath := filepath.Join(t.TempDir(), "art-dupl")
-	if err := buildBinary(binaryPath); err != nil {
-		t.Fatalf("Failed to build binary: %v", err)
-	}
-
-	// Find repo root for relative paths
-	repoRoot, err := findRepoRoot()
-	if err != nil {
-		t.Fatalf("Failed to find repo root: %v", err)
-	}
-
-	// Test that stats output has structured format
-	cmd := &Command{
-		Path: binaryPath,
-		Args: []string{binaryPath, statsSubCommand, "./printer"},
-		Dir:  repoRoot,
-	}
-
-	output, err := cmd.CombinedOutput()
+	output, err := executeTestCommand(t, []string{"art-dupl", statsSubCommand, "./printer"})
 	if err != nil {
 		t.Fatalf("Stats command failed: %v", err)
 	}
 
 	outputStr := string(output)
 
-	// Verify structure
 	checks := []struct {
 		name  string
 		check func() bool
@@ -261,41 +275,6 @@ func TestStatsOutputFormat(t *testing.T) {
 	}
 }
 
-// buildBinary builds the art-dupl binary for testing.
-func buildBinary(outputPath string) error {
-	// Change to repo root
-	repoRoot, err := findRepoRoot()
-	if err != nil {
-		return err
-	}
-
-	// Save current directory and restore later
-	originalDir, _ := os.Getwd()
-
-	defer func() { _ = os.Chdir(originalDir) }() // test cleanup
-
-	if err := os.Chdir(repoRoot); err != nil {
-		return err
-	}
-
-	// Build the binary
-	cmd := &Command{
-		Path: "go",
-		Args: []string{
-			"go",
-			"build",
-			"-o",
-			outputPath,
-			"-ldflags",
-			"-s -w",
-			"-trimpath",
-			"./cmd/art-dupl",
-		},
-	}
-
-	return cmd.Run()
-}
-
 // findRepoRoot finds the repository root directory.
 func findRepoRoot() (string, error) {
 	current, err := os.Getwd()
@@ -319,42 +298,4 @@ func findRepoRoot() (string, error) {
 	}
 
 	return "", os.ErrNotExist
-}
-
-// Command is a simple command wrapper for testing.
-type Command struct {
-	Path string
-	Args []string
-	Env  []string
-	Dir  string
-}
-
-// buildCmd creates and configures the exec.Command.
-//
-//nolint:funcorder // helper method
-func (c *Command) buildCmd() *exec.Cmd {
-	cmd := exec.CommandContext(
-		context.Background(),
-		c.Path,
-		c.Args[1:]...,
-	) // Args[0] is the binary path
-	if c.Dir != "" {
-		cmd.Dir = c.Dir
-	}
-
-	if len(c.Env) > 0 {
-		cmd.Env = c.Env
-	}
-
-	return cmd
-}
-
-// CombinedOutput runs the command and returns its combined stdout and stderr.
-func (c *Command) CombinedOutput() ([]byte, error) {
-	return c.buildCmd().CombinedOutput()
-}
-
-// Run runs the command.
-func (c *Command) Run() error {
-	return c.buildCmd().Run()
 }

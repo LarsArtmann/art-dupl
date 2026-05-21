@@ -1,7 +1,6 @@
 package bdd
 
 import (
-	"os/exec"
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -99,8 +98,7 @@ var _ = Describe("Semantic Detection", func() {
 			err = setup.FileProcessor.WriteFile("dupl.json", []byte(configContent), 0o644)
 			Expect(err).NotTo(HaveOccurred())
 
-			cmd := exec.Command(setup.BinaryPath, "-c", configPath, setup.TmpDir)
-			output, err := cmd.CombinedOutput()
+			output, err := setup.Executor("-c", configPath, setup.TmpDir)
 			outputStr := string(output)
 
 			Expect(err).ToNot(HaveOccurred())
