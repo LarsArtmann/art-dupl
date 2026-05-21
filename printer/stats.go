@@ -70,6 +70,7 @@ func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
 			TokenDistribution: make(map[string]int),
 			SeverityBreakdown: make(map[string]int),
 			CategoryBreakdown: make(map[string]int),
+			PriorityBreakdown: make(map[string]int),
 		},
 		StyleMixin: StyleMixin{
 			base:    styles.base,
@@ -126,6 +127,15 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 	if len(group.Clones) > 0 {
 		category := string(group.Clones[0].Classification.Category)
 		p.statsData.CategoryBreakdown[category]++
+
+		priority := string(group.Clones[0].Classification.Priority)
+		p.statsData.PriorityBreakdown[priority]++
+
+		if group.Clones[0].Classification.Actionability == domain.Actionable {
+			p.statsData.ActionableGroups++
+		} else {
+			p.statsData.NonActionableGroups++
+		}
 	}
 
 	return nil

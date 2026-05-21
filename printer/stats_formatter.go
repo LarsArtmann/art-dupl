@@ -51,6 +51,11 @@ type jsonStatsOutput struct {
 	TokenDistribution map[string]int `json:"tokenDistribution"`
 	SeverityBreakdown map[string]int `json:"severityBreakdown"`
 	CategoryBreakdown map[string]int `json:"categoryBreakdown,omitempty"`
+	PriorityBreakdown map[string]int `json:"priorityBreakdown,omitempty"`
+	Actionability     struct {
+		Actionable    int `json:"actionable,omitempty"`
+		NonActionable int `json:"nonActionable,omitempty"`
+	} `json:"actionability,omitempty"`
 	TopFiles          []jsonTopFile  `json:"topFiles"`
 }
 
@@ -236,6 +241,21 @@ func (p *stats) printTextDistributions() {
 		_, _ = fmt.Fprintf(p.w, "\n")
 	}
 
+	if len(p.statsData.PriorityBreakdown) > 0 {
+		p.printSection("Clone Priority:")
+		printPriorityDistribution(p.w, p.statsData.PriorityBreakdown)
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
+	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
+		p.printSection("Actionability:")
+		p.printMetric("Actionable Groups", strconv.Itoa(p.statsData.ActionableGroups))
+		if p.statsData.NonActionableGroups > 0 {
+			p.printMetric("Non-Actionable Groups", strconv.Itoa(p.statsData.NonActionableGroups))
+		}
+		_, _ = fmt.Fprintf(p.w, "\n")
+	}
+
 	if len(p.statsData.FileDuplication) > 0 {
 		p.printSection("Top Files by Duplicate Lines:")
 		printTopFiles(p.w, p.statsData.FileDuplication, 10)
@@ -357,6 +377,17 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	// Fill category breakdown
 	if len(p.statsData.CategoryBreakdown) > 0 {
 		jsonData.CategoryBreakdown = p.statsData.CategoryBreakdown
+	}
+
+	// Fill priority breakdown
+	if len(p.statsData.PriorityBreakdown) > 0 {
+		jsonData.PriorityBreakdown = p.statsData.PriorityBreakdown
+	}
+
+	// Fill actionability
+	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
+		jsonData.Actionability.Actionable = p.statsData.ActionableGroups
+		jsonData.Actionability.NonActionable = p.statsData.NonActionableGroups
 	}
 
 	// Add methodology note

@@ -127,6 +127,32 @@ func printCategoryDistribution(w io.Writer, distribution map[string]int) {
 	}
 }
 
+// priorityOrder defines a stable display order for priority levels.
+var priorityOrder = []string{"critical", "high", "medium", "low"}
+
+// printPriorityDistribution prints the priority breakdown with percentages.
+func printPriorityDistribution(w io.Writer, distribution map[string]int) {
+	total := 0
+	for _, count := range distribution {
+		total += count
+	}
+
+	for _, priority := range priorityOrder {
+		count, exists := distribution[priority]
+		if !exists {
+			continue
+		}
+
+		pct := calcPercentage(count, total)
+
+		_, _ = fmt.Fprintf(
+			w,
+			"  %-10s: %4d groups (%.1f%%)\n",
+			priority, count, pct,
+		)
+	}
+}
+
 // severityOrder defines the display order for severity levels.
 var severityOrder = []string{healthSmall, healthMedium, healthLarge, healthHuge}
 

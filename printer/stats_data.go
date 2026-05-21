@@ -55,6 +55,11 @@ type StatsData struct {
 	TokenDistribution map[string]int `json:"token_distribution"` // token range -> count
 	SeverityBreakdown map[string]int `json:"severity_breakdown"` // severity -> count (small/medium/large/huge)
 	CategoryBreakdown map[string]int `json:"category_breakdown,omitempty"` // category -> count (function/test/struct/etc)
+	PriorityBreakdown map[string]int `json:"priority_breakdown,omitempty"` // priority -> count (critical/high/medium/low)
+
+	// Actionability metrics
+	ActionableGroups    int `json:"actionable_groups,omitempty"`     // Groups that can be refactored
+	NonActionableGroups int `json:"non_actionable_groups,omitempty"` // Groups that are idiomatic boilerplate
 
 	// Filter metrics (NEW)
 	FilesFiltered   int            `json:"files_filtered,omitempty"`   // Total files filtered out

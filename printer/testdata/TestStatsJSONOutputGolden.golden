@@ -33,6 +33,12 @@
   "categoryBreakdown": {
     "unknown": 1
   },
+  "priorityBreakdown": {
+    "low": 1
+  },
+  "actionability": {
+    "actionable": 1
+  },
   "topFiles": [
     {
       "filename": "file2.go",
