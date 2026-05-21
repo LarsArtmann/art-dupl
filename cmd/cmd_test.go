@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -271,6 +272,7 @@ func TestAddFlags(t *testing.T) {
 		"include-protobuf",
 		"include-mockgen",
 		"include-stringer",
+		"include-generic",
 		"include-pattern",
 		"exclude-pattern",
 		"incremental",
@@ -517,6 +519,36 @@ func TestSetupFilter(t *testing.T) {
 
 		if f == nil {
 			t.Error("setupFilter() returned nil")
+		}
+	})
+
+	t.Run("generic filter active by default", func(t *testing.T) {
+		cfg := &config.Config{}
+
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
+
+		reasons := f.FilterReasons()
+		found := slices.Contains(reasons, gogenfilter.ReasonGeneric)
+		if !found {
+			t.Errorf("expected FilterGeneric (ReasonGeneric) in filter reasons, got: %v", reasons)
+		}
+	})
+
+	t.Run("include generic disables generic filter", func(t *testing.T) {
+		cfg := &config.Config{IncludeGeneric: true}
+
+		f, err := setupFilter(cfg)
+		if err != nil {
+			t.Fatalf("setupFilter() error: %v", err)
+		}
+
+		reasons := f.FilterReasons()
+		found := slices.Contains(reasons, gogenfilter.ReasonGeneric)
+		if found {
+			t.Errorf("did not expect ReasonGeneric when IncludeGeneric=true, got: %v", reasons)
 		}
 	})
 }
