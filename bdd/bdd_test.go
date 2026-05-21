@@ -445,6 +445,7 @@ func (s *Service) processInternal(data string) error {
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}
+
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON response

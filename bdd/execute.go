@@ -35,18 +35,24 @@ func executeInProcess(args ...string) (*testutil.CommandResult, error) {
 	syscall.Dup2(int(stdoutW.Fd()), 1)
 	syscall.Dup2(int(stderrW.Fd()), 2)
 
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
+	var (
+		stdoutBuf bytes.Buffer
+		stderrBuf bytes.Buffer
+	)
 
 	stdoutDone := make(chan struct{})
+
 	go func() {
 		_, _ = io.Copy(&stdoutBuf, stdoutR)
+
 		close(stdoutDone)
 	}()
 
 	stderrDone := make(chan struct{})
+
 	go func() {
 		_, _ = io.Copy(&stderrBuf, stderrR)
+
 		close(stderrDone)
 	}()
 

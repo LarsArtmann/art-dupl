@@ -252,7 +252,13 @@ func exclude() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include pattern for pkg1
-			output, err := setup.Executor(setup.TmpDir, "--include-pattern", "pkg1/*", "--threshold", "10")
+			output, err := setup.Executor(
+				setup.TmpDir,
+				"--include-pattern",
+				"pkg1/*",
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -341,7 +347,13 @@ func discard() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with exclude pattern for pkg2
-			output, err := setup.Executor(setup.TmpDir, "--exclude-pattern", "pkg2/*", "--threshold", "10")
+			output, err := setup.Executor(
+				setup.TmpDir,
+				"--exclude-pattern",
+				"pkg2/*",
+				"--threshold",
+				"10",
+			)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

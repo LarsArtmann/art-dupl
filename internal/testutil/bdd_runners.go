@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -10,7 +11,7 @@ import (
 func splitLines(content string) []string {
 	var lines []string
 
-	for _, line := range strings.Split(content, "\n") {
+	for line := range strings.SplitSeq(content, "\n") {
 		trimmed := strings.TrimSpace(line)
 		if trimmed != "" {
 			lines = append(lines, trimmed)
@@ -28,7 +29,7 @@ func commandError(msg string, err error, output []byte) error {
 // runExecutor executes the in-process command and returns combined stdout+stderr.
 func (s *BDDTestSetup) runExecutor(args ...string) ([]byte, error) {
 	if s.Executor == nil {
-		return nil, fmt.Errorf("BDDTestSetup.Executor is nil — must be set before running commands")
+		return nil, errors.New("BDDTestSetup.Executor is nil — must be set before running commands")
 	}
 
 	return s.Executor(args...)
@@ -100,7 +101,10 @@ func (s *BDDTestSetup) RunArtDuplAllFormat(outputDir, threshold string) ([]byte,
 // RunArtDuplWithStdin executes art-dupl with stdin input.
 // For in-process execution, stdin content (file paths) is parsed and passed
 // as positional arguments directly, since we can't pipe to os.Stdin.
-func (s *BDDTestSetup) RunArtDuplWithStdin(stdinContent string, flags map[string]string) ([]byte, error) {
+func (s *BDDTestSetup) RunArtDuplWithStdin(
+	stdinContent string,
+	flags map[string]string,
+) ([]byte, error) {
 	if s.T != nil {
 		s.T.Helper()
 	}
@@ -109,11 +113,12 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(stdinContent string, flags map[string
 	lines := splitLines(stdinContent)
 
 	if len(lines) == 0 {
-		return nil, fmt.Errorf("no file paths provided in stdin content")
+		return nil, errors.New("no file paths provided in stdin content")
 	}
 
 	// Build args from file paths + flags
 	args := lines
+
 	for flag, value := range flags {
 		if value != "" {
 			args = append(args, "--"+flag, value)
