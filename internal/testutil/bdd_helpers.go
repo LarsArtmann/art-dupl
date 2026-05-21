@@ -83,7 +83,7 @@ func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(
 
 	err := s.CreateDuplicateFiles(filenames, content)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create duplicate files: %w", err)
+		return nil, fmt.Errorf("failed to create duplicate files (content=%q): %w", content, err)
 	}
 
 	return s.RunArtDupl(args...)
@@ -175,12 +175,12 @@ func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error
 
 	err = s.CreateFileWithContent(lib1Path, code)
 	if err != nil {
-		return fmt.Errorf("failed to create vendor file %s: %w", lib1Path, err)
+		return fmt.Errorf("failed to create vendor file %s (code=%q): %w", lib1Path, code, err)
 	}
 
 	err = s.CreateFileWithContent(lib2Path, code)
 	if err != nil {
-		return fmt.Errorf("failed to create vendor file %s: %w", lib2Path, err)
+		return fmt.Errorf("failed to create vendor file %s (code=%q): %w", lib2Path, code, err)
 	}
 
 	return nil
@@ -316,7 +316,7 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	// Create vendor directory with duplicate files
 	err := s.CreateVendorDuplicateFiles(vendorPath, code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vendor duplicate files in %s: %w", vendorPath, err)
+		return nil, fmt.Errorf("failed to create vendor duplicate files in %s (subcommand=%q): %w", vendorPath, subcommand, err)
 	}
 
 	// Build arguments
