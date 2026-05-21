@@ -181,9 +181,7 @@ func TestLoadConfig_InvalidJSON(t *testing.T) {
 	dir := t.TempDir()
 	cfgFile := filepath.Join(dir, "bad.json")
 
-	if err := os.WriteFile(cfgFile, []byte("{invalid json}"), 0o644); err != nil {
-		t.Fatal(err)
-	}
+	mustWriteFile(t, cfgFile, "{invalid json}")
 
 	_, err := LoadConfig(cfgFile)
 	if err == nil {
@@ -213,9 +211,7 @@ func TestSaveConfig_FileExists(t *testing.T) {
 	dir := t.TempDir()
 	cfgFile := filepath.Join(dir, "existing.json")
 
-	if err := os.WriteFile(cfgFile, []byte("{}"), 0o644); err != nil {
-		t.Fatal(err)
-	}
+	mustWriteFile(t, cfgFile, "{}")
 
 	cfg := &Config{Threshold: 77}
 	if err := SaveConfig(cfg, cfgFile); err != nil {
@@ -1250,5 +1246,12 @@ func TestErrInvalidDetectionMethod(t *testing.T) {
 
 	if !errors.Is(ErrInvalidDetectionMethod, ErrInvalidDetectionMethod) {
 		t.Error("ErrInvalidDetectionMethod should be ErrInvalidDetectionMethod")
+	}
+}
+
+func mustWriteFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
 	}
 }

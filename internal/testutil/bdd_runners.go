@@ -117,15 +117,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 	}
 
 	// Build args from file paths + flags
-	args := lines
-
-	for flag, value := range flags {
-		if value != "" {
-			args = append(args, "--"+flag, value)
-		} else {
-			args = append(args, "--"+flag)
-		}
-	}
+	args := appendFlagsToArgs(lines, flags)
 
 	return s.runExecutor(args...)
 }

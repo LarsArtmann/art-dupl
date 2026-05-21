@@ -175,8 +175,7 @@ func (p *htmlprinter) writeDiffComparison(
 <span class="diff-stats">
 `, activeClass, p.iota, index, otherVSCode, html.EscapeString(other.Filename), other.LineStart)
 	if err != nil {
-		return fmt.Errorf("write diff comparison header for %s:%d (index %d/%d): %w",
-			other.Filename, other.LineStart, index, total, err)
+		return diffWriteErr(other.Filename, other.LineStart, "comparison header", index, total, err)
 	}
 
 	// Write stats
@@ -197,8 +196,7 @@ func (p *htmlprinter) writeDiffComparison(
 <div class="diff-content" data-diff-index="`+strconv.Itoa(index)+`">
 `)
 	if err != nil {
-		return fmt.Errorf("write diff content wrapper for %s:%d (index %d/%d): %w",
-			other.Filename, other.LineStart, index, total, err)
+		return diffWriteErr(other.Filename, other.LineStart, "content wrapper", index, total, err)
 	}
 
 	// Write base and compared panels with word-level highlighting
@@ -211,6 +209,11 @@ func (p *htmlprinter) writeDiffComparison(
 `)
 
 	return err
+}
+
+func diffWriteErr(filename string, lineStart int, phase string, index, total int, err error) error {
+	return fmt.Errorf("write diff %s for %s:%d (index %d/%d): %w",
+		phase, filename, lineStart, index, total, err)
 }
 
 // writeDiffPanelsWithWordDiff renders both base and compared panels with word-level highlighting.

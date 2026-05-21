@@ -531,6 +531,7 @@ func TestSetupFilter(t *testing.T) {
 		}
 
 		reasons := f.FilterReasons()
+
 		found := slices.Contains(reasons, gogenfilter.ReasonGeneric)
 		if !found {
 			t.Errorf("expected FilterGeneric (ReasonGeneric) in filter reasons, got: %v", reasons)
@@ -546,6 +547,7 @@ func TestSetupFilter(t *testing.T) {
 		}
 
 		reasons := f.FilterReasons()
+
 		found := slices.Contains(reasons, gogenfilter.ReasonGeneric)
 		if found {
 			t.Errorf("did not expect ReasonGeneric when IncludeGeneric=true, got: %v", reasons)

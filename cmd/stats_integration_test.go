@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"syscall"
 	"testing"
+
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // hasAllStrings returns a function that checks if all substrings exist in the given text.
@@ -85,20 +86,10 @@ func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	)
 
 	stdoutDone := make(chan struct{})
-
-	go func() {
-		_, _ = io.Copy(&stdoutBuf, stdoutR)
-
-		close(stdoutDone)
-	}()
+	testutil.CopyToBuffer(&stdoutBuf, stdoutR, stdoutDone)
 
 	stderrDone := make(chan struct{})
-
-	go func() {
-		_, _ = io.Copy(&stderrBuf, stderrR)
-
-		close(stderrDone)
-	}()
+	testutil.CopyToBuffer(&stderrBuf, stderrR, stderrDone)
 
 	execErr := rootCmd.Execute()
 

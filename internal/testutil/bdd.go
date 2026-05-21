@@ -94,10 +94,8 @@ func (s *BDDTestSetup) CreateTestFiles(files map[string]string) error {
 	return s.FileProcessor.WriteTestFiles(files)
 }
 
-// BuildArgsFromFlags converts a map of flags to command line arguments.
-func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
-	args := baseArgs
-
+// appendFlagsToArgs converts a flag map to CLI arguments.
+func appendFlagsToArgs(args []string, flags map[string]string) []string {
 	for flag, value := range flags {
 		if value != "" {
 			args = append(args, "--"+flag, value)
@@ -107,6 +105,11 @@ func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
 	}
 
 	return args
+}
+
+// BuildArgsFromFlags converts a map of flags to command line arguments.
+func BuildArgsFromFlags(baseArgs []string, flags map[string]string) []string {
+	return appendFlagsToArgs(baseArgs, flags)
 }
 
 // GetFilePath returns full path for a file in test directory.

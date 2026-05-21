@@ -3,7 +3,6 @@ package bdd
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"syscall"
 
@@ -41,20 +40,10 @@ func executeInProcess(args ...string) (*testutil.CommandResult, error) {
 	)
 
 	stdoutDone := make(chan struct{})
-
-	go func() {
-		_, _ = io.Copy(&stdoutBuf, stdoutR)
-
-		close(stdoutDone)
-	}()
+	testutil.CopyToBuffer(&stdoutBuf, stdoutR, stdoutDone)
 
 	stderrDone := make(chan struct{})
-
-	go func() {
-		_, _ = io.Copy(&stderrBuf, stderrR)
-
-		close(stderrDone)
-	}()
+	testutil.CopyToBuffer(&stderrBuf, stderrR, stderrDone)
 
 	err := rootCmd.Execute()
 

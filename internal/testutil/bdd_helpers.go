@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -336,4 +337,13 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	}
 
 	return s.RunArtDupl(args...)
+}
+
+// CopyToBuffer reads from src into dst in a goroutine, signaling completion on done.
+func CopyToBuffer(dst io.Writer, src io.Reader, done chan<- struct{}) {
+	go func() {
+		_, _ = io.Copy(dst, src)
+
+		close(done)
+	}()
 }
