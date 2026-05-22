@@ -6,7 +6,7 @@
 class Artdupl < Formula
   desc "Code duplication detection tool using suffix tree algorithms"
   homepage "https://github.com/LarsArtmann/art-dupl"
-  version "1.0.0"
+  version "0.2.0"
   license "MIT"
 
   on_macos do
