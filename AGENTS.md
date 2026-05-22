@@ -8,13 +8,14 @@ This document provides essential information for AI agents working on the **art-
 
 ### Key Features
 
-- **Multi-method detection**: Suffix tree algorithm (art-dupl) and hash-based detection
+- **Multi-method detection**: Suffix tree (art-dupl), hash-based, TODO, and legacy pattern detection
 - **Professional CLI**: Built with Fang framework (Cobra) with auto-completion and version info
-- **Multiple output formats**: Text, HTML, JSON, plumbing, and CSV (for stats)
+- **Multiple output formats**: Text, HTML, JSON, simple-JSON, plumbing, SARIF, and CSV (for stats)
 - **Statistics subcommand**: Aggregated duplication metrics and project overview
-- **Smart filtering**: SQLC and templ generated code filtering with pattern matching
+- **Smart filtering**: SQLC, templ, protobuf, mockgen, stringer, and generic generated code filtering
 - **Configuration files**: JSON-based configuration for team consistency
-- **Sorting options**: By size, occurrence, or hash
+- **Sorting options**: By size, occurrence, hash, or total-tokens
+- **Semantic detection**: Default semantic matching (AST + identifiers); `--structural` for structure-only
 - **BDD tests**: Ginkgo/Gomega behavior-driven development test suite
 
 ### Core Architecture
@@ -22,25 +23,24 @@ This document provides essential information for AI agents working on the **art-
 #### Primary Packages
 
 - **cmd/**: CLI command definitions (root, stats, version)
-- **config/**: Configuration management and validation
-- **cli/**: CLI runtime, validation, and sorting logic
+- **config/**: Configuration management, validation, and typed enums
 - **detection/**: Multi-method detection coordination (art-dupl, hash, todos, legacy)
 - **suffixtree/**: Core suffix tree implementation for AST-based detection
-- **syntax/**: AST handling, serialization, and node processing
+- **syntax/**: AST handling, serialization, and node processing (golang + templ)
 - **hash/**: Rolling hash-based detection implementation
 - **job/**: Orchestrates file parsing and tree building with profiling
-- **printer/**: Output formatting (text, HTML, JSON, plumbing, stats)
-- **adapter/**: Adapter pattern for printer abstraction
+- **printer/**: Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
+- **domain/**: Domain types (Filepath, LineNumber, CloneSeverity, ProcessedClone, ProcessedCloneGroup)
+- **cache/**: File-level caching for incremental analysis
 
 #### Supporting Packages
 
-- **domain/**: Domain types and models (Clone, CloneGroup, StringPool)
-- **types/**: Type definitions and shared types
-- **errors/**: Error handling with typed error wrappers
-- **pkg/**: Utility packages (artdupl, position, logger)
-- **internal/**: Internal utilities (testutil, enum, utils, simd)
-- **migration/**: Migration utilities for version compatibility
-- **lib/**: Legacy utility functions (being phased out)
+- **errors/**: Typed error hierarchy (DuplError, EnumValidationError, MarshalError)
+- **pkg/artdupl/**: Public SDK for programmatic access
+- **pkg/format/**: Hash formatting utilities
+- **pkg/logger/**: Logging interface and default implementation
+- **pkg/position/**: Byte-to-line position conversion
+- **internal/**: Internal utilities (testutil, testhelpers, configtest, filtertest, utils, simd)
 
 ## Development Commands
 
@@ -195,16 +195,17 @@ art-dupl [flags] [paths]
 #### Domain Types
 
 - Domain models in `domain/` package with typed IDs
-- StringPool for efficient string deduplication
-- Clone and CloneGroup types for type-safe clone representation
+- `Filepath` and `LineNumber`: validated value objects for file locations
+- `CloneSeverity`, `CloneCategory`, `ClonePriority`: string-based enums
+- `ProcessedClone` and `ProcessedCloneGroup`: rich DTOs for printer consumption
 - Strong typing prevents impossible states
 
-#### Printer Adapter Pattern
+#### Printer Interface Pattern
 
-- `adapter/` package provides abstraction over printer implementations
-- Interface-based design for multiple output formats
-- Format-specific printers (text, HTML, JSON, plumbing, stats)
-- Sortable output with configurable sorting options
+- `printer.Printer` interface defines `PrintHeader`, `PrintClones`, `PrintFooter`
+- Format-specific implementations (text, HTML, JSON, plumbing, SARIF, stats)
+- `printer.StatsPrinter` extends Printer with stats configuration
+- Sortable output with configurable sorting via `config.SortCriteria`
 
 ## Testing Approach
 
@@ -215,7 +216,7 @@ art-dupl [flags] [paths]
 - **BDD tests** use Ginkgo/Gomega framework in `bdd/` directory
 - Table-driven tests for multiple scenarios
 - Performance testing with benchmarks (`_bench_test.go`)
-- Fuzz testing for robustness (`fuzz/` directory)
+- Fuzz testing for robustness (`suffixtree/testdata/fuzz/`)
 
 ### Test Categories
 
@@ -293,12 +294,13 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 ### CI Pipeline
 
 - GitHub Actions in `.github/workflows/`:
-  - `build.yml`: Matrix testing (multiple Go versions and OS)
-  - `checks.yml`: Code quality checks
-  - `performance.yml`: Performance regression testing
+  - `ci.yml`: Main CI (lint, matrix test, coverage, self-analysis)
+  - `performance.yml`: Performance regression testing with benchstat
+  - `release.yml`: GoReleaser release pipeline (Docker, Homebrew, Nix)
+  - `auto-tag.yml`: Auto-tag on version bump in flake.nix
+  - `deploy-site.yml`: Firebase hosting deploy
 - Golangci-lint for code quality checks (configuration in `.golangci.yml`)
-- Dependency management verification
-- Tests run on oldstable and stable Go versions
+- Matrix testing: oldstable + stable Go on ubuntu, macos, windows
 - BDD tests included in CI
 
 ### Dependency Management
@@ -306,8 +308,15 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - **Core runtime dependencies**:
   - `github.com/charmbracelet/fang`: Professional CLI framework
   - `github.com/spf13/cobra`: Command-line interface library
+  - `github.com/sergi/go-diff`: Diff algorithm for HTML output
+  - `github.com/zeebo/xxh3`: XXH3 hashing for fast detection
+  - `github.com/a-h/templ`: Templ file parsing support
+  - `charm.land/lipgloss/v2`: Terminal styling
+  - `github.com/LarsArtmann/gogenfilter/v3`: File filtering (private)
+- **Testing dependencies**:
   - `github.com/onsi/ginkgo/v2`: BDD testing framework
   - `github.com/onsi/gomega`: Gomega matchers for Ginkgo
+  - `github.com/charmbracelet/x/exp/golden`: Golden file testing
 - **Development dependencies**:
   - `github.com/golangci/golangci-lint`: Linter (development only)
 - Version pinning through go.mod and go.sum
@@ -498,17 +507,19 @@ import (
     "github.com/LarsArtmann/art-dupl/detection"
     "github.com/LarsArtmann/art-dupl/suffixtree"
     "github.com/LarsArtmann/art-dupl/syntax"
+    "github.com/LarsArtmann/art-dupl/syntax/golang"
+    "github.com/LarsArtmann/art-dupl/syntax/templ"
     "github.com/LarsArtmann/art-dupl/hash"
     "github.com/LarsArtmann/art-dupl/job"
     "github.com/LarsArtmann/art-dupl/printer"
     "github.com/LarsArtmann/art-dupl/domain"
-    "github.com/LarsArtmann/art-dupl/adapter"
-    "github.com/LarsArtmann/art-dupl/types"
     "github.com/LarsArtmann/art-dupl/errors"
+    "github.com/LarsArtmann/art-dupl/cache"
     "github.com/LarsArtmann/art-dupl/pkg/artdupl"
+    "github.com/LarsArtmann/art-dupl/pkg/format"
     "github.com/LarsArtmann/art-dupl/pkg/logger"
-    "github.com/LarsArtmann/gogenfilter"
     "github.com/LarsArtmann/art-dupl/pkg/position"
+    "github.com/LarsArtmann/gogenfilter/v3"
 )
 ```
 
@@ -533,32 +544,34 @@ import (
 ```
 art-dupl/
 ├── cmd/              # CLI command definitions
-├── config/           # Configuration management
-├── cli/              # CLI runtime and validation
-├── detection/        # Multi-method detection
+├── config/           # Configuration management and typed enums
+├── detection/        # Multi-method detection (MethodDetector interface)
 ├── suffixtree/       # Suffix tree algorithm
-├── syntax/           # AST processing
+├── syntax/           # AST processing (golang/ + templ/)
 ├── hash/             # Hash-based detection
-├── job/              # Analysis orchestration
-├── printer/          # Output formatting
-├── adapter/          # Printer adapter pattern
-├── domain/           # Domain models
-├── types/            # Shared types
-├── errors/           # Error handling
-├── pkg/              # Utility packages
-│   ├── artdupl/
-│   ├── logger/
-│   └── position/
+├── job/              # Analysis orchestration (parse → serialize → build tree)
+├── printer/          # Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
+├── domain/           # Domain types (Filepath, LineNumber, ProcessedClone, etc.)
+├── errors/           # Typed error hierarchy
+├── cache/            # File-level caching for incremental analysis
+├── pkg/              # Public packages
+│   ├── artdupl/      # SDK for programmatic access
+│   ├── format/       # Hash formatting
+│   ├── logger/       # Logging interface
+│   └── position/     # Byte-to-line conversion
 ├── internal/         # Internal utilities
-│   ├── testutil/
-│   ├── enum/
-│   ├── utils/
-│   └── simd/
-├── migration/        # Migration utilities
-├── lib/              # Legacy utilities
-├── bdd/              # BDD tests
+│   ├── testutil/     # BDD test helpers
+│   ├── testhelpers/  # Shared test utilities
+│   ├── configtest/   # Config integration tests
+│   ├── filtertest/   # Filter integration tests
+│   ├── utils/        # Internal utilities
+│   └── simd/         # SIMD optimizations
+├── bdd/              # BDD tests (Ginkgo/Gomega)
 ├── docs/             # Documentation
-└── examples/         # Usage examples
+├── examples/         # SDK usage examples
+├── scripts/          # Build/utility scripts
+├── site/             # Landing page (Firebase)
+└── HomebrewFormula/  # Homebrew formula
 ```
 
 ## Development Guidelines
@@ -713,18 +726,22 @@ Each method runs independently via goroutines, results combined and deduplicated
 
 Strong typing throughout the codebase:
 
-- `domain.Clone`: Type-safe clone representation
-- `domain.CloneGroup`: Grouped clones with metadata
-- `domain.StringPool`: Efficient string deduplication
-- Typed enums for detection methods, output formats, sorting options
+- `domain.Filepath`, `domain.LineNumber`: Validated value objects
+- `domain.CloneSeverity`: Enum (low, medium, high, critical)
+- `domain.ProcessedClone`, `domain.ProcessedCloneGroup`: Rich DTOs for printer
+- `domain.CloneClassification`: Category, priority, actionability metadata
+- Typed enums in `config/`: DetectionMethod, OutputFormat, SortCriteria, FileType
+- SDK types in `pkg/artdupl/`: Clone, CloneGroup, Result, Metadata
 
-### Printer Adapter Pattern
+### Printer Interface
 
-The `adapter/` package provides abstraction over output formats:
+The `printer/` package provides output formatting:
 
-- Interface-based design for extensibility
-- Format-specific implementations (text, HTML, JSON, plumbing, stats)
-- Sorting and filtering capabilities built-in
+- `printer.Printer` interface: `PrintHeader`, `PrintClones`, `PrintFooter`
+- `printer.StatsPrinter` extends Printer with stats configuration
+- Format-specific implementations (text, HTML, JSON, plumbing, SARIF, stats)
+- Sorting via `config.SortCriteria`
+- Clone classification and actionability scoring built-in
 
 ### Configuration System
 
@@ -734,7 +751,17 @@ Multi-layered configuration:
 2. JSON config file (optional)
 3. CLI flags (override all)
 
-Configuration merging and validation ensures consistency.
+Configuration merging (reflection-based) and validation ensures consistency.
+
+### SDK Architecture
+
+The `pkg/artdupl/` package provides a public SDK for programmatic access:
+
+- `Detector` interface: `FindClones`, `FindClonesStream`, `Close`
+- `Options` struct for configuration (threshold, methods, workers, timeout)
+- `Result`, `CloneGroup`, `Clone`, `Summary`, `Metadata` types
+- Pipeline: `buildAnalysisPipeline` → `MultiDetector.FindDuplOver` → `collectMatchesIntoGroups`
+- Version from `runtime/debug.ReadBuildInfo()`
 
 ## Important Project Notes
 
@@ -840,9 +867,10 @@ Root cause: `NewNode()` returns zero-value struct with no position validation. B
 
 **Three parallel Clone types:**
 
-- `printer.clone` (unexported): has fragment, classification — richest for output
-- `pkg/artdupl.Clone`: SDK type with primitives, `IsValid()` validation
-- `printer.CloneGroup` vs `pkg/artdupl.CloneGroup`: different JSON shapes for different consumers
+- `printer.clone` (unexported): minimal `struct { fragment []byte }`
+- `printer.CloneGroup` / `printer.JSONClone`: JSON-oriented output types
+- `pkg/artdupl.Clone` / `pkg/artdupl.CloneGroup`: SDK types with `IsValid()` validation
+- `domain.ProcessedClone` / `domain.ProcessedCloneGroup`: rich DTOs with classification
 
 Consolidation depends on Printer DTO change above.
 
