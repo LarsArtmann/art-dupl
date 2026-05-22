@@ -162,10 +162,10 @@ go install github.com/LarsArtmann/art-dupl@latest
 
 # Or build from source
 cd /path/to/art-dupl
-make build
+just build
 
 # Run
-./dist/dupl --help
+./dist/art-dupl --help
 ```
 
 ## Documentation
