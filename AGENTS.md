@@ -44,9 +44,9 @@ This document provides essential information for AI agents working on the **art-
 
 ## Development Commands
 
-### Essential Commands (Prefer Justfile)
+### Essential Commands
 
-**IMPORTANT**: According to project standards, always prefer justfile commands (95% of cases). Only use make commands if justfile is unavailable.
+**IMPORTANT**: Use `just` for all task running. `nix build` / `nix flake check` for reproducible builds.
 
 ```bash
 # Build the project
@@ -107,17 +107,6 @@ just test-integration
 
 # Run benchmarks with allocations reporting
 just bench-allocs
-```
-
-### Alternative Makefile Commands
-
-Makefile uses `GOEXPERIMENT=jsonv2` flag for JSON v2 support:
-
-```bash
-make build    # Build with JSONv2 experiment
-make test     # Test with JSONv2 experiment
-make check    # Lint with JSONv2 experiment
-make clean    # Clean build artifacts
 ```
 
 ### Building the CLI Tool
@@ -288,7 +277,6 @@ The `internal/testutil/bdd.go` provides comprehensive helpers for BDD tests:
 - Cross-platform builds supported (Linux, macOS, Windows)
 - CGO disabled for static binaries
 - Build flags for optimized production binaries (`-ldflags "-s -w" -trimpath`)
-- JSONv2 experiment enabled via `GOEXPERIMENT=jsonv2` for Makefile builds
 - Justfile builds output to `dist/art-dupl` by default
 
 ### CI Pipeline
@@ -763,11 +751,10 @@ This project follows strict quality standards:
 
 ### Build System
 
-**CRITICAL**: Always prefer justfile commands over Makefile commands:
+**CRITICAL**: Use `just` for all task running:
 
-- Justfile: `just build`, `just test`, `just check`, etc.
-- Makefile: Only use if justfile unavailable
-- Makefile uses `GOEXPERIMENT=jsonv2` for JSON v2 support
+- `just build`, `just test`, `just check`, etc.
+- `nix build` / `nix flake check` for reproducible builds and CI
 - Justfile builds output to `dist/art-dupl` directory
 
 ### Nix Flake — Private Dependency Pattern
