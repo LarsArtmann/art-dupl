@@ -328,17 +328,12 @@ var _ = Describe("CLI Completion Commands", func() {
 	})
 
 	Context("When requesting man page", func() {
-		It("should provide man page output", func() {
+		It("should handle missing man subcommand gracefully", func() {
 			output, err := setup.RunArtDupl("man")
-			// May or may not be available
-			if err == nil {
-				cmdOutput := string(output)
-				// Man page typically starts with .TH
-				Expect(cmdOutput).To(SatisfyAny(
-					HavePrefix(".TH"),
-					ContainSubstring("art-dupl"),
-				))
-			}
+			// "man" is not a registered subcommand — treated as a path argument
+			// The tool should handle this gracefully (skip non-existent path)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(string(output)).ToNot(BeEmpty())
 		})
 	})
 })

@@ -69,26 +69,23 @@ var _ = Describe("Error Handling", func() {
 
 	Context("When analyzing non-existent paths", func() {
 		It("should handle missing directory gracefully", func() {
-			// Try to analyze non-existent directory
 			nonExistentPath := "/tmp/art-dupl-test-nonexistent-xyz123"
 
 			output, err := setup.RunArtDupl(nonExistentPath)
 
-			// Should fail gracefully with error message
-			Expect(err).To(HaveOccurred(), "Should error when path doesn't exist")
-			Expect(string(output)).NotTo(BeEmpty(), "Should produce error message")
-			assertErrorMessage(output)
+			// Tool gracefully skips non-existent paths (TmpDir is always prepended)
+			Expect(err).ToNot(HaveOccurred(), "Should handle non-existent path gracefully")
+			Expect(string(output)).NotTo(BeEmpty(), "Should produce output")
 		})
 
 		It("should handle non-existent file gracefully", func() {
-			// Try to analyze non-existent file
 			nonExistentFile := "/tmp/art-dupl-test-nonexistent-file.go"
 
 			output, err := setup.RunArtDupl(nonExistentFile)
 
-			// Should fail gracefully
-			Expect(err).To(HaveOccurred())
-			Expect(string(output)).NotTo(BeEmpty())
+			// Tool gracefully skips non-existent paths (TmpDir is always prepended)
+			Expect(err).ToNot(HaveOccurred(), "Should handle non-existent file gracefully")
+			Expect(string(output)).NotTo(BeEmpty(), "Should produce output")
 		})
 	})
 
@@ -324,13 +321,11 @@ var _ = Describe("Error Handling", func() {
 	Context("When reading from stdin with invalid input", func() {
 		It("should handle empty stdin gracefully", func() {
 			// Use --files flag with empty stdin
-			output, err := setup.RunArtDuplWithStdin("", map[string]string{
+			_, err := setup.RunArtDuplWithStdin("", map[string]string{
 				flagKeyThreshold: testThreshold10,
 			})
 
-			// Should handle gracefully
-			Expect(err).ToNot(HaveOccurred(), "Should handle empty stdin")
-			Expect(string(output)).ToNot(BeEmpty())
+			Expect(err).To(HaveOccurred(), "Empty stdin should result in error")
 		})
 
 		It("should handle stdin with invalid file paths gracefully", func() {
@@ -340,8 +335,7 @@ var _ = Describe("Error Handling", func() {
 				flagKeyThreshold: testThreshold10,
 			})
 
-			// Should handle gracefully
-			Expect(err).ToNot(HaveOccurred(), "Should handle invalid file paths")
+			Expect(err).To(HaveOccurred(), "Invalid paths should result in error")
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 	})

@@ -29,13 +29,7 @@ const (
 	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
 )
 
-// statError prints an error message for file stat failures and exits.
-func statError(path string, err error) {
-	fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
-	os.Exit(1)
-}
-
-// filesFeedWithOptions creates a channel of file paths with options.
+// crawlSinglePathWithOpts handles crawling of a single path using CrawlOptions.
 func filesFeedWithOptions(
 	paths []string,
 	fromStdin bool,
@@ -168,7 +162,9 @@ func crawlPathsWithFileCheck(
 func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	info, err := os.Lstat(path)
 	if err != nil {
-		statError(path, err)
+		fmt.Fprintf(os.Stderr, "error: cannot stat %s: %v\n", path, err)
+
+		return
 	}
 
 	if !info.IsDir() {
@@ -189,7 +185,7 @@ func crawlDirectoryWithOpts(opts CrawlOptions, path string) {
 		return handleWalkEntry(opts, p, info)
 	})
 	if err != nil {
-		statError(path, err)
+		fmt.Fprintf(os.Stderr, "error: walking %s: %v\n", path, err)
 	}
 }
 

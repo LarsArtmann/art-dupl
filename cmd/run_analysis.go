@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
@@ -150,6 +151,34 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
 
+// validatePaths checks that at least one given path exists on the filesystem.
+// Skips validation when reading paths from stdin.
+// If some paths are invalid, they're silently skipped during crawl (with stderr warning).
+// Only returns an error when NONE of the specified paths exist.
+func validatePaths(paths []string, filesFromStdin bool) error {
+	if filesFromStdin || len(paths) == 0 {
+		return nil
+	}
+
+	var invalid []string
+
+	for _, path := range paths {
+		_, err := os.Stat(path)
+		if err != nil {
+			invalid = append(invalid, path)
+		}
+	}
+
+	if len(invalid) == len(paths) {
+		return duplerrors.NewValidationError(
+			"none of the specified paths exist: "+strings.Join(invalid, ", "),
+			nil,
+		)
+	}
+
+	return nil
+}
+
 // verboseFprintf prints a message to stderr if verbose mode is enabled.
 func verboseFprintf(cfg *config.Config, msg string) {
 	if cfg.Verbose {
@@ -234,6 +263,28 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 	return fltr, nil
 }
 
+// startProfiling begins profiling if enabled in config, returning the profile result.
+func startProfiling(cfg *config.Config) job.ProfileResult {
+	if !cfg.Profile {
+		return job.ProfileResult{}
+	}
+
+	profile := job.StartProfile()
+	_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
+
+	return profile
+}
+
+// endProfiling ends profiling and prints results if enabled.
+func endProfiling(cfg *config.Config, startProfile job.ProfileResult) {
+	if !cfg.Profile {
+		return
+	}
+
+	endProfile := job.EndProfile(startProfile)
+	job.PrintProfileResult(endProfile)
+}
+
 // executeAnalysis runs the core duplicate analysis logic.
 func executeAnalysis(
 	ctx context.Context,
@@ -241,12 +292,12 @@ func executeAnalysis(
 	paths []string,
 	outputFormat config.OutputFormat,
 ) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
-	var startProfile job.ProfileResult
-	if cfg.Profile {
-		startProfile = job.StartProfile()
-
-		_, _ = fmt.Fprintln(os.Stderr, "📊 Performance profiling enabled")
+	err := validatePaths(paths, cfg.FilesFromStdin)
+	if err != nil {
+		return nil, job.ParseStats{}, nil, duplerrors.WrapValidation(err, "path validation failed")
 	}
+
+	startProfile := startProfiling(cfg)
 
 	filterParam, err := setupFilter(cfg)
 	if err != nil {
@@ -307,10 +358,7 @@ func executeAnalysis(
 		}
 	}()
 
-	if cfg.Profile {
-		endProfile := job.EndProfile(startProfile)
-		job.PrintProfileResult(endProfile)
-	}
+	endProfiling(cfg, startProfile)
 
 	return duplChan, result.parseStats, filterStats, nil
 }

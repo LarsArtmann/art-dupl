@@ -124,21 +124,55 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 
 // prepareSubcommandArgs prepares arguments for a subcommand, adding the temp directory if needed.
 // Only appends TmpDir if no path-like argument is found (i.e., no non-flag arg besides subcommand names).
+// It tracks flag-value pairs (e.g., --threshold 5) so numeric values aren't mistaken for paths.
 func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) []string {
 	if s.T != nil {
 		s.T.Helper()
 	}
 
-	// Subcommand names that should not be treated as paths
 	subcommands := map[string]bool{
 		"stats": true, "version": true, "completion": true, "man": true,
 	}
 
-	// Check if any arg looks like a path (doesn't start with "-" and isn't a subcommand name)
+	// Flags that take a value (non-boolean). Boolean flags like --vendor don't consume the next arg.
+	valueFlags := map[string]bool{
+		"--threshold": true, "-t": true,
+		"--format":            true,
+		"--sort":              true,
+		"--detection-methods": true, "-m": true,
+		"--output-dir": true,
+		"--timeout":    true,
+		"--only":       true,
+		"--since":      true,
+		"--cache-dir":  true,
+		"--diff":       true,
+		"--config":     true, "-c": true,
+	}
+
+	expectValue := false
 	for _, arg := range args {
-		if !strings.HasPrefix(arg, "-") && !subcommands[arg] {
-			return args
+		if expectValue {
+			expectValue = false
+
+			continue
 		}
+
+		if strings.HasPrefix(arg, "-") {
+			if strings.Contains(arg, "=") {
+				continue
+			}
+
+			expectValue = valueFlags[arg]
+
+			continue
+		}
+
+		if subcommands[arg] {
+			continue
+		}
+
+		// Found a non-flag, non-subcommand, non-value arg — treat as path
+		return args
 	}
 
 	// No path found — append TmpDir
