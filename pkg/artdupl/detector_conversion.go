@@ -1,6 +1,7 @@
 package artdupl
 
 import (
+	"runtime/debug"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/pkg/position"
@@ -149,10 +150,32 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result
 			LinesAnalyzed: 0, // Calculate actual lines analyzed
 		},
 		Metadata: &Metadata{
-			Version:    "1.0.0", // Get from build info
+			Version:    sdkVersion(),
 			Timestamp:  time.Now(),
 			ConfigHash: d.hashConfig(d.opts),
-			Toolchain:  "go", // Get actual version
+			Toolchain:  goVersion(),
 		},
 	}
+}
+
+func sdkVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "dev"
+	}
+
+	if info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+
+	return "dev"
+}
+
+func goVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "go"
+	}
+
+	return info.GoVersion
 }

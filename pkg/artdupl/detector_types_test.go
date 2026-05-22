@@ -98,7 +98,7 @@ func TestResult_Fields(t *testing.T) {
 			TotalGroups: 2,
 		},
 		Metadata: &Metadata{
-			Version: "1.0.0",
+			Version: "dev",
 		},
 	}
 
@@ -110,8 +110,8 @@ func TestResult_Fields(t *testing.T) {
 		t.Errorf("TotalFiles should be 10, got %d", result.Summary.TotalFiles)
 	}
 
-	if result.Metadata.Version != "1.0.0" {
-		t.Errorf("Version should be '1.0.0', got %s", result.Metadata.Version)
+	if result.Metadata.Version == "" {
+		t.Errorf("Version should not be empty")
 	}
 }
 

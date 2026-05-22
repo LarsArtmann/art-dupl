@@ -171,7 +171,7 @@ func TestExamplesTypes(t *testing.T) {
 
 	// Test metadata structure
 	metadata := &artdupl.Metadata{
-		Version:    "1.0.0",
+		Version:    "dev",
 		ConfigHash: "test-config-hash",
 		Toolchain:  "go1.21.0",
 	}
