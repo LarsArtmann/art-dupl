@@ -175,6 +175,8 @@
       checks = forAllSystems (
         system:
         let
+          pkgs = nixpkgs.legacyPackages.${system};
+          goPkg = pkgs.go_1_26 or pkgs.go;
           pkg = self.packages.${system}.default;
         in
         {
@@ -194,6 +196,20 @@
               touch $out
             '';
           });
+
+          # Lint check: runs golangci-lint
+          lint = pkgs.runCommand "art-dupl-lint" { nativeBuildInputs = [ goPkg pkgs.golangci-lint ]; } ''
+            cd ${pkgs.lib.cleanSource ./.}
+            golangci-lint run --timeout 5m ./...
+            touch $out
+          '';
+
+          # Format check: verifies Go code is formatted
+          fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
+            cd ${pkgs.lib.cleanSource ./.}
+            test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
+            touch $out
+          '';
         }
       );
 

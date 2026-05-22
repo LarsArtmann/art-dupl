@@ -77,6 +77,17 @@ just ci
 just install-local
 ```
 
+### Nix Flake Checks
+
+```bash
+# Run all nix checks (build, test, lint, format)
+nix flake check
+
+# Individual checks
+nix build .#checks.x86_64-linux.lint
+nix build .#checks.x86_64-linux.fmt
+```
+
 ### Advanced Testing Commands
 
 ```bash
