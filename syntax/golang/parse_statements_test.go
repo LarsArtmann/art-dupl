@@ -174,7 +174,7 @@ func TestParse_TypeSwitchStmt(t *testing.T) {
 	testParseNodeType(t, "typeswitch", `package main
 
 func main() {
-	var x interface{}
+	var x any
 	switch x.(type) {
 	case int:
 		println("int")

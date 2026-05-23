@@ -15,4 +15,6 @@ const (
 	testThreshold15  = "15"
 	testThreshold10  = "10"
 	flagKeyThreshold = "threshold"
+	serviceFile1     = "service1.go"
+	serviceFile2     = "service2.go"
 )

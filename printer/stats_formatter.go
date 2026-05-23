@@ -361,39 +361,53 @@ func (p *stats) printJSON() {
 func (p *stats) buildJSONData() jsonStatsOutput {
 	var jsonData jsonStatsOutput
 
-	// Fill configuration
+	p.fillJSONConfig(&jsonData)
+	p.fillJSONOverview(&jsonData)
+	p.fillJSONDuplicateCode(&jsonData)
+	p.fillJSONMetrics(&jsonData)
+	p.fillJSONBreakdowns(&jsonData)
+	p.fillJSONTopFiles(&jsonData)
+
+	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."
+
+	return jsonData
+}
+
+func (p *stats) fillJSONConfig(jsonData *jsonStatsOutput) {
 	jsonData.Configuration.Threshold = p.threshold
 	jsonData.Configuration.DetectionMethods = p.statsData.DetectionMethods
 	jsonData.Configuration.SemanticDetection = p.statsData.SemanticDetection
 	jsonData.Configuration.DetectionMode = p.statsData.DetectionMode
 	jsonData.Configuration.DetectionModeDesc = p.statsData.DetectionModeDesc
+}
 
-	// Fill overview
+func (p *stats) fillJSONOverview(jsonData *jsonStatsOutput) {
 	jsonData.Overview.FilesScanned = p.statsData.TotalFilesScanned
 	jsonData.Overview.CloneGroups = p.statsData.TotalCloneGroups
 	jsonData.Overview.TotalClones = p.statsData.TotalClones
 
-	// Fill filter info if available
 	if p.statsData.FilesFiltered > 0 {
 		jsonData.Overview.FilesFiltered = p.statsData.FilesFiltered
 		if len(p.statsData.FilterBreakdown) > 0 {
 			jsonData.Overview.FilterBreakdown = p.statsData.FilterBreakdown
 		}
 	}
+}
 
-	// Fill duplicate code metrics
+func (p *stats) fillJSONDuplicateCode(jsonData *jsonStatsOutput) {
 	jsonData.DuplicateCode.TotalLines = p.statsData.TotalDuplicateLines
 	jsonData.DuplicateCode.TotalTokens = p.statsData.TotalTokens
 	jsonData.DuplicateCode.AverageCloneSize = p.statsData.AverageCloneSize
 	jsonData.DuplicateCode.ComplexityScore = roundFloat(p.statsData.ComplexityScore, 2)
-
 	jsonData.DuplicateCode.ImpactScore = p.statsData.ImpactScore
+
 	if p.statsData.TotalEstimatedLines > 0 {
 		jsonData.DuplicateCode.EstimatedLines = p.statsData.TotalEstimatedLines
 		jsonData.DuplicateCode.DuplicationRatio = roundFloat(p.statsData.DuplicationRatio, 2)
 	}
+}
 
-	// Fill metrics
+func (p *stats) fillJSONMetrics(jsonData *jsonStatsOutput) {
 	if p.statsData.HealthScore != "" {
 		jsonData.Metrics.HealthScore = p.statsData.HealthScore
 		jsonData.Metrics.HealthScoreThresholds = "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%"
@@ -406,47 +420,37 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 	if p.statsData.Timestamp != "" {
 		jsonData.Metrics.Timestamp = p.statsData.Timestamp
 	}
+}
 
-	// Fill size distribution
+func (p *stats) fillJSONBreakdowns(jsonData *jsonStatsOutput) {
 	jsonData.SizeDistribution = p.statsData.SizeDistribution
-
-	// Fill token distribution
 	jsonData.TokenDistribution = p.statsData.TokenDistribution
-
-	// Fill severity breakdown
 	jsonData.SeverityBreakdown = p.statsData.SeverityBreakdown
 
-	// Fill category breakdown
 	if len(p.statsData.CategoryBreakdown) > 0 {
 		jsonData.CategoryBreakdown = p.statsData.CategoryBreakdown
 	}
 
-	// Fill priority breakdown
 	if len(p.statsData.PriorityBreakdown) > 0 {
 		jsonData.PriorityBreakdown = p.statsData.PriorityBreakdown
 	}
 
-	// Fill actionability
 	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
 		jsonData.Actionability.Actionable = p.statsData.ActionableGroups
 		jsonData.Actionability.NonActionable = p.statsData.NonActionableGroups
 	}
 
-	// Fill test vs production
 	if p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0 {
 		jsonData.TestVsProduction.Production = p.statsData.ProductionCloneGroups
 		jsonData.TestVsProduction.Test = p.statsData.TestCloneGroups
 	}
 
-	// Fill top clones
 	if len(p.statsData.TopClones) > 0 {
 		jsonData.TopClones = p.statsData.TopClones
 	}
+}
 
-	// Add methodology note
-	jsonData.Note = "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations."
-
-	// Fill top files
+func (p *stats) fillJSONTopFiles(jsonData *jsonStatsOutput) {
 	if len(p.statsData.FileDuplication) > 0 {
 		files := sortTopFiles(p.statsData.FileDuplication, 10)
 
@@ -458,6 +462,4 @@ func (p *stats) buildJSONData() jsonStatsOutput {
 			}
 		}
 	}
-
-	return jsonData
 }

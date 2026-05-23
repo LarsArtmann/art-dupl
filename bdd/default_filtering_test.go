@@ -56,7 +56,7 @@ func assertSQLCFileFiltered(setup *testutil.BDDTestSetup, filename, functionName
 
 	assertGenFileFiltered(
 		setup,
-		[]string{"service1.go", "service2.go"},
+		[]string{serviceFile1, serviceFile2},
 		regularCode,
 		filename,
 		generatedCode,
@@ -208,7 +208,7 @@ func query() {
 
 			assertGenFileFiltered(
 				setup,
-				[]string{"service1.go", "service2.go"},
+				[]string{serviceFile1, serviceFile2},
 				regularCode,
 				"queries.sql.go",
 				sqlcCode,
@@ -237,7 +237,7 @@ func query() { println(1) }`
 
 			assertGeneratedFileIncluded(
 				setup,
-				[]string{"service1.go", "service2.go"},
+				[]string{serviceFile1, serviceFile2},
 				regularCode,
 				"queries.sql.go",
 				sqlcCode,

@@ -70,20 +70,6 @@ func BenchmarkHashSeqVeryLarge(b *testing.B) {
 	}
 }
 
-// BenchmarkHashSeqFallback benchmarks the fallback (non-SIMD) implementation.
-func BenchmarkHashSeqFallback(b *testing.B) {
-	b.ReportAllocs()
-
-	nodes := GenerateNodes(10000)
-	buf := make([]byte, len(nodes))
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		hashSeqFallback(nodes, buf)
-	}
-}
-
 // BenchmarkHashSeqParallel benchmarks parallel hashing.
 func BenchmarkHashSeqParallel(b *testing.B) {
 	b.ReportAllocs()

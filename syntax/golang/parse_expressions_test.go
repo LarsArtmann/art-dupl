@@ -111,7 +111,7 @@ func TestParse_TypeAssertExpr(t *testing.T) {
 	testParseNodeType(t, "typeassert", `package main
 
 func main() {
-	var i interface{}
+	var i any
 	_ = i.(string)
 }
 `, TypeAssertExpr)

@@ -210,3 +210,72 @@ func TestProcessedCloneGroup_WithClones(t *testing.T) {
 		t.Errorf("Clones[0].Filename = %q, want 'a.go'", pg.Clones[0].Filename)
 	}
 }
+
+func TestClonePriority_GetPriorityColor(t *testing.T) {
+	tests := []struct {
+		priority ClonePriority
+		expected string
+	}{
+		{PriorityCritical, "var(--error)"},
+		{PriorityHigh, "var(--warning)"},
+		{PriorityMedium, "var(--accent)"},
+		{PriorityLow, "var(--success)"},
+		{ClonePriority("unknown"), "var(--text-secondary)"},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.priority), func(t *testing.T) {
+			result := tt.priority.GetPriorityColor()
+			if result != tt.expected {
+				t.Errorf("GetPriorityColor() = %q, want %q", result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestClonePriority_GetPriorityEmoji(t *testing.T) {
+	tests := []struct {
+		priority ClonePriority
+	}{
+		{PriorityCritical},
+		{PriorityHigh},
+		{PriorityMedium},
+		{PriorityLow},
+		{ClonePriority("unknown")},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.priority), func(t *testing.T) {
+			result := tt.priority.GetPriorityEmoji()
+			if result == "" {
+				t.Error("GetPriorityEmoji() returned empty string")
+			}
+		})
+	}
+}
+
+func TestCloneCategory_GetCategoryEmoji(t *testing.T) {
+	categories := []CloneCategory{
+		CategoryFunction,
+		CategoryMethod,
+		CategoryTest,
+		CategoryStruct,
+		CategoryInterface,
+		CategoryHandler,
+		CategoryLoop,
+		CategoryConditional,
+		CategoryAssignment,
+		CategoryExpression,
+		CategoryUnknown,
+		CloneCategory("nonexistent"),
+	}
+
+	for _, cat := range categories {
+		t.Run(string(cat), func(t *testing.T) {
+			result := cat.GetCategoryEmoji()
+			if result == "" {
+				t.Errorf("GetCategoryEmoji() for %q returned empty string", cat)
+			}
+		})
+	}
+}

@@ -316,7 +316,10 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	// Create vendor directory with duplicate files
 	err := s.CreateVendorDuplicateFiles(vendorPath, code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vendor duplicate files in %s (subcommand=%q): %w", vendorPath, subcommand, err)
+		return nil, fmt.Errorf(
+			"failed to create vendor duplicate files in %s (subcommand=%q): %w",
+			vendorPath, subcommand, err,
+		)
 	}
 
 	// Build arguments

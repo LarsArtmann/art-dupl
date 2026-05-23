@@ -1,12 +1,14 @@
 package detection
 
 import (
+	"errors"
 	"os"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -774,5 +776,151 @@ func TestFindIssues_WithData(t *testing.T) {
 			detector, nodes, _ := setupTodoTest(t)
 			assertTodoMatches(t, detector, nodes, "Expected matches from "+name)
 		})
+	}
+}
+
+var (
+	errInvalidLine = errors.New("invalid line")
+	errEmptyPath   = errors.New("empty path")
+)
+
+func TestSkipIfInvalidLineNumber(t *testing.T) {
+	t.Run("with error returns true", func(t *testing.T) {
+		result := skipIfInvalidLineNumber(
+			logger.Default,
+			"test.go",
+			int32(0),
+			errInvalidLine,
+		)
+		if !result {
+			t.Error("Expected true when err is non-nil")
+		}
+	})
+
+	t.Run("without error returns false", func(t *testing.T) {
+		result := skipIfInvalidLineNumber(
+			logger.Default,
+			"test.go",
+			int32(1),
+			nil,
+		)
+		if result {
+			t.Error("Expected false when err is nil")
+		}
+	})
+}
+
+func TestSkipIfInvalidFilepath(t *testing.T) {
+	t.Run("with error returns true", func(t *testing.T) {
+		result := skipIfInvalidFilepath(
+			logger.Default,
+			"",
+			errEmptyPath,
+		)
+		if !result {
+			t.Error("Expected true when err is non-nil")
+		}
+	})
+
+	t.Run("without error returns false", func(t *testing.T) {
+		result := skipIfInvalidFilepath(
+			logger.Default,
+			"test.go",
+			nil,
+		)
+		if result {
+			t.Error("Expected false when err is nil")
+		}
+	})
+}
+
+func TestMultiDetector_FindDuplOver_TodosMethod(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test.go"
+
+	goCode := `package test
+
+// TODO: fix this
+func Foo() {}
+`
+
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	tree := suffixtree.New()
+	data := []*syntax.Node{createTestNode(testFile, 1, 100)}
+
+	detector := NewMultiDetector(
+		config.DetectionConfig{Methods: config.DetectionMethods{config.DetectionMethodTodos}},
+		data,
+		tree,
+	)
+
+	matchCount := 0
+	for range detector.FindDuplOver(15) {
+		matchCount++
+	}
+
+	if matchCount == 0 {
+		t.Error("Expected at least one TODO match")
+	}
+}
+
+func TestMultiDetector_FindDuplOver_LegacyMethod(t *testing.T) {
+	tree := suffixtree.New()
+	data := []*syntax.Node{createTestNode("test.go", 1, 100)}
+
+	detector := NewMultiDetector(
+		config.DetectionConfig{Methods: config.DetectionMethods{config.DetectionMethodLegacy}},
+		data,
+		tree,
+	)
+
+	matchCount := 0
+	for range detector.FindDuplOver(15) {
+		matchCount++
+	}
+
+	// May or may not find matches depending on node content,
+	// but should not panic
+	_ = matchCount
+}
+
+func TestFindIssuesInFile_WithData(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFile := tmpDir + "/test.go"
+
+	goCode := `package test
+
+// TODO: something
+func Foo() {}
+`
+
+	err := os.WriteFile(testFile, []byte(goCode), 0o644)
+	if err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	nodes := []*syntax.Node{createTestNode(testFile, 1, 100)}
+
+	ch := findIssuesInFile(
+		nodes,
+		func(fname string, nodeList []*syntax.Node) []string { return []string{"issue"} },
+		func(issue string, filename string) syntax.Match {
+			return syntax.Match{Hash: issue, Frags: [][]*syntax.Node{{}}}
+		},
+	)
+
+	matchCount := 0
+	for range ch {
+		matchCount++
+	}
+
+	if matchCount != 1 {
+		t.Errorf("Expected 1 match, got %d", matchCount)
 	}
 }

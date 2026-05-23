@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+// errExecutorNil is returned when BDDTestSetup.Executor is nil.
+var errExecutorNil = errors.New(
+	"BDDTestSetup.Executor is nil — must be set before running commands",
+)
+
+// errNoStdinPaths is returned when stdin content has no file paths.
+var errNoStdinPaths = errors.New("no file paths provided in stdin content")
+
 // splitLines splits content by newlines, trimming whitespace and removing empty lines.
 func splitLines(content string) []string {
 	var lines []string
@@ -29,7 +37,7 @@ func commandError(msg string, err error, output []byte) error {
 // runExecutor executes the in-process command and returns combined stdout+stderr.
 func (s *BDDTestSetup) runExecutor(args ...string) ([]byte, error) {
 	if s.Executor == nil {
-		return nil, errors.New("BDDTestSetup.Executor is nil — must be set before running commands")
+		return nil, errExecutorNil
 	}
 
 	return s.Executor(args...)
@@ -113,7 +121,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 	lines := splitLines(stdinContent)
 
 	if len(lines) == 0 {
-		return nil, errors.New("no file paths provided in stdin content")
+		return nil, errNoStdinPaths
 	}
 
 	// Build args from file paths + flags

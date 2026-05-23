@@ -108,7 +108,7 @@ func (d *detector) createMultiDetector(
 ) *detection.MultiDetector {
 	return detection.NewMultiDetector(config.DetectionConfig{
 		Methods: d.config.DetectionMethods,
-		Verbose: false,
+		Verbose: d.opts.Verbose,
 	}, data, tree)
 }
 

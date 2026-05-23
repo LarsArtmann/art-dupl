@@ -16,6 +16,8 @@ import (
 
 const testFile = "test.go"
 
+const binaryName = "art-dupl"
+
 func TestDetectionMethodsToString(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -30,7 +32,7 @@ func TestDetectionMethodsToString(t *testing.T) {
 		{
 			name:     "single method",
 			methods:  config.DetectionMethods{config.DetectionMethodArtDupl},
-			expected: "art-dupl",
+			expected: binaryName,
 		},
 		{
 			name: "multiple methods",
@@ -306,7 +308,7 @@ func TestWriteFormatFile(t *testing.T) {
 			format,
 			filename,
 			sortByEnum,
-			"art-dupl",
+			binaryName,
 		)
 		if err != nil {
 			t.Fatalf("writeFormatFile() error = %v", err)

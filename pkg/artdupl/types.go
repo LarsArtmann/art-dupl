@@ -106,6 +106,7 @@ type Options struct {
 	// Detection settings
 	Threshold        int               `json:"threshold"`         // Minimum size to consider as clone
 	DetectionMethods []DetectionMethod `json:"detection_methods"` // Methods to use for detection
+	Verbose          bool              `json:"verbose"`           // Enable verbose detection logging
 
 	// File processing
 	IncludeVendor bool     `json:"include_vendor"` // Include vendor directory

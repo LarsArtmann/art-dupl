@@ -31,8 +31,8 @@ func executeInProcess(args ...string) (*testutil.CommandResult, error) {
 	stderrR, stderrW, _ := os.Pipe()
 
 	// Redirect fd 1 and fd 2 to the pipe write ends
-	syscall.Dup2(int(stdoutW.Fd()), 1)
-	syscall.Dup2(int(stderrW.Fd()), 2)
+	syscall.Dup2(int(stdoutW.Fd()), 1) //nolint:errcheck
+	syscall.Dup2(int(stderrW.Fd()), 2) //nolint:errcheck
 
 	var (
 		stdoutBuf bytes.Buffer
@@ -48,14 +48,14 @@ func executeInProcess(args ...string) (*testutil.CommandResult, error) {
 	err := rootCmd.Execute()
 
 	// Restore original fds
-	syscall.Dup2(savedStdout, 1)
-	syscall.Dup2(savedStderr, 2)
+	syscall.Dup2(savedStdout, 1) //nolint:errcheck
+	syscall.Dup2(savedStderr, 2) //nolint:errcheck
 
-	syscall.Close(savedStdout)
-	syscall.Close(savedStderr)
+	syscall.Close(savedStdout) //nolint:errcheck
+	syscall.Close(savedStderr) //nolint:errcheck
 
-	stdoutW.Close()
-	stderrW.Close()
+	stdoutW.Close() //nolint:errcheck
+	stderrW.Close() //nolint:errcheck
 
 	<-stdoutDone
 	<-stderrDone

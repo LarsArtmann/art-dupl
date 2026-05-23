@@ -77,8 +77,8 @@ func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	stdoutR, stdoutW, _ := os.Pipe()
 	stderrR, stderrW, _ := os.Pipe()
 
-	syscall.Dup2(int(stdoutW.Fd()), 1)
-	syscall.Dup2(int(stderrW.Fd()), 2)
+	syscall.Dup2(int(stdoutW.Fd()), 1) //nolint:errcheck
+	syscall.Dup2(int(stderrW.Fd()), 2) //nolint:errcheck
 
 	var (
 		stdoutBuf bytes.Buffer
@@ -93,14 +93,14 @@ func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 
 	execErr := rootCmd.Execute()
 
-	syscall.Dup2(savedStdout, 1)
-	syscall.Dup2(savedStderr, 2)
+	syscall.Dup2(savedStdout, 1) //nolint:errcheck
+	syscall.Dup2(savedStderr, 2) //nolint:errcheck
 
-	syscall.Close(savedStdout)
-	syscall.Close(savedStderr)
+	syscall.Close(savedStdout) //nolint:errcheck
+	syscall.Close(savedStderr) //nolint:errcheck
 
-	stdoutW.Close()
-	stderrW.Close()
+	stdoutW.Close() //nolint:errcheck
+	stderrW.Close() //nolint:errcheck
 
 	<-stdoutDone
 	<-stderrDone
@@ -119,7 +119,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 	}{
 		{
 			name: "stats on current directory",
-			args: []string{"art-dupl", statsSubCommand, "."},
+			args: []string{binaryName, statsSubCommand, "."},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -134,7 +134,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats on printer directory",
-			args: []string{"art-dupl", statsSubCommand, "./printer"},
+			args: []string{binaryName, statsSubCommand, "./printer"},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -144,7 +144,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats with threshold flag",
-			args: []string{"art-dupl", statsSubCommand, "-t", "20", "."},
+			args: []string{binaryName, statsSubCommand, "-t", "20", "."},
 			expectedInOutput: []string{
 				"Threshold: 20 tokens",
 				statsHeaderText,
@@ -153,7 +153,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats with multiple paths",
-			args: []string{"art-dupl", statsSubCommand, "./cmd", "./printer"},
+			args: []string{binaryName, statsSubCommand, "./cmd", "./printer"},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -162,7 +162,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats help",
-			args: []string{"art-dupl", statsSubCommand, "--help"},
+			args: []string{binaryName, statsSubCommand, "--help"},
 			expectedInOutput: []string{
 				"Prints comprehensive duplication statistics",
 				"art-dupl stats",
@@ -200,12 +200,12 @@ func TestStatsCommandErrorCases(t *testing.T) {
 	}{
 		{
 			name:    "stats with non-existent path",
-			args:    []string{"art-dupl", statsSubCommand, "/non/existent/path"},
+			args:    []string{binaryName, statsSubCommand, "/non/existent/path"},
 			wantErr: true,
 		},
 		{
 			name:    "stats with invalid threshold",
-			args:    []string{"art-dupl", statsSubCommand, "-t", "-5", "."},
+			args:    []string{binaryName, statsSubCommand, "-t", "-5", "."},
 			wantErr: true,
 		},
 	}
@@ -222,7 +222,7 @@ func TestStatsCommandErrorCases(t *testing.T) {
 }
 
 func TestStatsOutputFormat(t *testing.T) {
-	output, err := executeTestCommand(t, []string{"art-dupl", statsSubCommand, "./printer"})
+	output, err := executeTestCommand(t, []string{binaryName, statsSubCommand, "./printer"})
 	if err != nil {
 		t.Fatalf("Stats command failed: %v", err)
 	}
