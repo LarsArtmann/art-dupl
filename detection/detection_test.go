@@ -910,7 +910,7 @@ func Foo() {}
 	ch := findIssuesInFile(
 		nodes,
 		func(fname string, nodeList []*syntax.Node) []string { return []string{"issue"} },
-		func(issue string, filename string) syntax.Match {
+		func(issue, filename string) syntax.Match {
 			return syntax.Match{Hash: issue, Frags: [][]*syntax.Node{{}}}
 		},
 	)
