@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-arF9PWi3ncaDOjnsMcNvZ+Mj0umRxjytebSS4aQkeA0=";
+          vendorHash = "";
 
           overrideModAttrs = old: {
             preBuild = ''
@@ -66,6 +66,7 @@
                 _ "github.com/go-faster/yaml"
               )' > dummy/dummy.go
               go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./dummy
+              go mod tidy
             '';
           };
 
