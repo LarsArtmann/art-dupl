@@ -9,6 +9,7 @@
 ### 1. Makefile Deletion & Cleanup (7 commits)
 
 **Commit `d7521db`** — Deleted `Makefile` (16 lines), cleaned all references from `AGENTS.md`:
+
 - Removed "Alternative Makefile Commands" section
 - Removed "JSONv2 experiment enabled via GOEXPERIMENT=jsonv2 for Makefile builds"
 - Updated Build System section to reference `just` + `nix` only
@@ -28,6 +29,7 @@ The formula hadn't been updated since initial creation. SHA256 placeholders rema
 ### 3. SDK Hardcoded Version Fix
 
 **Commit `1033f47`** — `pkg/artdupl/detector_conversion.go`:
+
 - Replaced hardcoded `Version: "1.0.0"` with `sdkVersion()` using `runtime/debug.ReadBuildInfo()`
 - Replaced hardcoded `Toolchain: "go"` with `goVersion()` using same API
 - Updated `detector_types_test.go` and `examples/examples_test.go` to match
@@ -36,15 +38,15 @@ The formula hadn't been updated since initial creation. SHA256 placeholders rema
 
 **Commit `48070c2`** — Replaced 3 overlapping workflows with 1:
 
-| Removed | Lines | Trigger | What it did |
-|---------|-------|---------|-------------|
-| `art-dupl.yml` | 89 | push/PR | build, test, race, lint, coverage, self-analysis |
-| `build.yml` | 40 | push/PR | matrix (go × os) test + build |
-| `checks.yml` | 51 | push/PR | mod tidy, lint, test, race, build |
+| Removed        | Lines | Trigger | What it did                                      |
+| -------------- | ----- | ------- | ------------------------------------------------ |
+| `art-dupl.yml` | 89    | push/PR | build, test, race, lint, coverage, self-analysis |
+| `build.yml`    | 40    | push/PR | matrix (go × os) test + build                    |
+| `checks.yml`   | 51    | push/PR | mod tidy, lint, test, race, build                |
 
-| Created | Lines | Jobs |
-|---------|-------|------|
-| `ci.yml` | 104 | lint (golangci-lint action), test (matrix), coverage, self-analysis |
+| Created  | Lines | Jobs                                                                |
+| -------- | ----- | ------------------------------------------------------------------- |
+| `ci.yml` | 104   | lint (golangci-lint action), test (matrix), coverage, self-analysis |
 
 Net: **-76 lines**, single source of truth, pinned golangci-lint via action (not raw curl install).
 
@@ -65,21 +67,21 @@ All 4 checks pass: `nix flake check` ✅
 
 **Commit `e911b10`** — Fixed 13 categories of inaccuracies:
 
-| Category | Before | After |
-|----------|--------|-------|
-| Ghost directories | cli/, adapter/, types/, migration/, lib/ | Removed |
-| Ghost domain types | domain.Clone, domain.CloneGroup, domain.StringPool | Actual: Filepath, LineNumber, ProcessedClone, etc. |
-| CI references | build.yml, checks.yml | ci.yml + 4 other workflows listed |
-| Missing deps | 4 listed | 11 listed (added go-diff, xxh3, templ, lipgloss, gogenfilter, golden) |
-| Package tree | Had ghost dirs, missing real ones | Accurate tree with cache/, pkg/format/, scripts/, site/ |
-| Import paths | adapter, types imports | syntax/golang, syntax/templ, cache, pkg/format |
-| Printer section | "Adapter Pattern" (adapter/ doesn't exist) | "Printer Interface" (printer.Printer interface) |
-| Fuzz location | `fuzz/` directory | `suffixtree/testdata/fuzz/` |
-| internal/ | Listed `enum/` | Actual: testutil, testhelpers, configtest, filtertest, utils, simd |
-| Architecture | Missing SDK section | Added SDK Architecture with Detector interface |
-| Key Features | Missing SARIF, generic filter, semantic | Added |
-| Clone types | Wrong descriptions | Accurate: printer.clone, printer.CloneGroup, pkg/artdupl.Clone, domain.ProcessedClone |
-| Config section | "mergeConfig" | Added "reflection-based merge" |
+| Category           | Before                                             | After                                                                                 |
+| ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Ghost directories  | cli/, adapter/, types/, migration/, lib/           | Removed                                                                               |
+| Ghost domain types | domain.Clone, domain.CloneGroup, domain.StringPool | Actual: Filepath, LineNumber, ProcessedClone, etc.                                    |
+| CI references      | build.yml, checks.yml                              | ci.yml + 4 other workflows listed                                                     |
+| Missing deps       | 4 listed                                           | 11 listed (added go-diff, xxh3, templ, lipgloss, gogenfilter, golden)                 |
+| Package tree       | Had ghost dirs, missing real ones                  | Accurate tree with cache/, pkg/format/, scripts/, site/                               |
+| Import paths       | adapter, types imports                             | syntax/golang, syntax/templ, cache, pkg/format                                        |
+| Printer section    | "Adapter Pattern" (adapter/ doesn't exist)         | "Printer Interface" (printer.Printer interface)                                       |
+| Fuzz location      | `fuzz/` directory                                  | `suffixtree/testdata/fuzz/`                                                           |
+| internal/          | Listed `enum/`                                     | Actual: testutil, testhelpers, configtest, filtertest, utils, simd                    |
+| Architecture       | Missing SDK section                                | Added SDK Architecture with Detector interface                                        |
+| Key Features       | Missing SARIF, generic filter, semantic            | Added                                                                                 |
+| Clone types        | Wrong descriptions                                 | Accurate: printer.clone, printer.CloneGroup, pkg/artdupl.Clone, domain.ProcessedClone |
+| Config section     | "mergeConfig"                                      | Added "reflection-based merge"                                                        |
 
 ---
 
@@ -127,6 +129,7 @@ First action of the session: changed global `~/.config/crush/AGENTS.md` from "ju
 ### 2. Pre-commit Hook Failures
 
 BuildFlow pre-commit hook fails on every commit with:
+
 - `todo-check`: 22 pre-existing TODO comments
 - `gitleaks`: 2 false positives in `_output_example/docker.html`
 
@@ -155,48 +158,48 @@ All commits use `--no-verify` to bypass. These are pre-existing issues not addre
 
 ### High Impact, Low Effort (Do First)
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Fix `os.Exit(1)` in CLI tests — replace with error returns | CI reliable | Medium |
-| 2 | Fix pre-commit hook: resolve or suppress 22 TODOs + gitleaks false positives | DX | Low |
-| 3 | Add `.gitattributes` linguist override for generated HTML test data | DX | Trivial |
-| 4 | Fix BDD test flakiness (likely same os.Exit root cause) | CI reliable | Medium |
-| 5 | Verify CI passes on fork branch post-consolidation | CI confidence | Trivial |
+| #   | Task                                                                         | Impact        | Effort  |
+| --- | ---------------------------------------------------------------------------- | ------------- | ------- |
+| 1   | Fix `os.Exit(1)` in CLI tests — replace with error returns                   | CI reliable   | Medium  |
+| 2   | Fix pre-commit hook: resolve or suppress 22 TODOs + gitleaks false positives | DX            | Low     |
+| 3   | Add `.gitattributes` linguist override for generated HTML test data          | DX            | Trivial |
+| 4   | Fix BDD test flakiness (likely same os.Exit root cause)                      | CI reliable   | Medium  |
+| 5   | Verify CI passes on fork branch post-consolidation                           | CI confidence | Trivial |
 
 ### High Impact, Medium Effort
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 6 | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup` | Architecture | High |
-| 7 | Consolidate 3 Clone types after Printer DTO | Type safety | High |
-| 8 | Add Nix-based CI workflow (alternative to setup-go + just) | Reproducibility | Medium |
-| 9 | Write `.goreleaser.yaml` test: dry-run release locally | Release safety | Low |
-| 10 | Add `just release` test: dry-run version bump without push | Release safety | Low |
+| #   | Task                                                               | Impact          | Effort |
+| --- | ------------------------------------------------------------------ | --------------- | ------ |
+| 6   | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup` | Architecture    | High   |
+| 7   | Consolidate 3 Clone types after Printer DTO                        | Type safety     | High   |
+| 8   | Add Nix-based CI workflow (alternative to setup-go + just)         | Reproducibility | Medium |
+| 9   | Write `.goreleaser.yaml` test: dry-run release locally             | Release safety  | Low    |
+| 10  | Add `just release` test: dry-run version bump without push         | Release safety  | Low    |
 
 ### Medium Impact
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 11 | Self-duplication scan at t=15 and eliminate remaining clones | Code quality | Medium |
-| 12 | Remove `printer/clone_classify.go` coupling to `syntax/golang` | Multi-language prep | Medium |
-| 13 | Add `domain.ProcessedClone` domain types instead of primitives | Type safety | Low |
-| 14 | Increment domain/ test coverage (67.2% → 80%+) | Quality | Low |
-| 15 | Increment detection/ test coverage (78.3% → 85%+) | Quality | Low |
-| 16 | Add integration test for full release pipeline | Release safety | Medium |
-| 17 | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ) | Accuracy | Low |
-| 18 | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX | Low |
+| #   | Task                                                              | Impact              | Effort |
+| --- | ----------------------------------------------------------------- | ------------------- | ------ |
+| 11  | Self-duplication scan at t=15 and eliminate remaining clones      | Code quality        | Medium |
+| 12  | Remove `printer/clone_classify.go` coupling to `syntax/golang`    | Multi-language prep | Medium |
+| 13  | Add `domain.ProcessedClone` domain types instead of primitives    | Type safety         | Low    |
+| 14  | Increment domain/ test coverage (67.2% → 80%+)                    | Quality             | Low    |
+| 15  | Increment detection/ test coverage (78.3% → 85%+)                 | Quality             | Low    |
+| 16  | Add integration test for full release pipeline                    | Release safety      | Medium |
+| 17  | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ)              | Accuracy            | Low    |
+| 18  | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX                  | Low    |
 
 ### Lower Priority
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 19 | Add cache invalidation strategy docs | Docs | Trivial |
-| 20 | Migrate remaining justfile recipes to nix apps/checks | Build system | Medium |
-| 21 | Add nix flake schema for config validation | DX | Medium |
-| 22 | Add `nix develop` CI workflow (pure nix, no just) | Reproducibility | Medium |
-| 23 | Write SDK examples with real file system tests | Docs | Low |
-| 24 | Add `--include-generic` filter docs to HOW_TO_USE.md | Docs | Trivial |
-| 25 | Clean up docs/status/ historical reports (archive old ones) | Housekeeping | Trivial |
+| #   | Task                                                        | Impact          | Effort  |
+| --- | ----------------------------------------------------------- | --------------- | ------- |
+| 19  | Add cache invalidation strategy docs                        | Docs            | Trivial |
+| 20  | Migrate remaining justfile recipes to nix apps/checks       | Build system    | Medium  |
+| 21  | Add nix flake schema for config validation                  | DX              | Medium  |
+| 22  | Add `nix develop` CI workflow (pure nix, no just)           | Reproducibility | Medium  |
+| 23  | Write SDK examples with real file system tests              | Docs            | Low     |
+| 24  | Add `--include-generic` filter docs to HOW_TO_USE.md        | Docs            | Trivial |
+| 25  | Clean up docs/status/ historical reports (archive old ones) | Housekeeping    | Trivial |
 
 ---
 
@@ -207,6 +210,7 @@ All commits use `--no-verify` to bypass. These are pre-existing issues not addre
 All 255 BDD specs show green dots (PASS), all cmd subtests show `--- PASS`, yet both packages report `FAIL`. There's no `--- FAIL` output anywhere. The only theory is `os.Exit(1)` being called somewhere during test execution (perhaps in a defer or cleanup), but I cannot pinpoint the exact call site. The test binary exits with code 1, and Go's test framework reports the package as failed regardless of individual test results.
 
 This is a **blocking issue for CI reliability** and needs either:
+
 - A systematic grep + replace of all `os.Exit()` calls in test-reachable code paths
 - Or a test harness that intercepts `os.Exit()` (like `testify's` assert or a custom exit handler)
 
@@ -214,17 +218,17 @@ This is a **blocking issue for CI reliability** and needs either:
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Commits this session | 8 |
-| Files changed | 14 |
-| Lines added | 268 |
-| Lines removed | 295 |
-| Net change | -27 lines |
-| Packages with 80%+ coverage | 15 of 21 |
-| Packages with 100% coverage | 2 (pkg/position, pkg/format) |
-| Pre-existing test failures | 2 (bdd, cmd — os.Exit issue) |
-| Nix flake checks | 4/4 pass |
-| Ghost directories removed from docs | 5 |
-| Ghost types removed from docs | 3 |
-| CI workflows consolidated | 3 → 1 |
+| Metric                              | Value                        |
+| ----------------------------------- | ---------------------------- |
+| Commits this session                | 8                            |
+| Files changed                       | 14                           |
+| Lines added                         | 268                          |
+| Lines removed                       | 295                          |
+| Net change                          | -27 lines                    |
+| Packages with 80%+ coverage         | 15 of 21                     |
+| Packages with 100% coverage         | 2 (pkg/position, pkg/format) |
+| Pre-existing test failures          | 2 (bdd, cmd — os.Exit issue) |
+| Nix flake checks                    | 4/4 pass                     |
+| Ghost directories removed from docs | 5                            |
+| Ghost types removed from docs       | 3                            |
+| CI workflows consolidated           | 3 → 1                        |

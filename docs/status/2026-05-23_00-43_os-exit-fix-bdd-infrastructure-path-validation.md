@@ -11,12 +11,14 @@
 **Root cause:** `statError()` in `cmd/run_crawl.go` called `os.Exit(1)` when any file path didn't exist. Since both `cmd` and `bdd` test suites execute `rootCmd.Execute()` in-process (via `executeTestCommand` and `executeInProcess`), hitting `statError` would kill the entire Go test binary — not just the failing test.
 
 **Fix in `cmd/run_crawl.go`:**
+
 - Deleted `statError()` function (was lines 32-36)
 - `crawlSinglePathWithOpts`: replaced `statError(path, err)` with `fmt.Fprintf(os.Stderr, ...)` + early return
 - `crawlDirectoryWithOpts`: replaced `statError(path, err)` with `fmt.Fprintf(os.Stderr, ...)`
 - Both callers now log to stderr and skip the invalid path instead of terminating the process
 
 **Fix in `cmd/run_analysis.go`:**
+
 - Added `validatePaths(paths, filesFromStdin)` — upfront path validation before analysis begins
 - Returns error only when ALL specified paths are invalid (none exist on filesystem)
 - If some paths are invalid but at least one exists, the invalid ones are silently skipped during crawl (with stderr warning)
@@ -24,6 +26,7 @@
 - Uses `duplerrors.NewValidationError` for typed error propagation
 
 **Fix in `cmd/run_analysis.go` (profiling extraction):**
+
 - Extracted `startProfiling(cfg)` and `endProfiling(cfg, startProfile)` helpers from `executeAnalysis`
 - Keeps `executeAnalysis` at 76 lines (under 80-line funlen limit)
 - Pre-existing: 79 lines → would have been 84 with the new `validatePaths` call
@@ -40,6 +43,7 @@
 **Root cause:** `prepareSubcommandArgs` decided whether to append `TmpDir` by checking if any arg "looks like a path" (doesn't start with `-` and isn't a subcommand name). But flag values like `"5"` (from `--threshold 5`) or `"json"` (from `--format json`) don't start with `-` and aren't subcommand names — so they were mistaken for paths, and `TmpDir` was never appended.
 
 **Fix:** Rewrote the function with a proper flag-value parser:
+
 - Tracks `valueFlags` map of flags that consume the next argument (e.g., `--threshold`, `--format`, `--sort`)
 - Uses `expectValue` state machine to skip over flag values
 - Handles `--flag=value` syntax (contains `=`) correctly
@@ -52,17 +56,20 @@
 Tests that were written assuming `os.Exit` would kill the process (so they never actually ran) now run and need correct assertions:
 
 **`bdd/error_handling_test.go`:**
+
 - "should handle missing directory gracefully": `Expect(err).To(HaveOccurred())` → `ToNot(HaveOccurred())` — RunArtDupl prepends TmpDir (valid path), so analysis succeeds
 - "should handle non-existent file gracefully": same change
 - "should handle empty stdin gracefully": `ToNot(HaveOccurred())` → `To(HaveOccurred())` — empty stdin with no file paths is now a validation error
 - "should handle stdin with invalid file paths gracefully": `ToNot(HaveOccurred())` → `To(HaveOccurred())` — all-nonexistent paths is now a validation error
 
 **`bdd/cli_commands_test.go`:**
+
 - "should provide man page output" → "should handle missing man subcommand gracefully" — there is no `man` subcommand registered; `"man"` is treated as a path argument and gracefully skipped. Removed `SatisfyAny(HavePrefix(".TH"), ContainSubstring("art-dupl"))` check.
 
 ### 4. AGENTS.md Updated
 
 Added two architecture decision entries under "Codebase Architecture — Key Decisions":
+
 - **os.Exit removal & path validation (2026-05-23):** Documents the `statError` removal, `validatePaths` addition, and profiling extraction
 - **BDD test infrastructure fixes (2026-05-23):** Documents the `prepareSubcommandArgs` fix and test assertion updates
 
@@ -104,12 +111,14 @@ nix build .#checks.x86_64-linux.lint
 ```
 
 The nix sandbox doesn't provide a home directory, so golangci-lint can't create its cache. This was present before this session. The fix requires either:
+
 - Setting `XDG_CACHE_HOME` or `GOLANGCI_LINT_CACHE` in the nix derivation
 - Or passing `--cache-dir=$(mktemp -d)` to golangci-lint
 
 ### 3. Pre-existing: BuildFlow Pre-commit Hook Noisy
 
 BuildFlow pre-commit hook fails on every commit:
+
 - `todo-check`: 45 pre-existing TODO comments in Go files
 - `gitleaks`: docker.html false positive (file no longer exists, but gitleaks may detect patterns in other files)
 - All commits use `--no-verify` to bypass
@@ -138,48 +147,48 @@ BuildFlow pre-commit hook fails on every commit:
 
 ### High Impact, Low Effort (Do First)
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | Fix nix lint check sandbox: set `GOLANGCI_LINT_CACHE` in flake.nix derivation | CI complete | Trivial |
-| 2 | Fix 10 errcheck warnings in test files: check `syscall.Dup2`/`Close` returns | Lint clean | Low |
-| 3 | Extract `art-dupl` string to constant in test files (5 occurrences, goconst) | Lint clean | Trivial |
-| 4 | Fix golines formatting in `internal/testutil/bdd_helpers.go:319` | Lint clean | Trivial |
-| 5 | Create `.gitleaks.toml` to suppress false positives | DX | Trivial |
+| #   | Task                                                                          | Impact      | Effort  |
+| --- | ----------------------------------------------------------------------------- | ----------- | ------- |
+| 1   | Fix nix lint check sandbox: set `GOLANGCI_LINT_CACHE` in flake.nix derivation | CI complete | Trivial |
+| 2   | Fix 10 errcheck warnings in test files: check `syscall.Dup2`/`Close` returns  | Lint clean  | Low     |
+| 3   | Extract `art-dupl` string to constant in test files (5 occurrences, goconst)  | Lint clean  | Trivial |
+| 4   | Fix golines formatting in `internal/testutil/bdd_helpers.go:319`              | Lint clean  | Trivial |
+| 5   | Create `.gitleaks.toml` to suppress false positives                           | DX          | Trivial |
 
 ### High Impact, Medium Effort
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 6 | Fix gocyclo in `printer/stats_formatter.go:buildJSONData` (complexity 16) | Lint clean | Medium |
-| 7 | Fix exhaustruct warnings in `internal/testutil/bdd.go` (missing Executor/ExecutorResult) | Lint clean | Low |
-| 8 | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup` | Architecture | High |
-| 9 | Consolidate 3 Clone types after Printer DTO | Type safety | High |
-| 10 | Remove `printer/clone_classify.go` coupling to `syntax/golang` | Multi-language prep | Medium |
+| #   | Task                                                                                     | Impact              | Effort |
+| --- | ---------------------------------------------------------------------------------------- | ------------------- | ------ |
+| 6   | Fix gocyclo in `printer/stats_formatter.go:buildJSONData` (complexity 16)                | Lint clean          | Medium |
+| 7   | Fix exhaustruct warnings in `internal/testutil/bdd.go` (missing Executor/ExecutorResult) | Lint clean          | Low    |
+| 8   | Printer DTO refactor: `[][]*syntax.Node` → `[]ProcessedCloneGroup`                       | Architecture        | High   |
+| 9   | Consolidate 3 Clone types after Printer DTO                                              | Type safety         | High   |
+| 10  | Remove `printer/clone_classify.go` coupling to `syntax/golang`                           | Multi-language prep | Medium |
 
 ### Medium Impact
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 11 | Self-duplication scan at t=15 and eliminate remaining clones | Code quality | Medium |
-| 12 | Increment domain/ test coverage (67.2% → 80%+) | Quality | Low |
-| 13 | Increment detection/ test coverage (78.3% → 85%+) | Quality | Low |
-| 14 | Add Nix-based CI workflow (alternative to setup-go + just) | Reproducibility | Medium |
-| 15 | Migrate remaining justfile recipes to nix apps/checks | Build system | Medium |
-| 16 | Add integration test for full release pipeline | Release safety | Medium |
-| 17 | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ) | Accuracy | Low |
-| 18 | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX | Low |
+| #   | Task                                                              | Impact          | Effort |
+| --- | ----------------------------------------------------------------- | --------------- | ------ |
+| 11  | Self-duplication scan at t=15 and eliminate remaining clones      | Code quality    | Medium |
+| 12  | Increment domain/ test coverage (67.2% → 80%+)                    | Quality         | Low    |
+| 13  | Increment detection/ test coverage (78.3% → 85%+)                 | Quality         | Low    |
+| 14  | Add Nix-based CI workflow (alternative to setup-go + just)        | Reproducibility | Medium |
+| 15  | Migrate remaining justfile recipes to nix apps/checks             | Build system    | Medium |
+| 16  | Add integration test for full release pipeline                    | Release safety  | Medium |
+| 17  | Fix ConstantCSSProperty Pos=0,End=0 (upstream templ)              | Accuracy        | Low    |
+| 18  | Add SARIF output to CI (upload as artifact or CodeQL integration) | DX              | Low    |
 
 ### Lower Priority
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 19 | Write SDK examples with real file system tests | Docs | Low |
-| 20 | Add `--include-generic` filter docs to HOW_TO_USE.md | Docs | Trivial |
-| 21 | Add cache invalidation strategy docs | Docs | Trivial |
-| 22 | Add nix flake schema for config validation | DX | Medium |
-| 23 | Add `nix develop` CI workflow (pure nix, no just) | Reproducibility | Medium |
-| 24 | Clean up docs/status/ historical reports (archive old ones) | Housekeeping | Trivial |
-| 25 | Write `.goreleaser.yaml` test: dry-run release locally | Release safety | Low |
+| #   | Task                                                        | Impact          | Effort  |
+| --- | ----------------------------------------------------------- | --------------- | ------- |
+| 19  | Write SDK examples with real file system tests              | Docs            | Low     |
+| 20  | Add `--include-generic` filter docs to HOW_TO_USE.md        | Docs            | Trivial |
+| 21  | Add cache invalidation strategy docs                        | Docs            | Trivial |
+| 22  | Add nix flake schema for config validation                  | DX              | Medium  |
+| 23  | Add `nix develop` CI workflow (pure nix, no just)           | Reproducibility | Medium  |
+| 24  | Clean up docs/status/ historical reports (archive old ones) | Housekeeping    | Trivial |
+| 25  | Write `.goreleaser.yaml` test: dry-run release locally      | Release safety  | Low     |
 
 ---
 
@@ -191,15 +200,15 @@ BuildFlow pre-commit hook fails on every commit:
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Files changed | 6 |
-| Lines added | 118 |
-| Lines removed | 47 |
-| Net change | +71 lines |
-| Test packages passing | 23/23 (was 21/23) |
-| Test packages failing | 0 (was 2: cmd, bdd) |
-| BDD specs passing | 255/255 (was 255 specs reported as FAIL due to os.Exit) |
-| Lint issues | 21 (all pre-existing, 0 new) |
+| Metric                  | Value                                                                |
+| ----------------------- | -------------------------------------------------------------------- |
+| Files changed           | 6                                                                    |
+| Lines added             | 118                                                                  |
+| Lines removed           | 47                                                                   |
+| Net change              | +71 lines                                                            |
+| Test packages passing   | 23/23 (was 21/23)                                                    |
+| Test packages failing   | 0 (was 2: cmd, bdd)                                                  |
+| BDD specs passing       | 255/255 (was 255 specs reported as FAIL due to os.Exit)              |
+| Lint issues             | 21 (all pre-existing, 0 new)                                         |
 | os.Exit calls remaining | 2 (in `cmd/art-dupl/main.go` — correct, only in production `main()`) |
-| Nix flake checks | 3/4 pass (build, test, fmt ✅; lint ❌ sandbox cache) |
+| Nix flake checks        | 3/4 pass (build, test, fmt ✅; lint ❌ sandbox cache)                |

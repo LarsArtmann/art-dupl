@@ -64,7 +64,7 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Delete printer/sort_type.go — migrate all SortBy constants to config.SortCriteria
 - [x] Extract config.DetectionConfig from config.Config (Methods + Verbose)
 - [x] Define detection.MethodDetector interface for pluggable detectors
-- [x] Refactor MultiDetector to use DetectionConfig instead of *config.Config
+- [x] Refactor MultiDetector to use DetectionConfig instead of \*config.Config
 - [x] Fix SortByTotalTokens bug in printer/sorter.go and printer/text.go
 - [x] Fix --semantic/--structural flag descriptions
 - [x] Fix TestFindProjectRoot false positives

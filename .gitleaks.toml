@@ -1,5 +1,2 @@
 [allowlist]
-paths = [
-  '''_output_example/.*''',
-  '''site/.*''',
-]
+paths = ['''_output_example/.*''', '''site/.*''']

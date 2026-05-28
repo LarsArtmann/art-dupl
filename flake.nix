@@ -199,14 +199,20 @@
           });
 
           # Lint check: runs golangci-lint
-          lint = pkgs.runCommand "art-dupl-lint" {
-            nativeBuildInputs = [ goPkg pkgs.golangci-lint ];
-            GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
-          } ''
-            cd ${pkgs.lib.cleanSource ./.}
-            golangci-lint run --timeout 5m ./...
-            touch $out
-          '';
+          lint =
+            pkgs.runCommand "art-dupl-lint"
+              {
+                nativeBuildInputs = [
+                  goPkg
+                  pkgs.golangci-lint
+                ];
+                GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
+              }
+              ''
+                cd ${pkgs.lib.cleanSource ./.}
+                golangci-lint run --timeout 5m ./...
+                touch $out
+              '';
 
           # Format check: verifies Go code is formatted
           fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
