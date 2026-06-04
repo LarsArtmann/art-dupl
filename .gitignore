@@ -38,3 +38,4 @@ result-*
 /test-art-dupl
 # Test coverage
 vendor/
+go.work.sum
