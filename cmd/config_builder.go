@@ -194,25 +194,31 @@ func warnStructural(cmd *cobra.Command) {
 	}
 }
 
-// applyDetectionMethods sets detection methods from the -m flag.
-func applyDetectionMethods(cmd *cobra.Command, cfg *config.Config) error {
-	if !cmd.Flags().Changed("detection-methods") {
-		return nil
+// flagStringReader reads a string flag value only when the user explicitly set it.
+func flagStringReader(cmd *cobra.Command, name string) (string, bool) {
+	if !cmd.Flags().Changed(name) {
+		return "", false
 	}
 
-	val, _ := cmd.Flags().GetString("detection-methods")
+	val, _ := cmd.Flags().GetString(name)
+
+	return val, true
+}
+
+// applyDetectionMethods sets detection methods from the -m flag.
+func applyDetectionMethods(cmd *cobra.Command, cfg *config.Config) error {
+	val, ok := flagStringReader(cmd, "detection-methods")
+	if !ok {
+		return nil
+	}
 
 	return setDetectionMethods(cfg, val)
 }
 
 // applyTimeoutFlag parses and applies the --timeout flag.
 func applyTimeoutFlag(cmd *cobra.Command, cfg *config.Config) error {
-	if !cmd.Flags().Changed("timeout") {
-		return nil
-	}
-
-	val, _ := cmd.Flags().GetString("timeout")
-	if val == "" || val == "30m" {
+	val, ok := flagStringReader(cmd, "timeout")
+	if !ok || val == "" || val == "30m" {
 		return nil
 	}
 
@@ -231,12 +237,8 @@ func applyTimeoutFlag(cmd *cobra.Command, cfg *config.Config) error {
 
 // applyDiffModeFlag parses and applies the --diff flag.
 func applyDiffModeFlag(cmd *cobra.Command, cfg *config.Config) error {
-	if !cmd.Flags().Changed("diff") {
-		return nil
-	}
-
-	val, _ := cmd.Flags().GetString("diff")
-	if val == "" {
+	val, ok := flagStringReader(cmd, "diff")
+	if !ok || val == "" {
 		return nil
 	}
 

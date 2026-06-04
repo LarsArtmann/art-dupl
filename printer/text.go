@@ -217,13 +217,7 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					cl.LineStart,
 					cl.LineEnd,
 				); err != nil {
-					return fmt.Errorf(
-						"write clone fragment %s:%d-%d: %w",
-						cl.Filename,
-						cl.LineStart,
-						cl.LineEnd,
-						err,
-					)
+					return cloneWriteErr(cl, "fragment", err)
 				}
 			} else {
 				if err := writeCloneLines(
@@ -231,19 +225,18 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 					[]domain.ProcessedClone{cl},
 					"%s:%d-%d\n",
 				); err != nil {
-					return fmt.Errorf(
-						"write clone line %s:%d-%d: %w",
-						cl.Filename,
-						cl.LineStart,
-						cl.LineEnd,
-						err,
-					)
+					return cloneWriteErr(cl, "line", err)
 				}
 			}
 		}
 	}
 
 	return p.PrintFooter()
+}
+
+// cloneWriteErr wraps a write error with a "write clone X filename:line-line" prefix.
+func cloneWriteErr(cl domain.ProcessedClone, kind string, err error) error {
+	return fmt.Errorf("write clone %s %s:%d-%d: %w", kind, cl.Filename, cl.LineStart, cl.LineEnd, err)
 }
 
 func formatBytes(bytes int) string {

@@ -103,8 +103,7 @@ func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 </div>
 `)
 	if err != nil {
-		return fmt.Errorf("write diff legend for base %s:%d: %w",
-			groupDiff.Base.Filename, groupDiff.Base.LineStart, err)
+		return cloneLocationErr(groupDiff.Base.Filename, groupDiff.Base.LineStart, "write diff legend", err)
 	}
 
 	return nil
@@ -119,7 +118,7 @@ func (p *htmlprinter) writeDiffViewToggle() error {
 </div>
 `, p.iota, p.iota, p.iota, p.iota)
 	if err != nil {
-		return fmt.Errorf("write diff view toggle for group %d: %w", p.iota, err)
+		return groupErr(p.iota, "write diff view toggle", err)
 	}
 
 	return nil
@@ -133,7 +132,7 @@ func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
 <option value="" disabled selected>Compare with...</option>
 `)
 	if err != nil {
-		return fmt.Errorf("write diff selector header for group %d: %w", p.iota, err)
+		return groupErr(p.iota, "write diff selector header", err)
 	}
 
 	for idx, other := range groupDiff.Others {
@@ -228,22 +227,12 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return fmt.Errorf(
-			"write base panel header for %s:%d: %w",
-			other.Filename,
-			other.LineStart,
-			err,
-		)
+		return cloneLocationErr(other.Filename, other.LineStart, "write base panel header", err)
 	}
 
 	// Render base panel
 	if err := p.renderDiffLines(baseLines, comparedLines, true); err != nil {
-		return fmt.Errorf(
-			"render base diff lines for %s:%d: %w",
-			other.Filename,
-			other.LineStart,
-			err,
-		)
+		return cloneLocationErr(other.Filename, other.LineStart, "render base diff lines", err)
 	}
 
 	// Close base panel, start compared panel
@@ -254,32 +243,32 @@ func (p *htmlprinter) writeDiffPanelsWithWordDiff(_ *CloneWithContent, other Clo
 <pre><code>
 `)
 	if err != nil {
-		return fmt.Errorf(
-			"write compared panel header for %s:%d: %w",
-			other.Filename,
-			other.LineStart,
-			err,
-		)
+		return cloneLocationErr(other.Filename, other.LineStart, "write compared panel header", err)
 	}
 
 	// Render compared panel
 	if err := p.renderDiffLines(comparedLines, baseLines, false); err != nil {
-		return fmt.Errorf(
-			"render compared diff lines for %s:%d: %w",
-			other.Filename,
-			other.LineStart,
-			err,
-		)
+		return cloneLocationErr(other.Filename, other.LineStart, "render compared diff lines", err)
 	}
 
 	_, err = fmt.Fprint(p.w, `</code></pre>
 </div>
 `)
 	if err != nil {
-		return fmt.Errorf("close diff panels for %s:%d: %w", other.Filename, other.LineStart, err)
+		return cloneLocationErr(other.Filename, other.LineStart, "close diff panels", err)
 	}
 
 	return nil
+}
+
+// cloneLocationErr wraps an error with a "for filename:line" location prefix.
+func cloneLocationErr(filename string, line int, op string, err error) error {
+	return fmt.Errorf("%s for %s:%d: %w", op, filename, line, err)
+}
+
+// groupErr wraps an error with a "for group N" prefix.
+func groupErr(group int, op string, err error) error {
+	return fmt.Errorf("%s for group %d: %w", op, group, err)
 }
 
 // renderDiffLines renders diff lines with optional word-level highlighting for modified lines.

@@ -134,6 +134,11 @@ func (p *htmlprinter) writeMetadata() error {
 	return nil
 }
 
+// cloneGroupErr wraps an error with "op for clone group #N (hash: H)" context.
+func cloneGroupErr(groupNum int, hash, op string, err error) error {
+	return fmt.Errorf("%s for clone group #%d (hash: %s): %w", op, groupNum, hash, err)
+}
+
 func (p *htmlprinter) PrintClones(
 	group domain.ProcessedCloneGroup,
 	sortBy ...config.SortCriteria,
@@ -162,22 +167,12 @@ func (p *htmlprinter) PrintClones(
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
 		err := p.writeDiffView(clones)
 		if err != nil {
-			return fmt.Errorf(
-				"diff view for clone group #%d (hash: %s): %w",
-				p.iota,
-				group.Hash,
-				err,
-			)
+			return cloneGroupErr(p.iota, group.Hash, "diff view", err)
 		}
 	} else {
 		err := p.writeCloneOccurrences(clones)
 		if err != nil {
-			return fmt.Errorf(
-				"clone occurrences for clone group #%d (hash: %s): %w",
-				p.iota,
-				group.Hash,
-				err,
-			)
+			return cloneGroupErr(p.iota, group.Hash, "clone occurrences", err)
 		}
 	}
 

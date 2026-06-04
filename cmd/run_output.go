@@ -30,34 +30,19 @@ func printDupls(
 
 	err := printHeader(p, sortBy, threshold)
 	if err != nil {
-		return fmt.Errorf(
-			"print header (threshold: %d, sortBy: %s, detection: %s): %w",
-			threshold,
-			sortBy.String(),
-			detectionMethod,
-			err,
-		)
+		return fmt.Errorf("print header (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold, sortBy.String(), detectionMethod, err)
 	}
 
 	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic)
 	if err != nil {
-		return fmt.Errorf(
-			"print clone groups (fread: %v, sortBy: %s): %w",
-			fread,
-			sortBy.String(),
-			err,
-		)
+		return fmt.Errorf("print clone groups (fread: %v, sortBy: %s): %w", fread, sortBy.String(), err)
 	}
 
 	err = handleJSONOutput(p, threshold, sortBy, detectionMethod)
 	if err != nil {
-		return fmt.Errorf(
-			"json output (threshold: %d, sortBy: %s, detection: %s): %w",
-			threshold,
-			sortBy.String(),
-			detectionMethod,
-			err,
-		)
+		return fmt.Errorf("json output (threshold: %d, sortBy: %s, detection: %s): %w",
+			threshold, sortBy.String(), detectionMethod, err)
 	}
 
 	if ctx.Err() != nil {
