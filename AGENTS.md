@@ -45,11 +45,13 @@ pkg/artdupl/ Public SDK (Detector interface)
 ## Critical Conventions
 
 - **Idiomatic Go only** — no Result[T], Option[T], railway-oriented programming. Standard `(T, error)` returns.
-- **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it.
+- **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it. Semantic is now *faster* than structural (was 9x slower before optimization).
+- **Only `.go` and `.templ` files** are processed by default. Vendor excluded by default (`--vendor` to include).
 - **Generated code filtered by default** (sqlc, templ, protobuf, mockgen, stringer). Override with `--include-*` flags.
+- **Suffix tree uses O(1) map-based transition lookup** (optimized from O(n) linear search).
 - **Errors** use typed hierarchy from `errors/` package. Wrap with `duplerrors.Wrap*`. No panics for expected errors.
 - **Config merging** is reflection-based — adding Config fields requires no merge code changes.
-- **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers in `internal/testutil/bdd.go`.
+- **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers: `NewBDDTestSetupForGinkgo()`, `RunArtDupl()`, `CreateDuplicateFiles()`, `RunArtDuplOnDir()`, `RunArtDuplWithStdin()` — all in `internal/testutil/bdd.go`.
 
 ## Nix Flake — Private Dependency Pattern
 
