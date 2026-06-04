@@ -49,7 +49,7 @@
           # evaluation). The goModules derivation uses a dummy local replace so it
           # can vendor all public deps without network access to the private repo.
           # The main build then swaps in the real gogenfilter from the flake input.
-          vendorHash = "sha256-Qsu730TtxrREPGWG6MVG04nZLy9WzxGGr78HhQXMhC0=";
+          vendorHash = "sha256-TmhwPXrcO0BWV0OyrLOT1yRxKAfT/iqIfju+CbkEgig=";
 
           overrideModAttrs = old: {
             preBuild = ''
@@ -199,20 +199,20 @@
           });
 
           # Lint check: runs golangci-lint
-          lint =
-            pkgs.runCommand "art-dupl-lint"
-              {
-                nativeBuildInputs = [
-                  goPkg
-                  pkgs.golangci-lint
-                ];
-                GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
-              }
-              ''
-                cd ${pkgs.lib.cleanSource ./.}
-                golangci-lint run --timeout 5m ./...
-                touch $out
-              '';
+          lint = pkg.overrideAttrs (old: {
+            name = "${old.pname}-lint";
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];
+            GOCACHE = "/tmp/go-build";
+            GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
+            buildPhase = ''
+              runHook preBuild
+              golangci-lint run --timeout 5m ./...
+              runHook postBuild
+            '';
+            installPhase = ''
+              touch $out
+            '';
+          });
 
           # Format check: verifies Go code is formatted
           fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''

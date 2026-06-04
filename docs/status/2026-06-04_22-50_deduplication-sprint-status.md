@@ -23,15 +23,15 @@ clean. `go test -cover` shows 70.2% average coverage across 25 packages.
 
 ### This Session (2026-06-04)
 
-| Area | Result |
-|---|---|
-| `printer/html_diff.go` — `writeDiffPanelsWithWordDiff` error wrapping | 4 → 1 helper call via `cloneLocationErr` |
-| `printer/html_diff.go` — `writeDiffViewToggle` / `writeDiffSelector` | 2 → 1 helper call via `groupErr` |
-| `printer/html_diff.go` — `writeDiffView` legend error | 1 helper consolidation |
-| `printer/html.go` — `PrintClones` diff/clone-occurrences branches | 2 long `fmt.Errorf` → `cloneGroupErr` |
-| `printer/text.go` — `OutputText` fragment/line error wrapping | 2 long `fmt.Errorf` → `cloneWriteErr` |
+| Area                                                                                         | Result                                                                                         |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `printer/html_diff.go` — `writeDiffPanelsWithWordDiff` error wrapping                        | 4 → 1 helper call via `cloneLocationErr`                                                       |
+| `printer/html_diff.go` — `writeDiffViewToggle` / `writeDiffSelector`                         | 2 → 1 helper call via `groupErr`                                                               |
+| `printer/html_diff.go` — `writeDiffView` legend error                                        | 1 helper consolidation                                                                         |
+| `printer/html.go` — `PrintClones` diff/clone-occurrences branches                            | 2 long `fmt.Errorf` → `cloneGroupErr`                                                          |
+| `printer/text.go` — `OutputText` fragment/line error wrapping                                | 2 long `fmt.Errorf` → `cloneWriteErr`                                                          |
 | `cmd/config_builder.go` — `applyDetectionMethods` / `applyTimeoutFlag` / `applyDiffModeFlag` | 3× `if !Changed() { return nil }` + `GetString` boilerplate → single `flagStringReader` helper |
-| `cmd/run_output.go` — `printDupls` header/groups/JSON error wrapping | 3 7-line `fmt.Errorf` blocks → 3 one-liners |
+| `cmd/run_output.go` — `printDupls` header/groups/JSON error wrapping                         | 3 7-line `fmt.Errorf` blocks → 3 one-liners                                                    |
 
 ### Verification
 
@@ -70,11 +70,13 @@ The 4 remaining clones at threshold 20 are explicitly classified as
 From the project TODO (last updated 2026-05-23):
 
 **🔴 HIGH Priority (3 items, untouched this session):**
+
 - [ ] Introduce `ProcessedClone` DTO to decouple `Printer` from `syntax.Node` (111 test call sites)
 - [ ] Consolidate three parallel `Clone` types (`printer.clone`, `pkg/artdupl.Clone`, `printer.CloneGroup`)
 - [ ] Implement `TokenValue` type with validation and refactor `suffixtree/syntax` to use it
 
 **🟡 MEDIUM Priority (6 items, untouched):**
+
 - [ ] Implement CSV output format properly using `encoding/csv`
 - [ ] Unify enum patterns: domain enums should use config's generic helpers
 - [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
@@ -83,6 +85,7 @@ From the project TODO (last updated 2026-05-23):
 - [ ] Split `printer/stats_test.go` (975L → 3 files)
 
 **🟢 LOW Priority (8 items, untouched):**
+
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
 - [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
 - [ ] Create `domain.HealthScore` typed enum (currently just a string 'A'-'F')
@@ -138,8 +141,8 @@ and the helpers were verified by the existing test suite.
 4. **The 5-clone `printer/html.go:169-171` & `:174-176` & `html_diff.go:229-231` & `:245-247` & `:257-259` group at threshold 15** is the
    `if-err-return-helper(...)` pattern. Different helpers (`cloneGroupErr`
    vs `cloneLocationErr`) with different argument shapes. Could be unified
-   into one variadic helper, but that would *reduce* type safety and
-   *increase* coupling between unrelated call sites. **Not worth it.**
+   into one variadic helper, but that would _reduce_ type safety and
+   _increase_ coupling between unrelated call sites. **Not worth it.**
 
 ### Process Improvements
 
@@ -223,7 +226,7 @@ ships ~2x the work in transition.
 
 The `domain.ProcessedClone` type already exists (introduced 2026-04-30 per
 `AGENTS.md`) and is used by some callers, but `Printer.PrintClones` still
-takes `[][]*syntax.Node`. The architecture *is* partway through this
+takes `[][]*syntax.Node`. The architecture _is_ partway through this
 migration already — the question is whether to commit to finishing it now
 or wait for a dedicated sprint.
 
@@ -235,12 +238,12 @@ existing ADR or decision document on the migration strategy.
 
 ## Appendix: Clone Audit (Threshold 20)
 
-| File | Lines | Verdict | Reason |
-|---|---|---|---|
-| `cmd/config_builder.go:15` & `:56` | 1-line | **Accept** | Public+private pair; identical signature by necessity; different functions |
-| `internal/testutil/assert.go:13` & `:20` | 1-line | **Accept** | Public API; `AssertLen` vs `AssertFatalLen` (Errorf vs Fatalf) |
-| `printer/clone_classify_test.go:285-290` & `:295-300` | 6-line | **Accept** | Table-driven test data (priority emoji vs color) |
-| `syntax/templ/templ_test.go:761-789` & `:904-926` | 28-line | **Accept** | Table-driven test data (complex attributes vs file root end length) |
+| File                                                  | Lines   | Verdict    | Reason                                                                     |
+| ----------------------------------------------------- | ------- | ---------- | -------------------------------------------------------------------------- |
+| `cmd/config_builder.go:15` & `:56`                    | 1-line  | **Accept** | Public+private pair; identical signature by necessity; different functions |
+| `internal/testutil/assert.go:13` & `:20`              | 1-line  | **Accept** | Public API; `AssertLen` vs `AssertFatalLen` (Errorf vs Fatalf)             |
+| `printer/clone_classify_test.go:285-290` & `:295-300` | 6-line  | **Accept** | Table-driven test data (priority emoji vs color)                           |
+| `syntax/templ/templ_test.go:761-789` & `:904-926`     | 28-line | **Accept** | Table-driven test data (complex attributes vs file root end length)        |
 
 Per the project's own deduplication policy, these are all explicit "accept" cases.
 
@@ -248,13 +251,13 @@ Per the project's own deduplication policy, these are all explicit "accept" case
 
 ## Appendix: File State (Before / After)
 
-| File | Before | After | Δ |
-|---|---|---|---|
-| `cmd/config_builder.go` | 254L | ~241L | -13 |
-| `cmd/run_output.go` | 184L | 160L | -24 (1-line consolidations) |
-| `printer/html.go` | (same length, but 7-line blocks → 1-line calls) | | |
-| `printer/html_diff.go` | (4× 7-line errors → 1× 1-line call) | | |
-| `printer/text.go` | (2× 9-line errors → 1× 1-line call) | | |
+| File                    | Before                                          | After | Δ                           |
+| ----------------------- | ----------------------------------------------- | ----- | --------------------------- |
+| `cmd/config_builder.go` | 254L                                            | ~241L | -13                         |
+| `cmd/run_output.go`     | 184L                                            | 160L  | -24 (1-line consolidations) |
+| `printer/html.go`       | (same length, but 7-line blocks → 1-line calls) |       |                             |
+| `printer/html_diff.go`  | (4× 7-line errors → 1× 1-line call)             |       |                             |
+| `printer/text.go`       | (2× 9-line errors → 1× 1-line call)             |       |                             |
 
 ---
 
