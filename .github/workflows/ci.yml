@@ -82,6 +82,22 @@ jobs:
           name: coverage-report
           path: coverage.out
 
+  nix:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v17
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v9
+
+      - name: Check flake
+        run: nix flake check --all-systems
+
+      - name: Build
+        run: nix build
+
   self-analysis:
     name: Self-Analysis
     runs-on: ubuntu-latest
