@@ -92,10 +92,10 @@ When all occurrences are in test files, do a second pass that ignores string and
 
 In this project (390+ tests, 96.9% coverage):
 
-| Metric | Before | After (suppress test-low) |
-|--------|--------|---------------------------|
-| Production clones | 0 | 0 |
-| Test clones reported | 3 | 0 |
-| Total clone groups | 3 | 0 |
+| Metric               | Before | After (suppress test-low) |
+| -------------------- | ------ | ------------------------- |
+| Production clones    | 0      | 0                         |
+| Test clones reported | 3      | 0                         |
+| Total clone groups   | 3      | 0                         |
 
 The signal-to-noise ratio for the "test clones" category would improve significantly. Today, every run shows 2-3 test clones that are all false positives, training users to ignore the `🧪 test` badge entirely.

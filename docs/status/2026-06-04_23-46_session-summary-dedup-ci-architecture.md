@@ -24,19 +24,20 @@ All 22 test packages pass. `golangci-lint` reports **0 issues**. `art-dupl -t 30
 
 ### Production Code Deduplication (commit `df7bbe9`)
 
-| File | Change |
-|---|---|
-| `printer/html_diff.go` | Extracted `cloneLocationErr()` + `groupErr()` helpers. 6 error-wrapping sites collapsed from 7-line blocks to 1-line calls |
-| `printer/html.go` | Extracted `cloneGroupErr()` helper. 2 PrintClones branches collapsed |
-| `printer/text.go` | Extracted `cloneWriteErr()` helper. 2 OutputText branches collapsed |
-| `cmd/config_builder.go` | Extracted `flagStringReader()` helper. 3 apply* functions consolidated |
-| `cmd/run_output.go` | 3 multi-line `fmt.Errorf` blocks collapsed to 1-line calls |
+| File                    | Change                                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `printer/html_diff.go`  | Extracted `cloneLocationErr()` + `groupErr()` helpers. 6 error-wrapping sites collapsed from 7-line blocks to 1-line calls |
+| `printer/html.go`       | Extracted `cloneGroupErr()` helper. 2 PrintClones branches collapsed                                                       |
+| `printer/text.go`       | Extracted `cloneWriteErr()` helper. 2 OutputText branches collapsed                                                        |
+| `cmd/config_builder.go` | Extracted `flagStringReader()` helper. 3 apply\* functions consolidated                                                    |
+| `cmd/run_output.go`     | 3 multi-line `fmt.Errorf` blocks collapsed to 1-line calls                                                                 |
 
 **Net result:** 5 files changed, 54 insertions, 90 deletions. Zero behavioral change.
 
 ### CI Nix Flake Check (commit `cbe267b`)
 
 Added `nix` job to `.github/workflows/ci.yml`:
+
 - Installs Nix via `DeterminateSystems/nix-installer-action@v17`
 - Enables magic-nix-cache for faster CI builds
 - Runs `nix flake check --all-systems` (catches vendorHash drift, sandbox issues)
@@ -46,6 +47,7 @@ Added `nix` job to `.github/workflows/ci.yml`:
 ### TODO/Legacy Detectors — Already Wired
 
 Discovered that `-m todos` and `-m legacy` detection methods are **already fully implemented end-to-end**:
+
 - Enum values defined and validated in `config/detection_method.go`
 - Detectors implemented in `detection/todo_detector.go` and `detection/legacy_detector.go`
 - MultiDetector dispatches to both in `detection/multidetector.go`
@@ -55,14 +57,14 @@ No code changes needed. Documented in CI commit message.
 
 ### Verification Matrix
 
-| Check | Result |
-|---|---|
-| `art-dupl -t 30 . --semantic --sort total-tokens` | 0 clone groups |
+| Check                                             | Result                               |
+| ------------------------------------------------- | ------------------------------------ |
+| `art-dupl -t 30 . --semantic --sort total-tokens` | 0 clone groups                       |
 | `art-dupl -t 20 . --semantic --sort total-tokens` | 4 groups (all acceptable per policy) |
-| `go test -count=1 ./...` | 22 packages pass |
-| `go vet ./...` | Clean |
-| `golangci-lint run ./...` | 0 issues |
-| Average test coverage | 70.2% across 25 packages |
+| `go test -count=1 ./...`                          | 22 packages pass                     |
+| `go vet ./...`                                    | Clean                                |
+| `golangci-lint run ./...`                         | 0 issues                             |
+| Average test coverage                             | 70.2% across 25 packages             |
 
 ---
 
@@ -73,6 +75,7 @@ No code changes needed. Documented in CI commit message.
 **Status:** Attempted and reverted. Architecture fully researched and documented.
 
 **What was done:**
+
 - Deep analysis of all `syntax.Node` dependencies in `printer/`
 - Mapped every `[][]*syntax.Node` reference (139 total: 31 non-test, 108 test)
 - Identified 6 external callers in `cmd/` (the actual "seam" for the refactor)
@@ -92,6 +95,7 @@ No code changes needed. Documented in CI commit message.
 **Status:** Not started. Blocked on Item #1 (depends on Printer DTO refactor).
 
 **The 3 parallel Clone types identified:**
+
 1. `printer.clone` (unexported) — `struct { fragment []byte }`
 2. `printer.CloneGroup` / `printer.JSONClone` — JSON-oriented output types
 3. `pkg/artdupl.Clone` / `pkg/artdupl.CloneGroup` — SDK types with `IsValid()` validation
@@ -108,11 +112,13 @@ Nothing new from the user's paste_1.txt beyond what's documented above. Items 3 
 ### TODO_LIST.md Items (Last Updated 2026-05-23, 12 Days Stale)
 
 **🔴 HIGH Priority (3 items, untouched):**
+
 - [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node (111 test call sites)
 - [ ] Consolidate three parallel Clone types
 - [ ] Implement TokenValue type with validation
 
 **🟡 MEDIUM Priority (6 items, untouched):**
+
 - [ ] Implement CSV output format properly using `encoding/csv`
 - [ ] Unify enum patterns
 - [ ] Optimize memory layouts for SIMD-friendly data structures
@@ -121,6 +127,7 @@ Nothing new from the user's paste_1.txt beyond what's documented above. Items 3 
 - [ ] Split printer/stats_test.go (975L → 3 files)
 
 **🟢 LOW Priority (9 items, untouched):**
+
 - [ ] Refactor syntax/golang/transform.go (369L, 300L switch)
 - [ ] Fix remaining LSP hints
 - [ ] Create domain.HealthScore typed enum
@@ -234,13 +241,13 @@ Nothing new from the user's paste_1.txt beyond what's documented above. Items 3 
 
 The 5-PR plan is:
 
-| PR | Scope | Risk | Estimated Effort |
-|---|---|---|---|
-| A | Extract classify.go + actionability.go | Low (re-exports + test fixes) | ~20 files |
-| B | Convert test infra to domain types | Medium (29 test files) | ~40 call sites |
-| C | Move clone_processor + file_processor + extract.go | Medium (cmd/ callers) | ~10 files |
-| D | Move groups.go + sorter.go | Low (2 cmd/ files) | ~5 files |
-| E | Consolidate Clone types | High (SDK + printer API) | ~30 files |
+| PR  | Scope                                              | Risk                          | Estimated Effort |
+| --- | -------------------------------------------------- | ----------------------------- | ---------------- |
+| A   | Extract classify.go + actionability.go             | Low (re-exports + test fixes) | ~20 files        |
+| B   | Convert test infra to domain types                 | Medium (29 test files)        | ~40 call sites   |
+| C   | Move clone_processor + file_processor + extract.go | Medium (cmd/ callers)         | ~10 files        |
+| D   | Move groups.go + sorter.go                         | Low (2 cmd/ files)            | ~5 files         |
+| E   | Consolidate Clone types                            | High (SDK + printer API)      | ~30 files        |
 
 PR-A is the safest starting point — it removes the `syntax/golang` import from printer/ without moving any node-processing code. After PR-A, each subsequent PR builds on the previous one.
 
@@ -264,6 +271,7 @@ df7bbe9 refactor(printer,cmd): extract error-wrapping helpers to eliminate dupli
 ```
 
 **Untracked files:**
+
 - `docs/planning/html-to-templ-migration.md` (planning doc, not yet tracked)
 
 ---

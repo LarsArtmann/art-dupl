@@ -534,19 +534,16 @@ function copyCode(elementId) {
 	});
 }
 function showDiff(index, groupId) {
-	// Hide all diff comparisons for this group
 	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupId + '-"]');
 	comparisons.forEach(function(comp) {
 		comp.classList.remove('active');
 	});
-	// Show selected comparison
 	const selected = document.getElementById('diff-compare-' + groupId + '-' + index);
 	if (selected) {
 		selected.classList.add('active');
 	}
 }
 
-// Diff view mode toggle: side-by-side vs inline
 function toggleDiffView(groupId, mode) {
 	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupId + '-"]');
 	comparisons.forEach(function(comp) {
@@ -560,7 +557,6 @@ function toggleDiffView(groupId, mode) {
 		}
 	});
 
-	// Update toggle button states
 	const buttons = document.querySelectorAll('[id^="diff-toggle-' + groupId + '-"]');
 	buttons.forEach(function(btn) {
 		btn.classList.remove('active');
@@ -569,17 +565,13 @@ function toggleDiffView(groupId, mode) {
 		}
 	});
 
-	// Save preference
 	try {
 		localStorage.setItem('artdupl-diff-mode', mode);
 	} catch (e) {
-		// Ignore localStorage errors
 	}
 }
 
-// Filter clones by test/prod or category
 function filterClones(filter) {
-	// Update active button state
 	document.querySelectorAll('.filter-btn').forEach(function(btn) {
 		btn.classList.remove('active');
 		if (btn.dataset.filter === filter) {
@@ -587,7 +579,6 @@ function filterClones(filter) {
 		}
 	});
 
-	// Filter clone groups
 	document.querySelectorAll('.clone-group').forEach(function(group) {
 		if (filter === 'all') {
 			group.style.display = '';
@@ -602,17 +593,14 @@ function filterClones(filter) {
 	});
 }
 
-// Initialize diff view mode from saved preference
 document.addEventListener('DOMContentLoaded', function() {
 	try {
 		const savedMode = localStorage.getItem('artdupl-diff-mode');
 		if (savedMode === 'inline') {
-			// Apply inline mode to all diff comparisons
 			const allContents = document.querySelectorAll('.diff-content');
 			allContents.forEach(function(content) {
 				content.classList.add('inline');
 			});
-			// Update all toggle buttons
 			const allToggles = document.querySelectorAll('.diff-view-toggle button');
 			allToggles.forEach(function(btn) {
 				btn.classList.remove('active');
@@ -622,10 +610,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 		}
 	} catch (e) {
-		// Ignore localStorage errors
 	}
 
-	// Move summary section to top (after header)
 	var summary = document.querySelector('.summary-section');
 	var statsGrid = document.querySelector('.stats-grid');
 	if (summary && statsGrid) {

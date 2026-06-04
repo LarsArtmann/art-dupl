@@ -6,25 +6,26 @@ Go tool for finding code clones via suffix tree + hash-based detection on ASTs. 
 
 Enduring context that's hard to discover from code. For everything else, see the right file:
 
-| Need | File |
-|------|------|
-| How to use the CLI | `HOW_TO_USE.md` |
-| Testing practices | `TESTING.md` |
-| Feature inventory | `FEATURES.md` |
-| Open work | `TODO_LIST.md` |
-| Long-term ideas | `ROADMAP.md` |
-| SDK design | `SDK_DESIGN.md` |
-| Architecture decisions | `docs/adr/` |
-| Domain language | `docs/DOMAIN_LANGUAGE.md` |
+| Need                   | File                      |
+| ---------------------- | ------------------------- |
+| How to use the CLI     | `HOW_TO_USE.md`           |
+| Testing practices      | `TESTING.md`              |
+| Feature inventory      | `FEATURES.md`             |
+| Open work              | `TODO_LIST.md`            |
+| Long-term ideas        | `ROADMAP.md`              |
+| SDK design             | `SDK_DESIGN.md`           |
+| Architecture decisions | `docs/adr/`               |
+| Domain language        | `docs/DOMAIN_LANGUAGE.md` |
 
 ## Build & Test
 
 ```bash
-just build          # → dist/art-dupl
+just generate      # run templ generate (required before build if .templ files changed)
+just build          # → dist/art-dupl (includes templ generate)
 just test           # tests with coverage
 just check          # lint
-just ci             # format + lint + test
-nix flake check     # reproducible CI
+just ci             # format + lint + test (includes templ generate)
+nix flake check     # reproducible CI (includes templ generate in preBuild)
 ```
 
 ## Architecture
@@ -45,7 +46,7 @@ pkg/artdupl/ Public SDK (Detector interface)
 ## Critical Conventions
 
 - **Idiomatic Go only** — no Result[T], Option[T], railway-oriented programming. Standard `(T, error)` returns.
-- **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it. Semantic is now *faster* than structural (was 9x slower before optimization).
+- **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it. Semantic is now _faster_ than structural (was 9x slower before optimization).
 - **Only `.go` and `.templ` files** are processed by default. Vendor excluded by default (`--vendor` to include).
 - **Generated code filtered by default** (sqlc, templ, protobuf, mockgen, stringer). Override with `--include-*` flags.
 - **Suffix tree uses O(1) map-based transition lookup** (optimized from O(n) linear search).

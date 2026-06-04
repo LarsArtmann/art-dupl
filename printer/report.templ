@@ -1,0 +1,247 @@
+package printer
+
+import "strconv"
+
+script copyCodeScript(elementId string) {
+	const code = document.getElementById(elementId).innerText;
+	navigator.clipboard.writeText(code).then(() => {
+		const btn = event.target;
+		const original = btn.innerText;
+		btn.innerText = '✓ Copied!';
+		setTimeout(() => btn.innerText = original, 2000);
+	});
+}
+
+script toggleDiffViewScript(groupNum int, mode string) {
+	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupNum + '-"]');
+	comparisons.forEach(function(comp) {
+		const content = comp.querySelector('.diff-content');
+		if (content) {
+			if (mode === 'inline') {
+				content.classList.add('inline');
+			} else {
+				content.classList.remove('inline');
+			}
+		}
+	});
+	const buttons = document.querySelectorAll('[id^="diff-toggle-' + groupNum + '-"]');
+	buttons.forEach(function(btn) {
+		btn.classList.remove('active');
+		if (btn.dataset.mode === mode) {
+			btn.classList.add('active');
+		}
+	});
+	try {
+		localStorage.setItem('artdupl-diff-mode', mode);
+	} catch (e) {
+	}
+}
+
+script showDiffScript(index string, groupId int) {
+	const comparisons = document.querySelectorAll('[id^="diff-compare-' + groupId + '-"]');
+	comparisons.forEach(function(comp) {
+		comp.classList.remove('active');
+	});
+	const selected = document.getElementById('diff-compare-' + groupId + '-' + index);
+	if (selected) {
+		selected.classList.add('active');
+	}
+}
+
+script toggleCollapsed() {
+	this.parentElement.classList.toggle('collapsed');
+}
+
+templ cloneGroupFull(data CloneGroupViewData) {
+	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+		<div class="clone-header" onclick={ toggleCollapsed() }>
+			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
+			<div class="badge-group">
+				@templ.Raw(data.BadgesHTML)
+				<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
+			</div>
+		</div>
+		<div class="clone-body">
+			if data.Suggestion != "" {
+				<div class="suggestion">💡 { data.Suggestion }</div>
+			}
+			for i, cl := range data.Clones {
+				@cloneOccurrence(cl, data.GroupNum, i)
+			}
+		</div>
+	</div>
+}
+
+templ cloneGroupDiffFull(data CloneGroupViewData, diffData DiffViewData) {
+	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+		<div class="clone-header" onclick={ toggleCollapsed() }>
+			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
+			<div class="badge-group">
+				@templ.Raw(data.BadgesHTML)
+				<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
+			</div>
+		</div>
+		<div class="clone-body">
+			if data.Suggestion != "" {
+				<div class="suggestion">💡 { data.Suggestion }</div>
+			}
+			if len(diffData.Others) == 0 {
+				for i, cl := range data.Clones {
+					@cloneOccurrence(cl, data.GroupNum, i)
+				}
+			} else {
+				@diffViewContent(diffData)
+			}
+		</div>
+	</div>
+}
+
+templ cloneOccurrence(cl CloneOccurrenceData, groupNum int, index int) {
+	<div class="occurrence">
+		<div class="file-link">
+			<a href={ cl.VSCodeLink } title="Open in VSCode">{ cl.Filename }:{ strconv.Itoa(cl.LineStart) }</a>
+			<button class="copy-btn" onclick={ copyCodeScript("code-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index)) }>📋 Copy</button>
+		</div>
+		<pre><code id={ "code-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>{ cl.Fragment }</code></pre>
+	</div>
+}
+
+templ diffViewContent(data DiffViewData) {
+	<div class="diff-mode">
+		<div class="diff-base-header">
+			<span class="label">📋 BASE REFERENCE</span>
+			<div class="file-info"><a href={ safeVSCodeURL(data.Base.Filename, data.Base.LineStart) }>{ data.Base.Filename }:{ strconv.Itoa(data.Base.LineStart) }</a></div>
+		</div>
+		if data.AggregateStats.HasStats {
+			<div class="diff-aggregate-stats">
+				if data.AggregateStats.TotalAdded > 0 {
+					<span class="added">+{ strconv.Itoa(data.AggregateStats.TotalAdded) } added</span>
+				}
+				if data.AggregateStats.TotalRemoved > 0 {
+					<span class="removed">-{ strconv.Itoa(data.AggregateStats.TotalRemoved) } removed</span>
+				}
+				if data.AggregateStats.TotalModified > 0 {
+					<span class="modified">~{ strconv.Itoa(data.AggregateStats.TotalModified) } modified</span>
+				}
+			</div>
+		}
+		<div class="diff-view-toggle">
+			<button id={ "diff-toggle-" + strconv.Itoa(data.GroupNum) + "-side" } class="active" data-mode="side" onclick={ toggleDiffViewScript(data.GroupNum, "side") }>◫ Side by Side</button>
+			<button id={ "diff-toggle-" + strconv.Itoa(data.GroupNum) + "-inline" } data-mode="inline" onclick={ toggleDiffViewScript(data.GroupNum, "inline") }>▣ Inline</button>
+		</div>
+		if len(data.Others) > 1 {
+			<div class="diff-selector">
+				<select id={ "diff-select-" + strconv.Itoa(data.GroupNum) } onchange={ showDiffScript("this.value", data.GroupNum) }>
+					<option value="" disabled selected>Compare with...</option>
+					for i, other := range data.Others {
+						<option value={ strconv.Itoa(i) }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</option>
+					}
+				</select>
+			</div>
+		}
+		for i, other := range data.Others {
+			@diffComparison(data.GroupNum, other, i, len(data.Others))
+		}
+		<div class="diff-legend">
+			<div class="diff-legend-item"><div class="diff-legend-color added"></div>Added</div>
+			<div class="diff-legend-item"><div class="diff-legend-color removed"></div>Removed</div>
+			<div class="diff-legend-item"><div class="diff-legend-color modified"></div>Modified</div>
+		</div>
+	</div>
+}
+
+templ diffComparison(groupNum int, other CloneDiff, index int, total int) {
+	{{
+		activeClass := "active"
+		if total > 1 && index > 0 {
+			activeClass = ""
+		}
+		otherVSCode := safeVSCodeURL(other.Filename, other.LineStart)
+	}}
+	<div class={ "diff-comparison " + activeClass } id={ "diff-compare-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>
+		<div class="diff-header">
+			<span class="file-info"><a href={ otherVSCode }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</a></span>
+			<span class="diff-stats">
+				{{ added, removed, modified := countDiffStats(other.Diff) }}
+				if added > 0 {
+					<span class="added">+{ strconv.Itoa(added) }</span>
+				}
+				if removed > 0 {
+					<span class="removed">-{ strconv.Itoa(removed) }</span>
+				}
+				if modified > 0 {
+					<span class="modified">~{ strconv.Itoa(modified) }</span>
+				}
+			</span>
+		</div>
+		<div class="diff-content" data-diff-index={ strconv.Itoa(index) }>
+			@diffPanelsWithWordDiff(other)
+		</div>
+	</div>
+}
+
+templ diffPanelsWithWordDiff(other CloneDiff) {
+	{{
+		baseLines := other.Diff.Base
+		comparedLines := other.Diff.Compared
+	}}
+	<div class="diff-panel base">
+		<div class="diff-panel-title">Base Reference</div>
+		<pre>
+			<code>
+				for i, line := range baseLines {
+					{{
+						typeClass := diffLineTypeClass(line.Type)
+						content := diffLineContent(line, i, comparedLines, true)
+					}}
+					<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
+</span></div>
+				}
+			</code>
+		</pre>
+	</div>
+	<div class="diff-panel compared">
+		<div class="diff-panel-title">Compared</div>
+		<pre>
+			<code>
+				for i, line := range comparedLines {
+					{{
+						typeClass := diffLineTypeClass(line.Type)
+						content := diffLineContent(line, i, baseLines, false)
+					}}
+					<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
+</span></div>
+				}
+			</code>
+		</pre>
+	</div>
+}
+
+templ diffViewToggle(groupNum int) {
+	<div class="diff-view-toggle">
+		<button id={ "diff-toggle-" + strconv.Itoa(groupNum) + "-side" } class="active" data-mode="side" onclick={ toggleDiffViewScript(groupNum, "side") }>◫ Side by Side</button>
+		<button id={ "diff-toggle-" + strconv.Itoa(groupNum) + "-inline" } data-mode="inline" onclick={ toggleDiffViewScript(groupNum, "inline") }>▣ Inline</button>
+	</div>
+}
+
+templ diffSelectorTempl(data DiffViewData) {
+	<div class="diff-selector">
+		<select id={ "diff-select-" + strconv.Itoa(data.GroupNum) } onchange={ showDiffScript("this.value", data.GroupNum) }>
+			<option value="" disabled selected>Compare with...</option>
+			for i, other := range data.Others {
+				<option value={ strconv.Itoa(i) }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</option>
+			}
+		</select>
+	</div>
+}
+
+templ renderDiffLinesTempl(lines []DiffLine, oppositeLines []DiffLine, isBasePanel bool) {
+	for i, line := range lines {
+		{{
+			typeClass := diffLineTypeClass(line.Type)
+			content := diffLineContent(line, i, oppositeLines, isBasePanel)
+		}}
+		<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
+</span></div>
+	}
+}

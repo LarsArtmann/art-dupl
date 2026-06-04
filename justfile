@@ -33,11 +33,15 @@ check:
     golangci-lint run
 
 # Build the binary with optimization flags
-build:
+build: generate
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p dist/
     go build -ldflags "-s -w" -trimpath -o dist/art-dupl ./cmd/art-dupl
+
+# Generate templ files
+generate:
+    templ generate
 
 # Install dependencies
 deps:
@@ -101,7 +105,7 @@ fmt:
     gofmt -s -w .
 
 # Run all checks (format, lint, test)
-ci: fmt check test
+ci: generate fmt check test
 
 # Build for different platforms
 build-all:

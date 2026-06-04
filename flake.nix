@@ -42,6 +42,8 @@
 
           go = goPkg;
 
+          nativeBuildInputs = [ pkgs.templ ];
+
           src = pkgs.lib.cleanSource ./.;
 
           # Private Go modules can't be fetched inside the Nix sandbox (no SSH).
@@ -71,6 +73,7 @@
           };
 
           preBuild = ''
+            templ generate
             chmod -R u+w vendor
             rm -rf vendor/github.com/LarsArtmann/gogenfilter/v3
             mkdir -p vendor/github.com/LarsArtmann/gogenfilter/v3
@@ -148,6 +151,7 @@
               bc
               git
               gopls
+              templ
             ];
 
             env = {
