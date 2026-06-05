@@ -194,8 +194,12 @@ templ diffPanelsWithWordDiff(other CloneDiff) {
 						typeClass := diffLineTypeClass(line.Type)
 						content := diffLineContent(line, i, comparedLines, true)
 					}}
-					<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
-</span></div>
+					<div class={ "diff-line " + typeClass }>
+						<span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span>
+						<span class="diff-line-content">
+							@templ.Raw(content)
+						</span>
+					</div>
 				}
 			</code>
 		</pre>
@@ -209,8 +213,12 @@ templ diffPanelsWithWordDiff(other CloneDiff) {
 						typeClass := diffLineTypeClass(line.Type)
 						content := diffLineContent(line, i, baseLines, false)
 					}}
-					<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
-</span></div>
+					<div class={ "diff-line " + typeClass }>
+						<span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span>
+						<span class="diff-line-content">
+							@templ.Raw(content)
+						</span>
+					</div>
 				}
 			</code>
 		</pre>
@@ -241,7 +249,11 @@ templ renderDiffLinesTempl(lines []DiffLine, oppositeLines []DiffLine, isBasePan
 			typeClass := diffLineTypeClass(line.Type)
 			content := diffLineContent(line, i, oppositeLines, isBasePanel)
 		}}
-		<div class={ "diff-line " + typeClass }><span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span><span class="diff-line-content">@templ.Raw(content)
-</span></div>
+		<div class={ "diff-line " + typeClass }>
+			<span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span>
+			<span class="diff-line-content">
+				@templ.Raw(content)
+			</span>
+		</div>
 	}
 }
