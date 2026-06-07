@@ -105,7 +105,7 @@
             homepage = "https://github.com/LarsArtmann/art-dupl";
             license = licenses.mit;
             mainProgram = "art-dupl";
-            maintainers = [ ];
+            maintainers = [ lib.maintainers.larsartmann ];;
             platforms = platforms.all;
           };
         };
@@ -124,17 +124,21 @@
           ...
         }:
         let
-          goPkg = pkgs.go_1_26 or pkgs.go;
+          goPkg = goPkg or goPkg;
         in
         {
           treefmt = {
             projectRootFile = "go.mod";
             programs = {
               gofumpt.enable = true;
+              goimports.enable = true;
+              templ.enable = true;
               nixfmt.enable = true;
             };
           };
 
+          checks.format = config.treefmt.build.check self;
+          checks.build = config.packages.default;
           packages = {
             default = mkPackage pkgs;
             art-dupl = mkPackage pkgs;
@@ -185,11 +189,12 @@
               packages = [
                 goPkg
                 pkgs.golangci-lint
+              templ
               ];
 
               GOWORK = "off";
-            };
-          };
+            GOPRIVATE = "github.com/LarsArtmann/*";
+            };          };
 
           checks = {
             build = config.packages.default;
@@ -230,7 +235,7 @@
           };
         };
 
-      flake.overlays.default = final: prev: {
+      flake.overlays.default = final: _prev: {
         art-dupl = mkPackage final;
       };
     };
