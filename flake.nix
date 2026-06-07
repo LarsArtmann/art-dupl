@@ -3,6 +3,15 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+    systems.url = "github:nix-systems/default";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     gogenfilter = {
       url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=8788d6c7732b51abadc6cc97d5b5e6f91243b040";
       flake = false;
@@ -10,47 +19,35 @@
   };
 
   outputs =
-    {
+    inputs@{
       self,
       nixpkgs,
+      flake-parts,
+      systems,
+      treefmt-nix,
       gogenfilter,
     }:
     let
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      lib = nixpkgs.lib;
 
-      # gogenfilter's go.mod and go.sum are read at Nix evaluation time so the
-      # dummy is always in sync — no manual maintenance when deps change.
+      version = "0.2.0";
+
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";
 
       mkPackage =
-        system:
+        pkgs:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
-          goPkg = pkgs.go_1_26 or pkgs.go;
-          version = "0.2.0";
+          buildGoModule = pkgs.buildGoModule;
         in
-        pkgs.buildGoModule {
+        buildGoModule {
           pname = "art-dupl";
           inherit version;
 
-          go = goPkg;
-
           nativeBuildInputs = [ pkgs.templ ];
 
-          src = pkgs.lib.cleanSource ./.;
+          src = lib.cleanSource ./.;
 
-          # Private Go modules can't be fetched inside the Nix sandbox (no SSH).
-          # Strategy: gogenfilter is pre-fetched as a flake input (via SSH during
-          # evaluation). The goModules derivation uses a dummy local replace so it
-          # can vendor all public deps without network access to the private repo.
-          # The main build then swaps in the real gogenfilter from the flake input.
           vendorHash = "sha256-0T74NtbVIYkyOdPvMDrSUvioDOyGVV9XjxT4jtAczB0=";
 
           overrideModAttrs = old: {
@@ -94,10 +91,9 @@
 
           subPackages = [ "cmd/art-dupl" ];
 
-          # Tests are run via checks, not during build
           doCheck = false;
 
-          meta = with pkgs.lib; {
+          meta = with lib; {
             description = "Fast, type-safe code duplication detector for Go projects";
             longDescription = ''
               art-dupl is a modern code duplication detection tool for Go source files.
@@ -114,125 +110,128 @@
           };
         };
     in
-    {
-      # Packages: the main binary
-      packages = forAllSystems (system: {
-        default = mkPackage system;
-        art-dupl = mkPackage system;
-      });
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import systems;
 
-      # Apps: run directly with `nix run github:LarsArtmann/art-dupl`
-      apps = forAllSystems (system: {
-        default = {
-          type = "app";
-          program = "${self.packages.${system}.default}/bin/art-dupl";
-        };
-        art-dupl = {
-          type = "app";
-          program = "${self.packages.${system}.default}/bin/art-dupl";
-        };
-      });
+      imports = [
+        treefmt-nix.flakeModule
+      ];
 
-      # Dev shell: full development environment
-      devShells = forAllSystems (
-        system:
+      perSystem =
+        {
+          config,
+          pkgs,
+          ...
+        }:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
           goPkg = pkgs.go_1_26 or pkgs.go;
         in
         {
-          default = pkgs.mkShell {
-            name = "art-dupl-dev";
+          treefmt = {
+            projectRootFile = "go.mod";
+            programs = {
+              gofumpt.enable = true;
+              nixfmt.enable = true;
+            };
+          };
 
-            packages = with pkgs; [
-              goPkg
-              golangci-lint
-              just
-              bc
-              git
-              gopls
-              templ
-            ];
+          packages = {
+            default = mkPackage pkgs;
+            art-dupl = mkPackage pkgs;
+          };
 
-            env = {
-              CGO_ENABLED = 0;
-              GOTOOLCHAIN = "local";
-              GOWORK = "off";
-              GOPRIVATE = "github.com/LarsArtmann/*";
+          apps = {
+            default = {
+              type = "app";
+              program = "${self.packages.${pkgs.stdenv.system}.default}/bin/art-dupl";
+            };
+            art-dupl = {
+              type = "app";
+              program = "${self.packages.${pkgs.stdenv.system}.default}/bin/art-dupl";
+            };
+          };
+
+          devShells = {
+            default = pkgs.mkShell {
+              name = "art-dupl-dev";
+
+              packages = with pkgs; [
+                goPkg
+                golangci-lint
+                bc
+                git
+                gopls
+                templ
+              ];
+
+              env = {
+                CGO_ENABLED = 0;
+                GOTOOLCHAIN = "local";
+                GOWORK = "off";
+                GOPRIVATE = "github.com/LarsArtmann/*";
+              };
+
+              shellHook = ''
+                echo ""
+                echo "art-dupl development shell"
+                echo "=========================="
+                echo "Go:            $(go version)"
+                echo "golangci-lint: $(golangci-lint --version | head -1)"
+                echo ""
+              '';
             };
 
-            shellHook = ''
-              echo ""
-              echo "art-dupl development shell"
-              echo "=========================="
-              echo "Go:            $(go version)"
-              echo "golangci-lint: $(golangci-lint --version | head -1)"
-              echo "just:          $(just --version)"
-              echo ""
-              echo "Run 'just --list' to see available recipes"
-              echo ""
+            ci = pkgs.mkShellNoCC {
+              packages = [
+                goPkg
+                pkgs.golangci-lint
+              ];
+
+              GOWORK = "off";
+            };
+          };
+
+          checks = {
+            build = config.packages.default;
+
+            test = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-test";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                go test ./...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
+            lint = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-lint";
+              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];
+              GOCACHE = "/tmp/go-build";
+              GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
+              buildPhase = ''
+                runHook preBuild
+                golangci-lint run --timeout 5m ./...
+                runHook postBuild
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
+            fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
+              cd ${pkgs.lib.cleanSource ./.}
+              test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
+              touch $out
             '';
           };
-        }
-      );
+        };
 
-      # Checks: run with `nix flake check`
-      checks = forAllSystems (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          goPkg = pkgs.go_1_26 or pkgs.go;
-          pkg = self.packages.${system}.default;
-        in
-        {
-          # Build check: verifies the package compiles
-          build = pkg;
-
-          # Test check: runs the test suite
-          test = pkg.overrideAttrs (old: {
-            name = "${old.pname}-test";
-            doCheck = true;
-            checkPhase = ''
-              runHook preCheck
-              go test ./...
-              runHook postCheck
-            '';
-            installPhase = ''
-              touch $out
-            '';
-          });
-
-          # Lint check: runs golangci-lint
-          lint = pkg.overrideAttrs (old: {
-            name = "${old.pname}-lint";
-            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];
-            GOCACHE = "/tmp/go-build";
-            GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
-            buildPhase = ''
-              runHook preBuild
-              golangci-lint run --timeout 5m ./...
-              runHook postBuild
-            '';
-            installPhase = ''
-              touch $out
-            '';
-          });
-
-          # Format check: verifies Go code is formatted
-          fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
-            cd ${pkgs.lib.cleanSource ./.}
-            test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
-            touch $out
-          '';
-        }
-      );
-
-      # Overlay: use with `pkgs.art-dupl` after applying overlay
-      overlays.default = final: prev: {
-        art-dupl = self.packages.${prev.stdenv.hostPlatform.system}.default;
+      flake.overlays.default = final: prev: {
+        art-dupl = mkPackage final;
       };
-
-      # Formatter: `nix fmt` formats .nix files
-      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
     };
 }
