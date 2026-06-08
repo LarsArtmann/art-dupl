@@ -105,7 +105,7 @@
             homepage = "https://github.com/LarsArtmann/art-dupl";
             license = licenses.mit;
             mainProgram = "art-dupl";
-            maintainers = [ lib.maintainers.larsartmann ];;
+            maintainers = [ lib.maintainers.larsartmann ];
             platforms = platforms.all;
           };
         };
