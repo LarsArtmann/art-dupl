@@ -14,6 +14,7 @@ const (
 	CategoryConditional CloneCategory = "conditional"
 	CategoryAssignment  CloneCategory = "assignment"
 	CategoryExpression  CloneCategory = "expression"
+	CategoryIdiom       CloneCategory = "idiom"
 	CategoryUnknown     CloneCategory = "unknown"
 )
 
@@ -90,6 +91,8 @@ func (c CloneCategory) GetCategoryEmoji() string {
 		return "\U0001f4dd"
 	case CategoryExpression:
 		return "\U0001f4ca"
+	case CategoryIdiom:
+		return "\U0001f4a0"
 	case CategoryUnknown:
 		return "\U0001f4c4"
 	default:

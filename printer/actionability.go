@@ -12,6 +12,14 @@ const cleanupMethodName = "Unlock"
 // processOrderMethodName is a non-RAII method name for testing.
 const processOrderMethodName = "processOrder"
 
+// baseTypeOf extracts the base AST node type from a syntax.Node,
+// decoding any semantic encoding (identifier hash, operator hash) that
+// may be baked into the upper bits of Type. This ensures type comparisons
+// work correctly in both semantic and structural detection modes.
+func baseTypeOf(n *syntax.Node) int32 {
+	return golang.DecodeBaseType(n.Type)
+}
+
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
 //
@@ -56,7 +64,7 @@ func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
 		}
 
 		root := seq[0]
-		if root.Type != golang.FuncDecl {
+		if baseTypeOf(root) != golang.FuncDecl {
 			return false
 		}
 
@@ -75,7 +83,7 @@ func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
 // beyond the signature itself.
 func hasRealBody(node *syntax.Node) bool {
 	for _, child := range node.Children {
-		if child.Type == golang.BlockStmt && len(child.Children) > 0 {
+				if child.Type == golang.BlockStmt && len(child.Children) > 0 {
 			return true
 		}
 	}
@@ -95,7 +103,7 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 			return false
 		}
 
-		if seq[0].Type != golang.DeferStmt {
+		if baseTypeOf(seq[0]) != golang.DeferStmt {
 			return false
 		}
 
@@ -110,9 +118,9 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 // isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
 func isRAIIDeferCall(node *syntax.Node) bool {
 	for _, child := range node.Children {
-		if child.Type == golang.CallExpr {
+				if baseTypeOf(child) == golang.CallExpr {
 			for _, arg := range child.Children {
-				if arg.Type == golang.SelectorExpr && isCleanupMethod(arg.Name) {
+				if baseTypeOf(arg) == golang.SelectorExpr && isCleanupMethod(arg.Name) {
 					return true
 				}
 			}
@@ -141,7 +149,7 @@ func isPureErrorPropagation(nodeSeqs [][]*syntax.Node) bool {
 		}
 
 		root := seq[0]
-		if root.Type != golang.IfStmt {
+		if baseTypeOf(root) != golang.IfStmt {
 			return false
 		}
 
@@ -166,7 +174,7 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 	)
 
 	for _, child := range node.Children {
-		switch child.Type {
+		switch baseTypeOf(child) {
 		case golang.BinaryExpr:
 			if containsNilIdentifier(child) {
 				hasNilCompare = true
@@ -176,14 +184,10 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 				hasReturnErr = true
 			}
 		case golang.IfStmt:
-			// Any nested IfStmt in children means this is not a simple
-			// error propagation pattern.
 			return false
 		default:
-			// If there's any other significant child besides condition
-			// and body, this isn't pure error propagation.
-			if child.Type != golang.AssignStmt &&
-				child.Type != golang.DeclStmt {
+			if baseTypeOf(child) != golang.AssignStmt &&
+				baseTypeOf(child) != golang.DeclStmt {
 				hasElse = true
 			}
 		}
@@ -197,7 +201,7 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 // rather than just checking for any Ident node.
 func containsNilIdentifier(node *syntax.Node) bool {
 	for _, child := range node.Children {
-		if child.Type == golang.Ident && child.Name == "nil" {
+		if baseTypeOf(child) == golang.Ident && child.Name == "nil" {
 			return true
 		}
 	}
@@ -212,14 +216,14 @@ func isReturnOrWrappedReturn(node *syntax.Node) bool {
 	}
 
 	// Allow single return statement.
-	if len(node.Children) == 1 && node.Children[0].Type == golang.ReturnStmt {
+	if len(node.Children) == 1 && baseTypeOf(node.Children[0]) == golang.ReturnStmt {
 		return true
 	}
 
 	// Allow return with a CallExpr (e.g., return fmt.Errorf("...")).
 	if len(node.Children) == 1 {
 		child := node.Children[0]
-		if child.Type == golang.ReturnStmt || child.Type == golang.CallExpr {
+		if baseTypeOf(child) == golang.ReturnStmt || baseTypeOf(child) == golang.CallExpr {
 			return true
 		}
 	}

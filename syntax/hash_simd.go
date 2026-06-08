@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"encoding/binary"
 	"sync"
 
 	"github.com/LarsArtmann/art-dupl/pkg/format"
@@ -9,12 +10,11 @@ import (
 
 // hashPool is a sync.Pool for reusing byte slices in hashSeq operations.
 // This reduces memory allocations for hash operations.
-//
 
 var hashPool = sync.Pool{
 	New: func() any {
-		// Pre-allocate for common sizes (up to 10,000 nodes)
-		buf := make([]byte, 0, 10_000)
+		// Pre-allocate for common sizes (up to 10,000 nodes * 4 bytes = 40KB)
+		buf := make([]byte, 0, 40_000)
 
 		return &buf
 	},
@@ -23,19 +23,19 @@ var hashPool = sync.Pool{
 // hashSeq computes an XXH3 hash of a sequence of nodes.
 // This is the main hashing operation in the duplicate detection pipeline.
 //
-// Performance characteristics:
-// - O(n) time complexity where n is the number of nodes
-// - O(1) additional space (reuses pooled buffers)
-// - Uses SIMD-optimized XXH3 hashing (~20x faster than SHA-256)
+// Each node contributes 4 bytes (full int32 Type) to the hash, preserving
+// semantic encoding (identifier hashes, operator hashes) that would be
+// lost if only the lower 8 bits were used.
 //
-// This function is called frequently during clone detection and has been
-// identified as a primary performance bottleneck (96.33% of allocations).
+// Performance characteristics:
+//   - O(n) time complexity where n is the number of nodes
+//   - O(1) additional space (reuses pooled buffers)
+//   - Uses SIMD-optimized XXH3 hashing (~20x faster than SHA-256)
 func hashSeq(nodes []*Node) string {
 	if len(nodes) == 0 {
 		return ""
 	}
 
-	// Prepare byte array for hashing
 	// Extract byte slice from pool to reduce allocations
 	rawBuf := hashPool.Get()
 
@@ -51,16 +51,18 @@ func hashSeq(nodes []*Node) string {
 		hashPool.Put(bufPtr)
 	}()
 
+	// Each node contributes 4 bytes (full int32 Type)
+ needed := len(nodes) * 4
+
 	// Ensure buffer has sufficient capacity
-	if cap(buf) < len(nodes) {
-		buf = make([]byte, len(nodes))
+	if cap(buf) < needed {
+		buf = make([]byte, needed)
 	} else {
-		buf = buf[:len(nodes)]
+		buf = buf[:needed]
 	}
 
 	for i, node := range nodes {
-		//nolint:gosec // G115: Safe - node.Type is NodeType (uint8), always fits in byte
-		buf[i] = byte(node.Type)
+		binary.LittleEndian.PutUint32(buf[i*4:], uint32(node.Type))
 	}
 
 	hash := xxh3.Hash(buf)

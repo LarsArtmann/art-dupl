@@ -156,6 +156,22 @@ var _ = Describe("Semantic Detection", func() {
 				[]string{"crush_mode.go", "safety_mode.go"},
 				[]string{"crush_mode.go", "safety_mode.go"},
 			),
+			Entry(
+				"operator differences: + vs -",
+				"add.go", "sub.go",
+				operatorAddCode, operatorSubCode,
+				"10",
+				[]string{"add.go", "sub.go"},
+				[]string{"add.go", "sub.go"},
+			),
+			Entry(
+				"inverse conditions: >= vs <, == nil vs != nil",
+				"stale.go", "fresh.go",
+				inverseConditionCode1, inverseConditionCode2,
+				"10",
+				[]string{"stale.go", "fresh.go"},
+				[]string{"stale.go", "fresh.go"},
+			),
 		)
 	})
 })

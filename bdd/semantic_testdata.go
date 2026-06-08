@@ -186,4 +186,50 @@ func (sm SafetyMode) IsEnabled() bool {
 func ParseSafetyMode(s string) SafetyMode {
 	return SafetyMode(s)
 }`
+
+	// operatorAddCode and operatorSubCode have identical AST structure
+	// but different operators (+ vs -). In semantic mode, these should NOT
+	// be detected as clones because the operator is encoded into the token.
+	operatorAddCode = `package calc
+
+func sum(a, b int) int {
+	return a + b
+}
+
+func sumAll(items []int) int {
+	total := 0
+	for _, item := range items {
+		total = total + item
+	}
+	return total
+}`
+
+	operatorSubCode = `package calc
+
+func diff(a, b int) int {
+	return a - b
+}
+
+func diffAll(items []int) int {
+	total := 0
+	for _, item := range items {
+		total = total - item
+	}
+	return total
+}`
+
+	// inverseConditionCode1 and inverseConditionCode2 test that logical
+	// inverses (>= vs <, == nil vs != nil) are NOT reported as clones
+	// in semantic mode. This was Group #5 from real-world feedback.
+	inverseConditionCode1 = `package cache
+
+func (c *Cache) IsStale() bool {
+	return c.cached == nil || time.Since(c.cachedAt) >= c.ttl
+}`
+
+	inverseConditionCode2 = `package cache
+
+func (c *Cache) IsFresh() bool {
+	return c.cached != nil && time.Since(c.cachedAt) < c.ttl
+}`
 )

@@ -47,6 +47,9 @@ pkg/artdupl/ Public SDK (Detector interface)
 
 - **Idiomatic Go only** — no Result[T], Option[T], railway-oriented programming. Standard `(T, error)` returns.
 - **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it. Semantic is now _faster_ than structural (was 9x slower before optimization).
+- **Semantic encoding layout**: `[24-bit identifier/operator hash][8-bit base AST node type]`. Identifier names (Ident, SelectorExpr, FuncDecl, TypeSpec) and operators (BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt) are hashed into the upper 24 bits. Consumers comparing node types must use `golang.DecodeBaseType(node.Type)` to extract the base type — never compare raw `node.Type` against `golang.*` constants.
+- **`hashSeq` uses 4 bytes per node** (full int32 Type) to preserve semantic encoding in grouping hashes.
+- **Idiom category**: Clones with <5 tokens are classified as `idiom` (domain.CategoryIdiom) instead of their AST category. These are structural artifacts with near-zero actionability.
 - **Only `.go` and `.templ` files** are processed by default. Vendor excluded by default (`--vendor` to include).
 - **Generated code filtered by default** (sqlc, templ, protobuf, mockgen, stringer). Override with `--include-*` flags.
 - **Suffix tree uses O(1) map-based transition lookup** (optimized from O(n) linear search).
@@ -69,3 +72,4 @@ pkg/artdupl/ Public SDK (Detector interface)
 - **Printer ↔ syntax.Node coupling**: `Printer.PrintClones(dups [][]*syntax.Node)` — all 6 printers depend on AST internals. Fix requires ProcessedClone DTO (111 test call sites). Tracked in TODO_LIST.md.
 - **Three parallel Clone types**: `printer.clone`, `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone` — consolidation blocked on Printer DTO change.
 - **ConstantCSSProperty Pos=0,End=0**: upstream `a-h/templ` limitation (no Range field). Mitigated by inheriting parent CSSTemplate range.
+- **Templ has no semantic mode**: `syntax/templ/` matching is purely structural — no identifier/operator encoding.

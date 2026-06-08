@@ -29,7 +29,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Elt))
 
 	case *ast.AssignStmt:
-		o.Type = AssignStmt
+		o.Type = encodeSemanticType(AssignStmt, n.Tok.String(), t.config.Mode.IsSemantic())
 		for _, e := range n.Rhs {
 			o.AddChildren(t.trans(e))
 		}
@@ -42,7 +42,7 @@ func (t *transformer) trans(
 		o.Type = BasicLit
 
 	case *ast.BinaryExpr:
-		o.Type = BinaryExpr
+		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.X), t.trans(n.Y))
 
 	case *ast.BlockStmt:
@@ -196,7 +196,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Else)
 
 	case *ast.IncDecStmt:
-		o.Type = IncDecStmt
+		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.IndexExpr:
@@ -298,7 +298,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
 
 	case *ast.UnaryExpr:
-		o.Type = UnaryExpr
+		o.Type = encodeSemanticType(UnaryExpr, n.Op.String(), t.config.Mode.IsSemantic())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.ValueSpec:

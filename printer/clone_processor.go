@@ -6,6 +6,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // ErrZeroLengthDuplicate indicates a duplicate group with no nodes was encountered.
@@ -53,7 +54,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 			FileSize:  len(fileInfo.Content),
 			Classification: ClassifyClone(domain.ClassificationInput{
 				Filename: fileInfo.Filename,
-				NodeType: nstart.Type,
+				NodeType: golang.DecodeBaseType(nstart.Type),
 				Tokens:   tokens,
 				Lines:    lines,
 			}),

@@ -17,7 +17,16 @@ const (
 	suggestStrategy          = "Consider strategy pattern or early returns"
 	suggestTestHelper        = "Extract test helper function or use table-driven tests"
 	suggestSharedTestUtility = "Consider extracting to shared test utility"
+	suggestIdiom             = "Structural idiom — typically not actionable"
 )
+
+// idiomTokenThreshold is the maximum number of tokens for a clone to be
+// classified as an "idiom" rather than a specific AST category. At this
+// token count, clones are almost always structural artifacts (function
+// signatures, import patterns, standard library calls) rather than
+// meaningful duplication. Based on real-world feedback showing 100% false
+// positive rate for 2-4 token clones at threshold 15.
+const idiomTokenThreshold = 5
 
 type (
 	CloneCategory       = domain.CloneCategory
@@ -77,6 +86,10 @@ var nodeTypeNames = map[int32]string{
 }
 
 func ClassifyClone(input domain.ClassificationInput) CloneClassification {
+	if input.Tokens < idiomTokenThreshold {
+		return idiomClassification(input)
+	}
+
 	category := nodeTypeToCategory(input.NodeType)
 	isTest := isTestFile(input.Filename)
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
@@ -90,6 +103,20 @@ func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 		Lines:      input.Lines,
 		NodeType:   nodeTypeToString(input.NodeType),
 		Suggestion: suggestion,
+	}
+}
+
+func idiomClassification(input domain.ClassificationInput) CloneClassification {
+	isTest := isTestFile(input.Filename)
+
+	return CloneClassification{
+		Category:   domain.CategoryIdiom,
+		IsTest:     isTest,
+		Priority:   domain.PriorityLow,
+		Tokens:     input.Tokens,
+		Lines:      input.Lines,
+		NodeType:   nodeTypeToString(input.NodeType),
+		Suggestion: suggestIdiom,
 	}
 }
 
@@ -205,6 +232,10 @@ func otherPriority(tokens int) ClonePriority {
 }
 
 func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
+	if category == domain.CategoryIdiom {
+		return suggestIdiom
+	}
+
 	if isTest {
 		if tokens > 50 {
 			return suggestTestHelper
