@@ -39,3 +39,5 @@ result-*
 # Test coverage
 vendor/
 go.work.sum
+# Add pattern for Templ generated files
+*_templ.go
