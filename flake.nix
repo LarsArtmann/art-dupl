@@ -124,7 +124,7 @@
           ...
         }:
         let
-          goPkg = goPkg or goPkg;
+          goPkg = pkgs.go_1_26;
         in
         {
           treefmt = {
@@ -137,8 +137,45 @@
             };
           };
 
-          checks.format = config.treefmt.build.check self;
-          checks.build = config.packages.default;
+          checks = {
+            format = config.treefmt.build.check self;
+            build = config.packages.default;
+
+            test = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-test";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                go test ./...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
+            lint = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-lint";
+              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];
+              GOCACHE = "/tmp/go-build";
+              GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
+              buildPhase = ''
+                runHook preBuild
+                golangci-lint run --timeout 5m ./...
+                runHook postBuild
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
+            fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
+              cd ${pkgs.lib.cleanSource ./.}
+              test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
+              touch $out
+            '';
+          };
+
           packages = {
             default = mkPackage pkgs;
             art-dupl = mkPackage pkgs;
@@ -189,49 +226,12 @@
               packages = [
                 goPkg
                 pkgs.golangci-lint
-              templ
+                pkgs.templ
               ];
 
               GOWORK = "off";
-            GOPRIVATE = "github.com/LarsArtmann/*";
-            };          };
-
-          checks = {
-            build = config.packages.default;
-
-            test = config.packages.default.overrideAttrs (old: {
-              name = "${old.pname}-test";
-              doCheck = true;
-              checkPhase = ''
-                runHook preCheck
-                go test ./...
-                runHook postCheck
-              '';
-              installPhase = ''
-                touch $out
-              '';
-            });
-
-            lint = config.packages.default.overrideAttrs (old: {
-              name = "${old.pname}-lint";
-              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];
-              GOCACHE = "/tmp/go-build";
-              GOLANGCI_LINT_CACHE = "/tmp/golangci-lint-cache";
-              buildPhase = ''
-                runHook preBuild
-                golangci-lint run --timeout 5m ./...
-                runHook postBuild
-              '';
-              installPhase = ''
-                touch $out
-              '';
-            });
-
-            fmt = pkgs.runCommand "art-dupl-fmt" { nativeBuildInputs = [ goPkg ]; } ''
-              cd ${pkgs.lib.cleanSource ./.}
-              test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
-              touch $out
-            '';
+              GOPRIVATE = "github.com/LarsArtmann/*";
+            };
           };
         };
 
