@@ -52,7 +52,7 @@ func hashSeq(nodes []*Node) string {
 	}()
 
 	// Each node contributes 4 bytes (full int32 Type)
- needed := len(nodes) * 4
+	needed := len(nodes) * 4
 
 	// Ensure buffer has sufficient capacity
 	if cap(buf) < needed {
@@ -62,6 +62,7 @@ func hashSeq(nodes []*Node) string {
 	}
 
 	for i, node := range nodes {
+		//nolint:gosec // G115: node.Type bounded by int32
 		binary.LittleEndian.PutUint32(buf[i*4:], uint32(node.Type))
 	}
 

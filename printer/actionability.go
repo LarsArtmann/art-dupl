@@ -83,7 +83,7 @@ func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
 // beyond the signature itself.
 func hasRealBody(node *syntax.Node) bool {
 	for _, child := range node.Children {
-				if child.Type == golang.BlockStmt && len(child.Children) > 0 {
+		if child.Type == golang.BlockStmt && len(child.Children) > 0 {
 			return true
 		}
 	}
@@ -118,7 +118,7 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 // isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
 func isRAIIDeferCall(node *syntax.Node) bool {
 	for _, child := range node.Children {
-				if baseTypeOf(child) == golang.CallExpr {
+		if baseTypeOf(child) == golang.CallExpr {
 			for _, arg := range child.Children {
 				if baseTypeOf(arg) == golang.SelectorExpr && isCleanupMethod(arg.Name) {
 					return true
