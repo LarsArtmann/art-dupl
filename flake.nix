@@ -48,7 +48,7 @@
 
           src = lib.cleanSource ./.;
 
-          vendorHash = "sha256-0T74NtbVIYkyOdPvMDrSUvioDOyGVV9XjxT4jtAczB0=";
+          vendorHash = "sha256-p8mldrn+sJYbpswh29zdEfxsqdBunwOmhWX+vTPZh1U=";
           proxyVendor = true;
 
           overrideModAttrs = old: {
@@ -72,12 +72,9 @@
 
           preBuild = ''
             templ generate
-            chmod -R u+w vendor
-            rm -rf vendor/github.com/LarsArtmann/gogenfilter/v3
-            mkdir -p vendor/github.com/LarsArtmann/gogenfilter/v3
-            cp -r ${gogenfilter}/. vendor/github.com/LarsArtmann/gogenfilter/v3/
-            sed -i 's|=> ./dummy|=> ./vendor/github.com/LarsArtmann/gogenfilter/v3|' vendor/modules.txt
-            go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./vendor/github.com/LarsArtmann/gogenfilter/v3
+            mkdir -p gogenfilter-real
+            cp -r ${gogenfilter}/. gogenfilter-real/
+            go mod edit -replace=github.com/LarsArtmann/gogenfilter/v3=./gogenfilter-real
           '';
 
           ldflags = [
