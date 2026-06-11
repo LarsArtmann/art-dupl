@@ -19,27 +19,27 @@ Ran `art-dupl` on itself (dogfooding). Found **76 clone groups**. Analyzed every
 
 Analyzed all 76 clone groups reported by `art-dupl --semantic --sort total-tokens -t 15 .`:
 
-| Category | Count | Rationale |
-|---|---|---|
-| Interface method signatures (6-way PrintClones) | 1 | All 6 printers implement same `Printer` interface — accepted by design |
-| Public/private wrapper delegation | 1 | `EvaluateActionability` delegates to `EvaluateActionabilityWithLabel` — intentional API boundary |
-| Same domain, different output format (text vs JSON stats) | 2 | Same conditional structure, different renderers |
-| Idiomatic Go flag handling (config_builder.go) | 1 | Standard pattern for different flags |
-| Function type signatures (NodesToGroup, processTestNodes) | 2 | Standard Go signatures — same params, different return semantics |
-| Test table-driven patterns (test struct shape) | ~15 | Same `tests := []struct{name string; seqs [][]*syntax.Node; expected bool}` shape across multiple test functions |
-| Test AST fixture builders | ~25 | Intentionally explicit for readability — each fixture represents a distinct AST pattern |
-| Cross-package test utility call sites | ~4 | Already using `testutil.CreateNodeSlice` shared helper |
-| Single-line idioms (assertions, lipgloss, return types) | ~20 | Go idioms like `if err != nil`, style definitions, error returns — not extractable |
+| Category                                                  | Count | Rationale                                                                                                        |
+| --------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------- |
+| Interface method signatures (6-way PrintClones)           | 1     | All 6 printers implement same `Printer` interface — accepted by design                                           |
+| Public/private wrapper delegation                         | 1     | `EvaluateActionability` delegates to `EvaluateActionabilityWithLabel` — intentional API boundary                 |
+| Same domain, different output format (text vs JSON stats) | 2     | Same conditional structure, different renderers                                                                  |
+| Idiomatic Go flag handling (config_builder.go)            | 1     | Standard pattern for different flags                                                                             |
+| Function type signatures (NodesToGroup, processTestNodes) | 2     | Standard Go signatures — same params, different return semantics                                                 |
+| Test table-driven patterns (test struct shape)            | ~15   | Same `tests := []struct{name string; seqs [][]*syntax.Node; expected bool}` shape across multiple test functions |
+| Test AST fixture builders                                 | ~25   | Intentionally explicit for readability — each fixture represents a distinct AST pattern                          |
+| Cross-package test utility call sites                     | ~4    | Already using `testutil.CreateNodeSlice` shared helper                                                           |
+| Single-line idioms (assertions, lipgloss, return types)   | ~20   | Go idioms like `if err != nil`, style definitions, error returns — not extractable                               |
 
 ### Production Code Deduplication
 
-| Change | File | Before | After |
-|---|---|---|---|
-| Extracted `diffPanel` templ component | `printer/report.templ` | 2 identical diff panel blocks (base + compared) with ~40 lines duplicated | Single `diffPanel` component, called twice with different params |
-| Extracted `mustSelectorExprStmt(filename, name)` | `printer/actionability_patterns_test.go` | `mustTempDirOnly` + `mustAssertionsOnly` were structurally identical except selector name | Both delegate to shared helper |
-| Extracted `mustKeyValueExprFields(names...)` | `printer/actionability_patterns_test.go` | 6 repeated KeyValueExpr AST nodes in `mustDataDominatedSequence` | Variadic helper builds slice from names |
-| Simplified `mustThreeDistinctAssertions` | `printer/actionability_patterns_test.go` | 3 inline `ExprStmt > CallExpr > SelectorExpr` blocks | Uses `mustSelectorExprStmt` for each |
-| Simplified `mustTestScaffolding` | `printer/actionability_patterns_test.go` | 3 inline SelectorExpr assertion blocks | Uses `mustSelectorExprStmt` for WriteFile/NotTo/Equal |
+| Change                                           | File                                     | Before                                                                                    | After                                                            |
+| ------------------------------------------------ | ---------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Extracted `diffPanel` templ component            | `printer/report.templ`                   | 2 identical diff panel blocks (base + compared) with ~40 lines duplicated                 | Single `diffPanel` component, called twice with different params |
+| Extracted `mustSelectorExprStmt(filename, name)` | `printer/actionability_patterns_test.go` | `mustTempDirOnly` + `mustAssertionsOnly` were structurally identical except selector name | Both delegate to shared helper                                   |
+| Extracted `mustKeyValueExprFields(names...)`     | `printer/actionability_patterns_test.go` | 6 repeated KeyValueExpr AST nodes in `mustDataDominatedSequence`                          | Variadic helper builds slice from names                          |
+| Simplified `mustThreeDistinctAssertions`         | `printer/actionability_patterns_test.go` | 3 inline `ExprStmt > CallExpr > SelectorExpr` blocks                                      | Uses `mustSelectorExprStmt` for each                             |
+| Simplified `mustTestScaffolding`                 | `printer/actionability_patterns_test.go` | 3 inline SelectorExpr assertion blocks                                                    | Uses `mustSelectorExprStmt` for WriteFile/NotTo/Equal            |
 
 ### Metrics
 
@@ -50,6 +50,7 @@ Analyzed all 76 clone groups reported by `art-dupl --semantic --sort total-token
 ### Previous Session (Already Committed)
 
 The AST-aware false-positive filtering work from earlier today (commit `8e30d68`) is also fully done:
+
 - 4 AST pattern detectors: `isTestDataFilePair`, `isTableDrivenTestBody`, `isTestScaffolding`, `isDataDominated`
 - Pattern label system with 7 labels
 - 2 new domain categories: `CategoryTestBoilerplate`, `CategoryTestFixture`
@@ -177,53 +178,53 @@ nlreturn:     printer/actionability_patterns_test.go:568 — new helper needs bl
 
 ### Tier 1: Immediate Wins (This Session's Fallout)
 
-| #  | Task | Impact | Effort |
-|---|---|---|---|
-| 1 | **Fix 6 lint issues** — nlreturn in new helper, exhaustive switch, cyclop, 3 godoclint | Clean CI | 30min |
-| 2 | **Update TODO_LIST.md** — Add actionability pattern items, mark completed work | Accuracy | 30min |
-| 3 | **Update FEATURES.md** — Add pattern detection, labels, new categories | Accuracy | 30min |
-| 4 | **Fix `docs/DOMAIN_LANGUAGE.md`** — Fill in real domain terms for art-dupl | Clarity | 1hr |
-| 5 | **Archive `docs/status/` legacy files** — Move 30+ historical files to `docs/status/archive/` | Hygiene | 15min |
+| #   | Task                                                                                          | Impact   | Effort |
+| --- | --------------------------------------------------------------------------------------------- | -------- | ------ |
+| 1   | **Fix 6 lint issues** — nlreturn in new helper, exhaustive switch, cyclop, 3 godoclint        | Clean CI | 30min  |
+| 2   | **Update TODO_LIST.md** — Add actionability pattern items, mark completed work                | Accuracy | 30min  |
+| 3   | **Update FEATURES.md** — Add pattern detection, labels, new categories                        | Accuracy | 30min  |
+| 4   | **Fix `docs/DOMAIN_LANGUAGE.md`** — Fill in real domain terms for art-dupl                    | Clarity  | 1hr    |
+| 5   | **Archive `docs/status/` legacy files** — Move 30+ historical files to `docs/status/archive/` | Hygiene  | 15min  |
 
 ### Tier 2: False-Positive Elimination (Continuing Previous Sprint)
 
-| #  | Task | Impact | Effort |
-|---|---|---|---|
-| 6 | **Validate new patterns against real projects** — Run on 5+ external Go projects, compare false-positive rates | Critical | 1hr |
-| 7 | **CallExpr callee semantic hashing** — Hash function name in semantic mode. Highest-ROI semantic improvement | High | 3hr |
-| 8 | **Add BDD end-to-end tests for actionability** — Parse real Go test files, verify full pipeline classification | High | 2hr |
-| 9 | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map | Medium | 30min |
-| 10 | **Add `--exclude-testdata` CLI flag** — Pre-detection filtering for testdata directories | Medium | 1hr |
+| #   | Task                                                                                                           | Impact   | Effort |
+| --- | -------------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 6   | **Validate new patterns against real projects** — Run on 5+ external Go projects, compare false-positive rates | Critical | 1hr    |
+| 7   | **CallExpr callee semantic hashing** — Hash function name in semantic mode. Highest-ROI semantic improvement   | High     | 3hr    |
+| 8   | **Add BDD end-to-end tests for actionability** — Parse real Go test files, verify full pipeline classification | High     | 2hr    |
+| 9   | **Extract assertion name registry** — Replace switch in `walkForTestScaffoldingSignals` with extensible map    | Medium   | 30min  |
+| 10  | **Add `--exclude-testdata` CLI flag** — Pre-detection filtering for testdata directories                       | Medium   | 1hr    |
 
 ### Tier 3: Architecture
 
-| #  | Task | Impact | Effort |
-|---|---|---|---|
-| 11 | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test sites. #1 TODO item | Very High | 8hr |
-| 12 | **Clone type consolidation** — Merge 3 parallel Clone types into unified domain type | High | 4hr |
-| 13 | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware | Medium | 2hr |
-| 14 | **Fix bufio.Scanner missing sc.Err() check** in `cmd/run_crawl.go:45` | Low | 5min |
-| 15 | **Apply gopls hints** — `slices.Contains` and `stringsseq` in `actionability.go` | Low | 15min |
+| #   | Task                                                                                                  | Impact    | Effort |
+| --- | ----------------------------------------------------------------------------------------------------- | --------- | ------ |
+| 11  | **ProcessedClone DTO migration** — Decouple printers from `syntax.Node`. 111 test sites. #1 TODO item | Very High | 8hr    |
+| 12  | **Clone type consolidation** — Merge 3 parallel Clone types into unified domain type                  | High      | 4hr    |
+| 13  | **Thread PatternLabel into ClassifyClone** — Make per-clone classification pattern-aware              | Medium    | 2hr    |
+| 14  | **Fix bufio.Scanner missing sc.Err() check** in `cmd/run_crawl.go:45`                                 | Low       | 5min   |
+| 15  | **Apply gopls hints** — `slices.Contains` and `stringsseq` in `actionability.go`                      | Low       | 15min  |
 
 ### Tier 4: Semantic Mode
 
-| #  | Task | Impact | Effort |
-|---|---|---|---|
-| 16 | **BasicLit sub-categorization** — Separate string/int/char literal semantic types | Medium | 3hr |
-| 17 | **FuncLit semantic hashing** — Hash function literal signatures for callback-heavy code | Medium | 2hr |
-| 18 | **CompositeLit type hashing** — Hash type name in composite literals | Medium | 1hr |
-| 19 | **Interface method per-name hashing** — Replace `~interface~` with per-method hashing | Low | 2hr |
-| 20 | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions and thresholds | High | 4hr |
+| #   | Task                                                                                    | Impact | Effort |
+| --- | --------------------------------------------------------------------------------------- | ------ | ------ |
+| 16  | **BasicLit sub-categorization** — Separate string/int/char literal semantic types       | Medium | 3hr    |
+| 17  | **FuncLit semantic hashing** — Hash function literal signatures for callback-heavy code | Medium | 2hr    |
+| 18  | **CompositeLit type hashing** — Hash type name in composite literals                    | Medium | 1hr    |
+| 19  | **Interface method per-name hashing** — Replace `~interface~` with per-method hashing   | Low    | 2hr    |
+| 20  | **Config file support** (`.art-dupl.yaml`) — Project-specific exclusions and thresholds | High   | 4hr    |
 
 ### Tier 5: Quality & Infrastructure
 
-| #  | Task | Impact | Effort |
-|---|---|---|---|
-| 21 | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths | Medium | 2hr |
-| 22 | **CSV output using `encoding/csv`** — Replace manual string formatting | Low | 1hr |
-| 23 | **Split `printer/stats_test.go`** (975L → 3 files) | Low | 1hr |
-| 24 | **Write SDK documentation for `pkg/artdupl/`** | Low | 2hr |
-| 25 | **Validate GoReleaser release config** — Ensure release pipeline works | Low | 1hr |
+| #   | Task                                                                                | Impact | Effort |
+| --- | ----------------------------------------------------------------------------------- | ------ | ------ |
+| 21  | **Printer coverage >85%** — Currently 76.7%. Add tests for new classification paths | Medium | 2hr    |
+| 22  | **CSV output using `encoding/csv`** — Replace manual string formatting              | Low    | 1hr    |
+| 23  | **Split `printer/stats_test.go`** (975L → 3 files)                                  | Low    | 1hr    |
+| 24  | **Write SDK documentation for `pkg/artdupl/`**                                      | Low    | 2hr    |
+| 25  | **Validate GoReleaser release config** — Ensure release pipeline works              | Low    | 1hr    |
 
 ---
 
@@ -252,37 +253,37 @@ Coverage:        76.6%-100% across all packages
 
 ## Coverage by Package
 
-| Package | Coverage |
-|---|---|
-| `bdd` | 93.3% |
-| `cache` | 87.3% |
-| `cmd` | 75.3% |
-| `config` | 92.7% |
-| `detection` | 86.7% |
-| `domain` | 91.4% |
-| `errors` | 89.4% |
-| `hash` | 96.6% |
-| `job` | 76.7% |
-| `pkg/artdupl` | 91.1% |
-| `pkg/format` | 100.0% |
-| `pkg/logger` | 87.5% |
-| `pkg/position` | 100.0% |
-| `printer` | 76.6% |
-| `suffixtree` | 91.0% |
-| `syntax` | 93.0% |
-| `syntax/golang` | 94.6% |
-| `syntax/templ` | 84.6% |
+| Package         | Coverage |
+| --------------- | -------- |
+| `bdd`           | 93.3%    |
+| `cache`         | 87.3%    |
+| `cmd`           | 75.3%    |
+| `config`        | 92.7%    |
+| `detection`     | 86.7%    |
+| `domain`        | 91.4%    |
+| `errors`        | 89.4%    |
+| `hash`          | 96.6%    |
+| `job`           | 76.7%    |
+| `pkg/artdupl`   | 91.1%    |
+| `pkg/format`    | 100.0%   |
+| `pkg/logger`    | 87.5%    |
+| `pkg/position`  | 100.0%   |
+| `printer`       | 76.6%    |
+| `suffixtree`    | 91.0%    |
+| `syntax`        | 93.0%    |
+| `syntax/golang` | 94.6%    |
+| `syntax/templ`  | 84.6%    |
 
 ---
 
 ## Files Changed This Session
 
-| File | Delta | Purpose |
-|---|---|---|
-| `printer/report.templ` | -40 lines | Extract `diffPanel` component |
+| File                                     | Delta      | Purpose                                                                     |
+| ---------------------------------------- | ---------- | --------------------------------------------------------------------------- |
+| `printer/report.templ`                   | -40 lines  | Extract `diffPanel` component                                               |
 | `printer/actionability_patterns_test.go` | -107 lines | Extract `mustSelectorExprStmt`, `mustKeyValueExprFields`, simplify fixtures |
-| `docs/status/2026-06-11_04-35_...` | Modified | Updated with session context |
-| `docs/status/2026-06-11_05-27_...` | New | This report |
+| `docs/status/2026-06-11_04-35_...`       | Modified   | Updated with session context                                                |
+| `docs/status/2026-06-11_05-27_...`       | New        | This report                                                                 |
 
 ---
 

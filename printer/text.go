@@ -7,6 +7,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
+	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
 
 type TextPrinter struct {
@@ -54,7 +55,7 @@ func (p *TextPrinter) PrintClones(
 	isFileDupe := p.isFileDupe
 
 	if err := p.writeGroupHeader(isFileDupe, clones); err != nil {
-		return err
+		return duplerrors.Wrap(err, duplerrors.InternalError, "write group header")
 	}
 
 	p.cloneGroups = append(p.cloneGroups, clones)
@@ -152,7 +153,12 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 		cls.Lines,
 		cls.Suggestion,
 	); err != nil {
-		return err
+		return duplerrors.Wrapf(
+			err,
+			duplerrors.IOError,
+			"write rich group header (count=%d, category=%q, priority=%q)",
+			count, cls.Category, cls.Priority,
+		)
 	}
 
 	return nil

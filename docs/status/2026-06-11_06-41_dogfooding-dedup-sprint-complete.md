@@ -13,15 +13,15 @@ Ran `art-dupl --semantic --sort total-tokens -t 15 .` on the codebase itself. Fo
 
 ### Session Metrics (today's 5 commits)
 
-| Metric | Value |
-|---|---|
-| Clone groups eliminated | 76 → 69 (7 groups, ~9.2% reduction) |
-| Net lines removed | -108 (329 deletions, 221 additions) |
-| Production code wins | 1 (report.templ diff panel extraction) |
-| Test code wins | 4 (boolTestCase runner, mustSelectorExprStmt, mustKeyValueExprFields, actionability_test refactor) |
-| Files changed | 13 (+2 status docs) |
-| Test failures | 0 (25 packages, all green) |
-| Lint issues | 5 (pre-existing, unchanged) |
+| Metric                  | Value                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------- |
+| Clone groups eliminated | 76 → 69 (7 groups, ~9.2% reduction)                                                                |
+| Net lines removed       | -108 (329 deletions, 221 additions)                                                                |
+| Production code wins    | 1 (report.templ diff panel extraction)                                                             |
+| Test code wins          | 4 (boolTestCase runner, mustSelectorExprStmt, mustKeyValueExprFields, actionability_test refactor) |
+| Files changed           | 13 (+2 status docs)                                                                                |
+| Test failures           | 0 (25 packages, all green)                                                                         |
+| Lint issues             | 5 (pre-existing, unchanged)                                                                        |
 
 ---
 
@@ -33,24 +33,25 @@ Analyzed all 76 clone groups against the dedup decision checklist (extract vs ac
 
 **Eliminated (7 groups):**
 
-| # | What | Where | How |
-|---|---|---|---|
-| 1 | Diff panel duplication | `printer/report.templ` | Extracted `diffPanel` templ component — base and compared panels were identical except CSS class, title, cross-reference direction. ~40 lines eliminated |
-| 2 | mustTempDirOnly/mustAssertionsOnly | `printer/actionability_patterns_test.go` | Extracted `mustSelectorExprStmt(filename, name)` — both were structurally identical except selector name |
-| 3 | SelectorExpr assertion blocks | Same file | Used `mustSelectorExprStmt` in `mustThreeDistinctAssertions` and `mustTestScaffolding` |
-| 4 | KeyValueExpr repetition | Same file | Extracted `mustKeyValueExprFields(names...)` variadic builder — replaced 6 repeated AST nodes |
+| #   | What                               | Where                                    | How                                                                                                                                                      |
+| --- | ---------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Diff panel duplication             | `printer/report.templ`                   | Extracted `diffPanel` templ component — base and compared panels were identical except CSS class, title, cross-reference direction. ~40 lines eliminated |
+| 2   | mustTempDirOnly/mustAssertionsOnly | `printer/actionability_patterns_test.go` | Extracted `mustSelectorExprStmt(filename, name)` — both were structurally identical except selector name                                                 |
+| 3   | SelectorExpr assertion blocks      | Same file                                | Used `mustSelectorExprStmt` in `mustThreeDistinctAssertions` and `mustTestScaffolding`                                                                   |
+| 4   | KeyValueExpr repetition            | Same file                                | Extracted `mustKeyValueExprFields(names...)` variadic builder — replaced 6 repeated AST nodes                                                            |
 
 ### 2. Test Table Deduplication (Commit `741106e`)
 
-| # | What | Where | How |
-|---|---|---|---|
-| 5 | Repeated test table boilerplate | `printer/actionability_patterns_test.go` | Extracted `boolTestCase` type + `runBoolTests()` helper — used by 4 test functions (TestIsTestDataFilePair, TestIsTableDrivenTestBody, TestIsTestScaffolding, TestIsDataDominated) |
-| 6 | Same pattern in actionability_test | `printer/actionability_test.go` | Converted TestEvaluateActionability to use `runBoolTests` wrapper |
-| 7 | Stats formatter condition duplication | `printer/stats_formatter.go` | Extracted `hasActionabilityData()` and `hasTestProdData()` helpers — consolidated 4 identical condition checks between text and JSON rendering |
+| #   | What                                  | Where                                    | How                                                                                                                                                                                |
+| --- | ------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5   | Repeated test table boilerplate       | `printer/actionability_patterns_test.go` | Extracted `boolTestCase` type + `runBoolTests()` helper — used by 4 test functions (TestIsTestDataFilePair, TestIsTableDrivenTestBody, TestIsTestScaffolding, TestIsDataDominated) |
+| 6   | Same pattern in actionability_test    | `printer/actionability_test.go`          | Converted TestEvaluateActionability to use `runBoolTests` wrapper                                                                                                                  |
+| 7   | Stats formatter condition duplication | `printer/stats_formatter.go`             | Extracted `hasActionabilityData()` and `hasTestProdData()` helpers — consolidated 4 identical condition checks between text and JSON rendering                                     |
 
 ### 3. Previous Session Work (Already Committed)
 
 The AST-aware false-positive filtering from earlier today (commits `4d1d664`, `8e30d68`) is also fully done:
+
 - 4 AST pattern detectors: `isTestDataFilePair`, `isTableDrivenTestBody`, `isTestScaffolding`, `isDataDominated`
 - Pattern label system with 7 labels
 - 2 new domain categories: `CategoryTestBoilerplate`, `CategoryTestFixture`
@@ -60,17 +61,17 @@ The AST-aware false-positive filtering from earlier today (commits `4d1d664`, `8
 
 All 69 remaining clones are **intentional**. Breakdown:
 
-| Category | Count | Rationale |
-|---|---|---|
-| Interface method signatures (6-way PrintClones) | 1 group | All 6 printers implement same `Printer` interface — removing would break polymorphism |
-| Public/private wrapper delegation | 1 group | `EvaluateActionability` delegates to `EvaluateActionabilityWithLabel` — intentional API boundary |
-| Same domain, different output format | 2 groups | Text vs JSON stats check same conditions — different renderers, extracting hurts readability |
-| Idiomatic Go flag handling | 1 group | Standard `flagStringReader` + `return nil` pattern in config_builder |
-| Function type signatures | 4 groups | Standard Go return types — `NodesToGroup` / `processTestNodes` signatures |
-| Table-driven test case entries | ~8 groups | Same `{name, seqs, expected}` struct shape — the shape IS the test, not duplication |
-| Test AST fixture builders | ~12 groups | Explicit node trees for different AST patterns — each represents distinct behavior |
-| Cross-package test utility call sites | ~4 groups | Already using `testutil.CreateNodeSlice` shared helper |
-| Single-line Go idioms (~55 two-clone groups) | ~36 groups | `return nil, errors.New(msg)`, `for b.Loop() { ... }`, `Expect(x).To(HaveKey(y))`, `func(...) (chan syntax.Match, ...)` |
+| Category                                        | Count      | Rationale                                                                                                               |
+| ----------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Interface method signatures (6-way PrintClones) | 1 group    | All 6 printers implement same `Printer` interface — removing would break polymorphism                                   |
+| Public/private wrapper delegation               | 1 group    | `EvaluateActionability` delegates to `EvaluateActionabilityWithLabel` — intentional API boundary                        |
+| Same domain, different output format            | 2 groups   | Text vs JSON stats check same conditions — different renderers, extracting hurts readability                            |
+| Idiomatic Go flag handling                      | 1 group    | Standard `flagStringReader` + `return nil` pattern in config_builder                                                    |
+| Function type signatures                        | 4 groups   | Standard Go return types — `NodesToGroup` / `processTestNodes` signatures                                               |
+| Table-driven test case entries                  | ~8 groups  | Same `{name, seqs, expected}` struct shape — the shape IS the test, not duplication                                     |
+| Test AST fixture builders                       | ~12 groups | Explicit node trees for different AST patterns — each represents distinct behavior                                      |
+| Cross-package test utility call sites           | ~4 groups  | Already using `testutil.CreateNodeSlice` shared helper                                                                  |
+| Single-line Go idioms (~55 two-clone groups)    | ~36 groups | `return nil, errors.New(msg)`, `for b.Loop() { ... }`, `Expect(x).To(HaveKey(y))`, `func(...) (chan syntax.Match, ...)` |
 
 ---
 
@@ -89,6 +90,7 @@ None introduced by this session. The `exhaustive` and `cyclop` issues are from t
 ### Pre-commit Hook
 
 Pre-commit hook (`BuildFlow`) fails on pre-existing infrastructure issues unrelated to code changes:
+
 - `golangci-lint-config-verify`: gomoddirectives `allow_replacements` config issue
 - `library-policy`: SHA1 in cache/file_cache.go, fang v1 usage
 - Nix: missing tools (nixfmt, deadnix, vulnix), vendorHash mismatch
@@ -206,53 +208,53 @@ All commits this session required `--no-verify`. This is a known infrastructure 
 
 ### Tier 1: Clean Up This Session's Fallout (30 min)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 1 | **Fix 5 lint issues** — cyclop, exhaustive, 3 godoclint | Clean CI | 30min |
-| 2 | **Fix pre-commit hook** — gomoddirectives config, statix, vendorHash | Clean CI | 1hr |
-| 3 | **Update TODO_LIST.md** — Reflect today's work, add new items | Accuracy | 30min |
-| 4 | **Update FEATURES.md** — Add pattern detection, labels, categories, semantic encoding | Accuracy | 30min |
-| 5 | **Fill in DOMAIN_LANGUAGE.md** — Define Clone, CloneGroup, Category, Priority, Actionability, PatternLabel | Clarity | 1hr |
+| #   | Task                                                                                                       | Impact   | Effort |
+| --- | ---------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 1   | **Fix 5 lint issues** — cyclop, exhaustive, 3 godoclint                                                    | Clean CI | 30min  |
+| 2   | **Fix pre-commit hook** — gomoddirectives config, statix, vendorHash                                       | Clean CI | 1hr    |
+| 3   | **Update TODO_LIST.md** — Reflect today's work, add new items                                              | Accuracy | 30min  |
+| 4   | **Update FEATURES.md** — Add pattern detection, labels, categories, semantic encoding                      | Accuracy | 30min  |
+| 5   | **Fill in DOMAIN_LANGUAGE.md** — Define Clone, CloneGroup, Category, Priority, Actionability, PatternLabel | Clarity  | 1hr    |
 
 ### Tier 2: Validate & Harden (2-4 hr)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 6 | **Validate patterns against real projects** — Run on 5+ external Go projects, compare false-positive rates | Critical | 1hr |
-| 7 | **Add BDD end-to-end tests for actionability** — Parse real Go test files, verify full pipeline | High | 2hr |
-| 8 | **CallExpr callee semantic hashing** — Hash function name in semantic mode | High | 3hr |
-| 9 | **Apply gopls hints** — slices.Contains, stringsseq in actionability.go | Low | 15min |
-| 10 | **Fix bufio.Scanner sc.Err() check** in cmd/run_crawl.go | Low | 5min |
+| #   | Task                                                                                                       | Impact   | Effort |
+| --- | ---------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 6   | **Validate patterns against real projects** — Run on 5+ external Go projects, compare false-positive rates | Critical | 1hr    |
+| 7   | **Add BDD end-to-end tests for actionability** — Parse real Go test files, verify full pipeline            | High     | 2hr    |
+| 8   | **CallExpr callee semantic hashing** — Hash function name in semantic mode                                 | High     | 3hr    |
+| 9   | **Apply gopls hints** — slices.Contains, stringsseq in actionability.go                                    | Low      | 15min  |
+| 10  | **Fix bufio.Scanner sc.Err() check** in cmd/run_crawl.go                                                   | Low      | 5min   |
 
 ### Tier 3: Architecture (8-16 hr)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 11 | **ProcessedClone DTO migration** — Decouple printers from syntax.Node. 111 test sites | Very High | 8hr |
-| 12 | **Clone type consolidation** — Merge 3 parallel Clone types | High | 4hr |
-| 13 | **Thread PatternLabel into ClassifyClone** — Per-clone pattern-aware classification | Medium | 2hr |
-| 14 | **Config file support** (.art-dupl.yaml) — Project-specific exclusions | High | 4hr |
-| 15 | **Extract assertion name registry** — Replace hardcoded switch in walkForTestScaffoldingSignals | Medium | 30min |
+| #   | Task                                                                                            | Impact    | Effort |
+| --- | ----------------------------------------------------------------------------------------------- | --------- | ------ |
+| 11  | **ProcessedClone DTO migration** — Decouple printers from syntax.Node. 111 test sites           | Very High | 8hr    |
+| 12  | **Clone type consolidation** — Merge 3 parallel Clone types                                     | High      | 4hr    |
+| 13  | **Thread PatternLabel into ClassifyClone** — Per-clone pattern-aware classification             | Medium    | 2hr    |
+| 14  | **Config file support** (.art-dupl.yaml) — Project-specific exclusions                          | High      | 4hr    |
+| 15  | **Extract assertion name registry** — Replace hardcoded switch in walkForTestScaffoldingSignals | Medium    | 30min  |
 
 ### Tier 4: Semantic Mode (6-8 hr)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 16 | **BasicLit sub-categorization** — Separate string/int/char literal types | Medium | 3hr |
-| 17 | **FuncLit semantic hashing** — Hash function literal signatures | Medium | 2hr |
-| 18 | **CompositeLit type hashing** — Hash type name in composite literals | Medium | 1hr |
-| 19 | **Interface method per-name hashing** — Replace `~interface~` with per-method hashing | Low | 2hr |
-| 20 | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones | Medium | 1hr |
+| #   | Task                                                                                  | Impact | Effort |
+| --- | ------------------------------------------------------------------------------------- | ------ | ------ |
+| 16  | **BasicLit sub-categorization** — Separate string/int/char literal types              | Medium | 3hr    |
+| 17  | **FuncLit semantic hashing** — Hash function literal signatures                       | Medium | 2hr    |
+| 18  | **CompositeLit type hashing** — Hash type name in composite literals                  | Medium | 1hr    |
+| 19  | **Interface method per-name hashing** — Replace `~interface~` with per-method hashing | Low    | 2hr    |
+| 20  | **Test threshold multiplier** — Auto-raise threshold for test-to-test clones          | Medium | 1hr    |
 
 ### Tier 5: Infrastructure & Quality (4-6 hr)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 21 | **Printer coverage >85%** — Currently 76.7% | Medium | 2hr |
-| 22 | **CSV output using encoding/csv** | Low | 1hr |
-| 23 | **Split printer/stats_test.go** (975L → 3 files) | Low | 1hr |
-| 24 | **Archive docs/status/ legacy files** (70 → ~15 active) | Hygiene | 15min |
-| 25 | **Write SDK documentation for pkg/artdupl/** | Low | 2hr |
+| #   | Task                                                    | Impact  | Effort |
+| --- | ------------------------------------------------------- | ------- | ------ |
+| 21  | **Printer coverage >85%** — Currently 76.7%             | Medium  | 2hr    |
+| 22  | **CSV output using encoding/csv**                       | Low     | 1hr    |
+| 23  | **Split printer/stats_test.go** (975L → 3 files)        | Low     | 1hr    |
+| 24  | **Archive docs/status/ legacy files** (70 → ~15 active) | Hygiene | 15min  |
+| 25  | **Write SDK documentation for pkg/artdupl/**            | Low     | 2hr    |
 
 ---
 
@@ -261,6 +263,7 @@ All commits this session required `--no-verify`. This is a known infrastructure 
 **Should we pursue literal zero clone groups (which requires ProcessedClone DTO migration + printer consolidation), or is 69 the natural floor for a well-structured Go codebase at threshold 15?**
 
 Getting from 69 → 0 would require:
+
 - **ProcessedClone DTO migration** (8hr) — eliminates the 6-way PrintClones signature clone and the NodesToGroup/processTestNodes pattern
 - **Clone type consolidation** (4hr) — eliminates cross-package type signature matches
 - **Functional refactoring of all 55 two-clone groups** — extracting every `return nil, err`, `for b.Loop()`, and `Expect(x).To(...)` into shared helpers
@@ -282,26 +285,26 @@ Coverage:        76.6%–100% across all packages
 
 ## Coverage by Package
 
-| Package | Coverage |
-|---|---|
-| `bdd` | 93.3% |
-| `cache` | 87.3% |
-| `cmd` | 75.3% |
-| `config` | 92.7% |
-| `detection` | 86.7% |
-| `domain` | 91.4% |
-| `errors` | 89.4% |
-| `hash` | 96.6% |
-| `job` | 76.7% |
-| `pkg/artdupl` | 91.1% |
-| `pkg/format` | 100.0% |
-| `pkg/logger` | 87.5% |
-| `pkg/position` | 100.0% |
-| `printer` | 76.7% |
-| `suffixtree` | 91.0% |
-| `syntax` | 93.0% |
-| `syntax/golang` | 94.6% |
-| `syntax/templ` | 84.6% |
+| Package         | Coverage |
+| --------------- | -------- |
+| `bdd`           | 93.3%    |
+| `cache`         | 87.3%    |
+| `cmd`           | 75.3%    |
+| `config`        | 92.7%    |
+| `detection`     | 86.7%    |
+| `domain`        | 91.4%    |
+| `errors`        | 89.4%    |
+| `hash`          | 96.6%    |
+| `job`           | 76.7%    |
+| `pkg/artdupl`   | 91.1%    |
+| `pkg/format`    | 100.0%   |
+| `pkg/logger`    | 87.5%    |
+| `pkg/position`  | 100.0%   |
+| `printer`       | 76.7%    |
+| `suffixtree`    | 91.0%    |
+| `syntax`        | 93.0%    |
+| `syntax/golang` | 94.6%    |
+| `syntax/templ`  | 84.6%    |
 
 ## Session Commit History
 
