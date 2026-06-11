@@ -12,10 +12,12 @@ const (
 	CategoryHandler     CloneCategory = "handler"
 	CategoryLoop        CloneCategory = "loop"
 	CategoryConditional CloneCategory = "conditional"
-	CategoryAssignment  CloneCategory = "assignment"
-	CategoryExpression  CloneCategory = "expression"
-	CategoryIdiom       CloneCategory = "idiom"
-	CategoryUnknown     CloneCategory = "unknown"
+	CategoryTestBoilerplate CloneCategory = "test-boilerplate"
+	CategoryTestFixture    CloneCategory = "test-fixture"
+	CategoryAssignment     CloneCategory = "assignment"
+	CategoryExpression    CloneCategory = "expression"
+	CategoryIdiom         CloneCategory = "idiom"
+	CategoryUnknown       CloneCategory = "unknown"
 )
 
 // ClonePriority represents how important it is to address this clone.
@@ -77,6 +79,10 @@ func (c CloneCategory) GetCategoryEmoji() string {
 		return "\U0001f527"
 	case CategoryTest:
 		return "\U0001f9ea"
+	case CategoryTestBoilerplate:
+		return "\U0001f9f9"
+	case CategoryTestFixture:
+		return "\U0001f3af"
 	case CategoryStruct:
 		return "\U0001f4e6"
 	case CategoryInterface:

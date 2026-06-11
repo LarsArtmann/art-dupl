@@ -1,6 +1,9 @@
 package printer
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -30,23 +33,66 @@ func baseTypeOf(n *syntax.Node) int32 {
 // To be non-actionable, EVERY clone in the group must match the same
 // boilerplate pattern. If any clone differs, the group is actionable.
 func EvaluateActionability(nodeSeqs [][]*syntax.Node) domain.CloneActionability {
+	_, a := evaluateActionabilityDetailed(nodeSeqs)
+	return a
+}
+
+// PatternLabel identifies which non-actionable pattern was detected.
+// Empty string means actionable.
+type PatternLabel string
+
+const (
+	PatternNone             PatternLabel = ""
+	PatternTestData         PatternLabel = "testdata-pair"
+	PatternTableDrivenTest  PatternLabel = "table-driven-test"
+	PatternTestScaffolding  PatternLabel = "test-scaffolding"
+	PatternDataDominated    PatternLabel = "data-dominated"
+	PatternSignatureOnly    PatternLabel = "signature-only"
+	PatternRAIIDefer        PatternLabel = "raii-defer"
+	PatternErrorPropagation PatternLabel = "error-propagation"
+)
+
+// EvaluateActionabilityWithLabel returns both the actionability and the
+// pattern label that caused it. This allows downstream code to adjust
+// category/suggestion based on which specific pattern was detected.
+func EvaluateActionabilityWithLabel(nodeSeqs [][]*syntax.Node) (PatternLabel, domain.CloneActionability) {
+	return evaluateActionabilityDetailed(nodeSeqs)
+}
+
+func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, domain.CloneActionability) {
 	if len(nodeSeqs) == 0 {
-		return domain.Actionable
+		return PatternNone, domain.Actionable
 	}
 
 	if isSignatureOnlyMatch(nodeSeqs) {
-		return domain.NonActionable
+		return PatternSignatureOnly, domain.NonActionable
 	}
 
 	if isPureDeferPattern(nodeSeqs) {
-		return domain.NonActionable
+		return PatternRAIIDefer, domain.NonActionable
 	}
 
 	if isPureErrorPropagation(nodeSeqs) {
-		return domain.NonActionable
+		return PatternErrorPropagation, domain.NonActionable
 	}
 
-	return domain.Actionable
+	if isTestDataFilePair(nodeSeqs) {
+		return PatternTestData, domain.NonActionable
+	}
+
+	if isTableDrivenTestBody(nodeSeqs) {
+		return PatternTableDrivenTest, domain.NonActionable
+	}
+
+	if isTestScaffolding(nodeSeqs) {
+		return PatternTestScaffolding, domain.NonActionable
+	}
+
+	if isDataDominated(nodeSeqs) {
+		return PatternDataDominated, domain.NonActionable
+	}
+
+	return PatternNone, domain.Actionable
 }
 
 // isSignatureOnlyMatch reports whether every clone is a single FuncDecl node
@@ -229,4 +275,230 @@ func isReturnOrWrappedReturn(node *syntax.Node) bool {
 	}
 
 	return false
+}
+
+// isTestDataFilePair reports whether all clones originate from files inside
+// a testdata/ directory. Golden/input file pairs are conventional Go test
+// fixtures that are expected to be structurally similar — they represent
+// before/after snapshots of code transformations.
+func isTestDataFilePair(nodeSeqs [][]*syntax.Node) bool {
+	if len(nodeSeqs) == 0 {
+		return false
+	}
+
+	for _, seq := range nodeSeqs {
+		if len(seq) == 0 {
+			return false
+		}
+
+		if !isInTestDataDir(seq[0].Filename) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// isInTestDataDir checks if a file path contains a testdata/ directory
+// component, following Go's standard testing convention.
+func isInTestDataDir(filename string) bool {
+	parts := strings.Split(filepath.ToSlash(filename), "/")
+	for _, part := range parts {
+		if part == "testdata" {
+			return true
+		}
+	}
+
+	return false
+}
+
+// isTableDrivenTestBody reports whether every clone is a RangeStmt wrapping
+// a t.Run or t.Parallel call — the standard Go table-driven test pattern.
+// The loop body is structurally identical across tests because it's the
+// testing framework pattern, not duplicated business logic.
+func isTableDrivenTestBody(nodeSeqs [][]*syntax.Node) bool {
+	if len(nodeSeqs) == 0 {
+		return false
+	}
+
+	for _, seq := range nodeSeqs {
+		if len(seq) == 0 {
+			return false
+		}
+
+		root := seq[0]
+		if baseTypeOf(root) != golang.RangeStmt {
+			return false
+		}
+
+		if !containsTRunCall(root) {
+			return false
+		}
+
+		if !allFromTestFile(seq) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// containsTRunCall checks if a node tree contains a CallExpr where the
+// function is a SelectorExpr with method name "Run" — matching t.Run().
+func containsTRunCall(node *syntax.Node) bool {
+	if baseTypeOf(node) == golang.CallExpr {
+		for _, child := range node.Children {
+			if baseTypeOf(child) == golang.SelectorExpr && child.Name == "Run" {
+				return true
+			}
+		}
+	}
+
+	for _, child := range node.Children {
+		if containsTRunCall(child) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// allFromTestFile checks if all nodes in a sequence come from _test.go files.
+func allFromTestFile(seq []*syntax.Node) bool {
+	for _, n := range seq {
+		if !isTestFile(n.Filename) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// isTestScaffolding reports whether every clone matches the common test
+// setup/teardown pattern: create temp dir, write file, run check, assert.
+// This covers Ginkgo When/It blocks and standard test helpers that follow
+// the same structural pattern with only data differences.
+//
+// Detection strategy: look for CallExpr chains containing both a temp dir
+// creation (TempDir, TempFile) and an assertion call (Expect, Should,
+// NotTo, To, Equal, HaveLen, BeEmpty, etc.) within _test.go files.
+func isTestScaffolding(nodeSeqs [][]*syntax.Node) bool {
+	if len(nodeSeqs) == 0 {
+		return false
+	}
+
+	for _, seq := range nodeSeqs {
+		if !isTestScaffoldingSequence(seq) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// isTestScaffoldingSequence checks a single clone sequence for the
+// test scaffolding pattern.
+func isTestScaffoldingSequence(seq []*syntax.Node) bool {
+	if len(seq) == 0 {
+		return false
+	}
+
+	if !allFromTestFile(seq) {
+		return false
+	}
+
+	hasTempDir := false
+	hasAssertion := false
+
+	for _, node := range seq {
+		walkForTestScaffoldingSignals(node, &hasTempDir, &hasAssertion)
+	}
+
+	return hasTempDir && hasAssertion
+}
+
+// walkForTestScaffoldingSignals walks a node tree looking for test
+// scaffolding indicators: temp directory creation and assertion calls.
+func walkForTestScaffoldingSignals(node *syntax.Node, hasTempDir, hasAssertion *bool) {
+	if baseTypeOf(node) == golang.CallExpr {
+		for _, child := range node.Children {
+			bt := baseTypeOf(child)
+			name := child.Name
+
+			if bt == golang.SelectorExpr {
+				switch name {
+				case "TempDir", "TempFile":
+					*hasTempDir = true
+				case "Expect", "So", "Assert", "Check":
+					*hasAssertion = true
+				case "NotTo", "To", "Not", "ToNot", "ToNotBeElementOf":
+					*hasAssertion = true
+				case "Equal", "HaveLen", "BeEmpty", "BeNil", "BeTrue", "BeFalse",
+					"BeZero", "ContainElement", "ContainSubstring", "MatchRegexp",
+					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce":
+					*hasAssertion = true
+				case "Should":
+					*hasAssertion = true
+				}
+			}
+		}
+	}
+
+	for _, child := range node.Children {
+		walkForTestScaffoldingSignals(child, hasTempDir, hasAssertion)
+	}
+}
+
+// isDataDominated reports whether every clone is dominated by data nodes
+// (BasicLit and KeyValueExpr) rather than logic. When >70% of leaf nodes
+// are data, the clone represents struct initialization, config fixtures,
+// or test data arrays — not duplicated business logic.
+func isDataDominated(nodeSeqs [][]*syntax.Node) bool {
+	if len(nodeSeqs) == 0 {
+		return false
+	}
+
+	for _, seq := range nodeSeqs {
+		if !isSequenceDataDominated(seq) {
+			return false
+		}
+	}
+
+	return true
+}
+
+const dataDominanceRatio = 0.6
+
+// isSequenceDataDominated checks if a single clone sequence is dominated
+// by data nodes (BasicLit, KeyValueExpr) rather than logic nodes.
+func isSequenceDataDominated(seq []*syntax.Node) bool {
+	total := 0
+	data := 0
+
+	for _, node := range seq {
+		countDataNodes(node, &total, &data)
+	}
+
+	if total == 0 {
+		return false
+	}
+
+	return float64(data)/float64(total) >= dataDominanceRatio
+}
+
+// countDataNodes walks a node tree counting all nodes and data-type nodes.
+// Data nodes are BasicLit (string/number literals) and KeyValueExpr
+// (struct field initializers). A high ratio of data nodes indicates
+// struct initialization or config fixtures, not duplicated logic.
+func countDataNodes(node *syntax.Node, total, data *int) {
+	*total++
+
+	bt := baseTypeOf(node)
+	if bt == golang.BasicLit || bt == golang.KeyValueExpr {
+		*data++
+	}
+
+	for _, child := range node.Children {
+		countDataNodes(child, total, data)
+	}
 }

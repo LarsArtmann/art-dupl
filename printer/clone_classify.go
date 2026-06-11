@@ -8,16 +8,20 @@ import (
 )
 
 const (
-	suggestExtractUtility    = "Extract to shared utility function"
-	suggestReviewExtract     = "Review and extract common logic"
-	suggestComposition       = "Consider composition or shared base struct"
-	suggestInterface         = "Extract common interface definition"
-	suggestHandler           = "Extract handler logic to service layer"
-	suggestLoopHelper        = "Extract loop body to helper function"
-	suggestStrategy          = "Consider strategy pattern or early returns"
-	suggestTestHelper        = "Extract test helper function or use table-driven tests"
-	suggestSharedTestUtility = "Consider extracting to shared test utility"
-	suggestIdiom             = "Structural idiom — typically not actionable"
+	suggestExtractUtility        = "Extract to shared utility function"
+	suggestReviewExtract         = "Review and extract common logic"
+	suggestComposition           = "Consider composition or shared base struct"
+	suggestInterface             = "Extract common interface definition"
+	suggestHandler               = "Extract handler logic to service layer"
+	suggestLoopHelper            = "Extract loop body to helper function"
+	suggestStrategy              = "Consider strategy pattern or early returns"
+	suggestTestHelper            = "Extract test helper function or use table-driven tests"
+	suggestSharedTestUtility     = "Consider extracting to shared test utility"
+	suggestIdiom                 = "Structural idiom — typically not actionable"
+	suggestTestDataPair          = "Test fixture files — expected structural similarity"
+	suggestTableDrivenTest       = "Table-driven test body — framework pattern, not logic"
+	suggestTestScaffolding       = "Test setup/assertion pattern — only data differs"
+	suggestDataDominated         = "Data-dominated clone — struct literals, not logic"
 )
 
 // idiomTokenThreshold is the maximum number of tokens for a clone to be
@@ -182,6 +186,8 @@ func calculateProductionPriority(category CloneCategory, tokens, lines int) Clon
 	case domain.CategoryLoop, domain.CategoryConditional:
 		return controlFlowPriority(tokens)
 	case domain.CategoryTest,
+		domain.CategoryTestBoilerplate,
+		domain.CategoryTestFixture,
 		domain.CategoryAssignment,
 		domain.CategoryExpression,
 		domain.CategoryUnknown:
@@ -265,4 +271,30 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	default:
 		return suggestReviewExtract
 	}
+}
+
+// applyPatternLabel adjusts clone classification based on the AST-detected
+// non-actionable pattern. This upgrades the category and suggestion to
+// reflect the specific reason the clone is non-actionable, rather than
+// relying solely on the first node's type.
+func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domain.CloneClassification {
+	switch label {
+	case PatternTestData:
+		cls.Category = domain.CategoryTestFixture
+		cls.Suggestion = suggestTestDataPair
+		cls.Priority = domain.PriorityLow
+	case PatternTableDrivenTest:
+		cls.Category = domain.CategoryTestBoilerplate
+		cls.Suggestion = suggestTableDrivenTest
+		cls.Priority = domain.PriorityLow
+	case PatternTestScaffolding:
+		cls.Category = domain.CategoryTestBoilerplate
+		cls.Suggestion = suggestTestScaffolding
+		cls.Priority = domain.PriorityLow
+	case PatternDataDominated:
+		cls.Suggestion = suggestDataDominated
+		cls.Priority = domain.PriorityLow
+	}
+
+	return cls
 }

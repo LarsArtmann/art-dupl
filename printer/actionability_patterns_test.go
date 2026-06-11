@@ -1,0 +1,681 @@
+package printer
+
+import (
+	"testing"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
+)
+
+func TestIsTestDataFilePair(t *testing.T) {
+	tests := []struct {
+		name     string
+		seqs     [][]*syntax.Node
+		expected bool
+	}{
+		{
+			name: "both files in testdata directory",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("pkg/testdata/input.go")},
+				{mustNodeWithFilename("pkg/testdata/golden.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "nested testdata directory",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("internal/rule/testdata/errors_as/golden.go")},
+				{mustNodeWithFilename("internal/rule/testdata/errors_as/input.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "one file not in testdata",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("pkg/testdata/input.go")},
+				{mustNodeWithFilename("pkg/rule.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "production files only",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("pkg/handler.go")},
+				{mustNodeWithFilename("pkg/service.go")},
+			},
+			expected: false,
+		},
+		{
+			name:     "empty sequence",
+			seqs:     [][]*syntax.Node{},
+			expected: false,
+		},
+		{
+			name: "file named testdata.go but not in testdata dir",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("pkg/testdata.go")},
+				{mustNodeWithFilename("pkg/testdata_test.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "empty node in sequence",
+			seqs: [][]*syntax.Node{
+				{},
+				{mustNodeWithFilename("pkg/testdata/input.go")},
+			},
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isTestDataFilePair(tc.seqs)
+			if result != tc.expected {
+				t.Errorf("isTestDataFilePair() = %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestIsTableDrivenTestBody(t *testing.T) {
+	tests := []struct {
+		name     string
+		seqs     [][]*syntax.Node
+		expected bool
+	}{
+		{
+			name: "RangeStmt with t.Run in test file",
+			seqs: [][]*syntax.Node{
+				{mustRangeStmtWithTRun("resolve_test.go")},
+				{mustRangeStmtWithTRun("filter_test.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "RangeStmt without t.Run in test file",
+			seqs: [][]*syntax.Node{
+				{mustRangeStmtNoTRun("resolve_test.go")},
+				{mustRangeStmtNoTRun("filter_test.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "RangeStmt with t.Run but not test file",
+			seqs: [][]*syntax.Node{
+				{mustRangeStmtWithTRun("resolve.go")},
+				{mustRangeStmtWithTRun("filter.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "non-RangeStmt in test file",
+			seqs: [][]*syntax.Node{
+				{{Type: golang.FuncDecl, Filename: "resolve_test.go"}},
+				{{Type: golang.FuncDecl, Filename: "filter_test.go"}},
+			},
+			expected: false,
+		},
+		{
+			name:     "empty sequences",
+			seqs:     [][]*syntax.Node{},
+			expected: false,
+		},
+		{
+			name: "mixed: one RangeStmt one not",
+			seqs: [][]*syntax.Node{
+				{mustRangeStmtWithTRun("resolve_test.go")},
+				{{Type: golang.FuncDecl, Filename: "filter_test.go"}},
+			},
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isTableDrivenTestBody(tc.seqs)
+			if result != tc.expected {
+				t.Errorf("isTableDrivenTestBody() = %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestIsTestScaffolding(t *testing.T) {
+	tests := []struct {
+		name     string
+		seqs     [][]*syntax.Node
+		expected bool
+	}{
+		{
+			name: "Ginkgo TempDir + WriteFile + Expect pattern",
+			seqs: [][]*syntax.Node{
+				{mustTestScaffolding("benchmark_naming_rule_test.go")},
+				{mustTestScaffolding("testdata_directory_rule_test.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "TempDir without assertions",
+			seqs: [][]*syntax.Node{
+				{mustTempDirOnly("rule_test.go")},
+				{mustTempDirOnly("handler_test.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "Assertions without TempDir",
+			seqs: [][]*syntax.Node{
+				{mustAssertionsOnly("rule_test.go")},
+				{mustAssertionsOnly("handler_test.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "production files with similar pattern",
+			seqs: [][]*syntax.Node{
+				{mustTestScaffolding("handler.go")},
+				{mustTestScaffolding("service.go")},
+			},
+			expected: false,
+		},
+		{
+			name:     "empty sequences",
+			seqs:     [][]*syntax.Node{},
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isTestScaffolding(tc.seqs)
+			if result != tc.expected {
+				t.Errorf("isTestScaffolding() = %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestIsDataDominated(t *testing.T) {
+	tests := []struct {
+		name     string
+		seqs     [][]*syntax.Node
+		expected bool
+	}{
+		{
+			name: "struct init with many BasicLit values",
+			seqs: [][]*syntax.Node{
+				mustDataDominatedSequence(),
+				mustDataDominatedSequence(),
+			},
+			expected: true,
+		},
+		{
+			name: "logic-heavy sequence",
+			seqs: [][]*syntax.Node{
+				mustLogicHeavySequence(),
+				mustLogicHeavySequence(),
+			},
+			expected: false,
+		},
+		{
+			name: "mixed data and logic",
+			seqs: [][]*syntax.Node{
+				mustMixedDataLogicSequence(),
+				mustMixedDataLogicSequence(),
+			},
+			expected: false,
+		},
+		{
+			name:     "empty sequences",
+			seqs:     [][]*syntax.Node{},
+			expected: false,
+		},
+		{
+			name: "empty node list in sequence",
+			seqs: [][]*syntax.Node{
+				{},
+				{},
+			},
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isDataDominated(tc.seqs)
+			if result != tc.expected {
+				t.Errorf("isDataDominated() = %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestEvaluateActionabilityWithLabel(t *testing.T) {
+	tests := []struct {
+		name              string
+		seqs              [][]*syntax.Node
+		expectedLabel     PatternLabel
+		expectedAction    domain.CloneActionability
+	}{
+		{
+			name:           "testdata pair gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("pkg/testdata/input.go")},
+				{mustNodeWithFilename("pkg/testdata/golden.go")},
+			},
+			expectedLabel:  PatternTestData,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name:           "table-driven test gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustRangeStmtWithTRun("resolve_test.go")},
+				{mustRangeStmtWithTRun("filter_test.go")},
+			},
+			expectedLabel:  PatternTableDrivenTest,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name:           "test scaffolding gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustTestScaffolding("rule_test.go")},
+				{mustTestScaffolding("handler_test.go")},
+			},
+			expectedLabel:  PatternTestScaffolding,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name:           "RAII defer gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustDeferSelectorCall("mu", cleanupMethodName)},
+				{mustDeferSelectorCall("mu", cleanupMethodName)},
+			},
+			expectedLabel:  PatternRAIIDefer,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name:           "error propagation gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustIfErrReturnNil()},
+				{mustIfErrReturnNil()},
+			},
+			expectedLabel:  PatternErrorPropagation,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name: "signature-only gets correct label",
+			seqs: [][]*syntax.Node{
+				{{Type: golang.FuncDecl, Owns: 1}},
+				{{Type: golang.FuncDecl, Owns: 1}},
+			},
+			expectedLabel:  PatternSignatureOnly,
+			expectedAction: domain.NonActionable,
+		},
+		{
+			name: "actionable code gets no label",
+			seqs: [][]*syntax.Node{
+				mustFuncDeclWithBody(),
+				mustFuncDeclWithBody(),
+			},
+			expectedLabel:  PatternNone,
+			expectedAction: domain.Actionable,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			label, action := EvaluateActionabilityWithLabel(tc.seqs)
+			if label != tc.expectedLabel {
+				t.Errorf("label = %q, want %q", label, tc.expectedLabel)
+			}
+			if action != tc.expectedAction {
+				t.Errorf("action = %q, want %q", action, tc.expectedAction)
+			}
+		})
+	}
+}
+
+func TestApplyPatternLabel(t *testing.T) {
+	tests := []struct {
+		name         string
+		input        domain.CloneClassification
+		label        PatternLabel
+		wantCategory domain.CloneCategory
+		wantPriority domain.ClonePriority
+	}{
+		{
+			name:         "testdata label upgrades to test-fixture category",
+			input:        domain.CloneClassification{Category: domain.CategoryFunction},
+			label:        PatternTestData,
+			wantCategory: domain.CategoryTestFixture,
+			wantPriority: domain.PriorityLow,
+		},
+		{
+			name:         "table-driven label upgrades to test-boilerplate category",
+			input:        domain.CloneClassification{Category: domain.CategoryLoop},
+			label:        PatternTableDrivenTest,
+			wantCategory: domain.CategoryTestBoilerplate,
+			wantPriority: domain.PriorityLow,
+		},
+		{
+			name:         "scaffolding label upgrades to test-boilerplate category",
+			input:        domain.CloneClassification{Category: domain.CategoryFunction},
+			label:        PatternTestScaffolding,
+			wantCategory: domain.CategoryTestBoilerplate,
+			wantPriority: domain.PriorityLow,
+		},
+		{
+			name:         "data-dominated keeps category but lowers priority",
+			input:        domain.CloneClassification{Category: domain.CategoryFunction, Priority: domain.PriorityHigh},
+			label:        PatternDataDominated,
+			wantCategory: domain.CategoryFunction,
+			wantPriority: domain.PriorityLow,
+		},
+		{
+			name:         "no label keeps original classification",
+			input:        domain.CloneClassification{Category: domain.CategoryFunction, Priority: domain.PriorityHigh},
+			label:        PatternNone,
+			wantCategory: domain.CategoryFunction,
+			wantPriority: domain.PriorityHigh,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := applyPatternLabel(tc.input, tc.label)
+			if result.Category != tc.wantCategory {
+				t.Errorf("category = %q, want %q", result.Category, tc.wantCategory)
+			}
+			if result.Priority != tc.wantPriority {
+				t.Errorf("priority = %q, want %q", result.Priority, tc.wantPriority)
+			}
+		})
+	}
+}
+
+// Node construction helpers for tests.
+
+func mustNodeWithFilename(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.FuncDecl,
+		Owns:     5,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{Type: golang.BlockStmt, Children: []*syntax.Node{
+				{Type: golang.ExprStmt},
+			}},
+		},
+	}
+}
+
+func mustRangeStmtWithTRun(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.RangeStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.BlockStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.ExprStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Name: "Run",
+										Children: []*syntax.Node{
+											{Type: golang.Ident, Name: "t"},
+											{Type: golang.Ident, Name: "Run"},
+										},
+									},
+									{
+										Type: golang.BasicLit,
+									},
+									{
+										Type: golang.FuncLit,
+										Children: []*syntax.Node{
+											{Type: golang.FuncType},
+											{
+												Type: golang.BlockStmt,
+												Children: []*syntax.Node{
+													{Type: golang.ExprStmt},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustRangeStmtNoTRun(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.RangeStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.BlockStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.ExprStmt,
+						Children: []*syntax.Node{
+							{
+								Type: golang.CallExpr,
+								Children: []*syntax.Node{
+									{
+										Type: golang.SelectorExpr,
+										Name: "Process",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustTestScaffolding(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.ExprStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.AssignStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{
+								Type: golang.SelectorExpr,
+								Name: "TempDir",
+								Children: []*syntax.Node{
+									{Type: golang.CallExpr, Children: []*syntax.Node{
+										{Type: golang.SelectorExpr, Name: "GinkgoT"},
+									}},
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{
+								Type: golang.SelectorExpr,
+								Name: "WriteFile",
+							},
+						},
+					},
+				},
+			},
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{
+								Type: golang.SelectorExpr,
+								Name: "NotTo",
+							},
+						},
+					},
+				},
+			},
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{
+								Type: golang.SelectorExpr,
+								Name: "Equal",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustTempDirOnly(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.ExprStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.CallExpr,
+				Children: []*syntax.Node{
+					{
+						Type: golang.SelectorExpr,
+						Name: "TempDir",
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustAssertionsOnly(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.ExprStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.CallExpr,
+				Children: []*syntax.Node{
+					{
+						Type: golang.SelectorExpr,
+						Name: "Equal",
+					},
+				},
+			},
+		},
+	}
+}
+
+// mustDataDominatedSequence builds a node sequence dominated by BasicLit
+// and KeyValueExpr nodes (>70% data nodes).
+func mustDataDominatedSequence() []*syntax.Node {
+	return []*syntax.Node{
+		{
+			Type:     golang.CompositeLit,
+			Filename: "config_test.go",
+			Children: []*syntax.Node{
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Name"},
+					{Type: golang.BasicLit},
+				}},
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Reason"},
+					{Type: golang.BasicLit},
+				}},
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Severity"},
+					{Type: golang.BasicLit},
+				}},
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Version"},
+					{Type: golang.BasicLit},
+				}},
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Category"},
+					{Type: golang.BasicLit},
+				}},
+				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
+					{Type: golang.Ident, Name: "Action"},
+					{Type: golang.BasicLit},
+				}},
+			},
+		},
+	}
+}
+
+// mustLogicHeavySequence builds a node sequence with mostly logic nodes
+// (IfStmt, CallExpr, etc.) and few data nodes.
+func mustLogicHeavySequence() []*syntax.Node {
+	return []*syntax.Node{
+		{
+			Type:     golang.FuncDecl,
+			Filename: "service.go",
+			Children: []*syntax.Node{
+				{Type: golang.FuncType},
+				{
+					Type: golang.BlockStmt,
+					Children: []*syntax.Node{
+						{Type: golang.IfStmt, Children: []*syntax.Node{
+							{Type: golang.BinaryExpr},
+							{Type: golang.BlockStmt, Children: []*syntax.Node{
+								{Type: golang.ReturnStmt},
+							}},
+						}},
+						{Type: golang.AssignStmt},
+						{Type: golang.ReturnStmt},
+					},
+				},
+			},
+		},
+	}
+}
+
+// mustMixedDataLogicSequence builds a sequence with roughly equal
+// data and logic nodes (below the 70% threshold).
+func mustMixedDataLogicSequence() []*syntax.Node {
+	return []*syntax.Node{
+		{
+			Type:     golang.FuncDecl,
+			Filename: "handler.go",
+			Children: []*syntax.Node{
+				{Type: golang.FuncType},
+				{
+					Type: golang.BlockStmt,
+					Children: []*syntax.Node{
+						{Type: golang.AssignStmt},
+						{Type: golang.BasicLit},
+						{Type: golang.IfStmt, Children: []*syntax.Node{
+							{Type: golang.BinaryExpr},
+						}},
+						{Type: golang.BasicLit},
+					},
+				},
+			},
+		},
+	}
+}
