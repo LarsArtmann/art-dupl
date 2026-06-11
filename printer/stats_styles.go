@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"charm.land/lipgloss/v2"
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // StyleMixin holds common lipgloss style fields.
@@ -64,17 +65,17 @@ func initStyles() styleConfig {
 }
 
 // healthScoreStyle returns the appropriate style for a health score grade.
-func (p *stats) healthScoreStyle(grade string) lipgloss.Style {
+func (p *stats) healthScoreStyle(grade domain.HealthScore) lipgloss.Style {
 	switch grade {
-	case "A":
+	case domain.HealthScoreA:
 		return p.success
-	case "B":
+	case domain.HealthScoreB:
 		return p.success
-	case "C":
+	case domain.HealthScoreC:
 		return p.warning
-	case "D":
+	case domain.HealthScoreD:
 		return p.warning
-	case "F":
+	case domain.HealthScoreF:
 		return p.error
 	default:
 		return p.base

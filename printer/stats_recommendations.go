@@ -1,29 +1,31 @@
 package printer
 
+import "github.com/LarsArtmann/art-dupl/domain"
+
 // printRecommendations prints actionable recommendations based on the health score.
 func (p *stats) printRecommendations() {
 	switch p.statsData.HealthScore {
-	case "A":
+	case domain.HealthScoreA:
 		p.printSuccessf("✓ Excellent code health! Duplication is minimal.")
 		p.printLinef("Keep up the good work. Maintain current practices.")
-	case "B":
+	case domain.HealthScoreB:
 		p.printSuccessf("✓ Good code health with minor duplication.")
 		p.printLinef("Consider extracting small duplicate patterns into shared functions.")
 		p.printLinef("Review the 'Top Files' section to identify problem areas.")
-	case "C":
+	case domain.HealthScoreC:
 		p.printWarningf("! Moderate code duplication detected.")
 		p.printLinef("Prioritize refactoring duplicate code blocks:")
 		p.printLinef("  1. Focus on large clones (50+ lines) first")
 		p.printLinef("  2. Create shared utility functions or base classes")
 		p.printLinef("  3. Consider domain-driven design patterns")
-	case "D":
+	case domain.HealthScoreD:
 		p.printWarningf("⚠ High code duplication - action needed.")
 		p.printLinef("Immediate actions recommended:")
 		p.printLinef("  1. Extract all medium/large duplicate blocks (>20 lines)")
 		p.printLinef("  2. Implement shared libraries or services")
 		p.printLinef("  3. Establish code review guidelines to prevent new duplication")
 		p.printLinef("  4. Consider architectural changes (e.g., introduce new abstractions)")
-	case "F":
+	case domain.HealthScoreF:
 		p.printErrorf("✗ Critical code duplication - immediate action required!")
 		p.printLinef("Urgent steps to take:")
 		p.printLinef("  1. Prioritize ALL duplicate code extraction immediately")

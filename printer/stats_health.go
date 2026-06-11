@@ -1,6 +1,10 @@
 package printer
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+)
 
 const (
 	sizeRange1to5   = "1-5 lines"
@@ -26,9 +30,9 @@ const (
 // - C: < 15 (fair - needs attention)
 // - D: < 25 (poor - significant cleanup needed)
 // - F: >= 25 (critical - major refactoring required).
-func (p *stats) calculateHealthScore() string {
+func (p *stats) calculateHealthScore() domain.HealthScore {
 	if p.isEmptyStats() {
-		return "A"
+		return domain.HealthScoreA
 	}
 
 	totalScore := p.calculateTotalHealthScore()
@@ -50,15 +54,15 @@ func (p *stats) calculateTotalHealthScore() float64 {
 	return duplicationScore*0.7 + complexityScore*0.2 + impactScore*0.1
 }
 
-func scoreToGrade(score float64) string {
+func scoreToGrade(score float64) domain.HealthScore {
 	thresholds := []struct {
 		limit float64
-		grade string
+		grade domain.HealthScore
 	}{
-		{5, "A"},
-		{10, "B"},
-		{15, "C"},
-		{25, "D"},
+		{5, domain.HealthScoreA},
+		{10, domain.HealthScoreB},
+		{15, domain.HealthScoreC},
+		{25, domain.HealthScoreD},
 	}
 
 	for _, t := range thresholds {
@@ -67,7 +71,7 @@ func scoreToGrade(score float64) string {
 		}
 	}
 
-	return "F"
+	return domain.HealthScoreF
 }
 
 // getSizeRange returns a human-readable size range for a line count.

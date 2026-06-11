@@ -1,5 +1,7 @@
 package printer
 
+import "github.com/LarsArtmann/art-dupl/domain"
+
 // stats_data.go - Stats data structures
 //
 // This file contains the StatsData type definition for aggregated
@@ -54,7 +56,7 @@ type StatsData struct {
 	DuplicationRatio float64 `json:"duplication_ratio"` // Percentage of duplicated code
 
 	// Quality metrics
-	HealthScore string `json:"health_score"` // A-F grade based on metrics
+	HealthScore domain.HealthScore `json:"health_score"` // A-F grade based on metrics
 
 	// Time metrics
 	AnalysisDuration string `json:"analysis_duration"` // Time taken for analysis

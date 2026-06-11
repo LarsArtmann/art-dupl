@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
@@ -16,26 +17,26 @@ func TestHealthScoreCalculation(t *testing.T) {
 		duplicationRatio float64
 		complexityScore  float64
 		impactScore      int
-		expectedGrade    string
+		expectedGrade    domain.HealthScore
 	}{
-		{"Perfect health", 0.0, 0.0, 0, "A"},
-		{"Excellent health", 2.0, 1.0, 500, "A"}, // totalScore ≈ 1.85
-		{"Good health", 5.0, 2.0, 1000, "A"},     // totalScore ≈ 4.4
+		{"Perfect health", 0.0, 0.0, 0, domain.HealthScoreA},
+		{"Excellent health", 2.0, 1.0, 500, domain.HealthScoreA}, // totalScore ≈ 1.85
+		{"Good health", 5.0, 2.0, 1000, domain.HealthScoreA},     // totalScore ≈ 4.4
 		{
 			"Moderate health",
 			8.0,
 			3.0,
 			2000,
-			"B",
+			domain.HealthScoreB,
 		}, // totalScore ≈ 7.0
-		{"Poor health", 12.0, 4.0, 3000, "C"},     // totalScore ≈ 11.3
-		{"Critical health", 20.0, 5.0, 5000, "D"}, // totalScore ≈ 18.5
+		{"Poor health", 12.0, 4.0, 3000, domain.HealthScoreC},     // totalScore ≈ 11.3
+		{"Critical health", 20.0, 5.0, 5000, domain.HealthScoreD}, // totalScore ≈ 18.5
 		{
 			"Extreme duplication",
 			40.0,
 			10.0,
 			10000,
-			"F",
+			domain.HealthScoreF,
 		}, // totalScore = 40*0.7 + 20*0.2 + 10*0.1 = 33
 	}
 
@@ -70,7 +71,7 @@ func TestHealthScoreCalculation(t *testing.T) {
 
 type gradeRecommendationTestCase struct {
 	name             string
-	healthScore      string
+	healthScore      domain.HealthScore
 	totalCloneGroups int
 	averageCloneSize int
 	complexityScore  float64
@@ -79,7 +80,7 @@ type gradeRecommendationTestCase struct {
 }
 
 func TestPrintRecommendations(t *testing.T) {
-	gradeTestCase := func(name, healthScore string, totalCloneGroups, averageCloneSize int, complexityScore float64, shouldContain, shouldNotContain []string) gradeRecommendationTestCase {
+	gradeTestCase := func(name string, healthScore domain.HealthScore, totalCloneGroups, averageCloneSize int, complexityScore float64, shouldContain, shouldNotContain []string) gradeRecommendationTestCase {
 		return gradeRecommendationTestCase{
 			name:             name,
 			healthScore:      healthScore,
@@ -101,10 +102,10 @@ func TestPrintRecommendations(t *testing.T) {
 			shouldContain:    []string{"Excellent", "Keep up the good work"},
 			shouldNotContain: []string{"action needed", "Critical"},
 		},
-		gradeTestCase("Grade C recommendations with metrics", "C", 15, 60, 3.5,
+		gradeTestCase("Grade C recommendations with metrics", domain.HealthScoreC, 15, 60, 3.5,
 			[]string{"Moderate", "50+ lines", "15 clone groups"},
 			[]string{"Excellent", "Critical"}),
-		gradeTestCase("Grade F critical recommendations", "F", 30, 80, 6.0,
+		gradeTestCase("Grade F critical recommendations", domain.HealthScoreF, 30, 80, 6.0,
 			[]string{"Critical", "immediate action", "Halt new feature"},
 			[]string{"Excellent", "minor"}),
 	}

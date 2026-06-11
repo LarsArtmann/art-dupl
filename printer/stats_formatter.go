@@ -220,7 +220,7 @@ func (p *stats) printTextDuplicateCode() {
 	p.printMetric("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
 
 	if p.statsData.HealthScore != "" {
-		styled := p.healthScoreStyle(p.statsData.HealthScore).Render(p.statsData.HealthScore)
+		styled := p.healthScoreStyle(p.statsData.HealthScore).Render(string(p.statsData.HealthScore))
 		p.printMetric("Health Score", styled)
 		p.printLinef("  (A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%)")
 	}
@@ -409,7 +409,7 @@ func (p *stats) fillJSONDuplicateCode(jsonData *jsonStatsOutput) {
 
 func (p *stats) fillJSONMetrics(jsonData *jsonStatsOutput) {
 	if p.statsData.HealthScore != "" {
-		jsonData.Metrics.HealthScore = p.statsData.HealthScore
+		jsonData.Metrics.HealthScore = string(p.statsData.HealthScore)
 		jsonData.Metrics.HealthScoreThresholds = "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%"
 	}
 

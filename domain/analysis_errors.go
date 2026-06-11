@@ -6,4 +6,5 @@ import "errors"
 var (
 	ErrInvalidCloneSeverity = errors.New("invalid clone severity")
 	ErrInvalidSeverity      = errors.New("invalid severity value")
+	ErrInvalidHealthScore   = errors.New("invalid health score")
 )
