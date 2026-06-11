@@ -9,23 +9,17 @@ import (
 )
 
 func TestEvaluateActionability(t *testing.T) {
-	tests := []struct {
-		name     string
-		seqs     [][]*syntax.Node
-		expected domain.CloneActionability
-	}{
-		{
-			name:     "empty sequences are actionable",
-			seqs:     [][]*syntax.Node{},
-			expected: domain.Actionable,
-		},
+	runBoolTests(t, func(seqs [][]*syntax.Node) bool {
+		return EvaluateActionability(seqs) == domain.NonActionable
+	}, []boolTestCase{
+		{name: "empty sequences are actionable", seqs: [][]*syntax.Node{}, expected: false},
 		{
 			name: "single FuncDecl is non-actionable (interface signature)",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.FuncDecl, Owns: 1}},
 				{{Type: golang.FuncDecl, Owns: 1}},
 			},
-			expected: domain.NonActionable,
+			expected: true,
 		},
 		{
 			name: "bare DeferStmt without children is actionable (unknown defer)",
@@ -33,7 +27,7 @@ func TestEvaluateActionability(t *testing.T) {
 				{{Type: golang.DeferStmt, Owns: 1}},
 				{{Type: golang.DeferStmt, Owns: 1}},
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "bare IfStmt without children is actionable (cannot verify pattern)",
@@ -41,7 +35,7 @@ func TestEvaluateActionability(t *testing.T) {
 				{{Type: golang.IfStmt, Owns: 1}},
 				{{Type: golang.IfStmt, Owns: 1}},
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "FuncDecl with body is actionable",
@@ -49,7 +43,7 @@ func TestEvaluateActionability(t *testing.T) {
 				mustFuncDeclWithBody(),
 				mustFuncDeclWithBody(),
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "ForStmt loop is actionable",
@@ -57,7 +51,7 @@ func TestEvaluateActionability(t *testing.T) {
 				{{Type: golang.ForStmt, Owns: 1}},
 				{{Type: golang.ForStmt, Owns: 1}},
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "mixed types are actionable",
@@ -65,14 +59,14 @@ func TestEvaluateActionability(t *testing.T) {
 				{{Type: golang.FuncDecl, Owns: 3}, {Type: golang.AssignStmt}},
 				{{Type: golang.FuncDecl, Owns: 3}, {Type: golang.AssignStmt}},
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "only one sequence with FuncDecl is still non-actionable",
 			seqs: [][]*syntax.Node{
 				{{Type: golang.FuncDecl, Owns: 1}},
 			},
-			expected: domain.NonActionable,
+			expected: true,
 		},
 		{
 			name: "defer mu.Unlock is non-actionable",
@@ -80,7 +74,7 @@ func TestEvaluateActionability(t *testing.T) {
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
 			},
-			expected: domain.NonActionable,
+			expected: true,
 		},
 		{
 			name: "defer processOrder is actionable (not RAII)",
@@ -88,7 +82,7 @@ func TestEvaluateActionability(t *testing.T) {
 				{mustDeferSelectorCall("svc", processOrderMethodName)},
 				{mustDeferSelectorCall("svc", processOrderMethodName)},
 			},
-			expected: domain.Actionable,
+			expected: false,
 		},
 		{
 			name: "if err != nil { return err } is non-actionable",
@@ -96,18 +90,9 @@ func TestEvaluateActionability(t *testing.T) {
 				{mustIfErrReturnNil()},
 				{mustIfErrReturnNil()},
 			},
-			expected: domain.NonActionable,
+			expected: true,
 		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			result := EvaluateActionability(tc.seqs)
-			if result != tc.expected {
-				t.Errorf("EvaluateActionability() = %q, want %q", result, tc.expected)
-			}
-		})
-	}
+	})
 }
 
 func mustDeferSelectorCall(receiver, method string) *syntax.Node {

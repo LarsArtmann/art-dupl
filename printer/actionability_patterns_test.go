@@ -8,12 +8,29 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+type boolTestCase struct {
+	name     string
+	seqs     [][]*syntax.Node
+	expected bool
+}
+
+func runBoolTests(t *testing.T, fn func([][]*syntax.Node) bool, cases []boolTestCase) {
+	t.Helper()
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Helper()
+
+			result := fn(tc.seqs)
+			if result != tc.expected {
+				t.Errorf("got %v, want %v", result, tc.expected)
+			}
+		})
+	}
+}
+
 func TestIsTestDataFilePair(t *testing.T) {
-	tests := []struct {
-		name     string
-		seqs     [][]*syntax.Node
-		expected bool
-	}{
+	runBoolTests(t, isTestDataFilePair, []boolTestCase{
 		{
 			name: "both files in testdata directory",
 			seqs: [][]*syntax.Node{
@@ -46,11 +63,7 @@ func TestIsTestDataFilePair(t *testing.T) {
 			},
 			expected: false,
 		},
-		{
-			name:     "empty sequence",
-			seqs:     [][]*syntax.Node{},
-			expected: false,
-		},
+		{name: "empty sequence", seqs: [][]*syntax.Node{}, expected: false},
 		{
 			name: "file named testdata.go but not in testdata dir",
 			seqs: [][]*syntax.Node{
@@ -67,24 +80,11 @@ func TestIsTestDataFilePair(t *testing.T) {
 			},
 			expected: false,
 		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			result := isTestDataFilePair(tc.seqs)
-			if result != tc.expected {
-				t.Errorf("isTestDataFilePair() = %v, want %v", result, tc.expected)
-			}
-		})
-	}
+	})
 }
 
 func TestIsTableDrivenTestBody(t *testing.T) {
-	tests := []struct {
-		name     string
-		seqs     [][]*syntax.Node
-		expected bool
-	}{
+	runBoolTests(t, isTableDrivenTestBody, []boolTestCase{
 		{
 			name: "RangeStmt with t.Run in test file",
 			seqs: [][]*syntax.Node{
@@ -117,11 +117,7 @@ func TestIsTableDrivenTestBody(t *testing.T) {
 			},
 			expected: false,
 		},
-		{
-			name:     "empty sequences",
-			seqs:     [][]*syntax.Node{},
-			expected: false,
-		},
+		{name: "empty sequences", seqs: [][]*syntax.Node{}, expected: false},
 		{
 			name: "mixed: one RangeStmt one not",
 			seqs: [][]*syntax.Node{
@@ -130,24 +126,11 @@ func TestIsTableDrivenTestBody(t *testing.T) {
 			},
 			expected: false,
 		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			result := isTableDrivenTestBody(tc.seqs)
-			if result != tc.expected {
-				t.Errorf("isTableDrivenTestBody() = %v, want %v", result, tc.expected)
-			}
-		})
-	}
+	})
 }
 
 func TestIsTestScaffolding(t *testing.T) {
-	tests := []struct {
-		name     string
-		seqs     [][]*syntax.Node
-		expected bool
-	}{
+	runBoolTests(t, isTestScaffolding, []boolTestCase{
 		{
 			name: "Ginkgo TempDir + WriteFile + Expect pattern",
 			seqs: [][]*syntax.Node{
@@ -188,29 +171,12 @@ func TestIsTestScaffolding(t *testing.T) {
 			},
 			expected: false,
 		},
-		{
-			name:     "empty sequences",
-			seqs:     [][]*syntax.Node{},
-			expected: false,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			result := isTestScaffolding(tc.seqs)
-			if result != tc.expected {
-				t.Errorf("isTestScaffolding() = %v, want %v", result, tc.expected)
-			}
-		})
-	}
+		{name: "empty sequences", seqs: [][]*syntax.Node{}, expected: false},
+	})
 }
 
 func TestIsDataDominated(t *testing.T) {
-	tests := []struct {
-		name     string
-		seqs     [][]*syntax.Node
-		expected bool
-	}{
+	runBoolTests(t, isDataDominated, []boolTestCase{
 		{
 			name: "struct init with many BasicLit values",
 			seqs: [][]*syntax.Node{
@@ -235,11 +201,7 @@ func TestIsDataDominated(t *testing.T) {
 			},
 			expected: false,
 		},
-		{
-			name:     "empty sequences",
-			seqs:     [][]*syntax.Node{},
-			expected: false,
-		},
+		{name: "empty sequences", seqs: [][]*syntax.Node{}, expected: false},
 		{
 			name: "empty node list in sequence",
 			seqs: [][]*syntax.Node{
@@ -248,16 +210,7 @@ func TestIsDataDominated(t *testing.T) {
 			},
 			expected: false,
 		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			result := isDataDominated(tc.seqs)
-			if result != tc.expected {
-				t.Errorf("isDataDominated() = %v, want %v", result, tc.expected)
-			}
-		})
-	}
+	})
 }
 
 func TestEvaluateActionabilityWithLabel(t *testing.T) {
@@ -405,8 +358,6 @@ func TestApplyPatternLabel(t *testing.T) {
 	}
 }
 
-// Node construction helpers for tests.
-
 func mustNodeWithFilename(filename string) *syntax.Node {
 	return &syntax.Node{
 		Type:     golang.FuncDecl,
@@ -475,20 +426,7 @@ func mustRangeStmtNoTRun(filename string) *syntax.Node {
 			{
 				Type: golang.BlockStmt,
 				Children: []*syntax.Node{
-					{
-						Type: golang.ExprStmt,
-						Children: []*syntax.Node{
-							{
-								Type: golang.CallExpr,
-								Children: []*syntax.Node{
-									{
-										Type: golang.SelectorExpr,
-										Name: "Process",
-									},
-								},
-							},
-						},
-					},
+					mustSelectorExprStmt("", "Process"),
 				},
 			},
 		},
@@ -552,8 +490,6 @@ func mustAssertionsOnly(filename string) *syntax.Node {
 	return mustSelectorExprStmt(filename, "Equal")
 }
 
-// mustDataDominatedSequence builds a node sequence dominated by BasicLit
-// and KeyValueExpr nodes (>70% data nodes).
 func mustKeyValueExprFields(names ...string) []*syntax.Node {
 	nodes := make([]*syntax.Node, len(names))
 	for i, name := range names {
@@ -579,8 +515,6 @@ func mustDataDominatedSequence() []*syntax.Node {
 	}
 }
 
-// mustLogicHeavySequence builds a node sequence with mostly logic nodes
-// (IfStmt, CallExpr, etc.) and few data nodes.
 func mustLogicHeavySequence() []*syntax.Node {
 	return []*syntax.Node{
 		{
@@ -606,8 +540,6 @@ func mustLogicHeavySequence() []*syntax.Node {
 	}
 }
 
-// mustMixedDataLogicSequence builds a sequence with roughly equal
-// data and logic nodes (below the 70% threshold).
 func mustMixedDataLogicSequence() []*syntax.Node {
 	return []*syntax.Node{
 		{

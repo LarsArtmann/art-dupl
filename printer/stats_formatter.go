@@ -435,12 +435,12 @@ func (p *stats) fillJSONBreakdowns(jsonData *jsonStatsOutput) {
 		jsonData.PriorityBreakdown = p.statsData.PriorityBreakdown
 	}
 
-	if p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0 {
+	if p.hasActionabilityData() {
 		jsonData.Actionability.Actionable = p.statsData.ActionableGroups
 		jsonData.Actionability.NonActionable = p.statsData.NonActionableGroups
 	}
 
-	if p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0 {
+	if p.hasTestProdData() {
 		jsonData.TestVsProduction.Production = p.statsData.ProductionCloneGroups
 		jsonData.TestVsProduction.Test = p.statsData.TestCloneGroups
 	}
@@ -448,6 +448,14 @@ func (p *stats) fillJSONBreakdowns(jsonData *jsonStatsOutput) {
 	if len(p.statsData.TopClones) > 0 {
 		jsonData.TopClones = p.statsData.TopClones
 	}
+}
+
+func (p *stats) hasActionabilityData() bool {
+	return p.statsData.ActionableGroups > 0 || p.statsData.NonActionableGroups > 0
+}
+
+func (p *stats) hasTestProdData() bool {
+	return p.statsData.TestCloneGroups > 0 || p.statsData.ProductionCloneGroups > 0
 }
 
 func (p *stats) fillJSONTopFiles(jsonData *jsonStatsOutput) {
