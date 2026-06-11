@@ -275,6 +275,16 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			expectedAction: domain.NonActionable,
 		},
 		{
+			name: "interface implementation gets correct label",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/json.go")},
+				{mustFuncTypeNode("printer/html.go")},
+			},
+			expectedLabel:  PatternInterfaceImpl,
+			expectedAction: domain.NonActionable,
+		},
+		{
 			name: "actionable code gets no label",
 			seqs: [][]*syntax.Node{
 				mustFuncDeclWithBody(),
@@ -559,6 +569,79 @@ func mustMixedDataLogicSequence() []*syntax.Node {
 					},
 				},
 			},
+		},
+	}
+}
+
+func TestIsInterfaceImplementation(t *testing.T) {
+	runBoolTests(t, isInterfaceImplementation, []boolTestCase{
+		{
+			name: "3+ FuncType fragments from different files",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/json.go")},
+				{mustFuncTypeNode("printer/html.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "6 FuncType fragments from different files",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/json.go")},
+				{mustFuncTypeNode("printer/html.go")},
+				{mustFuncTypeNode("printer/plumbing.go")},
+				{mustFuncTypeNode("printer/sarif.go")},
+				{mustFuncTypeNode("printer/stats.go")},
+			},
+			expected: true,
+		},
+		{
+			name: "only 2 fragments returns false",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/json.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "3 fragments but same file",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/text.go")},
+				{mustFuncTypeNode("printer/text.go")},
+			},
+			expected: false,
+		},
+		{
+			name: "non-FuncType root returns false",
+			seqs: [][]*syntax.Node{
+				{mustNodeWithFilename("printer/text.go")},
+				{mustNodeWithFilename("printer/json.go")},
+				{mustNodeWithFilename("printer/html.go")},
+			},
+			expected: false,
+		},
+		{name: "empty sequences", seqs: [][]*syntax.Node{}, expected: false},
+		{
+			name: "empty fragment returns false",
+			seqs: [][]*syntax.Node{
+				{mustFuncTypeNode("printer/text.go")},
+				{},
+				{mustFuncTypeNode("printer/html.go")},
+			},
+			expected: false,
+		},
+	})
+}
+
+func mustFuncTypeNode(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.FuncType,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{Type: golang.FieldList},
+			{Type: golang.FieldList},
 		},
 	}
 }

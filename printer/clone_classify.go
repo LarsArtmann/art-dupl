@@ -21,7 +21,11 @@ const (
 	suggestTestDataPair      = "Test fixture files — expected structural similarity"
 	suggestTableDrivenTest   = "Table-driven test body — framework pattern, not logic"
 	suggestTestScaffolding   = "Test setup/assertion pattern — only data differs"
-	suggestDataDominated     = "Data-dominated clone — struct literals, not logic"
+	suggestDataDominated       = "Data-dominated clone — struct literals, not logic"
+	suggestSignatureOnly       = "Signature-only match — no extractable body"
+	suggestRAIIDefer           = "RAII cleanup defer — idiomatic resource management"
+	suggestErrorPropagation    = "Error propagation — standard Go error handling pattern"
+	suggestInterfaceImpl       = "Interface method implementation — shared signature, different behavior"
 )
 
 // idiomTokenThreshold is the maximum number of tokens for a clone to be
@@ -294,6 +298,20 @@ func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domai
 	case PatternDataDominated:
 		cls.Suggestion = suggestDataDominated
 		cls.Priority = domain.PriorityLow
+	case PatternSignatureOnly:
+		cls.Suggestion = suggestSignatureOnly
+		cls.Priority = domain.PriorityLow
+	case PatternRAIIDefer:
+		cls.Suggestion = suggestRAIIDefer
+		cls.Priority = domain.PriorityLow
+	case PatternErrorPropagation:
+		cls.Suggestion = suggestErrorPropagation
+		cls.Priority = domain.PriorityLow
+	case PatternInterfaceImpl:
+		cls.Suggestion = suggestInterfaceImpl
+		cls.Priority = domain.PriorityLow
+	case PatternNone:
+		// No pattern detected — keep original classification
 	}
 
 	return cls
