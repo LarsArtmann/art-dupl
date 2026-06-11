@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-05-23**
+**Last Updated: 2026-06-11**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -17,23 +17,28 @@ Actionable items planned for the next 2-4 weeks.
 - [ ] Implement CSV output format properly using encoding/csv
 - [ ] Unify enum patterns: domain enums should use config's generic helpers
 - [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
-- [ ] Decouple printer/clone_classify.go from syntax/golang direct import
 - [ ] Add --output-file flag to stats subcommand
-- [ ] Split printer/stats_test.go (975L → 3 files)
 
 ## 🟢 LOW Priority
 
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
 - [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-- [ ] Create domain.HealthScore typed enum (currently just a string 'A'-'F')
 - [ ] Write SDK documentation for pkg/artdupl/
 - [ ] Add BDD test for art-dupl stats --only templ and --only go
 - [ ] Add BDD test for --include-generic end-to-end
 - [ ] Add fuzz tests for templ parser edge cases
-- [ ] Add ADR for semantic-as-default and reflection-based config merge
 - [ ] Validate GoReleaser release config
 
-## ✅ Recently Completed (2026-05-23)
+## ✅ Recently Completed (2026-06-11)
+
+- [x] Decouple printer/clone_classify.go from syntax/golang direct import
+- [x] Create domain.HealthScore typed enum with validation and JSON marshaling
+- [x] Add FuncType-based interface implementation detector (non-actionable pattern)
+- [x] Complete exhaustive switch in applyPatternLabel for all PatternLabel cases
+- [x] Reduce GetCategoryEmoji cyclomatic complexity 16→2 via map lookup
+- [x] Add test cases for isInterfaceImplementation detector
+
+## ✅ Previously Completed (2026-05-23)
 
 - [x] Delete internal/simd/ dead code package (163L, 2 stale TODOs)
 - [x] Delete hashSeqSIMD() dead indirection in syntax/hash_simd.go
@@ -51,6 +56,8 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Makefile deleted, CI workflows consolidated (3 → 1)
 - [x] SDK hardcoded version → runtime/debug.ReadBuildInfo()
 - [x] AGENTS.md accuracy audit (5 ghost dirs, 3 ghost types removed)
+- [x] Add ADR for semantic-as-default and reflection-based config merge
+- [x] Split printer/stats_test.go (975L → 5 files)
 
 ## ✅ Previously Completed (2026-05-03)
 
