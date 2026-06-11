@@ -272,6 +272,79 @@ func TestStatsOutputFormat(t *testing.T) {
 	}
 }
 
+func TestCreateOutputWriter(t *testing.T) {
+	t.Run("empty filename returns stdout", func(t *testing.T) {
+		w, cleanup, err := createOutputWriter("")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if w != os.Stdout {
+			t.Error("expected os.Stdout")
+		}
+
+		cleanup()
+	})
+
+	t.Run("valid filename creates file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		path := filepath.Join(tmpDir, "stats-output.txt")
+
+		w, cleanup, err := createOutputWriter(path)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		_, writeErr := w.Write([]byte("test data\n"))
+		if writeErr != nil {
+			t.Fatalf("write error: %v", writeErr)
+		}
+
+		cleanup()
+
+		data, readErr := os.ReadFile(path)
+		if readErr != nil {
+			t.Fatalf("read error: %v", readErr)
+		}
+
+		if string(data) != "test data\n" {
+			t.Errorf("got %q, want %q", string(data), "test data\n")
+		}
+	})
+
+	t.Run("invalid path returns error", func(t *testing.T) {
+		_, _, err := createOutputWriter("/nonexistent/dir/output.txt")
+		if err == nil {
+			t.Error("expected error for invalid path")
+		}
+	})
+}
+
+func TestStatsOutputFile(t *testing.T) {
+	tmpDir := t.TempDir()
+	outputPath := filepath.Join(tmpDir, "stats.txt")
+
+	_, err := executeTestCommand(t, []string{
+		binaryName, statsSubCommand,
+		"--output-file", outputPath,
+		"./printer",
+	})
+	if err != nil {
+		t.Fatalf("Stats command with --output-file failed: %v", err)
+	}
+
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatalf("Failed to read output file: %v", err)
+	}
+
+	outputStr := string(data)
+	if !strings.Contains(outputStr, statsHeaderText) {
+		t.Errorf("Output file missing expected header %q", statsHeaderText)
+		t.Logf("Got: %s", outputStr)
+	}
+}
+
 // findRepoRoot finds the repository root directory.
 func findRepoRoot() (string, error) {
 	current, err := os.Getwd()

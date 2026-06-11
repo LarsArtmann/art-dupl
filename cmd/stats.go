@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -28,6 +30,7 @@ func NewStatsCommand() *cobra.Command {
 
 	// Stats-specific: output format
 	cmd.Flags().String("format", "text", "output format: text, json, csv (default: text)")
+	cmd.Flags().String("output-file", "", "write stats output to file instead of stdout")
 
 	return cmd
 }
@@ -65,6 +68,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
 func runStats(c *cobra.Command, arguments []string) error {
 	ctx := c.Context()
 	formatStr, _ := c.Flags().GetString("format")
+	outputFile, _ := c.Flags().GetString("output-file")
 
 	// Parse and validate format
 	format, err := config.ParseOutputFormat(formatStr)
@@ -102,7 +106,14 @@ func runStats(c *cobra.Command, arguments []string) error {
 	duration := endProfile.Duration
 
 	// Create stats printer
-	p := printer.NewStats(os.Stdout, os.ReadFile, mergedConfig.Threshold)
+	writer, cleanup, err := createOutputWriter(outputFile)
+	if err != nil {
+		return err
+	}
+
+	defer cleanup()
+
+	p := printer.NewStats(writer, os.ReadFile, mergedConfig.Threshold)
 
 	// Configure stats printer
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
@@ -146,4 +157,28 @@ func runStats(c *cobra.Command, arguments []string) error {
 // parseDuration parses a duration string using time package.
 func parseDuration(s string) (time.Duration, error) {
 	return time.ParseDuration(s) //nolint:wrapcheck // Simple pass-through for time.ParseDuration
+}
+
+// createOutputWriter returns an io.Writer for stats output.
+// If filename is empty, it returns os.Stdout with a no-op cleanup.
+// Otherwise it creates the file and returns a cleanup function that closes it.
+func createOutputWriter(filename string) (io.Writer, func(), error) {
+	if filename == "" {
+		return os.Stdout, func() {}, nil
+	}
+
+	// #nosec G304 -- user-controlled output path
+	f, err := os.Create(filename)
+	if err != nil {
+		return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "failed to create output file")
+	}
+
+	cleanup := func() {
+		closeErr := f.Close()
+		if closeErr != nil {
+			fmt.Fprintf(os.Stderr, "warning: failed to close file %q: %v\n", filename, closeErr)
+		}
+	}
+
+	return f, cleanup, nil
 }

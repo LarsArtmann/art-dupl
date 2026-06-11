@@ -58,6 +58,11 @@ func filesFeedWithOptions(
 				fchan <- path
 			}
 
+			err := sc.Err()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "reading stdin: %v\n", err)
+			}
+
 			close(fchan)
 		}()
 
