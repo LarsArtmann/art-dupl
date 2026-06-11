@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-05-02
+> **Last Updated:** 2026-06-12
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -30,34 +30,36 @@
 
 ### Output Formats
 
-| Feature                | Status               | Description                                                                 |
-| ---------------------- | -------------------- | --------------------------------------------------------------------------- |
-| **Text Output**        | FULLY_FUNCTIONAL     | Human-readable clone listing with file paths, line numbers, diff hints      |
-| **HTML Output**        | FULLY_FUNCTIONAL     | Dark theme, syntax highlighting, VSCode links, diff visualization           |
-| **JSON Output**        | FULLY_FUNCTIONAL     | Structured data with version, timestamp, clone_groups, summary              |
-| **Simple-JSON Output** | FULLY_FUNCTIONAL     | Simpler JSON format with score=impact, instances with token_count           |
-| **Plumbing Output**    | FULLY_FUNCTIONAL     | Machine-readable `file:startLine-endLine` format for CI/CD                  |
-| **SARIF Output**       | FULLY_FUNCTIONAL     | SARIF 2.1.0 for GitHub Advanced Security / CodeQL integration               |
-| **CSV Output**         | PARTIALLY_FUNCTIONAL | Stats CSV works; general clone CSV uses manual formatting, not encoding/csv |
+| Feature                | Status           | Description                                                            |
+| ---------------------- | ---------------- | ---------------------------------------------------------------------- |
+| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints |
+| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization      |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary         |
+| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count      |
+| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD             |
+| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security / CodeQL integration          |
+| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting          |
 
 ### Batch & Report Generation
 
-| Feature                     | Status           | Description                                                               |
-| --------------------------- | ---------------- | ------------------------------------------------------------------------- |
-| **All Formats (--all)**     | FULLY_FUNCTIONAL | Generate all output formats for all detection methods at once             |
-| **Custom Output Directory** | FULLY_FUNCTIONAL | `--output-dir` specifies destination for batch generation                 |
-| **HTML Diff Visualization** | FULLY_FUNCTIONAL | Side-by-side or inline diff via LCS algorithm, configurable with `--diff` |
+| Feature                         | Status           | Description                                                               |
+| ------------------------------- | ---------------- | ------------------------------------------------------------------------- |
+| **All Formats (--all)**         | FULLY_FUNCTIONAL | Generate all output formats for all detection methods at once             |
+| **Custom Output Directory**     | FULLY_FUNCTIONAL | `--output-dir` specifies destination for batch generation                 |
+| **Output File (--output-file)** | FULLY_FUNCTIONAL | Write stats output to file instead of stdout                              |
+| **HTML Diff Visualization**     | FULLY_FUNCTIONAL | Side-by-side or inline diff via LCS algorithm, configurable with `--diff` |
 
 ### Statistics Subcommand
 
-| Feature             | Status           | Description                                         |
-| ------------------- | ---------------- | --------------------------------------------------- |
-| **Text Stats**      | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)              |
-| **JSON Stats**      | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration         |
-| **CSV Stats**       | FULLY_FUNCTIONAL | Spreadsheet-compatible format for reporting         |
-| **Health Grade**    | FULLY_FUNCTIONAL | A-F health grade based on duplication metrics       |
-| **Clone Metrics**   | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication % |
-| **Spread Analysis** | FULLY_FUNCTIONAL | Complexity scores, severity distributions           |
+| Feature                  | Status           | Description                                             |
+| ------------------------ | ---------------- | ------------------------------------------------------- |
+| **Text Stats**           | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                  |
+| **JSON Stats**           | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration             |
+| **CSV Stats**            | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`      |
+| **Health Grade**         | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation |
+| **Clone Metrics**        | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %     |
+| **Spread Analysis**      | FULLY_FUNCTIONAL | Complexity scores, severity distributions               |
+| **Actionability Class.** | FULLY_FUNCTIONAL | AST-based detection of non-actionable patterns          |
 
 ### Sorting Options
 
@@ -100,15 +102,15 @@
 
 ## ⚡ Performance & Concurrency
 
-| Feature                   | Status               | Description                                                        |
-| ------------------------- | -------------------- | ------------------------------------------------------------------ |
-| **Parallel Parsing**      | FULLY_FUNCTIONAL     | Worker pool via `--workers` flag (0=auto, NumCPU)                  |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL     | SHA1 content-hash AST caching, `--incremental` flag                |
-| **Git-Aware Incremental** | FULLY_FUNCTIONAL     | `--since <git-ref>` for git-aware incremental mode                 |
-| **Cache Management**      | FULLY_FUNCTIONAL     | `--cache-dir`, `--clear-cache`, file-based gob serialization       |
-| **Execution Timeout**     | FULLY_FUNCTIONAL     | `--timeout` with context cancellation (default 30m)                |
-| **Performance Profiling** | EXPERIMENTAL         | Hidden `--profile` flag; pprof CPU/mem profile capture             |
-| **SIMD Optimizations**    | PARTIALLY_FUNCTIONAL | `internal/simd` exists; 6 SIMD TODOs remain in syntax/hash_simd.go |
+| Feature                   | Status           | Description                                                  |
+| ------------------------- | ---------------- | ------------------------------------------------------------ |
+| **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)            |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag          |
+| **Git-Aware Incremental** | FULLY_FUNCTIONAL | `--since <git-ref>` for git-aware incremental mode           |
+| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization |
+| **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)          |
+| **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture       |
+| **SIMD Optimizations**    | REMOVED          | `internal/simd/` deleted as dead code (never shipped)        |
 
 ---
 
@@ -166,43 +168,39 @@
 
 ## 🏗️ Architecture Components
 
-| Component        | Status           | Description                                        |
-| ---------------- | ---------------- | -------------------------------------------------- |
-| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions   |
-| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization    |
-| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental    |
-| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification          |
-| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                      |
-| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                |
-| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines         |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys              |
-| **domain/**      | FULLY_FUNCTIONAL | Value objects: Filepath, LineNumber, CloneSeverity |
-| **errors/**      | FULLY_FUNCTIONAL | 11 error types, typed wrapping, stack traces       |
-| **adapter/**     | FULLY_FUNCTIONAL | Printer adapter pattern for format abstraction     |
-| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface                 |
+| Component        | Status           | Description                                                            |
+| ---------------- | ---------------- | ---------------------------------------------------------------------- |
+| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions                       |
+| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                        |
+| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                        |
+| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML            |
+| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                          |
+| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                    |
+| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                             |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys                                  |
+| **domain/**      | FULLY_FUNCTIONAL | Value objects: Filepath, LineNumber, CloneSeverity, HealthScore, enums |
+| **errors/**      | FULLY_FUNCTIONAL | 14 error types, typed wrapping, stack traces                           |
+| **adapter/**     | FULLY_FUNCTIONAL | Printer adapter pattern for format abstraction                         |
+| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                |
 
 ---
 
 ## 🔮 Experimental / In Progress
 
-| Feature                   | Status               | Description                                       |
-| ------------------------- | -------------------- | ------------------------------------------------- |
-| **Performance Profiling** | EXPERIMENTAL         | `--profile` flag exists, pprof capture works      |
-| **SIMD Optimizations**    | PARTIALLY_FUNCTIONAL | Framework in place, 6 items remaining             |
-| **CSV Clone Output**      | PARTIALLY_FUNCTIONAL | Stats CSV works; clone CSV not using encoding/csv |
-| **TODO Detector**         | DEFINED_ONLY         | Implemented but not exposed via CLI               |
-| **Legacy Detector**       | DEFINED_ONLY         | Implemented but not exposed via CLI               |
+| Feature                   | Status       | Description                                  |
+| ------------------------- | ------------ | -------------------------------------------- |
+| **Performance Profiling** | EXPERIMENTAL | `--profile` flag exists, pprof capture works |
+| **TODO Detector**         | DEFINED_ONLY | Implemented but not exposed via CLI          |
+| **Legacy Detector**       | DEFINED_ONLY | Implemented but not exposed via CLI          |
 
 ---
 
 ## 🚫 Known Limitations
 
-| Limitation              | Impact | Description                                                       |
-| ----------------------- | ------ | ----------------------------------------------------------------- |
-| **Go & Templ Only**     | High   | Only `.go` and `.templ` files supported                           |
-| **Semantic Default**    | Medium | Flag docs say "already the default" but config default is `false` |
-| **CSV Formatting**      | Low    | Not using `encoding/csv` for clone output                         |
-| **Unexposed Detectors** | Low    | TodoDetector + LegacyDetector defined but not in CLI              |
+| Limitation              | Impact | Description                                          |
+| ----------------------- | ------ | ---------------------------------------------------- |
+| **Go & Templ Only**     | High   | Only `.go` and `.templ` files supported              |
+| **Unexposed Detectors** | Low    | TodoDetector + LegacyDetector defined but not in CLI |
 
 ---
 
@@ -251,4 +249,5 @@ art-dupl --clear-cache
 art-dupl stats                 # Text statistics
 art-dupl stats --format json   # JSON statistics
 art-dupl stats --format csv    # CSV for spreadsheets
+art-dupl stats --output-file report.txt  # Write to file
 ```

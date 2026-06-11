@@ -55,6 +55,19 @@ var priorityDisplay = map[ClonePriority]priorityData{
 	PriorityLow:      {color: "var(--success)", emoji: "\U0001f7e2"},
 }
 
+// IsValid returns true if the priority is one of the defined constants.
+func (p ClonePriority) IsValid() bool {
+	switch p {
+	case PriorityCritical, PriorityHigh, PriorityMedium, PriorityLow:
+		return true
+	default:
+		return false
+	}
+}
+
+// String returns the string representation of the priority.
+func (p ClonePriority) String() string { return string(p) }
+
 func (p ClonePriority) GetPriorityColor() string {
 	if data, ok := priorityDisplay[p]; ok {
 		return data.color
@@ -88,6 +101,22 @@ var categoryEmojis = map[CloneCategory]string{
 	CategoryUnknown:         "\U0001f4c4",
 }
 
+// IsValid returns true if the category is one of the defined constants.
+func (c CloneCategory) IsValid() bool {
+	switch c {
+	case CategoryFunction, CategoryMethod, CategoryTest, CategoryStruct,
+		CategoryInterface, CategoryHandler, CategoryLoop, CategoryConditional,
+		CategoryTestBoilerplate, CategoryTestFixture, CategoryAssignment,
+		CategoryExpression, CategoryIdiom, CategoryUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+// String returns the string representation of the category.
+func (c CloneCategory) String() string { return string(c) }
+
 func (c CloneCategory) GetCategoryEmoji() string {
 	if emoji, ok := categoryEmojis[c]; ok {
 		return emoji
@@ -95,6 +124,19 @@ func (c CloneCategory) GetCategoryEmoji() string {
 
 	return "\U0001f4c4"
 }
+
+// IsValid returns true if the actionability is one of the defined constants.
+func (a CloneActionability) IsValid() bool {
+	switch a {
+	case Actionable, NonActionable:
+		return true
+	default:
+		return false
+	}
+}
+
+// String returns the string representation of the actionability.
+func (a CloneActionability) String() string { return string(a) }
 
 // ClassificationInput holds the data needed to classify a clone.
 // Using a struct instead of primitives ensures the compiler catches missing fields

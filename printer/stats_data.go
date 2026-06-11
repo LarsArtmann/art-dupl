@@ -14,13 +14,13 @@ import "github.com/LarsArtmann/art-dupl/domain"
 
 // TopCloneGroup represents a high-impact clone group for the "top clones to fix" preview.
 type TopCloneGroup struct {
-	Priority       string `json:"priority"`
-	Category       string `json:"category"`
-	Lines          int    `json:"lines"`
-	Files          int    `json:"files"`
-	Suggestion     string `json:"suggestion"`
-	FirstFile      string `json:"firstFile"`
-	FirstLineStart int    `json:"firstLineStart"`
+	Priority       domain.ClonePriority `json:"priority"`
+	Category       domain.CloneCategory `json:"category"`
+	Lines          int                  `json:"lines"`
+	Files          int                  `json:"files"`
+	Suggestion     string               `json:"suggestion"`
+	FirstFile      string               `json:"firstFile"`
+	FirstLineStart int                  `json:"firstLineStart"`
 }
 
 // StatsData holds all aggregated statistics about code duplication analysis.

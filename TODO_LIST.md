@@ -14,20 +14,20 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🟡 MEDIUM Priority
 
-- [ ] Implement CSV output format properly using encoding/csv
+- [x] Implement CSV output format properly using encoding/csv
 - [ ] Unify enum patterns: domain enums should use config's generic helpers
 - [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
-- [ ] Add --output-file flag to stats subcommand
+- [x] Add --output-file flag to stats subcommand
 
 ## 🟢 LOW Priority
 
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
 - [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-- [ ] Write SDK documentation for pkg/artdupl/
-- [ ] Add BDD test for art-dupl stats --only templ and --only go
-- [ ] Add BDD test for --include-generic end-to-end
+- [x] Write SDK documentation for pkg/artdupl/
+- [x] Add BDD test for art-dupl stats --only templ and --only go
+- [x] Add BDD test for --include-generic end-to-end
 - [ ] Add fuzz tests for templ parser edge cases
-- [ ] Validate GoReleaser release config
+- [x] Validate GoReleaser release config
 
 ## ✅ Recently Completed (2026-06-11)
 
@@ -37,6 +37,12 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Complete exhaustive switch in applyPatternLabel for all PatternLabel cases
 - [x] Reduce GetCategoryEmoji cyclomatic complexity 16→2 via map lookup
 - [x] Add test cases for isInterfaceImplementation detector
+- [x] Implement CSV output format properly using encoding/csv
+- [x] Add --output-file flag to stats subcommand
+- [x] Write SDK documentation for pkg/artdupl/
+- [x] Add BDD tests for --only and --include-generic with stats
+- [x] Validate GoReleaser release config (remove unnecessary -r flag)
+- [x] Eliminate all 3 godoclint warnings to achieve zero lint issues
 
 ## ✅ Previously Completed (2026-05-23)
 

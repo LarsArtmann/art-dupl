@@ -127,8 +127,8 @@ func (p *stats) trackTopClone(group domain.ProcessedCloneGroup, lines int) {
 	}
 
 	top := TopCloneGroup{
-		Priority:       string(cls.Priority),
-		Category:       string(cls.Category),
+		Priority:       cls.Priority,
+		Category:       cls.Category,
 		Lines:          lines,
 		Files:          len(group.Clones),
 		Suggestion:     cls.Suggestion,
@@ -155,13 +155,13 @@ func sortTopClones(clones []TopCloneGroup) []TopCloneGroup {
 	return clones
 }
 
-func priorityScore(priority string) int {
+func priorityScore(priority domain.ClonePriority) int {
 	switch priority {
-	case "critical":
+	case domain.PriorityCritical:
 		return 4
-	case "high":
+	case domain.PriorityHigh:
 		return 3
-	case "medium":
+	case domain.PriorityMedium:
 		return 2
 	default:
 		return 1
