@@ -69,27 +69,27 @@ This is a correctness bug, not an improvement. It affects every single user runn
 
 ## Comprehensive Plan — Medium Granularity (30min-100min tasks)
 
-| # | Task | Impact | Effort | Files |
-|---|------|--------|--------|-------|
-| 1 | **Fix classification: decode base type before category switch** | CRITICAL | 30min | `printer/clone_processor.go`, `printer/clone_classify.go` |
-| 2 | **Add baseTypeOf helper to actionability.go** | HIGH | 30min | `printer/actionability.go` |
-| 3 | **Add unit tests for classification in semantic mode** | HIGH | 45min | `printer/clone_classify_test.go` |
-| 4 | **Encode BinaryExpr operator into Type** | HIGH | 45min | `syntax/golang/transform.go`, `syntax/golang/identifier_hash.go` |
-| 5 | **Encode UnaryExpr/IncDecStmt/AssignStmt operators** | HIGH | 45min | `syntax/golang/transform.go` |
-| 6 | **Add operator encoding unit tests** | HIGH | 60min | `syntax/golang/identifier_hash_test.go`, `syntax/golang/transform_test.go` |
-| 7 | **Fix hashSeq: use 4 bytes per node** | HIGH | 30min | `syntax/hash_simd.go` |
-| 8 | **Add hashSeq unit tests (currently zero)** | MEDIUM | 45min | `syntax/hash_test.go` (new) |
-| 9 | **Add CategoryIdiom to domain types** | MEDIUM | 15min | `domain/processed_clone.go` |
-| 10 | **Add idiom detection to clone_classify.go** | MEDIUM | 30min | `printer/clone_classify.go` |
-| 11 | **Wire idiom into HTML display + orderedCategories** | MEDIUM | 15min | `printer/html_summary.go`, `domain/processed_clone.go` |
-| 12 | **Update nodeTypeToCategory to use decoded type** | CRITICAL | 15min | `printer/clone_classify.go` |
-| 13 | **Add idiom suggestion constant** | LOW | 10min | `printer/clone_classify.go` |
-| 14 | **BDD: semantic operator detection test** | MEDIUM | 45min | `bdd/semantic_detection_test.go` |
-| 15 | **BDD: idiom classification test** | MEDIUM | 30min | `bdd/` (new or existing) |
-| 16 | **Update hashSeq benchmarks for 4-byte encoding** | LOW | 15min | `syntax/hash_bench_test.go` |
-| 17 | **Verify all tests pass, fix nix vendorHash** | HIGH | 30min | `flake.nix`, all test files |
-| 18 | **Commit with detailed messages + push** | — | 15min | git |
-| 19 | **Update AGENTS.md with new patterns** | LOW | 10min | `AGENTS.md` |
+| #   | Task                                                            | Impact   | Effort | Files                                                                      |
+| --- | --------------------------------------------------------------- | -------- | ------ | -------------------------------------------------------------------------- |
+| 1   | **Fix classification: decode base type before category switch** | CRITICAL | 30min  | `printer/clone_processor.go`, `printer/clone_classify.go`                  |
+| 2   | **Add baseTypeOf helper to actionability.go**                   | HIGH     | 30min  | `printer/actionability.go`                                                 |
+| 3   | **Add unit tests for classification in semantic mode**          | HIGH     | 45min  | `printer/clone_classify_test.go`                                           |
+| 4   | **Encode BinaryExpr operator into Type**                        | HIGH     | 45min  | `syntax/golang/transform.go`, `syntax/golang/identifier_hash.go`           |
+| 5   | **Encode UnaryExpr/IncDecStmt/AssignStmt operators**            | HIGH     | 45min  | `syntax/golang/transform.go`                                               |
+| 6   | **Add operator encoding unit tests**                            | HIGH     | 60min  | `syntax/golang/identifier_hash_test.go`, `syntax/golang/transform_test.go` |
+| 7   | **Fix hashSeq: use 4 bytes per node**                           | HIGH     | 30min  | `syntax/hash_simd.go`                                                      |
+| 8   | **Add hashSeq unit tests (currently zero)**                     | MEDIUM   | 45min  | `syntax/hash_test.go` (new)                                                |
+| 9   | **Add CategoryIdiom to domain types**                           | MEDIUM   | 15min  | `domain/processed_clone.go`                                                |
+| 10  | **Add idiom detection to clone_classify.go**                    | MEDIUM   | 30min  | `printer/clone_classify.go`                                                |
+| 11  | **Wire idiom into HTML display + orderedCategories**            | MEDIUM   | 15min  | `printer/html_summary.go`, `domain/processed_clone.go`                     |
+| 12  | **Update nodeTypeToCategory to use decoded type**               | CRITICAL | 15min  | `printer/clone_classify.go`                                                |
+| 13  | **Add idiom suggestion constant**                               | LOW      | 10min  | `printer/clone_classify.go`                                                |
+| 14  | **BDD: semantic operator detection test**                       | MEDIUM   | 45min  | `bdd/semantic_detection_test.go`                                           |
+| 15  | **BDD: idiom classification test**                              | MEDIUM   | 30min  | `bdd/` (new or existing)                                                   |
+| 16  | **Update hashSeq benchmarks for 4-byte encoding**               | LOW      | 15min  | `syntax/hash_bench_test.go`                                                |
+| 17  | **Verify all tests pass, fix nix vendorHash**                   | HIGH     | 30min  | `flake.nix`, all test files                                                |
+| 18  | **Commit with detailed messages + push**                        | —        | 15min  | git                                                                        |
+| 19  | **Update AGENTS.md with new patterns**                          | LOW      | 10min  | `AGENTS.md`                                                                |
 
 ---
 
@@ -97,95 +97,95 @@ This is a correctness bug, not an improvement. It affects every single user runn
 
 ### Phase 1: Fix Classification Bug (1%)
 
-| # | Task | Est | File |
-|---|------|-----|------|
-| 1.1 | Add `DecodeBaseType` call in `clone_processor.go` before passing to ClassifyClone | 5min | `printer/clone_processor.go` |
-| 1.2 | Update `nodeTypeToCategory` to decode input | 5min | `printer/clone_classify.go` |
-| 1.3 | Update `nodeTypeToString` to decode input | 5min | `printer/clone_classify.go` |
-| 1.4 | Write test: FuncDecl in semantic mode classified as `function` | 10min | `printer/clone_classify_test.go` |
-| 1.5 | Write test: SelectorExpr in semantic mode gets correct display name | 10min | `printer/clone_classify_test.go` |
-| 1.6 | Write test: Ident in semantic mode classified correctly | 10min | `printer/clone_classify_test.go` |
-| 1.7 | Run tests, verify fix | 5min | — |
+| #   | Task                                                                              | Est   | File                             |
+| --- | --------------------------------------------------------------------------------- | ----- | -------------------------------- |
+| 1.1 | Add `DecodeBaseType` call in `clone_processor.go` before passing to ClassifyClone | 5min  | `printer/clone_processor.go`     |
+| 1.2 | Update `nodeTypeToCategory` to decode input                                       | 5min  | `printer/clone_classify.go`      |
+| 1.3 | Update `nodeTypeToString` to decode input                                         | 5min  | `printer/clone_classify.go`      |
+| 1.4 | Write test: FuncDecl in semantic mode classified as `function`                    | 10min | `printer/clone_classify_test.go` |
+| 1.5 | Write test: SelectorExpr in semantic mode gets correct display name               | 10min | `printer/clone_classify_test.go` |
+| 1.6 | Write test: Ident in semantic mode classified correctly                           | 10min | `printer/clone_classify_test.go` |
+| 1.7 | Run tests, verify fix                                                             | 5min  | —                                |
 
 ### Phase 2: Fix Actionability Comparisons
 
-| # | Task | Est | File |
-|---|------|-----|------|
-| 2.1 | Add `baseTypeOf(n *syntax.Node) int32` helper | 5min | `printer/actionability.go` |
-| 2.2 | Replace `root.Type == golang.FuncDecl` with `baseTypeOf(root) == golang.FuncDecl` | 5min | `printer/actionability.go` |
-| 2.3 | Replace `child.Type == golang.BlockStmt` with `baseTypeOf(child)` | 5min | `printer/actionability.go` |
-| 2.4 | Replace `seq[0].Type != golang.DeferStmt` with `baseTypeOf` | 5min | `printer/actionability.go` |
-| 2.5 | Replace all remaining `.Type == golang.*` in actionability.go | 10min | `printer/actionability.go` |
-| 2.6 | Replace `child.Type == golang.BinaryExpr` in isErrorOnlyIf | 5min | `printer/actionability.go` |
-| 2.7 | Replace `child.Type == golang.Ident` in containsNilIdentifier | 5min | `printer/actionability.go` |
-| 2.8 | Replace `child.Type == golang.IfStmt` in isErrorOnlyIf | 5min | `printer/actionability.go` |
-| 2.9 | Replace `child.Type == golang.AssignStmt/DeclStmt` | 5min | `printer/actionability.go` |
-| 2.10 | Replace `node.Children[0].Type == golang.ReturnStmt` | 5min | `printer/actionability.go` |
-| 2.11 | Replace `child.Type == golang.ReturnStmt \|\| golang.CallExpr` | 5min | `printer/actionability.go` |
-| 2.12 | Run existing actionability tests, verify no regression | 5min | — |
-| 2.13 | Add test: actionability works with semantic-encoded nodes | 10min | `printer/actionability_test.go` |
+| #    | Task                                                                              | Est   | File                            |
+| ---- | --------------------------------------------------------------------------------- | ----- | ------------------------------- |
+| 2.1  | Add `baseTypeOf(n *syntax.Node) int32` helper                                     | 5min  | `printer/actionability.go`      |
+| 2.2  | Replace `root.Type == golang.FuncDecl` with `baseTypeOf(root) == golang.FuncDecl` | 5min  | `printer/actionability.go`      |
+| 2.3  | Replace `child.Type == golang.BlockStmt` with `baseTypeOf(child)`                 | 5min  | `printer/actionability.go`      |
+| 2.4  | Replace `seq[0].Type != golang.DeferStmt` with `baseTypeOf`                       | 5min  | `printer/actionability.go`      |
+| 2.5  | Replace all remaining `.Type == golang.*` in actionability.go                     | 10min | `printer/actionability.go`      |
+| 2.6  | Replace `child.Type == golang.BinaryExpr` in isErrorOnlyIf                        | 5min  | `printer/actionability.go`      |
+| 2.7  | Replace `child.Type == golang.Ident` in containsNilIdentifier                     | 5min  | `printer/actionability.go`      |
+| 2.8  | Replace `child.Type == golang.IfStmt` in isErrorOnlyIf                            | 5min  | `printer/actionability.go`      |
+| 2.9  | Replace `child.Type == golang.AssignStmt/DeclStmt`                                | 5min  | `printer/actionability.go`      |
+| 2.10 | Replace `node.Children[0].Type == golang.ReturnStmt`                              | 5min  | `printer/actionability.go`      |
+| 2.11 | Replace `child.Type == golang.ReturnStmt \|\| golang.CallExpr`                    | 5min  | `printer/actionability.go`      |
+| 2.12 | Run existing actionability tests, verify no regression                            | 5min  | —                               |
+| 2.13 | Add test: actionability works with semantic-encoded nodes                         | 10min | `printer/actionability_test.go` |
 
 ### Phase 3: Encode Operators (4%)
 
-| # | Task | Est | File |
-|---|------|-----|------|
-| 3.1 | Add `encodeOperatorSemantic` function to identifier_hash.go | 10min | `syntax/golang/identifier_hash.go` |
-| 3.2 | Update `BinaryExpr` case: encode `n.Op.String()` | 5min | `syntax/golang/transform.go` |
-| 3.3 | Update `UnaryExpr` case: encode `n.Op.String()` | 5min | `syntax/golang/transform.go` |
-| 3.4 | Update `IncDecStmt` case: encode `n.Tok.String()` | 5min | `syntax/golang/transform.go` |
-| 3.5 | Update `AssignStmt` case: encode `n.Tok.String()` | 5min | `syntax/golang/transform.go` |
-| 3.6 | Write test: `a + b` and `a - b` produce different types in semantic mode | 10min | `syntax/golang/transform_test.go` |
-| 3.7 | Write test: `a >= b` and `a < b` produce different types | 10min | `syntax/golang/transform_test.go` |
-| 3.8 | Write test: `x++` and `x--` produce different types | 10min | `syntax/golang/transform_test.go` |
-| 3.9 | Write test: `x = 1` and `x := 1` produce different types | 10min | `syntax/golang/transform_test.go` |
-| 3.10 | Write test: operators are identical in structural mode | 10min | `syntax/golang/transform_test.go` |
-| 3.11 | Run all transform tests | 5min | — |
+| #    | Task                                                                     | Est   | File                               |
+| ---- | ------------------------------------------------------------------------ | ----- | ---------------------------------- |
+| 3.1  | Add `encodeOperatorSemantic` function to identifier_hash.go              | 10min | `syntax/golang/identifier_hash.go` |
+| 3.2  | Update `BinaryExpr` case: encode `n.Op.String()`                         | 5min  | `syntax/golang/transform.go`       |
+| 3.3  | Update `UnaryExpr` case: encode `n.Op.String()`                          | 5min  | `syntax/golang/transform.go`       |
+| 3.4  | Update `IncDecStmt` case: encode `n.Tok.String()`                        | 5min  | `syntax/golang/transform.go`       |
+| 3.5  | Update `AssignStmt` case: encode `n.Tok.String()`                        | 5min  | `syntax/golang/transform.go`       |
+| 3.6  | Write test: `a + b` and `a - b` produce different types in semantic mode | 10min | `syntax/golang/transform_test.go`  |
+| 3.7  | Write test: `a >= b` and `a < b` produce different types                 | 10min | `syntax/golang/transform_test.go`  |
+| 3.8  | Write test: `x++` and `x--` produce different types                      | 10min | `syntax/golang/transform_test.go`  |
+| 3.9  | Write test: `x = 1` and `x := 1` produce different types                 | 10min | `syntax/golang/transform_test.go`  |
+| 3.10 | Write test: operators are identical in structural mode                   | 10min | `syntax/golang/transform_test.go`  |
+| 3.11 | Run all transform tests                                                  | 5min  | —                                  |
 
 ### Phase 4: Fix hashSeq (20%)
 
-| # | Task | Est | File |
-|---|------|-----|------|
-| 4.1 | Update hashSeq to use 4 bytes per node | 10min | `syntax/hash_simd.go` |
-| 4.2 | Update pool allocation to 4x node count | 5min | `syntax/hash_simd.go` |
+| #   | Task                                                                               | Est   | File                        |
+| --- | ---------------------------------------------------------------------------------- | ----- | --------------------------- |
+| 4.1 | Update hashSeq to use 4 bytes per node                                             | 10min | `syntax/hash_simd.go`       |
+| 4.2 | Update pool allocation to 4x node count                                            | 5min  | `syntax/hash_simd.go`       |
 | 4.3 | Write test: hashSeq produces different hashes for semantically different sequences | 10min | `syntax/hash_test.go` (new) |
-| 4.4 | Write test: hashSeq produces same hash for same sequence | 5min | `syntax/hash_test.go` |
-| 4.5 | Write test: hashSeq handles empty input | 5min | `syntax/hash_test.go` |
-| 4.6 | Write test: hashSeq handles single node | 5min | `syntax/hash_test.go` |
-| 4.7 | Write test: hashSeq handles large sequences | 5min | `syntax/hash_test.go` |
-| 4.8 | Run all tests | 5min | — |
+| 4.4 | Write test: hashSeq produces same hash for same sequence                           | 5min  | `syntax/hash_test.go`       |
+| 4.5 | Write test: hashSeq handles empty input                                            | 5min  | `syntax/hash_test.go`       |
+| 4.6 | Write test: hashSeq handles single node                                            | 5min  | `syntax/hash_test.go`       |
+| 4.7 | Write test: hashSeq handles large sequences                                        | 5min  | `syntax/hash_test.go`       |
+| 4.8 | Run all tests                                                                      | 5min  | —                           |
 
 ### Phase 5: Add Idiom Category
 
-| # | Task | Est | File |
-|---|------|-----|------|
-| 5.1 | Add `CategoryIdiom` constant to domain | 5min | `domain/processed_clone.go` |
-| 5.2 | Add idiom emoji to `GetCategoryEmoji()` | 5min | `domain/processed_clone.go` |
-| 5.3 | Add idiom detection logic: tokens < 5 → idiom | 10min | `printer/clone_classify.go` |
-| 5.4 | Add `suggestIdiom` constant | 5min | `printer/clone_classify.go` |
-| 5.5 | Add idiom to `orderedCategories()` | 5min | `printer/html_summary.go` |
-| 5.6 | Add idiom to `getSuggestion()` switch | 5min | `printer/clone_classify.go` |
-| 5.7 | Write test: tokens=4 classified as idiom | 5min | `printer/clone_classify_test.go` |
-| 5.8 | Write test: tokens=5 NOT classified as idiom | 5min | `printer/clone_classify_test.go` |
-| 5.9 | Run all tests | 5min | — |
+| #   | Task                                          | Est   | File                             |
+| --- | --------------------------------------------- | ----- | -------------------------------- |
+| 5.1 | Add `CategoryIdiom` constant to domain        | 5min  | `domain/processed_clone.go`      |
+| 5.2 | Add idiom emoji to `GetCategoryEmoji()`       | 5min  | `domain/processed_clone.go`      |
+| 5.3 | Add idiom detection logic: tokens < 5 → idiom | 10min | `printer/clone_classify.go`      |
+| 5.4 | Add `suggestIdiom` constant                   | 5min  | `printer/clone_classify.go`      |
+| 5.5 | Add idiom to `orderedCategories()`            | 5min  | `printer/html_summary.go`        |
+| 5.6 | Add idiom to `getSuggestion()` switch         | 5min  | `printer/clone_classify.go`      |
+| 5.7 | Write test: tokens=4 classified as idiom      | 5min  | `printer/clone_classify_test.go` |
+| 5.8 | Write test: tokens=5 NOT classified as idiom  | 5min  | `printer/clone_classify_test.go` |
+| 5.9 | Run all tests                                 | 5min  | —                                |
 
 ### Phase 6: BDD Integration Tests
 
-| # | Task | Est | File |
-|---|------|-----|------|
+| #   | Task                                                     | Est   | File                             |
+| --- | -------------------------------------------------------- | ----- | -------------------------------- |
 | 6.1 | BDD: operators produce different clones in semantic mode | 15min | `bdd/semantic_detection_test.go` |
-| 6.2 | BDD: inverse conditions NOT reported as clones | 15min | `bdd/semantic_detection_test.go` |
-| 6.3 | BDD: idiom category appears in output for <5 tokens | 15min | `bdd/classification_test.go` |
-| 6.4 | Run full BDD suite | 5min | — |
+| 6.2 | BDD: inverse conditions NOT reported as clones           | 15min | `bdd/semantic_detection_test.go` |
+| 6.3 | BDD: idiom category appears in output for <5 tokens      | 15min | `bdd/classification_test.go`     |
+| 6.4 | Run full BDD suite                                       | 5min  | —                                |
 
 ### Phase 7: Polish & Verify
 
-| # | Task | Est | File |
-|---|------|-----|------|
+| #   | Task                                          | Est   | File                        |
+| --- | --------------------------------------------- | ----- | --------------------------- |
 | 7.1 | Update hashSeq benchmarks for 4-byte encoding | 10min | `syntax/hash_bench_test.go` |
-| 7.2 | Run full test suite | 5min | — |
-| 7.3 | Run lint check | 5min | — |
-| 7.4 | Update AGENTS.md with semantic encoding docs | 10min | `AGENTS.md` |
-| 7.5 | Final commit + push | 10min | git |
+| 7.2 | Run full test suite                           | 5min  | —                           |
+| 7.3 | Run lint check                                | 5min  | —                           |
+| 7.4 | Update AGENTS.md with semantic encoding docs  | 10min | `AGENTS.md`                 |
+| 7.5 | Final commit + push                           | 10min | git                         |
 
 ---
 
@@ -252,27 +252,27 @@ graph TD
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-|------|-----------|
-| Operator encoding changes clone detection results | Operators encoded ONLY in semantic mode. Structural mode unchanged. |
-| hashSeq 4-byte change affects grouping | Hash is only for grouping, not detection. Detection uses full int32. |
-| Actionability breaks | Phase 2 runs BEFORE Phase 3 (operator encoding). baseTypeOf fixes both current + future. |
-| Performance regression from 4-byte hashSeq | XXH3 is SIMD-optimized. 4x data is still negligible vs AST parsing. Benchmark to confirm. |
-| Test flakiness | All changes are deterministic. No time/network dependencies. |
+| Risk                                              | Mitigation                                                                                |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Operator encoding changes clone detection results | Operators encoded ONLY in semantic mode. Structural mode unchanged.                       |
+| hashSeq 4-byte change affects grouping            | Hash is only for grouping, not detection. Detection uses full int32.                      |
+| Actionability breaks                              | Phase 2 runs BEFORE Phase 3 (operator encoding). baseTypeOf fixes both current + future.  |
+| Performance regression from 4-byte hashSeq        | XXH3 is SIMD-optimized. 4x data is still negligible vs AST parsing. Benchmark to confirm. |
+| Test flakiness                                    | All changes are deterministic. No time/network dependencies.                              |
 
 ---
 
 ## Files Changed Summary
 
-| File | Change Type |
-|------|-------------|
-| `syntax/golang/transform.go` | Encode operators for BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt |
-| `syntax/golang/identifier_hash.go` | Add operator encoding helper |
-| `syntax/hash_simd.go` | 4-byte per node in hashSeq |
-| `domain/processed_clone.go` | Add CategoryIdiom + emoji |
-| `printer/clone_processor.go` | Decode base type before classification |
-| `printer/clone_classify.go` | Use decoded type, add idiom detection |
-| `printer/actionability.go` | Route Type comparisons through baseTypeOf |
-| `printer/html_summary.go` | Add idiom to orderedCategories |
-| New: `syntax/hash_test.go` | hashSeq unit tests |
-| `bdd/semantic_detection_test.go` | Operator detection BDD |
+| File                               | Change Type                                                        |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| `syntax/golang/transform.go`       | Encode operators for BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt |
+| `syntax/golang/identifier_hash.go` | Add operator encoding helper                                       |
+| `syntax/hash_simd.go`              | 4-byte per node in hashSeq                                         |
+| `domain/processed_clone.go`        | Add CategoryIdiom + emoji                                          |
+| `printer/clone_processor.go`       | Decode base type before classification                             |
+| `printer/clone_classify.go`        | Use decoded type, add idiom detection                              |
+| `printer/actionability.go`         | Route Type comparisons through baseTypeOf                          |
+| `printer/html_summary.go`          | Add idiom to orderedCategories                                     |
+| New: `syntax/hash_test.go`         | hashSeq unit tests                                                 |
+| `bdd/semantic_detection_test.go`   | Operator detection BDD                                             |
