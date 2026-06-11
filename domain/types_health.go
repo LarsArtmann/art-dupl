@@ -45,6 +45,7 @@ func (h HealthScore) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler for HealthScore.
 func (h *HealthScore) UnmarshalJSON(data []byte) error {
 	str := strings.Trim(string(data), `"`)
+
 	score := HealthScore(str)
 	if !score.IsValid() {
 		return fmt.Errorf(

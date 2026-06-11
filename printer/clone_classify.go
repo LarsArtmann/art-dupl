@@ -21,11 +21,11 @@ const (
 	suggestTestDataPair      = "Test fixture files — expected structural similarity"
 	suggestTableDrivenTest   = "Table-driven test body — framework pattern, not logic"
 	suggestTestScaffolding   = "Test setup/assertion pattern — only data differs"
-	suggestDataDominated       = "Data-dominated clone — struct literals, not logic"
-	suggestSignatureOnly       = "Signature-only match — no extractable body"
-	suggestRAIIDefer           = "RAII cleanup defer — idiomatic resource management"
-	suggestErrorPropagation    = "Error propagation — standard Go error handling pattern"
-	suggestInterfaceImpl       = "Interface method implementation — shared signature, different behavior"
+	suggestDataDominated     = "Data-dominated clone — struct literals, not logic"
+	suggestSignatureOnly     = "Signature-only match — no extractable body"
+	suggestRAIIDefer         = "RAII cleanup defer — idiomatic resource management"
+	suggestErrorPropagation  = "Error propagation — standard Go error handling pattern"
+	suggestInterfaceImpl     = "Interface method implementation — shared signature, different behavior"
 )
 
 // idiomTokenThreshold is the maximum number of tokens for a clone to be
