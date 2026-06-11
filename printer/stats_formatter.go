@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -85,53 +86,63 @@ func (p *stats) printStats() {
 	}
 }
 
-// printCSV prints statistics in CSV format.
+// printCSV prints statistics in CSV format using encoding/csv for proper escaping.
 func (p *stats) printCSV() {
-	// Write CSV header
-	_, _ = fmt.Fprintf(p.w, "Metric,Value\n")
+	w := csv.NewWriter(p.w)
+	write := func(record ...string) {
+		_ = w.Write(record)
+	}
 
 	// Configuration
-	_, _ = fmt.Fprintf(p.w, "Threshold,%d\n", p.threshold)
-	_, _ = fmt.Fprintf(p.w, "Detection Methods,%s\n", p.statsData.DetectionMethods)
+	write("Metric", "Value")
+	write("Threshold", strconv.Itoa(p.threshold))
+	write("Detection Methods", p.statsData.DetectionMethods)
 
 	if p.statsData.DetectionMode != "" {
-		_, _ = fmt.Fprintf(p.w, "Detection Mode,%s\n", p.statsData.DetectionMode)
+		write("Detection Mode", p.statsData.DetectionMode)
 	}
 
 	if p.statsData.DetectionModeDesc != "" {
-		_, _ = fmt.Fprintf(p.w, "Detection Mode Description,%s\n", p.statsData.DetectionModeDesc)
+		write("Detection Mode Description", p.statsData.DetectionModeDesc)
 	}
 
-	_, _ = fmt.Fprintf(p.w, "Semantic Detection,%t\n", p.statsData.SemanticDetection)
-	_, _ = fmt.Fprintf(p.w, "Timestamp,%s\n", p.statsData.Timestamp)
-	_, _ = fmt.Fprintf(p.w, "Analysis Time,%s\n", p.statsData.AnalysisDuration)
-	_, _ = fmt.Fprintf(p.w, "\n")
+	write("Semantic Detection", strconv.FormatBool(p.statsData.SemanticDetection))
+	write("Timestamp", p.statsData.Timestamp)
+	write("Analysis Time", p.statsData.AnalysisDuration)
+
+	// Blank separator
+	write()
 
 	// Overview
-	_, _ = fmt.Fprintf(p.w, "Files Scanned,%d\n", p.statsData.TotalFilesScanned)
+	write("Files Scanned", strconv.Itoa(p.statsData.TotalFilesScanned))
+
 	if p.statsData.FilesFiltered > 0 {
-		_, _ = fmt.Fprintf(p.w, "Files Filtered,%d\n", p.statsData.FilesFiltered)
+		write("Files Filtered", strconv.Itoa(p.statsData.FilesFiltered))
 	}
 
-	_, _ = fmt.Fprintf(p.w, "Clone Groups,%d\n", p.statsData.TotalCloneGroups)
-	_, _ = fmt.Fprintf(p.w, "Total Clones,%d\n", p.statsData.TotalClones)
-	_, _ = fmt.Fprintf(p.w, "\n")
+	write("Clone Groups", strconv.Itoa(p.statsData.TotalCloneGroups))
+	write("Total Clones", strconv.Itoa(p.statsData.TotalClones))
+
+	// Blank separator
+	write()
 
 	// Duplicate Code
-	_, _ = fmt.Fprintf(p.w, "Total Duplicate Lines,%d\n", p.statsData.TotalDuplicateLines)
-	_, _ = fmt.Fprintf(p.w, "Estimated Total Lines,%d\n", p.statsData.TotalEstimatedLines)
-	_, _ = fmt.Fprintf(p.w, "Duplication Ratio,%.1f%%\n", p.statsData.DuplicationRatio)
-	_, _ = fmt.Fprintf(p.w, "Total Duplicate Tokens,%d\n", p.statsData.TotalTokens)
-	_, _ = fmt.Fprintf(p.w, "Average Clone Size,%d\n", p.statsData.AverageCloneSize)
-	_, _ = fmt.Fprintf(p.w, "Complexity Score,%.2f\n", p.statsData.ComplexityScore)
-	_, _ = fmt.Fprintf(p.w, "Impact Score,%d\n", p.statsData.ImpactScore)
-	_, _ = fmt.Fprintf(p.w, "Health Score,%s\n", p.statsData.HealthScore)
-	_, _ = fmt.Fprintf(
-		p.w,
-		"Health Score Thresholds,A: <5%% dup, B: <10%%, C: <15%%, D: <25%%, F: >=25%%\n",
-	)
-	_, _ = fmt.Fprintf(p.w, "\n")
-	_, _ = fmt.Fprintf(p.w, "Note,Metrics count unique duplicate patterns not total occurrences\n")
+	write("Total Duplicate Lines", strconv.Itoa(p.statsData.TotalDuplicateLines))
+	write("Estimated Total Lines", strconv.Itoa(p.statsData.TotalEstimatedLines))
+	write("Duplication Ratio", fmt.Sprintf("%.1f%%", p.statsData.DuplicationRatio))
+	write("Total Duplicate Tokens", strconv.Itoa(p.statsData.TotalTokens))
+	write("Average Clone Size", strconv.Itoa(p.statsData.AverageCloneSize))
+	write("Complexity Score", fmt.Sprintf("%.2f", p.statsData.ComplexityScore))
+	write("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
+	write("Health Score", string(p.statsData.HealthScore))
+	write("Health Score Thresholds", "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%")
+
+	// Blank separator
+	write()
+
+	write("Note", "Metrics count unique duplicate patterns not total occurrences")
+
+	w.Flush()
 }
 
 // printText prints statistics in text format.
