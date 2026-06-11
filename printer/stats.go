@@ -1,38 +1,3 @@
-// Package printer provides output formatting and statistics for duplicate detection.
-//
-// This package implements multiple output formats and statistical analysis
-// of detected code duplicates.
-//
-// Output Formats:
-// - TextPrinter: Human-readable text output
-// - JSONPrinter: Structured JSON output
-// - HTMLPrinter: HTML report with syntax highlighting
-// - PlumbingPrinter: Machine-readable output for scripting
-// - StatsPrinter: Comprehensive statistics and health analysis
-//
-// Design:
-// - Printer interface: Common API for all formats
-// - Format-specific implementations in separate files
-// - Statistics split across focused files:
-//   - stats.go: Core type and interface methods
-//   - stats_collector.go: SetX methods for data collection
-//   - stats_health.go: Health score calculation
-//   - stats_formatter.go: Output formatters (CSV, JSON, Text)
-//   - stats_visualization.go: Visualization helpers
-//   - stats_recommendations.go: Recommendation generation
-//   - stats_styles.go: Style management
-//   - stats_data.go: Data structures
-//
-// Configuration:
-// - SortBy criteria: Size, Occurrence, Hash, TotalTokens
-// - OutputFormat selection: Text, HTML, JSON, Plumbing, Simple JSON
-// - Threshold settings: Minimum size for duplicates
-// - Verbosity: Detailed output for debugging
-//
-// Performance:
-// - Streaming output for large projects
-// - Efficient memory usage for statistics
-// - Lazy evaluation where possible
 package printer
 
 import (
