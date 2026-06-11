@@ -2,6 +2,7 @@ package printer
 
 import (
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -51,6 +52,7 @@ const (
 	PatternSignatureOnly    PatternLabel = "signature-only"
 	PatternRAIIDefer        PatternLabel = "raii-defer"
 	PatternErrorPropagation PatternLabel = "error-propagation"
+	PatternInterfaceImpl    PatternLabel = "interface-implementation"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -67,6 +69,10 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, dom
 
 	if isSignatureOnlyMatch(nodeSeqs) {
 		return PatternSignatureOnly, domain.NonActionable
+	}
+
+	if isInterfaceImplementation(nodeSeqs) {
+		return PatternInterfaceImpl, domain.NonActionable
 	}
 
 	if isPureDeferPattern(nodeSeqs) {
@@ -136,6 +142,71 @@ func hasRealBody(node *syntax.Node) bool {
 	}
 
 	return false
+}
+
+// isInterfaceImplementation detects when all clone fragments are implementations
+// of the same interface method. The signal is: multiple fragments from different
+// files that all start with the same function name Ident, indicating they share
+// a common interface contract.
+//
+// This is precise because:
+//   - In semantic mode, Ident nodes encode the identifier name, so "PrintClones"
+//     in html.go and "PrintClones" in json.go produce identical tokens.
+//   - 3+ fragments from different files with the same method name is almost never
+//     coincidence — it means they all satisfy the same interface.
+//   - The match starts inside a FuncDecl (past the receiver-specific FuncDecl node),
+//     at the Ident/FuncType children which are identical across implementations.
+func isInterfaceImplementation(nodeSeqs [][]*syntax.Node) bool {
+	if len(nodeSeqs) < 3 {
+		return false
+	}
+
+	sharedName := ""
+	files := make(map[string]bool)
+
+	for _, seq := range nodeSeqs {
+		if len(seq) == 0 {
+			return false
+		}
+
+		name := extractFuncNameFromFragment(seq)
+		if name == "" {
+			return false
+		}
+
+		if sharedName == "" {
+			sharedName = name
+		} else if name != sharedName {
+			return false
+		}
+
+		if seq[0].Filename != "" {
+			files[seq[0].Filename] = true
+		}
+	}
+
+	return len(files) >= 3
+}
+
+// extractFuncNameFromFragment finds the function name from a matched node fragment.
+// It looks for the first Ident node that carries a function-name-like identifier
+// (heuristic: capitalized first letter, indicating exported method name).
+func extractFuncNameFromFragment(seq []*syntax.Node) string {
+	for _, node := range seq {
+		if baseTypeOf(node) == golang.Ident && node.Name != "" && isExportedName(node.Name) {
+			return node.Name
+		}
+
+		if baseTypeOf(node) == golang.FuncDecl && node.Name != "" {
+			return node.Name
+		}
+	}
+
+	return ""
+}
+
+func isExportedName(name string) bool {
+	return len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z'
 }
 
 // isPureDeferPattern reports whether every clone is a DeferStmt
@@ -304,13 +375,8 @@ func isTestDataFilePair(nodeSeqs [][]*syntax.Node) bool {
 // component, following Go's standard testing convention.
 func isInTestDataDir(filename string) bool {
 	parts := strings.Split(filepath.ToSlash(filename), "/")
-	for _, part := range parts {
-		if part == "testdata" {
-			return true
-		}
-	}
 
-	return false
+	return slices.Contains(parts, "testdata")
 }
 
 // isTableDrivenTestBody reports whether every clone is a RangeStmt wrapping
@@ -355,13 +421,7 @@ func containsTRunCall(node *syntax.Node) bool {
 		}
 	}
 
-	for _, child := range node.Children {
-		if containsTRunCall(child) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(node.Children, containsTRunCall)
 }
 
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.
