@@ -519,45 +519,24 @@ func mustTestScaffolding(filename string) *syntax.Node {
 					},
 				},
 			},
+			mustSelectorExprStmt("", "WriteFile"),
+			mustSelectorExprStmt("", "NotTo"),
+			mustSelectorExprStmt("", "Equal"),
+		},
+	}
+}
+
+func mustSelectorExprStmt(filename, selectorName string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.ExprStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
 			{
-				Type: golang.ExprStmt,
+				Type: golang.CallExpr,
 				Children: []*syntax.Node{
 					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{
-								Type: golang.SelectorExpr,
-								Name: "WriteFile",
-							},
-						},
-					},
-				},
-			},
-			{
-				Type: golang.ExprStmt,
-				Children: []*syntax.Node{
-					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{
-								Type: golang.SelectorExpr,
-								Name: "NotTo",
-							},
-						},
-					},
-				},
-			},
-			{
-				Type: golang.ExprStmt,
-				Children: []*syntax.Node{
-					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{
-								Type: golang.SelectorExpr,
-								Name: "Equal",
-							},
-						},
+						Type: golang.SelectorExpr,
+						Name: selectorName,
 					},
 				},
 			},
@@ -566,74 +545,36 @@ func mustTestScaffolding(filename string) *syntax.Node {
 }
 
 func mustTempDirOnly(filename string) *syntax.Node {
-	return &syntax.Node{
-		Type:     golang.ExprStmt,
-		Filename: filename,
-		Children: []*syntax.Node{
-			{
-				Type: golang.CallExpr,
-				Children: []*syntax.Node{
-					{
-						Type: golang.SelectorExpr,
-						Name: "TempDir",
-					},
-				},
-			},
-		},
-	}
+	return mustSelectorExprStmt(filename, "TempDir")
 }
 
 func mustAssertionsOnly(filename string) *syntax.Node {
-	return &syntax.Node{
-		Type:     golang.ExprStmt,
-		Filename: filename,
-		Children: []*syntax.Node{
-			{
-				Type: golang.CallExpr,
-				Children: []*syntax.Node{
-					{
-						Type: golang.SelectorExpr,
-						Name: "Equal",
-					},
-				},
-			},
-		},
-	}
+	return mustSelectorExprStmt(filename, "Equal")
 }
 
 // mustDataDominatedSequence builds a node sequence dominated by BasicLit
 // and KeyValueExpr nodes (>70% data nodes).
+func mustKeyValueExprFields(names ...string) []*syntax.Node {
+	nodes := make([]*syntax.Node, len(names))
+	for i, name := range names {
+		nodes[i] = &syntax.Node{
+			Type: golang.KeyValueExpr,
+			Children: []*syntax.Node{
+				{Type: golang.Ident, Name: name},
+				{Type: golang.BasicLit},
+			},
+		}
+	}
+
+	return nodes
+}
+
 func mustDataDominatedSequence() []*syntax.Node {
 	return []*syntax.Node{
 		{
 			Type:     golang.CompositeLit,
 			Filename: "config_test.go",
-			Children: []*syntax.Node{
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Name"},
-					{Type: golang.BasicLit},
-				}},
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Reason"},
-					{Type: golang.BasicLit},
-				}},
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Severity"},
-					{Type: golang.BasicLit},
-				}},
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Version"},
-					{Type: golang.BasicLit},
-				}},
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Category"},
-					{Type: golang.BasicLit},
-				}},
-				{Type: golang.KeyValueExpr, Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "Action"},
-					{Type: golang.BasicLit},
-				}},
-			},
+			Children: mustKeyValueExprFields("Name", "Reason", "Severity", "Version", "Category", "Action"),
 		},
 	}
 }
@@ -695,39 +636,9 @@ func mustThreeDistinctAssertions(filename string) *syntax.Node {
 		Type:     golang.ExprStmt,
 		Filename: filename,
 		Children: []*syntax.Node{
-			{
-				Type: golang.ExprStmt,
-				Children: []*syntax.Node{
-					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{Type: golang.SelectorExpr, Name: "Expect"},
-						},
-					},
-				},
-			},
-			{
-				Type: golang.ExprStmt,
-				Children: []*syntax.Node{
-					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{Type: golang.SelectorExpr, Name: "NotTo"},
-						},
-					},
-				},
-			},
-			{
-				Type: golang.ExprStmt,
-				Children: []*syntax.Node{
-					{
-						Type: golang.CallExpr,
-						Children: []*syntax.Node{
-							{Type: golang.SelectorExpr, Name: "Equal"},
-						},
-					},
-				},
-			},
+			mustSelectorExprStmt("", "Expect"),
+			mustSelectorExprStmt("", "NotTo"),
+			mustSelectorExprStmt("", "Equal"),
 		},
 	}
 }
