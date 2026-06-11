@@ -42,57 +42,6 @@ type (
 	CloneClassification = domain.CloneClassification
 )
 
-var nodeTypeNames = map[int32]string{
-	golang.BadNode:        "BadNode",
-	golang.File:           "File",
-	golang.ArrayType:      "ArrayType",
-	golang.AssignStmt:     "AssignStmt",
-	golang.BasicLit:       "BasicLit",
-	golang.BinaryExpr:     "BinaryExpr",
-	golang.BlockStmt:      "BlockStmt",
-	golang.BranchStmt:     "BranchStmt",
-	golang.CallExpr:       "CallExpr",
-	golang.CaseClause:     "CaseClause",
-	golang.ChanType:       "ChanType",
-	golang.CommClause:     "CommClause",
-	golang.CompositeLit:   "CompositeLit",
-	golang.DeclStmt:       "DeclStmt",
-	golang.DeferStmt:      "DeferStmt",
-	golang.Ellipsis:       "Ellipsis",
-	golang.EmptyStmt:      "EmptyStmt",
-	golang.ExprStmt:       "ExprStmt",
-	golang.Field:          "Field",
-	golang.FieldList:      "FieldList",
-	golang.ForStmt:        "ForStmt",
-	golang.FuncDecl:       "FuncDecl",
-	golang.FuncLit:        "FuncLit",
-	golang.FuncType:       "FuncType",
-	golang.GenDecl:        "GenDecl",
-	golang.GoStmt:         "GoStmt",
-	golang.Ident:          "Ident",
-	golang.IfStmt:         "IfStmt",
-	golang.IncDecStmt:     "IncDecStmt",
-	golang.InterfaceType:  "InterfaceType",
-	golang.KeyValueExpr:   "KeyValueExpr",
-	golang.LabeledStmt:    "LabeledStmt",
-	golang.MapType:        "MapType",
-	golang.ParenExpr:      "ParenExpr",
-	golang.RangeStmt:      "RangeStmt",
-	golang.ReturnStmt:     "ReturnStmt",
-	golang.SelectStmt:     "SelectStmt",
-	golang.SelectorExpr:   "SelectorExpr",
-	golang.SendStmt:       "SendStmt",
-	golang.SliceExpr:      "SliceExpr",
-	golang.StarExpr:       "StarExpr",
-	golang.StructType:     "StructType",
-	golang.SwitchStmt:     "SwitchStmt",
-	golang.TypeAssertExpr: "TypeAssertExpr",
-	golang.TypeSpec:       "TypeSpec",
-	golang.TypeSwitchStmt: "TypeSwitchStmt",
-	golang.UnaryExpr:      "UnaryExpr",
-	golang.ValueSpec:      "ValueSpec",
-}
-
 func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 	if input.Tokens < idiomTokenThreshold {
 		return idiomClassification(input)
@@ -152,11 +101,7 @@ func nodeTypeToCategory(nodeType int32) CloneCategory {
 }
 
 func nodeTypeToString(nodeType int32) string {
-	if name, ok := nodeTypeNames[nodeType]; ok {
-		return name
-	}
-
-	return "Unknown"
+	return golang.TypeName(nodeType)
 }
 
 func isTestFile(filename string) bool {
