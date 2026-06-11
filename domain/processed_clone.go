@@ -71,39 +71,29 @@ func (p ClonePriority) GetPriorityEmoji() string {
 	return "\u26aa"
 }
 
+var categoryEmojis = map[CloneCategory]string{
+	CategoryFunction:        "\u26a1",
+	CategoryMethod:          "\U0001f527",
+	CategoryTest:            "\U0001f9ea",
+	CategoryTestBoilerplate: "\U0001f9f9",
+	CategoryTestFixture:     "\U0001f3af",
+	CategoryStruct:          "\U0001f4e6",
+	CategoryInterface:       "\U0001f50c",
+	CategoryHandler:         "\U0001f3af",
+	CategoryLoop:            "\U0001f504",
+	CategoryConditional:     "\U0001f500",
+	CategoryAssignment:      "\U0001f4dd",
+	CategoryExpression:      "\U0001f4ca",
+	CategoryIdiom:           "\U0001f4a0",
+	CategoryUnknown:         "\U0001f4c4",
+}
+
 func (c CloneCategory) GetCategoryEmoji() string {
-	switch c {
-	case CategoryFunction:
-		return "\u26a1"
-	case CategoryMethod:
-		return "\U0001f527"
-	case CategoryTest:
-		return "\U0001f9ea"
-	case CategoryTestBoilerplate:
-		return "\U0001f9f9"
-	case CategoryTestFixture:
-		return "\U0001f3af"
-	case CategoryStruct:
-		return "\U0001f4e6"
-	case CategoryInterface:
-		return "\U0001f50c"
-	case CategoryHandler:
-		return "\U0001f3af"
-	case CategoryLoop:
-		return "\U0001f504"
-	case CategoryConditional:
-		return "\U0001f500"
-	case CategoryAssignment:
-		return "\U0001f4dd"
-	case CategoryExpression:
-		return "\U0001f4ca"
-	case CategoryIdiom:
-		return "\U0001f4a0"
-	case CategoryUnknown:
-		return "\U0001f4c4"
-	default:
-		return "\U0001f4c4"
+	if emoji, ok := categoryEmojis[c]; ok {
+		return emoji
 	}
+
+	return "\U0001f4c4"
 }
 
 // ClassificationInput holds the data needed to classify a clone.
