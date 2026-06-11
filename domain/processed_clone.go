@@ -4,20 +4,20 @@ package domain
 type CloneCategory string
 
 const (
-	CategoryFunction    CloneCategory = "function"
-	CategoryMethod      CloneCategory = "method"
-	CategoryTest        CloneCategory = "test"
-	CategoryStruct      CloneCategory = "struct"
-	CategoryInterface   CloneCategory = "interface"
-	CategoryHandler     CloneCategory = "handler"
-	CategoryLoop        CloneCategory = "loop"
-	CategoryConditional CloneCategory = "conditional"
+	CategoryFunction        CloneCategory = "function"
+	CategoryMethod          CloneCategory = "method"
+	CategoryTest            CloneCategory = "test"
+	CategoryStruct          CloneCategory = "struct"
+	CategoryInterface       CloneCategory = "interface"
+	CategoryHandler         CloneCategory = "handler"
+	CategoryLoop            CloneCategory = "loop"
+	CategoryConditional     CloneCategory = "conditional"
 	CategoryTestBoilerplate CloneCategory = "test-boilerplate"
-	CategoryTestFixture    CloneCategory = "test-fixture"
-	CategoryAssignment     CloneCategory = "assignment"
-	CategoryExpression    CloneCategory = "expression"
-	CategoryIdiom         CloneCategory = "idiom"
-	CategoryUnknown       CloneCategory = "unknown"
+	CategoryTestFixture     CloneCategory = "test-fixture"
+	CategoryAssignment      CloneCategory = "assignment"
+	CategoryExpression      CloneCategory = "expression"
+	CategoryIdiom           CloneCategory = "idiom"
+	CategoryUnknown         CloneCategory = "unknown"
 )
 
 // ClonePriority represents how important it is to address this clone.

@@ -8,20 +8,20 @@ import (
 )
 
 const (
-	suggestExtractUtility        = "Extract to shared utility function"
-	suggestReviewExtract         = "Review and extract common logic"
-	suggestComposition           = "Consider composition or shared base struct"
-	suggestInterface             = "Extract common interface definition"
-	suggestHandler               = "Extract handler logic to service layer"
-	suggestLoopHelper            = "Extract loop body to helper function"
-	suggestStrategy              = "Consider strategy pattern or early returns"
-	suggestTestHelper            = "Extract test helper function or use table-driven tests"
-	suggestSharedTestUtility     = "Consider extracting to shared test utility"
-	suggestIdiom                 = "Structural idiom — typically not actionable"
-	suggestTestDataPair          = "Test fixture files — expected structural similarity"
-	suggestTableDrivenTest       = "Table-driven test body — framework pattern, not logic"
-	suggestTestScaffolding       = "Test setup/assertion pattern — only data differs"
-	suggestDataDominated         = "Data-dominated clone — struct literals, not logic"
+	suggestExtractUtility    = "Extract to shared utility function"
+	suggestReviewExtract     = "Review and extract common logic"
+	suggestComposition       = "Consider composition or shared base struct"
+	suggestInterface         = "Extract common interface definition"
+	suggestHandler           = "Extract handler logic to service layer"
+	suggestLoopHelper        = "Extract loop body to helper function"
+	suggestStrategy          = "Consider strategy pattern or early returns"
+	suggestTestHelper        = "Extract test helper function or use table-driven tests"
+	suggestSharedTestUtility = "Consider extracting to shared test utility"
+	suggestIdiom             = "Structural idiom — typically not actionable"
+	suggestTestDataPair      = "Test fixture files — expected structural similarity"
+	suggestTableDrivenTest   = "Table-driven test body — framework pattern, not logic"
+	suggestTestScaffolding   = "Test setup/assertion pattern — only data differs"
+	suggestDataDominated     = "Data-dominated clone — struct literals, not logic"
 )
 
 // idiomTokenThreshold is the maximum number of tokens for a clone to be

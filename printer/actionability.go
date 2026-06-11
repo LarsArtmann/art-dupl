@@ -34,6 +34,7 @@ func baseTypeOf(n *syntax.Node) int32 {
 // boilerplate pattern. If any clone differs, the group is actionable.
 func EvaluateActionability(nodeSeqs [][]*syntax.Node) domain.CloneActionability {
 	_, a := evaluateActionabilityDetailed(nodeSeqs)
+
 	return a
 }
 
@@ -379,9 +380,11 @@ func allFromTestFile(seq []*syntax.Node) bool {
 // This covers Ginkgo When/It blocks and standard test helpers that follow
 // the same structural pattern with only data differences.
 //
-// Detection strategy: look for CallExpr chains containing both a temp dir
-// creation (TempDir, TempFile) and an assertion call (Expect, Should,
-// NotTo, To, Equal, HaveLen, BeEmpty, etc.) within _test.go files.
+// Detection strategy: look for assertion calls within _test.go files where
+// the clone also contains either temp dir/file creation OR file I/O (WriteFile,
+// ReadFile, MkdirAll). The combination of assertions + file setup is a strong
+// signal of test scaffolding. Falls back to detecting 3+ distinct assertion
+// methods as sufficient evidence on its own.
 func isTestScaffolding(nodeSeqs [][]*syntax.Node) bool {
 	if len(nodeSeqs) == 0 {
 		return false
@@ -407,19 +410,29 @@ func isTestScaffoldingSequence(seq []*syntax.Node) bool {
 		return false
 	}
 
-	hasTempDir := false
-	hasAssertion := false
+	var (
+		hasFileIO      bool
+		assertionNames map[string]bool
+	)
 
 	for _, node := range seq {
-		walkForTestScaffoldingSignals(node, &hasTempDir, &hasAssertion)
+		walkForTestScaffoldingSignals(node, &hasFileIO, &assertionNames)
 	}
 
-	return hasTempDir && hasAssertion
+	if hasFileIO && len(assertionNames) >= 1 {
+		return true
+	}
+
+	return len(assertionNames) >= 3
 }
 
 // walkForTestScaffoldingSignals walks a node tree looking for test
-// scaffolding indicators: temp directory creation and assertion calls.
-func walkForTestScaffoldingSignals(node *syntax.Node, hasTempDir, hasAssertion *bool) {
+// scaffolding indicators: file I/O operations and assertion calls.
+func walkForTestScaffoldingSignals(node *syntax.Node, hasFileIO *bool, assertionNames *map[string]bool) {
+	if *assertionNames == nil {
+		*assertionNames = make(map[string]bool)
+	}
+
 	if baseTypeOf(node) == golang.CallExpr {
 		for _, child := range node.Children {
 			bt := baseTypeOf(child)
@@ -428,24 +441,27 @@ func walkForTestScaffoldingSignals(node *syntax.Node, hasTempDir, hasAssertion *
 			if bt == golang.SelectorExpr {
 				switch name {
 				case "TempDir", "TempFile":
-					*hasTempDir = true
-				case "Expect", "So", "Assert", "Check":
-					*hasAssertion = true
-				case "NotTo", "To", "Not", "ToNot", "ToNotBeElementOf":
-					*hasAssertion = true
+					*hasFileIO = true
+				case "WriteFile", "ReadFile", "MkdirAll", "MkdirTemp":
+					*hasFileIO = true
+				case "Expect", "Should", "So", "Assert", "Check", "Require":
+					(*assertionNames)["expect-family"] = true
+				case "NotTo", "To", "Not", "ToNot":
+					(*assertionNames)["matcher-chain"] = true
 				case "Equal", "HaveLen", "BeEmpty", "BeNil", "BeTrue", "BeFalse",
 					"BeZero", "ContainElement", "ContainSubstring", "MatchRegexp",
-					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce":
-					*hasAssertion = true
-				case "Should":
-					*hasAssertion = true
+					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce",
+					"(HaveOccurred", "ShouldNot":
+					(*assertionNames)["assertion"] = true
+				case "Fatalf", "Errorf", "Skipf", "Logf", "FailNow":
+					(*assertionNames)["testing-t"] = true
 				}
 			}
 		}
 	}
 
 	for _, child := range node.Children {
-		walkForTestScaffoldingSignals(child, hasTempDir, hasAssertion)
+		walkForTestScaffoldingSignals(child, hasFileIO, assertionNames)
 	}
 }
 

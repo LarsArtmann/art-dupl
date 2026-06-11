@@ -173,6 +173,14 @@ func TestIsTestScaffolding(t *testing.T) {
 			expected: false,
 		},
 		{
+			name: "3+ distinct assertions without TempDir is scaffolding",
+			seqs: [][]*syntax.Node{
+				{mustThreeDistinctAssertions("rule_test.go")},
+				{mustThreeDistinctAssertions("handler_test.go")},
+			},
+			expected: true,
+		},
+		{
 			name: "production files with similar pattern",
 			seqs: [][]*syntax.Node{
 				{mustTestScaffolding("handler.go")},
@@ -254,13 +262,13 @@ func TestIsDataDominated(t *testing.T) {
 
 func TestEvaluateActionabilityWithLabel(t *testing.T) {
 	tests := []struct {
-		name              string
-		seqs              [][]*syntax.Node
-		expectedLabel     PatternLabel
-		expectedAction    domain.CloneActionability
+		name           string
+		seqs           [][]*syntax.Node
+		expectedLabel  PatternLabel
+		expectedAction domain.CloneActionability
 	}{
 		{
-			name:           "testdata pair gets correct label",
+			name: "testdata pair gets correct label",
 			seqs: [][]*syntax.Node{
 				{mustNodeWithFilename("pkg/testdata/input.go")},
 				{mustNodeWithFilename("pkg/testdata/golden.go")},
@@ -269,7 +277,7 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			expectedAction: domain.NonActionable,
 		},
 		{
-			name:           "table-driven test gets correct label",
+			name: "table-driven test gets correct label",
 			seqs: [][]*syntax.Node{
 				{mustRangeStmtWithTRun("resolve_test.go")},
 				{mustRangeStmtWithTRun("filter_test.go")},
@@ -278,7 +286,7 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			expectedAction: domain.NonActionable,
 		},
 		{
-			name:           "test scaffolding gets correct label",
+			name: "test scaffolding gets correct label",
 			seqs: [][]*syntax.Node{
 				{mustTestScaffolding("rule_test.go")},
 				{mustTestScaffolding("handler_test.go")},
@@ -287,7 +295,7 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			expectedAction: domain.NonActionable,
 		},
 		{
-			name:           "RAII defer gets correct label",
+			name: "RAII defer gets correct label",
 			seqs: [][]*syntax.Node{
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
@@ -296,7 +304,7 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			expectedAction: domain.NonActionable,
 		},
 		{
-			name:           "error propagation gets correct label",
+			name: "error propagation gets correct label",
 			seqs: [][]*syntax.Node{
 				{mustIfErrReturnNil()},
 				{mustIfErrReturnNil()},
@@ -330,6 +338,7 @@ func TestEvaluateActionabilityWithLabel(t *testing.T) {
 			if label != tc.expectedLabel {
 				t.Errorf("label = %q, want %q", label, tc.expectedLabel)
 			}
+
 			if action != tc.expectedAction {
 				t.Errorf("action = %q, want %q", action, tc.expectedAction)
 			}
@@ -388,6 +397,7 @@ func TestApplyPatternLabel(t *testing.T) {
 			if result.Category != tc.wantCategory {
 				t.Errorf("category = %q, want %q", result.Category, tc.wantCategory)
 			}
+
 			if result.Priority != tc.wantPriority {
 				t.Errorf("priority = %q, want %q", result.Priority, tc.wantPriority)
 			}
@@ -673,6 +683,48 @@ func mustMixedDataLogicSequence() []*syntax.Node {
 							{Type: golang.BinaryExpr},
 						}},
 						{Type: golang.BasicLit},
+					},
+				},
+			},
+		},
+	}
+}
+
+func mustThreeDistinctAssertions(filename string) *syntax.Node {
+	return &syntax.Node{
+		Type:     golang.ExprStmt,
+		Filename: filename,
+		Children: []*syntax.Node{
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{Type: golang.SelectorExpr, Name: "Expect"},
+						},
+					},
+				},
+			},
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{Type: golang.SelectorExpr, Name: "NotTo"},
+						},
+					},
+				},
+			},
+			{
+				Type: golang.ExprStmt,
+				Children: []*syntax.Node{
+					{
+						Type: golang.CallExpr,
+						Children: []*syntax.Node{
+							{Type: golang.SelectorExpr, Name: "Equal"},
+						},
 					},
 				},
 			},
