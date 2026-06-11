@@ -181,7 +181,7 @@ nix:
     path: pkgs/art-dupl/default.nix
     install: |
       mkdir -p $out/bin
-      cp -vr ./{binary} $out/bin/art-dupl
+      cp -v ./{binary} $out/bin/art-dupl
 
 scoops:
   - name: art-dupl
