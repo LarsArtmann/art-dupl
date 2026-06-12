@@ -5,7 +5,7 @@ All notable changes to art-dupl will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2026-06-12
 
 ### Added
 
@@ -28,8 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`priorityScore()` now uses `domain.ClonePriority`**: Eliminates fragile raw string comparisons
 - **`TopCloneGroup` uses typed domain values**: `domain.ClonePriority` and `domain.CloneCategory` instead of `string`
-- **`semantic detection is ON by default`** (was incorrectly documented as OFF): `DefaultConfig.Semantic = true`
-  - `--structural` flag disables semantic matching (not the other way around)
+- **Documentation accuracy**: Fixed incorrect "Semantic OFF by default" (it's ON), removed dead SIMD/string-interning claims
 - **Semantic classification accuracy**: Operator encoding and idiom category reduce false positives
 - **GoReleaser nix install**: Removed unnecessary `-r` flag from `cp` command
 - **All lint issues to zero**: godoclint, gci, wsl whitespace warnings eliminated
@@ -39,12 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`GetCategoryEmoji` complexity 16→2**: Map lookup replaces 14-case switch
 - **Clone classification decoupled from `syntax/golang`**: `printer/clone_classify.go` no longer imports AST internals
 - **Printer test deduplication**: Shared `boolTestCase` runner eliminates test table duplication
+- **Populated `docs/DOMAIN_LANGUAGE.md`**: 20 glossary terms, 9 value objects, 6 bounded contexts
 
 ### Removed
 
 - **`internal/simd/` dead code**: 163 lines with 2 stale TODOs — never shipped
 
-## 2026-05-23 — Build System & Quality Sprint
+## [0.2.0] - 2026-05-21
 
 ### Added
 
@@ -57,9 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BDD `prepareSubcommandArgs` bug**: 9 hidden test failures from flag-value parsing
 - **21 lint issues → 0**: errcheck, goconst, exhaustruct, err113, gci, golines, gocyclo
 - **Nix lint sandbox**: Set `GOLANGCI_LINT_CACHE` in `flake.nix`
-
-### Changed
-
 - **`buildJSONData` complexity 16→<10**: 6 extracted helpers
 - **CI consolidation**: 3 overlapping workflows → single `ci.yml`
 - **SDK version**: Hardcoded → `runtime/debug.ReadBuildInfo()`
@@ -68,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`internal/simd/` dead code** and `hashSeqSIMD()` indirection
 
-## 2026-05-03 — Architecture Refactoring Sprint
+## [0.1.0] - 2026-05-03
 
 ### Added
 
@@ -82,10 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Rich error types**: 11 `DuplError` types with context, wrapping, and categorization
 - **BDD test suite**: Ginkgo/Gomega behavior-driven tests
 - **Professional CLI**: Fang/Cobra with auto-completion, man pages, version info
-
-### Changed
-
-- **Semantic detection ON by default**: `--structural` flag disables it for raw structural matching
+- **Semantic detection ON by default**: `--structural` flag disables it
   - Methods with different receivers distinguished (e.g., `CrushMode.IsValid` vs `SafetyMode.IsValid`)
   - Extended to `FuncDecl` (receiver + name) and `TypeSpec` (type name)
 - **Major file splits**: `cmd/run.go` → 5, `printer/stats.go` → 7, `domain/` → 6, `pkg/artdupl/` → 5
@@ -98,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Double-counting**: Fixed in `TotalDuplicateLines`, added unique duplicate lines metric
 - **`SortByTotalTokens` bug**: Incorrect sorting in `printer/sorter.go` and `printer/text.go`
 
-## [1.0.0] - Initial Fork
+## [0.0.1] - Initial Fork
 
 ### Added
 
