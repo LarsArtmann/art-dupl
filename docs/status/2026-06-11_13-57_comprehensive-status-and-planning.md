@@ -10,21 +10,21 @@
 
 ### This Session (5 commits by previous assistant, 5 by current session)
 
-| Commit | Description |
-|--------|-------------|
-| `8889a7a` | Fix all 3 godoclint warnings → zero lint issues |
-| `6538918` | Comprehensive status report |
-| `d2952f9` | GCI/WSL lint fixes |
-| `76d1db4` | TODO_LIST.md update |
-| `2583add` | GetCategoryEmoji complexity 16→2 |
+| Commit    | Description                                      |
+| --------- | ------------------------------------------------ |
+| `8889a7a` | Fix all 3 godoclint warnings → zero lint issues  |
+| `6538918` | Comprehensive status report                      |
+| `d2952f9` | GCI/WSL lint fixes                               |
+| `76d1db4` | TODO_LIST.md update                              |
+| `2583add` | GetCategoryEmoji complexity 16→2                 |
 | `49ae11a` | FuncType-based interface implementation detector |
-| `b4ea5f8` | HealthScore typed enum |
-| `60f402d` | Decouple clone_classify.go from syntax/golang |
-| `9741041` | `--output-file` flag + scanner.Err() fix |
-| `a371919` | CSV output using `encoding/csv` |
-| `e854653` | BDD tests for `--only` and `--include-generic` |
-| `e82d6b5` | SDK godoc documentation |
-| `04b9acd` | GoReleaser nix install fix |
+| `b4ea5f8` | HealthScore typed enum                           |
+| `60f402d` | Decouple clone_classify.go from syntax/golang    |
+| `9741041` | `--output-file` flag + scanner.Err() fix         |
+| `a371919` | CSV output using `encoding/csv`                  |
+| `e854653` | BDD tests for `--only` and `--include-generic`   |
+| `e82d6b5` | SDK godoc documentation                          |
+| `04b9acd` | GoReleaser nix install fix                       |
 
 ### Stable, Working Features
 
@@ -45,16 +45,17 @@
 
 ### 1. Documentation Drift — Multiple Files Out of Date
 
-| File | Last Updated | Issue |
-|------|-------------|-------|
-| `FEATURES.md` | 2026-05-02 | CSV still marked "PARTIALLY_FUNCTIONAL", `--output-file` not documented, actionability patterns missing |
-| `CHANGELOG.md` | 2026-03-28 | No entries for: HealthScore type, `--output-file`, CSV refactor, actionability patterns, exhaustive switch fix |
-| `docs/DOMAIN_LANGUAGE.md` | Never | Empty template with placeholder "Example Term" — never populated |
-| `TODO_LIST.md` | 2026-06-11 | MEDIUM items "CSV encoding/csv" and "--output-file" still marked unchecked despite being done |
+| File                      | Last Updated | Issue                                                                                                          |
+| ------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
+| `FEATURES.md`             | 2026-05-02   | CSV still marked "PARTIALLY_FUNCTIONAL", `--output-file` not documented, actionability patterns missing        |
+| `CHANGELOG.md`            | 2026-03-28   | No entries for: HealthScore type, `--output-file`, CSV refactor, actionability patterns, exhaustive switch fix |
+| `docs/DOMAIN_LANGUAGE.md` | Never        | Empty template with placeholder "Example Term" — never populated                                               |
+| `TODO_LIST.md`            | 2026-06-11   | MEDIUM items "CSV encoding/csv" and "--output-file" still marked unchecked despite being done                  |
 
 ### 2. Enum Unification — Analyzed but Not Executed
 
 **What was found:**
+
 - `domain/CloneSeverity` and `domain/HealthScore` have hand-written JSON marshal/unmarshal boilerplate (~40 lines each)
 - `config/enum_helpers.go` has generic helpers (`marshalStringType`, `unmarshalStringTypeToPointer`, `isValidStringType`)
 - `domain/helpers.go` has **parallel** generic helpers (`marshalStringID`, `unmarshalWithValidation`)
@@ -117,6 +118,7 @@
 ### 3. LSP Diagnostic Cache is Corrupted
 
 The gopls/golangci-lint LSP shows 6 warnings that are **not real**:
+
 - `ErrInvalidHealthScore` undefined — code compiles fine, `just check` = 0 issues
 - `GetCategoryEmoji` cyclop 16 — already refactored to map lookup, complexity is 2
 - `exhaustive` missing cases — all 9 PatternLabel values are handled
@@ -139,7 +141,7 @@ Empty template with "Example Term" placeholders. Every AI session sees this file
 2. **`domain.ClonePriority`** — 4 constants, only display methods. Missing `IsValid()`/`String()`/JSON.
 3. **`domain.CloneActionability`** — 2 constants, zero methods. Completely bare.
 4. **`printer/stats.go:priorityScore()`** — Maps raw strings `"critical"→4` instead of using `domain.ClonePriority`. Fragile.
-5. **`domain/helpers.go`** duplicates `config/enum_helpers.go`** — Both have generic string marshaling helpers. Should be in shared `internal/enum/`.
+5. **`domain/helpers.go`** duplicates `config/enum_helpers.go`\*\* — Both have generic string marshaling helpers. Should be in shared `internal/enum/`.
 
 ### Architecture
 
@@ -167,48 +169,48 @@ Sorted by **Impact × Effort⁻¹** (highest ROI first):
 
 ### Tier 1: High Impact, Low Effort (Quick Wins)
 
-| # | Task | Impact | Effort | Why |
-|---|------|--------|--------|-----|
-| 1 | Update `TODO_LIST.md` — mark completed items | Medium | 5min | Simple housekeeping, prevents confusion |
-| 2 | Update `CHANGELOG.md` — fix lies, add entries | High | 20min | Document is actively misleading |
-| 3 | Update `FEATURES.md` — CSV, `--output-file`, actionability | Medium | 10min | Stale since May |
-| 4 | Populate `docs/DOMAIN_LANGUAGE.md` | High | 15min | Empty template = dead documentation |
-| 5 | Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability` | Medium | 15min | Consistency with `CloneSeverity`/`HealthScore` |
-| 6 | Fix `priorityScore()` to use `domain.ClonePriority` constants | Low | 5min | Eliminates fragile raw strings |
-| 7 | Restart LSP to clear stale diagnostic cache | Low | 1min | 6 phantom warnings |
+| #   | Task                                                                               | Impact | Effort | Why                                            |
+| --- | ---------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------- |
+| 1   | Update `TODO_LIST.md` — mark completed items                                       | Medium | 5min   | Simple housekeeping, prevents confusion        |
+| 2   | Update `CHANGELOG.md` — fix lies, add entries                                      | High   | 20min  | Document is actively misleading                |
+| 3   | Update `FEATURES.md` — CSV, `--output-file`, actionability                         | Medium | 10min  | Stale since May                                |
+| 4   | Populate `docs/DOMAIN_LANGUAGE.md`                                                 | High   | 15min  | Empty template = dead documentation            |
+| 5   | Add `IsValid()/String()` to `CloneCategory`, `ClonePriority`, `CloneActionability` | Medium | 15min  | Consistency with `CloneSeverity`/`HealthScore` |
+| 6   | Fix `priorityScore()` to use `domain.ClonePriority` constants                      | Low    | 5min   | Eliminates fragile raw strings                 |
+| 7   | Restart LSP to clear stale diagnostic cache                                        | Low    | 1min   | 6 phantom warnings                             |
 
 ### Tier 2: High Impact, Medium Effort (Architecture)
 
-| # | Task | Impact | Effort | Why |
-|---|------|--------|--------|-----|
-| 8 | Extract shared enum helpers to `internal/enum/` | Medium | 30min | Eliminates parallel implementations |
-| 9 | Decouple `printer/actionability.go` from `syntax/golang` | High | 1h | Last layer violation in printer |
-| 10 | Extract `printer/clone_classify.go` + `actionability.go` to `detection/classify/` | High | 2h | Business logic should not live in printer |
-| 11 | Consolidate Clone types: define canonical `domain.ProcessedClone` | High | 4h | 4 types for same concept is madness |
-| 12 | Add `--output-file` support to root command (not just stats) | Medium | 30min | Users expect this on all subcommands |
+| #   | Task                                                                              | Impact | Effort | Why                                       |
+| --- | --------------------------------------------------------------------------------- | ------ | ------ | ----------------------------------------- |
+| 8   | Extract shared enum helpers to `internal/enum/`                                   | Medium | 30min  | Eliminates parallel implementations       |
+| 9   | Decouple `printer/actionability.go` from `syntax/golang`                          | High   | 1h     | Last layer violation in printer           |
+| 10  | Extract `printer/clone_classify.go` + `actionability.go` to `detection/classify/` | High   | 2h     | Business logic should not live in printer |
+| 11  | Consolidate Clone types: define canonical `domain.ProcessedClone`                 | High   | 4h     | 4 types for same concept is madness       |
+| 12  | Add `--output-file` support to root command (not just stats)                      | Medium | 30min  | Users expect this on all subcommands      |
 
 ### Tier 3: High Impact, High Effort (Major Refactor)
 
-| # | Task | Impact | Effort | Why |
-|---|------|--------|--------|-----|
-| 13 | ProcessedClone DTO — decouple printer from `syntax.Node` | Very High | 8h | 111 test call sites, biggest coupling issue |
-| 14 | TokenValue type with validation | High | 4h | Type safety for suffix tree tokens |
-| 15 | Wire TODO/Legacy detectors to CLI | Medium | 2h | Implemented but inaccessible to users |
-| 16 | Fix `detection/todo_detector.go` to use existing `syntax/` parsing | Medium | 2h | Eliminates redundant re-parsing |
+| #   | Task                                                               | Impact    | Effort | Why                                         |
+| --- | ------------------------------------------------------------------ | --------- | ------ | ------------------------------------------- |
+| 13  | ProcessedClone DTO — decouple printer from `syntax.Node`           | Very High | 8h     | 111 test call sites, biggest coupling issue |
+| 14  | TokenValue type with validation                                    | High      | 4h     | Type safety for suffix tree tokens          |
+| 15  | Wire TODO/Legacy detectors to CLI                                  | Medium    | 2h     | Implemented but inaccessible to users       |
+| 16  | Fix `detection/todo_detector.go` to use existing `syntax/` parsing | Medium    | 2h     | Eliminates redundant re-parsing             |
 
 ### Tier 4: Nice to Have
 
-| # | Task | Impact | Effort | Why |
-|---|------|--------|--------|-----|
-| 17 | Use `x/exp/slices` for dedup/filtering in `config/detection_method.go` | Low | 15min | Already in go.mod |
-| 18 | String interning for `syntax.Node.Filename` | Medium | 2h | Memory optimization for large codebases |
-| 19 | Consolidate `pkg/format/hash.go` into `pkg/format/` or inline it | Low | 10min | Single 17-line file, questionable package |
-| 20 | Fuzz tests for templ parser edge cases | Medium | 3h | Coverage for parser robustness |
-| 21 | Move `isTestFile()` from printer to domain | Low | 15min | Domain logic in wrong package |
-| 22 | Deduplicate `BuildCloneGroups()` and `collectMatchesIntoGroups()` | Low | 30min | Same function in two packages |
-| 23 | Add `--verbose` output for stats `--output-file` path confirmation | Low | 10min | User experience |
-| 24 | Investigate `charm.land/fang/v2` migration (from v1) | Low | 2h | Library policy warning in CI |
-| 25 | Implement proper general clone CSV output (not just stats) | Medium | 2h | Stats CSV is done, clone CSV is not |
+| #   | Task                                                                   | Impact | Effort | Why                                       |
+| --- | ---------------------------------------------------------------------- | ------ | ------ | ----------------------------------------- |
+| 17  | Use `x/exp/slices` for dedup/filtering in `config/detection_method.go` | Low    | 15min  | Already in go.mod                         |
+| 18  | String interning for `syntax.Node.Filename`                            | Medium | 2h     | Memory optimization for large codebases   |
+| 19  | Consolidate `pkg/format/hash.go` into `pkg/format/` or inline it       | Low    | 10min  | Single 17-line file, questionable package |
+| 20  | Fuzz tests for templ parser edge cases                                 | Medium | 3h     | Coverage for parser robustness            |
+| 21  | Move `isTestFile()` from printer to domain                             | Low    | 15min  | Domain logic in wrong package             |
+| 22  | Deduplicate `BuildCloneGroups()` and `collectMatchesIntoGroups()`      | Low    | 30min  | Same function in two packages             |
+| 23  | Add `--verbose` output for stats `--output-file` path confirmation     | Low    | 10min  | User experience                           |
+| 24  | Investigate `charm.land/fang/v2` migration (from v1)                   | Low    | 2h     | Library policy warning in CI              |
+| 25  | Implement proper general clone CSV output (not just stats)             | Medium | 2h     | Stats CSV is done, clone CSV is not       |
 
 ---
 
@@ -233,6 +235,7 @@ a371919 refactor(printer): use encoding/csv for proper CSV escaping in stats out
 ```
 
 Previous session (already pushed):
+
 ```
 8889a7a fix(lint): eliminate all 3 godoclint warnings to achieve zero lint issues
 6538918 docs(status): add comprehensive review and planning report
