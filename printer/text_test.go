@@ -219,7 +219,7 @@ func TestTextPrinter_PrintClonesSorted(t *testing.T) {
 	)
 }
 
-func TestCalculateProcessedCloneSizes(t *testing.T) {
+func TestTotalFragmentSize(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -238,8 +238,8 @@ func TestCalculateProcessedCloneSizes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			if got := calculateProcessedCloneSizes(tc.clones); got != tc.want {
-				t.Errorf("calculateProcessedCloneSizes() = %d, want %d", got, tc.want)
+			if got := totalFragmentSize(tc.clones); got != tc.want {
+				t.Errorf("totalFragmentSize() = %d, want %d", got, tc.want)
 			}
 		})
 	}

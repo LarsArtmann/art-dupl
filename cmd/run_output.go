@@ -116,11 +116,13 @@ func printCloneGroups(
 				"failed to process clones for hash %s", k)
 		}
 
-		err = p.PrintClones(domain.ProcessedCloneGroup{
+		group := domain.ProcessedCloneGroup{
 			Hash:   k,
-			Size:   totalSize(clones),
 			Clones: clones,
-		}, sortBy)
+		}
+		group.TokenCount = group.TotalTokenCount()
+
+		err = p.PrintClones(group, sortBy)
 		if err != nil {
 			return errors.Wrap(err, errors.AnalysisError,
 				fmt.Sprintf("failed to print clones for hash %s (sortBy: %s)", k, sortBy.String()))
@@ -128,15 +130,6 @@ func printCloneGroups(
 	}
 
 	return nil
-}
-
-func totalSize(clones []domain.ProcessedClone) int {
-	total := 0
-	for _, c := range clones {
-		total += c.Size
-	}
-
-	return total
 }
 
 func handleJSONOutput(

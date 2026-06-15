@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"errors"
 	"testing"
 )
 
@@ -186,11 +187,11 @@ func TestCloneSeverity_UnmarshalJSON_Invalid(t *testing.T) {
 
 func TestProcessedCloneGroup_WithClones(t *testing.T) {
 	pg := ProcessedCloneGroup{
-		Hash: "abc123",
-		Size: 50,
+		Hash:       "abc123",
+		TokenCount: 50,
 		Clones: []ProcessedClone{
-			{Filename: "a.go", LineStart: 1, LineEnd: 10, Size: 25},
-			{Filename: "b.go", LineStart: 5, LineEnd: 14, Size: 25},
+			{Filename: "a.go", LineStart: 1, LineEnd: 10, TokenCount: 25},
+			{Filename: "b.go", LineStart: 5, LineEnd: 14, TokenCount: 25},
 		},
 	}
 
@@ -198,8 +199,8 @@ func TestProcessedCloneGroup_WithClones(t *testing.T) {
 		t.Errorf("Hash = %q, want 'abc123'", pg.Hash)
 	}
 
-	if pg.Size != 50 {
-		t.Errorf("Size = %d, want 50", pg.Size)
+	if pg.TokenCount != 50 {
+		t.Errorf("TokenCount = %d, want 50", pg.TokenCount)
 	}
 
 	if len(pg.Clones) != 2 {
@@ -208,6 +209,85 @@ func TestProcessedCloneGroup_WithClones(t *testing.T) {
 
 	if pg.Clones[0].Filename != "a.go" {
 		t.Errorf("Clones[0].Filename = %q, want 'a.go'", pg.Clones[0].Filename)
+	}
+}
+
+func TestProcessedClone_LineCount(t *testing.T) {
+	tests := []struct {
+		name      string
+		lineStart int
+		lineEnd   int
+		want      int
+	}{
+		{"single line", 5, 5, 1},
+		{"multi line", 1, 10, 10},
+		{"same start/end", 3, 3, 1},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			c := ProcessedClone{LineStart: tc.lineStart, LineEnd: tc.lineEnd}
+			if got := c.LineCount(); got != tc.want {
+				t.Errorf("LineCount() = %d, want %d", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestProcessedClone_Validate(t *testing.T) {
+	tests := []struct {
+		name    string
+		clone   ProcessedClone
+		wantErr error
+	}{
+		{
+			name:    "valid clone",
+			clone:   ProcessedClone{Filename: "main.go", LineStart: 1, LineEnd: 10, TokenCount: 15},
+			wantErr: nil,
+		},
+		{
+			name:    "empty filename",
+			clone:   ProcessedClone{Filename: "", LineStart: 1, LineEnd: 10, TokenCount: 15},
+			wantErr: ErrEmptyFilename,
+		},
+		{
+			name:    "line end before start",
+			clone:   ProcessedClone{Filename: "main.go", LineStart: 10, LineEnd: 5, TokenCount: 15},
+			wantErr: ErrLineEndBeforeStart,
+		},
+		{
+			name:    "negative token count",
+			clone:   ProcessedClone{Filename: "main.go", LineStart: 1, LineEnd: 10, TokenCount: -1},
+			wantErr: ErrNegativeTokenCount,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.clone.Validate()
+			if !errors.Is(err, tc.wantErr) {
+				t.Errorf("Validate() error = %v, want %v", err, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestProcessedCloneGroup_TotalTokenCount(t *testing.T) {
+	pg := ProcessedCloneGroup{
+		Clones: []ProcessedClone{
+			{TokenCount: 10},
+			{TokenCount: 20},
+			{TokenCount: 30},
+		},
+	}
+
+	if got := pg.TotalTokenCount(); got != 60 {
+		t.Errorf("TotalTokenCount() = %d, want 60", got)
+	}
+
+	empty := ProcessedCloneGroup{}
+	if got := empty.TotalTokenCount(); got != 0 {
+		t.Errorf("TotalTokenCount() on empty = %d, want 0", got)
 	}
 }
 

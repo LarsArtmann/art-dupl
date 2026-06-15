@@ -133,23 +133,6 @@ func SortClonesByTotalTokens(nodeGroups [][]*syntax.Node) [][]*syntax.Node {
 	return nodeGroups
 }
 
-// sumFragmentLengths sums the lengths of all clone fragments in a group.
-func sumFragmentLengths(cloneGroups []clone) int {
-	sum := 0
-	for _, cl := range cloneGroups {
-		sum += len(cl.fragment)
-	}
-
-	return sum
-}
-
-// Helper functions for text.go compatibility.
-func sortCloneGroupsBySize(cloneGroups [][]clone) {
-	sort.Slice(cloneGroups, func(i, j int) bool {
-		return sumFragmentLengths(cloneGroups[i]) > sumFragmentLengths(cloneGroups[j])
-	})
-}
-
 // ExtractSortCriteria extracts the sort criteria from variadic sortBy parameter.
 // Returns SortBySize as default if no criteria is provided.
 func ExtractSortCriteria(sortBy ...config.SortCriteria) config.SortCriteria {

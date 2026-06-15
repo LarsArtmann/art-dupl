@@ -12,7 +12,7 @@ func SortProcessedClonesByCriteria(clones []domain.ProcessedClone, sortBy config
 	switch sortBy {
 	case config.SortBySize, config.SortByTotalTokens:
 		sort.Slice(clones, func(i, j int) bool {
-			return clones[i].Size > clones[j].Size
+			return clones[i].TokenCount > clones[j].TokenCount
 		})
 	case config.SortByOccurrence, config.SortByHash:
 	}

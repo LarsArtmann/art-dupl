@@ -92,7 +92,7 @@ var categoryEmojis = map[CloneCategory]string{
 	CategoryTestFixture:     "\U0001f3af",
 	CategoryStruct:          "\U0001f4e6",
 	CategoryInterface:       "\U0001f50c",
-	CategoryHandler:         "\U0001f3af",
+	CategoryHandler:         "\U0001f3a8",
 	CategoryLoop:            "\U0001f504",
 	CategoryConditional:     "\U0001f500",
 	CategoryAssignment:      "\U0001f4dd",
@@ -156,7 +156,7 @@ type CloneClassification struct {
 	Actionability CloneActionability
 	Tokens        int
 	Lines         int
-	NodeType      string
+	NodeTypeName  string
 	Suggestion    string
 }
 
@@ -167,14 +167,49 @@ type ProcessedClone struct {
 	LineStart      int
 	LineEnd        int
 	Fragment       []byte
-	Size           int
+	TokenCount     int
 	FileSize       int
 	Classification CloneClassification
 }
 
+// LineCount returns the number of source lines spanned by this clone.
+func (c ProcessedClone) LineCount() int {
+	return c.LineEnd - c.LineStart + 1
+}
+
+// Validate checks that the clone's invariants hold.
+// A valid clone must have a non-empty filename, LineEnd >= LineStart,
+// and a non-negative TokenCount.
+func (c ProcessedClone) Validate() error {
+	if c.Filename == "" {
+		return ErrEmptyFilename
+	}
+
+	if c.LineEnd < c.LineStart {
+		return ErrLineEndBeforeStart
+	}
+
+	if c.TokenCount < 0 {
+		return ErrNegativeTokenCount
+	}
+
+	return nil
+}
+
 // ProcessedCloneGroup represents a group of duplicate code fragments.
 type ProcessedCloneGroup struct {
-	Hash   string
-	Size   int
-	Clones []ProcessedClone
+	Hash       string
+	TokenCount int
+	Clones     []ProcessedClone
+}
+
+// TotalTokenCount returns the sum of TokenCount across all clones in the group.
+// This is the canonical way to compute total tokens — avoids manual iteration.
+func (g ProcessedCloneGroup) TotalTokenCount() int {
+	total := 0
+	for _, c := range g.Clones {
+		total += c.TokenCount
+	}
+
+	return total
 }

@@ -54,7 +54,7 @@ func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
 	if !severity.IsValid() {
 		return fmt.Errorf(
 			"%w: %s (valid options: low, medium, high, critical)",
-			ErrInvalidSeverity,
+			ErrInvalidCloneSeverity,
 			str,
 		)
 	}

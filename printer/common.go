@@ -9,10 +9,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-type clone struct {
-	fragment []byte
-}
-
 func findLineBeg(file []byte, index int) int {
 	for i := index; i >= 0; i-- {
 		if file[i] == '\n' {

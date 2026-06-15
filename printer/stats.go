@@ -63,8 +63,8 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 	uniqueLineCount := 0
 
 	for _, cl := range group.Clones {
-		lineCount := cl.LineEnd - cl.LineStart + 1
-		tokensInGroup += cl.Size
+		lineCount := cl.LineCount()
+		tokensInGroup += cl.TokenCount
 
 		p.statsData.TotalClones++
 
@@ -72,14 +72,14 @@ func (p *stats) PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.S
 			uniqueLineCount = lineCount
 		}
 
-		p.statsData.TotalTokens += cl.Size
+		p.statsData.TotalTokens += cl.TokenCount
 
 		p.statsData.FileDuplication[cl.Filename] += lineCount
 
 		sizeRange := p.getSizeRange(lineCount)
 		p.statsData.SizeDistribution[sizeRange]++
 
-		tokenRange := p.getTokenRange(cl.Size)
+		tokenRange := p.getTokenRange(cl.TokenCount)
 		p.statsData.TokenDistribution[tokenRange]++
 	}
 
@@ -163,8 +163,10 @@ func priorityScore(priority domain.ClonePriority) int {
 		return 3
 	case domain.PriorityMedium:
 		return 2
-	default:
+	case domain.PriorityLow:
 		return 1
+	default:
+		return 0
 	}
 }
 

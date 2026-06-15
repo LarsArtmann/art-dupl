@@ -116,40 +116,6 @@ func TestFormatBytes(t *testing.T) {
 	}
 }
 
-func TestSumFragmentLengths(t *testing.T) {
-	t.Parallel()
-
-	clones := []clone{
-		{fragment: []byte("hello")},
-		{fragment: []byte("world!")},
-	}
-
-	if got := sumFragmentLengths(clones); got != 11 {
-		t.Errorf("sumFragmentLengths() = %d, want 11", got)
-	}
-
-	if got := sumFragmentLengths(nil); got != 0 {
-		t.Errorf("sumFragmentLengths(nil) = %d, want 0", got)
-	}
-}
-
-func TestSortCloneGroupsBySize(t *testing.T) {
-	t.Parallel()
-
-	groups := [][]clone{
-		{{fragment: []byte("short")}},
-		{{fragment: []byte("this is a longer fragment")}},
-		{{fragment: []byte("medium")}},
-	}
-
-	sortCloneGroupsBySize(groups)
-
-	frag0 := string(groups[0][0].fragment)
-	if frag0 != "this is a longer fragment" {
-		t.Errorf("sortCloneGroupsBySize: first = %q, want longest", frag0)
-	}
-}
-
 func TestExtractSortCriteria(t *testing.T) {
 	t.Parallel()
 

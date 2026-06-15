@@ -50,7 +50,7 @@ func (p *TextPrinter) PrintClones(
 	clones := group.Clones
 	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
 
-	groupCloneSize := calculateProcessedCloneSizes(clones)
+	groupCloneSize := totalFragmentSize(clones)
 
 	isFileDupe := p.isFileDupe
 
@@ -264,17 +264,8 @@ func formatBytes(bytes int) string {
 	}
 }
 
-func calculateProcessedCloneSizes(clones []domain.ProcessedClone) int {
-	total := 0
-
-	for i := range clones {
-		clones[i].Size = len(clones[i].Fragment)
-		total += clones[i].Size
-	}
-
-	return total
-}
-
+// totalFragmentSize returns the total byte length of all clone fragments.
+// This is used for display ordering by fragment size and is non-mutating.
 func totalFragmentSize(clones []domain.ProcessedClone) int {
 	total := 0
 	for _, cl := range clones {

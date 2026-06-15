@@ -173,7 +173,7 @@ func (p *sarifPrinter) PrintClones(
 
 	p.processedHashes[hash] = true
 
-	size := group.Size
+	size := group.TokenCount
 
 	for _, cl := range group.Clones {
 		level := p.determineLevel(size)

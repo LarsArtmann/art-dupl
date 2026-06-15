@@ -40,6 +40,8 @@ hash/       Rolling hash-based detection
 job/        Orchestrates parse → serialize → build tree
 printer/    Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
 domain/     Value objects (Filepath, LineNumber, CloneSeverity)
+errors/     11 typed error types, stack traces, JSON marshaling
+cache/      File-based AST caching with SHA1 content hashing
 pkg/artdupl/ Public SDK (Detector interface)
 ```
 
@@ -69,7 +71,7 @@ pkg/artdupl/ Public SDK (Detector interface)
 
 ## Known Limitations
 
-- **Printer ↔ syntax.Node coupling**: `Printer.PrintClones(dups [][]*syntax.Node)` — all 6 printers depend on AST internals. Fix requires ProcessedClone DTO (111 test call sites). Tracked in TODO_LIST.md.
-- **Three parallel Clone types**: `printer.clone`, `printer.CloneGroup`, `pkg/artdupl.Clone`, `domain.ProcessedClone` — consolidation blocked on Printer DTO change.
+- **Printer ↔ syntax.Node coupling**: Printer interface uses `domain.ProcessedCloneGroup`, but internal code (`actionability.go`, `common.go`) still imports `syntax.Node` directly. `clone_processor.go` is the bridge point. Further decoupling needed for `actionability.go` pattern evaluation.
+- **Three parallel Clone types**: `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO), `domain.ProcessedClone` (canonical internal DTO). `printer.clone` dead type was removed. Consolidation of remaining three blocked on Printer/SDK DTO design.
 - **ConstantCSSProperty Pos=0,End=0**: upstream `a-h/templ` limitation (no Range field). Mitigated by inheriting parent CSSTemplate range.
 - **Templ has no semantic mode**: `syntax/templ/` matching is purely structural — no identifier/operator encoding.

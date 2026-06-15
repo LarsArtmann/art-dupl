@@ -46,12 +46,12 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		lines := fileInfo.LineEnd - fileInfo.LineStart + 1
 
 		clones[i] = domain.ProcessedClone{
-			Filename:  fileInfo.Filename,
-			LineStart: fileInfo.LineStart,
-			LineEnd:   fileInfo.LineEnd,
-			Fragment:  fragment,
-			Size:      tokens,
-			FileSize:  len(fileInfo.Content),
+			Filename:   fileInfo.Filename,
+			LineStart:  fileInfo.LineStart,
+			LineEnd:    fileInfo.LineEnd,
+			Fragment:   fragment,
+			TokenCount: tokens,
+			FileSize:   len(fileInfo.Content),
 			Classification: ClassifyClone(domain.ClassificationInput{
 				Filename: fileInfo.Filename,
 				NodeType: golang.DecodeBaseType(nstart.Type),
@@ -87,12 +87,12 @@ func NodesToGroup(
 
 	size := 0
 	for _, c := range clones {
-		size += c.Size
+		size += c.TokenCount
 	}
 
 	return domain.ProcessedCloneGroup{
-		Hash:   hash,
-		Size:   size,
-		Clones: clones,
+		Hash:       hash,
+		TokenCount: size,
+		Clones:     clones,
 	}, nil
 }

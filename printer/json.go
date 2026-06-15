@@ -130,7 +130,7 @@ func (p *JSONPrinter) PrintClones(
 
 	size := 0
 	for _, cl := range clones {
-		size += cl.Size
+		size += cl.TokenCount
 	}
 
 	cloneGroup := CloneGroup{
