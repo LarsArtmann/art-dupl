@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Architecture Review — art-dupl</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+    </script>
+    <style>
+      .seam { stroke-dasharray: 4 4; }
+      .leak { stroke: #dc2626; }
+      .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-slate-900 font-sans">
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+      <header>
+        <h1 class="text-3xl font-bold text-slate-900">Deepening Opportunities — art-dupl</h1>
+        <p class="text-sm text-slate-500 mt-1">2026-06-15 · Shallow modules → Deep modules</p>
+        <div class="flex gap-4 mt-3 text-xs text-slate-500">
+          <span>■ module</span>
+          <span><span class="border-dashed">- - -</span> seam</span>
+          <span class="text-red-600">→ leakage</span>
+          <span class="bg-slate-800 text-white px-1 rounded">deep module</span>
+        </div>
+      </header>
+
+      <section id="candidates" class="space-y-10">
+
+        <!-- Candidate 1: MethodDetector -->
+        <article class="rounded-lg border border-slate-200 bg-white p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-semibold">Activate the MethodDetector seam</h2>
+            <span class="px-2 py-0.5 text-xs rounded bg-emerald-100 text-emerald-800">Strong</span>
+            <span class="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-600">in-process</span>
+          </div>
+          <div class="font-mono text-sm text-slate-600">
+            detection/detector.go · detection/multidetector.go
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Before — Shallow</h3>
+              <div class="rounded border border-slate-200 bg-slate-50 p-3 h-48 flex flex-col justify-center">
+                <div class="text-center text-xs text-slate-400 mb-2">Interface surface ≈ Implementation</div>
+                <div class="mx-auto w-3/4 h-6 bg-amber-200 rounded mb-1 flex items-center justify-center text-xs">MethodDetector (unused)</div>
+                <div class="mx-auto w-3/4 h-10 bg-amber-300 rounded flex items-center justify-center text-xs">MultiDetector: 4 hard-coded branches</div>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">After — Deep</h3>
+              <div class="rounded border border-slate-200 bg-slate-50 p-3 h-48 flex flex-col justify-center">
+                <div class="text-center text-xs text-slate-400 mb-2">Interface surface ≪ Implementation</div>
+                <div class="mx-auto w-3/5 h-4 bg-slate-800 rounded mb-2 flex items-center justify-center text-xs text-white">[]MethodDetector</div>
+                <div class="mx-auto w-4/5 h-16 bg-slate-300 rounded flex items-center justify-center text-xs">MultiDetector dispatches in a loop</div>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm"><strong>Problem:</strong> MethodDetector interface exists but is never used for dispatch. MultiDetector hard-codes each detector.</p>
+          <p class="text-sm"><strong>Solution:</strong> MultiDetector holds []MethodDetector, dispatches in a loop, removes all hard-coded constructors.</p>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Locality: all detector dispatch concentrates in one module</li>
+            <li>• Leverage: one interface, N adapters, zero MultiDetector edits</li>
+            <li>• Interface shrinks; implementation absorbs the branches</li>
+          </ul>
+        </article>
+
+        <!-- Candidate 2: printer/ split -->
+        <article class="rounded-lg border border-slate-200 bg-white p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-semibold">Split printer/ into focused sub-packages</h2>
+            <span class="px-2 py-0.5 text-xs rounded bg-emerald-100 text-emerald-800">Strong</span>
+            <span class="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-600">local-substitutable</span>
+          </div>
+          <div class="font-mono text-sm text-slate-600">
+            printer/ — 29 production files, ~7,000 lines, 5 concerns
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Before — Wide, shallow</h3>
+              <div class="space-y-1">
+                <div class="h-10 rounded border-l-4 border-blue-400 bg-blue-50 px-3 flex items-center text-xs justify-between">
+                  <span>6 output formats</span>
+                  <span class="text-slate-400">~2,400 lines</span>
+                </div>
+                <div class="h-10 rounded border-l-4 border-green-400 bg-green-50 px-3 flex items-center text-xs justify-between">
+                  <span>8 stats files</span>
+                  <span class="text-slate-400">~2,000 lines</span>
+                </div>
+                <div class="h-10 rounded border-l-4 border-purple-400 bg-purple-50 px-3 flex items-center text-xs justify-between">
+                  <span>5 HTML templating</span>
+                  <span class="text-slate-400">~1,500 lines</span>
+                </div>
+                <div class="h-10 rounded border-l-4 border-amber-400 bg-amber-50 px-3 flex items-center text-xs justify-between">
+                  <span>3 classification</span>
+                  <span class="text-slate-400">~800 lines</span>
+                </div>
+                <div class="h-10 rounded border-l-4 border-slate-400 bg-slate-50 px-3 flex items-center text-xs justify-between">
+                  <span>6 sorting/common</span>
+                  <span class="text-slate-400">~300 lines</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">After — Deep, focused</h3>
+              <div class="space-y-1">
+                <div class="h-10 rounded border-l-4 border-blue-600 bg-blue-100 px-3 flex items-center text-xs font-medium">
+                  printer/ (core: Printer interface, sorting, common)
+                </div>
+                <div class="h-10 rounded border-l-4 border-green-600 bg-green-100 px-3 flex items-center text-xs font-medium">
+                  printer/stats/ (statistics engine, health, viz)
+                </div>
+                <div class="h-10 rounded border-l-4 border-purple-600 bg-purple-100 px-3 flex items-center text-xs font-medium">
+                  printer/html/ (HTML generation + templ)
+                </div>
+                <div class="h-10 rounded border-l-4 border-amber-600 bg-amber-100 px-3 flex items-center text-xs font-medium">
+                  printer/analyze/ (classification + actionability)
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm"><strong>Problem:</strong> Single package mixing 5 concerns — output formatting, statistics engine, HTML templating, classification, sorting.</p>
+          <p class="text-sm"><strong>Solution:</strong> Split into 4 sub-packages by concern.</p>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Locality: stats engine changes stay in stats package</li>
+            <li>• Tests hit focused interfaces, not 50-file package</li>
+            <li>• Delete shallow wrappers: classification absorbs into its own module</li>
+          </ul>
+        </article>
+
+        <!-- Candidate 3: syntax/golang leaking -->
+        <article class="rounded-lg border border-slate-200 bg-white p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-semibold">Hide language backends behind syntax facade</h2>
+            <span class="px-2 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Worth exploring</span>
+            <span class="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-600">ports & adapters</span>
+          </div>
+          <div class="font-mono text-sm text-slate-600">
+            printer/clone_processor.go:9 · printer/actionability.go:10 · job/file_parser.go:7-8
+          </div>
+          <div class="rounded border border-slate-200 bg-white p-4">
+            <pre class="mermaid">
+              flowchart LR
+                PRINTER[printer] -.leak.-> GOLANG[syntax/golang]
+                JOB[job] -.leak.-> GOLANG
+                DET[detection] -.leak.-> GOLANG
+                SDK[pkg/artdupl] -.leak.-> GOLANG
+                SYNTAX[syntax facade] --> GOLANG
+                SYNTAX --> TEMPL[syntax/templ]
+                classDef leak stroke:#dc2626,stroke-width:2px;
+                class PRINTER,JOB,DET,SDK leak
+                style SYNTAX fill:#0f172a,color:#fff
+            </pre>
+          </div>
+          <p class="text-sm"><strong>Problem:</strong> 4 packages import syntax/golang directly. The syntax facade is shallow — callers bypass it.</p>
+          <p class="text-sm"><strong>Solution:</strong> Export <code>DecodeBaseType</code> and node-type queries through <code>syntax</code>. Make <code>golang</code> and <code>templ</code> internal sub-packages.</p>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Locality: language backends hidden behind facade</li>
+            <li>• Leverage: one interface (syntax), N backends (golang, templ, future)</li>
+            <li>• Adding a language backend doesn't ripple to 4 consumers</li>
+          </ul>
+        </article>
+
+        <!-- Candidate 4: MultiDetector concrete coupling -->
+        <article class="rounded-lg border border-slate-200 bg-white p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-semibold">MultiDetector stores concrete types, not interfaces</h2>
+            <span class="px-2 py-0.5 text-xs rounded bg-slate-200 text-slate-700">Speculative</span>
+            <span class="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-600">mock</span>
+          </div>
+          <div class="font-mono text-sm text-slate-600">
+            detection/multidetector.go:34-35
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Before</h3>
+              <pre class="mermaid">
+                flowchart TD
+                  MD[MultiDetector] --> DATA[[]*syntax.Node]
+                  MD --> TREE[*suffixtree.STree]
+                  style MD fill:#fef3c7
+              </pre>
+              <p class="text-sm mt-2 text-slate-600">Concrete coupling to AST internals and suffix tree implementation.</p>
+            </div>
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-slate-400 mb-2">After</h3>
+              <pre class="mermaid">
+                flowchart TD
+                  MD[MultiDetector] --> IFC[DataProvider interface]
+                  IFC --> DATA[[]*syntax.Node]
+                  IFC --> TREE[suffixtree.STree]
+                  style MD fill:#dbeafe
+                  style IFC fill:#0f172a,color:#fff
+              </pre>
+              <p class="text-sm mt-2 text-slate-600">Testable with fakes. Two adapters justify the seam: production + tests.</p>
+            </div>
+          </div>
+          <p class="text-sm"><strong>Problem:</strong> MultiDetector binds to <code>[][]*syntax.Node</code> and <code>*suffixtree.STree</code> directly.</p>
+          <p class="text-sm"><strong>Solution:</strong> Accept data through an interface; two adapters (production pipeline + in-memory test) justify the seam.</p>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Tests hit one interface, not AST internals</li>
+            <li>• Two adapters justify the seam</li>
+          </ul>
+        </article>
+
+      </section>
+
+      <section id="top-recommendation" class="rounded-lg border-2 border-emerald-500 bg-emerald-50 p-6">
+        <h2 class="text-xl font-semibold text-emerald-900">Top recommendation</h2>
+        <p class="text-sm mt-2 text-emerald-800">
+          <strong>Activate the MethodDetector seam (#1).</strong> It's the single highest-leverage change:
+          converts hard-coded dispatch into a real seam, makes the detection pipeline composable and extensible.
+          Every future detector addition becomes trivial instead of requiring MultiDetector edits.
+          <a href="#" class="underline">See candidate #1 above.</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
