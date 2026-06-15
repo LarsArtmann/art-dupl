@@ -68,6 +68,23 @@ func (p ClonePriority) IsValid() bool {
 // String returns the string representation of the priority.
 func (p ClonePriority) String() string { return string(p) }
 
+// Rank returns the ordinal rank of the priority (higher = more important).
+// Used for sorting and comparison. Returns 0 for invalid values.
+func (p ClonePriority) Rank() int {
+	switch p {
+	case PriorityCritical:
+		return 4
+	case PriorityHigh:
+		return 3
+	case PriorityMedium:
+		return 2
+	case PriorityLow:
+		return 1
+	default:
+		return 0
+	}
+}
+
 func (p ClonePriority) GetPriorityColor() string {
 	if data, ok := priorityDisplay[p]; ok {
 		return data.color

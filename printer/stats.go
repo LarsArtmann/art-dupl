@@ -156,18 +156,7 @@ func sortTopClones(clones []TopCloneGroup) []TopCloneGroup {
 }
 
 func priorityScore(priority domain.ClonePriority) int {
-	switch priority {
-	case domain.PriorityCritical:
-		return 4
-	case domain.PriorityHigh:
-		return 3
-	case domain.PriorityMedium:
-		return 2
-	case domain.PriorityLow:
-		return 1
-	default:
-		return 0
-	}
+	return priority.Rank()
 }
 
 // PrintFooter prints the aggregated statistics.

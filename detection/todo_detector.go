@@ -42,6 +42,8 @@ func (td *TodoDetector) findTodosInFile(path string, astNodes []*syntax.Node) []
 
 	file, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 	if err != nil {
+		logger.Default.Warn("failed to parse file for TODO detection", "file", path, "err", err)
+
 		return nil
 	}
 

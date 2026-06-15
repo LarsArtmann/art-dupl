@@ -74,10 +74,8 @@ func (c Clone) IsValid() error {
 		return ErrCloneEndLineBeforeStart
 	}
 
-	if c.StartPos > 0 || c.EndPos > 0 {
-		if c.StartPos >= c.EndPos {
-			return ErrCloneZeroLength
-		}
+	if c.StartPos >= c.EndPos {
+		return ErrCloneZeroLength
 	}
 
 	return nil

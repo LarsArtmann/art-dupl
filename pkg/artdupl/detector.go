@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -46,6 +47,10 @@ func NewDetector(opts *Options) (Detector, error) {
 	// Convert SDK options to internal config
 	cfg := convertOptionsToConfig(opts)
 
+	// Deep-copy caller-provided slices to prevent post-construction mutation
+	opts.DetectionMethods = slices.Clone(opts.DetectionMethods)
+	opts.IgnoreFiles = slices.Clone(opts.IgnoreFiles)
+
 	return &detector{ //nolint:exhaustruct
 		opts:   opts,
 		config: cfg,
@@ -54,6 +59,7 @@ func NewDetector(opts *Options) (Detector, error) {
 }
 
 // FindClones performs complete duplication analysis.
+// Not safe for concurrent use — see FindClonesStream for concurrent scenarios.
 func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error) {
 	d.started = time.Now()
 
@@ -93,7 +99,13 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	// Build and return result
-	return d.buildResult(cloneGroups, pipeline.fileCount.FilesCount), nil
+	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount)
+
+	if len(result.CloneGroups) == 0 {
+		return nil, ErrNoDuplicatesFound
+	}
+
+	return result, nil
 }
 
 // FindClonesStream provides streaming results for large projects.

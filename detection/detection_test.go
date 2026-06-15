@@ -302,7 +302,7 @@ func TestLegacyPattern_Defaults(t *testing.T) {
 		patternTypes[p.Type] = true
 	}
 
-	expectedTypes := []string{"deprecated_function", "old_pattern", "deprecated_import"}
+	expectedTypes := []string{"deprecated_function"}
 	for _, expectedType := range expectedTypes {
 		if !patternTypes[expectedType] {
 			t.Errorf("Expected pattern type %s not found", expectedType)

@@ -33,7 +33,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 	for _, node := range nodes {
 		for _, pattern := range ld.patterns {
 			for _, funcName := range pattern.Functions {
-				if strings.Contains(fmt.Sprintf("%v", node), funcName) {
+				if nodeContainsFunctionCall(node, funcName) {
 					lineNum, err := domain.NewLineNumber(
 						uint16(node.Pos),
 					) // #nosec G115 -- Node positions are within uint16 range
@@ -61,36 +61,34 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 	return issues
 }
 
+// nodeContainsFunctionCall checks if a node or its children reference a function name.
+// It matches against the node's Name field and recursively checks children,
+// avoiding false positives from stringified struct dumps.
+func nodeContainsFunctionCall(node *syntax.Node, funcName string) bool {
+	if strings.Contains(node.Name, funcName) {
+		return true
+	}
+
+	for _, child := range node.Children {
+		if nodeContainsFunctionCall(child, funcName) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // getDefaultLegacyPatterns returns default legacy code patterns.
 func getDefaultLegacyPatterns() []LegacyPattern {
 	return []LegacyPattern{
-		{ //nolint:exhaustruct
+		{
 			Type:     "deprecated_function",
 			Message:  "Use of deprecated function",
 			Severity: "medium",
 			Functions: []string{
-				"io/ioutil.ReadFile",     // Deprecated in Go 1.16
-				"io/ioutil.WriteFile",    // Deprecated in Go 1.16
-				"io/ioutil.TempFile",     // Deprecated in Go 1.16
-				"os/exec.CommandContext", // Actually not deprecated, example
-			},
-		},
-		{ //nolint:exhaustruct
-			Type:     "old_pattern",
-			Message:  "Old code pattern that should be refactored",
-			Severity: "low",
-			Patterns: []string{
-				`for.*range.*len\(.*\).*{.*\[\].*=.*append\(.*,.*\)`,
-				`if.*err.*!=.*nil.*{.*return.*err}`,
-			},
-		},
-		{ //nolint:exhaustruct
-			Type:     "deprecated_import",
-			Message:  "Use of deprecated import path",
-			Severity: "high",
-			Imports: []string{
-				"golang.org/x/net/context",
-				"gopkg.in/yaml.v1",
+				"io/ioutil.ReadFile",  // Deprecated in Go 1.16
+				"io/ioutil.WriteFile", // Deprecated in Go 1.16
+				"io/ioutil.TempFile",  // Deprecated in Go 1.16
 			},
 		},
 	}

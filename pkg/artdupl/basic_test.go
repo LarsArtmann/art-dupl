@@ -211,9 +211,9 @@ func TestClone_IsValid(t *testing.T) {
 			name:    "valid testClone single line",
 		},
 		{
-			name:    "valid clone without positions",
+			name:    "invalid clone without positions (zero length)",
 			clone:   Clone{StartLine: 1, EndLine: 10},
-			wantErr: nil,
+			wantErr: ErrCloneZeroLength,
 		},
 		{
 			name:    "invalid end line before start",

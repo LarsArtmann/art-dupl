@@ -63,7 +63,9 @@ components:
   # Utility packages
   pkg-utils:
     in:
-      - pkg/**
+      - pkg/format/**
+      - pkg/logger/**
+      - pkg/position/**
       - internal/utils/**
 
   # Test utilities

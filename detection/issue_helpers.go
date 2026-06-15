@@ -42,8 +42,6 @@ type LegacyPattern struct {
 	Message   string   `json:"message"`
 	Severity  string   `json:"severity"`
 	Functions []string `json:"functions,omitempty"`
-	Patterns  []string `json:"patterns,omitempty"`
-	Imports   []string `json:"imports,omitempty"`
 }
 
 // LineExtractor is an interface for issue types that have a line number.

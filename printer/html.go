@@ -305,14 +305,7 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) erro
 
 // priorityHigher returns true if p1 is higher priority than p2.
 func priorityHigher(p1, p2 ClonePriority) bool {
-	priorityOrder := map[ClonePriority]int{
-		domain.PriorityCritical: 4,
-		domain.PriorityHigh:     3,
-		domain.PriorityMedium:   2,
-		domain.PriorityLow:      1,
-	}
-
-	return priorityOrder[p1] > priorityOrder[p2]
+	return p1.Rank() > p2.Rank()
 }
 
 func suggestionHTML(suggestion string) string {
