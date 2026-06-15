@@ -225,18 +225,18 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 // isCyclic finds out whether there is a repetive pattern in the found clone. If positive,
 // it return false to point out that the clone would be redundant.
 func isCyclic(indexes []int, nodes []*Node) bool {
-	cnt := len(indexes)
-	if cnt <= 1 {
+	count := len(indexes)
+	if count <= 1 {
 		return false
 	}
 
-	alts := findDivisors(cnt)
+	alts := findDivisors(count)
 	if len(alts) == 0 {
 		return false
 	}
 
-	for i := range indexes[cnt/2] {
-		checkPatternCycle(i, indexes, nodes, alts, cnt)
+	for i := range indexes[count/2] {
+		checkPatternCycle(i, indexes, nodes, alts, count)
 
 		if len(alts) == 0 {
 			return false
@@ -246,12 +246,12 @@ func isCyclic(indexes []int, nodes []*Node) bool {
 	return true
 }
 
-// findDivisors returns all divisors of cnt that are <= cnt/2.
-func findDivisors(cnt int) map[int]bool {
+// findDivisors returns all divisors of count that are <= count/2.
+func findDivisors(count int) map[int]bool {
 	alts := make(map[int]bool)
 
-	for i := 1; i <= cnt/2; i++ {
-		if cnt%i == 0 {
+	for i := 1; i <= count/2; i++ {
+		if count%i == 0 {
 			alts[i] = true
 		}
 	}
@@ -260,7 +260,7 @@ func findDivisors(cnt int) map[int]bool {
 }
 
 // checkPatternCycle removes invalid periods from alts for the given starting position.
-func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, cnt int) {
+func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]bool, count int) {
 	// Bounds check to prevent panic
 	if startIdx+indexes[0] >= len(nodes) {
 		return
@@ -269,7 +269,7 @@ func checkPatternCycle(startIdx int, indexes []int, nodes []*Node, alts map[int]
 	startNode := nodes[startIdx+indexes[0]]
 
 	for alt := range alts {
-		if !isPatternRepeating(startIdx, alt, indexes, nodes, startNode, cnt) {
+		if !isPatternRepeating(startIdx, alt, indexes, nodes, startNode, count) {
 			delete(alts, alt)
 		}
 	}
@@ -281,9 +281,9 @@ func isPatternRepeating(
 	indexes []int,
 	nodes []*Node,
 	startNode *Node,
-	cnt int,
+	count int,
 ) bool {
-	for j := alt; j < cnt; j += alt {
+	for j := alt; j < count; j += alt {
 		index := startIdx + indexes[j]
 		if index >= len(nodes) {
 			return startIdx >= indexes[alt]

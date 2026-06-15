@@ -1,0 +1,159 @@
+direction: down
+
+# art-dupl — Ideal/Target Architecture (SHOULD BE state)
+
+errors: {
+  shape: package
+  style.fill: "#0f172a"
+  style.font-color: "#ffffff"
+  "11 error types\nstack traces\nJSON marshaling"
+}
+
+domain: {
+  shape: package
+  style.fill: "#dbeafe"
+  "Value Objects\nLineNumber, Filepath\nCloneSeverity, HealthScore"
+}
+
+config: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "Config management\nTyped enums\nReflection-based merge"
+}
+
+suffixtree: {
+  shape: package
+  style.fill: "#fef3c7"
+  "Ukkonen's algorithm\nO(1) map transitions"
+}
+
+syntax: {
+  shape: package
+  style.fill: "#d1fae5"
+  style.stroke: "#059669"
+  style.stroke-width: 2
+  "Deep facade\nRe-exports all needed types\nHides language backends"
+
+  golang: {
+    shape: package
+    style.fill: "#f0fdf4"
+    "Go parser (internal)"
+    style.stroke-dash: 3
+  }
+
+  templ: {
+    shape: package
+    style.fill: "#f0fdf4"
+    "Templ parser (internal)"
+    style.stroke-dash: 3
+  }
+}
+
+hash: {
+  shape: package
+  style.fill: "#d1fae5"
+  "XXH3 streaming hash\nImplements MethodDetector"
+}
+
+cache: {
+  shape: package
+  style.fill: "#fef3c7"
+  "File-based AST cache\nSHA1 content hashing"
+}
+
+job: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "Pipeline orchestration\nParallel workers\nIncremental analysis"
+}
+
+detection: {
+  shape: package
+  style.fill: "#d1fae5"
+  style.stroke: "#059669"
+  style.stroke-width: 2
+  "MultiDetector\n[]MethodDetector dispatch\nDeep seam: one loop"
+
+  method_detector: {
+    shape: class
+    style.fill: "#0f172a"
+    style.font-color: "#ffffff"
+    "MethodDetector interface"
+  }
+}
+
+printer: {
+  shape: package
+  style.fill: "#d1fae5"
+  "Core: Printer interface\n+ sorting + common"
+
+  stats: {
+    shape: package
+    style.fill: "#dbeafe"
+    "Statistics engine\nhealth, viz, recommendations"
+  }
+
+  html: {
+    shape: package
+    style.fill: "#dbeafe"
+    "HTML generation\n+ templ rendering"
+  }
+
+  analyze: {
+    shape: package
+    style.fill: "#dbeafe"
+    "Clone classification\n+ actionability"
+  }
+}
+
+sdk: {
+  shape: package
+  style.fill: "#d1fae5"
+  "pkg/artdupl\nPublic SDK\nDetector interface"
+}
+
+cmd: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "CLI entry point\nFang/Cobra\n35+ flags"
+}
+
+# Dependencies (clean DAG, no leakage)
+domain -> errors
+config -> errors
+config -> domain
+suffixtree -> errors
+syntax -> suffixtree
+syntax -> errors
+
+hash -> syntax
+cache -> syntax
+job -> syntax
+job -> suffixtree
+job -> cache
+
+detection -> syntax
+detection -> config
+detection -> domain
+detection.method_detector -> hash: "implements"
+detection.method_detector -> suffixtree: "implements"
+
+printer -> syntax
+printer -> config
+printer -> domain
+printer.analyze -> syntax
+printer.stats -> printer.analyze
+printer.html -> printer.analyze
+
+sdk -> config
+sdk -> detection
+sdk -> job
+sdk -> domain
+
+cmd -> config
+cmd -> detection
+cmd -> printer
+cmd -> job
+cmd -> sdk
+
+# No more leakage — syntax facade hides golang/templ

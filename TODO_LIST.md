@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-06-12**
+**Last Updated: 2026-06-15**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -8,28 +8,94 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🔴 HIGH Priority
 
-- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node (111 test call sites)
-- [ ] Consolidate three parallel Clone types (printer.clone, pkg/artdupl.Clone, printer.CloneGroup)
-- [ ] Implement TokenValue type with validation and refactor suffixtree/syntax to use it
+### Architecture
+
+- [ ] Activate `MethodDetector` interface for polymorphic dispatch (currently hard-coded in MultiDetector)
+- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals
+- [ ] Consolidate four parallel Clone types (printer.clone, pkg/artdupl.Clone, printer.CloneGroup, domain.ProcessedClone)
+- [ ] Split `printer/` into sub-packages (stats, html, analyze) — 50 files is too many for one package
+
+### Correctness
+
+- [ ] Fix SDK `FindClonesStream` error handling — pipeline errors silently swallowed (logged, not returned)
+- [ ] Deep-copy `Options` in `NewDetector` — shared `*Options` allows post-construction mutation panic
+- [ ] Fix `legacy_detector.go:36` fragile string matching (stringified AST → false positives)
+- [ ] Wire `ErrNoDuplicatesFound` sentinel — advertised in SDK but never returned by `FindClones`
+- [ ] Fix `Clone.IsValid()` — skips length check when `StartPos == 0` (byte offset zero)
+
+### Type Safety
+
+- [ ] Collapse `CloneSeverity`/`ClonePriority` into one type (same 4 values, two types)
+- [ ] Add JSON validation to CloneCategory, ClonePriority, CloneActionability
+- [ ] Wire `Actionability` field in `CloneClassification` — currently always zero value (invalid)
+- [ ] Break SDK type aliases (`DetectionMethod = config.DetectionMethod`, `Logger = logger.Logger`)
+
+---
 
 ## 🟡 MEDIUM Priority
 
-- [x] Implement CSV output format properly using encoding/csv
+### Safety
+
+- [ ] Add `context.Context` to MultiDetector goroutines (goroutine leak on consumer abandon)
+- [ ] Document detector thread-safety contract (stateful `d.started` field races under concurrent use)
+- [ ] Remove dead `Patterns`/`Imports` fields in `LegacyPattern` struct
+- [ ] Fix `issue_helpers.go:82` — `Frags: [][]*syntax.Node{{}}` always passes length filter
+
+### UX
+
+- [ ] Fix HealthScore legend vs formula mismatch (legend says <5%=A, formula actually scores differently)
+- [ ] Add `ClonePriority.Rank()` to domain (deduplicate ordinal logic in printer/stats.go and printer/html.go)
+- [ ] Add `--suppress-test-low` flag for blanket suppression of test-only low-priority clones
+- [ ] Separate test/production threshold support
+
+### Architecture
+
+- [ ] Hide `syntax/golang` and `syntax/templ` behind `syntax` facade (4 packages import sub-packages directly)
 - [ ] Unify enum patterns: domain enums should use config's generic helpers
-- [ ] Optimize memory layouts for SIMD-friendly data structures and implement string interning
-- [x] Add --output-file flag to stats subcommand
+- [ ] Implement string interning for duplicate identifier names
+- [ ] Fix `.go-arch-lint.yml` sdk/pkg-utils glob overlap
+
+---
 
 ## 🟢 LOW Priority
 
-- [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
-- [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-- [x] Write SDK documentation for pkg/artdupl/
-- [x] Add BDD test for art-dupl stats --only templ and --only go
-- [x] Add BDD test for --include-generic end-to-end
-- [ ] Add fuzz tests for templ parser edge cases
-- [x] Validate GoReleaser release config
+### Code Quality
 
-## ✅ Recently Completed (2026-06-11)
+- [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
+- [ ] Refactor `printer/actionability.go` (558L — extract `everySequenceMatch` helper, move test constants)
+- [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
+- [ ] Extract `validateLocation` helper to deduplicate todo_detector/legacy_detector boilerplate
+- [ ] Fix `todo_detector.go:43` — silent parse error (should log at Warn)
+
+### Features
+
+- [ ] Add fuzz tests for templ parser edge cases
+- [ ] Add property-based/fuzz tests for suffix tree invariants
+- [ ] Add Ginkgo `DescribeTable` lambda detection pattern
+- [ ] Add builder/callback pattern detection (`makeFix`/builder)
+- [ ] Implement hybrid slice/map transition storage for small transition counts
+
+### Documentation
+
+- [ ] Create ADR for actionability pattern detection system
+- [ ] Document detection method help text (CLI `-m` help omits `todos` and `legacy`)
+
+---
+
+## ✅ Recently Completed (2026-06-15)
+
+- [x] Fix exhaustive switch: missing `PriorityLow` case in printer/stats.go
+- [x] Fix assertion matcher typo: `(HaveOccurred` → `HaveOccurred` in actionability.go
+- [x] Fix dead code in `isReturnOrWrappedReturn` (unreachable ReturnStmt branch)
+- [x] Fix emoji collision: CategoryHandler and CategoryTestFixture both used 🎯
+- [x] Rename `CloneClassification.NodeType` → `NodeTypeName` (avoid int32/string name collision)
+- [x] Rename `cnt` → `count` in syntax/syntax.go (4 functions)
+- [x] Fix `.go-arch-lint.yml`: Add `domain` to detection deps, map `internal/utils` to pkg-utils
+- [x] Update FEATURES.md: Fix stale claims, add 11 missing features
+- [x] Update AGENTS.md: Add cache/ and errors/ to architecture, fix Clone count
+- [x] Run `go mod tidy` to fix missing transitive hashes in go.sum
+
+## ✅ Previously Completed (2026-06-11)
 
 - [x] Decouple printer/clone_classify.go from syntax/golang direct import
 - [x] Create domain.HealthScore typed enum with validation and JSON marshaling

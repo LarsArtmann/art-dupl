@@ -1,7 +1,7 @@
 # Modularization Proposal — art-dupl
 
-**Date:** 2026-05-14
-**Status:** Draft
+**Date:** 2026-05-14 (updated 2026-06-15)
+**Status:** Proposal — Reviewed and Updated
 **Module:** `github.com/LarsArtmann/art-dupl`
 
 ---
@@ -537,3 +537,25 @@ The current `flake.nix` uses `buildGoModule` for the root module. With multi-mod
 | `sergi/go-diff`              | printer                | printer |
 | `spf13/cobra`                | cmd                    | cli     |
 | `zeebo/xxh3`                 | syntax, hash           | core    |
+
+---
+
+## 10. Update Log — 2026-06-15
+
+### Changes Since Original Proposal
+
+- **`internal/simd/` deleted** — dead code removed (was listed in pre-work table, now N/A)
+- **Go version updated** to 1.26.3 (was 1.26.2)
+- **Package count**: 25 (was 26 — simd removed)
+- **`.go-arch-lint.yml` fixed**: `detection → domain` dependency now declared; `internal/utils` mapped to `pkg-utils`
+- **`MethodDetector` interface still unused** — hard-coded dispatch in `MultiDetector.FindDuplOver` remains the #1 composability defect
+- **`printer/` grew** from 41 to 50 files, confirming it as the primary scalability concern
+
+### Updated Recommendation
+
+The original 5-module proposal remains sound. However, a **pragmatic alternative** worth considering:
+
+- **Phase 1**: Extract only `pkg/artdupl` → `sdk/` module (minimal risk, immediate SDK consumer benefit)
+- **Phase 2**: Full 5-module split once `MethodDetector` seam is activated and printer is split
+
+This phased approach delivers value incrementally without the full `internal/` promotion scope upfront.

@@ -62,7 +62,9 @@ components:
 
   # Utility packages
   pkg-utils:
-    in: pkg/**
+    in:
+      - pkg/**
+      - internal/utils/**
 
   # Test utilities
   testutil:
@@ -98,6 +100,7 @@ deps:
       - config
       - errors
       - pkg-utils
+      - domain
 
   suffixtree:
     mayDependOn: []

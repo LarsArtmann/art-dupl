@@ -1,0 +1,149 @@
+direction: down
+
+# art-dupl — Current Architecture (IS state)
+
+errors: {
+  shape: package
+  style.fill: "#0f172a"
+  style.font-color: "#ffffff"
+  "11 error types\nstack traces\nJSON marshaling"
+}
+
+domain: {
+  shape: package
+  style.fill: "#dbeafe"
+  "Value Objects\nLineNumber, Filepath\nCloneSeverity, HealthScore"
+}
+
+config: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "Config management\nTyped enums\nReflection-based merge"
+}
+
+suffixtree: {
+  shape: package
+  style.fill: "#fef3c7"
+  "Ukkonen's algorithm\nO(1) map transitions"
+}
+
+syntax: {
+  shape: package
+  style.fill: "#fce7f3"
+  style.stroke: "#dc2626"
+  style.stroke-width: 2
+  "AST handling (GOD-PACKAGE)\n7/12 components depend on it"
+
+  golang: {
+    shape: package
+    "Go parser\n45 node types\nSemantic encoding"
+  }
+
+  templ: {
+    shape: package
+    "Templ parser\n28 node types\nStructural only"
+  }
+}
+
+hash: {
+  shape: package
+  style.fill: "#d1fae5"
+  "XXH3 streaming hash\nContent-addressed dedup"
+}
+
+cache: {
+  shape: package
+  style.fill: "#fef3c7"
+  "File-based AST cache\nSHA1 content hashing"
+}
+
+job: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "Pipeline orchestration\nParallel workers\nIncremental analysis"
+}
+
+detection: {
+  shape: package
+  style.fill: "#fee2e2"
+  "MultiDetector\n⚠ hard-coded dispatch\nMethodDetector unused"
+
+  todo_detector: "TodoDetector"
+  legacy_detector: "LegacyDetector"
+}
+
+printer: {
+  shape: package
+  style.fill: "#fee2e2"
+  style.stroke: "#dc2626"
+  style.stroke-width: 2
+  "GOD-PACKAGE (50 files)\n6 output formats + stats\n+ HTML templ + classification"
+
+  stats: "8 stats files"
+  html: "5 HTML files"
+  actionability: "Classification"
+}
+
+sdk: {
+  shape: package
+  style.fill: "#d1fae5"
+  "pkg/artdupl\nPublic SDK\nDetector interface"
+}
+
+cmd: {
+  shape: package
+  style.fill: "#e0e7ff"
+  "CLI entry point\nFang/Cobra\n35+ flags"
+}
+
+# Dependencies (actual)
+domain -> errors
+config -> errors
+config -> domain
+suffixtree -> errors
+syntax -> suffixtree
+syntax -> errors
+
+hash -> syntax
+hash -> errors
+cache -> syntax
+cache -> errors
+job -> syntax
+job -> suffixtree
+job -> cache
+job -> errors
+
+detection -> suffixtree
+detection -> hash
+detection -> syntax
+detection -> config
+detection -> domain
+
+printer -> syntax
+printer -> config
+printer -> domain
+printer -> errors
+
+sdk -> config
+sdk -> detection
+sdk -> job
+sdk -> hash
+sdk -> domain
+
+cmd -> config
+cmd -> detection
+cmd -> printer
+cmd -> job
+cmd -> sdk
+
+# Leakage (red)
+printer -> syntax.golang: {
+  style.stroke: "#dc2626"
+  style.stroke-dash: 4
+  label: "leak"
+}
+job -> syntax.golang: {
+  style.stroke: "#dc2626"
+  style.stroke-dash: 4
+  label: "leak"
+}

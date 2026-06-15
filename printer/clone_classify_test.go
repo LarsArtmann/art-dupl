@@ -239,7 +239,7 @@ func TestCloneCategoryEmoji(t *testing.T) {
 		{domain.CategoryTest, "🧪"},
 		{domain.CategoryStruct, "📦"},
 		{domain.CategoryInterface, "🔌"},
-		{domain.CategoryHandler, "🎯"},
+		{domain.CategoryHandler, "🎨"},
 		{domain.CategoryLoop, "🔄"},
 		{domain.CategoryConditional, "🔀"},
 		{domain.CategoryAssignment, "📝"},

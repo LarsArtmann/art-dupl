@@ -311,17 +311,11 @@ func isReturnOrWrappedReturn(node *syntax.Node) bool {
 		return false
 	}
 
-	// Allow single return statement.
-	if len(node.Children) == 1 && baseTypeOf(node.Children[0]) == golang.ReturnStmt {
-		return true
-	}
-
-	// Allow return with a CallExpr (e.g., return fmt.Errorf("...")).
+	// Allow single return or return with CallExpr (e.g., return fmt.Errorf("...")).
 	if len(node.Children) == 1 {
-		child := node.Children[0]
-		if baseTypeOf(child) == golang.ReturnStmt || baseTypeOf(child) == golang.CallExpr {
-			return true
-		}
+		bt := baseTypeOf(node.Children[0])
+
+		return bt == golang.ReturnStmt || bt == golang.CallExpr
 	}
 
 	return false
@@ -489,7 +483,7 @@ func walkForTestScaffoldingSignals(node *syntax.Node, hasFileIO *bool, assertion
 				case "Equal", "HaveLen", "BeEmpty", "BeNil", "BeTrue", "BeFalse",
 					"BeZero", "ContainElement", "ContainSubstring", "MatchRegexp",
 					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce",
-					"(HaveOccurred", "ShouldNot":
+					"HaveOccurred", "ShouldNot":
 					(*assertionNames)["assertion"] = true
 				case "Fatalf", "Errorf", "Skipf", "Logf", "FailNow":
 					(*assertionNames)["testing-t"] = true
@@ -504,7 +498,7 @@ func walkForTestScaffoldingSignals(node *syntax.Node, hasFileIO *bool, assertion
 }
 
 // isDataDominated reports whether every clone is dominated by data nodes
-// (BasicLit and KeyValueExpr) rather than logic. When >70% of leaf nodes
+// (BasicLit and KeyValueExpr) rather than logic. When ≥60% of all nodes
 // are data, the clone represents struct initialization, config fixtures,
 // or test data arrays — not duplicated business logic.
 func isDataDominated(nodeSeqs [][]*syntax.Node) bool {
