@@ -497,6 +497,7 @@ func TestFinding_Validate(t *testing.T) {
 
 	t.Run("empty filename", func(t *testing.T) {
 		f := valid
+
 		f.Filename = ""
 		if err := f.Validate(); !errors.Is(err, ErrEmptyFilename) {
 			t.Errorf("Validate() error = %v, want ErrEmptyFilename", err)
@@ -505,6 +506,7 @@ func TestFinding_Validate(t *testing.T) {
 
 	t.Run("zero line", func(t *testing.T) {
 		f := valid
+
 		f.Line = 0
 		if err := f.Validate(); !errors.Is(err, ErrInvalidLineNumber) {
 			t.Errorf("Validate() error = %v, want ErrInvalidLineNumber", err)
@@ -513,6 +515,7 @@ func TestFinding_Validate(t *testing.T) {
 
 	t.Run("invalid type", func(t *testing.T) {
 		f := valid
+
 		f.Type = FindingType("bogus")
 		if err := f.Validate(); !errors.Is(err, ErrInvalidFindingType) {
 			t.Errorf("Validate() error = %v, want ErrInvalidFindingType", err)
