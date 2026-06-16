@@ -298,8 +298,8 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	testutil.AssertFieldValue(t, tool.Version, "1.0.0", "Version")
 
 	// Check rules
-	if len(tool.Rules) != 1 {
-		t.Errorf("Expected 1 rule, got %d", len(tool.Rules))
+	if len(tool.Rules) != 3 {
+		t.Errorf("Expected 3 rules (duplicate-code, todo, legacy), got %d", len(tool.Rules))
 	}
 
 	rule := tool.Rules[0]

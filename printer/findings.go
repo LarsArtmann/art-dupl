@@ -11,6 +11,8 @@ func (p *TextPrinter) PrintFindings(findings []domain.Finding) error {
 		return nil
 	}
 
+	p.findingCount = len(findings)
+
 	if _, err := fmt.Fprintf(p.w, "\n\U0001f4cb Findings (%d):\n", len(findings)); err != nil {
 		return fmt.Errorf("write findings header: %w", err)
 	}

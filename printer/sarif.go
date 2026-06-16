@@ -11,6 +11,13 @@ import (
 	errors "github.com/LarsArtmann/art-dupl/errors"
 )
 
+// SARIF level constants.
+const (
+	sarifLevelError   = "error"
+	sarifLevelWarning = "warning"
+	sarifLevelNote    = "note"
+)
+
 // SARIFOutput represents the SARIF (Static Analysis Results Interchange Format) output.
 // This format is used by security tools like GitHub Advanced Security, CodeQL, etc.
 // Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
@@ -222,11 +229,11 @@ func (p *sarifPrinter) PrintFooter() error {
 func (p *sarifPrinter) determineLevel(size int) string {
 	switch {
 	case size >= p.threshold*4:
-		return "error" // Large clones are errors
+		return sarifLevelError
 	case size >= p.threshold*2:
-		return "warning" // Medium clones are warnings
+		return sarifLevelWarning
 	default:
-		return "note" // Small clones are notes
+		return sarifLevelNote
 	}
 }
 
@@ -238,11 +245,11 @@ func (p *sarifPrinter) SetHash(hash string) {
 func (p *sarifPrinter) findingLevel(priority domain.ClonePriority) string {
 	switch priority { //nolint:exhaustive // default covers remaining priorities
 	case domain.PriorityCritical, domain.PriorityHigh:
-		return "error"
+		return sarifLevelError
 	case domain.PriorityMedium:
-		return "warning"
+		return sarifLevelWarning
 	default:
-		return "note"
+		return sarifLevelNote
 	}
 }
 
@@ -296,6 +303,28 @@ func (p *sarifPrinter) outputSARIF() error {
 									Level: "warning",
 								},
 								HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
+							},
+							{
+								ID:   "art-dupl/todo",
+								Name: "TODO/FIXME Comment",
+								ShortDescription: SARIFTextContent{
+									Text: "Detects TODO, FIXME, HACK, XXX, and NOTE comments",
+								},
+								DefaultConfiguration: SARIFConfiguration{
+									Level: "note",
+								},
+								HelpURI: "https://github.com/LarsArtmann/art-dupl#findings",
+							},
+							{
+								ID:   "art-dupl/legacy",
+								Name: "Legacy Pattern Usage",
+								ShortDescription: SARIFTextContent{
+									Text: "Detects usage of deprecated API patterns (e.g. io/ioutil)",
+								},
+								DefaultConfiguration: SARIFConfiguration{
+									Level: "warning",
+								},
+								HelpURI: "https://github.com/LarsArtmann/art-dupl#findings",
 							},
 						},
 					},
