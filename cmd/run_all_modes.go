@@ -119,8 +119,14 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 }
 
 // collectFindings collects all findings from a channel into a slice.
+// Returns nil if the channel is nil (hash-only mode produces no findings).
 func collectFindings(findingChan <-chan domain.Finding) []domain.Finding {
+	if findingChan == nil {
+		return nil
+	}
+
 	var findings []domain.Finding
+
 	for finding := range findingChan {
 		findings = append(findings, finding)
 	}
