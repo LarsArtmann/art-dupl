@@ -263,7 +263,7 @@ func TestIssue_GetLine(t *testing.T) {
 				Line:     mustNewLineNumber(100),
 				Type:     "deprecated_function",
 				Message:  "Use of deprecated function",
-				Severity: domain.CloneSeverityMedium,
+				Severity: domain.PriorityMedium,
 			},
 			lineNum: 100,
 		},

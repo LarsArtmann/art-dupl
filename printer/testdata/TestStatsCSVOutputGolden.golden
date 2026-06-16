@@ -17,6 +17,6 @@ Average Clone Size,1
 Complexity Score,2.00
 Impact Score,8
 Health Score,A
-Health Score Thresholds,"A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%"
+Health Score Thresholds,"Weighted score: A<5, B<10, C<15, D<25, F>=25"
 
 Note,Metrics count unique duplicate patterns not total occurrences

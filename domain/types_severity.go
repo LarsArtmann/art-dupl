@@ -1,65 +1,17 @@
 package domain
 
-import (
-	"fmt"
-	"strings"
-)
+// Deprecated: Use ClonePriority instead. CloneSeverity is kept as a type alias
+// for backward compatibility and will be removed in a future version.
+type CloneSeverity = ClonePriority
 
-// CloneSeverity represents clone severity levels for categorizing duplicate code.
-type CloneSeverity string
+// Deprecated: Use PriorityLow instead.
+const CloneSeverityLow = PriorityLow
 
-// Clone severity constants define the importance level of detected clones.
-const (
-	// CloneSeverityLow indicates minor duplication with low impact.
-	CloneSeverityLow CloneSeverity = "low"
-	// CloneSeverityMedium indicates moderate duplication that should be reviewed.
-	CloneSeverityMedium CloneSeverity = "medium"
-	// CloneSeverityHigh indicates significant duplication requiring attention.
-	CloneSeverityHigh CloneSeverity = "high"
-	// CloneSeverityCritical indicates severe duplication that must be addressed.
-	CloneSeverityCritical CloneSeverity = "critical"
-)
+// Deprecated: Use PriorityMedium instead.
+const CloneSeverityMedium = PriorityMedium
 
-// IsValid returns true if the severity is one of the defined constants.
-func (cs CloneSeverity) IsValid() bool {
-	switch cs {
-	case CloneSeverityLow, CloneSeverityMedium, CloneSeverityHigh, CloneSeverityCritical:
-		return true
-	default:
-		return false
-	}
-}
+// Deprecated: Use PriorityHigh instead.
+const CloneSeverityHigh = PriorityHigh
 
-// String returns the string representation of the severity.
-func (cs CloneSeverity) String() string { return string(cs) }
-
-// MarshalJSON implements json.Marshaler for CloneSeverity.
-func (cs CloneSeverity) MarshalJSON() ([]byte, error) {
-	if !cs.IsValid() {
-		return nil, fmt.Errorf(
-			"%w: %s (valid options: low, medium, high, critical)",
-			ErrInvalidCloneSeverity,
-			cs,
-		)
-	}
-
-	return []byte(`"` + string(cs) + `"`), nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler for CloneSeverity.
-func (cs *CloneSeverity) UnmarshalJSON(data []byte) error {
-	str := strings.Trim(string(data), `"`)
-
-	severity := CloneSeverity(str)
-	if !severity.IsValid() {
-		return fmt.Errorf(
-			"%w: %s (valid options: low, medium, high, critical)",
-			ErrInvalidCloneSeverity,
-			str,
-		)
-	}
-
-	*cs = severity
-
-	return nil
-}
+// Deprecated: Use PriorityCritical instead.
+const CloneSeverityCritical = PriorityCritical

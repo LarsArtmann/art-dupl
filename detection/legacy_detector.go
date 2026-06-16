@@ -51,7 +51,7 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 						Line:     lineNum,
 						Type:     pattern.Type,
 						Message:  fmt.Sprintf("%s: %s", pattern.Message, funcName),
-						Severity: domain.CloneSeverity(pattern.Severity),
+						Severity: domain.ClonePriority(pattern.Severity),
 					})
 				}
 			}

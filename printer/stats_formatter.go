@@ -135,7 +135,7 @@ func (p *stats) printCSV() {
 	write("Complexity Score", fmt.Sprintf("%.2f", p.statsData.ComplexityScore))
 	write("Impact Score", strconv.Itoa(p.statsData.ImpactScore))
 	write("Health Score", string(p.statsData.HealthScore))
-	write("Health Score Thresholds", "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%")
+	write("Health Score Thresholds", "Weighted score: A<5, B<10, C<15, D<25, F>=25")
 
 	// Blank separator
 	write()
@@ -421,7 +421,7 @@ func (p *stats) fillJSONDuplicateCode(jsonData *jsonStatsOutput) {
 func (p *stats) fillJSONMetrics(jsonData *jsonStatsOutput) {
 	if p.statsData.HealthScore != "" {
 		jsonData.Metrics.HealthScore = string(p.statsData.HealthScore)
-		jsonData.Metrics.HealthScoreThresholds = "A: <5% dup, B: <10%, C: <15%, D: <25%, F: >=25%"
+		jsonData.Metrics.HealthScoreThresholds = "Weighted score: A<5, B<10, C<15, D<25, F>=25"
 	}
 
 	if p.statsData.AnalysisDuration != "" {

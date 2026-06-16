@@ -28,7 +28,7 @@ type LegacyIssue struct {
 	Line     domain.LineNumber    `json:"line"`
 	Type     string               `json:"type"`
 	Message  string               `json:"message"`
-	Severity domain.CloneSeverity `json:"severity"`
+	Severity domain.ClonePriority `json:"severity"`
 }
 
 // GetLine returns the line number for this issue (implements LineExtractor interface).

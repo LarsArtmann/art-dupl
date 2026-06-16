@@ -148,6 +148,55 @@ func (d *detector) FindClonesStream(
 	return resultChan, nil
 }
 
+// FindClonesStreamResult provides streaming results with error propagation.
+// The channel emits StreamResult values. A final StreamResult with Err != nil
+// indicates pipeline failure. The channel is always closed after all results.
+func (d *detector) FindClonesStreamResult(
+	ctx context.Context,
+	files []string,
+) (<-chan StreamResult, error) {
+	d.started = time.Now()
+
+	err := d.validateInputsOrError(ctx, files)
+	if err != nil {
+		return nil, err
+	}
+
+	resultChan := make(chan StreamResult, 10)
+
+	go func() {
+		defer close(resultChan)
+
+		pipeline, err := d.buildAnalysisPipeline(ctx, files)
+		if err != nil {
+			resultChan <- StreamResult{Group: nil, Err: err}
+
+			return
+		}
+
+		groupChan := make(chan *CloneGroup, 10)
+
+		go func() {
+			defer close(groupChan)
+
+			streamErr := d.streamDetectionResults(ctx, pipeline, groupChan)
+			if streamErr != nil {
+				resultChan <- StreamResult{Group: nil, Err: streamErr}
+			}
+		}()
+
+		for group := range groupChan {
+			if group != nil {
+				resultChan <- StreamResult{Group: group, Err: nil}
+			}
+		}
+
+		d.reportProgress(100, "Analysis complete", "")
+	}()
+
+	return resultChan, nil
+}
+
 // wrapValidationError wraps a validation error with context about the operation.
 func (d *detector) wrapValidationError(err error, operation string, fileCount int) error {
 	return errors.WrapValidation(

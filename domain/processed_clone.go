@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"fmt"
+	"strings"
+)
+
 // CloneCategory represents the category of code that was duplicated.
 type CloneCategory string
 
@@ -154,6 +159,105 @@ func (a CloneActionability) IsValid() bool {
 
 // String returns the string representation of the actionability.
 func (a CloneActionability) String() string { return string(a) }
+
+// ParseClonePriority parses a string into a ClonePriority, returning an error if invalid.
+func ParseClonePriority(s string) (ClonePriority, error) {
+	p := ClonePriority(s)
+	if !p.IsValid() {
+		return "", fmt.Errorf("%w: %q", ErrInvalidClonePriority, s)
+	}
+
+	return p, nil
+}
+
+// MarshalJSON implements json.Marshaler for ClonePriority.
+func (p ClonePriority) MarshalJSON() ([]byte, error) {
+	if !p.IsValid() {
+		return nil, fmt.Errorf("%w: %q", ErrInvalidClonePriority, p)
+	}
+
+	return []byte(`"` + string(p) + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler for ClonePriority.
+func (p *ClonePriority) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), `"`)
+
+	parsed, err := ParseClonePriority(s)
+	if err != nil {
+		return err
+	}
+
+	*p = parsed
+
+	return nil
+}
+
+// ParseCloneCategory parses a string into a CloneCategory, returning an error if invalid.
+func ParseCloneCategory(s string) (CloneCategory, error) {
+	c := CloneCategory(s)
+	if !c.IsValid() {
+		return "", fmt.Errorf("%w: %q", ErrInvalidCloneCategory, s)
+	}
+
+	return c, nil
+}
+
+// MarshalJSON implements json.Marshaler for CloneCategory.
+func (c CloneCategory) MarshalJSON() ([]byte, error) {
+	if !c.IsValid() {
+		return nil, fmt.Errorf("%w: %q", ErrInvalidCloneCategory, c)
+	}
+
+	return []byte(`"` + string(c) + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler for CloneCategory.
+func (c *CloneCategory) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), `"`)
+
+	parsed, err := ParseCloneCategory(s)
+	if err != nil {
+		return err
+	}
+
+	*c = parsed
+
+	return nil
+}
+
+// ParseCloneActionability parses a string into a CloneActionability, returning an error if invalid.
+func ParseCloneActionability(s string) (CloneActionability, error) {
+	a := CloneActionability(s)
+	if !a.IsValid() {
+		return "", fmt.Errorf("%w: %q", ErrInvalidCloneActionability, s)
+	}
+
+	return a, nil
+}
+
+// MarshalJSON implements json.Marshaler for CloneActionability.
+func (a CloneActionability) MarshalJSON() ([]byte, error) {
+	if !a.IsValid() {
+		return nil, fmt.Errorf("%w: %q", ErrInvalidCloneActionability, a)
+	}
+
+	return []byte(`"` + string(a) + `"`), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler for CloneActionability.
+func (a *CloneActionability) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), `"`)
+
+	parsed, err := ParseCloneActionability(s)
+	if err != nil {
+		return err
+	}
+
+	*a = parsed
+
+	return nil
+}
 
 // ClassificationInput holds the data needed to classify a clone.
 // Using a struct instead of primitives ensures the compiler catches missing fields
