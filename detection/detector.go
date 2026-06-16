@@ -1,6 +1,8 @@
 package detection
 
 import (
+	"context"
+
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -9,5 +11,6 @@ import (
 type MethodDetector interface {
 	// FindDuplOver runs detection with the given threshold and returns
 	// matches via a channel for streaming consumption.
-	FindDuplOver(threshold int) <-chan syntax.Match
+	// The context allows callers to cancel detection early.
+	FindDuplOver(ctx context.Context, threshold int) <-chan syntax.Match
 }

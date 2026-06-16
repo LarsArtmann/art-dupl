@@ -13,9 +13,6 @@ import (
 // RAII cleanup method names that indicate non-actionable patterns.
 const cleanupMethodName = "Unlock"
 
-// processOrderMethodName is a non-RAII method name for testing.
-const processOrderMethodName = "processOrder"
-
 // baseTypeOf extracts the base AST node type from a syntax.Node,
 // decoding any semantic encoding (identifier hash, operator hash) that
 // may be baked into the upper bits of Type. This ensures type comparisons

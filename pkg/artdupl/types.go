@@ -7,26 +7,54 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // DetectionMethod represents the method used for duplicate detection.
-// This is a re-export of config.DetectionMethod for SDK convenience.
-type DetectionMethod = config.DetectionMethod
+// This is an independent SDK type — conversion to internal config types
+// happens at the SDK boundary (convertOptionsToConfig).
+type DetectionMethod string
 
 const (
 	// MethodArtDupl uses suffix tree algorithm on AST tokens.
-	MethodArtDupl = config.DetectionMethodArtDupl
+	MethodArtDupl DetectionMethod = "art-dupl"
 
 	// MethodHash uses rolling hash on file content.
-	MethodHash = config.DetectionMethodHash
+	MethodHash DetectionMethod = "hash"
 
 	// MethodTodos detects TODO comments in code.
-	MethodTodos = config.DetectionMethodTodos
+	MethodTodos DetectionMethod = "todos"
 
 	// MethodLegacy uses the legacy detection algorithm.
-	MethodLegacy = config.DetectionMethodLegacy
+	MethodLegacy DetectionMethod = "legacy"
 )
+
+// String returns the string representation of the detection method.
+func (m DetectionMethod) String() string { return string(m) }
+
+// IsValid returns true if the detection method is one of the defined constants.
+func (m DetectionMethod) IsValid() bool {
+	switch m {
+	case MethodArtDupl, MethodHash, MethodTodos, MethodLegacy:
+		return true
+	default:
+		return false
+	}
+}
+
+// toConfigDetectionMethod converts an SDK DetectionMethod to a config.DetectionMethod.
+func toConfigDetectionMethod(m DetectionMethod) config.DetectionMethod {
+	return config.DetectionMethod(string(m))
+}
+
+// toConfigDetectionMethods converts a slice of SDK DetectionMethod to config.DetectionMethods.
+func toConfigDetectionMethods(methods []DetectionMethod) config.DetectionMethods {
+	result := make(config.DetectionMethods, len(methods))
+	for i, m := range methods {
+		result[i] = toConfigDetectionMethod(m)
+	}
+
+	return result
+}
 
 // Detector is the main interface for code duplication detection.
 type Detector interface {
@@ -149,8 +177,23 @@ type Progress struct {
 // FileReaderFunc represents a function that can read file contents.
 type FileReaderFunc func(filename string) ([]byte, error)
 
-// Logger is an alias to the logger package's Logger interface.
-type Logger = logger.Logger
+// Logger is the SDK's own logging interface.
+// Any type implementing these methods satisfies the interface — the internal
+// pkg/logger.Logger is structurally compatible without an explicit adapter.
+type Logger interface {
+	Debug(msg string, args ...any)
+	Info(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Error(msg string, args ...any)
+}
+
+// noOpLogger is the default SDK logger when none is provided.
+type noOpLogger struct{}
+
+func (noOpLogger) Debug(string, ...any) {}
+func (noOpLogger) Info(string, ...any)  {}
+func (noOpLogger) Warn(string, ...any)  {}
+func (noOpLogger) Error(string, ...any) {}
 
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
@@ -165,7 +208,7 @@ func DefaultOptions() *Options {
 		MaxClonesPerGroup: 50,
 		ProgressCallback:  nil,
 		FileReader:        readFileDefault,
-		Logger:            logger.Default,
+		Logger:            noOpLogger{},
 	}
 }
 
@@ -203,6 +246,6 @@ func ValidateOptions(opts *Options) error {
 	}
 
 	return config.ValidateDetectionMethods(
-		opts.DetectionMethods,
+		toConfigDetectionMethods(opts.DetectionMethods),
 	)
 }

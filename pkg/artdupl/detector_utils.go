@@ -36,9 +36,8 @@ func convertOptionsToConfig(opts *Options) *config.Config {
 	cfg := config.DefaultConfig()
 	cfg.Threshold = opts.Threshold
 
-	// Convert detection methods
-	cfg.DetectionMethods = make(config.DetectionMethods, len(opts.DetectionMethods))
-	copy(cfg.DetectionMethods, opts.DetectionMethods)
+	// Convert detection methods (SDK type → config type)
+	cfg.DetectionMethods = toConfigDetectionMethods(opts.DetectionMethods)
 
 	cfg.IncludeVendor = opts.IncludeVendor
 	cfg.IgnoreFiles = opts.IgnoreFiles

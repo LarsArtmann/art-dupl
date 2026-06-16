@@ -80,7 +80,7 @@ func drainMatchesChannel(t *testing.T) {
 		data,
 		tree,
 	)
-	matchesChan := md.FindDuplOver(1)
+	matchesChan := md.FindDuplOver(context.Background(), 1)
 
 	if matchesChan == nil {
 		t.Error("Expected non-nil matches channel")

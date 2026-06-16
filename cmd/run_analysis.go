@@ -333,7 +333,7 @@ func executeAnalysis(
 	go func() {
 		defer close(duplChan)
 
-		matches := multiDetector.FindDuplOver(cfg.Threshold)
+		matches := multiDetector.FindDuplOver(ctx, cfg.Threshold)
 		for match := range matches {
 			select {
 			case <-ctx.Done():

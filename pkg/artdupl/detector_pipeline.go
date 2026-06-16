@@ -120,7 +120,7 @@ func (d *detector) runDetection(
 	d.reportProgress(70, "Starting duplicate detection", "")
 
 	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(d.config.Threshold)
+	matchesChan := md.FindDuplOver(ctx, d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {
@@ -145,7 +145,7 @@ func (d *detector) streamDetectionResults(
 	resultChan chan<- *CloneGroup,
 ) error {
 	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(d.config.Threshold)
+	matchesChan := md.FindDuplOver(ctx, d.config.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {
@@ -177,8 +177,10 @@ func collectMatchesIntoGroups(
 		default:
 		}
 
-		if len(match.Frags) > 0 {
-			groups[match.Hash] = append(groups[match.Hash], match.Frags...)
+		for _, frag := range match.Frags {
+			if len(frag) > 0 {
+				groups[match.Hash] = append(groups[match.Hash], frag)
+			}
 		}
 	}
 

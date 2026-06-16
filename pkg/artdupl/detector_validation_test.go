@@ -223,21 +223,23 @@ func TestDetectionMethod_Constants(t *testing.T) {
 }
 
 // TestDetectionMethod_Equality tests detection method equality.
+// SDK types are independent from config types — they share string values
+// but are distinct types. Conversion happens at the SDK boundary.
 func TestDetectionMethod_Equality(t *testing.T) {
-	if MethodArtDupl != config.DetectionMethodArtDupl {
-		t.Error("MethodArtDupl should equal config.DetectionMethodArtDupl")
+	if string(MethodArtDupl) != string(config.DetectionMethodArtDupl) {
+		t.Error("MethodArtDupl should have same string value as config.DetectionMethodArtDupl")
 	}
 
-	if MethodHash != config.DetectionMethodHash {
-		t.Error("MethodHash should equal config.DetectionMethodHash")
+	if string(MethodHash) != string(config.DetectionMethodHash) {
+		t.Error("MethodHash should have same string value as config.DetectionMethodHash")
 	}
 
-	if MethodTodos != config.DetectionMethodTodos {
-		t.Error("MethodTodos should equal config.DetectionMethodTodos")
+	if string(MethodTodos) != string(config.DetectionMethodTodos) {
+		t.Error("MethodTodos should have same string value as config.DetectionMethodTodos")
 	}
 
-	if MethodLegacy != config.DetectionMethodLegacy {
-		t.Error("MethodLegacy should equal config.DetectionMethodLegacy")
+	if string(MethodLegacy) != string(config.DetectionMethodLegacy) {
+		t.Error("MethodLegacy should have same string value as config.DetectionMethodLegacy")
 	}
 }
 

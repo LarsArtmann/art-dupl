@@ -1,6 +1,7 @@
 package detection
 
 import (
+	"context"
 	"go/parser"
 	"go/token"
 	"regexp"
@@ -30,8 +31,11 @@ func NewTodoDetector() *TodoDetector {
 }
 
 // FindTodos finds all TODO-style comments in the provided nodes.
-func (td *TodoDetector) FindTodos(data []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(data, td.findTodosInFile, "TODO")
+func (td *TodoDetector) FindTodos(
+	ctx context.Context,
+	data []*syntax.Node,
+) <-chan syntax.Match {
+	return findIssuesGeneric(ctx, data, td.findTodosInFile, "TODO")
 }
 
 // findTodosInFile parses the file and finds TODO comments.

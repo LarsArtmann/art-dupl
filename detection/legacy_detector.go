@@ -1,6 +1,7 @@
 package detection
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -22,8 +23,11 @@ func NewLegacyDetector() *LegacyDetector {
 }
 
 // FindLegacy finds all legacy patterns in provided nodes.
-func (ld *LegacyDetector) FindLegacy(nodes []*syntax.Node) <-chan syntax.Match {
-	return findIssuesGeneric(nodes, ld.findLegacyInFile, "LEGACY")
+func (ld *LegacyDetector) FindLegacy(
+	ctx context.Context,
+	nodes []*syntax.Node,
+) <-chan syntax.Match {
+	return findIssuesGeneric(ctx, nodes, ld.findLegacyInFile, "LEGACY")
 }
 
 // findLegacyInFile finds legacy patterns in a specific file.

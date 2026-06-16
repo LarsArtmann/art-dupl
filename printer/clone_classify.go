@@ -53,13 +53,14 @@ func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 	suggestion := getSuggestion(category, isTest, input.Tokens)
 
 	return CloneClassification{
-		Category:     category,
-		IsTest:       isTest,
-		Priority:     priority,
-		Tokens:       input.Tokens,
-		Lines:        input.Lines,
-		NodeTypeName: nodeTypeToString(input.NodeType),
-		Suggestion:   suggestion,
+		Category:      category,
+		IsTest:        isTest,
+		Priority:      priority,
+		Tokens:        input.Tokens,
+		Lines:         input.Lines,
+		NodeTypeName:  nodeTypeToString(input.NodeType),
+		Suggestion:    suggestion,
+		Actionability: domain.Actionable,
 	}
 }
 
@@ -67,13 +68,14 @@ func idiomClassification(input domain.ClassificationInput) CloneClassification {
 	isTest := isTestFile(input.Filename)
 
 	return CloneClassification{
-		Category:     domain.CategoryIdiom,
-		IsTest:       isTest,
-		Priority:     domain.PriorityLow,
-		Tokens:       input.Tokens,
-		Lines:        input.Lines,
-		NodeTypeName: nodeTypeToString(input.NodeType),
-		Suggestion:   suggestIdiom,
+		Category:      domain.CategoryIdiom,
+		IsTest:        isTest,
+		Priority:      domain.PriorityLow,
+		Tokens:        input.Tokens,
+		Lines:         input.Lines,
+		NodeTypeName:  nodeTypeToString(input.NodeType),
+		Suggestion:    suggestIdiom,
+		Actionability: domain.NonActionable,
 	}
 }
 

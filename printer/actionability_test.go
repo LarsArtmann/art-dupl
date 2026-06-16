@@ -8,6 +8,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// processOrderMethodName is a non-RAII method name for testing.
+const processOrderMethodName = "processOrder"
+
 func TestEvaluateActionability(t *testing.T) {
 	runBoolTests(t, func(seqs [][]*syntax.Node) bool {
 		return EvaluateActionability(seqs) == domain.NonActionable
