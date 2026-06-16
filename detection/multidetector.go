@@ -63,7 +63,7 @@ func (md *MultiDetector) FindDuplOver(
 		go func() {
 			defer close(resultChan)
 
-			suffixMatches := md.tree.FindDuplOver(threshold)
+			suffixMatches := md.tree.FindDuplOver(ctx, threshold)
 			md.processSuffixTreeMatches(ctx, suffixMatches, resultChan, threshold)
 		}()
 
@@ -99,7 +99,7 @@ func (md *MultiDetector) runMultiMethodDetection(
 	if md.detCfg.Methods.Contains(config.DetectionMethodArtDupl) {
 		md.logVerbose("Running suffix tree-based detection...")
 
-		artDuplMatches := md.tree.FindDuplOver(threshold)
+		artDuplMatches := md.tree.FindDuplOver(ctx, threshold)
 		md.processSuffixTreeMatches(ctx, artDuplMatches, resultChan, threshold)
 	}
 

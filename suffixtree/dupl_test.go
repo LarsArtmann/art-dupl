@@ -1,6 +1,7 @@
 package suffixtree
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -69,7 +70,7 @@ All work and no play makes Jack a dull boy$`, 4, []Match{{[]Pos{0, 43}, 42}}},
 		tree := New()
 		tree.Update(str2tok(tc.s)...)
 
-		ch := tree.FindDuplOver(tc.threshold)
+		ch := tree.FindDuplOver(context.Background(), tc.threshold)
 		for _, exp := range tc.matches {
 			act, ok := <-ch
 			if !ok {

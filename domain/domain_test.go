@@ -291,6 +291,56 @@ func TestProcessedCloneGroup_TotalTokenCount(t *testing.T) {
 	}
 }
 
+func TestProcessedCloneGroup_Validate(t *testing.T) {
+	validClone := ProcessedClone{Filename: "test.go", LineStart: 1, LineEnd: 5, TokenCount: 10}
+
+	t.Run("valid group", func(t *testing.T) {
+		g := ProcessedCloneGroup{
+			TokenCount: 20,
+			Clones:     []ProcessedClone{validClone, validClone},
+		}
+		if err := g.Validate(); err != nil {
+			t.Errorf("Validate() unexpected error: %v", err)
+		}
+	})
+
+	t.Run("empty group", func(t *testing.T) {
+		g := ProcessedCloneGroup{}
+		if err := g.Validate(); !errors.Is(err, ErrEmptyCloneGroup) {
+			t.Errorf("Validate() error = %v, want ErrEmptyCloneGroup", err)
+		}
+	})
+
+	t.Run("token count mismatch", func(t *testing.T) {
+		g := ProcessedCloneGroup{
+			TokenCount: 999, // Wrong — should be 20
+			Clones:     []ProcessedClone{validClone, validClone},
+		}
+		if err := g.Validate(); !errors.Is(err, ErrTokenCountMismatch) {
+			t.Errorf("Validate() error = %v, want ErrTokenCountMismatch", err)
+		}
+	})
+
+	t.Run("invalid clone propagates", func(t *testing.T) {
+		g := ProcessedCloneGroup{
+			TokenCount: 10,
+			Clones: []ProcessedClone{
+				validClone,
+				{Filename: "", LineStart: 1, LineEnd: 1, TokenCount: 0}, // Empty filename
+			},
+		}
+
+		err := g.Validate()
+		if err == nil {
+			t.Fatal("Validate() expected error for invalid clone, got nil")
+		}
+
+		if !errors.Is(err, ErrEmptyFilename) {
+			t.Errorf("Validate() error = %v, want ErrEmptyFilename", err)
+		}
+	})
+}
+
 func TestClonePriority_GetPriorityColor(t *testing.T) {
 	tests := []struct {
 		priority ClonePriority

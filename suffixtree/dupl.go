@@ -1,6 +1,7 @@
 package suffixtree
 
 import (
+	"context"
 	"math"
 	"slices"
 )
@@ -67,20 +68,29 @@ func (c *contextList) append(c2 *contextList) {
 }
 
 // FindDuplOver find pairs of maximal duplicities over a threshold
-// length.
-func (t *STree) FindDuplOver(threshold int) <-chan Match {
+// length. The context allows callers to cancel the walk early.
+func (t *STree) FindDuplOver(ctx context.Context, threshold int) <-chan Match {
 	auxTran := newTran(0, 0, t.root)
 	ch := make(chan Match)
 
 	go func() {
-		walkTrans(auxTran, 0, threshold, ch)
+		walkTrans(ctx, auxTran, 0, threshold, ch)
 		close(ch)
 	}()
 
 	return ch
 }
 
-func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextList {
+func walkTrans(
+	ctx context.Context,
+	parent *tran,
+	length, threshold int,
+	ch chan<- Match,
+) *contextList {
+	if ctx.Err() != nil {
+		return newContextList()
+	}
+
 	s := parent.state
 
 	cl := newContextList()
@@ -117,7 +127,7 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 		t := s.trans[k]
 		ln := length + t.len()
 
-		cl2 := walkTrans(t, ln, threshold, ch)
+		cl2 := walkTrans(ctx, t, ln, threshold, ch)
 		if ln >= threshold {
 			cl.append(cl2)
 		}
@@ -126,8 +136,11 @@ func walkTrans(parent *tran, length, threshold int, ch chan<- Match) *contextLis
 	if length >= threshold && len(cl.lists) > 1 {
 		// Safe conversion: ensure length fits in int32
 		if length <= math.MaxInt32 {
-			m := Match{cl.getAll(), Pos(length)} // #nosec G115 -- Bounds checked above
-			ch <- m
+				m := Match{cl.getAll(), Pos(length)} // #nosec G115 -- Bounds checked above
+			select {
+			case ch <- m:
+			case <-ctx.Done():
+			}
 		}
 	}
 

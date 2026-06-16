@@ -334,3 +334,27 @@ func (g ProcessedCloneGroup) TotalTokenCount() int {
 
 	return total
 }
+
+// Validate checks that the group's invariants hold:
+//   - Must have at least one clone.
+//   - Every clone must pass its own Validate().
+//   - Group TokenCount must equal the sum of clone TokenCounts.
+func (g ProcessedCloneGroup) Validate() error {
+	if len(g.Clones) == 0 {
+		return ErrEmptyCloneGroup
+	}
+
+	for i, c := range g.Clones {
+		err := c.Validate()
+		if err != nil {
+			return fmt.Errorf("clone %d: %w", i, err)
+		}
+	}
+
+	expected := g.TotalTokenCount()
+	if g.TokenCount != expected {
+		return fmt.Errorf("%w: has %d, expected %d", ErrTokenCountMismatch, g.TokenCount, expected)
+	}
+
+	return nil
+}
