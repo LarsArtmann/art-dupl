@@ -68,6 +68,8 @@ const (
 	PatternRAIIDefer        PatternLabel = "raii-defer"
 	PatternErrorPropagation PatternLabel = "error-propagation"
 	PatternInterfaceImpl    PatternLabel = "interface-implementation"
+	PatternDescribeTable    PatternLabel = "describe-table"
+	PatternBuilderCallback  PatternLabel = "builder-callback"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -112,6 +114,14 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, dom
 
 	if isDataDominated(nodeSeqs) {
 		return PatternDataDominated, domain.NonActionable
+	}
+
+	if isDescribeTablePattern(nodeSeqs) {
+		return PatternDescribeTable, domain.NonActionable
+	}
+
+	if isBuilderCallbackPattern(nodeSeqs) {
+		return PatternBuilderCallback, domain.NonActionable
 	}
 
 	return PatternNone, domain.Actionable
@@ -537,4 +547,79 @@ func countDataNodes(node *syntax.Node, total, data *int) {
 	for _, child := range node.Children {
 		countDataNodes(child, total, data)
 	}
+}
+
+// isDescribeTablePattern detects Ginkgo DescribeTable/DescribeTableEntry
+// patterns. These are framework-generated repetitive structures where each
+// Entry call shares the same body shape with different data — structurally
+// duplicated but intentionally so.
+func isDescribeTablePattern(nodeSeqs [][]*syntax.Node) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+		return containsCallTo(seq, "DescribeTable", "Entry", "FDescribeTable", "PDescribeTable")
+	})
+}
+
+// isBuilderCallbackPattern detects builder/callback patterns where the
+// dominant structure is a chain of method calls on different receiver types.
+// This indicates intentional API design (builder pattern, fluent interface)
+// rather than logic duplication.
+func isBuilderCallbackPattern(nodeSeqs [][]*syntax.Node) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+		return isChainOfCallsWithDifferentReceivers(seq)
+	})
+}
+
+// containsCallTo checks if any node in the sequence is a CallExpr that
+// calls one of the named functions (via Ident or SelectorExpr Name field).
+func containsCallTo(seq []*syntax.Node, names ...string) bool {
+	nameSet := make(map[string]bool, len(names))
+	for _, n := range names {
+		nameSet[n] = true
+	}
+
+	for _, node := range seq {
+		if baseTypeOf(node) != golang.CallExpr {
+			continue
+		}
+
+		if node.Name != "" && nameSet[node.Name] {
+			return true
+		}
+
+		for _, child := range node.Children {
+			if child.Name != "" && nameSet[child.Name] {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// isChainOfCallsWithDifferentReceivers checks if a sequence is dominated by
+// CallExpr nodes where each call targets a different receiver — indicating
+// builder pattern chains (a.WithX().WithY().Build()) rather than logic.
+func isChainOfCallsWithDifferentReceivers(seq []*syntax.Node) bool {
+	if len(seq) < 3 {
+		return false
+	}
+
+	callCount := 0
+	receiverNames := make(map[string]bool)
+
+	for _, node := range seq {
+		if baseTypeOf(node) != golang.CallExpr {
+			continue
+		}
+
+		callCount++
+
+		for _, child := range node.Children {
+			if baseTypeOf(child) == golang.SelectorExpr && child.Name != "" {
+				receiverNames[child.Name] = true
+			}
+		}
+	}
+
+	return callCount >= 3 && len(receiverNames) >= 2
 }

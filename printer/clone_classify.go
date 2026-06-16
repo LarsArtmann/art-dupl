@@ -26,6 +26,8 @@ const (
 	suggestRAIIDefer         = "RAII cleanup defer — idiomatic resource management"
 	suggestErrorPropagation  = "Error propagation — standard Go error handling pattern"
 	suggestInterfaceImpl     = "Interface method implementation — shared signature, different behavior"
+	suggestDescribeTable     = "Ginkgo DescribeTable entry — framework-generated structural repetition"
+	suggestBuilderCallback   = "Builder/callback chain — intentional fluent API design"
 )
 
 // idiomTokenThreshold is the maximum number of tokens for a clone to be
@@ -256,6 +258,13 @@ func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domai
 		cls.Priority = domain.PriorityLow
 	case PatternInterfaceImpl:
 		cls.Suggestion = suggestInterfaceImpl
+		cls.Priority = domain.PriorityLow
+	case PatternDescribeTable:
+		cls.Category = domain.CategoryTestBoilerplate
+		cls.Suggestion = suggestDescribeTable
+		cls.Priority = domain.PriorityLow
+	case PatternBuilderCallback:
+		cls.Suggestion = suggestBuilderCallback
 		cls.Priority = domain.PriorityLow
 	case PatternNone:
 		// No pattern detected — keep original classification
