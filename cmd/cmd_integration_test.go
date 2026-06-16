@@ -290,7 +290,7 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		ctx := t.Context()
 
-		duplChan, _, parseStats, filterStats, err := executeAnalysis(
+		duplChan, findingChan, parseStats, filterStats, err := executeAnalysis(
 			ctx,
 			cfg,
 			[]string{tmpDir},
@@ -303,6 +303,10 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 		matchCount := 0
 		for range duplChan {
 			matchCount++
+		}
+
+		// Drain findings to prevent goroutine leak
+		for range findingChan {
 		}
 
 		if parseStats.FilesCount < 2 {
@@ -329,13 +333,17 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		ctx := t.Context()
 
-		duplChan, _, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
+		duplChan, findingChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
 		if err != nil {
 			t.Fatalf("executeAnalysis() error = %v", err)
 		}
 
 		for range duplChan {
 			// Drain channel
+		}
+
+		// Drain findings to prevent goroutine leak
+		for range findingChan {
 		}
 	})
 }

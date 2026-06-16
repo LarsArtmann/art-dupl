@@ -121,12 +121,12 @@ func TestLineNumber_UnmarshalJSON_Zero(t *testing.T) {
 	}
 }
 
-func TestCloneSeverity_Valid(t *testing.T) {
-	for _, sev := range []CloneSeverity{
-		CloneSeverityLow,
-		CloneSeverityMedium,
-		CloneSeverityHigh,
-		CloneSeverityCritical,
+func TestClonePriority_Valid(t *testing.T) {
+	for _, sev := range []ClonePriority{
+		PriorityLow,
+		PriorityMedium,
+		PriorityHigh,
+		PriorityCritical,
 	} {
 		if !sev.IsValid() {
 			t.Errorf("%q should be valid", sev)
@@ -134,15 +134,15 @@ func TestCloneSeverity_Valid(t *testing.T) {
 	}
 }
 
-func TestCloneSeverity_Invalid(t *testing.T) {
-	sev := CloneSeverity("invalid")
+func TestClonePriority_Invalid(t *testing.T) {
+	sev := ClonePriority("invalid")
 	if sev.IsValid() {
 		t.Error("'invalid' should not be valid")
 	}
 }
 
-func TestCloneSeverity_MarshalJSON(t *testing.T) {
-	sev := CloneSeverityHigh
+func TestClonePriority_MarshalJSON(t *testing.T) {
+	sev := PriorityHigh
 
 	data, err := json.Marshal(sev)
 	if err != nil {
@@ -154,8 +154,8 @@ func TestCloneSeverity_MarshalJSON(t *testing.T) {
 	}
 }
 
-func TestCloneSeverity_MarshalJSON_Invalid(t *testing.T) {
-	sev := CloneSeverity("bad")
+func TestClonePriority_MarshalJSON_Invalid(t *testing.T) {
+	sev := ClonePriority("bad")
 
 	_, err := json.Marshal(sev)
 	if err == nil {
@@ -163,21 +163,21 @@ func TestCloneSeverity_MarshalJSON_Invalid(t *testing.T) {
 	}
 }
 
-func TestCloneSeverity_UnmarshalJSON(t *testing.T) {
-	var sev CloneSeverity
+func TestClonePriority_UnmarshalJSON(t *testing.T) {
+	var sev ClonePriority
 
 	err := json.Unmarshal([]byte(`"medium"`), &sev)
 	if err != nil {
 		t.Fatalf("UnmarshalJSON() error: %v", err)
 	}
 
-	if sev != CloneSeverityMedium {
+	if sev != PriorityMedium {
 		t.Errorf("UnmarshalJSON() = %q, want medium", sev)
 	}
 }
 
-func TestCloneSeverity_UnmarshalJSON_Invalid(t *testing.T) {
-	var sev CloneSeverity
+func TestClonePriority_UnmarshalJSON_Invalid(t *testing.T) {
+	var sev ClonePriority
 
 	err := json.Unmarshal([]byte(`"unknown"`), &sev)
 	if err == nil {

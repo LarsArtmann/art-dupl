@@ -37,7 +37,7 @@ func setDetectionMethods(appConfig *config.Config, detectionMethods string) erro
 
 // runCmd implements Cobra command execution.
 //
-//nolint:funlen,gocyclo,cyclop // Command execution requires handling many CLI flags and configuration options
+//nolint:funlen // Command execution requires handling many CLI flags and configuration options
 func runCmd(cmd *cobra.Command, args []string) error {
 	html, _ := cmd.Flags().GetBool("html")
 	jsonFlag, _ := cmd.Flags().GetBool("json")

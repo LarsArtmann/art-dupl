@@ -65,6 +65,7 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
 // runStats implements the stats command.
 //
 
+//nolint:funlen // Stats command orchestrates multiple configuration steps
 func runStats(c *cobra.Command, arguments []string) error {
 	ctx := c.Context()
 	formatStr, _ := c.Flags().GetString("format")
@@ -91,7 +92,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, _, parseStats, filterStats, err := executeAnalysis(
+	duplChan, findingChan, parseStats, filterStats, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
@@ -100,6 +101,12 @@ func runStats(c *cobra.Command, arguments []string) error {
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
+
+	// Drain findings channel to prevent goroutine leak (stats command doesn't display findings)
+	go func() {
+		for range findingChan {
+		}
+	}()
 
 	// End profiling
 	endProfile := job.EndProfile(startProfile)
