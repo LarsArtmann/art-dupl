@@ -112,6 +112,46 @@ func findIssuesGeneric[T LineExtractor](
 	})
 }
 
+// findFindingsInFile is a generic function that finds issues in files and
+// converts them to domain.Finding values via the converter function.
+// The ctx is checked on every channel send to prevent goroutine leaks.
+func findFindingsInFile[T any](
+	ctx context.Context,
+	data []*syntax.Node,
+	finder func(filePath string, nodeList []*syntax.Node) []T,
+	converter func(issue T) domain.Finding,
+) <-chan domain.Finding {
+	resultChan := make(chan domain.Finding)
+
+	go func() {
+		defer close(resultChan)
+
+		nodesByFile := make(map[string][]*syntax.Node)
+		for _, node := range data {
+			nodesByFile[node.Filename] = append(nodesByFile[node.Filename], node)
+		}
+
+		for filename, nodes := range nodesByFile {
+			issues := finder(filename, nodes)
+			for _, issue := range issues {
+				if ctx.Err() != nil {
+					return
+				}
+
+				finding := converter(issue)
+
+				select {
+				case resultChan <- finding:
+				case <-ctx.Done():
+					return
+				}
+			}
+		}
+	}()
+
+	return resultChan
+}
+
 func skipIfInvalidLineNumber(l logger.Logger, filename string, line any, err error) bool {
 	if err != nil {
 		l.Debug(

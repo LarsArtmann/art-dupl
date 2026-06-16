@@ -30,6 +30,24 @@ func (ld *LegacyDetector) FindLegacy(
 	return findIssuesGeneric(ctx, nodes, ld.findLegacyInFile, "LEGACY")
 }
 
+// FindFindings finds all legacy patterns and returns them as domain.Finding values.
+func (ld *LegacyDetector) FindFindings(
+	ctx context.Context,
+	nodes []*syntax.Node,
+) <-chan domain.Finding {
+	return findFindingsInFile(ctx, nodes, ld.findLegacyInFile, legacyIssueToFinding)
+}
+
+func legacyIssueToFinding(issue LegacyIssue) domain.Finding {
+	return domain.Finding{ //nolint:exhaustruct
+		Filename: issue.Filename,
+		Line:     issue.Line,
+		Type:     domain.FindingTypeLegacy,
+		Message:  issue.Message,
+		Priority: issue.Severity,
+	}
+}
+
 // findLegacyInFile finds legacy patterns in a specific file.
 func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node) []LegacyIssue {
 	var issues []LegacyIssue

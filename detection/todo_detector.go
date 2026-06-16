@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -35,6 +36,25 @@ func (td *TodoDetector) FindTodos(
 	data []*syntax.Node,
 ) <-chan syntax.Match {
 	return findIssuesGeneric(ctx, data, td.findTodosInFile, "TODO")
+}
+
+// FindFindings finds all TODO-style comments and returns them as domain.Finding values.
+func (td *TodoDetector) FindFindings(
+	ctx context.Context,
+	data []*syntax.Node,
+) <-chan domain.Finding {
+	return findFindingsInFile(ctx, data, td.findTodosInFile, todoIssueToFinding)
+}
+
+func todoIssueToFinding(issue TodoIssue) domain.Finding {
+	return domain.Finding{ //nolint:exhaustruct
+		Filename: issue.Filename,
+		Line:     issue.Line,
+		Type:     domain.FindingTypeTodo,
+		Message:  issue.Text,
+		Priority: domain.PriorityLow,
+		Tags:     issue.Tags,
+	}
 }
 
 // findTodosInFile parses the file and finds TODO comments.

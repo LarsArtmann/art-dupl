@@ -81,8 +81,10 @@ func (md *MultiDetector) FindDuplOver(
 	return resultChan
 }
 
-// runMultiMethodDetection runs each configured detection method sequentially,
-// streaming matches to resultChan. Respects ctx cancellation.
+// runMultiMethodDetection runs each configured clone detection method sequentially,
+// streaming matches to resultChan. Only clone-producing methods (hash, art-dupl)
+// are included — TODO and legacy detections produce domain.Finding values
+// via FindFindings, not clone matches.
 func (md *MultiDetector) runMultiMethodDetection(
 	ctx context.Context,
 	resultChan chan<- syntax.Match,
@@ -102,20 +104,44 @@ func (md *MultiDetector) runMultiMethodDetection(
 		artDuplMatches := md.tree.FindDuplOver(ctx, threshold)
 		md.processSuffixTreeMatches(ctx, artDuplMatches, resultChan, threshold)
 	}
+}
 
-	if md.detCfg.Methods.Contains(config.DetectionMethodTodos) {
-		md.logVerbose("Running TODO detection...")
+// FindFindings streams code-quality findings (TODOs, legacy patterns).
+// Unlike FindDuplOver (which returns clone matches), this returns
+// single-location issues that don't represent code duplication.
+// Call this when DetectionMethodTodos or DetectionMethodLegacy is configured.
+func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding {
+	resultChan := make(chan domain.Finding)
 
-		todoMatches := NewTodoDetector().FindTodos(ctx, md.data)
-		md.streamMatches(ctx, todoMatches, resultChan)
-	}
+	go func() {
+		defer close(resultChan)
 
-	if md.detCfg.Methods.Contains(config.DetectionMethodLegacy) {
-		md.logVerbose("Running legacy pattern detection...")
+		if md.detCfg.Methods.Contains(config.DetectionMethodTodos) {
+			md.logVerbose("Running TODO detection...")
 
-		legacyMatches := NewLegacyDetector().FindLegacy(ctx, md.data)
-		md.streamMatches(ctx, legacyMatches, resultChan)
-	}
+			for finding := range NewTodoDetector().FindFindings(ctx, md.data) {
+				select {
+				case resultChan <- finding:
+				case <-ctx.Done():
+					return
+				}
+			}
+		}
+
+		if md.detCfg.Methods.Contains(config.DetectionMethodLegacy) {
+			md.logVerbose("Running legacy pattern detection...")
+
+			for finding := range NewLegacyDetector().FindFindings(ctx, md.data) {
+				select {
+				case resultChan <- finding:
+				case <-ctx.Done():
+					return
+				}
+			}
+		}
+	}()
+
+	return resultChan
 }
 
 // streamMatches forwards matches from src to dst, checking ctx on every send.

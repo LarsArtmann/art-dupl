@@ -2,7 +2,8 @@ package domain
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/LarsArtmann/art-dupl/pkg/enum"
 )
 
 // CloneCategory represents the category of code that was duplicated.
@@ -162,28 +163,17 @@ func (a CloneActionability) String() string { return string(a) }
 
 // ParseClonePriority parses a string into a ClonePriority, returning an error if invalid.
 func ParseClonePriority(s string) (ClonePriority, error) {
-	p := ClonePriority(s)
-	if !p.IsValid() {
-		return "", fmt.Errorf("%w: %q", ErrInvalidClonePriority, s)
-	}
-
-	return p, nil
+	return enum.Parse[ClonePriority](s, ClonePriority.IsValid, ErrInvalidClonePriority)
 }
 
 // MarshalJSON implements json.Marshaler for ClonePriority.
 func (p ClonePriority) MarshalJSON() ([]byte, error) {
-	if !p.IsValid() {
-		return nil, fmt.Errorf("%w: %q", ErrInvalidClonePriority, p)
-	}
-
-	return []byte(`"` + string(p) + `"`), nil
+	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ClonePriority.
 func (p *ClonePriority) UnmarshalJSON(data []byte) error {
-	s := strings.Trim(string(data), `"`)
-
-	parsed, err := ParseClonePriority(s)
+	parsed, err := enum.UnmarshalJSON(data, ClonePriority.IsValid, ErrInvalidClonePriority)
 	if err != nil {
 		return err
 	}
@@ -195,28 +185,17 @@ func (p *ClonePriority) UnmarshalJSON(data []byte) error {
 
 // ParseCloneCategory parses a string into a CloneCategory, returning an error if invalid.
 func ParseCloneCategory(s string) (CloneCategory, error) {
-	c := CloneCategory(s)
-	if !c.IsValid() {
-		return "", fmt.Errorf("%w: %q", ErrInvalidCloneCategory, s)
-	}
-
-	return c, nil
+	return enum.Parse[CloneCategory](s, CloneCategory.IsValid, ErrInvalidCloneCategory)
 }
 
 // MarshalJSON implements json.Marshaler for CloneCategory.
 func (c CloneCategory) MarshalJSON() ([]byte, error) {
-	if !c.IsValid() {
-		return nil, fmt.Errorf("%w: %q", ErrInvalidCloneCategory, c)
-	}
-
-	return []byte(`"` + string(c) + `"`), nil
+	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCategory.
 func (c *CloneCategory) UnmarshalJSON(data []byte) error {
-	s := strings.Trim(string(data), `"`)
-
-	parsed, err := ParseCloneCategory(s)
+	parsed, err := enum.UnmarshalJSON(data, CloneCategory.IsValid, ErrInvalidCloneCategory)
 	if err != nil {
 		return err
 	}
@@ -228,28 +207,17 @@ func (c *CloneCategory) UnmarshalJSON(data []byte) error {
 
 // ParseCloneActionability parses a string into a CloneActionability, returning an error if invalid.
 func ParseCloneActionability(s string) (CloneActionability, error) {
-	a := CloneActionability(s)
-	if !a.IsValid() {
-		return "", fmt.Errorf("%w: %q", ErrInvalidCloneActionability, s)
-	}
-
-	return a, nil
+	return enum.Parse[CloneActionability](s, CloneActionability.IsValid, ErrInvalidCloneActionability)
 }
 
 // MarshalJSON implements json.Marshaler for CloneActionability.
 func (a CloneActionability) MarshalJSON() ([]byte, error) {
-	if !a.IsValid() {
-		return nil, fmt.Errorf("%w: %q", ErrInvalidCloneActionability, a)
-	}
-
-	return []byte(`"` + string(a) + `"`), nil
+	return enum.MarshalJSON(a, CloneActionability.IsValid, ErrInvalidCloneActionability)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneActionability.
 func (a *CloneActionability) UnmarshalJSON(data []byte) error {
-	s := strings.Trim(string(data), `"`)
-
-	parsed, err := ParseCloneActionability(s)
+	parsed, err := enum.UnmarshalJSON(data, CloneActionability.IsValid, ErrInvalidCloneActionability)
 	if err != nil {
 		return err
 	}

@@ -136,7 +136,7 @@ func walkTrans(
 	if length >= threshold && len(cl.lists) > 1 {
 		// Safe conversion: ensure length fits in int32
 		if length <= math.MaxInt32 {
-				m := Match{cl.getAll(), Pos(length)} // #nosec G115 -- Bounds checked above
+			m := Match{cl.getAll(), Pos(length)} // #nosec G115 -- Bounds checked above
 			select {
 			case ch <- m:
 			case <-ctx.Done():

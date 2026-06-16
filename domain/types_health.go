@@ -1,8 +1,7 @@
 package domain
 
 import (
-	"fmt"
-	"strings"
+	"github.com/LarsArtmann/art-dupl/pkg/enum"
 )
 
 // HealthScore represents an A-F grade for code health based on duplication metrics.
@@ -31,31 +30,17 @@ func (h HealthScore) String() string { return string(h) }
 
 // MarshalJSON implements json.Marshaler for HealthScore.
 func (h HealthScore) MarshalJSON() ([]byte, error) {
-	if !h.IsValid() {
-		return nil, fmt.Errorf(
-			"%w: %s (valid options: A, B, C, D, F)",
-			ErrInvalidHealthScore,
-			h,
-		)
-	}
-
-	return []byte(`"` + string(h) + `"`), nil
+	return enum.MarshalJSON(h, HealthScore.IsValid, ErrInvalidHealthScore)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for HealthScore.
 func (h *HealthScore) UnmarshalJSON(data []byte) error {
-	str := strings.Trim(string(data), `"`)
-
-	score := HealthScore(str)
-	if !score.IsValid() {
-		return fmt.Errorf(
-			"%w: %s (valid options: A, B, C, D, F)",
-			ErrInvalidHealthScore,
-			str,
-		)
+	parsed, err := enum.UnmarshalJSON(data, HealthScore.IsValid, ErrInvalidHealthScore)
+	if err != nil {
+		return err
 	}
 
-	*h = score
+	*h = parsed
 
 	return nil
 }
