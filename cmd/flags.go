@@ -100,4 +100,10 @@ func AddFlags(rootCmd *cobra.Command) {
 	// Root-only: rich text output with classification badges and priority
 	rootCmd.Flags().
 		Bool("rich-text", false, "enable enhanced text output with [PRIORITY] [category] badges and actionable suggestions")
+
+	// Root-only: test clone filtering
+	rootCmd.Flags().
+		Bool("suppress-test-low", false, "suppress low-priority clones in test files (reduces noise from test boilerplate)")
+	rootCmd.Flags().
+		Int("test-threshold", 0, "separate minimum token count for test files (0 = use regular threshold)")
 }

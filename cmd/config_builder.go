@@ -108,6 +108,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"semantic":             &cfg.Semantic,
 		"rich-text":            &cfg.RichText,
 		"clear-cache":          &cfg.ClearCache,
+		"suppress-test-low":    &cfg.SuppressTestLow,
 	}
 
 	for flagName, configPtr := range mappings {
@@ -128,6 +129,11 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 	if cmd.Flags().Changed("workers") {
 		val, _ := cmd.Flags().GetInt("workers")
 		cfg.Workers = val
+	}
+
+	if cmd.Flags().Changed("test-threshold") {
+		val, _ := cmd.Flags().GetInt("test-threshold")
+		cfg.TestThreshold = val
 	}
 }
 

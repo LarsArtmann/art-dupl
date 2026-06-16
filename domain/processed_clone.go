@@ -168,14 +168,14 @@ func ParseClonePriority(s string) (ClonePriority, error) {
 
 // MarshalJSON implements json.Marshaler for ClonePriority.
 func (p ClonePriority) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority)
+	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority) //nolint:wrapcheck
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ClonePriority.
 func (p *ClonePriority) UnmarshalJSON(data []byte) error {
 	parsed, err := enum.UnmarshalJSON(data, ClonePriority.IsValid, ErrInvalidClonePriority)
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // domain sentinel passed through
 	}
 
 	*p = parsed
@@ -190,14 +190,14 @@ func ParseCloneCategory(s string) (CloneCategory, error) {
 
 // MarshalJSON implements json.Marshaler for CloneCategory.
 func (c CloneCategory) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory)
+	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory) //nolint:wrapcheck
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCategory.
 func (c *CloneCategory) UnmarshalJSON(data []byte) error {
 	parsed, err := enum.UnmarshalJSON(data, CloneCategory.IsValid, ErrInvalidCloneCategory)
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // domain sentinel passed through
 	}
 
 	*c = parsed
@@ -212,14 +212,14 @@ func ParseCloneActionability(s string) (CloneActionability, error) {
 
 // MarshalJSON implements json.Marshaler for CloneActionability.
 func (a CloneActionability) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(a, CloneActionability.IsValid, ErrInvalidCloneActionability)
+	return enum.MarshalJSON(a, CloneActionability.IsValid, ErrInvalidCloneActionability) //nolint:wrapcheck
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneActionability.
 func (a *CloneActionability) UnmarshalJSON(data []byte) error {
 	parsed, err := enum.UnmarshalJSON(data, CloneActionability.IsValid, ErrInvalidCloneActionability)
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // domain sentinel passed through
 	}
 
 	*a = parsed

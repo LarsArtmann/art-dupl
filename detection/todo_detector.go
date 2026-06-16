@@ -47,7 +47,7 @@ func (td *TodoDetector) FindFindings(
 }
 
 func todoIssueToFinding(issue TodoIssue) domain.Finding {
-	return domain.Finding{ //nolint:exhaustruct
+	return domain.Finding{
 		Filename: issue.Filename,
 		Line:     issue.Line,
 		Type:     domain.FindingTypeTodo,

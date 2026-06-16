@@ -146,6 +146,15 @@ type Config struct {
 	// RichText enables enhanced text output with classification badges,
 	// priority indicators, and actionable suggestions.
 	RichText bool `json:"richText,omitempty"`
+
+	// SuppressTestLow suppresses test-file clones classified as low priority.
+	// Reduces noise from test boilerplate without hiding production issues.
+	SuppressTestLow bool `json:"suppressTestLow,omitempty"`
+
+	// TestThreshold sets a separate minimum token count for test files.
+	// When 0, the regular Threshold is used for all files.
+	// Useful when test files generate more structural noise than production code.
+	TestThreshold int `json:"testThreshold,omitempty"`
 }
 
 // DefaultThreshold is the default minimum token sequence size for clone detection.
@@ -185,5 +194,7 @@ func DefaultConfig() *Config {
 		Workers:            0,
 		DiffMode:           DiffModeDisabled,
 		RichText:           false,
+		SuppressTestLow:    false,
+		TestThreshold:      0,
 	}
 }

@@ -30,14 +30,14 @@ func (h HealthScore) String() string { return string(h) }
 
 // MarshalJSON implements json.Marshaler for HealthScore.
 func (h HealthScore) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(h, HealthScore.IsValid, ErrInvalidHealthScore)
+	return enum.MarshalJSON(h, HealthScore.IsValid, ErrInvalidHealthScore) //nolint:wrapcheck
 }
 
 // UnmarshalJSON implements json.Unmarshaler for HealthScore.
 func (h *HealthScore) UnmarshalJSON(data []byte) error {
 	parsed, err := enum.UnmarshalJSON(data, HealthScore.IsValid, ErrInvalidHealthScore)
 	if err != nil {
-		return err
+		return err //nolint:wrapcheck // domain sentinel passed through
 	}
 
 	*h = parsed
