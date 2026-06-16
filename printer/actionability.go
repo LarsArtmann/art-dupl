@@ -564,9 +564,7 @@ func isDescribeTablePattern(nodeSeqs [][]*syntax.Node) bool {
 // This indicates intentional API design (builder pattern, fluent interface)
 // rather than logic duplication.
 func isBuilderCallbackPattern(nodeSeqs [][]*syntax.Node) bool {
-	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
-		return isChainOfCallsWithDifferentReceivers(seq)
-	})
+	return everySequenceMatch(nodeSeqs, isChainOfCallsWithDifferentReceivers)
 }
 
 // containsCallTo checks if any node in the sequence is a CallExpr that

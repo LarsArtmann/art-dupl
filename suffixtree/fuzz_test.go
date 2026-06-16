@@ -40,6 +40,7 @@ func FuzzFindDuplOver(f *testing.F) {
 			count++
 			if count > 10000 {
 				cancel()
+
 				break
 			}
 		}
@@ -62,10 +63,12 @@ func FuzzFindDuplOverCancellation(f *testing.F) {
 		}
 
 		tree := New()
+
 		tokens := make([]Token, len(data))
 		for i, b := range data {
 			tokens[i] = simpleToken(TokenValue(b + 1)) // +1 to avoid zero
 		}
+
 		tree.Update(tokens...)
 
 		ctx, cancel := context.WithCancel(context.Background())

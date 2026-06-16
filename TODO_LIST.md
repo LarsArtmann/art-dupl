@@ -10,71 +10,30 @@ Actionable items planned for the next 2-4 weeks.
 
 ### Architecture (Multi-session refactors — deferred)
 
-- [ ] Activate `MethodDetector` interface for polymorphic dispatch (interface updated with ctx, needs adapter implementations)
-- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals
-- [ ] Consolidate four parallel Clone types (printer.clone, pkg/artdupl.Clone, printer.CloneGroup, domain.ProcessedClone)
+- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node)
+- [ ] Consolidate three parallel Clone types (printer.CloneGroup, pkg/artdupl.Clone, domain.ProcessedClone)
 - [ ] Split `printer/` into sub-packages (stats, html, analyze) — 50 files is too many for one package
+- [ ] Type-strengthen ProcessedClone: Filename string → domain.Filepath, LineStart/LineEnd int → domain.LineNumber (~25 consumer sites)
 
-### Correctness
+### Architecturally Constrained
 
-- [ ] Fix SDK `FindClonesStream` error handling — `FindClonesStreamResult` added, old method still swallows errors for backward compat
-
-### Type Safety
-
-- [x] ~~Collapse `CloneSeverity`/`ClonePriority` into one type~~ ✅ Done
-- [x] ~~Add JSON validation to CloneCategory, ClonePriority, CloneActionability~~ ✅ Done
-- [x] ~~Wire `Actionability` field in `CloneClassification`~~ ✅ Done
-- [x] ~~Break SDK type aliases~~ ✅ Done
+- [ ] Hide `syntax/golang` behind facade — **BLOCKED** by import cycle (syntax/golang imports syntax for Node type)
 
 ---
 
 ## 🟡 MEDIUM Priority
 
-### Safety
-
-- [x] ~~Add `context.Context` to MultiDetector goroutines~~ ✅ Done
-- [x] ~~Document detector thread-safety contract~~ ✅ Done
-- [x] ~~Remove dead `Patterns`/`Imports` fields in `LegacyPattern` struct~~ ✅ Done
-- [x] ~~Fix `issue_helpers.go:82`~~ ✅ Done
-
 ### UX
 
-- [x] ~~Fix HealthScore legend vs formula mismatch~~ ✅ Done
-- [x] ~~Add `ClonePriority.Rank()` to domain~~ ✅ Done
-- [ ] Add `--suppress-test-low` flag for blanket suppression of test-only low-priority clones
-- [ ] Separate test/production threshold support
-
-### Architecture
-
-- [ ] Hide `syntax/golang` and `syntax/templ` behind `syntax` facade (4 packages import sub-packages directly)
-- [ ] Unify enum patterns: domain enums should use config's generic helpers
-- [ ] Implement string interning for duplicate identifier names
-- [x] ~~Fix `.go-arch-lint.yml` sdk/pkg-utils glob overlap~~ ✅ Done
-
----
-
-## 🟢 LOW Priority
+- [ ] Add fuzz tests for templ parser edge cases
+- [ ] Wire InternFilename into node creation in transform functions
 
 ### Code Quality
 
 - [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
-- [ ] Refactor `printer/actionability.go` (552L — partially done)
-- [ ] Fix remaining LSP hints: unused params, unnecessary type args in tests
-- [x] ~~Extract `validateLocation` helper~~ ✅ Done
-- [x] ~~Fix `todo_detector.go:43` silent parse error~~ ✅ Done
-
-### Features
-
-- [ ] Add fuzz tests for templ parser edge cases
-- [ ] Add property-based/fuzz tests for suffix tree invariants
-- [ ] Add Ginkgo `DescribeTable` lambda detection pattern
-- [ ] Add builder/callback pattern detection (`makeFix`/builder)
-- [ ] Implement hybrid slice/map transition storage for small transition counts
-
-### Documentation
-
-- [x] ~~Create ADR for actionability pattern detection system~~ ✅ Done (ADR-0004)
-- [x] ~~Document detection method help text~~ ✅ Done
+- [ ] Refactor `printer/actionability.go` (600L — partially done, patterns extracted)
+- [ ] Fix remaining LSP hints: unused params, unnecessary type args
+- [ ] Implement hybrid slice/map transition storage for small transition counts (deferred — map already O(1))
 
 ---
 
@@ -98,20 +57,31 @@ Actionable items planned for the next 2-4 weeks.
 
 - [x] Add StreamResult type for streaming error propagation
 - [x] Add FindClonesStreamResult to Detector interface
+- [x] Deprecate FindClonesStream (delegates to FindClonesStreamResult)
 - [x] Add MarshalJSON/UnmarshalJSON for 3 domain enums
 - [x] Add Parse constructors for 3 domain enums
 - [x] Collapse CloneSeverity into ClonePriority
 - [x] Migrate LegacyIssue.Severity to ClonePriority
 - [x] Fix HealthScore legend
+- [x] Extract shared pkg/enum package, unify domain enums
+- [x] Add context.Context to suffixtree FindDuplOver
+- [x] Break SDK type aliases (DetectionMethod, Logger)
 
 ### Tier 3: Features & Code Quality
 
 - [x] Add context.Context to all detectors (goroutine leak prevention)
-- [x] Break SDK type aliases (DetectionMethod, Logger)
 - [x] Wire Actionability defaults in ClassifyClone
 - [x] Extract everySequenceMatch helper
 - [x] Extract validateLocation helper
 - [x] Create ADR-0004
+- [x] Activate MethodDetector interface with adapter implementations
+- [x] Route TODO/legacy detections via domain.Finding + FindFindings pipeline
+- [x] Add --suppress-test-low and --test-threshold flags
+- [x] Add DescribeTable and builder/callback detection patterns
+- [x] Add string interning (InternFilename)
+- [x] Add fuzz tests for suffix tree
+- [x] Move test constants to test files
+- [x] Fix issue_helpers.go Frags filter
 
 ## ✅ Previously Completed (2026-06-15)
 
