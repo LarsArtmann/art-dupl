@@ -39,10 +39,11 @@ syntax/     AST handling (golang/ + templ/)
 hash/       Rolling hash-based detection
 job/        Orchestrates parse → serialize → build tree
 printer/    Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
-domain/     Value objects (Filepath, LineNumber, CloneSeverity)
+domain/     Value objects (Filepath, LineNumber, Finding, ProcessedClone)
 errors/     11 typed error types, stack traces, JSON marshaling
 cache/      File-based AST caching with SHA1 content hashing
-pkg/artdupl/ Public SDK (Detector interface)
+pkg/artdupl/ Public SDK (Detector interface) — independent types, no config aliases
+pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 ```
 
 ## Critical Conventions
@@ -58,6 +59,10 @@ pkg/artdupl/ Public SDK (Detector interface)
 - **Errors** use typed hierarchy from `errors/` package. Wrap with `duplerrors.Wrap*`. No panics for expected errors.
 - **Config merging** is reflection-based — adding Config fields requires no merge code changes.
 - **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers: `NewBDDTestSetupForGinkgo()`, `RunArtDupl()`, `CreateDuplicateFiles()`, `RunArtDuplOnDir()`, `RunArtDuplWithStdin()` — all in `internal/testutil/bdd.go`.
+- **SDK type independence**: `pkg/artdupl` defines its own `DetectionMethod` and `Logger` types (not aliases). Conversion to internal `config.*` types happens at the SDK boundary via `toConfigDetection*` helpers. `ValidateOptions` uses SDK's own `IsValid()`, not config delegation.
+- **Finding pipeline**: TODO/Legacy detections produce `domain.Finding` values via `MultiDetector.FindFindings(ctx)`, NOT clone matches. Clone detections (hash, art-dupl) produce `syntax.Match` via `FindDuplOver(ctx, threshold)`. The two pipelines are separate — issues are single-location annotations, clones are AST fragment duplications.
+- **Context propagation**: All detection goroutines accept and check `context.Context`. `MultiDetector.FindDuplOver`, `FindTodos`, `FindLegacy`, `findIssuesInFile`, and `suffixtree.STree.FindDuplOver` all respect ctx cancellation via `select{case ch<-v: case <-ctx.Done(): return}`.
+- **Enum pattern**: Domain enums use `pkg/enum` shared helpers (`MarshalJSON`, `UnmarshalJSON`, `Parse`). Each enum has `IsValid()` and `String()`. ClonePriority has `Rank()` for ordinal comparison.
 
 ## Nix Flake — Private Dependency Pattern
 
@@ -71,7 +76,7 @@ pkg/artdupl/ Public SDK (Detector interface)
 
 ## Known Limitations
 
-- **Printer ↔ syntax.Node coupling**: Printer interface uses `domain.ProcessedCloneGroup`, but internal code (`actionability.go`, `common.go`) still imports `syntax.Node` directly. `clone_processor.go` is the bridge point. Further decoupling needed for `actionability.go` pattern evaluation.
-- **Three parallel Clone types**: `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO), `domain.ProcessedClone` (canonical internal DTO). `printer.clone` dead type was removed. Consolidation of remaining three blocked on Printer/SDK DTO design.
+- **Printer ↔ syntax.Node coupling**: Printer interface uses `domain.ProcessedCloneGroup`, but `actionability.go` still imports `syntax.Node` directly for pattern evaluation. `clone_processor.go` is the bridge point. The `everySequenceMatch` helper was extracted to reduce duplication.
+- **Three parallel Clone types**: `printer.CloneGroup` (JSON DTO), `pkg/artdupl.Clone` (SDK DTO), `domain.ProcessedClone` (canonical internal DTO). Consolidation of remaining three blocked on Printer/SDK DTO design.
 - **ConstantCSSProperty Pos=0,End=0**: upstream `a-h/templ` limitation (no Range field). Mitigated by inheriting parent CSSTemplate range.
 - **Templ has no semantic mode**: `syntax/templ/` matching is purely structural — no identifier/operator encoding.

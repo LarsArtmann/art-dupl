@@ -25,7 +25,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
-	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -51,68 +50,38 @@ func NewMultiDetector(
 	}
 }
 
-// FindDuplOver runs all configured detection methods and streams matches.
+// FindDuplOver runs all configured clone detection methods and streams matches.
 // The ctx is checked on every channel send — if cancelled, the goroutine
 // exits early to prevent goroutine leaks.
+//
+// Issue detections (TODO, legacy) are not included here — they produce
+// domain.Finding values via FindFindings, not clone matches.
 func (md *MultiDetector) FindDuplOver(
 	ctx context.Context,
 	threshold int,
 ) <-chan syntax.Match {
-	if md.detCfg.Methods.IsDefault() {
-		resultChan := make(chan syntax.Match)
-
-		go func() {
-			defer close(resultChan)
-
-			suffixMatches := md.tree.FindDuplOver(ctx, threshold)
-			md.processSuffixTreeMatches(ctx, suffixMatches, resultChan, threshold)
-		}()
-
-		return resultChan
-	}
+	detectors := md.buildCloneDetectors()
 
 	resultChan := make(chan syntax.Match)
 
 	go func() {
 		defer close(resultChan)
 
-		md.runMultiMethodDetection(ctx, resultChan, threshold)
+		for _, det := range detectors {
+			md.logVerbose("Running " + detName(det) + "...")
+
+			md.streamMatches(ctx, det.FindDuplOver(ctx, threshold), resultChan)
+		}
 	}()
 
 	return resultChan
 }
 
-// runMultiMethodDetection runs each configured clone detection method sequentially,
-// streaming matches to resultChan. Only clone-producing methods (hash, art-dupl)
-// are included — TODO and legacy detections produce domain.Finding values
-// via FindFindings, not clone matches.
-func (md *MultiDetector) runMultiMethodDetection(
-	ctx context.Context,
-	resultChan chan<- syntax.Match,
-	threshold int,
-) {
-	if md.detCfg.Methods.Contains(config.DetectionMethodHash) {
-		md.logVerbose("Running hash-based detection...")
-
-		hashDetector := hash.NewFileDetector(threshold)
-		hashMatches := hashDetector.FindDuplOver(md.data, threshold)
-		md.streamMatches(ctx, hashMatches, resultChan)
-	}
-
-	if md.detCfg.Methods.Contains(config.DetectionMethodArtDupl) {
-		md.logVerbose("Running suffix tree-based detection...")
-
-		artDuplMatches := md.tree.FindDuplOver(ctx, threshold)
-		md.processSuffixTreeMatches(ctx, artDuplMatches, resultChan, threshold)
-	}
-}
-
-// FindFindings streams code-quality findings (TODOs, legacy patterns).
-// Unlike FindDuplOver (which returns clone matches), this returns
-// single-location issues that don't represent code duplication.
-// Call this when DetectionMethodTodos or DetectionMethodLegacy is configured.
+// FindFindings runs all configured issue detection methods (TODO, legacy)
+// and streams domain.Finding values. This is the output path for code-quality
+// findings that are not code clones.
 func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding {
-	resultChan := make(chan domain.Finding)
+	resultChan := make(chan domain.Finding, 10)
 
 	go func() {
 		defer close(resultChan)
@@ -121,6 +90,10 @@ func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding
 			md.logVerbose("Running TODO detection...")
 
 			for finding := range NewTodoDetector().FindFindings(ctx, md.data) {
+				if ctx.Err() != nil {
+					return
+				}
+
 				select {
 				case resultChan <- finding:
 				case <-ctx.Done():
@@ -133,6 +106,10 @@ func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding
 			md.logVerbose("Running legacy pattern detection...")
 
 			for finding := range NewLegacyDetector().FindFindings(ctx, md.data) {
+				if ctx.Err() != nil {
+					return
+				}
+
 				select {
 				case resultChan <- finding:
 				case <-ctx.Done():
@@ -143,6 +120,26 @@ func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding
 	}()
 
 	return resultChan
+}
+
+// hasNonEmptyFrag returns true if frags contains at least one non-empty
+// node sequence. This prevents matches with empty inner slices (e.g.
+// [][]*Node{{}}) from passing the guard.
+func hasNonEmptyFrag(frags [][]*syntax.Node) bool {
+	for _, frag := range frags {
+		if len(frag) > 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
+// logVerbose prints verbose output if enabled.
+func (md *MultiDetector) logVerbose(message string) {
+	if md.detCfg.Verbose {
+		logger.Default.Info(message)
+	}
 }
 
 // streamMatches forwards matches from src to dst, checking ctx on every send.
@@ -167,46 +164,14 @@ func (md *MultiDetector) streamMatches(
 	}
 }
 
-// hasNonEmptyFrag returns true if frags contains at least one non-empty
-// node sequence. This prevents matches with empty inner slices (e.g.
-// [][]*Node{{}}) from passing the guard.
-func hasNonEmptyFrag(frags [][]*syntax.Node) bool {
-	for _, frag := range frags {
-		if len(frag) > 0 {
-			return true
-		}
-	}
-
-	return false
-}
-
-// logVerbose prints verbose output if enabled.
-func (md *MultiDetector) logVerbose(message string) {
-	if md.detCfg.Verbose {
-		logger.Default.Info(message)
-	}
-}
-
-// processSuffixTreeMatches converts suffix tree matches to syntax matches
-// and sends them to the result channel. Respects ctx cancellation.
-func (md *MultiDetector) processSuffixTreeMatches(
-	ctx context.Context,
-	matches <-chan suffixtree.Match,
-	resultChan chan<- syntax.Match,
-	threshold int,
-) {
-	for match := range matches {
-		if ctx.Err() != nil {
-			return
-		}
-
-		syntaxMatch := syntax.FindSyntaxUnits(md.data, match, threshold)
-		if hasNonEmptyFrag(syntaxMatch.Frags) {
-			select {
-			case resultChan <- syntaxMatch:
-			case <-ctx.Done():
-				return
-			}
-		}
+// detName returns a human-readable name for a MethodDetector.
+func detName(det MethodDetector) string {
+	switch det.(type) {
+	case *suffixTreeAdapter:
+		return "suffix tree-based detection"
+	case *hashAdapter:
+		return "hash-based detection"
+	default:
+		return "detection"
 	}
 }
