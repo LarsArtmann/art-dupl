@@ -126,7 +126,7 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, dom
 // match and the body is empty (or has only boilerplate), deduplication is
 // impossible without changing the interface.
 func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
-	for _, seq := range nodeSeqs {
+	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
 		if len(seq) != 1 {
 			return false
 		}
@@ -136,15 +136,8 @@ func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
 			return false
 		}
 
-		// A FuncDecl with a real body has a BlockStmt child that has children.
-		// If the body is empty (no children), or if there are very few children
-		// (just receiver + name + type), it's a signature-only implementation.
-		if hasRealBody(root) {
-			return false
-		}
-	}
-
-	return true
+		return !hasRealBody(root)
+	})
 }
 
 // hasRealBody checks if a FuncDecl contains a body with meaningful logic
@@ -209,7 +202,7 @@ func isInterfaceImplementation(nodeSeqs [][]*syntax.Node) bool {
 // `defer mu.Unlock()` from `defer processOrder()` — the former is
 // idiomatic RAII cleanup (non-actionable), the latter is real duplication.
 func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
-	for _, seq := range nodeSeqs {
+	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
 		if len(seq) != 1 {
 			return false
 		}
@@ -218,12 +211,8 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 			return false
 		}
 
-		if !isRAIIDeferCall(seq[0]) {
-			return false
-		}
-	}
-
-	return true
+		return isRAIIDeferCall(seq[0])
+	})
 }
 
 // isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
@@ -254,7 +243,7 @@ func isCleanupMethod(name string) bool {
 // isPureErrorPropagation reports whether every clone is an IfStmt
 // that only contains error propagation: if err != nil { return err }.
 func isPureErrorPropagation(nodeSeqs [][]*syntax.Node) bool {
-	for _, seq := range nodeSeqs {
+	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
 		if len(seq) != 1 {
 			return false
 		}
@@ -264,12 +253,8 @@ func isPureErrorPropagation(nodeSeqs [][]*syntax.Node) bool {
 			return false
 		}
 
-		if !isErrorOnlyIf(root) {
-			return false
-		}
-	}
-
-	return true
+		return isErrorOnlyIf(root)
+	})
 }
 
 // isErrorOnlyIf checks if an IfStmt is a pure error propagation pattern.
