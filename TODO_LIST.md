@@ -8,7 +8,7 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🔴 HIGH Priority
 
-### Architecture (Multi-session refactors — deferred)
+### Architecture (Multi-session refactors — deferred with rationale)
 
 - [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node)
 - [ ] Consolidate three parallel Clone types (printer.CloneGroup, pkg/artdupl.Clone, domain.ProcessedClone)
@@ -23,19 +23,37 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🟡 MEDIUM Priority
 
-### UX
+### Code Quality
 
-- [ ] Add fuzz tests for templ parser edge cases
-- [ ] Wire InternFilename into node creation in transform functions
+- [ ] Refactor `printer/actionability.go` (623L — patterns extracted, file still large; consider splitting pattern detection functions into sub-files by category: test-patterns, defer-patterns, data-patterns)
+- [ ] Implement hybrid slice/map transition storage for small transition counts (deferred — map already O(1))
+
+### Assessed — No Action Needed
+
+- [x] ~~Refactor `syntax/golang/transform.go` (370L, 49-case switch)~~ — Switch is inherent to Go AST type dispatch. Already has `//nolint:funlen,maintidx,nonamedreturns,gocognit`. Extracting cases to methods would reduce readability.
+- [x] ~~Fix remaining LSP hints~~ — All golangci-lint issues resolved (0 issues). LSP/gopls shows stale diagnostics; always trust `golangci-lint run` over IDE.
+
+---
+
+## ✅ Completed (2026-06-16) — Findings Pipeline + Code Quality Sprint
+
+### Critical Feature
+
+- [x] Wire FindFindings through CLI output pipeline (was implemented but never called — users got zero output for `--detection-methods todos`)
+- [x] Add PrintFindings method to Printer interface (text, JSON, plumbing, HTML, SARIF, stats)
+- [x] Modify executeAnalysis to return `<-chan domain.Finding` alongside clone channel
+- [x] Wire findings output in runCmd and runAllModes
+- [x] Fix goroutine deadlock: use select on channel sends for context cancellation
+- [x] Add JSON output support for findings (JSONOutput.Findings field)
+- [x] Add SARIF output support for findings (converts to SARIFResult with findingLevel)
 
 ### Code Quality
 
-- [ ] Refactor `syntax/golang/transform.go` (369L, 300L switch statement)
-- [ ] Refactor `printer/actionability.go` (600L — partially done, patterns extracted)
-- [ ] Fix remaining LSP hints: unused params, unnecessary type args
-- [ ] Implement hybrid slice/map transition storage for small transition counts (deferred — map already O(1))
-
----
+- [x] Wire InternFilename into all 4 transformer construction sites (golang parse, templ parse, NewSyntheticFileNode, incremental cache-hit path)
+- [x] Fix forcetypeassert in intern.go (replaced sync.Map with RWMutex+map for type safety)
+- [x] Add fuzz tests for templ parser (FuzzParseBytes — 2M+ execs, no panics)
+- [x] Extract spawnCloneDetection and spawnFindingDetection helpers from executeAnalysis
+- [x] All lint issues resolved (0 golangci-lint issues)
 
 ## ✅ Completed (2026-06-16) — Full TODO Sprint
 

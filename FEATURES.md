@@ -25,8 +25,8 @@
 | **Suffix Tree Detection (art-dupl)** | FULLY_FUNCTIONAL | Ukkonen's algorithm on serialized ASTs, O(1) map-based transitions      |
 | **Hash-Based Detection**             | FULLY_FUNCTIONAL | XXH3 streaming hash (~20x faster than SHA-256), content-addressed dedup |
 | **Multi-Detection Mode**             | FULLY_FUNCTIONAL | Run both methods simultaneously via goroutines, results deduplicated    |
-| **TODO/FIXME Detection**             | FULLY_FUNCTIONAL | `TodoDetector` wired through MultiDetector, `MethodTodos` selects it    |
-| **Legacy Pattern Detection**         | FULLY_FUNCTIONAL | `LegacyDetector` wired through MultiDetector, `MethodLegacy` selects it |
+| **TODO/FIXME Detection**             | FULLY_FUNCTIONAL | `TodoDetector` → `FindFindings` → `PrintFindings` in all output formats |
+| **Legacy Pattern Detection**         | FULLY_FUNCTIONAL | `LegacyDetector` → `FindFindings` → `PrintFindings` in all output formats |
 
 ### Output Formats
 
@@ -34,10 +34,10 @@
 | ---------------------- | ---------------- | ---------------------------------------------------------------------- |
 | **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints |
 | **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization      |
-| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary         |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, findings, summary |
 | **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count      |
 | **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD             |
-| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security / CodeQL integration          |
+| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, includes findings as results  |
 | **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting          |
 
 ### Batch & Report Generation
