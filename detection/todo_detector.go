@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -39,8 +38,6 @@ func (td *TodoDetector) FindTodos(
 }
 
 // findTodosInFile parses the file and finds TODO comments.
-//
-//nolint:gocognit // TODO parsing requires handling multiple comment formats and pattern matching
 func (td *TodoDetector) findTodosInFile(path string, astNodes []*syntax.Node) []TodoIssue {
 	fset := token.NewFileSet()
 
@@ -79,15 +76,8 @@ func (td *TodoDetector) findTodosInFile(path string, astNodes []*syntax.Node) []
 						todoText = strings.TrimSpace(matches[2])
 					}
 
-					lineNum, err := domain.NewLineNumber(
-						uint16(line),
-					) // #nosec G115 -- Line numbers from parser are within uint16 range
-					if skipIfInvalidLineNumber(logger.Default, path, line, err) {
-						continue
-					}
-
-					fp, err := domain.NewFilepath(path)
-					if skipIfInvalidFilepath(logger.Default, path, err) {
+					lineNum, fp, ok := validateLocation(logger.Default, path, line)
+					if !ok {
 						continue
 					}
 

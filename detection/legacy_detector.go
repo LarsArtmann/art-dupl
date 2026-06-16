@@ -38,15 +38,8 @@ func (ld *LegacyDetector) findLegacyInFile(filename string, nodes []*syntax.Node
 		for _, pattern := range ld.patterns {
 			for _, funcName := range pattern.Functions {
 				if nodeContainsFunctionCall(node, funcName) {
-					lineNum, err := domain.NewLineNumber(
-						uint16(node.Pos),
-					) // #nosec G115 -- Node positions are within uint16 range
-					if skipIfInvalidLineNumber(logger.Default, filename, node.Pos, err) {
-						continue
-					}
-
-					file, err := domain.NewFilepath(filename)
-					if skipIfInvalidFilepath(logger.Default, filename, err) {
+					lineNum, file, ok := validateLocation(logger.Default, filename, int(node.Pos))
+					if !ok {
 						continue
 					}
 

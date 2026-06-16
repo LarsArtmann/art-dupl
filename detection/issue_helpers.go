@@ -140,3 +140,23 @@ func skipIfInvalidFilepath(l logger.Logger, filename string, err error) bool {
 
 	return false
 }
+
+// validateLocation validates and returns a LineNumber and Filepath pair.
+// Returns ok=false if either validation fails (the caller should `continue`).
+func validateLocation(
+	l logger.Logger,
+	filename string,
+	line int,
+) (domain.LineNumber, domain.Filepath, bool) {
+	lineNum, err := domain.NewLineNumber(uint16(line)) // #nosec G115 -- positions within uint16 range
+	if skipIfInvalidLineNumber(l, filename, line, err) {
+		return 0, "", false
+	}
+
+	fp, err := domain.NewFilepath(filename)
+	if skipIfInvalidFilepath(l, filename, err) {
+		return 0, "", false
+	}
+
+	return lineNum, fp, true
+}

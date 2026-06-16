@@ -24,6 +24,24 @@ func baseTypeOf(n *syntax.Node) int32 {
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
 //
+// everySequenceMatch returns true if pred returns true for every sequence.
+// Used by actionability checks that require ALL clones to match a pattern.
+func everySequenceMatch(
+	nodeSeqs [][]*syntax.Node,
+	pred func(seq []*syntax.Node) bool,
+) bool {
+	for _, seq := range nodeSeqs {
+		if !pred(seq) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// EvaluateActionability analyzes a clone group and determines whether it
+// represents actionable duplication or idiomatic boilerplate noise.
+//
 // A group is actionable when it contains real logic that can be extracted,
 // composed, or otherwise refactored. Non-actionable patterns are standard
 // Go idioms that cannot be eliminated without breaking semantics.
@@ -419,13 +437,7 @@ func isTestScaffolding(nodeSeqs [][]*syntax.Node) bool {
 		return false
 	}
 
-	for _, seq := range nodeSeqs {
-		if !isTestScaffoldingSequence(seq) {
-			return false
-		}
-	}
-
-	return true
+	return everySequenceMatch(nodeSeqs, isTestScaffoldingSequence)
 }
 
 // isTestScaffoldingSequence checks a single clone sequence for the
@@ -503,13 +515,7 @@ func isDataDominated(nodeSeqs [][]*syntax.Node) bool {
 		return false
 	}
 
-	for _, seq := range nodeSeqs {
-		if !isSequenceDataDominated(seq) {
-			return false
-		}
-	}
-
-	return true
+	return everySequenceMatch(nodeSeqs, isSequenceDataDominated)
 }
 
 const dataDominanceRatio = 0.6
