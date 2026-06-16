@@ -304,6 +304,7 @@ func TestWriteFormatFile(t *testing.T) {
 			t.Context(),
 			cfg,
 			matches,
+			nil,
 			parseStats,
 			format,
 			filename,

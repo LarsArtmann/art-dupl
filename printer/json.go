@@ -13,13 +13,14 @@ import (
 )
 
 type JSONOutput struct {
-	Version         string       `json:"version"`
-	Timestamp       time.Time    `json:"timestamp"`
-	Threshold       int          `json:"threshold"`
-	FilesAnalyzed   int          `json:"files_analyzed"`
-	DetectionMethod string       `json:"detection_method,omitempty"`
-	CloneGroups     []CloneGroup `json:"clone_groups"`
-	Summary         Summary      `json:"summary"`
+	Version         string           `json:"version"`
+	Timestamp       time.Time        `json:"timestamp"`
+	Threshold       int              `json:"threshold"`
+	FilesAnalyzed   int              `json:"files_analyzed"`
+	DetectionMethod string           `json:"detection_method,omitempty"`
+	CloneGroups     []CloneGroup     `json:"clone_groups"`
+	Findings        []domain.Finding `json:"findings,omitempty"`
+	Summary         Summary          `json:"summary"`
 }
 
 type CloneGroup struct {
@@ -74,6 +75,7 @@ type JSONPrinter struct {
 	totalClones int
 	cloneGroups []CloneGroup
 	currentHash string
+	findings    []domain.Finding
 }
 
 func NewJSON(w io.Writer, fread ReadFile) Printer {
@@ -162,6 +164,7 @@ func (p *JSONPrinter) OutputJSON(
 		Threshold:     threshold,
 		FilesAnalyzed: p.filesCount,
 		CloneGroups:   p.cloneGroups,
+		Findings:      p.findings,
 		Summary: Summary{
 			TotalCloneGroups: len(p.cloneGroups),
 			TotalClones:      p.totalClones,

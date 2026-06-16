@@ -40,7 +40,7 @@ func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, i
 
 	t := &transformer{
 		fileset:  fset,
-		filename: filename,
+		filename: syntax.InternFilename(filename),
 		config:   cfg,
 	}
 	lineCount := fset.File(file.Pos()).LineCount()

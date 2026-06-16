@@ -8,6 +8,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
+	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
@@ -278,17 +279,17 @@ func executeAnalysis(
 	cfg *config.Config,
 	paths []string,
 	outputFormat config.OutputFormat,
-) (chan syntax.Match, job.ParseStats, *FilterStats, error) {
+) (chan syntax.Match, <-chan domain.Finding, job.ParseStats, *FilterStats, error) {
 	err := validatePaths(paths, cfg.FilesFromStdin)
 	if err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.WrapValidation(err, "path validation failed")
+		return nil, nil, job.ParseStats{}, nil, duplerrors.WrapValidation(err, "path validation failed")
 	}
 
 	startProfile := startProfiling(cfg)
 
 	filterParam, err := setupFilter(cfg)
 	if err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
+		return nil, nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf("failed to setup filter (outputFormat: %s)", outputFormat),
@@ -301,7 +302,9 @@ func executeAnalysis(
 	}
 
 	if cfg.DetectionMethods.IsHashOnly() {
-		return executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat)
+		ch, ps, fs, err := executeHashOnlyAnalysis(ctx, cfg, paths, filterParam, filterStats, outputFormat)
+
+		return ch, nil, ps, fs, err
 	}
 
 	result := buildSuffixTree(buildParams{
@@ -313,7 +316,7 @@ func executeAnalysis(
 		outputFormat: outputFormat,
 	})
 	if result.err != nil {
-		return nil, job.ParseStats{}, nil, duplerrors.Wrap(
+		return nil, nil, job.ParseStats{}, nil, duplerrors.Wrap(
 			result.err,
 			duplerrors.AnalysisError,
 			fmt.Sprintf(
@@ -328,12 +331,27 @@ func executeAnalysis(
 		Methods: cfg.DetectionMethods,
 		Verbose: cfg.Verbose,
 	}, result.data, result.tree)
+
+	duplChan := spawnCloneDetection(ctx, multiDetector, cfg.Threshold)
+	findingChan := spawnFindingDetection(ctx, multiDetector)
+
+	endProfiling(cfg, startProfile)
+
+	return duplChan, findingChan, result.parseStats, filterStats, nil
+}
+
+// spawnCloneDetection starts a goroutine that drains clone matches from the detector.
+func spawnCloneDetection(
+	ctx context.Context,
+	detector *detection.MultiDetector,
+	threshold int,
+) chan syntax.Match {
 	duplChan := make(chan syntax.Match)
 
 	go func() {
 		defer close(duplChan)
 
-		matches := multiDetector.FindDuplOver(ctx, cfg.Threshold)
+		matches := detector.FindDuplOver(ctx, threshold)
 		for match := range matches {
 			select {
 			case <-ctx.Done():
@@ -345,7 +363,30 @@ func executeAnalysis(
 		}
 	}()
 
-	endProfiling(cfg, startProfile)
+	return duplChan
+}
 
-	return duplChan, result.parseStats, filterStats, nil
+// spawnFindingDetection starts a goroutine that drains findings from the detector.
+func spawnFindingDetection(
+	ctx context.Context,
+	detector *detection.MultiDetector,
+) chan domain.Finding {
+	findingChan := make(chan domain.Finding)
+
+	go func() {
+		defer close(findingChan)
+
+		findings := detector.FindFindings(ctx)
+		for finding := range findings {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			findingChan <- finding
+		}
+	}()
+
+	return findingChan
 }

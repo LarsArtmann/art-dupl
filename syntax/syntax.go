@@ -93,7 +93,7 @@ func (n *Node) Val() suffixtree.TokenValue {
 //nolint:gosec // G115: Size is validated to be within reasonable bounds before this point
 func NewSyntheticFileNode(filename string, size int) *Node {
 	return &Node{
-		Filename: filename,
+		Filename: InternFilename(filename),
 		Pos:      0,
 		End:      int32(size),
 		Type:     1,

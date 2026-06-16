@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
@@ -37,7 +38,7 @@ func setDetectionMethods(appConfig *config.Config, detectionMethods string) erro
 
 // runCmd implements Cobra command execution.
 //
-//nolint:funlen // Command execution requires handling many CLI flags and configuration options
+//nolint:funlen,gocyclo,cyclop // Command execution requires handling many CLI flags and configuration options
 func runCmd(cmd *cobra.Command, args []string) error {
 	html, _ := cmd.Flags().GetBool("html")
 	jsonFlag, _ := cmd.Flags().GetBool("json")
@@ -93,7 +94,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
-	duplChan, parseStats, _, err := executeAnalysis(
+	duplChan, findingChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
@@ -157,7 +158,22 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		)
 	}
 
+	findings := collectFindings(findingChan)
+
+	err = printFindingsOutput(p, findings)
+	if err != nil {
+		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print findings")
+	}
+
 	return nil
+}
+
+func printFindingsOutput(p printer.Printer, findings []domain.Finding) error {
+	if len(findings) == 0 {
+		return nil
+	}
+
+	return fmt.Errorf("print findings: %w", p.PrintFindings(findings))
 }
 
 // setJSONPrinterFilesCount sets the files count on a JSON printer if the printer is a JSON printer.

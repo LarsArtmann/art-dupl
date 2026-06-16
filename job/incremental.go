@@ -128,7 +128,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		// This is critical because cached nodes retain the filename of the first file
 		// that was cached with this content hash
 		for _, node := range cachedNodes {
-			node.Filename = file
+			node.Filename = syntax.InternFilename(file)
 		}
 
 		lines := countLines(content)

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -40,7 +41,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	)
 
 	// Run analysis once
-	duplChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat)
+	duplChan, findingChan, parseStats, _, err := executeAnalysis(ctx, cfg, cfg.Paths, cfg.OutputFormat)
 	if err != nil {
 		return fmt.Errorf(
 			"analysis failed for paths %v (sortBy=%s, outputDir=%s): %w",
@@ -61,8 +62,9 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 		)
 	}
 
-	// Convert channel to slice for reuse
+	// Convert channels to slices for reuse
 	matches := collectMatches(duplChan)
+	findings := collectFindings(findingChan)
 
 	// Generate all output formats
 	formats := config.AllOutputFormats()
@@ -78,6 +80,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 			ctx,
 			cfg,
 			matches,
+			findings,
 			parseStats,
 			format,
 			filename,
@@ -115,11 +118,22 @@ func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
 	return matches
 }
 
+// collectFindings collects all findings from a channel into a slice.
+func collectFindings(findingChan <-chan domain.Finding) []domain.Finding {
+	var findings []domain.Finding
+	for finding := range findingChan {
+		findings = append(findings, finding)
+	}
+
+	return findings
+}
+
 // writeFormatFile writes a single output format to a file.
 func writeFormatFile(
 	ctx context.Context,
 	cfg *config.Config,
 	matches []syntax.Match,
+	findings []domain.Finding,
 	parseStats job.ParseStats,
 	format config.OutputFormat,
 	filename string,
@@ -189,6 +203,13 @@ func writeFormatFile(
 			detectionMethodStr,
 			err,
 		)
+	}
+
+	if len(findings) > 0 {
+		err := p.PrintFindings(findings)
+		if err != nil {
+			return fmt.Errorf("failed to print findings for %s format: %w", format, err)
+		}
 	}
 
 	return nil

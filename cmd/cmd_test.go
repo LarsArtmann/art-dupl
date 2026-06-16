@@ -208,6 +208,10 @@ func (m *mockPrinter) PrintClones(_ domain.ProcessedCloneGroup, _ ...config.Sort
 	return nil
 }
 
+func (*mockPrinter) PrintFindings(_ []domain.Finding) error {
+	return nil
+}
+
 var _ printer.Printer = (*mockPrinter)(nil)
 
 func TestNewRootCommand(t *testing.T) {

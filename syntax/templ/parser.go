@@ -38,7 +38,7 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 
 	// Transform to unified syntax tree
 	t := &transformer{
-		filename:   filename,
+		filename:   syntax.InternFilename(filename),
 		contentLen: len(content),
 	}
 
