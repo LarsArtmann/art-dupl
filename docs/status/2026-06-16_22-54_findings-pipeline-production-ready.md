@@ -15,6 +15,7 @@
 The critical bug that started this session: `FindFindings` was implemented but **never called from any CLI path**. Users running `art-dupl --detection-methods todos` got zero output. Now fully fixed through 3 self-review iterations:
 
 **Round 1 — Core wiring:**
+
 - ✅ `Printer.PrintFindings([]domain.Finding)` added to Printer interface
 - ✅ Implemented in all 6 printers: Text, JSON, Plumbing, HTML, SARIF, Stats
 - ✅ `executeAnalysis` returns `<-chan domain.Finding` alongside clone channel
@@ -24,12 +25,14 @@ The critical bug that started this session: `FindFindings` was implemented but *
 - ✅ Goroutine deadlock fixed: `select` on channel sends for ctx cancellation
 
 **Round 2 — Bug fixes from self-review:**
+
 - ✅ Nil channel deadlock fix: `collectFindings(nil)` blocks forever in hash-only mode — guarded with nil check
 - ✅ JSON plumbing fix: `PrintFindings` was called AFTER `OutputJSON` flushed — findings passed into `printDupls` so they're set before JSON flush
 - ✅ Goroutine leak fix: `stats.go` and integration tests now drain `findingChan` instead of discarding with `_`
 - ✅ Dead code removal: Deleted `domain/types_severity.go` (all `CloneSeverity` aliases were zero-usage dead code causing exhaustive lint false positives)
 
 **Round 3 — Quality hardening:**
+
 - ✅ `FindingType` enum gets `pkg/enum` methods (MarshalJSON/UnmarshalJSON/ParseFindingType) matching ClonePriority pattern
 - ✅ `ErrInvalidLineNumber` sentinel added — `Finding.Validate` was reusing semantically wrong `ErrLineEndBeforeStart`
 - ✅ SARIF rule definitions added for `art-dupl/todo` and `art-dupl/legacy` (previously results referenced undefined rules — SARIF spec violation)
@@ -48,20 +51,20 @@ The critical bug that started this session: `FindFindings` was implemented but *
 
 ### Commits This Session (28 total, 15 in this reporting window)
 
-| Commit | Description |
-|--------|-------------|
-| `17f799f` | test(domain): FindingType enum tests + Finding.Validate |
-| `8a4a453` | refactor(domain): delete dead ErrInvalidCloneSeverity |
-| `70bb3a9` | feat(printer): SARIF rule definitions + text footer count |
+| Commit    | Description                                                           |
+| --------- | --------------------------------------------------------------------- |
+| `17f799f` | test(domain): FindingType enum tests + Finding.Validate               |
+| `8a4a453` | refactor(domain): delete dead ErrInvalidCloneSeverity                 |
+| `70bb3a9` | feat(printer): SARIF rule definitions + text footer count             |
 | `73bb46b` | refactor(domain): FindingType pkg/enum methods + ErrInvalidLineNumber |
-| `bc12630` | test(cmd): integration test for findings pipeline |
-| `b473f54` | fix: drain findingChan, delete CloneSeverity aliases |
-| `911784b` | fix(cmd): pass findings to printDupls (JSON/SARIF fix) |
-| `1677d80` | fix(cmd): guard collectFindings against nil channel |
-| `63281c1` | docs(status): comprehensive status report |
-| `583e0e5` | docs: update TODO_LIST, FEATURES, AGENTS |
-| `5cdc4ed` | fix(detection): select on channel sends (deadlock fix) |
-| `b0a5b16` | feat: wire PrintFindings through pipeline + InternFilename |
+| `bc12630` | test(cmd): integration test for findings pipeline                     |
+| `b473f54` | fix: drain findingChan, delete CloneSeverity aliases                  |
+| `911784b` | fix(cmd): pass findings to printDupls (JSON/SARIF fix)                |
+| `1677d80` | fix(cmd): guard collectFindings against nil channel                   |
+| `63281c1` | docs(status): comprehensive status report                             |
+| `583e0e5` | docs: update TODO_LIST, FEATURES, AGENTS                              |
+| `5cdc4ed` | fix(detection): select on channel sends (deadlock fix)                |
+| `b0a5b16` | feat: wire PrintFindings through pipeline + InternFilename            |
 
 ---
 
@@ -70,6 +73,7 @@ The critical bug that started this session: `FindFindings` was implemented but *
 ### Findings Text Output
 
 The text output is functional but basic:
+
 ```
 📋 Findings (3):
   /tmp/main.go:3 [todo] fix this later
@@ -173,33 +177,33 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 
 ## F) Top 25 Things to Do Next
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 1 | **Fix BDD test suite timeout** (profile goroutine leaks) | Critical | Medium | P0 |
-| 2 | **HOW_TO_USE.md**: Add detection-methods + findings sections | High | Low | P0 |
-| 3 | **README.md**: Add todos/legacy to detection methods table | High | Low | P0 |
-| 4 | **Add BDD spec for findings** (verify todos output in all formats) | High | Low | P1 |
-| 5 | **Rich text findings** (group by file, priority badges) | Medium | Low | P1 |
-| 6 | **Add goleak** to unit tests | Medium | Low | P1 |
-| 7 | **printDupls struct refactor** (11 params → config struct) | Medium | Medium | P2 |
-| 8 | **Type-strengthen ProcessedClone** (Filepath, LineNumber) | Medium | Medium | P2 |
-| 9 | **Break syntax import cycle** (extract Node to shared types) | High | High | P2 |
-| 10 | **Consolidate 3 Clone types** into 1 canonical | High | High | P2 |
-| 11 | **Decouple actionability.go from syntax.Node** | High | High | P2 |
-| 12 | **Split printer/ package** into sub-packages | Medium | High | P2 |
-| 13 | **Templ semantic mode** (identifier/operator hashing) | Medium | High | P2 |
-| 14 | **Benchmark findings pipeline overhead** | Medium | Low | P2 |
-| 15 | **Add `--findings-only` flag** (skip clone detection) | Medium | Low | P3 |
-| 16 | **Add severity filtering** (`--min-priority medium`) | Medium | Low | P3 |
-| 17 | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`) | Medium | Medium | P3 |
-| 18 | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`) | Medium | Medium | P3 |
-| 19 | **Cache findings** in incremental mode | Low | Medium | P3 |
-| 20 | **Findings in stats output** (count by type/priority) | Low | Low | P3 |
-| 21 | **Hybrid slice/map transition storage** | Low | Medium | P3 |
-| 22 | **Refactor actionability.go** into sub-files | Low | Medium | P3 |
-| 23 | **Add ADR-0005** for Findings pipeline architecture | Low | Low | P3 |
-| 24 | **LegacyIssue Tags field** for consistency | Low | Low | P3 |
-| 25 | **Improve SARIF finding-level mapping** for legacy | Low | Low | P3 |
+| #   | Task                                                               | Impact   | Effort | Priority |
+| --- | ------------------------------------------------------------------ | -------- | ------ | -------- |
+| 1   | **Fix BDD test suite timeout** (profile goroutine leaks)           | Critical | Medium | P0       |
+| 2   | **HOW_TO_USE.md**: Add detection-methods + findings sections       | High     | Low    | P0       |
+| 3   | **README.md**: Add todos/legacy to detection methods table         | High     | Low    | P0       |
+| 4   | **Add BDD spec for findings** (verify todos output in all formats) | High     | Low    | P1       |
+| 5   | **Rich text findings** (group by file, priority badges)            | Medium   | Low    | P1       |
+| 6   | **Add goleak** to unit tests                                       | Medium   | Low    | P1       |
+| 7   | **printDupls struct refactor** (11 params → config struct)         | Medium   | Medium | P2       |
+| 8   | **Type-strengthen ProcessedClone** (Filepath, LineNumber)          | Medium   | Medium | P2       |
+| 9   | **Break syntax import cycle** (extract Node to shared types)       | High     | High   | P2       |
+| 10  | **Consolidate 3 Clone types** into 1 canonical                     | High     | High   | P2       |
+| 11  | **Decouple actionability.go from syntax.Node**                     | High     | High   | P2       |
+| 12  | **Split printer/ package** into sub-packages                       | Medium   | High   | P2       |
+| 13  | **Templ semantic mode** (identifier/operator hashing)              | Medium   | High   | P2       |
+| 14  | **Benchmark findings pipeline overhead**                           | Medium   | Low    | P2       |
+| 15  | **Add `--findings-only` flag** (skip clone detection)              | Medium   | Low    | P3       |
+| 16  | **Add severity filtering** (`--min-priority medium`)               | Medium   | Low    | P3       |
+| 17  | **Custom TODO patterns** (`--todo-patterns "BUG,PERF"`)            | Medium   | Medium | P3       |
+| 18  | **Custom legacy patterns** (`--legacy-patterns "pkg.OldFunc"`)     | Medium   | Medium | P3       |
+| 19  | **Cache findings** in incremental mode                             | Low      | Medium | P3       |
+| 20  | **Findings in stats output** (count by type/priority)              | Low      | Low    | P3       |
+| 21  | **Hybrid slice/map transition storage**                            | Low      | Medium | P3       |
+| 22  | **Refactor actionability.go** into sub-files                       | Low      | Medium | P3       |
+| 23  | **Add ADR-0005** for Findings pipeline architecture                | Low      | Low    | P3       |
+| 24  | **LegacyIssue Tags field** for consistency                         | Low      | Low    | P3       |
+| 25  | **Improve SARIF finding-level mapping** for legacy                 | Low      | Low    | P3       |
 
 ---
 
@@ -208,6 +212,7 @@ BuildFlow flags 4 untracked binaries: `art-dupl`, `dist/art-dupl`, `result`, `bd
 **Why does the BDD test suite (264 specs) hang ONLY when running ALL specs together, but individual specs and subsets complete in milliseconds?**
 
 Verified facts:
+
 - Individual specs: PASS in 0.003s
 - Subset of 50: PASS in seconds
 - Full suite of 264: HANGS at 600s timeout
@@ -223,16 +228,16 @@ The goroutine leak we fixed (undrained `findingChan`) was a contributing factor 
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Commits this session | 28 |
-| Files changed | ~20 |
-| Lines added | ~600 |
-| Lines removed | ~150 |
-| Tests passing | 21/21 non-BDD ✅ |
-| Lint issues | 0 ✅ |
-| Build status | Clean ✅ |
-| BuildFlow | 34/34 steps pass ✅ |
-| Critical bugs fixed | 4 (nil channel deadlock, JSON plumbing, goroutine deadlock, goroutine leak) |
-| Self-review rounds | 3 |
-| New tests added | 9 (7 domain + 2 integration) |
+| Metric               | Value                                                                       |
+| -------------------- | --------------------------------------------------------------------------- |
+| Commits this session | 28                                                                          |
+| Files changed        | ~20                                                                         |
+| Lines added          | ~600                                                                        |
+| Lines removed        | ~150                                                                        |
+| Tests passing        | 21/21 non-BDD ✅                                                            |
+| Lint issues          | 0 ✅                                                                        |
+| Build status         | Clean ✅                                                                    |
+| BuildFlow            | 34/34 steps pass ✅                                                         |
+| Critical bugs fixed  | 4 (nil channel deadlock, JSON plumbing, goroutine deadlock, goroutine leak) |
+| Self-review rounds   | 3                                                                           |
+| New tests added      | 9 (7 domain + 2 integration)                                                |
