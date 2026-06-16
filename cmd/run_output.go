@@ -20,6 +20,8 @@ func printDupls(
 	threshold int,
 	detectionMethod string,
 	semantic bool,
+	suppressTestLow bool,
+	testThreshold int,
 ) error {
 	if ctx.Err() != nil {
 		return ctx.Err() //nolint:wrapcheck
@@ -34,7 +36,7 @@ func printDupls(
 			threshold, sortBy.String(), detectionMethod, err)
 	}
 
-	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic)
+	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic, suppressTestLow, testThreshold)
 	if err != nil {
 		return fmt.Errorf("print clone groups (fread: %v, sortBy: %s): %w", fread, sortBy.String(), err)
 	}
@@ -93,6 +95,8 @@ func printCloneGroups(
 	keys []string,
 	sortBy config.SortCriteria,
 	semantic bool,
+	suppressTestLow bool,
+	testThreshold int,
 ) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
@@ -121,6 +125,10 @@ func printCloneGroups(
 			Clones: clones,
 		}
 		group.TokenCount = group.TotalTokenCount()
+
+		if shouldSuppressGroup(group, suppressTestLow, testThreshold) {
+			continue
+		}
 
 		err = p.PrintClones(group, sortBy)
 		if err != nil {
@@ -159,4 +167,28 @@ func printFooter(p printer.Printer) error {
 	}
 
 	return nil
+}
+
+// shouldSuppressGroup checks if a clone group should be filtered out based on
+// suppress-test-low and test-threshold settings.
+func shouldSuppressGroup(
+	group domain.ProcessedCloneGroup,
+	suppressTestLow bool,
+	testThreshold int,
+) bool {
+	if len(group.Clones) == 0 {
+		return false
+	}
+
+	cls := group.Clones[0].Classification
+
+	if suppressTestLow && cls.IsTest && cls.Priority == domain.PriorityLow {
+		return true
+	}
+
+	if testThreshold > 0 && cls.IsTest && group.TokenCount < testThreshold {
+		return true
+	}
+
+	return false
 }

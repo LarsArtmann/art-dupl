@@ -175,6 +175,8 @@ func writeFormatFile(
 		cfg.Threshold,
 		detectionMethodStr,
 		cfg.Semantic,
+		cfg.SuppressTestLow,
+		cfg.TestThreshold,
 	)
 	if err != nil {
 		return fmt.Errorf(
