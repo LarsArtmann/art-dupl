@@ -81,6 +81,7 @@ Actionable items planned for the next 2-4 weeks.
 ## ✅ Completed (2026-06-16) — Full TODO Sprint
 
 ### Tier 1: Quick Fixes
+
 - [x] Fix Clone.IsValid() StartPos==0 bypass
 - [x] Wire ErrNoDuplicatesFound sentinel in FindClones
 - [x] Deep-copy Options slices in NewDetector
@@ -94,6 +95,7 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Replace priorityScore/priorityHigher with Rank()
 
 ### Tier 2: Architecture
+
 - [x] Add StreamResult type for streaming error propagation
 - [x] Add FindClonesStreamResult to Detector interface
 - [x] Add MarshalJSON/UnmarshalJSON for 3 domain enums
@@ -103,6 +105,7 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Fix HealthScore legend
 
 ### Tier 3: Features & Code Quality
+
 - [x] Add context.Context to all detectors (goroutine leak prevention)
 - [x] Break SDK type aliases (DetectionMethod, Logger)
 - [x] Wire Actionability defaults in ClassifyClone

@@ -245,7 +245,12 @@ func ValidateOptions(opts *Options) error {
 		return fmt.Errorf("validate options failed (opts=%v): %w", opts, ErrInvalidTimeout)
 	}
 
-	return config.ValidateDetectionMethods(
-		toConfigDetectionMethods(opts.DetectionMethods),
-	)
+	// Validate detection methods using SDK's own type — no config dependency
+	for _, method := range opts.DetectionMethods {
+		if !method.IsValid() {
+			return fmt.Errorf("validate options failed (opts=%v): %w: %s", opts, ErrUnsupportedMethod, method)
+		}
+	}
+
+	return nil
 }

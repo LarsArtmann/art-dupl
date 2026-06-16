@@ -1,9 +1,11 @@
 # ADR-0004: Actionability Pattern Detection System
 
 ## Date
+
 2026-06-15
 
 ## Status
+
 Accepted
 
 ## Context
@@ -30,18 +32,21 @@ A clone group is `NonActionable` only when **every** clone in the group matches 
 ## Consequences
 
 ### Positive
+
 - Dramatically improved signal-to-noise ratio
 - Users can focus on clones that represent real refactoring opportunities
 - Binary classification is simple to understand and act on
 - Each pattern detector is independently testable
 
 ### Negative
+
 - Binary (actionable/non-actionable) classification lacks nuance — some clones are "partially actionable"
 - Adding new patterns requires modifying the `evaluateActionabilityDetailed` function
 - Pattern detection adds ~5ms per clone group to analysis time
 - The `everySequenceMatch` requirement means a group with 9 non-actionable + 1 actionable clone is reported as actionable
 
 ### Future Considerations
+
 - Pattern-aware weighting system (multiply priority by pattern weight) was considered but deferred
 - A `--suppress-test-low` flag for blanket suppression of test-only low-priority clones is planned
 - Separate test/production thresholds would reduce test noise further

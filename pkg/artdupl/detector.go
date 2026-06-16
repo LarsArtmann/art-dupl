@@ -109,40 +109,36 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 }
 
 // FindClonesStream provides streaming results for large projects.
+//
+// Deprecated: Use FindClonesStreamResult instead. This method silently
+// swallows pipeline errors — if the analysis fails mid-stream, the channel
+// simply closes with no indication of failure. FindClonesStreamResult
+// returns a channel of StreamResult{Group, Err} values that propagate errors.
 func (d *detector) FindClonesStream(
 	ctx context.Context,
 	files []string,
 ) (<-chan *CloneGroup, error) {
-	d.started = time.Now()
+	resultChan := make(chan *CloneGroup, 10)
 
-	// Validate inputs
-	err := d.validateInputsOrError(ctx, files)
+	streamCh, err := d.FindClonesStreamResult(ctx, files)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create output channel
-	resultChan := make(chan *CloneGroup, 10)
-
-	// Start streaming analysis
 	go func() {
 		defer close(resultChan)
 
-		// Process files and build analysis pipeline
-		pipeline, err := d.buildAnalysisPipeline(ctx, files)
-		if err != nil {
-			d.logger.Error("Analysis pipeline error: %v", err)
+		for result := range streamCh {
+			if result.Err != nil {
+				d.logger.Error("Streaming analysis error: %v", result.Err)
 
-			return
+				return
+			}
+
+			if result.Group != nil {
+				resultChan <- result.Group
+			}
 		}
-
-		// Run detection with streaming
-		err = d.streamDetectionResults(ctx, pipeline, resultChan)
-		if err != nil {
-			d.logger.Error("Streaming detection error: %v", err)
-		}
-
-		d.reportProgress(100, "Analysis complete", "")
 	}()
 
 	return resultChan, nil
