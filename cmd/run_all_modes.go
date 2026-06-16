@@ -197,6 +197,7 @@ func writeFormatFile(
 		cfg.Semantic,
 		cfg.SuppressTestLow,
 		cfg.TestThreshold,
+		findings,
 	)
 	if err != nil {
 		return fmt.Errorf(
@@ -209,13 +210,6 @@ func writeFormatFile(
 			detectionMethodStr,
 			err,
 		)
-	}
-
-	if len(findings) > 0 {
-		err := p.PrintFindings(findings)
-		if err != nil {
-			return fmt.Errorf("failed to print findings for %s format: %w", format, err)
-		}
 	}
 
 	return nil

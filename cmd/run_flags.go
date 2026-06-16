@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
@@ -134,6 +133,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
+	findings := collectFindings(findingChan)
+
 	err = printDupls(
 		ctx,
 		p,
@@ -145,6 +146,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.Semantic,
 		mergedConfig.SuppressTestLow,
 		mergedConfig.TestThreshold,
+		findings,
 	)
 	if err != nil {
 		return duplerrors.Wrap(
@@ -158,22 +160,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		)
 	}
 
-	findings := collectFindings(findingChan)
-
-	err = printFindingsOutput(p, findings)
-	if err != nil {
-		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print findings")
-	}
-
 	return nil
-}
-
-func printFindingsOutput(p printer.Printer, findings []domain.Finding) error {
-	if len(findings) == 0 {
-		return nil
-	}
-
-	return fmt.Errorf("print findings: %w", p.PrintFindings(findings))
 }
 
 // setJSONPrinterFilesCount sets the files count on a JSON printer if the printer is a JSON printer.

@@ -12,10 +12,10 @@
 
 ### This Session's Commits
 
-| Commit | Description |
-|--------|-------------|
-| `583e0e5` | docs: update TODO_LIST, FEATURES, AGENTS with Findings pipeline completion |
-| `5cdc4ed` | fix(detection): use select on channel sends to prevent goroutine deadlock |
+| Commit    | Description                                                                  |
+| --------- | ---------------------------------------------------------------------------- |
+| `583e0e5` | docs: update TODO_LIST, FEATURES, AGENTS with Findings pipeline completion   |
+| `5cdc4ed` | fix(detection): use select on channel sends to prevent goroutine deadlock    |
 | `b0a5b16` | feat: wire PrintFindings through pipeline, fix vendorHash, refactor interner |
 
 ### Critical Feature — Findings Pipeline (was BROKEN, now FULLY FUNCTIONAL)
@@ -76,6 +76,7 @@ The pipeline is wired and produces output, but the **text output format is basic
 ```
 
 **What's missing:**
+
 - No priority badges or color coding in text output
 - No grouping by file in text output
 - JSON findings are included but not in SimpleJSON format
@@ -177,33 +178,33 @@ BuildFlow flags 4 binaries that are NOT in git but exist in the working director
 
 ## F) Top 25 Things to Do Next
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 1 | **Fix BDD test suite timeout** (profile goroutine leaks) | Critical | Medium | P0 |
-| 2 | **Delete CloneSeverity type aliases** (fixes exhaustive lint false positive) | High | Low | P0 |
-| 3 | **Add BDD spec for findings output** (verify --detection-methods todos works in all formats) | High | Low | P0 |
-| 4 | **Add findings to SimpleJSON output** | Medium | Low | P1 |
-| 5 | **Add SARIF rule definitions for findings** (tool.driver.rules) | Medium | Low | P1 |
-| 6 | **Improve text findings output** (group by file, priority badges) | Medium | Low | P1 |
-| 7 | **Update HOW_TO_USE.md** with findings examples | Medium | Low | P1 |
-| 8 | **Add `.gitignore` entries** for build artifacts | Low | Trivial | P1 |
-| 9 | **Add ADR-0005** for Findings pipeline architecture | Medium | Low | P1 |
-| 10 | **Type-strengthen ProcessedClone** (Filename→Filepath, Lines→LineNumber) | Medium | Medium | P2 |
-| 11 | **Decouple actionability.go from syntax.Node** (ProcessedClone DTO) | High | High | P2 |
-| 12 | **Consolidate 3 Clone types** into 1 canonical | High | High | P2 |
-| 13 | **Split printer/ package** into sub-packages | Medium | High | P2 |
-| 14 | **Break syntax/syntax-golang import cycle** (extract Node to shared package) | High | High | P2 |
-| 15 | **Add templ semantic mode** (identifier/operator hashing) | Medium | High | P2 |
-| 16 | **Benchmark findings pipeline overhead** | Medium | Low | P2 |
-| 17 | **Add goleak** to unit tests (goroutine leak detection) | Medium | Low | P2 |
-| 18 | **Refactor actionability.go** into sub-files by pattern category | Low | Medium | P3 |
-| 19 | **Implement hybrid slice/map transition storage** | Low | Medium | P3 |
-| 20 | **Add `--findings-only` flag** (skip clone detection, just findings) | Medium | Low | P3 |
-| 21 | **Add severity filtering** (`--min-priority medium` to filter findings) | Medium | Low | P3 |
-| 22 | **Add findings to stats output** (count by type, priority distribution) | Low | Low | P3 |
-| 23 | **Add custom TODO patterns** (`--todo-patterns "BUG,PERF,SECURITY"`) | Medium | Medium | P3 |
-| 24 | **Add legacy pattern customization** (`--legacy-patterns "pkg.OldFunc"`) | Medium | Medium | P3 |
-| 25 | **Cache findings results** in incremental mode | Low | Medium | P3 |
+| #   | Task                                                                                         | Impact   | Effort  | Priority |
+| --- | -------------------------------------------------------------------------------------------- | -------- | ------- | -------- |
+| 1   | **Fix BDD test suite timeout** (profile goroutine leaks)                                     | Critical | Medium  | P0       |
+| 2   | **Delete CloneSeverity type aliases** (fixes exhaustive lint false positive)                 | High     | Low     | P0       |
+| 3   | **Add BDD spec for findings output** (verify --detection-methods todos works in all formats) | High     | Low     | P0       |
+| 4   | **Add findings to SimpleJSON output**                                                        | Medium   | Low     | P1       |
+| 5   | **Add SARIF rule definitions for findings** (tool.driver.rules)                              | Medium   | Low     | P1       |
+| 6   | **Improve text findings output** (group by file, priority badges)                            | Medium   | Low     | P1       |
+| 7   | **Update HOW_TO_USE.md** with findings examples                                              | Medium   | Low     | P1       |
+| 8   | **Add `.gitignore` entries** for build artifacts                                             | Low      | Trivial | P1       |
+| 9   | **Add ADR-0005** for Findings pipeline architecture                                          | Medium   | Low     | P1       |
+| 10  | **Type-strengthen ProcessedClone** (Filename→Filepath, Lines→LineNumber)                     | Medium   | Medium  | P2       |
+| 11  | **Decouple actionability.go from syntax.Node** (ProcessedClone DTO)                          | High     | High    | P2       |
+| 12  | **Consolidate 3 Clone types** into 1 canonical                                               | High     | High    | P2       |
+| 13  | **Split printer/ package** into sub-packages                                                 | Medium   | High    | P2       |
+| 14  | **Break syntax/syntax-golang import cycle** (extract Node to shared package)                 | High     | High    | P2       |
+| 15  | **Add templ semantic mode** (identifier/operator hashing)                                    | Medium   | High    | P2       |
+| 16  | **Benchmark findings pipeline overhead**                                                     | Medium   | Low     | P2       |
+| 17  | **Add goleak** to unit tests (goroutine leak detection)                                      | Medium   | Low     | P2       |
+| 18  | **Refactor actionability.go** into sub-files by pattern category                             | Low      | Medium  | P3       |
+| 19  | **Implement hybrid slice/map transition storage**                                            | Low      | Medium  | P3       |
+| 20  | **Add `--findings-only` flag** (skip clone detection, just findings)                         | Medium   | Low     | P3       |
+| 21  | **Add severity filtering** (`--min-priority medium` to filter findings)                      | Medium   | Low     | P3       |
+| 22  | **Add findings to stats output** (count by type, priority distribution)                      | Low      | Low     | P3       |
+| 23  | **Add custom TODO patterns** (`--todo-patterns "BUG,PERF,SECURITY"`)                         | Medium   | Medium  | P3       |
+| 24  | **Add legacy pattern customization** (`--legacy-patterns "pkg.OldFunc"`)                     | Medium   | Medium  | P3       |
+| 25  | **Cache findings results** in incremental mode                                               | Low      | Medium  | P3       |
 
 ---
 
@@ -212,6 +213,7 @@ BuildFlow flags 4 binaries that are NOT in git but exist in the working director
 **Why does the BDD test suite hang when running all 264 specs, but individual specs and small batches complete in milliseconds?**
 
 I've verified:
+
 - Individual specs pass (`--ginkgo.focus="should detect duplicates"` → PASS in 0.003s)
 - The goroutine deadlock fix (select on channel sends) is in place
 - Stashing our changes and running on the clean tree also hangs
@@ -230,14 +232,14 @@ The hang is pre-existing — it existed before this session's changes. But it bl
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Commits this session | 3 (pushed to origin) |
-| Files changed | 15+ |
-| Lines added | ~400 |
-| Lines removed | ~100 |
-| Tests passing | 21/21 non-BDD packages ✅ |
-| Lint issues | 0 ✅ |
-| Build status | Clean ✅ |
-| BuildFlow | 25/25 steps pass ✅ |
-| Critical bugs fixed | 2 (Findings pipeline, goroutine deadlock) |
+| Metric               | Value                                     |
+| -------------------- | ----------------------------------------- |
+| Commits this session | 3 (pushed to origin)                      |
+| Files changed        | 15+                                       |
+| Lines added          | ~400                                      |
+| Lines removed        | ~100                                      |
+| Tests passing        | 21/21 non-BDD packages ✅                 |
+| Lint issues          | 0 ✅                                      |
+| Build status         | Clean ✅                                  |
+| BuildFlow            | 25/25 steps pass ✅                       |
+| Critical bugs fixed  | 2 (Findings pipeline, goroutine deadlock) |
