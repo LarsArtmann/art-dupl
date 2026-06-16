@@ -1,6 +1,10 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/pkg/enum"
+)
 
 // FindingType represents the kind of code-quality finding.
 type FindingType string
@@ -22,6 +26,28 @@ func (f FindingType) IsValid() bool {
 
 // String returns the string representation of the finding type.
 func (f FindingType) String() string { return string(f) }
+
+// ParseFindingType parses a string into a FindingType, returning an error if invalid.
+func ParseFindingType(s string) (FindingType, error) {
+	return enum.Parse[FindingType](s, FindingType.IsValid, ErrInvalidFindingType)
+}
+
+// MarshalJSON implements json.Marshaler for FindingType.
+func (f FindingType) MarshalJSON() ([]byte, error) {
+	return enum.MarshalJSON(f, FindingType.IsValid, ErrInvalidFindingType) //nolint:wrapcheck
+}
+
+// UnmarshalJSON implements json.Unmarshaler for FindingType.
+func (f *FindingType) UnmarshalJSON(data []byte) error {
+	parsed, err := enum.UnmarshalJSON(data, FindingType.IsValid, ErrInvalidFindingType)
+	if err != nil {
+		return err //nolint:wrapcheck // domain sentinel passed through
+	}
+
+	*f = parsed
+
+	return nil
+}
 
 // Finding represents a single-line code-quality finding — a TODO comment,
 // a legacy pattern call, or similar issue that is NOT a code clone.
@@ -45,7 +71,7 @@ func (f Finding) Validate() error {
 	}
 
 	if f.Line == 0 {
-		return ErrLineEndBeforeStart
+		return ErrInvalidLineNumber
 	}
 
 	if !f.Type.IsValid() {

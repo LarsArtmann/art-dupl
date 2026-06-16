@@ -15,4 +15,5 @@ var (
 	ErrEmptyCloneGroup           = errors.New("clone group must have at least one clone")
 	ErrTokenCountMismatch        = errors.New("group token count does not match sum of clones")
 	ErrInvalidFindingType        = errors.New("invalid finding type")
+	ErrInvalidLineNumber         = errors.New("line number cannot be zero")
 )
