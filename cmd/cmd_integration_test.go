@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -344,6 +345,74 @@ func TestExecuteAnalysis_Integration(t *testing.T) {
 
 		// Drain findings to prevent goroutine leak
 		for range findingChan {
+		}
+	})
+}
+
+func TestExecuteAnalysis_FindingsPipeline(t *testing.T) {
+	t.Run("todos detection produces findings", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		file1 := filepath.Join(tmpDir, "main.go")
+		writeTestFile(t, file1, "package main\n\n// TODO: fix this\n// FIXME: broken\nfunc main() {}\n", 0o600)
+
+		cfg := &config.Config{
+			Threshold:        10,
+			DetectionMethods: config.DetectionMethods{config.DetectionMethodTodos},
+		}
+
+		ctx := t.Context()
+
+		_, findingChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
+		if err != nil {
+			t.Fatalf("executeAnalysis() error = %v", err)
+		}
+
+		var findings []domain.Finding
+
+		for f := range findingChan {
+			findings = append(findings, f)
+		}
+
+		if len(findings) < 2 {
+			t.Fatalf("Expected at least 2 findings (TODO + FIXME), got %d", len(findings))
+		}
+
+		for _, f := range findings {
+			if f.Type != domain.FindingTypeTodo {
+				t.Errorf("Expected finding type %q, got %q", domain.FindingTypeTodo, f.Type)
+			}
+
+			if f.Filename == "" {
+				t.Error("Expected non-empty filename")
+			}
+
+			if f.Line == 0 {
+				t.Error("Expected non-zero line number")
+			}
+		}
+	})
+
+	t.Run("hash-only mode produces nil findingChan", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		file1 := filepath.Join(tmpDir, "file1.go")
+		writeTestFile(t, file1, "package main\nfunc main() {}\n", 0o600)
+
+		cfg := &config.Config{
+			Threshold:        10,
+			DetectionMethods: config.DetectionMethods{config.DetectionMethodHash},
+		}
+
+		ctx := t.Context()
+
+		_, findingChan, _, _, err := executeAnalysis(ctx, cfg, []string{tmpDir}, config.OutputFormatText)
+		if err != nil {
+			t.Fatalf("executeAnalysis() error = %v", err)
+		}
+
+		if findingChan != nil {
+			t.Fatal("Expected nil findingChan in hash-only mode")
 		}
 	})
 }
