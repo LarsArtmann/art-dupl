@@ -354,12 +354,10 @@ func spawnCloneDetection(
 		matches := detector.FindDuplOver(ctx, threshold)
 		for match := range matches {
 			select {
+			case duplChan <- match:
 			case <-ctx.Done():
 				return
-			default:
 			}
-
-			duplChan <- match
 		}
 	}()
 
@@ -379,12 +377,10 @@ func spawnFindingDetection(
 		findings := detector.FindFindings(ctx)
 		for finding := range findings {
 			select {
+			case findingChan <- finding:
 			case <-ctx.Done():
 				return
-			default:
 			}
-
-			findingChan <- finding
 		}
 	}()
 
