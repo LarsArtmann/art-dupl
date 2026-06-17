@@ -10,6 +10,7 @@
 ## a) FULLY DONE
 
 ### Detection Layer
+
 - [x] **Deleted** `detection/todo_detector.go` (119 lines) — TODO/FIXME/HACK/XXX/NOTE comment detector
 - [x] **Deleted** `detection/legacy_detector.go` (110 lines) — deprecated function / legacy pattern detector
 - [x] **Deleted** `detection/issue_helpers.go` (202 lines) — generic `findIssuesInFile`, `findIssuesGeneric`, `findFindingsInFile`, `TodoIssue`, `LegacyIssue`
@@ -18,16 +19,19 @@
 - [x] **Rewrote** `detection/detection_test.go` (933 → ~90 lines) — removed all TODO/legacy detector tests, kept MultiDetector core tests
 
 ### Domain Layer
+
 - [x] **Deleted** `domain/finding.go` (86 lines) — `FindingType`, `FindingTypeTodo`, `FindingTypeLegacy`, `Finding` struct, `ParseFindingType`, marshal/unmarshal/validate
 - [x] **Updated** `domain/analysis_errors.go` — removed `ErrInvalidFindingType`
 - [x] **Updated** `domain/domain_test.go` — removed all Finding/FindingType tests (~111 lines)
 
 ### Config Layer
+
 - [x] **Updated** `config/detection_method.go` — removed `DetectionMethodTodos`, `DetectionMethodLegacy` constants and from `validDetectionMethods`, `AllDetectionMethods()`, `ParseDetectionMethods`
 - [x] **Updated** `config/config_enum_test.go` — removed todos/legacy from parse tests, adjusted expected counts
 - [x] **Updated** `config/config_test.go` — `AllDetectionMethods()` now returns 2 methods (was 4)
 
 ### Printer Layer
+
 - [x] **Deleted** `printer/findings.go` (79 lines) — `PrintFindings` implementations for text, plumbing, JSON, HTML, SARIF, stats
 - [x] **Updated** `printer/printer.go` — removed `PrintFindings(findings []domain.Finding)` from `Printer` interface
 - [x] **Updated** `printer/json.go` — removed `Findings` field from `JSONOutput`, removed `findings` field from `JSONPrinter`
@@ -35,6 +39,7 @@
 - [x] **Updated** `printer/text.go` — removed `findingCount` and findings footer logic (was already minimal)
 
 ### CLI / Command Layer
+
 - [x] **Updated** `cmd/run_analysis.go` — `executeAnalysis()` now returns 4 values (removed `findingChan`), removed `spawnFindingDetection()`, `spawnCloneDetection` simplified
 - [x] **Updated** `cmd/run_flags.go` — `runCmd` no longer collects findings, no longer passes findings to `printDupls()`
 - [x] **Updated** `cmd/run_all_modes.go` — removed `collectFindings()`, `findings` parameter from `writeFormatFile()`, `runAllModes` no longer produces findings
@@ -45,12 +50,14 @@
 - [x] **Updated** `cmd/cmd_utils_test.go` — fixed `writeFormatFile` call sites
 
 ### SDK Layer
+
 - [x] **Updated** `pkg/artdupl/types.go` — removed `MethodTodos`, `MethodLegacy` constants, updated `IsValid()` switch
 - [x] **Updated** `pkg/artdupl/basic_test.go` — removed MethodTodos/MethodLegacy from test slices
 - [x] **Updated** `pkg/artdupl/detector_types_test.go` — adjusted `Summary.MethodsUsed` count from 4 → 2
 - [x] **Updated** `pkg/artdupl/detector_validation_test.go` — removed MethodTodos/MethodLegacy equality checks
 
 ### Examples
+
 - [x] **Updated** `examples/examples_test.go` — removed MethodTodos/MethodLegacy from detection method list
 
 ---
@@ -58,12 +65,14 @@
 ## b) PARTIALLY DONE
 
 ### BuildFlow / CI
+
 - [x] `todo-check` passes (0 TODO comments found, 236 files scanned)
 - [ ] `duplications-checker` fails: found 1 clone group exceeding 30-token threshold — **pre-existing**, not introduced this session
 - [ ] `jscpd` fails: signal killed (OOM/timeout on large repo) — **pre-existing**
 - [x] All other 27 BuildFlow steps pass
 
 ### BDD Tests
+
 - [x] 256 of 264 specs pass
 - [ ] 8 BDD failures — **all pre-existing**, all related to `--include-*` filtering flags (sqlc, templ, protobuf, mockgen). These fail on the base commit too. Not related to TODO/legacy removal.
 
@@ -72,15 +81,18 @@
 ## c) NOT STARTED
 
 ### Type Model Improvements (architecture follow-up)
+
 - [ ] `config.DetectionMethods` — still a slice wrapper; could be a proper set type with O(1) Contains
 - [ ] `syntax.Match.Frags` — `[][]*syntax.Node` is a deeply nested structure; could use a flatter representation
 - [ ] `domain.ProcessedCloneGroup` vs `printer.CloneGroup` vs `pkg/artdupl.Clone` — 3 parallel DTOs noted in AGENTS.md as "blocked on Printer/SDK DTO design"
 - [ ] `domain.LineNumber` — `uint16` is a bounded choice; positions use `int32` in `syntax.Node` (mix of signed/unsigned)
 
 ### Missing CLI Wiring (from status archives)
+
 - [ ] `--method` flag still accepts parsed strings but there are only 2 valid methods now; could simplify UX
 
 ### Code Health
+
 - [ ] `go.mod` / `go.sum` show dependency bump (`gogenfilter v3.1.0 → v3.2.0`) — was modified before this session; should verify if intentional or stale
 
 ---
@@ -114,6 +126,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 ## f) Top #25 Things to Get Done Next
 
 ### High Impact / Low Effort (Quick Wins)
+
 1. Fix `text.go` — remove dead `findingCount` field and footer logic
 2. Verify `go.mod` / `go.sum` bump is intentional; revert if not
 3. Remove `domain/finding.go` references from any remaining docs/status files
@@ -121,6 +134,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 5. Update `AGENTS.md` — remove Finding pipeline references
 
 ### High Impact / Medium Effort
+
 6. Fix 8 BDD filtering tests (sqlc/templ/protobuf/mockgen include flags)
 7. Unify `domain.ProcessedClone`, `printer.CloneGroup`, `pkg/artdupl.Clone` into single DTO
 8. Unify position types: `syntax.Node.Pos` (int32), `domain.LineNumber` (uint16), `LineRangeMixin.StartLine` (int)
@@ -128,6 +142,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 10. Refactor `DetectionMethods` from slice to set type
 
 ### High Impact / High Effort (Architecture)
+
 11. Modularize into sub-modules (`go-modularize` skill) — split printer, syntax, suffixtree into independently versioned modules
 12. Extract a proper `Position` type in `pkg/position` and use it consistently across `syntax.Node`, `domain`, `printer`
 13. Consolidate `config` and `pkg/artdupl` detection method enums — currently two parallel enum systems
@@ -135,6 +150,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 15. Introduce `Result[T]` or proper error wrapping at `executeAnalysis` boundaries instead of multi-return tuples
 
 ### Medium Impact / Low Effort
+
 16. Audit `printer/html.go` for remaining `Finding` references (1484 lines, noted in AGENTS.md as overweight)
 17. Remove `TestDetectionMethods` hardcoded count assertion (currently asserts `len(methods) == 2`) — fragile
 18. Add `//go:build` integration test tags for slower BDD tests
@@ -142,6 +158,7 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 20. Run `go vet ./...` and fix any shadow or unreachable warnings
 
 ### Medium Impact / Medium Effort
+
 21. Introduce `buildflow` allowlist for `duplications-checker` (art-dupl has legitimate structural duplication)
 22. Add `jscpd` timeout configuration or skip in BuildFlow for this repo
 23. Remove `AGENTS.md` "Finding pipeline" paragraph (marked as separate from clone pipeline)
@@ -164,20 +181,20 @@ None. All modified packages compile. Unit tests pass. The removed code was clean
 
 ## Build & Test Summary
 
-| Check | Result | Notes |
-|-------|--------|-------|
-| `go build ./...` | ✅ | Clean |
-| `go test ./cmd/...` | ✅ | Pass |
-| `go test ./config/...` | ✅ | Pass |
-| `go test ./detection/...` | ✅ | Pass |
-| `go test ./domain/...` | ✅ | Pass |
-| `go test ./examples/...` | ✅ | Pass |
-| `go test ./pkg/artdupl/...` | ✅ | Pass |
-| `go test ./printer/...` | ✅ | Pass |
-| `go test ./bdd/...` | ⚠️ | 256/264 pass, 8 pre-existing filter failures |
-| `buildflow todo-check` | ✅ | 0 TODO comments |
-| `buildflow duplications-checker` | ❌ | 1 clone group >30 tokens (pre-existing) |
-| `buildflow jscpd` | ❌ | Signal killed (pre-existing) |
+| Check                            | Result | Notes                                        |
+| -------------------------------- | ------ | -------------------------------------------- |
+| `go build ./...`                 | ✅     | Clean                                        |
+| `go test ./cmd/...`              | ✅     | Pass                                         |
+| `go test ./config/...`           | ✅     | Pass                                         |
+| `go test ./detection/...`        | ✅     | Pass                                         |
+| `go test ./domain/...`           | ✅     | Pass                                         |
+| `go test ./examples/...`         | ✅     | Pass                                         |
+| `go test ./pkg/artdupl/...`      | ✅     | Pass                                         |
+| `go test ./printer/...`          | ✅     | Pass                                         |
+| `go test ./bdd/...`              | ⚠️     | 256/264 pass, 8 pre-existing filter failures |
+| `buildflow todo-check`           | ✅     | 0 TODO comments                              |
+| `buildflow duplications-checker` | ❌     | 1 clone group >30 tokens (pre-existing)      |
+| `buildflow jscpd`                | ❌     | Signal killed (pre-existing)                 |
 
 ---
 

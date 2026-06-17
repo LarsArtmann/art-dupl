@@ -65,7 +65,6 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
 // runStats implements the stats command.
 //
 
-//nolint:funlen // Stats command orchestrates multiple configuration steps
 func runStats(c *cobra.Command, arguments []string) error {
 	ctx := c.Context()
 	formatStr, _ := c.Flags().GetString("format")
