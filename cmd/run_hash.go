@@ -43,6 +43,7 @@ func executeHashOnlyAnalysis(
 		paths,
 		filterParam,
 		filterStats,
+		newGeneratorIncludes(cfg),
 		cfg.IncludeVendor,
 		cfg.IncludeNodeModules,
 		cfg.Only,

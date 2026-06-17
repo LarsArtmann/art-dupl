@@ -35,6 +35,7 @@ func filesFeedWithOptions(
 	fromStdin bool,
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
+	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 ) chan string {
@@ -47,7 +48,7 @@ func filesFeedWithOptions(
 				f := sc.Text()
 				path := strings.TrimPrefix(f, "./")
 
-				if !shouldIncludeFile(filter, path, filterStats) {
+				if !shouldIncludeFile(filter, path, filterStats, includes) {
 					continue
 				}
 
@@ -78,7 +79,7 @@ func filesFeedWithOptions(
 	}
 
 	return crawlPathsWithFileCheck(
-		paths, filter, filterStats,
+		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 	)
 }
@@ -88,10 +89,11 @@ func crawlPaths(
 	paths []string,
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
+	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 ) chan string {
 	return crawlPathsWithFileCheck(
-		paths, filter, filterStats,
+		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, isSourceFile,
 	)
 }
@@ -105,6 +107,7 @@ func crawlPathsAllFiles(
 	paths []string,
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
+	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
 ) chan string {
@@ -116,7 +119,7 @@ func crawlPathsAllFiles(
 	}
 
 	return crawlPathsWithFileCheck(
-		paths, filter, filterStats,
+		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 	)
 }
@@ -129,6 +132,7 @@ type fileCheckFunc func(name string) bool
 type CrawlOptions struct {
 	Filter          *gogenfilter.Filter
 	FilterStats     *FilterStats
+	Includes        generatorIncludes
 	IncludeVendor   bool
 	IncludeNodeMods bool
 	FileCheck       fileCheckFunc
@@ -139,6 +143,7 @@ func crawlPathsWithFileCheck(
 	paths []string,
 	f *gogenfilter.Filter,
 	filterStats *FilterStats,
+	includes generatorIncludes,
 	includeVendor bool,
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,
@@ -150,6 +155,7 @@ func crawlPathsWithFileCheck(
 			crawlSinglePathWithOpts(CrawlOptions{
 				Filter:          f,
 				FilterStats:     filterStats,
+				Includes:        includes,
 				IncludeVendor:   includeVendor,
 				IncludeNodeMods: includeNodeModules,
 				FileCheck:       fileCheck,
@@ -173,7 +179,7 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	}
 
 	if !info.IsDir() {
-		if shouldIncludeFile(opts.Filter, path, opts.FilterStats) &&
+		if shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) &&
 			passesFileCheck(info.Name(), opts.FileCheck) {
 			opts.FChan <- path
 		}
@@ -209,7 +215,7 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 	}
 
 	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) &&
-		shouldIncludeFile(opts.Filter, path, opts.FilterStats) {
+		shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) {
 		opts.FChan <- path
 	}
 

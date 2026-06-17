@@ -40,6 +40,7 @@ func (p buildParams) getFilesChan() chan string {
 		p.cfg.FilesFromStdin,
 		p.filterParam,
 		p.filterStats,
+		newGeneratorIncludes(p.cfg),
 		p.cfg.IncludeVendor,
 		p.cfg.IncludeNodeModules,
 		p.cfg.Only,

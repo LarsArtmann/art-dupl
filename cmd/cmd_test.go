@@ -74,6 +74,7 @@ func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount 
 		false,
 		nil,
 		nil,
+		generatorIncludes{},
 		false,
 		false,
 		config.FileType(ext),
@@ -305,7 +306,7 @@ func TestPrintVersion(t *testing.T) {
 
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
-		result := crawlPaths([]string{}, nil, nil, false, false)
+		result := crawlPaths([]string{}, nil, nil, generatorIncludes{}, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -330,7 +331,7 @@ func TestCrawlPaths(t *testing.T) {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
-		result := crawlPaths([]string{tmpFile}, nil, nil, false, false)
+		result := crawlPaths([]string{tmpFile}, nil, nil, generatorIncludes{}, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -353,6 +354,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			false,
 			(*gogenfilter.Filter)(nil),
 			nil,
+			generatorIncludes{},
 			false,
 			false,
 			"",
@@ -372,7 +374,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		ch := filesFeedWithOptions([]string{}, false, f, nil, false, false, "")
+		ch := filesFeedWithOptions([]string{}, false, f, nil, generatorIncludes{}, false, false, "")
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -411,7 +413,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	}
 
 	t.Run("all files with empty filter", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, false, false, "")
+		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, generatorIncludes{}, false, false, "")
 
 		found := make([]string, 0, 4)
 		for f := range ch {

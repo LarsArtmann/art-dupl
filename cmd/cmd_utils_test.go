@@ -331,7 +331,7 @@ func TestShouldIncludeFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := shouldIncludeFile(nil, tt.path, nil)
+			result := shouldIncludeFile(nil, tt.path, nil, generatorIncludes{})
 			if result != tt.expected {
 				t.Errorf("shouldIncludeFile(nil, %q) = %v, want %v", tt.path, result, tt.expected)
 			}
@@ -486,7 +486,7 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, nil, true, true, ""))
+		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, nil, generatorIncludes{}, true, true, ""))
 
 		// Should find all 3 fileList
 		if len(fileList) != 3 {
