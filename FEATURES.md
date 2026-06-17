@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-06-15
+> **Last Updated:** 2026-06-17
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -20,25 +20,23 @@
 
 ### Detection Methods
 
-| Feature                              | Status           | Description                                                               |
-| ------------------------------------ | ---------------- | ------------------------------------------------------------------------- |
-| **Suffix Tree Detection (art-dupl)** | FULLY_FUNCTIONAL | Ukkonen's algorithm on serialized ASTs, O(1) map-based transitions        |
-| **Hash-Based Detection**             | FULLY_FUNCTIONAL | XXH3 streaming hash (~20x faster than SHA-256), content-addressed dedup   |
-| **Multi-Detection Mode**             | FULLY_FUNCTIONAL | Run both methods simultaneously via goroutines, results deduplicated      |
-| **TODO/FIXME Detection**             | FULLY_FUNCTIONAL | `TodoDetector` → `FindFindings` → `PrintFindings` in all output formats   |
-| **Legacy Pattern Detection**         | FULLY_FUNCTIONAL | `LegacyDetector` → `FindFindings` → `PrintFindings` in all output formats |
+| Feature                              | Status           | Description                                                             |
+| ------------------------------------ | ---------------- | ----------------------------------------------------------------------- |
+| **Suffix Tree Detection (art-dupl)** | FULLY_FUNCTIONAL | Ukkonen's algorithm on serialized ASTs, O(1) map-based transitions      |
+| **Hash-Based Detection**             | FULLY_FUNCTIONAL | XXH3 streaming hash (~20x faster than SHA-256), content-addressed dedup |
+| **Multi-Detection Mode**             | FULLY_FUNCTIONAL | Run both methods simultaneously via goroutines, results deduplicated    |
 
 ### Output Formats
 
-| Feature                | Status           | Description                                                              |
-| ---------------------- | ---------------- | ------------------------------------------------------------------------ |
-| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints   |
-| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization        |
-| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, findings, summary |
-| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count        |
-| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD               |
-| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, includes findings as results   |
-| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting            |
+| Feature                | Status           | Description                                                            |
+| ---------------------- | ---------------- | ---------------------------------------------------------------------- |
+| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints |
+| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization      |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary         |
+| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count      |
+| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD             |
+| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results   |
+| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting          |
 
 ### Batch & Report Generation
 

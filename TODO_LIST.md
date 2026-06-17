@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-06-16**
+**Last Updated: 2026-06-17**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -35,24 +35,14 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
-## ✅ Completed (2026-06-16) — Findings Pipeline + Code Quality Sprint
-
-### Critical Feature
-
-- [x] Wire FindFindings through CLI output pipeline (was implemented but never called — users got zero output for `--detection-methods todos`)
-- [x] Add PrintFindings method to Printer interface (text, JSON, plumbing, HTML, SARIF, stats)
-- [x] Modify executeAnalysis to return `<-chan domain.Finding` alongside clone channel
-- [x] Wire findings output in runCmd and runAllModes
-- [x] Fix goroutine deadlock: use select on channel sends for context cancellation
-- [x] Add JSON output support for findings (JSONOutput.Findings field)
-- [x] Add SARIF output support for findings (converts to SARIFResult with findingLevel)
+## ✅ Completed (2026-06-16) — Code Quality Sprint
 
 ### Code Quality
 
 - [x] Wire InternFilename into all 4 transformer construction sites (golang parse, templ parse, NewSyntheticFileNode, incremental cache-hit path)
 - [x] Fix forcetypeassert in intern.go (replaced sync.Map with RWMutex+map for type safety)
 - [x] Add fuzz tests for templ parser (FuzzParseBytes — 2M+ execs, no panics)
-- [x] Extract spawnCloneDetection and spawnFindingDetection helpers from executeAnalysis
+- [x] Extract spawnCloneDetection helper from executeAnalysis
 - [x] All lint issues resolved (0 golangci-lint issues)
 
 ## ✅ Completed (2026-06-16) — Full TODO Sprint
@@ -67,7 +57,6 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Replace fragile fmt.Sprintf AST stringification with nodeContainsFunctionCall
 - [x] Log parse errors at Warn instead of silently returning nil
 - [x] Fix .go-arch-lint.yml sdk/pkg-utils glob overlap
-- [x] Update CLI -m help text to include todos and legacy
 - [x] Add ClonePriority.Rank() to domain
 - [x] Replace priorityScore/priorityHigher with Rank()
 
@@ -79,7 +68,6 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Add MarshalJSON/UnmarshalJSON for 3 domain enums
 - [x] Add Parse constructors for 3 domain enums
 - [x] Collapse CloneSeverity into ClonePriority
-- [x] Migrate LegacyIssue.Severity to ClonePriority
 - [x] Fix HealthScore legend
 - [x] Extract shared pkg/enum package, unify domain enums
 - [x] Add context.Context to suffixtree FindDuplOver
@@ -93,13 +81,11 @@ Actionable items planned for the next 2-4 weeks.
 - [x] Extract validateLocation helper
 - [x] Create ADR-0004
 - [x] Activate MethodDetector interface with adapter implementations
-- [x] Route TODO/legacy detections via domain.Finding + FindFindings pipeline
 - [x] Add --suppress-test-low and --test-threshold flags
 - [x] Add DescribeTable and builder/callback detection patterns
 - [x] Add string interning (InternFilename)
 - [x] Add fuzz tests for suffix tree
 - [x] Move test constants to test files
-- [x] Fix issue_helpers.go Frags filter
 
 ## ✅ Previously Completed (2026-06-15)
 

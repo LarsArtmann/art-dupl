@@ -67,8 +67,6 @@ art-dupl is a Go tool for finding code clones using suffix tree algorithms and h
 - `DetectionMethod`: Detection method options
   - `DetectionMethodArtDupl`: Original suffix tree detection
   - `DetectionMethodHash`: SHA1 hash-based detection
-  - `DetectionMethodTodos`: TODO detection
-  - `DetectionMethodLegacy`: Legacy detection
 
 **Key Functions:**
 
