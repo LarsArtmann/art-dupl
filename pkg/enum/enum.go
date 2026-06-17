@@ -57,25 +57,24 @@ func UnmarshalJSON[T ~string](
 		return zero, fmt.Errorf("%w: %q", invalidErr, strings.TrimSpace(string(data)))
 	}
 
-	val := T(str)
-	if !isValid(val) {
-		var zero T
-
-		return zero, fmt.Errorf("%w: %q", invalidErr, str)
-	}
-
-	return val, nil
+	return validate(T(str), str, isValid, invalidErr)
 }
 
 // Parse converts a raw string to an enum value with validation.
 // Returns the provided error if the string is not a valid enum value.
 func Parse[T ~string](s string, isValid func(T) bool, invalidErr error) (T, error) {
-	val := T(s)
-	if !isValid(val) {
-		var zero T
+	return validate(T(s), s, isValid, invalidErr)
+}
 
-		return zero, fmt.Errorf("%w: %q", invalidErr, s)
+// validate returns val when it satisfies isValid, otherwise the zero value of T
+// and invalidErr wrapped around displayValue. Shared by UnmarshalJSON and Parse
+// so the "check + wrap" form lives in one place.
+func validate[T ~string](val T, displayValue string, isValid func(T) bool, invalidErr error) (T, error) {
+	if isValid(val) {
+		return val, nil
 	}
 
-	return val, nil
+	var zero T
+
+	return zero, fmt.Errorf("%w: %q", invalidErr, displayValue)
 }
