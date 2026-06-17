@@ -6,8 +6,6 @@
 // Detection Methods Supported:
 // - DetectionMethodArtDupl: Suffix tree algorithm on AST tokens
 // - DetectionMethodHash: Rolling hash on file content
-// - DetectionMethodTodos: Find TODO/FIXME/HACK comments
-// - DetectionMethodLegacy: Find deprecated functions and legacy patterns
 //
 // Core Types:
 // - MultiDetector: Coordinates multiple detection methods
@@ -24,7 +22,6 @@ import (
 	"context"
 
 	"github.com/LarsArtmann/art-dupl/config"
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -53,9 +50,6 @@ func NewMultiDetector(
 // FindDuplOver runs all configured clone detection methods and streams matches.
 // The ctx is checked on every channel send — if cancelled, the goroutine
 // exits early to prevent goroutine leaks.
-//
-// Issue detections (TODO, legacy) are not included here — they produce
-// domain.Finding values via FindFindings, not clone matches.
 func (md *MultiDetector) FindDuplOver(
 	ctx context.Context,
 	threshold int,
@@ -71,51 +65,6 @@ func (md *MultiDetector) FindDuplOver(
 			md.logVerbose("Running " + detName(det) + "...")
 
 			md.streamMatches(ctx, det.FindDuplOver(ctx, threshold), resultChan)
-		}
-	}()
-
-	return resultChan
-}
-
-// FindFindings runs all configured issue detection methods (TODO, legacy)
-// and streams domain.Finding values. This is the output path for code-quality
-// findings that are not code clones.
-func (md *MultiDetector) FindFindings(ctx context.Context) <-chan domain.Finding {
-	resultChan := make(chan domain.Finding, 10)
-
-	go func() {
-		defer close(resultChan)
-
-		if md.detCfg.Methods.Contains(config.DetectionMethodTodos) {
-			md.logVerbose("Running TODO detection...")
-
-			for finding := range NewTodoDetector().FindFindings(ctx, md.data) {
-				if ctx.Err() != nil {
-					return
-				}
-
-				select {
-				case resultChan <- finding:
-				case <-ctx.Done():
-					return
-				}
-			}
-		}
-
-		if md.detCfg.Methods.Contains(config.DetectionMethodLegacy) {
-			md.logVerbose("Running legacy pattern detection...")
-
-			for finding := range NewLegacyDetector().FindFindings(ctx, md.data) {
-				if ctx.Err() != nil {
-					return
-				}
-
-				select {
-				case resultChan <- finding:
-				case <-ctx.Done():
-					return
-				}
-			}
 		}
 	}()
 

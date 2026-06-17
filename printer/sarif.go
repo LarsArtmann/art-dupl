@@ -128,7 +128,6 @@ type sarifPrinter struct {
 	startTime       time.Time
 	currentHash     string // Hash for the current clone group
 	version         string // Tool version for SARIF output
-	findings        []domain.Finding
 }
 
 // NewSARIF creates a new SARIF format printer with default settings.
@@ -255,30 +254,6 @@ func (p *sarifPrinter) findingLevel(priority domain.ClonePriority) string {
 
 // outputSARIF generates and writes the SARIF output.
 func (p *sarifPrinter) outputSARIF() error {
-	for _, f := range p.findings {
-		p.results = append(p.results, SARIFResult{
-			RuleID: "art-dupl/" + f.Type.String(),
-			Level:  p.findingLevel(f.Priority),
-			Message: SARIFMessage{
-				Text: f.Message,
-			},
-			Locations: []SARIFLocation{
-				{
-					PhysicalLocation: SARIFPhysicalLocation{
-						ArtifactLocation: SARIFArtifactLocation{
-							URI: string(f.Filename),
-						},
-						Region: SARIFRegion{
-							LineRangeMixin: LineRangeMixin{
-								StartLine: int(f.Line),
-							},
-						},
-					},
-				},
-			},
-		})
-	}
-
 	output := SARIFOutput{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 		Version: "2.1.0",

@@ -282,15 +282,13 @@ func TestSummary_AllMethodsUsed(t *testing.T) {
 		MethodsUsed: []DetectionMethod{
 			MethodArtDupl,
 			MethodHash,
-			MethodTodos,
-			MethodLegacy,
 		},
 	}
 
 	testutil.AssertFieldValue(t, summary.TotalFiles, 10, "TotalFiles")
 	testutil.AssertFieldValue(t, summary.TotalClones, 20, "TotalClones")
 	testutil.AssertFieldValue(t, summary.TotalGroups, 5, "TotalGroups")
-	assertMethodsCount(t, 4, len(summary.MethodsUsed))
+	assertMethodsCount(t, 2, len(summary.MethodsUsed))
 }
 
 // TestProgress_Zero tests Progress with zero values.

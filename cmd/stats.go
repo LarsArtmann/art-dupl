@@ -92,7 +92,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 	startProfile := job.StartProfile()
 
 	// Run analysis
-	duplChan, findingChan, parseStats, filterStats, err := executeAnalysis(
+	duplChan, parseStats, filterStats, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
@@ -101,12 +101,6 @@ func runStats(c *cobra.Command, arguments []string) error {
 	if err != nil {
 		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
-
-	// Drain findings channel to prevent goroutine leak (stats command doesn't display findings)
-	go func() {
-		for range findingChan {
-		}
-	}()
 
 	// End profiling
 	endProfile := job.EndProfile(startProfile)

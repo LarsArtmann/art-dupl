@@ -38,7 +38,7 @@ func (fp *Filepath) UnmarshalJSON(data []byte) error {
 
 // LineNumber represents a line number in a source file.
 // Line numbers start at 1 (not 0) in most editors.
-// Optimized: uint16 provides 0-65,535 range (sufficient for any source file).
+// uint16 provides 0-65,535 range (sufficient for any source file).
 type LineNumber uint16
 
 // NewLineNumber creates a validated LineNumber from a uint16.

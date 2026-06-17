@@ -61,7 +61,7 @@ func TestDetectionMethods_IsHashOnly(t *testing.T) {
 		{"hash only", DetectionMethods{DetectionMethodHash}, true},
 		{"art-dupl only", DetectionMethods{DetectionMethodArtDupl}, false},
 		{"both methods", DetectionMethods{DetectionMethodHash, DetectionMethodArtDupl}, false},
-		{"hash + other", DetectionMethods{DetectionMethodHash, DetectionMethodTodos}, false},
+		{"hash + other", DetectionMethods{DetectionMethodHash, DetectionMethodArtDupl}, false},
 	}
 
 	for _, tc := range tests {
@@ -438,22 +438,13 @@ func TestParseDetectionMethods(t *testing.T) {
 			false,
 		},
 		{"invalid", "hash,invalid", nil, true},
-		{"todos", "todos", []DetectionMethod{DetectionMethodTodos}, false},
-		{"legacy", "legacy", []DetectionMethod{DetectionMethodLegacy}, false},
-		{
-			"hash and todos",
-			"hash,todos",
-			[]DetectionMethod{DetectionMethodHash, DetectionMethodTodos},
-			false,
-		},
+
 		{
 			"all methods",
-			"hash,art-dupl,todos,legacy",
+			"hash,art-dupl",
 			[]DetectionMethod{
 				DetectionMethodHash,
 				DetectionMethodArtDupl,
-				DetectionMethodTodos,
-				DetectionMethodLegacy,
 			},
 			false,
 		},

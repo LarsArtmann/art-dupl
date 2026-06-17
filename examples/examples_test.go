@@ -51,8 +51,6 @@ func TestExamplesTypes(t *testing.T) {
 	methods := []artdupl.DetectionMethod{
 		artdupl.MethodArtDupl,
 		artdupl.MethodHash,
-		artdupl.MethodTodos,
-		artdupl.MethodLegacy,
 	}
 
 	for _, method := range methods {

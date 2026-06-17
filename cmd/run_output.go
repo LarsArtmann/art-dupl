@@ -22,7 +22,6 @@ func printDupls(
 	semantic bool,
 	suppressTestLow bool,
 	testThreshold int,
-	findings []domain.Finding,
 ) error {
 	if ctx.Err() != nil {
 		return ctx.Err() //nolint:wrapcheck
@@ -40,13 +39,6 @@ func printDupls(
 	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic, suppressTestLow, testThreshold)
 	if err != nil {
 		return fmt.Errorf("print clone groups (fread: %v, sortBy: %s): %w", fread, sortBy.String(), err)
-	}
-
-	if len(findings) > 0 {
-		err = p.PrintFindings(findings)
-		if err != nil {
-			return fmt.Errorf("print findings (%d items): %w", len(findings), err)
-		}
 	}
 
 	err = handleJSONOutput(p, threshold, sortBy, detectionMethod)

@@ -13,18 +13,12 @@ const (
 	DetectionMethodHash DetectionMethod = "hash"
 	// DetectionMethodArtDupl uses suffix tree detection.
 	DetectionMethodArtDupl DetectionMethod = "art-dupl"
-	// DetectionMethodTodos finds TODO comments.
-	DetectionMethodTodos DetectionMethod = "todos"
-	// DetectionMethodLegacy finds legacy code patterns.
-	DetectionMethodLegacy DetectionMethod = "legacy"
 )
 
 //nolint:gochecknoglobals // Lookup table for valid detection methods, initialized once at package load
 var validDetectionMethods = map[DetectionMethod]bool{
 	DetectionMethodHash:    true,
 	DetectionMethodArtDupl: true,
-	DetectionMethodTodos:   true,
-	DetectionMethodLegacy:  true,
 }
 
 // String implements fmt.Stringer.
@@ -117,8 +111,6 @@ func AllDetectionMethods() []DetectionMethod {
 	return []DetectionMethod{
 		DetectionMethodHash,
 		DetectionMethodArtDupl,
-		DetectionMethodTodos,
-		DetectionMethodLegacy,
 	}
 }
 

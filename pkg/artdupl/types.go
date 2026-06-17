@@ -20,12 +20,6 @@ const (
 
 	// MethodHash uses rolling hash on file content.
 	MethodHash DetectionMethod = "hash"
-
-	// MethodTodos detects TODO comments in code.
-	MethodTodos DetectionMethod = "todos"
-
-	// MethodLegacy uses the legacy detection algorithm.
-	MethodLegacy DetectionMethod = "legacy"
 )
 
 // String returns the string representation of the detection method.
@@ -34,7 +28,7 @@ func (m DetectionMethod) String() string { return string(m) }
 // IsValid returns true if the detection method is one of the defined constants.
 func (m DetectionMethod) IsValid() bool {
 	switch m {
-	case MethodArtDupl, MethodHash, MethodTodos, MethodLegacy:
+	case MethodArtDupl, MethodHash:
 		return true
 	default:
 		return false

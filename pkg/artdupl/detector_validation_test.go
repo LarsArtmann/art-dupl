@@ -209,8 +209,6 @@ func TestDetectionMethod_Constants(t *testing.T) {
 	}{
 		{"MethodArtDupl", MethodArtDupl},
 		{"MethodHash", MethodHash},
-		{"MethodTodos", MethodTodos},
-		{"MethodLegacy", MethodLegacy},
 	}
 
 	for _, tc := range methods {
@@ -232,14 +230,6 @@ func TestDetectionMethod_Equality(t *testing.T) {
 
 	if string(MethodHash) != string(config.DetectionMethodHash) {
 		t.Error("MethodHash should have same string value as config.DetectionMethodHash")
-	}
-
-	if string(MethodTodos) != string(config.DetectionMethodTodos) {
-		t.Error("MethodTodos should have same string value as config.DetectionMethodTodos")
-	}
-
-	if string(MethodLegacy) != string(config.DetectionMethodLegacy) {
-		t.Error("MethodLegacy should have same string value as config.DetectionMethodLegacy")
 	}
 }
 

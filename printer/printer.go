@@ -21,7 +21,6 @@ type RichTextSetter interface {
 type Printer interface {
 	PrintHeader() error
 	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error
-	PrintFindings(findings []domain.Finding) error
 	PrintFooter() error
 }
 

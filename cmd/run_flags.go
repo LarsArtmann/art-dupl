@@ -93,7 +93,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
-	duplChan, findingChan, parseStats, _, err := executeAnalysis(
+	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
 		mergedConfig.Paths,
@@ -133,8 +133,6 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Convert detection methods to comma-separated string
 	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
 
-	findings := collectFindings(findingChan)
-
 	err = printDupls(
 		ctx,
 		p,
@@ -146,7 +144,6 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.Semantic,
 		mergedConfig.SuppressTestLow,
 		mergedConfig.TestThreshold,
-		findings,
 	)
 	if err != nil {
 		return duplerrors.Wrap(
