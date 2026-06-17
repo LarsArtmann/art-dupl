@@ -14,7 +14,6 @@ type TextPrinter struct {
 	ReadFile
 
 	cnt           int
-	findingCount  int
 	w             io.Writer
 	totalSize     int
 	cloneGroups   [][]domain.ProcessedClone
@@ -119,12 +118,6 @@ func (p *TextPrinter) writeCloneHeader(clones []domain.ProcessedClone) error {
 func (p *TextPrinter) PrintFooter() error {
 	if _, err := fmt.Fprintf(p.w, "\nFound total %d clone groups.\n", p.cnt); err != nil {
 		return err
-	}
-
-	if p.findingCount > 0 {
-		if _, err := fmt.Fprintf(p.w, "Found total %d findings.\n", p.findingCount); err != nil {
-			return err
-		}
 	}
 
 	if len(p.diffHintFiles) >= 2 {

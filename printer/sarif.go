@@ -241,17 +241,6 @@ func (p *sarifPrinter) SetHash(hash string) {
 	p.currentHash = hash
 }
 
-func (p *sarifPrinter) findingLevel(priority domain.ClonePriority) string {
-	switch priority { //nolint:exhaustive // default covers remaining priorities
-	case domain.PriorityCritical, domain.PriorityHigh:
-		return sarifLevelError
-	case domain.PriorityMedium:
-		return sarifLevelWarning
-	default:
-		return sarifLevelNote
-	}
-}
-
 // outputSARIF generates and writes the SARIF output.
 func (p *sarifPrinter) outputSARIF() error {
 	output := SARIFOutput{
