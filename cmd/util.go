@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -84,7 +85,7 @@ func shouldIncludeFile(
 		return shouldIncludeFileStandard(f, path, stats)
 	}
 
-	content, err := os.ReadFile(path)
+	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return true
 	}

@@ -32,8 +32,8 @@ func TestNewLogger_NilConfig(t *testing.T) {
 		t.Error("Expected logger to be non-nil")
 	}
 
-	if _, ok := logger.(*charmLogger); !ok {
-		t.Error("Expected *charmLogger type")
+	if logger == nil {
+		t.Error("Expected logger to be non-nil")
 	}
 }
 
@@ -68,27 +68,27 @@ func TestNewLogger_InvalidLevel(t *testing.T) {
 func TestCharmLogger_Methods(t *testing.T) {
 	tests := []struct {
 		name   string
-		method func(logger Logger, msg string, args ...any)
+		method func(logger *charmLogger, msg string, args ...any)
 		msg    string
 	}{
 		{
 			name:   "Debug",
-			method: func(l Logger, msg string, args ...any) { l.Debug(msg, args...) },
+			method: func(l *charmLogger, msg string, args ...any) { l.Debug(msg, args...) },
 			msg:    "debug message",
 		},
 		{
 			name:   "Info",
-			method: func(l Logger, msg string, args ...any) { l.Info(msg, args...) },
+			method: func(l *charmLogger, msg string, args ...any) { l.Info(msg, args...) },
 			msg:    "info message",
 		},
 		{
 			name:   "Warn",
-			method: func(l Logger, msg string, args ...any) { l.Warn(msg, args...) },
+			method: func(l *charmLogger, msg string, args ...any) { l.Warn(msg, args...) },
 			msg:    "warn message",
 		},
 		{
 			name:   "Error",
-			method: func(l Logger, msg string, args ...any) { l.Error(msg, args...) },
+			method: func(l *charmLogger, msg string, args ...any) { l.Error(msg, args...) },
 			msg:    "error message",
 		},
 	}
@@ -164,14 +164,6 @@ func TestNoOpLogger(t *testing.T) {
 	logger.Info("info")
 	logger.Warn("warn")
 	logger.Error("error")
-}
-
-func TestNoOpLogger_ImplementsInterface(t *testing.T) {
-	var _ Logger = &NoOpLogger{}
-}
-
-func TestCharmLogger_ImplementsInterface(t *testing.T) {
-	var _ Logger = &charmLogger{}
 }
 
 func TestDefaultLogger(t *testing.T) {

@@ -31,12 +31,6 @@ Or build from source:
 ```bash
 git clone https://github.com/LarsArtmann/art-dupl.git
 cd art-dupl
-just build    # Creates ./dist/art-dupl
-```
-
-Or with Nix:
-
-```bash
 nix build     # Builds with Go 1.26, static binary
 nix run .#art-dupl -- ./src
 ```

@@ -9,7 +9,6 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/errors"
-	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // detector implements the Detector interface using existing dupl components.
@@ -41,7 +40,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	// Set default logger if not provided
 	if opts.Logger == nil {
-		opts.Logger = logger.Default
+		opts.Logger = noOpLogger{}
 	}
 
 	// Convert SDK options to internal config

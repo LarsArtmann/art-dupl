@@ -7,14 +7,6 @@ import (
 	"charm.land/log/v2"
 )
 
-// Logger interface for logging operations.
-type Logger interface {
-	Debug(msg string, args ...any)
-	Info(msg string, args ...any)
-	Warn(msg string, args ...any)
-	Error(msg string, args ...any)
-}
-
 // Config holds logging configuration.
 type Config struct {
 	Level        string
@@ -36,7 +28,7 @@ func DefaultConfig() *Config {
 // NewLogger creates a new logger with the given configuration.
 //
 
-func NewLogger(cfg *Config) Logger {
+func NewLogger(cfg *Config) *charmLogger {
 	if cfg == nil {
 		cfg = DefaultConfig()
 	}
@@ -113,4 +105,4 @@ func (l *NoOpLogger) Error(_ string, _ ...any) {}
 // Default returns a no-op logger by default.
 //
 //nolint:gochecknoglobals // Default logger instance for convenience
-var Default Logger = &NoOpLogger{}
+var Default = &NoOpLogger{}

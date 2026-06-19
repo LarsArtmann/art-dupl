@@ -52,9 +52,9 @@ type simpleToken TokenValue
 
 func (s simpleToken) Val() TokenValue { return TokenValue(s) }
 
-// FuzzFindDuplOverCancellation tests that context cancellation
+// FuzzCtxCancelFindDuplOver tests that context cancellation
 // properly stops the walk and closes the channel.
-func FuzzFindDuplOverCancellation(f *testing.F) {
+func FuzzCtxCancelFindDuplOver(f *testing.F) {
 	f.Add([]byte("abcdefghij"))
 
 	f.Fuzz(func(t *testing.T, data []byte) {

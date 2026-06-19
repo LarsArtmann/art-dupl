@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gogenfilter = {
-      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=8788d6c7732b51abadc6cc97d5b5e6f91243b040";
+      url = "git+ssh://git@github.com/LarsArtmann/gogenfilter?rev=6c1baabdaf12709d3ea45779e93b1a4a8f3cb898";
       flake = false;
     };
   };
@@ -28,7 +28,7 @@
       gogenfilter,
     }:
     let
-      lib = nixpkgs.lib;
+      inherit (nixpkgs) lib;
 
       version = "0.2.0";
 
@@ -38,7 +38,7 @@
       mkPackage =
         pkgs:
         let
-          buildGoModule = pkgs.buildGoModule;
+          inherit (pkgs) buildGoModule;
         in
         buildGoModule {
           pname = "art-dupl";
@@ -48,7 +48,7 @@
 
           src = lib.cleanSource ./.;
 
-          vendorHash = "sha256-P1MZ/PxmF3IUGLe9ycH7JuNOw6AsiiVx9r8rgoKKz9Q=";
+          vendorHash = "sha256-IcR8IPln7ZBB+QJP2MZKFMdr0204pgdH9IA/lIbrpjA=";
           proxyVendor = true;
 
           overrideModAttrs = old: {
