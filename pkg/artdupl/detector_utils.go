@@ -2,8 +2,6 @@ package artdupl
 
 import (
 	"fmt"
-
-	"github.com/LarsArtmann/art-dupl/config"
 )
 
 // reportProgress reports analysis progress if callback is provided.
@@ -27,20 +25,34 @@ func (d *detector) reportProgress(percentage float64, stage, currentFile string)
 
 // hashConfig creates a hash of the configuration for metadata.
 func (d *detector) hashConfig(opts *Options) string {
-	// Simple hash - in real implementation use proper hashing
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)
 }
 
-// convertOptionsToConfig converts SDK options to internal config format.
-func convertOptionsToConfig(opts *Options) *config.Config {
-	cfg := config.DefaultConfig()
-	cfg.Threshold = opts.Threshold
+// detectorConfig holds the resolved configuration used by the detector pipeline.
+// This is an SDK-internal type — no dependency on the config package.
+type detectorConfig struct {
+	Threshold        int
+	DetectionMethods []DetectionMethod
+	Semantic         bool
+}
 
-	// Convert detection methods (SDK type → config type)
-	cfg.DetectionMethods = toConfigDetectionMethods(opts.DetectionMethods)
+// convertOptionsToConfig resolves SDK Options into the internal detectorConfig.
+// Semantic defaults to true (matching config.DefaultConfig().Semantic).
+func convertOptionsToConfig(opts *Options) *detectorConfig {
+	return &detectorConfig{
+		Threshold:        opts.Threshold,
+		DetectionMethods: opts.DetectionMethods,
+		Semantic:         true,
+	}
+}
 
-	cfg.IncludeVendor = opts.IncludeVendor
-	cfg.IgnoreFiles = opts.IgnoreFiles
+// methodsToStrings converts SDK DetectionMethod values to plain strings
+// for packages that accept method names without importing the SDK types.
+func methodsToStrings(methods []DetectionMethod) []string {
+	result := make([]string, len(methods))
+	for i, m := range methods {
+		result[i] = string(m)
+	}
 
-	return cfg
+	return result
 }

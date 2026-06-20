@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 const testFilename = "test.go"
 
-// newTestConfig creates a config for testing.
-func newTestConfig() *config.Config {
-	cfg := config.DefaultConfig()
-	cfg.Threshold = 15
-
-	return cfg
+// newTestConfig creates a detectorConfig for testing.
+func newTestConfig() *detectorConfig {
+	return &detectorConfig{
+		Threshold:        15,
+		DetectionMethods: []DetectionMethod{MethodArtDupl},
+		Semantic:         true,
+	}
 }
 
 // newTestProgress creates a Progress struct with the given parameters.

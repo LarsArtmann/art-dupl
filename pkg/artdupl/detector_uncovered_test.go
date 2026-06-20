@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
@@ -76,7 +75,7 @@ func drainMatchesChannel(t *testing.T) {
 	tree := buildTestSuffixTree(data)
 
 	md := detection.NewMultiDetector(
-		config.DetectionConfig{Methods: d.config.DetectionMethods},
+		detection.Config{Methods: methodsToStrings(d.cfg.DetectionMethods)},
 		data,
 		tree,
 	)
@@ -108,7 +107,7 @@ func newTestDetector() *detector {
 		opts: &Options{
 			DetectionMethods: []DetectionMethod{MethodArtDupl},
 		},
-		config: newTestConfig(),
+		cfg: newTestConfig(),
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -19,22 +18,14 @@ func createTestNode(filename string, pos, end int32) *syntax.Node {
 	}
 }
 
-// createTestConfig creates a test configuration for MultiDetector tests.
-func createTestConfig() *config.Config {
-	return &config.Config{
-		Threshold:        15,
-		DetectionMethods: config.DetectionMethods{config.DetectionMethodArtDupl},
-	}
-}
-
 func TestMultiDetector_logVerbose(t *testing.T) {
 	t.Run("verbose enabled", func(t *testing.T) {
-		detector := &MultiDetector{detCfg: config.DetectionConfig{Verbose: true}}
+		detector := &MultiDetector{cfg: Config{Verbose: true}}
 		detector.logVerbose("Test message")
 	})
 
 	t.Run("verbose disabled", func(t *testing.T) {
-		detector := &MultiDetector{detCfg: config.DetectionConfig{Verbose: false}}
+		detector := &MultiDetector{cfg: Config{Verbose: false}}
 		detector.logVerbose("Should not print")
 	})
 }
@@ -44,20 +35,20 @@ func TestMultiDetector_FindDuplOver(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		methods config.DetectionMethods
+		methods []string
 		verbose bool
 		empty   bool
 	}{
-		{"default method", config.DetectionMethods{config.DetectionMethodArtDupl}, false, false},
-		{"hash method", config.DetectionMethods{config.DetectionMethodHash}, false, false},
+		{"default method", []string{MethodArtDupl}, false, false},
+		{"hash method", []string{MethodHash}, false, false},
 		{
 			"both methods",
-			config.DetectionMethods{config.DetectionMethodArtDupl, config.DetectionMethodHash},
+			[]string{MethodArtDupl, MethodHash},
 			false,
 			false,
 		},
-		{"verbose", config.DetectionMethods{config.DetectionMethodHash}, true, false},
-		{"empty data", config.DetectionMethods{config.DetectionMethodArtDupl}, false, true},
+		{"verbose", []string{MethodHash}, true, false},
+		{"empty data", []string{MethodArtDupl}, false, true},
 	}
 
 	for _, tc := range tests {
@@ -72,7 +63,7 @@ func TestMultiDetector_FindDuplOver(t *testing.T) {
 			}
 
 			detector := NewMultiDetector(
-				config.DetectionConfig{Methods: tc.methods, Verbose: tc.verbose},
+				Config{Methods: tc.methods, Verbose: tc.verbose},
 				data,
 				tree,
 			)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/detection"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
@@ -53,7 +52,7 @@ func (d *detector) buildAnalysisPipeline(
 		}
 	}()
 
-	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.config.Semantic)
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.Semantic)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	select {
@@ -106,8 +105,8 @@ func (d *detector) createMultiDetector(
 	data []*syntax.Node,
 	tree *suffixtree.STree,
 ) *detection.MultiDetector {
-	return detection.NewMultiDetector(config.DetectionConfig{
-		Methods: d.config.DetectionMethods,
+	return detection.NewMultiDetector(detection.Config{
+		Methods: methodsToStrings(d.cfg.DetectionMethods),
 		Verbose: d.opts.Verbose,
 	}, data, tree)
 }
@@ -120,7 +119,7 @@ func (d *detector) runDetection(
 	d.reportProgress(70, "Starting duplicate detection", "")
 
 	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(ctx, d.config.Threshold)
+	matchesChan := md.FindDuplOver(ctx, d.cfg.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {
@@ -145,7 +144,7 @@ func (d *detector) streamDetectionResults(
 	resultChan chan<- *CloneGroup,
 ) error {
 	md := d.createMultiDetector(result.data, result.tree)
-	matchesChan := md.FindDuplOver(ctx, d.config.Threshold)
+	matchesChan := md.FindDuplOver(ctx, d.cfg.Threshold)
 
 	groups, err := collectMatchesIntoGroups(ctx, matchesChan)
 	if err != nil {

@@ -27,6 +27,16 @@ func (dm DetectionMethods) IsHashOnly() bool {
 	return len(dm) == 1 && dm[0] == DetectionMethodHash
 }
 
+// Strings converts DetectionMethods to a plain []string for packages
+// that accept method names without importing config (e.g., detection.Config).
+func (dm DetectionMethods) Strings() []string {
+	result := make([]string, len(dm))
+	for i, m := range dm {
+		result[i] = string(m)
+	}
+	return result
+}
+
 // Config represents the dupl configuration with strong typing.
 //
 // Note: Config uses primitive types (int, string, bool) for JSON marshaling

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/LarsArtmann/art-dupl/config"
 )
 
 // DetectionMethod represents the method used for duplicate detection.
@@ -33,21 +31,6 @@ func (m DetectionMethod) IsValid() bool {
 	default:
 		return false
 	}
-}
-
-// toConfigDetectionMethod converts an SDK DetectionMethod to a config.DetectionMethod.
-func toConfigDetectionMethod(m DetectionMethod) config.DetectionMethod {
-	return config.DetectionMethod(string(m))
-}
-
-// toConfigDetectionMethods converts a slice of SDK DetectionMethod to config.DetectionMethods.
-func toConfigDetectionMethods(methods []DetectionMethod) config.DetectionMethods {
-	result := make(config.DetectionMethods, len(methods))
-	for i, m := range methods {
-		result[i] = toConfigDetectionMethod(m)
-	}
-
-	return result
 }
 
 // Detector is the main interface for code duplication detection.

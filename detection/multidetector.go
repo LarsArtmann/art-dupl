@@ -13,7 +13,7 @@
 //
 // Usage:
 //
-//	cfg := config.DetectionConfig{Methods: methods, Verbose: verbose}
+//	cfg := detection.Config{Methods: []string{detection.MethodArtDupl}, Verbose: verbose}
 //	md := detection.NewMultiDetector(cfg, data, tree)
 //	matches := md.FindDuplOver(ctx, threshold)
 package detection
@@ -21,7 +21,6 @@ package detection
 import (
 	"context"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -29,21 +28,21 @@ import (
 
 // MultiDetector runs multiple detection methods and combines results.
 type MultiDetector struct {
-	detCfg config.DetectionConfig
-	data   []*syntax.Node
-	tree   *suffixtree.STree
+	cfg  Config
+	data []*syntax.Node
+	tree *suffixtree.STree
 }
 
 // NewMultiDetector creates a new multi-method detector.
 func NewMultiDetector(
-	cfg config.DetectionConfig,
+	cfg Config,
 	data []*syntax.Node,
 	tree *suffixtree.STree,
 ) *MultiDetector {
 	return &MultiDetector{
-		detCfg: cfg,
-		data:   data,
-		tree:   tree,
+		cfg:  cfg,
+		data: data,
+		tree: tree,
 	}
 }
 
@@ -86,7 +85,7 @@ func hasNonEmptyFrag(frags [][]*syntax.Node) bool {
 
 // logVerbose prints verbose output if enabled.
 func (md *MultiDetector) logVerbose(message string) {
-	if md.detCfg.Verbose {
+	if md.cfg.Verbose {
 		logger.Default.Info(message)
 	}
 }

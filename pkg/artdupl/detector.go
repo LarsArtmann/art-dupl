@@ -7,14 +7,13 @@ import (
 	"slices"
 	"time"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 // detector implements the Detector interface using existing dupl components.
 type detector struct {
 	opts    *Options
-	config  *config.Config
+	cfg     *detectorConfig
 	logger  Logger
 	started time.Time
 }
@@ -52,7 +51,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	return &detector{ //nolint:exhaustruct
 		opts:   opts,
-		config: cfg,
+		cfg:    cfg,
 		logger: opts.Logger,
 	}, nil
 }
@@ -77,8 +76,8 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 			fmt.Sprintf(
 				"analysis pipeline construction failed for %d files (methods=%v, threshold=%d)",
 				len(files),
-				d.config.DetectionMethods,
-				d.config.Threshold,
+				d.cfg.DetectionMethods,
+				d.cfg.Threshold,
 			),
 		)
 	}
@@ -91,7 +90,7 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 			errors.DetectionError,
 			fmt.Sprintf(
 				"detection failed (methods=%v, nodes=%d)",
-				d.config.DetectionMethods,
+				d.cfg.DetectionMethods,
 				len(pipeline.data),
 			),
 		)

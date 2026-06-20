@@ -327,8 +327,8 @@ func executeAnalysis(
 		)
 	}
 
-	multiDetector := detection.NewMultiDetector(config.DetectionConfig{
-		Methods: cfg.DetectionMethods,
+	multiDetector := detection.NewMultiDetector(detection.Config{
+		Methods: cfg.DetectionMethods.Strings(),
 		Verbose: cfg.Verbose,
 	}, result.data, result.tree)
 

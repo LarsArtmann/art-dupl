@@ -2,8 +2,8 @@ package detection
 
 import (
 	"context"
+	"slices"
 
-	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/hash"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -85,11 +85,11 @@ func (a *hashAdapter) FindDuplOver(
 func (md *MultiDetector) buildCloneDetectors() []MethodDetector {
 	var detectors []MethodDetector
 
-	if md.detCfg.Methods.IsDefault() || md.detCfg.Methods.Contains(config.DetectionMethodArtDupl) {
+	if len(md.cfg.Methods) == 0 || slices.Contains(md.cfg.Methods, MethodArtDupl) {
 		detectors = append(detectors, &suffixTreeAdapter{tree: md.tree, data: md.data})
 	}
 
-	if md.detCfg.Methods.Contains(config.DetectionMethodHash) {
+	if slices.Contains(md.cfg.Methods, MethodHash) {
 		detectors = append(detectors, &hashAdapter{data: md.data})
 	}
 
