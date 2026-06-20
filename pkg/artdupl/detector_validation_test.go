@@ -441,8 +441,8 @@ func TestDetector_FindClones_ContextCanceled(t *testing.T) {
 	}
 }
 
-// TestDetector_FindClonesStream_NoFiles tests FindClonesStream with no files.
-func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
+// TestDetector_FindClonesStreamResult_NoFiles tests FindClonesStreamResult with no files.
+func TestDetector_FindClonesStreamResult_NoFiles(t *testing.T) {
 	opts := DefaultOptions()
 
 	detector, actualErr := NewDetector(opts)
@@ -450,14 +450,14 @@ func TestDetector_FindClonesStream_NoFiles(t *testing.T) {
 		t.Fatalf("Failed to create detector: %v", actualErr)
 	}
 
-	_, actualErr = detector.FindClonesStream(t.Context(), []string{})
+	_, actualErr = detector.FindClonesStreamResult(t.Context(), []string{})
 	if !errors.Is(actualErr, ErrNoFilesProvided) {
 		t.Errorf("Expected ErrNoFilesProvided, got: %v", actualErr)
 	}
 }
 
-// TestDetector_FindClonesStream_Cancellation tests stream detection with context cancellation.
-func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
+// TestDetector_FindClonesStreamResult_Cancellation tests stream detection with context cancellation.
+func TestDetector_FindClonesStreamResult_Cancellation(t *testing.T) {
 	opts := DefaultOptions()
 
 	detector, err := NewDetector(opts)
@@ -472,7 +472,7 @@ func TestDetector_FindClonesStream_Cancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
-	_, err = detector.FindClonesStream(ctx, []string{testFilename})
+	_, err = detector.FindClonesStreamResult(ctx, []string{testFilename})
 	if err == nil {
 		t.Error("Expected error with canceled context")
 	}

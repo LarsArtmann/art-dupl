@@ -54,7 +54,7 @@ func NewDetector(opts *Options) (Detector, error) {
 }
 
 // FindClones performs complete duplication analysis.
-// Not safe for concurrent use — see FindClonesStream for concurrent scenarios.
+// Not safe for concurrent use — see FindClonesStreamResult for concurrent scenarios.
 func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error) {
 	startTime := time.Now()
 
@@ -97,42 +97,6 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	}
 
 	return result, nil
-}
-
-// FindClonesStream provides streaming results for large projects.
-//
-// Deprecated: Use FindClonesStreamResult instead. This method silently
-// swallows pipeline errors — if the analysis fails mid-stream, the channel
-// simply closes with no indication of failure. FindClonesStreamResult
-// returns a channel of StreamResult{Group, Err} values that propagate errors.
-func (d *detector) FindClonesStream(
-	ctx context.Context,
-	files []string,
-) (<-chan *CloneGroup, error) {
-	resultChan := make(chan *CloneGroup, 10)
-
-	streamCh, err := d.FindClonesStreamResult(ctx, files)
-	if err != nil {
-		return nil, err
-	}
-
-	go func() {
-		defer close(resultChan)
-
-		for result := range streamCh {
-			if result.Err != nil {
-				d.logger.Error("Streaming analysis error: %v", result.Err)
-
-				return
-			}
-
-			if result.Group != nil {
-				resultChan <- result.Group
-			}
-		}
-	}()
-
-	return resultChan, nil
 }
 
 // FindClonesStreamResult provides streaming results with error propagation.

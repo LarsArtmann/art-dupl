@@ -128,7 +128,7 @@ func streamingExample() {
 	ctx := context.Background()
 	files := []string{"cli.go", "main.go"}
 
-	cloneChan, err := detector.FindClonesStream(ctx, files)
+	cloneChan, err := detector.FindClonesStreamResult(ctx, files)
 	if err != nil {
 		log.Printf("Stream setup failed: %v", err)
 
@@ -138,10 +138,26 @@ func streamingExample() {
 	groupCount := 0
 	totalClones := 0
 
-	for group := range cloneChan {
+	for result := range cloneChan {
+		if result.Err != nil {
+			log.Printf("Stream error: %v", result.Err)
+
+			return
+		}
+
+		if result.Group == nil {
+			continue
+		}
+
 		groupCount++
-		totalClones += len(group.Clones)
-		fmt.Printf("  Group %s: %d clones\n", group.Hash[:8]+"...", len(group.Clones))
+		totalClones += len(result.Group.Clones)
+
+		hashPreview := result.Group.Hash
+		if len(hashPreview) > 8 {
+			hashPreview = hashPreview[:8]
+		}
+
+		fmt.Printf("  Group %s...: %d clones\n", hashPreview, len(result.Group.Clones))
 	}
 
 	fmt.Printf("Streaming complete: %d groups, %d total clones\n", groupCount, totalClones)

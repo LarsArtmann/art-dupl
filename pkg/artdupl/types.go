@@ -38,11 +38,9 @@ type Detector interface {
 	// FindClones performs duplication analysis and returns complete results
 	FindClones(ctx context.Context, files []string) (*Result, error)
 
-	// FindClonesStream provides streaming results for large projects
-	FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error)
-
 	// FindClonesStreamResult provides streaming results with error propagation.
-	// The final StreamResult will have Err set if the pipeline failed.
+	// The channel emits StreamResult values. A final StreamResult with Err != nil
+	// indicates pipeline failure. The channel is always closed after all results.
 	FindClonesStreamResult(ctx context.Context, files []string) (<-chan StreamResult, error)
 
 	// Close releases any resources held by the detector

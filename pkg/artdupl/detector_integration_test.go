@@ -167,7 +167,7 @@ func TestDetector_Integration_NonExistentFile(t *testing.T) {
 	}
 }
 
-// TestDetector_Integration_StreamWithValidFiles tests FindClonesStream with valid files.
+// TestDetector_Integration_StreamWithValidFiles tests FindClonesStreamResult with valid files.
 func TestDetector_Integration_StreamWithValidFiles(t *testing.T) {
 	t.Parallel()
 
@@ -190,8 +190,8 @@ func main() {
 		cleanupDetector(t, detector)
 	})
 
-	_, err = detector.FindClonesStream(t.Context(), []string{filename})
+	_, err = detector.FindClonesStreamResult(t.Context(), []string{filename})
 	if err != nil {
-		t.Logf("FindClonesStream returned: %v", err)
+		t.Logf("FindClonesStreamResult returned: %v", err)
 	}
 }
