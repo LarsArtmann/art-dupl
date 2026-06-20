@@ -122,10 +122,10 @@ type Options struct {
 	DetectionMethods []DetectionMethod `json:"detection_methods"` // Methods to use for detection
 	Verbose          bool              `json:"verbose"`           // Enable verbose detection logging
 
-	// File processing
-	IncludeVendor bool     `json:"include_vendor"` // Include vendor directory
-	IgnoreFiles   []string `json:"ignore_files"`   // File patterns to ignore
-	MaxFileSize   int64    `json:"max_file_size"`  // Maximum file size to process
+	// File processing — the SDK takes explicit file lists, so callers
+	// filter vendor/test directories themselves before calling FindClones.
+	IgnoreFiles []string `json:"ignore_files"`  // File patterns to ignore (filepath.Match)
+	MaxFileSize int64    `json:"max_file_size"` // Maximum file size to process
 
 	// Performance tuning
 	MaxWorkers int           `json:"max_workers"` // Maximum concurrent workers
@@ -177,7 +177,6 @@ func DefaultOptions() *Options {
 	return &Options{ //nolint:exhaustruct
 		Threshold:         15,
 		DetectionMethods:  []DetectionMethod{MethodArtDupl},
-		IncludeVendor:     false,
 		MaxFileSize:       10 * 1024 * 1024, // 10MB
 		MaxWorkers:        4,
 		Timeout:           30 * time.Minute,

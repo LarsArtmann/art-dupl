@@ -152,7 +152,6 @@ func configExample() {
 	opts := &artdupl.Options{
 		Threshold:        15,
 		DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodArtDupl},
-		IncludeVendor:    false,
 		IncludeFragments: true,
 		MaxFileSize:      1024 * 1024, // 1MB
 		MaxWorkers:       2,

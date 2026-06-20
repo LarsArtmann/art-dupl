@@ -44,6 +44,9 @@ var (
 	// ErrFileTooLarge is returned when file exceeds size limit.
 	ErrFileTooLarge = errors.New("file size exceeds maximum limit")
 
+	// ErrFileIgnored is returned when a file matches an ignore pattern.
+	ErrFileIgnored = errors.New("file matched an ignore pattern")
+
 	// ErrParsingFailed is returned when file parsing fails.
 	ErrParsingFailed = errors.New("failed to parse file")
 

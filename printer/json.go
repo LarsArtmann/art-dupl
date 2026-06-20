@@ -68,7 +68,7 @@ type SimpleJSONOutput []SimpleCloneGroup
 type JSONPrinter struct {
 	ReadFile
 
-	iota        int
+	cloneIndex  int
 	w           io.Writer
 	filesCount  int
 	totalClones int
@@ -84,7 +84,7 @@ func NewJSON(w io.Writer, fread ReadFile) Printer {
 }
 
 func (p *JSONPrinter) PrintHeader() error {
-	p.iota = 0
+	p.cloneIndex = 0
 	p.totalClones = 0
 	p.cloneGroups = []CloneGroup{}
 
@@ -103,7 +103,7 @@ func (p *JSONPrinter) PrintClones(
 	group domain.ProcessedCloneGroup,
 	sortBy ...config.SortCriteria,
 ) error {
-	p.iota++
+	p.cloneIndex++
 
 	clones := group.Clones
 

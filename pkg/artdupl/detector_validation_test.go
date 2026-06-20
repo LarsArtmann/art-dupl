@@ -147,7 +147,6 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 			opts: &Options{
 				Threshold:         20,
 				DetectionMethods:  []DetectionMethod{MethodArtDupl},
-				IncludeVendor:     true,
 				IgnoreFiles:       []string{"*_test.go"},
 				MaxFileSize:       5 * 1024 * 1024,
 				MaxWorkers:        8,
@@ -235,7 +234,6 @@ func TestConvertOptionsToConfig(t *testing.T) {
 	opts := &Options{
 		Threshold:        25,
 		DetectionMethods: []DetectionMethod{MethodArtDupl, MethodHash},
-		IncludeVendor:    true,
 		IgnoreFiles:      []string{"*_test.go", "vendor/*"},
 	}
 
@@ -245,12 +243,6 @@ func TestConvertOptionsToConfig(t *testing.T) {
 
 	if len(cfg.DetectionMethods) != 2 {
 		t.Errorf("Should have 2 detection methods, got %d", len(cfg.DetectionMethods))
-	}
-
-	// IncludeVendor and IgnoreFiles remain on opts — the pipeline reads them
-	// from opts directly, not from detectorConfig.
-	if !opts.IncludeVendor {
-		t.Error("IncludeVendor should be true")
 	}
 
 	if len(opts.IgnoreFiles) != 2 {

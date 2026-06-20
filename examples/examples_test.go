@@ -237,7 +237,6 @@ func TestExamplesDetector(t *testing.T) {
 	customOpts := &artdupl.Options{
 		Threshold:         20,
 		DetectionMethods:  []artdupl.DetectionMethod{artdupl.MethodArtDupl},
-		IncludeVendor:     false,
 		MaxFileSize:       1024 * 1024,
 		MaxWorkers:        2,
 		IncludeFragments:  true,

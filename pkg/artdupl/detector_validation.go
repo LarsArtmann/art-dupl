@@ -24,6 +24,8 @@ func (d *detector) validateInputs(ctx context.Context, files []string) error {
 }
 
 // validateFile checks if a file should be processed.
+// Returns nil if the file passes all checks, or an error explaining why it was skipped.
+// The caller logs the error and skips the file — it is not a pipeline failure.
 func (d *detector) validateFile(filename string) error {
 	// Check if file exists
 	info, err := os.Stat(filename)
@@ -42,10 +44,10 @@ func (d *detector) validateFile(filename string) error {
 		)
 	}
 
-	// Check if file should be ignored
+	// Check if file matches an ignore pattern
 	for _, pattern := range d.opts.IgnoreFiles {
 		if matched, _ := filepath.Match(pattern, filepath.Base(filename)); matched {
-			return fmt.Errorf("%w: %s (ignored by pattern=%s)", ErrParsingFailed, filename, pattern)
+			return fmt.Errorf("%w: %s (matched pattern=%q)", ErrFileIgnored, filename, pattern)
 		}
 	}
 

@@ -20,7 +20,7 @@ func TestJSONPrinter_PrintHeader(t *testing.T) {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
-	testutil.AssertFieldValue(t, jsonPrinter.iota, 0, "iota")
+	testutil.AssertFieldValue(t, jsonPrinter.cloneIndex, 0, "iota")
 
 	testutil.AssertFieldValue(t, jsonPrinter.filesCount, 0, "filesCount")
 
@@ -56,7 +56,7 @@ func bar() {
 	}
 
 	jsonPrinter := printer.(*JSONPrinter)
-	testutil.AssertFieldValue(t, jsonPrinter.iota, 1, "iota")
+	testutil.AssertFieldValue(t, jsonPrinter.cloneIndex, 1, "iota")
 
 	testutil.AssertFieldValue(t, len(jsonPrinter.cloneGroups), 1, "clone groups")
 }

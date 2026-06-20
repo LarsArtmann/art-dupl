@@ -466,8 +466,8 @@ func TestValidateFile_IgnorePatternMatching(t *testing.T) {
 	}
 
 	err := d.validateFile(testFile)
-	if !errors.Is(err, ErrParsingFailed) {
-		t.Errorf("Expected ErrParsingFailed for ignored file, got %v", err)
+	if !errors.Is(err, ErrFileIgnored) {
+		t.Errorf("Expected ErrFileIgnored for ignored file, got %v", err)
 	}
 }
 
