@@ -407,7 +407,7 @@ func TestStreamDetectionResults(t *testing.T) {
 
 	err := d.streamDetectionResults(ctx, pipeline, resultChan)
 	if err != nil {
-		t.Logf("streamDetectionResults returned: %v", err)
+		t.Errorf("streamDetectionResults with valid pipeline should not error, got: %v", err)
 	}
 }
 
@@ -425,7 +425,10 @@ func TestStreamDetectionResults_Cancelled(t *testing.T) {
 
 	pipeline := &pipelineResult{data: fragNodes, tree: tree}
 
-	_ = d.streamDetectionResults(ctx, pipeline, resultChan)
+	err := d.streamDetectionResults(ctx, pipeline, resultChan)
+	if err != nil {
+		t.Errorf("streamDetectionResults with cancelled context should return nil (graceful), got: %v", err)
+	}
 }
 
 // TestConvertFragmentToClone_WithFragments tests convertFragmentToClone with IncludeFragments.
