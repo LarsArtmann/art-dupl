@@ -17,22 +17,17 @@ func assertFieldsEqual[T comparable](t *testing.T, got, expected T, name string)
 func TestDuplError(t *testing.T) {
 	cause := errors.New("cause error")
 
-	// Test error creation
-	unwrapErr := NewParseError("test.go", 42, "test message", cause)
+	unwrapErr := NewIOError("test.go", "test message", cause)
 
-	// Test error message
-	expected := "parse error at test.go:42: test message"
+	expected := "io error at test.go:0: test message"
 	if unwrapErr.Error() != expected {
 		t.Errorf("Expected '%s', got '%s'", expected, unwrapErr.Error())
 	}
 
-	// Test unwrap
 	assertUnwrapsToCause(t, unwrapErr, cause, "Unwrap should return cause error")
 
-	// Test fields
-	assertFieldsEqual(t, unwrapErr.Type, ParseError, "Type")
+	assertFieldsEqual(t, unwrapErr.Type, IOError, "Type")
 	assertFieldsEqual(t, unwrapErr.File, "test.go", "File")
-	assertFieldsEqual(t, unwrapErr.Line, 42, "Line")
 	assertFieldsEqual(t, unwrapErr.Message, "test message", "Message")
 }
 
@@ -42,9 +37,6 @@ func TestErrorTypes(t *testing.T) {
 		errFunc  func() *DuplError
 		expected ErrorType
 	}{
-		{"ParseError", func() *DuplError {
-			return NewParseError("", 0, "", nil)
-		}, ParseError},
 		{"ConfigError", func() *DuplError {
 			return NewConfigError("", nil)
 		}, ConfigError},
@@ -57,18 +49,9 @@ func TestErrorTypes(t *testing.T) {
 		{"InternalError", func() *DuplError {
 			return NewInternalError("", nil)
 		}, InternalError},
-		{"DetectionError", func() *DuplError {
-			return NewDetectionError("", nil)
-		}, DetectionError},
-		{"AnalysisError", func() *DuplError {
-			return NewAnalysisError("", nil)
-		}, AnalysisError},
 		{"FileError", func() *DuplError {
 			return NewFileError("", "", nil)
 		}, FileError},
-		{"TimeoutError", func() *DuplError {
-			return NewTimeoutError("", nil)
-		}, TimeoutError},
 	}
 
 	for _, tc := range tests {
@@ -82,30 +65,27 @@ func TestErrorTypes(t *testing.T) {
 }
 
 func TestIs(t *testing.T) {
-	parseErr := NewParseError("", 0, "", nil)
+	ioErr := NewIOError("", "", nil)
 	configErr := NewConfigError("", nil)
 
-	// Test positive cases
-	if !Is(parseErr, ParseError) {
-		t.Error("Should identify ParseError")
+	if !Is(ioErr, IOError) {
+		t.Error("Should identify IOError")
 	}
 
 	if !Is(configErr, ConfigError) {
 		t.Error("Should identify ConfigError")
 	}
 
-	// Test negative cases
-	if Is(parseErr, ConfigError) {
+	if Is(ioErr, ConfigError) {
 		t.Error("Should not match ConfigError")
 	}
 
-	if Is(configErr, ParseError) {
-		t.Error("Should not match ParseError")
+	if Is(configErr, IOError) {
+		t.Error("Should not match IOError")
 	}
 
-	// Test with standard error
 	standardErr := errors.New("standard error")
-	if Is(standardErr, ParseError) {
+	if Is(standardErr, IOError) {
 		t.Error("Should not match standard error")
 	}
 }
@@ -202,32 +182,7 @@ func TestWrapFunctions(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if !Is(tc.wrappedErr, tc.expected) {
-				t.Errorf("Expected %s type", tc.expected)
-			}
-		})
-	}
-}
-
-func TestErrorTypeString(t *testing.T) {
-	tests := []struct {
-		errorType ErrorType
-		expected  string
-	}{
-		{ParseError, "parse"},
-		{ConfigError, "config"},
-		{IOError, "io"},
-		{ValidationError, "validation"},
-		{InternalError, "internal"},
-		{DetectionError, "detection"},
-		{AnalysisError, "analysis"},
-		{FileError, "file"},
-		{TimeoutError, "timeout"},
-	}
-
-	for _, tc := range tests {
-		t.Run(string(tc.errorType), func(t *testing.T) {
-			if tc.errorType.String() != tc.expected {
-				t.Errorf("Expected %s, got %s", tc.expected, tc.errorType.String())
+				t.Errorf("Expected %s, got %v", tc.expected, tc.wrappedErr)
 			}
 		})
 	}

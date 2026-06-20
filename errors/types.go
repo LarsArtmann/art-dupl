@@ -11,17 +11,13 @@ import (
 type ErrorType string
 
 const (
-	ParseError      ErrorType = "parse"
 	ConfigError     ErrorType = "config"
 	IOError         ErrorType = "io"
 	ValidationError ErrorType = "validation"
 	InternalError   ErrorType = "internal"
-	DetectionError  ErrorType = "detection"
 	AnalysisError   ErrorType = "analysis"
 	FileError       ErrorType = "file"
-	TimeoutError    ErrorType = "timeout"
 	CacheError      ErrorType = "cache"
-	CancelledError  ErrorType = "cancelled"
 )
 
 // DuplError is the main error type with rich context.
@@ -32,46 +28,6 @@ type DuplError struct {
 	Line    int
 	Cause   error
 	Stack   string
-}
-
-// EnumValidationError provides domain-specific error context for enum validation failures.
-type EnumValidationError struct {
-	DuplError
-
-	EnumValue string
-	EnumType  string
-}
-
-// NewEnumValidationError creates a new enum validation error with rich context.
-func NewEnumValidationError(enumType, enumValue string, cause error) *EnumValidationError {
-	return &EnumValidationError{
-		DuplError: DuplError{ //nolint:exhaustruct
-			Type:    ValidationError,
-			Message: fmt.Sprintf("enum validation error: type=%s, value=%q", enumType, enumValue),
-			Cause:   cause,
-			Stack:   string(debug.Stack()),
-		},
-		EnumValue: enumValue,
-		EnumType:  enumType,
-	}
-}
-
-// Error implements the error interface for EnumValidationError.
-func (e *EnumValidationError) Error() string {
-	return fmt.Sprintf("enum validation failed: type=%s, value=%q (file: %s:%d)",
-		e.EnumType, e.EnumValue, e.File, e.Line)
-}
-
-// NewParseError creates a new parse error with context.
-func NewParseError(file string, line int, msg string, cause error) *DuplError {
-	return &DuplError{
-		Type:    ParseError,
-		Message: msg,
-		File:    file,
-		Line:    line,
-		Cause:   cause,
-		Stack:   string(debug.Stack()),
-	}
 }
 
 // newError creates a new error with the specified type.
@@ -113,19 +69,6 @@ func NewInternalError(
 	return newError(InternalError, msg, cause)
 }
 
-// NewDetectionError creates a new detection error.
-func NewDetectionError(msg string, cause error) *DuplError {
-	return newError(DetectionError, msg, cause)
-}
-
-// NewAnalysisError creates a new analysis error.
-func NewAnalysisError(
-	msg string,
-	cause error,
-) *DuplError {
-	return newError(AnalysisError, msg, cause)
-}
-
 // NewFileError creates a new file error with context.
 func NewFileError(file, msg string, cause error) *DuplError {
 	return &DuplError{ //nolint:exhaustruct // Line optional for file errors
@@ -135,19 +78,6 @@ func NewFileError(file, msg string, cause error) *DuplError {
 		Cause:   cause,
 		Stack:   string(debug.Stack()),
 	}
-}
-
-// NewTimeoutError creates a new timeout error.
-func NewTimeoutError(
-	msg string,
-	cause error,
-) *DuplError {
-	return newError(TimeoutError, msg, cause)
-}
-
-// NewCancelledError creates a new cancelled error for user-initiated cancellation.
-func NewCancelledError(msg string, cause error) *DuplError {
-	return newError(CancelledError, msg, cause)
 }
 
 // Error implements the error interface.
@@ -274,9 +204,4 @@ func WrapFile(err error, file, operation string) error {
 	}
 
 	return NewFileError(file, operation, err)
-}
-
-// String returns the string name of an ErrorType.
-func (et ErrorType) String() string {
-	return string(et)
 }
