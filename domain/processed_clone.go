@@ -161,11 +161,6 @@ func (a CloneActionability) IsValid() bool {
 // String returns the string representation of the actionability.
 func (a CloneActionability) String() string { return string(a) }
 
-// ParseClonePriority parses a string into a ClonePriority, returning an error if invalid.
-func ParseClonePriority(s string) (ClonePriority, error) {
-	return enum.Parse[ClonePriority](s, ClonePriority.IsValid, ErrInvalidClonePriority)
-}
-
 // MarshalJSON implements json.Marshaler for ClonePriority.
 func (p ClonePriority) MarshalJSON() ([]byte, error) {
 	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority) //nolint:wrapcheck
@@ -183,11 +178,6 @@ func (p *ClonePriority) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ParseCloneCategory parses a string into a CloneCategory, returning an error if invalid.
-func ParseCloneCategory(s string) (CloneCategory, error) {
-	return enum.Parse[CloneCategory](s, CloneCategory.IsValid, ErrInvalidCloneCategory)
-}
-
 // MarshalJSON implements json.Marshaler for CloneCategory.
 func (c CloneCategory) MarshalJSON() ([]byte, error) {
 	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory) //nolint:wrapcheck
@@ -203,11 +193,6 @@ func (c *CloneCategory) UnmarshalJSON(data []byte) error {
 	*c = parsed
 
 	return nil
-}
-
-// ParseCloneActionability parses a string into a CloneActionability, returning an error if invalid.
-func ParseCloneActionability(s string) (CloneActionability, error) {
-	return enum.Parse[CloneActionability](s, CloneActionability.IsValid, ErrInvalidCloneActionability)
 }
 
 // MarshalJSON implements json.Marshaler for CloneActionability.
