@@ -1,34 +1,31 @@
-// art-dupl is a fast, type-safe code duplication detector for Go projects.
+// art-dupl is a fast code duplication detector for Go projects.
 //
 // FEATURES:
 // - Fast suffix tree algorithm for syntax-level clone detection
-// - Type-safe domain model with validation at construction
-// - Multiple detection methods: syntax-level, hash-based, TODO comments, legacy patterns
-// - Multiple output formats: text, HTML, JSON, plumbing
+// - Multiple detection methods: syntax-level (art-dupl), hash-based
+// - Multiple output formats: text, HTML, JSON, plumbing, SARIF
 // - Comprehensive statistics: duplication ratio, health score, complexity metrics
-// - SIMD-optimized performance for large codebases
+// - Semantic matching (normalizes identifiers and operators)
 //
 // ARCHITECTURE:
-// - domain/: Value objects and entities (LineNumber, Threshold, Clone, CloneGroup, Analysis)
+// - domain/: Core domain types (ProcessedClone, enums, validation)
 // - syntax/: Unified AST representation for language-agnostic processing
 // - suffixtree/: Suffix tree data structure for efficient duplicate searching
-// - detection/: Multi-method detection coordination (art-dupl, hash, todos, legacy)
-// - config/: Configuration management with type-safe enums
+// - detection/: Multi-method detection coordination (art-dupl, hash)
+// - config/: Configuration management with typed enums
 // - errors/: Rich error types with context and wrapping
 // - printer/: Output formatting with multiple formats
 //
-// TYPE SAFETY:
-// - Domain types prevent accidental type mismatches (e.g., LineNumber vs int)
-// - Validation enforced at construction (domain.NewThreshold(), etc.)
-// - Typed marshaling functions for JSON (SafeMarshalConfig, SafeMarshalClone, etc.)
-// - Idiomatic Go error handling: (T, error) returns with rich error context
+// ERROR HANDLING:
+// - Idiomatic Go: (T, error) returns with rich error context
+// - Typed error sentinels for sentinel comparison via errors.Is()
+// - Domain validation via ProcessedClone.Validate()
 //
 // PERFORMANCE:
 // - O(n) suffix tree construction where n = sequence length
-// - O(n) duplicate search with typical code
-// - SIMD-optimized transition search for >8 transitions
+// - O(1) map-based transition lookup (optimized from O(n) linear search)
 // - Memory-optimized node layout (40B per node, 37.5% reduction)
-// - String interning for duplicate strings (StringInternPool)
+// - String interning for duplicate strings (InternFilename)
 //
 // USAGE:
 //
@@ -55,8 +52,7 @@
 // GETTING STARTED:
 // - See README.md for detailed documentation
 // - See docs/ directory for architecture decisions
-// - See examples/ directory for usage examples
-// - See domain/domain_types.go for available domain types
+// - See HOW_TO_USE.md for CLI usage
 //
 // PACKAGE ORGANIZATION:
 // - domain/: Core domain model (value objects, entities, enums)
