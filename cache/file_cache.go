@@ -176,7 +176,9 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	}
 
 	fc.metadata.UpdatedAt = time.Now()
-	if err := fc.saveMetadata(); err != nil {
+
+	err = fc.saveMetadata()
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "warning: failed to save cache metadata: %v\n", err)
 	}
 

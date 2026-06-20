@@ -38,7 +38,12 @@ func MarshalJSON[T ~string](val T, isValid func(T) bool, invalidErr error) ([]by
 		return nil, fmt.Errorf("%w: %q", invalidErr, val)
 	}
 
-	return json.Marshal(string(val))
+	data, err := json.Marshal(string(val))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal enum value: %w", err)
+	}
+
+	return data, nil
 }
 
 // UnmarshalJSON unmarshals JSON data into a string-based enum value.

@@ -158,7 +158,7 @@ func (d *detector) FindClonesStreamResult(
 
 // wrapValidationError wraps a validation error with context about the operation.
 func (d *detector) wrapValidationError(err error, operation string, fileCount int) error {
-	return fmt.Errorf("input validation failed for "+operation+"%d files: %w", fileCount, err)
+	return fmt.Errorf("input validation failed for %s %d files: %w", operation, fileCount, err)
 }
 
 // validateInputsWithContext validates inputs and returns the error if validation fails.

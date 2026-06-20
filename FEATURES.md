@@ -148,7 +148,7 @@
 
 | Feature                | Status           | Description                                                 |
 | ---------------------- | ---------------- | ----------------------------------------------------------- |
-| **Detector Interface** | FULLY_FUNCTIONAL | `FindClones()`, `FindClonesStreamResult()`, `Close()`           |
+| **Detector Interface** | FULLY_FUNCTIONAL | `FindClones()`, `FindClonesStreamResult()`, `Close()`       |
 | **Options Builder**    | FULLY_FUNCTIONAL | Full configuration via `Options` struct                     |
 | **Progress Callbacks** | FULLY_FUNCTIONAL | Stage, completed, total, percentage, current file           |
 | **Result Type**        | FULLY_FUNCTIONAL | CloneGroups, Summary, Metadata                              |
@@ -173,19 +173,19 @@
 
 ## 🏗️ Architecture Components
 
-| Component        | Status           | Description                                                            |
-| ---------------- | ---------------- | ---------------------------------------------------------------------- |
-| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions                       |
-| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                        |
-| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                        |
-| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML            |
-| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                          |
-| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                    |
-| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                             |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys                                  |
-| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels             |
-| **errors/**      | FULLY_FUNCTIONAL | 6 error types, typed wrapping, stack traces                           |
-| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                |
+| Component        | Status           | Description                                                 |
+| ---------------- | ---------------- | ----------------------------------------------------------- |
+| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions            |
+| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization             |
+| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental             |
+| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML |
+| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                               |
+| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                         |
+| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                  |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys                       |
+| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels  |
+| **errors/**      | FULLY_FUNCTIONAL | 6 error types, typed wrapping, stack traces                 |
+| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc     |
 
 ---
 
@@ -199,10 +199,10 @@
 
 ## 🚫 Known Limitations
 
-| Limitation                  | Impact | Description                                                                          |
-| --------------------------- | ------ | ------------------------------------------------------------------------------------ |
-| **Go & Templ Only**         | High   | Only `.go` and `.templ` files supported                                              |
-| **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
+| Limitation                  | Impact   | Description                                                                                           |
+| --------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| **Go & Templ Only**         | High     | Only `.go` and `.templ` files supported                                                               |
+| **No Git-Diff Incremental** | Low      | Only content-hash caching (`--incremental`); git-diff file selection not implemented                  |
 | **SDK Stream Errors**       | Resolved | `FindClonesStream` removed; `FindClonesStreamResult` propagates errors via `StreamResult{Group, Err}` |
 
 ---
