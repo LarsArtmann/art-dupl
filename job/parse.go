@@ -66,7 +66,15 @@ func Parse(
 
 			lineCount += lines
 
-			achan <- ast
+			select {
+			case achan <- ast:
+			case <-ctx.Done():
+				statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+
+				close(achan)
+
+				return
+			}
 		}
 
 		statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
@@ -110,7 +118,7 @@ func ParseParallel(
 
 	go closeResultChan(&wg, resultChan)
 
-	go collectResults(resultChan, achan, statsChan)
+	go collectResults(ctx, resultChan, achan, statsChan)
 
 	// serialize
 	schan := make(chan []*syntax.Node)
@@ -151,7 +159,12 @@ func startWorkers(
 				}
 
 				result := parseFileWithConfig(file, semantic)
-				resultChan <- result
+
+				select {
+				case resultChan <- result:
+				case <-ctx.Done():
+					return
+				}
 			}
 		})
 	}
@@ -187,6 +200,7 @@ func closeResultChan(wg *sync.WaitGroup, resultChan chan parseResult) {
 
 // collectResults collects parse results and forwards AST nodes.
 func collectResults(
+	ctx context.Context,
 	resultChan <-chan parseResult,
 	achan chan<- *syntax.Node,
 	statsChan chan<- ParseStats,
@@ -204,7 +218,16 @@ func collectResults(
 		fileCount++
 
 		lineCount += result.lines
-		achan <- result.ast
+
+		select {
+		case achan <- result.ast:
+		case <-ctx.Done():
+			statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
+
+			close(achan)
+
+			return
+		}
 	}
 
 	statsChan <- ParseStats{ParseStatsMixin: ParseStatsMixin{FilesCount: fileCount, LinesCount: lineCount}}
@@ -224,7 +247,14 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 		}
 
 		seq := syntax.Serialize(ast)
-		schan <- seq
+
+		select {
+		case schan <- seq:
+		case <-ctx.Done():
+			close(schan)
+
+			return
+		}
 	}
 
 	close(schan)
