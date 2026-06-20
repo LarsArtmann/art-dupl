@@ -41,7 +41,7 @@ func createPrinter(
 		return printer.NewJSON
 	case config.OutputFormatSARIF:
 		return func(dst io.Writer, src printer.ReadFile) printer.Printer {
-			return printer.NewSARIFWithConfig(dst, src, printer.SARIFConfig{
+			return printer.NewSARIFWithConfig(dst, src, printer.SARIFPrinterOptions{
 				Threshold: threshold,
 				Version:   version,
 			})

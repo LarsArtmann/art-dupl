@@ -23,7 +23,7 @@ func createTestSARIFNodes(filename string, startPos, endPos int32) []*syntax.Nod
 }
 
 func newTestSARIFPrinter(buf *bytes.Buffer, version string) *sarifPrinter {
-	return NewSARIFWithConfig(buf, mockSARIFReadFile, SARIFConfig{
+	return NewSARIFWithConfig(buf, mockSARIFReadFile, SARIFPrinterOptions{
 		Threshold: 15,
 		Version:   version,
 	}).(*sarifPrinter)

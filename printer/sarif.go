@@ -132,20 +132,20 @@ type sarifPrinter struct {
 
 // NewSARIF creates a new SARIF format printer with default settings.
 func NewSARIF(w io.Writer, fread ReadFile, threshold int) Printer {
-	return NewSARIFWithConfig(w, fread, SARIFConfig{
+	return NewSARIFWithConfig(w, fread, SARIFPrinterOptions{
 		Threshold: threshold,
 		Version:   "dev",
 	})
 }
 
-// SARIFConfig contains configuration for SARIF output.
-type SARIFConfig struct {
+// SARIFPrinterOptions contains configuration for SARIF output.
+type SARIFPrinterOptions struct {
 	Threshold int
 	Version   string
 }
 
 // NewSARIFWithConfig creates a new SARIF format printer with explicit config.
-func NewSARIFWithConfig(w io.Writer, fread ReadFile, cfg SARIFConfig) Printer {
+func NewSARIFWithConfig(w io.Writer, fread ReadFile, cfg SARIFPrinterOptions) Printer {
 	return &sarifPrinter{
 		w:               w,
 		ReadFile:        fread,
