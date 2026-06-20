@@ -48,6 +48,24 @@ const (
 	NonActionable CloneActionability = "non-actionable"
 )
 
+// CloneType represents the standard code clone taxonomy (Bellon et al.).
+type CloneType string
+
+const (
+	// CloneType1 is an exact copy-paste: identical text (except whitespace/comments).
+	// In semantic mode, all clones are Type 1 because identifiers and literals
+	// are encoded into the token hash.
+	CloneType1 CloneType = "type-1"
+	// CloneType2 is a parameterized copy: same structure, different identifier
+	// names or literal values. Detected when Name fields differ across fragments
+	// but the AST structure is identical.
+	CloneType2 CloneType = "type-2"
+	// CloneType3 is a near-miss clone: small structural differences (added,
+	// deleted, or modified statements). Future capability — not currently
+	// detected by the suffix tree algorithm.
+	CloneType3 CloneType = "type-3"
+)
+
 // priorityData holds display data for priorities.
 type priorityData struct {
 	color string
@@ -161,6 +179,36 @@ func (a CloneActionability) IsValid() bool {
 // String returns the string representation of the actionability.
 func (a CloneActionability) String() string { return string(a) }
 
+// IsValid returns true if the clone type is one of the defined constants.
+func (t CloneType) IsValid() bool {
+	switch t {
+	case CloneType1, CloneType2, CloneType3:
+		return true
+	default:
+		return false
+	}
+}
+
+// String returns the string representation of the clone type.
+func (t CloneType) String() string { return string(t) }
+
+// MarshalJSON implements json.Marshaler for CloneType.
+func (t CloneType) MarshalJSON() ([]byte, error) {
+	return enum.MarshalJSON(t, CloneType.IsValid, ErrInvalidCloneType) //nolint:wrapcheck
+}
+
+// UnmarshalJSON implements json.Unmarshaler for CloneType.
+func (t *CloneType) UnmarshalJSON(data []byte) error {
+	parsed, err := enum.UnmarshalJSON(data, CloneType.IsValid, ErrInvalidCloneType)
+	if err != nil {
+		return err //nolint:wrapcheck // domain sentinel passed through
+	}
+
+	*t = parsed
+
+	return nil
+}
+
 // MarshalJSON implements json.Marshaler for ClonePriority.
 func (p ClonePriority) MarshalJSON() ([]byte, error) {
 	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority) //nolint:wrapcheck
@@ -228,6 +276,7 @@ type CloneClassification struct {
 	IsTest        bool
 	Priority      ClonePriority
 	Actionability CloneActionability
+	CloneType     CloneType
 	Tokens        int
 	Lines         int
 	Suggestion    string

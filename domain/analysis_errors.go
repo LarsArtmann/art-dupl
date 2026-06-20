@@ -7,6 +7,7 @@ var (
 	ErrInvalidCloneCategory      = errors.New("invalid clone category")
 	ErrInvalidClonePriority      = errors.New("invalid clone priority")
 	ErrInvalidCloneActionability = errors.New("invalid clone actionability")
+	ErrInvalidCloneType          = errors.New("invalid clone type")
 	ErrInvalidHealthScore        = errors.New("invalid health score")
 	ErrEmptyFilename             = errors.New("filename cannot be empty")
 	ErrLineEndBeforeStart        = errors.New("line end is before line start")
