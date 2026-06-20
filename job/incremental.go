@@ -8,6 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/cache"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // IncrementalParser parses files with caching support.
@@ -15,25 +16,25 @@ import (
 type IncrementalParser struct {
 	cache      *cache.FileCache
 	clearCache bool
-	semantic   bool
+	mode       golang.DetectionMode
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
-func NewIncrementalParser(cacheDir string, clearCache, semantic bool) *IncrementalParser {
+func NewIncrementalParser(cacheDir string, clearCache bool, mode golang.DetectionMode) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
 		"cacheDir",
 		cacheDir,
 		"clearCache",
 		clearCache,
-		"semantic",
-		semantic,
+		"mode",
+		mode,
 	)
 
 	return &IncrementalParser{
 		cache:      cache.NewFileCache(cacheDir),
 		clearCache: clearCache,
-		semantic:   semantic,
+		mode:       mode,
 	}
 }
 
@@ -150,7 +151,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		lines int
 	)
 
-	ast, lines, err = ParseFileByExtensionWithConfig(file, ip.semantic)
+	ast, lines, err = ParseFileByExtensionWithConfig(file, ip.mode)
 	if err != nil {
 		return ip.handleFileError(
 			file,

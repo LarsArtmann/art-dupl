@@ -8,12 +8,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
-// ParseFileByExtensionWithConfig parses a file based on its extension with semantic mode configuration.
-// When semantic is true, identifier names are included in the type hash (reduces false positives).
-// When semantic is false, only AST structure is considered (structural matching).
+// ParseFileByExtensionWithConfig parses a file based on its extension with the
+// given detection mode. The mode controls how identifier names participate in
+// matching (Exact/Semantic/Structural).
 func ParseFileByExtensionWithConfig(
 	file string,
-	semantic bool,
+	mode golang.DetectionMode,
 ) (*syntax.Node, int, error) {
 	var (
 		ast   *syntax.Node
@@ -26,11 +26,6 @@ func ParseFileByExtensionWithConfig(
 		ast, lines, err = templ.ParseWithLineCount(file)
 	default:
 		// Default to Go parser for .go files and any other files that reach here
-		mode := golang.DetectionModeStructural
-		if semantic {
-			mode = golang.DetectionModeSemantic
-		}
-
 		cfg := golang.ParseConfig{Mode: mode}
 		ast, lines, err = golang.ParseWithLineCountConfig(file, cfg)
 	}

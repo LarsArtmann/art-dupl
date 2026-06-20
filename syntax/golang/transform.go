@@ -29,7 +29,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Elt))
 
 	case *ast.AssignStmt:
-		o.Type = encodeSemanticType(AssignStmt, n.Tok.String(), t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(AssignStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
 		for _, e := range n.Rhs {
 			o.AddChildren(t.trans(e))
 		}
@@ -39,10 +39,10 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BasicLit:
-		o.Type = encodeSemanticType(BasicLit, n.Value, t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(BasicLit, n.Value, t.config.Mode.hashesIdentifiers())
 
 	case *ast.BinaryExpr:
-		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.X), t.trans(n.Y))
 
 	case *ast.BlockStmt:
@@ -109,7 +109,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.Field:
-		if t.config.Mode.IsSemantic() && t.inInterface {
+		if t.config.Mode.hashesIdentifiers() && t.inInterface {
 			o.Type = encodeSemanticType(Field, "~interface~", true)
 		} else {
 			o.Type = Field
@@ -144,6 +144,11 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Body))
 
 	case *ast.FuncDecl:
+		// Alpha-normalization: build the per-function symbol table before
+		// transforming the body so every Ident resolves to its canonical name.
+		t.norm.beginFunction()
+		t.norm.collectFunctionLocals(n)
+
 		// Semantic hashing: combine receiver type and function name
 		// This makes methods on different types semantically distinct,
 		// reducing false positives for template patterns like enums.
@@ -151,7 +156,7 @@ func (t *transformer) trans(
 		funcName := n.Name.Name
 		o.Type = encodeSemanticTypeMulti(
 			FuncDecl,
-			t.config.Mode.IsSemantic(),
+			t.config.Mode.hashesIdentifiers(),
 			receiverType,
 			funcName,
 		)
@@ -164,7 +169,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Type), t.trans(n.Body))
 
 	case *ast.FuncType:
-		if t.config.Mode.IsSemantic() && t.inInterface {
+		if t.config.Mode.hashesIdentifiers() && t.inInterface {
 			o.Type = encodeSemanticType(FuncType, "~interface~", true)
 		} else {
 			o.Type = FuncType
@@ -186,7 +191,15 @@ func (t *transformer) trans(
 
 	case *ast.Ident:
 		o.Name = n.Name
-		o.Type = encodeSemanticType(Ident, n.Name, t.config.Mode.IsSemantic())
+		// Alpha-normalize the name used for hashing (Semantic mode only).
+		// o.Name keeps the original identifier so clone-type classification
+		// can still distinguish Type 1 (same names) from Type 2 (renamed).
+		nameForHash := n.Name
+		if t.config.Mode.normalizesLocals() {
+			nameForHash = t.norm.resolve(n.Name)
+		}
+
+		o.Type = encodeSemanticType(Ident, nameForHash, t.config.Mode.hashesIdentifiers())
 
 	case *ast.IfStmt:
 		o.Type = IfStmt
@@ -196,7 +209,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Else)
 
 	case *ast.IncDecStmt:
-		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.IndexExpr:
@@ -252,7 +265,7 @@ func (t *transformer) trans(
 
 	case *ast.SelectorExpr:
 		o.Name = n.Sel.Name
-		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.X), t.trans(n.Sel))
 
 	case *ast.SendStmt:
@@ -287,7 +300,7 @@ func (t *transformer) trans(
 
 	case *ast.TypeSpec:
 		o.Name = n.Name.Name
-		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.Name))
 		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Type))
@@ -298,7 +311,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
 
 	case *ast.UnaryExpr:
-		o.Type = encodeSemanticType(UnaryExpr, n.Op.String(), t.config.Mode.IsSemantic())
+		o.Type = encodeSemanticType(UnaryExpr, n.Op.String(), t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.ValueSpec:

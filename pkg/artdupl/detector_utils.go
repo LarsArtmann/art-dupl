@@ -2,6 +2,8 @@ package artdupl
 
 import (
 	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // reportProgress reports analysis progress if callback is provided.
@@ -36,6 +38,17 @@ type detectorConfig struct {
 	Threshold        int
 	DetectionMethods []DetectionMethod
 	Semantic         bool
+}
+
+// toDetectionMode maps the SDK's Semantic bool to a golang.DetectionMode.
+// The SDK exposes two modes: Semantic (alpha-normalized, default) and
+// Structural. The Exact mode is a CLI-only feature.
+func (c *detectorConfig) toDetectionMode() golang.DetectionMode {
+	if c.Semantic {
+		return golang.DetectionModeSemantic
+	}
+
+	return golang.DetectionModeStructural
 }
 
 // convertOptionsToConfig resolves SDK Options into the internal detectorConfig.

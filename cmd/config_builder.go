@@ -106,6 +106,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"include-generic":      &cfg.IncludeGeneric,
 		"incremental":          &cfg.Incremental,
 		"semantic":             &cfg.Semantic,
+		"exact":                &cfg.Exact,
 		"rich-text":            &cfg.RichText,
 		"clear-cache":          &cfg.ClearCache,
 		"suppress-test-low":    &cfg.SuppressTestLow,
@@ -181,14 +182,23 @@ func configFile(cmd *cobra.Command) string {
 	return val
 }
 
-// validateMutualExclusion checks that semantic and structural are not both explicitly set.
+// validateMutualExclusion checks that the detection-mode flags are not
+// combined incompatibly. --semantic, --exact, and --structural select one mode.
 func validateMutualExclusion(cmd *cobra.Command) error {
 	semanticSet := cmd.Flags().Changed("semantic")
 	structuralSet := cmd.Flags().Changed("structural")
+	exactSet := cmd.Flags().Changed("exact")
 
 	if semanticSet && structuralSet {
 		return duplerrors.NewValidationError(
 			"cannot use both --semantic and --structural flags; these are mutually exclusive",
+			nil,
+		)
+	}
+
+	if exactSet && structuralSet {
+		return duplerrors.NewValidationError(
+			"cannot use both --exact and --structural flags; these are mutually exclusive",
 			nil,
 		)
 	}

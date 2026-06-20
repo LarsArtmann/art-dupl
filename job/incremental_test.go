@@ -7,6 +7,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 func waitForParsedNodes(
@@ -64,7 +65,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -95,7 +96,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -140,7 +141,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -153,7 +154,7 @@ func main() {
 		// Drain channel
 	}
 
-	parserWithClear := NewIncrementalParser(cacheDir, true, true)
+	parserWithClear := NewIncrementalParser(cacheDir, true, golang.DetectionModeSemantic)
 
 	fchan2 := make(chan string, 1)
 	fchan2 <- setup.GetFilePath("test.go")
@@ -174,7 +175,7 @@ func TestIncrementalParserContextCancellation(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	cancel, fchan := cancelledContextAndChannel(t.Context())
 
 	schan, _ := parser.ParseIncremental(t.Context(), fchan)
@@ -189,7 +190,7 @@ func TestIncrementalParserNonexistentFile(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)
@@ -242,7 +243,7 @@ func function2() {
 		t.Fatalf("Failed to create test files: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 2)
@@ -287,7 +288,7 @@ func main() {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	parser := NewIncrementalParser(cacheDir, false, true)
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
 	fchan := make(chan string, 1)

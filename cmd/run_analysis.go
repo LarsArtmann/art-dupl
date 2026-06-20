@@ -99,7 +99,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	incParser := job.NewIncrementalParser(
 		params.cfg.CacheDir,
 		params.cfg.ClearCache,
-		params.cfg.Semantic,
+		detectionMode(params.cfg),
 	)
 
 	filesChan := params.getFilesChan()
@@ -135,10 +135,10 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 			params.ctx,
 			filesChan,
 			params.cfg.Workers,
-			params.cfg.Semantic,
+			detectionMode(params.cfg),
 		)
 	} else {
-		schan, statsChan = job.Parse(params.ctx, filesChan, params.cfg.Semantic)
+		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg))
 	}
 
 	tree, data, done := job.BuildTree(params.ctx, schan)

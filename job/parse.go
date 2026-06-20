@@ -7,6 +7,7 @@ import (
 
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // ParseStats holds statistics from the parsing phase.
@@ -22,11 +23,11 @@ type parseResult struct {
 }
 
 // Parse parses files sequentially (legacy behavior).
-// When semantic is true, identifier names are included in type hashes.
+// mode controls how identifier names participate in matching.
 func Parse(
 	ctx context.Context,
 	fchan chan string,
-	semantic bool,
+	mode golang.DetectionMode,
 ) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
@@ -57,7 +58,7 @@ func Parse(
 
 			// Dispatch to appropriate parser based on file extension
 
-			ast, lines, err = ParseFileByExtensionWithConfig(file, semantic)
+			ast, lines, err = ParseFileByExtensionWithConfig(file, mode)
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 
@@ -91,12 +92,12 @@ func Parse(
 
 // ParseParallel parses files concurrently using a worker pool.
 // Workers defaults to runtime.GOMAXPROCS(0) if <= 0.
-// When semantic is true, identifier names are included in type hashes.
+// mode controls how identifier names participate in matching.
 func ParseParallel(
 	ctx context.Context,
 	fchan chan string,
 	workers int,
-	semantic bool,
+	mode golang.DetectionMode,
 ) (chan []*syntax.Node, chan ParseStats) {
 	workers = normalizeWorkerCount(workers)
 
@@ -108,7 +109,7 @@ func ParseParallel(
 
 	fileQueue := make(chan string, workers*2)
 
-	startWorkers(ctx, &wg, fileQueue, resultChan, workers, semantic)
+	startWorkers(ctx, &wg, fileQueue, resultChan, workers, mode)
 
 	// Feed files to workers
 	go feedFiles(ctx, fchan, fileQueue)
@@ -147,7 +148,7 @@ func startWorkers(
 	fileQueue <-chan string,
 	resultChan chan<- parseResult,
 	workers int,
-	semantic bool,
+	mode golang.DetectionMode,
 ) {
 	for range workers {
 		wg.Go(func() {
@@ -158,7 +159,7 @@ func startWorkers(
 				default:
 				}
 
-				result := parseFileWithConfig(file, semantic)
+				result := parseFileWithConfig(file, mode)
 
 				select {
 				case resultChan <- result:
@@ -170,9 +171,9 @@ func startWorkers(
 	}
 }
 
-// parseFileWithConfig parses a single file with semantic configuration.
-func parseFileWithConfig(file string, semantic bool) parseResult {
-	ast, lines, err := ParseFileByExtensionWithConfig(file, semantic)
+// parseFileWithConfig parses a single file with the given detection mode.
+func parseFileWithConfig(file string, mode golang.DetectionMode) parseResult {
+	ast, lines, err := ParseFileByExtensionWithConfig(file, mode)
 
 	return parseResult{ast: ast, lines: lines, err: err}
 }

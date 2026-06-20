@@ -56,7 +56,7 @@ func (d *detector) buildAnalysisPipeline(
 		}
 	}()
 
-	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.Semantic)
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode())
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	select {

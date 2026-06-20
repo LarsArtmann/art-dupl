@@ -139,6 +139,12 @@ type Config struct {
 	// - Semantic=false: Matches based on structure only (more potential matches)
 	Semantic bool `json:"semantic,omitempty"`
 
+	// Exact disables alpha-normalization so that identifier names are matched
+	// verbatim (copy-paste detection / Type 1 clones only). Only meaningful
+	// when Semantic is true: Exact+Semantic = exact-name matching, Semantic
+	// alone = alpha-normalized (Type 2) matching.
+	Exact bool `json:"exact,omitempty"`
+
 	// Workers specifies the number of concurrent workers for file parsing.
 	// 0 or negative means use runtime.GOMAXPROCS(0).
 	// 1 means sequential processing (same as Parse()).

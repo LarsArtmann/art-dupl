@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 func TestParse(t *testing.T) {
@@ -35,7 +36,7 @@ func helper() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, true)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
 
 	waitForParsedNodes(
 		t,
@@ -53,7 +54,7 @@ func TestParseErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, true)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
 
 	select {
 	case seq := <-schan:
@@ -98,7 +99,7 @@ func function1() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, true)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
 
 	// Should receive sequences for both files
 	count := 0

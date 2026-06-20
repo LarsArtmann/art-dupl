@@ -42,6 +42,7 @@ func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, i
 		fileset:  fset,
 		filename: syntax.InternFilename(filename),
 		config:   cfg,
+		norm:     newNormalizer(cfg.Mode.normalizesLocals()),
 	}
 	lineCount := fset.File(file.Pos()).LineCount()
 
@@ -53,6 +54,7 @@ type transformer struct {
 	filename    string
 	config      ParseConfig
 	inInterface bool
+	norm        *normalizer
 }
 
 // addWithNilCheck adds a child to o if not nil and valid.

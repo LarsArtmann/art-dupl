@@ -80,3 +80,47 @@ func TestClassifyCloneType(t *testing.T) {
 		})
 	}
 }
+
+// TestClassifyCloneType_DescendsIntoChildren verifies that clone-type
+// classification walks the full subtree of each fragment node, not just the
+// top-level roots. The renamed identifiers that distinguish Type 1 from Type 2
+// live in descendant nodes.
+func TestClassifyCloneType_DescendsIntoChildren(t *testing.T) {
+	t.Parallel()
+
+	// Two top-level roots with identical Type, but their child Idents have
+	// different Names. Without subtree traversal this would be Type 1.
+	rootA := &syntax.Node{
+		Type: golang.BlockStmt,
+		Children: []*syntax.Node{
+			{Type: golang.Ident, Name: "alpha"},
+			{Type: golang.Ident, Name: "beta"},
+		},
+	}
+	rootB := &syntax.Node{
+		Type: golang.BlockStmt,
+		Children: []*syntax.Node{
+			{Type: golang.Ident, Name: "gamma"},
+			{Type: golang.Ident, Name: "delta"},
+		},
+	}
+
+	// Children with identical names → Type 1.
+	rootC := &syntax.Node{
+		Type: golang.BlockStmt,
+		Children: []*syntax.Node{
+			{Type: golang.Ident, Name: "alpha"},
+			{Type: golang.Ident, Name: "beta"},
+		},
+	}
+
+	got := classifyCloneType([][]*syntax.Node{{rootA}, {rootB}})
+	if got != domain.CloneType2 {
+		t.Errorf("renamed children: got %q, want type-2", got)
+	}
+
+	got = classifyCloneType([][]*syntax.Node{{rootA}, {rootC}})
+	if got != domain.CloneType1 {
+		t.Errorf("identical children: got %q, want type-1", got)
+	}
+}

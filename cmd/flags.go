@@ -44,9 +44,11 @@ func addSharedFlags(cmd *cobra.Command) {
 
 	// Semantic-aware detection flags
 	cmd.Flags().
-		Bool("semantic", true, "enable semantic-aware detection (on by default; matches by structure AND identifier names)")
+		Bool("semantic", true, "enable semantic detection (default): alpha-normalize local identifiers so renamed-variable clones (Type 2) are detected")
 	cmd.Flags().
-		Bool("structural", false, "disable semantic detection; match by structure only (increases false positives from similar-looking but semantically different code)")
+		Bool("exact", false, "match identifier names verbatim (copy-paste / Type 1 clones only); disables alpha-normalization")
+	cmd.Flags().
+		Bool("structural", false, "match by AST shape only, ignoring all names (loosest matching, most candidates)")
 
 	// File type filter
 	cmd.Flags().
