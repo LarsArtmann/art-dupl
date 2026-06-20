@@ -39,8 +39,8 @@ syntax/     AST handling (golang/ + templ/)
 hash/       Rolling hash-based detection
 job/        Orchestrates parse → serialize → build tree
 printer/    Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
-domain/     Value objects (Filepath, LineNumber, Finding, ProcessedClone)
-errors/     11 typed error types, stack traces, JSON marshaling
+domain/     Value objects (ProcessedClone, enums, validation sentinels)
+errors/     6 typed error types, stack traces, JSON marshaling
 cache/      File-based AST caching with SHA1 content hashing
 pkg/artdupl/ Public SDK (Detector interface) — independent types, no config aliases
 pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)

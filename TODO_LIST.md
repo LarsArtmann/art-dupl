@@ -13,7 +13,8 @@ Actionable items planned for the next 2-4 weeks.
 - [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node — 34 references)
 - [ ] Consolidate **five** parallel Clone/Group types: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`. Field names are now aligned (`LineStart`/`LineEnd` canonical across all types), but the types themselves are still separate.
 - [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
-- [ ] Type-strengthen ProcessedClone: Filename string → domain.Filepath, LineStart/LineEnd int → domain.LineNumber (~25 consumer sites)
+- [ ] Unify `Fragment` type (`[]byte` in domain vs `string` in SDK — flips at every boundary)
+- [ ] Rename `…Data` view models to `…View` in printer/ (touches templ-generated code)
 
 ### Architecturally Constrained
 
@@ -33,6 +34,39 @@ Actionable items planned for the next 2-4 weeks.
 - [x] ~~Fix remaining LSP hints~~ — All golangci-lint issues resolved (0 issues). LSP/gopls shows stale diagnostics; always trust `golangci-lint run` over IDE.
 
 ---
+
+## ✅ Completed (2026-06-20) — Brutal Self-Review Sprint
+
+### Dead Code Removal (Ghost Systems Eliminated)
+
+- [x] Delete dead `domain.Filepath`/`LineNumber` branded types — full smart-constructors + JSON marshaling existed but zero consumers outside domain package. Deleted `types_file.go`, `helpers.go`, and their tests.
+- [x] Remove dead `ParseClonePriority`/`ParseCloneCategory`/`ParseCloneActionability` — exported, never called.
+- [x] Remove dead `ErrInvalidLineNumber` sentinel — never referenced.
+- [x] Remove dead `CloneClassification.NodeTypeName` field — set but never read.
+- [x] Remove 5 dead error constructors (`NewParseError`, `NewDetectionError`, `NewAnalysisError`, `NewTimeoutError`, `NewCancelledError`) + `EnumValidationError` type — only used in own test files.
+- [x] Remove dead `ErrorType.String()` method — never called.
+- [x] Remove 4 dead `ErrorType` constants (`ParseError`, `DetectionError`, `TimeoutError`, `CancelledError`).
+
+### Lying Documentation Fixed
+
+- [x] Fix `domain/domain.go` package doc — removed references to 6 non-existent types (`BytePosition`, `Threshold`, `TokenCount`, etc.).
+- [x] Fix `go.mod` module doc — removed "SIMD-optimized" lies, `CloneSeverity` references, non-existent `SafeMarshalConfig`/`SafeMarshalClone`/`domain.NewThreshold` functions.
+
+### API Cleanup
+
+- [x] Remove deprecated `FindClonesStream` from `Detector` interface — was marked deprecated but still required by interface, forcing all implementations to provide it.
+- [x] Rename `SARIFConfig` → `SARIFPrinterOptions` — collided with `SARIFConfiguration` (SARIF spec type in same file).
+- [x] Fix 12 `unusedwrite` diagnostics in `examples_test.go` — added missing field assertions.
+- [x] Fix 3 `infertypeargs` diagnostics — removed with dead Parse functions.
+
+### Assessed — No Action Needed
+
+- [x] Duplicate error sentinels (config vs artdupl) — ACCEPTED: expected decoupling pattern (SDK defines own sentinels).
+- [x] Duplicate `noOpLogger` implementations — ACCEPTED: expected decoupling pattern.
+- [x] Raw `"art-dupl"` strings in tests — ACCEPTED: tests should use literal expected values.
+- [x] `CloneCategory` type alias in printer — ACCEPTED: convenience alias, not a split brain.
+- [x] `config.Config` GeneratorFilter extraction — DEFERRED: reflection-based merge treats embedded structs as single units, would break field-by-field override semantics.
+- [x] `Fragment` `[]byte` vs `string` — DEFERRED: works correctly at boundaries, needs design decision.
 
 ## ✅ Completed (2026-06-20) — Correctness & Cleanup Sprint
 
