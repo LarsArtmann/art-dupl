@@ -40,6 +40,7 @@ func executeHashOnlyAnalysis(
 	}
 
 	filesChan := crawlPathsAllFiles(
+		ctx,
 		paths,
 		filterParam,
 		filterStats,

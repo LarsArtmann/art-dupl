@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -31,6 +32,7 @@ const (
 
 // crawlSinglePathWithOpts handles crawling of a single path using CrawlOptions.
 func filesFeedWithOptions(
+	ctx context.Context,
 	paths []string,
 	fromStdin bool,
 	filter *gogenfilter.Filter,
@@ -56,7 +58,11 @@ func filesFeedWithOptions(
 					continue
 				}
 
-				fchan <- path
+				select {
+				case fchan <- path:
+				case <-ctx.Done():
+					return
+				}
 			}
 
 			err := sc.Err()
@@ -79,6 +85,7 @@ func filesFeedWithOptions(
 	}
 
 	return crawlPathsWithFileCheck(
+		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 	)
@@ -86,6 +93,7 @@ func filesFeedWithOptions(
 
 // crawlPaths walks paths and returns a channel of Go files.
 func crawlPaths(
+	ctx context.Context,
 	paths []string,
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
@@ -93,6 +101,7 @@ func crawlPaths(
 	includeVendor, includeNodeModules bool,
 ) chan string {
 	return crawlPathsWithFileCheck(
+		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, isSourceFile,
 	)
@@ -104,6 +113,7 @@ func crawlPaths(
 // (excluded by default to avoid processing large dependency directories).
 // The only parameter filters to specific file extensions (".go" or ".templ").
 func crawlPathsAllFiles(
+	ctx context.Context,
 	paths []string,
 	filter *gogenfilter.Filter,
 	filterStats *FilterStats,
@@ -119,6 +129,7 @@ func crawlPathsAllFiles(
 	}
 
 	return crawlPathsWithFileCheck(
+		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
 	)
@@ -130,6 +141,7 @@ type fileCheckFunc func(name string) bool
 
 // CrawlOptions contains the common options for crawling operations.
 type CrawlOptions struct {
+	Ctx             context.Context
 	Filter          *gogenfilter.Filter
 	FilterStats     *FilterStats
 	Includes        generatorIncludes
@@ -140,6 +152,7 @@ type CrawlOptions struct {
 }
 
 func crawlPathsWithFileCheck(
+	ctx context.Context,
 	paths []string,
 	f *gogenfilter.Filter,
 	filterStats *FilterStats,
@@ -152,7 +165,12 @@ func crawlPathsWithFileCheck(
 
 	go func() {
 		for _, path := range paths {
+			if ctx.Err() != nil {
+				break
+			}
+
 			crawlSinglePathWithOpts(CrawlOptions{
+				Ctx:             ctx,
 				Filter:          f,
 				FilterStats:     filterStats,
 				Includes:        includes,
@@ -181,13 +199,21 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	if !info.IsDir() {
 		if shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) &&
 			passesFileCheck(info.Name(), opts.FileCheck) {
-			opts.FChan <- path
+			opts.sendFile(path)
 		}
 
 		return
 	}
 
 	crawlDirectoryWithOpts(opts, path)
+}
+
+// sendFile pushes a file path onto the channel, respecting context cancellation.
+func (opts CrawlOptions) sendFile(path string) {
+	select {
+	case opts.FChan <- path:
+	case <-opts.Ctx.Done():
+	}
 }
 
 // crawlDirectoryWithOpts walks a directory tree using CrawlOptions.
@@ -216,7 +242,7 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 
 	if !info.IsDir() && passesFileCheck(info.Name(), opts.FileCheck) &&
 		shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) {
-		opts.FChan <- path
+		opts.sendFile(path)
 	}
 
 	return nil

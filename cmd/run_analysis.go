@@ -36,6 +36,7 @@ type buildParams struct {
 // getFilesChan creates a channel of file paths based on the build parameters.
 func (p buildParams) getFilesChan() chan string {
 	return filesFeedWithOptions(
+		p.ctx,
 		p.paths,
 		p.cfg.FilesFromStdin,
 		p.filterParam,

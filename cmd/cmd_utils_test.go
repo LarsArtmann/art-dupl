@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -486,7 +487,9 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		fileList := collectStrings(crawlPathsAllFiles([]string{tempDir}, f, nil, generatorIncludes{}, true, true, ""))
+		fileList := collectStrings(
+			crawlPathsAllFiles(context.Background(), []string{tempDir}, f, nil, generatorIncludes{}, true, true, ""),
+		)
 
 		// Should find all 3 fileList
 		if len(fileList) != 3 {
@@ -513,6 +516,7 @@ func TestCrawlSinglePath_File(t *testing.T) {
 	fchan := make(chan string, 10)
 
 	crawlSinglePathWithOpts(CrawlOptions{
+		Ctx:             context.Background(),
 		Filter:          f,
 		IncludeVendor:   false,
 		IncludeNodeMods: false,
@@ -586,6 +590,7 @@ func TestHandleWalkEntry(t *testing.T) {
 			fchan := make(chan string, 1)
 
 			err = handleWalkEntry(CrawlOptions{
+				Ctx:             context.Background(),
 				Filter:          f,
 				IncludeVendor:   false,
 				IncludeNodeMods: false,

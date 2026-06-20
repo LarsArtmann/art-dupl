@@ -70,6 +70,7 @@ func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount 
 	t.Helper()
 
 	ch := filesFeedWithOptions(
+		context.Background(),
 		[]string{tmpDir},
 		false,
 		nil,
@@ -305,7 +306,7 @@ func TestPrintVersion(t *testing.T) {
 
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
-		result := crawlPaths([]string{}, nil, nil, generatorIncludes{}, false, false)
+		result := crawlPaths(context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -330,7 +331,7 @@ func TestCrawlPaths(t *testing.T) {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
-		result := crawlPaths([]string{tmpFile}, nil, nil, generatorIncludes{}, false, false)
+		result := crawlPaths(context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -349,6 +350,7 @@ func TestCrawlPaths(t *testing.T) {
 func TestFilesFeedWithOptions(t *testing.T) {
 	t.Run("empty options", func(t *testing.T) {
 		ch := filesFeedWithOptions(
+			context.Background(),
 			[]string{},
 			false,
 			(*gogenfilter.Filter)(nil),
@@ -373,7 +375,17 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			t.Fatalf("NewFilter() error: %v", err)
 		}
 
-		ch := filesFeedWithOptions([]string{}, false, f, nil, generatorIncludes{}, false, false, "")
+		ch := filesFeedWithOptions(
+			context.Background(),
+			[]string{},
+			false,
+			f,
+			nil,
+			generatorIncludes{},
+			false,
+			false,
+			"",
+		)
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
 		}
@@ -412,7 +424,17 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 	}
 
 	t.Run("all files with empty filter", func(t *testing.T) {
-		ch := filesFeedWithOptions([]string{tmpDir}, false, nil, nil, generatorIncludes{}, false, false, "")
+		ch := filesFeedWithOptions(
+			context.Background(),
+			[]string{tmpDir},
+			false,
+			nil,
+			nil,
+			generatorIncludes{},
+			false,
+			false,
+			"",
+		)
 
 		found := make([]string, 0, 4)
 		for f := range ch {
