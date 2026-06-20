@@ -13,5 +13,4 @@ var (
 	ErrNegativeTokenCount        = errors.New("token count cannot be negative")
 	ErrEmptyCloneGroup           = errors.New("clone group must have at least one clone")
 	ErrTokenCountMismatch        = errors.New("group token count does not match sum of clones")
-	ErrInvalidLineNumber         = errors.New("line number cannot be zero")
 )

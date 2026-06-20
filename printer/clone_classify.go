@@ -60,7 +60,6 @@ func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 		Priority:      priority,
 		Tokens:        input.Tokens,
 		Lines:         input.Lines,
-		NodeTypeName:  nodeTypeToString(input.NodeType),
 		Suggestion:    suggestion,
 		Actionability: domain.Actionable,
 	}
@@ -75,7 +74,6 @@ func idiomClassification(input domain.ClassificationInput) CloneClassification {
 		Priority:      domain.PriorityLow,
 		Tokens:        input.Tokens,
 		Lines:         input.Lines,
-		NodeTypeName:  nodeTypeToString(input.NodeType),
 		Suggestion:    suggestIdiom,
 		Actionability: domain.NonActionable,
 	}
@@ -102,10 +100,6 @@ func nodeTypeToCategory(nodeType int32) CloneCategory {
 	default:
 		return domain.CategoryUnknown
 	}
-}
-
-func nodeTypeToString(nodeType int32) string {
-	return golang.TypeName(nodeType)
 }
 
 func isTestFile(filename string) bool {

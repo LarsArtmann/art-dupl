@@ -230,7 +230,6 @@ type CloneClassification struct {
 	Actionability CloneActionability
 	Tokens        int
 	Lines         int
-	NodeTypeName  string
 	Suggestion    string
 }
 
