@@ -111,11 +111,11 @@
 | ------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                   |
 | **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag                                 |
-| **Git-Aware Incremental** | PARTIALLY_FUNCTIONAL | `--since <git-ref>` flag is wired into config (`config.Since`) but **never read** by analysis code. Only content-hash caching works; git diffing is not implemented (`job/incremental.go` uses `cache.Key(content)`, no git shelling). |
+| **Git-Aware Incremental** | REMOVED | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization                        |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                              |
-| **SIMD Optimizations**    | N/A              | `internal/simd/` deleted as dead code; `syntax/hash_simd.go` uses sync.Pool instead |
+| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 — no hand-written SIMD |
 
 ---
 
@@ -202,7 +202,7 @@
 | Limitation            | Impact | Description                                                       |
 | --------------------- | ------ | ----------------------------------------------------------------- |
 | **Go & Templ Only**   | High   | Only `.go` and `.templ` files supported                           |
-| **`--since` is a stub** | Medium | Flag is accepted and stored in config but git-aware incremental is **not implemented**; only content-hash caching runs (`job/incremental.go`) |
+| **No Git-Diff Incremental** | Low | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
 | **SDK Stream Errors** | Low    | `FindClonesStream` logs pipeline errors instead of returning them |
 
 ---

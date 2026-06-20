@@ -59,7 +59,7 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 - **Errors** use typed hierarchy from `errors/` package. Wrap with `duplerrors.Wrap*`. No panics for expected errors.
 - **Config merging** is reflection-based — adding Config fields requires no merge code changes.
 - **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers: `NewBDDTestSetupForGinkgo()`, `RunArtDupl()`, `CreateDuplicateFiles()`, `RunArtDuplOnDir()`, `RunArtDuplWithStdin()` — all in `internal/testutil/bdd.go`.
-- **SDK type independence**: `pkg/artdupl` defines its own `DetectionMethod` and `Logger` types (not aliases). Conversion to internal `config.*` types happens at the SDK boundary via `toConfigDetection*` helpers. `ValidateOptions` uses SDK's own `IsValid()`, not config delegation.
+- **SDK type independence**: `pkg/artdupl` has **ZERO imports** of `config/`. Defines its own `DetectionMethod`, `Logger`, error sentinels (`ErrInvalidThreshold` etc.), and internal `detectorConfig`. The `detection` package also owns its own `Config` type (`[]string` methods, no config dependency). Enforced via `.go-arch-lint.yml`.
 - **Context propagation**: All detection goroutines accept and check `context.Context`. `MultiDetector.FindDuplOver` and `suffixtree.STree.FindDuplOver` respect ctx cancellation via `select{case ch<-v: case <-ctx.Done(): return}`.
 - **Enum pattern**: Domain enums use `pkg/enum` shared helpers (`MarshalJSON`, `UnmarshalJSON`, `Parse`). Each enum has `IsValid()` and `String()`. ClonePriority has `Rank()` for ordinal comparison.
 
@@ -76,8 +76,6 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 ## Known Limitations
 
 - **Printer ↔ syntax.Node coupling**: Printer interface uses `domain.ProcessedCloneGroup`, but `actionability.go` still imports `syntax.Node` directly for pattern evaluation. `clone_processor.go` is the bridge point. The `everySequenceMatch` helper was extracted to reduce duplication.
-- **`--since` is a dead/stub flag**: Accepted and stored in `config.Since` (`cmd/config_builder.go:149`) but **never read** by any analysis code. Git-aware incremental is NOT implemented — `job/incremental.go` only does SHA1 content-hash caching (`cache.Key(content)`). FEATURES.md marks it `PARTIALLY_FUNCTIONAL`. Either implement git-diff file selection or remove the flag.
-- **SDK leaks internal `config/`**: `pkg/artdupl` claims independence (`doc.go`) but 5 files still import `config` directly (`config.Config`, `config.DetectionConfig`, re-exports `config.ErrInvalidThreshold`). Only `DetectionMethod` was decoupled.
-- **Five parallel Clone types** (not three): `printer.CloneGroup`, `printer.JSONClone`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone(Group)`. Field names diverge (`LineStart` vs `StartLine`). Consolidation blocked on Printer/SDK DTO design.
+- **Five parallel Clone types**: `printer.CloneGroup`, `printer.JSONClone`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone(Group)`. Field names are now aligned (`LineStart`/`LineEnd` canonical across all types), but the types themselves remain separate. Consolidation blocked on Printer/SDK DTO design.
 - **ConstantCSSProperty Pos=0,End=0**: upstream `a-h/templ` limitation (no Range field). Mitigated by inheriting parent CSSTemplate range.
 - **Templ has no semantic mode**: `syntax/templ/` matching is purely structural — no identifier/operator encoding.

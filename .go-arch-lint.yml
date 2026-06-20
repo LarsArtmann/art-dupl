@@ -66,6 +66,7 @@ components:
       - pkg/format/**
       - pkg/logger/**
       - pkg/position/**
+      - pkg/enum/**
       - internal/utils/**
 
   # Test utilities
@@ -104,7 +105,8 @@ deps:
       - domain
 
   suffixtree:
-    mayDependOn: []
+    mayDependOn:
+      - errors
 
   syntax:
     mayDependOn:
@@ -143,10 +145,11 @@ deps:
       - errors
 
   domain:
-    mayDependOn: []
+    mayDependOn:
+      - pkg-utils
 
   errors:
-    mayDependOn: []
+    anyProjectDeps: true
 
   job:
     mayDependOn:
@@ -162,7 +165,8 @@ deps:
       - errors
 
   pkg-utils:
-    mayDependOn: []
+    mayDependOn:
+      - errors
 
   testutil:
     anyProjectDeps: true

@@ -8,16 +8,10 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🔴 HIGH Priority
 
-### Correctness — Dead/Misleading Flags
-
-- [ ] `--since <git-ref>` is a **dead flag**: accepted and stored in `config.Since` (`cmd/config_builder.go:149`) but **never read** by any analysis code. Git-aware incremental is not implemented — `job/incremental.go` only does SHA1 content-hash caching. Either implement git-diff file selection or remove the flag + docs (FEATURES.md marked it `PARTIALLY_FUNCTIONAL`).
-
 ### Architecture (Multi-session refactors — deferred with rationale)
 
-- [ ] Decouple `pkg/artdupl` SDK from internal `config/`: only `DetectionMethod` was split off, but 5 SDK files still import `config` directly (`config.Config`, `config.DetectionConfig`, `config.DetectionMethods` slice, and re-export `config.ErrInvalidThreshold`/`ErrThresholdTooLarge`). SDK should define its own config surface.
-- [ ] Remove `domain/` → internal `errors/` dependency: `domain/types_file.go:7` and `domain/helpers.go:7` import the internal `errors` package (`errors.NewValidationError`). Domain should be a leaf package depending only on stdlib + `pkg/enum`.
 - [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node — 34 references)
-- [ ] Consolidate **five** parallel Clone/Group types (not three as previously documented): `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`
+- [ ] Consolidate **five** parallel Clone/Group types: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`. Field names are now aligned (`LineStart`/`LineEnd` canonical across all types), but the types themselves are still separate.
 - [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
 - [ ] Type-strengthen ProcessedClone: Filename string → domain.Filepath, LineStart/LineEnd int → domain.LineNumber (~25 consumer sites)
 
@@ -31,9 +25,6 @@ Actionable items planned for the next 2-4 weeks.
 
 ### Code Quality
 
-- [ ] Refactor `printer/actionability.go` (623L — patterns extracted, file still large; consider splitting pattern detection functions into sub-files by category: test-patterns, defer-patterns, data-patterns)
-- [ ] Remove misleading filename `syntax/hash_simd.go` — contains no SIMD; uses `sync.Pool` + `xxh3.Hash`. Rename to `hash_seq.go` or similar.
-- [ ] Remove empty package-anchor file `syntax/golang/golang.go` (7 lines, zero declarations) or document why it's retained.
 - [ ] Implement hybrid slice/map transition storage for small transition counts (deferred — map already O(1))
 
 ### Assessed — No Action Needed
@@ -42,6 +33,25 @@ Actionable items planned for the next 2-4 weeks.
 - [x] ~~Fix remaining LSP hints~~ — All golangci-lint issues resolved (0 issues). LSP/gopls shows stale diagnostics; always trust `golangci-lint run` over IDE.
 
 ---
+
+## ✅ Completed (2026-06-20) — Architecture Hardening Sprint
+
+### Correctness
+
+- [x] Remove `--since <git-ref>` dead flag — was accepted and stored but never read by any analysis code. Flag, config field, tests, and docs all removed.
+
+### Architecture
+
+- [x] Decouple `pkg/artdupl` SDK from internal `config/` — **ZERO config imports** in pkg/artdupl/. SDK defines own `detectorConfig`, error sentinels, and types. `detection` package also decoupled (owns `detection.Config` with `[]string` methods).
+- [x] Remove `domain/` → internal `errors/` dependency — replaced 6 `errors.NewValidationError(msg, nil)` calls with stdlib `errors.New(msg)`. Domain is now a true leaf package.
+- [x] Align Clone field names — `pkg/artdupl.Clone`: `StartLine`→`LineStart`, `EndLine`→`LineEnd` to match canonical naming in `domain.ProcessedClone` and `printer.JSONClone`.
+
+### Code Quality
+
+- [x] Split `printer/actionability.go` (624L) into 4 category files: `actionability.go` (public API + structural patterns), `actionability_control_flow.go` (defer + error), `actionability_test_patterns.go` (test data + scaffolding), `actionability_data.go` (data + builder).
+- [x] Rename `syntax/hash_simd.go` → `hash_seq.go` — file contains no SIMD code (uses `sync.Pool` + `xxh3.Hash`).
+- [x] Remove empty `syntax/golang/golang.go` anchor file — merged comment into `doc.go`.
+- [x] Enforce decoupling in `.go-arch-lint.yml`: removed `config` from `sdk` and `detection` mayDependOn, removed `errors` from `domain` mayDependOn.
 
 ## ✅ Completed (2026-06-16) — Code Quality Sprint
 
