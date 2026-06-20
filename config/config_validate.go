@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/errors"
 )
@@ -71,8 +72,9 @@ func validateDetectionMethods(methods []DetectionMethod) error {
 		if !method.IsValid() {
 			return errors.NewValidationError(
 				fmt.Sprintf(
-					"invalid detection method: %s (valid: hash, art-dupl, todos, legacy)",
+					"invalid detection method: %s (valid: %s)",
 					method,
+					strings.Join(detectionMethodStrings(AllDetectionMethods()), ", "),
 				),
 				nil,
 			)

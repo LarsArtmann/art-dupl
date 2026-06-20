@@ -118,3 +118,13 @@ func AllDetectionMethods() []DetectionMethod {
 func DefaultDetectionMethod() DetectionMethod {
 	return DetectionMethodArtDupl
 }
+
+// detectionMethodStrings converts a slice of DetectionMethod to string slice.
+func detectionMethodStrings(methods []DetectionMethod) []string {
+	result := make([]string, len(methods))
+	for i, m := range methods {
+		result[i] = string(m)
+	}
+
+	return result
+}

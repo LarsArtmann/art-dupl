@@ -210,7 +210,7 @@ func (p *sarifPrinter) PrintClones(
 			},
 			Fingerprints: SARIFFingerprints{
 				ContentFingerprint: hash,
-				PartialFingerprint: hash[:8],
+				PartialFingerprint: hash[:min(8, len(hash))],
 			},
 		}
 

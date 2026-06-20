@@ -16,7 +16,7 @@ func addSharedFlags(cmd *cobra.Command) {
 		IntP("threshold", "t", config.DefaultThreshold, "minimum token sequence size to consider as clone (default: 15)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	cmd.Flags().
-		StringP("detection-methods", "m", "art-dupl", "detection methods (comma-separated): art-dupl, hash, todos, legacy (default: art-dupl)")
+		StringP("detection-methods", "m", "art-dupl", "detection methods (comma-separated): art-dupl, hash (default: art-dupl)")
 
 	// Hidden flags for advanced features
 	cmd.Flags().Bool("profile", false, "enable performance profiling")
