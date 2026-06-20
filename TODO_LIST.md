@@ -34,6 +34,24 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
+## ✅ Completed (2026-06-20) — Correctness & Cleanup Sprint
+
+### Correctness (Critical bugs found in self-review)
+
+- [x] Fix `started time.Time` data race — field was written by `FindClones` and `FindClonesStreamResult` (both public methods), read by `buildResult`. Concurrent calls on one detector would race. Removed field; `startTime` is now a local variable.
+- [x] Fix `Summary.LinesAnalyzed` hardcoded to 0 — the data existed in `job.ParseStats.LinesCount` but was never wired through to `buildResult`. Now populated from pipeline stats.
+- [x] Fix sync `FindClones` never reporting 100% progress — only streaming path emitted completion event.
+- [x] Decouple SDK from internal `errors` package — `detector.go` was the last file importing `github.com/LarsArtmann/art-dupl/errors`. That package calls `debug.Stack()` on every error. Replaced all `errors.Wrap*` with `fmt.Errorf` using `%w`. SDK now uses only stdlib for error handling.
+
+### Code Quality (Dead code + naming)
+
+- [x] Remove dead `config.DetectionConfig` — zero consumers after SDK+detection decoupling.
+- [x] Remove 6 dead SDK sentinel errors never returned by production code.
+- [x] Unexport `SimpleJSONClone`/`SimpleCloneGroup`/`SimpleJSONOutput` — used only within `printer/json.go`.
+- [x] Rename `validateInputsOrError` → `validateInputsWithContext` (misleading "OrError" suffix).
+- [x] Rename `hashConfig` → `configDebugString` (it's not a hash, it's a debug string).
+- [x] Align `LineRangeMixin` fields: `StartLine`→`LineStart`, `EndLine`→`LineEnd` — was a split brain within printer (JSONClone used LineStart/LineEnd while the embedded mixin used StartLine/EndLine).
+
 ## ✅ Completed (2026-06-20) — Architecture Hardening Sprint
 
 ### Correctness

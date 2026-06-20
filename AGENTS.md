@@ -59,7 +59,7 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 - **Errors** use typed hierarchy from `errors/` package. Wrap with `duplerrors.Wrap*`. No panics for expected errors.
 - **Config merging** is reflection-based — adding Config fields requires no merge code changes.
 - **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers: `NewBDDTestSetupForGinkgo()`, `RunArtDupl()`, `CreateDuplicateFiles()`, `RunArtDuplOnDir()`, `RunArtDuplWithStdin()` — all in `internal/testutil/bdd.go`.
-- **SDK type independence**: `pkg/artdupl` has **ZERO imports** of `config/`. Defines its own `DetectionMethod`, `Logger`, error sentinels (`ErrInvalidThreshold` etc.), and internal `detectorConfig`. The `detection` package also owns its own `Config` type (`[]string` methods, no config dependency). Enforced via `.go-arch-lint.yml`.
+- **SDK type independence**: `pkg/artdupl` has **ZERO imports** of `config/` and `errors/`. Defines its own `DetectionMethod`, `Logger`, error sentinels (`ErrInvalidThreshold` etc.), and internal `detectorConfig`. Uses only stdlib `errors` + `fmt.Errorf` for error wrapping (no `debug.Stack()` overhead). The `detection` package also owns its own `Config` type (`[]string` methods, no config dependency). Enforced via `.go-arch-lint.yml`.
 - **Context propagation**: All detection goroutines accept and check `context.Context`. `MultiDetector.FindDuplOver` and `suffixtree.STree.FindDuplOver` respect ctx cancellation via `select{case ch<-v: case <-ctx.Done(): return}`.
 - **Enum pattern**: Domain enums use `pkg/enum` shared helpers (`MarshalJSON`, `UnmarshalJSON`, `Parse`). Each enum has `IsValid()` and `String()`. ClonePriority has `Rank()` for ordinal comparison.
 
