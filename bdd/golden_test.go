@@ -34,7 +34,7 @@ func process() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run the tool
-			output, err := setup.RunArtDupl("--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Use golden file comparison
@@ -57,7 +57,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with JSON output
-			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify JSON is valid

@@ -25,7 +25,7 @@ var _ = Describe("Detection Methods", func() {
 			detectionMethods,
 			"--json",
 			"--threshold",
-			"5",
+			"1",
 		}
 	}
 
@@ -52,7 +52,7 @@ func main() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "3")
+			output, err := setup.RunArtDupl("--detection-methods", "hash", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			runOutput := string(output)
@@ -124,7 +124,7 @@ func processProduct(name string, price int) error {
 			err = setup.CreateFileWithContent("product.go", productCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--detection-methods", "art-dupl", "--threshold", "3")
+			output, err := setup.RunArtDupl("--detection-methods", "art-dupl", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			runOutput := string(output)
@@ -145,7 +145,7 @@ func test() error {
 			err := setup.CreateDuplicateFiles([]string{"default1.go", "default2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			runOutput := string(output)
@@ -191,7 +191,7 @@ func structuralB(value string) error {
 				"--detection-methods",
 				"hash,art-dupl",
 				"--threshold",
-				"5",
+				"1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -298,7 +298,7 @@ func NodeModulesFunc() {
 			output, err := setup.RunArtDupl(
 				"--detection-methods",
 				"hash",
-				"--threshold", "3",
+				"--threshold", "1",
 				"-v",
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -316,7 +316,7 @@ func NodeModulesFunc() {
 			output, err := setup.RunArtDupl(
 				"--detection-methods",
 				"hash",
-				"--threshold", "3",
+				"--threshold", "1",
 				"--include-node-modules",
 			)
 			Expect(err).ToNot(HaveOccurred())

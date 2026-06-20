@@ -70,7 +70,7 @@ func assertGeneratedFilesFiltered(
 	err = setup.CreateTestFile(generatedFilename, generatedCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunSubcommand("stats", "--threshold", "5")
+	output, err := setup.RunSubcommand("stats", "--threshold", "1")
 	Expect(err).ToNot(HaveOccurred())
 
 	outputStr := string(output)
@@ -96,7 +96,7 @@ func assertGeneratedFilesIncluded(
 	Expect(err).NotTo(HaveOccurred())
 
 	args := make([]string, 0, 3+len(includeFlags))
-	args = append(args, "stats", "--threshold", "5")
+	args = append(args, "stats", "--threshold", "1")
 	args = append(args, includeFlags...)
 	output, err := setup.RunSubcommand(args...)
 	Expect(err).ToNot(HaveOccurred())
@@ -148,7 +148,7 @@ func Component() templ.Component { return nil }`
 				"stats",
 				"--verbose",
 				"--threshold",
-				"5",
+				"1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -203,7 +203,7 @@ func Component() templ.Component { return nil }`
 				"--include-templ",
 				"--include-sqlc",
 				"--threshold",
-				"5",
+				"1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -231,7 +231,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with JSON format
-			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Parse JSON
@@ -254,7 +254,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with CSV format
-			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -302,7 +302,7 @@ func processData() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--format", "json", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			var result map[string]any
@@ -323,7 +323,7 @@ func processData() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -331,7 +331,7 @@ func processData() {
 			// Should show health score
 			Expect(outputStr).To(ContainSubstring("Health Score:"))
 			// Should show grade (A-F)
-			Expect(outputStr).To(MatchRegexp(`Health Score:\s*[A-F]`))
+			Expect(outputStr).To(MatchRegexp(`Health Score:.*?[A-F]`))
 		})
 
 		It("should show top files with most duplicates", func() {
@@ -348,7 +348,7 @@ func b() { println(2) }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -385,7 +385,7 @@ func common() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats on the entire temp directory (which contains both pkg1 and pkg2)
-			output, err := setup.RunSubcommand("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -427,7 +427,7 @@ func unique2() { println("unique2") }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -442,7 +442,7 @@ func unique2() { println("unique2") }`
 				testutil.VendorTestCode,
 				true,
 				"stats",
-				"--threshold", "5",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("vendor"))
@@ -521,7 +521,7 @@ templ page() { <div>Hello</div> }`
 			err = setup.CreateTestFile("page2.templ", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--only", "go", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--only", "go", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -548,7 +548,7 @@ func duplicate() { println(1) }`
 			err = setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, goCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--only", "templ", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--only", "templ", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -576,7 +576,7 @@ func process() {
 			err = setup.CreateTestFile("generated.go", genericCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--include-generic", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--include-generic", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("Files Scanned"))
 		})

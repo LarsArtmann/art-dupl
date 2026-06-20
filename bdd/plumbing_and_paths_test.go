@@ -53,7 +53,7 @@ var _ = Describe("Plumbing Output Format", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Each line should follow plumbing format: filename:startline-endline
@@ -69,7 +69,7 @@ var _ = Describe("Plumbing Output Format", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -94,7 +94,7 @@ var _ = Describe("Plumbing Output Format", func() {
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "3")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -115,9 +115,12 @@ func small() { println(1) }`
 import "fmt"
 
 func large() {
+	count := 0
 	for i := 0; i < 100; i++ {
 		fmt.Println(i)
+		count++
 	}
+	fmt.Println("total:", count)
 }`
 
 			// Create small duplicates
@@ -128,8 +131,8 @@ func large() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with threshold that filters small but shows large
-			// small: ~12 tokens, large: ~28 tokens
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			// small: 1 statement, large: 3 statements
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "2")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -146,7 +149,7 @@ func large() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing and sort
-			output, err := setup.RunArtDupl("--plumbing", "--sort", "size", "--threshold", "3")
+			output, err := setup.RunArtDupl("--plumbing", "--sort", "size", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should still be valid plumbing format
@@ -183,7 +186,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 				setup.GetFilePath("pkg1"),
 				setup.GetFilePath("pkg2"),
 				setup.GetFilePath("pkg3"),
-				"--threshold", "5",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -212,7 +215,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 			output, err := setup.RunArtDupl(
 				setup.GetFilePath("pkg"),
 				setup.GetFilePath("standalone.go"),
-				"--threshold", "3",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -242,7 +245,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 			// Run only on include directory (use RunArtDuplOnDir to avoid double-path issue)
 			output, err := setup.RunArtDuplOnDir(
 				setup.GetFilePath("include"),
-				"--threshold", "3",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -279,7 +282,7 @@ func testCommon() { println(1) }`
 				setup.GetFilePath("pkg1"),
 				setup.GetFilePath("pkg2"),
 				"--exclude-pattern", "*_test.go",
-				"--threshold", "3",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -313,7 +316,7 @@ func %s() { println(1) }`, funcName)
 			err = setup.CreateFileWithContent(filepath.Join(subDir, goldenFile2), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl(setup.GetFilePath(runPath), "--threshold", "3")
+			output, err := setup.RunArtDupl(setup.GetFilePath(runPath), "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(string(output)).To(ContainSubstring(expectedSubstr))
@@ -335,7 +338,7 @@ func root() { println(1) }`
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl(runPath, "--threshold", "3")
+			output, err := setup.RunArtDupl(runPath, "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(string(output)).To(ContainSubstring(goldenFile1))
@@ -362,7 +365,7 @@ func root() { println(1) }`
 			err = setup.CreateTestFile("config.json", `{}`)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should complete without error

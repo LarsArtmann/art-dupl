@@ -7,11 +7,11 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// GetCloneSize returns the size (token count) of the first clone in a group.
+// GetCloneSize returns the token count of the first clone in a group.
 // Returns 0 if the group is empty or has no fragments.
 func GetCloneSize(group [][]*syntax.Node) int {
-	if len(group) > 0 && len(group[0]) > 0 {
-		return int(group[0][0].Owns)
+	if len(group) > 0 {
+		return len(group[0])
 	}
 
 	return 0

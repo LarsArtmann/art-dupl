@@ -24,7 +24,7 @@ func process() { println(1) }`
 				testRegularCode,
 				"api.pb.go",
 				pbCode,
-				"3",
+				"1",
 			)
 		})
 
@@ -40,7 +40,7 @@ func process() { println(1) }`
 				"api.pb.go",
 				pbCode,
 				"--include-protobuf",
-				"3",
+				"1",
 			)
 		})
 	})
@@ -57,7 +57,7 @@ func process() { println(1) }`
 				testRegularCode,
 				"mock_service.go",
 				mockCode,
-				"3",
+				"1",
 			)
 		})
 
@@ -73,7 +73,7 @@ func process() { println(1) }`
 				"mock_service.go",
 				mockCode,
 				"--include-mockgen",
-				"3",
+				"1",
 			)
 		})
 	})
@@ -96,7 +96,7 @@ func process() { println(1) }`
 				testRegularCode,
 				"status_string.go",
 				stringerCode,
-				"3",
+				"1",
 			)
 		})
 
@@ -112,7 +112,7 @@ func process() { println(1) }`
 				"status_string.go",
 				stringerCode,
 				"--include-stringer",
-				"3",
+				"1",
 			)
 		})
 	})
@@ -135,7 +135,7 @@ func process() { println(1) }`
 				testRegularCode,
 				"generated.go",
 				genericCode,
-				"3",
+				"1",
 			)
 		})
 
@@ -151,7 +151,7 @@ func process() { println(1) }`
 				"generated.go",
 				genericCode,
 				"--include-generic",
-				"3",
+				"1",
 			)
 		})
 	})

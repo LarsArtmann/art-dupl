@@ -139,7 +139,7 @@ func process(data string) error {
 
 			// Run with size sorting
 			resultOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "3",
+				flagKeyThreshold: "1",
 				"sort":           "size",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -186,7 +186,7 @@ func lessCommonFunction(id int, name string) error {
 
 			// Run with occurrence sorting
 			occurrenceOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "5",
+				flagKeyThreshold: "1",
 				"sort":           "occurrence",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -233,7 +233,7 @@ func functionB() error {
 
 			// Run with hash sorting
 			hashSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "3",
+				flagKeyThreshold: "1",
 				"sort":           "hash",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -260,7 +260,7 @@ func hello() {
 
 			// Run with invalid sort option - should default to size
 			sortResult, _ := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "5",
+				flagKeyThreshold: "1",
 				"sort":           "invalid",
 			})
 

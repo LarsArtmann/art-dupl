@@ -23,11 +23,12 @@ func TestGetCloneSize(t *testing.T) {
 		t.Errorf("GetCloneSize({empty group}) = %d, want 0", got)
 	}
 
-	node := &syntax.Node{Owns: 42}
-	group := [][]*syntax.Node{{node}}
+	node1 := &syntax.Node{}
+	node2 := &syntax.Node{}
+	group := [][]*syntax.Node{{node1, node2}}
 
-	if got := GetCloneSize(group); got != 42 {
-		t.Errorf("GetCloneSize() = %d, want 42", got)
+	if got := GetCloneSize(group); got != 2 {
+		t.Errorf("GetCloneSize() = %d, want 2", got)
 	}
 }
 
@@ -87,14 +88,14 @@ func TestComputeUniqueCounts(t *testing.T) {
 func TestSortCloneGroupKeys(t *testing.T) {
 	t.Parallel()
 
-	smallNode := &syntax.Node{Owns: 5}
-	bigNode := &syntax.Node{Owns: 50}
-	medNode := &syntax.Node{Owns: 20}
+	smallNode := &syntax.Node{}
+	bigNode := &syntax.Node{}
+	medNode := &syntax.Node{}
 
 	groups := map[string][][]*syntax.Node{
 		healthSmall:  {{smallNode}},
-		"big":        {{bigNode}, {smallNode}, {medNode}},
-		healthMedium: {{medNode}, {smallNode}},
+		"big":        {{bigNode, medNode, smallNode}, {smallNode}, {medNode}},
+		healthMedium: {{medNode, smallNode}, {smallNode}},
 	}
 	uniqueCounts := map[string]int{healthSmall: 1, "big": 3, healthMedium: 2}
 

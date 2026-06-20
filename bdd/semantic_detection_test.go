@@ -35,7 +35,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3", "--structural", "--include-tests")
+			output, err := setup.RunArtDupl("--threshold", "1", "--structural", "--include-tests")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -59,7 +59,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3", "--semantic")
+			output, err := setup.RunArtDupl("--threshold", "1", "--semantic")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -74,7 +74,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3", "--semantic", "--include-tests")
+			output, err := setup.RunArtDupl("--threshold", "1", "--semantic", "--include-tests")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -92,7 +92,7 @@ var _ = Describe("Semantic Detection", func() {
 
 			configContent := `{
 				"semantic": true,
-				"threshold": 5
+				"threshold": 1
 			}`
 			configPath := filepath.Join(setup.TmpDir, "dupl.json")
 			err = setup.FileProcessor.WriteFile("dupl.json", []byte(configContent), 0o644)
@@ -145,7 +145,7 @@ var _ = Describe("Semantic Detection", func() {
 				"handler tests",
 				"user_handler_test.go", "order_handler_test.go",
 				handlerTestCode1, handlerTestCode2,
-				"15",
+				"1",
 				[]string{"user_handler_test.go"},
 				[]string{"user_handler_test.go", "order_handler_test.go"},
 			),
@@ -153,7 +153,7 @@ var _ = Describe("Semantic Detection", func() {
 				"enum pattern methods",
 				"crush_mode.go", "safety_mode.go",
 				enumPatternCode1, enumPatternCode2,
-				"10",
+				"2",
 				[]string{"crush_mode.go", "safety_mode.go"},
 				[]string{"crush_mode.go", "safety_mode.go"},
 			),
@@ -161,7 +161,7 @@ var _ = Describe("Semantic Detection", func() {
 				"operator differences: + vs -",
 				"add.go", "sub.go",
 				operatorAddCode, operatorSubCode,
-				"10",
+				"2",
 				[]string{"add.go", "sub.go"},
 				[]string{"add.go", "sub.go"},
 			),
@@ -169,7 +169,7 @@ var _ = Describe("Semantic Detection", func() {
 				"inverse conditions: >= vs <, == nil vs != nil",
 				"stale.go", "fresh.go",
 				inverseConditionCode1, inverseConditionCode2,
-				"10",
+				"1",
 				[]string{"stale.go", "fresh.go"},
 				[]string{"stale.go", "fresh.go"},
 			),

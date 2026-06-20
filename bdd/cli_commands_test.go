@@ -223,7 +223,7 @@ func %s() {}`, funcName)
 				[]string{"verbose1.go", "verbose2.go"},
 				"-v",
 				"--threshold",
-				"5",
+				"1",
 			),
 			Entry(
 				"multiple verbose flags",
@@ -231,7 +231,7 @@ func %s() {}`, funcName)
 				[]string{"verbose3.go", "verbose4.go"},
 				"-vv",
 				"--threshold",
-				"5",
+				"1",
 			),
 			Entry(
 				"triple verbose flag",
@@ -239,7 +239,7 @@ func %s() {}`, funcName)
 				[]string{"verbose5.go", "verbose6.go"},
 				"-vvv",
 				"--threshold",
-				"5",
+				"1",
 			),
 			Entry(
 				"verbose long flag",
@@ -247,7 +247,7 @@ func %s() {}`, funcName)
 				[]string{"verbose7.go", "verbose8.go"},
 				"--verbose",
 				"--threshold",
-				"5",
+				"1",
 			),
 		)
 	})
@@ -275,7 +275,7 @@ func argTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with path as positional argument
-			output, err := setup.RunArtDupl(setup.TmpDir, "--threshold", "5")
+			output, err := setup.RunArtDupl(setup.TmpDir, "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -296,7 +296,7 @@ func multiDir() {}`
 			dir2 := setup.GetFilePath("dir2")
 
 			// Run with multiple paths
-			output, err := setup.RunArtDupl(dir1, dir2, "--threshold", "5")
+			output, err := setup.RunArtDupl(dir1, dir2, "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})

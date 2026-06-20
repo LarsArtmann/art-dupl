@@ -58,7 +58,7 @@ func (s *OrderStore) Save(ctx context.Context, name string) error {
 
 	Context("When using --semantic mode", func() {
 		It("should suppress identical interface method signatures", func() {
-			output, err := setup.RunArtDupl("--semantic", "--threshold", "5")
+			output, err := setup.RunArtDupl("--semantic", "--threshold", "1")
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}
@@ -105,7 +105,7 @@ func logError(err error) {
 
 	Context("When using --rich-text flag", func() {
 		It("should include classification badges in text output", func() {
-			output, err := setup.RunArtDupl("--rich-text", "--threshold", "5")
+			output, err := setup.RunArtDupl("--rich-text", "--threshold", "1")
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}
@@ -120,7 +120,7 @@ func logError(err error) {
 		})
 
 		It("should include actionability in JSON output", func() {
-			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "5")
+			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "1")
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}

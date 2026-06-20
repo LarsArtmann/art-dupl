@@ -47,7 +47,7 @@ func minimalFunc() {}`
 		err := setup.CreateDuplicateFiles(files, code)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunSubcommand("stats", "--"+mode, "--threshold", "5")
+		output, err := setup.RunSubcommand("stats", "--"+mode, "--threshold", "1")
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(string(output)).To(ContainSubstring(expectedSubstring))
@@ -70,7 +70,7 @@ func jsonTest(name string) error {
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunSubcommandOutput(
-			"stats", "--"+mode, "--format", "json", "--threshold", "3",
+			"stats", "--"+mode, "--format", "json", "--threshold", "1",
 		)
 		Expect(err).ToNot(HaveOccurred())
 
@@ -98,7 +98,7 @@ func csvTest() {}`
 		Expect(err).NotTo(HaveOccurred())
 
 		output, err := setup.RunSubcommand(
-			"stats", "--"+mode, "--format", "csv", "--threshold", "5",
+			"stats", "--"+mode, "--format", "csv", "--threshold", "1",
 		)
 		Expect(err).ToNot(HaveOccurred())
 
@@ -125,7 +125,7 @@ func handleRequest(req string) error {
 			err := setup.CreateDuplicateFiles(files, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--semantic", "--threshold", "3")
+			output, err := setup.RunSubcommand("stats", "--semantic", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(string(output)).To(ContainSubstring("identifier names"))
@@ -168,7 +168,7 @@ func jsonSemanticTest(name string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunSubcommandOutput(
-				"stats", "--semantic", "--format", "json", "--threshold", "3",
+				"stats", "--semantic", "--format", "json", "--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -206,7 +206,7 @@ func jsonStructTest(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			output, err := setup.RunSubcommandOutput(
-				"stats", "--structural", "--format", "json", "--threshold", "3",
+				"stats", "--structural", "--format", "json", "--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 

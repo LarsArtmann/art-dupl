@@ -118,7 +118,7 @@ func processData(data string) error {
 				code: `package main
 func pathTest() {}`,
 				files:      []string{"path1.go", "path2.go"},
-				threshold:  "5",
+				threshold:  "1",
 				assertions: []string{"path1.go", "path2.go"},
 			},
 		}
@@ -182,7 +182,7 @@ func large() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Run with low threshold - should include more clones
-			lowOutput, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			lowOutput, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// High threshold should produce less output than low threshold
@@ -299,7 +299,7 @@ func patternPlumb() {}`
 				"--include-pattern",
 				"src/*",
 				"--threshold",
-				"5",
+				"1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
@@ -370,7 +370,7 @@ func delimiterTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			// All non-empty lines should have consistent structure
@@ -396,7 +396,7 @@ func specialPath() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -410,7 +410,7 @@ func statsPlumb() {}`
 			err := setup.CreateDuplicateFiles([]string{"stats1.go", "stats2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunSubcommand("stats", "--threshold", "5")
+			output, err := setup.RunSubcommand("stats", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -435,7 +435,7 @@ func stdinPlumb() {}`
 
 			// Run with --files and plumbing
 			output, err := setup.RunArtDuplWithStdin(stdin, map[string]string{
-				flagKeyThreshold: "5",
+				flagKeyThreshold: "1",
 				"plumbing":       "",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -605,7 +605,7 @@ func absPathTest() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with plumbing output
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

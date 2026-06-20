@@ -115,7 +115,7 @@ templ PageFooter() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run art-dupl (templ files included by default)
-			output, err := setup.RunArtDupl("--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -162,7 +162,7 @@ templ Panel(heading string, text string) {
 			err = setup.CreateTestFile("panel.templ", panelCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "5")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -196,7 +196,7 @@ templ Menu(options []string) {
 			err = setup.CreateTestFile("menu.templ", menuCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -229,7 +229,7 @@ templ Toggle(visible bool, text string) {
 			err = setup.CreateTestFile("toggle.templ", toggleCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -267,7 +267,7 @@ templ Display(name string) {
 			Expect(err).NotTo(HaveOccurred())
 
 			// *_templ.go files are filtered by default
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -381,7 +381,7 @@ templ LoginForm(url string) {
 			err = setup.CreateTestFile("login.templ", loginCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -453,7 +453,7 @@ templ pageHeader(name string) {
 			err = setup.CreateTestFile("page.templ", duplicateCode2)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

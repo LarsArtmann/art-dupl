@@ -60,7 +60,7 @@ func assertSQLCFileFiltered(setup *testutil.BDDTestSetup, filename, functionName
 		regularCode,
 		filename,
 		generatedCode,
-		"3",
+		"1",
 	)
 }
 
@@ -136,7 +136,7 @@ func process() {
 				regularCode,
 				"page_templ.go",
 				templCode,
-				"5",
+				"1",
 			)
 		})
 
@@ -161,7 +161,7 @@ func common() { println(1) }`
 			err = setup.CreateTestFile("layout_templ.go", templCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -181,7 +181,7 @@ func common() { println(1) }`
 				"page_templ.go",
 				testTemplCode,
 				"--include-templ",
-				"3",
+				"1",
 			)
 		})
 	})
@@ -212,7 +212,7 @@ func query() {
 				regularCode,
 				"queries.sql.go",
 				sqlcCode,
-				"5",
+				"1",
 			)
 		})
 
@@ -242,7 +242,7 @@ func query() { println(1) }`
 				"queries.sql.go",
 				sqlcCode,
 				"--include-sqlc",
-				"3",
+				"1",
 			)
 		})
 	})
@@ -269,7 +269,7 @@ func process() { println(1) }`
 			err = setup.CreateTestFile("queries.sql.go", sqlcCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -299,7 +299,7 @@ func process() { println(1) }`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include flags
-			output, err := setup.RunArtDupl("--include-templ", "--include-sqlc", "--threshold", "3")
+			output, err := setup.RunArtDupl("--include-templ", "--include-sqlc", "--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -319,7 +319,7 @@ func process() { println(1) }`
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "3")
+			output, err := setup.RunArtDupl("--threshold", "1")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -334,7 +334,7 @@ func process() { println(1) }`
 				testutil.SimpleVendorTestCode,
 				true,
 				"",
-				"--threshold", "3",
+				"--threshold", "1",
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(output)).To(ContainSubstring("vendor"))
@@ -365,7 +365,7 @@ func assertTemplFilteredWithFormat(
 	err = setup.CreateTestFile("page_templ.go", testTemplCode)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl(outputFormatFlag, "--threshold", "3")
+	output, err := setup.RunArtDupl(outputFormatFlag, "--threshold", "1")
 	Expect(err).ToNot(HaveOccurred())
 
 	Expect(string(output)).ToNot(ContainSubstring("page_templ.go"))

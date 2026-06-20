@@ -208,6 +208,14 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 		return Match{}
 	}
 
+	// When the token stream uses statement-level tokenization but this
+	// match falls entirely in the non-statement portion (structural
+	// wrappers like FuncDecl/File), the legacy Owns-based indexes are
+	// not meaningful clone units — skip them.
+	if len(indexes) > 0 && !firstSeq[indexes[0]].Statement && dataContainsStatements(data) {
+		return Match{}
+	}
+
 	if len(indexes) > 0 && len(m.Ps) > 1 {
 		indexes = validateOwnershipConsistency(data, m, firstSeq, indexes)
 	}
@@ -262,6 +270,19 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 	match.Hash = hashSeq(firstSeq[indexes[0]:endIdx])
 
 	return match
+}
+
+// dataContainsStatements reports whether the token stream contains any
+// statement-level nodes. Used to distinguish statement-level tokenization
+// from legacy synthetic test nodes that have no Statement flag set.
+func dataContainsStatements(data []*Node) bool {
+	for i := range data {
+		if data[i].Statement {
+			return true
+		}
+	}
+
+	return false
 }
 
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
