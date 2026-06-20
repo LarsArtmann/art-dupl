@@ -101,7 +101,11 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	// Root-only: test clone filtering
 	rootCmd.Flags().
-		Bool("suppress-test-low", false, "suppress low-priority clones in test files (reduces noise from test boilerplate)")
+		Bool("suppress-test-low", true, "suppress low-priority clones in test files (default: true)")
 	rootCmd.Flags().
-		Int("test-threshold", 0, "separate minimum token count for test files (0 = use regular threshold)")
+		Int("test-threshold", 0, "separate minimum token count for test files (0 = max(30, threshold))")
+	rootCmd.Flags().
+		Bool("ignore-tests", false, "exclude *_test.go files from analysis entirely")
+	rootCmd.Flags().
+		Bool("include-tests", false, "override --ignore-tests and analyze test files normally")
 }

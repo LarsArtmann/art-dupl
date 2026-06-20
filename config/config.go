@@ -157,9 +157,18 @@ type Config struct {
 	SuppressTestLow bool `json:"suppressTestLow,omitempty"`
 
 	// TestThreshold sets a separate minimum token count for test files.
-	// When 0, the regular Threshold is used for all files.
-	// Useful when test files generate more structural noise than production code.
+	// When 0, defaults to max(30, Threshold) — test files need substantial
+	// clones to be reported, filtering out common test boilerplate noise.
 	TestThreshold int `json:"testThreshold,omitempty"`
+
+	// IgnoreTests excludes all *_test.go files from analysis entirely.
+	// Use --include-tests to override and analyze test files normally.
+	IgnoreTests bool `json:"ignoreTests,omitempty"`
+
+	// IncludeTests disables ALL test-specific filtering: treats *_test.go files
+	// identically to production files. Overrides IgnoreTests, SuppressTestLow,
+	// and TestThreshold defaults.
+	IncludeTests bool `json:"includeTests,omitempty"`
 }
 
 // DefaultThreshold is the default minimum token sequence size for clone detection.
@@ -200,5 +209,36 @@ func DefaultConfig() *Config {
 		RichText:           false,
 		SuppressTestLow:    false,
 		TestThreshold:      0,
+		IgnoreTests:        false,
 	}
+}
+
+// EffectiveTestThreshold returns the minimum token count for test-file clones.
+// When IncludeTests is true, returns 0 (no test-specific filtering).
+// When TestThreshold is explicitly set (>0), uses that value.
+// Otherwise defaults to max(30, Threshold) to filter common test boilerplate.
+func (c *Config) EffectiveTestThreshold() int {
+	if c.IncludeTests {
+		return 0
+	}
+
+	if c.TestThreshold > 0 {
+		return c.TestThreshold
+	}
+
+	if c.Threshold > 30 {
+		return c.Threshold
+	}
+
+	return 30
+}
+
+// EffectiveSuppressTestLow returns whether low-priority test clones should be suppressed.
+// When IncludeTests is true, always returns false.
+func (c *Config) EffectiveSuppressTestLow() bool {
+	if c.IncludeTests {
+		return false
+	}
+
+	return c.SuppressTestLow
 }

@@ -109,12 +109,23 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"rich-text":            &cfg.RichText,
 		"clear-cache":          &cfg.ClearCache,
 		"suppress-test-low":    &cfg.SuppressTestLow,
+		"ignore-tests":         &cfg.IgnoreTests,
 	}
 
 	for flagName, configPtr := range mappings {
 		if cmd.Flags().Changed(flagName) {
 			val, _ := cmd.Flags().GetBool(flagName)
 			*configPtr = val
+		}
+	}
+
+	// --include-tests overrides all test-specific filtering
+	if cmd.Flags().Changed("include-tests") {
+		val, _ := cmd.Flags().GetBool("include-tests")
+		if val {
+			cfg.IgnoreTests = false
+			cfg.SuppressTestLow = false
+			cfg.IncludeTests = true
 		}
 	}
 }

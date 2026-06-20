@@ -217,11 +217,12 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 		}
 	}
 
-	if len(filterOptions) > 0 || len(cfg.IncludePatterns) > 0 || len(cfg.ExcludePatterns) > 0 ||
-		len(cfg.IgnoreFiles) > 0 {
+	excludePatterns := buildExcludePatterns(cfg)
+
+	if len(filterOptions) > 0 || len(excludePatterns) > 0 || len(cfg.IncludePatterns) > 0 {
 		configs := []gogenfilter.FilterConfig{
 			gogenfilter.WithIncludePatterns(cfg.IncludePatterns...),
-			gogenfilter.WithExcludePatterns(append(cfg.ExcludePatterns, cfg.IgnoreFiles...)...),
+			gogenfilter.WithExcludePatterns(excludePatterns...),
 		}
 
 		if len(filterOptions) > 0 {
@@ -249,6 +250,22 @@ func setupFilter(cfg *config.Config) (*gogenfilter.Filter, error) {
 	}
 
 	return fltr, nil
+}
+
+// buildExcludePatterns collects all file exclusion patterns from config,
+// including IgnoreFiles, ExcludePatterns, and *_test.go when IgnoreTests is set.
+func buildExcludePatterns(cfg *config.Config) []string {
+	patterns := make([]string, 0, len(cfg.ExcludePatterns)+len(cfg.IgnoreFiles)+1)
+	patterns = append(patterns, cfg.ExcludePatterns...)
+	patterns = append(patterns, cfg.IgnoreFiles...)
+
+	if cfg.IgnoreTests {
+		patterns = append(patterns, "*_test.go")
+
+		verboseFprintf(cfg, "Test file exclusion enabled (--ignore-tests)")
+	}
+
+	return patterns
 }
 
 // startProfiling begins profiling if enabled in config, returning the profile result.

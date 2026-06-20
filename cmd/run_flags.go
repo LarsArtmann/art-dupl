@@ -142,8 +142,8 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.Threshold,
 		detectionMethodStr,
 		mergedConfig.Semantic,
-		mergedConfig.SuppressTestLow,
-		mergedConfig.TestThreshold,
+		mergedConfig.EffectiveSuppressTestLow(),
+		mergedConfig.EffectiveTestThreshold(),
 	)
 	if err != nil {
 		return duplerrors.Wrap(
