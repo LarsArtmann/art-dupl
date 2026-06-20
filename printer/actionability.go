@@ -60,6 +60,9 @@ const (
 	PatternSignatureOnly    PatternLabel = "signature-only"
 	PatternRAIIDefer        PatternLabel = "raii-defer"
 	PatternErrorPropagation PatternLabel = "error-propagation"
+	PatternErrorWrapping    PatternLabel = "error-wrapping"
+	PatternAssertionChain   PatternLabel = "assertion-chain"
+	PatternCobraBoilerplate PatternLabel = "cobra-boilerplate"
 	PatternInterfaceImpl    PatternLabel = "interface-implementation"
 	PatternDescribeTable    PatternLabel = "describe-table"
 	PatternBuilderCallback  PatternLabel = "builder-callback"
@@ -91,6 +94,18 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, dom
 
 	if isPureErrorPropagation(nodeSeqs) {
 		return PatternErrorPropagation, domain.NonActionable
+	}
+
+	if isErrorWrappingReturn(nodeSeqs) {
+		return PatternErrorWrapping, domain.NonActionable
+	}
+
+	if isAssertionChain(nodeSeqs) {
+		return PatternAssertionChain, domain.NonActionable
+	}
+
+	if isCobraCommandBoilerplate(nodeSeqs) {
+		return PatternCobraBoilerplate, domain.NonActionable
 	}
 
 	if isTestDataFilePair(nodeSeqs) {

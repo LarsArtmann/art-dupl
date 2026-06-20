@@ -46,7 +46,9 @@ func isRAIIDeferCall(node *syntax.Node) bool {
 // isCleanupMethod reports whether a method name is a known RAII cleanup.
 func isCleanupMethod(name string) bool {
 	switch name {
-	case cleanupMethodName, "Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free":
+	case cleanupMethodName,
+		"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
+		"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown":
 		return true
 	default:
 		return false

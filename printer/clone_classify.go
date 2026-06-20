@@ -250,6 +250,16 @@ func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domai
 	case PatternErrorPropagation:
 		cls.Suggestion = suggestErrorPropagation
 		cls.Priority = domain.PriorityLow
+	case PatternErrorWrapping:
+		cls.Suggestion = "error-wrapping idiom (if err != nil { return fmt.Errorf(...) })"
+		cls.Priority = domain.PriorityLow
+	case PatternAssertionChain:
+		cls.Category = domain.CategoryTestBoilerplate
+		cls.Suggestion = "test assertion chain (Expect/Assert/Require/Should/Must)"
+		cls.Priority = domain.PriorityLow
+	case PatternCobraBoilerplate:
+		cls.Suggestion = "cobra.Command/fang.Command boilerplate"
+		cls.Priority = domain.PriorityLow
 	case PatternInterfaceImpl:
 		cls.Suggestion = suggestInterfaceImpl
 		cls.Priority = domain.PriorityLow
