@@ -1,6 +1,8 @@
 package printer
 
 import (
+	"slices"
+
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -66,13 +68,7 @@ func hasAssertionTarget(callExpr *syntax.Node) bool {
 // These are CLI boilerplate that cannot be deduplicated.
 func isCobraCommandBoilerplate(nodeSeqs [][]*syntax.Node) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
-		for _, node := range seq {
-			if isCommandLiteral(node) {
-				return true
-			}
-		}
-
-		return false
+		return slices.ContainsFunc(seq, isCommandLiteral)
 	})
 }
 
@@ -148,10 +144,8 @@ func hasErrorWrappingCall(block *syntax.Node) bool {
 
 	for _, child := range block.Children {
 		if baseTypeOf(child) == golang.ReturnStmt {
-			for _, ret := range child.Children {
-				if isWrappingCall(ret) {
-					return true
-				}
+			if slices.ContainsFunc(child.Children, isWrappingCall) {
+				return true
 			}
 		}
 	}
