@@ -93,7 +93,15 @@ func (ip *IncrementalParser) ParseIncremental(
 				stats.CacheMisses++
 			}
 
-			schan <- nodes
+			select {
+			case schan <- nodes:
+			case <-ctx.Done():
+				statsChan <- stats
+
+				close(schan)
+
+				return
+			}
 		}
 
 		statsChan <- stats
