@@ -35,6 +35,24 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
+## ✅ Completed (2026-06-20) — Brutal Self-Review Sprint #2
+
+### Dead Code Removal
+- [x] Remove dead `ParseFileByExtension` wrapper (only test callers, delegated to `WithConfig` variant)
+
+### Error Handling Fixes
+- [x] Fix 3 swallowed errors in `cache/file_cache.go` (MkdirAll, Remove, saveMetadata) — now log warnings to stderr
+- [x] Add `context.Context` to `hash.FileDetector.FindDuplOver` — was the only MethodDetector without cancellation support
+
+### Linting/Config Fixes
+- [x] Remove 5 misleading `goexperiment.*` build tags from `.golangci.yml` (arenas, goroutineleakprofile, jsonv2, runtimesecret, simd) — none used by any code
+- [x] Fix non-functional depguard allow-list — was set to only `$gostd` + `$module`, now lists all 16 approved external dependencies
+
+### Test Quality Improvements
+- [x] Fix 2 always-pass tests in `detector_uncovered_test.go` that discarded errors
+- [x] Add `pkg/enum` tests (was 0% coverage, now 100%) — critical shared dependency for all domain enum JSON marshaling
+- [x] Add `domain.HealthScore` tests (was 0% coverage) — covers IsValid, String, MarshalJSON, UnmarshalJSON
+
 ## ✅ Completed (2026-06-20) — Brutal Self-Review Sprint
 
 ### Dead Code Removal (Ghost Systems Eliminated)
