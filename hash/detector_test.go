@@ -1,6 +1,7 @@
 package hash
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -123,7 +124,7 @@ func TestFileDetector_FindDuplOver_BasicDuplicate(t *testing.T) {
 	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	fd := NewFileDetector(1)
-	matches := collectMatches(fd.FindDuplOver(nodes, 1))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1))
 
 	testutil.AssertCountf(t, len(matches), 1, "expected 1 match, got %d")
 
@@ -146,7 +147,7 @@ func TestFileDetector_FindDuplOver_SkipsBelowThreshold(t *testing.T) {
 	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	fd := NewFileDetector(1000)
-	matches := collectMatches(fd.FindDuplOver(nodes, 1000))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1000))
 
 	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches (below threshold), got %d")
 }
@@ -155,7 +156,7 @@ func TestFileDetector_FindDuplOver_EmptyNodes(t *testing.T) {
 	t.Parallel()
 
 	fd := NewFileDetector(5)
-	matches := collectMatches(fd.FindDuplOver(nil, 5))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nil, 5))
 
 	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for empty input, got %d")
 }
@@ -169,7 +170,7 @@ func TestFileDetector_FindDuplOver_NodesWithoutFilename(t *testing.T) {
 	}
 
 	fd := NewFileDetector(1)
-	matches := collectMatches(fd.FindDuplOver(nodes, 1))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1))
 
 	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for empty filenames, got %d")
 }
@@ -183,7 +184,7 @@ func TestFileDetector_FindDuplOver_NonexistentFiles(t *testing.T) {
 	}
 
 	fd := NewFileDetector(1)
-	matches := collectMatches(fd.FindDuplOver(nodes, 1))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1))
 
 	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches for nonexistent files, got %d")
 }
@@ -205,7 +206,7 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	}
 
 	fd := NewFileDetector(1)
-	matches := collectMatches(fd.FindDuplOver(nodes, 1))
+	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1))
 
 	testutil.AssertCountf(
 		t,
@@ -404,7 +405,7 @@ func TestFileDetector_FindDuplOver(t *testing.T) {
 	nodes := newSyntheticNodePair(f1, f2, len(content))
 
 	hd := NewFileDetector(1)
-	matches := collectMatches(hd.FindDuplOver(nodes, 1))
+	matches := collectMatches(hd.FindDuplOver(context.Background(), nodes, 1))
 
 	testutil.AssertCountf(t, len(matches), 1, "expected 1 match via FileDetector, got %d")
 }

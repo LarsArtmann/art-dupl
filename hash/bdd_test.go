@@ -1,6 +1,7 @@
 package hash
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -46,7 +47,7 @@ func processUser(name string, age int) error {
 
 	// WHEN: Running hash detection with threshold 5
 	detector := NewFileDetector(5)
-	matchesChan := detector.FindDuplOver(nodes, 5)
+	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should detect duplicate
 	matches := testutil.CollectMatches(matchesChan)
@@ -109,7 +110,7 @@ func hello() {
 
 	// WHEN: Running hash detection with high threshold (1000 bytes)
 	detector := NewFileDetector(1000)
-	matchesChan := detector.FindDuplOver(nodes, 1000)
+	matchesChan := detector.FindDuplOver(context.Background(), nodes, 1000)
 
 	// THEN: Should not detect duplicates (files too small)
 	matches := testutil.CollectMatches(matchesChan)
@@ -172,7 +173,7 @@ func processProduct(name string, price int) error {
 
 	// WHEN: Running hash detection with threshold 5
 	detector := NewFileDetector(5)
-	matchesChan := detector.FindDuplOver(nodes, 5)
+	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should find both duplicate groups
 	matches := testutil.CollectMatches(matchesChan)
@@ -190,7 +191,7 @@ func TestHashDetectionShouldHandleEmptyInput(t *testing.T) {
 
 	// WHEN: Running hash detection
 	detector := NewFileDetector(5)
-	matchesChan := detector.FindDuplOver(nodes, 5)
+	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should handle gracefully without panics
 	matches := testutil.CollectMatches(matchesChan)

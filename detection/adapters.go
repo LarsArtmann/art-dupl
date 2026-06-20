@@ -60,7 +60,7 @@ func (a *hashAdapter) FindDuplOver(
 		defer close(resultChan)
 
 		hashDetector := hash.NewFileDetector(threshold)
-		source := hashDetector.FindDuplOver(a.data, threshold)
+		source := hashDetector.FindDuplOver(ctx, a.data, threshold)
 
 		for match := range source {
 			if ctx.Err() != nil {

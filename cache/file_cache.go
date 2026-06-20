@@ -90,6 +90,7 @@ func NewFileCache(cacheDir string) *FileCache {
 
 	// Ensure cache directories exist (tests verify this)
 	filesDir := filepath.Join(cacheDir, "files")
+
 	err := os.MkdirAll(filesDir, cacheDirPerms)
 	if err != nil {
 		// Cache is best-effort — log and continue without it

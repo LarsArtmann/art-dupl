@@ -1,6 +1,7 @@
 package hash
 
 import (
+	"context"
 	"io"
 	"os"
 
@@ -64,7 +65,7 @@ func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
 }
 
 // FindDuplOver finds exact file duplicates using XXH3 hashing.
-func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan syntax.Match {
+func (f *FileDetector) FindDuplOver(ctx context.Context, data []*syntax.Node, threshold int) <-chan syntax.Match {
 	resultChan := make(chan syntax.Match)
 
 	go func() {
@@ -75,6 +76,10 @@ func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 		groups := make(map[string][]FileHash)
 
 		for _, filename := range fileList {
+			if ctx.Err() != nil {
+				return
+			}
+
 			fh, ok := f.hashFile(filename)
 			if !ok {
 				continue
@@ -100,9 +105,13 @@ func (f *FileDetector) FindDuplOver(data []*syntax.Node, threshold int) <-chan s
 					fragments = append(fragments, []*syntax.Node{node})
 				}
 
-				resultChan <- syntax.Match{
+				select {
+				case resultChan <- syntax.Match{
 					Hash:  validFiles[0].Hash,
 					Frags: fragments,
+				}:
+				case <-ctx.Done():
+					return
 				}
 			}
 		}
