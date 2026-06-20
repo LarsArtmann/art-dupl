@@ -118,7 +118,10 @@ func (d *detector) FindClonesStreamResult(
 
 		pipeline, err := d.buildAnalysisPipeline(ctx, files)
 		if err != nil {
-			resultChan <- StreamResult{Group: nil, Err: err}
+			select {
+			case resultChan <- StreamResult{Group: nil, Err: err}:
+			case <-ctx.Done():
+			}
 
 			return
 		}
@@ -130,13 +133,20 @@ func (d *detector) FindClonesStreamResult(
 
 			streamErr := d.streamDetectionResults(ctx, pipeline, groupChan)
 			if streamErr != nil {
-				resultChan <- StreamResult{Group: nil, Err: streamErr}
+				select {
+				case resultChan <- StreamResult{Group: nil, Err: streamErr}:
+				case <-ctx.Done():
+				}
 			}
 		}()
 
 		for group := range groupChan {
 			if group != nil {
-				resultChan <- StreamResult{Group: group, Err: nil}
+				select {
+				case resultChan <- StreamResult{Group: group, Err: nil}:
+				case <-ctx.Done():
+					return
+				}
 			}
 		}
 
