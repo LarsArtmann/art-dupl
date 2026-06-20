@@ -28,9 +28,17 @@ components:
   suffixtree:
     in: suffixtree/**
 
-  # AST processing and language parsers
+  # AST processing core (Node type, serialization)
   syntax:
-    in: syntax/**
+    in: syntax/
+
+  # Go language parser (sub-package imports parent for Node type)
+  syntax-golang:
+    in: syntax/golang/**
+
+  # Templ language parser (sub-package imports parent for Node type)
+  syntax-templ:
+    in: syntax/templ/**
 
   # Hash-based detection
   hash:
@@ -114,6 +122,18 @@ deps:
       - errors
       - pkg-utils
 
+  syntax-golang:
+    mayDependOn:
+      - syntax
+      - errors
+      - pkg-utils
+
+  syntax-templ:
+    mayDependOn:
+      - syntax
+      - errors
+      - pkg-utils
+
   hash:
     mayDependOn:
       - syntax
@@ -123,6 +143,7 @@ deps:
   printer:
     mayDependOn:
       - syntax
+      - syntax-golang
       - config
       - errors
       - pkg-utils
@@ -154,6 +175,8 @@ deps:
   job:
     mayDependOn:
       - syntax
+      - syntax-golang
+      - syntax-templ
       - suffixtree
       - cache
       - errors
