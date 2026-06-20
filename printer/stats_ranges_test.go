@@ -216,7 +216,7 @@ func TestStatsAverageCloneSize(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			statsData := statsPrinter.GetStatsData()
+			statsData := statsPrinter.GetStatsView()
 			if statsData.AverageCloneSize != tt.expectedAverage {
 				t.Errorf(
 					"AverageCloneSize = %d, want %d",
@@ -262,7 +262,7 @@ func TestStatsComplexityScore(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData()
+	statsData := statsPrinter.GetStatsView()
 
 	expectedComplexity := 9.0 / 3.0 // 9 clones / 3 groups
 	if statsData.ComplexityScore != expectedComplexity {
@@ -320,7 +320,7 @@ func TestStatsFileDuplicationTracking(t *testing.T) {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	statsData := statsPrinter.GetStatsData()
+	statsData := statsPrinter.GetStatsView()
 	if len(statsData.FileDuplication) == 0 {
 		t.Fatal("FileDuplication map is empty")
 	}

@@ -4,11 +4,11 @@ import "github.com/LarsArtmann/art-dupl/domain"
 
 // stats_data.go - Stats data structures
 //
-// This file contains the StatsData type definition for aggregated
+// This file contains the StatsView type definition for aggregated
 // statistics about code duplication.
 //
 // Design:
-// - StatsData is a simple struct for JSON marshaling
+// - StatsView is a simple struct for JSON marshaling
 // - No methods here, just data definition
 // - Formatting and calculation logic are in separate files
 
@@ -23,7 +23,7 @@ type TopCloneGroup struct {
 	FirstLineStart int                  `json:"firstLineStart"`
 }
 
-// StatsData holds all aggregated statistics about code duplication analysis.
+// StatsView holds all aggregated statistics about code duplication analysis.
 //
 // Fields:
 // - Count metrics: TotalFilesScanned, TotalCloneGroups, TotalClones
@@ -38,7 +38,7 @@ type TopCloneGroup struct {
 // JSON Marshaling:
 // - All fields are JSON tagged for easy marshaling
 // - Use printer.JSONPrinter for formatted JSON output.
-type StatsData struct {
+type StatsView struct {
 	// Count metrics
 	TotalFilesScanned int `json:"total_files_scanned"`
 	TotalCloneGroups  int `json:"total_clone_groups"`

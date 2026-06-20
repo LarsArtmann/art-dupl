@@ -18,7 +18,7 @@ type stats struct {
 	w         io.Writer
 	threshold int
 	format    config.OutputFormat
-	statsData *StatsData
+	statsData *StatsView
 }
 
 // NewStats creates a new stats printer.
@@ -30,7 +30,7 @@ func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
 		w:         writer,
 		ReadFile:  fileReader,
 		threshold: minTokens,
-		statsData: &StatsData{
+		statsData: &StatsView{
 			FileDuplication:   make(map[string]int),
 			SizeDistribution:  make(map[string]int),
 			TokenDistribution: make(map[string]int),

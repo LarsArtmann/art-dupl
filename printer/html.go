@@ -134,13 +134,13 @@ func (p *htmlprinter) PrintClones(
 	}
 
 	sort.Sort(byNameAndLineProcessed(clones))
-	viewData := toCloneGroupViewData(p.iota, clones)
+	viewData := toCloneGroupView(p.iota, clones)
 
 	ctx := context.Background()
 
 	if p.diffMode.IsEnabled() && len(clones) > 1 {
 		groupDiff := ComputeCloneGroupDiff(clones)
-		diffData := toDiffViewData(p.iota, groupDiff)
+		diffData := toDiffView(p.iota, groupDiff)
 
 		if len(groupDiff.Others) == 0 {
 			return cloneGroupFull(viewData).Render(ctx, p.w)
@@ -157,7 +157,7 @@ func (p *htmlprinter) buildSummarySection() string {
 		return ""
 	}
 
-	return buildSummaryHTML(toSummaryViewData(p.stats))
+	return buildSummaryHTML(toSummaryView(p.stats))
 }
 
 func (p *htmlprinter) PrintFooter() error {
@@ -325,7 +325,7 @@ func suggestionHTML(suggestion string) string {
 // writeCloneOccurrences renders clone occurrences (non-diff mode) using templ.
 func (p *htmlprinter) writeCloneOccurrences(clones []domain.ProcessedClone) error {
 	for i, cl := range clones {
-		occData := toCloneOccurrenceData(cl)
+		occData := toCloneOccurrenceView(cl)
 
 		err := cloneOccurrence(
 			occData,

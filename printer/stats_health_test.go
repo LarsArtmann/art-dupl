@@ -200,7 +200,7 @@ func TestSetFilterStats(t *testing.T) {
 
 			sp.SetFilterStats(tt.filesFiltered, tt.breakdown)
 
-			data := sp.GetStatsData()
+			data := sp.GetStatsView()
 
 			if data.FilesFiltered != tt.wantFiltered {
 				t.Errorf("FilesFiltered = %d, want %d", data.FilesFiltered, tt.wantFiltered)
@@ -247,7 +247,7 @@ func TestFilterStatsInJSONOutput(t *testing.T) {
 	}
 
 	// Verify the data was stored correctly
-	data := sp.GetStatsData()
+	data := sp.GetStatsView()
 	testutil.AssertFieldValue(t, data.FilesFiltered, 25, "FilesFiltered")
 
 	if len(data.FilterBreakdown) != 3 {

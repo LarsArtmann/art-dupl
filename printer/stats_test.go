@@ -90,7 +90,7 @@ func makeDupNodePair(filename string, pos, end int32) []*syntax.Node {
 }
 
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.
-func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
+func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsView {
 	t.Helper()
 
 	err := statsPrinter.PrintFooter()
@@ -98,25 +98,25 @@ func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsData {
 		t.Fatalf("PrintFooter failed: %v", err)
 	}
 
-	data := statsPrinter.GetStatsData()
+	data := statsPrinter.GetStatsView()
 
 	return data
 }
 
-func TestStatsDataAggregation(t *testing.T) {
+func TestStatsViewAggregation(t *testing.T) {
 	tests := []struct {
 		name       string
 		duplicates [][][]*syntax.Node
 		filesCount int
 		threshold  int
-		checkStats func(t *testing.T, stats *StatsData)
+		checkStats func(t *testing.T, stats *StatsView)
 	}{
 		{
 			name:       "empty clones",
 			duplicates: [][][]*syntax.Node{},
 			filesCount: 0,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsData) {
+			checkStats: func(t *testing.T, stats *StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 0, "TotalCloneGroups")
@@ -139,7 +139,7 @@ func TestStatsDataAggregation(t *testing.T) {
 			},
 			filesCount: 2,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsData) {
+			checkStats: func(t *testing.T, stats *StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 1, "TotalCloneGroups")
@@ -173,7 +173,7 @@ func TestStatsDataAggregation(t *testing.T) {
 			},
 			filesCount: 2,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsData) {
+			checkStats: func(t *testing.T, stats *StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 2, "TotalCloneGroups")
@@ -203,7 +203,7 @@ func TestStatsDataAggregation(t *testing.T) {
 				t.Fatalf("PrintFooter failed: %v", err)
 			}
 
-			tt.checkStats(t, statsPrinter.GetStatsData())
+			tt.checkStats(t, statsPrinter.GetStatsView())
 		})
 	}
 }

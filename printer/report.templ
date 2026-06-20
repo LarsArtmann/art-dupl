@@ -52,7 +52,7 @@ script toggleCollapsed() {
 	this.parentElement.classList.toggle('collapsed');
 }
 
-templ cloneGroupFull(data CloneGroupViewData) {
+templ cloneGroupFull(data CloneGroupView) {
 	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		<div class="clone-header" onclick={ toggleCollapsed() }>
 			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
@@ -72,7 +72,7 @@ templ cloneGroupFull(data CloneGroupViewData) {
 	</div>
 }
 
-templ cloneGroupDiffFull(data CloneGroupViewData, diffData DiffViewData) {
+templ cloneGroupDiffFull(data CloneGroupView, diffData DiffView) {
 	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		<div class="clone-header" onclick={ toggleCollapsed() }>
 			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
@@ -96,7 +96,7 @@ templ cloneGroupDiffFull(data CloneGroupViewData, diffData DiffViewData) {
 	</div>
 }
 
-templ cloneOccurrence(cl CloneOccurrenceData, groupNum int, index int) {
+templ cloneOccurrence(cl CloneOccurrenceView, groupNum int, index int) {
 	<div class="occurrence">
 		<div class="file-link">
 			<a href={ cl.VSCodeLink } title="Open in VSCode">{ cl.Filename }:{ strconv.Itoa(cl.LineStart) }</a>
@@ -106,7 +106,7 @@ templ cloneOccurrence(cl CloneOccurrenceData, groupNum int, index int) {
 	</div>
 }
 
-templ diffViewContent(data DiffViewData) {
+templ diffViewContent(data DiffView) {
 	<div class="diff-mode">
 		<div class="diff-base-header">
 			<span class="label">📋 BASE REFERENCE</span>
@@ -214,7 +214,7 @@ templ diffViewToggle(groupNum int) {
 	</div>
 }
 
-templ diffSelectorTempl(data DiffViewData) {
+templ diffSelectorTempl(data DiffView) {
 	<div class="diff-selector">
 		<select id={ "diff-select-" + strconv.Itoa(data.GroupNum) } onchange={ showDiffScript("this.value", data.GroupNum) }>
 			<option value="" disabled selected>Compare with...</option>

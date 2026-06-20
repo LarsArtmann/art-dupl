@@ -10,14 +10,14 @@ import (
 	"github.com/a-h/templ"
 )
 
-type CloneOccurrenceData struct {
+type CloneOccurrenceView struct {
 	VSCodeLink templ.SafeURL
 	Filename   string
 	LineStart  int
 	Fragment   string
 }
 
-type CloneGroupViewData struct {
+type CloneGroupView struct {
 	GroupNum    int
 	Category    CloneCategory
 	Priority    ClonePriority
@@ -26,10 +26,10 @@ type CloneGroupViewData struct {
 	TotalTokens int
 	BadgesHTML  string
 	Suggestion  string
-	Clones      []CloneOccurrenceData
+	Clones      []CloneOccurrenceView
 }
 
-type DiffViewData struct {
+type DiffView struct {
 	GroupNum       int
 	Base           *CloneWithContent
 	Others         []CloneDiff
@@ -43,7 +43,7 @@ type DiffAggregateStats struct {
 	HasStats      bool
 }
 
-type SummaryViewData struct {
+type SummaryView struct {
 	TotalClones    int
 	TotalTokens    int
 	ProdCount      int
@@ -53,8 +53,8 @@ type SummaryViewData struct {
 	HasData        bool
 }
 
-func toCloneOccurrenceData(cl domain.ProcessedClone) CloneOccurrenceData {
-	return CloneOccurrenceData{
+func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
+	return CloneOccurrenceView{
 		VSCodeLink: templ.SafeURL(fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)),
 		Filename:   cl.Filename,
 		LineStart:  cl.LineStart,
@@ -62,10 +62,10 @@ func toCloneOccurrenceData(cl domain.ProcessedClone) CloneOccurrenceData {
 	}
 }
 
-func toCloneGroupViewData(
+func toCloneGroupView(
 	groupNum int,
 	clones []domain.ProcessedClone,
-) CloneGroupViewData {
+) CloneGroupView {
 	occurrences := len(clones)
 	totalTokens := 0
 	hasTest := false
@@ -113,12 +113,12 @@ func toCloneGroupViewData(
 		badgesHTML += `<span class="badge-test">🧪 test</span>`
 	}
 
-	occurrenceData := make([]CloneOccurrenceData, len(clones))
+	occurrenceData := make([]CloneOccurrenceView, len(clones))
 	for i, cl := range clones {
-		occurrenceData[i] = toCloneOccurrenceData(cl)
+		occurrenceData[i] = toCloneOccurrenceView(cl)
 	}
 
-	return CloneGroupViewData{
+	return CloneGroupView{
 		GroupNum:    groupNum,
 		Category:    primaryCategory,
 		Priority:    highestPriority,
@@ -131,8 +131,8 @@ func toCloneGroupViewData(
 	}
 }
 
-func toDiffViewData(groupNum int, groupDiff CloneGroupDiff) DiffViewData {
-	return DiffViewData{
+func toDiffView(groupNum int, groupDiff CloneGroupDiff) DiffView {
+	return DiffView{
 		GroupNum: groupNum,
 		Base:     groupDiff.Base,
 		Others:   groupDiff.Others,
@@ -145,8 +145,8 @@ func toDiffViewData(groupNum int, groupDiff CloneGroupDiff) DiffViewData {
 	}
 }
 
-func toSummaryViewData(stats classificationStats) SummaryViewData {
-	return SummaryViewData{
+func toSummaryView(stats classificationStats) SummaryView {
+	return SummaryView{
 		TotalClones:    stats.totalClones,
 		TotalTokens:    stats.totalTokens,
 		ProdCount:      stats.prodCount,
@@ -187,7 +187,7 @@ func buildMetadataBadgesHTML(meta ReportMetadata) string {
 	return strings.Join(parts, "")
 }
 
-func buildSummaryHTML(data SummaryViewData) string {
+func buildSummaryHTML(data SummaryView) string {
 	if !data.HasData {
 		return ""
 	}

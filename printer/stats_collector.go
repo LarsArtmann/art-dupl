@@ -76,7 +76,7 @@ func (p *stats) SetFormat(format config.OutputFormat) {
 	p.format = format
 }
 
-// GetStatsData returns the collected statistics data.
-func (p *stats) GetStatsData() *StatsData {
+// GetStatsView returns the collected statistics data.
+func (p *stats) GetStatsView() *StatsView {
 	return p.statsData
 }

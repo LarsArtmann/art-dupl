@@ -13,7 +13,7 @@ func (p *htmlprinter) writeDiffView(clones []domain.ProcessedClone) error {
 		return p.writeCloneOccurrences(clones)
 	}
 
-	diffData := toDiffViewData(p.iota, groupDiff)
+	diffData := toDiffView(p.iota, groupDiff)
 
 	return diffViewContent(diffData).Render(context.Background(), p.w)
 }
@@ -23,7 +23,7 @@ func (p *htmlprinter) writeDiffViewToggle() error {
 }
 
 func (p *htmlprinter) writeDiffSelector(groupDiff CloneGroupDiff) error {
-	diffData := DiffViewData{
+	diffData := DiffView{
 		GroupNum: p.iota,
 		Base:     groupDiff.Base,
 		Others:   groupDiff.Others,
