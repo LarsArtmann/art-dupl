@@ -15,9 +15,11 @@ func NewRootCommand() *cobra.Command {
 		Example: "art-dupl ./src",
 	}
 
-	// Add stats subcommand
+	// Add subcommands
 	statsCmd := NewStatsCommand()
 	rootCmd.AddCommand(statsCmd)
+	rootCmd.AddCommand(NewBaselineCommand())
+	rootCmd.AddCommand(NewCheckCommand())
 
 	return rootCmd
 }
