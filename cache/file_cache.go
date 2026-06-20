@@ -90,7 +90,11 @@ func NewFileCache(cacheDir string) *FileCache {
 
 	// Ensure cache directories exist (tests verify this)
 	filesDir := filepath.Join(cacheDir, "files")
-	_ = os.MkdirAll(filesDir, cacheDirPerms)
+	err := os.MkdirAll(filesDir, cacheDirPerms)
+	if err != nil {
+		// Cache is best-effort — log and continue without it
+		fmt.Fprintf(os.Stderr, "warning: failed to create cache directory %s: %v\n", filesDir, err)
+	}
 
 	// Load existing metadata if available
 	fc.loadMetadata()
@@ -126,7 +130,10 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 	nodes, err := fc.deserialize(data)
 	if err != nil {
 		// Corrupted cache entry, remove it
-		_ = os.Remove(cachePath)
+		removeErr := os.Remove(cachePath)
+		if removeErr != nil {
+			fmt.Fprintf(os.Stderr, "warning: failed to remove corrupted cache entry %s: %v\n", cachePath, removeErr)
+		}
 
 		atomic.AddInt64(&fc.metadata.MissCount, 1)
 
@@ -168,7 +175,9 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 	}
 
 	fc.metadata.UpdatedAt = time.Now()
-	_ = fc.saveMetadata()
+	if err := fc.saveMetadata(); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: failed to save cache metadata: %v\n", err)
+	}
 
 	return nil
 }
