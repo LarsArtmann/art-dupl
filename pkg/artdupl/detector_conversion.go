@@ -122,8 +122,8 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 }
 
 // buildResult creates final Result structure.
-func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result {
-	analysisTime := time.Since(d.started)
+func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount, linesAnalyzed int, startTime time.Time) *Result {
+	analysisTime := time.Since(startTime)
 
 	// Filter out nil clone groups
 	validGroups := make([]*CloneGroup, 0, len(cloneGroups))
@@ -147,7 +147,7 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result
 			TotalGroups:   len(validGroups),
 			AnalysisTime:  analysisTime,
 			MethodsUsed:   d.opts.DetectionMethods,
-			LinesAnalyzed: 0, // Calculate actual lines analyzed
+			LinesAnalyzed: linesAnalyzed,
 		},
 		Metadata: &Metadata{
 			Version:    sdkVersion(),

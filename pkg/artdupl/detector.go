@@ -6,16 +6,13 @@ import (
 	"os"
 	"slices"
 	"time"
-
-	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 // detector implements the Detector interface using existing dupl components.
 type detector struct {
-	opts    *Options
-	cfg     *detectorConfig
-	logger  Logger
-	started time.Time
+	opts   *Options
+	cfg    *detectorConfig
+	logger Logger
 }
 
 // NewDetector creates a new code duplication detector.
@@ -28,8 +25,8 @@ func NewDetector(opts *Options) (Detector, error) {
 	// Validate options
 	err := ValidateOptions(opts)
 	if err != nil {
-		return nil, errors.WrapConfig(err, fmt.Sprintf("invalid options (threshold=%d, methods=%v)",
-			opts.Threshold, opts.DetectionMethods))
+		return nil, fmt.Errorf("invalid options (threshold=%d, methods=%v): %w",
+			opts.Threshold, opts.DetectionMethods, err)
 	}
 
 	// Set default file reader if not provided
@@ -49,7 +46,7 @@ func NewDetector(opts *Options) (Detector, error) {
 	opts.DetectionMethods = slices.Clone(opts.DetectionMethods)
 	opts.IgnoreFiles = slices.Clone(opts.IgnoreFiles)
 
-	return &detector{ //nolint:exhaustruct
+	return &detector{
 		opts:   opts,
 		cfg:    cfg,
 		logger: opts.Logger,
@@ -59,7 +56,7 @@ func NewDetector(opts *Options) (Detector, error) {
 // FindClones performs complete duplication analysis.
 // Not safe for concurrent use — see FindClonesStream for concurrent scenarios.
 func (d *detector) FindClones(ctx context.Context, files []string) (*Result, error) {
-	d.started = time.Now()
+	startTime := time.Now()
 
 	// Validate inputs
 	err := d.validateInputsWithContext(ctx, files)
@@ -70,34 +67,30 @@ func (d *detector) FindClones(ctx context.Context, files []string) (*Result, err
 	// Process files and build analysis pipeline
 	pipeline, err := d.buildAnalysisPipeline(ctx, files)
 	if err != nil {
-		return nil, errors.Wrap(
+		return nil, fmt.Errorf(
+			"analysis pipeline construction failed for %d files (methods=%v, threshold=%d): %w",
+			len(files),
+			d.cfg.DetectionMethods,
+			d.cfg.Threshold,
 			err,
-			errors.AnalysisError,
-			fmt.Sprintf(
-				"analysis pipeline construction failed for %d files (methods=%v, threshold=%d)",
-				len(files),
-				d.cfg.DetectionMethods,
-				d.cfg.Threshold,
-			),
 		)
 	}
 
 	// Run detection based on configured methods
 	cloneGroups, err := d.runDetection(ctx, pipeline)
 	if err != nil {
-		return nil, errors.Wrap(
+		return nil, fmt.Errorf(
+			"detection failed (methods=%v, nodes=%d): %w",
+			d.cfg.DetectionMethods,
+			len(pipeline.data),
 			err,
-			errors.DetectionError,
-			fmt.Sprintf(
-				"detection failed (methods=%v, nodes=%d)",
-				d.cfg.DetectionMethods,
-				len(pipeline.data),
-			),
 		)
 	}
 
 	// Build and return result
-	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount)
+	result := d.buildResult(cloneGroups, pipeline.fileCount.FilesCount, pipeline.fileCount.LinesCount, startTime)
+
+	d.reportProgress(100, "Analysis complete", "")
 
 	if len(result.CloneGroups) == 0 {
 		return nil, ErrNoDuplicatesFound
@@ -149,8 +142,6 @@ func (d *detector) FindClonesStreamResult(
 	ctx context.Context,
 	files []string,
 ) (<-chan StreamResult, error) {
-	d.started = time.Now()
-
 	err := d.validateInputsWithContext(ctx, files)
 	if err != nil {
 		return nil, err
@@ -193,10 +184,7 @@ func (d *detector) FindClonesStreamResult(
 
 // wrapValidationError wraps a validation error with context about the operation.
 func (d *detector) wrapValidationError(err error, operation string, fileCount int) error {
-	return errors.WrapValidation(
-		err,
-		fmt.Sprintf("input validation failed for "+operation+"%d files", fileCount),
-	)
+	return fmt.Errorf("input validation failed for "+operation+"%d files: %w", fileCount, err)
 }
 
 // validateInputsWithContext validates inputs and returns the error if validation fails.
