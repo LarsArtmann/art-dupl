@@ -39,7 +39,7 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BasicLit:
-		o.Type = BasicLit
+		o.Type = encodeSemanticType(BasicLit, n.Value, t.config.Mode.IsSemantic())
 
 	case *ast.BinaryExpr:
 		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.IsSemantic())

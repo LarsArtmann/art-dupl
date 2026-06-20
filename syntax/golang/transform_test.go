@@ -148,3 +148,80 @@ func ParseSafetyMode(s string) SafetyMode { return SafetyMode(s) }
 		t.Logf("Types: %v", funcDeclTypes)
 	}
 }
+
+func TestBasicLitValueHashing(t *testing.T) {
+	t.Parallel()
+
+	code := `package test
+
+func a() int { return 42 }
+func b() int { return 999 }
+func c() int { return 42 }
+`
+
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.go"
+	writeTestFile(t, tmpFile, code)
+
+	t.Run("semantic_mode_different_values_different_types", func(t *testing.T) {
+		t.Parallel()
+
+		node, err := ParseWithConfig(tmpFile, MustParseConfig(DetectionModeSemantic))
+		if err != nil {
+			t.Fatalf("Parse() error = %v", err)
+		}
+
+		litTypes := collectBasicLitTypes(node)
+		// "42", "999", "42" → 2 distinct types in semantic mode
+		if len(litTypes) != 2 {
+			t.Errorf("Expected 2 distinct BasicLit types (42≠999, 42==42), got %d: %v",
+				len(litTypes), litTypes)
+		}
+
+		// Verify "42" and "999" encode to different types
+		type42 := encodeSemanticType(BasicLit, "42", true)
+		type999 := encodeSemanticType(BasicLit, "999", true)
+
+		if type42 == type999 {
+			t.Error("BasicLit 42 and 999 should encode to different types")
+		}
+
+		if _, ok := litTypes[type42]; !ok {
+			t.Errorf("Expected encoded type for '42' not found in: %v", litTypes)
+		}
+	})
+
+	t.Run("structural_mode_all_literals_same_type", func(t *testing.T) {
+		t.Parallel()
+
+		node, err := ParseWithConfig(tmpFile, MustParseConfig(DetectionModeStructural))
+		if err != nil {
+			t.Fatalf("Parse() error = %v", err)
+		}
+
+		litTypes := collectBasicLitTypes(node)
+		if len(litTypes) != 1 {
+			t.Errorf("Expected exactly 1 BasicLit type in structural mode, got %d: %v", len(litTypes), litTypes)
+		}
+	})
+}
+
+func collectBasicLitTypes(node *syntax.Node) map[int32]struct{} {
+	result := make(map[int32]struct{})
+
+	var walk func(n *syntax.Node)
+
+	walk = func(n *syntax.Node) {
+		if DecodeBaseType(n.Type) == BasicLit {
+			result[n.Type] = struct{}{}
+		}
+
+		for _, child := range n.Children {
+			walk(child)
+		}
+	}
+
+	walk(node)
+
+	return result
+}
