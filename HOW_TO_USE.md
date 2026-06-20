@@ -351,6 +351,30 @@ The HTML report provides:
 - **Automation**: Integrate into CI/CD with clear failure criteria
 - **Documentation**: Document accepted patterns that may generate clones
 
+### 5. CI Integration with baseline/check
+
+art-dupl provides two subcommands for CI/pre-commit gating:
+
+```bash
+# Step 1: Record the current state as a baseline
+art-dupl baseline . -t 15
+# Writes .art-dupl-baseline.json with all current clone-group hashes.
+# Commit this file: git add .art-dupl-baseline.json
+
+# Step 2: Run check in CI — reports ONLY new clones not in the baseline
+art-dupl check . -t 15
+# Exit code 0: no new clones (all current clones are in the baseline)
+# Exit code 1: new clones detected (CI gate fails)
+
+# Step 3: After accepting new clones, update the baseline
+art-dupl baseline . -t 15
+git add .art-dupl-baseline.json && git commit -m "chore: update clone baseline"
+```
+
+The baseline file uses content-hash matching, so renamed files or moved code that keeps the same structure still matches. Use `--json` with `check` for structured output, and `--baseline-path` to customize the file location.
+
+GitHub Actions and pre-commit hook templates are included in `.github/workflows/art-dupl-check.yml` and `.pre-commit-hooks.yaml`.
+
 ## Troubleshooting
 
 ### Common Issues

@@ -90,6 +90,29 @@
 
 ---
 
+## 🔧 Refactoring Advisor
+
+| Feature                       | Status           | Description                                                                 |
+| ----------------------------- | ---------------- | --------------------------------------------------------------------------- |
+| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output       |
+| **Extractability Score**      | FULLY_FUNCTIONAL | `lines_saved` + `extractable` fields in JSON for refactoring prioritization |
+| **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.) |
+| **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups — only the largest match is reported         |
+| **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides           |
+
+---
+
+## 🚀 CI Integration
+
+| Feature                  | Status           | Description                                                                          |
+| ------------------------ | ---------------- | ------------------------------------------------------------------------------------ |
+| **Baseline Recording**   | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json`           |
+| **CI Check Mode**        | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates                       |
+| **GitHub Actions**       | FULLY_FUNCTIONAL | `.github/workflows/art-dupl-check.yml` template included                             |
+| **Pre-Commit Hook**      | FULLY_FUNCTIONAL | `.pre-commit-hooks.yaml` for pre-commit framework integration                        |
+
+---
+
 ## 🛡️ Smart Filtering
 
 | Feature                       | Status           | Description                                                                 |

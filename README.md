@@ -199,17 +199,17 @@ CLI flags override config file values. Config file overrides defaults.
 ## Examples
 
 ```bash
-# CI/CD: fail if too many clones
-TOTAL=$(art-dupl --json . | jq '.summary.total_clones')
-[ "$TOTAL" -gt 100 ] && echo "Too many clones: $TOTAL" && exit 1
+# CI/CD: baseline + check workflow (recommended)
+art-dupl baseline . -t 15          # Record accepted clones (commit the file)
+art-dupl check . -t 15             # CI gate: exits 1 if new clones found
+
+# Semantic detection (default): finds renamed-variable clones (Type 2)
+art-dupl . -t 15                   # Default mode: alpha-normalized matching
+art-dupl --exact . -t 15           # Verbatim name matching (copy-paste only)
+art-dupl --structural . -t 15      # AST shape only (loosest)
 
 # Find test file duplicates
 find . -name '*_test.go' | art-dupl -files
-
-# Progressive refactoring: baseline → refactor → measure
-art-dupl --json -t 15 > baseline.json
-# ... refactor ...
-art-dupl --json -t 15 > after.json
 
 # Most widespread clones first
 art-dupl --plumbing --sort occurrence ./src
