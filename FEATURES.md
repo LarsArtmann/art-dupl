@@ -50,20 +50,20 @@
 
 ### Statistics Subcommand
 
-| Feature                     | Status           | Description                                                             |
-| --------------------------- | ---------------- | ----------------------------------------------------------------------- |
-| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                  |
-| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                             |
-| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                      |
-| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                 |
-| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                     |
-| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                               |
+| Feature                     | Status           | Description                                                                                                                                                                                                    |
+| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                                                                                                                                                         |
+| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                                                                                                                                                                    |
+| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                                                                                                                                                             |
+| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                        |
+| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                            |
+| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                      |
 | **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 10 non-actionable patterns (signature-only, interface-impl, RAII defer, error-propagation, test-data, table-driven, test-scaffolding, data-dominated, describe-table, builder-callback) |
-| **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels |
-| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`) |
-| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output              |
-| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats              |
-| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats    |
+| **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                        |
+| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`)                                                                                                             |
+| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                     |
+| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                     |
+| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                           |
 
 ### Sorting Options
 
@@ -107,15 +107,15 @@
 
 ## ⚡ Performance & Concurrency
 
-| Feature                   | Status           | Description                                                                         |
-| ------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
-| **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                   |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag                                 |
-| **Git-Aware Incremental** | REMOVED | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
-| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization                        |
-| **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                 |
-| **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                              |
-| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 — no hand-written SIMD |
+| Feature                   | Status           | Description                                                                                                                                         |
+| ------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                   |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag                                                                                                 |
+| **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
+| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization                                                                                        |
+| **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
+| **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
+| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 — no hand-written SIMD                                                     |
 
 ---
 
@@ -199,11 +199,11 @@
 
 ## 🚫 Known Limitations
 
-| Limitation            | Impact | Description                                                       |
-| --------------------- | ------ | ----------------------------------------------------------------- |
-| **Go & Templ Only**   | High   | Only `.go` and `.templ` files supported                           |
-| **No Git-Diff Incremental** | Low | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
-| **SDK Stream Errors** | Low    | `FindClonesStream` logs pipeline errors instead of returning them |
+| Limitation                  | Impact | Description                                                                          |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| **Go & Templ Only**         | High   | Only `.go` and `.templ` files supported                                              |
+| **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
+| **SDK Stream Errors**       | Low    | `FindClonesStream` logs pipeline errors instead of returning them                    |
 
 ---
 

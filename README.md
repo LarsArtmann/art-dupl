@@ -157,12 +157,12 @@ art-dupl completion [bash|zsh|fish|powershell]
 
 ### Performance Flags
 
-| Flag            | Default | Description                                           |
-| --------------- | ------- | ----------------------------------------------------- |
-| `--workers`     | `0`     | Concurrent workers (`0` = auto-detect CPU cores)      |
-| `--incremental` | `false` | Enable AST caching for incremental analysis           |
-| `--cache-dir`   | `""`    | Cache directory (default: `.cache/art-dupl`)          |
-| `--clear-cache` | `false` | Clear cache before running                            |
+| Flag            | Default | Description                                      |
+| --------------- | ------- | ------------------------------------------------ |
+| `--workers`     | `0`     | Concurrent workers (`0` = auto-detect CPU cores) |
+| `--incremental` | `false` | Enable AST caching for incremental analysis      |
+| `--cache-dir`   | `""`    | Cache directory (default: `.cache/art-dupl`)     |
+| `--clear-cache` | `false` | Clear cache before running                       |
 
 ### Stats Subcommand
 
