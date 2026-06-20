@@ -45,7 +45,11 @@ func (d *detector) buildAnalysisPipeline(
 				continue
 			}
 
-			fileChan <- filename
+			select {
+			case fileChan <- filename:
+			case <-ctx.Done():
+				return
+			}
 
 			progress := float64(i+1) / float64(len(files)) * 50
 			d.reportProgress(progress, "Processing files", filename)

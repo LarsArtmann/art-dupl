@@ -105,7 +105,11 @@ func convertFileDuplicatesToMatches(
 				Hash:  fileDup.Hash,
 				Frags: createFragmentsFromFileHashes(fileDup.Files),
 			}
-			duplChan <- match
+			select {
+			case duplChan <- match:
+			case <-ctx.Done():
+				return
+			}
 		}
 	}()
 

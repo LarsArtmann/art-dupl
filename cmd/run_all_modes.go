@@ -162,7 +162,11 @@ func writeFormatFile(
 		defer close(matchChan)
 
 		for _, match := range matches {
-			matchChan <- match
+			select {
+			case matchChan <- match:
+			case <-ctx.Done():
+				return
+			}
 		}
 	}()
 
