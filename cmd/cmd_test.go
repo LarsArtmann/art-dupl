@@ -289,8 +289,8 @@ func TestAddFlags(t *testing.T) {
 	}
 
 	threshold, _ := cmd.Flags().GetInt("threshold")
-	if threshold != 15 {
-		t.Errorf("threshold default = %d, want 15", threshold)
+	if threshold != 1 {
+		t.Errorf("threshold default = %d, want 1", threshold)
 	}
 }
 

@@ -129,7 +129,7 @@ func large() {
 
 			// Run with threshold that filters small but shows large
 			// small: ~12 tokens, large: ~28 tokens
-			output, err := setup.RunArtDupl("--plumbing", "--threshold", "15")
+			output, err := setup.RunArtDupl("--plumbing", "--threshold", "5")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

@@ -177,13 +177,17 @@ type Config struct {
 	IncludeTests bool `json:"includeTests,omitempty"`
 }
 
-// DefaultThreshold is the default minimum token sequence size for clone detection.
-const DefaultThreshold = 15
+// DefaultThreshold is the default minimum number of duplicated statements to report.
+// With statement-level tokenization, each Go statement produces one composite token.
+// A threshold of 1 means "report any duplicated statement." Users who want less
+// noise should increase to 3-5. Post-hoc filters (overlap elimination, test
+// suppression, actionability patterns) handle most noise automatically.
+const DefaultThreshold = 1
 
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {
 	return &Config{
-		Threshold:          15,
+		Threshold:          DefaultThreshold,
 		IncludeVendor:      false,
 		IncludeNodeModules: false,
 		FilesFromStdin:     false,

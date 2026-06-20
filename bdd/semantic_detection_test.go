@@ -35,7 +35,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "10", "--structural", "--include-tests")
+			output, err := setup.RunArtDupl("--threshold", "3", "--structural", "--include-tests")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -59,7 +59,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "10", "--semantic")
+			output, err := setup.RunArtDupl("--threshold", "3", "--semantic")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -74,7 +74,7 @@ var _ = Describe("Semantic Detection", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "10", "--semantic", "--include-tests")
+			output, err := setup.RunArtDupl("--threshold", "3", "--semantic", "--include-tests")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

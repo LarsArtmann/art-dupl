@@ -87,7 +87,7 @@ var _ = Describe("Configuration File Loading", func() {
 	Context("When using a valid JSON configuration file", func() {
 		It("should load threshold from config file", func() {
 			configContent := `{
-				"threshold": 50,
+				"threshold": 15,
 				"outputFormat": "json"
 			}`
 			output, err := runWithConfig(
@@ -122,7 +122,7 @@ var _ = Describe("Configuration File Loading", func() {
 
 			// Create config with paths
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"paths": ["./src", "./lib"]
 			}`
 			configPath := filepath.Join(setup.TmpDir, "dupl.json")
@@ -152,7 +152,7 @@ var _ = Describe("Configuration File Loading", func() {
 	Context("When CLI flags override config file settings", func() {
 		It("should use CLI threshold over config threshold", func() {
 			configContent := `{
-				"threshold": 50
+				"threshold": 15
 			}`
 			output, err := runWithConfig(
 				configContent,
@@ -165,7 +165,7 @@ var _ = Describe("Configuration File Loading", func() {
 
 		It("should use CLI output format over config format", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"outputFormat": "text"
 			}`
 			// Create config file manually
@@ -234,7 +234,7 @@ var _ = Describe("Configuration File Loading", func() {
 	Context("When configuration file has detection method settings", func() {
 		It("should load detection methods from config", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"detectionMethods": ["hash", "art-dupl"]
 			}`
 			output, err := runWithConfig(
@@ -248,7 +248,7 @@ var _ = Describe("Configuration File Loading", func() {
 
 		It("should load single detection method from config", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"detectionMethods": ["hash"]
 			}`
 			output, err := runWithConfig(
@@ -271,14 +271,14 @@ var _ = Describe("Configuration File Loading", func() {
 	Context("When configuration file has filtering settings", func() {
 		It("should filter generated code by default without config field", func() {
 			configContent := `{
-				"threshold": 15
+				"threshold": 5
 			}`
 			runConfigTest(configContent, filterGenCode, []string{"filter1.go", "filter2.go"})
 		})
 
 		It("should load include-sqlc setting from config", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"includeSqlc": true
 			}`
 			runConfigTest(configContent, sqlcCode, []string{"query1.go", "query2.go"})
@@ -286,7 +286,7 @@ var _ = Describe("Configuration File Loading", func() {
 
 		It("should respect includeTempl setting from config", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"includeTempl": true
 			}`
 			runConfigTest(configContent, templCode, []string{"comp1.go", "comp2.go"})
@@ -299,7 +299,7 @@ var _ = Describe("Configuration File Loading", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		configContent := fmt.Sprintf(`{
-			"threshold": 15,
+			"threshold": 5,
 			"%s": ["%s"]
 		}`, patternType, patternValue)
 		configPath := filepath.Join(setup.TmpDir, "dupl.json")
@@ -391,7 +391,7 @@ var _ = Describe("Configuration File Edge Cases", func() {
 	Context("When configuration file has extra fields", func() {
 		It("should ignore unknown fields in config", func() {
 			configContent := `{
-				"threshold": 15,
+				"threshold": 5,
 				"unknownField": "should be ignored",
 				"anotherUnknown": 12345
 			}`
@@ -440,7 +440,7 @@ func nestedConfig() {}`
 		It("should handle config with unicode content", func() {
 			// Create config with unicode
 			configContent := fmt.Sprintf(`{
-				"threshold": 15,
+				"threshold": 5,
 				"paths": ["%s"]
 			}`, setup.TmpDir)
 			configPath := filepath.Join(setup.TmpDir, "unicode.json")

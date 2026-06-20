@@ -56,20 +56,28 @@ const maxChildrenSerial = 10_000
 // - int32 fields grouped for cache efficiency (4B each, 16B total)
 // - pointer field (8B)
 // - string headers at end (32B: Filename + Name)
-// Total: 56B.
+// - bool flag (1B + 7B padding)
+// Total: 64B.
 //
 // The Name field stores the original Go identifier for Ident, SelectorExpr,
 // and FuncDecl nodes. It enables actionability analysis to distinguish
 // `nil` from `err`, `Unlock` from `Close`, etc.
 // Empty string means "not an identifier-bearing node" or structural-only mode.
+//
+// The Statement field marks direct children of block-like nodes (BlockStmt,
+// CaseClause.Body, CommClause.Body). When true, serial() fingerprints the
+// entire subtree into a single composite Type token instead of emitting
+// each descendant individually. This makes threshold mean "N duplicated
+// statements" rather than "N arbitrary AST nodes.".
 type Node struct {
-	Type     int32
-	Pos      int32
-	End      int32
-	Owns     int32
-	Children []*Node
-	Filename string
-	Name     string
+	Type      int32
+	Pos       int32
+	End       int32
+	Owns      int32
+	Children  []*Node
+	Filename  string
+	Name      string
+	Statement bool
 }
 
 func NewNode() *Node {
@@ -116,6 +124,17 @@ func Serialize(n *Node) []*Node {
 func serial(n *Node, stream *[]*Node) int {
 	*stream = append(*stream, n)
 
+	if n.Statement {
+		// Statement-level tokenization: fingerprint the entire subtree into
+		// one composite Type so the suffix tree matches at statement granularity.
+		// Children remain in memory for classification/actionability but are not
+		// emitted as individual tokens.
+		n.Type = fingerprintSubtree(n)
+		n.Owns = 0
+
+		return 1
+	}
+
 	var count int
 
 	for i, child := range n.Children {
@@ -132,6 +151,46 @@ func serial(n *Node, stream *[]*Node) int {
 	return int(n.Owns) + 1
 }
 
+// FNV-1a constants for statement fingerprinting.
+const (
+	fnvOffset32 uint32 = 2166136261
+	fnvPrime32  uint32 = 16777619
+)
+
+// fingerprintSubtree hashes the pre-order Type sequence of a node and all its
+// descendants into a single int32 using FNV-1a. This produces a deterministic,
+// order-sensitive composite token representing one complete statement.
+//
+// The function reads original Type values set during trans() (which already
+// include semantic encoding: alpha-normalized identifiers, literal values,
+// operator hashes). Two statements with identical semantic content produce
+// identical fingerprints, enabling Type 1/Type 2 clone detection at statement
+// granularity.
+func fingerprintSubtree(n *Node) int32 {
+	hash := fnvOffset32
+	hash = fnvStep32(hash, uint32(n.Type))
+
+	for _, child := range n.Children {
+		hash = fingerprintSubtreeInto(child, hash)
+	}
+
+	return int32(hash) //nolint:gosec // G115: FNV hash intentionally wraps
+}
+
+func fingerprintSubtreeInto(n *Node, hash uint32) uint32 {
+	hash = fnvStep32(hash, uint32(n.Type))
+
+	for _, child := range n.Children {
+		hash = fingerprintSubtreeInto(child, hash)
+	}
+
+	return hash
+}
+
+func fnvStep32(hash, value uint32) uint32 {
+	return (hash ^ value) * fnvPrime32
+}
+
 // FindSyntaxUnits finds all complete syntax units in the match group and returns them
 // with the corresponding hash.
 func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
@@ -141,6 +200,13 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 
 	firstSeq := data[m.Ps[0] : m.Ps[0]+m.Len]
 	indexes := getUnitsIndexes(firstSeq, threshold)
+
+	// Statement-level threshold: when the match contains statement tokens,
+	// require at least `threshold` statements. In legacy mode (no statement
+	// tokens), the per-node threshold check in getUnitsIndexes is sufficient.
+	if len(indexes) > 0 && firstSeq[indexes[0]].Statement && len(indexes) < threshold {
+		return Match{}
+	}
 
 	if len(indexes) > 0 && len(m.Ps) > 1 {
 		indexes = validateOwnershipConsistency(data, m, firstSeq, indexes)
@@ -185,7 +251,15 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 	}
 
 	lastIndex := indexes[len(indexes)-1]
-	match.Hash = hashSeq(firstSeq[indexes[0] : lastIndex+int(firstSeq[lastIndex].Owns)])
+	lastNode := firstSeq[lastIndex]
+	// For statement atoms (Owns=0), include the node itself (+1).
+	// For structural nodes, include descendants (Owns).
+	endIdx := lastIndex + int(lastNode.Owns)
+	if lastNode.Statement || lastNode.Owns == 0 {
+		endIdx = lastIndex + 1
+	}
+
+	match.Hash = hashSeq(firstSeq[indexes[0]:endIdx])
 
 	return match
 }
@@ -196,11 +270,44 @@ func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {
 		split   bool
 	)
 
+	// Check if this match contains any statement-level tokens.
+	// If so, only statement tokens are valid clone units.
+	hasStatements := false
+
+	for i := range nodeSeq {
+		if nodeSeq[i].Statement {
+			hasStatements = true
+
+			break
+		}
+	}
+
 	for i := 0; i < len(nodeSeq); {
 		n := nodeSeq[i]
+
+		if n.Statement {
+			if split {
+				indexes = indexes[:0]
+				split = false
+			}
+
+			indexes = append(indexes, i)
+			i++
+
+			continue
+		}
+
+		// If this match has statement tokens, skip structural wrapper nodes
+		// (they're context, not clone units).
+		if hasStatements {
+			i++
+
+			continue
+		}
+
+		// Legacy mode: no statement tokens, use original Owns-based logic.
 		switch {
 		case int(n.Owns) > len(nodeSeq)-i:
-			// not complete syntax unit
 			i++
 			split = true
 

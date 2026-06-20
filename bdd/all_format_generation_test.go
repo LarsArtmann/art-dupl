@@ -130,8 +130,7 @@ func test() {}`
 				"--all",
 				"--output-dir",
 				customOutputDir,
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 

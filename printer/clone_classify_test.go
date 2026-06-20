@@ -23,18 +23,18 @@ func TestClassifyClone(t *testing.T) {
 			name:           "function declaration in production code - medium",
 			filename:       "handler.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         40,
+			tokens:         12,
 			lines:          10,
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityHigh, // tokens > 25
+			wantPriority:   domain.PriorityHigh, // tokens > 8
 			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "function in test file",
 			filename:       "handler_test.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         45,
+			tokens:         12,
 			lines:          12,
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     true,
@@ -45,73 +45,73 @@ func TestClassifyClone(t *testing.T) {
 			name:           "method (function literal) in production - large",
 			filename:       "service.go",
 			nodeType:       golang.FuncLit,
-			tokens:         95,
+			tokens:         20,
 			lines:          20,
 			wantCategory:   domain.CategoryMethod,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityCritical, // tokens > 50
+			wantPriority:   domain.PriorityCritical, // tokens > 15
 			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "struct type in production - small",
 			filename:       "types.go",
 			nodeType:       golang.StructType,
-			tokens:         29,
+			tokens:         8,
 			lines:          8,
 			wantCategory:   domain.CategoryStruct,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens <= 10
 			wantSuggestion: "Consider composition or shared base struct",
 		},
 		{
 			name:           "interface type - large",
 			filename:       "interfaces.go",
 			nodeType:       golang.InterfaceType,
-			tokens:         39,
+			tokens:         12,
 			lines:          12,
 			wantCategory:   domain.CategoryInterface,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityHigh, // tokens > 30
+			wantPriority:   domain.PriorityHigh, // tokens > 10
 			wantSuggestion: "Extract common interface definition",
 		},
 		{
 			name:           "for loop - large",
 			filename:       "processor.go",
 			nodeType:       golang.ForStmt,
-			tokens:         40,
+			tokens:         12,
 			lines:          15,
 			wantCategory:   domain.CategoryLoop,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityHigh, // tokens > 30
+			wantPriority:   domain.PriorityHigh, // tokens > 10
 			wantSuggestion: "Extract loop body to helper function",
 		},
 		{
 			name:           "range loop - small",
 			filename:       "iterator.go",
 			nodeType:       golang.RangeStmt,
-			tokens:         25,
+			tokens:         8,
 			lines:          8,
 			wantCategory:   domain.CategoryLoop,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens <= 10
 			wantSuggestion: "Extract loop body to helper function",
 		},
 		{
 			name:           "if statement - small",
 			filename:       "validator.go",
 			nodeType:       golang.IfStmt,
-			tokens:         25,
+			tokens:         8,
 			lines:          10,
 			wantCategory:   domain.CategoryConditional,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityMedium, // tokens < 30
+			wantPriority:   domain.PriorityMedium, // tokens <= 10
 			wantSuggestion: "Consider strategy pattern or early returns",
 		},
 		{
 			name:           "switch statement - large",
 			filename:       "router.go",
 			nodeType:       golang.SwitchStmt,
-			tokens:         50,
+			tokens:         12,
 			lines:          15,
 			wantCategory:   domain.CategoryConditional,
 			wantIsTest:     false,
@@ -122,29 +122,29 @@ func TestClassifyClone(t *testing.T) {
 			name:           "assignment statement - small",
 			filename:       "main.go",
 			nodeType:       golang.AssignStmt,
-			tokens:         9,
+			tokens:         5,
 			lines:          3,
 			wantCategory:   domain.CategoryAssignment,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityLow, // tokens < 25
+			wantPriority:   domain.PriorityLow, // tokens <= 8
 			wantSuggestion: suggestReviewExtract,
 		},
 		{
 			name:           "call expression - unmapped node type",
 			filename:       "caller.go",
 			nodeType:       golang.CallExpr,
-			tokens:         15,
+			tokens:         5,
 			lines:          5,
 			wantCategory:   domain.CategoryUnknown, // CallExpr not in nodeTypeToCategory switch
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityLow, // tokens < 25
+			wantPriority:   domain.PriorityLow, // tokens <= 8
 			wantSuggestion: suggestReviewExtract,
 		},
 		{
 			name:           "unknown node type",
 			filename:       "broken.go",
 			nodeType:       golang.BadNode,
-			tokens:         20,
+			tokens:         5,
 			lines:          6,
 			wantCategory:   domain.CategoryUnknown,
 			wantIsTest:     false,
@@ -155,7 +155,7 @@ func TestClassifyClone(t *testing.T) {
 			name:           "handler in production - large",
 			filename:       "api.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         120,
+			tokens:         20,
 			lines:          40,
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
@@ -166,33 +166,33 @@ func TestClassifyClone(t *testing.T) {
 			name:           "test file with large duplication",
 			filename:       "large_test.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         120,
+			tokens:         35,
 			lines:          35,
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     true,
-			wantPriority:   domain.PriorityMedium, // test file with tokens > 100
+			wantPriority:   domain.PriorityMedium, // test file with tokens > 30
 			wantSuggestion: "Extract test helper function or use table-driven tests",
 		},
 		{
 			name:           "function in production - small",
 			filename:       "utils.go",
 			nodeType:       golang.FuncDecl,
-			tokens:         20,
+			tokens:         5,
 			lines:          8,
 			wantCategory:   domain.CategoryFunction,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityMedium, // tokens < 25
+			wantPriority:   domain.PriorityMedium, // tokens <= 8
 			wantSuggestion: suggestExtractUtility,
 		},
 		{
 			name:           "gen decl maps to expression",
 			filename:       "consts.go",
 			nodeType:       golang.GenDecl,
-			tokens:         30,
+			tokens:         10,
 			lines:          10,
 			wantCategory:   domain.CategoryExpression,
 			wantIsTest:     false,
-			wantPriority:   domain.PriorityMedium, // tokens 25-50
+			wantPriority:   domain.PriorityMedium, // tokens 8-15
 			wantSuggestion: suggestReviewExtract,
 		},
 	}

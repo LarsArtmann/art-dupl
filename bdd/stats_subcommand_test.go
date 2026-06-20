@@ -45,7 +45,7 @@ func processData(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats subcommand
-			output, err := setup.RunSubcommand("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -64,7 +64,7 @@ func processData(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -137,7 +137,7 @@ func test() {}`
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats with CSV format
-			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--format", "csv", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -207,7 +207,7 @@ func pkgFunc() {}`
 
 			// Run stats on specific path
 			specificPath := setup.GetFilePath("pkg1")
-			output, err := setup.RunSubcommand("stats", "--threshold", "10", specificPath)
+			output, err := setup.RunSubcommand("stats", "--threshold", "3", specificPath)
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -261,7 +261,7 @@ func artDuplTest() string {
 	Context("When running stats on empty directories", func() {
 		It("should handle empty directory gracefully", func() {
 			// Run stats on empty temp directory
-			output, err := setup.RunSubcommand("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should produce output even for empty directory
@@ -274,7 +274,7 @@ func artDuplTest() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run stats
-			output, err := setup.RunSubcommand("stats", "--threshold", "10")
+			output, err := setup.RunSubcommand("stats", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -302,16 +302,14 @@ func %s() {}`, funcName)
 				"verboseTest",
 				[]string{"verbose1.go", "verbose2.go"},
 				"-v",
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			),
 			Entry(
 				"multiple verbose flags",
 				"verboseTest2",
 				[]string{"verbose3.go", "verbose4.go"},
 				"-vv",
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			),
 		)
 	})
@@ -330,7 +328,7 @@ func testWithStats(
 	// Build command args with mandatory --threshold if not provided
 	args := append([]string{"stats"}, flags...)
 	if !containsThreshold(flags) {
-		args = append(args, "--threshold", "10")
+		args = append(args, "--threshold", "3")
 	}
 
 	output, err := setup.RunSubcommand(args...)
@@ -397,8 +395,7 @@ func test() {}`
 				"stats",
 				"--format",
 				"invalid_format",
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			)
 			// Should either error or use default
 			_ = err

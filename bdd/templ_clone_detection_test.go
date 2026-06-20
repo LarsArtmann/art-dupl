@@ -381,7 +381,7 @@ templ LoginForm(url string) {
 			err = setup.CreateTestFile("login.templ", loginCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--threshold", "10")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -415,7 +415,7 @@ templ personalNetting(name string) {
 				err = setup.CreateTestFile("netting.templ", nettingCode)
 				Expect(err).NotTo(HaveOccurred())
 
-				output, err := setup.RunArtDupl("--threshold", "10")
+				output, err := setup.RunArtDupl("--threshold", "3")
 				Expect(err).ToNot(HaveOccurred())
 
 				outputStr := string(output)

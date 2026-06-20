@@ -139,7 +139,7 @@ func process(data string) error {
 
 			// Run with size sorting
 			resultOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "10",
+				flagKeyThreshold: "3",
 				"sort":           "size",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -233,7 +233,7 @@ func functionB() error {
 
 			// Run with hash sorting
 			hashSortedOutput, err := setup.RunArtDuplWithFlags(map[string]string{
-				flagKeyThreshold: "10",
+				flagKeyThreshold: "3",
 				"sort":           "hash",
 			})
 			Expect(err).ToNot(HaveOccurred())

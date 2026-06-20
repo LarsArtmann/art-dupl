@@ -91,7 +91,7 @@ func (u *User) Validate() bool {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -143,7 +143,7 @@ func Body() templ.Component {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -176,7 +176,7 @@ func (q *Query) Validate() bool {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with include-sqlc
-			output, err := setup.Executor(setup.TmpDir, "--include-sqlc", "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--include-sqlc", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -208,7 +208,7 @@ func Link() string {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with --include-templ to include templ files
-			output, err := setup.Executor(setup.TmpDir, "--include-templ", "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--include-templ", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -256,8 +256,7 @@ func exclude() {
 				setup.TmpDir,
 				"--include-pattern",
 				"pkg1/*",
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -301,7 +300,7 @@ func two() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with multiple include patterns
-			args := buildFilterArgs(setup.TmpDir, 10, []string{"pkg1/*", "pkg2/*"}, nil)
+			args := buildFilterArgs(setup.TmpDir, 3, []string{"pkg1/*", "pkg2/*"}, nil)
 			output, err := setup.Executor(args...)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -351,8 +350,7 @@ func discard() {
 				setup.TmpDir,
 				"--exclude-pattern",
 				"pkg2/*",
-				"--threshold",
-				"10",
+				"--threshold", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -388,7 +386,7 @@ func test() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with both include and exclude - include should take precedence
-			args := buildFilterArgs(setup.TmpDir, 10, []string{"specific/*"}, []string{"*/file.go"})
+			args := buildFilterArgs(setup.TmpDir, 3, []string{"specific/*"}, []string{"*/file.go"})
 			output, err := setup.Executor(args...)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -440,7 +438,7 @@ func duplicate() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run without vendor flag (should exclude vendor)
-			output, err := setup.Executor(setup.TmpDir, "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)
@@ -451,7 +449,7 @@ func duplicate() {
 
 		It("should include vendor directory when --vendor is specified", func() {
 			// Run with vendor flag
-			output, err := setup.Executor(setup.TmpDir, "--vendor", "--threshold", "10")
+			output, err := setup.Executor(setup.TmpDir, "--vendor", "--threshold", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			outputStr := string(output)

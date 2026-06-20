@@ -83,7 +83,7 @@ func ModifiedTest() {
 
 			cacheDir := filepath.Join(setup.TmpDir, ".cache")
 
-			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Should find duplicates
@@ -102,7 +102,7 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// First run - creates cache
-			output1, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			output1, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output1).ToNot(BeNil())
 
@@ -114,7 +114,7 @@ func ModifiedTest() {
 			initialCount := len(entries1)
 
 			// Second run - should use cache
-			output2, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			output2, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output2).ToNot(BeNil())
 
@@ -138,14 +138,14 @@ func ModifiedTest() {
 
 			// First run
 			start1 := time.Now()
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			duration1 := time.Since(start1)
 
 			Expect(err).ToNot(HaveOccurred())
 
 			// Second run
 			start2 := time.Now()
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			duration2 := time.Since(start2)
 
 			Expect(err).ToNot(HaveOccurred())
@@ -168,7 +168,7 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// First run - creates cache
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Verify cache exists
@@ -183,8 +183,7 @@ func ModifiedTest() {
 				"--clear-cache",
 				"--cache-dir",
 				cacheDir,
-				"-t",
-				"10",
+				"-t", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
@@ -208,7 +207,7 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// First run
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Get initial cache entries
@@ -226,7 +225,7 @@ func ModifiedTest() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second run - should detect modified file
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check that cache has new entry (different hash for modified file)
@@ -255,7 +254,7 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// First run
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Modify only one file
@@ -263,7 +262,7 @@ func ModifiedTest() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Second run
-			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			output, err := setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})
@@ -281,8 +280,7 @@ func ModifiedTest() {
 				"--cache-dir",
 				cacheDir,
 				"--json",
-				"-t",
-				"10",
+				"-t", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -304,8 +302,7 @@ func ModifiedTest() {
 				"--cache-dir",
 				cacheDir,
 				"--plumbing",
-				"-t",
-				"10",
+				"-t", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 
@@ -348,8 +345,7 @@ func ModifiedTest() {
 				"--cache-dir",
 				cacheDir,
 				"--verbose",
-				"-t",
-				"10",
+				"-t", "3",
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
@@ -367,11 +363,11 @@ func ModifiedTest() {
 			cacheDir := filepath.Join(setup.TmpDir, ".cache", "art-dupl")
 
 			// Create cache first with incremental run
-			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "10")
+			_, err = setup.RunArtDupl("--incremental", "--cache-dir", cacheDir, "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Stats should work (stats doesn't use incremental cache - it always does fresh analysis)
-			output, err := setup.RunSubcommand("stats", "-t", "10")
+			output, err := setup.RunSubcommand("stats", "-t", "3")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(output).ToNot(BeNil())
 		})

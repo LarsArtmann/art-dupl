@@ -115,7 +115,7 @@ func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) C
 }
 
 func calculateTestPriority(tokens, lines int) ClonePriority {
-	if tokens > 100 || lines > 30 {
+	if tokens > 30 || lines > 30 {
 		return domain.PriorityMedium
 	}
 
@@ -145,11 +145,11 @@ func calculateProductionPriority(category CloneCategory, tokens, lines int) Clon
 }
 
 func functionPriority(tokens, lines int) ClonePriority {
-	if tokens > 50 || lines > 20 {
+	if tokens > 15 || lines > 20 {
 		return domain.PriorityCritical
 	}
 
-	if tokens > 25 || lines > 10 {
+	if tokens > 8 || lines > 10 {
 		return domain.PriorityHigh
 	}
 
@@ -157,7 +157,7 @@ func functionPriority(tokens, lines int) ClonePriority {
 }
 
 func typePriority(tokens int) ClonePriority {
-	if tokens > 30 {
+	if tokens > 10 {
 		return domain.PriorityHigh
 	}
 
@@ -165,7 +165,7 @@ func typePriority(tokens int) ClonePriority {
 }
 
 func controlFlowPriority(tokens int) ClonePriority {
-	if tokens > 30 {
+	if tokens > 10 {
 		return domain.PriorityHigh
 	}
 
@@ -173,11 +173,11 @@ func controlFlowPriority(tokens int) ClonePriority {
 }
 
 func otherPriority(tokens int) ClonePriority {
-	if tokens > 50 {
+	if tokens > 15 {
 		return domain.PriorityHigh
 	}
 
-	if tokens > 25 {
+	if tokens > 8 {
 		return domain.PriorityMedium
 	}
 
@@ -190,7 +190,7 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	}
 
 	if isTest {
-		if tokens > 50 {
+		if tokens > 15 {
 			return suggestTestHelper
 		}
 

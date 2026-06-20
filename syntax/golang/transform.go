@@ -47,8 +47,11 @@ func (t *transformer) trans(
 
 	case *ast.BlockStmt:
 		o.Type = BlockStmt
+
 		for _, stmt := range n.List {
-			o.AddChildren(t.trans(stmt))
+			child := t.trans(stmt)
+			child.Statement = true
+			o.AddChildren(child)
 		}
 
 	case *ast.BranchStmt:
@@ -363,9 +366,12 @@ func extractReceiverTypeName(recv *ast.FieldList) string {
 }
 
 // addBodyStatements transforms all statements in a body and adds them as children.
+// Each statement is marked as a statement atom for statement-level tokenization.
 func (t *transformer) addBodyStatements(o *syntax.Node, body []ast.Stmt) {
 	for _, stmt := range body {
-		o.AddChildren(t.trans(stmt))
+		child := t.trans(stmt)
+		child.Statement = true
+		o.AddChildren(child)
 	}
 }
 

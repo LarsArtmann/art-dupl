@@ -47,7 +47,7 @@ func processItem(data string, index int) error {
 		err := setup.CreateDuplicateFiles([]string{"sarif1.go", "sarif2.go"}, duplicateCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--sarif", "--threshold", "15")
+		output, err := setup.RunArtDupl("--sarif", "--threshold", "5")
 		Expect(err).ToNot(HaveOccurred())
 
 		var sarif map[string]any
@@ -64,7 +64,7 @@ func processItem(data string, index int) error {
 		err := setup.CreateDuplicateFiles([]string{"loc1.go", "loc2.go"}, duplicateCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--sarif", "--threshold", "15")
+		output, err := setup.RunArtDupl("--sarif", "--threshold", "5")
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(output)
@@ -84,7 +84,7 @@ func small() {
 		err := setup.CreateDuplicateFiles([]string{"small1.go", smallFile2}, smallCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--sarif", "--threshold", "50")
+		output, err := setup.RunArtDupl("--sarif", "--threshold", "15")
 		Expect(err).ToNot(HaveOccurred())
 
 		var sarif map[string]any
@@ -107,7 +107,7 @@ func small() {
 		err := setup.CreateDuplicateFiles([]string{"hash1.go", "hash2.go"}, duplicateCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--sarif", "-m", "hash", "--threshold", "10")
+		output, err := setup.RunArtDupl("--sarif", "-m", "hash", "--threshold", "3")
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(output)
@@ -168,7 +168,7 @@ func processSmall(data string) error {
 		)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--sort", "total-tokens", "--threshold", "10")
+		output, err := setup.RunArtDupl("--sort", "total-tokens", "--threshold", "3")
 		Expect(err).ToNot(HaveOccurred())
 
 		outputStr := string(output)
@@ -185,7 +185,7 @@ var _ = Describe("File Type Filter (--only)", func() {
 		err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, simpleGoCode)
 		Expect(err).NotTo(HaveOccurred())
 
-		output, err := setup.RunArtDupl("--only", "go", "--threshold", "10")
+		output, err := setup.RunArtDupl("--only", "go", "--threshold", "3")
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(string(output)).To(ContainSubstring(goldenFile1))
@@ -246,7 +246,7 @@ func testHTMLDiffOutput(file1, file2, diffMode, expectedFile, code string) {
 	err := setup.CreateDuplicateFiles([]string{file1, file2}, code)
 	Expect(err).NotTo(HaveOccurred())
 
-	output, err := setup.RunArtDupl("--html", "--diff", diffMode, "--threshold", "10")
+	output, err := setup.RunArtDupl("--html", "--diff", diffMode, "--threshold", "3")
 	Expect(err).ToNot(HaveOccurred())
 
 	outputStr := string(output)

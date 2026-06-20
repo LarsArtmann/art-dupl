@@ -128,7 +128,7 @@ func uniqueFunction(ctx context.Context) error {
 	Context("When analyzing code for duplicates", func() {
 		It("should find structural duplicates ignoring literal values", func() {
 			// Run art-dupl on test directory
-			output, err := setup.RunArtDupl("--threshold", "10")
+			output, err := setup.RunArtDupl("--threshold", "3")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf(
@@ -250,7 +250,7 @@ func (v *Validator) lessCommon(id int) error {
 	Context("When generating reports", func() {
 		It("should produce valid JSON output with statistics", func() {
 			// Run with JSON output on current directory - use Executor to get stdout
-			output, err := setup.Executor(".", "--json", "--threshold", "10")
+			output, err := setup.Executor(".", "--json", "--threshold", "3")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf(
@@ -274,12 +274,12 @@ func (v *Validator) lessCommon(id int) error {
 			Expect(result).To(HaveKey("files_analyzed"))
 			Expect(result).To(HaveKey("clone_groups"))
 			Expect(result).To(HaveKey("summary"))
-			Expect(result["threshold"]).To(Equal(float64(10)))
+			Expect(result["threshold"]).To(Equal(float64(3)))
 		})
 
 		It("should produce HTML output with code fragments", func() {
 			// Run with HTML output on current directory
-			output, err := setup.RunArtDuplOnDir(".", "--html", "--threshold", "10")
+			output, err := setup.RunArtDuplOnDir(".", "--html", "--threshold", "3")
 
 			// Verify
 			Expect(err).ToNot(HaveOccurred())
@@ -329,7 +329,7 @@ func processData(data string) error {
 
 			// Analyze only subDir1
 			subDir1 := setup.GetFilePath("pkg1")
-			output, err := setup.RunArtDuplOnDir(subDir1, "--threshold", "10")
+			output, err := setup.RunArtDuplOnDir(subDir1, "--threshold", "3")
 			// Print debug information if there's an error
 			if err != nil {
 				fmt.Printf(
@@ -381,7 +381,7 @@ func unique() {
 			)
 			output, err := setup.RunArtDuplWithStdin(
 				stdin,
-				map[string]string{flagKeyThreshold: "10"},
+				map[string]string{flagKeyThreshold: "3"},
 			)
 
 			// Verify - should find duplicates between target files
@@ -441,7 +441,7 @@ func (s *Service) processInternal(data string) error {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Execute with JSON output
-			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "15")
+			output, err := setup.Executor(setup.TmpDir, "--json", "--threshold", "5")
 			if err != nil {
 				fmt.Printf("Command failed with output: %s\n", string(output))
 			}

@@ -178,7 +178,7 @@ func large() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Run with high threshold - should filter out small clones
-			highOutput, err := setup.RunArtDupl("--plumbing", "--threshold", "50")
+			highOutput, err := setup.RunArtDupl("--plumbing", "--threshold", "15")
 			Expect(err).ToNot(HaveOccurred())
 
 			// Run with low threshold - should include more clones
