@@ -19,6 +19,7 @@ Actionable items planned for the next 2-4 weeks.
 ### Architecturally Constrained
 
 - [ ] Hide `syntax/golang` behind facade — **BLOCKED** by import cycle (syntax/golang imports syntax for Node type)
+- [ ] Thread `context.Context` through `cmd/run_crawl.go` file feeders — stdin scanner and `filepath.Walk` are inherently blocking; needs full chain refactor (`filesFeedWithOptions` → `buildParams` → all callers)
 
 ---
 
@@ -34,6 +35,21 @@ Actionable items planned for the next 2-4 weeks.
 - [x] ~~Fix remaining LSP hints~~ — All golangci-lint issues resolved (0 issues). LSP/gopls shows stale diagnostics; always trust `golangci-lint run` over IDE.
 
 ---
+
+## ✅ Completed (2026-06-20) — Brutal Self-Review Sprint #3
+
+### Concurrency Fixes (Goroutine Leak Elimination)
+- [x] Fix 3 goroutine leaks in SDK `FindClonesStreamResult` — blocking sends on `resultChan` without `ctx.Done()` select
+- [x] Fix 4 goroutine leaks in `job/parse.go` pipeline — "check-then-send" race pattern in `Parse`, `startWorkers`, `collectResults` (added ctx param), `serializeAST`
+- [x] Fix goroutine leak in `job/buildtree.go` — `done` channel was unbuffered, `done <- true` blocked if caller selected `ctx.Done()`
+- [x] Fix goroutine leak in `job/incremental.go` — `schan <- nodes` blocking send without select
+- [x] Fix goroutine leak in `cmd/run_all_modes.go` — `matchChan <- match` without select
+- [x] Fix goroutine leak in `cmd/run_hash.go` — `duplChan <- match` check-then-send race
+- [x] Fix goroutine leak in `pkg/artdupl/detector_pipeline.go` — `fileChan <- filename` check-then-send race
+
+### Stale Reference Cleanup
+- [x] Remove stale `--since` flag from BDD test harness (`internal/testutil/bdd_runners.go`)
+- [x] Fix misleading test names referencing removed `ParseFileByExtension` wrapper
 
 ## ✅ Completed (2026-06-20) — Brutal Self-Review Sprint #2
 
