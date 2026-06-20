@@ -134,6 +134,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 
 	// Build groups from matches and print
 	groups := printer.BuildCloneGroups(duplChan)
+	groups = printer.EliminateOverlaps(groups)
 	keys := getSortedKeys(groups, config.SortByHash)
 
 	err = printHeader(p, config.SortByHash, mergedConfig.Threshold)
