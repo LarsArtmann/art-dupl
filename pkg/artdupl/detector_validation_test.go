@@ -264,13 +264,11 @@ func TestErrors_AllErrors(t *testing.T) {
 		ErrNoFilesProvided,
 		ErrFileNotFound,
 		ErrFileTooLarge,
-		ErrParsingFailed,
-		ErrContextCanceled,
+		ErrFileIgnored,
 		ErrAnalysisTimeout,
 		ErrNoDuplicatesFound,
-		ErrResultProcessing,
-		ErrMemoryLimit,
-		ErrInternal,
+		ErrCloneLineEndBeforeStart,
+		ErrCloneZeroLength,
 	}
 
 	for i, err := range allErrors {

@@ -152,7 +152,7 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount int) *Result
 		Metadata: &Metadata{
 			Version:    sdkVersion(),
 			Timestamp:  time.Now(),
-			ConfigHash: d.hashConfig(d.opts),
+			ConfigHash: d.configDebugString(d.opts),
 			Toolchain:  goVersion(),
 		},
 	}

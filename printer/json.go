@@ -45,25 +45,25 @@ type Summary struct {
 	ImpactScore      int     `json:"impact_score,omitempty"`
 }
 
-type SimpleJSONClone struct {
+type simpleJSONClone struct {
 	LineRangeMixin
 
 	Filename   string `json:"filename"`
 	TokenCount int    `json:"token_count"`
 }
 
-type SimpleCloneGroup struct {
+type simpleCloneGroup struct {
 	Hash      string            `json:"hash"`
 	Score     int               `json:"score"`
-	Instances []SimpleJSONClone `json:"instances"`
+	Instances []simpleJSONClone `json:"instances"`
 }
 
 type LineRangeMixin struct {
-	StartLine int `json:"startLine"`
-	EndLine   int `json:"endLine,omitempty"`
+	LineStart int `json:"line_start"`
+	LineEnd   int `json:"line_end,omitempty"`
 }
 
-type SimpleJSONOutput []SimpleCloneGroup
+type simpleJSONOutput []simpleCloneGroup
 
 type JSONPrinter struct {
 	ReadFile
@@ -186,24 +186,24 @@ func (p *JSONPrinter) OutputJSON(
 }
 
 func (p *JSONPrinter) OutputSimpleJSON() error {
-	simpleOutput := make(SimpleJSONOutput, len(p.cloneGroups))
+	simpleOutput := make(simpleJSONOutput, len(p.cloneGroups))
 
 	for i, group := range p.cloneGroups {
 		impactScore := group.Size * len(group.Files)
 
-		simpleInstances := make([]SimpleJSONClone, len(group.Files))
+		simpleInstances := make([]simpleJSONClone, len(group.Files))
 		for j, file := range group.Files {
-			simpleInstances[j] = SimpleJSONClone{
+			simpleInstances[j] = simpleJSONClone{
 				LineRangeMixin: LineRangeMixin{
-					StartLine: file.LineStart,
-					EndLine:   file.LineEnd,
+					LineStart: file.LineStart,
+					LineEnd:   file.LineEnd,
 				},
 				Filename:   file.Filename,
 				TokenCount: group.Size,
 			}
 		}
 
-		simpleOutput[i] = SimpleCloneGroup{
+		simpleOutput[i] = simpleCloneGroup{
 			Hash:      group.Hash,
 			Score:     impactScore,
 			Instances: simpleInstances,

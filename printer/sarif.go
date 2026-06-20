@@ -201,8 +201,8 @@ func (p *sarifPrinter) PrintClones(
 						},
 						Region: SARIFRegion{
 							LineRangeMixin: LineRangeMixin{
-								StartLine: cl.LineStart,
-								EndLine:   cl.LineEnd,
+								LineStart: cl.LineStart,
+								LineEnd:   cl.LineEnd,
 							},
 						},
 					},

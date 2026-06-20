@@ -23,8 +23,10 @@ func (d *detector) reportProgress(percentage float64, stage, currentFile string)
 	}
 }
 
-// hashConfig creates a hash of the configuration for metadata.
-func (d *detector) hashConfig(opts *Options) string {
+// configDebugString returns a debug representation of the resolved config.
+// This is NOT a cryptographic hash — it's a human-readable string for
+// Metadata.ConfigHash, useful for distinguishing runs in output.
+func (d *detector) configDebugString(opts *Options) string {
 	return fmt.Sprintf("config-%d-%v", opts.Threshold, opts.DetectionMethods)
 }
 

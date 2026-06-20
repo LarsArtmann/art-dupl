@@ -47,33 +47,15 @@ var (
 	// ErrFileIgnored is returned when a file matches an ignore pattern.
 	ErrFileIgnored = errors.New("file matched an ignore pattern")
 
-	// ErrParsingFailed is returned when file parsing fails.
-	ErrParsingFailed = errors.New("failed to parse file")
-
-	// ErrContextCanceled is returned when context is canceled.
-	ErrContextCanceled = errors.New("analysis canceled")
-
 	// ErrAnalysisTimeout is returned when analysis times out.
 	ErrAnalysisTimeout = errors.New("analysis timed out")
 
 	// ErrNoDuplicatesFound is returned when no duplicates are detected.
 	ErrNoDuplicatesFound = errors.New("no duplicates found")
 
-	// ErrResultProcessing is returned when result processing fails.
-	ErrResultProcessing = errors.New("error processing results")
-
 	// ErrCloneLineEndBeforeStart is returned when end line is before start line.
 	ErrCloneLineEndBeforeStart = errors.New("clone end line is before start line")
 
 	// ErrCloneZeroLength is returned when clone has zero length.
 	ErrCloneZeroLength = errors.New("clone has zero length (start >= end)")
-
-	// ErrCloneInvalidPosition is returned when clone has invalid byte positions.
-	ErrCloneInvalidPosition = errors.New("clone has invalid byte positions")
-
-	// ErrMemoryLimit is returned when memory limit is exceeded.
-	ErrMemoryLimit = errors.New("memory limit exceeded")
-
-	// ErrInternal is returned when an internal error occurs.
-	ErrInternal = errors.New("internal error")
 )
