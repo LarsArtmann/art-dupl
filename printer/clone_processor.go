@@ -70,6 +70,10 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	for i := range clones {
 		clones[i].Classification.Actionability = actionability
 		clones[i].Classification.CloneType = cloneType
+		clones[i].Classification.Extractability = domain.AssessExtractability(
+			clones[i].LineCount(), len(clones),
+			clones[i].Classification.Category.IsCompleteUnit(),
+		)
 		clones[i].Classification = applyPatternLabel(
 			clones[i].Classification, label,
 		)

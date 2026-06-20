@@ -37,6 +37,8 @@ type JSONClone struct {
 	Priority      string `json:"priority,omitempty"`
 	Actionability string `json:"actionability,omitempty"`
 	CloneType     string `json:"clone_type,omitempty"`
+	LinesSaved    int    `json:"lines_saved,omitempty"`
+	Extractable   bool   `json:"extractable,omitempty"`
 }
 
 type Summary struct {
@@ -119,6 +121,8 @@ func (p *JSONPrinter) PrintClones(
 			Priority:      string(cl.Classification.Priority),
 			Actionability: string(cl.Classification.Actionability),
 			CloneType:     string(cl.Classification.CloneType),
+			LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
+			Extractable:   cl.Classification.Extractability.CanExtract,
 		}
 	}
 

@@ -272,14 +272,15 @@ type ClassificationInput struct {
 
 // CloneClassification provides metadata about a code clone for actionable reports.
 type CloneClassification struct {
-	Category      CloneCategory
-	IsTest        bool
-	Priority      ClonePriority
-	Actionability CloneActionability
-	CloneType     CloneType
-	Tokens        int
-	Lines         int
-	Suggestion    string
+	Category       CloneCategory
+	IsTest         bool
+	Priority       ClonePriority
+	Actionability  CloneActionability
+	CloneType      CloneType
+	Extractability Extractability
+	Tokens         int
+	Lines          int
+	Suggestion     string
 }
 
 // ProcessedClone represents a single clone instance with extracted fragment data.
