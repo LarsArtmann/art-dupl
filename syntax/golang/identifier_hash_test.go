@@ -325,7 +325,7 @@ func TestCombineIdentifierHashes(t *testing.T) {
 		{"hash1 zero", 0, 0x123456, false},
 		{"hash2 zero", 0x123456, 0, false},
 		{"both non-zero", 0x123456, 0x789ABC, false},
-		{"same hash", 0x123456, 0x123456, true}, // XOR of same = 0
+		{"same hash", 0x123456, 0x123456, false}, // Non-commutative: same hash does NOT zero out
 	}
 
 	for _, tt := range tests {
@@ -455,5 +455,49 @@ func BenchmarkEncodeSemanticType(b *testing.B) {
 
 	for b.Loop() {
 		_ = encodeSemanticType(baseType, "identifierName", true)
+	}
+}
+
+func TestCombineIdentifierHashes_NonCommutative(t *testing.T) {
+	t.Parallel()
+
+	// The combiner must be non-commutative: combine(A, B) != combine(B, A)
+	// This prevents false matches where (TypeA, MethodX) collides with (TypeB, MethodY)
+	hashA := hashIdentifierFast("User")
+	hashB := hashIdentifierFast("Order")
+	hashX := hashIdentifierFast("GetByID")
+	hashY := hashIdentifierFast("DeleteByID")
+
+	combinedAB := combineIdentifierHashes(hashA, hashB)
+	combinedBA := combineIdentifierHashes(hashB, hashA)
+
+	if combinedAB == combinedBA {
+		t.Error("combineIdentifierHashes is commutative: combine(A,B) == combine(B,A)")
+	}
+
+	// Verify (A, X) != (B, Y) — the original XOR collision problem
+	ax := combineIdentifierHashes(hashA, hashX)
+	by := combineIdentifierHashes(hashB, hashY)
+
+	if ax == by {
+		t.Error("collision: combine(A,X) == combine(B,Y) — non-commutative combiner failed")
+	}
+}
+
+func TestCombineIdentifierHashes_ZeroHandling(t *testing.T) {
+	t.Parallel()
+
+	hash := hashIdentifierFast("test")
+
+	if combineIdentifierHashes(0, hash) != hash {
+		t.Error("combineIdentifierHashes(0, hash) should return hash")
+	}
+
+	if combineIdentifierHashes(hash, 0) != hash {
+		t.Error("combineIdentifierHashes(hash, 0) should return hash")
+	}
+
+	if combineIdentifierHashes(0, 0) != 0 {
+		t.Error("combineIdentifierHashes(0, 0) should return 0")
 	}
 }

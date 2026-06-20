@@ -73,8 +73,9 @@ func DecodeSemanticHash(t int32) int32 {
 }
 
 // combineIdentifierHashes combines two identifier hashes into one 24-bit hash.
-// Uses XOR mixing for good distribution while staying within 24 bits.
-// This allows encoding both receiver type and function name in a single semantic hash.
+// Uses a non-commutative FNV multiply-pair combiner so that (A, B) ≠ (B, A).
+// This prevents false matches where hash(receiver) ^ hash(method) collides
+// for different receiver/method pairs (the XOR commutativity problem).
 func combineIdentifierHashes(hash1, hash2 int32) int32 {
 	if hash1 == 0 {
 		return hash2
@@ -83,8 +84,12 @@ func combineIdentifierHashes(hash1, hash2 int32) int32 {
 	if hash2 == 0 {
 		return hash1
 	}
-	// XOR the hashes and keep in 24-bit range
-	return (hash1 ^ hash2) & 0x00FFFFFF
+
+	const fnvPrime uint32 = 16777619
+
+	combined := uint32(hash1)*fnvPrime ^ uint32(hash2) //nolint:gosec // G115: hash values are bounded to 24-bit range
+
+	return int32(combined & 0x00FFFFFF)
 }
 
 // encodeSemanticTypeMulti combines a base node type with multiple identifier hashes.
