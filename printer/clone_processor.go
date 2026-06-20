@@ -61,17 +61,60 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		}
 	}
 
-	// Populate group-level Actionability after all per-instance
-	// classifications are computed.
+	// Populate group-level Actionability and CloneType after all per-instance
+	// classifications are computed. Both are group properties: every instance
+	// in a clone group shares the same actionability verdict and clone type.
 	label, actionability := EvaluateActionabilityWithLabel(dups)
+	cloneType := classifyCloneType(dups)
+
 	for i := range clones {
 		clones[i].Classification.Actionability = actionability
+		clones[i].Classification.CloneType = cloneType
 		clones[i].Classification = applyPatternLabel(
 			clones[i].Classification, label,
 		)
 	}
 
 	return clones, nil
+}
+
+// classifyCloneType determines the Bellon clone type (1/2/3) for a group of
+// fragments by comparing the identifier Name fields across corresponding nodes.
+//
+// The suffix tree matches on Node.Type only; Name is never part of the matching
+// criterion. Therefore any Name divergence across fragments signals a renamed
+// (parameterized) clone:
+//
+//   - Type 1 (exact): every node position has identical Name across ALL fragments.
+//   - Type 2 (parameterized): structure matches (guaranteed by the suffix tree)
+//     but at least one identifier name differs between fragments.
+//   - Type 3 (near-miss): fragments differ in length. The suffix tree normally
+//     guarantees equal-length fragments, so this is a defensive fallback.
+//
+// In the current semantic mode (exact-name hashing) matched nodes always share
+// identical Names, so clones are Type 1. After alpha-normalization (Type 2
+// detection) renamed identifiers will match structurally while their original
+// Names diverge, producing Type 2 classifications.
+func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
+	if len(dups) < 2 {
+		return domain.CloneType1
+	}
+
+	first := dups[0]
+
+	for _, other := range dups[1:] {
+		if len(other) != len(first) {
+			return domain.CloneType3
+		}
+
+		for i := range first {
+			if first[i].Name != other[i].Name {
+				return domain.CloneType2
+			}
+		}
+	}
+
+	return domain.CloneType1
 }
 
 // NodesToGroup converts raw syntax.Node groups into a ProcessedCloneGroup.

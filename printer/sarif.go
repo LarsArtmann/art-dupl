@@ -74,6 +74,7 @@ type SARIFResult struct {
 	Message      SARIFMessage      `json:"message"`
 	Locations    []SARIFLocation   `json:"locations"`
 	Fingerprints SARIFFingerprints `json:"fingerprints"`
+	Properties   map[string]string `json:"properties,omitempty"`
 }
 
 // SARIFMessage represents a message in a result.
@@ -211,6 +212,9 @@ func (p *sarifPrinter) PrintClones(
 			Fingerprints: SARIFFingerprints{
 				ContentFingerprint: hash,
 				PartialFingerprint: hash[:min(8, len(hash))],
+			},
+			Properties: map[string]string{
+				"clone_type": string(cl.Classification.CloneType),
 			},
 		}
 

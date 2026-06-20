@@ -36,6 +36,7 @@ type JSONClone struct {
 	Category      string `json:"category,omitempty"`
 	Priority      string `json:"priority,omitempty"`
 	Actionability string `json:"actionability,omitempty"`
+	CloneType     string `json:"clone_type,omitempty"`
 }
 
 type Summary struct {
@@ -117,6 +118,7 @@ func (p *JSONPrinter) PrintClones(
 			Category:      string(cl.Classification.Category),
 			Priority:      string(cl.Classification.Priority),
 			Actionability: string(cl.Classification.Actionability),
+			CloneType:     string(cl.Classification.CloneType),
 		}
 	}
 

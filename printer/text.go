@@ -144,9 +144,10 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 
 	if _, err := fmt.Fprintf(
 		p.w,
-		"found %d clones: [%s] %s%s (%d tokens, %d lines) suggestion: %s\n",
+		"found %d clones: [%s] [%s] %s%s (%d tokens, %d lines) suggestion: %s\n",
 		count,
 		cls.Priority,
+		cls.CloneType,
 		cls.Category,
 		actionabilityBadge,
 		cls.Tokens,
