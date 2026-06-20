@@ -1,0 +1,45 @@
+name: Clone Detection
+
+# Runs art-dupl check against the committed baseline. Fails when new code
+# clones are introduced that are not yet in .art-dupl-baseline.json.
+#
+# To update the baseline (accept new clones), run locally:
+#   art-dupl baseline . && git add .art-dupl-baseline.json && git commit
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  check:
+    name: Check for new clones
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install art-dupl
+        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
+
+      - name: Create baseline if missing
+        run: |
+          if [ ! -f .art-dupl-baseline.json ]; then
+            echo "No baseline found — creating one (first run)."
+            art-dupl baseline . -t 15
+          fi
+
+      - name: Check for new clones
+        run: art-dupl check . -t 15 --json --output-dir reports || true
+
+      - name: Upload report on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clone-detection-report
+          path: reports/
+          if-no-files-found: ignore

@@ -1,0 +1,23 @@
+# Pre-commit hook for art-dupl clone detection.
+#
+# Usage in .pre-commit-config.yaml:
+#
+#   repos:
+#     - repo: https://github.com/LarsArtmann/art-dupl
+#       rev: v1.0.0
+#       hooks:
+#         - id: art-dupl
+#           args: [-t, '15']
+#
+# The hook runs `art-dupl check` on staged Go files and fails if new clones
+# (not in .art-dupl-baseline.json) are detected. Run `art-dupl baseline .`
+# to update the baseline before committing accepted clones.
+
+- id: art-dupl
+  name: art-dupl clone detection
+  description: Detects new code clones not in the baseline (.art-dupl-baseline.json)
+  language: golang
+  entry: art-dupl check
+  types: [go]
+  pass_filenames: true
+  args: [-t, '15']
