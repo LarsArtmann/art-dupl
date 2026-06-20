@@ -171,7 +171,7 @@ func TestParseFileByExtensionGoFile(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	ast, lines, err := ParseFileByExtension(setup.GetFilePath("test.go"))
+	ast, lines, err := ParseFileByExtensionWithConfig(setup.GetFilePath("test.go"), true)
 	if err != nil {
 		t.Fatalf("ParseFileByExtension failed: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestParseFileByExtensionGoFile(t *testing.T) {
 }
 
 func TestParseFileByExtensionNonexistentFile(t *testing.T) {
-	_, _, err := ParseFileByExtension("nonexistent.go")
+	_, _, err := ParseFileByExtensionWithConfig("nonexistent.go", true)
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
 	}

@@ -8,12 +8,6 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/templ"
 )
 
-// ParseFileByExtension parses a file based on its extension.
-// Uses default configuration (semantic mode).
-func ParseFileByExtension(file string) (*syntax.Node, int, error) {
-	return ParseFileByExtensionWithConfig(file, true)
-}
-
 // ParseFileByExtensionWithConfig parses a file based on its extension with semantic mode configuration.
 // When semantic is true, identifier names are included in the type hash (reduces false positives).
 // When semantic is false, only AST structure is considered (structural matching).
