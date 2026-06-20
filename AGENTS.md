@@ -31,15 +31,16 @@ nix flake check     # reproducible CI (includes templ generate in preBuild)
 ## Architecture
 
 ```
-cmd/        CLI (root, stats, version) via Fang/Cobra
+cmd/        CLI (root, stats, baseline, check, version) via Fang/Cobra
 config/     Config management, typed enums, reflection-based merge
 detection/  MultiDetector dispatches to MethodDetector implementations
 suffixtree/ Core suffix tree algorithm on AST tokens
 syntax/     AST handling (golang/ + templ/)
 hash/       Rolling hash-based detection
-job/        Orchestrates parse → serialize → build tree
+job/        Orchestrates parse → serialize → build tree (threads golang.DetectionMode)
 printer/    Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
-domain/     Value objects (ProcessedClone, enums, validation sentinels)
+domain/     Value objects (ProcessedClone, enums, Extractability, validation sentinels)
+baseline/   Baseline recording + CI check file format (Load/Save/Add/Has)
 errors/     6 typed error types, stack traces, JSON marshaling
 cache/      File-based AST caching with SHA1 content hashing
 pkg/artdupl/ Public SDK (Detector interface) — independent types, no config aliases
