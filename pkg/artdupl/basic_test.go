@@ -200,33 +200,33 @@ func TestClone_IsValid(t *testing.T) {
 	}{
 		{
 			name:    "valid clone with positions",
-			clone:   Clone{StartLine: 1, EndLine: 5, StartPos: 10, EndPos: 50},
+			clone:   Clone{LineStart: 1, LineEnd: 5, StartPos: 10, EndPos: 50},
 			wantErr: nil,
 		},
 		{
-			clone:   Clone{StartLine: 5, EndLine: 5, StartPos: 10, EndPos: 20},
+			clone:   Clone{LineStart: 5, LineEnd: 5, StartPos: 10, EndPos: 20},
 			wantErr: nil,
 			name:    "valid testClone single line",
 		},
 		{
 			name:    "invalid clone without positions (zero length)",
-			clone:   Clone{StartLine: 1, EndLine: 10},
+			clone:   Clone{LineStart: 1, LineEnd: 10},
 			wantErr: ErrCloneZeroLength,
 		},
 		{
 			name:    "invalid end line before start",
-			clone:   Clone{StartLine: 10, EndLine: 5},
-			wantErr: ErrCloneEndLineBeforeStart,
+			clone:   Clone{LineStart: 10, LineEnd: 5},
+			wantErr: ErrCloneLineEndBeforeStart,
 		},
 		{
-			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 50},
+			clone:   Clone{LineStart: 1, LineEnd: 1, StartPos: 50, EndPos: 50},
 			wantErr: ErrCloneZeroLength,
 			name:    "invalid zero length positions",
 		},
 		{
 			name:    "invalid negative length positions",
 			wantErr: ErrCloneZeroLength,
-			clone:   Clone{StartLine: 1, EndLine: 1, StartPos: 50, EndPos: 30},
+			clone:   Clone{LineStart: 1, LineEnd: 1, StartPos: 50, EndPos: 30},
 		},
 	}
 

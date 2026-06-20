@@ -125,8 +125,8 @@ func TestExamplesTypes(t *testing.T) {
 	// Test clone structure
 	clone := &artdupl.Clone{
 		Filename:  testFile,
-		StartLine: 1,
-		EndLine:   10,
+		LineStart: 1,
+		LineEnd:   10,
 		StartPos:  0,
 		EndPos:    100,
 		Fragment:  "test code",
@@ -137,11 +137,11 @@ func TestExamplesTypes(t *testing.T) {
 		t.Error("Clone should have filename")
 	}
 
-	if clone.StartLine <= 0 {
+	if clone.LineStart <= 0 {
 		t.Error("Start line should be positive")
 	}
 
-	if clone.EndLine <= clone.StartLine {
+	if clone.LineEnd <= clone.LineStart {
 		t.Error("End line should be after start line")
 	}
 

@@ -19,7 +19,7 @@
 //	for _, group := range result.CloneGroups {
 //	    fmt.Printf("Clone: %d tokens, %d occurrences\n", group.Size, len(group.Clones))
 //	    for _, clone := range group.Clones {
-//	        fmt.Printf("  %s:%d-%d\n", clone.Filename, clone.StartLine, clone.EndLine)
+//	        fmt.Printf("  %s:%d-%d\n", clone.Filename, clone.LineStart, clone.LineEnd)
 //	    }
 //	}
 //

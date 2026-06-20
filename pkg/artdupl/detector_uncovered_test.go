@@ -184,9 +184,9 @@ func TestConvertFragmentToClone(t *testing.T) {
 
 		testutil.AssertFieldValue(t, clone.Filename, testFilename, "Filename")
 
-		testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
+		testutil.AssertFieldValue(t, clone.LineStart, 10, "LineStart")
 
-		testutil.AssertFieldValue(t, clone.EndLine, 22, "EndLine")
+		testutil.AssertFieldValue(t, clone.LineEnd, 22, "LineEnd")
 
 		testutil.AssertFieldValue(t, clone.Size, 3, "Size")
 

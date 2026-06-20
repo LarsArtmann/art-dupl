@@ -50,8 +50,8 @@ func createTestClone(t *testing.T, fragment string) Clone {
 
 	return Clone{
 		Filename:  testFilename,
-		StartLine: 1,
-		EndLine:   5,
+		LineStart: 1,
+		LineEnd:   5,
 		Fragment:  fragment,
 		Size:      25,
 	}

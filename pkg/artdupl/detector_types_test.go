@@ -49,8 +49,8 @@ func TestCloneGroup_Fields(t *testing.T) {
 	group := CloneGroup{
 		Hash: "abc123",
 		Clones: []*Clone{
-			{Filename: "file1.go", StartLine: 10, EndLine: 20},
-			{Filename: "file2.go", StartLine: 15, EndLine: 25},
+			{Filename: "file1.go", LineStart: 10, LineEnd: 20},
+			{Filename: "file2.go", LineStart: 15, LineEnd: 25},
 		},
 		Size:      100,
 		LineCount: 11,
@@ -68,8 +68,8 @@ func TestCloneGroup_Fields(t *testing.T) {
 func TestClone_Fields(t *testing.T) {
 	clone := Clone{
 		Filename:  testFilename,
-		StartLine: 10,
-		EndLine:   20,
+		LineStart: 10,
+		LineEnd:   20,
 		StartPos:  100,
 		EndPos:    200,
 		Fragment:  "code here",
@@ -77,8 +77,8 @@ func TestClone_Fields(t *testing.T) {
 	}
 
 	testutil.AssertFieldValue(t, clone.Filename, testFilename, "Filename")
-	testutil.AssertFieldValue(t, clone.StartLine, 10, "StartLine")
-	testutil.AssertFieldValue(t, clone.EndLine, 20, "EndLine")
+	testutil.AssertFieldValue(t, clone.LineStart, 10, "LineStart")
+	testutil.AssertFieldValue(t, clone.LineEnd, 20, "LineEnd")
 	testutil.AssertFieldValue(t, clone.StartPos, 100, "StartPos")
 	testutil.AssertFieldValue(t, clone.EndPos, 200, "EndPos")
 	testutil.AssertFieldValue(t, clone.Fragment, "code here", "Fragment")
@@ -176,7 +176,7 @@ func TestClone_Empty(t *testing.T) {
 
 	testutil.AssertFieldValue(t, clone.Filename, "", "Filename")
 
-	testutil.AssertFieldValue(t, clone.StartLine, 0, "StartLine")
+	testutil.AssertFieldValue(t, clone.LineStart, 0, "LineStart")
 
 	testutil.AssertFieldValue(t, clone.Size, 0, "Size")
 }
@@ -232,15 +232,15 @@ func TestClone_LargeFragment(t *testing.T) {
 
 	clone := Clone{
 		Filename:  "large.go",
-		StartLine: 1,
-		EndLine:   1000,
+		LineStart: 1,
+		LineEnd:   1000,
 		Fragment:  string(largeFragment),
 		Size:      len(largeFragment),
 	}
 
 	testutil.AssertFieldValue(t, clone.Filename, "large.go", "Filename")
-	testutil.AssertFieldValue(t, clone.StartLine, 1, "StartLine")
-	testutil.AssertFieldValue(t, clone.EndLine, 1000, "EndLine")
+	testutil.AssertFieldValue(t, clone.LineStart, 1, "LineStart")
+	testutil.AssertFieldValue(t, clone.LineEnd, 1000, "LineEnd")
 	testutil.AssertFieldValue(t, clone.Size, len(largeFragment), "Size")
 
 	if len(clone.Fragment) != 10000 {
@@ -254,8 +254,8 @@ func TestCloneGroup_ManyClones(t *testing.T) {
 	for i := range clones {
 		clones[i] = &Clone{
 			Filename:  fmt.Sprintf("file%d.go", i),
-			StartLine: i * 10,
-			EndLine:   i*10 + 5,
+			LineStart: i * 10,
+			LineEnd:   i*10 + 5,
 			Size:      50,
 		}
 	}
@@ -315,15 +315,15 @@ func TestProgress_Full(t *testing.T) {
 func TestClone_EdgeCases(t *testing.T) {
 	clone := Clone{
 		Filename:  "single.go",
-		StartLine: 10,
-		EndLine:   10,
+		LineStart: 10,
+		LineEnd:   10,
 		Size:      1,
 	}
 
 	testutil.AssertFieldValue(t, clone.Filename, "single.go", "Filename")
 	testutil.AssertFieldValue(t, clone.Size, 1, "Size")
 
-	if clone.StartLine != clone.EndLine {
+	if clone.LineStart != clone.LineEnd {
 		t.Error("Single-line clone should have same start and end line")
 	}
 }

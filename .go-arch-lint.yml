@@ -99,7 +99,6 @@ deps:
       - suffixtree
       - hash
       - syntax
-      - config
       - errors
       - pkg-utils
       - domain
@@ -129,7 +128,6 @@ deps:
 
   sdk:
     mayDependOn:
-      - config
       - detection
       - job
       - hash
@@ -145,10 +143,10 @@ deps:
       - errors
 
   domain:
-    mayDependOn:
-      - errors
+    mayDependOn: []
 
-  errors: []
+  errors:
+    mayDependOn: []
 
   job:
     mayDependOn:

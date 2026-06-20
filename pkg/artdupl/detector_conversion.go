@@ -35,7 +35,7 @@ func (d *detector) convertToCloneGroup(
 		validClones = append(validClones, clone)
 		totalSize += clone.Size
 
-		lines := clone.EndLine - clone.StartLine + 1
+		lines := clone.LineEnd - clone.LineStart + 1
 		if lines > maxLines {
 			maxLines = lines
 		}
@@ -84,8 +84,8 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 
 	clone := &Clone{ //nolint:exhaustruct
 		Filename:  firstNode.Filename,
-		StartLine: startLine,
-		EndLine:   endLine,
+		LineStart: startLine,
+		LineEnd:   endLine,
 		StartPos:  startPos,
 		EndPos:    endPos,
 		Size:      len(frag),

@@ -75,8 +75,8 @@ type CloneGroup struct {
 // Clone represents a single occurrence of duplicated code.
 type Clone struct {
 	Filename  string `json:"filename"`           // File containing this clone
-	StartLine int    `json:"start_line"`         // Starting line number
-	EndLine   int    `json:"end_line"`           // Ending line number
+	LineStart int    `json:"line_start"`         // Starting line number
+	LineEnd   int    `json:"line_end"`           // Ending line number
 	StartPos  int    `json:"start_pos"`          // Starting byte position
 	EndPos    int    `json:"end_pos"`            // Ending byte position
 	Fragment  string `json:"fragment,omitempty"` // Actual code content (optional)
@@ -84,10 +84,10 @@ type Clone struct {
 }
 
 // IsValid validates the clone data and returns an error if invalid.
-// A valid clone must have EndLine >= StartLine and EndPos > StartPos.
+// A valid clone must have LineEnd >= LineStart and EndPos > StartPos.
 func (c Clone) IsValid() error {
-	if c.EndLine < c.StartLine {
-		return ErrCloneEndLineBeforeStart
+	if c.LineEnd < c.LineStart {
+		return ErrCloneLineEndBeforeStart
 	}
 
 	if c.StartPos >= c.EndPos {

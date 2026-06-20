@@ -59,8 +59,8 @@ var (
 	// ErrResultProcessing is returned when result processing fails.
 	ErrResultProcessing = errors.New("error processing results")
 
-	// ErrCloneEndLineBeforeStart is returned when end line is before start line.
-	ErrCloneEndLineBeforeStart = errors.New("clone end line is before start line")
+	// ErrCloneLineEndBeforeStart is returned when end line is before start line.
+	ErrCloneLineEndBeforeStart = errors.New("clone end line is before start line")
 
 	// ErrCloneZeroLength is returned when clone has zero length.
 	ErrCloneZeroLength = errors.New("clone has zero length (start >= end)")
