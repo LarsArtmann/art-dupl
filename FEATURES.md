@@ -78,13 +78,13 @@
 
 ## 🔍 Semantic Detection
 
-| Feature                  | Status           | Description                                                                          |
-| ------------------------ | ---------------- | ------------------------------------------------------------------------------------ |
-| **Semantic Mode**        | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers; detects Type 2 (renamed) clones (default)        |
-| **Exact Mode**           | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)               |
-| **Structural-Only Mode** | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                          |
-| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output          |
-| **Mutual Exclusion**     | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                     |
+| Feature                       | Status           | Description                                                                   |
+| ----------------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| **Semantic Mode**             | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers; detects Type 2 (renamed) clones (default) |
+| **Exact Mode**                | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)        |
+| **Structural-Only Mode**      | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                   |
+| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output         |
+| **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive              |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
@@ -104,12 +104,12 @@
 
 ## 🚀 CI Integration
 
-| Feature                  | Status           | Description                                                                          |
-| ------------------------ | ---------------- | ------------------------------------------------------------------------------------ |
-| **Baseline Recording**   | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json`           |
-| **CI Check Mode**        | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates                       |
-| **GitHub Actions**       | FULLY_FUNCTIONAL | `.github/workflows/art-dupl-check.yml` template included                             |
-| **Pre-Commit Hook**      | FULLY_FUNCTIONAL | `.pre-commit-hooks.yaml` for pre-commit framework integration                        |
+| Feature                | Status           | Description                                                                |
+| ---------------------- | ---------------- | -------------------------------------------------------------------------- |
+| **Baseline Recording** | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json` |
+| **CI Check Mode**      | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates             |
+| **GitHub Actions**     | FULLY_FUNCTIONAL | `.github/workflows/art-dupl-check.yml` template included                   |
+| **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `.pre-commit-hooks.yaml` for pre-commit framework integration              |
 
 ---
 

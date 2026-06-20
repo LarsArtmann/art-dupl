@@ -14,30 +14,30 @@ This session completed the foundation tier of the Superb Clone Detection Engine 
 
 ## Completed This Session
 
-| Task | Commit | Impact |
-|------|--------|--------|
-| **T6** — Clone Type Classification | `359f3d7` | `classifyCloneType()` compares Name fields across fragment subtrees; emits `clone_type` (type-1/2/3) in JSON, SARIF, and `--rich-text`. |
-| **T19** — Domain Coverage | `692c587` | Domain package: 58.6% → **100%** (all enum methods tested). |
-| **T18** — Detection Coverage | `9fecc7f` | Detection package: 61.8% → **92.7%** (adapters, dispatch, cancellation, real duplicate data). |
-| **T2** — Alpha-Normalization | `91554e5` | Per-function symbol table canonicalizes locals (params/receiver/body vars) to v0/v1/... before hashing. Selectors/types/field names preserved. |
-| **T5** — Three-Mode System | `91554e5` | `--semantic` (default, alpha-normalized), `--exact` (verbatim names), `--structural` (shape only). `bool` → `DetectionMode` enum threaded through job/cmd. |
-| **Dedup + Docs** | `b86e7de` | Eliminated `flattenSubtree` (reuse `syntax.Serialize`); updated AGENTS.md/HOW_TO_USE.md/FEATURES.md. |
+| Task                               | Commit    | Impact                                                                                                                                                     |
+| ---------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T6** — Clone Type Classification | `359f3d7` | `classifyCloneType()` compares Name fields across fragment subtrees; emits `clone_type` (type-1/2/3) in JSON, SARIF, and `--rich-text`.                    |
+| **T19** — Domain Coverage          | `692c587` | Domain package: 58.6% → **100%** (all enum methods tested).                                                                                                |
+| **T18** — Detection Coverage       | `9fecc7f` | Detection package: 61.8% → **92.7%** (adapters, dispatch, cancellation, real duplicate data).                                                              |
+| **T2** — Alpha-Normalization       | `91554e5` | Per-function symbol table canonicalizes locals (params/receiver/body vars) to v0/v1/... before hashing. Selectors/types/field names preserved.             |
+| **T5** — Three-Mode System         | `91554e5` | `--semantic` (default, alpha-normalized), `--exact` (verbatim names), `--structural` (shape only). `bool` → `DetectionMode` enum threaded through job/cmd. |
+| **Dedup + Docs**                   | `b86e7de` | Eliminated `flattenSubtree` (reuse `syntax.Serialize`); updated AGENTS.md/HOW_TO_USE.md/FEATURES.md.                                                       |
 
 ---
 
 ## Key Achievement: Type 2 Clone Detection
 
-Before this session, `--semantic` mode was **backwards**: it baked exact identifier names into the token hash, making matching *stricter* than structural. `processUser` and `processOrder` with identical bodies were *rejected*.
+Before this session, `--semantic` mode was **backwards**: it baked exact identifier names into the token hash, making matching _stricter_ than structural. `processUser` and `processOrder` with identical bodies were _rejected_.
 
 Now, semantic mode **alpha-normalizes** local identifiers before hashing. Two functions with identical structure but completely different variable names produce **identical token streams** and are detected as clones, classified as **type-2**.
 
 ### Dogfooding Validation (art-dupl on itself, `-t 20`)
 
-| Mode | Clone Groups | type-1 | type-2 |
-|------|-------------|--------|--------|
-| `--semantic` (default) | 7 | 3 | **4** |
-| `--exact` (old behavior) | 4 | 4 | 0 |
-| `--structural` | 7 | — | — |
+| Mode                     | Clone Groups | type-1 | type-2 |
+| ------------------------ | ------------ | ------ | ------ |
+| `--semantic` (default)   | 7            | 3      | **4**  |
+| `--exact` (old behavior) | 4            | 4      | 0      |
+| `--structural`           | 7            | —      | —      |
 
 The 4 type-2 clones are genuine: e.g. `DetectionMethods.Strings()` (receiver `dm`) vs a structurally identical method (receiver `methods`) — previously invisible.
 
@@ -69,24 +69,24 @@ The old `semantic bool` threaded through `job.Parse` is replaced by `golang.Dete
 
 ## Coverage
 
-| Package | Before | After |
-|---------|--------|-------|
-| domain | 58.6% | **100%** |
-| detection | 61.8% | **92.7%** |
-| syntax/golang | 95.9% | **96%+** (normalizer fully tested) |
+| Package       | Before | After                              |
+| ------------- | ------ | ---------------------------------- |
+| domain        | 58.6%  | **100%**                           |
+| detection     | 61.8%  | **92.7%**                          |
+| syntax/golang | 95.9%  | **96%+** (normalizer fully tested) |
 
 ---
 
 ## Remaining Work
 
-| Task | Status | Notes |
-|------|--------|-------|
-| T10 — Baseline/CI Mode | Next | `baseline` + `check` subcommands |
-| T11 — Extractability Score | Pending | Refactoring hints |
-| T17 — Property Tests | Pending | Suffix tree correctness |
+| Task                        | Status   | Notes                                           |
+| --------------------------- | -------- | ----------------------------------------------- |
+| T10 — Baseline/CI Mode      | Next     | `baseline` + `check` subcommands                |
+| T11 — Extractability Score  | Pending  | Refactoring hints                               |
+| T17 — Property Tests        | Pending  | Suffix tree correctness                         |
 | T1 — Statement Tokenization | Deferred | High risk; `serial()` still inflates thresholds |
-| T12-T16 — Architecture | Pending | Printer decoupling, type consolidation |
-| T20-T24 — Ecosystem | Pending | Benchmarks, GitHub Actions, pre-commit |
+| T12-T16 — Architecture      | Pending  | Printer decoupling, type consolidation          |
+| T20-T24 — Ecosystem         | Pending  | Benchmarks, GitHub Actions, pre-commit          |
 
 ---
 

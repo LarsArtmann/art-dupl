@@ -20,4 +20,4 @@
   entry: art-dupl check
   types: [go]
   pass_filenames: true
-  args: [-t, '15']
+  args: [-t, "15"]
