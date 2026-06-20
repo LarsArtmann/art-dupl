@@ -17,7 +17,8 @@
 
 ## Quality & Documentation
 
-- [ ] Create Architecture Decision Records (ADRs) for major design decisions
+- [x] ~~Create Architecture Decision Records (ADRs) for major design decisions~~ — DONE: 4 ADRs in `docs/adr/` (map-based transitions, semantic default, reflection config merge, actionability patterns)
+- [ ] Continue adding ADRs for future major design decisions
 
 ## Performance
 

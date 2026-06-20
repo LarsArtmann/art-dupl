@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-06-17
+> **Last Updated:** 2026-06-20
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -58,9 +58,9 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                 |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                     |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                               |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 8 non-actionable patterns                        |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 10 non-actionable patterns (signature-only, interface-impl, RAII defer, error-propagation, test-data, table-driven, test-scaffolding, data-dominated, describe-table, builder-callback) |
 | **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels |
-| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 15 actionable suggestions based on category + context                   |
+| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`) |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output              |
 | **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats              |
 | **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats    |
@@ -111,7 +111,7 @@
 | ------------------------- | ---------------- | ----------------------------------------------------------------------------------- |
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                   |
 | **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag                                 |
-| **Git-Aware Incremental** | FULLY_FUNCTIONAL | `--since <git-ref>` for git-aware incremental mode                                  |
+| **Git-Aware Incremental** | PARTIALLY_FUNCTIONAL | `--since <git-ref>` flag is wired into config (`config.Since`) but **never read** by analysis code. Only content-hash caching works; git diffing is not implemented (`job/incremental.go` uses `cache.Key(content)`, no git shelling). |
 | **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization                        |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                              |
@@ -202,6 +202,7 @@
 | Limitation            | Impact | Description                                                       |
 | --------------------- | ------ | ----------------------------------------------------------------- |
 | **Go & Templ Only**   | High   | Only `.go` and `.templ` files supported                           |
+| **`--since` is a stub** | Medium | Flag is accepted and stored in config but git-aware incremental is **not implemented**; only content-hash caching runs (`job/incremental.go`) |
 | **SDK Stream Errors** | Low    | `FindClonesStream` logs pipeline errors instead of returning them |
 
 ---

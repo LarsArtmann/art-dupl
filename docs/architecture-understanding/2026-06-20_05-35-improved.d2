@@ -1,0 +1,87 @@
+direction: down
+
+# Leaf packages (unchanged - already clean)
+errors: Errors {shape: package; style.fill: "#1a3a1a"}
+pkg_enum: pkg/enum {shape: package; style.fill: "#1a3a1a"}
+pkg_format: pkg/format {shape: package; style.fill: "#1a3a1a"}
+pkg_position: pkg/position {shape: package; style.fill: "#1a3a1a"}
+pkg_logger: pkg/logger {shape: package; style.fill: "#1a3a1a"}
+
+# Foundation - domain is now a TRUE leaf
+domain: domain\n(FIXED: true leaf) {shape: package; style.fill: "#1a3a1a"}
+suffixtree: suffixtree {shape: package; style.fill: "#1a2a3a"}
+config: config {shape: package; style.fill: "#3a3a1a"}
+
+domain -> pkg_enum: "stdlib + pkg/enum only"
+
+suffixtree -> errors
+config -> errors
+
+# AST layer (unchanged)
+syntax: syntax {shape: package; style.fill: "#2a2a3a"}
+syntax_golang: syntax/golang {shape: package; style.fill: "#2a2a3a"}
+syntax_templ: syntax/templ {shape: package; style.fill: "#2a2a3a"}
+
+syntax -> pkg_format
+syntax -> suffixtree
+syntax_golang -> syntax
+syntax_templ -> syntax
+
+# Detection layer (unchanged)
+hash: hash {shape: package; style.fill: "#3a2a1a"}
+cache: cache {shape: package; style.fill: "#3a2a1a"}
+
+hash -> pkg_format
+hash -> pkg_logger
+hash -> syntax
+cache -> errors
+cache -> syntax
+
+# Orchestration
+detection: detection {shape: package; style.fill: "#3a2a3a"}
+job: job {shape: package; style.fill: "#3a2a3a"}
+
+detection -> config
+detection -> hash
+detection -> suffixtree
+detection -> syntax
+
+job -> cache
+job -> suffixtree
+job -> syntax
+job -> syntax_golang
+job -> syntax_templ
+
+# NEW: Engine facade - the single internal boundary
+engine: internal/engine\n(SINGLE FACADE) {shape: package; style.fill: "#1a4a3a"; style.stroke: "#6eb5ff"; style.stroke-width: 3}
+
+engine -> detection
+engine -> job
+engine -> syntax
+engine -> config
+
+# Output layer - SPLIT into sub-packages, decoupled from syntax
+printer_sub: printer/*\n(text, json, sarif, plumbing) {shape: package; style.fill: "#1a3a3a"}
+printer_stats: printer/stats {shape: package; style.fill: "#1a3a3a"}
+printer_html: printer/html {shape: package; style.fill: "#1a3a3a"}
+analyze: printer/analyze\n(actionability) {shape: package; style.fill: "#1a3a3a"}
+
+printer_sub -> domain: "DTO only (FIXED)"
+printer_sub -> config
+printer_stats -> domain
+printer_html -> domain
+analyze -> syntax: "runs BEFORE DTO boundary"
+analyze -> domain
+
+# Entry points
+cmd: cmd\n(CLI) {shape: package; style.fill: "#1a1a2a"}
+sdk: pkg/artdupl\n(Public SDK) {shape: package; style.fill: "#1a4a3a"; style.stroke: "#6eb5ff"; style.stroke-width: 3}
+
+cmd -> engine
+cmd -> printer_sub
+cmd -> printer_stats
+cmd -> printer_html
+
+sdk -> engine: "1 internal dep (FIXED)"
+sdk -> pkg_enum
+sdk -> pkg_logger

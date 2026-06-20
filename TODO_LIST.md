@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-06-17**
+**Last Updated: 2026-06-20**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -8,11 +8,17 @@ Actionable items planned for the next 2-4 weeks.
 
 ## 🔴 HIGH Priority
 
+### Correctness — Dead/Misleading Flags
+
+- [ ] `--since <git-ref>` is a **dead flag**: accepted and stored in `config.Since` (`cmd/config_builder.go:149`) but **never read** by any analysis code. Git-aware incremental is not implemented — `job/incremental.go` only does SHA1 content-hash caching. Either implement git-diff file selection or remove the flag + docs (FEATURES.md marked it `PARTIALLY_FUNCTIONAL`).
+
 ### Architecture (Multi-session refactors — deferred with rationale)
 
-- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node)
-- [ ] Consolidate three parallel Clone types (printer.CloneGroup, pkg/artdupl.Clone, domain.ProcessedClone)
-- [ ] Split `printer/` into sub-packages (stats, html, analyze) — 50 files is too many for one package
+- [ ] Decouple `pkg/artdupl` SDK from internal `config/`: only `DetectionMethod` was split off, but 5 SDK files still import `config` directly (`config.Config`, `config.DetectionConfig`, `config.DetectionMethods` slice, and re-export `config.ErrInvalidThreshold`/`ErrThresholdTooLarge`). SDK should define its own config surface.
+- [ ] Remove `domain/` → internal `errors/` dependency: `domain/types_file.go:7` and `domain/helpers.go:7` import the internal `errors` package (`errors.NewValidationError`). Domain should be a leaf package depending only on stdlib + `pkg/enum`.
+- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node — 34 references)
+- [ ] Consolidate **five** parallel Clone/Group types (not three as previously documented): `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`
+- [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
 - [ ] Type-strengthen ProcessedClone: Filename string → domain.Filepath, LineStart/LineEnd int → domain.LineNumber (~25 consumer sites)
 
 ### Architecturally Constrained
@@ -26,6 +32,8 @@ Actionable items planned for the next 2-4 weeks.
 ### Code Quality
 
 - [ ] Refactor `printer/actionability.go` (623L — patterns extracted, file still large; consider splitting pattern detection functions into sub-files by category: test-patterns, defer-patterns, data-patterns)
+- [ ] Remove misleading filename `syntax/hash_simd.go` — contains no SIMD; uses `sync.Pool` + `xxh3.Hash`. Rename to `hash_seq.go` or similar.
+- [ ] Remove empty package-anchor file `syntax/golang/golang.go` (7 lines, zero declarations) or document why it's retained.
 - [ ] Implement hybrid slice/map transition storage for small transition counts (deferred — map already O(1))
 
 ### Assessed — No Action Needed

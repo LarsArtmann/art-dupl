@@ -1,0 +1,88 @@
+direction: down
+
+# Leaf packages
+errors: Errors {shape: package; style.fill: "#1a3a1a"}
+pkg_enum: pkg/enum {shape: package; style.fill: "#1a3a1a"}
+pkg_format: pkg/format {shape: package; style.fill: "#1a3a1a"}
+pkg_position: pkg/position {shape: package; style.fill: "#1a3a1a"}
+pkg_logger: pkg/logger {shape: package; style.fill: "#1a3a1a"}
+
+# Foundation
+domain: domain {shape: package; style.fill: "#3a3a1a"}
+suffixtree: suffixtree\n(O(1) Ukkonen) {shape: package; style.fill: "#1a2a3a"}
+config: config {shape: package; style.fill: "#3a3a1a"}
+
+domain -> errors: "imports (VIOLATION: domain should be leaf)"
+domain -> pkg_enum
+
+suffixtree -> errors
+config -> errors
+
+# AST layer
+syntax: syntax\n(Node, Match, Serialize) {shape: package; style.fill: "#2a2a3a"}
+syntax_golang: syntax/golang\n(Go parser) {shape: package; style.fill: "#2a2a3a"}
+syntax_templ: syntax/templ\n(Templ parser) {shape: package; style.fill: "#2a2a3a"}
+
+syntax -> pkg_format
+syntax -> suffixtree: "Token interface"
+syntax_golang -> syntax: "child→parent"
+syntax_templ -> syntax: "child→parent"
+
+# Detection layer
+hash: hash\n(XXH3 detector) {shape: package; style.fill: "#3a2a1a"}
+cache: cache\n(SHA1 AST cache) {shape: package; style.fill: "#3a2a1a"}
+
+hash -> pkg_format
+hash -> pkg_logger
+hash -> syntax
+cache -> errors
+cache -> syntax
+
+# Orchestration
+detection: detection\n(MultiDetector) {shape: package; style.fill: "#3a2a3a"}
+job: job\n(parse pipeline) {shape: package; style.fill: "#3a2a3a"}
+
+detection -> config
+detection -> hash
+detection -> pkg_logger
+detection -> suffixtree
+detection -> syntax
+
+job -> cache
+job -> pkg_logger
+job -> suffixtree
+job -> syntax
+job -> syntax_golang
+job -> syntax_templ
+
+# Output layer
+printer: printer\n(7 formats + stats)\n~29 files, ~3500 LOC {shape: package; style.fill: "#5a2a2a"; style.stroke: "#ff6b6b"}
+
+printer -> config
+printer -> domain
+printer -> errors
+printer -> pkg_position
+printer -> syntax: "9 files leak AST (VIOLATION)"
+printer -> syntax_golang
+
+# Entry points
+cmd: cmd\n(CLI: Fang/Cobra) {shape: package; style.fill: "#1a1a2a"}
+sdk: pkg/artdupl\n(Public SDK) {shape: package; style.fill: "#5a2a2a"; style.stroke: "#ff6b6b"}
+
+cmd -> config
+cmd -> detection
+cmd -> domain
+cmd -> errors
+cmd -> hash
+cmd -> job
+cmd -> printer
+cmd -> suffixtree
+cmd -> syntax
+
+sdk -> config: "7 INTERNAL DEPS (VIOLATION)"
+sdk -> detection
+sdk -> errors
+sdk -> job
+sdk -> pkg_position
+sdk -> suffixtree
+sdk -> syntax
