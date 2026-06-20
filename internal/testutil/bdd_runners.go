@@ -151,7 +151,6 @@ func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) []string {
 		"--output-dir": true,
 		"--timeout":    true,
 		"--only":       true,
-		"--since":      true,
 		"--cache-dir":  true,
 		"--diff":       true,
 		"--config":     true, "-c": true,

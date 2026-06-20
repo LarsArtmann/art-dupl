@@ -163,7 +163,7 @@ func TestNormalizeWorkerCount(t *testing.T) {
 	}
 }
 
-func TestParseFileByExtensionGoFile(t *testing.T) {
+func TestParseFileByExtensionWithConfig_GoFile(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 
 	err := setup.CreateTestFile("test.go", testContentSimple)
@@ -173,7 +173,7 @@ func TestParseFileByExtensionGoFile(t *testing.T) {
 
 	ast, lines, err := ParseFileByExtensionWithConfig(setup.GetFilePath("test.go"), true)
 	if err != nil {
-		t.Fatalf("ParseFileByExtension failed: %v", err)
+		t.Fatalf("ParseFileByExtensionWithConfig failed: %v", err)
 	}
 
 	if ast == nil {
@@ -185,7 +185,7 @@ func TestParseFileByExtensionGoFile(t *testing.T) {
 	}
 }
 
-func TestParseFileByExtensionNonexistentFile(t *testing.T) {
+func TestParseFileByExtensionWithConfig_NonexistentFile(t *testing.T) {
 	_, _, err := ParseFileByExtensionWithConfig("nonexistent.go", true)
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
