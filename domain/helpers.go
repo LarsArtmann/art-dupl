@@ -2,14 +2,13 @@ package domain
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-
-	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 func marshalStringID(s, validationMsg string) ([]byte, error) {
 	if s == "" {
-		return nil, errors.NewValidationError(validationMsg, nil)
+		return nil, errors.New(validationMsg)
 	}
 
 	return json.Marshal(s) //nolint:wrapcheck // Standard JSON marshaling
@@ -35,10 +34,7 @@ func unmarshalWithValidation[T any](
 	}
 
 	if !validator(value) {
-		return errors.NewValidationError(
-			fmt.Sprintf("%s (typeName=%q, value=%v)", validationMsg, typeName, value),
-			nil,
-		)
+		return fmt.Errorf("%s (typeName=%q, value=%v)", validationMsg, typeName, value)
 	}
 
 	assign(value)

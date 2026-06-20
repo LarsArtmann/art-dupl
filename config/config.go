@@ -110,11 +110,6 @@ type Config struct {
 	// Incremental enables incremental analysis (only analyze changed files)
 	Incremental bool `json:"incremental,omitempty"`
 
-	// Since specifies the git reference for incremental analysis
-	// Can be a commit hash, branch name, tag, or relative reference (e.g., "HEAD~1")
-	// If empty and Incremental is true, uses HEAD (all uncommitted changes)
-	Since string `json:"since,omitempty"`
-
 	// CacheDir specifies the cache directory for AST caching
 	// If empty, uses default .cache/art-dupl
 	CacheDir string `json:"cacheDir,omitempty"`
@@ -187,7 +182,6 @@ func DefaultConfig() *Config {
 		IncludePatterns:    []string{},
 		ExcludePatterns:    []string{},
 		Incremental:        false,
-		Since:              "",
 		CacheDir:           "",
 		ClearCache:         false,
 		Semantic:           true,

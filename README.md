@@ -161,7 +161,6 @@ art-dupl completion [bash|zsh|fish|powershell]
 | --------------- | ------- | ----------------------------------------------------- |
 | `--workers`     | `0`     | Concurrent workers (`0` = auto-detect CPU cores)      |
 | `--incremental` | `false` | Enable AST caching for incremental analysis           |
-| `--since`       | `""`    | Git ref for incremental mode (e.g., `HEAD~1`, `main`) |
 | `--cache-dir`   | `""`    | Cache directory (default: `.cache/art-dupl`)          |
 | `--clear-cache` | `false` | Clear cache before running                            |
 

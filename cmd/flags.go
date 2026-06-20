@@ -83,8 +83,6 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("incremental", false, "enable incremental analysis with AST caching")
 	rootCmd.Flags().
-		String("since", "", "git reference for incremental mode (e.g., HEAD~1, main, commit-hash)")
-	rootCmd.Flags().
 		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
 	rootCmd.Flags().
 		Bool("clear-cache", false, "clear cache before running (requires --incremental)")

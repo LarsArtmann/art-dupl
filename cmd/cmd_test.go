@@ -277,7 +277,6 @@ func TestAddFlags(t *testing.T) {
 		"include-pattern",
 		"exclude-pattern",
 		"incremental",
-		"since",
 		"cache-dir",
 		"clear-cache",
 	}

@@ -2,9 +2,8 @@ package domain
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-
-	"github.com/LarsArtmann/art-dupl/errors"
 )
 
 // Filepath represents a filesystem path.
@@ -13,7 +12,7 @@ type Filepath string
 // NewFilepath creates a validated Filepath from a string.
 func NewFilepath(path string) (Filepath, error) {
 	if path == "" {
-		return "", errors.NewValidationError("filepath cannot be empty", nil)
+		return "", errors.New("filepath cannot be empty")
 	}
 
 	return Filepath(path), nil
@@ -45,7 +44,7 @@ type LineNumber uint16
 // Returns error if the line number is 0 (invalid).
 func NewLineNumber(n uint16) (LineNumber, error) {
 	if n == 0 {
-		return 0, errors.NewValidationError("line number cannot be 0", nil)
+		return 0, errors.New("line number cannot be 0")
 	}
 
 	return LineNumber(n), nil
@@ -59,7 +58,7 @@ func (ln LineNumber) Uint16() uint16 {
 // MarshalJSON implements json.Marshaler for LineNumber.
 func (ln LineNumber) MarshalJSON() ([]byte, error) {
 	if ln == 0 {
-		return nil, errors.NewValidationError("line number cannot be 0", nil)
+		return nil, errors.New("line number cannot be 0")
 	}
 
 	return json.Marshal(uint16(ln)) //nolint:wrapcheck // Standard JSON marshaling
@@ -75,7 +74,7 @@ func (ln *LineNumber) UnmarshalJSON(data []byte) error {
 	}
 
 	if n == 0 {
-		return errors.NewValidationError("line number cannot be 0", nil)
+		return errors.New("line number cannot be 0")
 	}
 
 	*ln = LineNumber(n)

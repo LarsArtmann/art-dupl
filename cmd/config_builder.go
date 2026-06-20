@@ -144,11 +144,6 @@ func applyChangedStringFlags(cmd *cobra.Command, cfg *config.Config) {
 		cfg.Only = config.FileType(val)
 	}
 
-	if cmd.Flags().Changed("since") {
-		val, _ := cmd.Flags().GetString("since")
-		cfg.Since = val
-	}
-
 	if cmd.Flags().Changed("cache-dir") {
 		val, _ := cmd.Flags().GetString("cache-dir")
 		cfg.CacheDir = val
