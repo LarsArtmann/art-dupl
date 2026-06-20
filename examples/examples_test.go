@@ -149,6 +149,14 @@ func TestExamplesTypes(t *testing.T) {
 		t.Error("Clone size should be positive")
 	}
 
+	if clone.Fragment == "" {
+		t.Error("Clone should have fragment")
+	}
+
+	if clone.EndPos <= clone.StartPos {
+		t.Error("EndPos should be greater than StartPos")
+	}
+
 	// Test summary structure
 	summary := &artdupl.Summary{
 		TotalFiles:    10,
@@ -165,6 +173,22 @@ func TestExamplesTypes(t *testing.T) {
 
 	if len(summary.MethodsUsed) == 0 {
 		t.Error("Methods used should not be empty")
+	}
+
+	if summary.TotalClones <= 0 {
+		t.Error("Total clones should be positive")
+	}
+
+	if summary.TotalGroups <= 0 {
+		t.Error("Total groups should be positive")
+	}
+
+	if summary.LinesAnalyzed <= 0 {
+		t.Error("Lines analyzed should be positive")
+	}
+
+	if summary.AnalysisTime <= 0 {
+		t.Error("Analysis time should be positive")
 	}
 
 	// Test metadata structure
@@ -202,6 +226,18 @@ func TestExamplesTypes(t *testing.T) {
 
 	if progress.Percentage < 0 || progress.Percentage > 100 {
 		t.Errorf("Progress percentage should be between 0-100, got %f", progress.Percentage)
+	}
+
+	if progress.Total <= 0 {
+		t.Error("Progress total should be positive")
+	}
+
+	if progress.Completed < 0 || progress.Completed > progress.Total {
+		t.Error("Completed should be between 0 and Total")
+	}
+
+	if progress.Message == "" {
+		t.Error("Progress message should not be empty")
 	}
 }
 
