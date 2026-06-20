@@ -103,11 +103,12 @@ func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
 	// Flatten each fragment into its complete pre-order node sequence. The
 	// fragment slice contains only the top-level "syntax unit" roots; the
 	// renamed identifiers live in their descendants, so we must walk the full
-	// subtree to detect Name divergence.
+	// subtree to detect Name divergence. syntax.Serialize provides exactly this
+	// pre-order traversal.
 	seqs := make([][]*syntax.Node, len(dups))
 	for i, dup := range dups {
 		for _, node := range dup {
-			seqs[i] = append(seqs[i], flattenSubtree(node)...)
+			seqs[i] = append(seqs[i], syntax.Serialize(node)...)
 		}
 	}
 
@@ -126,24 +127,6 @@ func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
 	}
 
 	return domain.CloneType1
-}
-
-// flattenSubtree collects a node and all its descendants in pre-order, matching
-// the serialization order used by the suffix tree so that corresponding
-// positions across clone fragments align.
-func flattenSubtree(n *syntax.Node) []*syntax.Node {
-	var out []*syntax.Node
-	flattenInto(n, &out)
-
-	return out
-}
-
-func flattenInto(n *syntax.Node, out *[]*syntax.Node) {
-	*out = append(*out, n)
-
-	for _, child := range n.Children {
-		flattenInto(child, out)
-	}
 }
 
 // NodesToGroup converts raw syntax.Node groups into a ProcessedCloneGroup.

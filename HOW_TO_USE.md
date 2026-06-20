@@ -358,12 +358,16 @@ The HTML report provides:
 #### Too Many False Positives
 
 ```bash
-# Semantic matching is the default — it reduces false positives by matching identifier names
-# This helps for patterns like enum methods (CrushMode.IsValid vs SafetyMode.IsValid)
-./art-dupl -t 40
+# Three detection modes control how identifier names participate in matching:
+# --semantic (default): alpha-normalizes local variables, detects Type 2 (renamed) clones
+# --exact: matches identifier names verbatim (copy-paste / Type 1 only)
+# --structural: ignores all names, matches by AST shape (loosest, most results)
+./art-dupl -t 40            # semantic mode (default)
+./art-dupl --exact -t 40    # exact name matching
+./art-dupl --structural -t 40  # shape-only matching
 
-# Use --structural for raw structural matching (more results, more noise)
-./art-dupl --structural -t 40
+# Clones are labeled type-1 (exact), type-2 (renamed), or type-3 (near-miss)
+# in JSON, SARIF, and --rich-text output.
 
 # Or ignore certain patterns
 ./art-dupl -config dupl.json  # with ignoreFiles patterns

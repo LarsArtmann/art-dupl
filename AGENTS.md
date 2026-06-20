@@ -49,8 +49,10 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 ## Critical Conventions
 
 - **Idiomatic Go only** — no Result[T], Option[T], railway-oriented programming. Standard `(T, error)` returns.
-- **Semantic matching is default** (`config.DefaultConfig.Semantic = true`). `--structural` disables it. Semantic is now _faster_ than structural (was 9x slower before optimization).
-- **Semantic encoding layout**: `[24-bit identifier/operator hash][8-bit base AST node type]`. Identifier names (Ident, SelectorExpr, FuncDecl, TypeSpec) and operators (BinaryExpr, UnaryExpr, IncDecStmt, AssignStmt) are hashed into the upper 24 bits. Consumers comparing node types must use `golang.DecodeBaseType(node.Type)` to extract the base type — never compare raw `node.Type` against `golang.*` constants.
+- **Three detection modes** (`syntax/golang/detection_mode.go`): `--semantic` (default, alpha-normalized — detects Type 2 renamed clones), `--exact` (verbatim name hashing — Type 1 copy-paste only), `--structural` (AST shape only). Config maps via `cmd.detectionMode()`; job package threads `golang.DetectionMode` (not bool).
+- **Alpha-normalization** (`syntax/golang/normalizer.go`): per-function symbol table canonicalizes locals (params, receiver, body vars) to v0/v1/... before hashing. `o.Name` keeps original for clone-type classification; `o.Type` uses the canonical name. Selectors/field names/types are NOT canonicalized (API surface).
+- **Semantic encoding layout**: `[24-bit identifier/operator hash][8-bit base AST node type]`. Both Exact and Semantic modes hash identifiers (`hashesIdentifiers()`); Structural ignores them. Consumers comparing node types must use `golang.DecodeBaseType(node.Type)` — never compare raw `node.Type` against `golang.*` constants.
+- **Clone type classification** (`printer/clone_processor.go`): Type 1 (exact, identical names), Type 2 (renamed, detected via alpha-normalization), Type 3 (near-miss). Walks full subtree via `syntax.Serialize` to compare Names in descendant nodes.
 - **`hashSeq` uses 4 bytes per node** (full int32 Type) to preserve semantic encoding in grouping hashes.
 - **Idiom category**: Clones with <5 tokens are classified as `idiom` (domain.CategoryIdiom) instead of their AST category. These are structural artifacts with near-zero actionability.
 - **Only `.go` and `.templ` files** are processed by default. Vendor excluded by default (`--vendor` to include).
