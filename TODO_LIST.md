@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-06-20**
+**Last Updated: 2026-06-22**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -11,10 +11,18 @@ Actionable items planned for the next 2-4 weeks.
 ### Architecture (Multi-session refactors — deferred with rationale)
 
 - [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node — 34 references)
-- [ ] Consolidate **five** parallel Clone/Group types: `printer.CloneGroup`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone`, `domain.ProcessedCloneGroup`. Field names are now aligned (`LineStart`/`LineEnd` canonical across all types), but the types themselves are still separate.
+- [x] ~~Consolidate **five** parallel Clone/Group types~~ — Field names aligned (`LineStart`/`LineEnd`/`StartPos`/`EndPos` canonical), Fragment unified to `string`, `printer.CloneGroup.Files`→`Clones`. Types remain separate for Printer/SDK DTO independence (see ADR-0005, `docs/research/SPLIT-BRAIN.html`).
 - [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
-- [ ] Unify `Fragment` type (`[]byte` in domain vs `string` in SDK — flips at every boundary)
-- [ ] Rename `…Data` view models to `…View` in printer/ (touches templ-generated code)
+- [x] ~~Unify `Fragment` type (`[]byte` in domain vs `string` in SDK — flips at every boundary)~~ — Done: `domain.ProcessedClone.Fragment` is now `string` everywhere.
+- [x] ~~Rename `…Data` view models to `…View` in printer/~~ — Verified: all view models already use `…View` suffix.
+
+### Split-Brain Resolution (2026-06-22)
+
+- [x] Unify `DetectionMethod` across `config`/`pkg/artdupl`/`detection` — now type aliases to `domain.DetectionMethod` (see ADR-0005)
+- [x] Align error sentinels (`ErrInvalidThreshold`/`ErrThresholdTooLarge`/`ErrInvalidDetectionMethod`) — re-exported from `domain` for cross-package `errors.Is()` compatibility
+- [x] Unify `Logger` interface — explicit in `pkg/logger` with compile-time assertions; SDK aliases it
+- [x] Fix `Timeout` type mismatch — `config.Config.Timeout` is now `time.Duration` (not `int` seconds)
+- [x] Remove dead `DetectionMethods.Strings()` and `methodsToStrings()` — typed slices pass directly after alias unification
 
 ### Architecturally Constrained
 

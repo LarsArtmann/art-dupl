@@ -8,13 +8,14 @@ import (
 // CreateMockNode creates a simple mock AST node for testing.
 func CreateMockNode(nodeType int, filename string, pos, end int) *syntax.Node {
 	return &syntax.Node{
-		Type:     int32(nodeType), // #nosec G115 -- Test helper with controlled values
-		Filename: filename,
-		Pos:      int32(pos), // #nosec G115 -- Test helper with controlled values
-		End:      int32(end), // #nosec G115 -- Test helper with controlled values
-		Owns:     0,
-		Children: nil,
-		Name:     "",
+		Type:      int32(nodeType), // #nosec G115 -- Test helper with controlled values
+		Filename:  filename,
+		Pos:       int32(pos), // #nosec G115 -- Test helper with controlled values
+		End:       int32(end), // #nosec G115 -- Test helper with controlled values
+		Owns:      0,
+		Children:  nil,
+		Name:      "",
+		Statement: false,
 	}
 }
 
@@ -61,13 +62,14 @@ func CreateMatchWithNodes(hash string, fragments [][]*syntax.Node) syntax.Match 
 // This helper reduces duplication when creating similar node literals.
 func CreateNodeWithPos(nodeType int32, filename string, pos, end int32) *syntax.Node {
 	return &syntax.Node{
-		Type:     nodeType,
-		Filename: filename,
-		Pos:      pos,
-		End:      end,
-		Owns:     0,
-		Children: nil,
-		Name:     "",
+		Type:      nodeType,
+		Filename:  filename,
+		Pos:       pos,
+		End:       end,
+		Owns:      0,
+		Children:  nil,
+		Name:      "",
+		Statement: false,
 	}
 }
 
@@ -82,13 +84,14 @@ func CreateNodeSlice(values []struct {
 	nodes := make([]*syntax.Node, len(values))
 	for i, v := range values {
 		nodes[i] = &syntax.Node{
-			Type:     v.Type,
-			Filename: v.Filename,
-			Pos:      v.Pos,
-			End:      v.End,
-			Owns:     0,
-			Children: nil,
-			Name:     "",
+			Type:      v.Type,
+			Filename:  v.Filename,
+			Pos:       v.Pos,
+			End:       v.End,
+			Owns:      0,
+			Children:  nil,
+			Name:      "",
+			Statement: false,
 		}
 	}
 
