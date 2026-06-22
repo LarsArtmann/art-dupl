@@ -23,9 +23,9 @@ type JSONOutput struct {
 }
 
 type CloneGroup struct {
-	Hash  string      `json:"hash"`
-	Size  int         `json:"size"`
-	Files []JSONClone `json:"files"`
+	Hash   string      `json:"hash"`
+	Size   int         `json:"size"`
+	Clones []JSONClone `json:"files"`
 }
 
 type JSONClone struct {
@@ -116,7 +116,7 @@ func (p *JSONPrinter) PrintClones(
 			Filename:      cl.Filename,
 			LineStart:     cl.LineStart,
 			LineEnd:       cl.LineEnd,
-			Fragment:      string(deindent(cl.Fragment)),
+			Fragment:      cl.Fragment,
 			Category:      string(cl.Classification.Category),
 			Priority:      string(cl.Classification.Priority),
 			Actionability: string(cl.Classification.Actionability),
@@ -140,9 +140,9 @@ func (p *JSONPrinter) PrintClones(
 	}
 
 	cloneGroup := CloneGroup{
-		Hash:  p.currentHash,
-		Size:  size,
-		Files: jsonClones,
+		Hash:   p.currentHash,
+		Size:   size,
+		Clones: jsonClones,
 	}
 
 	p.cloneGroups = append(p.cloneGroups, cloneGroup)
@@ -195,10 +195,10 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 	simpleOutput := make(simpleJSONOutput, len(p.cloneGroups))
 
 	for i, group := range p.cloneGroups {
-		impactScore := group.Size * len(group.Files)
+		impactScore := group.Size * len(group.Clones)
 
-		simpleInstances := make([]simpleJSONClone, len(group.Files))
-		for j, file := range group.Files {
+		simpleInstances := make([]simpleJSONClone, len(group.Clones))
+		for j, file := range group.Clones {
 			simpleInstances[j] = simpleJSONClone{
 				LineRangeMixin: LineRangeMixin{
 					LineStart: file.LineStart,

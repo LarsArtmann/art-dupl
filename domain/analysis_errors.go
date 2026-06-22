@@ -9,6 +9,8 @@ var (
 	ErrInvalidCloneActionability = errors.New("invalid clone actionability")
 	ErrInvalidCloneType          = errors.New("invalid clone type")
 	ErrInvalidHealthScore        = errors.New("invalid health score")
+	ErrInvalidThreshold          = errors.New("threshold must be >= 1")
+	ErrThresholdTooLarge         = errors.New("threshold too large (max 1000)")
 	ErrEmptyFilename             = errors.New("filename cannot be empty")
 	ErrLineEndBeforeStart        = errors.New("line end is before line start")
 	ErrNegativeTokenCount        = errors.New("token count cannot be negative")

@@ -4,14 +4,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 // Static errors for config validation.
 var (
-	ErrInvalidDetectionMethod = errors.New("invalid detection method")
+	// ErrInvalidDetectionMethod re-exported from domain for cross-package
+	// errors.Is() compatibility.
+	ErrInvalidDetectionMethod = domain.ErrInvalidDetectionMethod
 	ErrInvalidType            = errors.New("invalid type")
-	ErrInvalidThreshold       = errors.New("threshold must be >= 1")
-	ErrThresholdTooLarge      = errors.New("threshold too large (max 1000)")
+
+	// ErrInvalidThreshold and ErrThresholdTooLarge are re-exported from domain
+	// so that errors.Is() works across config, SDK, and domain boundaries.
+	ErrInvalidThreshold  = domain.ErrInvalidThreshold
+	ErrThresholdTooLarge = domain.ErrThresholdTooLarge
 )
 
 // isValidStringType validates a string type against a set of valid values.

@@ -24,8 +24,7 @@ func Profile() ProfileResult {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
-	return ProfileResult{ //nolint:exhaustruct
-		AllocMB:      float64(m.Alloc) / 1024 / 1024,
+	return ProfileResult{ //nolint:exhaustruct // Duration/Timestamp computed later by ProfileDiff
 		TotalAllocMB: float64(m.TotalAlloc) / 1024 / 1024,
 		SysMB:        float64(m.Sys) / 1024 / 1024,
 		NumGC:        m.NumGC,
@@ -36,8 +35,7 @@ func Profile() ProfileResult {
 
 // ProfileDiff calculates the difference between two profiles.
 func ProfileDiff(start, end ProfileResult) ProfileResult {
-	return ProfileResult{ //nolint:exhaustruct
-		AllocMB:      end.AllocMB - start.AllocMB,
+	return ProfileResult{ //nolint:exhaustruct // Delta result; Timestamp meaningless for diffs
 		TotalAllocMB: end.TotalAllocMB - start.TotalAllocMB,
 		SysMB:        end.SysMB - start.SysMB,
 		NumGC:        end.NumGC - start.NumGC,

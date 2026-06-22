@@ -3,53 +3,22 @@ package config
 import (
 	"fmt"
 	"strings"
+
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// DetectionMethod represents the detection method type.
-type DetectionMethod string
+// DetectionMethod is an alias for domain.DetectionMethod to prevent drift
+// across config, SDK, and detection packages.
+type DetectionMethod = domain.DetectionMethod
 
+// Constant aliases for backward compatibility with existing config code.
 const (
 	// DetectionMethodHash uses hash-based comparison.
-	DetectionMethodHash DetectionMethod = "hash"
+	DetectionMethodHash = domain.MethodHash
+
 	// DetectionMethodArtDupl uses suffix tree detection.
-	DetectionMethodArtDupl DetectionMethod = "art-dupl"
+	DetectionMethodArtDupl = domain.MethodArtDupl
 )
-
-//nolint:gochecknoglobals // Lookup table for valid detection methods, initialized once at package load
-var validDetectionMethods = map[DetectionMethod]bool{
-	DetectionMethodHash:    true,
-	DetectionMethodArtDupl: true,
-}
-
-// String implements fmt.Stringer.
-func (dm DetectionMethod) String() string {
-	return string(dm)
-}
-
-// IsValid validates detection method.
-func (dm DetectionMethod) IsValid() bool {
-	return isValidStringType(dm, validDetectionMethods)
-}
-
-// MarshalJSON implements json.Marshaler.
-func (dm DetectionMethod) MarshalJSON() ([]byte, error) {
-	return marshalStringType(
-		dm,
-		isValidMethod[DetectionMethod](),
-		"detection method",
-	)
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (dm *DetectionMethod) UnmarshalJSON(data []byte) error {
-	return unmarshalStringTypeToPointer(
-		data,
-		isValidMethod[DetectionMethod](),
-		DetectionMethodArtDupl,
-		"detection method",
-		dm,
-	)
-}
 
 // ParseDetectionMethods parses comma-separated detection methods.
 func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
@@ -71,7 +40,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 		if !dm.IsValid() {
 			return nil, fmt.Errorf(
 				"%w: %s (input: %q)",
-				ErrInvalidDetectionMethod,
+				domain.ErrInvalidDetectionMethod,
 				method,
 				methodsStr,
 			)
@@ -99,7 +68,7 @@ func ParseDetectionMethods(methodsStr string) ([]DetectionMethod, error) {
 func ValidateDetectionMethods(methods []DetectionMethod) error {
 	for _, method := range methods {
 		if !method.IsValid() {
-			return fmt.Errorf("%w: %s", ErrInvalidDetectionMethod, method)
+			return fmt.Errorf("%w: %s", domain.ErrInvalidDetectionMethod, method)
 		}
 	}
 
@@ -108,15 +77,12 @@ func ValidateDetectionMethods(methods []DetectionMethod) error {
 
 // AllDetectionMethods returns all supported detection methods.
 func AllDetectionMethods() []DetectionMethod {
-	return []DetectionMethod{
-		DetectionMethodHash,
-		DetectionMethodArtDupl,
-	}
+	return domain.AllDetectionMethods()
 }
 
 // DefaultDetectionMethod returns the default detection method.
 func DefaultDetectionMethod() DetectionMethod {
-	return DetectionMethodArtDupl
+	return domain.DefaultDetectionMethod()
 }
 
 // detectionMethodStrings converts a slice of DetectionMethod to string slice.

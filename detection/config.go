@@ -1,18 +1,21 @@
 package detection
 
+import "github.com/LarsArtmann/art-dupl/domain"
+
 // Config configures the MultiDetector's behavior.
 type Config struct {
 	// Methods specifies which detection algorithms to run.
 	// Accepted values: MethodArtDupl, MethodHash.
 	// Empty means use the default (art-dupl only).
-	Methods []string
+	Methods []domain.DetectionMethod
 
 	// Verbose enables detailed logging during detection.
 	Verbose bool
 }
 
-// Detection method names for Config.Methods.
+// Detection method name constants — aliases for domain.DetectionMethod
+// to prevent drift across packages.
 const (
-	MethodArtDupl = "art-dupl"
-	MethodHash    = "hash"
+	MethodArtDupl = domain.MethodArtDupl
+	MethodHash    = domain.MethodHash
 )

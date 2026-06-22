@@ -75,7 +75,7 @@ func drainMatchesChannel(t *testing.T) {
 	tree := buildTestSuffixTree(data)
 
 	md := detection.NewMultiDetector(
-		detection.Config{Methods: methodsToStrings(d.cfg.DetectionMethods)},
+		detection.Config{Methods: d.cfg.DetectionMethods},
 		data,
 		tree,
 	)

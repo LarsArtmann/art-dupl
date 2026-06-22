@@ -1,6 +1,9 @@
 package config
 
-import "slices"
+import (
+	"slices"
+	"time"
+)
 
 // DetectionMethods is a slice of DetectionMethod for type safety.
 type DetectionMethods []DetectionMethod
@@ -25,16 +28,6 @@ func (dm DetectionMethods) IsEmpty() bool {
 // is used, we can skip AST parsing and work directly with file paths.
 func (dm DetectionMethods) IsHashOnly() bool {
 	return len(dm) == 1 && dm[0] == DetectionMethodHash
-}
-
-// Strings converts DetectionMethods to a plain []string for packages
-// that accept method names without importing config (e.g., detection.Config).
-func (dm DetectionMethods) Strings() []string {
-	result := make([]string, len(dm))
-	for i, m := range dm {
-		result[i] = string(m)
-	}
-	return result
 }
 
 // Config represents the dupl configuration with strong typing.
@@ -83,8 +76,8 @@ type Config struct {
 	// Profile enables performance profiling output
 	Profile bool `json:"profile,omitempty"`
 
-	// Timeout specifies maximum execution time in seconds (0 = no timeout)
-	Timeout int `json:"timeout,omitempty"`
+	// Timeout specifies maximum execution time (0 = no timeout)
+	Timeout time.Duration `json:"timeout,omitempty"`
 
 	// IncludeSQLC includes sqlc.dev generated files in analysis (default: false, filtered)
 	IncludeSQLC bool `json:"includeSQLC,omitempty"`

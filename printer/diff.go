@@ -286,13 +286,13 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 				LineStart: base.LineStart,
 				LineEnd:   base.LineEnd,
 			},
-			Content: base.Fragment,
+			Content: []byte(base.Fragment),
 		},
 		Others: make([]CloneDiff, 0, len(clones)-1),
 	}
 
 	for idx := 1; idx < len(clones); idx++ {
-		diff := LineDiff(base.Fragment, clones[idx].Fragment)
+		diff := LineDiff([]byte(base.Fragment), []byte(clones[idx].Fragment))
 		if diff.HasDiff {
 			result.HasAnyDiff = true
 		}
@@ -309,7 +309,7 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 					LineStart: clones[idx].LineStart,
 					LineEnd:   clones[idx].LineEnd,
 				},
-				Content: clones[idx].Fragment,
+				Content: []byte(clones[idx].Fragment),
 			},
 			Diff: diff,
 		})

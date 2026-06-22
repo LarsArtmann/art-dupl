@@ -7,6 +7,16 @@ import (
 	"charm.land/log/v2"
 )
 
+// Logger is the canonical logging interface for the project.
+// Both the SDK and CLI reference this interface so that logger
+// conformance is compiler-checked.
+type Logger interface {
+	Debug(msg string, args ...any)
+	Info(msg string, args ...any)
+	Warn(msg string, args ...any)
+	Error(msg string, args ...any)
+}
+
 // Config holds logging configuration.
 type Config struct {
 	Level        string
@@ -38,13 +48,16 @@ func NewLogger(cfg *Config) *charmLogger {
 		level = log.InfoLevel
 	}
 
-	logger := log.NewWithOptions(cfg.Output, log.Options{ //nolint:exhaustruct
-		Level:           level,
-		ReportTimestamp: true,
-		ReportCaller:    cfg.ReportCaller,
-		Prefix:          cfg.Prefix,
-		Formatter:       log.TextFormatter,
-	})
+	logger := log.NewWithOptions(
+		cfg.Output,
+		log.Options{ //nolint:exhaustruct // third-party struct; rely on library defaults for unset fields
+			Level:           level,
+			ReportTimestamp: true,
+			ReportCaller:    cfg.ReportCaller,
+			Prefix:          cfg.Prefix,
+			Formatter:       log.TextFormatter,
+		},
+	)
 
 	return &charmLogger{logger: logger}
 }
@@ -101,6 +114,12 @@ func (l *NoOpLogger) Debug(_ string, _ ...any) {}
 func (l *NoOpLogger) Info(_ string, _ ...any)  {}
 func (l *NoOpLogger) Warn(_ string, _ ...any)  {}
 func (l *NoOpLogger) Error(_ string, _ ...any) {}
+
+// Compile-time assertions that logger implementations satisfy the Logger contract.
+var (
+	_ Logger = (*charmLogger)(nil)
+	_ Logger = (*NoOpLogger)(nil)
+)
 
 // Default returns a no-op logger by default.
 //

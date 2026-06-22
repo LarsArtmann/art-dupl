@@ -1,24 +1,27 @@
 package artdupl
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+)
 
 // SDK-specific sentinel errors for simple error comparison via errors.Is().
 //
-// Design Note: These errors are intentionally separate from the internal errors
-// package (errors/types.go) which provides rich error types with context.
-// SDK users need simple sentinel errors for comparison, while internal code
-// uses rich errors for debugging. This dual approach is by design:
-//   - SDK errors: Simple sentinel errors for user-facing error comparison
-//   - Internal errors: Rich DuplError types with file, line, stack trace
+// ErrInvalidThreshold and ErrThresholdTooLarge are re-exported from domain
+// so that errors.Is() works across config, SDK, and domain boundaries.
+// All other sentinels are SDK-specific.
 var (
 	// ErrNilOptions is returned when options are nil.
 	ErrNilOptions = errors.New("options cannot be nil")
 
 	// ErrInvalidThreshold is returned when threshold is invalid.
-	ErrInvalidThreshold = errors.New("threshold must be >= 1")
+	// Re-exported from domain for cross-package errors.Is() compatibility.
+	ErrInvalidThreshold = domain.ErrInvalidThreshold
 
 	// ErrThresholdTooLarge is returned when threshold exceeds maximum.
-	ErrThresholdTooLarge = errors.New("threshold too large (max 1000)")
+	// Re-exported from domain for cross-package errors.Is() compatibility.
+	ErrThresholdTooLarge = domain.ErrThresholdTooLarge
 
 	// ErrNoDetectionMethods is returned when no detection methods are specified.
 	ErrNoDetectionMethods = errors.New("at least one detection method must be specified")

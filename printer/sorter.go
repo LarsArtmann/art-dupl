@@ -30,7 +30,7 @@ func SortCloneGroups(groups []CloneGroup, sortBy config.SortCriteria) {
 		sortCloneGroupsBySizeDescending(groups)
 	case config.SortByOccurrence:
 		sort.Slice(groups, func(i, j int) bool {
-			return len(groups[i].Files) > len(groups[j].Files) // Most files first (descending)
+			return len(groups[i].Clones) > len(groups[j].Clones) // Most clones first (descending)
 		})
 	case config.SortByHash:
 		sort.Slice(groups, func(i, j int) bool {
@@ -38,7 +38,7 @@ func SortCloneGroups(groups []CloneGroup, sortBy config.SortCriteria) {
 		})
 	case config.SortByTotalTokens:
 		sort.Slice(groups, func(i, j int) bool {
-			return groups[i].Size*len(groups[i].Files) > groups[j].Size*len(groups[j].Files)
+			return groups[i].Size*len(groups[i].Clones) > groups[j].Size*len(groups[j].Clones)
 		})
 	default:
 		// Default to size sorting for highest impact

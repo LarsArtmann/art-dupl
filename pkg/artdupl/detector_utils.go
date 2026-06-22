@@ -60,14 +60,3 @@ func convertOptionsToConfig(opts *Options) *detectorConfig {
 		Semantic:         true,
 	}
 }
-
-// methodsToStrings converts SDK DetectionMethod values to plain strings
-// for packages that accept method names without importing the SDK types.
-func methodsToStrings(methods []DetectionMethod) []string {
-	result := make([]string, len(methods))
-	for i, m := range methods {
-		result[i] = string(m)
-	}
-
-	return result
-}

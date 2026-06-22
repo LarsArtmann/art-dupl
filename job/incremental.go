@@ -71,7 +71,7 @@ func (ip *IncrementalParser) ParseIncremental(
 	statsChan := make(chan IncrementalStats, 1)
 
 	go func() {
-		stats := IncrementalStats{} //nolint:exhaustruct
+		stats := IncrementalStats{} //nolint:exhaustruct // zero-value counters, mutated incrementally
 
 		for file := range fchan {
 			select {

@@ -252,7 +252,7 @@ func applyTimeoutFlag(cmd *cobra.Command, cfg *config.Config) error {
 		)
 	}
 
-	cfg.Timeout = int(duration.Seconds())
+	cfg.Timeout = duration
 
 	return nil
 }

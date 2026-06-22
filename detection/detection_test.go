@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -35,20 +36,20 @@ func TestMultiDetector_FindDuplOver(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		methods []string
+		methods []domain.DetectionMethod
 		verbose bool
 		empty   bool
 	}{
-		{"default method", []string{MethodArtDupl}, false, false},
-		{"hash method", []string{MethodHash}, false, false},
+		{"default method", []domain.DetectionMethod{MethodArtDupl}, false, false},
+		{"hash method", []domain.DetectionMethod{MethodHash}, false, false},
 		{
 			"both methods",
-			[]string{MethodArtDupl, MethodHash},
+			[]domain.DetectionMethod{MethodArtDupl, MethodHash},
 			false,
 			false,
 		},
-		{"verbose", []string{MethodHash}, true, false},
-		{"empty data", []string{MethodArtDupl}, false, true},
+		{"verbose", []domain.DetectionMethod{MethodHash}, true, false},
+		{"empty data", []domain.DetectionMethod{MethodArtDupl}, false, true},
 	}
 
 	for _, tc := range tests {

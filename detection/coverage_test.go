@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -145,14 +146,14 @@ func TestBuildCloneDetectors(t *testing.T) {
 
 	cases := []struct {
 		name    string
-		methods []string
+		methods []domain.DetectionMethod
 		want    int
 	}{
 		{"empty defaults to art-dupl", nil, 1},
-		{"art-dupl only", []string{MethodArtDupl}, 1},
-		{"hash only", []string{MethodHash}, 1},
-		{"both methods", []string{MethodArtDupl, MethodHash}, 2},
-		{"unknown method ignored", []string{"bogus"}, 0},
+		{"art-dupl only", []domain.DetectionMethod{MethodArtDupl}, 1},
+		{"hash only", []domain.DetectionMethod{MethodHash}, 1},
+		{"both methods", []domain.DetectionMethod{MethodArtDupl, MethodHash}, 2},
+		{"unknown method ignored", []domain.DetectionMethod{"bogus"}, 0},
 	}
 
 	for _, tc := range cases {

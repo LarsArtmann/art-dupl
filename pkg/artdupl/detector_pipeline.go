@@ -78,7 +78,7 @@ func (d *detector) buildAnalysisPipeline(
 
 	fileCount := <-fileCountChan
 
-	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct
+	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // sentinel terminator; only Type matters
 
 	d.reportProgress(60, "Building suffix tree", "")
 
@@ -110,7 +110,7 @@ func (d *detector) createMultiDetector(
 	tree *suffixtree.STree,
 ) *detection.MultiDetector {
 	return detection.NewMultiDetector(detection.Config{
-		Methods: methodsToStrings(d.cfg.DetectionMethods),
+		Methods: d.cfg.DetectionMethods,
 		Verbose: d.opts.Verbose,
 	}, data, tree)
 }

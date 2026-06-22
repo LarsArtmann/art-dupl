@@ -5,33 +5,22 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
-// DetectionMethod represents the method used for duplicate detection.
-// This is an independent SDK type — conversion to internal config types
-// happens at the SDK boundary (convertOptionsToConfig).
-type DetectionMethod string
+// DetectionMethod is an alias for domain.DetectionMethod, the canonical
+// definition shared across config, SDK, and detection packages.
+type DetectionMethod = domain.DetectionMethod
 
 const (
 	// MethodArtDupl uses suffix tree algorithm on AST tokens.
-	MethodArtDupl DetectionMethod = "art-dupl"
+	MethodArtDupl = domain.MethodArtDupl
 
 	// MethodHash uses rolling hash on file content.
-	MethodHash DetectionMethod = "hash"
+	MethodHash = domain.MethodHash
 )
-
-// String returns the string representation of the detection method.
-func (m DetectionMethod) String() string { return string(m) }
-
-// IsValid returns true if the detection method is one of the defined constants.
-func (m DetectionMethod) IsValid() bool {
-	switch m {
-	case MethodArtDupl, MethodHash:
-		return true
-	default:
-		return false
-	}
-}
 
 // Detector is the main interface for code duplication detection.
 type Detector interface {
@@ -152,23 +141,10 @@ type Progress struct {
 // FileReaderFunc represents a function that can read file contents.
 type FileReaderFunc func(filename string) ([]byte, error)
 
-// Logger is the SDK's own logging interface.
-// Any type implementing these methods satisfies the interface — the internal
-// pkg/logger.Logger is structurally compatible without an explicit adapter.
-type Logger interface {
-	Debug(msg string, args ...any)
-	Info(msg string, args ...any)
-	Warn(msg string, args ...any)
-	Error(msg string, args ...any)
-}
-
-// noOpLogger is the default SDK logger when none is provided.
-type noOpLogger struct{}
-
-func (noOpLogger) Debug(string, ...any) {}
-func (noOpLogger) Info(string, ...any)  {}
-func (noOpLogger) Warn(string, ...any)  {}
-func (noOpLogger) Error(string, ...any) {}
+// Logger is an alias for logger.Logger, the canonical logging interface.
+// This eliminates the split-brain between the SDK's own Logger interface
+// and pkg/logger's implementations.
+type Logger = logger.Logger
 
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
@@ -182,7 +158,7 @@ func DefaultOptions() *Options {
 		MaxClonesPerGroup: 50,
 		ProgressCallback:  nil,
 		FileReader:        readFileDefault,
-		Logger:            noOpLogger{},
+		Logger:            &logger.NoOpLogger{},
 	}
 }
 

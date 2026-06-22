@@ -14,6 +14,7 @@ type CloneOccurrenceView struct {
 	VSCodeLink templ.SafeURL
 	Filename   string
 	LineStart  int
+	LineEnd    int
 	Fragment   string
 }
 
@@ -58,7 +59,8 @@ func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 		VSCodeLink: templ.SafeURL(fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)),
 		Filename:   cl.Filename,
 		LineStart:  cl.LineStart,
-		Fragment:   string(cl.Fragment),
+		LineEnd:    cl.LineEnd,
+		Fragment:   cl.Fragment,
 	}
 }
 

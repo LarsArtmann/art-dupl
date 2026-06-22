@@ -79,7 +79,7 @@ func foo() {
 		{
 			Hash: "test-hash",
 			Size: 100,
-			Files: []JSONClone{
+			Clones: []JSONClone{
 				{
 					Filename:  testFilename,
 					LineStart: 1,
@@ -243,7 +243,7 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 		{
 			Hash: "abc",
 			Size: 10,
-			Files: []JSONClone{
+			Clones: []JSONClone{
 				{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"},
 				{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"},
 			},

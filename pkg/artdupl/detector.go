@@ -6,6 +6,8 @@ import (
 	"os"
 	"slices"
 	"time"
+
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
 
 // detector implements the Detector interface using existing dupl components.
@@ -36,7 +38,7 @@ func NewDetector(opts *Options) (Detector, error) {
 
 	// Set default logger if not provided
 	if opts.Logger == nil {
-		opts.Logger = noOpLogger{}
+		opts.Logger = &logger.NoOpLogger{}
 	}
 
 	// Convert SDK options to internal config

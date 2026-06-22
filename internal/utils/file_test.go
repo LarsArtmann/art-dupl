@@ -262,7 +262,7 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		deadlineCtx, cancel := ApplyTimeout(ctx, 5)
+		deadlineCtx, cancel := ApplyTimeout(ctx, 5*time.Second)
 		defer cancel()
 
 		g.Expect(deadlineCtx).ToNot(gomega.Equal(ctx))
@@ -278,7 +278,7 @@ func TestApplyTimeout(t *testing.T) {
 
 		ctx := t.Context()
 
-		deadlineCtx, cancel := ApplyTimeout(ctx, 1)
+		deadlineCtx, cancel := ApplyTimeout(ctx, 1*time.Second)
 		defer cancel()
 
 		select {
@@ -298,7 +298,7 @@ func TestApplyTimeout(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		cancelableCtx, cancel := ApplyTimeout(ctx, 10)
+		cancelableCtx, cancel := ApplyTimeout(ctx, 10*time.Second)
 
 		cancel()
 

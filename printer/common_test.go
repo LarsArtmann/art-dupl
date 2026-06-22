@@ -23,7 +23,7 @@ func newTestProcessedClone(
 		Filename:  filename,
 		LineStart: lineStart,
 		LineEnd:   lineEnd,
-		Fragment:  []byte(fragment),
+		Fragment:  fragment,
 	}
 }
 

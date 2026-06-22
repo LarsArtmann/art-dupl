@@ -289,7 +289,9 @@ type ProcessedClone struct {
 	Filename       string
 	LineStart      int
 	LineEnd        int
-	Fragment       []byte
+	StartPos       int32
+	EndPos         int32
+	Fragment       string
 	TokenCount     int
 	FileSize       int
 	Classification CloneClassification
