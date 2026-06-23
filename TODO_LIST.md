@@ -1,12 +1,21 @@
 # TODO List
 
-**Last Updated: 2026-06-22**
+**Last Updated: 2026-06-23**
 
 Actionable items planned for the next 2-4 weeks.
 
 ---
 
 ## 🔴 HIGH Priority
+
+### Type Safety (From 2026-06-23 Data Model Review)
+
+- [ ] Introduce branded `NodeType int32` in syntax/ to prevent cross-package int32 collision between golang and templ node type constants — **HIGH RISK**: touches gob serialization cache format and semantic encoding layout (`[24-bit hash][8-bit base type]`)
+- [ ] Introduce shared `CloneRef` value object in domain to unify the 7 parallel Clone types (ProcessedClone, SDK Clone, JSONClone, etc.) via embedding without collapsing DTO boundary
+- [ ] Relocate `SortCriteria` and `OutputFormat` enums from config to domain — decouples printer (21 files) from config package
+- [x] ~~Unify `FileReaderFunc` type~~ — Done: canonical type in domain, aliased in printer and SDK (2026-06-23)
+- [x] ~~Add `Config.Validate()` method~~ — Done: single entry point delegating to existing ValidateConfig (2026-06-23)
+- [x] ~~Fix stringly-typed JSON DTO fields~~ — Done: JSONClone.Category/Priority/Actionability/CloneType now use domain enums directly (2026-06-23)
 
 ### Architecture (Multi-session refactors — deferred with rationale)
 
@@ -15,6 +24,17 @@ Actionable items planned for the next 2-4 weeks.
 - [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
 - [x] ~~Unify `Fragment` type (`[]byte` in domain vs `string` in SDK — flips at every boundary)~~ — Done: `domain.ProcessedClone.Fragment` is now `string` everywhere.
 - [x] ~~Rename `…Data` view models to `…View` in printer/~~ — Verified: all view models already use `…View` suffix.
+
+### Correctness Fixes (From 2026-06-23 Full Code Review)
+
+- [x] ~~Fix suffixtree error swallow in canonize~~ — Done: silent `_` discard replaced with explicit panic-with-context (2026-06-23)
+- [x] ~~Fix cache atomic read race~~ — Done: Stats()/GetStats() now use atomic.LoadInt64 (2026-06-23)
+- [x] ~~Remove dead DuplError.Line field~~ — Done: field never set, always printed `:0` (2026-06-23)
+- [x] ~~Remove dead SortNodesByCriteria~~ — Done: zero callers (2026-06-23)
+- [x] ~~Remove dead SARIF rules~~ — Done: art-dupl/todo and art-dupl/legacy never produced in results (2026-06-23)
+- [ ] Cache deep-copy on incremental cache-hit path — `job/incremental.go:139` mutates shared cached nodes (data race under concurrent parse)
+- [ ] Add `Name()` method to MethodDetector interface — eliminates type switch at `detection/multidetector.go:117`
+- [ ] Fix `debug.Stack()` called unconditionally on every error in `errors/types.go:39` — unnecessary overhead for routine errors in a file-processing tool
 
 ### Split-Brain Resolution (2026-06-22)
 
