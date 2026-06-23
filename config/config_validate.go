@@ -7,6 +7,12 @@ import (
 	"github.com/LarsArtmann/art-dupl/errors"
 )
 
+// Validate validates the configuration invariants in one place.
+// It is the single entry point for all Config validation.
+func (c *Config) Validate() error {
+	return ValidateConfig(c)
+}
+
 // ValidateConfig validates the configuration.
 func ValidateConfig(cfg *Config) error {
 	validations := []func() error{

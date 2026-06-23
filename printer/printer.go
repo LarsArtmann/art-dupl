@@ -7,7 +7,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-type ReadFile func(filename string) ([]byte, error)
+// ReadFile is an alias for domain.FileReaderFunc, the canonical file-reader
+// function type shared across the codebase.
+type ReadFile = domain.FileReaderFunc
 
 type HashSetter interface {
 	SetHash(hash string)

@@ -138,8 +138,9 @@ type Progress struct {
 	CurrentFile string  `json:"current_file,omitempty"` // Currently processing file
 }
 
-// FileReaderFunc represents a function that can read file contents.
-type FileReaderFunc func(filename string) ([]byte, error)
+// FileReaderFunc is an alias for domain.FileReaderFunc, the canonical
+// file-reader function type shared across the codebase.
+type FileReaderFunc = domain.FileReaderFunc
 
 // Logger is an alias for logger.Logger, the canonical logging interface.
 // This eliminates the split-brain between the SDK's own Logger interface
