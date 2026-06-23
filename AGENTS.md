@@ -20,12 +20,11 @@ Enduring context that's hard to discover from code. For everything else, see the
 ## Build & Test
 
 ```bash
-just generate      # run templ generate (required before build if .templ files changed)
-just build          # → dist/art-dupl (includes templ generate)
-just test           # tests with coverage
-just check          # lint
-just ci             # format + lint + test (includes templ generate)
-nix flake check     # reproducible CI (includes templ generate in preBuild)
+templ generate     # run templ generate (required before build if .templ files changed)
+go build ./...     # build all packages
+go test ./...      # run all tests
+golangci-lint run --timeout 5m ./...  # lint
+nix flake check    # reproducible CI (includes templ generate in preBuild)
 ```
 
 ## Architecture
@@ -63,7 +62,7 @@ pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
 - **Config merging** is reflection-based — adding Config fields requires no merge code changes.
 - **BDD tests** use Ginkgo/Gomega in `bdd/`. Helpers: `NewBDDTestSetupForGinkgo()`, `RunArtDupl()`, `CreateDuplicateFiles()`, `RunArtDuplOnDir()`, `RunArtDuplWithStdin()` — all in `internal/testutil/bdd.go`.
 - **SDK type independence**: `pkg/artdupl` has **ZERO imports** of `config/` and `errors/`. Uses `domain` types via aliases (`DetectionMethod = domain.DetectionMethod`, `ErrInvalidThreshold = domain.ErrInvalidThreshold`). Logger aliased to `pkg/logger.Logger`. Uses only stdlib `errors` + `fmt.Errorf` for error wrapping (no `debug.Stack()` overhead). The `detection` package uses `[]domain.DetectionMethod` (typed, not plain `[]string`). Enforced via `.go-arch-lint.yml`.
-- **Shared types in domain**: `DetectionMethod`, `ErrInvalidThreshold`, `ErrThresholdTooLarge`, and `Logger` are defined once in `domain`/`pkg/logger` and aliased by `config`, `pkg/artdupl`, and `detection`. See ADR-0005. `config.Config.Timeout` is `time.Duration` (not `int` seconds). `Fragment` is `string` everywhere (not `[]byte`).
+- **Shared types in domain**: `DetectionMethod`, `ErrInvalidThreshold`, `ErrThresholdTooLarge`, `FileReaderFunc`, and `Logger` are defined once in `domain`/`pkg/logger` and aliased by `config`, `pkg/artdupl`, `detection`, and `printer`. See ADR-0005. `config.Config.Timeout` is `time.Duration` (not `int` seconds). `Fragment` is `string` everywhere (not `[]byte`).
 - **Context propagation**: All pipeline goroutines (detection, job/parse, job/buildtree, job/incremental, SDK streaming) use `select { case ch <- v: case <-ctx.Done(): return }` for every channel send. Never use the "check-then-send" pattern (`select { case <-ctx.Done(): ...; default: }` followed by a bare `ch <- v`) — it races. `collectResults` in `job/parse.go` accepts `ctx` as first param. `BuildTree`'s `done` channel is buffered(1). Only `cmd/run_crawl.go` file feeders lack ctx (stdin/filepath.Walk are inherently blocking; process exits on cancellation).
 - **Enum pattern**: Domain enums use `pkg/enum` shared helpers (`MarshalJSON`, `UnmarshalJSON`, `Parse`). Each enum has `IsValid()` and `String()`. ClonePriority has `Rank()` for ordinal comparison.
 
