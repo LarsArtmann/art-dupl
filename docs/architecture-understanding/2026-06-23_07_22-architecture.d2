@@ -1,0 +1,101 @@
+direction: down
+layout: elk
+
+# art-dupl CURRENT architecture — 8-layer DAG with coupling hotspots
+
+cmd: CLI Entry Point {
+  shape: page
+  style.fill: "#ffb347"
+  style.font-color: "#0e0e10"
+}
+
+sdk: pkg/artdupl\nPublic SDK {
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+
+detection: detection\nMultiDetector
+printer: printer\nOutput Layer {
+  style.fill: "#ff6b6b"
+  style.font-color: "#0e0e10"
+}
+job: job\nParse & Build
+
+config: config\nConfig + Enums {
+  shape: package
+  style.fill: "#ff6b6b"
+  style.font-color: "#0e0e10"
+}
+
+syntax_engine: syntax\nAST Types {
+  shape: cylinder
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+golang: syntax/golang\nGo Parser
+templ: syntax/templ\nTempl Parser
+suffixtree: suffixtree\nAlgorithm
+hash: hash\nHash Detector
+cache: cache\nAST Cache
+baseline: baseline {
+  shape: package
+}
+
+domain: domain\nCore Types {
+  shape: circle
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+errors: errors\nTyped Errors {
+  shape: package
+}
+
+foundation: pkg/* leaf foundations {
+  shape: package
+  style.fill: "#16161a"
+}
+
+cmd -> sdk: uses
+cmd -> detection: wires
+cmd -> printer: wires
+cmd -> job: wires
+cmd -> baseline: wires
+cmd -> config: loads
+cmd -> domain
+cmd -> errors
+
+sdk -> detection: builds
+sdk -> job: orchestrates
+sdk -> suffixtree
+sdk -> syntax_engine
+sdk -> golang: HARDCODED
+sdk -> domain
+
+detection -> syntax_engine: MethodDetector
+detection -> hash: adapter
+detection -> suffixtree: adapter
+detection -> domain
+detection -> errors
+
+printer -> config: 21 FILES COUPLED
+printer -> domain
+printer -> syntax_engine
+printer -> golang
+printer -> errors
+
+job -> syntax_engine
+job -> golang
+job -> templ
+job -> suffixtree
+job -> cache
+job -> errors
+
+config -> domain: enums alias
+config -> errors
+
+golang -> syntax_engine
+templ -> syntax_engine
+hash -> syntax_engine
+cache -> syntax_engine
+suffixtree -> errors
+domain -> foundation

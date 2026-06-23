@@ -97,10 +97,11 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 //   - Type 3 (near-miss): fragments differ in length. The suffix tree normally
 //     guarantees equal-length fragments, so this is a defensive fallback.
 //
-// In the current semantic mode (exact-name hashing) matched nodes always share
-// identical Names, so clones are Type 1. After alpha-normalization (Type 2
-// detection) renamed identifiers will match structurally while their original
-// Names diverge, producing Type 2 classifications.
+// In exact mode (verbatim name hashing) matched nodes always share identical
+// Names, so clones are Type 1. In semantic mode (alpha-normalization, the
+// default), renamed identifiers match structurally while their original Names
+// diverge, producing Type 2 classifications. Structural mode ignores names
+// entirely, also yielding Type 2 when names happen to differ.
 func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
 	if len(dups) < 2 {
 		return domain.CloneType1

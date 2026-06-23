@@ -168,7 +168,7 @@ const (
 // granularity.
 func fingerprintSubtree(n *Node) int32 {
 	hash := fnvOffset32
-	hash = fnvStep32(hash, uint32(n.Type))
+	hash = fnvStep32(hash, uint32(n.Type)) //nolint:gosec // G115: hash uses bit patterns
 
 	for _, child := range n.Children {
 		hash = fingerprintSubtreeInto(child, hash)
@@ -178,7 +178,7 @@ func fingerprintSubtree(n *Node) int32 {
 }
 
 func fingerprintSubtreeInto(n *Node, hash uint32) uint32 {
-	hash = fnvStep32(hash, uint32(n.Type))
+	hash = fnvStep32(hash, uint32(n.Type)) //nolint:gosec // G115: hash uses bit patterns
 
 	for _, child := range n.Children {
 		hash = fingerprintSubtreeInto(child, hash)

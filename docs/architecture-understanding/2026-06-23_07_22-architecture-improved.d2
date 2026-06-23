@@ -1,0 +1,103 @@
+direction: down
+layout: elk
+
+# art-dupl TARGET architecture — decoupled, composable, registry-driven
+
+cmd: CLI Entry Point {
+  shape: page
+  style.fill: "#ffb347"
+  style.font-color: "#0e0e10"
+}
+
+sdk: pkg/artdupl\nPublic SDK {
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+
+detection: detection\nMultiDetector
+printer: printer\nOutput Layer {
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+job: job\nParse & Build
+
+domain: domain\nCore Types + ALL Enums {
+  shape: circle
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+
+lang_registry: Language Parser Registry {
+  shape: hexagon
+  style.fill: "#f4d35e"
+  style.font-color: "#0e0e10"
+}
+
+syntax_engine: syntax\nAST Types {
+  shape: cylinder
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+}
+golang: syntax/golang\nGo Parser
+templ: syntax/templ\nTempl Parser
+suffixtree: suffixtree\nAlgorithm
+hash: hash\nHash Detector
+cache: cache\nAST Cache
+baseline: baseline {
+  shape: package
+}
+config: config\nConfig Only {
+  shape: package
+}
+errors: errors\nTyped Errors {
+  shape: package
+}
+foundation: pkg/* leaf foundations {
+  shape: package
+  style.fill: "#16161a"
+}
+
+cmd -> sdk: uses
+cmd -> detection: wires
+cmd -> printer: wires
+cmd -> job: wires
+cmd -> config: loads
+cmd -> domain
+cmd -> errors
+
+sdk -> detection: builds
+sdk -> job: orchestrates
+sdk -> suffixtree
+sdk -> syntax_engine
+sdk -> lang_registry: resolves by ext
+sdk -> domain
+
+detection -> syntax_engine: MethodDetector.Name()
+detection -> hash: adapter
+detection -> suffixtree: adapter
+detection -> domain
+detection -> errors
+
+printer -> domain: enums relocated HERE
+printer -> syntax_engine
+printer -> golang
+printer -> errors
+
+golang -> syntax_engine: self-registers
+templ -> syntax_engine: self-registers
+golang -> lang_registry: register()
+templ -> lang_registry: register()
+
+job -> lang_registry: resolve
+job -> syntax_engine
+job -> suffixtree
+job -> cache
+job -> errors
+
+config -> domain: aliases only
+config -> errors
+
+hash -> syntax_engine
+cache -> syntax_engine
+suffixtree -> errors
+domain -> foundation

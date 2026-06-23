@@ -38,11 +38,14 @@
 //
 // # Streaming API
 //
-// For large codebases, use FindClonesStreamResult.esult for incremental results:
+// For large codebases, use FindClonesStreamResult for incremental results:
 //
-//	ch, err := detector.FindClonesStreamResult.esult(ctx, files)
-//	for group := range ch {
-//	    processGroup(group)
+//	ch, err := detector.FindClonesStreamResult(ctx, files)
+//	for res := range ch {
+//	    if res.Err != nil {
+//	        return res.Err
+//	    }
+//	    processGroup(res.Group)
 //	}
 //
 // # Detection Methods
