@@ -272,28 +272,6 @@ func (p *sarifPrinter) outputSARIF() error {
 								},
 								HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
 							},
-							{
-								ID:   "art-dupl/todo",
-								Name: "TODO/FIXME Comment",
-								ShortDescription: SARIFTextContent{
-									Text: "Detects TODO, FIXME, HACK, XXX, and NOTE comments",
-								},
-								DefaultConfiguration: SARIFConfiguration{
-									Level: "note",
-								},
-								HelpURI: "https://github.com/LarsArtmann/art-dupl#findings",
-							},
-							{
-								ID:   "art-dupl/legacy",
-								Name: "Legacy Pattern Usage",
-								ShortDescription: SARIFTextContent{
-									Text: "Detects usage of deprecated API patterns (e.g. io/ioutil)",
-								},
-								DefaultConfiguration: SARIFConfiguration{
-									Level: "warning",
-								},
-								HelpURI: "https://github.com/LarsArtmann/art-dupl#findings",
-							},
 						},
 					},
 				},
