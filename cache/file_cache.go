@@ -244,8 +244,8 @@ func (fc *FileCache) Stats() Stats {
 	defer fc.mu.RUnlock()
 
 	stats := Stats{
-		Hits:   fc.metadata.HitCount,
-		Misses: fc.metadata.MissCount,
+		Hits:   atomic.LoadInt64(&fc.metadata.HitCount),
+		Misses: atomic.LoadInt64(&fc.metadata.MissCount),
 	}
 
 	filesDir := filepath.Join(fc.cacheDir, "files")
@@ -269,7 +269,7 @@ func (fc *FileCache) GetStats() (int64, int64) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
-	return fc.metadata.HitCount, fc.metadata.MissCount
+	return atomic.LoadInt64(&fc.metadata.HitCount), atomic.LoadInt64(&fc.metadata.MissCount)
 }
 
 // cachePath returns the full path for a cache entry.

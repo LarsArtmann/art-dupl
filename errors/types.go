@@ -25,7 +25,6 @@ type DuplError struct {
 	Type    ErrorType
 	Message string
 	File    string
-	Line    int
 	Cause   error
 	Stack   string
 }
@@ -47,7 +46,7 @@ func NewConfigError(msg string, cause error) *DuplError {
 
 // NewIOError creates a new I/O error.
 func NewIOError(file, msg string, cause error) *DuplError {
-	return &DuplError{ //nolint:exhaustruct // Line optional for I/O errors
+	return &DuplError{
 		Type:    IOError,
 		Message: msg,
 		File:    file,
@@ -71,7 +70,7 @@ func NewInternalError(
 
 // NewFileError creates a new file error with context.
 func NewFileError(file, msg string, cause error) *DuplError {
-	return &DuplError{ //nolint:exhaustruct // Line optional for file errors
+	return &DuplError{
 		Type:    FileError,
 		Message: msg,
 		File:    file,
@@ -83,7 +82,7 @@ func NewFileError(file, msg string, cause error) *DuplError {
 // Error implements the error interface.
 func (e *DuplError) Error() string {
 	if e.File != "" {
-		return fmt.Sprintf("%s error at %s:%d: %s", e.Type, e.File, e.Line, e.Message)
+		return fmt.Sprintf("%s error at %s: %s", e.Type, e.File, e.Message)
 	}
 
 	return fmt.Sprintf("%s error: %s", e.Type, e.Message)

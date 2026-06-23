@@ -19,7 +19,7 @@ func TestDuplError(t *testing.T) {
 
 	unwrapErr := NewIOError("test.go", "test message", cause)
 
-	expected := "io error at test.go:0: test message"
+	expected := "io error at test.go: test message"
 	if unwrapErr.Error() != expected {
 		t.Errorf("Expected '%s', got '%s'", expected, unwrapErr.Error())
 	}

@@ -57,7 +57,16 @@ func (t *STree) Update(data ...Token) {
 	t.data = append(t.data, data...)
 	for range data {
 		t.update()
-		t.s, t.start, _ = t.canonize(t.s, t.start, t.end)
+
+		s, start, err := t.canonize(t.s, t.start, t.end)
+		if err != nil {
+			// canonize failure means the suffix tree is in a corrupt state.
+			// Panic explicitly with context rather than silently continuing
+			// and dereferencing nil on the next update() call.
+			panic(fmt.Sprintf("suffixtree canonize failed during Update: %v", err))
+		}
+
+		t.s, t.start = s, start
 		t.end++
 	}
 }
@@ -89,7 +98,13 @@ func (t *STree) update() {
 		}
 
 		oldr = r
-		s, start, _ = t.canonize(s.linkState, start, end-1)
+
+		var canonizeErr error
+
+		s, start, canonizeErr = t.canonize(s.linkState, start, end-1)
+		if canonizeErr != nil {
+			panic(fmt.Sprintf("suffixtree canonize failed during update: %v", canonizeErr))
+		}
 	}
 
 	if oldr != t.root {
