@@ -29,16 +29,16 @@ type CloneGroup struct {
 }
 
 type JSONClone struct {
-	Filename      string `json:"filename"`
-	LineStart     int    `json:"line_start"`
-	LineEnd       int    `json:"line_end"`
-	Fragment      string `json:"fragment"`
-	Category      string `json:"category,omitempty"`
-	Priority      string `json:"priority,omitempty"`
-	Actionability string `json:"actionability,omitempty"`
-	CloneType     string `json:"clone_type,omitempty"`
-	LinesSaved    int    `json:"lines_saved,omitempty"`
-	Extractable   bool   `json:"extractable,omitempty"`
+	Filename      string                    `json:"filename"`
+	LineStart     int                       `json:"line_start"`
+	LineEnd       int                       `json:"line_end"`
+	Fragment      string                    `json:"fragment"`
+	Category      domain.CloneCategory      `json:"category,omitempty"`
+	Priority      domain.ClonePriority      `json:"priority,omitempty"`
+	Actionability domain.CloneActionability `json:"actionability,omitempty"`
+	CloneType     domain.CloneType          `json:"clone_type,omitempty"`
+	LinesSaved    int                       `json:"lines_saved,omitempty"`
+	Extractable   bool                      `json:"extractable,omitempty"`
 }
 
 type Summary struct {
@@ -117,10 +117,10 @@ func (p *JSONPrinter) PrintClones(
 			LineStart:     cl.LineStart,
 			LineEnd:       cl.LineEnd,
 			Fragment:      cl.Fragment,
-			Category:      string(cl.Classification.Category),
-			Priority:      string(cl.Classification.Priority),
-			Actionability: string(cl.Classification.Actionability),
-			CloneType:     string(cl.Classification.CloneType),
+			Category:      cl.Classification.Category,
+			Priority:      cl.Classification.Priority,
+			Actionability: cl.Classification.Actionability,
+			CloneType:     cl.Classification.CloneType,
 			LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
 			Extractable:   cl.Classification.Extractability.CanExtract,
 		}
