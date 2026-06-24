@@ -50,28 +50,42 @@ func cancelledContextAndChannel(ctx context.Context) (context.CancelFunc, chan s
 	return cancel, fchan
 }
 
-func TestIncrementalParserBasic(t *testing.T) {
-	setup := testutil.NewTestFileSetup(t)
-	cacheDir := setup.TmpDir + "/cache"
-
-	content := `package main
+// helloWorldFile is the standard test file content used across incremental parser tests.
+const helloWorldFile = `package main
 
 func main() {
 	println("hello")
 }`
 
-	err := setup.CreateTestFile("test.go", content)
-	if err != nil {
+// writeHelloWorldFile creates a test file with the standard hello-world content.
+func writeHelloWorldFile(t *testing.T, setup *testutil.TestFileSetup) {
+	t.Helper()
+
+	if err := setup.CreateTestFile("test.go", helloWorldFile); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
+}
 
-	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
-	ctx := t.Context()
-
+// singleFileChannel creates a buffered channel pre-populated with a single file path.
+func singleFileChannel(setup *testutil.TestFileSetup) chan string {
 	fchan := make(chan string, 1)
 	fchan <- setup.GetFilePath("test.go")
 
 	close(fchan)
+
+	return fchan
+}
+
+func TestIncrementalParserBasic(t *testing.T) {
+	setup := testutil.NewTestFileSetup(t)
+	cacheDir := setup.TmpDir + "/cache"
+
+	writeHelloWorldFile(t, setup)
+
+	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
+	ctx := t.Context()
+
+	fchan := singleFileChannel(setup)
 
 	schan, statsChan := parser.ParseIncremental(ctx, fchan)
 
@@ -85,34 +99,19 @@ func TestIncrementalParserCacheHit(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
-	if err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	writeHelloWorldFile(t, setup)
 
 	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
-	fchan := make(chan string, 1)
-	fchan <- setup.GetFilePath("test.go")
-
-	close(fchan)
+	fchan := singleFileChannel(setup)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
 	for range schan {
 		// Drain channel
 	}
 
-	fchan2 := make(chan string, 1)
-	fchan2 <- setup.GetFilePath("test.go")
-
-	close(fchan2)
+	fchan2 := singleFileChannel(setup)
 
 	schan2, statsChan := parser.ParseIncremental(ctx, fchan2)
 
@@ -130,24 +129,12 @@ func TestIncrementalParserClearCache(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
-	if err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	writeHelloWorldFile(t, setup)
 
 	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
-	fchan := make(chan string, 1)
-	fchan <- setup.GetFilePath("test.go")
-
-	close(fchan)
+	fchan := singleFileChannel(setup)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
 	for range schan {
@@ -156,10 +143,7 @@ func main() {
 
 	parserWithClear := NewIncrementalParser(cacheDir, true, golang.DetectionModeSemantic)
 
-	fchan2 := make(chan string, 1)
-	fchan2 <- setup.GetFilePath("test.go")
-
-	close(fchan2)
+	fchan2 := singleFileChannel(setup)
 
 	schan2, statsChan := parserWithClear.ParseIncremental(ctx, fchan2)
 
@@ -277,24 +261,12 @@ func TestIncrementalParserGetCacheStats(t *testing.T) {
 	setup := testutil.NewTestFileSetup(t)
 	cacheDir := setup.TmpDir + "/cache"
 
-	content := `package main
-
-func main() {
-	println("hello")
-}`
-
-	err := setup.CreateTestFile("test.go", content)
-	if err != nil {
-		t.Fatalf("Failed to create test file: %v", err)
-	}
+	writeHelloWorldFile(t, setup)
 
 	parser := NewIncrementalParser(cacheDir, false, golang.DetectionModeSemantic)
 	ctx := t.Context()
 
-	fchan := make(chan string, 1)
-	fchan <- setup.GetFilePath("test.go")
-
-	close(fchan)
+	fchan := singleFileChannel(setup)
 
 	schan, _ := parser.ParseIncremental(ctx, fchan)
 	for range schan {

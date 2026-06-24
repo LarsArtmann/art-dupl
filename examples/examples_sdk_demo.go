@@ -13,6 +13,20 @@ import (
 
 const demoTestFile = "test.go"
 
+// newDemoDetector creates a detector and logs any creation error.
+// Returns nil + false if creation fails; the caller should return early.
+// The returned detector must be closed by the caller (typically via defer).
+func newDemoDetector(opts *artdupl.Options) (artdupl.Detector, bool) {
+	detector, err := artdupl.NewDetector(opts)
+	if err != nil {
+		log.Printf("Failed to create detector: %v", err)
+
+		return nil, false
+	}
+
+	return detector, true
+}
+
 func RunSDKDemo() {
 	fmt.Println("=== dupl SDK Demo ===")
 
@@ -35,10 +49,8 @@ func RunSDKDemo() {
 
 func basicExample() {
 	// Create detector with default options
-	detector, err := artdupl.NewDetector(nil)
-	if err != nil {
-		log.Printf("Failed to create detector: %v", err)
-
+	detector, ok := newDemoDetector(nil)
+	if !ok {
 		return
 	}
 
@@ -88,10 +100,8 @@ func progressExample() {
 		return nil
 	}
 
-	detector, err := artdupl.NewDetector(opts)
-	if err != nil {
-		log.Printf("Failed to create detector: %v", err)
-
+	detector, ok := newDemoDetector(opts)
+	if !ok {
 		return
 	}
 
@@ -116,10 +126,8 @@ func streamingExample() {
 	opts.Threshold = 5
 	opts.Timeout = 10 * time.Second
 
-	detector, err := artdupl.NewDetector(opts)
-	if err != nil {
-		log.Printf("Failed to create detector: %v", err)
-
+	detector, ok := newDemoDetector(opts)
+	if !ok {
 		return
 	}
 
@@ -175,10 +183,8 @@ func configExample() {
 		Logger:           logger.NewLogger(&logger.Config{Level: "debug"}),
 	}
 
-	detector, err := artdupl.NewDetector(opts)
-	if err != nil {
-		log.Printf("Failed to create detector: %v", err)
-
+	detector, ok := newDemoDetector(opts)
+	if !ok {
 		return
 	}
 
@@ -231,10 +237,8 @@ func errorExample() {
 	for _, tc := range testCases {
 		fmt.Printf("  Testing %s: ", tc.name)
 
-		detector, err := artdupl.NewDetector(tc.opts)
-		if err != nil {
-			fmt.Printf("✅ Expected error: %v\n", err)
-
+		detector, ok := newDemoDetector(tc.opts)
+		if !ok {
 			continue
 		}
 
@@ -242,7 +246,7 @@ func errorExample() {
 
 		ctx := context.Background()
 
-		_, err = detector.FindClones(ctx, tc.files)
+		_, err := detector.FindClones(ctx, tc.files)
 		if err != nil {
 			fmt.Printf("✅ Expected error: %v\n", err)
 		} else {

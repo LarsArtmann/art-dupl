@@ -199,14 +199,12 @@ func (t CloneType) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneType.
 func (t *CloneType) UnmarshalJSON(data []byte) error {
-	parsed, err := enum.UnmarshalJSON(data, CloneType.IsValid, ErrInvalidCloneType)
-	if err != nil {
-		return err //nolint:wrapcheck // domain sentinel passed through
-	}
-
-	*t = parsed
-
-	return nil
+	return enum.UnmarshalJSONInto(
+		t,
+		data,
+		CloneType.IsValid,
+		ErrInvalidCloneType,
+	)
 }
 
 // MarshalJSON implements json.Marshaler for ClonePriority.
@@ -216,14 +214,12 @@ func (p ClonePriority) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for ClonePriority.
 func (p *ClonePriority) UnmarshalJSON(data []byte) error {
-	parsed, err := enum.UnmarshalJSON(data, ClonePriority.IsValid, ErrInvalidClonePriority)
-	if err != nil {
-		return err //nolint:wrapcheck // domain sentinel passed through
-	}
-
-	*p = parsed
-
-	return nil
+	return enum.UnmarshalJSONInto(
+		p,
+		data,
+		ClonePriority.IsValid,
+		ErrInvalidClonePriority,
+	)
 }
 
 // MarshalJSON implements json.Marshaler for CloneCategory.
@@ -233,14 +229,12 @@ func (c CloneCategory) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCategory.
 func (c *CloneCategory) UnmarshalJSON(data []byte) error {
-	parsed, err := enum.UnmarshalJSON(data, CloneCategory.IsValid, ErrInvalidCloneCategory)
-	if err != nil {
-		return err //nolint:wrapcheck // domain sentinel passed through
-	}
-
-	*c = parsed
-
-	return nil
+	return enum.UnmarshalJSONInto(
+		c,
+		data,
+		CloneCategory.IsValid,
+		ErrInvalidCloneCategory,
+	)
 }
 
 // MarshalJSON implements json.Marshaler for CloneActionability.
@@ -250,14 +244,12 @@ func (a CloneActionability) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements json.Unmarshaler for CloneActionability.
 func (a *CloneActionability) UnmarshalJSON(data []byte) error {
-	parsed, err := enum.UnmarshalJSON(data, CloneActionability.IsValid, ErrInvalidCloneActionability)
-	if err != nil {
-		return err //nolint:wrapcheck // domain sentinel passed through
-	}
-
-	*a = parsed
-
-	return nil
+	return enum.UnmarshalJSONInto(
+		a,
+		data,
+		CloneActionability.IsValid,
+		ErrInvalidCloneActionability,
+	)
 }
 
 // ClassificationInput holds the data needed to classify a clone.

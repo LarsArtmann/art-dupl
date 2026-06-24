@@ -65,6 +65,35 @@ func UnmarshalJSON[T ~string](
 	return validate(T(str), str, isValid, invalidErr)
 }
 
+// UnmarshalJSONInto is the pointer-receiver UnmarshalJSON companion to UnmarshalJSON.
+// It handles the boilerplate that every string-based enum type repeats:
+//
+//	func (t *T) UnmarshalJSON(data []byte) error {
+//	    parsed, err := enum.UnmarshalJSON(data, T.IsValid, ErrInvalidT)
+//	    if err != nil {
+//	        return err
+//	    }
+//	    *t = parsed
+//	    return nil
+//	}
+//
+// The wrapper avoids that ceremony at every enum declaration site.
+func UnmarshalJSONInto[T ~string](
+	dst *T,
+	data []byte,
+	isValid func(T) bool,
+	invalidErr error,
+) error {
+	parsed, err := UnmarshalJSON(data, isValid, invalidErr)
+	if err != nil {
+		return err
+	}
+
+	*dst = parsed
+
+	return nil
+}
+
 // Parse converts a raw string to an enum value with validation.
 // Returns the provided error if the string is not a valid enum value.
 func Parse[T ~string](s string, isValid func(T) bool, invalidErr error) (T, error) {
