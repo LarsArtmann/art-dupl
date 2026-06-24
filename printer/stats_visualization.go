@@ -106,25 +106,7 @@ var categoryOrder = []string{
 
 // printCategoryDistribution prints the category breakdown with percentages.
 func printCategoryDistribution(w io.Writer, distribution map[string]int) {
-	total := 0
-	for _, count := range distribution {
-		total += count
-	}
-
-	for _, category := range categoryOrder {
-		count, exists := distribution[category]
-		if !exists {
-			continue
-		}
-
-		pct := calcPercentage(count, total)
-
-		_, _ = fmt.Fprintf(
-			w,
-			"  %-12s: %4d groups (%.1f%%)\n",
-			category, count, pct,
-		)
-	}
+	printOrderedDistribution(w, distribution, categoryOrder, "  %-12s: %4d groups (%.1f%%)\n")
 }
 
 // priorityOrder defines a stable display order for priority levels.
@@ -132,25 +114,7 @@ var priorityOrder = []string{"critical", "high", "medium", "low"}
 
 // printPriorityDistribution prints the priority breakdown with percentages.
 func printPriorityDistribution(w io.Writer, distribution map[string]int) {
-	total := 0
-	for _, count := range distribution {
-		total += count
-	}
-
-	for _, priority := range priorityOrder {
-		count, exists := distribution[priority]
-		if !exists {
-			continue
-		}
-
-		pct := calcPercentage(count, total)
-
-		_, _ = fmt.Fprintf(
-			w,
-			"  %-10s: %4d groups (%.1f%%)\n",
-			priority, count, pct,
-		)
-	}
+	printOrderedDistribution(w, distribution, priorityOrder, "  %-10s: %4d groups (%.1f%%)\n")
 }
 
 // severityOrder defines the display order for severity levels.
@@ -158,23 +122,26 @@ var severityOrder = []string{healthSmall, healthMedium, healthLarge, healthHuge}
 
 // printSeverityDistribution prints the severity breakdown with visualization.
 func printSeverityDistribution(w io.Writer, distribution map[string]int) {
+	printOrderedDistribution(w, distribution, severityOrder, "  %-10s: %4d clones (%.1f%%)\n")
+}
+
+// printOrderedDistribution prints a breakdown of distribution in the given order
+// using the provided format string. Categories missing from the distribution are
+// skipped. The format receives (label, count, percentage).
+func printOrderedDistribution(w io.Writer, distribution map[string]int, order []string, format string) {
 	total := 0
 	for _, count := range distribution {
 		total += count
 	}
 
-	for _, severity := range severityOrder {
-		count, exists := distribution[severity]
+	for _, label := range order {
+		count, exists := distribution[label]
 		if !exists {
 			continue
 		}
 
 		pct := calcPercentage(count, total)
 
-		_, _ = fmt.Fprintf(
-			w,
-			"  %-10s: %4d clones (%.1f%%)\n",
-			severity, count, pct,
-		)
+		_, _ = fmt.Fprintf(w, format, label, count, pct)
 	}
 }

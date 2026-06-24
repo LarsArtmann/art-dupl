@@ -2,6 +2,7 @@ package job
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"time"
@@ -17,6 +18,29 @@ type ProfileResult struct {
 	Duration     time.Duration // Total execution time
 	NumGoroutine int           // Number of goroutines
 	Timestamp    time.Time     // Start timestamp for duration calculation
+}
+
+// profileSeparator is the horizontal rule used to delimit profiling output sections.
+const profileSeparator = "═══════════════════════════════════════════════════════════"
+
+// printProfileSeparator writes a blank line, the separator, a centered title, the
+// separator again, and a blank line.
+func printProfileHeader(w io.Writer, title string) {
+	printSeparatorLine(w)
+	fmt.Fprintln(w, title)
+	printSeparatorLine(w)
+}
+
+// printProfileFooter writes a blank line, the separator, and a blank line.
+func printProfileFooter(w io.Writer) {
+	printSeparatorLine(w)
+}
+
+// printSeparatorLine writes a blank line, the separator, and a blank line.
+func printSeparatorLine(w io.Writer) {
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, profileSeparator)
+	fmt.Fprintln(w)
 }
 
 // Profile captures performance metrics at a point in time.
@@ -78,11 +102,7 @@ func PrintProfileResult(result ProfileResult) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
-	fmt.Fprintln(os.Stderr)
-	fmt.Fprintln(os.Stderr, "═══════════════════════════════════════════════════════════")
-	fmt.Fprintln(os.Stderr, "                    PERFORMANCE PROFILING RESULTS")
-	fmt.Fprintln(os.Stderr, "═══════════════════════════════════════════════════════════")
-	fmt.Fprintln(os.Stderr)
+	printProfileHeader(os.Stderr, "                    PERFORMANCE PROFILING RESULTS")
 
 	fmt.Fprintln(os.Stderr, "Execution Time:")
 	fmt.Fprintf(os.Stderr, "  %s\n", result.Duration)
@@ -110,7 +130,5 @@ func PrintProfileResult(result ProfileResult) {
 
 	fmt.Fprintln(os.Stderr, "Concurrency:")
 	fmt.Fprintf(os.Stderr, "  Goroutines:         %8d\n", runtime.NumGoroutine())
-	fmt.Fprintln(os.Stderr)
-	fmt.Fprintln(os.Stderr, "═══════════════════════════════════════════════════════════")
-	fmt.Fprintln(os.Stderr)
+	printProfileFooter(os.Stderr)
 }

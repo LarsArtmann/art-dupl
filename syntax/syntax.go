@@ -167,14 +167,7 @@ const (
 // identical fingerprints, enabling Type 1/Type 2 clone detection at statement
 // granularity.
 func fingerprintSubtree(n *Node) int32 {
-	hash := fnvOffset32
-	hash = fnvStep32(hash, uint32(n.Type)) //nolint:gosec // G115: hash uses bit patterns
-
-	for _, child := range n.Children {
-		hash = fingerprintSubtreeInto(child, hash)
-	}
-
-	return int32(hash) //nolint:gosec // G115: FNV hash intentionally wraps
+	return int32(fingerprintSubtreeInto(n, fnvOffset32)) //nolint:gosec // FNV hash intentionally wraps
 }
 
 func fingerprintSubtreeInto(n *Node, hash uint32) uint32 {

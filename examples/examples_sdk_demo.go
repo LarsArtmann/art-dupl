@@ -40,6 +40,20 @@ func newDemoCtx(opts *artdupl.Options) (artdupl.Detector, context.Context, bool)
 	return detector, context.Background(), true
 }
 
+// runDemo wraps the "create detector + defer close" boilerplate shared by
+// every demo function. It runs fn with a fresh detector + background context
+// when setup succeeds, and silently returns when setup fails.
+func runDemo(opts *artdupl.Options, fn func(artdupl.Detector, context.Context)) {
+	detector, ctx, ok := newDemoCtx(opts)
+	if !ok {
+		return
+	}
+
+	defer func() { _ = detector.Close() }()
+
+	fn(detector, ctx)
+}
+
 func RunSDKDemo() {
 	fmt.Println("=== dupl SDK Demo ===")
 
@@ -61,48 +75,40 @@ func RunSDKDemo() {
 }
 
 func basicExample() {
-	// Create detector with default options
-	detector, ctx, ok := newDemoCtx(nil)
-	if !ok {
-		return
-	}
+	runDemo(nil, func(detector artdupl.Detector, ctx context.Context) {
+		files := []string{
+			"syntax/syntax.go",
+			"config/config.go",
+		}
 
-	defer func() { _ = detector.Close() }()
+		result, err := detector.FindClones(ctx, files)
+		if err != nil {
+			log.Printf("Analysis failed: %v", err)
 
-	// Analyze some files
-	files := []string{
-		"syntax/syntax.go",
-		"config/config.go",
-	}
+			return
+		}
 
-	result, err := detector.FindClones(ctx, files)
-	if err != nil {
-		log.Printf("Analysis failed: %v", err)
-
-		return
-	}
-
-	fmt.Printf(
-		"Found %d clone cloneGroups in %v\n",
-		len(result.CloneGroups),
-		result.Summary.AnalysisTime,
-	)
-	fmt.Printf("Analyzed %d files, found %d total clones\n",
-		result.Summary.TotalFiles, result.Summary.TotalClones)
-
-	if len(result.CloneGroups) > 0 {
-		cloneGroup := result.CloneGroups[0]
 		fmt.Printf(
-			"  First cloneGroup: %s with %d clones\n",
-			cloneGroup.Hash[:8]+"...",
-			len(cloneGroup.Clones),
+			"Found %d clone cloneGroups in %v\n",
+			len(result.CloneGroups),
+			result.Summary.AnalysisTime,
 		)
-		fmt.Printf("    Method: %s, Size: %d tokens\n", cloneGroup.Method, cloneGroup.Size)
-	}
+		fmt.Printf("Analyzed %d files, found %d total clones\n",
+			result.Summary.TotalFiles, result.Summary.TotalClones)
+
+		if len(result.CloneGroups) > 0 {
+			cloneGroup := result.CloneGroups[0]
+			fmt.Printf(
+				"  First cloneGroup: %s with %d clones\n",
+				cloneGroup.Hash[:8]+"...",
+				len(cloneGroup.Clones),
+			)
+			fmt.Printf("    Method: %s, Size: %d tokens\n", cloneGroup.Method, cloneGroup.Size)
+		}
+	})
 }
 
 func progressExample() {
-	// Create detector with progress callback
 	opts := artdupl.DefaultOptions()
 	opts.Threshold = 10
 	opts.ProgressCallback = func(progress *artdupl.Progress) error {
@@ -111,73 +117,62 @@ func progressExample() {
 		return nil
 	}
 
-	detector, ctx, ok := newDemoCtx(opts)
-	if !ok {
-		return
-	}
+	runDemo(opts, func(detector artdupl.Detector, ctx context.Context) {
+		files := []string{"suffixtree/suffixtree.go", "detection/multidetector.go"}
 
-	defer func() { _ = detector.Close() }()
-
-	files := []string{"suffixtree/suffixtree.go", "detection/multidetector.go"}
-
-	result, err := detector.FindClones(ctx, files)
-	if err != nil {
-		log.Printf("Analysis failed: %v", err)
-
-		return
-	}
-
-	fmt.Printf("  Complete! Found %d clone groups\n", len(result.CloneGroups))
-}
-
-func streamingExample() {
-	// Create detector optimized for streaming large results
-	opts := artdupl.DefaultOptions()
-	opts.Threshold = 5
-	opts.Timeout = 10 * time.Second
-
-	detector, ctx, ok := newDemoCtx(opts)
-	if !ok {
-		return
-	}
-
-	defer func() { _ = detector.Close() }()
-
-	files := []string{"cli.go", "main.go"}
-
-	cloneChan, err := detector.FindClonesStreamResult(ctx, files)
-	if err != nil {
-		log.Printf("Stream setup failed: %v", err)
-
-		return
-	}
-
-	groupCount := 0
-	totalClones := 0
-
-	for result := range cloneChan {
-		if result.Err != nil {
-			log.Printf("Stream error: %v", result.Err)
+		result, err := detector.FindClones(ctx, files)
+		if err != nil {
+			log.Printf("Analysis failed: %v", err)
 
 			return
 		}
 
-		if result.Group == nil {
-			continue
+		fmt.Printf("  Complete! Found %d clone groups\n", len(result.CloneGroups))
+	})
+}
+
+func streamingExample() {
+	opts := artdupl.DefaultOptions()
+	opts.Threshold = 5
+	opts.Timeout = 10 * time.Second
+
+	runDemo(opts, func(detector artdupl.Detector, ctx context.Context) {
+		files := []string{"cli.go", "main.go"}
+
+		cloneChan, err := detector.FindClonesStreamResult(ctx, files)
+		if err != nil {
+			log.Printf("Stream setup failed: %v", err)
+
+			return
 		}
 
-		groupCount++
-		totalClones += len(result.Group.Clones)
+		groupCount := 0
+		totalClones := 0
 
-		hashPreview := result.Group.Hash
-		if len(hashPreview) > 8 {
-			hashPreview = hashPreview[:8]
+		for result := range cloneChan {
+			if result.Err != nil {
+				log.Printf("Stream error: %v", result.Err)
+
+				return
+			}
+
+			if result.Group == nil {
+				continue
+			}
+
+			groupCount++
+			totalClones += len(result.Group.Clones)
+
+			hashPreview := result.Group.Hash
+			if len(hashPreview) > 8 {
+				hashPreview = hashPreview[:8]
+			}
+
+			fmt.Printf("  Group %s...: %d clones\n", hashPreview, len(result.Group.Clones))
 		}
 
-		fmt.Printf("  Group %s...: %d clones\n", hashPreview, len(result.Group.Clones))
-	}
-
-	fmt.Printf("Streaming complete: %d groups, %d total clones\n", groupCount, totalClones)
+		fmt.Printf("Streaming complete: %d groups, %d total clones\n", groupCount, totalClones)
+	})
 }
 
 func configExample() {
@@ -192,27 +187,22 @@ func configExample() {
 		Logger:           logger.NewLogger(&logger.Config{Level: "debug"}),
 	}
 
-	detector, ctx, ok := newDemoCtx(opts)
-	if !ok {
-		return
-	}
+	runDemo(opts, func(detector artdupl.Detector, ctx context.Context) {
+		files := []string{"printer/printer.go"}
 
-	defer func() { _ = detector.Close() }()
+		result, err := detector.FindClones(ctx, files)
+		if err != nil {
+			log.Printf("Analysis failed: %v", err)
 
-	files := []string{"printer/printer.go"}
+			return
+		}
 
-	result, err := detector.FindClones(ctx, files)
-	if err != nil {
-		log.Printf("Analysis failed: %v", err)
+		fmt.Printf("Config analysis: %d groups found\n", len(result.CloneGroups))
 
-		return
-	}
-
-	fmt.Printf("Config analysis: %d groups found\n", len(result.CloneGroups))
-
-	if len(result.CloneGroups) > 0 && len(result.CloneGroups[0].Clones) > 0 {
-		fmt.Printf("  Sample fragment: %s\n", result.CloneGroups[0].Clones[0].Fragment)
-	}
+		if len(result.CloneGroups) > 0 && len(result.CloneGroups[0].Clones) > 0 {
+			fmt.Printf("  Sample fragment: %s\n", result.CloneGroups[0].Clones[0].Fragment)
+		}
+	})
 }
 
 func errorExample() {

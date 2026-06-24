@@ -43,12 +43,7 @@ func detectionMethodsToString(methods config.DetectionMethods) string {
 		return ""
 	}
 
-	result := make([]string, len(methods))
-	for i, dm := range methods {
-		result[i] = dm.String()
-	}
-
-	return strings.Join(result, ",")
+	return strings.Join(detectionMethodsToStringSlice(methods), ",")
 }
 
 // detectionMethodsToStringSlice converts detection methods to a slice of strings.
