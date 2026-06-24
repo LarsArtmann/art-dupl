@@ -219,34 +219,6 @@ func AssertMarshalJSONError[T any](
 	}
 }
 
-// AssertUnmarshalJSONError checks that a JSON unmarshal operation returns the expected error state.
-// The methodName parameter is used in the error message (e.g., "UnmarshalJSON").
-func AssertUnmarshalJSONError[T any](
-	t *testing.T,
-	methodName string,
-	data []byte,
-	wantError bool,
-	unmarshalFn func([]byte) error,
-) {
-	t.Helper()
-
-	err := unmarshalFn(data)
-	if (err != nil) != wantError {
-		t.Errorf("%s() error = %v, wantErr %v", methodName, err, wantError)
-	}
-}
-
-// AssertErrorMatches checks that an error matches expected state.
-// The wantErr parameter indicates whether an error is expected.
-// The msg parameter is used in the error message (e.g., "handleWalkEntry()").
-func AssertErrorMatches(t *testing.T, err error, wantErr bool, msg string) {
-	t.Helper()
-
-	if (err != nil) != wantErr {
-		t.Errorf("%s error = %v, wantErr %v", msg, err, wantErr)
-	}
-}
-
 // AssertJSONRoundTrip verifies that a value can be marshaled to JSON and unmarshaled back.
 // The obj parameter is the original object to roundtrip.
 // The t.Helper() should be called before this function.
@@ -267,24 +239,6 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 	}
 
 	return result
-}
-
-// AssertUnmarshalError verifies that unmarshaling from JSON produces the expected error state.
-// The methodName is used in error messages (e.g., "StringID.UnmarshalJSON").
-// The data parameter is the JSON bytes to unmarshal.
-func AssertUnmarshalError(
-	t *testing.T,
-	methodName string,
-	data []byte,
-	wantErr bool,
-	unmarshalFn func([]byte) error,
-) {
-	t.Helper()
-
-	err := unmarshalFn(data)
-	if (err != nil) != wantErr {
-		t.Errorf("%s() error = %v, wantErr %v", methodName, err, wantErr)
-	}
 }
 
 // AssertConfigField asserts that a config field matches the expected value.

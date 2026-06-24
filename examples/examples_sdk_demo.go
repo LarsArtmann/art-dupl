@@ -27,6 +27,19 @@ func newDemoDetector(opts *artdupl.Options) (artdupl.Detector, bool) {
 	return detector, true
 }
 
+// newDemoCtx creates a demo detector paired with a background context.
+// It folds the common "create + check ok + context.Background()" prologue
+// shared by every example function. The returned detector must be closed
+// by the caller (typically via defer).
+func newDemoCtx(opts *artdupl.Options) (artdupl.Detector, context.Context, bool) {
+	detector, ok := newDemoDetector(opts)
+	if !ok {
+		return nil, nil, false
+	}
+
+	return detector, context.Background(), true
+}
+
 func RunSDKDemo() {
 	fmt.Println("=== dupl SDK Demo ===")
 
@@ -49,7 +62,7 @@ func RunSDKDemo() {
 
 func basicExample() {
 	// Create detector with default options
-	detector, ok := newDemoDetector(nil)
+	detector, ctx, ok := newDemoCtx(nil)
 	if !ok {
 		return
 	}
@@ -61,8 +74,6 @@ func basicExample() {
 		"syntax/syntax.go",
 		"config/config.go",
 	}
-
-	ctx := context.Background()
 
 	result, err := detector.FindClones(ctx, files)
 	if err != nil {
@@ -100,14 +111,13 @@ func progressExample() {
 		return nil
 	}
 
-	detector, ok := newDemoDetector(opts)
+	detector, ctx, ok := newDemoCtx(opts)
 	if !ok {
 		return
 	}
 
 	defer func() { _ = detector.Close() }()
 
-	ctx := context.Background()
 	files := []string{"suffixtree/suffixtree.go", "detection/multidetector.go"}
 
 	result, err := detector.FindClones(ctx, files)
@@ -126,14 +136,13 @@ func streamingExample() {
 	opts.Threshold = 5
 	opts.Timeout = 10 * time.Second
 
-	detector, ok := newDemoDetector(opts)
+	detector, ctx, ok := newDemoCtx(opts)
 	if !ok {
 		return
 	}
 
 	defer func() { _ = detector.Close() }()
 
-	ctx := context.Background()
 	files := []string{"cli.go", "main.go"}
 
 	cloneChan, err := detector.FindClonesStreamResult(ctx, files)
@@ -183,14 +192,13 @@ func configExample() {
 		Logger:           logger.NewLogger(&logger.Config{Level: "debug"}),
 	}
 
-	detector, ok := newDemoDetector(opts)
+	detector, ctx, ok := newDemoCtx(opts)
 	if !ok {
 		return
 	}
 
 	defer func() { _ = detector.Close() }()
 
-	ctx := context.Background()
 	files := []string{"printer/printer.go"}
 
 	result, err := detector.FindClones(ctx, files)
