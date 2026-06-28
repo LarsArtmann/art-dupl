@@ -5,6 +5,16 @@ All notable changes to art-dupl will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`--include-generated` flag**: Unified generated-code inclusion (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`). Replaces the separate `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` flags.
+
+### Deprecated
+
+- **Per-generator `--include-*` flags**: `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` are now hidden aliases. They still work but print a deprecation warning pointing to `--include-generated`.
+
 ## [0.3.0] - 2026-06-12
 
 ### Added

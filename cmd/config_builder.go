@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -61,6 +63,13 @@ func buildCLIConfig(cmd *cobra.Command, args []string) (*config.Config, error) {
 	applyChangedStringFlags(cmd, cfg)
 	applyChangedStringArrayFlags(cmd, cfg)
 
+	var err error
+
+	err = applyIncludeGeneratedFlag(cmd, cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	if len(args) > 0 {
 		cfg.Paths = args
 	}
@@ -69,8 +78,6 @@ func buildCLIConfig(cmd *cobra.Command, args []string) (*config.Config, error) {
 	if verboseCount > 0 {
 		cfg.Verbose = true
 	}
-
-	var err error
 
 	err = applyDetectionMethods(cmd, cfg)
 	if err != nil {
@@ -275,4 +282,97 @@ func applyDiffModeFlag(cmd *cobra.Command, cfg *config.Config) error {
 	cfg.DiffMode = parsed
 
 	return nil
+}
+
+const (
+	generatedCategorySQLC     = "sqlc"
+	generatedCategoryTempl    = "templ"
+	generatedCategoryProtobuf = "protobuf"
+	generatedCategoryMockgen  = "mockgen"
+	generatedCategoryStringer = "stringer"
+	generatedCategoryGeneric  = "generic"
+	generatedCategoryAll      = "all"
+	flagIncludeGenerated      = "include-generated"
+)
+
+// generatedCategories returns the accepted values for --include-generated.
+func generatedCategories() []string {
+	return []string{
+		generatedCategorySQLC,
+		generatedCategoryTempl,
+		generatedCategoryProtobuf,
+		generatedCategoryMockgen,
+		generatedCategoryStringer,
+		generatedCategoryGeneric,
+		generatedCategoryAll,
+	}
+}
+
+// applyIncludeGeneratedFlag parses the --include-generated categories and sets
+// the matching per-generator config fields. It accepts repeated flags and
+// comma-separated values.
+func applyIncludeGeneratedFlag(cmd *cobra.Command, cfg *config.Config) error {
+	if !cmd.Flags().Changed(flagIncludeGenerated) {
+		return nil
+	}
+
+	values, _ := cmd.Flags().GetStringArray(flagIncludeGenerated)
+
+	categories, err := parseIncludeGeneratedCategories(values)
+	if err != nil {
+		return duplerrors.WrapValidation(err, "invalid --include-generated value")
+	}
+
+	for _, c := range categories {
+		switch c {
+		case generatedCategorySQLC:
+			cfg.IncludeSQLC = true
+		case generatedCategoryTempl:
+			cfg.IncludeTempl = true
+		case generatedCategoryProtobuf:
+			cfg.IncludeProtobuf = true
+		case generatedCategoryMockgen:
+			cfg.IncludeMockgen = true
+		case generatedCategoryStringer:
+			cfg.IncludeStringer = true
+		case generatedCategoryGeneric:
+			cfg.IncludeGeneric = true
+		case generatedCategoryAll:
+			cfg.IncludeSQLC = true
+			cfg.IncludeTempl = true
+			cfg.IncludeProtobuf = true
+			cfg.IncludeMockgen = true
+			cfg.IncludeStringer = true
+			cfg.IncludeGeneric = true
+		}
+	}
+
+	return nil
+}
+
+// parseIncludeGeneratedCategories validates and normalizes raw --include-generated
+// values. Each value may be a single category or a comma-separated list.
+func parseIncludeGeneratedCategories(values []string) ([]string, error) {
+	valid := generatedCategories()
+	result := make([]string, 0, len(values)*2)
+
+	for _, v := range values {
+		for part := range strings.SplitSeq(v, ",") {
+			c := strings.ToLower(strings.TrimSpace(part))
+			if c == "" {
+				continue
+			}
+
+			if !slices.Contains(valid, c) {
+				return nil, duplerrors.NewValidationError(
+					fmt.Sprintf("unknown --include-generated category %q (valid: %s)", c, strings.Join(valid, ", ")),
+					nil,
+				)
+			}
+
+			result = append(result, c)
+		}
+	}
+
+	return result, nil
 }

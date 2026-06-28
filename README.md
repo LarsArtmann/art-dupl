@@ -74,7 +74,7 @@ art-dupl stats --format json
 | Go       | `.go`     | Full AST analysis                           |
 | Templ    | `.templ`  | Full AST analysis via official templ parser |
 
-`.templ` source files are included by default. Templ-generated `*_templ.go` files are filtered by default (use `--include-templ` to include them). Use `--only go` or `--only templ` to restrict analysis to a single file type.
+`.templ` source files are included by default. Templ-generated `*_templ.go` files are filtered by default (use `--include-generated templ` to include them). Use `--only go` or `--only templ` to restrict analysis to a single file type.
 
 ## Detection Methods
 
@@ -141,19 +141,15 @@ art-dupl completion [bash|zsh|fish|powershell]
 
 ### Filtering Flags
 
-| Flag                     | Default | Description                                                |
-| ------------------------ | ------- | ---------------------------------------------------------- |
-| `--vendor`               | `false` | Include vendor directory                                   |
-| `--include-node-modules` | `false` | Include node_modules (hash detection)                      |
-| `--include-sqlc`         | `false` | Include sqlc-generated files (filtered by default)         |
-| `--include-templ`        | `false` | Include `*_templ.go` generated files (filtered by default) |
-| `--include-protobuf`     | `false` | Include `.pb.go` files (filtered by default)               |
-| `--include-mockgen`      | `false` | Include mockgen-generated files (filtered by default)      |
-| `--include-stringer`     | `false` | Include stringer-generated files (filtered by default)     |
-| `--include-pattern`      | `[]`    | Glob patterns to include (overrides filters)               |
-| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                   |
-| `--only`                 | `""`    | Restrict to `go` or `templ` file type                      |
-| `--files`                | `-f`    | Read file paths from stdin                                 |
+| Flag                     | Default | Description                                                                      |
+| ------------------------ | ------- | -------------------------------------------------------------------------------- |
+| `--vendor`               | `false` | Include vendor directory                                                         |
+| `--include-node-modules` | `false` | Include node_modules (hash detection)                                            |
+| `--include-generated`    | `[]`    | Generated-code categories to include: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` |
+| `--include-pattern`      | `[]`    | Glob patterns to include (overrides filters)                                     |
+| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                                         |
+| `--only`                 | `""`    | Restrict to `go` or `templ` file type                                            |
+| `--files`                | `-f`    | Read file paths from stdin                                                       |
 
 ### Performance Flags
 
@@ -218,7 +214,7 @@ art-dupl --plumbing --sort occurrence ./src
 art-dupl ./src
 
 # Override: include sqlc-generated files
-art-dupl --include-sqlc ./src
+art-dupl --include-generated sqlc ./src
 ```
 
 ## Architecture

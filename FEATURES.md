@@ -122,7 +122,7 @@
 | **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                       |
 | **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                             |
 | **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                            |
-| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-sqlc/templ/protobuf/mockgen/stringer/generic` to override        |
+| **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`) |
 | **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                     |
 | **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                     |
 | **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                        |
@@ -256,7 +256,7 @@ art-dupl --all -o ./reports    # All formats to directory
 ### Filtering
 
 ```bash
-art-dupl --include-sqlc       # Include sqlc-generated files (filtered by default)
+art-dupl --include-generated sqlc  # Include sqlc-generated files (filtered by default)
 art-dupl --only go             # Go files only
 art-dupl --include-pattern "gen/*" --exclude-pattern "mock_*"
 ```

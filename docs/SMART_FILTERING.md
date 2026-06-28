@@ -51,19 +51,19 @@ art-dupl --filter-generated ./src
 **Override auto-detection**: Keep sqlc files (disable auto-filtering):
 
 ```bash
-art-dupl --filter-generated --include-sqlc ./src
+art-dupl --include-generated sqlc ./src
 ```
 
 **Keep templ files**: Include templ generated files (override default filtering):
 
 ```bash
-art-dupl --include-templ ./src
+art-dupl --include-generated templ ./src
 ```
 
 **Keep both**: Include both sqlc and templ files:
 
 ```bash
-art-dupl --filter-generated --include-sqlc --include-templ ./src
+art-dupl --include-generated sqlc,templ ./src
 ```
 
 ### Include Patterns
@@ -110,7 +110,7 @@ art-dupl --filter-generated --json ./src | jq '.summary.total_clones'
 Filter and include vendor directory:
 
 ```bash
-art-dupl --filter-generated --include-sqlc --include-pattern "vendor/*" ./src
+art-dupl --include-generated sqlc --include-pattern "vendor/*" ./src
 ```
 
 ## Configuration File
@@ -177,7 +177,7 @@ Keep certain generated code while filtering others:
 
 ```bash
 # Analyze sqlc but exclude templ templates
-art-dupl --filter-generated --include-sqlc ./src
+art-dupl --include-generated sqlc ./src
 ```
 
 ### CI/CD Integration

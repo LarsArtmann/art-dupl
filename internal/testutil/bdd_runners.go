@@ -154,6 +154,7 @@ func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) []string {
 		"--cache-dir":  true,
 		"--diff":       true,
 		"--config":     true, "-c": true,
+		"--include-generated": true,
 	}
 
 	expectValue := false

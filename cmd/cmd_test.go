@@ -269,6 +269,7 @@ func TestAddFlags(t *testing.T) {
 		"detection-methods",
 		"all",
 		"output-dir",
+		"include-generated",
 		"include-sqlc",
 		"include-templ",
 		"include-protobuf",

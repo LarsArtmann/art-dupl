@@ -276,7 +276,7 @@ var _ = Describe("Configuration File Loading", func() {
 			runConfigTest(configContent, filterGenCode, []string{"filter1.go", "filter2.go"})
 		})
 
-		It("should load include-sqlc setting from config", func() {
+		It("should load includeSQLC setting from config", func() {
 			configContent := `{
 				"threshold": 1,
 				"includeSqlc": true
