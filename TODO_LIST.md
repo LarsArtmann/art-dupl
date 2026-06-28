@@ -1,8 +1,16 @@
 # TODO List
 
-**Last Updated: 2026-06-23**
+**Last Updated: 2026-06-28**
 
 Actionable items planned for the next 2-4 weeks.
+
+---
+
+## ✅ Completed (2026-06-28) — Generated-Code Inclusion Flag Unification
+
+- [x] Unify the six per-generator `--include-*` flags under a single `--include-generated <category>` flag (commit `35c79de`). Categories: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` (repeatable / comma-separated). Legacy flags survive as hidden deprecated aliases.
+- [x] Scope the statement-level tokenization guard to the match's filename so templ matches survive in mixed Go/templ corpora (commit `3d1d841`, `dataContainsStatements` → `fileContainsStatements`).
+- [x] Catch & correct a `go.sum` trim regression before it reached history (`go mod tidy` proved the 47 removed checksums were required); only the stale `flake.nix` `vendorHash` bump was committed.
 
 ---
 
