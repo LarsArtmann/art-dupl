@@ -165,3 +165,75 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 		})
 	}
 }
+
+func TestFindSyntaxUnits_MixedCorpusKeepsNonStatementMatches(t *testing.T) {
+	// Regression test for: --only templ showed clones that default analysis hid.
+	// Statement-level tokenization is Go-only. When Go and templ files are mixed,
+	// the non-statement guard must be scoped to each file. A templ file without
+	// statement tokens should still produce matches even when other Go files in
+	// the corpus contain statement tokens.
+	goFile := "main.go"
+	templFile := "view.templ"
+
+	// Go file: one statement node, then two identical structural nodes that form
+	// a legacy match. The statement token ensures the file uses statement-level
+	// tokenization.
+	goStmt := &Node{Type: 1000, Filename: goFile, Statement: true, Owns: 0}
+	goA := &Node{Type: 2000, Filename: goFile, Statement: false, Owns: 0}
+	goB := &Node{Type: 2000, Filename: goFile, Statement: false, Owns: 0}
+
+	// Templ file: two identical non-statement nodes forming a legacy match.
+	templA := &Node{Type: 3000, Filename: templFile, Statement: false, Owns: 0}
+	templB := &Node{Type: 3000, Filename: templFile, Statement: false, Owns: 0}
+
+	data := []*Node{goStmt, goA, goB, templA, templB}
+
+	// Match the two templ nodes.
+	match := suffixtree.Match{
+		Ps:  []suffixtree.Pos{3, 4},
+		Len: 1,
+	}
+
+	result := FindSyntaxUnits(data, match, 1)
+
+	if len(result.Frags) == 0 {
+		t.Fatalf("Expected templ match to be kept in mixed corpus, got empty result")
+	}
+
+	if len(result.Frags) != 2 {
+		t.Fatalf("Expected 2 fragments, got %d", len(result.Frags))
+	}
+
+	for i, frag := range result.Frags {
+		if len(frag) != 1 {
+			t.Fatalf("Expected fragment %d to have 1 node, got %d", i, len(frag))
+		}
+
+		if frag[0].Filename != templFile {
+			t.Errorf("Expected fragment %d to be from %s, got %s", i, templFile, frag[0].Filename)
+		}
+	}
+}
+
+func TestFindSyntaxUnits_GoNonStatementMatchStillSkipped(t *testing.T) {
+	// Verify the per-file guard still skips non-statement structural matches in
+	// files that use statement-level tokenization.
+	goFile := "main.go"
+
+	goStmt := &Node{Type: 1000, Filename: goFile, Statement: true, Owns: 0}
+	goA := &Node{Type: 2000, Filename: goFile, Statement: false, Owns: 0}
+	goB := &Node{Type: 2000, Filename: goFile, Statement: false, Owns: 0}
+
+	data := []*Node{goStmt, goA, goB}
+
+	match := suffixtree.Match{
+		Ps:  []suffixtree.Pos{1, 2},
+		Len: 1,
+	}
+
+	result := FindSyntaxUnits(data, match, 1)
+
+	if len(result.Frags) > 0 {
+		t.Fatalf("Expected Go non-statement match to be skipped, got %d fragments", len(result.Frags))
+	}
+}

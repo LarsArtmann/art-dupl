@@ -201,11 +201,14 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 		return Match{}
 	}
 
-	// When the token stream uses statement-level tokenization but this
-	// match falls entirely in the non-statement portion (structural
-	// wrappers like FuncDecl/File), the legacy Owns-based indexes are
-	// not meaningful clone units — skip them.
-	if len(indexes) > 0 && !firstSeq[indexes[0]].Statement && dataContainsStatements(data) {
+	// When this file uses statement-level tokenization but the match falls
+	// entirely in the non-statement portion (structural wrappers like
+	// FuncDecl/File), the legacy Owns-based indexes are not meaningful clone
+	// units — skip them. The check is scoped to the match's file because other
+	// languages (e.g. templ) do not mark statements and should still be matched
+	// via the legacy path.
+	if len(indexes) > 0 && !firstSeq[indexes[0]].Statement &&
+		fileContainsStatements(data, firstSeq[indexes[0]].Filename) {
 		return Match{}
 	}
 
@@ -265,12 +268,15 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 	return match
 }
 
-// dataContainsStatements reports whether the token stream contains any
-// statement-level nodes. Used to distinguish statement-level tokenization
-// from legacy synthetic test nodes that have no Statement flag set.
-func dataContainsStatements(data []*Node) bool {
+// fileContainsStatements reports whether any node in the token stream for the
+// given filename is marked as a statement. This scopes the statement-level
+// tokenization guard to a single file so that mixed-language corpora (e.g. Go
+// with statement tokens plus templ without them) do not discard legitimate
+// non-statement matches from files that never opted into statement-level
+// tokenization.
+func fileContainsStatements(data []*Node, filename string) bool {
 	for i := range data {
-		if data[i].Statement {
+		if data[i].Filename == filename && data[i].Statement {
 			return true
 		}
 	}
