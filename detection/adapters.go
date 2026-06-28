@@ -45,6 +45,11 @@ func (a *suffixTreeAdapter) FindDuplOver(
 	return resultChan
 }
 
+// Name returns the human-readable detection method name.
+func (*suffixTreeAdapter) Name() string {
+	return "suffix tree-based detection"
+}
+
 // hashAdapter wraps the hash-based detector as a MethodDetector.
 type hashAdapter struct {
 	data []*syntax.Node
@@ -78,6 +83,11 @@ func (a *hashAdapter) FindDuplOver(
 	}()
 
 	return resultChan
+}
+
+// Name returns the human-readable detection method name.
+func (*hashAdapter) Name() string {
+	return "hash-based detection"
 }
 
 // buildCloneDetectors creates MethodDetector instances based on the configured methods.

@@ -13,4 +13,7 @@ type MethodDetector interface {
 	// matches via a channel for streaming consumption.
 	// The context allows callers to cancel detection early.
 	FindDuplOver(ctx context.Context, threshold int) <-chan syntax.Match
+
+	// Name returns a human-readable name for the detection method.
+	Name() string
 }

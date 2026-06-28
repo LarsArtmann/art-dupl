@@ -61,7 +61,7 @@ func (md *MultiDetector) FindDuplOver(
 		defer close(resultChan)
 
 		for _, det := range detectors {
-			md.logVerbose("Running " + detName(det) + "...")
+			md.logVerbose("Running " + det.Name() + "...")
 
 			md.streamMatches(ctx, det.FindDuplOver(ctx, threshold), resultChan)
 		}
@@ -109,17 +109,5 @@ func (md *MultiDetector) streamMatches(
 				return
 			}
 		}
-	}
-}
-
-// detName returns a human-readable name for a MethodDetector.
-func detName(det MethodDetector) string {
-	switch det.(type) {
-	case *suffixTreeAdapter:
-		return "suffix tree-based detection"
-	case *hashAdapter:
-		return "hash-based detection"
-	default:
-		return "detection"
 	}
 }

@@ -102,8 +102,8 @@ func TestStreamMatches_StopsOnCancelledContext(t *testing.T) {
 	}
 }
 
-// fakeDetector is a MethodDetector that is neither suffixTreeAdapter nor
-// hashAdapter, used to exercise the default branch of detName.
+// fakeDetector is a MethodDetector used to verify the Name() contract for
+// detectors outside the built-in adapters.
 type fakeDetector struct{}
 
 func (f *fakeDetector) FindDuplOver(_ context.Context, _ int) <-chan syntax.Match {
@@ -113,7 +113,11 @@ func (f *fakeDetector) FindDuplOver(_ context.Context, _ int) <-chan syntax.Matc
 	return ch
 }
 
-func TestDetName(t *testing.T) {
+func (f *fakeDetector) Name() string {
+	return "detection"
+}
+
+func TestDetectorName(t *testing.T) {
 	t.Parallel()
 
 	md := &MultiDetector{data: []*syntax.Node{}, tree: suffixtree.New()}
@@ -125,15 +129,15 @@ func TestDetName(t *testing.T) {
 	}{
 		{"suffix tree adapter", &suffixTreeAdapter{tree: md.tree, data: md.data}, "suffix tree-based detection"},
 		{"hash adapter", &hashAdapter{data: md.data}, "hash-based detection"},
-		{"unknown type", &fakeDetector{}, "detection"},
+		{"fake detector", &fakeDetector{}, "detection"},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			if got := detName(tc.det); got != tc.want {
-				t.Errorf("detName() = %q, want %q", got, tc.want)
+			if got := tc.det.Name(); got != tc.want {
+				t.Errorf("Name() = %q, want %q", got, tc.want)
 			}
 		})
 	}
@@ -239,9 +243,9 @@ func buildDuplicateData() ([]*syntax.Node, *suffixtree.STree) {
 	// Unique sentinel terminator (value outside the AST type range).
 	data = append(data, &syntax.Node{Type: 1 << 20, Filename: "sentinel.go"})
 
-	tokens := make([]suffixtree.Token, len(data))
-	for i, n := range data {
-		tokens[i] = n
+	tokens := make([]suffixtree.Token, 0, len(data))
+	for _, n := range data {
+		tokens = append(tokens, n)
 	}
 
 	tree := suffixtree.New()
