@@ -4,7 +4,6 @@ package errors
 import (
 	"errors"
 	"fmt"
-	"runtime/debug"
 )
 
 // ErrorType categorizes different types of errors.
@@ -26,7 +25,6 @@ type DuplError struct {
 	Message string
 	File    string
 	Cause   error
-	Stack   string
 }
 
 // newError creates a new error with the specified type.
@@ -35,7 +33,6 @@ func newError(errorType ErrorType, msg string, cause error) *DuplError {
 		Type:    errorType,
 		Message: msg,
 		Cause:   cause,
-		Stack:   string(debug.Stack()),
 	}
 }
 
@@ -51,7 +48,6 @@ func NewIOError(file, msg string, cause error) *DuplError {
 		Message: msg,
 		File:    file,
 		Cause:   cause,
-		Stack:   string(debug.Stack()),
 	}
 }
 
@@ -75,7 +71,6 @@ func NewFileError(file, msg string, cause error) *DuplError {
 		Message: msg,
 		File:    file,
 		Cause:   cause,
-		Stack:   string(debug.Stack()),
 	}
 }
 
@@ -125,7 +120,6 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 		Type:    errorType,
 		Message: msg,
 		Cause:   err,
-		Stack:   string(debug.Stack()),
 	}
 }
 
@@ -143,7 +137,6 @@ func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
 		Type:    errorType,
 		Message: fmt.Sprintf(format, args...),
 		Cause:   err,
-		Stack:   string(debug.Stack()),
 	}
 }
 
