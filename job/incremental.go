@@ -133,16 +133,20 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 	// Check cache first
 	if cachedNodes, hit := ip.cache.Get(contentHash); hit {
-		// Cache hit - use cached nodes but update filename to current file
-		// This is critical because cached nodes retain the filename of the first file
-		// that was cached with this content hash
+		// Deep-copy cached nodes: the cache shares node pointers across goroutines,
+		// and we rewrite Filename per file below, which would race without a private copy.
+		nodes := make([]*syntax.Node, 0, len(cachedNodes))
 		for _, node := range cachedNodes {
+			nodes = append(nodes, node.Clone())
+		}
+
+		for _, node := range nodes {
 			node.Filename = syntax.InternFilename(file)
 		}
 
 		lines := countLines(content)
 
-		return cachedNodes, lines, true
+		return nodes, lines, true
 	}
 
 	// Cache miss - parse the file

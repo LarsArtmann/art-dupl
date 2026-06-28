@@ -88,6 +88,33 @@ func (n *Node) AddChildren(children ...*Node) {
 	n.Children = append(n.Children, children...)
 }
 
+// Clone returns a deep copy of the node subtree. The incremental cache stores
+// serialized node trees that are shared across goroutines on a cache hit, where
+// each file rewrites Filename; Clone yields an independent copy safe to mutate.
+func (n *Node) Clone() *Node {
+	if n == nil {
+		return nil
+	}
+
+	clone := &Node{
+		Type:      n.Type,
+		Pos:       n.Pos,
+		End:       n.End,
+		Owns:      n.Owns,
+		Filename:  n.Filename,
+		Name:      n.Name,
+		Statement: n.Statement,
+	}
+	if len(n.Children) > 0 {
+		clone.Children = make([]*Node, len(n.Children)) //nolint:makezero // filled by index below
+		for i, c := range n.Children {
+			clone.Children[i] = c.Clone()
+		}
+	}
+
+	return clone
+}
+
 // Val returns the token value for suffix tree compatibility.
 // Implements the suffixtree.Token interface.
 func (n *Node) Val() suffixtree.TokenValue {
@@ -248,7 +275,7 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 		// Hash is computed below after fragments are populated
 	}
 	for i, pos := range m.Ps {
-		match.Frags[i] = make([]*Node, len(indexes))
+		match.Frags[i] = make([]*Node, len(indexes)) //nolint:makezero // 2D matrix filled by index below
 		for j, index := range indexes {
 			match.Frags[i][j] = data[int(pos)+index]
 		}
