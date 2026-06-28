@@ -141,15 +141,15 @@ art-dupl completion [bash|zsh|fish|powershell]
 
 ### Filtering Flags
 
-| Flag                     | Default | Description                                                                      |
-| ------------------------ | ------- | -------------------------------------------------------------------------------- |
-| `--vendor`               | `false` | Include vendor directory                                                         |
-| `--include-node-modules` | `false` | Include node_modules (hash detection)                                            |
+| Flag                     | Default | Description                                                                                                |
+| ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `--vendor`               | `false` | Include vendor directory                                                                                   |
+| `--include-node-modules` | `false` | Include node_modules (hash detection)                                                                      |
 | `--include-generated`    | `[]`    | Generated-code categories to include: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` |
-| `--include-pattern`      | `[]`    | Glob patterns to include (overrides filters)                                     |
-| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                                         |
-| `--only`                 | `""`    | Restrict to `go` or `templ` file type                                            |
-| `--files`                | `-f`    | Read file paths from stdin                                                       |
+| `--include-pattern`      | `[]`    | Glob patterns to include (overrides filters)                                                               |
+| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                                                                   |
+| `--only`                 | `""`    | Restrict to `go` or `templ` file type                                                                      |
+| `--files`                | `-f`    | Read file paths from stdin                                                                                 |
 
 ### Performance Flags
 

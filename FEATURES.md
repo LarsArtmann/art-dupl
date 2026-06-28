@@ -115,18 +115,18 @@
 
 ## 🛡️ Smart Filtering
 
-| Feature                       | Status           | Description                                                                 |
-| ----------------------------- | ---------------- | --------------------------------------------------------------------------- |
-| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`            |
-| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default |
-| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                       |
-| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                             |
-| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                            |
+| Feature                       | Status           | Description                                                                                                         |
+| ----------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **SQLC Detection**            | FULLY_FUNCTIONAL | Auto-detects `sqlc.yaml` in parent dirs, filters generated `.go`                                                    |
+| **Templ Filtering**           | FULLY_FUNCTIONAL | `.templ` source files included by default; `*_templ.go` filtered by default                                         |
+| **Protobuf Filtering**        | FULLY_FUNCTIONAL | Filters `.pb.go`, `_grpc.pb.go` files                                                                               |
+| **Mockgen Filtering**         | FULLY_FUNCTIONAL | Filters mockgen generated files                                                                                     |
+| **Stringer Filtering**        | FULLY_FUNCTIONAL | Filters stringer generated files                                                                                    |
 | **Include Overrides**         | FULLY_FUNCTIONAL | `--include-generated <category>` to override (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`) |
-| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                     |
-| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                     |
-| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                        |
-| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                      |
+| **Custom Include/Exclude**    | FULLY_FUNCTIONAL | `--include-pattern` / `--exclude-pattern` glob patterns                                                             |
+| **Directory Exclusions**      | FULLY_FUNCTIONAL | `vendor/`, `.git/`, `node_modules/` excluded by default                                                             |
+| **Node Modules**              | FULLY_FUNCTIONAL | `--include-node-modules` includes for hash detection                                                                |
+| **File Type Filter (--only)** | FULLY_FUNCTIONAL | Restrict to `go` or `templ` file types                                                                              |
 
 ---
 
