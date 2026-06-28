@@ -6,17 +6,17 @@
 
 ## 00 — Executive Summary
 
-| Metric | Value |
-|---|---|
-| Build | ✓ Green |
-| Tests | ✓ All 27 packages pass |
-| Race detector | ✓ Clean (go test -race) |
-| Lint (golangci-lint) | ✓ **0 issues** (was 66) |
-| nix flake check | ✓ **ALL CHECKS PASSED** |
-| go.sum integrity | ⚠ BuildFlow strips test checksums (by design) |
-| Uncommitted files | ✓ 0 (clean tree) |
-| Session commits | 9 commits, 61 files, +497/−504 lines |
-| Critical blockers | 0 |
+| Metric               | Value                                         |
+| -------------------- | --------------------------------------------- |
+| Build                | ✓ Green                                       |
+| Tests                | ✓ All 27 packages pass                        |
+| Race detector        | ✓ Clean (go test -race)                       |
+| Lint (golangci-lint) | ✓ **0 issues** (was 66)                       |
+| nix flake check      | ✓ **ALL CHECKS PASSED**                       |
+| go.sum integrity     | ⚠ BuildFlow strips test checksums (by design) |
+| Uncommitted files    | ✓ 0 (clean tree)                              |
+| Session commits      | 9 commits, 61 files, +497/−504 lines          |
+| Critical blockers    | 0                                             |
 
 This session delivered: the complete lint cleanup that unblocked `nix flake check`, a data-race fix on the incremental cache path, removal of unconditional `debug.Stack()` overhead, the `MethodDetector.Name()` interface refactor, and the first step of printer decoupling (enum types moved to domain). All work is committed and pushed to `origin/fork`.
 
@@ -49,6 +49,7 @@ The `detName` helper used a `switch det.(type)` to return human-readable detecti
 ### AGENTS.md Updated — Commit `da48beb`
 
 Documented all new conventions:
+
 - `Node.Clone()` for incremental cache safety
 - `MethodDetector.Name()` interface method
 - `DuplError` no longer captures `debug.Stack()`
@@ -87,18 +88,18 @@ golangci-lint CLI config is clean (0 issues), but the LSP surfaces a different l
 
 ## 03 — Not Started
 
-| Item | Impact | Effort | Notes |
-|---|---|---|---|
-| Branded `NodeType int32` | High | XL | Prevents cross-package int32 collision. HIGH RISK: touches gob cache format + semantic encoding `[24-bit hash][8-bit base type]`. Deliberately deferred. |
-| Shared `CloneRef` value object | Med | M | Unify 7 parallel Clone types via embedding without collapsing DTO boundary. Needs design decision. |
-| ProcessedClone DTO (full) | Med | L | Fully decouple printer from `syntax.Node` internals. `actionability.go` is the remaining bridge point. |
-| Split `printer/` package | Med | L | 56 files / ~13.8k LOC in one package. Split into stats/html/analyze sub-packages. |
-| Templ statement-level tokenization | Med | L | Templ matching is purely structural today; no statement-level tokens, no semantic mode. |
-| Templ semantic mode | High | L | No identifier/operator encoding for templ. Mixed-language corpora lack a unified detection model. |
-| Git-aware incremental mode | Med | L | Replaces removed `--since` dead flag. Needs `git diff` integration. |
-| Context through `cmd/run_crawl.go` feeders | Med | L | stdin scanner + filepath.Walk are inherently blocking. Needs full chain refactor. |
-| `config/filetype.go` enum migration | Low | S | Last config enum still using old `isValidStringType` helpers. Same treatment as SortCriteria/OutputFormat/DiffMode. |
-| Remove config/enum_helpers.go dead code | Low | S | After filetype migration, the old helpers (`marshalStringType`, `unmarshalStringTypeToPointer`) become dead code. |
+| Item                                       | Impact | Effort | Notes                                                                                                                                                    |
+| ------------------------------------------ | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Branded `NodeType int32`                   | High   | XL     | Prevents cross-package int32 collision. HIGH RISK: touches gob cache format + semantic encoding `[24-bit hash][8-bit base type]`. Deliberately deferred. |
+| Shared `CloneRef` value object             | Med    | M      | Unify 7 parallel Clone types via embedding without collapsing DTO boundary. Needs design decision.                                                       |
+| ProcessedClone DTO (full)                  | Med    | L      | Fully decouple printer from `syntax.Node` internals. `actionability.go` is the remaining bridge point.                                                   |
+| Split `printer/` package                   | Med    | L      | 56 files / ~13.8k LOC in one package. Split into stats/html/analyze sub-packages.                                                                        |
+| Templ statement-level tokenization         | Med    | L      | Templ matching is purely structural today; no statement-level tokens, no semantic mode.                                                                  |
+| Templ semantic mode                        | High   | L      | No identifier/operator encoding for templ. Mixed-language corpora lack a unified detection model.                                                        |
+| Git-aware incremental mode                 | Med    | L      | Replaces removed `--since` dead flag. Needs `git diff` integration.                                                                                      |
+| Context through `cmd/run_crawl.go` feeders | Med    | L      | stdin scanner + filepath.Walk are inherently blocking. Needs full chain refactor.                                                                        |
+| `config/filetype.go` enum migration        | Low    | S      | Last config enum still using old `isValidStringType` helpers. Same treatment as SortCriteria/OutputFormat/DiffMode.                                      |
+| Remove config/enum_helpers.go dead code    | Low    | S      | After filetype migration, the old helpers (`marshalStringType`, `unmarshalStringTypeToPointer`) become dead code.                                        |
 
 ---
 
@@ -150,33 +151,33 @@ BuildFlow's library-policy check recommends adding `github.com/larsartmann/go-er
 
 ## 06 — Top 25 Things to Get Done Next
 
-| # | Task | Impact | Effort | Priority |
-|---|---|---|---|---|
-| 1 | Update printer imports from `config.` to `domain.` (remove config dep) | High | S | **P0** |
-| 2 | Add regression test for incremental cache deep-copy under `-race` | High | S | **P0** |
-| 3 | Migrate `config/filetype.go` enum to domain (same alias treatment) | Med | S | **P1** |
-| 4 | Delete dead `config/enum_helpers.go` after filetype migration | Med | S | **P1** |
-| 5 | Add `go mod tidy` completeness check to CI (separate from BuildFlow) | High | S | **P1** |
-| 6 | Document BuildFlow go.sum stripping behavior in AGENTS.md | Med | S | **P1** |
-| 7 | Remove printer's remaining `config` test imports (9 files) | Med | S | **P1** |
-| 8 | Introduce `CloneRef` value object (embed, don't collapse DTOs) | Med | M | **P1** |
-| 9 | Decouple `actionability.go` from `syntax.Node` (11 refs remaining) | Med | L | **P2** |
-| 10 | Split `printer/` into stats/html/analyze sub-packages | Med | L | **P2** |
-| 11 | Branded `NodeType int32` (with cache-format + encoding coordination) | High | XL | **P2** |
-| 12 | Templ semantic mode (identifier/operator encoding) | High | L | **P2** |
-| 13 | Thread `context.Context` through `cmd/run_crawl.go` file feeders | Med | L | **P2** |
-| 14 | Templ statement-level tokenization | Med | L | **P2** |
-| 15 | Git-aware incremental mode (replaces removed `--since`) | Med | L | **P2** |
-| 16 | Align LSP linter set with golangci-lint CLI config | Low | S | **P3** |
-| 17 | Hide `syntax/golang` behind a facade (blocked by import cycle) | Low | L | **P3** |
-| 18 | Add `--list-generators` discovery helper for `--include-generated` | Low | S | **P3** |
-| 19 | Document deprecation timeline for 6 legacy `--include-*` flags | Low | S | **P3** |
-| 20 | Consolidate parallel Clone-type field docs in one ADR | Low | S | **P3** |
-| 21 | Benchmark statement-level tokenization vs. legacy | Low | S | **P3** |
-| 22 | Fuzz `parseIncludeGeneratedCategories` parser | Low | S | **P3** |
-| 23 | Hybrid slice/map transition storage for small counts in suffix tree | Low | M | **P3** |
-| 24 | Add integration test for `--include-generated all` end-to-end | Low | S | **P3** |
-| 25 | Evaluate `go-error-family` migration (BuildFlow recommends it) | Low | M | **P3** |
+| #   | Task                                                                   | Impact | Effort | Priority |
+| --- | ---------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1   | Update printer imports from `config.` to `domain.` (remove config dep) | High   | S      | **P0**   |
+| 2   | Add regression test for incremental cache deep-copy under `-race`      | High   | S      | **P0**   |
+| 3   | Migrate `config/filetype.go` enum to domain (same alias treatment)     | Med    | S      | **P1**   |
+| 4   | Delete dead `config/enum_helpers.go` after filetype migration          | Med    | S      | **P1**   |
+| 5   | Add `go mod tidy` completeness check to CI (separate from BuildFlow)   | High   | S      | **P1**   |
+| 6   | Document BuildFlow go.sum stripping behavior in AGENTS.md              | Med    | S      | **P1**   |
+| 7   | Remove printer's remaining `config` test imports (9 files)             | Med    | S      | **P1**   |
+| 8   | Introduce `CloneRef` value object (embed, don't collapse DTOs)         | Med    | M      | **P1**   |
+| 9   | Decouple `actionability.go` from `syntax.Node` (11 refs remaining)     | Med    | L      | **P2**   |
+| 10  | Split `printer/` into stats/html/analyze sub-packages                  | Med    | L      | **P2**   |
+| 11  | Branded `NodeType int32` (with cache-format + encoding coordination)   | High   | XL     | **P2**   |
+| 12  | Templ semantic mode (identifier/operator encoding)                     | High   | L      | **P2**   |
+| 13  | Thread `context.Context` through `cmd/run_crawl.go` file feeders       | Med    | L      | **P2**   |
+| 14  | Templ statement-level tokenization                                     | Med    | L      | **P2**   |
+| 15  | Git-aware incremental mode (replaces removed `--since`)                | Med    | L      | **P2**   |
+| 16  | Align LSP linter set with golangci-lint CLI config                     | Low    | S      | **P3**   |
+| 17  | Hide `syntax/golang` behind a facade (blocked by import cycle)         | Low    | L      | **P3**   |
+| 18  | Add `--list-generators` discovery helper for `--include-generated`     | Low    | S      | **P3**   |
+| 19  | Document deprecation timeline for 6 legacy `--include-*` flags         | Low    | S      | **P3**   |
+| 20  | Consolidate parallel Clone-type field docs in one ADR                  | Low    | S      | **P3**   |
+| 21  | Benchmark statement-level tokenization vs. legacy                      | Low    | S      | **P3**   |
+| 22  | Fuzz `parseIncludeGeneratedCategories` parser                          | Low    | S      | **P3**   |
+| 23  | Hybrid slice/map transition storage for small counts in suffix tree    | Low    | M      | **P3**   |
+| 24  | Add integration test for `--include-generated all` end-to-end          | Low    | S      | **P3**   |
+| 25  | Evaluate `go-error-family` migration (BuildFlow recommends it)         | Low    | M      | **P3**   |
 
 ---
 
@@ -187,6 +188,7 @@ BuildFlow's library-policy check recommends adding `github.com/larsartmann/go-er
 **Context:** BuildFlow runs `go mod tidy` during pre-commit, which strips 47 test-dependency checksums from go.sum. Manual `go mod tidy` restores them, but BuildFlow strips them again on the next commit. All verification gates pass with the stripped go.sum (Go lazily re-fetches; Nix uses vendorHash).
 
 **The question:** Is this the intended behavior? If so, I should document it in AGENTS.md and stop trying to "fix" it. If not, we need to either:
+
 - Override `GOFLAGS` in BuildFlow to preserve test checksums
 - Add a post-commit hook that restores them
 - File a BuildFlow issue about `go mod tidy` stripping needed checksums
@@ -195,4 +197,4 @@ I cannot determine the correct answer from the codebase alone — it depends on 
 
 ---
 
-*Generated: 2026-06-28 06:45 CEST · Branch: fork · HEAD: ee2fad8 · Verification: build ✓ · test ✓ · lint 0 ✓ · nix flake check ✓*
+_Generated: 2026-06-28 06:45 CEST · Branch: fork · HEAD: ee2fad8 · Verification: build ✓ · test ✓ · lint 0 ✓ · nix flake check ✓_

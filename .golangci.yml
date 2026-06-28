@@ -1,7 +1,7 @@
 version: "2"
 run:
   timeout: 5m
-  go: 1.26.3
+  go: 1.26.4
   build-tags:
     - goexperiment.arenas
     - goexperiment.goroutineleakprofile
@@ -211,6 +211,8 @@ linters:
         - v
       ignore-type-assert-ok: true
     wrapcheck:
+      ignore-package-globs:
+        - github.com/LarsArtmann/art-dupl/pkg/enum
       ignore-sigs:
         - errors.Wrap
         - errors.Wrapf
@@ -221,8 +223,6 @@ linters:
         - domain.NewValidationError(
         - errors.HandleMarshalingError(
         - errors.WrapIO(
-      ignore-package-globs:
-        - github.com/LarsArtmann/art-dupl/pkg/enum
   exclusions:
     generated: lax
     rules:
