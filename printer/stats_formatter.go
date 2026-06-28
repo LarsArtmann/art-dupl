@@ -473,12 +473,12 @@ func (p *stats) fillJSONTopFiles(jsonData *jsonStatsOutput) {
 	if len(p.statsData.FileDuplication) > 0 {
 		files := sortTopFiles(p.statsData.FileDuplication, 10)
 
-		jsonData.TopFiles = make([]jsonTopFile, len(files))
-		for i := range files {
-			jsonData.TopFiles[i] = jsonTopFile{
-				Filename: files[i].filename,
-				Lines:    files[i].lines,
-			}
+		jsonData.TopFiles = make([]jsonTopFile, 0, len(files))
+		for _, f := range files {
+			jsonData.TopFiles = append(jsonData.TopFiles, jsonTopFile{
+				Filename: f.filename,
+				Lines:    f.lines,
+			})
 		}
 	}
 }

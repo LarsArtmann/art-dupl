@@ -221,6 +221,8 @@ linters:
         - domain.NewValidationError(
         - errors.HandleMarshalingError(
         - errors.WrapIO(
+      ignore-package-globs:
+        - github.com/LarsArtmann/art-dupl/pkg/enum
   exclusions:
     generated: lax
     rules:

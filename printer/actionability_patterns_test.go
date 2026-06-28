@@ -501,15 +501,15 @@ func mustAssertionsOnly(filename string) *syntax.Node {
 }
 
 func mustKeyValueExprFields(names ...string) []*syntax.Node {
-	nodes := make([]*syntax.Node, len(names))
-	for i, name := range names {
-		nodes[i] = &syntax.Node{
+	nodes := make([]*syntax.Node, 0, len(names))
+	for _, name := range names {
+		nodes = append(nodes, &syntax.Node{
 			Type: golang.KeyValueExpr,
 			Children: []*syntax.Node{
 				{Type: golang.Ident, Name: name},
 				{Type: golang.BasicLit},
 			},
-		}
+		})
 	}
 
 	return nodes

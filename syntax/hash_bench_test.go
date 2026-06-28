@@ -9,14 +9,14 @@ import (
 
 // GenerateNodes creates test nodes for benchmarking.
 func GenerateNodes(count int) []*Node {
-	nodes := make([]*Node, count)
-	for i := range nodes {
-		nodes[i] = &Node{
+	nodes := make([]*Node, 0, count)
+	for i := range count {
+		nodes = append(nodes, &Node{
 			Type:     int32(i % 256), // Test various types
 			Filename: fmt.Sprintf("file_%d.go", i%10),
 			Pos:      int32(i),
 			End:      int32(i + 1),
-		}
+		})
 	}
 
 	return nodes

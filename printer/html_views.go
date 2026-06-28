@@ -115,9 +115,9 @@ func toCloneGroupView(
 		badgesHTML += `<span class="badge-test">🧪 test</span>`
 	}
 
-	occurrenceData := make([]CloneOccurrenceView, len(clones))
-	for i, cl := range clones {
-		occurrenceData[i] = toCloneOccurrenceView(cl)
+	occurrenceData := make([]CloneOccurrenceView, 0, len(clones))
+	for _, cl := range clones {
+		occurrenceData = append(occurrenceData, toCloneOccurrenceView(cl))
 	}
 
 	return CloneGroupView{

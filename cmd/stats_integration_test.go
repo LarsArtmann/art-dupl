@@ -57,12 +57,12 @@ func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	}
 
 	// Resolve relative paths against repo root
-	resolved := make([]string, len(args))
-	for i, arg := range args {
+	resolved := make([]string, 0, len(args))
+	for _, arg := range args {
 		if !strings.HasPrefix(arg, "-") && strings.Contains(arg, "/") && !filepath.IsAbs(arg) {
-			resolved[i] = filepath.Join(repoRoot, arg)
+			resolved = append(resolved, filepath.Join(repoRoot, arg))
 		} else {
-			resolved[i] = arg
+			resolved = append(resolved, arg)
 		}
 	}
 

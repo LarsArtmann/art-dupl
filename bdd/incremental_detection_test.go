@@ -421,9 +421,9 @@ func NoCache() {}`)
 	Context("When processing many files", func() {
 		It("should cache all processed files", func() {
 			// Create multiple files with duplicate content
-			files := make([]string, 10)
-			for i := range files {
-				files[i] = filepath.Join("subdir", string(rune('a'+i))+".go")
+			files := make([]string, 0, 10)
+			for i := range 10 {
+				files = append(files, filepath.Join("subdir", string(rune('a'+i))+".go"))
 			}
 
 			err := setup.CreateSubdirectories("subdir")

@@ -17,8 +17,7 @@ func process() error {
 	return nil
 }`
 
-var _ = Describe("SARIF Output", func() {
-	duplicateCode := `package main
+var duplicateCode = `package main
 
 import "fmt"
 
@@ -41,6 +40,7 @@ func processItem(data string, index int) error {
 	return nil
 }`
 
+var _ = Describe("SARIF Output", func() {
 	It("should produce valid SARIF 2.1.0 JSON output", func() {
 		setup := CreateBDDTestSetup()
 
@@ -219,8 +219,7 @@ templ page(name string) {
 	})
 })
 
-var _ = Describe("Diff Visualization (--diff)", func() {
-	diffCode := `package main
+var diffCode = `package main
 
 import "fmt"
 
@@ -231,6 +230,7 @@ func process() error {
 	return nil
 }`
 
+var _ = Describe("Diff Visualization (--diff)", func() {
 	It("should produce HTML output with side-by-side diff", func() {
 		testHTMLDiffOutput("diff1.go", "diff2.go", "side-by-side", "diff1.go", diffCode)
 	})

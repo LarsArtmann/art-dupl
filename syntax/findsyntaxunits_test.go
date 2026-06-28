@@ -8,9 +8,9 @@ import (
 
 // makeTestNodes creates a slice of nodes with sequential types and specified ownership.
 func makeTestNodes(count int, owns int32) []*Node {
-	data := make([]*Node, count)
-	for i := range data {
-		data[i] = &Node{Type: int32(i), Owns: owns}
+	data := make([]*Node, 0, count)
+	for i := range count {
+		data = append(data, &Node{Type: int32(i), Owns: owns})
 	}
 
 	return data
@@ -21,16 +21,16 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 	// should result in the last index being removed
 
 	// Create a sequence of nodes with different ownership patterns
-	nodes := make([]*Node, 10)
-	for i := range nodes {
-		nodes[i] = &Node{Type: int32(i), Owns: 0}
+	nodes := make([]*Node, 0, 10)
+	for i := range 10 {
+		nodes = append(nodes, &Node{Type: int32(i), Owns: 0})
 	}
 
 	// Set ownership pattern: first node owns 3, others own 0
 	nodes[0].Owns = 3
 
 	// Create another sequence with different ownership
-	data := make([]*Node, 20)
+	data := make([]*Node, 20) //nolint:makezero // copied into then filled by index
 	copy(data, nodes)
 
 	// Add the same sequence at a different position but with different ownership
@@ -59,17 +59,17 @@ func TestFindSyntaxUnitsConsistentOwnership(t *testing.T) {
 	// Test case: Same ownership structures should work correctly
 
 	// Create identical sequences with proper ownership
-	nodes1 := make([]*Node, 10)
-	for i := range nodes1 {
-		nodes1[i] = &Node{Type: int32(i), Owns: 0}
+	nodes1 := make([]*Node, 0, 10)
+	for i := range 10 {
+		nodes1 = append(nodes1, &Node{Type: int32(i), Owns: 0})
 	}
 	// Set up a proper ownership structure: leaf nodes own 0, parent nodes own children count
 	nodes1[0].Owns = 4 // First node owns 4 children
 	nodes1[5].Owns = 2 // Node at position 5 owns 2 children
 
-	nodes2 := make([]*Node, 10)
-	for i := range nodes2 {
-		nodes2[i] = &Node{Type: int32(i), Owns: 0}
+	nodes2 := make([]*Node, 0, 10)
+	for i := range 10 {
+		nodes2 = append(nodes2, &Node{Type: int32(i), Owns: 0})
 	}
 	// Same ownership structure
 	nodes2[0].Owns = 4
@@ -117,9 +117,9 @@ func TestFindSyntaxUnitsEdgeCases(t *testing.T) {
 		{
 			name: "single position",
 			setup: func() []*Node {
-				data := make([]*Node, 10)
-				for i := range data {
-					data[i] = &Node{Type: int32(i), Owns: 0}
+				data := make([]*Node, 0, 10)
+				for i := range 10 {
+					data = append(data, &Node{Type: int32(i), Owns: 0})
 				}
 				// Create a proper ownership structure
 				data[0].Owns = 4

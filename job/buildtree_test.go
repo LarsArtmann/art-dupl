@@ -25,9 +25,9 @@ func waitForCompletion(t *testing.T, done chan bool, errorMessage string) {
 func TestBuildTree(t *testing.T) {
 	ctx := t.Context()
 	// Create a simple sequence of nodes
-	nodes := make([]*syntax.Node, 3)
-	for i := range nodes {
-		nodes[i] = &syntax.Node{Type: int32(i)}
+	nodes := make([]*syntax.Node, 0, 3)
+	for i := range 3 {
+		nodes = append(nodes, &syntax.Node{Type: int32(i)})
 	}
 
 	// Create channel with test data
@@ -78,11 +78,11 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 func TestBuildTreeMultipleSequences(t *testing.T) {
 	ctx := t.Context()
 	// Create multiple sequences
-	sequence1 := make([]*syntax.Node, 2)
+	sequence1 := make([]*syntax.Node, 2) //nolint:makezero // fixed-size fixture assigned by explicit index
 	sequence1[0] = &syntax.Node{Type: 1}
 	sequence1[1] = &syntax.Node{Type: 2}
 
-	sequence2 := make([]*syntax.Node, 2)
+	sequence2 := make([]*syntax.Node, 2) //nolint:makezero // fixed-size fixture assigned by explicit index
 	sequence2[0] = &syntax.Node{Type: 3}
 	sequence2[1] = &syntax.Node{Type: 4}
 

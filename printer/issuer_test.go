@@ -31,11 +31,11 @@ func assertFromFilename(t *testing.T, issues []Issue, expected string) {
 
 // createIssuerTestNodes creates nodes with proper positions for issuer tests.
 func createIssuerTestNodes(filenames ...string) [][]*syntax.Node {
-	result := make([][]*syntax.Node, len(filenames))
-	for i, filename := range filenames {
-		result[i] = []*syntax.Node{
+	result := make([][]*syntax.Node, 0, len(filenames))
+	for _, filename := range filenames {
+		result = append(result, []*syntax.Node{
 			{Type: 1, Filename: filename, Pos: 0, End: 10},
-		}
+		})
 	}
 
 	return result

@@ -27,7 +27,7 @@ const profileSeparator = "══════════════════
 // separator again, and a blank line.
 func printProfileHeader(w io.Writer, title string) {
 	printSeparatorLine(w)
-	fmt.Fprintln(w, title)
+	_, _ = fmt.Fprintln(w, title)
 	printSeparatorLine(w)
 }
 
@@ -38,9 +38,9 @@ func printProfileFooter(w io.Writer) {
 
 // printSeparatorLine writes a blank line, the separator, and a blank line.
 func printSeparatorLine(w io.Writer) {
-	fmt.Fprintln(w)
-	fmt.Fprintln(w, profileSeparator)
-	fmt.Fprintln(w)
+	_, _ = fmt.Fprintln(w)
+	_, _ = fmt.Fprintln(w, profileSeparator)
+	_, _ = fmt.Fprintln(w)
 }
 
 // Profile captures performance metrics at a point in time.

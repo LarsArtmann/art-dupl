@@ -51,12 +51,12 @@ func BenchmarkFindDuplOver(b *testing.B) {
 // genTokenSequence generates a pseudo-random sequence of tokens for benchmarking.
 // Uses a simple LCG to avoid importing math/rand in benchmarks.
 func genTokenSequence(n int) []Token {
-	data := make([]Token, n)
+	data := make([]Token, 0, n)
 
 	seed := uint32(42)
-	for i := range data {
+	for range n {
 		seed = seed*1103515245 + 12345
-		data[i] = char(rune('a' + seed%26))
+		data = append(data, char(rune('a'+seed%26)))
 	}
 
 	return data

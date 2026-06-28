@@ -18,9 +18,9 @@ func collectMatches(ch <-chan Match) []Match {
 
 // tokensAt extracts the token subsequence at [pos, pos+len) from data.
 func tokensAt(data []Token, pos, length Pos) []TokenValue {
-	result := make([]TokenValue, length)
+	result := make([]TokenValue, 0, length)
 	for i := range length {
-		result[i] = data[int(pos)+int(i)].Val()
+		result = append(result, data[int(pos)+int(i)].Val())
 	}
 
 	return result
@@ -102,9 +102,9 @@ func TestProperty_NoFalsePositivesOnUniqueInput(t *testing.T) {
 	t.Parallel()
 
 	// Generate 200 unique token values — no repeats possible.
-	data := make([]Token, 200)
-	for i := range data {
-		data[i] = char(rune('A' + i)) // each token unique
+	data := make([]Token, 0, 200)
+	for i := range 200 {
+		data = append(data, char(rune('A'+i))) // each token unique
 	}
 
 	tree := New()

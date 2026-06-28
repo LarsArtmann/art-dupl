@@ -119,10 +119,10 @@ func convertFileDuplicatesToMatches(
 
 // createFragmentsFromFileHashes converts file hashes to syntax.Node fragments.
 func createFragmentsFromFileHashes(files []hash.FileHash) [][]*syntax.Node {
-	fragments := make([][]*syntax.Node, len(files))
-	for i, fileHash := range files {
+	fragments := make([][]*syntax.Node, 0, len(files))
+	for _, fileHash := range files {
 		node := syntax.NewSyntheticFileNode(fileHash.Filename, fileHash.Size)
-		fragments[i] = []*syntax.Node{node}
+		fragments = append(fragments, []*syntax.Node{node})
 	}
 
 	return fragments

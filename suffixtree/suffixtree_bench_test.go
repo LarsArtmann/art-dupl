@@ -11,9 +11,9 @@ import (
 func generateRandomTokens(count int) []Token {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	tokens := make([]Token, count)
-	for i := range tokens {
-		tokens[i] = &testToken{val: r.Intn(1000)}
+	tokens := make([]Token, 0, count)
+	for range count {
+		tokens = append(tokens, &testToken{val: r.Intn(1000)})
 	}
 
 	return tokens
@@ -199,11 +199,11 @@ func BenchmarkAt(b *testing.B) {
 	tokens := generateRandomTokens(10000)
 	tree.Update(tokens...)
 
-	positions := make([]int, 100)
+	positions := make([]int, 0, 100)
 
 	r := rand.New(rand.NewSource(42))
-	for i := range positions {
-		positions[i] = r.Intn(len(tokens))
+	for range 100 {
+		positions = append(positions, r.Intn(len(tokens)))
 	}
 
 	for b.Loop() {

@@ -51,9 +51,9 @@ var testFread printer.ReadFile = func(_ string) ([]byte, error) {
 func createTestMatchChannel(hash string, files ...string) chan syntax.Match {
 	ch := make(chan syntax.Match, 1)
 
-	frags := make([][]*syntax.Node, len(files))
-	for i, file := range files {
-		frags[i] = testutil.CreateSingleNode(file, 1, 10)
+	frags := make([][]*syntax.Node, 0, len(files))
+	for _, file := range files {
+		frags = append(frags, testutil.CreateSingleNode(file, 1, 10))
 	}
 
 	ch <- syntax.Match{

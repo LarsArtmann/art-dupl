@@ -18,12 +18,10 @@ func (c char) Val() TokenValue {
 
 func str2tok(str string) []Token {
 	// Use utf8.RuneCountInString to get actual character count for Unicode support
-	toks := make([]Token, utf8.RuneCountInString(str))
+	toks := make([]Token, 0, utf8.RuneCountInString(str))
 
-	i := 0
 	for _, c := range str {
-		toks[i] = char(c)
-		i++
+		toks = append(toks, char(c))
 	}
 
 	return toks
@@ -143,9 +141,9 @@ func genStates(count int, data string) (*STree, []*state) {
 	t := new(STree)
 	t.data = str2tok(data)
 
-	states := make([]*state, count)
-	for i := range states {
-		states[i] = newState(t)
+	states := make([]*state, 0, count)
+	for range count {
+		states = append(states, newState(t))
 	}
 
 	return t, states

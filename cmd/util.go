@@ -52,9 +52,9 @@ func detectionMethodsToStringSlice(methods config.DetectionMethods) []string {
 		return nil
 	}
 
-	result := make([]string, len(methods))
-	for i, dm := range methods {
-		result[i] = dm.String()
+	result := make([]string, 0, len(methods))
+	for _, dm := range methods {
+		result = append(result, dm.String())
 	}
 
 	return result

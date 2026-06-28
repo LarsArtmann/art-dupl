@@ -20,7 +20,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		return nil, nil
 	}
 
-	clones := make([]domain.ProcessedClone, len(dups))
+	clones := make([]domain.ProcessedClone, len(dups)) //nolint:makezero // loop index i is used for error attribution
 
 	for i, dup := range dups {
 		cnt := len(dup)
@@ -112,11 +112,14 @@ func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
 	// renamed identifiers live in their descendants, so we must walk the full
 	// subtree to detect Name divergence. syntax.Serialize provides exactly this
 	// pre-order traversal.
-	seqs := make([][]*syntax.Node, len(dups))
-	for i, dup := range dups {
+	seqs := make([][]*syntax.Node, 0, len(dups))
+	for _, dup := range dups {
+		var seq []*syntax.Node
 		for _, node := range dup {
-			seqs[i] = append(seqs[i], syntax.Serialize(node)...)
+			seq = append(seq, syntax.Serialize(node)...)
 		}
+
+		seqs = append(seqs, seq)
 	}
 
 	first := seqs[0]

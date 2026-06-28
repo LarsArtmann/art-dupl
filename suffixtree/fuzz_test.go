@@ -22,9 +22,9 @@ func FuzzFindDuplOver(f *testing.F) {
 		tree := New()
 
 		// Convert bytes to tokens
-		tokens := make([]Token, len(data))
-		for i, b := range data {
-			tokens[i] = simpleToken(TokenValue(b))
+		tokens := make([]Token, 0, len(data))
+		for _, b := range data {
+			tokens = append(tokens, simpleToken(TokenValue(b)))
 		}
 
 		tree.Update(tokens...)
@@ -64,9 +64,9 @@ func FuzzCtxCancelFindDuplOver(f *testing.F) {
 
 		tree := New()
 
-		tokens := make([]Token, len(data))
-		for i, b := range data {
-			tokens[i] = simpleToken(TokenValue(b + 1)) // +1 to avoid zero
+		tokens := make([]Token, 0, len(data))
+		for _, b := range data {
+			tokens = append(tokens, simpleToken(TokenValue(b+1))) // +1 to avoid zero
 		}
 
 		tree.Update(tokens...)

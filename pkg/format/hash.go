@@ -6,7 +6,7 @@ package format
 func Hash(hash uint64) string {
 	const hexchars = "0123456789abcdef"
 
-	buf := make([]byte, 16) //nolint:mnd // 16 hex chars for uint64
+	buf := make([]byte, 16) //nolint:mnd,makezero // 16-char hex buffer filled backward by index
 	for i := 15; i >= 0; i-- {
 		buf[i] = hexchars[hash&0xf]
 		hash >>= 4

@@ -110,9 +110,9 @@ func (p *JSONPrinter) PrintClones(
 
 	clones := group.Clones
 
-	jsonClones := make([]JSONClone, len(clones))
-	for i, cl := range clones {
-		jsonClones[i] = JSONClone{
+	jsonClones := make([]JSONClone, 0, len(clones))
+	for _, cl := range clones {
+		jsonClones = append(jsonClones, JSONClone{
 			Filename:      cl.Filename,
 			LineStart:     cl.LineStart,
 			LineEnd:       cl.LineEnd,
@@ -123,7 +123,7 @@ func (p *JSONPrinter) PrintClones(
 			CloneType:     cl.Classification.CloneType,
 			LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
 			Extractable:   cl.Classification.Extractability.CanExtract,
-		}
+		})
 	}
 
 	sort.Slice(jsonClones, func(i, j int) bool {
@@ -192,28 +192,28 @@ func (p *JSONPrinter) OutputJSON(
 }
 
 func (p *JSONPrinter) OutputSimpleJSON() error {
-	simpleOutput := make(simpleJSONOutput, len(p.cloneGroups))
+	simpleOutput := make(simpleJSONOutput, 0, len(p.cloneGroups))
 
-	for i, group := range p.cloneGroups {
+	for _, group := range p.cloneGroups {
 		impactScore := group.Size * len(group.Clones)
 
-		simpleInstances := make([]simpleJSONClone, len(group.Clones))
-		for j, file := range group.Clones {
-			simpleInstances[j] = simpleJSONClone{
+		simpleInstances := make([]simpleJSONClone, 0, len(group.Clones))
+		for _, file := range group.Clones {
+			simpleInstances = append(simpleInstances, simpleJSONClone{
 				LineRangeMixin: LineRangeMixin{
 					LineStart: file.LineStart,
 					LineEnd:   file.LineEnd,
 				},
 				Filename:   file.Filename,
 				TokenCount: group.Size,
-			}
+			})
 		}
 
-		simpleOutput[i] = simpleCloneGroup{
+		simpleOutput = append(simpleOutput, simpleCloneGroup{
 			Hash:      group.Hash,
 			Score:     impactScore,
 			Instances: simpleInstances,
-		}
+		})
 	}
 
 	data, err := json.MarshalIndent(simpleOutput, "", "  ")

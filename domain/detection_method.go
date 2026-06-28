@@ -37,7 +37,7 @@ func (m DetectionMethod) IsValid() bool {
 
 // MarshalJSON implements json.Marshaler.
 func (m DetectionMethod) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(m, DetectionMethod.IsValid, ErrInvalidDetectionMethod) //nolint:wrapcheck
+	return enum.MarshalJSON(m, DetectionMethod.IsValid, ErrInvalidDetectionMethod)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.

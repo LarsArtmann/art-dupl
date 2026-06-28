@@ -1171,9 +1171,9 @@ func TestHTMLRenderDiffLines_Variants(t *testing.T) {
 	t.Parallel()
 
 	diffLines := func(contents []string, types []DiffLineType, startLineNum int) []DiffLine {
-		lines := make([]DiffLine, len(contents))
+		lines := make([]DiffLine, 0, len(contents))
 		for i, content := range contents {
-			lines[i] = DiffLine{Content: content, Type: types[i], LineNumber: startLineNum + i}
+			lines = append(lines, DiffLine{Content: content, Type: types[i], LineNumber: startLineNum + i})
 		}
 
 		return lines

@@ -21,10 +21,10 @@ func CreateMockNode(nodeType int, filename string, pos, end int) *syntax.Node {
 
 // CreateMockNodes creates multiple mock nodes for testing.
 func CreateMockNodes(count int, filename string) []*syntax.Node {
-	nodes := make([]*syntax.Node, count)
+	nodes := make([]*syntax.Node, 0, count)
 	for i := range count {
 		offset := i * 10
-		nodes[i] = CreateMockNode(golang.FuncDecl, filename, offset, offset+10)
+		nodes = append(nodes, CreateMockNode(golang.FuncDecl, filename, offset, offset+10))
 	}
 
 	return nodes
@@ -32,11 +32,11 @@ func CreateMockNodes(count int, filename string) []*syntax.Node {
 
 // CreateMockCloneGroup creates a mock clone group with given files.
 func CreateMockCloneGroup(hash string, size int, filenames []string) []*syntax.Node {
-	nodes := make([]*syntax.Node, len(filenames))
+	nodes := make([]*syntax.Node, 0, len(filenames))
 	for idx, fname := range filenames {
 		step := 25
 		start := idx * step
-		nodes[idx] = CreateMockNode(golang.FuncDecl, fname, start, start+step)
+		nodes = append(nodes, CreateMockNode(golang.FuncDecl, fname, start, start+step))
 	}
 
 	return nodes
@@ -45,9 +45,9 @@ func CreateMockCloneGroup(hash string, size int, filenames []string) []*syntax.N
 // CreateMatch creates a syntax.Match with a hash and one or more filenames.
 // Each filename creates a separate fragment containing a single node.
 func CreateMatch(hash string, filenames ...string) syntax.Match {
-	frags := make([][]*syntax.Node, len(filenames))
-	for i, fname := range filenames {
-		frags[i] = []*syntax.Node{{Filename: fname}}
+	frags := make([][]*syntax.Node, 0, len(filenames))
+	for _, fname := range filenames {
+		frags = append(frags, []*syntax.Node{{Filename: fname}})
 	}
 
 	return syntax.Match{Hash: hash, Frags: frags}
@@ -81,9 +81,9 @@ func CreateNodeSlice(values []struct {
 	End      int32
 },
 ) []*syntax.Node {
-	nodes := make([]*syntax.Node, len(values))
-	for i, v := range values {
-		nodes[i] = &syntax.Node{
+	nodes := make([]*syntax.Node, 0, len(values))
+	for _, v := range values {
+		nodes = append(nodes, &syntax.Node{
 			Type:      v.Type,
 			Filename:  v.Filename,
 			Pos:       v.Pos,
@@ -92,7 +92,7 @@ func CreateNodeSlice(values []struct {
 			Children:  nil,
 			Name:      "",
 			Statement: false,
-		}
+		})
 	}
 
 	return nodes

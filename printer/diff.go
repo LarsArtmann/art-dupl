@@ -35,13 +35,13 @@ type DiffResult struct {
 
 // initDiffLines converts raw lines into DiffLine structs with line numbers.
 func initDiffLines(lines [][]byte) []DiffLine {
-	result := make([]DiffLine, len(lines))
+	result := make([]DiffLine, 0, len(lines))
 	for i, line := range lines {
-		result[i] = DiffLine{
+		result = append(result, DiffLine{
 			Content:    string(line),
 			Type:       DiffLineEqual,
 			LineNumber: i + 1,
-		}
+		})
 	}
 
 	return result
@@ -184,9 +184,9 @@ func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 	m, n := len(srcRows), len(dstRows)
 
 	// Build LCS matrix
-	dp := make([][]int, m+1)
+	dp := make([][]int, m+1) //nolint:makezero // DP matrix filled by index
 	for i := range dp {
-		dp[i] = make([]int, n+1)
+		dp[i] = make([]int, n+1) //nolint:makezero // DP row filled by index
 	}
 
 	for i := 1; i <= m; i++ {

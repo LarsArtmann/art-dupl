@@ -252,15 +252,15 @@ func testPrinterSorting(
 func createMockCloneGroup(t *testing.T, filename string, startPos, numTokens int) []*syntax.Node {
 	t.Helper()
 	// Create nodes that represent the tokens in a clone
-	nodes := make([]*syntax.Node, numTokens)
+	nodes := make([]*syntax.Node, 0, numTokens)
 
 	for i := range numTokens {
-		nodes[i] = &syntax.Node{
+		nodes = append(nodes, &syntax.Node{
 			Type:     golang.FuncDecl,
 			Filename: filename,
 			Pos:      int32(startPos + (i * 2)),
 			End:      int32(startPos + (i * 2) + 1),
-		}
+		})
 	}
 
 	return nodes

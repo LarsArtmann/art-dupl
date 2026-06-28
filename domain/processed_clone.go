@@ -194,7 +194,7 @@ func (t CloneType) String() string { return string(t) }
 
 // MarshalJSON implements json.Marshaler for CloneType.
 func (t CloneType) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(t, CloneType.IsValid, ErrInvalidCloneType) //nolint:wrapcheck
+	return enum.MarshalJSON(t, CloneType.IsValid, ErrInvalidCloneType)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneType.
@@ -209,7 +209,7 @@ func (t *CloneType) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements json.Marshaler for ClonePriority.
 func (p ClonePriority) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority) //nolint:wrapcheck
+	return enum.MarshalJSON(p, ClonePriority.IsValid, ErrInvalidClonePriority)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ClonePriority.
@@ -224,7 +224,7 @@ func (p *ClonePriority) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements json.Marshaler for CloneCategory.
 func (c CloneCategory) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory) //nolint:wrapcheck
+	return enum.MarshalJSON(c, CloneCategory.IsValid, ErrInvalidCloneCategory)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneCategory.
@@ -239,7 +239,7 @@ func (c *CloneCategory) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements json.Marshaler for CloneActionability.
 func (a CloneActionability) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(a, CloneActionability.IsValid, ErrInvalidCloneActionability) //nolint:wrapcheck
+	return enum.MarshalJSON(a, CloneActionability.IsValid, ErrInvalidCloneActionability)
 }
 
 // UnmarshalJSON implements json.Unmarshaler for CloneActionability.

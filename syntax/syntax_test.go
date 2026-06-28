@@ -33,9 +33,9 @@ func TestSerialization(t *testing.T) {
 }
 
 func genNodes(cnt int) []*Node {
-	nodes := make([]*Node, cnt)
-	for i := range nodes {
-		nodes[i] = NewNode()
+	nodes := make([]*Node, 0, cnt)
+	for range cnt {
+		nodes = append(nodes, NewNode())
 	}
 
 	return nodes
@@ -136,9 +136,9 @@ func TestCyclicDupl(t *testing.T) {
 func str2nodes(str string) []*Node {
 	chars := []rune(str)
 
-	nodes := make([]*Node, (len(chars)+1)/3)
+	nodes := make([]*Node, 0, (len(chars)+1)/3)
 	for i := 0; i < len(chars)-1; i += 3 {
-		nodes[i/3] = &Node{Type: chars[i], Owns: chars[i+1] - '0'}
+		nodes = append(nodes, &Node{Type: chars[i], Owns: chars[i+1] - '0'})
 	}
 
 	return nodes

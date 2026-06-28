@@ -81,16 +81,16 @@ var _ = Describe("Plumbing Output Format", func() {
 	assertOutputContainsAny := func(output []byte, expected []string) {
 		outputStr := string(output)
 
-		matchers := make([]types.GomegaMatcher, len(expected))
-		for i, exp := range expected {
-			matchers[i] = ContainSubstring(exp)
+		matchers := make([]types.GomegaMatcher, 0, len(expected))
+		for _, exp := range expected {
+			matchers = append(matchers, ContainSubstring(exp))
 		}
 
 		Expect(outputStr).To(SatisfyAny(matchers...))
 	}
 
 	Context("When using plumbing output for basic analysis", func() {
-		tests := []struct {
+		tests := []struct { //nolint:ginkgolinter // table-test case generator, not shared state
 			name       string
 			code       string
 			files      []string
@@ -191,7 +191,7 @@ func large() {
 	})
 
 	Context("When using plumbing with different detection methods", func() {
-		tests := []struct {
+		tests := []struct { //nolint:ginkgolinter // table-test case generator, not shared state
 			name   string
 			code   string
 			files  []string

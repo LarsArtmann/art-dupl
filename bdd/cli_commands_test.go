@@ -311,7 +311,7 @@ var _ = Describe("CLI Completion Commands", func() {
 	})
 
 	Context("When requesting shell completion", func() {
-		shells := []string{"bash", "zsh", "fish"}
+		shells := []string{"bash", "zsh", "fish"} //nolint:ginkgolinter // table-test case generator, not shared state
 		for _, shell := range shells {
 			It(fmt.Sprintf("should provide %s completion", shell), func() {
 				output, err := setup.RunArtDupl("completion", shell)

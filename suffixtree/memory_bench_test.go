@@ -9,9 +9,9 @@ func benchmarkMemoryUsage(b *testing.B, uniqueCount int) {
 	b.Helper()
 	b.ReportAllocs()
 
-	tokens := make([]Token, 10000)
-	for i := range tokens {
-		tokens[i] = &testToken{val: i % uniqueCount}
+	tokens := make([]Token, 0, 10000)
+	for i := range 10000 {
+		tokens = append(tokens, &testToken{val: i % uniqueCount})
 	}
 
 	b.ResetTimer()

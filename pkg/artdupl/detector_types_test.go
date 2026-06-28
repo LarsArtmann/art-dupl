@@ -225,9 +225,9 @@ func TestClone_WithoutFragment(t *testing.T) {
 
 // TestClone_LargeFragment tests Clone with large fragment.
 func TestClone_LargeFragment(t *testing.T) {
-	largeFragment := make([]byte, 10000)
-	for i := range largeFragment {
-		largeFragment[i] = 'x'
+	largeFragment := make([]byte, 0, 10000)
+	for range 10000 {
+		largeFragment = append(largeFragment, 'x')
 	}
 
 	clone := Clone{
@@ -250,14 +250,14 @@ func TestClone_LargeFragment(t *testing.T) {
 
 // TestCloneGroup_ManyClones tests CloneGroup with many clones.
 func TestCloneGroup_ManyClones(t *testing.T) {
-	clones := make([]*Clone, 100)
-	for i := range clones {
-		clones[i] = &Clone{
+	clones := make([]*Clone, 0, 100)
+	for i := range 100 {
+		clones = append(clones, &Clone{
 			Filename:  fmt.Sprintf("file%d.go", i),
 			LineStart: i * 10,
 			LineEnd:   i*10 + 5,
 			Size:      50,
-		}
+		})
 	}
 
 	group := CloneGroup{

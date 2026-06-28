@@ -158,11 +158,11 @@ func TestConvertToCloneGroup_MaxClonesLimit(t *testing.T) {
 	}
 
 	// Create 5 fragments
-	frags := make([][]*syntax.Node, 5)
+	frags := make([][]*syntax.Node, 0, 5)
 	for i := range 5 {
-		frags[i] = []*syntax.Node{
+		frags = append(frags, []*syntax.Node{
 			{Type: 1, Filename: "file.go", Pos: int32(i), End: int32(i + 1)},
-		}
+		})
 	}
 
 	group := d.convertToCloneGroup("hash", frags, MethodArtDupl)

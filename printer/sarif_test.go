@@ -300,6 +300,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	// Check rules — only duplicate-code is a real rule; todo/legacy were
 	// declared but never produced in results, so they were removed.
 	if len(tool.Rules) != 1 {
+		t.Fatalf("Expected 1 rule, got %d", len(tool.Rules))
 	}
 
 	rule := tool.Rules[0]
