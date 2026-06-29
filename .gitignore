@@ -41,3 +41,62 @@ vendor/
 go.work.sum
 # Add pattern for Templ generated files
 *_templ.go
+
+# >>> buildflow-managed (.gitignore) >>>
+# Auto-managed by buildflow. Edit outside these markers; this block is regenerated on `buildflow --fix`.
+
+## Secrets and environment
+.env.local
+.env.*.local
+*.pem
+*.key
+
+## Databases
+*.db-shm
+*.db-wal
+
+## Operating systems
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+## Editors and ides
+.vscode/
+*.swp
+*.swo
+
+## Logs and temporaries
+*.tmp
+*.temp
+
+## Go
+*.dll
+*.so
+*.dylib
+go.work
+
+## Nix
+.envrc
+
+## Javascript and typescript
+build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+## Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+# <<< buildflow-managed (.gitignore) <<<

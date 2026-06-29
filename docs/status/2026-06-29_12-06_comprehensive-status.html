@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Title</title>
+    <style>
+      /* =========================================================================
+         BAUHAUS DARK — Dashboard template
+         Design language: form follows function. Primary colors on graphite.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Dark) --- */
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        /* --- Semantic layer (shared vocabulary with editorial template) --- */
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px; /* Bauhaus default: sharp corners */
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Sticky-header offset for anchor jumps */
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Accessibility: keyboard focus --- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline-offset: -1px;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 80px;
+        margin-bottom: 1rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 56px;
+        height: 56px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 24px;
+        left: 72px;
+        width: 48px;
+        height: 48px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        left: 140px;
+        width: 0;
+        height: 0;
+        border-left: 28px solid transparent;
+        border-right: 28px solid transparent;
+        border-bottom: 48px solid var(--warning);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges (used inside issue cards) --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges (used in tables) --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      /* --- Callouts (used inside issues or standalone) --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+
+      /* --- Stat cards / scorecards (aliased vocabulary) --- */
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad,
+      .score-bad {
+        /* default top bar already set */
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      /* --- Strengths list --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      /* --- Tables --- */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .tok-keyword {
+        color: var(--accent);
+      } /* func, type, struct, if, return */
+      .tok-type {
+        color: var(--warning);
+      } /* int, string, bool, error */
+      .tok-string {
+        color: var(--solution);
+      } /* "quoted strings" */
+      .tok-comment {
+        color: var(--text-faint);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #74a9ff;
+      } /* function names */
+      .tok-number {
+        color: var(--accent);
+      } /* 42, 3.14 */
+      .tok-generic {
+        color: var(--problem);
+      } /* T, ID in generics */
+      .tok-builtin {
+        color: #4dd9ff;
+      } /* make, len, append */
+      .tok-punct {
+        color: var(--text-muted);
+      } /* { } ( ) ; = : */
+      .tok-attr {
+        color: var(--accent);
+      } /* Nix attribute names */
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--surface-sunken);
+        border: 1px solid var(--border-strong);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+        border-color: var(--problem);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+        border-color: var(--solution);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids (responsive) --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC (alternative to sidebar) --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  <body>
+    <div class="top-bar">
+      <span>Comprehensive Status Report</span>
+      <span>2026-06-29 12:06</span>
+      <span>art-dupl · HEAD 9f74133</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Executive Summary</a>
+          <a href="#fully-done">Fully Done</a>
+          <a href="#partial">Partially Done</a>
+          <a href="#not-started">Not Started</a>
+          <a href="#fucked">Totally Fucked Up</a>
+          <a href="#improve">What To Improve</a>
+          <a href="#top25">Top 25 Next</a>
+          <a href="#question">Top Question</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <!-- Hero -->
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Comprehensive Status Report</div>
+          <h1>art-dupl — Status Snapshot 2026-06-29</h1>
+          <p class="hero-subtitle">
+            Point-in-time audit: what's fully done, partially done, broken, and
+            what to do next. Post-idiom-line-guard-fix session.
+          </p>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <h2 id="summary"><span class="num">00</span>Executive Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">27/27</div>
+            <div class="stat-label">Test packages green</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint issues</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">51.6k</div>
+            <div class="stat-label">Lines of Go (254 files)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">11</div>
+            <div class="stat-label">Direct deps (zero banned)</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Stale TODO items</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">~170</div>
+            <div class="stat-label">Status files (cruft)</div>
+          </div>
+        </div>
+
+        <p>
+          <strong>HEAD:</strong> <code>9f74133</code> (fork) ·
+          <strong>Build:</strong> green ·
+          <strong>Lint:</strong> 0 issues ·
+          <strong>BDD:</strong> all pass ·
+          <strong>Idiom fix shipped:</strong> this session delivered the
+          idiom-line-guard fix that stops large multi-line templ clones from
+          being dismissed as non-actionable idioms.
+        </p>
+
+        <!-- Fully Done -->
+        <h2 id="fully-done"><span class="num">01</span>Fully Done (a)</h2>
+
+        <h3>This session — Idiom Line-Guard Fix (commit 9f74133)</h3>
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Root-cause fix</strong>
+              <span
+                >The idiom classifier only checked token count (&lt;5), but
+                templ files produce clones where one Element node spans many
+                lines. A 13-line clone with 3-4 tokens was wrongly dismissed.
+                Added <code>idiomLineThreshold = 5</code> gate.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Full test coverage</strong>
+              <span
+                >Unit tests for ClassifyClone (both branches) + integration test
+                through ProcessClones pipeline + golden file verified
+                consistent.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Docs updated</strong>
+              <span
+                >AGENTS.md, DOMAIN_LANGUAGE.md, CHANGELOG.md all reflect the new
+                ≤5 line rule.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <h3>Core platform (all FULLY_FUNCTIONAL)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Status</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Go + Templ parsing</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>45 Go node types, 28 templ node types</td>
+            </tr>
+            <tr>
+              <td>3 detection modes</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>semantic (default), exact, structural</td>
+            </tr>
+            <tr>
+              <td>7 output formats</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>text, HTML, JSON, simple-json, plumbing, SARIF, CSV</td>
+            </tr>
+            <tr>
+              <td>Clone classification</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>14 categories, 4 priorities, 10 non-actionable patterns</td>
+            </tr>
+            <tr>
+              <td>Baseline + CI check</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>baseline record, check mode, GitHub Actions template</td>
+            </tr>
+            <tr>
+              <td>SDK (pkg/artdupl)</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>Detector interface, streaming, zero config imports</td>
+            </tr>
+            <tr>
+              <td>Concurrency safety</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>All pipeline goroutines use ctx-aware sends; -race clean</td>
+            </tr>
+            <tr>
+              <td>Generated-code filtering</td>
+              <td><span class="badge badge-fixed">Done</span></td>
+              <td>
+                Unified --include-generated (sqlc/templ/protobuf/mockgen/stringer/generic)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Partially Done -->
+        <h2 id="partial"><span class="num">02</span>Partially Done (b)</h2>
+
+        <div class="card card-warning">
+          <h4>printer/ package is too large (~29 files, ~3500+ lines)</h4>
+          <p>
+            The printer package holds text, HTML, JSON, SARIF, CSV, stats, and
+            plumbing output in one package. Planned split into
+            <code>printer/stats</code>, <code>printer/html</code>,
+            <code>printer/analyze</code> sub-packages. Not started. Decouples
+            21 files from config.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Printer ↔ syntax.Node coupling (34 references)</h4>
+          <p>
+            <code>actionability.go</code> still imports
+            <code>syntax.Node</code> directly for pattern evaluation.
+            <code>clone_processor.go</code> bridges partially. Full DTO
+            decoupling (ProcessedClone hides AST) is ~60% done — the bridge
+            exists but the actionability layer still reaches into syntax.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Parallel Clone types (7 variants)</h4>
+          <p>
+            ProcessedClone, SDK Clone, JSONClone, etc. Field names aligned
+            (LineStart/LineEnd canonical, Fragment unified to string). Types
+            deliberately separate for DTO independence (ADR-0005). This is
+            <em>accepted</em> architecture, not a defect — but it remains
+            cognitive overhead.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>docs/status/ has ~170 historical files</h4>
+          <p>
+            The archive directory contains 130+ files from 2025-12 through
+            2026-06. Many duplicate "COMPREHENSIVE STATUS" titles. The non-
+            archive <code>docs/status/</code> has 40+ loose files (some
+            ALL-CAPS, some snake_case). This is documentation debt — it makes
+            finding the <em>current</em> status hard.
+          </p>
+        </div>
+
+        <!-- Not Started -->
+        <h2 id="not-started"><span class="num">03</span>Not Started (c)</h2>
+
+        <div class="card">
+          <h4>Branded NodeType int32 (HIGH RISK)</h4>
+          <p>
+            golang and templ node type constants share the same int32 space
+            (golang.BadNode=0, templ.BadNode=0). A branded type would prevent
+            cross-package collision. <strong>Blocked by:</strong> touches gob
+            cache format and semantic encoding layout
+            ([24-bit hash][8-bit base type]). Needs a migration plan.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Watch mode (continuous monitoring)</h4>
+          <p>
+            ROADMAP item. Would run incremental detection on file changes
+            (fsnotify). Requires git-aware file selection which was removed
+            (the --since flag was a dead stub). Not started.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Performance baseline + regression suite</h4>
+          <p>
+            Benchmarks exist in <code>_bench_test.go</code> files but there's no
+            pinned baseline or CI regression gate. ROADMAP item.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>TypeScript/Python language support</h4>
+          <p>ROADMAP aspiration. No parser infrastructure for non-Go languages.</p>
+        </div>
+
+        <!-- Totally Fucked Up -->
+        <h2 id="fucked"><span class="num">04</span>Totally Fucked Up (d)</h2>
+
+        <div class="card card-problem">
+          <h4>3 stale TODO items (done but not checked off)</h4>
+          <p>
+            The TODO_LIST.md lists 3 items as open that are actually DONE in
+            code:
+          </p>
+          <ul>
+            <li>
+              <strong>Cache deep-copy on incremental cache-hit</strong> — DONE
+              (commit ad6b33f, <code>node.Clone()</code> at
+              job/incremental.go:140)
+            </li>
+            <li>
+              <strong>Add Name() to MethodDetector interface</strong> — DONE
+              (commit 5d4abaf, detection/detector.go:18)
+            </li>
+            <li>
+              <strong>Fix debug.Stack() unconditional capture</strong> — DONE
+              (commit e80aeff, zero references remain in errors/types.go)
+            </li>
+            <li>
+              <strong>Relocate SortCriteria to domain</strong> — DONE (commit
+              f9b2a90, now in domain/sort_criteria.go)
+            </li>
+          </ul>
+          <p>
+            <strong>Impact:</strong> future sessions waste time re-investigating
+            items that are already complete. TODO_LIST.md last-updated date is
+            stale (2026-06-28).
+          </p>
+        </div>
+
+        <div class="card card-problem">
+          <h4>LSP diagnostic is stale (goconst phantom)</h4>
+          <p>
+            The editor shows a goconst warning on
+            <code>clone_processor_classify_test.go:35</code> ("string
+            widget.templ has 6 occurrences"). The string was already extracted
+            to <code>lowTokenHighLineFilename</code> const and
+            <code>golangci-lint run</code> reports 0 issues. The LSP has a
+            cached diagnostic that doesn't match reality. Known issue per
+            AGENTS.md: "LSP/gopls shows stale diagnostics; always trust
+            golangci-lint run over IDE."
+          </p>
+        </div>
+
+        <!-- What to improve -->
+        <h2 id="improve"><span class="num">05</span>What We Should Improve (e)</h2>
+
+        <div class="grid-2">
+          <div class="card card-solution">
+            <h4>Archive status cruft now</h4>
+            <p>
+              Move all non-latest docs/status/*.md files (and all ALL-CAPS
+              legacy files) into docs/status/archive/. Keep only the latest
+              HTML + the README. Reduces noise massively.
+            </p>
+          </div>
+          <div class="card card-solution">
+            <h4>Fix stale TODO checkboxes</h4>
+            <p>
+              Check off the 3-4 done items immediately. Update last-updated date.
+              Prevents re-investigation cost.
+            </p>
+          </div>
+          <div class="card card-solution">
+            <h4>Add idiom-classification BDD test</h4>
+            <p>
+              There's no BDD test that constructs a templ clone and asserts the
+              category. Add one: "large templ clone is NOT idiom" — this is
+              exactly the bug we just fixed. Regression guard.
+            </p>
+          </div>
+          <div class="card card-solution">
+            <h4>Thread ClassificationInput from a typed constructor</h4>
+            <p>
+              ClassificationInput is a struct with 4 primitive fields.
+              Constructing it at clone_processor.go:57 manually wires
+              golang.DecodeBaseType + counts. A <code>NewClassificationInput</code>
+              constructor would centralize this and make the line/token
+              invariant explicit.
+            </p>
+          </div>
+        </div>
+
+        <h3>Architectural reflections</h3>
+        <div class="card card-warning">
+          <h4>Two-layer classification is subtle but correct</h4>
+          <p>
+            Per-clone <code>ClassifyClone</code> runs first (sets category,
+            priority, suggestion), then group-level
+            <code>EvaluateActionabilityWithLabel</code> overrides with
+            pattern-specific labels. The idiom gate is a per-clone decision —
+            correct. But the <em>order dependency</em> is implicit: if someone
+            moves the idiom check after the actionability layer, the label
+            override would clobber the idiom category. A comment at
+            ProcessClones documenting this ordering contract would help.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>printer/ magic numbers are policy, not domain</h4>
+          <p>
+            <code>idiomTokenThreshold</code> and <code>idiomLineThreshold</code>
+            are unexported constants in printer/clone_classify.go. This is the
+            correct location (classification policy), NOT domain. Domain types
+            should not encode thresholds. No change needed — documenting the
+            rationale.
+          </p>
+        </div>
+
+        <!-- Top 25 -->
+        <h2 id="top25"><span class="num">06</span>Top 25 Next Actions (f)</h2>
+        <p>Sorted by impact ÷ effort (highest ROI first).</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Impact</th>
+              <th>Effort</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><span class="badge badge-critical">High</span></td>
+              <td>10 min</td>
+              <td>
+                Check off 4 stale TODO items (Node.Clone, Name(), debug.Stack,
+                SortCriteria) + update last-updated date
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><span class="badge badge-critical">High</span></td>
+              <td>20 min</td>
+              <td>
+                Move ~40 loose docs/status/*.md (non-archive) into
+                docs/status/archive/, keep only latest 3 + README
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>30 min</td>
+              <td>
+                Add BDD test: "large templ clone (many lines, few tokens) is
+                classified actionable, not idiom" — regression guard for
+                9f74133
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>30 min</td>
+              <td>
+                Document the two-layer classification ordering contract at
+                ProcessClones (per-clone ClassifyClone THEN group
+                EvaluateActionabilityWithLabel)
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>1 hr</td>
+              <td>
+                Pin performance baseline: capture suffixtree + parse benchmarks
+                to a file, add CI gate for &gt;10% regression
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><span class="badge badge-medium">Med</span></td>
+              <td>1 hr</td>
+              <td>
+                Split printer/ into printer/stats, printer/html, printer/analyze
+                sub-packages (start with stats extraction)
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><span class="badge badge-medium">Med</span></td>
+              <td>1 hr</td>
+              <td>
+                Add CloneRef value object in domain to unify the 7 Clone types
+                via embedding (without collapsing DTO boundary)
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><span class="badge badge-medium">Med</span></td>
+              <td>45 min</td>
+              <td>
+                Add <code>NewClassificationInput</code> constructor in domain —
+                centralizes NodeType decode + count invariants
+              </td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><span class="badge badge-medium">Med</span></td>
+              <td>30 min</td>
+              <td>
+                Consolidate docs/status/ non-archive ALL-CAPS files
+                (EXECUTION_COMPLETE, FINAL_*, MISSION_*, etc.) into archive
+              </td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><span class="badge badge-medium">Med</span></td>
+              <td>30 min</td>
+              <td>
+                Write ADR-0006 documenting the two-layer classification design
+                (per-clone vs group-level actionability)
+              </td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>2 hr</td>
+              <td>
+                Full DTO decoupling: remove syntax.Node import from
+                actionability.go (34 references → 0)
+              </td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>2 hr</td>
+              <td>
+                Implement hybrid slice/map transition storage for small
+                transition counts in suffixtree (deferred — map already O(1))
+              </td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>3 hr</td>
+              <td>
+                Introduce branded NodeType int32 (HIGH RISK — needs gob cache
+                migration plan)
+              </td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>3 hr</td>
+              <td>
+                Thread context.Context through cmd/run_crawl.go file feeders
+                (stdin/Walk are blocking)
+              </td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>4 hr</td>
+              <td>
+                Watch mode: fsnotify + incremental detection (ROADMAP). Blocked
+                by git-aware file selection
+              </td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>4 hr</td>
+              <td>
+                Implement git-aware file selection (--since replacement that
+                actually reads git diff)
+              </td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>30 min</td>
+              <td>
+                Update FEATURES.md last-updated date (currently 2026-06-23) +
+                verify all statuses still accurate post-idiom-fix
+              </td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>1 hr</td>
+              <td>
+                Add encoding/json/v2 evaluation spike (Go 1.25+ — current
+                toolchain is 1.26.4, eligible)
+              </td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>1 hr</td>
+              <td>
+                Add govulncheck + gosec to CI (how-to-golang security
+                requirement — currently missing)
+              </td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>2 hr</td>
+              <td>
+                Add govalid evaluation for config validation (replaces manual
+                Validate functions with code-gen)
+              </td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>30 min</td>
+              <td>
+                Audit go.mod module doc comment (still references
+                CloneSeverity which was collapsed into ClonePriority)
+              </td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>1 hr</td>
+              <td>
+                Hide syntax/golang behind facade (BLOCKED by import cycle —
+                syntax/golang imports syntax for Node)
+              </td>
+            </tr>
+            <tr>
+              <td>23</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>ongoing</td>
+              <td>
+                Continue reducing legacy code in docs/status/ toward zero (target
+                per brutal-self-review skill)
+              </td>
+            </tr>
+            <tr>
+              <td>24</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>2 hr</td>
+              <td>
+                Add otter/v2 cache evaluation for in-memory AST cache (currently
+                file-based gob)
+              </td>
+            </tr>
+            <tr>
+              <td>25</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td>4 hr</td>
+              <td>
+                Scaffold TypeScript parser (ROADMAP — first non-Go language)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Question -->
+        <h2 id="question"><span class="num">07</span>Top Question (g)</h2>
+        <div class="callout callout-warning">
+          <strong>The one question I cannot figure out myself:</strong>
+          <p>
+            <strong
+              >Should the idiom classification be a per-clone decision or a
+              group-level decision?</strong
+            >
+          </p>
+          <p>
+            Currently the idiom gate (<code>&lt;5 tokens AND ≤5 lines</code>)
+            runs in <code>ClassifyClone</code> — a per-clone function. But the
+            group-level <code>EvaluateActionabilityWithLabel</code> can OVERRIDE
+            the category via <code>applyPatternLabel</code>. This means: if a
+            group of 3 clones each individually look like idioms (few tokens,
+            few lines) but the group-level pattern matcher detects
+            "interface-implementation", the label wins and the clone is marked
+            non-actionable with a different suggestion. The ordering is correct
+            today, but it's <em>subtle</em>.
+          </p>
+          <p>
+            Should we move the idiom gate <em>after</em> the actionability
+            layer, so idioms are truly the last-resort classification? Or is
+            per-clone correct because "idiom" is about the clone's own shape,
+            independent of what pattern the group matches? I lean toward
+            <strong>keeping it per-clone</strong> (current design) because the
+            idiom category is fundamentally about the clone's size, not its
+            group context — but I want your call.
+          </p>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-06-29 12:06 &middot; All claims verified against source
+          code · build/test/lint green · HEAD 9f74133
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>
