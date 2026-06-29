@@ -31,7 +31,7 @@
     "small": 1
   },
   "categoryBreakdown": {
-    "idiom": 1
+    "unknown": 1
   },
   "priorityBreakdown": {
     "low": 1
@@ -45,10 +45,10 @@
   "topClones": [
     {
       "priority": "low",
-      "category": "idiom",
+      "category": "unknown",
       "lines": 1,
       "files": 2,
-      "suggestion": "Structural idiom — typically not actionable",
+      "suggestion": "Review and extract common logic",
       "firstFile": "file1.go",
       "firstLineStart": 1
     }

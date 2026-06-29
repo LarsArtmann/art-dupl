@@ -20,28 +20,6 @@ func TestClassifyClone(t *testing.T) {
 		wantSuggestion string
 	}{
 		{
-			name:           "low token small line clone is idiom",
-			filename:       "widget.templ",
-			nodeType:       golang.BadNode,
-			tokens:         4,
-			lines:          4,
-			wantCategory:   domain.CategoryIdiom,
-			wantIsTest:     false,
-			wantPriority:   domain.PriorityLow,
-			wantSuggestion: suggestIdiom,
-		},
-		{
-			name:           "low token large line clone is not idiom",
-			filename:       "widget.templ",
-			nodeType:       golang.BadNode,
-			tokens:         4,
-			lines:          13,
-			wantCategory:   domain.CategoryUnknown,
-			wantIsTest:     false,
-			wantPriority:   domain.PriorityLow,
-			wantSuggestion: suggestReviewExtract,
-		},
-		{
 			name:           "function declaration in production code - medium",
 			filename:       "handler.go",
 			nodeType:       golang.FuncDecl,

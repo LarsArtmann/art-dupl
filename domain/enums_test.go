@@ -42,7 +42,7 @@ func TestCloneCategory_IsValid(t *testing.T) {
 		CategoryFunction, CategoryMethod, CategoryTest, CategoryStruct,
 		CategoryInterface, CategoryHandler, CategoryLoop, CategoryConditional,
 		CategoryTestBoilerplate, CategoryTestFixture, CategoryAssignment,
-		CategoryExpression, CategoryIdiom, CategoryUnknown,
+		CategoryExpression, CategoryUnknown,
 	}
 
 	for _, c := range valid {

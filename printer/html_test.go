@@ -529,8 +529,8 @@ func TestOrderedCategories(t *testing.T) {
 	t.Parallel()
 
 	cats := orderedCategories()
-	if len(cats) != 12 {
-		t.Errorf("want 12 categories, got %d", len(cats))
+	if len(cats) != 11 {
+		t.Errorf("want 11 categories, got %d", len(cats))
 	}
 
 	if cats[0] != domain.CategoryFunction {

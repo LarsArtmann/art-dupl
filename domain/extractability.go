@@ -61,7 +61,7 @@ func extractHint(saved int) string {
 
 // IsCompleteUnit reports whether a clone classification category represents a
 // complete, extractable syntactic unit (function/method/block) rather than a
-// fragment or idiom.
+// fragment or partial match.
 func (c CloneCategory) IsCompleteUnit() bool {
 	switch c { //nolint:exhaustive // default covers all non-extractable categories
 	case CategoryFunction, CategoryMethod, CategoryLoop, CategoryConditional:

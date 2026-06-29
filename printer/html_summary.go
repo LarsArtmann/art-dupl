@@ -14,7 +14,6 @@ func orderedCategories() []CloneCategory {
 		domain.CategoryConditional,
 		domain.CategoryAssignment,
 		domain.CategoryExpression,
-		domain.CategoryIdiom,
 		domain.CategoryTest,
 		domain.CategoryUnknown,
 	}

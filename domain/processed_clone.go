@@ -22,7 +22,6 @@ const (
 	CategoryTestFixture     CloneCategory = "test-fixture"
 	CategoryAssignment      CloneCategory = "assignment"
 	CategoryExpression      CloneCategory = "expression"
-	CategoryIdiom           CloneCategory = "idiom"
 	CategoryUnknown         CloneCategory = "unknown"
 )
 
@@ -138,7 +137,6 @@ var categoryEmojis = map[CloneCategory]string{
 	CategoryConditional:     "\U0001f500",
 	CategoryAssignment:      "\U0001f4dd",
 	CategoryExpression:      "\U0001f4ca",
-	CategoryIdiom:           "\U0001f4a0",
 	CategoryUnknown:         "\U0001f4c4",
 }
 
@@ -148,7 +146,7 @@ func (c CloneCategory) IsValid() bool {
 	case CategoryFunction, CategoryMethod, CategoryTest, CategoryStruct,
 		CategoryInterface, CategoryHandler, CategoryLoop, CategoryConditional,
 		CategoryTestBoilerplate, CategoryTestFixture, CategoryAssignment,
-		CategoryExpression, CategoryIdiom, CategoryUnknown:
+		CategoryExpression, CategoryUnknown:
 		return true
 	default:
 		return false

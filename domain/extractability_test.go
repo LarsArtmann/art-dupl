@@ -50,7 +50,7 @@ func TestCloneCategory_IsCompleteUnit(t *testing.T) {
 		}
 	}
 
-	incomplete := []CloneCategory{CategoryStruct, CategoryIdiom, CategoryUnknown, CategoryAssignment}
+	incomplete := []CloneCategory{CategoryStruct, CategoryUnknown, CategoryAssignment}
 	for _, c := range incomplete {
 		if c.IsCompleteUnit() {
 			t.Errorf("%q should NOT be a complete unit", c)

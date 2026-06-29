@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`--include-generated` flag**: Unified generated-code inclusion (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`). Replaces the separate `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` flags.
 
-### Fixed
+### Removed
 
-- **Idiom line guard**: Clones now require both `<5 tokens` AND `≤5 lines` to be classified as `idiom`. Previously, only the token count was checked, which caused large multi-line templ/HTML clones (few nodes, many lines) to be wrongly dismissed as non-actionable structural idioms.
+- **Idiom category deleted**: The `domain.CategoryIdiom` classification was fundamentally broken — the two-layer classification architecture (per-clone `ClassifyClone` then group-level `EvaluateActionabilityWithLabel`) created a contradictory state where clones were labeled "idiom — typically not actionable" but had `Actionability=Actionable` (overwritten by the group evaluator). The 14 AST-based actionability patterns already handle genuinely non-actionable clones with precision. Small clones are now classified by their actual AST type (function, struct, unknown, etc.) and the actionability patterns determine whether they're worth fixing.
 
 ### Deprecated
 

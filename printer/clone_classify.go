@@ -17,7 +17,6 @@ const (
 	suggestStrategy          = "Consider strategy pattern or early returns"
 	suggestTestHelper        = "Extract test helper function or use table-driven tests"
 	suggestSharedTestUtility = "Consider extracting to shared test utility"
-	suggestIdiom             = "Structural idiom — typically not actionable"
 	suggestTestDataPair      = "Test fixture files — expected structural similarity"
 	suggestTableDrivenTest   = "Table-driven test body — framework pattern, not logic"
 	suggestTestScaffolding   = "Test setup/assertion pattern — only data differs"
@@ -30,21 +29,6 @@ const (
 	suggestBuilderCallback   = "Builder/callback chain — intentional fluent API design"
 )
 
-// idiomTokenThreshold is the maximum number of tokens for a clone to be
-// classified as an "idiom" rather than a specific AST category. At this
-// token count, clones are almost always structural artifacts (function
-// signatures, import patterns, standard library calls) rather than
-// meaningful duplication. Based on real-world feedback showing 100% false
-// positive rate for 2-4 token clones at threshold 15.
-const idiomTokenThreshold = 5
-
-// idiomLineThreshold is the maximum number of source lines a low-token clone
-// may span before it is treated as actionable duplication. Languages with
-// coarse-grained AST nodes (e.g. templ, where one Element node can cover many
-// lines of HTML attributes) can produce clones with very few tokens but many
-// source lines. Those are not idioms.
-const idiomLineThreshold = 5
-
 type (
 	CloneCategory       = domain.CloneCategory
 	ClonePriority       = domain.ClonePriority
@@ -52,10 +36,6 @@ type (
 )
 
 func ClassifyClone(input domain.ClassificationInput) CloneClassification {
-	if input.Tokens < idiomTokenThreshold && input.Lines <= idiomLineThreshold {
-		return idiomClassification(input)
-	}
-
 	category := nodeTypeToCategory(input.NodeType)
 	isTest := isTestFile(input.Filename)
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
@@ -69,20 +49,6 @@ func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 		Lines:         input.Lines,
 		Suggestion:    suggestion,
 		Actionability: domain.Actionable,
-	}
-}
-
-func idiomClassification(input domain.ClassificationInput) CloneClassification {
-	isTest := isTestFile(input.Filename)
-
-	return CloneClassification{
-		Category:      domain.CategoryIdiom,
-		IsTest:        isTest,
-		Priority:      domain.PriorityLow,
-		Tokens:        input.Tokens,
-		Lines:         input.Lines,
-		Suggestion:    suggestIdiom,
-		Actionability: domain.NonActionable,
 	}
 }
 
@@ -192,10 +158,6 @@ func otherPriority(tokens int) ClonePriority {
 }
 
 func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
-	if category == domain.CategoryIdiom {
-		return suggestIdiom
-	}
-
 	if isTest {
 		if tokens > 15 {
 			return suggestTestHelper
