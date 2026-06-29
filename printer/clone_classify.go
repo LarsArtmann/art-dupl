@@ -38,6 +38,13 @@ const (
 // positive rate for 2-4 token clones at threshold 15.
 const idiomTokenThreshold = 5
 
+// idiomLineThreshold is the maximum number of source lines a low-token clone
+// may span before it is treated as actionable duplication. Languages with
+// coarse-grained AST nodes (e.g. templ, where one Element node can cover many
+// lines of HTML attributes) can produce clones with very few tokens but many
+// source lines. Those are not idioms.
+const idiomLineThreshold = 5
+
 type (
 	CloneCategory       = domain.CloneCategory
 	ClonePriority       = domain.ClonePriority
@@ -45,7 +52,7 @@ type (
 )
 
 func ClassifyClone(input domain.ClassificationInput) CloneClassification {
-	if input.Tokens < idiomTokenThreshold {
+	if input.Tokens < idiomTokenThreshold && input.Lines <= idiomLineThreshold {
 		return idiomClassification(input)
 	}
 

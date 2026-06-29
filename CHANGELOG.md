@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`--include-generated` flag**: Unified generated-code inclusion (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`). Replaces the separate `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` flags.
 
+### Fixed
+
+- **Idiom line guard**: Clones now require both `<5 tokens` AND `≤5 lines` to be classified as `idiom`. Previously, only the token count was checked, which caused large multi-line templ/HTML clones (few nodes, many lines) to be wrongly dismissed as non-actionable structural idioms.
+
 ### Deprecated
 
 - **Per-generator `--include-*` flags**: `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` are now hidden aliases. They still work but print a deprecation warning pointing to `--include-generated`.
