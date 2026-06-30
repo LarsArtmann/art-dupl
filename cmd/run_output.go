@@ -24,7 +24,7 @@ func printDupls(
 	testThreshold int,
 ) error {
 	if ctx.Err() != nil {
-		return ctx.Err() //nolint:wrapcheck
+		return ctx.Err()
 	}
 
 	groups := printer.BuildCloneGroups(duplChan)

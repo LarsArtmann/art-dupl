@@ -184,9 +184,9 @@ func diffLCS(srcRows, dstRows [][]byte, left, right []DiffLine) bool {
 	m, n := len(srcRows), len(dstRows)
 
 	// Build LCS matrix
-	dp := make([][]int, m+1) //nolint:makezero // DP matrix filled by index
+	dp := make([][]int, m+1)
 	for i := range dp {
-		dp[i] = make([]int, n+1) //nolint:makezero // DP row filled by index
+		dp[i] = make([]int, n+1)
 	}
 
 	for i := 1; i <= m; i++ {

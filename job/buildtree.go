@@ -10,10 +10,10 @@ import (
 func BuildTree(
 	ctx context.Context,
 	schan chan []*syntax.Node,
-) (t *suffixtree.STree, d *[]*syntax.Node, done chan bool) {
-	t = suffixtree.New()
+) (*suffixtree.STree, *[]*syntax.Node, chan bool) {
+	t := suffixtree.New()
 	data := make([]*syntax.Node, 0, 100)
-	done = make(chan bool, 1)
+	done := make(chan bool, 1)
 
 	go func() {
 		for seq := range schan {

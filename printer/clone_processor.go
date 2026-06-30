@@ -20,7 +20,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		return nil, nil
 	}
 
-	clones := make([]domain.ProcessedClone, len(dups)) //nolint:makezero // loop index i is used for error attribution
+	clones := make([]domain.ProcessedClone, len(dups))
 
 	for i, dup := range dups {
 		cnt := len(dup)

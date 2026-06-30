@@ -56,7 +56,7 @@ func hashSeq(nodes []*Node) string {
 
 	// Ensure buffer has sufficient capacity
 	if cap(buf) < needed {
-		buf = make([]byte, needed) //nolint:makezero // binary buffer written via PutUint32 by index
+		buf = make([]byte, needed)
 	} else {
 		buf = buf[:needed]
 	}

@@ -107,7 +107,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 
 	// Check for cancellation after analysis completes
 	if ctx.Err() != nil {
-		return ctx.Err() //nolint:wrapcheck
+		return ctx.Err()
 	}
 
 	// Build metadata for HTML report

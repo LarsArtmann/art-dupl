@@ -341,13 +341,9 @@ func TestFileError_ReturnsZeroState(t *testing.T) {
 
 	fd := NewFileDetector(1)
 
-	fileHash, ok := fd.fileError("test.go", os.ErrNotExist, "file not found")
+	ok := fd.fileError("test.go", os.ErrNotExist, "file not found")
 	if ok {
 		t.Error("expected ok=false")
-	}
-
-	if fileHash != (FileHash{}) {
-		t.Errorf("expected zero FileHash, got %+v", fileHash)
 	}
 }
 

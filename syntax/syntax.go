@@ -106,7 +106,7 @@ func (n *Node) Clone() *Node {
 		Statement: n.Statement,
 	}
 	if len(n.Children) > 0 {
-		clone.Children = make([]*Node, len(n.Children)) //nolint:makezero // filled by index below
+		clone.Children = make([]*Node, len(n.Children))
 		for i, c := range n.Children {
 			clone.Children[i] = c.Clone()
 		}
@@ -275,7 +275,7 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 		// Hash is computed below after fragments are populated
 	}
 	for i, pos := range m.Ps {
-		match.Frags[i] = make([]*Node, len(indexes)) //nolint:makezero // 2D matrix filled by index below
+		match.Frags[i] = make([]*Node, len(indexes))
 		for j, index := range indexes {
 			match.Frags[i][j] = data[int(pos)+index]
 		}

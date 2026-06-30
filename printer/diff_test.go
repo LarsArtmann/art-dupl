@@ -313,8 +313,8 @@ func TestDiffSameLength(t *testing.T) {
 
 func TestDiffLargeFiles(t *testing.T) {
 	// Create base and compared with different lengths (>100 triggers large file path)
-	srcRows := make([][]byte, 150) //nolint:makezero // 150-row fixture filled by index
-	dstRows := make([][]byte, 150) //nolint:makezero // 150-row fixture filled by index
+	srcRows := make([][]byte, 150)
+	dstRows := make([][]byte, 150)
 
 	for i := range 150 {
 		if i == 75 {
@@ -326,8 +326,8 @@ func TestDiffLargeFiles(t *testing.T) {
 		}
 	}
 
-	base := make([]DiffLine, 150)     //nolint:makezero // 150-row fixture filled by index
-	compared := make([]DiffLine, 150) //nolint:makezero // 150-row fixture filled by index
+	base := make([]DiffLine, 150)
+	compared := make([]DiffLine, 150)
 
 	for i := range 150 {
 		base[i] = DiffLine{Content: string(srcRows[i]), Type: DiffLineEqual, LineNumber: i + 1}

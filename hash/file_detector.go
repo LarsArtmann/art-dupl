@@ -148,14 +148,14 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 		filename,
 	) // #nosec G304 -- Filename comes from user-provided paths, verified by caller
 	if err != nil {
-		return f.fileError(filename, err, "skipping file that cannot be opened")
+		return FileHash{}, f.fileError(filename, err, "skipping file that cannot be opened")
 	}
 
 	defer func() { _ = file.Close() }()
 
 	fi, err := file.Stat()
 	if err != nil {
-		return f.fileError(filename, err, "skipping file that cannot be stat'd")
+		return FileHash{}, f.fileError(filename, err, "skipping file that cannot be stat'd")
 	}
 
 	size := int(fi.Size())
@@ -164,7 +164,7 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 
 	_, err = io.Copy(hasher, file)
 	if err != nil {
-		return f.fileError(filename, err, "skipping file that cannot be read")
+		return FileHash{}, f.fileError(filename, err, "skipping file that cannot be read")
 	}
 
 	return FileHash{
@@ -175,8 +175,8 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 }
 
 // fileError logs a file operation error and returns failure state.
-func (f *FileDetector) fileError(filename string, err error, reason string) (FileHash, bool) {
+func (f *FileDetector) fileError(filename string, err error, reason string) bool {
 	logger.Default.Debug(reason, "file", filename, "err", err)
 
-	return FileHash{}, false
+	return false
 }

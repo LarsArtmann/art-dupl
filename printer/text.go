@@ -176,7 +176,7 @@ func writeCloneLines(w io.Writer, clones []domain.ProcessedClone, format string)
 }
 
 func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) error {
-	sortedCloneGroups := make([][]domain.ProcessedClone, len(p.cloneGroups)) //nolint:makezero
+	sortedCloneGroups := make([][]domain.ProcessedClone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
 	switch sortBy {

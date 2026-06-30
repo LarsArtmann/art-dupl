@@ -30,7 +30,7 @@ func TestFindSyntaxUnitsOwnershipCheck(t *testing.T) {
 	nodes[0].Owns = 3
 
 	// Create another sequence with different ownership
-	data := make([]*Node, 20) //nolint:makezero // copied into then filled by index
+	data := make([]*Node, 20)
 	copy(data, nodes)
 
 	// Add the same sequence at a different position but with different ownership

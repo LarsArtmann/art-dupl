@@ -78,11 +78,11 @@ func TestBuildTreeEmptyInput(t *testing.T) {
 func TestBuildTreeMultipleSequences(t *testing.T) {
 	ctx := t.Context()
 	// Create multiple sequences
-	sequence1 := make([]*syntax.Node, 2) //nolint:makezero // fixed-size fixture assigned by explicit index
+	sequence1 := make([]*syntax.Node, 2)
 	sequence1[0] = &syntax.Node{Type: 1}
 	sequence1[1] = &syntax.Node{Type: 2}
 
-	sequence2 := make([]*syntax.Node, 2) //nolint:makezero // fixed-size fixture assigned by explicit index
+	sequence2 := make([]*syntax.Node, 2)
 	sequence2[0] = &syntax.Node{Type: 3}
 	sequence2[1] = &syntax.Node{Type: 4}
 
