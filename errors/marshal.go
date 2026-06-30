@@ -34,18 +34,18 @@ func (e *MarshalError) Unwrap() error {
 }
 
 // HandleMarshalingError provides unified JSON marshaling error handling.
+// It inspects the concrete encoding/json error type (not its message string,
+// which is unstable) so callers can match the typed sentinels via errors.Is.
 func HandleMarshalingError(operation, context string, err error) error {
 	if err == nil {
 		return nil
 	}
 
-	switch err.Error() {
-	case "json: unsupported value":
+	switch {
+	case errors.As(err, new(*json.UnsupportedValueError)):
 		return newMarshalError(operation, context, err, ErrUnsupportedValueType)
-	case "json: unsupported type":
+	case errors.As(err, new(*json.UnsupportedTypeError)):
 		return newMarshalError(operation, context, err, ErrUnsupportedType)
-	case "json: invalid UTF-8":
-		return newMarshalError(operation, context, err, ErrInvalidUTF8)
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
 	}
@@ -79,7 +79,7 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 
 	data, err := json.Marshal(v)
 	if err != nil {
-		return nil, NewConfigError("failed to marshal value", err)
+		return nil, HandleMarshalingError("marshal", nilErrorMessage, err)
 	}
 
 	return data, nil
@@ -105,8 +105,9 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, NewConfigError(
-			fmt.Sprintf("failed to marshal value with indent (prefix: %q)", prefix),
+		return nil, HandleMarshalingError(
+			"marshal indent",
+			fmt.Sprintf("%s (prefix: %q)", nilErrorMessage, prefix),
 			err,
 		)
 	}

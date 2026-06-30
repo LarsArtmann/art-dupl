@@ -40,7 +40,7 @@ func (d *detector) buildAnalysisPipeline(
 
 			err := d.validateFile(filename)
 			if err != nil {
-				d.logger.Warn("Skipping file %s: %v", filename, err)
+				d.logger.Warn("Skipping file", "file", filename, "err", err)
 
 				continue
 			}

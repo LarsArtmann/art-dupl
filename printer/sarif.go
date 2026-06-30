@@ -99,8 +99,11 @@ type SARIFArtifactLocation struct {
 }
 
 // SARIFRegion represents a region within a file.
+// Field names follow the SARIF 2.1.0 spec (region.startLine / region.endLine);
+// they intentionally differ from LineRangeMixin's line_start/line_end tags.
 type SARIFRegion struct {
-	LineRangeMixin
+	StartLine int `json:"startLine"`
+	EndLine   int `json:"endLine,omitempty"`
 }
 
 // SARIFFingerprints represents fingerprints for deduplication.
@@ -181,7 +184,7 @@ func (p *sarifPrinter) PrintClones(
 
 	p.processedHashes[hash] = true
 
-	size := group.TokenCount
+	size := group.TotalTokenCount()
 
 	for _, cl := range group.Clones {
 		level := p.determineLevel(size)
@@ -201,10 +204,8 @@ func (p *sarifPrinter) PrintClones(
 							URI: cl.Filename,
 						},
 						Region: SARIFRegion{
-							LineRangeMixin: LineRangeMixin{
-								LineStart: cl.LineStart,
-								LineEnd:   cl.LineEnd,
-							},
+							StartLine: cl.LineStart,
+							EndLine:   cl.LineEnd,
 						},
 					},
 				},

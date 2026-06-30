@@ -86,12 +86,14 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	// Get context from Cobra (includes Fang's signal handling)
 	ctx := cmd.Context()
 
+	// Apply timeout before dispatching so it is honored on every code path,
+	// including --all (which previously returned before the timeout was set).
+	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
+	defer cancel()
+
 	if allFlag {
 		return runAllModes(ctx, mergedConfig, sortBy, outputDir)
 	}
-	// Add timeout context if specified
-	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
-	defer cancel()
 
 	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,

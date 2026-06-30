@@ -27,7 +27,7 @@ func (d *detector) convertToCloneGroup(
 
 		err := clone.IsValid()
 		if err != nil {
-			d.logger.Warn("Skipping invalid clone: %v", err)
+			d.logger.Warn("Skipping invalid clone", "err", err)
 
 			continue
 		}
@@ -106,7 +106,7 @@ func (d *detector) extractFragmentContent(frag []*syntax.Node) string {
 
 	content, err := d.opts.FileReader(frag[0].Filename)
 	if err != nil {
-		d.logger.Warn("Failed to read file %s: %v", frag[0].Filename, err)
+		d.logger.Warn("Failed to read file", "file", frag[0].Filename, "err", err)
 
 		return ""
 	}

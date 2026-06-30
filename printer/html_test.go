@@ -457,11 +457,15 @@ func TestSuggestionHTML(t *testing.T) {
 func TestHTMLCountDiffStats(t *testing.T) {
 	t.Parallel()
 
+	// Mirrors real diff-engine output: the LineDiff engine records removed
+	// lines on Base and added/modified on Compared.
 	diff := DiffResult{
+		Base: []DiffLine{
+			{Content: "c", Type: DiffLineRemoved},
+		},
 		Compared: []DiffLine{
 			{Content: "a", Type: DiffLineAdded},
 			{Content: "b", Type: DiffLineEqual},
-			{Content: "c", Type: DiffLineRemoved},
 			{Content: "d", Type: DiffLineModified},
 			{Content: "e", Type: DiffLineAdded},
 		},

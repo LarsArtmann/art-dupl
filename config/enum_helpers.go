@@ -99,10 +99,13 @@ func unmarshalStringTypeToPointer[T ~string](
 }
 
 // marshalStringType marshals a string type to JSON with validation.
-// For invalid values (typically zero values with omitempty), returns null to allow omission.
+// Invalid values produce an error rather than silently serializing as null,
+// so corrupted in-memory state surfaces at the marshaling boundary instead of
+// being hidden. Callers that need to omit a zero value must handle that case
+// themselves (as FileType.MarshalJSON does for FileTypeAll).
 func marshalStringType[T ~string](val T, isValid func(T) bool, typeName string) ([]byte, error) {
 	if !isValid(val) {
-		return []byte("null"), nil
+		return nil, fmt.Errorf("%w: %q is not a valid %s", ErrInvalidType, val, typeName)
 	}
 
 	data, err := json.Marshal(string(val))

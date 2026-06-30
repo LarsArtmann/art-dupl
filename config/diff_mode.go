@@ -31,6 +31,6 @@ func ParseDiffMode(s string) (DiffMode, error) {
 	case "false", "disabled", "":
 		return DiffModeDisabled, nil
 	default:
-		return DiffModeDisabled, fmt.Errorf("%w: %s", ErrInvalidType, s)
+		return DiffModeDisabled, fmt.Errorf("%w: %s", ErrInvalidDiffMode, s)
 	}
 }

@@ -1196,12 +1196,13 @@ func TestMarshalStringType_Variants(t *testing.T) {
 	isValidFn := func(v string) bool { return v == testValidValue }
 
 	tests := []struct {
-		name  string
-		input string
-		want  string
+		name      string
+		input     string
+		want      string
+		wantError bool
 	}{
-		{"invalid_returns_null", "invalid", "null"},
-		{"valid_returns_quoted", testValidValue, `"valid"`},
+		{"invalid_returns_error", "invalid", "", true},
+		{"valid_returns_quoted", testValidValue, `"valid"`, false},
 	}
 
 	for _, tc := range tests {
@@ -1209,6 +1210,14 @@ func TestMarshalStringType_Variants(t *testing.T) {
 			t.Parallel()
 
 			data, err := marshalStringType(tc.input, isValidFn, "string type")
+			if tc.wantError {
+				if err == nil {
+					t.Fatalf("marshalStringType(%s) expected error, got %s", tc.input, data)
+				}
+
+				return
+			}
+
 			if err != nil {
 				t.Fatalf("marshalStringType error: %v", err)
 			}

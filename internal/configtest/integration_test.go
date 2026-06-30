@@ -80,6 +80,8 @@ func createConfigTestCase(name string, threshold int, isValid bool) struct {
 		config: &config.Config{
 			Threshold:         threshold,
 			OutputFormat:      config.OutputFormatText,
+			SortBy:            config.SortBySize,
+			DiffMode:          config.DiffModeDisabled,
 			MaxChildrenSerial: 10000,
 			DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 		},
@@ -138,6 +140,8 @@ func TestOutputFormatSelection(t *testing.T) {
 			cfg := &config.Config{
 				OutputFormat:      config.OutputFormat(tt.outputFormat),
 				Threshold:         15,
+				SortBy:            config.SortBySize,
+				DiffMode:          config.DiffModeDisabled,
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  config.DetectionMethods{config.DetectionMethodArtDupl},
 			}

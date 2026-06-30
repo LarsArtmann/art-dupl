@@ -51,12 +51,16 @@ func countDiffStats(diff DiffResult) (int, int, int) {
 		switch line.Type {
 		case DiffLineAdded:
 			added++
-		case DiffLineRemoved:
-			removed++
 		case DiffLineModified:
 			modified++
-		case DiffLineEqual:
-			// No action needed
+		case DiffLineEqual, DiffLineRemoved:
+			// Removed lines are recorded on the Base side (see LineDiff); counted below.
+		}
+	}
+
+	for _, line := range diff.Base {
+		if line.Type == DiffLineRemoved {
+			removed++
 		}
 	}
 

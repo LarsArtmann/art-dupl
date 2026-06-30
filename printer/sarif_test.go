@@ -325,7 +325,7 @@ func TestSARIFOutput_Structure(t *testing.T) {
 			t.Error("Expected non-empty URI")
 		}
 
-		if loc.Region.LineStart == 0 {
+		if loc.Region.StartLine == 0 {
 			t.Error("Expected non-zero StartLine")
 		}
 	}

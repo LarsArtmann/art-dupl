@@ -166,6 +166,8 @@ func TestValidateConfig(t *testing.T) {
 			config: &Config{
 				Threshold:         15,
 				OutputFormat:      "text",
+				SortBy:            SortBySize,
+				DiffMode:          DiffModeDisabled,
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 			},
@@ -213,6 +215,8 @@ func TestValidateConfig(t *testing.T) {
 			config: &Config{
 				Threshold:         15,
 				OutputFormat:      "text",
+				SortBy:            SortBySize,
+				DiffMode:          DiffModeDisabled,
 				MaxChildrenSerial: 10000,
 				DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 				Incremental:       true,

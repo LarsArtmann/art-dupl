@@ -55,7 +55,7 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BranchStmt:
-		o.Type = BranchStmt
+		o.Type = encodeSemanticType(BranchStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
 		t.addWithNilCheck(o, n.Label)
 
 	case *ast.CallExpr:
@@ -75,7 +75,7 @@ func (t *transformer) trans(
 		t.addBodyStatements(o, n.Body)
 
 	case *ast.ChanType:
-		o.Type = ChanType
+		o.Type = encodeSemanticType(ChanType, chanDirString(n.Dir), t.config.Mode.hashesIdentifiers())
 		o.AddChildren(t.trans(n.Value))
 
 	case *ast.CommClause:
@@ -183,7 +183,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Results)
 
 	case *ast.GenDecl:
-		o.Type = GenDecl
+		o.Type = encodeSemanticType(GenDecl, n.Tok.String(), t.config.Mode.hashesIdentifiers())
 		for _, spec := range n.Specs {
 			o.AddChildren(t.trans(spec))
 		}
@@ -385,4 +385,17 @@ func (t *transformer) addIdentifierNames(o *syntax.Node, names []*ast.Ident) {
 // addKeyValue adds transformed key and value nodes as children.
 func (t *transformer) addKeyValue(o *syntax.Node, key, value ast.Expr) {
 	o.AddChildren(t.trans(key), t.trans(value))
+}
+
+// chanDirString returns a stable string for an ast.ChanDir so that
+// send-only, receive-only, and bidirectional channels encode distinctly.
+func chanDirString(dir ast.ChanDir) string {
+	switch dir {
+	case ast.SEND:
+		return "send"
+	case ast.RECV:
+		return "recv"
+	default:
+		return "both"
+	}
 }

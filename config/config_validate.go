@@ -19,6 +19,9 @@ func ValidateConfig(cfg *Config) error {
 		func() error { return validateThreshold(cfg.Threshold) },
 		func() error { return validateMaxChildrenSerial(cfg.MaxChildrenSerial) },
 		func() error { return validateOutputFormat(cfg.OutputFormat) },
+		func() error { return validateSortCriteria(cfg.SortBy) },
+		func() error { return validateDiffMode(cfg.DiffMode) },
+		func() error { return validateTestThreshold(cfg.TestThreshold) },
 		func() error { return validateDetectionMethods(cfg.DetectionMethods) },
 		func() error { return validateCacheFlags(cfg.CacheDir, cfg.ClearCache, cfg.Incremental) },
 		func() error { return validateOnly(cfg.Only) },
@@ -62,6 +65,39 @@ func validateOutputFormat(format OutputFormat) error {
 	if !format.IsValid() {
 		return errors.NewValidationError(
 			fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", format),
+			nil,
+		)
+	}
+
+	return nil
+}
+
+func validateSortCriteria(criteria SortCriteria) error {
+	if !criteria.IsValid() {
+		return errors.NewValidationError(
+			fmt.Sprintf("invalid sort criteria: %s", criteria),
+			nil,
+		)
+	}
+
+	return nil
+}
+
+func validateDiffMode(mode DiffMode) error {
+	if !mode.IsValid() {
+		return errors.NewValidationError(
+			fmt.Sprintf("invalid diff mode: %s", mode),
+			nil,
+		)
+	}
+
+	return nil
+}
+
+func validateTestThreshold(testThreshold int) error {
+	if testThreshold < 0 {
+		return errors.NewValidationError(
+			fmt.Sprintf("test threshold must be non-negative: %d", testThreshold),
 			nil,
 		)
 	}

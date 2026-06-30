@@ -31,6 +31,11 @@ func ParseWithLineCount(filename string) (*syntax.Node, int, error) {
 // ParseWithLineCountConfig parses the given file with the specified configuration
 // and returns the syntax tree along with the line count.
 func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, int, error) {
+	err := cfg.Validate()
+	if err != nil {
+		return nil, 0, fmt.Errorf("parse %s: %w", filename, err)
+	}
+
 	fset := token.NewFileSet()
 
 	file, err := parser.ParseFile(fset, filename, nil, 0)
