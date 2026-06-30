@@ -6,10 +6,8 @@
 package suffixtree
 
 import (
-	"bytes"
 	"fmt"
 	"math"
-	"strings"
 
 	"github.com/LarsArtmann/art-dupl/errors"
 )
@@ -198,21 +196,6 @@ func (t *STree) At(p Pos) Token {
 	}
 
 	return t.data[p]
-}
-
-func (t *STree) String() string {
-	buf := new(bytes.Buffer)
-	printState(buf, t.root, 0)
-
-	return buf.String()
-}
-
-func printState(buf *bytes.Buffer, s *state, ident int) {
-	for _, tr := range s.trans {
-		fmt.Fprint(buf, strings.Repeat("  ", ident))
-		fmt.Fprintf(buf, "* (%d, %d)\n", tr.start, tr.ActEnd())
-		printState(buf, tr.state, ident+1)
-	}
 }
 
 // state is an explicit state of the suffix tree.

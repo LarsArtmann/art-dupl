@@ -201,7 +201,7 @@ func f(v interface{}) {
 	}
 }
 
-func TestNormalizer_DoesNotDescendIntoFuncLit(t *testing.T) {
+func TestNormalizer_DescendsIntoFuncLit(t *testing.T) {
 	t.Parallel()
 
 	src := `package p
@@ -218,10 +218,11 @@ func f() {
 	n.beginFunction()
 	n.collectFunctionLocals(fd)
 
-	// closureVar is inside a FuncLit — it should NOT be declared in the outer
-	// function's table (nested functions have their own scope).
-	if got := n.resolve("closureVar"); got != "closureVar" {
-		t.Errorf("func-lit local should not be canonicalized by outer scope, got %q", got)
+	// closureVar is inside a FuncLit — with flat-table normalization, its
+	// params and locals ARE declared in the same table. This enables Type 2
+	// detection for closures with renamed variables.
+	if got := n.resolve("closureVar"); got == "closureVar" {
+		t.Error("func-lit param closureVar should be canonicalized")
 	}
 
 	// cb is a local of the outer function — it should be canonicalized.

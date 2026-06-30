@@ -103,8 +103,9 @@ func (n *normalizer) collectFunctionLocals(fd *ast.FuncDecl) {
 }
 
 // declareBodyLocals walks a function body declaring every locally-introduced
-// binding. Nested function literals are not descended into (they own their
-// scope) so their parameters do not pollute the enclosing table.
+// binding. Closure (FuncLit) parameters and body locals are also declared
+// using the same flat symbol table — this is a known limitation (no scope
+// shadowing) but correct for the common case of non-shadowed names.
 func (n *normalizer) declareBodyLocals(body *ast.BlockStmt) {
 	ast.Inspect(body, func(node ast.Node) bool {
 		switch d := node.(type) {
@@ -120,7 +121,12 @@ func (n *normalizer) declareBodyLocals(body *ast.BlockStmt) {
 		case *ast.TypeSwitchStmt:
 			n.declareTypeSwitchGuard(d)
 		case *ast.FuncLit:
-			return false // nested function: own scope, stop descending
+			// Declare closure parameters and results, then continue
+			// descending into the body to collect closure-local variables.
+			declareFieldListNames(n, d.Type.Params)
+			if d.Type.Results != nil {
+				declareFieldListNames(n, d.Type.Results)
+			}
 		}
 
 		return true

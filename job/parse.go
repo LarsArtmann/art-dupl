@@ -253,9 +253,7 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 
 		seq := syntax.SerializeWithMaxChildren(ast, maxChildren)
 
-		select {
-		case schan <- seq:
-		case <-ctx.Done():
+		if !sendCtx(ctx, schan, seq) {
 			close(schan)
 
 			return

@@ -313,42 +313,6 @@ func TestFileCache_Stats(t *testing.T) {
 	})
 }
 
-// TestFileCache_GetStats tests the GetStats method.
-func TestFileCache_GetStats(t *testing.T) {
-	tempDir := t.TempDir()
-	fc := NewFileCache(tempDir)
-
-	t.Run("initial stats", func(t *testing.T) {
-		hits, misses := fc.GetStats()
-		if hits != 0 || misses != 0 {
-			t.Errorf("Expected (0, 0), got (%d, %d)", hits, misses)
-		}
-	})
-
-	t.Run("after operations", func(t *testing.T) {
-		contentHash := Key([]byte("test content"))
-		nodes := testNodes()
-
-		fc.Get("nonexistent") // miss
-
-		err := fc.Set(contentHash, nodes)
-		if err != nil {
-			t.Fatalf("Set failed: %v", err)
-		}
-
-		fc.Get(contentHash) // hit
-
-		hits, misses := fc.GetStats()
-		if hits != 1 {
-			t.Errorf("Expected 1 hit, got %d", hits)
-		}
-
-		if misses != 1 {
-			t.Errorf("Expected 1 miss, got %d", misses)
-		}
-	})
-}
-
 // TestKey tests hash generation.
 func TestKey(t *testing.T) {
 	t.Run("consistent hashing", func(t *testing.T) {

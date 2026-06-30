@@ -264,14 +264,6 @@ func (fc *FileCache) Stats() Stats {
 	return stats
 }
 
-// GetStats returns cache hit/miss statistics.
-func (fc *FileCache) GetStats() (int64, int64) {
-	fc.mu.RLock()
-	defer fc.mu.RUnlock()
-
-	return atomic.LoadInt64(&fc.metadata.HitCount), atomic.LoadInt64(&fc.metadata.MissCount)
-}
-
 // cachePath returns the full path for a cache entry.
 func (fc *FileCache) cachePath(contentHash string) string {
 	return filepath.Join(fc.cacheDir, "files", contentHash+".gob")

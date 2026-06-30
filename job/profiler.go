@@ -57,18 +57,6 @@ func Profile() ProfileResult {
 	}
 }
 
-// ProfileDiff calculates the difference between two profiles.
-func ProfileDiff(start, end ProfileResult) ProfileResult {
-	return ProfileResult{ //nolint:exhaustruct // Delta result; Timestamp meaningless for diffs
-		TotalAllocMB: end.TotalAllocMB - start.TotalAllocMB,
-		SysMB:        end.SysMB - start.SysMB,
-		NumGC:        end.NumGC - start.NumGC,
-		PauseTotalMS: end.PauseTotalMS - start.PauseTotalMS,
-		Duration:     end.Duration - start.Duration,
-		NumGoroutine: end.NumGoroutine - start.NumGoroutine,
-	}
-}
-
 // StartProfile returns a profile with start time.
 func StartProfile() ProfileResult {
 	p := Profile()
@@ -84,14 +72,6 @@ func EndProfile(start ProfileResult) ProfileResult {
 	end.Duration = time.Since(start.Timestamp)
 
 	return end
-}
-
-// ProfileWithDuration creates a profile with a specific duration.
-func ProfileWithDuration(duration time.Duration) ProfileResult {
-	p := Profile()
-	p.Duration = duration
-
-	return p
 }
 
 // PrintProfileResult outputs profile metrics to stderr.
