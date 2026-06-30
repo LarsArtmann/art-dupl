@@ -1,0 +1,76 @@
+direction: right
+
+tier_1: Tier 1 — CRITICAL correctness (1% → 51%) {
+  style.fill: "#ff6b6b"
+  style.font-color: "#0e0e10"
+  style.stroke: "#ff6b6b"
+  shape: package
+}
+
+tier_2: Tier 2 — HIGH quick wins (4% → 64%) {
+  style.fill: "#f4d35e"
+  style.font-color: "#0e0e10"
+  style.stroke: "#f4d35e"
+  shape: package
+}
+
+tier_3: Tier 3 — HIGH robustness (20% → 80%) {
+  style.fill: "#ffb347"
+  style.font-color: "#0e0e10"
+  style.stroke: "#ffb347"
+  shape: package
+}
+
+tier_4: Tier 4 — POLICY + architecture {
+  style.fill: "#6eb5ff"
+  style.font-color: "#0e0e10"
+  style.stroke: "#6eb5ff"
+  shape: package
+}
+
+tier_5: Tier 5 — MEDIUM code quality {
+  style.fill: "#18181d"
+  style.font-color: "#f4f4f0"
+  style.stroke: "#6eb5ff"
+  shape: package
+}
+
+tier_6: Tier 6 — LOW infrastructure {
+  style.fill: "#18181d"
+  style.font-color: "#f4f4f0"
+  style.stroke: "#f4d35e"
+  shape: package
+}
+
+tier_7: Tier 7 — ROADMAP future {
+  style.fill: "#16161a"
+  style.font-color: "#f4f4f0"
+  style.stroke: "#6eb5ff"
+  shape: package
+}
+
+t1_type2: "T1 Type-2 classification\n(Option A: walk Children)" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
+t5_serial: "T5 Non-destructive serial\n(side table)" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
+t6_cache: "T6 Cache-miss deep-clone" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
+t7_suffix: "T7 Update panic→error" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
+
+t2_analysis: "T2 AnalysisTime tag" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
+t3_gc: "T3 Remove runtime.GC()" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
+t4_sort: "T4 Deterministic sort" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
+t10_maxchild: "T10 Wire MaxChildrenSerial" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
+t11_sha: "T11 sha1→sha256" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
+
+t8_mode: "T8 Detection mode enum" {style.fill: "#ffb347"; style.font-color: "#0e0e10"}
+t9_funclit: "T9 FuncLit normalize" {style.fill: "#ffb347"; style.font-color: "#0e0e10"}
+
+t12_json: "T12 json v1→v2" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
+t21_enum: "T21 SortCriteria→domain" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
+t22_dto: "T22 ProcessedClone DTO" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
+
+tier_1 -> tier_2 -> tier_3 -> tier_4 -> tier_5 -> tier_6 -> tier_7: "priority flow"
+
+t1_type2 -> t5_serial: "fixes user-visible bug first"
+t5_serial -> t6_cache: "paired: multi-pass safety"
+t6_cache -> t7_suffix: "robustness chain"
+
+t5_serial -> t4_sort: "non-destructive enables golden tests"
