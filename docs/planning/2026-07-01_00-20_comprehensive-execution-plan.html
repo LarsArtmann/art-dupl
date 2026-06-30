@@ -1,0 +1,2784 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>art-dupl — Comprehensive Execution Plan 2026-07-01</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.95rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 72ch;
+        margin: 0;
+      }
+      .hero-meta {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        margin-top: 0.8rem;
+      }
+      .pill {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        padding: 0.15rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+        margin-right: 0.3rem;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before {
+        background: var(--warning);
+      }
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value {
+        color: var(--problem);
+      }
+      .stat-good .stat-value {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value {
+        color: var(--warning);
+      }
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .badge-t1 {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-t2 {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-t3 {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-t4 {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.86rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.5rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      td code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+      tr.task-row td {
+        background: color-mix(in srgb, var(--accent) 5%, transparent);
+        border-bottom: 2px solid var(--border-strong);
+      }
+      tr.task-row td:first-child {
+        font-weight: 800;
+      }
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+      .callout-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 10%, transparent);
+      }
+      .diagram-wrap {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        margin: 1.5rem 0;
+        overflow-x: auto;
+      }
+      .diagram-wrap svg {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      .num-cell {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .min-cell {
+        font-family: var(--font-mono);
+        text-align: center;
+        white-space: nowrap;
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Execution Plan</span>
+      <span>2026-07-01 00:20</span>
+      <span>art-dupl &middot; branch fork &middot; commit fd1ced3</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#pareto">Pareto Breakdown</a>
+          <a href="#graph">Execution Graph</a>
+          <a href="#tier1">Tier 1 — Critical</a>
+          <a href="#tier2">Tier 2 — Quick Wins</a>
+          <a href="#tier3">Tier 3 — Robustness</a>
+          <a href="#tier4">Tier 4 — Policy+Arch</a>
+          <a href="#tier5">Tier 5 — Code Quality</a>
+          <a href="#tier6">Tier 6 — Infrastructure</a>
+          <a href="#tier7">Tier 7 — Roadmap</a>
+          <a href="#blocked">Blocked</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Comprehensive Execution Plan</div>
+          <h1>art-dupl — Pareto Plan 2026-07-01</h1>
+          <p class="hero-subtitle">
+            Every open TODO across the status report, TODO_LIST.md, and ROADMAP.md — broken into 134
+            sub-tasks of ≤12 min each, sorted by importance / impact / effort / customer value.
+            Architecture decision baked in: <strong>Option A first</strong> (Type-2 fix via Children
+            walk), then quick wins, then the destructive-serial + cache-aliasing cluster (Option B)
+            as a focused unit.
+          </p>
+          <div class="hero-meta">
+            <span class="pill">41 tasks</span>
+            <span class="pill">134 sub-tasks</span>
+            <span class="pill">7 Pareto tiers</span>
+            <span class="pill">max 12 min / task</span>
+            <span class="pill">total ~17.5 hrs</span>
+          </div>
+        </div>
+
+        <nav class="toc">
+          <h3>Contents</h3>
+          <ul>
+            <li><a href="#summary">00 — Summary</a></li>
+            <li><a href="#pareto">01 — Pareto Breakdown (1% / 4% / 20%)</a></li>
+            <li><a href="#graph">02 — Execution Graph</a></li>
+            <li><a href="#tier1">03 — Tier 1: CRITICAL correctness (1%→51%)</a></li>
+            <li><a href="#tier2">04 — Tier 2: HIGH quick wins (4%→64%)</a></li>
+            <li><a href="#tier3">05 — Tier 3: HIGH robustness (20%→80%)</a></li>
+            <li><a href="#tier4">06 — Tier 4: POLICY + architecture</a></li>
+            <li><a href="#tier5">07 — Tier 5: MEDIUM code quality</a></li>
+            <li><a href="#tier6">08 — Tier 6: LOW infrastructure</a></li>
+            <li><a href="#tier7">09 — Tier 7: ROADMAP future</a></li>
+            <li><a href="#blocked">10 — Blocked</a></li>
+          </ul>
+        </nav>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-bad">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Tier 1 criticals</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">7</div>
+            <div class="stat-label">Tier 2 quick wins</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Tier 3 robustness</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Tier 4 policy+arch</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Tier 5 code quality</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Tier 6 infra</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Tier 7 roadmap</div>
+          </div>
+        </div>
+        <p>
+          Sources merged:
+          <code>docs/status/2026-06-30_23-01_post-review-and-linter-overhaul.html</code> (Top 25),
+          <code>TODO_LIST.md</code> (open items), <code>ROADMAP.md</code> (future). Duplicates
+          removed; stale items already done filtered out (Name() interface, debug.Stack removal,
+          Fragment unification — all complete). The architecture decision from the prior review is
+          resolved: <strong>Option A</strong> for the Type-2 fix (walk
+          <code>node.Children</code> directly — simpler, near-zero algorithmic risk), and
+          <strong>Option B</strong> applied only to the destructive-serial + cache-aliasing cluster
+          where the side-table approach fixes two bugs at once.
+        </p>
+
+        <h2 id="pareto"><span class="num">01</span>Pareto Breakdown</h2>
+        <div class="card card-problem">
+          <h4>The 1% that delivers 51% — T1 Type-2 classification fix</h4>
+          <p>
+            The tool's <strong>headline feature silently misclassifies results</strong>. Every
+            renamed-clone (Type 2, the most common kind in real codebases) is labeled Type 1 because
+            statement serialization drops descendants where the renamed identifiers live. Fix:
+            <code>classifyCloneType</code> walks <code>node.Children</code> directly instead of
+            going through <code>Serialize</code>. Existential correctness, small effort, low risk.
+          </p>
+        </div>
+        <div class="card card-warning">
+          <h4>The 4% that delivers 64% — Quick wins + non-destructive serial cluster</h4>
+          <p>
+            Seven XS/S tasks (AnalysisTime tag, GC removal, deterministic sort, MaxChildrenSerial
+            wiring, sha1→sha256, RunTableTest fix, dead-field removal) plus the
+            <strong>T5+T6 cluster</strong>: non-destructive <code>serial()</code> (Option B side
+            table) paired with cache-miss deep-clone. This cluster fixes the two remaining
+            existential bugs AND unblocks deterministic/golden-file testing. ~3 hrs total.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>The 20% that delivers 80% — Robustness + policy compliance</h4>
+          <p>
+            Detection-mode enum unification (kills the <code>--semantic=false</code> silent-drop
+            class), FuncLit normalization (Type-2 inside closures), dead-code purge, and the two
+            policy bans (json v1→v2, sha1). After this tier the engine is correct, deterministic,
+            and policy-compliant.
+          </p>
+        </div>
+        <div class="card">
+          <h4>The other 80% — Architecture, quality, infrastructure, roadmap</h4>
+          <p>
+            DTO decoupling, file splits, comparator unification, cache eviction, branded types, fang
+            v2, watch mode, new languages. Valuable but not urgent — backlog after the 80% is
+            delivered.
+          </p>
+        </div>
+
+        <h2 id="graph"><span class="num">02</span>Execution Graph</h2>
+        <div class="diagram-wrap" id="graph">
+          <?xml version="1.0" encoding="utf-8"?><svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            data-d2-version="v0.7.1"
+            preserveAspectRatio="xMinYMin meet"
+            viewBox="0 0 4567 1610"
+          >
+            <svg
+              class="d2-2633752449 d2-svg"
+              width="4567"
+              height="1610"
+              viewBox="-101 -101 4567 1610"
+            >
+              <rect
+                x="-101.000000"
+                y="-101.000000"
+                width="4567.000000"
+                height="1610.000000"
+                rx="0.000000"
+                fill="#FFFFFF"
+                class="fill-N7"
+                stroke-width="0"
+              />
+              <style type="text/css">
+                <![CDATA[
+                .d2-2633752449 .text-bold {
+                	font-family: "d2-2633752449-font-bold";
+                }
+                @font-face {
+                	font-family: d2-2633752449-font-bold;
+                	src: url("data:application/font-woff;base64,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");
+                }
+                .d2-2633752449 .text-italic {
+                	font-family: "d2-2633752449-font-italic";
+                }
+                @font-face {
+                	font-family: d2-2633752449-font-italic;
+                	src: url("data:application/font-woff;base64,d09GRgABAAAAABaUAAoAAAAAIhwAARhRAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAAA9AAAAGAAAABgW1SVeGNtYXAAAAFUAAAA1gAAATAnMyqOZ2x5ZgAAAiwAAA8WAAAVZJM3nn9oZWFkAAARRAAAADYAAAA2G7Ur2mhoZWEAABF8AAAAJAAAACQLeAjraG10eAAAEaAAAAD7AAABHIEEBrBsb2NhAAASnAAAAJAAAACQwqbHnG1heHAAABMsAAAAIAAAACAAXwD2bmFtZQAAE0wAAAMmAAAIMgntVzNwb3N0AAAWdAAAACAAAAAg/8YAMgADAeEBkAAFAAACigJY//EASwKKAlgARAFeADIBIwAAAgsFAwMEAwkCBCAAAHcAAAADAAAAAAAAAABBREJPAAEAIP//Au7/BgAAA9gBESAAAZMAAAAAAeYClAAAACAAA3ichM/JLmtxAAbw37k99160amoNNZ3S0qqhZq2xsZJYiETE0mt4DC9iY2cILyI8yV8c9r7178uXD5GMCDlxVEFFIhZLVNU1LFnW0tZx4syFS1dukkL5NgRSVftRzVQdO3WequtvFT6UFBXlZb864TW8hOfwFB7DQ7h/r73dpfu/J3Jo34Eju1pWNK1as27Dpi3bdrT9kRH765//unTrkZXTK69PvwGDhhQUDRsxakzJuAmTpkxLlM2YVVE1Z15N3YKGxfTdng6fAAAA//8BAAD//2+wKPMAAHicfFhrcBvXdb7nLoglIRAkiBcB4UFggV0SxIPcBbAAQbwIAnwBfIqkLPElyZJNSbZoO7TkSH6qdWWlVmGPJ55m3Nit3U46bhKNnf5IYju1ldaMXXn6cFonrtXxI3RiNbXNQR0nU+52dgGSoKbtn50dYPfec77zfd85d1EdciOEb8dPIAI1oCbUggwIcTonQXA8T5kIjmEokuQZnY50PwRrD31DkT3wi/ZnfutzKAYe/MuR/1h6Hj+xeRIemL//fuHghaNHZ69fF7zwL9cRQgiLbyIEP8Ul1IC0COlIjqFphlIqATgdxVDkhz1XVAqVQmHhhL+Hmw8UJlp+uQz3rKyEjkdjtwgTuLS5cvUqQoBiYhn78VPIgVCdi6bDoSTmWKOJpGnKpcEGvdHIsRHepFSCa+TWSNeBewvRidaILkL3LPa5XcPx9mwb5Z5XZ8+MFp84PcB7O9qYxM1neuPz4ba9rMMvxYoohHBEjlUnIcCxRoNeqaQYjo1EwiGaoqjzX33k0emnT83MTJ/L3nIkgkt/cM/p7x1N7/v6ofllKV+Q12jGJbRHxpB0khxJkU6SOg/HG4UPvZ9rPuWA1uBS5qd9X/TVPN9Q8zxRfdr/eeNnvbiU+ahP+NctDOL4KeSSMfg/IOApniOUSvDdfW/XwQcn4hNmXse3Jw/n3FQh5Y7pPBca34q5F9SPnRl94nR+G4iehUhr81+nhY/snu08lrfy4AinjiMonZOgzo9GoT1aPD+aEt5J4pJwHQybKxAV1irvoDIuIaLyDnV+9LxUwK314HFcQnXV9Ujq/OjdoG/Epc0XtnB4CZeQWf5fZ+J4ecdIhKdIgiIkzpAEdX4+ZlTkr8yfHyk0WNSKsVd9CaNCqakfxiXhmxcuwOHNFbjTd7zzceE5mHvct+wTLlXXPoZL1arqTFwkIq++vero170KpUaVGzlffKJToWxS5XFJmHuk+zYO5jZX4NlHueOs8LTMkV6xjBfwU6gZtdVWwWjQazDDJrHEk0o1wHH7amBmNT98NBSY+Uo2PJt0DY9K1yH1k+dGSqu5/rNTI4+t5rK9h1djh1bjh1d7lu7e5qFfxl5fy0OK0HHsFhG/P3fn8IP7lkOZxaPHC4NHcWl4ZvyWbuFLGBgfi3Foex0Gl1AjMu6sQ+ooYtdK35u74/apu6ZO3sn3H1m4eWRwCZfyUwdv1wofglH4BKYn85FghdtqsQwCfgp5ETK5aIaXCRcO0QwjCTIS2WajUmnQG00moxz3x9mV9phtmu+d8HsK3nh4Lh5fcnDmfMATtnW7C8FQ/Ji6p6ezk+2PulljwDLEs5NsqD1g73B07aWDRr91gO85GEKA5hHCYVxCpJQNxTtJiviL1Vca4c3GH63iYja7+WIlzjGxLNfbWK2QXG0pJEkfOlkd9ptPKBXDoyMN6Vz0gGGiMGl9SL18zBA0w4rwiN+VL86dgMeFE5fukdZbRIjw4RJyVrirVJIVBumMekPlDigiFOFlNi02jKsIQqEwdRmfG2gAhb5Tf6kobBwhMSg0Tu2LuCQ8GToZDp8MwbLwZOhEJHIiBMubK/CYe4xhCoxwSs5hCiFsxyXUJO1JcCajUaYtzwHxNe7EuL+hqYEw+VrPTQn/GQIEpZfdOdoz4H5JWBHl2jNiGb6EDaSXWGDacQuO5whKipSRvGLbOl5MF3zDCxyT0Cp0yUOpegW1v4Uec/sMrNWdDTu61Qen8/fMce3OhGAZ9ATTgeDPaJd3aJ5NJSpcc4hl+AyvIYPUTSR2UCSl40gJKZl3NepQkqTR+AmT0BL61KUiY8TufX55+7A7G7Z3dbgmqICeU7c7E3jtlSVb54EZaeu0d2ieSya8no9pFwLkEcvwAmwg667sdthX7QbvjN3sKx4K+3qNfh1t65qJxHraIkaXpag+Nt9/13TQZe4yGfpXsn15i5bVe9AWdpipyWUHu/8fvJ4WopkulqrojXpuRI9pW3xlM3ojfFjO5UewgSzIU7ufrFancruzEZzchqQMP5pZ9o/MdfEZu7pO+HFDW9Zri5nstok/FjHR0kGFF9THD+VWJn2BcdbKaVLjHrOWMzjAs6e10drtmEaAOhGCR/HbyCRrKYVr1UvKTahzOrUn09w0mrB4W/aq9mqdHfXaw+oj0/CtWN3E8FTjHp5UsZ1TSWG/hBmIbtiADeRAgVp34HmlktrNPqWS2IXe890zlNuaa08Oa8z0vmBivHNorptOagld6pjurhg14eo0dlupDGcP/httC5tchfSttG9mOvuVm1iJj8TiMXB2ev+BdnXk93fF4xUPcCAE7+C1aj/Z4SEpN5VwSEqTcFwqdjUrOiZ9yXB9stCrUAxaBwM5vHY9QQUzUYdbeAN8+tbGEW9A+JYoSmui3+EXMI36EEJKlB1ECImi+Hsig34j/95f+T23E8Ov8RpSV3xDikNHMSTpuFRcwr/d/9rq6PyKBa8JNoA3hV/8+s6zCJBPLKPf4TXUIqEYDlXsyqCvUuC2jPJs8V4ALaEkQWVUp7RmfGLzMbKBaAEcVyi298WfwIbk09KeldRNVQCUuxCoBeNQilTQU3RPd11wvycRUSiSxYRCMWAY9OUkbPLGwc4crA+5u/l2H5eJau36Wnx27nbwhw3UWhvDjfBLO3ZMBnahL+9wI/jbuoR3YQM1IVutTirmUhnRKuJ/e2zBN7zAji36Rha8/gkuwkoX9a0Hc3dNByrXdN9Kf99AdqW/Ly/PqV+IHHwGGxXNkzURazAluxmp2+VfqospJeGZDsjSZ+leHW5x/Hmtf13FL6Yd/qrwHbc+DVA1MPqXHudWPpzs0fKedbxkLDdoZbdSwOm0Y8/+QK1XX3y61miuPn2aDm5b9WYRYLdRV+pyDjZQc01dTCS9VY89ClvBbzbsbba4C44ErM/7Eg399am4cBWB+N9iGe6FDcTc2P9vbP9S9680/2e7581dpjTtTXREAzHfkC8wbA3oOCfdHWlLhrom1aF22tEeoCyMw5Ls6Mx43PZ2vcXvsNMtrl6fv98jxdwrlmE/Prnt9RFecixOdqkar/9+OqSA2MCegjuz96z63hhhdWkse7TNQXXK32RphJZY3cMPJ4VPWlrsdlUdTzZJa0fFMnwK65JPmHZmharidFW7f35bDYO2AV+uIDXI9n3qPl7r0EFEeFtnlmgK+wXLMMVVNBhHCN6HddSIkKT8avvWcfDQQMGtUCoUWrfuj4rCJqwLH1MjlHvIDWbBUnk3jxB+HdbleaP23Z07giIq5yiSWKYKzQCgaNrb/MCIFktThqX5/sH3FjXyr7amu2Fd+MDV73L1u8Bec2cBFTXodg9SwhcIxLcRgn+q4EDpmJp5gzRR1TMbSfp+fnDUW68hFU1tTdNTa0fGfPValaLZpVsA/NFJI2PQdxhO/tfndxoDRqPPdBdCIL4mBuFDWEcWhEiZM3JT2IWIBitVbRpzS4snY26ZKtB19YRC62n5w4LwgTk++I8kGWtIsBR8LHzqLFJUwQXazc+DRZ+MlfgFQvAdWJfOTxQP0lAIHKmqh+x7jZCoF14W1D44l/QLv5+saM4rluEtfBFpJXRNOyfJ/2WAX2MHPN6hpTCbd3cMLXYz2ZDNF5Cv6uiR5E1/em6g50jywDNn84n+Oy70Z2dzd1zo75tFIOUKD+D75LMTL02qEZ4jONLS+LWlO1TTfPwrD6nTcI1VuzZfS2/l8GN8UXqP4pNE1WSYbQMinaSqfunSQpALt2VcjG+2a3K/d/LcFOjVgYmzh28K+Hqdji6646b+8MLSymCftOZvxDL8BF9E7TdoleK3nZJktjqCoSLWH2aO2jnTcHf/7L6j6rGDDMvZsjZman58dmQ4HE8sqzP+dldoJMb19XQk7N6I1cSlxvsScwaFdpBN3NQt4SuJ6iq+D6mks4uT4p08SLlTHo6PVCZkGBmkhF81wMK+8Sn1lCD+La1sIRX6dv3lEHxDWEkmX7ZlnNZQa0ULSPJ8fJ902trJYzsBnZOkyK3Gpnwps2BjjZmod9CXCjl8bc5x6Gz8VUjrNQ8uZm9Xp/wdzpC3yCV7m7UW8Pe9VK+eniqcSsi84MQyXMcXURPyIcTra3dR6k27vjhITWZn07Nxlu6lONY85oblyHinf/y2dDinD7l62dmUxrnPOTDNL76Rmw4Ot/MZV3CP6YPoodThZ0/3dbd19GTP7qPd+0eTxyUeoGWEcB2+T54Xkph38k5Sg8kztuFTE8IbGrikOnJ31nTm9W+P97HzL/3dbQghAjnFMvwcX0QO1IliW4yORPjwtidXKmzHUrC6raQMeiNRyZBm5JZ5LTAb7exnrPbQLNsxFMjz+nZr7yGbpzfq9eWTdne6vSPLsH1DavdQtHs4rFVY4wxf9LZl2PSMQ9HYEXX1TPnhaOswGwzFw2xc+IEt2u7hOgzWkShfPSM0i2V4fQtjXcW3I6Fq29ZtuUNka2Tcil6DHw2xreMUxFlPr7s5lNOH2pLsTKrROeXMT/MLcX5MQh2+XcFXLWEtOLqcEryTHmr/aGo5zR9OHXrudF+FUyaxjC6gk5I+K55fKWXeaGasxlaP2mq0+GxGsw+JovzsGryHGRRDabgDKSWU5W8K10AFZkQgJJkkpX638drW7Emh9/E1MFX+c5LUHnx5z/uRiPxfRhyHWfyupBNTtVQmpfzxxvTVVid/67D/+MkGveZy+tnJ1Z/8cN78sPDv3wwcW6IlTb8tjqNPqu8ykRa5eHxFuuA/fqKhpYmVlrhseRicfxI8tkjr0n82ufrGD6Q8EmIZf4afQQzKoQBoEIPycAAhRKIcXEaVuLvQLfAG9kq48GEqzIU5A2egDNe+893e716+5fXYlSux16Xn9OJnOInrJM+tY3hn2MnwYIAoc0VIw99cYUDZ7H019apX+LJuex5FV2F967uQ41DxMKzLzQ7QAB5BL+AXpD11NbU4o7NTJr2NwiMmo9nZajS3IZDn7LdgXcqf3DlhyP2620RpzSp9s9WpOlU8pcn+TNUQU5Ldndi9+V5+RvIlsQxpeBw1SdHcODvWuv7FnkxrsL9TumYZq8/e3OaRr+rZTHCuGJjNBOaLAdaTHHIHeitXuQ/5xTLk8DNSjiRw8M/wUUiwqvFfbe5DCP0PAAAA//8BAAD//9Q1hbQAAAABAAAAARhRkERd8V8PPPUAAQPoAAAAANhdoMwAAAAA3WYvN/69/t0IHQPJAAIAAwACAAAAAAAAAAEAAAPY/u8AAAhA/r39vAgdA+gAwv/RAAAAAAAAAAAAAABHeJwczsEqfGEcxvHv8zvL/18zRR1m86afmSmHUjYmY2GBjUJkJytFysrG3hVYugcrNzDYKLGajbJ4XQALaUaa5tWZxVPP5lsfO2eGR9AwPVmDlm3j6uN6xW2Tlp3hDHC94HaH2yluF7StgVuB65f/GnJgx2zZN4d6ZtemaNokQbfULaepd+qqUdg4sn8EPgh8pku9EfhhLgsEGyNYRtPy1Ct77RN0lQZao21VltRh2R5Y103qqpPudZ16iswqUlMsf+orUlEERRYVOVFkWpEqX+TlVOCZcDmrqqdulrOiyILtMDEywcbIdUSFvTT/BwAA//8BAAD//04YRfcAAAAALgAuAFIAhACmAL4A1AEKASQBMgFCAXABlgHIAewCFAJUAmgCkALKAuoDIgNaA4gDwAP6BCIEagSUBKAErATGBOgFKgVUBYIFvAX2BhQGUAZ+BqoGyAcCBy4HXgd2B6gHwAfqCCYITgiCCMQI3gk0CXgJjgmaCagJtgnUCfIKBAoYCjAKPgpUCnIKogqyAAEAAABHAIwADABmAAcAAQAAAAAAAAAAAAAAAAAEAAN4nJyU204bVxSGPwfbbXq6qFBEbtC+TKVkTKMQJeHKlKCMinDqcXqQqkqDPT6I8czIM5iSJ+h136Jvkas+Rp+i6nW1fy+DHUVBIAT8e/Y6/Gutf21gk//YoFa/C/zdnBuusd382fAdvmgeGd5gv/mZ4ToPG/8YbjBovDXc5EGja/gT3tX/NPwpT+q/Gb7LVv3Q8Oc8rm8a/nLD8a/hr3jCuwWuwTP+MFxji8LwHTb51fAG97CYtTr32DHc4Gu2DTfZBnpMqEiZkDHCMWTCiDNmJJREJMyYMCRhgCOkTUqlrxmxkGP0wa8xERUzYkUcU+FIiUiJKRlbxLfyynmtjEOdZnbXpmJMzIk8TonJcOSMyMlIOFWcioqCF7RoUdIX34KKkoCSCSkBOTNGtOhwyBE9xkwocRwqkmcWkTOk4pxY+Z1Z+M70ScgojdUZGQPxdOKXyDvkCEeHQrarkY/WIjzE8aO8Pbdctt8S6NetMFvPu2QTM1c/U3Ul1c25JjjWrc/b5gfhihe4W/Vnncn1PRrof6XIJ5xp/gNNKhOTDOe2aBNJQZG7j2Nf55BIHfmJkB6v6PCGns5tunRpc0yPkJfy7dDF8R0djjmQRyi8uDuUYo75Bcf3hLLxsRPrz2JiCb9TmLpLcZypjimFeu6ZB6o1UYU3n7DfoXxNHaV8+tojb+k0v0x7FjMyVRRiOFUvl9oorX8DU8RUtfjZXt37bZjb7i23+IJcO+zVuuDkJ7dgdN1Ug/c0c66fgJgBOSey6JMzpUXFhXi/JuaMFMeBuvdKW1LRvvTxeS6kkoSpGIRkijOj0N/YdBMZ9/6a7p29JQP5e6anl1XdJotTr65m9EbdW95F1uVkZQItm2q+oqa+uGam/UQ7tco/km+p1y3nEaHiLnb7Q6/ADs/ZZY+xsvR1M7+886+Et9hTB05JZDWUpn0NjwnYJeApu+zynKfv9XLJxhkft8ZnNX+bA/bpsHdtNQvbDvu8XIv28cx/ie2O6nE8ujw9u/U0H9xAtd9o367eza4m56cxt2hX23FMzNRzcVurNbn7BP8DAAD//wEAAP//cqFRQAAAAAMAAP/1AAD/zgAyAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
+                }]]>
+              </style>
+              <style type="text/css">
+                <![CDATA[.shape {
+                  shape-rendering: geometricPrecision;
+                  stroke-linejoin: round;
+                }
+                .connection {
+                  stroke-linecap: round;
+                  stroke-linejoin: round;
+                }
+                .blend {
+                  mix-blend-mode: multiply;
+                  opacity: 0.5;
+                }
+
+                		.d2-2633752449 .fill-N1{fill:#0A0F25;}
+                		.d2-2633752449 .fill-N2{fill:#676C7E;}
+                		.d2-2633752449 .fill-N3{fill:#9499AB;}
+                		.d2-2633752449 .fill-N4{fill:#CFD2DD;}
+                		.d2-2633752449 .fill-N5{fill:#DEE1EB;}
+                		.d2-2633752449 .fill-N6{fill:#EEF1F8;}
+                		.d2-2633752449 .fill-N7{fill:#FFFFFF;}
+                		.d2-2633752449 .fill-B1{fill:#0D32B2;}
+                		.d2-2633752449 .fill-B2{fill:#0D32B2;}
+                		.d2-2633752449 .fill-B3{fill:#E3E9FD;}
+                		.d2-2633752449 .fill-B4{fill:#E3E9FD;}
+                		.d2-2633752449 .fill-B5{fill:#EDF0FD;}
+                		.d2-2633752449 .fill-B6{fill:#F7F8FE;}
+                		.d2-2633752449 .fill-AA2{fill:#4A6FF3;}
+                		.d2-2633752449 .fill-AA4{fill:#EDF0FD;}
+                		.d2-2633752449 .fill-AA5{fill:#F7F8FE;}
+                		.d2-2633752449 .fill-AB4{fill:#EDF0FD;}
+                		.d2-2633752449 .fill-AB5{fill:#F7F8FE;}
+                		.d2-2633752449 .stroke-N1{stroke:#0A0F25;}
+                		.d2-2633752449 .stroke-N2{stroke:#676C7E;}
+                		.d2-2633752449 .stroke-N3{stroke:#9499AB;}
+                		.d2-2633752449 .stroke-N4{stroke:#CFD2DD;}
+                		.d2-2633752449 .stroke-N5{stroke:#DEE1EB;}
+                		.d2-2633752449 .stroke-N6{stroke:#EEF1F8;}
+                		.d2-2633752449 .stroke-N7{stroke:#FFFFFF;}
+                		.d2-2633752449 .stroke-B1{stroke:#0D32B2;}
+                		.d2-2633752449 .stroke-B2{stroke:#0D32B2;}
+                		.d2-2633752449 .stroke-B3{stroke:#E3E9FD;}
+                		.d2-2633752449 .stroke-B4{stroke:#E3E9FD;}
+                		.d2-2633752449 .stroke-B5{stroke:#EDF0FD;}
+                		.d2-2633752449 .stroke-B6{stroke:#F7F8FE;}
+                		.d2-2633752449 .stroke-AA2{stroke:#4A6FF3;}
+                		.d2-2633752449 .stroke-AA4{stroke:#EDF0FD;}
+                		.d2-2633752449 .stroke-AA5{stroke:#F7F8FE;}
+                		.d2-2633752449 .stroke-AB4{stroke:#EDF0FD;}
+                		.d2-2633752449 .stroke-AB5{stroke:#F7F8FE;}
+                		.d2-2633752449 .background-color-N1{background-color:#0A0F25;}
+                		.d2-2633752449 .background-color-N2{background-color:#676C7E;}
+                		.d2-2633752449 .background-color-N3{background-color:#9499AB;}
+                		.d2-2633752449 .background-color-N4{background-color:#CFD2DD;}
+                		.d2-2633752449 .background-color-N5{background-color:#DEE1EB;}
+                		.d2-2633752449 .background-color-N6{background-color:#EEF1F8;}
+                		.d2-2633752449 .background-color-N7{background-color:#FFFFFF;}
+                		.d2-2633752449 .background-color-B1{background-color:#0D32B2;}
+                		.d2-2633752449 .background-color-B2{background-color:#0D32B2;}
+                		.d2-2633752449 .background-color-B3{background-color:#E3E9FD;}
+                		.d2-2633752449 .background-color-B4{background-color:#E3E9FD;}
+                		.d2-2633752449 .background-color-B5{background-color:#EDF0FD;}
+                		.d2-2633752449 .background-color-B6{background-color:#F7F8FE;}
+                		.d2-2633752449 .background-color-AA2{background-color:#4A6FF3;}
+                		.d2-2633752449 .background-color-AA4{background-color:#EDF0FD;}
+                		.d2-2633752449 .background-color-AA5{background-color:#F7F8FE;}
+                		.d2-2633752449 .background-color-AB4{background-color:#EDF0FD;}
+                		.d2-2633752449 .background-color-AB5{background-color:#F7F8FE;}
+                		.d2-2633752449 .color-N1{color:#0A0F25;}
+                		.d2-2633752449 .color-N2{color:#676C7E;}
+                		.d2-2633752449 .color-N3{color:#9499AB;}
+                		.d2-2633752449 .color-N4{color:#CFD2DD;}
+                		.d2-2633752449 .color-N5{color:#DEE1EB;}
+                		.d2-2633752449 .color-N6{color:#EEF1F8;}
+                		.d2-2633752449 .color-N7{color:#FFFFFF;}
+                		.d2-2633752449 .color-B1{color:#0D32B2;}
+                		.d2-2633752449 .color-B2{color:#0D32B2;}
+                		.d2-2633752449 .color-B3{color:#E3E9FD;}
+                		.d2-2633752449 .color-B4{color:#E3E9FD;}
+                		.d2-2633752449 .color-B5{color:#EDF0FD;}
+                		.d2-2633752449 .color-B6{color:#F7F8FE;}
+                		.d2-2633752449 .color-AA2{color:#4A6FF3;}
+                		.d2-2633752449 .color-AA4{color:#EDF0FD;}
+                		.d2-2633752449 .color-AA5{color:#F7F8FE;}
+                		.d2-2633752449 .color-AB4{color:#EDF0FD;}
+                		.d2-2633752449 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-2633752449);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-2633752449);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-2633752449);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-2633752449);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-2633752449);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-2633752449);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-2633752449);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-2633752449);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]>
+              </style>
+              <g class="dGllcl8x">
+                <g class="shape">
+                  <path
+                    d="M 0 0 L 150 0 L 150 15 L 337 15 L 337 73 L 0 73 Z"
+                    stroke="#ff6b6b"
+                    fill="#ff6b6b"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="49.300000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 1 — CRITICAL correctness (1% → 51%)
+                </text>
+              </g>
+              <g class="dGllcl8y">
+                <g class="shape">
+                  <path
+                    d="M 783 0 L 933 0 L 933 15 L 1085 15 L 1085 73 L 783 73 Z"
+                    stroke="#f4d35e"
+                    fill="#f4d35e"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="934.000000"
+                  y="49.300000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 2 — HIGH quick wins (4% → 64%)
+                </text>
+              </g>
+              <g class="dGllcl8z">
+                <g class="shape">
+                  <path
+                    d="M 1607 0 L 1757 0 L 1757 15 L 1920 15 L 1920 73 L 1607 73 Z"
+                    stroke="#ffb347"
+                    fill="#ffb347"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="1763.500000"
+                  y="49.300000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 3 — HIGH robustness (20% → 80%)
+                </text>
+              </g>
+              <g class="dGllcl80">
+                <g class="shape">
+                  <path
+                    d="M 2312 0 L 2440 0 L 2440 15 L 2568 15 L 2568 73 L 2312 73 Z"
+                    stroke="#6eb5ff"
+                    fill="#6eb5ff"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="2440.000000"
+                  y="49.300000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 4 — POLICY + architecture
+                </text>
+              </g>
+              <g class="dGllcl81">
+                <g class="shape">
+                  <path
+                    d="M 2930 0 L 3056 0 L 3056 15 L 3182 15 L 3182 73 L 2930 73 Z"
+                    stroke="#6eb5ff"
+                    fill="#18181d"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="3056.000000"
+                  y="49.300000"
+                  fill="#f4f4f0"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 5 — MEDIUM code quality
+                </text>
+              </g>
+              <g class="dGllcl82">
+                <g class="shape">
+                  <path
+                    d="M 3544 0 L 3663 0 L 3663 15 L 3782 15 L 3782 73 L 3544 73 Z"
+                    stroke="#f4d35e"
+                    fill="#18181d"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="3663.000000"
+                  y="49.300000"
+                  fill="#f4f4f0"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 6 — LOW infrastructure
+                </text>
+              </g>
+              <g class="dGllcl83">
+                <g class="shape">
+                  <path
+                    d="M 4144 0 L 4255 0 L 4255 15 L 4365 15 L 4365 73 L 4144 73 Z"
+                    stroke="#6eb5ff"
+                    fill="#16161a"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="4254.500000"
+                  y="49.300000"
+                  fill="#f4f4f0"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  Tier 7 — ROADMAP future
+                </text>
+              </g>
+              <g class="dDFfdHlwZTI=">
+                <g class="shape">
+                  <rect
+                    x="57.000000"
+                    y="192.000000"
+                    width="223.000000"
+                    height="82.000000"
+                    stroke="#0D32B2"
+                    fill="#ff6b6b"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="230.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  <tspan x="168.500000" dy="0.000000">T1 Type-2 classification</tspan>
+                  <tspan x="168.500000" dy="18.500000">(Option A: walk Children)</tspan>
+                </text>
+              </g>
+              <g class="dDVfc2VyaWFs">
+                <g class="shape">
+                  <rect
+                    x="822.000000"
+                    y="192.000000"
+                    width="224.000000"
+                    height="82.000000"
+                    stroke="#0D32B2"
+                    fill="#ff6b6b"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="934.000000"
+                  y="230.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  <tspan x="934.000000" dy="0.000000">T5 Non-destructive serial</tspan>
+                  <tspan x="934.000000" dy="18.500000">(side table)</tspan>
+                </text>
+              </g>
+              <g class="dDZfY2FjaGU=">
+                <g class="shape">
+                  <rect
+                    x="1650.000000"
+                    y="137.000000"
+                    width="228.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#ff6b6b"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="1764.000000"
+                  y="175.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T6 Cache-miss deep-clone
+                </text>
+              </g>
+              <g class="dDdfc3VmZml4">
+                <g class="shape">
+                  <rect
+                    x="2336.000000"
+                    y="137.000000"
+                    width="208.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#ff6b6b"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="2440.000000"
+                  y="175.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T7 Update panic→error
+                </text>
+              </g>
+              <g class="dDJfYW5hbHlzaXM=">
+                <g class="shape">
+                  <rect
+                    x="76.000000"
+                    y="334.000000"
+                    width="186.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#f4d35e"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="169.000000"
+                  y="372.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T2 AnalysisTime tag
+                </text>
+              </g>
+              <g class="dDNfZ2M=">
+                <g class="shape">
+                  <rect
+                    x="59.000000"
+                    y="460.000000"
+                    width="219.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#f4d35e"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="498.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T3 Remove runtime.GC()
+                </text>
+              </g>
+              <g class="dDRfc29ydA==">
+                <g class="shape">
+                  <rect
+                    x="1667.000000"
+                    y="263.000000"
+                    width="194.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#f4d35e"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="1764.000000"
+                  y="301.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T4 Deterministic sort
+                </text>
+              </g>
+              <g class="dDEwX21heGNoaWxk">
+                <g class="shape">
+                  <rect
+                    x="49.000000"
+                    y="586.000000"
+                    width="240.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#f4d35e"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="169.000000"
+                  y="624.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T10 Wire MaxChildrenSerial
+                </text>
+              </g>
+              <g class="dDExX3NoYQ==">
+                <g class="shape">
+                  <rect
+                    x="85.000000"
+                    y="712.000000"
+                    width="168.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#f4d35e"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="169.000000"
+                  y="750.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T11 sha1→sha256
+                </text>
+              </g>
+              <g class="dDhfbW9kZQ==">
+                <g class="shape">
+                  <rect
+                    x="58.000000"
+                    y="838.000000"
+                    width="221.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#ffb347"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="876.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T8 Detection mode enum
+                </text>
+              </g>
+              <g class="dDlfZnVuY2xpdA==">
+                <g class="shape">
+                  <rect
+                    x="72.000000"
+                    y="964.000000"
+                    width="193.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#ffb347"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="1002.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T9 FuncLit normalize
+                </text>
+              </g>
+              <g class="dDEyX2pzb24=">
+                <g class="shape">
+                  <rect
+                    x="93.000000"
+                    y="1090.000000"
+                    width="152.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#6eb5ff"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="169.000000"
+                  y="1128.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T12 json v1→v2
+                </text>
+              </g>
+              <g class="dDIxX2VudW0=">
+                <g class="shape">
+                  <rect
+                    x="57.000000"
+                    y="1216.000000"
+                    width="223.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#6eb5ff"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="168.500000"
+                  y="1254.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T21 SortCriteria→domain
+                </text>
+              </g>
+              <g class="dDIyX2R0bw==">
+                <g class="shape">
+                  <rect
+                    x="59.000000"
+                    y="1342.000000"
+                    width="220.000000"
+                    height="66.000000"
+                    stroke="#0D32B2"
+                    fill="#6eb5ff"
+                    class="stroke-B1"
+                    style="stroke-width: 2"
+                  />
+                </g>
+                <text
+                  x="169.000000"
+                  y="1380.500000"
+                  fill="#0e0e10"
+                  class="text-bold"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  T22 ProcessedClone DTO
+                </text>
+              </g>
+              <g class="KHRpZXJfMSAtJmd0OyB0aWVyXzIpWzBd">
+                <marker
+                  id="mk-d2-2633752449-3488378134"
+                  markerWidth="10.000000"
+                  markerHeight="12.000000"
+                  refX="7.000000"
+                  refY="6.000000"
+                  viewBox="0.000000 0.000000 10.000000 12.000000"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
+                >
+                  <polygon
+                    points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000"
+                    fill="#0D32B2"
+                    class="connection fill-B1"
+                    stroke-width="2"
+                  />
+                </marker>
+                <path
+                  d="M 338.999995 36.995516 C 515.400024 36.599998 604.599976 36.400002 779.000010 36.008969"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="560.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHRpZXJfMiAtJmd0OyB0aWVyXzMpWzBd">
+                <path
+                  d="M 1086.999996 36.996169 C 1293.800049 36.599998 1398.199951 36.400002 1603.000007 36.007663"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="1346.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHRpZXJfMyAtJmd0OyB0aWVyXzQpWzBd">
+                <path
+                  d="M 1921.999993 36.994898 C 2076.800049 36.599998 2155.199951 36.400002 2308.000013 36.010204"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="2116.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHRpZXJfNCAtJmd0OyB0aWVyXzUpWzBd">
+                <path
+                  d="M 2569.999992 36.994475 C 2712.800049 36.599998 2785.199951 36.400002 2926.000015 36.011050"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="2749.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHRpZXJfNSAtJmd0OyB0aWVyXzYpWzBd">
+                <path
+                  d="M 3183.999992 36.994475 C 3326.800049 36.599998 3399.199951 36.400002 3540.000015 36.011050"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="3363.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHRpZXJfNiAtJmd0OyB0aWVyXzcpWzBd">
+                <path
+                  d="M 3783.999992 36.994475 C 3926.800049 36.599998 3999.199951 36.400002 4140.000015 36.011050"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="3963.500000"
+                  y="42.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  priority flow
+                </text>
+              </g>
+              <g class="KHQxX3R5cGUyIC0mZ3Q7IHQ1X3NlcmlhbClbMF0=">
+                <path
+                  d="M 282.000000 233.000000 C 504.000000 233.000000 612.400024 233.000000 818.000000 233.000000"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="551.500000"
+                  y="239.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  fixes user-visible bug first
+                </text>
+              </g>
+              <g class="KHQ1X3NlcmlhbCAtJmd0OyB0Nl9jYWNoZSlbMF0=">
+                <path
+                  d="M 1047.976896 215.696876 C 1286.000000 179.199997 1406.699951 170.000000 1645.500000 170.000000"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="1346.000000"
+                  y="180.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  paired: multi-pass safety
+                </text>
+              </g>
+              <g class="KHQ2X2NhY2hlIC0mZ3Q7IHQ3X3N1ZmZpeClbMF0=">
+                <path
+                  d="M 1880.500000 170.000000 C 2068.500000 170.000000 2160.000000 170.000000 2332.000000 170.000000"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="2107.500000"
+                  y="176.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  robustness chain
+                </text>
+              </g>
+              <g class="KHQ1X3NlcmlhbCAtJmd0OyB0NF9zb3J0KVswXQ==">
+                <path
+                  d="M 1047.976896 250.303124 C 1286.000000 286.799988 1410.099976 296.000000 1662.500000 296.000000"
+                  stroke="#0D32B2"
+                  fill="none"
+                  class="connection stroke-B1"
+                  style="stroke-width: 2"
+                  marker-end="url(#mk-d2-2633752449-3488378134)"
+                  mask="url(#d2-2633752449)"
+                />
+                <text
+                  x="1354.500000"
+                  y="297.000000"
+                  fill="#676C7E"
+                  class="text-italic fill-N2"
+                  style="text-anchor: middle; font-size: 16px"
+                >
+                  non-destructive enables golden tests
+                </text>
+              </g>
+              <mask
+                id="d2-2633752449"
+                maskUnits="userSpaceOnUse"
+                x="-101"
+                y="-101"
+                width="4567"
+                height="1610"
+              >
+                <rect x="-101" y="-101" width="4567" height="1610" fill="white"></rect>
+                <rect x="518.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="1304.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="2074.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="2707.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="3321.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="3921.000000" y="26.000000" width="85" height="21" fill="black"></rect>
+                <rect x="467.000000" y="223.000000" width="169" height="21" fill="black"></rect>
+                <rect x="1262.000000" y="164.000000" width="168" height="21" fill="black"></rect>
+                <rect x="2050.000000" y="160.000000" width="115" height="21" fill="black"></rect>
+                <rect x="1232.000000" y="281.000000" width="245" height="21" fill="black"></rect>
+              </mask>
+            </svg>
+          </svg>
+        </div>
+
+        <h2 id="tier1"><span class="num">03</span>Tier 1 — CRITICAL correctness (1% → 51%)</h2>
+        <p>
+          Existential bugs. The headline feature (semantic clone detection) silently misclassifies
+          or data-races. Fix these before anything else.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T1</td>
+                <td colspan="2">
+                  <span class="badge badge-t1">Tier 1</span> Type-2 classification fix — Option A:
+                  walk node.Children directly
+                </td>
+                <td class="min-cell">~52</td>
+              </tr>
+              <tr>
+                <td>T1.1</td>
+                <td>
+                  Read <code>classifyCloneType</code> + <code>syntax.Node.Children</code> structure;
+                  confirm Serialize drops descendants
+                </td>
+                <td><code>printer/clone_processor.go:105</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T1.2</td>
+                <td>Write direct-Children-walk Name collector helper</td>
+                <td><code>printer/clone_processor.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T1.3</td>
+                <td>Replace Serialize-based Name collection with the walker</td>
+                <td><code>printer/clone_processor.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T1.4</td>
+                <td>
+                  Write reproducer test: two renamed funcs <code>func a(x)</code>/<code
+                    >func b(y)</code
+                  >
+                  → Type 2
+                </td>
+                <td><code>printer/clone_processor_test.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T1.5</td>
+                <td>Build + test + verify classification flips to Type 2</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T5</td>
+                <td colspan="2">
+                  <span class="badge badge-t1">Tier 1</span> Non-destructive serial — Option B: side
+                  table (paired with T6)
+                </td>
+                <td class="min-cell">~66</td>
+              </tr>
+              <tr>
+                <td>T5.1</td>
+                <td>
+                  Read <code>serial()</code> + enumerate all <code>n.Type</code> consumers
+                  post-Serialize
+                </td>
+                <td><code>syntax/syntax.go:151</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T5.2</td>
+                <td>Design side-table type (<code>map[*Node]int32</code> or isolated field)</td>
+                <td><code>syntax/syntax.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T5.3</td>
+                <td>
+                  Implement non-destructive serial: write fingerprint to side table, never mutate
+                  <code>n.Type</code>
+                </td>
+                <td><code>syntax/syntax.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T5.4</td>
+                <td>
+                  Thread side table through <code>hashSeq</code> /
+                  <code>suffixtree.Update</code> consumers
+                </td>
+                <td><code>syntax/</code>, <code>suffixtree/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T5.5</td>
+                <td>Add idempotency test: Serialize twice → identical output</td>
+                <td><code>syntax/syntax_test.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T5.6</td>
+                <td>Build + test + lint</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T6</td>
+                <td colspan="2">
+                  <span class="badge badge-t1">Tier 1</span> Cache-miss deep-clone (paired with T5)
+                </td>
+                <td class="min-cell">~35</td>
+              </tr>
+              <tr>
+                <td>T6.1</td>
+                <td>Read cache-miss path: returns same slice that's stored</td>
+                <td><code>job/incremental.go:158</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T6.2</td>
+                <td>Add <code>Clone()</code> before storing nodes in cache</td>
+                <td><code>job/incremental.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T6.3</td>
+                <td>Add concurrent-parse data-race test</td>
+                <td><code>job/incremental_test.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T6.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T7</td>
+                <td colspan="2">
+                  <span class="badge badge-t1">Tier 1</span> suffixtree.Update panic → error
+                </td>
+                <td class="min-cell">~41</td>
+              </tr>
+              <tr>
+                <td>T7.1</td>
+                <td>Read <code>Update()</code>, locate panic sites</td>
+                <td><code>suffixtree/suffixtree.go:66</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T7.2</td>
+                <td>Change <code>Update</code> signature to return <code>error</code></td>
+                <td><code>suffixtree/suffixtree.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T7.3</td>
+                <td>Update all callers to propagate/handle error</td>
+                <td><code>job/</code>, <code>detection/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T7.4</td>
+                <td>Add error-path test</td>
+                <td><code>suffixtree/suffixtree_test.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T7.5</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier2"><span class="num">04</span>Tier 2 — HIGH quick wins (4% → 64%)</h2>
+        <p>
+          XS/S effort, immediate value. Ship these right after T1 to bank a green baseline before
+          the T5/T6 surgery.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T2</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> AnalysisTime JSON tag — marshal
+                  Milliseconds() not raw Duration
+                </td>
+                <td class="min-cell">~12</td>
+              </tr>
+              <tr>
+                <td>T2.1</td>
+                <td>Read tag, fix MarshalJSON to use <code>Milliseconds()</code></td>
+                <td><code>pkg/artdupl/types.go:92</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T2.2</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">4</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T3</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> Remove runtime.GC() from
+                  PrintProfileResult
+                </td>
+                <td class="min-cell">~10</td>
+              </tr>
+              <tr>
+                <td>T3.1</td>
+                <td>Read call site, remove <code>runtime.GC()</code></td>
+                <td><code>job/profiler.go:99</code></td>
+                <td class="min-cell">6</td>
+              </tr>
+              <tr>
+                <td>T3.2</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">4</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T4</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> Deterministic sort of clone groups +
+                  clones before cap/output
+                </td>
+                <td class="min-cell">~39</td>
+              </tr>
+              <tr>
+                <td>T4.1</td>
+                <td>Read <code>processCloneGroups</code>: find map iteration + unsorted cap</td>
+                <td><code>pkg/artdupl/detector_pipeline.go:98</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T4.2</td>
+                <td>Add sort (by fingerprint, then line) before cap</td>
+                <td><code>pkg/artdupl/detector_pipeline.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T4.3</td>
+                <td>Add determinism test: run twice, compare byte-for-byte</td>
+                <td><code>pkg/artdupl/detector_pipeline_test.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T4.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T10</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> Wire MaxChildrenSerial config field
+                  into serial()
+                </td>
+                <td class="min-cell">~23</td>
+              </tr>
+              <tr>
+                <td>T10.1</td>
+                <td>Read hardcoded 10000 + config field (parsed but unused)</td>
+                <td><code>syntax/syntax.go:51</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T10.2</td>
+                <td>Thread config value into <code>serial()</code></td>
+                <td><code>syntax/syntax.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T10.3</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T11</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> crypto/sha1 → crypto/sha256 in cache
+                  (policy)
+                </td>
+                <td class="min-cell">~14</td>
+              </tr>
+              <tr>
+                <td>T11.1</td>
+                <td>Read + replace <code>sha1</code> with <code>sha256</code></td>
+                <td><code>cache/file_cache.go:28</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T11.2</td>
+                <td>Remove <code>#nosec G505</code>, build + test</td>
+                <td>—</td>
+                <td class="min-cell">6</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T20</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> Fix broken RunTableTest (GetName
+                  assertion always fails)
+                </td>
+                <td class="min-cell">~14</td>
+              </tr>
+              <tr>
+                <td>T20.1</td>
+                <td>Read test, fix GetName assertion</td>
+                <td><code>detection/*_test.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T20.2</td>
+                <td>Run test</td>
+                <td>—</td>
+                <td class="min-cell">4</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T30</td>
+                <td colspan="2">
+                  <span class="badge badge-t2">Tier 2</span> Remove FileDetector.threshold dead
+                  field + constructor param
+                </td>
+                <td class="min-cell">~15</td>
+              </tr>
+              <tr>
+                <td>T30.1</td>
+                <td>Remove dead field + constructor param, update callers</td>
+                <td><code>hash/file_detector.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T30.2</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier3"><span class="num">05</span>Tier 3 — HIGH robustness (20% → 80%)</h2>
+        <p>
+          Correctness and robustness for non-trivial cases. Detection-mode enum kills a class of
+          silent-drop bugs.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T8</td>
+                <td colspan="2">
+                  <span class="badge badge-t3">Tier 3</span> Unify detection mode: 2 bools →
+                  DetectionMode enum end-to-end
+                </td>
+                <td class="min-cell">~62</td>
+              </tr>
+              <tr>
+                <td>T8.1</td>
+                <td>Read config_builder bool→enum reconstruction (3 flags → 2 bools)</td>
+                <td><code>cmd/config_builder.go:194</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T8.2</td>
+                <td>Locate/confirm <code>DetectionMode</code> enum in domain</td>
+                <td><code>syntax/golang/detection_mode.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T8.3</td>
+                <td>Replace 2 bools with enum in Config + CLI flag binding</td>
+                <td><code>config/</code>, <code>cmd/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T8.4</td>
+                <td>Update all consumers (job, detection)</td>
+                <td><code>job/</code>, <code>detection/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T8.5</td>
+                <td>Update tests</td>
+                <td>—</td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T8.6</td>
+                <td>Build + test + lint</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T9</td>
+                <td colspan="2">
+                  <span class="badge badge-t3">Tier 3</span> Alpha-normalize FuncLit (closures):
+                  push/pop scope
+                </td>
+                <td class="min-cell">~39</td>
+              </tr>
+              <tr>
+                <td>T9.1</td>
+                <td>Read normalizer.go, find FuncLit handling gap</td>
+                <td><code>syntax/golang/normalizer.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T9.2</td>
+                <td>Implement push/pop scope for FuncLit body</td>
+                <td><code>syntax/golang/normalizer.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T9.3</td>
+                <td>Add test: closure with renamed var → Type 2</td>
+                <td><code>syntax/golang/normalizer_test.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T9.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T14</td>
+                <td colspan="2">
+                  <span class="badge badge-t3">Tier 3</span> Delete dead funcs: STree.String(),
+                  cache.GetStats(), profiler dead funcs
+                </td>
+                <td class="min-cell">~17</td>
+              </tr>
+              <tr>
+                <td>T14.1</td>
+                <td>Verify zero callers, delete each</td>
+                <td><code>suffixtree/</code>, <code>cache/</code>, <code>job/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T14.2</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T13</td>
+                <td colspan="2">
+                  <span class="badge badge-t3">Tier 3</span> Delete ~32 dead exports in
+                  internal/testutil/
+                </td>
+                <td class="min-cell">~37</td>
+              </tr>
+              <tr>
+                <td>T13.1</td>
+                <td>Read testutil assert/tabletest/golden/node</td>
+                <td><code>internal/testutil/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T13.2</td>
+                <td>Verify zero callers for each export</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T13.3</td>
+                <td>Delete dead exports</td>
+                <td><code>internal/testutil/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T13.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T19</td>
+                <td colspan="2">
+                  <span class="badge badge-t3">Tier 3</span> Extract pipeline send-pattern helper (5
+                  copy-pasted sites)
+                </td>
+                <td class="min-cell">~22</td>
+              </tr>
+              <tr>
+                <td>T19.1</td>
+                <td>
+                  Find 5 copy-pasted <code>select { case ch &lt;- v: case ctx.Done() }</code> sites
+                </td>
+                <td><code>job/</code>, <code>pkg/artdupl/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T19.2</td>
+                <td>Extract helper + apply to all sites</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier4"><span class="num">06</span>Tier 4 — POLICY + architecture</h2>
+        <p>
+          Policy compliance (banned deps) and high-value decoupling. After this tier the codebase is
+          policy-clean.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T12</td>
+                <td colspan="2">
+                  <span class="badge badge-t4">Tier 4</span> Migrate encoding/json v1 → v2 (9 files)
+                </td>
+                <td class="min-cell">~64</td>
+              </tr>
+              <tr>
+                <td>T12.1</td>
+                <td>Read how-to-golang json v2 API policy</td>
+                <td>policy</td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T12.2</td>
+                <td>Migrate config/ JSON marshaling (2 files)</td>
+                <td><code>config/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T12.3</td>
+                <td>Migrate errors/marshal.go</td>
+                <td><code>errors/marshal.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T12.4</td>
+                <td>Migrate domain/ enum marshaling</td>
+                <td><code>domain/</code>, <code>pkg/enum/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T12.5</td>
+                <td>Migrate remaining 4 files</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T12.6</td>
+                <td>Build + test + lint</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T21</td>
+                <td colspan="2">
+                  <span class="badge badge-t4">Tier 4</span> Relocate SortCriteria + OutputFormat
+                  from config to domain
+                </td>
+                <td class="min-cell">~40</td>
+              </tr>
+              <tr>
+                <td>T21.1</td>
+                <td>Read current config enum locations</td>
+                <td><code>config/sort_criteria.go</code></td>
+                <td class="min-cell">8</td>
+              </tr>
+              <tr>
+                <td>T21.2</td>
+                <td>Move to domain, add aliases in config</td>
+                <td><code>domain/</code>, <code>config/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T21.3</td>
+                <td>Update printer (21 files) imports</td>
+                <td><code>printer/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T21.4</td>
+                <td>Build + test + lint</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T22</td>
+                <td colspan="2">
+                  <span class="badge badge-t4">Tier 4</span> ProcessedClone DTO — decouple Printer
+                  from syntax.Node (34 refs)
+                </td>
+                <td class="min-cell">~42</td>
+              </tr>
+              <tr>
+                <td>T22.1</td>
+                <td>Read actionability.go syntax.Node usage</td>
+                <td><code>printer/actionability.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T22.2</td>
+                <td>Design ProcessedClone with pattern data</td>
+                <td><code>domain/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T22.3</td>
+                <td>Migrate actionability.go off syntax.Node</td>
+                <td><code>printer/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T22.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T23</td>
+                <td colspan="2">
+                  <span class="badge badge-t4">Tier 4</span> CloneRef value object — unify 7
+                  parallel Clone types via embedding
+                </td>
+                <td class="min-cell">~42</td>
+              </tr>
+              <tr>
+                <td>T23.1</td>
+                <td>Read all 7 Clone type definitions</td>
+                <td><code>domain/</code>, <code>printer/</code>, <code>pkg/artdupl/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T23.2</td>
+                <td>Design CloneRef + embedding plan</td>
+                <td><code>domain/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T23.3</td>
+                <td>Implement across types</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T23.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T18</td>
+                <td colspan="2">
+                  <span class="badge badge-t4">Tier 4</span> Consolidate hash→match pipeline
+                  (FindFileDuplicates vs FindDuplOver)
+                </td>
+                <td class="min-cell">~34</td>
+              </tr>
+              <tr>
+                <td>T18.1</td>
+                <td>Compare both pipelines, find divergence</td>
+                <td><code>hash/file_detector.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T18.2</td>
+                <td>Unify into one</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T18.3</td>
+                <td>Update callers + tests</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier5"><span class="num">07</span>Tier 5 — MEDIUM code quality</h2>
+        <p>
+          File splits, comparator unification, concurrency hardening. Readability and
+          maintainability.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T15</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Split syntax.go (513L): extract
+                  cyclic-detection cluster
+                </td>
+                <td class="min-cell">~27</td>
+              </tr>
+              <tr>
+                <td>T15.1</td>
+                <td>Identify split boundaries</td>
+                <td><code>syntax/syntax.go</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T15.2</td>
+                <td>Extract cluster to new file</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T15.3</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T16</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Split html_template.go (523L) +
+                  stats_formatter.go (484L)
+                </td>
+                <td class="min-cell">~32</td>
+              </tr>
+              <tr>
+                <td>T16.1</td>
+                <td>Split html_template.go</td>
+                <td><code>printer/html_template.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T16.2</td>
+                <td>Split stats_formatter.go</td>
+                <td><code>printer/stats_formatter.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T16.3</td>
+                <td>Build + test + templ generate</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T17</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Split transform.go (401L) per AST
+                  category (like templ/)
+                </td>
+                <td class="min-cell">~17</td>
+              </tr>
+              <tr>
+                <td>T17.1</td>
+                <td>Split per AST category</td>
+                <td><code>syntax/golang/transform.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T17.2</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">5</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T28</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Unify Sort comparators (4 impls
+                  over 3 representations)
+                </td>
+                <td class="min-cell">~42</td>
+              </tr>
+              <tr>
+                <td>T28.1</td>
+                <td>Read 4 implementations over 3 representations</td>
+                <td><code>printer/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T28.2</td>
+                <td>Unify into generic comparator</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T28.3</td>
+                <td>Update callers</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T28.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T29</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Add singleflight to parseFile
+                  (concurrent cache safety)
+                </td>
+                <td class="min-cell">~32</td>
+              </tr>
+              <tr>
+                <td>T29.1</td>
+                <td>Add <code>golang.org/x/sync/singleflight</code> dep</td>
+                <td><code>go.mod</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T29.2</td>
+                <td>Wrap concurrent cache access</td>
+                <td><code>job/parse.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T29.3</td>
+                <td>Add test</td>
+                <td>—</td>
+                <td class="min-cell">10</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T31</td>
+                <td colspan="2">
+                  <span class="badge badge-medium">Tier 5</span> Hybrid slice/map transition storage
+                  for small counts
+                </td>
+                <td class="min-cell">~34</td>
+              </tr>
+              <tr>
+                <td>T31.1</td>
+                <td>Benchmark current map overhead</td>
+                <td><code>suffixtree/</code></td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T31.2</td>
+                <td>Implement hybrid for small counts</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T31.3</td>
+                <td>Benchmark + test</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier6"><span class="num">08</span>Tier 6 — LOW infrastructure</h2>
+        <p>
+          Branded types, package restructuring, framework migration, cache bounds. Higher risk /
+          longer payoff.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th>File</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T24</td>
+                <td colspan="2">
+                  <span class="badge badge-low">Tier 6 · HIGH RISK</span> Branded NodeType int32 in
+                  syntax/ (touches gob cache + encoding layout)
+                </td>
+                <td class="min-cell">~68</td>
+              </tr>
+              <tr>
+                <td>T24.1</td>
+                <td>Design branded type + gob serialization impact</td>
+                <td>design</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T24.2</td>
+                <td>Implement NodeType in syntax/</td>
+                <td><code>syntax/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T24.3</td>
+                <td>Migrate golang + templ node constants</td>
+                <td><code>syntax/golang/</code>, <code>syntax/templ/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T24.4</td>
+                <td>Update semantic encoding layout</td>
+                <td><code>syntax/golang/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T24.5</td>
+                <td>Update cache format + tests</td>
+                <td><code>cache/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T24.6</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T25</td>
+                <td colspan="2">
+                  <span class="badge badge-low">Tier 6</span> Split printer/ into sub-packages
+                  (stats, html, analyze) — ~29 files
+                </td>
+                <td class="min-cell">~66</td>
+              </tr>
+              <tr>
+                <td>T25.1</td>
+                <td>Define package boundaries</td>
+                <td>design</td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T25.2</td>
+                <td>Extract stats sub-package</td>
+                <td><code>printer/stats/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T25.3</td>
+                <td>Extract html sub-package</td>
+                <td><code>printer/html/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T25.4</td>
+                <td>Extract analyze sub-package</td>
+                <td><code>printer/analyze/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T25.5</td>
+                <td>Update imports across 21 files</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T25.6</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T26</td>
+                <td colspan="2">
+                  <span class="badge badge-low">Tier 6</span> Migrate charmbracelet/fang v1 →
+                  charm.land/fang/v2
+                </td>
+                <td class="min-cell">~42</td>
+              </tr>
+              <tr>
+                <td>T26.1</td>
+                <td>Read fang v2 migration guide</td>
+                <td>docs</td>
+                <td class="min-cell">10</td>
+              </tr>
+              <tr>
+                <td>T26.2</td>
+                <td>Update go.mod + imports</td>
+                <td><code>go.mod</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T26.3</td>
+                <td>Adapt API changes</td>
+                <td><code>cmd/</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T26.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T27</td>
+                <td colspan="2">
+                  <span class="badge badge-low">Tier 6</span> Add cache eviction/bounds (currently
+                  unbounded disk growth)
+                </td>
+                <td class="min-cell">~44</td>
+              </tr>
+              <tr>
+                <td>T27.1</td>
+                <td>Design eviction policy (LRU / size cap)</td>
+                <td>design</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T27.2</td>
+                <td>Implement bounds + eviction</td>
+                <td><code>cache/file_cache.go</code></td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T27.3</td>
+                <td>Add config + tests</td>
+                <td>—</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T27.4</td>
+                <td>Build + test</td>
+                <td>—</td>
+                <td class="min-cell">8</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="tier7"><span class="num">09</span>Tier 7 — ROADMAP future</h2>
+        <p>
+          Aspirational items from ROADMAP.md. No committed timeline — pursue after the 80% is
+          delivered.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-task</th>
+                <th>Action</th>
+                <th class="min-cell">Min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row">
+                <td>T32</td>
+                <td colspan="2">Watch mode for continuous monitoring + incremental detection</td>
+                <td class="min-cell">~36</td>
+              </tr>
+              <tr>
+                <td>T32.1</td>
+                <td>Design file watcher integration</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T32.2</td>
+                <td>Implement incremental detection loop</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T32.3</td>
+                <td>Add <code>--watch</code> flag + tests</td>
+                <td class="min-cell">12</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T33</td>
+                <td colspan="2">GitHub Actions workflow templates</td>
+                <td class="min-cell">~20</td>
+              </tr>
+              <tr>
+                <td>T33.1</td>
+                <td>Write CI workflow template</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T33.2</td>
+                <td>Document usage</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T34</td>
+                <td colspan="2">Pre-commit hooks</td>
+                <td class="min-cell">~20</td>
+              </tr>
+              <tr>
+                <td>T34.1</td>
+                <td>Write pre-commit hook template</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T34.2</td>
+                <td>Document setup</td>
+                <td class="min-cell">8</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T35</td>
+                <td colspan="2">Performance baseline benchmarks</td>
+                <td class="min-cell">~24</td>
+              </tr>
+              <tr>
+                <td>T35.1</td>
+                <td>Write benchmark suite</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T35.2</td>
+                <td>Establish baseline numbers</td>
+                <td class="min-cell">12</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T36</td>
+                <td colspan="2">Performance regression test suite</td>
+                <td class="min-cell">~24</td>
+              </tr>
+              <tr>
+                <td>T36.1</td>
+                <td>Wire benchmarks into CI regression</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T36.2</td>
+                <td>Add threshold assertions</td>
+                <td class="min-cell">12</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T37</td>
+                <td colspan="2">Continue adding ADRs for major decisions</td>
+                <td class="min-cell">~12</td>
+              </tr>
+              <tr>
+                <td>T37.1</td>
+                <td>Write ADRs for pending decisions (Option A/B, side table)</td>
+                <td class="min-cell">12</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T38</td>
+                <td colspan="2">Add TypeScript/JavaScript support</td>
+                <td class="min-cell">~36+</td>
+              </tr>
+              <tr>
+                <td>T38.1</td>
+                <td>Design AST adapter</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T38.2</td>
+                <td>Implement parser adapter</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T38.3</td>
+                <td>Add detection + tests</td>
+                <td class="min-cell">12</td>
+              </tr>
+
+              <tr class="task-row">
+                <td>T39</td>
+                <td colspan="2">Add Python support</td>
+                <td class="min-cell">~36+</td>
+              </tr>
+              <tr>
+                <td>T39.1</td>
+                <td>Design AST adapter</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T39.2</td>
+                <td>Implement parser adapter</td>
+                <td class="min-cell">12</td>
+              </tr>
+              <tr>
+                <td>T39.3</td>
+                <td>Add detection + tests</td>
+                <td class="min-cell">12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="blocked"><span class="num">10</span>Blocked / Architecturally Constrained</h2>
+        <div class="card card-warning">
+          <h4>T40 — Hide syntax/golang behind facade</h4>
+          <p>
+            <strong>Blocked</strong> by import cycle: <code>syntax/golang</code> imports
+            <code>syntax</code> for the <code>Node</code> type. Cannot extract a facade without
+            breaking the cycle first (needs <code>Node</code> in a leaf package).
+          </p>
+        </div>
+        <div class="card card-warning">
+          <h4>T41 — Thread context.Context through cmd/run_crawl.go file feeders</h4>
+          <p>
+            <strong>Blocked</strong> by inherent blocking: stdin scanner and
+            <code>filepath.Walk</code> are blocking; needs full-chain refactor (<code
+              >filesFeedWithOptions</code
+            >
+            → <code>buildParams</code> → all callers). Process currently exits on cancellation, so
+            the gap is latent.
+          </p>
+        </div>
+
+        <h2><span class="num">&diams;</span>Execution Notes</h2>
+        <div class="callout callout-solution">
+          <strong>Sequence</strong> T1 → Tier 2 quick wins → T5+T6 cluster → T7 → Tier 3 → Tier 4.
+          The first 3 tiers (~6 hrs) deliver a correct, deterministic, low-risk engine. Verify with
+          <code>go build ./... && go test ./... && golangci-lint run --timeout 5m ./...</code> after
+          each task.
+        </div>
+        <div class="callout callout-warning">
+          <strong>Decision baked in</strong> Option A for T1 (Children walk), Option B for T5+T6
+          (side table). Both were the open question — this plan commits to the lower-risk path first
+          and the root-cause fix second, gated behind a green baseline.
+        </div>
+        <div class="callout callout-problem">
+          <strong>Risk</strong> T24 (branded NodeType) is HIGH RISK — it touches the gob cache
+          format and the 24/8-bit semantic encoding layout. Do it last, behind a feature flag, with
+          cache-version migration.
+        </div>
+
+        <footer class="footer">
+          Generated 2026-07-01 00:20 &middot; art-dupl @ fork fd1ced3 &middot; Sources: status
+          report Top 25 + TODO_LIST.md + ROADMAP.md
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>
