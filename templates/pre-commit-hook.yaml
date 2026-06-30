@@ -1,0 +1,21 @@
+# Pre-commit hook template for art-dupl.
+# Copy this file into your repository as .pre-commit-hooks.yaml or add to
+# .pre-commit-config.yaml.
+#
+# Usage in .pre-commit-config.yaml:
+#
+#   repos:
+#     - repo: https://github.com/LarsArtmann/art-dupl
+#       rev: v0.1.0
+#       hooks:
+#         - id: art-dupl
+#           args: [--threshold, "5"]
+
+id: art-dupl
+name: art-dupl (code duplication check)
+description: Detect code clones using suffix tree + hash-based AST analysis.
+entry: art-dupl
+language: golang
+types: [go]
+pass_filenames: false
+args: ["run", "--threshold", "5", "--output", "plumbing", "."]

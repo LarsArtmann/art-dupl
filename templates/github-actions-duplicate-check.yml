@@ -1,0 +1,42 @@
+# GitHub Actions workflow template for running art-dupl in CI.
+# Copy this file into your repository as .github/workflows/duplicate-check.yml
+# and adjust the threshold/paths as needed.
+#
+# This workflow:
+# 1. Installs art-dupl
+# 2. Runs duplicate detection on every push/PR
+# 3. Records a baseline (committed to the repo)
+# 4. Fails if NEW duplicates are introduced (baseline check)
+
+name: Duplicate Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  duplicate-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install art-dupl
+        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
+
+      - name: Check for new duplicates
+        run: |
+          # Record baseline on first run, then check on subsequent runs.
+          # The baseline file (.art-dupl-baseline.json) should be committed.
+          if [ -f .art-dupl-baseline.json ]; then
+            art-dupl check --baseline .art-dupl-baseline.json --threshold 5 ./...
+          else
+            echo "No baseline found. Recording initial baseline..."
+            art-dupl baseline --output .art-dupl-baseline.json --threshold 5 ./...
+            echo "Commit .art-dupl-baseline.json to enable baseline checking."
+          fi
