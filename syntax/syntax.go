@@ -160,15 +160,28 @@ func SerializeWithMaxChildren(n *Node, maxChildren int) []*Node {
 }
 
 func serial(n *Node, stream *[]*Node, maxChildren int) int {
-	*stream = append(*stream, n)
+	// Shallow-copy the node so mutations (Type fingerprinting, Owns counting)
+	// never corrupt the original tree. This makes Serialize idempotent and
+	// safe for concurrent access to cached trees.
+	node := &Node{
+		Type:      n.Type,
+		Pos:       n.Pos,
+		End:       n.End,
+		Owns:      n.Owns,
+		Children:  n.Children,
+		Filename:  n.Filename,
+		Name:      n.Name,
+		Statement: n.Statement,
+	}
+	*stream = append(*stream, node)
 
 	if n.Statement {
 		// Statement-level tokenization: fingerprint the entire subtree into
 		// one composite Type so the suffix tree matches at statement granularity.
 		// Children remain in memory for classification/actionability but are not
 		// emitted as individual tokens.
-		n.Type = fingerprintSubtree(n)
-		n.Owns = 0
+		node.Type = fingerprintSubtree(n)
+		node.Owns = 0
 
 		return 1
 	}
@@ -183,9 +196,9 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 		count += serial(child, stream, maxChildren)
 	}
 
-	n.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildren
+	node.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildren
 
-	return int(n.Owns) + 1
+	return int(node.Owns) + 1
 }
 
 // FNV-1a constants for statement fingerprinting.

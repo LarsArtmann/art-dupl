@@ -10,6 +10,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/detection"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/job"
+	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/gogenfilter/v3"
@@ -107,7 +108,9 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
 	schan, incStatsChan := incParser.ParseIncremental(params.ctx, filesChan)
 	tree, data, done := job.BuildTree(params.ctx, schan)
-	<-done
+	if err := <-done; err != nil {
+		return treeBuildResult{tree: tree, data: *data}
+	}
 
 	incStats := <-incStatsChan
 	parseStats := job.ParseStats{
@@ -117,7 +120,9 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		},
 	}
 
-	tree.Update(&syntax.Node{Type: -1})
+	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
+		logger.Default.Error("suffix tree terminator update failed", "err", err)
+	}
 	printSearchStatus(params.cfg, params.outputFormat)
 
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
@@ -145,11 +150,15 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	}
 
 	tree, data, done := job.BuildTree(params.ctx, schan)
-	<-done
+	if err := <-done; err != nil {
+		return treeBuildResult{tree: tree, data: *data}
+	}
 
 	parseStats := <-statsChan
 
-	tree.Update(&syntax.Node{Type: -1})
+	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
+		logger.Default.Error("suffix tree terminator update failed", "err", err)
+	}
 	printSearchStatus(params.cfg, params.outputFormat)
 
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}

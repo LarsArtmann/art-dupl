@@ -61,7 +61,10 @@ func (d *detector) buildAnalysisPipeline(
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	select {
-	case <-done:
+	case err := <-done:
+		if err != nil {
+			return nil, fmt.Errorf("suffix tree build failed: %w", err)
+		}
 	case <-ctx.Done():
 		return nil, fmt.Errorf(
 			"pipeline canceled after processing %d files: %w",
@@ -79,7 +82,11 @@ func (d *detector) buildAnalysisPipeline(
 
 	fileCount := <-fileCountChan
 
-	tree.Update(&syntax.Node{Type: -1}) //nolint:exhaustruct // sentinel terminator; only Type matters
+	if err := tree.Update(
+		&syntax.Node{Type: -1},
+	); err != nil { //nolint:exhaustruct // sentinel terminator; only Type matters
+		return nil, fmt.Errorf("suffix tree terminator update failed: %w", err)
+	}
 
 	d.reportProgress(60, "Building suffix tree", "")
 

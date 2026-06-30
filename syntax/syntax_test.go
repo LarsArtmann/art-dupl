@@ -187,8 +187,9 @@ func FuzzSerialize(f *testing.F) {
 		}
 
 		// Verify root owns the correct number of descendants
-		if len(stream) > 0 && root.Owns != int32(len(stream)-1) {
-			t.Errorf("Root Owns mismatch: got %d, want %d", root.Owns, len(stream)-1)
+		// (stream[0] is the serialized copy of root with correct Owns)
+		if len(stream) > 0 && stream[0].Owns != int32(len(stream)-1) {
+			t.Errorf("Root Owns mismatch: got %d, want %d", stream[0].Owns, len(stream)-1)
 		}
 	})
 }
@@ -325,5 +326,80 @@ func TestCountUniqueFilesEmptySequences(t *testing.T) {
 
 	if got := CountUniqueFiles(group); got != 1 {
 		t.Errorf("CountUniqueFiles() = %d, want 1", got)
+	}
+}
+
+func TestSerializeIdempotent(t *testing.T) {
+	t.Parallel()
+
+	// Build a tree with statement nodes (exercises fingerprintSubtree path)
+	root := &Node{
+		Type:      100,
+		Statement: true,
+		Children: []*Node{
+			{Type: 200, Name: "x"},
+			{Type: 300, Name: "y"},
+		},
+	}
+
+	originalType := root.Type
+
+	first := Serialize(root)
+	second := Serialize(root)
+
+	// Original tree must NOT be mutated
+	if root.Type != originalType {
+		t.Errorf("original tree mutated: Type was %d, now %d", originalType, root.Type)
+	}
+
+	// Both serializations must produce identical results
+	if len(first) != len(second) {
+		t.Fatalf("length mismatch: first=%d, second=%d", len(first), len(second))
+	}
+
+	for i := range first {
+		if first[i].Type != second[i].Type {
+			t.Errorf(
+				"Type mismatch at %d: first=%d, second=%d",
+				i, first[i].Type, second[i].Type,
+			)
+		}
+
+		if first[i].Owns != second[i].Owns {
+			t.Errorf(
+				"Owns mismatch at %d: first=%d, second=%d",
+				i, first[i].Owns, second[i].Owns,
+			)
+		}
+	}
+}
+
+func TestSerializeDoesNotMutateOriginal(t *testing.T) {
+	t.Parallel()
+
+	// Non-statement tree: serial sets Owns on each node
+	root := &Node{
+		Type: 10,
+		Children: []*Node{
+			{Type: 20},
+			{Type: 30, Children: []*Node{{Type: 40}}},
+		},
+	}
+
+	originalOwns := []int32{root.Owns, root.Children[0].Owns, root.Children[1].Owns}
+
+	_ = Serialize(root)
+
+	// Original Owns must be unchanged
+	if root.Owns != originalOwns[0] {
+		t.Errorf("root.Owns mutated: was %d, now %d", originalOwns[0], root.Owns)
+	}
+
+	if root.Children[0].Owns != originalOwns[1] {
+		t.Errorf("child[0].Owns mutated: was %d, now %d", originalOwns[1], root.Children[0].Owns)
+	}
+
+	if root.Children[1].Owns != originalOwns[2] {
+		t.Errorf("child[1].Owns mutated: was %d, now %d", originalOwns[2], root.Children[1].Owns)
 	}
 }

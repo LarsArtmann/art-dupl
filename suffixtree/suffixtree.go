@@ -53,22 +53,21 @@ func New() *STree {
 }
 
 // Update refreshes the suffix tree to by new data.
-func (t *STree) Update(data ...Token) {
+func (t *STree) Update(data ...Token) error {
 	t.data = append(t.data, data...)
 	for range data {
 		t.update()
 
 		s, start, err := t.canonize(t.s, t.start, t.end)
 		if err != nil {
-			// canonize failure means the suffix tree is in a corrupt state.
-			// Panic explicitly with context rather than silently continuing
-			// and dereferencing nil on the next update() call.
-			panic(fmt.Sprintf("suffixtree canonize failed during Update: %v", err))
+			return fmt.Errorf("suffixtree canonize failed during Update: %w", err)
 		}
 
 		t.s, t.start = s, start
 		t.end++
 	}
+
+	return nil
 }
 
 // update transforms suffix tree T(n) to T(n+1).

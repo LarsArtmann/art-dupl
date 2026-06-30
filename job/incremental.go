@@ -174,8 +174,15 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	// Serialize AST to nodes
 	nodes := syntax.SerializeWithMaxChildren(ast, ip.maxChildren)
 
-	// Cache the result
-	cacheErr := ip.cache.Set(contentHash, nodes)
+	// Store a deep-cloned copy in the cache so the returned slice and the
+	// cached slice are independent. This prevents data races when multiple
+	// goroutines access the same cached entry concurrently.
+	cachedNodes := make([]*syntax.Node, len(nodes))
+	for i, node := range nodes {
+		cachedNodes[i] = node.Clone()
+	}
+
+	cacheErr := ip.cache.Set(contentHash, cachedNodes)
 	if cacheErr != nil {
 		logger.Default.Error("failed to cache file", "file", file, "err", cacheErr)
 	} else {
