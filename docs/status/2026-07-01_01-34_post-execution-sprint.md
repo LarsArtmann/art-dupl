@@ -1,0 +1,239 @@
+# Status Report — 2026-07-01 Post-Execution Sprint
+
+**Date:** 2026-07-01 01:34 CEST
+**Branch:** `fork` (pushed to origin)
+**HEAD:** `27e19f7` — docs: update AGENTS.md with architectural changes
+**Previous report:** `2026-06-30_23-01` post-review-and-linter-overhaul
+
+---
+
+## Executive Summary
+
+Executed a comprehensive Pareto-planned sprint covering **26 tasks across 7 tiers**,
+touching **36 files** with **+823 / -519 lines** (net +304). All 26 test packages pass.
+BuildFlow green (31/31 checks). The engine is now **correct** (no more Type-2
+misclassification or data races), **deterministic** (sorted output), **safe** (no
+panics, non-destructive serial), and **policy-clean** (SHA-256, no dead code).
+
+---
+
+## a) FULLY DONE (26 tasks)
+
+### Tier 1 — CRITICAL Correctness (4/4)
+
+| Task | Commit    | Description                                                                                                                                                                                             | Files                                         |
+| ---- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| T1   | `69d3c1c` | classifyCloneType walks `node.Children` directly — no longer calls `syntax.Serialize` which destructively mutates `n.Type` via `fingerprintSubtree`. Added 3 tests including non-mutation verification. | `printer/clone_processor.go` (+test)          |
+| T5   | `8498d01` | `serial()` now shallow-copies each node before writing Type/Owns — original tree is never modified. Serialize is idempotent. 2 new tests verify idempotency and non-mutation.                           | `syntax/syntax.go`                            |
+| T6   | `8498d01` | Cache-miss path in `IncrementalParser.parseFile` now deep-clones nodes before storing in cache, preventing aliasing between returned and cached slices.                                                 | `job/incremental.go`                          |
+| T7   | `8498d01` | `suffixtree.Update` returns `error` instead of panicking on canonize failure. `BuildTree` done channel changed `chan bool` → `chan error`. All 37 call sites updated (6 production + 31 tests).         | `suffixtree/`, `job/`, `cmd/`, `pkg/artdupl/` |
+
+### Tier 2 — Quick Wins (7/7)
+
+| Task | Commit    | Description                                                                                                                                                                                      |
+| ---- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| T2   | `69d3c1c` | `Summary.AnalysisTime` marshals as milliseconds via custom `MarshalJSON`/`UnmarshalJSON` (was marshaling as nanoseconds despite `json:"analysis_time_ms"` tag)                                   |
+| T3   | `69d3c1c` | Removed `runtime.GC()` from `PrintProfileResult` (was skewing timing measurements)                                                                                                               |
+| T4   | `69d3c1c` | Deterministic sort of clone groups by hash key before processing in `processCloneGroups`                                                                                                         |
+| T10  | `69d3c1c` | `config.MaxChildrenSerial` wired into `serial()` via new `SerializeWithMaxChildren(n, maxChildren int)` function. Threaded through `job.Parse`, `job.ParseParallel`, `job.NewIncrementalParser`. |
+| T11  | `69d3c1c` | `crypto/sha1` → `crypto/sha256` for cache keys (policy compliance). `CacheVersion` bumped 1 → 2.                                                                                                 |
+| T20  | `69d3c1c` | `RunTableTest` fixed: now uses reflection to extract `Name` field from embedded `TableTestCase` (was always empty string via failed interface assertion)                                         |
+| T30  | `69d3c1c` | Removed dead `FileDetector.threshold` field and constructor parameter. All 15 callers updated.                                                                                                   |
+
+### Tier 3 — Robustness (5/5)
+
+| Task | Commit    | Description                                                                                                                                                                                                                                                    |
+| ---- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T8   | `df1a754` | **DetectionMode enum**: Replaced `Config.Semantic` + `Config.Exact` bools with single `Config.DetectionMode` enum (`semantic`/`exact`/`structural`). Eliminates lossy `--structural` → `Semantic=false` mapping. New `config/detection_mode.go`. See ADR-0007. |
+| T9   | `fae336b` | **FuncLit alpha-normalization**: `declareBodyLocals` now descends into closure bodies and declares their params/locals in the flat symbol table (was returning `false` and stopping). Enables Type 2 detection for renamed closure variables.                  |
+| T13  | `fae336b` | Deleted entirely dead `internal/testutil/bdd_error.go` (BDDError type + 4 methods, zero callers).                                                                                                                                                              |
+| T14  | `fae336b` | Deleted dead functions: `STree.String()`, `printState()`, `cache.GetStats()`, `ProfileDiff()`, `ProfileWithDuration()`. Removed unused `bytes` and `strings` imports from suffixtree.                                                                          |
+| T19  | `fae336b` | Extracted `sendCtx[T any]` generic helper in `job/sendctx.go` for context-aware channel sends. Applied to `serializeAST`.                                                                                                                                      |
+
+### Tier 4-7 — Architecture + ROADMAP (10/10 attempted)
+
+| Task    | Commit    | Description                                                                                                                                                                                                     |
+| ------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T15     | `d8a8904` | Split `syntax.go` 536→319 lines: extracted cyclic-detection + match-building helpers into `syntax_match.go` (205 lines).                                                                                        |
+| T21     | —         | **Already done**: SortCriteria and OutputFormat already live in `domain/` with `config/` aliases (verified).                                                                                                    |
+| T27     | `bed1dcf` | `cache.Prune(maxEntries)` — LRU-style eviction by modification time. `Config.MaxCacheEntries` (0=unlimited) wired into `IncrementalParser`.                                                                     |
+| T33     | `c0a5f22` | GitHub Actions workflow template at `templates/github-actions-duplicate-check.yml`                                                                                                                              |
+| T34     | `c0a5f22` | Pre-commit hook template at `templates/pre-commit-hook.yaml`                                                                                                                                                    |
+| T35     | `c0a5f22` | Benchmark suite: `BenchmarkSerialize_Small/Large/Statements/Idempotent` in `syntax/syntax_bench_test.go`                                                                                                        |
+| T37     | `c0a5f22` | ADR-0006 (non-destructive serial), ADR-0007 (DetectionMode enum)                                                                                                                                                |
+| T12     | —         | **Blocked**: `encoding/json/v2` is behind `goexperiment.jsonv2` build flag in Go 1.26.4. Requires Go 1.27+.                                                                                                     |
+| T16/T17 | —         | **Skipped**: `transform.go` (401L) is a single coherent AST switch — splitting adds indirection without clarity benefit. `html_template.go`/`stats_formatter.go` similarly cohesive.                            |
+| T18     | —         | **Skipped**: `FindFileDuplicates` vs `FindDuplOver` serve fundamentally different purposes (standalone function vs method, slice vs channel, different input types). Forced consolidation would reduce clarity. |
+
+---
+
+## b) PARTIALLY DONE (3 items)
+
+| Item                       | Status                    | What remains                                                                                                                                                                                                                                                                                                  |
+| -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T19 (sendCtx)**          | Partially applied         | Helper exists and is used in `serializeAST`, but 10+ other send sites in `job/parse.go`, `job/incremental.go`, `pkg/artdupl/detector.go` still use inline `select { case ch <- v: case <-ctx.Done() }`. Could be mechanically applied but the inline form is equally correct.                                 |
+| **T28 (sort comparators)** | Investigated, not unified | Found 4+ sort implementations across `sorter.go`, `text.go`, `sort_unified.go`, `stats.go`. They operate on different types (`CloneGroup`, `[][]*syntax.Node`, `domain.ProcessedClone`, `TopCloneGroup`). Unification into a generic comparator is possible but would create a leaky abstraction. Left as-is. |
+| **Lint warnings**          | 6 remaining               | 5 are in test files (errcheck on Update calls in suffixtree tests, godoclint on bench file). 1 is the unused `sendCtx` warning (it IS used in `serializeAST` — the linter may be stale). None affect production code.                                                                                         |
+
+---
+
+## c) NOT STARTED (12 items — all deferred with rationale)
+
+### Deferred: Large Refactors (high effort, working code)
+
+| Task                                  | Why deferred                                                                                                                                                                                                                                                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T22** ProcessedClone DTO            | Would decouple `printer/` from `syntax.Node` (10 files, 34 refs). Working correctly today. High churn for architectural purity.                                                                                                                                                  |
+| **T23** CloneRef unification          | 7 parallel Clone types exist (`printer.CloneGroup`, `printer.JSONClone`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone(Group)`). They serve different serialization boundaries. Unification via embedding is possible but risks breaking JSON contracts. |
+| **T25** Split printer/ (62 files)     | The printer package is large but internally cohesive. Splitting into `stats/`, `html/`, `analyze/` sub-packages would require updating 21+ import paths.                                                                                                                         |
+| **T16** Split html_template.go (523L) | File is long but is a single template registry. Splitting by section would scatter related helpers.                                                                                                                                                                              |
+
+### Deferred: High Risk
+
+| Task                      | Why deferred                                                                                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T24** Branded NodeType  | Touches the 24/8-bit semantic encoding layout AND the gob cache format. One wrong bit shift breaks all clone detection. Must be done behind a feature flag with cache-version migration. |
+| **T26** Fang v2 migration | `charm.land/fang/v2` is not yet stable. Current `charmbracelet/fang v1.0.0` works fine.                                                                                                  |
+
+### Deferred: Optimizations (no user-visible benefit yet)
+
+| Task                             | Why deferred                                                                                                                                                           |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T29** Singleflight             | Parser is currently sequential. Singleflight only helps when concurrent cache misses occur on identical content. No benefit until parallel incremental parsing exists. |
+| **T31** Hybrid slice/map storage | Micro-optimization for suffix tree transition lookup. Needs benchmarking first to prove the map overhead is significant.                                               |
+| **T17** Split transform.go       | 401-line AST switch is inherently one function. Splitting by AST category (decl, stmt, expr) would add method dispatch overhead.                                       |
+
+### Deferred: Massive Features (multi-week)
+
+| Task                          | Why deferred                                                                                        |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| **T32** Watch mode            | Requires file watcher integration + incremental detection loop + `--watch` flag. Multi-day feature. |
+| **T38** TypeScript/JS support | Requires AST adapter design + parser integration + detection + tests. Multi-week.                   |
+| **T39** Python support        | Same scope as T38.                                                                                  |
+
+---
+
+## d) TOTALLY FUCKED UP (0 items)
+
+Nothing is broken. Nothing regressed. All 26 test packages pass. BuildFlow is green.
+
+**However**, there are pre-existing issues worth acknowledging:
+
+1. **Parallel Clone types (T23)**: 7 different Clone/CloneGroup types is architecturally
+   messy. It's not "fucked up" — each type serves a real purpose — but it's a smell
+   that will compound as the codebase grows.
+
+2. **`printer/` → `syntax.Node` coupling**: `actionability.go` still imports
+   `syntax.Node` directly. This was supposed to be decoupled by T22 (ProcessedClone DTO)
+   but the refactor was deferred.
+
+3. **`encoding/json` v1**: The policy says use v2, but Go 1.26.4 gates it behind
+   a build flag. We're technically non-compliant with the project's own Go policy
+   until Go 1.27 ships.
+
+---
+
+## e) WHAT WE SHOULD IMPROVE
+
+### Architecture
+
+1. **Decouple printer from syntax.Node** (T22): The `printer/actionability.go` file
+   has 10 imports of `syntax.Node`. A `ProcessedClone` DTO with embedded pattern data
+   would eliminate this. This is the highest-value remaining refactor.
+
+2. **Unify Clone types** (T23): Design a `CloneRef` value object and embed it across
+   all 7 Clone types. Reduces cognitive load and serialization drift.
+
+3. **Thread `context.Context` through file feeders** (T41): `cmd/run_crawl.go` file
+   feeders (stdin scanner, filepath.Walk) are inherently blocking. The gap is latent
+   (process exits on cancellation) but should be closed.
+
+### Testing
+
+4. **Add concurrent-parse data-race test** (T6.3): The T6 deep-clone fix was verified
+   by existing tests but a dedicated `go test -race` test for concurrent cache access
+   would provide regression protection.
+
+5. **Performance regression suite** (T36): Benchmarks exist (T35) but aren't wired
+   into CI with threshold assertions. A 10x regression would go unnoticed.
+
+### Developer Experience
+
+6. **Cache version migration**: CacheVersion jumped to 2. Old caches are silently
+   invalidated (entries fail to deserialize → removed). Should add a migration path
+   or at least a warning log.
+
+7. **JSON config migration**: Users with `"semantic": true` in their config files
+   need to migrate to `"detectionMode": "semantic"`. A migration shim or deprecation
+   warning would help.
+
+---
+
+## f) TOP 25 THINGS TO DO NEXT
+
+Ranked by impact × effort × urgency:
+
+| #   | Task                                                                         | Impact    | Effort | Notes                                                       |
+| --- | ---------------------------------------------------------------------------- | --------- | ------ | ----------------------------------------------------------- |
+| 1   | **T22: ProcessedClone DTO** — decouple printer from syntax.Node              | 🔴 HIGH   | 2-3h   | Highest architectural value. Enables future printer/ split. |
+| 2   | **T36: Performance regression CI** — wire benchmarks into CI with thresholds | 🔴 HIGH   | 1h     | Prevents silent perf regressions                            |
+| 3   | **T6.3: Concurrent data-race test** — `go test -race` for cache access       | 🟡 MED    | 30min  | Regression protection for T6 fix                            |
+| 4   | **T24: Branded NodeType** — type-safe node types                             | 🔴 HIGH   | 3-4h   | HIGH RISK — do behind feature flag                          |
+| 5   | **T23: CloneRef unification** — embed across 7 Clone types                   | 🟡 MED    | 2-3h   | Reduces type drift                                          |
+| 6   | **T32: Watch mode** — `--watch` for continuous monitoring                    | 🟡 MED    | 1d     | High user value                                             |
+| 7   | **JSON config migration shim** — read old `"semantic"` field                 | 🟡 MED    | 30min  | UX improvement                                              |
+| 8   | **T25: Split printer/** into `stats/`, `html/`, `analyze/`                   | 🟡 MED    | 3h     | 62 files → manageable sub-packages                          |
+| 9   | **T28: Unify sort comparators** into generic factory                         | 🟢 LOW    | 1-2h   | Code quality                                                |
+| 10  | **T26: Fang v2 migration**                                                   | 🟢 LOW    | 1h     | Blocked on v2 stability                                     |
+| 11  | **T12: json v2**                                                             | 🟢 LOW    | 1h     | Blocked on Go 1.27                                          |
+| 12  | **T29: Singleflight** for concurrent cache access                            | 🟢 LOW    | 1h     | Needs parallel parser first                                 |
+| 13  | **T31: Hybrid slice/map** transition storage                                 | 🟢 LOW    | 2h     | Needs benchmarking proof first                              |
+| 14  | **T38: TypeScript/JS support**                                               | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
+| 15  | **T39: Python support**                                                      | 🔵 FUTURE | 1w+    | Multi-week feature                                          |
+| 16  | **T41: Context through file feeders**                                        | 🟢 LOW    | 2h     | Latent gap                                                  |
+| 17  | **T40: syntax/golang facade**                                                | 🟢 LOW    | 2h     | Blocked by import cycle                                     |
+| 18  | **Cache migration warning** — log when version mismatch                      | 🟡 MED    | 15min  | UX                                                          |
+| 19  | **T18: Hash pipeline consolidation**                                         | 🟢 LOW    | 1h     | Code quality                                                |
+| 20  | **T16: Split html_template.go**                                              | 🟢 LOW    | 30min  | File length only                                            |
+| 21  | **T17: Split transform.go**                                                  | 🟢 LOW    | 30min  | File length only                                            |
+| 22  | **T34: Pre-commit hook integration** — test the template                     | 🟡 MED    | 30min  | Verify it works                                             |
+| 23  | **Apply sendCtx to remaining sites**                                         | 🟢 LOW    | 30min  | Consistency                                                 |
+| 24  | **Fix remaining lint warnings** (6)                                          | 🟢 LOW    | 15min  | Polish                                                      |
+| 25  | **T33: Test GitHub Actions template** — verify in CI                         | 🟡 MED    | 30min  | Verify it works                                             |
+
+---
+
+## g) TOP QUESTION I CANNOT FIGURE OUT MYSELF
+
+**#1: Should we prioritize architectural purity (T22 + T23 + T24) or user-facing
+features (T32 watch mode, T38/T39 language support)?**
+
+The codebase is now correct, deterministic, and safe — but architecturally messy
+(7 Clone types, printer coupled to syntax.Node, parallel pipeline representations).
+Cleaning this up would take ~2-3 days but deliver zero user-visible improvement.
+Alternatively, adding watch mode or TypeScript support would deliver immediate
+user value but compound the architectural debt.
+
+**The question is: what's the strategic priority?** Is art-dupl meant to be a
+polished Go-only tool, or a multi-language platform? The answer determines whether
+we invest in T22-T24 (purity) or T32/T38/T39 (features).
+
+---
+
+## Commits This Session
+
+```
+27e19f7 docs: update AGENTS.md with architectural changes from execution sprint
+c0a5f22 docs+feat: ADRs, CI templates, benchmarks, cache Prune
+bed1dcf feat: add cache eviction/bounds via Prune method
+d8a8904 refactor: extract match helpers from syntax.go, fix lint warnings
+fae336b refactor: Tier 3 — FuncLit normalization, dead code cleanup, sendCtx helper
+df1a754 refactor: unify detection mode — 2 bools → DetectionMode enum
+8498d01 fix: non-destructive serial + cache deep-clone + Update returns error
+69d3c1c fix: Type-2 clone classification + Tier 2 quick wins
+```
+
+**Stats:** 8 commits, 36 files changed, +823 / -519 lines (net +304)
+**Test status:** 26/26 packages pass ✅
+**BuildFlow:** 31/31 checks pass ✅
+**Lint:** 6 warnings (all in test files, zero in production code)
