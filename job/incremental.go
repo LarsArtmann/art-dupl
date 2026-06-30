@@ -14,10 +14,11 @@ import (
 // IncrementalParser parses files with caching support.
 // It uses content hashing to detect unchanged files and loads cached AST nodes.
 type IncrementalParser struct {
-	cache       *cache.FileCache
-	clearCache  bool
-	mode        golang.DetectionMode
-	maxChildren int
+	cache           *cache.FileCache
+	clearCache      bool
+	mode            golang.DetectionMode
+	maxChildren     int
+	maxCacheEntries int
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
@@ -26,6 +27,7 @@ func NewIncrementalParser(
 	clearCache bool,
 	mode golang.DetectionMode,
 	maxChildren int,
+	maxCacheEntries int,
 ) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
@@ -38,10 +40,11 @@ func NewIncrementalParser(
 	)
 
 	return &IncrementalParser{
-		cache:       cache.NewFileCache(cacheDir),
-		clearCache:  clearCache,
-		mode:        mode,
-		maxChildren: maxChildren,
+		cache:           cache.NewFileCache(cacheDir),
+		clearCache:      clearCache,
+		mode:            mode,
+		maxChildren:     maxChildren,
+		maxCacheEntries: maxCacheEntries,
 	}
 }
 
@@ -187,6 +190,12 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 		logger.Default.Error("failed to cache file", "file", file, "err", cacheErr)
 	} else {
 		logger.Default.Info("cached file AST", "file", file, "hash", contentHash)
+	}
+
+	if ip.maxCacheEntries > 0 {
+		if evicted, err := ip.cache.Prune(ip.maxCacheEntries); err == nil && evicted > 0 {
+			logger.Default.Info("pruned cache entries", "evicted", evicted, "max", ip.maxCacheEntries)
+		}
 	}
 
 	return nodes, lines, false

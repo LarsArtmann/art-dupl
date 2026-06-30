@@ -31,6 +31,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -262,6 +263,59 @@ func (fc *FileCache) Stats() Stats {
 	}
 
 	return stats
+}
+
+// Prune removes the oldest cache entries until the cache contains at most
+// maxEntries files. Entries are evicted by modification time (oldest first).
+// If maxEntries <= 0, no pruning occurs.
+func (fc *FileCache) Prune(maxEntries int) (int, error) {
+	if maxEntries <= 0 {
+		return 0, nil
+	}
+
+	fc.mu.Lock()
+	defer fc.mu.Unlock()
+
+	filesDir := filepath.Join(fc.cacheDir, "files")
+
+	entries, err := os.ReadDir(filesDir)
+	if err != nil {
+		return 0, nil // Directory might not exist yet
+	}
+
+	if len(entries) <= maxEntries {
+		return 0, nil
+	}
+
+	type entryInfo struct {
+		name    string
+		modTime time.Time
+	}
+
+	infos := make([]entryInfo, 0, len(entries))
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+
+		infos = append(infos, entryInfo{name: entry.Name(), modTime: info.ModTime()})
+	}
+
+	sort.Slice(infos, func(i, j int) bool {
+		return infos[i].modTime.Before(infos[j].modTime)
+	})
+
+	evicted := 0
+
+	for i := range len(infos) - maxEntries {
+		path := filepath.Join(filesDir, infos[i].name)
+		if err := os.Remove(path); err == nil {
+			evicted++
+		}
+	}
+
+	return evicted, nil
 }
 
 // cachePath returns the full path for a cache entry.

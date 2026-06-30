@@ -120,6 +120,10 @@ type Config struct {
 	// ClearCache clears the cache before running (useful for forced full rebuild)
 	ClearCache bool `json:"clearCache,omitempty"`
 
+	// MaxCacheEntries limits the number of cached AST files on disk.
+	// 0 means unlimited. When exceeded, oldest entries are evicted.
+	MaxCacheEntries int `json:"maxCacheEntries,omitempty"`
+
 	// DetectionMode controls how identifier names participate in matching.
 	// - "semantic" (default): alpha-normalized identifiers — detects Type 2 renamed clones.
 	// - "exact": verbatim name hashing — Type 1 copy-paste only.

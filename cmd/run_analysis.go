@@ -103,6 +103,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		params.cfg.ClearCache,
 		detectionMode(params.cfg),
 		params.cfg.MaxChildrenSerial,
+		params.cfg.MaxCacheEntries,
 	)
 
 	filesChan := params.getFilesChan()
