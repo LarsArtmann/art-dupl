@@ -24,10 +24,12 @@ type parseResult struct {
 
 // Parse parses files sequentially (legacy behavior).
 // mode controls how identifier names participate in matching.
+// maxChildren caps the number of children serialized per node (prevents stack overflow).
 func Parse(
 	ctx context.Context,
 	fchan chan string,
 	mode golang.DetectionMode,
+	maxChildren int,
 ) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
@@ -85,7 +87,7 @@ func Parse(
 
 	// serialize
 	schan := make(chan []*syntax.Node)
-	go serializeAST(ctx, achan, schan)
+	go serializeAST(ctx, achan, schan, maxChildren)
 
 	return schan, statsChan
 }
@@ -93,11 +95,13 @@ func Parse(
 // ParseParallel parses files concurrently using a worker pool.
 // Workers defaults to runtime.GOMAXPROCS(0) if <= 0.
 // mode controls how identifier names participate in matching.
+// maxChildren caps the number of children serialized per node (prevents stack overflow).
 func ParseParallel(
 	ctx context.Context,
 	fchan chan string,
 	workers int,
 	mode golang.DetectionMode,
+	maxChildren int,
 ) (chan []*syntax.Node, chan ParseStats) {
 	workers = normalizeWorkerCount(workers)
 
@@ -123,7 +127,7 @@ func ParseParallel(
 
 	// serialize
 	schan := make(chan []*syntax.Node)
-	go serializeAST(ctx, achan, schan)
+	go serializeAST(ctx, achan, schan, maxChildren)
 
 	return schan, statsChan
 }
@@ -237,7 +241,7 @@ func collectResults(
 }
 
 // serializeAST serializes AST nodes to token sequences.
-func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- []*syntax.Node) {
+func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- []*syntax.Node, maxChildren int) {
 	for ast := range achan {
 		select {
 		case <-ctx.Done():
@@ -247,7 +251,7 @@ func serializeAST(ctx context.Context, achan <-chan *syntax.Node, schan chan<- [
 		default:
 		}
 
-		seq := syntax.Serialize(ast)
+		seq := syntax.SerializeWithMaxChildren(ast, maxChildren)
 
 		select {
 		case schan <- seq:

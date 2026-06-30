@@ -372,9 +372,9 @@ func TestKey(t *testing.T) {
 
 	t.Run("hash length", func(t *testing.T) {
 		hash := Key([]byte("test"))
-		// SHA1 produces 20 bytes, hex encoded to 40 characters
-		if len(hash) != 40 {
-			t.Errorf("Expected hash length 40, got %d", len(hash))
+		// SHA-256 produces 32 bytes, hex encoded to 64 characters
+		if len(hash) != 64 {
+			t.Errorf("Expected hash length 64, got %d", len(hash))
 		}
 	})
 

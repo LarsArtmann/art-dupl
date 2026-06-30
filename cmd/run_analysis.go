@@ -101,6 +101,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		params.cfg.CacheDir,
 		params.cfg.ClearCache,
 		detectionMode(params.cfg),
+		params.cfg.MaxChildrenSerial,
 	)
 
 	filesChan := params.getFilesChan()
@@ -137,9 +138,10 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 			filesChan,
 			params.cfg.Workers,
 			detectionMode(params.cfg),
+			params.cfg.MaxChildrenSerial,
 		)
 	} else {
-		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg))
+		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg), params.cfg.MaxChildrenSerial)
 	}
 
 	tree, data, done := job.BuildTree(params.ctx, schan)

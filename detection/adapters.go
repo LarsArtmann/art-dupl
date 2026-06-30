@@ -64,7 +64,7 @@ func (a *hashAdapter) FindDuplOver(
 	go func() {
 		defer close(resultChan)
 
-		hashDetector := hash.NewFileDetector(threshold)
+		hashDetector := hash.NewFileDetector()
 		source := hashDetector.FindDuplOver(ctx, a.data, threshold)
 
 		for match := range source {

@@ -1,6 +1,9 @@
 package testutil
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 // TableTestCase represents a single test case in a table-driven test.
 type TableTestCase struct {
@@ -32,16 +35,35 @@ func RunTableTest[T any](t *testing.T, tests []T, assertion func(t *testing.T, t
 	t.Helper()
 
 	for _, tt := range tests {
-		// Extract name using type assertion if possible
-		var name string
-		if tc, ok := any(tt).(interface{ GetName() string }); ok {
-			name = tc.GetName()
-		}
-
+		name := extractTestName(tt)
 		t.Run(name, func(t *testing.T) {
 			assertion(t, tt)
 		})
 	}
+}
+
+// extractTestName resolves a test case name by trying, in order:
+// 1. A GetName() string method (interface{ GetName() string })
+// 2. A "Name" string field via reflection (covers embedded TableTestCase).
+func extractTestName(v any) string {
+	if tc, ok := v.(interface{ GetName() string }); ok {
+		if name := tc.GetName(); name != "" {
+			return name
+		}
+	}
+
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		rv = rv.Elem()
+	}
+
+	if rv.Kind() == reflect.Struct {
+		if nameField := rv.FieldByName("Name"); nameField.IsValid() && nameField.Kind() == reflect.String {
+			return nameField.String()
+		}
+	}
+
+	return ""
 }
 
 // RunTableTestWithName executes a table-driven test with a custom name extractor function.

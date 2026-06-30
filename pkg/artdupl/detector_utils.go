@@ -35,9 +35,10 @@ func (d *detector) configDebugString(opts *Options) string {
 // detectorConfig holds the resolved configuration used by the detector pipeline.
 // This is an SDK-internal type — no dependency on the config package.
 type detectorConfig struct {
-	Threshold        int
-	DetectionMethods []DetectionMethod
-	Semantic         bool
+	Threshold         int
+	DetectionMethods  []DetectionMethod
+	Semantic          bool
+	MaxChildrenSerial int
 }
 
 // toDetectionMode maps the SDK's Semantic bool to a golang.DetectionMode.

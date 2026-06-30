@@ -46,7 +46,7 @@ func processUser(name string, age int) error {
 	nodes := []*syntax.Node{node1, node2}
 
 	// WHEN: Running hash detection with threshold 5
-	detector := NewFileDetector(5)
+	detector := NewFileDetector()
 	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should detect duplicate
@@ -109,7 +109,7 @@ func hello() {
 	nodes := []*syntax.Node{node1, node2}
 
 	// WHEN: Running hash detection with high threshold (1000 bytes)
-	detector := NewFileDetector(1000)
+	detector := NewFileDetector()
 	matchesChan := detector.FindDuplOver(context.Background(), nodes, 1000)
 
 	// THEN: Should not detect duplicates (files too small)
@@ -172,7 +172,7 @@ func processProduct(name string, price int) error {
 	nodes := testutil.ParseFiles(t, filePaths)
 
 	// WHEN: Running hash detection with threshold 5
-	detector := NewFileDetector(5)
+	detector := NewFileDetector()
 	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should find both duplicate groups
@@ -190,7 +190,7 @@ func TestHashDetectionShouldHandleEmptyInput(t *testing.T) {
 	var nodes []*syntax.Node
 
 	// WHEN: Running hash detection
-	detector := NewFileDetector(5)
+	detector := NewFileDetector()
 	matchesChan := detector.FindDuplOver(context.Background(), nodes, 5)
 
 	// THEN: Should handle gracefully without panics

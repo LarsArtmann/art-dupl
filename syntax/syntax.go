@@ -142,13 +142,24 @@ type Match struct {
 }
 
 func Serialize(n *Node) []*Node {
+	return SerializeWithMaxChildren(n, maxChildrenSerial)
+}
+
+// SerializeWithMaxChildren serializes a node tree with a caller-specified
+// maximum children cap. This allows the job layer to thread config.MaxChildrenSerial
+// into the serialization without a global variable.
+func SerializeWithMaxChildren(n *Node, maxChildren int) []*Node {
+	if maxChildren <= 0 {
+		maxChildren = maxChildrenSerial
+	}
+
 	stream := make([]*Node, 0, 10)
-	serial(n, &stream)
+	serial(n, &stream, maxChildren)
 
 	return stream
 }
 
-func serial(n *Node, stream *[]*Node) int {
+func serial(n *Node, stream *[]*Node, maxChildren int) int {
 	*stream = append(*stream, n)
 
 	if n.Statement {
@@ -165,15 +176,14 @@ func serial(n *Node, stream *[]*Node) int {
 	var count int
 
 	for i, child := range n.Children {
-		// To avoid "goroutine stack exceeds" with gigantic slices (Composite Literals).
-		if i > maxChildrenSerial {
+		if i > maxChildren {
 			break
 		}
 
-		count += serial(child, stream)
+		count += serial(child, stream, maxChildren)
 	}
 
-	n.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildrenSerial
+	n.Owns = int32(count) // #nosec G115 -- Child count bounded by maxChildren
 
 	return int(n.Owns) + 1
 }

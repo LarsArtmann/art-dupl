@@ -52,7 +52,7 @@ func function3() {
 
 	close(fchan)
 
-	schan, statsChan := ParseParallel(ctx, fchan, 2, golang.DetectionModeSemantic)
+	schan, statsChan := ParseParallel(ctx, fchan, 2, golang.DetectionModeSemantic, 0)
 
 	count := 0
 
@@ -86,7 +86,7 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 0, golang.DetectionModeSemantic)
+	schan, _ := ParseParallel(ctx, fchan, 0, golang.DetectionModeSemantic, 0)
 
 	waitForParsedNodes(t, schan, "ParseParallel timed out")
 }
@@ -94,7 +94,7 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 func TestParseParallelContextCancellation(t *testing.T) {
 	cancel, fchan := cancelledContextAndChannel(t.Context())
 
-	schan, _ := ParseParallel(t.Context(), fchan, 2, golang.DetectionModeSemantic)
+	schan, _ := ParseParallel(t.Context(), fchan, 2, golang.DetectionModeSemantic, 0)
 
 	// Should complete without deadlock
 	for range schan {
@@ -111,7 +111,7 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 1, golang.DetectionModeSemantic)
+	schan, _ := ParseParallel(ctx, fchan, 1, golang.DetectionModeSemantic, 0)
 
 	waitForChannelOrTimeout(
 		t,
@@ -207,7 +207,7 @@ func TestParseStatsFromSequential(t *testing.T) {
 
 	close(fchan)
 
-	schan, statsChan := Parse(ctx, fchan, golang.DetectionModeSemantic)
+	schan, statsChan := Parse(ctx, fchan, golang.DetectionModeSemantic, 0)
 
 	// Drain the sequences channel
 	for range schan {

@@ -96,9 +96,6 @@ func ProfileWithDuration(duration time.Duration) ProfileResult {
 
 // PrintProfileResult outputs profile metrics to stderr.
 func PrintProfileResult(result ProfileResult) {
-	runtime.GC() // Force GC for accurate measurement
-
-	// Re-read after GC for final stats
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 

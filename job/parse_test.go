@@ -36,7 +36,7 @@ func helper() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic, 0)
 
 	waitForParsedNodes(
 		t,
@@ -54,7 +54,7 @@ func TestParseErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic, 0)
 
 	select {
 	case seq := <-schan:
@@ -99,7 +99,7 @@ func function1() {
 
 	close(fchan)
 
-	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic)
+	schan, _ := Parse(ctx, fchan, golang.DetectionModeSemantic, 0)
 
 	// Should receive sequences for both files
 	count := 0

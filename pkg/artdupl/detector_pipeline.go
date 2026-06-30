@@ -3,6 +3,7 @@ package artdupl
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/LarsArtmann/art-dupl/detection"
@@ -56,7 +57,7 @@ func (d *detector) buildAnalysisPipeline(
 		}
 	}()
 
-	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode())
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode(), d.cfg.MaxChildrenSerial)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	select {
@@ -90,12 +91,21 @@ func (d *detector) buildAnalysisPipeline(
 }
 
 // processCloneGroups iterates over clone groups and processes each one.
-// The processFn is called for each valid group.
+// The processFn is called for each valid group. Groups are sorted by hash
+// before processing to ensure deterministic output regardless of map iteration order.
 func (d *detector) processCloneGroups(
 	groups map[string][][]*syntax.Node,
 	processFn func(*CloneGroup),
 ) {
-	for hash, frags := range groups {
+	hashes := make([]string, 0, len(groups))
+	for hash := range groups {
+		hashes = append(hashes, hash)
+	}
+
+	sort.Strings(hashes)
+
+	for _, hash := range hashes {
+		frags := groups[hash]
 		uniq := syntax.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])

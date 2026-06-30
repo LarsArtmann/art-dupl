@@ -25,7 +25,7 @@ package cache
 
 import (
 	"bytes"
-	"crypto/sha1" // #nosec G505 -- SHA1 used for cache keys, not security
+	"crypto/sha256"
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
@@ -44,7 +44,7 @@ const (
 	DefaultCacheDir = ".cache/art-dupl"
 
 	// CacheVersion is incremented when cache format changes.
-	CacheVersion = 1
+	CacheVersion = 2
 
 	// Directory permissions.
 	cacheDirPerms = 0o750
@@ -359,11 +359,9 @@ type cacheEntry struct {
 	Nodes   []*syntax.Node
 }
 
-// Key generates a cache key from file content.
-// This uses SHA1 for cache keys (fast and collision-resistant enough for this use case).
+// Key generates a cache key from file content using SHA-256.
 func Key(content []byte) string {
-	// #nosec G401 -- SHA1 used for cache keys, not cryptographic security
-	h := sha1.Sum(content)
+	h := sha256.Sum256(content)
 
 	return hex.EncodeToString(h[:])
 }

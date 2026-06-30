@@ -2,6 +2,7 @@ package artdupl
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -89,9 +90,39 @@ type Summary struct {
 	TotalFiles    int               `json:"total_files"`
 	TotalClones   int               `json:"total_clones"`
 	TotalGroups   int               `json:"total_groups"`
-	AnalysisTime  time.Duration     `json:"analysis_time_ms"`
+	AnalysisTime  time.Duration     `json:"-"`
 	MethodsUsed   []DetectionMethod `json:"methods_used"`
 	LinesAnalyzed int               `json:"lines_analyzed"`
+}
+
+// MarshalJSON emits AnalysisTime as milliseconds (matching the JSON contract)
+// rather than the default time.Duration serialization (nanoseconds).
+func (s Summary) MarshalJSON() ([]byte, error) {
+	type alias Summary
+	return json.Marshal(struct {
+		alias
+
+		AnalysisTimeMS int64 `json:"analysis_time_ms"`
+	}{
+		alias:          alias(s),
+		AnalysisTimeMS: s.AnalysisTime.Milliseconds(),
+	})
+}
+
+// UnmarshalJSON reads AnalysisTime from milliseconds back into time.Duration.
+func (s *Summary) UnmarshalJSON(data []byte) error {
+	type alias Summary
+	aux := struct {
+		alias
+
+		AnalysisTimeMS int64 `json:"analysis_time_ms"`
+	}{}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	*s = Summary(aux.alias)
+	s.AnalysisTime = time.Duration(aux.AnalysisTimeMS) * time.Millisecond
+	return nil
 }
 
 // Metadata contains additional information about the analysis.

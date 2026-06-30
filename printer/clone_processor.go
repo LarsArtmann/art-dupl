@@ -107,36 +107,51 @@ func classifyCloneType(dups [][]*syntax.Node) domain.CloneType {
 		return domain.CloneType1
 	}
 
-	// Flatten each fragment into its complete pre-order node sequence. The
-	// fragment slice contains only the top-level "syntax unit" roots; the
-	// renamed identifiers live in their descendants, so we must walk the full
-	// subtree to detect Name divergence. syntax.Serialize provides exactly this
-	// pre-order traversal.
-	seqs := make([][]*syntax.Node, 0, len(dups))
-	for _, dup := range dups {
-		var seq []*syntax.Node
-		for _, node := range dup {
-			seq = append(seq, syntax.Serialize(node)...)
-		}
-
-		seqs = append(seqs, seq)
+	// Walk node.Children directly to collect Names in pre-order. We deliberately
+	// avoid syntax.Serialize here because it destructively mutates n.Type for
+	// statement nodes via fingerprintSubtree — calling it during classification
+	// corrupts the tree for downstream consumers.
+	nameSeqs := make([][]string, len(dups))
+	for i, dup := range dups {
+		nameSeqs[i] = collectNamesPreOrder(dup)
 	}
 
-	first := seqs[0]
+	first := nameSeqs[0]
 
-	for _, other := range seqs[1:] {
+	for _, other := range nameSeqs[1:] {
 		if len(other) != len(first) {
 			return domain.CloneType3
 		}
 
 		for i := range first {
-			if first[i].Name != other[i].Name {
+			if first[i] != other[i] {
 				return domain.CloneType2
 			}
 		}
 	}
 
 	return domain.CloneType1
+}
+
+// collectNamesPreOrder traverses the given nodes and all their descendants in
+// pre-order, collecting the Name field of each node. Unlike syntax.Serialize,
+// this does NOT mutate any node fields.
+func collectNamesPreOrder(nodes []*syntax.Node) []string {
+	var names []string
+
+	var walk func(n *syntax.Node)
+	walk = func(n *syntax.Node) {
+		names = append(names, n.Name)
+		for _, child := range n.Children {
+			walk(child)
+		}
+	}
+
+	for _, node := range nodes {
+		walk(node)
+	}
+
+	return names
 }
 
 // NodesToGroup converts raw syntax.Node groups into a ProcessedCloneGroup.

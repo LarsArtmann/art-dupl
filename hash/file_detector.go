@@ -19,15 +19,11 @@ type FileHash struct {
 }
 
 // FileDetector implements exact file duplicate detection.
-type FileDetector struct {
-	threshold int
-}
+type FileDetector struct{}
 
 // NewFileDetector creates a new file-level hash detector.
-func NewFileDetector(threshold int) *FileDetector {
-	return &FileDetector{
-		threshold: threshold,
-	}
+func NewFileDetector() *FileDetector {
+	return &FileDetector{}
 }
 
 // FileDuplicate represents a group of files with identical content.
@@ -40,7 +36,7 @@ type FileDuplicate struct {
 // Files are hashed one at a time via io.Copy through XXH3 — file content is
 // never held in memory. Only (hash, filename, size) is retained per file.
 func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
-	fd := NewFileDetector(threshold)
+	fd := NewFileDetector()
 
 	groups := make(map[string][]FileHash)
 

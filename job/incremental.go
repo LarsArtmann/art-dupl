@@ -14,13 +14,19 @@ import (
 // IncrementalParser parses files with caching support.
 // It uses content hashing to detect unchanged files and loads cached AST nodes.
 type IncrementalParser struct {
-	cache      *cache.FileCache
-	clearCache bool
-	mode       golang.DetectionMode
+	cache       *cache.FileCache
+	clearCache  bool
+	mode        golang.DetectionMode
+	maxChildren int
 }
 
 // NewIncrementalParser creates a new IncrementalParser.
-func NewIncrementalParser(cacheDir string, clearCache bool, mode golang.DetectionMode) *IncrementalParser {
+func NewIncrementalParser(
+	cacheDir string,
+	clearCache bool,
+	mode golang.DetectionMode,
+	maxChildren int,
+) *IncrementalParser {
 	logger.Default.Info(
 		"creating incremental parser",
 		"cacheDir",
@@ -32,9 +38,10 @@ func NewIncrementalParser(cacheDir string, clearCache bool, mode golang.Detectio
 	)
 
 	return &IncrementalParser{
-		cache:      cache.NewFileCache(cacheDir),
-		clearCache: clearCache,
-		mode:       mode,
+		cache:       cache.NewFileCache(cacheDir),
+		clearCache:  clearCache,
+		mode:        mode,
+		maxChildren: maxChildren,
 	}
 }
 
@@ -165,7 +172,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 	}
 
 	// Serialize AST to nodes
-	nodes := syntax.Serialize(ast)
+	nodes := syntax.SerializeWithMaxChildren(ast, ip.maxChildren)
 
 	// Cache the result
 	cacheErr := ip.cache.Set(contentHash, nodes)
