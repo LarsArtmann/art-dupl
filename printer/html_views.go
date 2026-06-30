@@ -285,16 +285,64 @@ func buildSummaryHTML(data SummaryView) string {
 	return sb.String()
 }
 
+const (
+	cssClassAdded    = "added"
+	cssClassRemoved  = "removed"
+	cssClassModified = "modified"
+	cssClassEqual    = "equal"
+)
+
 func diffLineTypeClass(lineType DiffLineType) string {
 	switch lineType {
 	case DiffLineAdded:
-		return "added"
+		return cssClassAdded
 	case DiffLineRemoved:
-		return "removed"
+		return cssClassRemoved
 	case DiffLineModified:
-		return "modified"
+		return cssClassModified
 	case DiffLineEqual:
-		return "equal"
+		return cssClassEqual
+	default:
+		return ""
+	}
+}
+
+func diffStatPrefix(cssClass string) string {
+	switch cssClass {
+	case cssClassAdded:
+		return "+"
+	case cssClassRemoved:
+		return "-"
+	case cssClassModified:
+		return "~"
+	default:
+		return ""
+	}
+}
+
+var diffStatTypes = []string{cssClassAdded, cssClassRemoved, cssClassModified}
+
+func diffStatValue(cssClass string, stats DiffAggregateStats) int {
+	switch cssClass {
+	case cssClassAdded:
+		return stats.TotalAdded
+	case cssClassRemoved:
+		return stats.TotalRemoved
+	case cssClassModified:
+		return stats.TotalModified
+	default:
+		return 0
+	}
+}
+
+func diffStatLabel(cssClass string) string {
+	switch cssClass {
+	case cssClassAdded:
+		return "Added"
+	case cssClassRemoved:
+		return "Removed"
+	case cssClassModified:
+		return "Modified"
 	default:
 		return ""
 	}

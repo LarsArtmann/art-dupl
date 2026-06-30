@@ -52,19 +52,27 @@ script toggleCollapsed() {
 	this.parentElement.classList.toggle('collapsed');
 }
 
+templ cloneHeader(data CloneGroupView) {
+	<div class="clone-header" onclick={ toggleCollapsed() }>
+		<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
+		<div class="badge-group">
+			@templ.Raw(data.BadgesHTML)
+			<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
+		</div>
+	</div>
+}
+
+templ suggestionBlock(data CloneGroupView) {
+	if data.Suggestion != "" {
+		<div class="suggestion">💡 { data.Suggestion }</div>
+	}
+}
+
 templ cloneGroupFull(data CloneGroupView) {
 	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
-		<div class="clone-header" onclick={ toggleCollapsed() }>
-			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
-			<div class="badge-group">
-				@templ.Raw(data.BadgesHTML)
-				<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
-			</div>
-		</div>
+		@cloneHeader(data)
 		<div class="clone-body">
-			if data.Suggestion != "" {
-				<div class="suggestion">💡 { data.Suggestion }</div>
-			}
+			@suggestionBlock(data)
 			for i, cl := range data.Clones {
 				@cloneOccurrence(cl, data.GroupNum, i)
 			}
@@ -74,17 +82,9 @@ templ cloneGroupFull(data CloneGroupView) {
 
 templ cloneGroupDiffFull(data CloneGroupView, diffData DiffView) {
 	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
-		<div class="clone-header" onclick={ toggleCollapsed() }>
-			<h3>Clone Group #{ strconv.Itoa(data.GroupNum) }</h3>
-			<div class="badge-group">
-				@templ.Raw(data.BadgesHTML)
-				<span class="badge">{ strconv.Itoa(data.Occurrences) } occurrences · { strconv.Itoa(data.TotalTokens) } tokens</span>
-			</div>
-		</div>
+		@cloneHeader(data)
 		<div class="clone-body">
-			if data.Suggestion != "" {
-				<div class="suggestion">💡 { data.Suggestion }</div>
-			}
+			@suggestionBlock(data)
 			if len(diffData.Others) == 0 {
 				for i, cl := range data.Clones {
 					@cloneOccurrence(cl, data.GroupNum, i)
@@ -106,46 +106,46 @@ templ cloneOccurrence(cl CloneOccurrenceView, groupNum int, index int) {
 	</div>
 }
 
+templ diffStatBadge(cssClass string, value int, label string) {
+	if value > 0 {
+		<span class={ cssClass }>{ diffStatPrefix(cssClass) }{ strconv.Itoa(value) }{ label }</span>
+	}
+}
+
+templ fileAnchor(url templ.SafeURL, filename string, lineStart int) {
+	<a href={ url }>{ filename }:{ strconv.Itoa(lineStart) }</a>
+}
+
+templ diffLegendItem(cssClass string, label string) {
+	<div class="diff-legend-item"><div class={ "diff-legend-color " + cssClass }></div>{ label }</div>
+}
+
 templ diffViewContent(data DiffView) {
 	<div class="diff-mode">
 		<div class="diff-base-header">
 			<span class="label">📋 BASE REFERENCE</span>
-			<div class="file-info"><a href={ safeVSCodeURL(data.Base.Filename, data.Base.LineStart) }>{ data.Base.Filename }:{ strconv.Itoa(data.Base.LineStart) }</a></div>
+			<div class="file-info">
+				@fileAnchor(safeVSCodeURL(data.Base.Filename, data.Base.LineStart), data.Base.Filename, data.Base.LineStart)
+			</div>
 		</div>
 		if data.AggregateStats.HasStats {
 			<div class="diff-aggregate-stats">
-				if data.AggregateStats.TotalAdded > 0 {
-					<span class="added">+{ strconv.Itoa(data.AggregateStats.TotalAdded) } added</span>
-				}
-				if data.AggregateStats.TotalRemoved > 0 {
-					<span class="removed">-{ strconv.Itoa(data.AggregateStats.TotalRemoved) } removed</span>
-				}
-				if data.AggregateStats.TotalModified > 0 {
-					<span class="modified">~{ strconv.Itoa(data.AggregateStats.TotalModified) } modified</span>
+				for _, t := range diffStatTypes {
+					@diffStatBadge(t, diffStatValue(t, data.AggregateStats), " "+t)
 				}
 			</div>
 		}
-		<div class="diff-view-toggle">
-			<button id={ "diff-toggle-" + strconv.Itoa(data.GroupNum) + "-side" } class="active" data-mode="side" onclick={ toggleDiffViewScript(data.GroupNum, "side") }>◫ Side by Side</button>
-			<button id={ "diff-toggle-" + strconv.Itoa(data.GroupNum) + "-inline" } data-mode="inline" onclick={ toggleDiffViewScript(data.GroupNum, "inline") }>▣ Inline</button>
-		</div>
+		@diffViewToggle(data.GroupNum)
 		if len(data.Others) > 1 {
-			<div class="diff-selector">
-				<select id={ "diff-select-" + strconv.Itoa(data.GroupNum) } onchange={ showDiffScript("this.value", data.GroupNum) }>
-					<option value="" disabled selected>Compare with...</option>
-					for i, other := range data.Others {
-						<option value={ strconv.Itoa(i) }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</option>
-					}
-				</select>
-			</div>
+			@diffSelectorTempl(data)
 		}
 		for i, other := range data.Others {
 			@diffComparison(data.GroupNum, other, i, len(data.Others))
 		}
 		<div class="diff-legend">
-			<div class="diff-legend-item"><div class="diff-legend-color added"></div>Added</div>
-			<div class="diff-legend-item"><div class="diff-legend-color removed"></div>Removed</div>
-			<div class="diff-legend-item"><div class="diff-legend-color modified"></div>Modified</div>
+			for _, t := range diffStatTypes {
+				@diffLegendItem(t, diffStatLabel(t))
+			}
 		</div>
 	</div>
 }
@@ -160,17 +160,13 @@ templ diffComparison(groupNum int, other CloneDiff, index int, total int) {
 	}}
 	<div class={ "diff-comparison " + activeClass } id={ "diff-compare-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>
 		<div class="diff-header">
-			<span class="file-info"><a href={ otherVSCode }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</a></span>
+			<span class="file-info">
+				@fileAnchor(otherVSCode, other.Filename, other.LineStart)
+			</span>
 			<span class="diff-stats">
 				{{ added, removed, modified := countDiffStats(other.Diff) }}
-				if added > 0 {
-					<span class="added">+{ strconv.Itoa(added) }</span>
-				}
-				if removed > 0 {
-					<span class="removed">-{ strconv.Itoa(removed) }</span>
-				}
-				if modified > 0 {
-					<span class="modified">~{ strconv.Itoa(modified) }</span>
+				for _, t := range diffStatTypes {
+					@diffStatBadge(t, diffStatValue(t, DiffAggregateStats{TotalAdded: added, TotalRemoved: removed, TotalModified: modified}), "")
 				}
 			</span>
 		</div>
@@ -185,18 +181,7 @@ templ diffPanel(panelClass string, title string, lines []DiffLine, oppositeLines
 		<div class="diff-panel-title">{ title }</div>
 		<pre>
 			<code>
-				for i, line := range lines {
-					{{
-						typeClass := diffLineTypeClass(line.Type)
-						content := diffLineContent(line, i, oppositeLines, isBasePanel)
-					}}
-					<div class={ "diff-line " + typeClass }>
-						<span class="diff-line-num">{ strconv.Itoa(line.LineNumber) }</span>
-						<span class="diff-line-content">
-							@templ.Raw(content)
-						</span>
-					</div>
-				}
+				@renderDiffLinesTempl(lines, oppositeLines, isBasePanel)
 			</code>
 		</pre>
 	</div>
