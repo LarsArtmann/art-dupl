@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>art-dupl Status Report — 2026-06-30</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        --radius: 0px;
+        --radius-sm: 0px;
+
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+        .layout {
+          padding: 2rem 3rem;
+        }
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+        max-width: 920px;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before {
+        background: var(--warning);
+      }
+      .stat-bad::before {
+        background: var(--problem);
+      }
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-good .stat-value {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value {
+        color: var(--warning);
+      }
+      .stat-bad .stat-value {
+        color: var(--problem);
+      }
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 10%, transparent);
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+
+      ul.tight {
+        margin: 0.3rem 0 0.8rem 1.4rem;
+      }
+      ul.tight li {
+        margin-bottom: 0.3rem;
+      }
+
+      .footer {
+        margin-top: 3rem;
+        padding-top: 1.2rem;
+        border-top: 2px solid var(--border-strong);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>art-dupl · Code Clone Detector</span>
+      <span>Status Snapshot · 2026-06-30 23:52</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar">
+        <nav data-nav>
+          <div class="label">Sections</div>
+          <a href="#verdict">00 · Verdict</a>
+          <a href="#health">01 · Health Scorecard</a>
+          <a href="#done">02 · Fully Done</a>
+          <a href="#partial">03 · Partially Done</a>
+          <a href="#notstarted">04 · Not Started</a>
+          <a href="#fuckedup">05 · Totally Fucked Up</a>
+          <a href="#improve">06 · What To Improve</a>
+          <a href="#next25">07 · Top 25 Next</a>
+          <a href="#question">08 · The #1 Question</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="hero">
+          <div class="hero-badge">Snapshot Report</div>
+          <h1>art-dupl Comprehensive Status</h1>
+          <p class="hero-subtitle">
+            A point-in-time snapshot of the art-dupl code clone detector — Go + AST suffix-tree +
+            hash detection. Generated 2026-06-30 23:52 on the <code>fork</code> branch. Covers all
+            work categories: done, partial, untouched, and broken. Every claim verified against the
+            live build, test, and lint output captured moments before this report.
+          </p>
+        </header>
+
+        <section id="verdict">
+          <h2><span class="num">00</span>Verdict</h2>
+          <p>
+            <strong
+              >Production-shaped, fast, and well-tested — but two correctness landmines remain open
+              under the hood.</strong
+            >
+            Build passes, lint is at zero, all 24 test-bearing packages are green, and harmful code
+            duplication has been driven to zero this session. The surface API (7 output formats, 3
+            detection modes, SDK, baseline/CI) is complete and functional. The risks are
+            concentrated in two architectural defects flagged as OPEN in <code>AGENTS.md</code>:
+            destructive AST serialization that silently loses the Type-1-vs-Type-2 (renamed)
+            distinction, and a non-concurrent-safe incremental cache-miss path. Neither blocks
+            normal single-threaded use, but both are latent correctness/maintenance hazards.
+          </p>
+        </section>
+
+        <section id="health">
+          <h2><span class="num">01</span>Health Scorecard</h2>
+          <p>
+            Verified live at report time (<code>go build</code>, <code>go test ./...</code>,
+            <code>golangci-lint run</code>, <code>art-dupl</code>).
+          </p>
+          <div class="stat-grid">
+            <div class="stat-card stat-good">
+              <div class="stat-value">PASS</div>
+              <div class="stat-label">Build · 27 pkgs</div>
+            </div>
+            <div class="stat-card stat-good">
+              <div class="stat-value">24/24</div>
+              <div class="stat-label">Test packages green</div>
+            </div>
+            <div class="stat-card stat-good">
+              <div class="stat-value">0</div>
+              <div class="stat-label">Lint issues</div>
+            </div>
+            <div class="stat-card stat-good">
+              <div class="stat-value">10</div>
+              <div class="stat-label">Clone groups (all acceptable)</div>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-value">51,541</div>
+              <div class="stat-label">Lines of Go</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">252</div>
+              <div class="stat-label">Go files</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">106</div>
+              <div class="stat-label">Test files</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">27</div>
+              <div class="stat-label">Packages</div>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card stat-warn">
+              <div class="stat-value">2</div>
+              <div class="stat-label">OPEN defects (AGENTS.md)</div>
+            </div>
+            <div class="stat-card stat-warn">
+              <div class="stat-value">11</div>
+              <div class="stat-label">Open TODO items</div>
+            </div>
+            <div class="stat-card stat-good">
+              <div class="stat-value">121</div>
+              <div class="stat-label">Completed TODO items</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Pkgs w/o tests</div>
+            </div>
+          </div>
+          <div class="callout callout-solution">
+            <strong>Overall health grade: A−.</strong> Excellent test/lint posture and feature
+            completeness. Held back from A/A+ by the two OPEN correctness defects and a lingering
+            Printer↔syntax.Node coupling that blocks clean package boundaries.
+          </div>
+        </section>
+
+        <section id="done">
+          <h2><span class="num">02</span>Fully Done</h2>
+          <div class="strengths">
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Three detection modes — fully functional</strong
+                ><span
+                  >Semantic (alpha-normalized, Type-2 renamed clones), Exact (Type-1 copy-paste),
+                  Structural (AST shape only). Threaded cleanly through <code>cmd</code> →
+                  <code>job</code> → <code>golang.DetectionMode</code>.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Two languages — fully functional</strong
+                ><span
+                  >Go (45 node types) and Templ (28 node types), on by default. Vendor excluded;
+                  generated code filtered (sqlc/templ/protobuf/mockgen/stringer/generic) with
+                  <code>--include-generated</code> override.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Seven output formats — fully functional</strong
+                ><span
+                  >Text, HTML (dark theme, VSCode links, side-by-side &amp; inline diff via LCS),
+                  JSON, Simple-JSON, Plumbing, SARIF 2.1.0, CSV. Plus <code>--all</code> batch
+                  generation.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Baseline &amp; CI mode — fully functional</strong
+                ><span
+                  ><code>baseline</code> records known clones; <code>check</code> compares against
+                  it and fails CI on new clones. Load/Save/Add/Has with file-format
+                  versioning.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Public SDK (<code>pkg/artdupl</code>) — fully functional</strong
+                ><span
+                  >Detector interface, streaming results, zero imports of <code>config/</code> and
+                  <code>errors/</code>. Type aliases to domain. Enforced via
+                  <code>.go-arch-lint.yml</code>.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Zero lint issues — fully functional</strong
+                ><span
+                  ><code>golangci-lint run --timeout 5m ./...</code> → 0 issues across 27 packages.
+                  Config reduced 51% in a recent overhaul.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>BDD + unit test suites — fully functional</strong
+                ><span
+                  >24/24 test-bearing packages green. Ginkgo/Gomega BDD in <code>bdd/</code>;
+                  helpers in <code>internal/testutil</code>.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Nix flake build — fully functional</strong
+                ><span
+                  ><code>nix build</code>, <code>nix flake check</code>,
+                  <code>nix run .#test</code>, <code>nix run .#lint</code> all working. Private
+                  <code>gogenfilter</code> dep via two-phase dummy/replace.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>Enum pattern unified — fully functional</strong
+                ><span
+                  >Domain enums use <code>pkg/enum</code> shared helpers
+                  (<code>MarshalJSON</code>/<code>UnmarshalJSON</code>/<code>Parse</code>). Each has
+                  <code>IsValid()</code>, <code>String()</code>.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong
+                  >Duplication driven to zero harmful clones — fully functional (this
+                  session)</strong
+                ><span
+                  >Extracted 6 reusable templ components (<code>cloneHeader</code>,
+                  <code>suggestionBlock</code>, <code>diffStatBadge</code>, <code>fileAnchor</code>,
+                  <code>diffLegendItem</code>, <code>renderDiffLinesTempl</code>), data-driven
+                  diff-stat types, and CSS-class constants. 10 residual groups all defensible.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <span class="check">✓</span>
+              <div class="text">
+                <strong>16 correctness defects fixed</strong
+                ><span
+                  >From the 2026-06-30 full code review — committed as <code>499f046</code>.
+                  Suffixtree error swallow, cache atomic race, dead fields, dead SARIF rules,
+                  etc.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="partial">
+          <h2><span class="num">03</span>Partially Done</h2>
+
+          <div class="card card-warning">
+            <h3>Printer ↔ syntax.Node coupling</h3>
+            <p class="where">
+              printer/actionability.go · printer/clone_processor.go · 34 references
+            </p>
+            <p>
+              The Printer interface uses <code>domain.ProcessedCloneGroup</code>, but
+              <code>actionability.go</code> still imports <code>syntax.Node</code> directly for
+              pattern evaluation. <code>clone_processor.go</code> is the partial bridge. This blocks
+              splitting the oversized <code>printer/</code> package and keeps the printer coupled to
+              AST internals.
+            </p>
+          </div>
+
+          <div class="card card-warning">
+            <h3>Parallel Clone/Group type alignment</h3>
+            <p class="where">
+              printer.CloneGroup · printer.JSONClone · pkg/artdupl.Clone ·
+              domain.ProcessedClone(Group)
+            </p>
+            <p>
+              Field names aligned (<code>LineStart</code>/<code>LineEnd</code> canonical), Fragment
+              unified to <code>string</code>, <code>StartPos</code>/<code>EndPos</code> added. But
+              the 5+ parallel types remain separate for Printer/SDK DTO independence. Full
+              consolidation via a shared <code>CloneRef</code> value object is designed but not
+              built.
+            </p>
+          </div>
+
+          <div class="card card-warning">
+            <h3>Config enum relocation</h3>
+            <p class="where">config/SortCriteria · config/OutputFormat · config/DiffMode</p>
+            <p>
+              These config enums still live in <code>config/</code> though they use the shared
+              <code>pkg/enum</code> helpers. Relocating <code>SortCriteria</code> and
+              <code>OutputFormat</code> to <code>domain</code> would decouple the 21-file
+              <code>printer/</code> package from <code>config</code>. Designed, not executed —
+              touches many call sites.
+            </p>
+          </div>
+
+          <div class="card card-warning">
+            <h3>Documentation freshness</h3>
+            <p>
+              <code>FEATURES.md</code> last updated 2026-06-23; <code>TODO_LIST.md</code> last
+              updated 2026-06-28. Both lag behind the current 2026-06-30 state (e.g., one TODO item
+              about <code>debug.Stack()</code> is now stale — <code>DuplError</code> no longer
+              captures a stack). <code>AGENTS.md</code> is current.
+            </p>
+          </div>
+        </section>
+
+        <section id="notstarted">
+          <h2><span class="num">04</span>Not Started</h2>
+
+          <div class="card">
+            <h3>Branded <code>NodeType int32</code></h3>
+            <p>
+              Introduce a branded type in <code>syntax/</code> to prevent cross-package
+              <code>int32</code> collision between golang and templ node-type constants. HIGH RISK:
+              touches gob serialization cache format and the semantic encoding layout (<code
+                >[24-bit hash][8-bit base type]</code
+              >). Designed and documented, deliberately deferred.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Split <code>printer/</code> into sub-packages</h3>
+            <p>
+              ~29 source files / ~3,500+ lines in one package is too many. Planned split:
+              <code>stats</code>, <code>html</code>, <code>analyze</code>. Blocked by the
+              Printer↔syntax.Node coupling above — clean boundaries don't exist yet.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Shared <code>CloneRef</code> value object</h3>
+            <p>
+              Unify the 7 parallel Clone types via embedding without collapsing the DTO boundary.
+              The analysis is done (<code>docs/research/SPLIT-BRAIN.html</code>); the implementation
+              is not.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3><code>Name()</code> on MethodDetector interface</h3>
+            <p>
+              Eliminates a type switch at <code>detection/multidetector.go:117</code>. New detectors
+              would just implement <code>Name()</code>. Small, well-scoped — but not yet done.
+            </p>
+          </div>
+        </section>
+
+        <section id="fuckedup">
+          <h2><span class="num">05</span>Totally Fucked Up</h2>
+          <p>
+            Two correctness defects are flagged <strong>OPEN</strong> in <code>AGENTS.md</code> and
+            confirmed against source. These are the real risks — they silently corrupt results under
+            the right conditions rather than crashing loudly.
+          </p>
+
+          <div class="card card-problem">
+            <span class="badge badge-critical">CRITICAL · OPEN</span>
+            <h3>Destructive serialization breaks Type-2 classification</h3>
+            <p class="where">
+              syntax.Serialize → serial() · printer/clone_processor.go::classifyCloneType
+            </p>
+            <p>
+              <code>syntax.Serialize</code> → <code>serial()</code> overwrites
+              <code>n.Type</code> in place (<code>fingerprintSubtree</code>), so it is
+              <strong>destructive on shared trees</strong>. Calling it twice double-hashes. Worse,
+              <code>classifyCloneType</code> calls <code>syntax.Serialize</code> on nodes the suffix
+              tree already serialized, and the walk short-circuits on
+              <code>Statement=true</code> nodes — so the
+              <strong>Type-1-vs-Type-2 (renamed) distinction is silently lost</strong> for
+              statement-rooted fragments.
+            </p>
+            <div class="callout callout-problem">
+              <strong>Impact:</strong> The clone-type badges in HTML/JSON output can be wrong for
+              statement-rooted clones. Users relying on "Type 2 = renamed" to prioritize refactor
+              work get silently incorrect data. No crash — just wrong labels. <br /><br />
+              <strong>Fix direction:</strong> Serialize into a side table, never mutate
+              <code>n.Type</code>; walk <code>node.Children</code> directly for Name comparison. See
+              <code>docs/reviews/2026-06-30_18-31_full-code-review.html</code>.
+            </div>
+          </div>
+
+          <div class="card card-problem">
+            <span class="badge badge-critical">CRITICAL · OPEN</span>
+            <h3>Incremental cache-miss aliasing (data race)</h3>
+            <p class="where">job/incremental.go · parseFile</p>
+            <p>
+              The cache-miss path returns the
+              <strong>same node slice it stores in the cache</strong> (the hit path correctly
+              <code>Clone()</code>s). <code>parseFile</code> is not concurrent-safe, so under
+              concurrent parse when multiple goroutines hit a fresh content-hash cache miss, they
+              alias the same backing slice — a latent data race.
+            </p>
+            <div class="callout callout-problem">
+              <strong>Impact:</strong> Only triggers on the incremental path with concurrent
+              goroutines and a cache miss. Won't appear in single-threaded or all-cache-hit runs.
+              But it is a genuine race that <code>-race</code> would flag. <br /><br />
+              <strong>Fix direction:</strong> Deep-clone-on-store + <code>singleflight</code> to
+              deduplicate concurrent misses on the same key.
+            </div>
+          </div>
+        </section>
+
+        <section id="improve">
+          <h2><span class="num">06</span>What To Improve</h2>
+          <div class="card card-solution">
+            <h3>1. Fix the two OPEN correctness defects first</h3>
+            <p>
+              They are the only things between the project and a clean "A". The
+              destructive-serialization fix is the higher-leverage one — it makes clone-type labels
+              trustworthy, which is the whole point of the semantic mode.
+            </p>
+          </div>
+          <div class="card">
+            <h3>2. Non-destructive serialization as a foundation</h3>
+            <p>
+              The fix to (1) is also a prerequisite for safely caching serialized trees, reusing
+              them across detection modes, and reasoning about the pipeline without "don't call it
+              twice" footguns. It removes a whole class of "works only if called in the right order"
+              bugs.
+            </p>
+          </div>
+          <div class="card">
+            <h3>3. Decouple Printer from syntax.Node</h3>
+            <p>
+              Introduce the <code>ProcessedClone</code> DTO so <code>actionability.go</code> stops
+              importing <code>syntax.Node</code>. This unblocks the <code>printer/</code> package
+              split and makes the printer testable in isolation.
+            </p>
+          </div>
+          <div class="card">
+            <h3>4. Add tests to the 3 test-less packages</h3>
+            <p>
+              <code>cmd/art-dupl</code> (main binary), <code>internal/testhelpers</code>, and
+              <code>internal/testutil</code> have zero test files. The main binary especially should
+              have at least a smoke/integration test.
+            </p>
+          </div>
+          <div class="card">
+            <h3>5. Run the test suite under <code>-race</code> in CI</h3>
+            <p>
+              The incremental cache aliasing defect (OPEN #2) is exactly the kind of bug
+              <code>-race</code> catches. If <code>nix flake check</code> doesn't already run
+              <code>go test -race ./...</code>, it should — it would have flagged this.
+            </p>
+          </div>
+        </section>
+
+        <section id="next25">
+          <h2><span class="num">07</span>Top 25 Things To Get Done Next</h2>
+          <p>Sorted by impact. Badges indicate priority tier.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Task</th>
+                  <th>Priority</th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    Fix destructive serialization — serialize into side table, stop mutating
+                    <code>n.Type</code>
+                  </td>
+                  <td><span class="badge badge-critical">P0</span></td>
+                  <td>Restores trustworthy clone-type labels; removes "call only once" footgun</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>
+                    Fix <code>classifyCloneType</code> — walk <code>node.Children</code> directly,
+                    don't re-serialize
+                  </td>
+                  <td><span class="badge badge-critical">P0</span></td>
+                  <td>Companion to #1; recovers Type-1-vs-Type-2 distinction for statements</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>
+                    Fix incremental cache-miss aliasing — deep-clone-on-store +
+                    <code>singleflight</code>
+                  </td>
+                  <td><span class="badge badge-critical">P0</span></td>
+                  <td>Eliminates latent data race on concurrent path</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Add <code>go test -race ./...</code> to <code>nix flake check</code></td>
+                  <td><span class="badge badge-high">P1</span></td>
+                  <td>Catches races like #3 automatically going forward</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>
+                    Decouple Printer from <code>syntax.Node</code> via
+                    <code>ProcessedClone</code> DTO
+                  </td>
+                  <td><span class="badge badge-high">P1</span></td>
+                  <td>Unblocks package split; 34 references to fix</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Split <code>printer/</code> into sub-packages (stats, html, analyze)</td>
+                  <td><span class="badge badge-high">P1</span></td>
+                  <td>~29 files / 3,500 lines is too big; blocked by #5</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>
+                    Relocate <code>SortCriteria</code> &amp; <code>OutputFormat</code> to
+                    <code>domain</code>
+                  </td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>Decouples 21-file printer from config</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>Add smoke/integration test for <code>cmd/art-dupl</code> main binary</td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>One of 3 test-less packages; the only user-facing one</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>Add <code>Name()</code> to <code>MethodDetector</code> interface</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Removes a type switch; small, clean, well-scoped</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>Introduce branded <code>NodeType int32</code></td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>Prevents cross-package int32 collision; HIGH RISK (cache format)</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>Build shared <code>CloneRef</code> value object</td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>Unifies 7 parallel Clone types without collapsing DTO boundary</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>Refresh <code>FEATURES.md</code> to 2026-06-30 state</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Lags by a week; feature inventory should be current</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>
+                    Refresh <code>TODO_LIST.md</code> — remove stale items, add the OPEN defects
+                  </td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>11 open items; at least 1 is already done (stack capture)</td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>Templ semantic mode (currently structural-only)</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td><code>syntax/templ/</code> has no identifier/operator encoding</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>Add more language frontends (TypeScript, Python, Rust)</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Currently Go+Templ only; architecture supports more</td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>Document the semantic encoding layout as an ADR</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td><code>[24-bit id/op hash][8-bit base type]</code> lives only in AGENTS.md</td>
+                </tr>
+                <tr>
+                  <td>17</td>
+                  <td>Context propagation audit on <code>cmd/run_crawl.go</code> feeders</td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>Only path lacking ctx-aware channel sends</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>Performance benchmark suite for suffix-tree build</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>O(1) transitions optimized but no regression guard</td>
+                </tr>
+                <tr>
+                  <td>19</td>
+                  <td>Cache eviction policy for the AST cache</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>SHA1 content hashing; no bounded-size policy</td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>HTML report: collapsible clone groups by default for large repos</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>UX for repos with 100+ clone groups</td>
+                </tr>
+                <tr>
+                  <td>21</td>
+                  <td>SARIF rule metadata enrichment</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Dead rules removed; live rules could carry fix suggestions</td>
+                </tr>
+                <tr>
+                  <td>22</td>
+                  <td>SDK streaming backpressure handling</td>
+                  <td><span class="badge badge-medium">P2</span></td>
+                  <td>Channel-based; no explicit flow control documented</td>
+                </tr>
+                <tr>
+                  <td>23</td>
+                  <td>Investigate XXH3 vs faster hashes for the hash-detector</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Already ~20x faster than SHA-256; diminishing returns</td>
+                </tr>
+                <tr>
+                  <td>24</td>
+                  <td>Add <code>go.mod</code> dependency audit to CI</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Catch banned/deperecated deps per how-to-golang policy</td>
+                </tr>
+                <tr>
+                  <td>25</td>
+                  <td>Write a "how art-dupl detects clones" architecture deep-dive</td>
+                  <td><span class="badge badge-low">P3</span></td>
+                  <td>Onboarding doc; the algorithm is non-obvious</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="question">
+          <h2><span class="num">08</span>The #1 Question I Cannot Answer Myself</h2>
+          <div class="card card-warning">
+            <span class="badge badge-high">BLOCKING DECISION</span>
+            <h3>
+              For the destructive-serialization fix: do we freeze the on-disk cache format, or
+              accept a cache-busting version bump?
+            </h3>
+            <p>
+              The correct fix for OPEN defect #1 is to stop mutating <code>n.Type</code> and
+              serialize into a side table. But the current AST cache (<code>cache/</code>)
+              <strong
+                >gobs the serialized nodes including the mutated <code>Type</code> field</strong
+              >, and the semantic encoding layout is
+              <code>[24-bit identifier/operator hash][8-bit base AST node type]</code> packed into
+              <code>int32</code>.
+            </p>
+            <p>If I introduce a separate side table for fingerprints, there are two paths:</p>
+            <ul class="tight">
+              <li>
+                <strong
+                  >(A) Keep <code>node.Type</code> in the gob, add a parallel fingerprint
+                  map.</strong
+                >
+                Backwards-compatible cache, but now there are two sources of truth for the type
+                field — a split-brain waiting to happen.
+              </li>
+              <li>
+                <strong
+                  >(B) Move the fingerprint out of <code>node.Type</code> entirely, bump the cache
+                  version.</strong
+                >
+                Clean single source of truth, but invalidates every existing baseline/cache file and
+                requires a migration story for CI users with committed caches.
+              </li>
+            </ul>
+            <p>
+              This is a one-way door for anyone who has committed cache files or baselines to their
+              repo. I can't tell from the code alone whether external/CI consumers depend on the
+              current cache format being stable, so I won't pick unilaterally.
+              <strong
+                >Which do you want: cache-format stability with a documented split-brain risk (A),
+                or a clean format bump with a migration note (B)?</strong
+              >
+            </p>
+          </div>
+        </section>
+
+        <footer class="footer">
+          Generated 2026-06-30 23:52 · All metrics verified live against build/test/lint output ·
+          Snapshot only
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>
