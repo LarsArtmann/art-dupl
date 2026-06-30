@@ -143,7 +143,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		config.SortCriteria(sortBy),
 		mergedConfig.Threshold,
 		detectionMethodStr,
-		mergedConfig.Semantic,
+		mergedConfig.DetectionMode.IsSemantic(),
 		mergedConfig.EffectiveSuppressTestLow(),
 		mergedConfig.EffectiveTestThreshold(),
 	)

@@ -485,25 +485,22 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	}
 }
 
-func TestSemanticField(t *testing.T) {
+func TestDetectionMode(t *testing.T) {
 	t.Parallel()
 
-	// Test default value is true (semantic matching is the default)
+	// Test default value is semantic
 	cfg := DefaultConfig()
-	testutil.AssertFieldValue(t, cfg.Semantic, true, "Semantic")
+	testutil.AssertFieldValue(t, cfg.DetectionMode, DetectionModeSemantic, "DetectionMode")
 
-	// Test Semantic can be loaded from config file
+	// Test DetectionMode can be loaded from config file
 	t.Run("LoadFromConfigFile", func(t *testing.T) {
 		t.Parallel()
 
 		tmpDir, cleanup := createTempDir(t)
 		defer cleanup()
 
-		configFile := filepath.Join(tmpDir, "semantic-config.json")
-		configContent := `{
-			"threshold": 15,
-			"semantic": true
-		}`
+		configFile := filepath.Join(tmpDir, "detection-mode-config.json")
+		configContent := `{"detectionMode": "exact"}`
 
 		err := os.WriteFile(configFile, []byte(configContent), 0o644)
 		if err != nil {
@@ -515,10 +512,10 @@ func TestSemanticField(t *testing.T) {
 			t.Fatalf("Failed to load config: %v", err)
 		}
 
-		testutil.AssertFieldValue(t, loaded.Semantic, true, "Semantic")
+		testutil.AssertFieldValue(t, loaded.DetectionMode, DetectionModeExact, "DetectionMode")
 	})
 
-	// Test Semantic is preserved in save/load round trip
+	// Test DetectionMode is preserved in save/load round trip
 	t.Run("SaveLoadRoundTrip", func(t *testing.T) {
 		t.Parallel()
 
@@ -529,7 +526,7 @@ func TestSemanticField(t *testing.T) {
 		cfg := &Config{
 			Threshold:         20,
 			OutputFormat:      "json",
-			Semantic:          true,
+			DetectionMode:     DetectionModeStructural,
 			DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 			MaxChildrenSerial: 10000,
 		}
@@ -544,33 +541,30 @@ func TestSemanticField(t *testing.T) {
 			t.Fatalf("Failed to load saved config: %v", err)
 		}
 
-		if loaded.Semantic != cfg.Semantic {
-			t.Errorf("Expected Semantic %v, got %v", cfg.Semantic, loaded.Semantic)
+		if loaded.DetectionMode != cfg.DetectionMode {
+			t.Errorf("Expected DetectionMode %v, got %v", cfg.DetectionMode, loaded.DetectionMode)
 		}
 	})
 
-	// Test Semantic is merged correctly (CLI zero values don't override file values for booleans)
+	// Test DetectionMode is merged correctly
 	t.Run("MergeConfigs", func(t *testing.T) {
 		fileConfig := &Config{
 			Threshold:         15,
-			Semantic:          true,
+			DetectionMode:     DetectionModeSemantic,
 			MaxChildrenSerial: 10000,
 			DetectionMethods:  DetectionMethods{DetectionMethodArtDupl},
 		}
 
 		cliConfig := &Config{
 			Threshold: 20,
-			// Semantic not set (zero value = false)
-			// CLI skips zero values for booleans, so file value should be preserved
 		}
 
 		merged := MergeConfigs(fileConfig, cliConfig)
 
-		// File value should be preserved since CLI has zero value
-		if merged.Semantic != true {
+		if merged.DetectionMode != DetectionModeSemantic {
 			t.Errorf(
-				"Expected merged Semantic true (file value preserved), got %v",
-				merged.Semantic,
+				"Expected merged DetectionMode semantic, got %v",
+				merged.DetectionMode,
 			)
 		}
 	})

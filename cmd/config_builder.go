@@ -38,7 +38,11 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 	mergedConfig := config.MergeConfigs(fileConfig, appConfig)
 
 	if cmd.Flags().Changed("structural") {
-		mergedConfig.Semantic = false
+		mergedConfig.DetectionMode = config.DetectionModeStructural
+	} else if cmd.Flags().Changed("exact") {
+		mergedConfig.DetectionMode = config.DetectionModeExact
+	} else if cmd.Flags().Changed("semantic") {
+		mergedConfig.DetectionMode = config.DetectionModeSemantic
 	}
 
 	err = config.ValidateConfig(mergedConfig)
@@ -112,8 +116,6 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"include-stringer":     &cfg.IncludeStringer,
 		"include-generic":      &cfg.IncludeGeneric,
 		"incremental":          &cfg.Incremental,
-		"semantic":             &cfg.Semantic,
-		"exact":                &cfg.Exact,
 		"rich-text":            &cfg.RichText,
 		"clear-cache":          &cfg.ClearCache,
 		"suppress-test-low":    &cfg.SuppressTestLow,

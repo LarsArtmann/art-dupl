@@ -178,7 +178,7 @@ func writeFormatFile(
 		sortByEnum,
 		cfg.Threshold,
 		detectionMethodStr,
-		cfg.Semantic,
+		cfg.DetectionMode.IsSemantic(),
 		cfg.EffectiveSuppressTestLow(),
 		cfg.EffectiveTestThreshold(),
 	)

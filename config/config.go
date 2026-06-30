@@ -120,23 +120,11 @@ type Config struct {
 	// ClearCache clears the cache before running (useful for forced full rebuild)
 	ClearCache bool `json:"clearCache,omitempty"`
 
-	// Semantic enables semantic-aware duplicate detection.
-	// When true, identifier names are included in the type hash, reducing false positives
-	// from structurally similar but semantically different code.
-	//
-	// Default is true (semantic matching). Use --structural flag to disable
-	// and match by structure only (more potential matches, more noise).
-	//
-	// Example: Expect(x).To(Equal(y)) vs Expect(z).To(Equal(w))
-	// - Semantic=true (default): Only matches if method names are the same
-	// - Semantic=false: Matches based on structure only (more potential matches)
-	Semantic bool `json:"semantic,omitempty"`
-
-	// Exact disables alpha-normalization so that identifier names are matched
-	// verbatim (copy-paste detection / Type 1 clones only). Only meaningful
-	// when Semantic is true: Exact+Semantic = exact-name matching, Semantic
-	// alone = alpha-normalized (Type 2) matching.
-	Exact bool `json:"exact,omitempty"`
+	// DetectionMode controls how identifier names participate in matching.
+	// - "semantic" (default): alpha-normalized identifiers — detects Type 2 renamed clones.
+	// - "exact": verbatim name hashing — Type 1 copy-paste only.
+	// - "structural": AST shape only, ignores names entirely.
+	DetectionMode DetectionMode `json:"detectionMode,omitempty"`
 
 	// Workers specifies the number of concurrent workers for file parsing.
 	// 0 or negative means use runtime.GOMAXPROCS(0).
@@ -206,7 +194,7 @@ func DefaultConfig() *Config {
 		Incremental:        false,
 		CacheDir:           "",
 		ClearCache:         false,
-		Semantic:           true,
+		DetectionMode:      DetectionModeSemantic,
 		Workers:            0,
 		DiffMode:           DiffModeDisabled,
 		RichText:           false,

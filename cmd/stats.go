@@ -123,7 +123,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 			Format:              format,
 			FilesCount:          parseStats.FilesCount,
 			DetectionMethods:    detectionMethodStr,
-			SemanticDetection:   mergedConfig.Semantic,
+			SemanticDetection:   mergedConfig.DetectionMode.IsSemantic(),
 			Timestamp:           time.Now().UTC().Format(time.RFC3339),
 			AnalysisDuration:    duration,
 			TotalEstimatedLines: parseStats.LinesCount,
@@ -142,7 +142,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 		return duplerrors.Wrap(err, duplerrors.AnalysisError, "failed to print stats header")
 	}
 
-	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash, mergedConfig.Semantic,
+	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash, mergedConfig.DetectionMode.IsSemantic(),
 		mergedConfig.EffectiveSuppressTestLow(), mergedConfig.EffectiveTestThreshold())
 	if err != nil {
 		return err
