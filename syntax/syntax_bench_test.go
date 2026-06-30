@@ -1,8 +1,6 @@
 package syntax
 
-import (
-	"testing"
-)
+import "testing"
 
 func BenchmarkSerialize_Small(b *testing.B) {
 	root := &Node{
