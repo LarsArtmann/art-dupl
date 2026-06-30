@@ -1,0 +1,101 @@
+# >>> buildflow-managed (.dockerignore) >>>
+# Auto-managed by buildflow. Edit outside these markers; this block is regenerated on `buildflow --fix`.
+
+## Secrets and environment
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+## Version control
+.git
+.gitignore
+.gitattributes
+
+## Ci cd
+.github/
+.gitlab-ci.yml
+
+## Operating systems
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+## Editors and ides
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+## Documentation
+docs/
+*.md
+
+## Logs and temporaries
+*.log
+*.tmp
+*.temp
+
+## Test artifacts
+*.test
+*.out
+coverage.out
+*.html
+
+## Go
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+go.work.sum
+/art-dupl
+
+## Nix
+result
+result-*
+.envrc
+.direnv/
+
+## Javascript and typescript
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.next/
+.nuxt/
+.docusaurus/
+.eslintcache
+.cache/
+.parcel-cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+## Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.ipynb_checkpoints/
+.hypothesis/
+cython_debug/
+.coverage
+htmlcov/
+# <<< buildflow-managed (.dockerignore) <<<
