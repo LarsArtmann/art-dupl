@@ -32,7 +32,7 @@ func (t *testToken) Val() TokenValue {
 func generateTreeWithRandomTokens(tokenCount int) *STree {
 	tree := New()
 	tokens := generateRandomTokens(tokenCount)
-	tree.Update(tokens...)
+	mustUpdate(tree, tokens...)
 
 	return tree
 }
@@ -44,7 +44,7 @@ func generateTreeWithTransitions(stateCount, transPerState int) *STree {
 
 	// Add tokens to build tree structure
 	tokens := generateRandomTokens(stateCount * transPerState * 10)
-	tree.Update(tokens...)
+	mustUpdate(tree, tokens...)
 
 	return tree
 }
@@ -94,7 +94,7 @@ func BenchmarkFindTranSmall(b *testing.B) {
 	benchmarkFindTran(b, 0, 0, func() *STree {
 		tree := New()
 		tokens := generateRandomTokens(100)
-		tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 
 		return tree
 	}, findTranFunc)
@@ -143,7 +143,7 @@ func BenchmarkConstruction(b *testing.B) {
 
 			for b.Loop() {
 				tree := New()
-				tree.Update(tokens...)
+				mustUpdate(tree, tokens...)
 			}
 		})
 	}
@@ -161,7 +161,7 @@ func BenchmarkConstructionParallel(b *testing.B) {
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
 					tree := New()
-					tree.Update(tokens...)
+					mustUpdate(tree, tokens...)
 				}
 			})
 		})
@@ -187,7 +187,7 @@ func BenchmarkUpdate(b *testing.B) {
 			b.ResetTimer()
 
 			for b.Loop() {
-				tree.Update(tokens...)
+				mustUpdate(tree, tokens...)
 			}
 		})
 	}
@@ -197,7 +197,7 @@ func BenchmarkUpdate(b *testing.B) {
 func BenchmarkAt(b *testing.B) {
 	tree := New()
 	tokens := generateRandomTokens(10000)
-	tree.Update(tokens...)
+	mustUpdate(tree, tokens...)
 
 	positions := make([]int, 0, 100)
 
@@ -221,7 +221,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 
 	for b.Loop() {
 		tree := New()
-		tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 	}
 }
 
@@ -239,7 +239,7 @@ func BenchmarkTestAndSplit(b *testing.B) {
 func BenchmarkSearch(b *testing.B) {
 	tree := New()
 	tokens := generateRandomTokens(1000)
-	tree.Update(tokens...)
+	mustUpdate(tree, tokens...)
 
 	if len(tokens) < 10 {
 		b.Skip("Not enough tokens for search benchmark")

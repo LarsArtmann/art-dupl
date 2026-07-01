@@ -54,7 +54,7 @@ func TestConstruction(t *testing.T) {
 	r[0].addTran(2, 5, r[3]) // nana
 
 	banana := New()
-	_ = banana.Update(str2tok(str2)...)
+	mustUpdate(banana, str2tok(str2)...)
 	compareTrees(t, r[0], banana.root)
 
 	_, q := genStates(11, str2+"$")
@@ -73,7 +73,7 @@ func TestConstruction(t *testing.T) {
 	q[5].addTran(4, 6, q[9])  // na$
 	q[5].addTran(6, 6, q[10]) // $
 
-	banana.Update(char('$'))
+	mustUpdate(banana, char('$'))
 	compareTrees(t, q[0], banana.root)
 
 	foo := New()
@@ -298,7 +298,7 @@ func FuzzSuffixTreeUpdate(f *testing.F) {
 		defer testhelpers.PanicRecovery(t, input)()
 
 		// Update tree with tokens
-		_ = tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 
 		// Verify invariants
 		if len(tree.data) != len(tokens) {
@@ -367,7 +367,7 @@ func TestUnicodeSupport(t *testing.T) {
 			tokens := str2tok(tc.input)
 
 			// This should not panic on Unicode input
-			_ = tree.Update(tokens...)
+			mustUpdate(tree, tokens...)
 
 			// Verify all characters were converted
 			if len(tokens) != len(tc.expected) {

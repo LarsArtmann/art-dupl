@@ -99,7 +99,7 @@ type Summary struct {
 // rather than the default time.Duration serialization (nanoseconds).
 func (s Summary) MarshalJSON() ([]byte, error) {
 	type alias Summary
-	return json.Marshal(struct {
+	data, err := json.Marshal(struct {
 		alias
 
 		AnalysisTimeMS int64 `json:"analysis_time_ms"`
@@ -107,6 +107,10 @@ func (s Summary) MarshalJSON() ([]byte, error) {
 		alias:          alias(s),
 		AnalysisTimeMS: s.AnalysisTime.Milliseconds(),
 	})
+	if err != nil {
+		return nil, fmt.Errorf("marshal summary: %w", err)
+	}
+	return data, nil
 }
 
 // UnmarshalJSON reads AnalysisTime from milliseconds back into time.Duration.
@@ -118,7 +122,7 @@ func (s *Summary) UnmarshalJSON(data []byte) error {
 		AnalysisTimeMS int64 `json:"analysis_time_ms"`
 	}{}
 	if err := json.Unmarshal(data, &aux); err != nil {
-		return err
+		return fmt.Errorf("unmarshal summary: %w", err)
 	}
 	*s = Summary(aux.alias)
 	s.AnalysisTime = time.Duration(aux.AnalysisTimeMS) * time.Millisecond

@@ -249,7 +249,9 @@ func buildDuplicateData() ([]*syntax.Node, *suffixtree.STree) {
 	}
 
 	tree := suffixtree.New()
-	tree.Update(tokens...)
+	if err := tree.Update(tokens...); err != nil {
+		panic("unexpected tree.Update error: " + err.Error())
+	}
 
 	return data, tree
 }

@@ -58,10 +58,14 @@ func makeFrag(filename string, pos, end int32) []*syntax.Node {
 func buildTreeFromFrag(frag []*syntax.Node) *suffixtree.STree {
 	tree := suffixtree.New()
 	for _, node := range frag {
-		tree.Update(node)
+		if err := tree.Update(node); err != nil {
+			panic("unexpected tree.Update error: " + err.Error())
+		}
 	}
 
-	tree.Update(&syntax.Node{Type: -1})
+	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
+		panic("unexpected tree.Update error: " + err.Error())
+	}
 
 	return tree
 }
@@ -93,10 +97,14 @@ func drainMatchesChannel(t *testing.T) {
 func buildTestSuffixTree(data []*syntax.Node) *suffixtree.STree {
 	tree := suffixtree.New()
 	for _, node := range data {
-		tree.Update(node)
+		if err := tree.Update(node); err != nil {
+			panic("unexpected tree.Update error: " + err.Error())
+		}
 	}
 
-	tree.Update(&syntax.Node{Type: -1})
+	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
+		panic("unexpected tree.Update error: " + err.Error())
+	}
 
 	return tree
 }

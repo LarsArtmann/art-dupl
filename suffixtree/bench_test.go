@@ -19,7 +19,7 @@ func BenchmarkSTreeUpdate(b *testing.B) {
 
 			for range b.N {
 				tree := New()
-				tree.Update(data...)
+				mustUpdate(tree, data...)
 			}
 		})
 	}
@@ -32,7 +32,7 @@ func BenchmarkFindDuplOver(b *testing.B) {
 	data := append(append(half, half...), char(0))
 
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	thresholds := []int{10, 50, 200}
 	for _, t := range thresholds {
@@ -60,6 +60,14 @@ func genTokenSequence(n int) []Token {
 	}
 
 	return data
+}
+
+// mustUpdate calls tree.Update and panics on error. Test inputs are deterministic,
+// so an Update error signals a bug in tree construction itself.
+func mustUpdate(tree *STree, tokens ...Token) {
+	if err := tree.Update(tokens...); err != nil {
+		panic("unexpected STree.Update error: " + err.Error())
+	}
 }
 
 func itoa(n int) string {

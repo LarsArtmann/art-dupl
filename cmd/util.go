@@ -23,6 +23,8 @@ const (
 // detectionMode resolves the active golang.DetectionMode from config.
 func detectionMode(cfg *config.Config) golang.DetectionMode {
 	switch cfg.DetectionMode {
+	case config.DetectionModeSemantic:
+		return golang.DetectionModeSemantic
 	case config.DetectionModeExact:
 		return golang.DetectionModeExact
 	case config.DetectionModeStructural:

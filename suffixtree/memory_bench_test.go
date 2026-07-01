@@ -18,7 +18,7 @@ func benchmarkMemoryUsage(b *testing.B, uniqueCount int) {
 
 	for range b.N {
 		tree := New()
-		tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 	}
 }
 

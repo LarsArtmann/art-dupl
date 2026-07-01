@@ -27,7 +27,7 @@ func FuzzFindDuplOver(f *testing.F) {
 			tokens = append(tokens, simpleToken(TokenValue(b)))
 		}
 
-		tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
@@ -69,7 +69,7 @@ func FuzzCtxCancelFindDuplOver(f *testing.F) {
 			tokens = append(tokens, simpleToken(TokenValue(b+1))) // +1 to avoid zero
 		}
 
-		tree.Update(tokens...)
+		mustUpdate(tree, tokens...)
 
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel() // cancel immediately

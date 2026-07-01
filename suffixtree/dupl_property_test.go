@@ -41,7 +41,7 @@ func TestProperty_EveryMatchIsARealRepeat(t *testing.T) {
 	for _, seq := range sequences {
 		data := str2tok(seq)
 		tree := New()
-		tree.Update(data...)
+		mustUpdate(tree, data...)
 
 		matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
 
@@ -67,7 +67,7 @@ func TestProperty_AllMatchesMeetThreshold(t *testing.T) {
 
 	data := str2tok("abcabcabcabc$")
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	for _, threshold := range []int{2, 3, 4, 5, 6} {
 		matches := collectMatches(tree.FindDuplOver(context.Background(), threshold))
@@ -86,7 +86,7 @@ func TestProperty_MatchesHaveMultiplePositions(t *testing.T) {
 
 	data := str2tok("aabbaabbaabb$")
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
 	for _, m := range matches {
@@ -108,7 +108,7 @@ func TestProperty_NoFalsePositivesOnUniqueInput(t *testing.T) {
 	}
 
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	matches := collectMatches(tree.FindDuplOver(context.Background(), 2))
 	if len(matches) != 0 {
@@ -129,7 +129,7 @@ func TestProperty_DuplicateDetected(t *testing.T) {
 	data := str2tok(half + half + "$")
 
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	matches := collectMatches(tree.FindDuplOver(context.Background(), 5))
 	if len(matches) == 0 {
@@ -160,7 +160,7 @@ func TestProperty_MatchesAreMaximal(t *testing.T) {
 
 	data := str2tok("xabcyabcz$")
 	tree := New()
-	tree.Update(data...)
+	mustUpdate(tree, data...)
 
 	matches := collectMatches(tree.FindDuplOver(context.Background(), 3))
 	for _, m := range matches {

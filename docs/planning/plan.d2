@@ -1,76 +1,108 @@
-direction: right
-
-tier_1: Tier 1 — CRITICAL correctness (1% → 51%) {
-  style.fill: "#ff6b6b"
-  style.font-color: "#0e0e10"
-  style.stroke: "#ff6b6b"
-  shape: package
-}
-
-tier_2: Tier 2 — HIGH quick wins (4% → 64%) {
-  style.fill: "#f4d35e"
-  style.font-color: "#0e0e10"
-  style.stroke: "#f4d35e"
-  shape: package
-}
-
-tier_3: Tier 3 — HIGH robustness (20% → 80%) {
-  style.fill: "#ffb347"
-  style.font-color: "#0e0e10"
-  style.stroke: "#ffb347"
-  shape: package
-}
-
-tier_4: Tier 4 — POLICY + architecture {
-  style.fill: "#6eb5ff"
-  style.font-color: "#0e0e10"
-  style.stroke: "#6eb5ff"
-  shape: package
-}
-
-tier_5: Tier 5 — MEDIUM code quality {
-  style.fill: "#18181d"
+direction: down
+Pareto Plan art-dupl post-sprint: {
+  shape: document
+  style.fill: "#0e0e10"
   style.font-color: "#f4f4f0"
-  style.stroke: "#6eb5ff"
-  shape: package
+
+  Resolved_2026_07_01: {
+    label: "RESOLVED in 2026-07-01 sprint (8 commits)\l• Destructive serialization\l• Type-2 classification\l• Incremental cache aliasing + singleflight\l• Update panics to error\l• DetectionMode enum\l• FuncLit normalization\l• SHA-256 cache, eviction, benchmarks\l"
+    style.fill: "#1a2e1a"
+    style.stroke: "#6eb5ff"
+    style.font-color: "#f4f4f0"
+  }
+
+  T1_Trust: {
+    label: "TIER 1 - The 1% (51% value)\lTRUST FOUNDATION: fix what sprint missed\l"
+    style.fill: "#3d1a1a"
+    style.stroke: "#ff6b6b"
+    style.font-color: "#f4f4f0"
+  }
+
+  T1a: {
+    label: "L1 Production lint bugs\l- cmd/util.go exhaustive switch\l- types.go wrapcheck (2 sites)\l~12 min zero risk"
+    style.fill: "#2a2a30"
+    style.stroke: "#ff6b6b"
+  }
+  T1b: {
+    label: "L2 Test errcheck (11)\l- tree.Update returns error\l~12 min mechanical"
+    style.fill: "#2a2a30"
+    style.stroke: "#ff6b6b"
+  }
+  T1c: {
+    label: "D1 Fix stale AGENTS.md\l- line 89 OPEN to RESOLVED\l~6 min doc accuracy"
+    style.fill: "#2a2a30"
+    style.stroke: "#ff6b6b"
+  }
+
+  T2_Honesty: {
+    label: "TIER 2 - The 4% (64% value)\lHONESTY + GUARDRAILS\l"
+    style.fill: "#3d2e1a"
+    style.stroke: "#f4d35e"
+    style.font-color: "#f4f4f0"
+  }
+  T2a: {label: "D2 Refresh TODO_LIST.md ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#f4d35e"}
+  T2b: {label: "D3 Refresh FEATURES.md ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#f4d35e"}
+  T2c: {label: "G1 Wire -race + lint into CI ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#f4d35e"}
+  T2d: {label: "U1 Cache version-mismatch warning ~8 min\l"; style.fill: "#2a2a30"; style.stroke: "#f4d35e"}
+  T2e: {label: "U2 JSON config migration shim ~10 min\l"; style.fill: "#2a2a30"; style.stroke: "#f4d35e"}
+
+  T3_Arch: {
+    label: "TIER 3 - The 20% (80% value)\lHIGHEST ARCHITECTURAL VALUE\l"
+    style.fill: "#1a2e3d"
+    style.stroke: "#6eb5ff"
+    style.font-color: "#f4f4f0"
+  }
+  A1: {label: "T22 ProcessedClone DTO\ldecouple printer from syntax.Node\l10 files 34 refs ~100 min\l"; style.fill: "#2a2a30"; style.stroke: "#6eb5ff"}
+  A2: {label: "T25 Split printer (stats html analyze)\lBLOCKED BY T22\l"; style.fill: "#2a2a30"; style.stroke: "#6eb5ff"}
+  A3: {label: "T36 Perf regression CI ~40 min\l"; style.fill: "#2a2a30"; style.stroke: "#6eb5ff"}
+  A4: {label: "T23 CloneRef unification 7 types ~80 min\l"; style.fill: "#2a2a30"; style.stroke: "#6eb5ff"}
+
+  T4_Quality: {
+    label: "TIER 4 - QUALITY POLISH\l"
+    style.fill: "#1a3d2e"
+    style.stroke: "#7ee787"
+    style.font-color: "#f4f4f0"
+  }
+  Q1: {label: "sendCtx rollout ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#7ee787"}
+  Q2: {label: "T28 sort comparators ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#7ee787"}
+  Q3: {label: "T18 hash pipeline ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#7ee787"}
+  Q4: {label: "Verify CI templates ~12 min\l"; style.fill: "#2a2a30"; style.stroke: "#7ee787"}
+
+  Decision: {
+    label: "STRATEGIC GATE\nArchitectural purity\nvs\nUser-facing features?"
+    shape: diamond
+    style.fill: "#3d1a3d"
+    style.stroke: "#f4d35e"
+    style.font-color: "#f4f4f0"
+  }
+
+  T5_Features: {
+    label: "TIER 5 - FEATURES (gated)\l"
+    style.fill: "#2a2a3d"
+    style.stroke: "#b083ff"
+    style.font-color: "#f4f4f0"
+  }
+  F1: {label: "T32 Watch mode ~1d\l"; style.fill: "#2a2a30"; style.stroke: "#b083ff"}
+  F2: {label: "T38 TypeScript ~1w+\l"; style.fill: "#2a2a30"; style.stroke: "#b083ff"}
+  F3: {label: "T39 Python ~1w+\l"; style.fill: "#2a2a30"; style.stroke: "#b083ff"}
+  R1: {label: "T24 Branded NodeType HIGH RISK\l"; style.fill: "#2a2a30"; style.stroke: "#ff6b6b"}
+  B1: {label: "BLOCKED T26 Fang v2 T12 json v2\l"; style.fill: "#2a2a30"; style.stroke: "#888"}
+
+  Resolved_2026_07_01 -> T1_Trust: {style.stroke-dash: 4; style.stroke: "#555"; label: " revealed gaps"}
+  T1_Trust -> T1a -> T1b -> T1c
+  T1c -> T2_Honesty: {label: " builds on "}
+  T2_Honesty -> T2a -> T2b -> T2c -> T2d -> T2e
+  T2e -> T3_Arch: {label: " then "}
+  T3_Arch -> A1
+  A1 -> A2: {label: " unblocks "}
+  T3_Arch -> T4_Quality
+  T4_Quality -> Q1 -> Q2 -> Q3 -> Q4
+  Q4 -> Decision: {label: " then decide "}
+  Decision -> T5_Features: {label: " if features "}
+  Decision -> A4: {label: " if purity "; style.stroke-dash: 4}
+  T5_Features -> F1
+  T5_Features -> F2
+  T5_Features -> F3
+  T5_Features -> R1
+  T5_Features -> B1
 }
-
-tier_6: Tier 6 — LOW infrastructure {
-  style.fill: "#18181d"
-  style.font-color: "#f4f4f0"
-  style.stroke: "#f4d35e"
-  shape: package
-}
-
-tier_7: Tier 7 — ROADMAP future {
-  style.fill: "#16161a"
-  style.font-color: "#f4f4f0"
-  style.stroke: "#6eb5ff"
-  shape: package
-}
-
-t1_type2: "T1 Type-2 classification\n(Option A: walk Children)" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
-t5_serial: "T5 Non-destructive serial\n(side table)" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
-t6_cache: "T6 Cache-miss deep-clone" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
-t7_suffix: "T7 Update panic→error" {style.fill: "#ff6b6b"; style.font-color: "#0e0e10"}
-
-t2_analysis: "T2 AnalysisTime tag" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
-t3_gc: "T3 Remove runtime.GC()" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
-t4_sort: "T4 Deterministic sort" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
-t10_maxchild: "T10 Wire MaxChildrenSerial" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
-t11_sha: "T11 sha1→sha256" {style.fill: "#f4d35e"; style.font-color: "#0e0e10"}
-
-t8_mode: "T8 Detection mode enum" {style.fill: "#ffb347"; style.font-color: "#0e0e10"}
-t9_funclit: "T9 FuncLit normalize" {style.fill: "#ffb347"; style.font-color: "#0e0e10"}
-
-t12_json: "T12 json v1→v2" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
-t21_enum: "T21 SortCriteria→domain" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
-t22_dto: "T22 ProcessedClone DTO" {style.fill: "#6eb5ff"; style.font-color: "#0e0e10"}
-
-tier_1 -> tier_2 -> tier_3 -> tier_4 -> tier_5 -> tier_6 -> tier_7: "priority flow"
-
-t1_type2 -> t5_serial: "fixes user-visible bug first"
-t5_serial -> t6_cache: "paired: multi-pass safety"
-t6_cache -> t7_suffix: "robustness chain"
-
-t5_serial -> t4_sort: "non-destructive enables golden tests"
