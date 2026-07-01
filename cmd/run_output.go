@@ -106,7 +106,7 @@ func printCloneGroups(
 		}
 
 		if semantic {
-			if printer.EvaluateActionability(uniq) == domain.NonActionable {
+			if printer.EvaluateActionability(printer.ToCloneNodeSeqs(uniq)) == domain.NonActionable {
 				continue
 			}
 		}

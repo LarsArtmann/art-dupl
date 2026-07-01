@@ -146,8 +146,6 @@ func TestDetectorName(t *testing.T) {
 func TestBuildCloneDetectors(t *testing.T) {
 	t.Parallel()
 
-	md := &MultiDetector{data: []*syntax.Node{}, tree: suffixtree.New()}
-
 	cases := []struct {
 		name    string
 		methods []domain.DetectionMethod
@@ -164,7 +162,7 @@ func TestBuildCloneDetectors(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			md.cfg = Config{Methods: tc.methods}
+			md := &MultiDetector{data: []*syntax.Node{}, tree: suffixtree.New(), cfg: Config{Methods: tc.methods}}
 
 			dets := md.buildCloneDetectors()
 			if len(dets) != tc.want {

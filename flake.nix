@@ -152,6 +152,19 @@
               '';
             });
 
+            race = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-race";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                CGO_ENABLED=1 go test -race ./...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
             lint = config.packages.default.overrideAttrs (old: {
               name = "${old.pname}-lint";
               nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.golangci-lint ];

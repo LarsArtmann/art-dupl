@@ -508,6 +508,62 @@
         <div class="hero">
           <div class="hero-badge">Comprehensive Execution Plan</div>
           <h1>art-dupl — Pareto Plan 2026-07-01</h1>
+          <!-- ====== UPDATE BANNER — added 2026-07-01 02:50 ====== -->
+          <div
+            style="
+              background: #1a2e1a;
+              border-left: 4px solid #7ee787;
+              padding: 1rem 1.4rem;
+              margin: 1.5rem 0;
+              font-family: var(--font-body, system-ui, sans-serif);
+              font-size: 14px;
+              line-height: 1.6;
+              border-radius: 2px;
+            "
+          >
+            <div
+              style="
+                font-weight: 800;
+                color: #7ee787;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                font-size: 12px;
+                margin-bottom: 0.5rem;
+              "
+            >
+              ✅ Update — 2026-07-01 02:50 CEST
+            </div>
+            <div style="color: #f4f4f0">
+              This document is a <strong>point-in-time snapshot</strong>. Since it was written, the
+              following has changed:
+            </div>
+            <ul style="color: rgba(244, 244, 240, 0.85); margin: 0.6rem 0 0 1.2rem; padding: 0">
+              <li>
+                All <strong>4 CRITICAL defects</strong> flagged here are now
+                <strong style="color: #7ee787">RESOLVED</strong> (2026-07-01 execution sprint —
+                commits <code>69d3c1c</code> through <code>268d3c3</code>): non-destructive serial,
+                Type-2 classification via direct <code>node.Children</code> walk, cache-miss
+                deep-clone + singleflight, <code>suffixtree.Update</code> returns error.
+              </li>
+              <li>
+                The <strong>30 lint issues</strong> the sprint introduced (3 production + 27 test)
+                are <strong style="color: #7ee787">FIXED</strong> (2026-07-01 this session:
+                exhaustive switch, wrapcheck, <code>mustUpdate</code> helper for all test
+                <code>tree.Update</code> calls, stale AGENTS.md reconciled).
+              </li>
+              <li>
+                <strong>Current verified state:</strong> <code>go build ./…</code> ✅ ·
+                <code>go test ./…</code> 0 failures ✅ · <code>golangci-lint run</code> 0 issues ✅.
+              </li>
+            </ul>
+            <div style="margin-top: 0.7rem; color: rgba(244, 244, 240, 0.65); font-size: 13px">
+              See <code>docs/status/2026-07-01_01-34_post-execution-sprint.md</code> for sprint
+              results and <code>docs/planning/2026-07-01_02-30_PARETO-EXECUTION-PLAN.html</code> for
+              the current plan.
+            </div>
+          </div>
+          <!-- ====== END UPDATE BANNER ====== -->
+
           <p class="hero-subtitle">
             Every open TODO across the status report, TODO_LIST.md, and ROADMAP.md — broken into 134
             sub-tasks of ≤12 min each, sorted by importance / impact / effort / customer value.
@@ -543,17 +599,17 @@
 
         <h2 id="summary"><span class="num">00</span>Summary</h2>
         <div class="stat-grid">
-          <div class="stat-card stat-bad">
-            <div class="stat-value">4</div>
-            <div class="stat-label">Tier 1 criticals</div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">4 ✅</div>
+            <div class="stat-label">Tier 1 criticals (DONE)</div>
           </div>
-          <div class="stat-card stat-warn">
-            <div class="stat-value">7</div>
-            <div class="stat-label">Tier 2 quick wins</div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">7 ✅</div>
+            <div class="stat-label">Tier 2 quick wins (DONE)</div>
           </div>
-          <div class="stat-card stat-warn">
-            <div class="stat-value">5</div>
-            <div class="stat-label">Tier 3 robustness</div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">5 ✅</div>
+            <div class="stat-label">Tier 3 robustness (DONE)</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">5</div>

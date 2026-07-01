@@ -69,11 +69,13 @@ panics, non-destructive serial), and **policy-clean** (SHA-256, no dead code).
 
 ## b) PARTIALLY DONE (3 items)
 
-| Item                       | Status                    | What remains                                                                                                                                                                                                                                                                                                  |
-| -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **T19 (sendCtx)**          | Partially applied         | Helper exists and is used in `serializeAST`, but 10+ other send sites in `job/parse.go`, `job/incremental.go`, `pkg/artdupl/detector.go` still use inline `select { case ch <- v: case <-ctx.Done() }`. Could be mechanically applied but the inline form is equally correct.                                 |
-| **T28 (sort comparators)** | Investigated, not unified | Found 4+ sort implementations across `sorter.go`, `text.go`, `sort_unified.go`, `stats.go`. They operate on different types (`CloneGroup`, `[][]*syntax.Node`, `domain.ProcessedClone`, `TopCloneGroup`). Unification into a generic comparator is possible but would create a leaky abstraction. Left as-is. |
-| **Lint warnings**          | 6 remaining               | 5 are in test files (errcheck on Update calls in suffixtree tests, godoclint on bench file). 1 is the unused `sendCtx` warning (it IS used in `serializeAST` — the linter may be stale). None affect production code.                                                                                         |
+| Item                       | Status                    | What remains                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T19 (sendCtx)**          | Partially applied         | Helper exists and is used in `serializeAST`, but 10+ other send sites in `job/parse.go`, `job/incremental.go`, `pkg/artdupl/detector.go` still use inline `select { case ch <- v: case <-ctx.Done() }`. Could be mechanically applied but the inline form is equally correct.                                                                                                                                                                                                     |
+| **T28 (sort comparators)** | Investigated, not unified | Found 4+ sort implementations across `sorter.go`, `text.go`, `sort_unified.go`, `stats.go`. They operate on different types (`CloneGroup`, `[][]*syntax.Node`, `domain.ProcessedClone`, `TopCloneGroup`). Unification into a generic comparator is possible but would create a leaky abstraction. Left as-is.                                                                                                                                                                     |
+| **Lint warnings**          | **0 (fixed post-sprint)** | The sprint report originally claimed "6 remaining, none in production". A follow-up verification with `golangci-lint run --max-issues-per-linter 0` revealed **30 issues** total (3 production + 27 test): `cmd/util.go` exhaustive switch (T8 fallout), `types.go` wrapcheck ×2 (T2 fallout), 27 test errcheck on `tree.Update` (T7 fallout). **All 30 fixed in a follow-up session** (exhaustive case added, errors wrapped, `mustUpdate` helper extracted). Current: 0 issues. |
+
+> **Correction (2026-07-01 02:50):** The original sprint report understated lint issues — the default `golangci-lint` cap of 3-per-linter hid 16 more errcheck sites, and 3 production lint bugs were introduced by the sprint itself (exhaustive switch from T8, wrapcheck from T2). These were all fixed in a follow-up pass. The line below ("6 warnings, zero in production") was **incorrect** — see `docs/planning/2026-07-01_02-30_PARETO-EXECUTION-PLAN.html` Tier 1 for details.
 
 ---
 
@@ -236,7 +238,7 @@ df1a754 refactor: unify detection mode — 2 bools → DetectionMode enum
 **Stats:** 8 commits, 36 files changed, +823 / -519 lines (net +304)
 **Test status:** 26/26 packages pass ✅
 **BuildFlow:** 31/31 checks pass ✅
-**Lint:** 6 warnings (all in test files, zero in production code)
+**Lint:** ~~6 warnings (all in test files, zero in production code)~~ **CORRECTION: was actually 30 (3 production + 27 test) — all fixed in follow-up, now 0**
 
 ---
 
@@ -331,3 +333,30 @@ all fixed before commit:
    backed by `errUnexpectedSingleflightType` sentinel (`err113`-compliant)
 
 **Stats (this commit):** 1 commit, 7 files changed, +749 / -53 lines
+
+---
+
+## Post-Sprint Correction — Lint Cleanup (2026-07-01 02:50)
+
+**The sprint report's lint claim was inaccurate.** The statement "6 warnings, zero in
+production code" was wrong:
+
+1. **3 production lint bugs introduced by the sprint** (not caught because the default
+   `golangci-lint` cap hid them):
+   - `cmd/util.go:25` — exhaustive switch missing `DetectionModeSemantic` (introduced by T8)
+   - `pkg/artdupl/types.go:102,121` — wrapcheck on `json.Marshal/Unmarshal` (introduced by T2)
+
+2. **27 test errcheck** (not 6) — `tree.Update` now returns error (T7), but 27 call sites
+   across suffixtree, detection, and pkg/artdupl tests didn't check it. The default lint cap
+   showed only the first 11.
+
+**Fix applied (follow-up session):**
+
+- Added explicit `DetectionModeSemantic` case to `cmd/util.go`
+- Wrapped `json.Marshal/Unmarshal` errors with `fmt.Errorf("…: %w", err)`
+- Extracted `mustUpdate(tree, tokens...)` helper in `suffixtree/bench_test.go` and replaced
+  all 19 suffixtree test sites; inline checks for detection + pkg/artdupl tests
+- Reconciled stale `AGENTS.md:89` (destructive serial OPEN → RESOLVED)
+
+**Verified:** `go build ./…` ✅ · `go test ./…` 0 failures ✅ ·
+`golangci-lint run --max-issues-per-linter 0` **0 issues** ✅

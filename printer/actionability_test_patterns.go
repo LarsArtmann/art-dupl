@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -13,7 +13,7 @@ import (
 // a testdata/ directory. Golden/input file pairs are conventional Go test
 // fixtures that are expected to be structurally similar — they represent
 // before/after snapshots of code transformations.
-func isTestDataFilePair(nodeSeqs [][]*syntax.Node) bool {
+func isTestDataFilePair(nodeSeqs [][]*domain.CloneNode) bool {
 	if len(nodeSeqs) == 0 {
 		return false
 	}
@@ -43,7 +43,7 @@ func isInTestDataDir(filename string) bool {
 // a t.Run or t.Parallel call — the standard Go table-driven test pattern.
 // The loop body is structurally identical across tests because it's the
 // testing framework pattern, not duplicated business logic.
-func isTableDrivenTestBody(nodeSeqs [][]*syntax.Node) bool {
+func isTableDrivenTestBody(nodeSeqs [][]*domain.CloneNode) bool {
 	if len(nodeSeqs) == 0 {
 		return false
 	}
@@ -54,7 +54,7 @@ func isTableDrivenTestBody(nodeSeqs [][]*syntax.Node) bool {
 		}
 
 		root := seq[0]
-		if baseTypeOf(root) != golang.RangeStmt {
+		if root.BaseType != golang.RangeStmt {
 			return false
 		}
 
@@ -72,10 +72,10 @@ func isTableDrivenTestBody(nodeSeqs [][]*syntax.Node) bool {
 
 // containsTRunCall checks if a node tree contains a CallExpr where the
 // function is a SelectorExpr with method name "Run" — matching t.Run().
-func containsTRunCall(node *syntax.Node) bool {
-	if baseTypeOf(node) == golang.CallExpr {
+func containsTRunCall(node *domain.CloneNode) bool {
+	if node.BaseType == golang.CallExpr {
 		for _, child := range node.Children {
-			if baseTypeOf(child) == golang.SelectorExpr && child.Name == "Run" {
+			if child.BaseType == golang.SelectorExpr && child.Name == "Run" {
 				return true
 			}
 		}
@@ -85,7 +85,7 @@ func containsTRunCall(node *syntax.Node) bool {
 }
 
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.
-func allFromTestFile(seq []*syntax.Node) bool {
+func allFromTestFile(seq []*domain.CloneNode) bool {
 	for _, n := range seq {
 		if !isTestFile(n.Filename) {
 			return false
@@ -105,7 +105,7 @@ func allFromTestFile(seq []*syntax.Node) bool {
 // ReadFile, MkdirAll). The combination of assertions + file setup is a strong
 // signal of test scaffolding. Falls back to detecting 3+ distinct assertion
 // methods as sufficient evidence on its own.
-func isTestScaffolding(nodeSeqs [][]*syntax.Node) bool {
+func isTestScaffolding(nodeSeqs [][]*domain.CloneNode) bool {
 	if len(nodeSeqs) == 0 {
 		return false
 	}
@@ -115,7 +115,7 @@ func isTestScaffolding(nodeSeqs [][]*syntax.Node) bool {
 
 // isTestScaffoldingSequence checks a single clone sequence for the
 // test scaffolding pattern.
-func isTestScaffoldingSequence(seq []*syntax.Node) bool {
+func isTestScaffoldingSequence(seq []*domain.CloneNode) bool {
 	if len(seq) == 0 {
 		return false
 	}
@@ -142,14 +142,14 @@ func isTestScaffoldingSequence(seq []*syntax.Node) bool {
 
 // walkForTestScaffoldingSignals walks a node tree looking for test
 // scaffolding indicators: file I/O operations and assertion calls.
-func walkForTestScaffoldingSignals(node *syntax.Node, hasFileIO *bool, assertionNames *map[string]bool) {
+func walkForTestScaffoldingSignals(node *domain.CloneNode, hasFileIO *bool, assertionNames *map[string]bool) {
 	if *assertionNames == nil {
 		*assertionNames = make(map[string]bool)
 	}
 
-	if baseTypeOf(node) == golang.CallExpr {
+	if node.BaseType == golang.CallExpr {
 		for _, child := range node.Children {
-			bt := baseTypeOf(child)
+			bt := child.BaseType
 			name := child.Name
 
 			if bt == golang.SelectorExpr {

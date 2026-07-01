@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -14,13 +14,13 @@ const cleanupMethodName = "Unlock"
 // Using the Name field on child nodes, we can now distinguish
 // `defer mu.Unlock()` from `defer processOrder()` — the former is
 // idiomatic RAII cleanup (non-actionable), the latter is real duplication.
-func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
-	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+func isPureDeferPattern(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		if len(seq) != 1 {
 			return false
 		}
 
-		if baseTypeOf(seq[0]) != golang.DeferStmt {
+		if seq[0].BaseType != golang.DeferStmt {
 			return false
 		}
 
@@ -29,11 +29,11 @@ func isPureDeferPattern(nodeSeqs [][]*syntax.Node) bool {
 }
 
 // isRAIIDeferCall checks if a DeferStmt wraps a known RAII cleanup method.
-func isRAIIDeferCall(node *syntax.Node) bool {
+func isRAIIDeferCall(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
-		if baseTypeOf(child) == golang.CallExpr {
+		if child.BaseType == golang.CallExpr {
 			for _, arg := range child.Children {
-				if baseTypeOf(arg) == golang.SelectorExpr && isCleanupMethod(arg.Name) {
+				if arg.BaseType == golang.SelectorExpr && isCleanupMethod(arg.Name) {
 					return true
 				}
 			}
@@ -57,14 +57,14 @@ func isCleanupMethod(name string) bool {
 
 // isPureErrorPropagation reports whether every clone is an IfStmt
 // that only contains error propagation: if err != nil { return err }.
-func isPureErrorPropagation(nodeSeqs [][]*syntax.Node) bool {
-	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+func isPureErrorPropagation(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		if len(seq) != 1 {
 			return false
 		}
 
 		root := seq[0]
-		if baseTypeOf(root) != golang.IfStmt {
+		if root.BaseType != golang.IfStmt {
 			return false
 		}
 
@@ -77,7 +77,7 @@ func isPureErrorPropagation(nodeSeqs [][]*syntax.Node) bool {
 //   - A condition containing a comparison against nil (BinaryExpr with nil)
 //   - A body containing only a ReturnStmt (or CallExpr wrapping error)
 //   - No Else branch
-func isErrorOnlyIf(node *syntax.Node) bool {
+func isErrorOnlyIf(node *domain.CloneNode) bool {
 	var (
 		hasNilCompare bool
 		hasReturnErr  bool
@@ -85,7 +85,7 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 	)
 
 	for _, child := range node.Children {
-		switch baseTypeOf(child) {
+		switch child.BaseType {
 		case golang.BinaryExpr:
 			if containsNilIdentifier(child) {
 				hasNilCompare = true
@@ -97,8 +97,8 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 		case golang.IfStmt:
 			return false
 		default:
-			if baseTypeOf(child) != golang.AssignStmt &&
-				baseTypeOf(child) != golang.DeclStmt {
+			if child.BaseType != golang.AssignStmt &&
+				child.BaseType != golang.DeclStmt {
 				hasElse = true
 			}
 		}
@@ -110,9 +110,9 @@ func isErrorOnlyIf(node *syntax.Node) bool {
 // containsNilIdentifier checks if a BinaryExpr compares against nil.
 // Uses the Name field to verify an identifier named "nil" is present,
 // rather than just checking for any Ident node.
-func containsNilIdentifier(node *syntax.Node) bool {
+func containsNilIdentifier(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
-		if baseTypeOf(child) == golang.Ident && child.Name == "nil" {
+		if child.BaseType == golang.Ident && child.Name == "nil" {
 			return true
 		}
 	}
@@ -121,14 +121,14 @@ func containsNilIdentifier(node *syntax.Node) bool {
 }
 
 // isReturnOrWrappedReturn checks if a BlockStmt only contains a ReturnStmt.
-func isReturnOrWrappedReturn(node *syntax.Node) bool {
+func isReturnOrWrappedReturn(node *domain.CloneNode) bool {
 	if len(node.Children) == 0 {
 		return false
 	}
 
 	// Allow single return or return with CallExpr (e.g., return fmt.Errorf("...")).
 	if len(node.Children) == 1 {
-		bt := baseTypeOf(node.Children[0])
+		bt := node.Children[0].BaseType
 
 		return bt == golang.ReturnStmt || bt == golang.CallExpr
 	}

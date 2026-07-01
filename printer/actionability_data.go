@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -9,7 +9,7 @@ import (
 // (BasicLit and KeyValueExpr) rather than logic. When ≥60% of all nodes
 // are data, the clone represents struct initialization, config fixtures,
 // or test data arrays — not duplicated business logic.
-func isDataDominated(nodeSeqs [][]*syntax.Node) bool {
+func isDataDominated(nodeSeqs [][]*domain.CloneNode) bool {
 	if len(nodeSeqs) == 0 {
 		return false
 	}
@@ -21,7 +21,7 @@ const dataDominanceRatio = 0.6
 
 // isSequenceDataDominated checks if a single clone sequence is dominated
 // by data nodes (BasicLit, KeyValueExpr) rather than logic nodes.
-func isSequenceDataDominated(seq []*syntax.Node) bool {
+func isSequenceDataDominated(seq []*domain.CloneNode) bool {
 	total := 0
 	data := 0
 
@@ -40,10 +40,10 @@ func isSequenceDataDominated(seq []*syntax.Node) bool {
 // Data nodes are BasicLit (string/number literals) and KeyValueExpr
 // (struct field initializers). A high ratio of data nodes indicates
 // struct initialization or config fixtures, not duplicated logic.
-func countDataNodes(node *syntax.Node, total, data *int) {
+func countDataNodes(node *domain.CloneNode, total, data *int) {
 	*total++
 
-	bt := baseTypeOf(node)
+	bt := node.BaseType
 	if bt == golang.BasicLit || bt == golang.KeyValueExpr {
 		*data++
 	}
@@ -57,8 +57,8 @@ func countDataNodes(node *syntax.Node, total, data *int) {
 // patterns. These are framework-generated repetitive structures where each
 // Entry call shares the same body shape with different data — structurally
 // duplicated but intentionally so.
-func isDescribeTablePattern(nodeSeqs [][]*syntax.Node) bool {
-	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+func isDescribeTablePattern(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		return containsCallTo(seq, "DescribeTable", "Entry", "FDescribeTable", "PDescribeTable")
 	})
 }
@@ -67,20 +67,20 @@ func isDescribeTablePattern(nodeSeqs [][]*syntax.Node) bool {
 // dominant structure is a chain of method calls on different receiver types.
 // This indicates intentional API design (builder pattern, fluent interface)
 // rather than logic duplication.
-func isBuilderCallbackPattern(nodeSeqs [][]*syntax.Node) bool {
+func isBuilderCallbackPattern(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, isChainOfCallsWithDifferentReceivers)
 }
 
 // containsCallTo checks if any node in the sequence is a CallExpr that
 // calls one of the named functions (via Ident or SelectorExpr Name field).
-func containsCallTo(seq []*syntax.Node, names ...string) bool {
+func containsCallTo(seq []*domain.CloneNode, names ...string) bool {
 	nameSet := make(map[string]bool, len(names))
 	for _, n := range names {
 		nameSet[n] = true
 	}
 
 	for _, node := range seq {
-		if baseTypeOf(node) != golang.CallExpr {
+		if node.BaseType != golang.CallExpr {
 			continue
 		}
 
@@ -101,7 +101,7 @@ func containsCallTo(seq []*syntax.Node, names ...string) bool {
 // isChainOfCallsWithDifferentReceivers checks if a sequence is dominated by
 // CallExpr nodes where each call targets a different receiver — indicating
 // builder pattern chains (a.WithX().WithY().Build()) rather than logic.
-func isChainOfCallsWithDifferentReceivers(seq []*syntax.Node) bool {
+func isChainOfCallsWithDifferentReceivers(seq []*domain.CloneNode) bool {
 	if len(seq) < 3 {
 		return false
 	}
@@ -110,14 +110,14 @@ func isChainOfCallsWithDifferentReceivers(seq []*syntax.Node) bool {
 	receiverNames := make(map[string]bool)
 
 	for _, node := range seq {
-		if baseTypeOf(node) != golang.CallExpr {
+		if node.BaseType != golang.CallExpr {
 			continue
 		}
 
 		callCount++
 
 		for _, child := range node.Children {
-			if baseTypeOf(child) == golang.SelectorExpr && child.Name != "" {
+			if child.BaseType == golang.SelectorExpr && child.Name != "" {
 				receiverNames[child.Name] = true
 			}
 		}

@@ -1,8 +1,52 @@
 # TODO List
 
-**Last Updated: 2026-06-28**
+**Last Updated: 2026-07-01**
 
 Actionable items planned for the next 2-4 weeks.
+
+---
+
+## ✅ Completed (2026-07-01) — Execution Sprint + Lint Cleanup
+
+### Critical Correctness (4/4 resolved)
+
+- [x] Non-destructive serialization — `serial()` now shallow-copies each node before writing Type/Owns (commit `8498d01`)
+- [x] Type-2 classification — `classifyCloneType` walks `node.Children` directly via `collectNamesPreOrder`, no longer calls `syntax.Serialize` (commit `69d3c1c`)
+- [x] Incremental cache-miss aliasing — deep-clone-on-store + `singleflight.Group` deduplicates concurrent parses (commits `8498d01`, `94b5205`)
+- [x] `suffixtree.Update` returns `error` instead of panicking — all 37 call sites updated (commit `8498d01`)
+
+### Quick Wins (7/7)
+
+- [x] `Summary.AnalysisTime` marshals as milliseconds (commit `69d3c1c`)
+- [x] Removed `runtime.GC()` from `PrintProfileResult` (commit `69d3c1c`)
+- [x] Deterministic sort of clone groups by hash key (commit `69d3c1c`)
+- [x] `config.MaxChildrenSerial` wired into `serial()` via `SerializeWithMaxChildren` (commit `69d3c1c`)
+- [x] `crypto/sha1` → `crypto/sha256` for cache keys; `CacheVersion` bumped 1→2 (commit `69d3c1c`)
+- [x] Fixed broken `RunTableTest` (reflection-based Name extraction) (commit `69d3c1c`)
+- [x] Removed dead `FileDetector.threshold` field (commit `69d3c1c`)
+
+### Robustness (5/5)
+
+- [x] DetectionMode enum — replaced 2 config bools with single `Config.DetectionMode` enum (commit `df1a754`, ADR-0007)
+- [x] FuncLit alpha-normalization — closures now canonicalized in semantic mode (commit `fae336b`)
+- [x] Deleted dead code: `STree.String()`, `cache.GetStats()`, profiler dead funcs, BDDError type (commit `fae336b`)
+- [x] Extracted `sendCtx[T]` generic helper for context-aware channel sends (commit `fae336b`)
+- [x] Cache eviction via `cache.Prune(maxEntries)` + `Config.MaxCacheEntries` (commit `bed1dcf`)
+
+### Infrastructure
+
+- [x] Parallel incremental parsing with worker pool (`ParseIncrementalParallel`) (commit `94b5205`)
+- [x] GitHub Actions workflow template + pre-commit hook template (commit `c0a5f22`)
+- [x] Benchmark suite for `syntax.Serialize` (commit `c0a5f22`)
+- [x] ADR-0006 (non-destructive serial) + ADR-0007 (DetectionMode enum) (commit `c0a5f22`)
+- [x] CI templates written to `templates/` (commit `c0a5f22`)
+
+### Lint Cleanup (post-sprint, 2026-07-01 02:50)
+
+- [x] Fixed exhaustive switch in `cmd/util.go` (T8 fallout — missing `DetectionModeSemantic` case)
+- [x] Fixed wrapcheck in `pkg/artdupl/types.go` (T2 fallout — `json.Marshal/Unmarshal`)
+- [x] Fixed 27 test errcheck via `mustUpdate` helper (T7 fallout)
+- [x] Reconciled stale AGENTS.md (destructive serial OPEN→RESOLVED)
 
 ---
 
@@ -18,18 +62,18 @@ Actionable items planned for the next 2-4 weeks.
 
 ### Type Safety (From 2026-06-23 Data Model Review)
 
-- [ ] Introduce branded `NodeType int32` in syntax/ to prevent cross-package int32 collision between golang and templ node type constants — **HIGH RISK**: touches gob serialization cache format and semantic encoding layout (`[24-bit hash][8-bit base type]`)
+- [ ] Introduce branded `NodeType int32` in syntax/ to prevent cross-package int32 collision between golang and templ node type constants — **HIGH RISK**: touches gob serialization cache format and semantic encoding layout (`[24-bit hash][8-bit base type]`). Needs feature flag + cache-version migration.
 - [ ] Introduce shared `CloneRef` value object in domain to unify the 7 parallel Clone types (ProcessedClone, SDK Clone, JSONClone, etc.) via embedding without collapsing DTO boundary
-- [ ] Relocate `SortCriteria` and `OutputFormat` enums from config to domain — decouples printer (21 files) from config package
+- [x] ~~Relocate `SortCriteria` and `OutputFormat` enums from config to domain~~ — Done: both live in `domain/` (`domain/sort_criteria.go`, `domain/output_format.go`) with `config/` aliases (2026-07-01)
 - [x] ~~Unify `FileReaderFunc` type~~ — Done: canonical type in domain, aliased in printer and SDK (2026-06-23)
 - [x] ~~Add `Config.Validate()` method~~ — Done: single entry point delegating to existing ValidateConfig (2026-06-23)
 - [x] ~~Fix stringly-typed JSON DTO fields~~ — Done: JSONClone.Category/Priority/Actionability/CloneType now use domain enums directly (2026-06-23)
 
 ### Architecture (Multi-session refactors — deferred with rationale)
 
-- [ ] Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals (clone_processor.go bridges partially; actionability.go still imports syntax.Node — 34 references)
+- [x] ~~Introduce ProcessedClone DTO to decouple Printer from syntax.Node internals~~ — Done: `domain.CloneNode` recursive tree type bridges `syntax.Node` → actionability evaluation; actionability files no longer import `syntax` (2026-07-01)
 - [x] ~~Consolidate **five** parallel Clone/Group types~~ — Field names aligned (`LineStart`/`LineEnd`/`StartPos`/`EndPos` canonical), Fragment unified to `string`, `printer.CloneGroup.Files`→`Clones`. Types remain separate for Printer/SDK DTO independence (see ADR-0005, `docs/research/SPLIT-BRAIN.html`).
-- [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines is too many for one package
+- [ ] Split `printer/` into sub-packages (stats, html, analyze) — ~29 source files / ~3500+ lines. Previously blocked by ProcessedClone DTO coupling; now unblocked.
 - [x] ~~Unify `Fragment` type (`[]byte` in domain vs `string` in SDK — flips at every boundary)~~ — Done: `domain.ProcessedClone.Fragment` is now `string` everywhere.
 - [x] ~~Rename `…Data` view models to `…View` in printer/~~ — Verified: all view models already use `…View` suffix.
 
@@ -40,9 +84,9 @@ Actionable items planned for the next 2-4 weeks.
 - [x] ~~Remove dead DuplError.Line field~~ — Done: field never set, always printed `:0` (2026-06-23)
 - [x] ~~Remove dead SortNodesByCriteria~~ — Done: zero callers (2026-06-23)
 - [x] ~~Remove dead SARIF rules~~ — Done: art-dupl/todo and art-dupl/legacy never produced in results (2026-06-23)
-- [ ] Cache deep-copy on incremental cache-hit path — `job/incremental.go:139` mutates shared cached nodes (data race under concurrent parse)
-- [ ] Add `Name()` method to MethodDetector interface — eliminates type switch at `detection/multidetector.go:117`
-- [ ] Fix `debug.Stack()` called unconditionally on every error in `errors/types.go:39` — unnecessary overhead for routine errors in a file-processing tool
+- [x] ~~Cache deep-copy on incremental cache-hit path~~ — Done: deep-clone-on-store + `singleflight.Group` (commits `8498d01`, `94b5205`)
+- [x] ~~Add `Name()` method to MethodDetector interface~~ — Done: `Name() string` on interface, eliminates type switch (2026-07-01)
+- [x] ~~Fix `debug.Stack()` called unconditionally on every error~~ — Done: `DuplError` no longer captures `debug.Stack()` (removed in prior sprint)
 
 ### Split-Brain Resolution (2026-06-22)
 

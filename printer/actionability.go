@@ -2,17 +2,8 @@ package printer
 
 import (
 	"github.com/LarsArtmann/art-dupl/domain"
-	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
-
-// baseTypeOf extracts the base AST node type from a syntax.Node,
-// decoding any semantic encoding (identifier hash, operator hash) that
-// may be baked into the upper bits of Type. This ensures type comparisons
-// work correctly in both semantic and structural detection modes.
-func baseTypeOf(n *syntax.Node) int32 {
-	return golang.DecodeBaseType(n.Type)
-}
 
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
@@ -20,8 +11,8 @@ func baseTypeOf(n *syntax.Node) int32 {
 // everySequenceMatch returns true if pred returns true for every sequence.
 // Used by actionability checks that require ALL clones to match a pattern.
 func everySequenceMatch(
-	nodeSeqs [][]*syntax.Node,
-	pred func(seq []*syntax.Node) bool,
+	nodeSeqs [][]*domain.CloneNode,
+	pred func(seq []*domain.CloneNode) bool,
 ) bool {
 	for _, seq := range nodeSeqs {
 		if !pred(seq) {
@@ -41,7 +32,7 @@ func everySequenceMatch(
 //
 // To be non-actionable, EVERY clone in the group must match the same
 // boilerplate pattern. If any clone differs, the group is actionable.
-func EvaluateActionability(nodeSeqs [][]*syntax.Node) domain.CloneActionability {
+func EvaluateActionability(nodeSeqs [][]*domain.CloneNode) domain.CloneActionability {
 	_, a := evaluateActionabilityDetailed(nodeSeqs)
 
 	return a
@@ -71,11 +62,11 @@ const (
 // EvaluateActionabilityWithLabel returns both the actionability and the
 // pattern label that caused it. This allows downstream code to adjust
 // category/suggestion based on which specific pattern was detected.
-func EvaluateActionabilityWithLabel(nodeSeqs [][]*syntax.Node) (PatternLabel, domain.CloneActionability) {
+func EvaluateActionabilityWithLabel(nodeSeqs [][]*domain.CloneNode) (PatternLabel, domain.CloneActionability) {
 	return evaluateActionabilityDetailed(nodeSeqs)
 }
 
-func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, domain.CloneActionability) {
+func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel, domain.CloneActionability) {
 	if len(nodeSeqs) == 0 {
 		return PatternNone, domain.Actionable
 	}
@@ -143,14 +134,14 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*syntax.Node) (PatternLabel, dom
 // identical bodies can be extracted to shared functions. But if two FuncDecls
 // match and the body is empty (or has only boilerplate), deduplication is
 // impossible without changing the interface.
-func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
-	return everySequenceMatch(nodeSeqs, func(seq []*syntax.Node) bool {
+func isSignatureOnlyMatch(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		if len(seq) != 1 {
 			return false
 		}
 
 		root := seq[0]
-		if baseTypeOf(root) != golang.FuncDecl {
+		if root.BaseType != golang.FuncDecl {
 			return false
 		}
 
@@ -160,9 +151,9 @@ func isSignatureOnlyMatch(nodeSeqs [][]*syntax.Node) bool {
 
 // hasRealBody checks if a FuncDecl contains a body with meaningful logic
 // beyond the signature itself.
-func hasRealBody(node *syntax.Node) bool {
+func hasRealBody(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
-		if child.Type == golang.BlockStmt && len(child.Children) > 0 {
+		if child.BaseType == golang.BlockStmt && len(child.Children) > 0 {
 			return true
 		}
 	}
@@ -186,7 +177,7 @@ func hasRealBody(node *syntax.Node) bool {
 //     coincidence — it means they all satisfy the same interface contract.
 //   - Semantic mode makes this even more precise by encoding identifier/operator
 //     names into the Type field.
-func isInterfaceImplementation(nodeSeqs [][]*syntax.Node) bool {
+func isInterfaceImplementation(nodeSeqs [][]*domain.CloneNode) bool {
 	if len(nodeSeqs) < 3 {
 		return false
 	}
@@ -201,7 +192,7 @@ func isInterfaceImplementation(nodeSeqs [][]*syntax.Node) bool {
 		root := seq[0]
 		// The fragment must be rooted at a FuncType — this is the signature
 		// node shared across interface implementations.
-		if baseTypeOf(root) != golang.FuncType {
+		if root.BaseType != golang.FuncType {
 			return false
 		}
 

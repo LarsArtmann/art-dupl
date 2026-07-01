@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-06-23
+> **Last Updated:** 2026-07-01
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -78,13 +78,14 @@
 
 ## 🔍 Semantic Detection
 
-| Feature                       | Status           | Description                                                                   |
-| ----------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| **Semantic Mode**             | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers; detects Type 2 (renamed) clones (default) |
-| **Exact Mode**                | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)        |
-| **Structural-Only Mode**      | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                   |
-| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output         |
-| **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive              |
+| Feature                       | Status           | Description                                                                                        |
+| ----------------------------- | ---------------- | -------------------------------------------------------------------------------------------------- |
+| **Semantic Mode**             | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers (including closures); detects Type 2 (renamed) clones (default) |
+| **Exact Mode**                | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)                             |
+| **Structural-Only Mode**      | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                                        |
+| **DetectionMode Enum**        | FULLY_FUNCTIONAL | Single `Config.DetectionMode` enum replaces former bool flags (ADR-0007)                           |
+| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                              |
+| **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                   |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
@@ -108,8 +109,8 @@
 | ---------------------- | ---------------- | -------------------------------------------------------------------------- |
 | **Baseline Recording** | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json` |
 | **CI Check Mode**      | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates             |
-| **GitHub Actions**     | FULLY_FUNCTIONAL | `.github/workflows/art-dupl-check.yml` template included                   |
-| **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `.pre-commit-hooks.yaml` for pre-commit framework integration              |
+| **GitHub Actions**     | FULLY_FUNCTIONAL | `templates/github-actions-duplicate-check.yml` template included           |
+| **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `templates/pre-commit-hook.yaml` for pre-commit framework integration      |
 
 ---
 
@@ -135,9 +136,10 @@
 | Feature                   | Status           | Description                                                                                                                                         |
 | ------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Parallel Parsing**      | FULLY_FUNCTIONAL | Worker pool via `--workers` flag (0=auto, NumCPU)                                                                                                   |
-| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA1 content-hash AST caching, `--incremental` flag                                                                                                 |
+| **Incremental Analysis**  | FULLY_FUNCTIONAL | SHA-256 content-hash AST caching, `--incremental` flag, CacheVersion 2                                                                              |
 | **Git-Aware Incremental** | REMOVED          | `--since` flag removed (was a dead stub, never read). Only content-hash caching via `--incremental` works. Git-diff file selection not implemented. |
-| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, file-based gob serialization                                                                                        |
+| **Cache Management**      | FULLY_FUNCTIONAL | `--cache-dir`, `--clear-cache`, `--max-cache-entries`, file-based gob serialization, LRU-style `Prune` eviction                                     |
+| **Parallel Incremental**  | FULLY_FUNCTIONAL | `ParseIncrementalParallel` worker pool + `singleflight.Group` dedup for byte-identical files (commit `94b5205`)                                     |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
 | **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 — no hand-written SIMD                                                     |

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
-	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
@@ -12,37 +11,37 @@ import (
 const processOrderMethodName = "processOrder"
 
 func TestEvaluateActionability(t *testing.T) {
-	runBoolTests(t, func(seqs [][]*syntax.Node) bool {
+	runBoolTests(t, func(seqs [][]*domain.CloneNode) bool {
 		return EvaluateActionability(seqs) == domain.NonActionable
 	}, []boolTestCase{
-		{name: "empty sequences are actionable", seqs: [][]*syntax.Node{}, expected: false},
+		{name: "empty sequences are actionable", seqs: [][]*domain.CloneNode{}, expected: false},
 		{
 			name: "single FuncDecl is non-actionable (interface signature)",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.FuncDecl, Owns: 1}},
-				{{Type: golang.FuncDecl, Owns: 1}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.FuncDecl}},
+				{{BaseType: golang.FuncDecl}},
 			},
 			expected: true,
 		},
 		{
 			name: "bare DeferStmt without children is actionable (unknown defer)",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.DeferStmt, Owns: 1}},
-				{{Type: golang.DeferStmt, Owns: 1}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.DeferStmt}},
+				{{BaseType: golang.DeferStmt}},
 			},
 			expected: false,
 		},
 		{
 			name: "bare IfStmt without children is actionable (cannot verify pattern)",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.IfStmt, Owns: 1}},
-				{{Type: golang.IfStmt, Owns: 1}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.IfStmt}},
+				{{BaseType: golang.IfStmt}},
 			},
 			expected: false,
 		},
 		{
 			name: "FuncDecl with body is actionable",
-			seqs: [][]*syntax.Node{
+			seqs: [][]*domain.CloneNode{
 				mustFuncDeclWithBody(),
 				mustFuncDeclWithBody(),
 			},
@@ -50,30 +49,30 @@ func TestEvaluateActionability(t *testing.T) {
 		},
 		{
 			name: "ForStmt loop is actionable",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.ForStmt, Owns: 1}},
-				{{Type: golang.ForStmt, Owns: 1}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.ForStmt}},
+				{{BaseType: golang.ForStmt}},
 			},
 			expected: false,
 		},
 		{
 			name: "mixed types are actionable",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.FuncDecl, Owns: 3}, {Type: golang.AssignStmt}},
-				{{Type: golang.FuncDecl, Owns: 3}, {Type: golang.AssignStmt}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.FuncDecl}, {BaseType: golang.AssignStmt}},
+				{{BaseType: golang.FuncDecl}, {BaseType: golang.AssignStmt}},
 			},
 			expected: false,
 		},
 		{
 			name: "only one sequence with FuncDecl is still non-actionable",
-			seqs: [][]*syntax.Node{
-				{{Type: golang.FuncDecl, Owns: 1}},
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.FuncDecl}},
 			},
 			expected: true,
 		},
 		{
 			name: "defer mu.Unlock is non-actionable",
-			seqs: [][]*syntax.Node{
+			seqs: [][]*domain.CloneNode{
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
 				{mustDeferSelectorCall("mu", cleanupMethodName)},
 			},
@@ -81,7 +80,7 @@ func TestEvaluateActionability(t *testing.T) {
 		},
 		{
 			name: "defer processOrder is actionable (not RAII)",
-			seqs: [][]*syntax.Node{
+			seqs: [][]*domain.CloneNode{
 				{mustDeferSelectorCall("svc", processOrderMethodName)},
 				{mustDeferSelectorCall("svc", processOrderMethodName)},
 			},
@@ -89,7 +88,7 @@ func TestEvaluateActionability(t *testing.T) {
 		},
 		{
 			name: "if err != nil { return err } is non-actionable",
-			seqs: [][]*syntax.Node{
+			seqs: [][]*domain.CloneNode{
 				{mustIfErrReturnNil()},
 				{mustIfErrReturnNil()},
 			},
@@ -98,19 +97,19 @@ func TestEvaluateActionability(t *testing.T) {
 	})
 }
 
-func mustDeferSelectorCall(receiver, method string) *syntax.Node {
-	return &syntax.Node{
-		Type: golang.DeferStmt,
-		Children: []*syntax.Node{
+func mustDeferSelectorCall(receiver, method string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.DeferStmt,
+		Children: []*domain.CloneNode{
 			{
-				Type: golang.CallExpr,
-				Children: []*syntax.Node{
+				BaseType: golang.CallExpr,
+				Children: []*domain.CloneNode{
 					{
-						Type: golang.SelectorExpr,
-						Name: method,
-						Children: []*syntax.Node{
-							{Type: golang.Ident, Name: receiver},
-							{Type: golang.Ident, Name: method},
+						BaseType: golang.SelectorExpr,
+						Name:     method,
+						Children: []*domain.CloneNode{
+							{BaseType: golang.Ident, Name: receiver},
+							{BaseType: golang.Ident, Name: method},
 						},
 					},
 				},
@@ -119,32 +118,32 @@ func mustDeferSelectorCall(receiver, method string) *syntax.Node {
 	}
 }
 
-func mustIfErrReturnNil() *syntax.Node {
-	return &syntax.Node{
-		Type: golang.IfStmt,
-		Children: []*syntax.Node{
+func mustIfErrReturnNil() *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.IfStmt,
+		Children: []*domain.CloneNode{
 			{
-				Type: golang.BinaryExpr,
-				Children: []*syntax.Node{
-					{Type: golang.Ident, Name: "err"},
-					{Type: golang.Ident, Name: "nil"},
+				BaseType: golang.BinaryExpr,
+				Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: "err"},
+					{BaseType: golang.Ident, Name: "nil"},
 				},
 			},
 			{
-				Type: golang.BlockStmt,
-				Children: []*syntax.Node{
-					{Type: golang.ReturnStmt},
+				BaseType: golang.BlockStmt,
+				Children: []*domain.CloneNode{
+					{BaseType: golang.ReturnStmt},
 				},
 			},
 		},
 	}
 }
 
-func mustFuncDeclWithBody() []*syntax.Node {
-	return []*syntax.Node{
-		{Type: golang.FuncDecl, Owns: 5},
-		{Type: golang.BlockStmt},
-		{Type: golang.IfStmt},
-		{Type: golang.ReturnStmt},
+func mustFuncDeclWithBody() []*domain.CloneNode {
+	return []*domain.CloneNode{
+		{BaseType: golang.FuncDecl},
+		{BaseType: golang.BlockStmt},
+		{BaseType: golang.IfStmt},
+		{BaseType: golang.ReturnStmt},
 	}
 }

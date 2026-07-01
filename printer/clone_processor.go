@@ -12,6 +12,46 @@ import (
 // ErrZeroLengthDuplicate indicates a duplicate group with no nodes was encountered.
 var ErrZeroLengthDuplicate = errors.New("zero length duplicate found")
 
+// ToCloneNodeSeqs converts raw syntax.Node sequences into domain.CloneNode
+// sequences. This is the exported bridge that decouples the actionability
+// evaluation layer from syntax.Node internals. External callers (e.g. cmd/)
+// use this before calling EvaluateActionability.
+func ToCloneNodeSeqs(dups [][]*syntax.Node) [][]*domain.CloneNode {
+	return toCloneNodeSeqs(dups)
+}
+
+// toCloneNodeSeqs converts raw syntax.Node sequences into domain.CloneNode
+// sequences. This is the bridge that decouples the actionability evaluation
+// layer from syntax.Node internals.
+func toCloneNodeSeqs(dups [][]*syntax.Node) [][]*domain.CloneNode {
+	result := make([][]*domain.CloneNode, len(dups))
+	for i, seq := range dups {
+		result[i] = make([]*domain.CloneNode, len(seq))
+		for j, n := range seq {
+			result[i][j] = syntaxToCloneNode(n)
+		}
+	}
+	return result
+}
+
+// syntaxToCloneNode recursively converts a syntax.Node subtree into an
+// immutable domain.CloneNode, decoding the base AST type from the semantic
+// encoding.
+func syntaxToCloneNode(n *syntax.Node) *domain.CloneNode {
+	cn := &domain.CloneNode{
+		BaseType: golang.DecodeBaseType(n.Type),
+		Name:     n.Name,
+		Filename: n.Filename,
+	}
+	if len(n.Children) > 0 {
+		cn.Children = make([]*domain.CloneNode, len(n.Children))
+		for i, c := range n.Children {
+			cn.Children[i] = syntaxToCloneNode(c)
+		}
+	}
+	return cn
+}
+
 // ProcessClones converts raw syntax.Node groups into ProcessedClone slices.
 // This is the single point where [][]*syntax.Node is decoded into domain types,
 // eliminating the need for each printer to understand AST internals.
@@ -66,7 +106,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	// Populate group-level Actionability and CloneType after all per-instance
 	// classifications are computed. Both are group properties: every instance
 	// in a clone group shares the same actionability verdict and clone type.
-	label, actionability := EvaluateActionabilityWithLabel(dups)
+	label, actionability := EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
 	cloneType := classifyCloneType(dups)
 
 	for i := range clones {
