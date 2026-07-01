@@ -237,3 +237,97 @@ df1a754 refactor: unify detection mode — 2 bools → DetectionMode enum
 **Test status:** 26/26 packages pass ✅
 **BuildFlow:** 31/31 checks pass ✅
 **Lint:** 6 warnings (all in test files, zero in production code)
+
+---
+
+## Appendix — T29: Parallel Incremental Parsing + Singleflight (2026-07-01)
+
+**Commit:** `94b5205` — feat: parallel incremental parsing with singleflight dedup
+**Branch:** `fork`
+
+### What Changed
+
+The incremental parser (`--incremental`) was sequential — one core parsing while
+the rest sat idle. On large codebases this is the bottleneck. T29 was deferred
+in the main sprint with the note _"Needs parallel parser first."_ This appendix
+delivers both the parallel parser and the singleflight dedup it enables.
+
+| Change                                                                                                   | File                                     |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `ParseIncrementalParallel(ctx, fchan, workers)` — worker pool for concurrent file parsing                | `job/incremental.go`                     |
+| `singleflight.Group` on `IncrementalParser` — deduplicates concurrent cache misses for identical content | `job/incremental.go`                     |
+| `parseFile` uses `group.Do(contentHash, …)` with double-check pattern inside the callback                | `job/incremental.go`                     |
+| Cache-miss path `deepCloneNodes` before storing — resolves the cache-miss aliasing data race             | `job/incremental.go`                     |
+| Each caller of `group.Do` clones the shared result + stamps own `Filename` via `cloneWithFilename`       | `job/incremental.go`                     |
+| Extracted `startIncrementalWorkers` + `collectIncrementalResults` (reuses `feedFiles` from `parse.go`)   | `job/incremental.go`                     |
+| Dispatches to parallel path when `cfg.Workers > 1`                                                       | `cmd/run_analysis.go`                    |
+| `golang.org/x/sync` promoted indirect → direct; allow-listed in depguard                                 | `go.mod`, `.golangci.yml`                |
+| Vendor hash updated for new direct dependency                                                            | `flake.nix`                              |
+| 9 `-race` concurrency tests                                                                              | `job/incremental_parallel_test.go` (NEW) |
+
+### Concurrency Correctness Analysis
+
+Every shared-mutable-state path was traced and verified safe:
+
+1. **`cache.Get`** — deserializes a fresh node tree from disk on every call.
+   No in-memory aliasing between goroutines; the `sync.RWMutex` only guards
+   the metadata/stats fields.
+2. **`singleflight.Group`** — inherently goroutine-safe. The callback stores a
+   `deepCloneNodes` copy in the cache and returns the original; each waiting
+   caller then re-clones that original via `cloneWithFilename`. No two files
+   ever hold pointers into the same node tree.
+3. **`Node.Clone()`** — deep recursive copy; read-only on the source. Safe to
+   call concurrently from multiple workers.
+4. **`InternFilename`** — `sync.RWMutex` with double-check. Thread-safe.
+5. **`IncrementalStats`** — single writer (the `collectIncrementalResults`
+   goroutine). No concurrent mutation.
+6. **Cancellation** — all sends go through `sendCtx` (`select` on `ctx.Done()`).
+   No check-then-send races. No goroutine leak paths.
+
+### Verification
+
+| Check                                                             | Result                    |
+| ----------------------------------------------------------------- | ------------------------- |
+| `go build ./...`                                                  | ✅ clean                  |
+| `go test ./...` (full suite)                                      | ✅ 24/24 packages         |
+| `go vet ./...`                                                    | ✅ clean                  |
+| `golangci-lint run ./job/`                                        | ✅ 0 issues               |
+| `CGO_ENABLED=1 go test ./job/ -race -run TestIncrementalParallel` | ✅ 9/9 pass               |
+| Stress: `-race -count=15` on singleflight + mutation + stress     | ✅ 45 iterations, 0 races |
+| BuildFlow pre-commit                                              | ✅ 31/31                  |
+
+### Test Coverage Added (9 tests)
+
+| Test                                         | Exercises                                                                           |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `TestIncrementalParallelBasic`               | Single file, workers=GOMAXPROCS                                                     |
+| `TestIncrementalParallelMultipleFiles`       | 3 distinct files, 4 workers                                                         |
+| `TestIncrementalParallelIdenticalContent`    | **16 byte-identical files** — singleflight coalescing + distinct Filename per clone |
+| `TestIncrementalParallelMatchesSequential`   | Parallel output multiset == sequential output multiset (node signatures)            |
+| `TestIncrementalParallelCacheHit`            | Second parallel run hits cache (0 misses)                                           |
+| `TestIncrementalParallelContextCancellation` | Cancel mid-stream → no deadlock, clean shutdown within 5s                           |
+| `TestIncrementalParallelWorkerZero`          | `workers=0` falls back to GOMAXPROCS                                                |
+| `TestIncrementalParallelMutationIsolation`   | Caller mutates returned nodes → cache-hit returns unmutated nodes                   |
+| `TestIncrementalParallelConcurrentStress`    | 24 files (2 content variants), 8 workers, interleaved for max collision             |
+
+### Impact on Top-25 List
+
+| Task          | Previous status                         | New status                                                          |
+| ------------- | --------------------------------------- | ------------------------------------------------------------------- |
+| **T29** (#12) | Deferred: "Needs parallel parser first" | **DONE** — parallel parser + singleflight shipped in `94b5205`      |
+| **T6.3** (#3) | Open: "Add concurrent data-race test"   | **DONE** — 9 `-race` tests cover the singleflight/cache/clone paths |
+
+### Refactoring Notes
+
+During verification, `golangci-lint` surfaced 4 issues in the uncommitted code,
+all fixed before commit:
+
+1. **`depguard`** — `golang.org/x/sync` not in allow-list → added to `.golangci.yml`
+2. **`funlen`** (99 > 80 lines) — extracted `startIncrementalWorkers` and
+   `collectIncrementalResults`; reused `feedFiles` from `parse.go` (eliminated
+   the duplicated feeder goroutine)
+3. **`unused`** — removed dead `err` field from `incrementalResult` struct
+4. **`forcetypeassert`** — replaced `v.([]*syntax.Node)` with checked assertion
+   backed by `errUnexpectedSingleflightType` sentinel (`err113`-compliant)
+
+**Stats (this commit):** 1 commit, 7 files changed, +749 / -53 lines
