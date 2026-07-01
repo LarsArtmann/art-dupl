@@ -276,20 +276,13 @@ type CloneClassification struct {
 // ProcessedClone represents a single clone instance with extracted fragment data.
 // Decouples printer output from syntax.Node internals.
 type ProcessedClone struct {
-	Filename       string
-	LineStart      int
-	LineEnd        int
+	CloneRef
+
 	StartPos       int32
 	EndPos         int32
-	Fragment       string
 	TokenCount     int
 	FileSize       int
 	Classification CloneClassification
-}
-
-// LineCount returns the number of source lines spanned by this clone.
-func (c ProcessedClone) LineCount() int {
-	return c.LineEnd - c.LineStart + 1
 }
 
 // Validate checks that the clone's invariants hold.

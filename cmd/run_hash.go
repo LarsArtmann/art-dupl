@@ -59,7 +59,7 @@ func executeHashOnlyAnalysis(
 
 	printFileCollectionStatus(cfg, outputFormat, len(files))
 
-	fileDuplicates := hash.FindFileDuplicates(files, cfg.Threshold)
+	fileDuplicates := hash.FindFileDuplicates(ctx, files, cfg.Threshold)
 
 	duplChan := convertFileDuplicatesToMatches(ctx, fileDuplicates)
 

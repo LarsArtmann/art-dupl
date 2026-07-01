@@ -185,6 +185,19 @@
               test -z "$(gofmt -l .)" || (echo "Unformatted files:"; gofmt -l .; exit 1)
               touch $out
             '';
+
+            bench = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-bench";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                go test -run='^TestPerfRegression' -v ./syntax/...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
           };
 
           packages = {

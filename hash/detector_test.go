@@ -22,7 +22,7 @@ func TestFindFileDuplicates_IdenticalFiles(t *testing.T) {
 	f2 := filepath.Join(dir, "b.go")
 	writeDuplicateFiles(t, f1, f2, content)
 
-	dups := FindFileDuplicates([]string{f1, f2}, 10)
+	dups := FindFileDuplicates(context.Background(), []string{f1, f2}, 10)
 	if len(dups) != 1 {
 		t.Fatalf("expected 1 duplicate group, got %d", len(dups))
 	}
@@ -43,7 +43,7 @@ func TestFindFileDuplicates_DifferentFiles(t *testing.T) {
 	writeTestFile(t, f1, []byte("package a\n"))
 	writeTestFile(t, f2, []byte("package b\n"))
 
-	dups := FindFileDuplicates([]string{f1, f2}, 1)
+	dups := FindFileDuplicates(context.Background(), []string{f1, f2}, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for different files, got %d")
 }
 
@@ -57,7 +57,7 @@ func TestFindFileDuplicates_SkipsSmallFiles(t *testing.T) {
 	f2 := filepath.Join(dir, "b.go")
 	writeDuplicateFiles(t, f1, f2, content)
 
-	dups := FindFileDuplicates([]string{f1, f2}, 100)
+	dups := FindFileDuplicates(context.Background(), []string{f1, f2}, 100)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates (files below threshold), got %d")
 }
 
@@ -73,14 +73,14 @@ func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
 
 	bad := filepath.Join(dir, "nope.go")
 
-	dups := FindFileDuplicates([]string{good, bad}, 1)
+	dups := FindFileDuplicates(context.Background(), []string{good, bad}, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates with missing file, got %d")
 }
 
 func TestFindFileDuplicates_EmptyInput(t *testing.T) {
 	t.Parallel()
 
-	dups := FindFileDuplicates(nil, 1)
+	dups := FindFileDuplicates(context.Background(), nil, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for nil input, got %d")
 }
 
@@ -103,7 +103,7 @@ func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
 	writeDuplicateFiles(t, files["b1.go"], files["b2.go"], contentB)
 
 	all := []string{files["a1.go"], files["a2.go"], files["b1.go"], files["b2.go"]}
-	dups := FindFileDuplicates(all, 1)
+	dups := FindFileDuplicates(context.Background(), all, 1)
 
 	testutil.AssertCountf(t, len(dups), 2, "expected 2 duplicate groups, got %d")
 }

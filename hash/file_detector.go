@@ -32,32 +32,55 @@ type FileDuplicate struct {
 	Files []FileHash
 }
 
-// FindFileDuplicates finds exact file duplicates by hashing file contents.
-// Files are hashed one at a time via io.Copy through XXH3 — file content is
-// never held in memory. Only (hash, filename, size) is retained per file.
-func FindFileDuplicates(files []string, threshold int) []FileDuplicate {
-	fd := NewFileDetector()
-
+// groupByHash hashes each file and groups results by content hash.
+// Files that cannot be hashed are silently skipped (errors logged at Debug).
+// Respects context cancellation between files.
+func (f *FileDetector) groupByHash(ctx context.Context, files []string) map[string][]FileHash {
 	groups := make(map[string][]FileHash)
 
 	for _, filename := range files {
-		fh, ok := fd.hashFile(filename)
-		if !ok || fh.Size < threshold {
+		if ctx.Err() != nil {
+			return groups
+		}
+
+		fh, ok := f.hashFile(filename)
+		if !ok {
 			continue
 		}
 
 		groups[fh.Hash] = append(groups[fh.Hash], fh)
 	}
 
-	var duplicates []FileDuplicate
+	return groups
+}
+
+// filterDuplicateGroups returns groups containing at least 2 files that meet
+// the size threshold. Because the hash is over file CONTENTS, every file in a
+// group shares the same size, so checking group[0].Size is sufficient.
+func filterDuplicateGroups(groups map[string][]FileHash, threshold int) []FileDuplicate {
+	var dups []FileDuplicate
 
 	for hash, group := range groups {
-		if len(group) >= 2 {
-			duplicates = append(duplicates, FileDuplicate{Hash: hash, Files: group})
+		if len(group) >= 2 && group[0].Size >= threshold {
+			dups = append(dups, FileDuplicate{Hash: hash, Files: group})
 		}
 	}
 
-	return duplicates
+	return dups
+}
+
+// FindFileDuplicates finds exact file duplicates by hashing file contents.
+// Files are hashed one at a time via io.Copy through XXH3 — file content is
+// never held in memory. Only (hash, filename, size) is retained per file.
+func FindFileDuplicates(ctx context.Context, files []string, threshold int) []FileDuplicate {
+	fd := NewFileDetector()
+	groups := fd.groupByHash(ctx, files)
+	return filterDuplicateGroups(groups, threshold)
+}
+
+// fileHashToFragment converts a FileHash into a synthetic syntax node fragment.
+func fileHashToFragment(fh FileHash) []*syntax.Node {
+	return []*syntax.Node{syntax.NewSyntheticFileNode(fh.Filename, fh.Size)}
 }
 
 // FindDuplOver finds exact file duplicates using XXH3 hashing.
@@ -68,47 +91,22 @@ func (f *FileDetector) FindDuplOver(ctx context.Context, data []*syntax.Node, th
 		defer close(resultChan)
 
 		fileList := f.extractUniqueFiles(data)
+		groups := f.groupByHash(ctx, fileList)
+		dups := filterDuplicateGroups(groups, threshold)
 
-		groups := make(map[string][]FileHash)
+		for _, dup := range dups {
+			fragments := make([][]*syntax.Node, 0, len(dup.Files))
+			for _, fh := range dup.Files {
+				fragments = append(fragments, fileHashToFragment(fh))
+			}
 
-		for _, filename := range fileList {
-			if ctx.Err() != nil {
+			select {
+			case resultChan <- syntax.Match{
+				Hash:  dup.Hash,
+				Frags: fragments,
+			}:
+			case <-ctx.Done():
 				return
-			}
-
-			fh, ok := f.hashFile(filename)
-			if !ok {
-				continue
-			}
-
-			groups[fh.Hash] = append(groups[fh.Hash], fh)
-		}
-
-		for _, group := range groups {
-			validFiles := make([]FileHash, 0, len(group))
-
-			for _, fh := range group {
-				if fh.Size >= threshold {
-					validFiles = append(validFiles, fh)
-				}
-			}
-
-			if len(validFiles) >= 2 {
-				fragments := make([][]*syntax.Node, 0, len(validFiles))
-
-				for _, fh := range validFiles {
-					node := syntax.NewSyntheticFileNode(fh.Filename, fh.Size)
-					fragments = append(fragments, []*syntax.Node{node})
-				}
-
-				select {
-				case resultChan <- syntax.Match{
-					Hash:  validFiles[0].Hash,
-					Frags: fragments,
-				}:
-				case <-ctx.Done():
-					return
-				}
 			}
 		}
 	}()

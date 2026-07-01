@@ -451,6 +451,33 @@ footer {
 	color: white;
 	border-color: var(--accent);
 }
+.collapse-controls {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 15px;
+}
+.collapse-btn {
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border);
+	color: var(--text-secondary);
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: all 0.2s;
+}
+.collapse-btn:hover {
+	background: var(--border);
+	color: var(--text-primary);
+}
+.clone-header h3::before {
+	content: '▼ ';
+	font-size: 0.7rem;
+	color: var(--text-secondary);
+}
+.collapsed .clone-header h3::before {
+	content: '▶ ';
+}
 .summary-value {
 	font-size: 1.4rem;
 	color: var(--text-primary);

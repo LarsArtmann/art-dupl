@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 )
@@ -169,7 +170,7 @@ func TestErrorWrapping_Basic(t *testing.T) {
 func TestCloneGroup_Validation_Basic(t *testing.T) {
 	group := CloneGroup{
 		Hash:   "test-hash",
-		Clones: []*Clone{{Filename: testFilename}},
+		Clones: []*Clone{{CloneRef: domain.CloneRef{Filename: testFilename}}},
 		Size:   10,
 		Method: MethodArtDupl,
 	}
@@ -200,33 +201,33 @@ func TestClone_IsValid(t *testing.T) {
 	}{
 		{
 			name:    "valid clone with positions",
-			clone:   Clone{LineStart: 1, LineEnd: 5, StartPos: 10, EndPos: 50},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 1, LineEnd: 5}, StartPos: 10, EndPos: 50},
 			wantErr: nil,
 		},
 		{
-			clone:   Clone{LineStart: 5, LineEnd: 5, StartPos: 10, EndPos: 20},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 5, LineEnd: 5}, StartPos: 10, EndPos: 20},
 			wantErr: nil,
 			name:    "valid testClone single line",
 		},
 		{
 			name:    "invalid clone without positions (zero length)",
-			clone:   Clone{LineStart: 1, LineEnd: 10},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 1, LineEnd: 10}},
 			wantErr: ErrCloneZeroLength,
 		},
 		{
 			name:    "invalid end line before start",
-			clone:   Clone{LineStart: 10, LineEnd: 5},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 10, LineEnd: 5}},
 			wantErr: ErrCloneLineEndBeforeStart,
 		},
 		{
-			clone:   Clone{LineStart: 1, LineEnd: 1, StartPos: 50, EndPos: 50},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 1, LineEnd: 1}, StartPos: 50, EndPos: 50},
 			wantErr: ErrCloneZeroLength,
 			name:    "invalid zero length positions",
 		},
 		{
 			name:    "invalid negative length positions",
 			wantErr: ErrCloneZeroLength,
-			clone:   Clone{LineStart: 1, LineEnd: 1, StartPos: 50, EndPos: 30},
+			clone:   Clone{CloneRef: domain.CloneRef{LineStart: 1, LineEnd: 1}, StartPos: 50, EndPos: 30},
 		},
 	}
 

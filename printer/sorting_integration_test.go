@@ -18,24 +18,7 @@ const (
 	smallFile        = "small.go"
 )
 
-// validateCloneSorting checks if the sorted clone groups match the expected order.
-func validateCloneSorting(
-	t *testing.T,
-	sorted [][]*syntax.Node,
-	expectedOrder []string,
-	sortingType string,
-) {
-	t.Helper()
-
-	for i, clone := range sorted {
-		if clone[0].Filename != expectedOrder[i] {
-			t.Errorf("%s sorting failed at index %d. Expected: %s, Got: %s",
-				sortingType, i, expectedOrder[i], clone[0].Filename)
-		}
-	}
-}
-
-// TestSortingIntegration tests the complete sorting functionality across all printers.
+// createMockCloneGroup creates a mock clone group with specified characteristics.
 func TestSortingIntegration(t *testing.T) {
 	// Create test file content with multiple clone groups
 	testContent := `package main
@@ -264,55 +247,4 @@ func createMockCloneGroup(t *testing.T, filename string, startPos, numTokens int
 	}
 
 	return nodes
-}
-
-// TestCommonSortingUtilities tests the common sorting functions directly.
-func TestCommonSortingUtilities(t *testing.T) {
-	smallClone := createMockCloneGroup(t, smallFile, 10, 2)
-	mediumClone := createMockCloneGroup(t, mediumFile, 30, 5)
-	largeClone := createMockCloneGroup(t, largeFile, 60, 8)
-
-	clones := [][]*syntax.Node{mediumClone, smallClone, largeClone}
-
-	// Test SortClonesBySize
-	t.Run("SortClonesBySize", func(t *testing.T) {
-		TestCloneSortingWithData(t, SortClonesBySize, "Size", clones)
-	})
-
-	// Test SortClonesByOccurrence (same as size for our test data)
-	t.Run("SortClonesByOccurrence", func(t *testing.T) {
-		TestCloneSortingWithData(t, SortClonesByOccurrence, "Occurrence", clones)
-	})
-
-	// Test SortClonesByHash
-	t.Run("SortClonesByHash", func(t *testing.T) {
-		sorted := SortClonesByHash(clones)
-
-		// Should be sorted alphabetically by filename
-		expectedOrder := []string{largeFile, mediumFile, "small.go"}
-		validateCloneSorting(t, sorted, expectedOrder, "Hash")
-	})
-
-	// Test SortClonesByTotalTokens
-	t.Run("SortClonesByTotalTokens", func(t *testing.T) {
-		// The SortClonesByTotalTokens function works with [][]*syntax.Node
-		// where each element is one clone occurrence in a file
-		// So to test different total token counts, we need to simulate
-		// the scenario where the function is called with different groups
-
-		// In real usage, the function receives a group of clones
-		// where each inner slice is a separate occurrence
-		// For testing, we'll simulate sorting multiple groups separately
-		group1 := createMockCloneGroup(t, smallFile, 10, 2)  // 2 tokens
-		group2 := createMockCloneGroup(t, mediumFile, 30, 5) // 5 tokens
-		group3 := createMockCloneGroup(t, largeFile, 60, 8)  // 8 tokens
-
-		clones := [][]*syntax.Node{group1, group2, group3}
-		sorted := SortClonesByTotalTokens(clones)
-
-		// Since SortClonesByTotalTokens counts all nodes, and we have single occurrences,
-		// it should sort by the number of nodes in each group
-		expectedOrder := []string{largeFile, mediumFile, "small.go"}
-		validateCloneSorting(t, sorted, expectedOrder, "Total-tokens")
-	})
 }

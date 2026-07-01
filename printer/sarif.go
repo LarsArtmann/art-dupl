@@ -49,12 +49,21 @@ type SARIFDriver struct {
 
 // SARIFRule represents a rule/check that was violated.
 type SARIFRule struct {
-	ID                   string             `json:"id"`
-	Name                 string             `json:"name"`
-	ShortDescription     SARIFTextContent   `json:"shortDescription"`
-	FullDescription      SARIFTextContent   `json:"fullDescription"`
-	DefaultConfiguration SARIFConfiguration `json:"defaultConfiguration"`
-	HelpURI              string             `json:"helpUri,omitempty"`
+	ID                   string              `json:"id"`
+	Name                 string              `json:"name"`
+	ShortDescription     SARIFTextContent    `json:"shortDescription"`
+	FullDescription      SARIFTextContent    `json:"fullDescription"`
+	DefaultConfiguration SARIFConfiguration  `json:"defaultConfiguration"`
+	HelpURI              string              `json:"helpUri,omitempty"`
+	Properties           SARIFRuleProperties `json:"properties,omitempty"`
+}
+
+// SARIFRuleProperties carries tool-specific metadata recognised by
+// GitHub Code Scanning, SonarQube, and other SARIF consumers.
+type SARIFRuleProperties struct {
+	Precision       string   `json:"precision"`
+	ProblemSeverity string   `json:"problem.severity"`
+	Tags            []string `json:"tags"`
 }
 
 // SARIFTextContent represents text content in SARIF.
@@ -272,6 +281,11 @@ func (p *sarifPrinter) outputSARIF() error {
 									Level: "warning",
 								},
 								HelpURI: "https://github.com/LarsArtmann/art-dupl#duplicate-code-detection",
+								Properties: SARIFRuleProperties{
+									Precision:       "high",
+									ProblemSeverity: "warning",
+									Tags:            []string{"maintainability", "duplicate-code", "design"},
+								},
 							},
 						},
 					},

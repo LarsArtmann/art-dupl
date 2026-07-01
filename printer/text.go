@@ -179,29 +179,16 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 	sortedCloneGroups := make([][]domain.ProcessedClone, len(p.cloneGroups))
 	copy(sortedCloneGroups, p.cloneGroups)
 
-	switch sortBy {
-	case config.SortBySize:
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalFragmentSize(sortedCloneGroups[i]) > totalFragmentSize(sortedCloneGroups[j])
-		})
-	case config.SortByOccurrence:
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return len(sortedCloneGroups[i]) > len(sortedCloneGroups[j])
-		})
-	case config.SortByHash:
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			if len(sortedCloneGroups[i]) == 0 || len(sortedCloneGroups[j]) == 0 {
-				return false
+	sortGroupsByCriteria(sortedCloneGroups, sortBy, GroupMetrics[[]domain.ProcessedClone]{
+		Size:  totalFragmentSize,
+		Count: func(g []domain.ProcessedClone) int { return len(g) },
+		SortKey: func(g []domain.ProcessedClone) string {
+			if len(g) == 0 {
+				return ""
 			}
-
-			return sortedCloneGroups[i][0].Filename < sortedCloneGroups[j][0].Filename
-		})
-	case config.SortByTotalTokens:
-		sort.Slice(sortedCloneGroups, func(i, j int) bool {
-			return totalFragmentSize(sortedCloneGroups[i])*len(sortedCloneGroups[i]) >
-				totalFragmentSize(sortedCloneGroups[j])*len(sortedCloneGroups[j])
-		})
-	}
+			return g[0].Filename
+		},
+	})
 
 	err := p.PrintHeader()
 	if err != nil {

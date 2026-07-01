@@ -131,10 +131,11 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 
 	nodes, err := fc.deserialize(data)
 	if err != nil {
-		// Corrupted cache entry, remove it
+		fmt.Fprintf(os.Stderr, "warning: removing stale cache entry %s: %v\n", cachePath, err)
+
 		removeErr := os.Remove(cachePath)
 		if removeErr != nil {
-			fmt.Fprintf(os.Stderr, "warning: failed to remove corrupted cache entry %s: %v\n", cachePath, removeErr)
+			fmt.Fprintf(os.Stderr, "warning: failed to remove stale cache entry %s: %v\n", cachePath, removeErr)
 		}
 
 		atomic.AddInt64(&fc.metadata.MissCount, 1)
@@ -380,6 +381,12 @@ func (fc *FileCache) loadMetadata() {
 	}
 
 	_ = errors.SafeUnmarshal(data, &fc.metadata, "cache metadata")
+
+	if fc.metadata.Version != 0 && fc.metadata.Version != CacheVersion {
+		fmt.Fprintf(os.Stderr,
+			"warning: cache version mismatch (metadata: got %d, want %d) — stale entries will be evicted on access\n",
+			fc.metadata.Version, CacheVersion)
+	}
 }
 
 // saveMetadata saves cache metadata to disk.

@@ -238,6 +238,16 @@ function filterClones(filter) {
 	});
 }
 
+function collapseAll(collapse) {
+	document.querySelectorAll('.clone-group').forEach(function(group) {
+		if (collapse) {
+			group.classList.add('collapsed');
+		} else {
+			group.classList.remove('collapsed');
+		}
+	});
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 	try {
 		const savedMode = localStorage.getItem('artdupl-diff-mode');

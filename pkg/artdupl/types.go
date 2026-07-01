@@ -62,13 +62,11 @@ type CloneGroup struct {
 
 // Clone represents a single occurrence of duplicated code.
 type Clone struct {
-	Filename  string `json:"filename"`           // File containing this clone
-	LineStart int    `json:"line_start"`         // Starting line number
-	LineEnd   int    `json:"line_end"`           // Ending line number
-	StartPos  int    `json:"start_pos"`          // Starting byte position
-	EndPos    int    `json:"end_pos"`            // Ending byte position
-	Fragment  string `json:"fragment,omitempty"` // Actual code content (optional)
-	Size      int    `json:"size"`               // Size in bytes/tokens
+	domain.CloneRef
+
+	StartPos int `json:"start_pos"` // Starting byte position
+	EndPos   int `json:"end_pos"`   // Ending byte position
+	Size     int `json:"size"`      // Size in bytes/tokens
 }
 
 // IsValid validates the clone data and returns an error if invalid.

@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -221,13 +222,17 @@ func crawlDirectoryWithOpts(opts CrawlOptions, path string) {
 	err := filepath.Walk(path, func(p string, info os.FileInfo, _ error) error {
 		return handleWalkEntry(opts, p, info)
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 		fmt.Fprintf(os.Stderr, "error: walking %s: %v\n", path, err)
 	}
 }
 
 // handleWalkEntry processes a single entry during directory walk.
 func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
+	if opts.Ctx.Err() != nil {
+		return opts.Ctx.Err()
+	}
+
 	if info == nil {
 		return nil
 	}

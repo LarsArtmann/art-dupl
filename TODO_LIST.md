@@ -6,7 +6,44 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
-## ✅ Completed (2026-07-01) — Execution Sprint + Lint Cleanup
+## ✅ Completed (2026-07-01) — Full TODO Sprint (13 tasks)
+
+### Architecture
+
+- [x] **T23 CloneRef value object** — `domain.CloneRef` type with `Filename`, `LineStart`, `LineEnd`, `Fragment` + `LineCount()` method. Embedded in `domain.ProcessedClone` and `pkg/artdupl.Clone`. Eliminates field-name drift across 7 parallel Clone types without collapsing DTO boundary.
+- [x] **T28 Sort comparator factory** — Generic `GroupMetrics[T]` + `makeGroupComparator[T]` + `sortGroupsByCriteria[T]` in `sort_unified.go`. Unified 3 parallel 4-criteria sort switch implementations (`SortCloneGroups`, `OutputText`, `sort_unified`). Deleted 4 dead `[][]*syntax.Node` sort functions + `test_helper.go`.
+- [x] **T18 Hash pipeline consolidation** — Extracted `groupByHash` + `filterDuplicateGroups` shared helpers. `FindFileDuplicates` and `FindDuplOver` now share the hash+group pipeline. Added `ctx` to `FindFileDuplicates`.
+- [x] **T41 Context through file feeders** — `filepath.Walk` now respects context cancellation via early-return-error in `handleWalkEntry`. Cancellation errors suppressed in `crawlDirectoryWithOpts`.
+
+### Features
+
+- [x] **HTML collapsible clone groups** — Added "Collapse All" / "Expand All" toolbar buttons + `collapseAll()` JS function. Added ▼/▶ collapse indicator on clone headers via CSS `::before`.
+- [x] **SARIF rule metadata enrichment** — Added `Properties` field (`precision`, `problem.severity`, `tags`) to SARIF rules for GitHub Code Scanning / SonarQube compatibility.
+
+### Infrastructure
+
+- [x] **T36 Perf regression CI** — Added `TestPerfRegressionSerialize` + `TestPerfRegressionHashSeq` with generous thresholds (50ms). Added `bench` check to `flake.nix`.
+- [x] **Cache version-mismatch warning** — `Get()` now logs the deserialize error before removing stale entries. `loadMetadata()` warns on metadata version mismatch.
+- [x] **JSON config migration shim** — `Config.UnmarshalJSON` converts legacy `"semantic": false` to `"detectionMode": "exact"` when `detectionMode` is absent.
+- [x] **ADR-0008** — Documented the semantic encoding layout (`[24-bit identifier/operator hash][8-bit base AST node type]`).
+
+### Assessments (No Action Needed)
+
+- [x] ~~Apply sendCtx to remaining channel send sites~~ — All 13 remaining bare sends target buffered(1) write-once channels (`statsChan`, `done`). No deadlock risk; converting would be cosmetic.
+- [x] ~~go.mod dependency audit~~ — All 12 direct deps justified (lipgloss, log, gogenfilter, templ, fang, ginkgo, gomega, go-diff, cobra, xxh3, x/sync). No banned or unnecessary deps.
+- [x] ~~Validate CI templates~~ — Fixed `./...` → `.` path in GitHub Actions template. Pre-commit hook already properly configured (`types: [go]`, `pass_filenames: false`).
+
+### Assessed — Deferred with Rationale
+
+- [ ] **T25 Split printer/ into sub-packages** — Feasible but requires interface inversion: core `printer.go` references `StatsPrinter`, creating circular deps with any sub-package. Clean split requires moving `Printer`/`ReadFile`/`StatsPrinter` interfaces to a separate base package + extracting shared test helpers from `_test.go` files + handling `.(*stats)` type assertions to unexported types. Multi-session architectural design work.
+- [ ] **T24 Branded NodeType int32** — A single `syntax.NodeType` type does NOT prevent the stated cross-package constant value collision (golang and templ constants would share the same `NodeType` type). The proper fix requires per-package `NodeType` types (`golang.NodeType`, `templ.NodeType`), which is even more invasive. Current 8-bit shared encoding space is intentional (see ADR-0008). HIGH RISK: touches gob cache format.
+
+---
+
+## 🔴 Previously Deferred (Architecturally Constrained)
+
+- [ ] **Hide `syntax/golang` behind facade** — **BLOCKED** by import cycle (syntax/golang imports syntax for Node type)
+- [ ] **Thread `context.Context` through stdin scanner** — stdin `bufio.Scanner` is inherently blocking; can't interrupt without closing stdin
 
 ### Critical Correctness (4/4 resolved)
 

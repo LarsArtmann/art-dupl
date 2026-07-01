@@ -34,9 +34,9 @@ jobs:
           # Record baseline on first run, then check on subsequent runs.
           # The baseline file (.art-dupl-baseline.json) should be committed.
           if [ -f .art-dupl-baseline.json ]; then
-            art-dupl check --baseline .art-dupl-baseline.json --threshold 5 ./...
+            art-dupl check --baseline .art-dupl-baseline.json --threshold 5 .
           else
             echo "No baseline found. Recording initial baseline..."
-            art-dupl baseline --output .art-dupl-baseline.json --threshold 5 ./...
+            art-dupl baseline --output .art-dupl-baseline.json --threshold 5 .
             echo "Commit .art-dupl-baseline.json to enable baseline checking."
           fi

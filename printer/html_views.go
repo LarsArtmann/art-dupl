@@ -280,6 +280,11 @@ func buildSummaryHTML(data SummaryView) string {
 	}
 
 	sb.WriteString(`</div>`)
+
+	sb.WriteString(`<div class="collapse-controls">`)
+	sb.WriteString(`<button class="collapse-btn" onclick="collapseAll(true)">⊟ Collapse All</button>`)
+	sb.WriteString(`<button class="collapse-btn" onclick="collapseAll(false)">⊞ Expand All</button>`)
+	sb.WriteString(`</div>`)
 	sb.WriteString(`</div>`)
 
 	return sb.String()
