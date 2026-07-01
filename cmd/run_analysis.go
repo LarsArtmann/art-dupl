@@ -107,7 +107,16 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	)
 
 	filesChan := params.getFilesChan()
-	schan, incStatsChan := incParser.ParseIncremental(params.ctx, filesChan)
+
+	var schan chan []*syntax.Node
+	var incStatsChan chan job.IncrementalStats
+
+	if params.cfg.Workers > 1 {
+		schan, incStatsChan = incParser.ParseIncrementalParallel(params.ctx, filesChan, params.cfg.Workers)
+	} else {
+		schan, incStatsChan = incParser.ParseIncremental(params.ctx, filesChan)
+	}
+
 	tree, data, done := job.BuildTree(params.ctx, schan)
 	if err := <-done; err != nil {
 		return treeBuildResult{tree: tree, data: *data}

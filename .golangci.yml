@@ -155,6 +155,7 @@ linters:
             - github.com/spf13/cobra
             - github.com/spf13/pflag
             - github.com/zeebo/xxh3
+            - golang.org/x/sync
     dupl:
       threshold: 100
     funlen:
