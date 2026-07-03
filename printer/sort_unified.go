@@ -1,7 +1,8 @@
 package printer
 
 import (
-	"sort"
+	"cmp"
+	"slices"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
@@ -16,45 +17,59 @@ type GroupMetrics[T any] struct {
 	SortKey func(T) string // hash or filename — the ascending sort key for SortByHash
 }
 
-// makeGroupComparator returns a less-than function for the requested sort
-// criteria, using the provided metric extractors. All four branches are
-// expressed here so call sites never repeat the switch.
-func makeGroupComparator[T any](sortBy config.SortCriteria, m GroupMetrics[T]) func(a, b T) bool {
+// makeGroupComparator returns a comparison function (negative = a before b,
+// zero = equal, positive = a after b) for slices.SortFunc. All four branches
+// are expressed here so call sites never repeat the switch.
+func makeGroupComparator[T any](sortBy config.SortCriteria, m GroupMetrics[T]) func(a, b T) int {
 	switch sortBy {
 	case config.SortByOccurrence:
-		return func(a, b T) bool { return m.Count(a) > m.Count(b) }
+		return func(a, b T) int { return cmp.Compare(m.Count(b), m.Count(a)) } // descending
 	case config.SortByHash:
-		return func(a, b T) bool {
+		return func(a, b T) int {
 			ka, kb := m.SortKey(a), m.SortKey(b)
-			if ka == "" || kb == "" {
-				return false
+			// Empty keys sort last so they don't destabilise the sort
+			if ka == "" && kb == "" {
+				return 0
 			}
-			return ka < kb
+
+			if ka == "" {
+				return 1
+			}
+
+			if kb == "" {
+				return -1
+			}
+
+			return cmp.Compare(ka, kb) // ascending
 		}
 	case config.SortByTotalTokens:
-		return func(a, b T) bool { return m.Size(a)*m.Count(a) > m.Size(b)*m.Count(b) }
+		return func(a, b T) int {
+			return cmp.Compare(m.Size(b)*m.Count(b), m.Size(a)*m.Count(a)) // descending
+		}
 	default: // SortBySize
-		return func(a, b T) bool { return m.Size(a) > m.Size(b) }
+		return func(a, b T) int { return cmp.Compare(m.Size(b), m.Size(a)) } // descending
 	}
 }
 
 // sortGroupsByCriteria sorts a slice of clone groups in-place using the
 // generic comparator factory.
 func sortGroupsByCriteria[T any](groups []T, sortBy config.SortCriteria, m GroupMetrics[T]) {
-	less := makeGroupComparator(sortBy, m)
-	sort.Slice(groups, func(i, j int) bool { return less(groups[i], groups[j]) })
+	slices.SortFunc(groups, makeGroupComparator(sortBy, m))
 }
 
+// SortProcessedClonesByCriteria sorts individual clones within a group.
+// Size/TotalTokens sort by TokenCount (descending). Occurrence/Hash are
+// group-level properties identical for every clone, so they are no-ops here;
+// within-group ordering falls back to filename/line (see byNameAndLineProcessed).
 func SortProcessedClonesByCriteria(clones []domain.ProcessedClone, sortBy config.SortCriteria) {
 	switch sortBy {
 	case config.SortBySize, config.SortByTotalTokens:
-		sort.Slice(clones, func(i, j int) bool {
-			return clones[i].TokenCount > clones[j].TokenCount
+		slices.SortFunc(clones, func(a, b domain.ProcessedClone) int {
+			return cmp.Compare(b.TokenCount, a.TokenCount) // descending
 		})
 	case config.SortByOccurrence, config.SortByHash:
 		// Intentionally a no-op: occurrence (group size) and hash are group-level
 		// attributes that are identical for every clone within a single group, so
-		// sorting individual occurrences by them has no defined order. Within-group
-		// ordering falls back to filename/line (see byNameAndLineProcessed).
+		// sorting individual occurrences by them has no defined order.
 	}
 }
