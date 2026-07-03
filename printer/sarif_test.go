@@ -306,6 +306,19 @@ func TestSARIFOutput_Structure(t *testing.T) {
 	rule := tool.Rules[0]
 	testutil.AssertFieldValue(t, rule.ID, "art-dupl/duplicate-code", "ID")
 
+	// Verify SARIF rule properties for GitHub Code Scanning / SonarQube compatibility
+	if rule.Properties.Precision != "high" {
+		t.Errorf("Expected precision 'high', got '%s'", rule.Properties.Precision)
+	}
+
+	if rule.Properties.ProblemSeverity != "warning" {
+		t.Errorf("Expected problem.severity 'warning', got '%s'", rule.Properties.ProblemSeverity)
+	}
+
+	if len(rule.Properties.Tags) != 3 {
+		t.Errorf("Expected 3 tags, got %d", len(rule.Properties.Tags))
+	}
+
 	// Check results
 	results := output.Runs[0].Results
 	if len(results) != 2 {
