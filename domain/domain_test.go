@@ -113,7 +113,7 @@ func TestProcessedClone_LineCount(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			c := ProcessedClone{CloneRef: CloneRef{LineStart: tc.lineStart, LineEnd: tc.lineEnd}}
 			if got := c.LineCount(); got != tc.want {
-				t.Errorf("LineCount() = %d}, want %d", got, tc.want)
+				t.Errorf("LineCount() = %d, want %d", got, tc.want)
 			}
 		})
 	}

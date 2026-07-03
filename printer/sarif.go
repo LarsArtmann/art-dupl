@@ -55,15 +55,15 @@ type SARIFRule struct {
 	FullDescription      SARIFTextContent    `json:"fullDescription"`
 	DefaultConfiguration SARIFConfiguration  `json:"defaultConfiguration"`
 	HelpURI              string              `json:"helpUri,omitempty"`
-	Properties           SARIFRuleProperties `json:"properties,omitempty"`
+	Properties           SARIFRuleProperties `json:"properties"`
 }
 
 // SARIFRuleProperties carries tool-specific metadata recognised by
 // GitHub Code Scanning, SonarQube, and other SARIF consumers.
 type SARIFRuleProperties struct {
-	Precision       string   `json:"precision"`
-	ProblemSeverity string   `json:"problem.severity"`
-	Tags            []string `json:"tags"`
+	Precision       string   `json:"precision,omitempty"`
+	ProblemSeverity string   `json:"problem.severity,omitempty"`
+	Tags            []string `json:"tags,omitempty"`
 }
 
 // SARIFTextContent represents text content in SARIF.

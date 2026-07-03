@@ -569,3 +569,60 @@ func TestDetectionMode(t *testing.T) {
 		}
 	})
 }
+
+func TestConfig_UnmarshalJSON_Migration(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		json     string
+		wantMode DetectionMode
+	}{
+		{
+			name:     "legacy semantic false converts to exact",
+			json:     `{"semantic": false, "threshold": 10}`,
+			wantMode: DetectionModeExact,
+		},
+		{
+			name:     "legacy semantic true stays semantic (default)",
+			json:     `{"semantic": true, "threshold": 10}`,
+			wantMode: DetectionModeSemantic,
+		},
+		{
+			name:     "detectionMode takes precedence over legacy semantic",
+			json:     `{"detectionMode": "structural", "semantic": false}`,
+			wantMode: DetectionModeStructural,
+		},
+		{
+			name:     "detectionMode without legacy field",
+			json:     `{"detectionMode": "exact", "threshold": 5}`,
+			wantMode: DetectionModeExact,
+		},
+		{
+			name:     "no detection fields uses default semantic",
+			json:     `{"threshold": 10}`,
+			wantMode: DetectionModeSemantic,
+		},
+		{
+			name:     "invalid semantic value is ignored",
+			json:     `{"semantic": "not-a-bool", "threshold": 10}`,
+			wantMode: DetectionModeSemantic,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			cfg := DefaultConfig()
+			err := json.Unmarshal([]byte(tc.json), cfg)
+			if err != nil {
+				t.Fatalf("UnmarshalJSON error: %v", err)
+			}
+
+			if cfg.DetectionMode != tc.wantMode {
+				t.Errorf("DetectionMode = %v, want %v", cfg.DetectionMode, tc.wantMode)
+			}
+		})
+	}
+}
