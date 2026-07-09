@@ -1,7 +1,8 @@
 package printer
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"sort"
@@ -33,10 +34,10 @@ type JSONClone struct {
 	LineStart     int                       `json:"line_start"`
 	LineEnd       int                       `json:"line_end"`
 	Fragment      string                    `json:"fragment"`
-	Category      domain.CloneCategory      `json:"category,omitempty"`
-	Priority      domain.ClonePriority      `json:"priority,omitempty"`
-	Actionability domain.CloneActionability `json:"actionability,omitempty"`
-	CloneType     domain.CloneType          `json:"clone_type,omitempty"`
+	Category      domain.CloneCategory      `json:"category,omitzero"`
+	Priority      domain.ClonePriority      `json:"priority,omitzero"`
+	Actionability domain.CloneActionability `json:"actionability,omitzero"`
+	CloneType     domain.CloneType          `json:"clone_type,omitzero"`
 	LinesSaved    int                       `json:"lines_saved,omitempty"`
 	Extractable   bool                      `json:"extractable,omitempty"`
 }
@@ -177,7 +178,7 @@ func (p *JSONPrinter) OutputJSON(
 
 	output.DetectionMethod = detectionMethod
 
-	data, err := json.MarshalIndent(&output, "", "  ")
+	data, err := json.Marshal(&output, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return fmt.Errorf(
 			"encode JSON output (threshold: %d, sortBy: %s, detection: %s): %w",
@@ -216,7 +217,7 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		})
 	}
 
-	data, err := json.MarshalIndent(simpleOutput, "", "  ")
+	data, err := json.Marshal(simpleOutput, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return errors.HandleMarshalingError("encode", "simple JSON output", err)
 	}

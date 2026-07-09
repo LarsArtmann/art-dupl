@@ -2,7 +2,8 @@ package printer
 
 import (
 	"encoding/csv"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"math"
 	"strconv"
@@ -358,7 +359,7 @@ func sortTopFiles(fileDuplication map[string]int, limit int) []topFileStat {
 func (p *stats) printJSON() {
 	jsonData := p.buildJSONData()
 
-	data, err := json.MarshalIndent(jsonData, "", "  ")
+	data, err := json.Marshal(jsonData, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		_, _ = fmt.Fprintf(p.w, "Error encoding JSON: %v\n", err)
 	} else {

@@ -185,7 +185,9 @@ func (t *transformer) trans(
 	case *ast.GenDecl:
 		o.Type = encodeSemanticType(GenDecl, n.Tok.String(), t.config.Mode.hashesIdentifiers())
 		for _, spec := range n.Specs {
-			o.AddChildren(t.trans(spec))
+			child := t.trans(spec)
+			child.Statement = true
+			o.AddChildren(child)
 		}
 
 	case *ast.GoStmt:

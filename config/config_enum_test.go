@@ -172,7 +172,7 @@ func TestLoadConfig_EmptyFile(t *testing.T) {
 		t.Fatalf("LoadConfig(empty) error: %v", err)
 	}
 
-	testutil.AssertFieldValue(t, cfg.Threshold, 1, "Threshold")
+	testutil.AssertFieldValue(t, cfg.Threshold, 5, "Threshold")
 }
 
 func TestLoadConfig_InvalidJSON(t *testing.T) {

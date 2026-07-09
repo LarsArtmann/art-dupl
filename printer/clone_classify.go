@@ -37,7 +37,7 @@ type (
 
 func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 	category := nodeTypeToCategory(input.NodeType)
-	isTest := isTestFile(input.Filename)
+	isTest := strings.HasSuffix(input.Filename, "_test.go")
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
 	suggestion := getSuggestion(category, isTest, input.Tokens)
 
@@ -73,10 +73,6 @@ func nodeTypeToCategory(nodeType int32) CloneCategory {
 	default:
 		return domain.CategoryUnknown
 	}
-}
-
-func isTestFile(filename string) bool {
-	return strings.HasSuffix(filename, "_test.go")
 }
 
 func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) ClonePriority {
@@ -238,6 +234,12 @@ func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domai
 		cls.Priority = domain.PriorityLow
 	case PatternBuilderCallback:
 		cls.Suggestion = suggestBuilderCallback
+		cls.Priority = domain.PriorityLow
+	case PatternAssignErrorCheck:
+		cls.Suggestion = "assign + error-check boilerplate (err := f(); if err != nil { return })"
+		cls.Priority = domain.PriorityLow
+	case PatternSingleCallExpr:
+		cls.Suggestion = "single function call with different arguments"
 		cls.Priority = domain.PriorityLow
 	case PatternNone:
 		// No pattern detected — keep original classification

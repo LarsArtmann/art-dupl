@@ -48,7 +48,7 @@
 
           src = lib.cleanSource ./.;
 
-          vendorHash = "sha256-OryheRp9cvgFvmZc9pGH9qgwJNLIGGIc17mJ2+uu4l0=";
+          vendorHash = "sha256-hWAjRdMbPrLusFnN4ziI29f6tAHFscj2jRwPW18N1iU=";
           proxyVendor = true;
 
           overrideModAttrs = old: {
@@ -85,7 +85,10 @@
             "-X github.com/LarsArtmann/art-dupl/cmd.Date=unknown"
           ];
 
-          env.CGO_ENABLED = 0;
+          env = {
+            CGO_ENABLED = 0;
+            GOEXPERIMENT = "jsonv2";
+          };
 
           subPackages = [ "cmd/art-dupl" ];
 
@@ -231,6 +234,7 @@
 
               env = {
                 CGO_ENABLED = 0;
+                GOEXPERIMENT = "jsonv2";
                 GOTOOLCHAIN = "local";
                 GOWORK = "off";
                 GOPRIVATE = "github.com/LarsArtmann/*";
@@ -255,6 +259,7 @@
 
               GOWORK = "off";
               GOPRIVATE = "github.com/LarsArtmann/*";
+              GOEXPERIMENT = "jsonv2";
             };
           };
         };

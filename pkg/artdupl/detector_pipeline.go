@@ -84,7 +84,7 @@ func (d *detector) buildAnalysisPipeline(
 
 	if err := tree.Update(
 		&syntax.Node{Type: -1},
-	); err != nil { //nolint:exhaustruct // sentinel terminator; only Type matters
+	); err != nil {
 		return nil, fmt.Errorf("suffix tree terminator update failed: %w", err)
 	}
 

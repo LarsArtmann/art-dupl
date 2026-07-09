@@ -19,7 +19,8 @@
 package baseline
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"os"
@@ -131,7 +132,7 @@ func (bf *File) Save(path string) error {
 		return bf.Entries[i].Hash < bf.Entries[j].Hash
 	})
 
-	data, err := json.MarshalIndent(bf, "", "  ")
+	data, err := json.Marshal(bf, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return fmt.Errorf("marshal baseline: %w", err)
 	}

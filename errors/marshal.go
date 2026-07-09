@@ -6,7 +6,8 @@ package errors
 // consider using the typed functions in their respective packages.
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 )
@@ -34,17 +35,21 @@ func (e *MarshalError) Unwrap() error {
 }
 
 // HandleMarshalingError provides unified JSON marshaling error handling.
-// It inspects the concrete encoding/json error type (not its message string,
-// which is unstable) so callers can match the typed sentinels via errors.Is.
+// It inspects the concrete encoding/json/v2 error types (not their message
+// strings, which are unstable) so callers can match the typed sentinels
+// via errors.Is.
+//
+// In json/v2, UnsupportedValueError and UnsupportedTypeError from v1 are
+// unified into SemanticError. We match on the action field to distinguish
+// marshal-time type incompatibilities from other semantic errors.
 func HandleMarshalingError(operation, context string, err error) error {
 	if err == nil {
 		return nil
 	}
 
+	var se *json.SemanticError
 	switch {
-	case errors.As(err, new(*json.UnsupportedValueError)):
-		return newMarshalError(operation, context, err, ErrUnsupportedValueType)
-	case errors.As(err, new(*json.UnsupportedTypeError)):
+	case errors.As(err, &se):
 		return newMarshalError(operation, context, err, ErrUnsupportedType)
 	default:
 		return &MarshalError{Operation: operation, Context: context, Cause: err}
@@ -87,7 +92,7 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
 func SafeMarshalIndent(v any, prefix, indent, context string) ([]byte, error) {
-	data, err := json.MarshalIndent(v, prefix, indent)
+	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
 	if err != nil {
 		return nil, fmt.Errorf("marshal indent (prefix: %q, context: %s): %w",
 			prefix, context, HandleMarshalingError("marshal indent", context, err))
@@ -103,7 +108,7 @@ func SafeMarshalIndentNilSafe(v any, prefix, indent, nilErrorMessage string) ([]
 		return nil, NewValidationError(nilErrorMessage, nil)
 	}
 
-	data, err := json.MarshalIndent(v, prefix, indent)
+	data, err := json.Marshal(v, jsontext.WithIndentPrefix(prefix), jsontext.WithIndent(indent))
 	if err != nil {
 		return nil, HandleMarshalingError(
 			"marshal indent",

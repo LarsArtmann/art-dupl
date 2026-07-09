@@ -1,7 +1,8 @@
 package printer
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"time"
@@ -302,7 +303,7 @@ func (p *sarifPrinter) outputSARIF() error {
 		},
 	}
 
-	data, err := json.MarshalIndent(&output, "", "  ")
+	data, err := json.Marshal(&output, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return errors.HandleMarshalingError(
 			"encode",

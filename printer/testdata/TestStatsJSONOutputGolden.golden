@@ -6,19 +6,22 @@
   },
   "overview": {
     "filesScanned": 10,
+    "filesFiltered": 0,
     "cloneGroups": 1,
     "totalClones": 2
   },
   "duplicateCode": {
     "totalDuplicateLines": 1,
+    "estimatedTotalLines": 0,
     "totalDuplicateTokens": 4,
     "averageCloneSize": 1,
     "complexityScore": 2,
-    "impactScore": 8
+    "impactScore": 8,
+    "duplicationRatio": 0
   },
   "metrics": {
     "healthScore": "A",
-    "healthScoreThresholds": "Weighted score: A\u003c5, B\u003c10, C\u003c15, D\u003c25, F\u003e=25"
+    "healthScoreThresholds": "Weighted score: A<5, B<10, C<15, D<25, F>=25"
   },
   "note": "Metrics count unique duplicate patterns, not total occurrences. A clone group with 3 instances counts once for line calculations.",
   "sizeDistribution": {
@@ -37,10 +40,12 @@
     "low": 1
   },
   "actionability": {
-    "actionable": 1
+    "actionable": 1,
+    "nonActionable": 0
   },
   "testVsProduction": {
-    "production": 1
+    "production": 1,
+    "test": 0
   },
   "topClones": [
     {

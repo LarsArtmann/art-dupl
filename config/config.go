@@ -50,7 +50,7 @@ type Config struct {
 	FilesFromStdin bool `json:"filesFromStdin,omitempty"`
 
 	// OutputFormat sets the output format with type safety
-	OutputFormat OutputFormat `json:"outputFormat,omitempty"`
+	OutputFormat OutputFormat `json:"outputFormat,omitzero"`
 
 	// Verbose enables verbose output
 	Verbose bool `json:"verbose,omitempty"`
@@ -68,7 +68,7 @@ type Config struct {
 	OutputFile string `json:"outputFile,omitempty"`
 
 	// SortBy specifies sorting criteria for clone groups
-	SortBy SortCriteria `json:"sortBy,omitempty"`
+	SortBy SortCriteria `json:"sortBy,omitzero"`
 
 	// DetectionMethods specifies which detection methods to use
 	DetectionMethods DetectionMethods `json:"detectionMethods,omitempty"`
@@ -77,7 +77,7 @@ type Config struct {
 	Profile bool `json:"profile,omitempty"`
 
 	// Timeout specifies maximum execution time (0 = no timeout)
-	Timeout time.Duration `json:"timeout,omitempty"`
+	Timeout time.Duration `json:"timeout,omitempty,format:nano"`
 
 	// IncludeSQLC includes sqlc.dev generated files in analysis (default: false, filtered)
 	IncludeSQLC bool `json:"includeSQLC,omitempty"`
@@ -102,7 +102,7 @@ type Config struct {
 
 	// Only restricts analysis to a specific file type (FileTypeGo or FileTypeTempl).
 	// FileTypeAll (empty string) means analyze all file types.
-	Only FileType `json:"only,omitempty"`
+	Only FileType `json:"only,omitzero"`
 
 	// IncludePatterns specifies file patterns to always include (takes precedence over filter)
 	IncludePatterns []string `json:"includePatterns,omitempty"`
@@ -128,7 +128,7 @@ type Config struct {
 	// - "semantic" (default): alpha-normalized identifiers — detects Type 2 renamed clones.
 	// - "exact": verbatim name hashing — Type 1 copy-paste only.
 	// - "structural": AST shape only, ignores names entirely.
-	DetectionMode DetectionMode `json:"detectionMode,omitempty"`
+	DetectionMode DetectionMode `json:"detectionMode,omitzero"`
 
 	// Workers specifies the number of concurrent workers for file parsing.
 	// 0 or negative means use runtime.GOMAXPROCS(0).
@@ -137,7 +137,7 @@ type Config struct {
 
 	// DiffMode enables diff visualization for HTML output.
 	// When enabled, duplicate occurrences are shown with visual diff highlighting.
-	DiffMode DiffMode `json:"diffMode,omitempty"`
+	DiffMode DiffMode `json:"diffMode,omitzero"`
 
 	// RichText enables enhanced text output with classification badges,
 	// priority indicators, and actionable suggestions.
@@ -164,10 +164,10 @@ type Config struct {
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
 // With statement-level tokenization, each Go statement produces one composite token.
-// A threshold of 1 means "report any duplicated statement." Users who want less
-// noise should increase to 3-5. Post-hoc filters (overlap elimination, test
-// suppression, actionability patterns) handle most noise automatically.
-const DefaultThreshold = 1
+// A threshold of 5 filters trivial patterns (single-call noise, error-check
+// boilerplate) while still catching meaningful duplication. Users who want more
+// sensitivity can lower to 3; users who want less noise can raise to 10+.
+const DefaultThreshold = 5
 
 // DefaultConfig returns a default configuration.
 func DefaultConfig() *Config {

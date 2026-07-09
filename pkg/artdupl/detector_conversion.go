@@ -83,7 +83,7 @@ func (d *detector) convertFragmentToClone(frag []*syntax.Node) *Clone {
 		}
 	}
 
-	clone := &Clone{ //nolint:exhaustruct // Fragment conditionally set below via IncludeFragments
+	clone := &Clone{
 		CloneRef: domain.CloneRef{
 			Filename:  firstNode.Filename,
 			LineStart: startLine,

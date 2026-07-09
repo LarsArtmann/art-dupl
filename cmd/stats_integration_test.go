@@ -134,7 +134,7 @@ func TestStatsCommandIntegration(t *testing.T) {
 		},
 		{
 			name: "stats on printer directory",
-			args: []string{binaryName, statsSubCommand, "./printer"},
+			args: []string{binaryName, statsSubCommand, "-t", "1", "./printer"},
 			expectedInOutput: []string{
 				statsHeaderText,
 				"Files Scanned:",
@@ -222,7 +222,7 @@ func TestStatsCommandErrorCases(t *testing.T) {
 }
 
 func TestStatsOutputFormat(t *testing.T) {
-	output, err := executeTestCommand(t, []string{binaryName, statsSubCommand, "./printer"})
+	output, err := executeTestCommand(t, []string{binaryName, statsSubCommand, "-t", "1", "./printer"})
 	if err != nil {
 		t.Fatalf("Stats command failed: %v", err)
 	}

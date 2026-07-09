@@ -28,7 +28,7 @@ func TestDefaultConfig(t *testing.T) {
 
 	cfg := DefaultConfig()
 
-	testutil.AssertConfigField(t, "Threshold", cfg.Threshold, 1)
+	testutil.AssertConfigField(t, "Threshold", cfg.Threshold, 5)
 	testutil.AssertConfigField(t, "IncludeVendor", cfg.IncludeVendor, false)
 	testutil.AssertConfigField(t, "OutputFormat", cfg.OutputFormat, "text")
 

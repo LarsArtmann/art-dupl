@@ -57,6 +57,8 @@ const (
 	PatternInterfaceImpl    PatternLabel = "interface-implementation"
 	PatternDescribeTable    PatternLabel = "describe-table"
 	PatternBuilderCallback  PatternLabel = "builder-callback"
+	PatternAssignErrorCheck PatternLabel = "assign-error-check"
+	PatternSingleCallExpr   PatternLabel = "single-call-expression"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -85,6 +87,14 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 
 	if isPureErrorPropagation(nodeSeqs) {
 		return PatternErrorPropagation, domain.NonActionable
+	}
+
+	if isAssignWithErrorCheck(nodeSeqs) {
+		return PatternAssignErrorCheck, domain.NonActionable
+	}
+
+	if isSingleCallExpression(nodeSeqs) {
+		return PatternSingleCallExpr, domain.NonActionable
 	}
 
 	if isErrorWrappingReturn(nodeSeqs) {

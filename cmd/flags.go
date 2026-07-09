@@ -13,7 +13,7 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("vendor", false, "include vendor directory in analysis")
 	cmd.Flags().CountP("verbose", "v", "enable verbose logging (repeat for more verbosity)")
 	cmd.Flags().
-		IntP("threshold", "t", config.DefaultThreshold, "minimum number of duplicated statements to report as clone (default: 1)")
+		IntP("threshold", "t", config.DefaultThreshold, "minimum number of duplicated statements to report as clone (default: 5)")
 	cmd.Flags().BoolP("files", "f", false, "read file names from stdin, one per line")
 	cmd.Flags().
 		StringP("detection-methods", "m", "art-dupl", "detection methods (comma-separated): art-dupl, hash (default: art-dupl)")
