@@ -84,6 +84,12 @@ func containsTRunCall(node *domain.CloneNode) bool {
 	return slices.ContainsFunc(node.Children, containsTRunCall)
 }
 
+// isTestFile reports whether a filename follows Go's test file naming
+// convention (suffixed with _test.go).
+func isTestFile(filename string) bool {
+	return strings.HasSuffix(filename, "_test.go")
+}
+
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.
 func allFromTestFile(seq []*domain.CloneNode) bool {
 	for _, n := range seq {
