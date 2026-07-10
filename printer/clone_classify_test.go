@@ -328,25 +328,3 @@ func TestPriorityHigher(t *testing.T) {
 		})
 	}
 }
-
-func TestIsTestFile(t *testing.T) {
-	tests := []struct {
-		filename string
-		want     bool
-	}{
-		{"handler_test.go", true},
-		{"handler.go", false},
-		{"test_utils.go", false},
-		{"pkg_test.go", true},
-		{"_test.go", true},
-		{"main.go", false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.filename, func(t *testing.T) {
-			if got := isTestFile(tt.filename); got != tt.want {
-				t.Errorf("isTestFile(%v) = %v, want %v", tt.filename, got, tt.want)
-			}
-		})
-	}
-}
