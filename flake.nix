@@ -30,7 +30,7 @@
     let
       inherit (nixpkgs) lib;
 
-      version = "0.2.0";
+      version = self.rev or self.dirtyRev or "dev";
 
       gogenfilterGoMod = builtins.readFile "${gogenfilter}/go.mod";
       gogenfilterGoSum = builtins.readFile "${gogenfilter}/go.sum";
@@ -106,7 +106,12 @@
             homepage = "https://github.com/LarsArtmann/art-dupl";
             license = licenses.mit;
             mainProgram = "art-dupl";
-            maintainers = [ lib.maintainers.larsartmann ];
+            maintainers = [
+              {
+                name = "Lars Artmann";
+                github = "LarsArtmann";
+              }
+            ];
             platforms = platforms.all;
           };
         };
