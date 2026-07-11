@@ -185,65 +185,80 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	}
 }
 
+// patternLabelConfig defines how applyPatternLabel adjusts a clone's
+// classification when a non-actionable pattern is detected.
+type patternLabelConfig struct {
+	category    domain.CloneCategory
+	setCategory bool
+	suggestion  string
+	priority    domain.ClonePriority
+}
+
+var patternLabelConfigs = map[PatternLabel]patternLabelConfig{
+	PatternTestData: {
+		category:    domain.CategoryTestFixture,
+		setCategory: true,
+		suggestion:  suggestTestDataPair,
+		priority:    domain.PriorityLow,
+	},
+	PatternTableDrivenTest: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  suggestTableDrivenTest,
+		priority:    domain.PriorityLow,
+	},
+	PatternTestScaffolding: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  suggestTestScaffolding,
+		priority:    domain.PriorityLow,
+	},
+	PatternDataDominated:    {suggestion: suggestDataDominated, priority: domain.PriorityLow},
+	PatternSignatureOnly:    {suggestion: suggestSignatureOnly, priority: domain.PriorityLow},
+	PatternRAIIDefer:        {suggestion: suggestRAIIDefer, priority: domain.PriorityLow},
+	PatternErrorPropagation: {suggestion: suggestErrorPropagation, priority: domain.PriorityLow},
+	PatternErrorWrapping: {
+		suggestion: "error-wrapping idiom (if err != nil { return fmt.Errorf(...) })",
+		priority:   domain.PriorityLow,
+	},
+	PatternAssertionChain: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  "test assertion chain (Expect/Assert/Require/Should/Must)",
+		priority:    domain.PriorityLow,
+	},
+	PatternCobraBoilerplate: {suggestion: "cobra.Command/fang.Command boilerplate", priority: domain.PriorityLow},
+	PatternInterfaceImpl:    {suggestion: suggestInterfaceImpl, priority: domain.PriorityLow},
+	PatternDescribeTable: {
+		category:    domain.CategoryTestBoilerplate,
+		setCategory: true,
+		suggestion:  suggestDescribeTable,
+		priority:    domain.PriorityLow,
+	},
+	PatternBuilderCallback: {suggestion: suggestBuilderCallback, priority: domain.PriorityLow},
+	PatternAssignErrorCheck: {
+		suggestion: "assign + error-check boilerplate (err := f(); if err != nil { return })",
+		priority:   domain.PriorityLow,
+	},
+	PatternSingleCallExpr: {
+		suggestion: "single function call with different arguments",
+		priority:   domain.PriorityLow,
+	},
+}
+
 // applyPatternLabel adjusts clone classification based on the AST-detected
 // non-actionable pattern. This upgrades the category and suggestion to
 // reflect the specific reason the clone is non-actionable, rather than
 // relying solely on the first node's type.
 func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domain.CloneClassification {
-	switch label {
-	case PatternTestData:
-		cls.Category = domain.CategoryTestFixture
-		cls.Suggestion = suggestTestDataPair
-		cls.Priority = domain.PriorityLow
-	case PatternTableDrivenTest:
-		cls.Category = domain.CategoryTestBoilerplate
-		cls.Suggestion = suggestTableDrivenTest
-		cls.Priority = domain.PriorityLow
-	case PatternTestScaffolding:
-		cls.Category = domain.CategoryTestBoilerplate
-		cls.Suggestion = suggestTestScaffolding
-		cls.Priority = domain.PriorityLow
-	case PatternDataDominated:
-		cls.Suggestion = suggestDataDominated
-		cls.Priority = domain.PriorityLow
-	case PatternSignatureOnly:
-		cls.Suggestion = suggestSignatureOnly
-		cls.Priority = domain.PriorityLow
-	case PatternRAIIDefer:
-		cls.Suggestion = suggestRAIIDefer
-		cls.Priority = domain.PriorityLow
-	case PatternErrorPropagation:
-		cls.Suggestion = suggestErrorPropagation
-		cls.Priority = domain.PriorityLow
-	case PatternErrorWrapping:
-		cls.Suggestion = "error-wrapping idiom (if err != nil { return fmt.Errorf(...) })"
-		cls.Priority = domain.PriorityLow
-	case PatternAssertionChain:
-		cls.Category = domain.CategoryTestBoilerplate
-		cls.Suggestion = "test assertion chain (Expect/Assert/Require/Should/Must)"
-		cls.Priority = domain.PriorityLow
-	case PatternCobraBoilerplate:
-		cls.Suggestion = "cobra.Command/fang.Command boilerplate"
-		cls.Priority = domain.PriorityLow
-	case PatternInterfaceImpl:
-		cls.Suggestion = suggestInterfaceImpl
-		cls.Priority = domain.PriorityLow
-	case PatternDescribeTable:
-		cls.Category = domain.CategoryTestBoilerplate
-		cls.Suggestion = suggestDescribeTable
-		cls.Priority = domain.PriorityLow
-	case PatternBuilderCallback:
-		cls.Suggestion = suggestBuilderCallback
-		cls.Priority = domain.PriorityLow
-	case PatternAssignErrorCheck:
-		cls.Suggestion = "assign + error-check boilerplate (err := f(); if err != nil { return })"
-		cls.Priority = domain.PriorityLow
-	case PatternSingleCallExpr:
-		cls.Suggestion = "single function call with different arguments"
-		cls.Priority = domain.PriorityLow
-	case PatternNone:
-		// No pattern detected — keep original classification
+	cfg, ok := patternLabelConfigs[label]
+	if !ok {
+		return cls
 	}
-
+	if cfg.setCategory {
+		cls.Category = cfg.category
+	}
+	cls.Suggestion = cfg.suggestion
+	cls.Priority = cfg.priority
 	return cls
 }

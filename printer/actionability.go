@@ -73,64 +73,31 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 		return PatternNone, domain.Actionable
 	}
 
-	if isSignatureOnlyMatch(nodeSeqs) {
-		return PatternSignatureOnly, domain.NonActionable
+	nonActionablePatterns := []struct {
+		check   func([][]*domain.CloneNode) bool
+		pattern PatternLabel
+	}{
+		{isSignatureOnlyMatch, PatternSignatureOnly},
+		{isInterfaceImplementation, PatternInterfaceImpl},
+		{isPureDeferPattern, PatternRAIIDefer},
+		{isPureErrorPropagation, PatternErrorPropagation},
+		{isAssignWithErrorCheck, PatternAssignErrorCheck},
+		{isSingleCallExpression, PatternSingleCallExpr},
+		{isErrorWrappingReturn, PatternErrorWrapping},
+		{isAssertionChain, PatternAssertionChain},
+		{isCobraCommandBoilerplate, PatternCobraBoilerplate},
+		{isTestDataFilePair, PatternTestData},
+		{isTableDrivenTestBody, PatternTableDrivenTest},
+		{isTestScaffolding, PatternTestScaffolding},
+		{isDataDominated, PatternDataDominated},
+		{isDescribeTablePattern, PatternDescribeTable},
+		{isBuilderCallbackPattern, PatternBuilderCallback},
 	}
 
-	if isInterfaceImplementation(nodeSeqs) {
-		return PatternInterfaceImpl, domain.NonActionable
-	}
-
-	if isPureDeferPattern(nodeSeqs) {
-		return PatternRAIIDefer, domain.NonActionable
-	}
-
-	if isPureErrorPropagation(nodeSeqs) {
-		return PatternErrorPropagation, domain.NonActionable
-	}
-
-	if isAssignWithErrorCheck(nodeSeqs) {
-		return PatternAssignErrorCheck, domain.NonActionable
-	}
-
-	if isSingleCallExpression(nodeSeqs) {
-		return PatternSingleCallExpr, domain.NonActionable
-	}
-
-	if isErrorWrappingReturn(nodeSeqs) {
-		return PatternErrorWrapping, domain.NonActionable
-	}
-
-	if isAssertionChain(nodeSeqs) {
-		return PatternAssertionChain, domain.NonActionable
-	}
-
-	if isCobraCommandBoilerplate(nodeSeqs) {
-		return PatternCobraBoilerplate, domain.NonActionable
-	}
-
-	if isTestDataFilePair(nodeSeqs) {
-		return PatternTestData, domain.NonActionable
-	}
-
-	if isTableDrivenTestBody(nodeSeqs) {
-		return PatternTableDrivenTest, domain.NonActionable
-	}
-
-	if isTestScaffolding(nodeSeqs) {
-		return PatternTestScaffolding, domain.NonActionable
-	}
-
-	if isDataDominated(nodeSeqs) {
-		return PatternDataDominated, domain.NonActionable
-	}
-
-	if isDescribeTablePattern(nodeSeqs) {
-		return PatternDescribeTable, domain.NonActionable
-	}
-
-	if isBuilderCallbackPattern(nodeSeqs) {
-		return PatternBuilderCallback, domain.NonActionable
+	for _, p := range nonActionablePatterns {
+		if p.check(nodeSeqs) {
+			return p.pattern, domain.NonActionable
+		}
 	}
 
 	return PatternNone, domain.Actionable

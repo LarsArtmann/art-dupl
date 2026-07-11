@@ -38,7 +38,6 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
@@ -46,7 +45,6 @@ linters:
     - funlen
     - ginkgolinter
     - gocheckcompilerdirectives
-    - gochecknoglobals
     - gochecknoinits
     - gochecksumtype
     - gocognit
@@ -92,7 +90,6 @@ linters:
     - predeclared
     - protogetter
     - reassign
-    - recvcheck
     - revive
     - rowserrcheck
     - sloglint
@@ -140,9 +137,6 @@ linters:
             - golang.org/x/sync
     dupl:
       threshold: 100
-    exhaustruct:
-      exclude:
-        - os/exec.Cmd
     funlen:
       lines: 80
       statements: 50
@@ -160,7 +154,9 @@ linters:
     gocyclo:
       min-complexity: 15
     gomoddirectives:
-      allow_replacements: true
+      replace-local: true
+      replace-allow-list:
+        - github.com/LarsArtmann/gogenfilter/v3
     ireturn:
       allow:
         - anon
@@ -221,8 +217,6 @@ linters:
           - forbidigo
           - nestif
           - wrapcheck
-          - exhaustruct
-          - gochecknoglobals
           - unparam
           - unused
       - path: bdd/
@@ -247,7 +241,6 @@ linters:
           - revive
           - varnamelen
           - mnd
-          - exhaustruct
           - depguard
       - path: internal/testutil/
         linters:
