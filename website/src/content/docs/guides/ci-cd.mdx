@@ -1,0 +1,119 @@
+---
+title: CI/CD Integration
+description: Baseline gating, GitHub Actions, pre-commit hooks, and SARIF upload for continuous clone detection.
+---
+
+## Baseline + Check Workflow (Recommended)
+
+The baseline workflow lets you record accepted clones and gate on new ones:
+
+```bash
+# Step 1: Record current clones (commit the baseline file)
+art-dupl baseline . -t 5
+
+# Step 2: CI gate — exits 1 only if NEW clones are found
+art-dupl check . -t 5
+```
+
+The baseline file (`.art-dupl-baseline.json`) contains accepted clone signatures. New clones not in the baseline cause `check` to exit with code 1.
+
+## GitHub Actions
+
+```yaml
+name: Code Duplication Check
+on: [push, pull_request]
+
+jobs:
+  clone-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Install art-dupl
+        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
+
+      - name: Check for new clones
+        run: art-dupl check . -t 5
+
+      - name: Generate report on failure
+        if: failure()
+        run: |
+          art-dupl --html -t 5 > clone-report.html
+          echo "::warning::New clones detected. See clone-report.html"
+
+      - name: Upload SARIF
+        if: always()
+        run: |
+          art-dupl --sarif -t 5 > results.sarif
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+```
+
+A ready-made template is included at [`templates/github-actions-duplicate-check.yml`](https://github.com/LarsArtmann/art-dupl/blob/fork/templates/github-actions-duplicate-check.yml).
+
+## SARIF Upload
+
+Upload clone results to the GitHub Security tab:
+
+```yaml
+- name: Generate SARIF
+  run: art-dupl --sarif -t 10 > results.sarif
+
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: results.sarif
+```
+
+## Pre-commit Hook
+
+### Using pre-commit framework
+
+A template is included at [`templates/pre-commit-hook.yaml`](https://github.com/LarsArtmann/art-dupl/blob/fork/templates/pre-commit-hook.yaml):
+
+```yaml
+repos:
+  - repo: https://github.com/LarsArtmann/art-dupl
+    rev: latest
+    hooks:
+      - id: art-dupl
+        args: ["-t", "10"]
+```
+
+### Using Git hooks directly
+
+```bash
+#!/bin/sh
+# .git/hooks/pre-commit
+
+echo "Running clone detection..."
+art-dupl --json -t 10 > /tmp/art-dupl-check.json
+CLONES=$(jq '.summary.total_clones' /tmp/art-dupl-check.json)
+
+if [ "$CLONES" -gt 0 ]; then
+  echo "Found $CLONES clone groups. Run 'art-dupl --html -t 10 > report.html' for details."
+  echo "Run 'art-dupl baseline . -t 10' to accept current state."
+  exit 1
+fi
+```
+
+## JSON Pipeline Integration
+
+```bash
+# Extract clone count
+TOTAL=$(art-dupl --json -t 15 | jq '.summary.total_clones')
+
+# Fail if too many clones
+if [ "$TOTAL" -gt 50 ]; then
+  echo "Too many clones: $TOTAL"
+  exit 1
+fi
+
+# List affected files
+art-dupl --json -t 15 | jq -r '.clone_groups[].clones[].filename' | sort -u
+```

@@ -1,0 +1,91 @@
+---
+title: CLI Flags
+description: Complete reference for all art-dupl command-line flags.
+---
+
+## Core Flags
+
+| Flag                  | Short | Default    | Description                                        |
+| --------------------- | ----- | ---------- | -------------------------------------------------- |
+| `--threshold`         | `-t`  | `5`        | Minimum duplicated statements to report            |
+| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                                |
+| `--sort`              | `-s`  | `size`     | Sort: `size`, `occurrence`, `hash`, `total-tokens` |
+| `--semantic`          |       | `true`     | Match by structure AND identifier names (default)  |
+| `--exact`             |       |            | Verbatim name matching (Type 1 only)               |
+| `--structural`        |       |            | AST shape only (loosest)                           |
+| `--config`            | `-c`  |            | Path to JSON config file                           |
+| `--verbose`           | `-v`  |            | Verbose logging (repeat for more)                  |
+| `--version`           |       |            | Show version                                       |
+
+## Output Flags
+
+| Flag            | Short | Description                                             |
+| --------------- | ----- | ------------------------------------------------------- |
+| `--html`        |       | HTML report with syntax highlighting                    |
+| `--json`        | `-j`  | Structured JSON with statistics                         |
+| `--simple-json` |       | Lightweight JSON with impact scores                     |
+| `--sarif`       |       | SARIF 2.1.0 format                                      |
+| `--plumbing`    | `-p`  | Machine-readable `file:startLine-endLine`               |
+| `--rich-text`   |       | Enhanced text with priority badges                      |
+| `--all`         | `-a`  | Generate all formats                                    |
+| `--output-dir`  | `-o`  | Output directory (with `--all`)                         |
+| `--diff`        |       | Diff visualization: `side-by-side`, `inline`, or `true` |
+
+## Filtering Flags
+
+| Flag                     | Default | Description                                                                                |
+| ------------------------ | ------- | ------------------------------------------------------------------------------------------ |
+| `--vendor`               | `false` | Include vendor directory                                                                   |
+| `--include-node-modules` | `false` | Include node_modules (hash detection)                                                      |
+| `--include-generated`    | `[]`    | Generated categories: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` |
+| `--include-pattern`      | `[]`    | Glob patterns to include                                                                   |
+| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                                                   |
+| `--only`                 | `""`    | Restrict to `go` or `templ`                                                                |
+| `--files`                | `-f`    | Read file paths from stdin                                                                 |
+| `--test-threshold`       | `0`     | Separate threshold for test files                                                          |
+
+## Performance Flags
+
+| Flag                  | Default | Description                                  |
+| --------------------- | ------- | -------------------------------------------- |
+| `--workers`           | `0`     | Concurrent workers (`0` = auto-detect)       |
+| `--incremental`       | `false` | Enable AST caching                           |
+| `--cache-dir`         | `""`    | Cache directory (default: `.cache/art-dupl`) |
+| `--clear-cache`       | `false` | Clear cache before running                   |
+| `--max-cache-entries` | `0`     | Max cache entries (`0` = unlimited)          |
+| `--timeout`           | `30m`   | Execution timeout                            |
+
+## Stats Subcommand
+
+```bash
+art-dupl stats [flags] [paths...]
+```
+
+| Flag            | Default | Description                          |
+| --------------- | ------- | ------------------------------------ |
+| `--format`      | `text`  | Output format: `text`, `json`, `csv` |
+| `--output-file` |         | Write stats output to file           |
+
+## Baseline Subcommand
+
+```bash
+art-dupl baseline [flags] [paths...]
+```
+
+Records current clones to `.art-dupl-baseline.json`.
+
+## Check Subcommand
+
+```bash
+art-dupl check [flags] [paths...]
+```
+
+Reports only clones NOT in the baseline. Exits 1 if new clones found.
+
+## Other Commands
+
+```bash
+art-dupl completion [bash|zsh|fish|powershell]  # Shell completion
+art-dupl --version                                # Version info
+art-dupl --help                                   # Help
+```

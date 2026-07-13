@@ -1,0 +1,52 @@
+{
+  "name": "art-dupl-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website and documentation for art-dupl — professional code clone detection for Go",
+  "keywords": [
+    "art-dupl",
+    "astro",
+    "code-clones",
+    "code-duplication",
+    "go",
+    "golang",
+    "sarif",
+    "starlight",
+    "static-analysis",
+    "suffix-tree",
+    "templ"
+  ],
+  "homepage": "https://art-dupl.web.app",
+  "bugs": "https://github.com/LarsArtmann/art-dupl/issues",
+  "license": "MIT",
+  "author": "LarsArtmann <lars@larsartmann.com> (https://larsartmann.com/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LarsArtmann/art-dupl.git",
+    "directory": "website"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "clean": "rm -rf dist .astro node_modules/.cache",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/starlight": "^0.41.1",
+    "@tailwindcss/vite": "^4.3.1",
+    "astro": "^7.0.3",
+    "tailwindcss": "^4.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "html-validate": "^11.5.3",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.6"
+  }
+}

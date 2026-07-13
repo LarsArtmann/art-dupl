@@ -1,0 +1,25 @@
+---
+import { outputFormats } from '../data/sections';
+import SectionHeader from './SectionHeader.astro';
+---
+
+<SectionHeader eyebrow="Output" title="Seven formats. One tool." subtitle="From quick terminal review to GitHub Security tab integration." />
+
+<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+  {outputFormats.map((format) => (
+    <div class="p-5 rounded-xl border border-border bg-bg-card backdrop-blur-sm hover:border-border-hover transition-all duration-200 hover:-translate-y-0.5">
+      <div class="flex items-center gap-2 mb-2">
+        <code class="text-xs font-mono text-accent bg-accent-dim px-2 py-0.5 rounded border border-border-accent">{format.flag}</code>
+      </div>
+      <h3 class="font-semibold text-text-primary text-sm mb-1">{format.name}</h3>
+      <p class="text-xs text-text-muted leading-relaxed">{format.desc}</p>
+    </div>
+  ))}
+  <div class="p-5 rounded-xl border border-dashed border-border bg-bg-card/30 flex items-center justify-center text-center">
+    <div>
+      <code class="text-xs font-mono text-accent bg-accent-dim px-2 py-0.5 rounded border border-border-accent mb-2 inline-block">--all</code>
+      <h3 class="font-semibold text-text-primary text-sm mb-1">All Formats</h3>
+      <p class="text-xs text-text-muted leading-relaxed">Generate everything to a directory at once</p>
+    </div>
+  </div>
+</div>

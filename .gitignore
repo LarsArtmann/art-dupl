@@ -33,7 +33,7 @@ reports/
 result
 result-*
 # Sensitive files
-!site/*.html
+
 *.test
 /test-art-dupl
 # Test coverage

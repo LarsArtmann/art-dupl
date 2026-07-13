@@ -1,0 +1,6 @@
+dist/
+.astro/
+node_modules/
+node_modules/.cache/
+firebase-debug.log*
+firebaserc-debug.log*

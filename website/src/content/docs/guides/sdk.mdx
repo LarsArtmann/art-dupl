@@ -1,0 +1,139 @@
+---
+title: Programmatic SDK
+description: Use art-dupl as a Go library with the Detector interface, streaming results, and progress callbacks.
+---
+
+## Overview
+
+The `pkg/artdupl` package provides a programmatic API with:
+
+- `Detector` interface with `FindClones()`, `FindClonesStreamResult()`, and `Close()`
+- `Options` builder for full configuration
+- Progress callbacks for UI integration
+- 20+ typed sentinel errors
+- Injectable file reader for testing/custom sources
+
+The SDK has **zero imports** of `config/` or `errors/` — it uses fully independent types aliased from `domain`.
+
+## Installation
+
+```bash
+go get github.com/LarsArtmann/art-dupl/pkg/artdupl
+```
+
+## Basic Usage
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+
+    "github.com/LarsArtmann/art-dupl/pkg/artdupl"
+)
+
+func main() {
+    detector, err := artdupl.New(artdupl.Options{
+        Threshold: 10,
+        Paths:     []string{"./src"},
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer detector.Close()
+
+    result, err := detector.FindClones(context.Background())
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("Found %d clone groups\n", len(result.CloneGroups))
+    for _, group := range result.CloneGroups {
+        fmt.Printf("  %d tokens, %d occurrences\n", group.Tokens, len(group.Clones))
+    }
+}
+```
+
+## Streaming Results
+
+```go
+detector, _ := artdupl.New(opts)
+defer detector.Close()
+
+ch, err := detector.FindClonesStreamResult(ctx)
+if err != nil {
+    log.Fatal(err)
+}
+
+for result := range ch {
+    if result.Err != nil {
+        log.Print(result.Err)
+        continue
+    }
+    fmt.Printf("Clone: %d tokens\n", result.CloneGroup.Tokens)
+}
+```
+
+## Progress Callbacks
+
+```go
+detector, _ := artdupl.New(artdupl.Options{
+    Threshold: 10,
+    Paths:     []string{"./src"},
+    OnProgress: func(stage string, completed, total int, currentFile string) {
+        pct := float64(completed) / float64(total) * 100
+        fmt.Printf("\r%s: %d/%d (%.0f%%) %s", stage, completed, total, pct, currentFile)
+    },
+})
+```
+
+## Custom File Reader
+
+```go
+detector, _ := artdupl.New(artdupl.Options{
+    Threshold:  10,
+    FileReader: func(path string) ([]byte, error) {
+        // Custom file reading logic (e.g., from a VFS, database, etc.)
+        return myCustomRead(path)
+    },
+})
+```
+
+## Validation
+
+```go
+if err := artdupl.ValidateOptions(opts); err != nil {
+    // Handle validation errors
+}
+
+// Check individual clone validity
+for _, group := range result.CloneGroups {
+    for _, clone := range group.Clones {
+        if !clone.IsValid() {
+            // Invalid clone
+        }
+    }
+}
+```
+
+## Error Handling
+
+The SDK provides typed sentinel errors:
+
+```go
+result, err := detector.FindClones(ctx)
+switch {
+case errors.Is(err, artdupl.ErrInvalidThreshold):
+    // Threshold out of range
+case errors.Is(err, artdupl.ErrThresholdTooLarge):
+    // Threshold exceeds file token count
+case err != nil:
+    // Other errors
+}
+```
+
+## API Reference
+
+Full API documentation: [pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl](https://pkg.go.dev/github.com/LarsArtmann/art-dupl/pkg/artdupl)

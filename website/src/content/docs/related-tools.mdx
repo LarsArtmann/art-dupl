@@ -1,0 +1,47 @@
+---
+title: Related Tools
+description: Other code duplication and static analysis tools for Go and beyond.
+---
+
+## Go-Specific
+
+| Tool                                              | Approach        | Notes                                                 |
+| ------------------------------------------------- | --------------- | ----------------------------------------------------- |
+| [dupl](https://github.com/mibk/dupl)              | Suffix tree     | The original tool art-dupl is forked from             |
+| [golangci/dupl](https://github.com/golangci/dupl) | Suffix tree     | golangci-lint's fork of dupl                          |
+| [go-tools](https://github.com/dominikh/go-tools)  | Static analysis | Comprehensive Go static analysis (not clone-specific) |
+
+## Multi-Language
+
+| Tool                                                             | Approach    | Notes                                  |
+| ---------------------------------------------------------------- | ----------- | -------------------------------------- |
+| [jscpd](https://github.com/kucherenko/jscpd)                     | Token-based | Multi-language, not AST-aware          |
+| [PMD CPD](https://docs.pmdrules.org/pmd_userdocs_copypaste.html) | Token-based | Java-focused, supports other languages |
+| [Sourcerer](https://sourcerer.io)                                | AST-based   | Commercial, multi-language             |
+
+## How art-dupl Differs
+
+art-dupl combines:
+
+- **AST-level analysis** (not text/token-based) — understands Go semantics
+- **Suffix tree algorithm** — O(n) duplicate search with O(1) transitions
+- **Three matching modes** — semantic, exact, structural
+- **Generated-code filtering** — auto-detects 6 generator categories
+- **CI baseline gating** — record accepted state, gate on new clones
+- **Templ support** — full `.templ` AST analysis
+- **7 output formats** — including SARIF for GitHub Security
+- **Programmatic SDK** — embed in your own tools
+
+## Integration with golangci-lint
+
+art-dupl is not currently integrated with golangci-lint. To use alongside it:
+
+```bash
+# Run golangci-lint for linting
+golangci-lint run
+
+# Run art-dupl for clone detection separately
+art-dupl -t 15
+```
+
+Or use the pre-commit hook to run art-dupl automatically.

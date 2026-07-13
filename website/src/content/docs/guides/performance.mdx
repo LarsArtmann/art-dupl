@@ -1,0 +1,77 @@
+---
+title: Performance
+description: Parallel parsing, incremental analysis, caching, and execution timeout for large codebases.
+---
+
+## Parallel Parsing
+
+```bash
+art-dupl --workers 8     # 8 concurrent workers
+art-dupl --workers 0     # Auto-detect CPU cores (default)
+```
+
+The worker pool parallelizes AST parsing across files. For large codebases, explicit worker counts can improve throughput.
+
+## Incremental Analysis
+
+```bash
+art-dupl --incremental               # Enable AST caching
+art-dupl --incremental --cache-dir ~/.cache/art-dupl  # Custom cache location
+art-dupl --clear-cache               # Clear cache before running
+```
+
+Incremental analysis caches parsed ASTs keyed by SHA-256 content hash. Re-runs only re-parse files that changed.
+
+### Cache Management
+
+```bash
+art-dupl --max-cache-entries 5000    # Limit cache size (0 = unlimited)
+```
+
+The cache uses LRU-style eviction (`Prune`) to stay within the entry limit.
+
+### Parallel Incremental
+
+When `--workers > 1` and `--incremental` is enabled, art-dupl uses:
+
+- Worker pool for parallel file parsing
+- `singleflight.Group` to deduplicate concurrent parses of byte-identical files (common in vendored/generated code)
+- Deep-cloned cache entries to prevent data races
+
+## Execution Timeout
+
+```bash
+art-dupl --timeout 10m     # Timeout after 10 minutes
+```
+
+Default timeout is 30 minutes. All pipeline goroutines respect context cancellation.
+
+## Profiling
+
+```bash
+art-dupl --profile cpu.prof    # Hidden flag — CPU profile
+```
+
+Produces pprof-compatible CPU and memory profiles. Useful for diagnosing performance issues on large codebases.
+
+## Benchmarks
+
+The suffix tree implementation has been benchmarked with property-based testing and race detection. Key optimizations:
+
+- O(1) map-based transition lookup (from original O(n) linear search)
+- `sync.Pool` for memory reuse in hash computation
+- XXH3 streaming hash (~20x faster than SHA-256)
+- Statement-level tokenization (fingerprints entire statement subtrees)
+
+## Scaling to Large Codebases
+
+For codebases with 10,000+ files:
+
+```bash
+art-dupl --workers 0 --incremental -t 15 --only go --exclude-pattern "*_test.go"
+```
+
+- Auto-detect workers for optimal parallelism
+- Enable incremental caching for faster re-runs
+- Raise threshold to reduce noise
+- Exclude test files to focus on production code

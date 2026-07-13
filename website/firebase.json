@@ -1,17 +1,8 @@
 {
   "hosting": {
-    "public": "site",
+    "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "headers": [
-      {
-        "source": "**/*.html",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600, s-maxage=3600"
-          }
-        ]
-      },
       {
         "source": "**/*.css",
         "headers": [

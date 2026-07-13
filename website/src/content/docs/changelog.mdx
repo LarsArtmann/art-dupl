@@ -1,0 +1,38 @@
+---
+title: Changelog
+description: Release history and notable changes for art-dupl.
+---
+
+## Recent Highlights
+
+### Semantic Detection (Type 2 Clones)
+
+Alpha-normalization now detects renamed-variable clones by default. Local identifiers (params, receiver, body variables, closures) are canonicalized to `v0/v1/...` before hashing, so functions with identical structure but different variable names are detected.
+
+### Three Matching Modes
+
+- **Semantic** (default) — alpha-normalized, finds Type 2 renamed clones
+- **Exact** — verbatim name matching, Type 1 copy-paste only
+- **Structural** — AST shape only, loosest matching
+
+A single `Config.DetectionMode` enum replaces former boolean flags.
+
+### Non-Destructive Serialization
+
+`syntax.Serialize` now shallow-copies each node before writing `Type`/`Owns`, so the original tree is never mutated and serialization is idempotent. The Type-1-vs-Type-2 distinction is preserved for statement-rooted fragments.
+
+### Incremental Cache Safety
+
+Deep-cloning before cache storage prevents data races. `singleflight.Group` deduplicates concurrent parses of byte-identical files. Parallel incremental parsing with worker pool is race-free.
+
+### Statement-Level Tokenization
+
+`serial()` fingerprints entire statement subtrees into single composite tokens. This means the threshold counts duplicated **statements**, not arbitrary AST nodes. ValueSpec and TypeSpec declarations are each fingerprinted as single tokens.
+
+## Full Changelog
+
+See the [GitHub Releases](https://github.com/LarsArtmann/art-dupl/releases) page for the complete version history.
+
+## Fork History
+
+art-dupl is a fork of [mibk/dupl](https://github.com/mibk/dupl) (via [golangci/dupl](https://github.com/golangci/dupl)) with major enhancements including multi-method detection, semantic matching, 7 output formats, templ support, generated-code filtering, incremental analysis, CI baseline gating, and a programmatic SDK.

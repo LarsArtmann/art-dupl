@@ -1,0 +1,89 @@
+---
+title: Quick Start
+description: Get started with art-dupl in under a minute.
+---
+
+## Basic Scan
+
+```bash
+art-dupl                    # Scan current directory (threshold: 5)
+art-dupl -t 15              # Larger clones only
+art-dupl ./src ./lib        # Specific directories
+art-dupl -v                 # Verbose output
+```
+
+## Output Formats
+
+```bash
+art-dupl --html > report.html          # HTML report with syntax highlighting
+art-dupl --html --diff side-by-side    # Side-by-side diff visualization
+art-dupl --json -t 10                  # JSON with statistics
+art-dupl --sarif                       # SARIF for GitHub Security
+art-dupl --plumbing                    # Machine-readable file:startLine-endLine
+art-dupl --all --output-dir ./reports  # All formats to a directory
+```
+
+## Detection Modes
+
+```bash
+art-dupl --semantic .      # Default: finds renamed-variable clones (Type 2)
+art-dupl --exact .         # Verbatim name matching (copy-paste only)
+art-dupl --structural .    # AST shape only (loosest matching)
+```
+
+## Detection Methods
+
+```bash
+art-dupl -m art-dupl                # Suffix tree (default)
+art-dupl -m hash                    # Hash-based (faster)
+art-dupl -m "hash,art-dupl"         # Both, deduplicated
+```
+
+## Sorting
+
+```bash
+art-dupl --sort size           # Largest clones first (default)
+art-dupl --sort occurrence     # Most widespread first
+art-dupl --sort total-tokens   # Highest total token count
+```
+
+## Project Statistics
+
+```bash
+art-dupl stats                  # Colored summary with health grade
+art-dupl stats --format json    # Machine-readable
+art-dupl stats --format csv     # Spreadsheet-compatible
+```
+
+## Filtering
+
+```bash
+art-dupl --only go              # .go files only
+art-dupl --only templ           # .templ files only
+art-dupl --exclude-pattern "*_test.go"  # Exclude tests
+art-dupl --include-generated sqlc       # Include sqlc-generated files
+```
+
+## Reading Files from Stdin
+
+```bash
+find . -name '*_test.go' | art-dupl --files
+```
+
+## Configuration File
+
+Create `dupl.json`:
+
+```json
+{
+  "threshold": 10,
+  "outputFormat": "json",
+  "paths": ["./src", "./internal"]
+}
+```
+
+```bash
+art-dupl -c dupl.json
+```
+
+CLI flags override config file values. Config file overrides defaults.

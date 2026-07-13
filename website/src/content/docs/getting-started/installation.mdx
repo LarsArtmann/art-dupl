@@ -1,0 +1,54 @@
+---
+title: Installation
+description: Install art-dupl for code clone detection in your Go projects.
+---
+
+## Requirements
+
+- Go 1.26 or later
+- A Go project with `.go` and/or `.templ` files
+
+## Install
+
+```bash
+go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
+```
+
+This installs the `art-dupl` binary to your `$GOPATH/bin`.
+
+## Build from Source
+
+```bash
+git clone https://github.com/LarsArtmann/art-dupl.git
+cd art-dupl
+go build -o art-dupl ./cmd/art-dupl
+```
+
+Or with Nix:
+
+```bash
+git clone https://github.com/LarsArtmann/art-dupl.git
+cd art-dupl
+nix build
+nix run .#art-dupl -- ./src
+```
+
+## Verify Installation
+
+```bash
+art-dupl --version
+```
+
+## First Scan
+
+```bash
+art-dupl
+```
+
+This scans the current directory with the default threshold of 5 duplicated statements. Generated code (sqlc, templ, protobuf, mockgen, stringer) is filtered automatically.
+
+## Next Steps
+
+- Follow the [Quick Start](/getting-started/quick-start/) for common workflows
+- Learn about [Detection Methods](/guides/detection-methods/) for semantic vs. structural matching
+- Set up [CI/CD Integration](/guides/ci-cd/) for baseline gating

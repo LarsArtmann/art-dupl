@@ -1,0 +1,121 @@
+---
+title: Output Formats
+description: Seven output formats for every workflow — terminal, CI/CD, security scanning, and scripting.
+---
+
+## Format Overview
+
+| Format      | Flag                | Use case                                              |
+| ----------- | ------------------- | ----------------------------------------------------- |
+| Text        | _(default)_         | Quick terminal review                                 |
+| Rich text   | `--rich-text`       | Priority badges and refactoring suggestions           |
+| HTML        | `--html`            | Detailed report with syntax highlighting and diffs    |
+| JSON        | `--json` / `-j`     | CI/CD integration with metadata and summary           |
+| Simple JSON | `--simple-json`     | Lightweight JSON with impact scores                   |
+| SARIF       | `--sarif`           | GitHub Advanced Security / CodeQL integration         |
+| Plumbing    | `--plumbing` / `-p` | Machine-readable `file:startLine-endLine` for scripts |
+
+## Text (Default)
+
+```bash
+art-dupl
+```
+
+Human-readable clone listing with file paths, line numbers, and diff hints.
+
+## Rich Text
+
+```bash
+art-dupl --rich-text
+```
+
+Enhanced text output with:
+
+- Priority badges (critical, high, medium, low)
+- Clone type labels (Type 1 / 2 / 3)
+- Actionability verdicts
+- Refactoring suggestions
+
+## HTML
+
+```bash
+art-dupl --html > report.html
+art-dupl --html --diff side-by-side > report.html
+art-dupl --html --diff inline > report.html
+```
+
+Dark-themed HTML report with:
+
+- Syntax highlighting
+- Side-by-side or inline diff visualization (LCS algorithm)
+- VSCode links for direct navigation
+- Clone group summaries
+
+## JSON
+
+```bash
+art-dupl --json -t 10
+```
+
+Structured JSON with version, timestamp, `clone_groups` array, and summary statistics. Includes:
+
+- Clone type classification
+- Extractability scores (`lines_saved`, `extractable`)
+- Actionability verdicts
+- Token counts and severity
+
+## Simple JSON
+
+```bash
+art-dupl --simple-json
+```
+
+Lightweight JSON format with `score` (impact) and `instances` with `token_count`. Easier to consume for simple integrations.
+
+## SARIF
+
+```bash
+art-dupl --sarif > results.sarif
+```
+
+SARIF 2.1.0 format for GitHub Advanced Security. Upload via:
+
+```yaml
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: results.sarif
+```
+
+Clones appear as results in the GitHub Security tab.
+
+## Plumbing
+
+```bash
+art-dupl --plumbing
+```
+
+Machine-readable format: `file:startLine-endLine`. Ideal for scripts, editor integrations, and piping to other tools.
+
+```bash
+# Count duplicate files
+art-dupl --plumbing | cut -d: -f1 | sort -u | wc -l
+```
+
+## All Formats
+
+```bash
+art-dupl --all --output-dir ./reports
+```
+
+Generate all output formats to a directory at once.
+
+## Sorting
+
+Control sort order with `-s` / `--sort`:
+
+| Option           | Description                        |
+| ---------------- | ---------------------------------- |
+| `size` (default) | Largest clone groups first         |
+| `occurrence`     | Most widespread (most files) first |
+| `hash`           | Alphabetical by hash value         |
+| `total-tokens`   | Highest total token count first    |

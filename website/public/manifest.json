@@ -1,0 +1,16 @@
+{
+  "name": "art-dupl",
+  "short_name": "art-dupl",
+  "description": "Professional code clone detection for Go",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#e8a020",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

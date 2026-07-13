@@ -1,0 +1,13 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "void-style": ["error", { "style": "slash" }],
+    "attr-quotes": "error",
+    "no-trailing-whitespace": "error",
+    "require-sri": "off",
+    "wcag/h30": "off",
+    "wcag/h63": "off",
+    "prefer-tbody": "off",
+    "no-inline-style": "off"
+  }
+}

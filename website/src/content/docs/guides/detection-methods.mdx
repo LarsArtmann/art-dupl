@@ -1,0 +1,87 @@
+---
+title: Detection Methods
+description: Suffix tree, hash-based, and multi-method detection with three matching modes.
+---
+
+## Detection Methods
+
+Controlled with `-m` / `--detection-methods`:
+
+| Method      | Flag                    | Description                                                      |
+| ----------- | ----------------------- | ---------------------------------------------------------------- |
+| Suffix tree | `-m art-dupl` (default) | Ukkonen's algorithm on serialized ASTs — finds structural clones |
+| Hash-based  | `-m hash`               | Rolling hash on file content — faster, different tradeoffs       |
+| Combined    | `-m "hash,art-dupl"`    | Runs both in parallel, deduplicates results                      |
+
+### Suffix Tree (Default)
+
+The suffix tree method is the core of art-dupl. It:
+
+1. Parses source files into ASTs
+2. Serializes ASTs into unified token sequences
+3. Builds a compressed suffix tree (Ukkonen's algorithm with O(1) map-based transitions)
+4. Finds repeated subsequences above the threshold
+
+This finds exact structural clones that regex-based tools miss.
+
+### Hash-Based
+
+The hash method uses XXH3 streaming hash on file content. It's faster but operates at the content level, not the AST level. Useful for quick scans of large codebases.
+
+### Combined
+
+Run both methods simultaneously via goroutines. Results are deduplicated. Best coverage at the cost of more computation.
+
+## Matching Modes
+
+Three mutually exclusive modes control how identifiers are matched:
+
+### Semantic (Default)
+
+```bash
+art-dupl --semantic .
+```
+
+Alpha-normalizes local identifiers (params, receiver, body variables, closures) to canonical names (`v0`, `v1`, ...) before hashing. This detects **Type 2 renamed clones** — functions with identical structure but different variable names.
+
+- `func (s *Server) handle()` matches `func (c *Client) process()`
+- `a.String()` does NOT match `b.Error()` (different method names)
+- Selectors and field names are NOT normalized (API surface must match)
+
+### Exact
+
+```bash
+art-dupl --exact .
+```
+
+Matches identifier names verbatim. Only finds **Type 1 exact clones** — copy-paste duplications where names are identical.
+
+### Structural
+
+```bash
+art-dupl --structural .
+```
+
+Ignores all identifier names. Matches by AST shape only. The loosest mode — `a.String()` matches `b.Error()`. Useful for raw structural pattern analysis but produces more noise.
+
+## Clone Type Classification
+
+art-dupl labels each clone group by type:
+
+| Type   | Description                                   | Detected by             |
+| ------ | --------------------------------------------- | ----------------------- |
+| Type 1 | Exact — identical names                       | Exact mode              |
+| Type 2 | Renamed — alpha-normalized match              | Semantic mode (default) |
+| Type 3 | Near-miss — structural with minor differences | Structural mode         |
+
+Classification appears in JSON, SARIF, and `--rich-text` output.
+
+## Semantic Encoding
+
+Internally, each AST node is encoded as:
+
+```
+[24-bit identifier/operator hash][8-bit base AST node type]
+```
+
+Both Exact and Semantic modes hash identifiers. Structural mode ignores them. When comparing node types programmatically, always use `golang.DecodeBaseType(node.Type)` — never compare raw `node.Type` values.

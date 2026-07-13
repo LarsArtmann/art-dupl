@@ -1,0 +1,74 @@
+---
+title: Configuration
+description: JSON configuration files, merging rules, and all configurable options.
+---
+
+## Configuration File
+
+Create `dupl.json` in your project root:
+
+```json
+{
+  "threshold": 10,
+  "outputFormat": "json",
+  "paths": ["./src", "./internal"],
+  "detectionMode": "semantic",
+  "sortCriteria": "size",
+  "includeVendor": false
+}
+```
+
+```bash
+art-dupl -c dupl.json
+# or
+art-dupl --config dupl.json
+```
+
+## Precedence
+
+1. **CLI flags** (highest priority)
+2. **Config file**
+3. **Built-in defaults** (lowest)
+
+## Key Options
+
+| Option             | Type     | Default      | Description                                                    |
+| ------------------ | -------- | ------------ | -------------------------------------------------------------- |
+| `threshold`        | int      | `5`          | Minimum duplicated statements to report                        |
+| `testThreshold`    | int      | `0`          | Separate threshold for test files (`0` = `max(30, threshold)`) |
+| `outputFormat`     | string   | `"text"`     | Output format                                                  |
+| `detectionMode`    | string   | `"semantic"` | Matching mode: `semantic`, `exact`, `structural`               |
+| `detectionMethods` | string   | `"art-dupl"` | Detection method(s)                                            |
+| `sortCriteria`     | string   | `"size"`     | Sort order                                                     |
+| `paths`            | []string | `["."]`      | Paths to scan                                                  |
+| `includeVendor`    | bool     | `false`      | Include vendor directory                                       |
+| `workers`          | int      | `0`          | Parallel workers (`0` = auto)                                  |
+| `incremental`      | bool     | `false`      | Enable AST caching                                             |
+| `cacheDir`         | string   | `""`         | Cache directory (default: `.cache/art-dupl`)                   |
+| `maxCacheEntries`  | int      | `0`          | Max cache entries (`0` = unlimited)                            |
+| `timeout`          | duration | `30m`        | Execution timeout                                              |
+
+## Reflection-Based Merging
+
+Configuration merging is reflection-based — adding new `Config` fields requires no merge code changes. All fields with matching JSON tags are automatically merged from the config file.
+
+## Output Directory
+
+```json
+{
+  "outputDir": "./reports",
+  "allFormats": true
+}
+```
+
+With `allFormats: true`, all output formats are generated to the specified directory.
+
+## Diff Visualization
+
+```json
+{
+  "diffMode": "side-by-side"
+}
+```
+
+Options: `"side-by-side"`, `"inline"`, `"true"` (defaults to side-by-side).

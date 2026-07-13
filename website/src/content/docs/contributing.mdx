@@ -1,0 +1,65 @@
+---
+title: Contributing
+description: How to contribute to art-dupl — development setup, testing, and code style.
+---
+
+## Development Setup
+
+```bash
+git clone https://github.com/LarsArtmann/art-dupl.git
+cd art-dupl
+go build ./...
+go test ./...
+```
+
+Or with Nix for a fully reproducible environment:
+
+```bash
+nix develop    # Enter dev shell
+nix build      # Build
+nix flake check  # Full CI check
+```
+
+## Testing
+
+```bash
+go test ./...                # All tests
+go test -race ./...          # Race detector
+go test -count=1 ./suffixtree/...  # Specific package
+golangci-lint run --timeout 5m ./...  # Lint
+```
+
+Tests use standard `testing` + Ginkgo/Gomega BDD in `bdd/`.
+
+## Code Style
+
+- **Idiomatic Go only** — standard `(T, error)` returns, no Result/Option types
+- Strong types over runtime checks
+- Small, focused functions
+- Early returns over nested conditionals
+- Descriptive names over comments
+
+## Architecture
+
+See the [README](https://github.com/LarsArtmann/art-dupl#architecture) for the package overview. Key conventions:
+
+- Domain types in `domain/`, aliased by `config/`, `pkg/artdupl/`, `detection/`
+- Errors use typed hierarchy from `errors/` package
+- Context propagation in all pipeline goroutines
+- Enum pattern via `pkg/enum` shared helpers
+
+## Pull Requests
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure `go test ./...` and `golangci-lint run` pass
+5. Submit a pull request
+
+## Reporting Issues
+
+Use [GitHub Issues](https://github.com/LarsArtmann/art-dupl/issues) for bug reports and feature requests. When reporting false positives, include:
+
+- The detected clone group (use `--json` output)
+- Whether it's generated code
+- The threshold used

@@ -1,0 +1,14 @@
+---
+export interface Props {
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { width = 28, height = 28, class: className } = Astro.props;
+---
+
+<svg class={className} width={width} height={height} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="art-dupl logo">
+  <rect width="28" height="28" rx="6" class="fill-[var(--color-accent)]" />
+  <text x="14" y="19" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="11" class="fill-[var(--color-bg-primary)]">AD</text>
+</svg>
