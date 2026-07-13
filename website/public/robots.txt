@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://art-dupl.web.app/sitemap-index.xml
+Sitemap: https://art-dupl.lars.software/sitemap-index.xml

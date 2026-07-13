@@ -10,10 +10,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`--include-generated` flag**: Unified generated-code inclusion (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`). Replaces the separate `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` flags.
+- **Three detection modes**: `--semantic` (default), `--exact`, `--structural` replace the former `Semantic`/`Exact` bool flags via a single `Config.DetectionMode` enum (ADR-0007).
+- **Baseline CI gating**: `art-dupl baseline` records accepted clones; `art-dupl check` reports only new clones and exits 1 for CI gates.
+- **Parallel incremental parsing**: `ParseIncrementalParallel` worker pool with `singleflight.Group` deduplication for byte-identical files.
+- **Cache eviction**: `--max-cache-entries` flag with LRU-style `Prune` eviction.
+- **HTML collapse controls**: "Collapse All" / "Expand All" toolbar buttons on clone groups.
+- **SARIF rule metadata**: `precision`, `problem.severity`, and `tags` properties for GitHub Code Scanning / SonarQube.
+- **Two new actionability patterns**: assign+error-check (`err := f(); if err != nil { return }`) and single-CallExpr (`errors.New("foo")`) now classified as NonActionable.
+- **Performance regression tests**: `TestPerfRegressionSerialize` + `TestPerfRegressionHashSeq` with threshold gating in `flake.nix` `checks.bench`.
+- **JSON config migration shim**: `Config.UnmarshalJSON` converts legacy `"semantic": false` → `"detectionMode": "exact"`.
+- **`CloneRef` value object**: Shared `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) embedded across `ProcessedClone` and `pkg/artdupl.Clone` to eliminate field-name drift.
+- **Generic sort comparator factory**: `sortGroupsByCriteria[T]` unifies 3 parallel 4-criteria sort implementations.
+- **ADRs 0005-0008**: Split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout.
+- **`encoding/json/v2` migration**: All JSON marshaling uses `encoding/json/v2` (requires `GOEXPERIMENT=jsonv2`, set in `flake.nix`).
+
+### Changed
+
+- **Default threshold raised from 1 to 5**: Filters trivial single-statement duplicates while catching meaningful cloning. Users can lower to 3 for more sensitivity or raise to 10+ for noise reduction.
+- **Cache keys migrated from SHA-1 to SHA-256**: `CacheVersion` bumped to 2. Old caches are automatically invalidated.
+- **ValueSpec/TypeSpec declarations fingerprinted as single composite tokens**: Each `var`/`const`/`type` declaration is now a single token, preventing partial expression prefix matching in declaration-only files.
+- **Non-destructive AST serialization**: `serial()` shallow-copies each node before writing Type/Owns; the original tree is never mutated (ADR-0006).
+- **`omitzero` instead of `omitempty`** for custom `MarshalJSON` enum types (json/v2 compatibility).
 
 ### Removed
 
 - **Idiom category deleted**: The `domain.CategoryIdiom` classification was fundamentally broken — the two-layer classification architecture (per-clone `ClassifyClone` then group-level `EvaluateActionabilityWithLabel`) created a contradictory state where clones were labeled "idiom — typically not actionable" but had `Actionability=Actionable` (overwritten by the group evaluator). The 14 AST-based actionability patterns already handle genuinely non-actionable clones with precision. Small clones are now classified by their actual AST type (function, struct, unknown, etc.) and the actionability patterns determine whether they're worth fixing.
+- **`--since` flag removed**: Was a dead stub that was accepted and stored but never read by any analysis code. Git-diff file selection is not implemented; only content-hash caching via `--incremental` works.
 
 ### Deprecated
 
@@ -120,4 +142,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-_Last updated: 2026-06-12_
+_Last updated: 2026-07-13_

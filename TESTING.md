@@ -69,8 +69,8 @@ func BenchmarkFunction(b *testing.B) {
 ```
 
 ```bash
-just bench               # Run all benchmarks
-just bench-allocs        # With allocation reporting
+go test -bench=. ./...          # Run all benchmarks
+go test -bench=. -benchmem ./... # With allocation reporting
 ```
 
 ## Fuzzing
@@ -89,8 +89,8 @@ func FuzzSerialize(f *testing.F) {
 ```
 
 ```bash
-just test-fuzz           # Run fuzz tests
-just test-fuzz-long      # Longer duration
+go test -fuzz=FuzzParseBytes -fuzztime=10s ./syntax/templ/  # Run fuzz tests
+go test -fuzz=FuzzParseBytes -fuzztime=60s ./syntax/templ/  # Longer duration
 ```
 
 ## Coverage
@@ -98,17 +98,18 @@ just test-fuzz-long      # Longer duration
 Target: 80% minimum.
 
 ```bash
-just test                # Tests with coverage
-just coverage            # HTML coverage report → coverage.html
-just check-coverage      # Fail if below threshold
+go test -coverprofile=coverage.out ./...   # Tests with coverage
+go tool cover -html=coverage.out           # HTML coverage report → browser
+go tool cover -func=coverage.out           # Summary in terminal
 ```
 
 ## Running Tests
 
 ```bash
-just test                # All tests with coverage
-just test-race           # With race detector
-just test-unit           # Unit tests only (excludes BDD)
-just test-integration    # Integration tests only
-just ci                  # Format + lint + test
+go test ./...                               # All tests
+go test -race ./...                         # With race detector
+go test $(go list ./... | grep -v /bdd)     # Unit tests only (excludes BDD)
+go test ./cmd/... ./bdd/...                 # Integration tests only
+golangci-lint run --timeout 5m ./...        # Lint
+nix flake check                             # Full CI (format + lint + test)
 ```

@@ -21,11 +21,16 @@ Enduring context that's hard to discover from code. For everything else, see the
 
 ```bash
 templ generate     # run templ generate (required before build if .templ files changed)
-go build ./...     # build all packages
+go build ./...     # build all packages (requires GOEXPERIMENT=jsonv2 — see below)
 go test ./...      # run all tests
 golangci-lint run --timeout 5m ./...  # lint
 nix flake check    # reproducible CI (includes templ generate in preBuild)
 ```
+
+> **`GOEXPERIMENT=jsonv2` is required.** The project migrated to `encoding/json/v2`.
+> The `flake.nix` devShell sets this automatically. For non-Nix workflows, export it
+> manually: `export GOEXPERIMENT=jsonv2`. Convention: use `omitzero` (not `omitempty`)
+> on custom `MarshalJSON` types, and `format:nano` for `time.Duration` fields.
 
 ## Architecture
 

@@ -4,7 +4,7 @@
 [![CI](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e8a020.svg)](LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/LarsArtmann/art-dupl.svg)](https://pkg.go.dev/github.com/LarsArtmann/art-dupl)
-[![Website](https://img.shields.io/badge/website-art--dupl.web.app-e8a020.svg)](https://art-dupl.web.app)
+[![Website](https://img.shields.io/badge/website-art--dupl.lars.software-e8a020.svg)](https://art-dupl.lars.software)
 
 **Professional code clone detection for Go.** Analyzes source code at the AST level to find structural and semantic clones — ignoring literal values so it focuses on patterns, not string contents.
 
@@ -26,28 +26,28 @@ art-dupl --json -t 10             # JSON for CI/CD
 art-dupl stats                    # Project health statistics
 ```
 
-Full documentation: **[art-dupl.web.app](https://art-dupl.web.app)**
+Full documentation: **[art-dupl.lars.software](https://art-dupl.lars.software)**
 
 ---
 
 ## Why art-dupl?
 
-| Capability               | Original dupl    | art-dupl                                                                     |
-| ------------------------ | ---------------- | ---------------------------------------------------------------------------- |
-| Detection algorithm      | Suffix tree only | Suffix tree + hash-based + multi-method                                      |
-| Semantic matching        | No               | Yes — alpha-normalization finds renamed clones (Type 2)                      |
-| Matching modes           | 1                | 3 — semantic (default), exact, structural                                    |
-| Output formats           | Text, HTML       | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                    |
-| Stats subcommand         | No               | Yes — health grades (A–F), CSV, JSON, recommendations                        |
-| Templ support            | No               | Full `.templ` AST analysis                                                   |
-| Generated code filtering | No               | Auto-detects sqlc, protobuf, mockgen, stringer, templ, generic               |
-| Incremental analysis     | No               | AST caching with SHA-256 content hashing                                     |
-| CI baseline gating       | No               | `baseline` + `check` subcommands                                             |
-| Diff visualization       | No               | Side-by-side and inline diffs in HTML                                        |
-| Clone classification     | No               | Type 1 / 2 / 3 labels + extractability scores                                |
-| Actionability filtering  | No               | Suppresses 12+ boilerplate patterns (test scaffolding, error wrapping, etc.) |
-| Parallel parsing         | No               | Worker pool with auto-detect                                                 |
-| Programmatic SDK         | No               | `pkg/artdupl` — Detector interface with streaming                            |
+| Capability               | Original dupl    | art-dupl                                                                    |
+| ------------------------ | ---------------- | --------------------------------------------------------------------------- |
+| Detection algorithm      | Suffix tree only | Suffix tree + hash-based + multi-method                                     |
+| Semantic matching        | No               | Yes — alpha-normalization finds renamed clones (Type 2)                     |
+| Matching modes           | 1                | 3 — semantic (default), exact, structural                                   |
+| Output formats           | Text, HTML       | Text, Rich-text, HTML, JSON, Simple-JSON, SARIF, plumbing                   |
+| Stats subcommand         | No               | Yes — health grades (A–F), CSV, JSON, recommendations                       |
+| Templ support            | No               | Full `.templ` AST analysis                                                  |
+| Generated code filtering | No               | Auto-detects sqlc, protobuf, mockgen, stringer, templ, generic              |
+| Incremental analysis     | No               | AST caching with SHA-256 content hashing                                    |
+| CI baseline gating       | No               | `baseline` + `check` subcommands                                            |
+| Diff visualization       | No               | Side-by-side and inline diffs in HTML                                       |
+| Clone classification     | No               | Type 1 / 2 / 3 labels + extractability scores                               |
+| Actionability filtering  | No               | Suppresses 15 boilerplate patterns (test scaffolding, error wrapping, etc.) |
+| Parallel parsing         | No               | Worker pool with auto-detect                                                |
+| Programmatic SDK         | No               | `pkg/artdupl` — Detector interface with streaming                           |
 
 ---
 

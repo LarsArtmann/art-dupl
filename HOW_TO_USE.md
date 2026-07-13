@@ -21,7 +21,7 @@ go install github.com/LarsArtmann/art-dupl@latest
 
 # Or build from source
 git clone https://github.com/LarsArtmann/art-dupl.git && cd art-dupl
-just build
+go build ./cmd/art-dupl
 ```
 
 ### First Analysis
@@ -379,7 +379,7 @@ git add .art-dupl-baseline.json && git commit -m "chore: update clone baseline"
 
 The baseline file uses content-hash matching, so renamed files or moved code that keeps the same structure still matches. Use `--json` with `check` for structured output, and `--baseline-path` to customize the file location.
 
-GitHub Actions and pre-commit hook templates are included in `.github/workflows/art-dupl-check.yml` and `.pre-commit-hooks.yaml`.
+GitHub Actions and pre-commit hook templates are included in `templates/github-actions-duplicate-check.yml` and `templates/pre-commit-hook.yaml`.
 
 ## Troubleshooting
 

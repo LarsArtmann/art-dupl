@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-07-01**
+**Last Updated: 2026-07-13**
 
 Actionable items planned for the next 2-4 weeks.
 
@@ -100,7 +100,7 @@ Actionable items planned for the next 2-4 weeks.
 ### Type Safety (From 2026-06-23 Data Model Review)
 
 - [ ] Introduce branded `NodeType int32` in syntax/ to prevent cross-package int32 collision between golang and templ node type constants — **HIGH RISK**: touches gob serialization cache format and semantic encoding layout (`[24-bit hash][8-bit base type]`). Needs feature flag + cache-version migration.
-- [ ] Introduce shared `CloneRef` value object in domain to unify the 7 parallel Clone types (ProcessedClone, SDK Clone, JSONClone, etc.) via embedding without collapsing DTO boundary
+- [x] ~~Introduce shared `CloneRef` value object in domain to unify the 7 parallel Clone types (ProcessedClone, SDK Clone, JSONClone, etc.) via embedding without collapsing DTO boundary~~ — Done: T23 completed (2026-07-01). `domain.CloneRef` embedded in `ProcessedClone` and `pkg/artdupl.Clone`.
 - [x] ~~Relocate `SortCriteria` and `OutputFormat` enums from config to domain~~ — Done: both live in `domain/` (`domain/sort_criteria.go`, `domain/output_format.go`) with `config/` aliases (2026-07-01)
 - [x] ~~Unify `FileReaderFunc` type~~ — Done: canonical type in domain, aliased in printer and SDK (2026-06-23)
 - [x] ~~Add `Config.Validate()` method~~ — Done: single entry point delegating to existing ValidateConfig (2026-06-23)
@@ -136,7 +136,7 @@ Actionable items planned for the next 2-4 weeks.
 ### Architecturally Constrained
 
 - [ ] Hide `syntax/golang` behind facade — **BLOCKED** by import cycle (syntax/golang imports syntax for Node type)
-- [ ] Thread `context.Context` through `cmd/run_crawl.go` file feeders — stdin scanner and `filepath.Walk` are inherently blocking; needs full chain refactor (`filesFeedWithOptions` → `buildParams` → all callers)
+- [ ] Thread `context.Context` through `cmd/run_crawl.go` stdin scanner — stdin `bufio.Scanner` is inherently blocking; can't interrupt without closing stdin. (`filepath.Walk` ctx cancellation was completed in T41.)
 
 ---
 

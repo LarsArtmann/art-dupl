@@ -12,18 +12,18 @@
 ## IDE & Tooling
 
 - [ ] Implement watch mode for continuous monitoring and incremental detection
-- [ ] Create GitHub Actions workflow templates
-- [ ] Create pre-commit hooks
+- [x] ~~Create GitHub Actions workflow templates~~ — DONE: `templates/github-actions-duplicate-check.yml`
+- [x] ~~Create pre-commit hooks~~ — DONE: `templates/pre-commit-hook.yaml`
 
 ## Quality & Documentation
 
-- [x] ~~Create Architecture Decision Records (ADRs) for major design decisions~~ — DONE: 4 ADRs in `docs/adr/` (map-based transitions, semantic default, reflection config merge, actionability patterns)
+- [x] ~~Create Architecture Decision Records (ADRs) for major design decisions~~ — DONE: 8 ADRs in `docs/adr/` (map-based transitions, semantic default, reflection config merge, actionability patterns, split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout)
 - [ ] Continue adding ADRs for future major design decisions
 
 ## Performance
 
-- [ ] Create performance baseline benchmarks
-- [ ] Create regression test suite for performance
+- [x] ~~Create performance baseline benchmarks~~ — DONE: `syntax/syntax_bench_test.go`
+- [x] ~~Create regression test suite for performance~~ — DONE: `syntax/perf_regression_test.go` + `checks.bench` in `flake.nix`
 
 ---
 

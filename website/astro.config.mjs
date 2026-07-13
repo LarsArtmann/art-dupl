@@ -5,7 +5,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://art-dupl.web.app",
+  site: "https://art-dupl.lars.software",
 
   compressHTML: true,
 

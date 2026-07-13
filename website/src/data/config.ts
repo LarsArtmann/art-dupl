@@ -3,7 +3,7 @@ export const siteConfig = {
   title: "art-dupl — Professional Code Clone Detection for Go",
   description:
     "AST-based code duplication detection for Go projects. Suffix tree algorithms, semantic awareness, 7 output formats, templ support, and CI baseline gating.",
-  siteUrl: "https://art-dupl.web.app",
+  siteUrl: "https://art-dupl.lars.software",
   github: "https://github.com/LarsArtmann/art-dupl",
   author: {
     name: "LarsArtmann",

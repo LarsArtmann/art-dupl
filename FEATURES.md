@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-01
+> **Last Updated:** 2026-07-13
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -50,20 +50,20 @@
 
 ### Statistics Subcommand
 
-| Feature                     | Status           | Description                                                                                                                                                                                                    |
-| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                                                                                                                                                         |
-| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                                                                                                                                                                    |
-| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                                                                                                                                                             |
-| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                        |
-| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                            |
-| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                      |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 10 non-actionable patterns (signature-only, interface-impl, RAII defer, error-propagation, test-data, table-driven, test-scaffolding, data-dominated, describe-table, builder-callback) |
-| **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                        |
-| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`)                                                                                                             |
-| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                     |
-| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                     |
-| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                           |
+| Feature                     | Status           | Description                                                                                                                                                                                                                                                                                                         |
+| --------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                                                                                                                                                                                                                                                              |
+| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                                                                                                                                                                                                                                                                         |
+| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                                                                                                                                                                                                                                                                  |
+| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                             |
+| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                 |
+| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                           |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 15 non-actionable patterns (signature-only, interface-impl, RAII defer, error-propagation, test-data, table-driven, test-scaffolding, data-dominated, describe-table, builder-callback, assertion-chain, cobra-boilerplate, error-wrapping, assign+error-check, single-CallExpr, pure-defer) |
+| **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                                                                                                                             |
+| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`)                                                                                                                                                                                                                  |
+| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                          |
+| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                                                                                                                          |
+| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                                                                                                                                |
 
 ### Sorting Options
 
@@ -160,14 +160,14 @@
 
 ## 🔧 Configuration
 
-| Feature                      | Status           | Description                                             |
-| ---------------------------- | ---------------- | ------------------------------------------------------- |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | 35+ flags for full control                              |
-| **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct       |
-| **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults |
-| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum token sequence size (default: 15)    |
-| **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                  |
-| **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin            |
+| Feature                      | Status           | Description                                                |
+| ---------------------------- | ---------------- | ---------------------------------------------------------- |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 35+ flags for full control                                 |
+| **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct          |
+| **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults    |
+| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5) |
+| **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                     |
+| **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin               |
 
 ---
 
@@ -192,7 +192,7 @@
 | **BDD Tests**         | FULLY_FUNCTIONAL | Ginkgo/Gomega in `bdd/` directory, user-focused  |
 | **Integration Tests** | FULLY_FUNCTIONAL | CLI integration tests in `cmd/`                  |
 | **Golden File Tests** | FULLY_FUNCTIONAL | HTML output golden testing                       |
-| **Fuzz Tests**        | FULLY_FUNCTIONAL | Property-based testing in `fuzz/` directory      |
+| **Fuzz Tests**        | FULLY_FUNCTIONAL | Fuzz tests for templ parser and suffix tree      |
 | **Benchmarks**        | FULLY_FUNCTIONAL | `_bench_test.go` files with allocation reporting |
 | **Race Detection**    | FULLY_FUNCTIONAL | All tests pass with `-race` flag                 |
 
@@ -209,7 +209,7 @@
 | **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                               |
 | **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                         |
 | **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                  |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA1 keys                       |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing         |
 | **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels  |
 | **errors/**      | FULLY_FUNCTIONAL | 6 error types, typed wrapping, stack traces                 |
 | **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc     |
@@ -268,7 +268,6 @@ art-dupl --include-pattern "gen/*" --exclude-pattern "mock_*"
 ```bash
 art-dupl --workers 8           # 8 parallel workers
 art-dupl --incremental         # AST caching
-art-dupl --since HEAD~10       # Git-aware incremental
 art-dupl --cache-dir /tmp/cache
 art-dupl --clear-cache
 ```
