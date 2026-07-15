@@ -113,37 +113,54 @@ func newMetadata() Metadata {
 	}
 }
 
-// Get retrieves cached AST nodes for the given content hash.
-// Returns the nodes and true if found (cache hit), nil and false otherwise.
-func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
+// withCachePath runs fn while holding the read lock and passing it the
+// resolved cache file path for contentHash.
+func (fc *FileCache) withCachePath(contentHash string, fn func(cachePath string)) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
-	cachePath := fc.cachePath(contentHash)
+	fn(fc.cachePath(contentHash))
+}
 
-	// #nosec G304 -- Path constructed from controlled cache directory and content hash
-	data, err := os.ReadFile(cachePath)
-	if err != nil {
-		atomic.AddInt64(&fc.metadata.MissCount, 1)
+// Get retrieves cached AST nodes for the given content hash.
+// Returns the nodes and true if found (cache hit), nil and false otherwise.
+func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
+	var (
+		nodes []*syntax.Node
+		hit   bool
+	)
 
-		return nil, false
-	}
+	fc.withCachePath(contentHash, func(path string) {
+		// #nosec G304 -- Path constructed from controlled cache directory and content hash
+		data, err := os.ReadFile(path)
+		if err != nil {
+			atomic.AddInt64(&fc.metadata.MissCount, 1)
 
-	nodes, err := fc.deserialize(data)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "warning: removing stale cache entry %s: %v\n", cachePath, err)
-
-		removeErr := os.Remove(cachePath)
-		if removeErr != nil {
-			fmt.Fprintf(os.Stderr, "warning: failed to remove stale cache entry %s: %v\n", cachePath, removeErr)
+			return
 		}
 
-		atomic.AddInt64(&fc.metadata.MissCount, 1)
+		deserialized, derr := fc.deserialize(data)
+		if derr != nil {
+			fmt.Fprintf(os.Stderr, "warning: removing stale cache entry %s: %v\n", path, derr)
 
+			removeErr := os.Remove(path)
+			if removeErr != nil {
+				fmt.Fprintf(os.Stderr, "warning: failed to remove stale cache entry %s: %v\n", path, removeErr)
+			}
+
+			atomic.AddInt64(&fc.metadata.MissCount, 1)
+
+			return
+		}
+
+		nodes = deserialized
+		hit = true
+		atomic.AddInt64(&fc.metadata.HitCount, 1)
+	})
+
+	if !hit {
 		return nil, false
 	}
-
-	atomic.AddInt64(&fc.metadata.HitCount, 1)
 
 	return nodes, true
 }
@@ -189,13 +206,14 @@ func (fc *FileCache) Set(contentHash string, nodes []*syntax.Node) error {
 
 // Has checks if a cache entry exists for the given hash.
 func (fc *FileCache) Has(contentHash string) bool {
-	fc.mu.RLock()
-	defer fc.mu.RUnlock()
+	var exists bool
 
-	cachePath := fc.cachePath(contentHash)
-	_, err := os.Stat(cachePath)
+	fc.withCachePath(contentHash, func(path string) {
+		_, err := os.Stat(path)
+		exists = err == nil
+	})
 
-	return err == nil
+	return exists
 }
 
 // Remove deletes a cache entry.

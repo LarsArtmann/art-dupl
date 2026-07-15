@@ -44,25 +44,9 @@ func (p *htmlprinter) renderDiffLines(lines, oppositeLines []DiffLine, isBasePan
 	return renderDiffLinesTempl(lines, oppositeLines, isBasePanel).Render(context.Background(), p.w)
 }
 
+// countDiffStats counts added, removed, and modified lines in a DiffResult.
+// Alias for countDiffLineStats; preserves the templ-facing name used by
+// printer/report.templ.
 func countDiffStats(diff DiffResult) (int, int, int) {
-	var added, removed, modified int
-
-	for _, line := range diff.Compared {
-		switch line.Type {
-		case DiffLineAdded:
-			added++
-		case DiffLineModified:
-			modified++
-		case DiffLineEqual, DiffLineRemoved:
-			// Removed lines are recorded on the Base side (see LineDiff); counted below.
-		}
-	}
-
-	for _, line := range diff.Base {
-		if line.Type == DiffLineRemoved {
-			removed++
-		}
-	}
-
-	return added, removed, modified
+	return countDiffLineStats(diff)
 }

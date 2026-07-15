@@ -25,6 +25,19 @@ func NewFilterStats(reasons []gogenfilter.FilterReason) *FilterStats {
 	}
 }
 
+// withReadLock runs fn while holding s.mu and returns its result.
+// Returns zeroValue when s is nil, so callers can defer to that case.
+func (s *FilterStats) withReadLock(zeroValue int, fn func() int) int {
+	if s == nil {
+		return zeroValue
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return fn()
+}
+
 // Record records a filter result.
 func (s *FilterStats) Record(result gogenfilter.FilterResult) {
 	if s == nil {
@@ -42,26 +55,12 @@ func (s *FilterStats) Record(result gogenfilter.FilterResult) {
 
 // TotalFiltered returns the total number of filtered files.
 func (s *FilterStats) TotalFiltered() int {
-	if s == nil {
-		return 0
-	}
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	return s.total
+	return s.withReadLock(0, func() int { return s.total })
 }
 
 // FilteredBy returns the number of files filtered by the given reason.
 func (s *FilterStats) FilteredBy(reason string) int {
-	if s == nil {
-		return 0
-	}
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	return s.byReason[reason]
+	return s.withReadLock(0, func() int { return s.byReason[reason] })
 }
 
 // Breakdown returns a copy of the per-reason breakdown.

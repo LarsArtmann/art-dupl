@@ -63,9 +63,7 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 		return nil
 	}
 
-	o := t.createNodeFromRange(Element, el.Range)
-	t.addAttributesToNode(el.Attributes, o)
-
+	o := t.createNodeWithAttributes(Element, el.Range, el.Attributes)
 	t.addChildren(o, el.Children)
 
 	return o

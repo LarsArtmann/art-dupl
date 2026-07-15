@@ -99,7 +99,9 @@ templ cloneGroupDiffFull(data CloneGroupView, diffData DiffView) {
 templ cloneOccurrence(cl CloneOccurrenceView, groupNum int, index int) {
 	<div class="occurrence">
 		<div class="file-link">
-			<a href={ cl.VSCodeLink } title="Open in VSCode">{ cl.Filename }:{ strconv.Itoa(cl.LineStart) }</a>
+			<a href={ cl.VSCodeLink } title="Open in VSCode">
+				@fileLineText(cl.Filename, cl.LineStart)
+			</a>
 			<button class="copy-btn" onclick={ copyCodeScript("code-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index)) }>📋 Copy</button>
 		</div>
 		<pre><code id={ "code-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>{ cl.Fragment }</code></pre>
@@ -112,8 +114,47 @@ templ diffStatBadge(cssClass string, value int, label string) {
 	}
 }
 
+// diffStatAggregateItem renders a single stat badge for the aggregate-stats block.
+templ diffStatAggregateItem(stats DiffAggregateStats, t string) {
+	@diffStatBadge(t, diffStatValue(t, stats), " "+t)
+}
+
+// diffStatLegendItem renders a single stat label for the legend block.
+templ diffStatLegendItem(t string) {
+	@diffLegendItem(t, diffStatLabel(t))
+}
+
+// renderStatBlock wraps the for-each-diffStatTypes loop in a div with the
+// given CSS class. Centralizes the for-loop and wrapping div that were
+// previously duplicated across aggregate-stats and legend blocks.
+templ renderStatBlock(wrapperClass string, makeItem func(t string) templ.Component) {
+	<div class={ wrapperClass }>
+		for _, t := range diffStatTypes {
+			@makeItem(t)
+		}
+	</div>
+}
+
 templ fileAnchor(url templ.SafeURL, filename string, lineStart int) {
-	<a href={ url }>{ filename }:{ strconv.Itoa(lineStart) }</a>
+	<a href={ url }>
+		@fileLineText(filename, lineStart)
+	</a>
+}
+
+// fileLineText renders "filename:line" as plain text content.
+// Centralizes the { filename }:{ strconv.Itoa(line) } pattern shared by
+// fileAnchor and the diff selector's option dropdown.
+templ fileLineText(filename string, line int) {
+	{ filename }:{ strconv.Itoa(line) }
+}
+
+// fileInfoSpan renders a file-info wrapper around a fileAnchor.
+// Centralizes the <span class="file-info">@fileAnchor(...)</span> markup used
+// in both diff-base-header and diff-header contexts (CSS rules are identical).
+templ fileInfoSpan(filename string, lineStart int) {
+	<span class="file-info">
+		@fileAnchor(safeVSCodeURL(filename, lineStart), filename, lineStart)
+	</span>
 }
 
 templ diffLegendItem(cssClass string, label string) {
@@ -124,16 +165,10 @@ templ diffViewContent(data DiffView) {
 	<div class="diff-mode">
 		<div class="diff-base-header">
 			<span class="label">📋 BASE REFERENCE</span>
-			<div class="file-info">
-				@fileAnchor(safeVSCodeURL(data.Base.Filename, data.Base.LineStart), data.Base.Filename, data.Base.LineStart)
-			</div>
+			@fileInfoSpan(data.Base.Filename, data.Base.LineStart)
 		</div>
 		if data.AggregateStats.HasStats {
-			<div class="diff-aggregate-stats">
-				for _, t := range diffStatTypes {
-					@diffStatBadge(t, diffStatValue(t, data.AggregateStats), " "+t)
-				}
-			</div>
+			@renderStatBlock("diff-aggregate-stats", func(t string) templ.Component { return diffStatAggregateItem(data.AggregateStats, t) })
 		}
 		@diffViewToggle(data.GroupNum)
 		if len(data.Others) > 1 {
@@ -142,27 +177,14 @@ templ diffViewContent(data DiffView) {
 		for i, other := range data.Others {
 			@diffComparison(data.GroupNum, other, i, len(data.Others))
 		}
-		<div class="diff-legend">
-			for _, t := range diffStatTypes {
-				@diffLegendItem(t, diffStatLabel(t))
-			}
-		</div>
+		@renderStatBlock("diff-legend", func(t string) templ.Component { return diffStatLegendItem(t) })
 	</div>
 }
 
 templ diffComparison(groupNum int, other CloneDiff, index int, total int) {
-	{{
-		activeClass := "active"
-		if total > 1 && index > 0 {
-			activeClass = ""
-		}
-		otherVSCode := safeVSCodeURL(other.Filename, other.LineStart)
-	}}
-	<div class={ "diff-comparison " + activeClass } id={ "diff-compare-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>
+	<div class={ templ.KV("diff-comparison", true), templ.KV("active", total == 1 || index == 0) } id={ "diff-compare-" + strconv.Itoa(groupNum) + "-" + strconv.Itoa(index) }>
 		<div class="diff-header">
-			<span class="file-info">
-				@fileAnchor(otherVSCode, other.Filename, other.LineStart)
-			</span>
+			@fileInfoSpan(other.Filename, other.LineStart)
 			<span class="diff-stats">
 				{{ added, removed, modified := countDiffStats(other.Diff) }}
 				for _, t := range diffStatTypes {
@@ -204,7 +226,9 @@ templ diffSelectorTempl(data DiffView) {
 		<select id={ "diff-select-" + strconv.Itoa(data.GroupNum) } onchange={ showDiffScript("this.value", data.GroupNum) }>
 			<option value="" disabled selected>Compare with...</option>
 			for i, other := range data.Others {
-				<option value={ strconv.Itoa(i) }>{ other.Filename }:{ strconv.Itoa(other.LineStart) }</option>
+				<option value={ strconv.Itoa(i) }>
+					@fileLineText(other.Filename, other.LineStart)
+				</option>
 			}
 		</select>
 	</div>

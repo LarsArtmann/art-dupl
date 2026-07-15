@@ -13,16 +13,24 @@ func toFSPath(path string) string {
 	return strings.TrimPrefix(path, "/")
 }
 
-// AssertFileShouldNotBeFiltered asserts that a file should not be filtered.
-func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepath string) {
+// runFilter calls Filter on the given path and fails the test on error.
+// Returns whether the path should be filtered.
+func runFilter(t *testing.T, f *gogenfilter.Filter, path string) bool {
 	t.Helper()
 
-	filtered, err := fltr.Filter(toFSPath(filepath))
+	filtered, err := f.Filter(toFSPath(path))
 	if err != nil {
-		t.Fatalf("Filter(%q) error: %v", filepath, err)
+		t.Fatalf("Filter(%q) error: %v", path, err)
 	}
 
-	if filtered {
+	return filtered
+}
+
+// AssertFileShouldNotBeFiltered asserts that a file should not be filtered.
+func AssertFileShouldNotBeFiltered(t *testing.T, f *gogenfilter.Filter, filepath string) {
+	t.Helper()
+
+	if runFilter(t, f, filepath) {
 		t.Errorf("%s should not be filtered", filepath)
 	}
 }
@@ -31,22 +39,17 @@ func AssertFileShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filep
 func AssertFileShouldBeFiltered(t *testing.T, f *gogenfilter.Filter, path string) {
 	t.Helper()
 
-	isFiltered, ferr := f.Filter(toFSPath(path))
-	if ferr != nil {
-		t.Fatalf("Filter(%q) error: %v", path, ferr)
-	}
-
-	if !isFiltered {
+	if !runFilter(t, f, path) {
 		t.Errorf("%s should be filtered", path)
 	}
 }
 
 // AssertFilesShouldNotBeFiltered asserts that multiple files should not be filtered.
-func AssertFilesShouldNotBeFiltered(t *testing.T, fltr *gogenfilter.Filter, filepaths []string) {
+func AssertFilesShouldNotBeFiltered(t *testing.T, f *gogenfilter.Filter, filepaths []string) {
 	t.Helper()
 
 	for _, filepath := range filepaths {
-		AssertFileShouldNotBeFiltered(t, fltr, filepath)
+		AssertFileShouldNotBeFiltered(t, f, filepath)
 	}
 }
 
@@ -62,7 +65,7 @@ func AssertFilesShouldBeFiltered(t *testing.T, f *gogenfilter.Filter, paths []st
 // AssertFilesFiltered asserts that files should (or should not) be filtered based on shouldFilter.
 func AssertFilesFiltered(
 	t *testing.T,
-	fltr *gogenfilter.Filter,
+	f *gogenfilter.Filter,
 	filepaths []string,
 	shouldFilter bool,
 ) {
@@ -70,9 +73,9 @@ func AssertFilesFiltered(
 
 	for _, filepath := range filepaths {
 		if shouldFilter {
-			AssertFileShouldBeFiltered(t, fltr, filepath)
+			AssertFileShouldBeFiltered(t, f, filepath)
 		} else {
-			AssertFileShouldNotBeFiltered(t, fltr, filepath)
+			AssertFileShouldNotBeFiltered(t, f, filepath)
 		}
 	}
 }

@@ -5,6 +5,20 @@ import (
 	templparser "github.com/a-h/templ/parser/v2"
 )
 
+// createNodeWithAttributes creates a syntax.Node for the given nodeType at the
+// supplied range and attaches its transformed attributes. Callers that need to
+// add children should append them after this returns.
+func (t *transformer) createNodeWithAttributes(
+	nodeType int,
+	rng templparser.Range,
+	attrs []templparser.Attribute,
+) *syntax.Node {
+	o := t.createNodeFromRange(nodeType, rng)
+	t.addAttributesToNode(attrs, o)
+
+	return o
+}
+
 // transformTemplElementExpression converts a TemplElementExpression to a syntax.Node.
 func (t *transformer) transformTemplElementExpression(
 	tee *templparser.TemplElementExpression,
@@ -45,10 +59,7 @@ func (t *transformer) transformScriptElement(se *templparser.ScriptElement) *syn
 		return nil
 	}
 
-	o := t.createNodeFromRange(ScriptElement, se.Range)
-	t.addAttributesToNode(se.Attributes, o)
-
-	return o
+	return t.createNodeWithAttributes(ScriptElement, se.Range, se.Attributes)
 }
 
 // transformDocType converts a DocType to a syntax.Node.
@@ -84,10 +95,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 		return nil
 	}
 
-	o := t.createNodeFromRange(Element, re.Range)
-	t.addAttributesToNode(re.Attributes, o)
-
-	return o
+	return t.createNodeWithAttributes(Element, re.Range, re.Attributes)
 }
 
 // transformFallthrough converts a Fallthrough to a syntax.Node.

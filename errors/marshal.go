@@ -65,14 +65,19 @@ func newMarshalError(operation, context string, err, staticErr error) *MarshalEr
 	}
 }
 
-// SafeMarshal provides safe marshaling with consistent error handling.
-func SafeMarshal(v any, context string) ([]byte, error) {
+// marshalJSON marshals v and wraps any error via HandleMarshalingError.
+func marshalJSON(v any, context, operation string) ([]byte, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
-		return nil, HandleMarshalingError("marshal", context, err)
+		return nil, HandleMarshalingError(operation, context, err)
 	}
 
 	return data, nil
+}
+
+// SafeMarshal provides safe marshaling with consistent error handling.
+func SafeMarshal(v any, context string) ([]byte, error) {
+	return marshalJSON(v, context, "marshal")
 }
 
 // SafeMarshalNilSafe provides safe marshaling with nil check.
@@ -82,12 +87,7 @@ func SafeMarshalNilSafe(v any, nilErrorMessage string) ([]byte, error) {
 		return nil, NewValidationError(nilErrorMessage, nil)
 	}
 
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil, HandleMarshalingError("marshal", nilErrorMessage, err)
-	}
-
-	return data, nil
+	return marshalJSON(v, nilErrorMessage, "marshal")
 }
 
 // SafeMarshalIndent provides safe indented marshaling with consistent error handling.
