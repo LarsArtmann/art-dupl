@@ -76,9 +76,10 @@ func (n *normalizer) resolve(realName string) string {
 }
 
 // collectFunctionLocals walks a FuncDecl in source order and declares every
-// local binding: receiver, parameters, results, and body-local variables.
-// This pre-pass populates the symbol table before the main transform runs, so
-// every Ident in the body resolves to the correct canonical name.
+// local binding: receiver, type parameters (generics), parameters, results,
+// and body-local variables. This pre-pass populates the symbol table before
+// the main transform runs, so every Ident in the body resolves to the correct
+// canonical name.
 func (n *normalizer) collectFunctionLocals(fd *ast.FuncDecl) {
 	if !n.enabled || fd == nil {
 		return
@@ -87,6 +88,13 @@ func (n *normalizer) collectFunctionLocals(fd *ast.FuncDecl) {
 	// Receiver binding (value or pointer receiver variable name).
 	if fd.Recv != nil {
 		declareFieldListNames(n, fd.Recv)
+	}
+
+	// Type parameter bindings (Go generics: func Foo[T any](...)).
+	// Type params are declared BEFORE regular params so they get canonical
+	// names in source order (T before receiver/params alphabetically).
+	if fd.Type.TypeParams != nil {
+		declareFieldListNames(n, fd.Type.TypeParams)
 	}
 
 	// Parameter and result bindings.
