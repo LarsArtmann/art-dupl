@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, master, fork]
 
+env:
+  GOEXPERIMENT: jsonv2
+
 jobs:
   lint:
     name: Lint
