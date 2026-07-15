@@ -214,10 +214,14 @@ templ diffPanelsWithWordDiff(other CloneDiff) {
 	@diffPanel("compared", "Compared", other.Diff.Compared, other.Diff.Base, false)
 }
 
+templ diffViewToggleButton(groupNum int, mode string, label string, active bool) {
+	<button id={ "diff-toggle-" + strconv.Itoa(groupNum) + "-" + mode } class={ templ.KV("active", active) } data-mode={ mode } onclick={ toggleDiffViewScript(groupNum, mode) }>{ label }</button>
+}
+
 templ diffViewToggle(groupNum int) {
 	<div class="diff-view-toggle">
-		<button id={ "diff-toggle-" + strconv.Itoa(groupNum) + "-side" } class="active" data-mode="side" onclick={ toggleDiffViewScript(groupNum, "side") }>◫ Side by Side</button>
-		<button id={ "diff-toggle-" + strconv.Itoa(groupNum) + "-inline" } data-mode="inline" onclick={ toggleDiffViewScript(groupNum, "inline") }>▣ Inline</button>
+		@diffViewToggleButton(groupNum, "side", "◫ Side by Side", true)
+		@diffViewToggleButton(groupNum, "inline", "▣ Inline", false)
 	</div>
 }
 
