@@ -85,11 +85,12 @@ Remove unnecessary type conversions that Go can infer.
 **Solution:** Add `//nolint:exhaustruct` comments for intentional partial initialization, OR fill in all fields.
 
 **Files with most issues:**
-| File | Count |
-|------|-------|
-| pkg/artdupl/types.go | 31 |
-| printer/json.go | 17 |
-| printer/stats_data.go | 16 |
+
+| File                  | Count |
+| --------------------- | ----- |
+| pkg/artdupl/types.go  | 31    |
+| printer/json.go       | 17    |
+| printer/stats_data.go | 16    |
 
 ### Task 3.2: Fix varnamelen - Variable Names (50 issues, 30 min)
 

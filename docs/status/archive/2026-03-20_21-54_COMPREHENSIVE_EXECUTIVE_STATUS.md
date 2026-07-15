@@ -250,11 +250,12 @@ All changes have been:
 4. Confusing dual paths for same functionality
 
 **Options:**
-| Option | Effort | Impact |
-|--------|--------|--------|
-| A. Keep and complete SDK | 10h | Provides public API |
-| B. Remove and simplify | 2h | Less code, less confusion |
-| C. Mark as deprecated | 1h | Gradual migration path |
+
+| Option                   | Effort | Impact                    |
+| ------------------------ | ------ | ------------------------- |
+| A. Keep and complete SDK | 10h    | Provides public API       |
+| B. Remove and simplify   | 2h     | Less code, less confusion |
+| C. Mark as deprecated    | 1h     | Gradual migration path    |
 
 **My Recommendation:** Option B - Remove pkg/artdupl/
 

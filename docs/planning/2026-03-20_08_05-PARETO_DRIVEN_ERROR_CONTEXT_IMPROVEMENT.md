@@ -243,22 +243,24 @@ Each task is designed to be completed in **5-15 minutes**. This level of granula
 #### Task 1.3-1.8: detector.go Context Fixes (30 micro-tasks)
 
 **Task 1.3: detector.go:32 context (5 micro-tasks)**
-| # | Micro-Task | Time | File:Line |
-|---|------------|------|-----------|
-| 1.3.1 | Read NewDetector function | 10m | detector.go:22-53 |
-| 1.3.2 | Identify opts context loss in WrapConfig | 5m | detector.go:32 |
-| 1.3.3 | Update WrapConfig to include opts summary | 10m | detector.go:32 |
-| 1.3.4 | Test detector initialization failure | 5m | Test file |
-| 1.3.5 | Verify error contains opts context | 5m | Test output |
+
+| #     | Micro-Task                                | Time | File:Line         |
+| ----- | ----------------------------------------- | ---- | ----------------- |
+| 1.3.1 | Read NewDetector function                 | 10m  | detector.go:22-53 |
+| 1.3.2 | Identify opts context loss in WrapConfig  | 5m   | detector.go:32    |
+| 1.3.3 | Update WrapConfig to include opts summary | 10m  | detector.go:32    |
+| 1.3.4 | Test detector initialization failure      | 5m   | Test file         |
+| 1.3.5 | Verify error contains opts context        | 5m   | Test output       |
 
 **Task 1.4: detector.go:61 context (5 micro-tasks)**
-| # | Micro-Task | Time | File:Line |
-|---|------------|------|-----------|
-| 1.4.1 | Read FindClones validateInputs call | 10m | detector.go:56-62 |
-| 1.4.2 | Identify ctx context loss in wrapValidationError | 5m | detector.go:61 |
-| 1.4.3 | Update wrapValidationError to include context info | 10m | detector.go:61 |
-| 1.4.4 | Test validation failure with context | 5m | Test file |
-| 1.4.5 | Verify error contains context metadata | 5m | Test output |
+
+| #     | Micro-Task                                         | Time | File:Line         |
+| ----- | -------------------------------------------------- | ---- | ----------------- |
+| 1.4.1 | Read FindClones validateInputs call                | 10m  | detector.go:56-62 |
+| 1.4.2 | Identify ctx context loss in wrapValidationError   | 5m   | detector.go:61    |
+| 1.4.3 | Update wrapValidationError to include context info | 10m  | detector.go:61    |
+| 1.4.4 | Test validation failure with context               | 5m   | Test file         |
+| 1.4.5 | Verify error contains context metadata             | 5m   | Test output       |
 
 [Continue pattern for remaining detector.go issues...]
 

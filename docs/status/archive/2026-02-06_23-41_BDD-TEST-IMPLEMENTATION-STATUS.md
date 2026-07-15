@@ -115,13 +115,14 @@ Failing: ~40+ (estimated)
 **Issue:** Commands don't have consistent exit code behavior
 
 **Expected Behavior:**
-| Scenario | Exit Code | Notes |
-|----------|-----------|-------|
-| Success with findings | 0 | Normal operation |
-| Success with 0 findings | 0 | Valid result - no duplicates |
-| Invalid flags | 1 | User error |
-| Config file error | 1 | Setup error |
-| File not found | 1 | Input error |
+
+| Scenario                | Exit Code | Notes                        |
+| ----------------------- | --------- | ---------------------------- |
+| Success with findings   | 0         | Normal operation             |
+| Success with 0 findings | 0         | Valid result - no duplicates |
+| Invalid flags           | 1         | User error                   |
+| Config file error       | 1         | Setup error                  |
+| File not found          | 1         | Input error                  |
 
 ### 3. Test Infrastructure Gaps
 

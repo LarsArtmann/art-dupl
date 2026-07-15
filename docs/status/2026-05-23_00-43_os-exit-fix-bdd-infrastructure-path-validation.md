@@ -32,11 +32,12 @@
 - Pre-existing: 79 lines → would have been 84 with the new `validatePaths` call
 
 **Impact:**
-| Suite | Before | After |
-|-------|--------|-------|
-| `go test ./cmd/...` | FAIL (exit code 1) | PASS |
-| `go test ./bdd/...` | FAIL (exit code 1) | PASS |
-| `go test ./...` | 2 packages FAIL | 23/23 packages PASS |
+
+| Suite               | Before             | After               |
+| ------------------- | ------------------ | ------------------- |
+| `go test ./cmd/...` | FAIL (exit code 1) | PASS                |
+| `go test ./bdd/...` | FAIL (exit code 1) | PASS                |
+| `go test ./...`     | 2 packages FAIL    | 23/23 packages PASS |
 
 ### 2. Fix BDD `prepareSubcommandArgs` Bug (`internal/testutil/bdd_runners.go`)
 

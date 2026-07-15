@@ -62,12 +62,13 @@ Added 5 new test cases that would have caught the original bug:
 ### 4. Full Test Verification
 
 All affected packages pass:
-| Package | Status | Coverage |
-|---------|--------|----------|
-| `pkg/position` | PASS | 97.1% |
-| `printer` | PASS | 63.4% |
-| `pkg/artdupl` | PASS | 85.0% |
-| `domain` | PASS | 97.0% |
+
+| Package        | Status | Coverage |
+| -------------- | ------ | -------- |
+| `pkg/position` | PASS   | 97.1%    |
+| `printer`      | PASS   | 63.4%    |
+| `pkg/artdupl`  | PASS   | 85.0%    |
+| `domain`       | PASS   | 97.0%    |
 
 ---
 

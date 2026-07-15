@@ -65,23 +65,24 @@
 ### Lint Issues (387 total - NON-BLOCKING)
 
 Categories breakdown:
-| Category | Count | Priority | Notes |
-| ------------- | ----- | -------- | --------------------------------|
-| exhaustruct | 50 | Low | Exhaustive struct checking |
-| mnd | 50 | Low | Magic numbers |
-| revive | 50 | Medium | Various style issues |
-| tagliatelle | 50 | Low | JSON tag naming |
-| varnamelen | 50 | Low | Variable name length |
-| err113 | 16 | Medium | Dynamic error creation |
-| recvcheck | 19 | Low | Receiver type consistency |
-| godoclint | 20 | Low | Documentation format |
-| wrapcheck | 13 | Medium | Error wrapping |
-| prealloc | 11 | Low | Pre-allocation hints |
-| unparam | 9 | Low | Unused parameters |
-| godox | 6 | Low | TODO/FIXME comments |
-| goprintffuncname | 5 | Low | Printf function naming |
-| thelper | 4 | Low | Test helper declarations |
-| Other | ~13 | Low | Various minor issues |
+
+| Category         | Count | Priority | Notes                      |
+| ---------------- | ----- | -------- | -------------------------- |
+| exhaustruct      | 50    | Low      | Exhaustive struct checking |
+| mnd              | 50    | Low      | Magic numbers              |
+| revive           | 50    | Medium   | Various style issues       |
+| tagliatelle      | 50    | Low      | JSON tag naming            |
+| varnamelen       | 50    | Low      | Variable name length       |
+| err113           | 16    | Medium   | Dynamic error creation     |
+| recvcheck        | 19    | Low      | Receiver type consistency  |
+| godoclint        | 20    | Low      | Documentation format       |
+| wrapcheck        | 13    | Medium   | Error wrapping             |
+| prealloc         | 11    | Low      | Pre-allocation hints       |
+| unparam          | 9     | Low      | Unused parameters          |
+| godox            | 6     | Low      | TODO/FIXME comments        |
+| goprintffuncname | 5     | Low      | Printf function naming     |
+| thelper          | 4     | Low      | Test helper declarations   |
+| Other            | ~13   | Low      | Various minor issues       |
 
 **Status:** These are pre-existing and do not block functionality. Addressed incrementally.
 

@@ -127,8 +127,7 @@ case *ast.FuncDecl:
     o.AddChildren(t.trans(n.Name), t.trans(n.Type))
     if n.Body != nil {
         o.AddChildren(t.trans(n.Body))
-    }</pre
->
+    }</pre>
 
 <h2>syntax/golang/golang.go:255</h2>
 <pre>
@@ -140,8 +139,7 @@ case *ast.IfStmt:
     o.AddChildren(t.trans(n.Cond), t.trans(n.Body))
     if n.Else != nil {
         o.AddChildren(t.trans(n.Else))
-    }</pre
->
+    }</pre>
 ```
 
 ### **Post-Refactoring Duplicate Analysis**

@@ -147,13 +147,13 @@ Verified: these fail identically without our 6 commits applied.
 
 ### INFRASTRUCTURE / PROCESS
 
-| #   | What                                                                     | Files              | Impact               | Effort |
+| # | What | Files | Impact | Effort |
 | --- | ------------------------------------------------------------------------ | ------------------ | -------------------- | ------ | --- |
-| 21  | Move `internal/testutil` to `pkg/testutil` to break import cycle barrier | All test files     | HIGH                 | HIGH   |
-| 22  | Add CI gate for clone count (`art-dupl -t 15                             | grep -c "^found"`) | `.github/workflows/` | Medium | Low |
-| 23  | Fix `gopls unusedparams` diagnostics across codebase                     | Multiple files     | Low                  | Low    |
-| 24  | Run `just ci` to full green (currently blocked by BDD failures)          | All                | HIGH                 | Medium |
-| 25  | Create `FEATURES.md` or `CHANGELOG.md` documenting recent improvements   | Root               | Low                  | Low    |
+| 21 | Move `internal/testutil` to `pkg/testutil` to break import cycle barrier | All test files | HIGH | HIGH |
+| 22 | Add CI gate for clone count (`art-dupl -t 15                             | grep -c "^found"`) | `.github/workflows/` | Medium | Low |
+| 23 | Fix `gopls unusedparams` diagnostics across codebase | Multiple files | Low | Low |
+| 24 | Run `just ci` to full green (currently blocked by BDD failures) | All | HIGH | Medium |
+| 25 | Create `FEATURES.md` or `CHANGELOG.md` documenting recent improvements | Root | Low | Low |
 
 ---
 

@@ -183,14 +183,14 @@ Each task handles 5-8 groups in one pass. Pattern: read → identify unique var 
 
 ## Phase 20: Final Verification
 
-| #   | Task                                                                          | Groups                  | Impact | Est. | Priority |
+| # | Task | Groups | Impact | Est. | Priority |
 | --- | ----------------------------------------------------------------------------- | ----------------------- | ------ | ---- | -------- | --- |
-| 67  | Run `just build && ./dist/art-dupl -t 15 . --semantic 2>&1                    | tail -3` — verify count | Verify | N/A  | 3min     | ★★★ |
-| 68  | Run `go test ./...` — all 23 packages must pass                               | Verify                  | N/A    | 5min | ★★★      |
-| 69  | Run `just ci` — fmt + lint + test                                             | Verify                  | N/A    | 5min | ★★★      |
-| 70  | Git commit with detailed message                                              | Persist                 | N/A    | 3min | ★★★      |
-| 71  | Update AGENTS.md with findings (semantic hash behavior, effective techniques) | Docs                    | N/A    | 5min | ★★☆      |
-| 72  | Update this plan with actual results                                          | Docs                    | N/A    | 5min | ★☆☆      |
+| 67 | Run `just build && ./dist/art-dupl -t 15 . --semantic 2>&1                    | tail -3` — verify count | Verify | N/A | 3min | ★★★ |
+| 68 | Run `go test ./...` — all 23 packages must pass | Verify | N/A | 5min | ★★★ |
+| 69 | Run `just ci` — fmt + lint + test | Verify | N/A | 5min | ★★★ |
+| 70 | Git commit with detailed message | Persist | N/A | 3min | ★★★ |
+| 71 | Update AGENTS.md with findings (semantic hash behavior, effective techniques) | Docs | N/A | 5min | ★★☆ |
+| 72 | Update this plan with actual results | Docs | N/A | 5min | ★☆☆ |
 
 ---
 

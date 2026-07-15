@@ -162,11 +162,12 @@ Closes dead code duplication identified by art-dupl analysis.
 3. Preserved custom `UnmarshalJSON` for enhanced error validation
 
 **Metrics**:
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Lines of code | 114 | ~92 | -19% |
-| Code complexity | High | Low | Simplified |
-| Pattern consistency | 3 patterns | 2 patterns → 1 pattern | Unified |
+
+| Metric              | Before     | After                  | Change     |
+| ------------------- | ---------- | ---------------------- | ---------- |
+| Lines of code       | 114        | ~92                    | -19%       |
+| Code complexity     | High       | Low                    | Simplified |
+| Pattern consistency | 3 patterns | 2 patterns → 1 pattern | Unified    |
 
 **Verification**:
 

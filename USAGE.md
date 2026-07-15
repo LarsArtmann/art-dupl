@@ -217,10 +217,10 @@ filename:start:line:end:line
 
 ### Input Options
 
-| Option   | Type       | Default | Description                              |
+| Option | Type | Default | Description |
 | -------- | ---------- | ------- | ---------------------------------------- | -------------------------------------------------- |
-| `-files` | flag       | false   | Read file names from stdin, one per line |
-| `-v`     | `-verbose` | flag    | false                                    | Enable verbose logging to show processing progress |
+| `-files` | flag | false | Read file names from stdin, one per line |
+| `-v` | `-verbose` | flag | false | Enable verbose logging to show processing progress |
 
 ### Output Format Conflicts
 
