@@ -57,6 +57,14 @@ func (dm DetectionMode) normalizesLocals() bool {
 	return dm == DetectionModeSemantic
 }
 
+// normalizesLiterals returns true when literal VALUES (strings, numbers) are
+// normalized to their KIND (STRING, INT, FLOAT) before hashing. Semantic mode
+// normalizes literals so that Type-2 clones with different literal values are
+// detected. Exact mode hashes literal values verbatim (Type-1 only).
+func (dm DetectionMode) normalizesLiterals() bool {
+	return dm == DetectionModeSemantic
+}
+
 // IsSemantic returns true if the new alpha-normalizing semantic mode is active.
 // Deprecated for internal gating: prefer hashesIdentifiers / normalizesLocals,
 // which express the actual question being asked.

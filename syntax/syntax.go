@@ -56,7 +56,7 @@ const maxChildrenSerial = 10_000
 // - int32 fields grouped for cache efficiency (4B each, 16B total)
 // - pointer field (8B)
 // - string headers at end (32B: Filename + Name)
-// - bool flag (1B + 7B padding)
+// - Fingerprint int32 + Statement bool fit in trailing padding (4B+1B+3B)
 // Total: 64B.
 //
 // The Name field stores the original Go identifier for Ident, SelectorExpr,
@@ -70,14 +70,15 @@ const maxChildrenSerial = 10_000
 // each descendant individually. This makes threshold mean "N duplicated
 // statements" rather than "N arbitrary AST nodes.".
 type Node struct {
-	Type      int32
-	Pos       int32
-	End       int32
-	Owns      int32
-	Children  []*Node
-	Filename  string
-	Name      string
-	Statement bool
+	Type        int32
+	Pos         int32
+	End         int32
+	Owns        int32
+	Children    []*Node
+	Filename    string
+	Name        string
+	Statement   bool
+	Fingerprint int32
 }
 
 func NewNode() *Node {
@@ -97,13 +98,15 @@ func (n *Node) Clone() *Node {
 	}
 
 	clone := &Node{
-		Type:      n.Type,
-		Pos:       n.Pos,
-		End:       n.End,
-		Owns:      n.Owns,
-		Filename:  n.Filename,
-		Name:      n.Name,
-		Statement: n.Statement,
+		Type:        n.Type,
+		Pos:         n.Pos,
+		End:         n.End,
+		Owns:        n.Owns,
+		Children:    n.Children,
+		Filename:    n.Filename,
+		Name:        n.Name,
+		Statement:   n.Statement,
+		Fingerprint: n.Fingerprint,
 	}
 	if len(n.Children) > 0 {
 		clone.Children = make([]*Node, len(n.Children))
@@ -117,7 +120,14 @@ func (n *Node) Clone() *Node {
 
 // Val returns the token value for suffix tree compatibility.
 // Implements the suffixtree.Token interface.
+//
+// For statement nodes, returns the composite Fingerprint so the suffix tree
+// matches at statement granularity. For non-statement nodes, returns the
+// semantic-encoded Type.
 func (n *Node) Val() suffixtree.TokenValue {
+	if n.Statement {
+		return suffixtree.TokenValue(n.Fingerprint)
+	}
 	return suffixtree.TokenValue(n.Type)
 }
 
@@ -160,27 +170,32 @@ func SerializeWithMaxChildren(n *Node, maxChildren int) []*Node {
 }
 
 func serial(n *Node, stream *[]*Node, maxChildren int) int {
-	// Shallow-copy the node so mutations (Type fingerprinting, Owns counting)
+	// Shallow-copy the node so mutations (fingerprinting, Owns counting)
 	// never corrupt the original tree. This makes Serialize idempotent and
 	// safe for concurrent access to cached trees.
 	node := &Node{
-		Type:      n.Type,
-		Pos:       n.Pos,
-		End:       n.End,
-		Owns:      n.Owns,
-		Children:  n.Children,
-		Filename:  n.Filename,
-		Name:      n.Name,
-		Statement: n.Statement,
+		Type:        n.Type,
+		Pos:         n.Pos,
+		End:         n.End,
+		Owns:        n.Owns,
+		Children:    n.Children,
+		Filename:    n.Filename,
+		Name:        n.Name,
+		Statement:   n.Statement,
+		Fingerprint: n.Fingerprint,
 	}
 	*stream = append(*stream, node)
 
 	if n.Statement {
 		// Statement-level tokenization: fingerprint the entire subtree into
-		// one composite Type so the suffix tree matches at statement granularity.
+		// one composite value so the suffix tree matches at statement granularity.
 		// Children remain in memory for classification/actionability but are not
 		// emitted as individual tokens.
-		node.Type = fingerprintSubtree(n)
+		//
+		// The fingerprint is stored in the Fingerprint field, NOT in Type, so
+		// that DecodeBaseType(Type) still returns the correct base AST type for
+		// actionability analysis.
+		node.Fingerprint = fingerprintSubtree(n)
 		node.Owns = 0
 
 		return 1

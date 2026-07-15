@@ -163,7 +163,7 @@ func c() int { return 42 }
 	tmpFile := tmpDir + "/test.go"
 	writeTestFile(t, tmpFile, code)
 
-	t.Run("semantic_mode_different_values_different_types", func(t *testing.T) {
+	t.Run("semantic_mode_normalizes_literal_values_to_kind", func(t *testing.T) {
 		t.Parallel()
 
 		node, err := ParseWithConfig(tmpFile, MustParseConfig(DetectionModeSemantic))
@@ -172,22 +172,12 @@ func c() int { return 42 }
 		}
 
 		litTypes := collectBasicLitTypes(node)
-		// "42", "999", "42" → 2 distinct types in semantic mode
-		if len(litTypes) != 2 {
-			t.Errorf("Expected 2 distinct BasicLit types (42≠999, 42==42), got %d: %v",
+		// "42", "999", "42" → 1 distinct type in semantic mode because
+		// literal VALUES are normalized to KIND (all INT → same hash).
+		// This enables Type-2 clone detection where only literal values differ.
+		if len(litTypes) != 1 {
+			t.Errorf("Expected 1 BasicLit type in semantic mode (INT kind normalized), got %d: %v",
 				len(litTypes), litTypes)
-		}
-
-		// Verify "42" and "999" encode to different types
-		type42 := encodeSemanticType(BasicLit, "42", true)
-		type999 := encodeSemanticType(BasicLit, "999", true)
-
-		if type42 == type999 {
-			t.Error("BasicLit 42 and 999 should encode to different types")
-		}
-
-		if _, ok := litTypes[type42]; !ok {
-			t.Errorf("Expected encoded type for '42' not found in: %v", litTypes)
 		}
 	})
 

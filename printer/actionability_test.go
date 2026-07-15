@@ -94,6 +94,14 @@ func TestEvaluateActionability(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "m.Lock(); defer m.Unlock() is non-actionable",
+			seqs: [][]*domain.CloneNode{
+				mustLockDeferUnlock(),
+				mustLockDeferUnlock(),
+			},
+			expected: true,
+		},
 	})
 }
 
@@ -145,5 +153,29 @@ func mustFuncDeclWithBody() []*domain.CloneNode {
 		{BaseType: golang.BlockStmt},
 		{BaseType: golang.IfStmt},
 		{BaseType: golang.ReturnStmt},
+	}
+}
+
+func mustLockDeferUnlock() []*domain.CloneNode {
+	return []*domain.CloneNode{
+		{
+			BaseType: golang.ExprStmt,
+			Children: []*domain.CloneNode{
+				{
+					BaseType: golang.CallExpr,
+					Children: []*domain.CloneNode{
+						{
+							BaseType: golang.SelectorExpr,
+							Name:     "Lock",
+							Children: []*domain.CloneNode{
+								{BaseType: golang.Ident, Name: "m"},
+								{BaseType: golang.Ident, Name: "Lock"},
+							},
+						},
+					},
+				},
+			},
+		},
+		mustDeferSelectorCall("m", cleanupMethodName),
 	}
 }

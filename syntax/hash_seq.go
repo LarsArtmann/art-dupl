@@ -62,8 +62,10 @@ func hashSeq(nodes []*Node) string {
 	}
 
 	for i, node := range nodes {
-		//nolint:gosec // G115: node.Type bounded by int32
-		binary.LittleEndian.PutUint32(buf[i*4:], uint32(node.Type))
+		// Use Val() so statement nodes contribute their composite fingerprint
+		// while non-statement nodes contribute their semantic-encoded Type.
+		//nolint:gosec // G115: node values bounded by int32
+		binary.LittleEndian.PutUint32(buf[i*4:], uint32(node.Val()))
 	}
 
 	hash := xxh3.Hash(buf)

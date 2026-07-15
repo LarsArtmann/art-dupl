@@ -8,23 +8,43 @@ import (
 // RAII cleanup method names that indicate non-actionable patterns.
 const cleanupMethodName = "Unlock"
 
+// acquireMethodNames are method calls that typically pair with a defer cleanup.
+// A sequence like `m.Lock(); defer m.Unlock()` is idiomatic Go that cannot be
+// usefully extracted — the defer must remain in the caller's scope.
+var acquireMethodNames = map[string]bool{
+	"Lock":    true,
+	"RLock":   true,
+	"Acquire": true,
+	"Reserve": true,
+	"Obtain":  true,
+	"Claim":   true,
+	"Take":    true,
+	"Begin":   true,
+}
+
 // isPureDeferPattern reports whether every clone is a DeferStmt
 // wrapping a RAII-style call (Unlock, Close, etc.).
 //
-// Using the Name field on child nodes, we can now distinguish
-// `defer mu.Unlock()` from `defer processOrder()` — the former is
-// idiomatic RAII cleanup (non-actionable), the latter is real duplication.
+// Also matches the 2-statement Lock/Acquire + Defer Unlock/Release pattern:
+//
+//	m.Lock()
+//	defer m.Unlock()
+//
+// This is idiomatic Go resource management — extracting it into a helper would
+// break the defer scope semantics.
 func isPureDeferPattern(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
-		if len(seq) != 1 {
-			return false
+		if len(seq) == 1 && seq[0].BaseType == golang.DeferStmt {
+			return isRAIIDeferCall(seq[0])
 		}
 
-		if seq[0].BaseType != golang.DeferStmt {
-			return false
+		if len(seq) == 2 &&
+			isAcquireCall(seq[0]) &&
+			seq[1].BaseType == golang.DeferStmt {
+			return isRAIIDeferCall(seq[1])
 		}
 
-		return isRAIIDeferCall(seq[0])
+		return false
 	})
 }
 
@@ -46,13 +66,35 @@ func isRAIIDeferCall(node *domain.CloneNode) bool {
 // isCleanupMethod reports whether a method name is a known RAII cleanup.
 func isCleanupMethod(name string) bool {
 	switch name {
-	case cleanupMethodName,
+	case cleanupMethodName, "RUnlock",
 		"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
 		"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown":
 		return true
 	default:
 		return false
 	}
+}
+
+// isAcquireCall reports whether a statement is a call to a known acquire
+// method (Lock, RLock, Acquire, etc.). This identifies the first half of the
+// Lock + Defer Unlock idiom.
+func isAcquireCall(node *domain.CloneNode) bool {
+	if node.BaseType != golang.ExprStmt {
+		return false
+	}
+
+	for _, child := range node.Children {
+		if child.BaseType == golang.CallExpr {
+			for _, callChild := range child.Children {
+				if callChild.BaseType == golang.SelectorExpr &&
+					acquireMethodNames[callChild.Name] {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 // isPureErrorPropagation reports whether every clone is an IfStmt
