@@ -8,20 +8,6 @@ import (
 // RAII cleanup method names that indicate non-actionable patterns.
 const cleanupMethodName = "Unlock"
 
-// acquireMethodNames are method calls that typically pair with a defer cleanup.
-// A sequence like `m.Lock(); defer m.Unlock()` is idiomatic Go that cannot be
-// usefully extracted — the defer must remain in the caller's scope.
-var acquireMethodNames = map[string]bool{
-	"Lock":    true,
-	"RLock":   true,
-	"Acquire": true,
-	"Reserve": true,
-	"Obtain":  true,
-	"Claim":   true,
-	"Take":    true,
-	"Begin":   true,
-}
-
 // isPureDeferPattern reports whether every clone is a DeferStmt
 // wrapping a RAII-style call (Unlock, Close, etc.).
 //
@@ -75,6 +61,17 @@ func isCleanupMethod(name string) bool {
 	}
 }
 
+// isAcquireMethod reports whether a method name is a known acquire operation.
+// These pair with defer cleanup calls in the Lock + Defer Unlock idiom.
+func isAcquireMethod(name string) bool {
+	switch name {
+	case "Lock", "RLock", "Acquire", "Reserve", "Obtain", "Claim", "Take", "Begin":
+		return true
+	default:
+		return false
+	}
+}
+
 // isAcquireCall reports whether a statement is a call to a known acquire
 // method (Lock, RLock, Acquire, etc.). This identifies the first half of the
 // Lock + Defer Unlock idiom.
@@ -87,7 +84,7 @@ func isAcquireCall(node *domain.CloneNode) bool {
 		if child.BaseType == golang.CallExpr {
 			for _, callChild := range child.Children {
 				if callChild.BaseType == golang.SelectorExpr &&
-					acquireMethodNames[callChild.Name] {
+					isAcquireMethod(callChild.Name) {
 					return true
 				}
 			}
