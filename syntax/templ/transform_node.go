@@ -64,6 +64,10 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 	}
 
 	o := t.createNodeWithAttributes(Element, el.Range, el.Attributes)
+	o.Name = el.Name
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(Element, el.Name, true)
+	}
 	t.addChildren(o, el.Children)
 
 	return o
@@ -81,15 +85,31 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 	switch a := attr.(type) {
 	case *templparser.ConstantAttribute:
 		o.Type = Attribute
+		o.Name = a.Key.String()
+		if t.semantic {
+			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
+		}
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.ExpressionAttribute:
 		o.Type = Attribute
+		o.Name = a.Key.String()
+		if t.semantic {
+			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
+		}
 		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.BoolConstantAttribute:
 		o.Type = Attribute
+		o.Name = a.Key.String()
+		if t.semantic {
+			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
+		}
 		t.setNodePosFromRange(o, a.Range)
 	case *templparser.BoolExpressionAttribute:
 		o.Type = Attribute
+		o.Name = a.Key.String()
+		if t.semantic {
+			o.Type = syntax.EncodeSemanticType(Attribute, a.Key.String(), true)
+		}
 		t.setNodePosFromRange(o, a.Expression.Range)
 	case *templparser.SpreadAttributes:
 		o.Type = SpreadAttributes

@@ -18,6 +18,11 @@ func Parse(filename string) (*syntax.Node, error) {
 
 // ParseWithLineCount parses the given templ file and returns the syntax tree along with the line count.
 func ParseWithLineCount(filepath string) (*syntax.Node, int, error) {
+	return ParseWithLineCountWithMode(filepath, false)
+}
+
+// ParseWithLineCountWithMode parses with optional semantic encoding.
+func ParseWithLineCountWithMode(filepath string, semantic bool) (*syntax.Node, int, error) {
 	content, err := os.ReadFile(
 		filepath,
 	) // #nosec G304 -- filepath comes from controlled file system walk
@@ -25,11 +30,18 @@ func ParseWithLineCount(filepath string) (*syntax.Node, int, error) {
 		return nil, 0, fmt.Errorf("read templ file %s: %w", filepath, err)
 	}
 
-	return ParseBytes(filepath, content)
+	return ParseBytesWithMode(filepath, content, semantic)
 }
 
 // ParseBytes parses templ content and returns the syntax tree along with the line count.
 func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
+	return ParseBytesWithMode(filename, content, false)
+}
+
+// ParseBytesWithMode parses templ content with optional semantic encoding.
+// When semantic is true, element tag names and attribute names are encoded
+// into node Types, so <a href> and <div class> produce different tokens.
+func ParseBytesWithMode(filename string, content []byte, semantic bool) (*syntax.Node, int, error) {
 	// Parse using the official templ parser
 	tf, err := templparser.ParseString(string(content))
 	if err != nil {
@@ -40,6 +52,7 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 	t := &transformer{
 		filename:   syntax.InternFilename(filename),
 		contentLen: len(content),
+		semantic:   semantic,
 	}
 
 	node := t.transformTemplateFile(tf)
@@ -53,4 +66,5 @@ func ParseBytes(filename string, content []byte) (*syntax.Node, int, error) {
 type transformer struct {
 	filename   string
 	contentLen int
+	semantic   bool
 }

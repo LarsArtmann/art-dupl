@@ -95,7 +95,13 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 		return nil
 	}
 
-	return t.createNodeWithAttributes(Element, re.Range, re.Attributes)
+	o := t.createNodeWithAttributes(Element, re.Range, re.Attributes)
+	o.Name = re.Name
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(Element, re.Name, true)
+	}
+
+	return o
 }
 
 // transformFallthrough converts a Fallthrough to a syntax.Node.

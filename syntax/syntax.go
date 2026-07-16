@@ -216,12 +216,6 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 	return int(node.Owns) + 1
 }
 
-// FNV-1a constants for statement fingerprinting.
-const (
-	fnvOffset32 uint32 = 2166136261
-	fnvPrime32  uint32 = 16777619
-)
-
 // fingerprintSubtree hashes the pre-order Type sequence of a node and all its
 // descendants into a single int32 using FNV-1a. This produces a deterministic,
 // order-sensitive composite token representing one complete statement.
