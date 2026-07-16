@@ -103,6 +103,10 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("ignore-tests", false, "exclude *_test.go files from analysis entirely")
 	rootCmd.Flags().
 		Bool("include-tests", false, "override --ignore-tests and analyze test files normally")
+	rootCmd.Flags().
+		Bool("dump-tokens", false, "dump the serialized token stream for debugging (skip clone detection)")
+	rootCmd.Flags().
+		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*

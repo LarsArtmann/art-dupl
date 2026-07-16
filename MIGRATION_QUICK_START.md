@@ -162,7 +162,8 @@ go install github.com/LarsArtmann/art-dupl@latest
 
 # Or build from source
 cd /path/to/art-dupl
-just build
+export GOEXPERIMENT=jsonv2  # Required for encoding/json/v2
+go build ./cmd/art-dupl
 
 # Run
 ./dist/art-dupl --help

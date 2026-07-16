@@ -102,7 +102,7 @@ func containsCallTo(seq []*domain.CloneNode, names ...string) bool {
 // CallExpr nodes where each call targets a different receiver — indicating
 // builder pattern chains (a.WithX().WithY().Build()) rather than logic.
 func isChainOfCallsWithDifferentReceivers(seq []*domain.CloneNode) bool {
-	if len(seq) < 3 {
+	if len(seq) < 2 {
 		return false
 	}
 

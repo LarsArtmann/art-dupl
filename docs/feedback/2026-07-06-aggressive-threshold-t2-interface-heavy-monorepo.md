@@ -1,5 +1,7 @@
 # Feedback: Aggressive threshold (t=2) on an interface-heavy Go monorepo
 
+> ✅ **ADDRESSED** — Default threshold is now 5 (commit `930b91a`). This feedback confirmed that t=5 produces 0 clone groups on this project, which is now the default. Semantic mode correctly handles interface-implementation patterns via the `interface-implementation` actionability pattern.
+
 **Date:** 2026-07-06
 **Project:** go-auto-upgrade (Go, ~3500 LOC, 15 packages, 3 migrators sharing a Migrator interface)
 **Command:** `art-dupl --semantic --sort total-tokens -t 2`

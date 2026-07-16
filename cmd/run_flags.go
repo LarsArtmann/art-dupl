@@ -95,6 +95,10 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return runAllModes(ctx, mergedConfig, sortBy, outputDir)
 	}
 
+	if dumpTokens, _ := cmd.Flags().GetBool("dump-tokens"); dumpTokens {
+		return dumpTokensOutput(ctx, mergedConfig)
+	}
+
 	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
@@ -146,6 +150,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.DetectionMode.IsSemantic(),
 		mergedConfig.EffectiveSuppressTestLow(),
 		mergedConfig.EffectiveTestThreshold(),
+		mergedConfig.MinLines,
 	)
 	if err != nil {
 		return duplerrors.Wrap(

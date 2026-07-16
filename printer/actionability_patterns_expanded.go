@@ -7,15 +7,16 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
-// assertionMethodNames are test assertion framework methods that indicate
-// non-actionable test boilerplate when they appear in chains of 3+.
-var assertionMethodNames = map[string]bool{
-	"Expect":  true,
-	"Assert":  true,
-	"Require": true,
-	"Should":  true,
-	"Must":    true,
-	"So":      true,
+// isAssertionMethod reports whether a method name belongs to a test assertion
+// framework (Ginkgo/testify/testify). These indicate non-actionable test
+// boilerplate when they appear in chains of 3+.
+func isAssertionMethod(name string) bool {
+	switch name {
+	case "Expect", "Assert", "Require", "Should", "Must", "So":
+		return true
+	default:
+		return false
+	}
 }
 
 // isAssertionChain reports whether every clone is dominated by test assertion
@@ -48,13 +49,13 @@ func isAssertionDominatedSeq(seq []*domain.CloneNode) bool {
 func hasAssertionTarget(callExpr *domain.CloneNode) bool {
 	for _, child := range callExpr.Children {
 		if child.BaseType == golang.SelectorExpr {
-			if assertionMethodNames[child.Name] {
+			if isAssertionMethod(child.Name) {
 				return true
 			}
 		}
 
 		if child.BaseType == golang.Ident {
-			if assertionMethodNames[child.Name] {
+			if isAssertionMethod(child.Name) {
 				return true
 			}
 		}
@@ -73,8 +74,8 @@ func isCobraCommandBoilerplate(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // isCommandLiteral checks if a node is part of a cobra.Command or fang.Command
-// literal. Looks for CompositeLit containing a SelectorExpr named "Command"
-// with a parent Ident of "cobra" or "fang".
+// struct literal. Verifies the CompositeLit contains a SelectorExpr named
+// "Command" whose receiver Ident is "cobra" or "fang".
 func isCommandLiteral(node *domain.CloneNode) bool {
 	if node.BaseType != golang.CompositeLit {
 		return false
@@ -82,10 +83,26 @@ func isCommandLiteral(node *domain.CloneNode) bool {
 
 	for _, child := range node.Children {
 		if child.BaseType == golang.SelectorExpr && child.Name == "Command" {
-			return true
+			if hasCommandReceiver(child) {
+				return true
+			}
 		}
 	}
 
+	return false
+}
+
+// hasCommandReceiver verifies that a SelectorExpr has a receiver Ident
+// matching "cobra" or "fang" — the supported CLI frameworks.
+func hasCommandReceiver(sel *domain.CloneNode) bool {
+	for _, child := range sel.Children {
+		if child.BaseType == golang.Ident {
+			switch child.Name {
+			case "cobra", "fang":
+				return true
+			}
+		}
+	}
 	return false
 }
 
@@ -153,18 +170,25 @@ func hasErrorWrappingCall(block *domain.CloneNode) bool {
 	return false
 }
 
+// isWrappingCallName reports whether a method name belongs to a known
+// error-wrapping function (errors.Wrap, fmt.Errorf, etc.).
+func isWrappingCallName(name string) bool {
+	switch name {
+	case "Errorf", "Wrap", "Errorw", "Wrapf", "Wrapr":
+		return true
+	default:
+		return false
+	}
+}
+
 // isWrappingCall checks if a node is a CallExpr to a known error-wrapping function.
 func isWrappingCall(node *domain.CloneNode) bool {
 	if node.BaseType != golang.CallExpr {
 		return false
 	}
 
-	wrappingNames := map[string]bool{
-		"Errorf": true, "Wrap": true, "Errorw": true, "Wrapf": true, "Wrapr": true,
-	}
-
 	for _, child := range node.Children {
-		if child.BaseType == golang.SelectorExpr && wrappingNames[child.Name] {
+		if child.BaseType == golang.SelectorExpr && isWrappingCallName(child.Name) {
 			return true
 		}
 	}

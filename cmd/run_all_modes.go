@@ -181,6 +181,7 @@ func writeFormatFile(
 		cfg.DetectionMode.IsSemantic(),
 		cfg.EffectiveSuppressTestLow(),
 		cfg.EffectiveTestThreshold(),
+		cfg.MinLines,
 	)
 	if err != nil {
 		return fmt.Errorf(

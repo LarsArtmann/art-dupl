@@ -12,7 +12,7 @@ nix develop
 go install
 
 # Run all checks
-just ci
+nix flake check
 ```
 
 ## Development Setup
@@ -20,7 +20,7 @@ just ci
 ### Prerequisites
 
 - **Go 1.26+**
-- **Nix** (recommended) or **Just** (alternative)
+- **Nix** (recommended) or **Go** toolchain directly
 
 ### Using Nix (Recommended)
 
@@ -31,13 +31,14 @@ nix flake check      # Run all checks (build + tests)
 nix run . -- --help  # Run the tool
 ```
 
-### Using Justfile
+### Using Go Directly
 
 ```bash
-just build           # Build the project
-just test            # Run tests
-just check           # Run linter
-just ci              # Format + lint + test
+export GOEXPERIMENT=jsonv2   # Required for encoding/json/v2
+go build ./...               # Build the project
+go test ./...                # Run tests
+golangci-lint run --timeout 5m ./...  # Run linter
+templ generate               # Generate templ code (if .templ files changed)
 ```
 
 ## Code Style
@@ -53,12 +54,12 @@ just ci              # Format + lint + test
 ## Testing
 
 ```bash
-just test            # All tests with coverage
-just test-race       # With race detector
-just test-unit       # Unit tests only
-just test-integration # Integration tests only
-just bench           # Benchmarks
-just coverage        # Generate coverage.html
+go test ./...                    # All tests
+go test -race ./...              # With race detector
+go test $(go list ./... | grep -v /bdd)  # Unit tests only (excludes BDD)
+go test ./cmd/... ./bdd/...      # Integration tests only
+go test -bench=. ./...           # Benchmarks
+go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out  # Coverage
 ```
 
 ### BDD Tests
@@ -102,7 +103,7 @@ syntax/        # AST handling
 
 1. Create a feature branch from `fork`
 2. Make your changes
-3. Run `just ci` to verify
+3. Run `nix flake check` (or `go test ./...` + `golangci-lint run`) to verify
 4. Write tests for new functionality
 5. Keep changes focused and small
 6. Submit a pull request

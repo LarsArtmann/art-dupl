@@ -6,6 +6,44 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
+## ✅ Completed (2026-07-16) — Pareto Roadmap P0-P2 Execution
+
+### P0: Documentation & Lint Hygiene (10 tasks)
+
+- [x] Marked 5 feedback docs as IMPLEMENTED/ADDRESSED with resolution banners
+- [x] Fixed CONTRIBUTING.md — replaced all `just` commands with `go`/`nix` equivalents
+- [x] Fixed MIGRATION_QUICK_START.md — replaced `just build` with `go build`
+- [x] Fixed HOW_TO_USE.md — GitHub Actions Go version 1.21→1.26, added GOEXPERIMENT
+- [x] Fixed TESTING.md — added GOEXPERIMENT=jsonv2 to build commands
+- [x] Fixed `assertionMethodNames` global var → `isAssertionMethod()` switch function
+- [x] Fixed `isWrappingCall` per-call map allocation → `isWrappingCallName()` switch function
+- [x] Added `meta.description` to nix apps in flake.nix
+- [x] `cmd/filter_stats.go` — verified trailing newline already present
+
+### P1: Detection Features & Fixes (8 tasks)
+
+- [x] **`--test-threshold` flag** — verified already fully implemented (config, CLI flag, validation, filtering pipeline)
+- [x] **KeyValueExpr field name encoding** — struct field names in composite literals now encoded via `encodeSemanticType`. `Point{X:1}` no longer matches `Size{W:1}`. 3 tests added.
+- [x] **`--dump-tokens` debug flag** — outputs serialized token stream for debugging (skips detection). Shows filename, position, base type, semantic hash, name.
+- [x] **`containsTRunCall` specificity fix** — now verifies receiver Ident matches common `*testing.T` variable names (t, tt, tc, test, etc.)
+- [x] **Cobra detection fix** — `isCommandLiteral` now verifies receiver Ident is "cobra" or "fang", not just any SelectorExpr named "Command"
+- [x] **Builder callback threshold** lowered from 3 to 2 calls for more FP suppression
+- [x] **Race safety verified** — all tests pass with `-race` flag across syntax, printer, job, and pkg packages
+- [x] **AGENTS.md updated** with callee encoding convention, KeyValueExpr encoding, and templ parser hierarchy gotcha
+
+### P2: Polish & Completeness (20 tasks, key items)
+
+- [x] **Error wrapping detection** — extended `isReturnOrWrappedReturn` to handle 2-stmt `log.Print(err); return err` pattern with `isLogOrPrintStmt` + `isLoggingMethod`
+- [x] **`--min-lines` flag** — `Config.MinLines`, CLI flag, config builder wiring, filtering pipeline (all call sites updated)
+- [x] **DOMAIN_LANGUAGE.md updated** — added entries for sendCtx, CloneNode, Test Threshold, Min Lines, Dump Tokens, Include Generated
+- [x] **ADR-0009** — Default threshold change (1→5) with rationale
+- [x] **ADR-0010** — encoding/json/v2 migration decision
+- [x] **Threshold recommendation table** updated in HOW_TO_USE.md for default=5
+- [x] **Benchmark** — `BenchmarkSemanticVsExactVsStructural` in syntax/golang/ showing relative performance across modes
+- [x] **Stale docs trashed** — 11 obsolete SIMD/planning/research docs removed (SIMD_IMPLEMENTATION_COMPLETED, SIMD_OPTIMIZATION_ANALYSIS, SIMD_PERFORMANCE_BASELINE, SIMD_READY_ARCHITECTURE, STATICPOOL_PERFORMANCE_ANALYSIS, EXECUTION_PLAN, IMPROVEMENT_PLAN, MODERNIZATION_FINAL_REPORT, code-quality-improvements, enum-consolidation-plan, phase0-validation-safety-report)
+
+---
+
 ## ✅ Completed (2026-07-16) — Semantic Precision + Templ Semantic Mode + 15-Project Validation
 
 ### Go Semantic Mode Fixes (3 root-cause bugs)

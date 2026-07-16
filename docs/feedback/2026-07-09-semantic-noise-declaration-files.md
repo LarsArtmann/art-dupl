@@ -1,5 +1,7 @@
 # Feedback: Semantic Mode Reports Noise in Declaration-Only Files
 
+> ✅ **IMPLEMENTED** — Default threshold raised to 5 (commit `930b91a`). ValueSpec declarations are now statement-level tokens (each declaration = one token), preventing partial expression prefix matching. The `single-call-expression` pattern suppresses lone `CallExpr` like `errors.New("foo")`. Validated at 100% precision across 15 projects.
+
 **Date:** 2026-07-09
 **Source:** `/home/lars/forks/upd/` — run with `--semantic` (threshold 2)
 **Report:** `/home/lars/forks/upd/art-dupl.html`

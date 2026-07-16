@@ -106,6 +106,7 @@ go tool cover -func=coverage.out           # Summary in terminal
 ## Running Tests
 
 ```bash
+export GOEXPERIMENT=jsonv2    # Required for encoding/json/v2
 go test ./...                               # All tests
 go test -race ./...                         # With race detector
 go test $(go list ./... | grep -v /bdd)     # Unit tests only (excludes BDD)

@@ -159,18 +159,57 @@ func containsNilIdentifier(node *domain.CloneNode) bool {
 	return false
 }
 
-// isReturnOrWrappedReturn checks if a BlockStmt only contains a ReturnStmt.
+// isReturnOrWrappedReturn checks if a BlockStmt contains only error handling:
+// either a single return, or a log/print call followed by a return.
 func isReturnOrWrappedReturn(node *domain.CloneNode) bool {
 	if len(node.Children) == 0 {
 		return false
 	}
 
-	// Allow single return or return with CallExpr (e.g., return fmt.Errorf("...")).
+	// Single return or return with CallExpr (e.g., return fmt.Errorf("...")).
 	if len(node.Children) == 1 {
 		bt := node.Children[0].BaseType
 
 		return bt == golang.ReturnStmt || bt == golang.CallExpr
 	}
 
+	// 2-statement pattern: log/print error, then return.
+	// e.g., log.Print(err); return err
+	if len(node.Children) == 2 {
+		return isLogOrPrintStmt(node.Children[0]) && node.Children[1].BaseType == golang.ReturnStmt
+	}
+
 	return false
+}
+
+// isLogOrPrintStmt checks if a statement is a logging or print call
+// (log.Print/Errorf/Warnf, fmt.Println/Printf, slog.Error/Warn/Info).
+func isLogOrPrintStmt(node *domain.CloneNode) bool {
+	if node.BaseType != golang.ExprStmt {
+		return false
+	}
+
+	for _, child := range node.Children {
+		if child.BaseType == golang.CallExpr {
+			for _, callChild := range child.Children {
+				if callChild.BaseType == golang.SelectorExpr && isLoggingMethod(callChild.Name) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+// isLoggingMethod reports whether a method name is a known logging/print function.
+func isLoggingMethod(name string) bool {
+	switch name {
+	case "Print", "Printf", "Println",
+		"Error", "Errorf", "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
+		"Fatal", "Fatalf", "Panic", "Panicf":
+		return true
+	default:
+		return false
+	}
 }

@@ -1,5 +1,7 @@
 # Feedback: Real-world deduplication session on a small Go web project
 
+> ✅ **ADDRESSED** — Default threshold raised to 5 (commit `930b91a`). Semantic mode improvements (literal normalization, alpha-normalization, actionability patterns) now suppress the boilerplate clones reported at t=15. The project achieved 0 clones at t=50, and with default threshold 5, noise is further reduced while maintaining precision.
+
 **Date:** 2026-06-08
 **Project:** overview (Go, ~2600 LOC, 17 test files)
 **Command:** `art-dupl -t 15 . --semantic --sort total-tokens`

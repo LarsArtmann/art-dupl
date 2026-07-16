@@ -217,10 +217,12 @@
             default = {
               type = "app";
               program = "${self.packages.${pkgs.stdenv.system}.default}/bin/art-dupl";
+              meta.description = "Run art-dupl code clone detection";
             };
             art-dupl = {
               type = "app";
               program = "${self.packages.${pkgs.stdenv.system}.default}/bin/art-dupl";
+              meta.description = "Run art-dupl code clone detection";
             };
           };
 

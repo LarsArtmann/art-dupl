@@ -156,6 +156,11 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 		val, _ := cmd.Flags().GetInt("test-threshold")
 		cfg.TestThreshold = val
 	}
+
+	if cmd.Flags().Changed("min-lines") {
+		val, _ := cmd.Flags().GetInt("min-lines")
+		cfg.MinLines = val
+	}
 }
 
 // applyChangedStringFlags sets string config fields only when explicitly provided.

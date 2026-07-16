@@ -1,5 +1,7 @@
 # Feedback: Suppress intra-test clone groups that differ only by literal values
 
+> ✅ **ADDRESSED** — Default threshold raised to 5 (commit `930b91a`). Literal values now normalized by type (STRING/INT/FLOAT) in semantic mode. Test-scaffolding, table-driven-test, and test-data-pair actionability patterns suppress test boilerplate. The `--suppress-test-low` flag and test pattern detection handle the remaining cases.
+
 **Date:** 2026-06-04
 **Project:** cqrs-htmx (Go, ~400 tests)
 **Threshold:** 45 (semantic)

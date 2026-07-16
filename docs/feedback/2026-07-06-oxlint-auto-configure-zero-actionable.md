@@ -1,5 +1,7 @@
 # Feedback: All-reported clones are pre-documented accepts on a curated Go CLI
 
+> ✅ **ADDRESSED** — Default threshold raised to 5 (commit `930b91a`). All 2 clone groups reported at t=2 were correctly classified as non-actionable (signature-only and assertion-chain patterns). At default threshold 5, these would not be reported. The tool correctly identified 0 actionable clones.
+
 **Date:** 2026-07-06
 **Project:** oxlint-auto-configure (Go, ~1800 LOC, 9 test files)
 **Command:** `art-dupl --semantic --sort total-tokens -t 2 --html`

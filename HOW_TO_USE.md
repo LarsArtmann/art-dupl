@@ -138,9 +138,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.26"
+      - name: Set GOEXPERIMENT
+        run: echo "GOEXPERIMENT=jsonv2" >> $GITHUB_ENV
 
       - name: Install art-dupl
         run: go install github.com/LarsArtmann/art-dupl@latest
@@ -319,12 +321,17 @@ The HTML report provides:
 
 ### 1. Setting Thresholds
 
-| Project Size               | Recommended Threshold | Rationale                        |
-| -------------------------- | --------------------- | -------------------------------- |
-| Small (<1000 lines)        | 10-15                 | Catch even small duplicates      |
-| Medium (1K-10K lines)      | 20-30                 | Balance between noise and signal |
-| Large (>10K lines)         | 30-50                 | Focus on meaningful duplicates   |
-| Codebases with boilerplate | 40+                   | Avoid flagging template code     |
+The default threshold is **5** (validated at 100% precision across 15 projects).
+With statement-level tokenization, each Go statement is one token, so `-t 5`
+means "report clones with at least 5 duplicated statements."
+
+| Threshold | Use Case                                    |
+| --------- | ------------------------------------------- |
+| 3         | Maximum sensitivity (may include noise)     |
+| **5**     | **Default** — best precision/recall balance |
+| 10        | Focus on substantial duplication            |
+| 15-30     | Large codebases, reduce noise               |
+| 30+       | Only major copy-paste blocks                |
 
 ### 2. Common Ignore Patterns
 

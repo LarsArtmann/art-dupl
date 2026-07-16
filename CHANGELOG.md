@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`--min-lines` flag**: Suppresses clone groups spanning fewer than N source lines (0 = disabled). Complementary filter to `--threshold`.
+- **`--dump-tokens` debug flag**: Outputs the serialized token stream (filename, position, type, semantic hash, name) without running clone detection. Essential for debugging false positives/negatives.
+- **KeyValueExpr field name encoding**: Struct field names in composite literals (`Point{X:1}` vs `Size{W:1}`) now encoded into the KeyValueExpr node Type via `encodeSemanticType`. Field names are API surface, not local variables. 3 tests added.
+- **Error wrapping detection for 2-stmt bodies**: `isReturnOrWrappedReturn` now handles `log.Print(err); return err` pattern via `isLogOrPrintStmt` + `isLoggingMethod`.
 - **Templ semantic mode**: HTML element tag names (`<a>`, `<div>`, `<button>`), attribute names (`href`, `class`, `hx-get`), and component callee names (`@demoSection(...)`) are now encoded into node Types via `syntax.EncodeSemanticType()`. Templ detection was previously purely structural — every element had the same token. Eliminated 84% of templ false positives on real projects (SwettySwipperWeb: 31→5 groups, DiscordSync: 10→5).
 - **Statement-level tokenization for templ**: Each HTML element subtree is now fingerprinted as a single composite token (same mechanism as Go statements). Threshold now counts duplicated HTML _elements_, not arbitrary AST nodes. Sentinel nodes between files fix suffix-tree maximal-repeat detection.
 - **Literal value normalization in semantic mode**: Semantic mode now hashes BasicLit KIND (STRING, INT, FLOAT) instead of VALUE. This enables Type-2 clone detection where only literal values differ — the most common real-world duplication pattern. Exact mode still hashes verbatim values.
@@ -41,9 +45,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`omitzero` instead of `omitempty`** for custom `MarshalJSON` enum types (json/v2 compatibility).
 - **3 anti-idiomatic linters disabled**: `exhaustruct` (50 false positives, incompatible with Go zero-value design), `gochecknoglobals` (27 false positives, flags sync.Pool/lookup maps/test fixtures), `recvcheck` (9 false positives, string enums legitimately mix pointer/value receivers).
 - **Two high-complexity functions refactored**: `evaluateActionabilityDetailed` (gocyclo 17→3, table-driven) and `applyPatternLabel` (gocyclo 17→2, map lookup).
+- **Builder callback threshold lowered**: From 3 to 2 calls for more aggressive FP suppression of builder/fluent API patterns.
+- **`isReturnOrWrappedReturn` extended**: Now handles 2-statement error handling bodies (`log.Print(err); return err`) in addition to single-statement returns.
+- **HOW_TO_USE.md threshold table updated**: Recommendations now reflect default=5 (was project-size-based with 10-50 range).
+- **11 stale docs removed**: SIMD (4 files), STATICPOOL, EXECUTION_PLAN, IMPROVEMENT_PLAN, MODERNIZATION_FINAL_REPORT, code-quality-improvements, enum-consolidation-plan, phase0-validation-safety-report.
 
 ### Fixed
 
+- **`containsTRunCall` overmatching**: Function now verifies the receiver Ident matches common `*testing.T` variable names (t, tt, tc, test, etc.) instead of matching any `.Run` selector.
+- **Cobra detection overmatching**: `isCommandLiteral` now verifies the SelectorExpr receiver Ident is "cobra" or "fang", not just any selector named "Command".
+- **`assertionMethodNames` global variable**: Replaced with `isAssertionMethod()` switch function (gochecknoglobals compliance).
+- **`isWrappingCall` per-call map allocation**: Replaced with `isWrappingCallName()` switch function (performance).
 - **Node.Fingerprint corrupting BaseType for statement nodes**: `serial()` was overwriting `node.Type` with the fingerprint hash, making `DecodeBaseType()` return garbage for ALL statement-level matches. Every actionability pattern that checked `BaseType == golang.IfStmt` etc. was silently broken. Fixed by adding separate `Fingerprint` field (commit `930b91a`).
 - **Templ callee identity loss**: `transformTemplElementExpression` created bare `ComponentRender` nodes with no name encoding. Every `@call()` in every templ file produced an identical suffix-tree token, causing false positives in demo files. Fixed by encoding callee name via `extractCalleeName()` (commit `23a3b03`).
 

@@ -241,7 +241,11 @@ func (t *transformer) trans(
 		t.inInterface = prev
 
 	case *ast.KeyValueExpr:
-		o.Type = KeyValueExpr
+		if keyIdent, ok := n.Key.(*ast.Ident); ok {
+			o.Type = encodeSemanticType(KeyValueExpr, keyIdent.Name, t.config.Mode.hashesIdentifiers())
+		} else {
+			o.Type = KeyValueExpr
+		}
 		t.addKeyValue(o, n.Key, n.Value)
 
 	case *ast.LabeledStmt:

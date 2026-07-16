@@ -71,17 +71,42 @@ func isTableDrivenTestBody(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // containsTRunCall checks if a node tree contains a CallExpr where the
-// function is a SelectorExpr with method name "Run" — matching t.Run().
+// function is t.Run() specifically. It verifies the SelectorExpr has
+// method name "Run" AND the receiver Ident looks like a testing.T variable
+// (common names: t, tt, tc, test, ts, tb, testing).
 func containsTRunCall(node *domain.CloneNode) bool {
 	if node.BaseType == golang.CallExpr {
 		for _, child := range node.Children {
 			if child.BaseType == golang.SelectorExpr && child.Name == "Run" {
-				return true
+				if hasTestingReceiver(child) {
+					return true
+				}
 			}
 		}
 	}
 
 	return slices.ContainsFunc(node.Children, containsTRunCall)
+}
+
+// hasTestingReceiver checks if a SelectorExpr has a receiver Ident with
+// a name commonly used for *testing.T parameters.
+func hasTestingReceiver(sel *domain.CloneNode) bool {
+	for _, child := range sel.Children {
+		if child.BaseType == golang.Ident && isTestingVarName(child.Name) {
+			return true
+		}
+	}
+	return false
+}
+
+// isTestingVarName reports whether a name is a common *testing.T variable name.
+func isTestingVarName(name string) bool {
+	switch name {
+	case "t", "tt", "tc", "test", "ts", "tb", "testing", "t0":
+		return true
+	default:
+		return false
+	}
 }
 
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.

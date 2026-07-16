@@ -160,6 +160,11 @@ type Config struct {
 	// identically to production files. Overrides IgnoreTests, SuppressTestLow,
 	// and TestThreshold defaults.
 	IncludeTests bool `json:"includeTests,omitempty"`
+
+	// MinLines suppresses clone groups whose clones span fewer than N source lines.
+	// 0 = disabled (no line-count filtering). Useful for filtering trivial
+	// one-liner clones that pass the token threshold but are too short to matter.
+	MinLines int `json:"minLines,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
@@ -205,6 +210,7 @@ func DefaultConfig() *Config {
 		SuppressTestLow:    false,
 		TestThreshold:      0,
 		IgnoreTests:        false,
+		MinLines:           0,
 	}
 }
 
