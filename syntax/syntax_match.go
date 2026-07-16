@@ -1,6 +1,8 @@
 package syntax
 
 import (
+	"strings"
+
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 )
 
@@ -56,6 +58,11 @@ func fileContainsStatements(data []*Node, filename string) bool {
 	}
 
 	return false
+}
+
+// isTemplFile reports whether a filename has a .templ extension.
+func isTemplFile(filename string) bool {
+	return strings.HasSuffix(filename, ".templ")
 }
 
 func getUnitsIndexes(nodeSeq []*Node, threshold int) []int {

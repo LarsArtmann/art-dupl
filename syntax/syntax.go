@@ -263,11 +263,11 @@ func FindSyntaxUnits(data []*Node, m suffixtree.Match, threshold int) Match {
 	// When this file uses statement-level tokenization but the match falls
 	// entirely in the non-statement portion (structural wrappers like
 	// FuncDecl/File), the legacy Owns-based indexes are not meaningful clone
-	// units — skip them. The check is scoped to the match's file because other
-	// languages (e.g. templ) do not mark statements and should still be matched
-	// via the legacy path.
+	// units — skip them. Only applies to Go files; templ files may have
+	// non-statement component declarations that are valid clone units.
 	if len(indexes) > 0 && !firstSeq[indexes[0]].Statement &&
-		fileContainsStatements(data, firstSeq[indexes[0]].Filename) {
+		fileContainsStatements(data, firstSeq[indexes[0]].Filename) &&
+		!isTemplFile(firstSeq[indexes[0]].Filename) {
 		return Match{}
 	}
 

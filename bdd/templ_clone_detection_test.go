@@ -283,7 +283,7 @@ templ Display(name string) {
 				btnCode("Button", "text"),
 				btnCode("Submit", "label"),
 				"button.templ", "submit.templ",
-				"--json", "3",
+				"--json", "1",
 				[]string{"button.templ", "submit.templ", `"clone_groups"`},
 			)
 		})
@@ -293,7 +293,7 @@ templ Display(name string) {
 				inputTemplCode("InputField", "name"),
 				inputTemplCode("TextField", "id"),
 				"input.templ", "text.templ",
-				"--html", "2",
+				"--html", "1",
 				[]string{"<!DOCTYPE html>", "input.templ", "text.templ"},
 			)
 		})
@@ -428,24 +428,20 @@ templ personalNetting(name string) {
 			duplicateCode1 := `package templates
 
 templ header(title string) {
-	<header>
-		<h1>{ title }</h1>
-		<nav>
-			<a href="/">Home</a>
-			<a href="/about">About</a>
-		</nav>
-	</header>
+	<h1>{ title }</h1>
+	<nav>
+		<a href="/">Home</a>
+		<a href="/about">About</a>
+	</nav>
 }`
 			duplicateCode2 := `package templates
 
 templ pageHeader(name string) {
-	<header>
-		<h1>{ name }</h1>
-		<nav>
-			<a href="/">Home</a>
-			<a href="/about">About</a>
-		</nav>
-	</header>
+	<h1>{ name }</h1>
+	<nav>
+		<a href="/">Home</a>
+		<a href="/about">About</a>
+	</nav>
 }`
 			err := setup.CreateTestFile("header.templ", duplicateCode1)
 			Expect(err).NotTo(HaveOccurred())

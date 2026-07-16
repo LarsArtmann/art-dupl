@@ -27,10 +27,13 @@ func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *sy
 }
 
 // addChildren processes a slice of nodes and adds them as children to the parent.
+// Each child is marked as Statement=true so serial() fingerprints the entire
+// element subtree into one composite token, matching how Go statements work.
 func (t *transformer) addChildren(parent *syntax.Node, nodes []templparser.Node) {
 	for _, child := range nodes {
 		childNode := t.transformNode(child)
 		if childNode != nil {
+			childNode.Statement = true
 			parent.AddChildren(childNode)
 		}
 	}
@@ -90,6 +93,10 @@ func (t *transformer) transformHTMLTemplate(tmpl *templparser.HTMLTemplate) *syn
 	}
 
 	o := t.createNodeFromRange(ComponentDeclaration, tmpl.Range)
+	o.Name = tmpl.Expression.Value
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(ComponentDeclaration, tmpl.Expression.Value, true)
+	}
 	t.addChildren(o, tmpl.Children)
 
 	return o

@@ -197,14 +197,14 @@ var _ = Describe("File Type Filter (--only)", func() {
 		templCode := `package main
 
 templ page(name string) {
-	<div class="container">
-		<h1>{ name }</h1>
-		<p>Hello World</p>
-		<span>Content here</span>
-	</div>
+	<h1>{ name }</h1>
+	<p>Hello World</p>
+	<span>Content here</span>
 }`
 
-		err := setup.CreateDuplicateFiles([]string{"page1.templ", "page2.templ"}, templCode)
+		err := setup.CreateTestFile("page1.templ", templCode)
+		Expect(err).NotTo(HaveOccurred())
+		err = setup.CreateTestFile("page2.templ", strings.Replace(templCode, "page", "page2", 1))
 		Expect(err).NotTo(HaveOccurred())
 
 		err = setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, simpleGoCode)

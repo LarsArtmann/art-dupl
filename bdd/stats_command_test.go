@@ -3,6 +3,7 @@ package bdd
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
@@ -532,18 +533,16 @@ templ page() { <div>Hello</div> }`
 		It("should only count templ files with --only templ", func() {
 			templCode := `package main
 templ page(name string) {
-	<div class="container">
-		<h1>{ name }</h1>
-		<p>Hello World</p>
-		<span>Content here</span>
-	</div>
+	<h1>{ name }</h1>
+	<p>Hello World</p>
+	<span>Content here</span>
 }`
 			goCode := `package main
 func duplicate() { println(1) }`
 
-			err := setup.CreateDuplicateFiles(
-				[]string{"page1.templ", "page2.templ"}, templCode,
-			)
+			err := setup.CreateTestFile("page1.templ", templCode)
+			Expect(err).NotTo(HaveOccurred())
+			err = setup.CreateTestFile("page2.templ", strings.Replace(templCode, "page", "page2", 1))
 			Expect(err).NotTo(HaveOccurred())
 			err = setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, goCode)
 			Expect(err).NotTo(HaveOccurred())

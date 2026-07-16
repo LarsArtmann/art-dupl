@@ -49,9 +49,9 @@ func TestBuildTree(t *testing.T) {
 		t.Error("Expected non-nil tree")
 	}
 
-	// Verify data contains our nodes
-	if len(*data) != len(nodes) {
-		t.Errorf("Expected %d nodes in data, got %d", len(nodes), len(*data))
+	// Verify data contains our nodes plus 1 sentinel
+	if len(*data) != len(nodes)+1 {
+		t.Errorf("Expected %d nodes in data (including sentinel), got %d", len(nodes)+1, len(*data))
 	}
 }
 
@@ -101,9 +101,9 @@ func TestBuildTreeMultipleSequences(t *testing.T) {
 	// Wait for processing
 	waitForCompletion(t, done, "BuildTree with multiple sequences timed out")
 
-	// Should contain all nodes from both sequences
-	if len(*builtData) != 4 {
-		t.Errorf("Expected 4 nodes total, got %d", len(*builtData))
+	// Should contain all nodes from both sequences plus 2 sentinels
+	if len(*builtData) != 6 {
+		t.Errorf("Expected 6 nodes total (including sentinels), got %d", len(*builtData))
 	}
 
 	// We don't need to use tree variable, but verify it exists
