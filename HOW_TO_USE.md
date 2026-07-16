@@ -125,6 +125,52 @@ art-dupl --include-pattern "vendor/*" ./src
 art-dupl --exclude-pattern "*_test.go" ./src
 ```
 
+### Line-Count Filtering
+
+Use `--min-lines` to suppress clone groups that span fewer than N source lines.
+A group is suppressed if ANY clone in the group is shorter than the threshold:
+
+```bash
+# Only report clones spanning 5+ lines
+art-dupl --min-lines 5 ./src
+
+# Combine with threshold for stricter filtering
+art-dupl -t 10 --min-lines 10 ./src
+```
+
+### Debugging Token Output
+
+Use `--dump-tokens` to inspect the serialized token stream without running
+clone detection. Output is tab-separated: filename, position, type, name:
+
+```bash
+art-dupl --dump-tokens ./src/file.go
+```
+
+### Quiet and Color Control
+
+```bash
+# Suppress progress messages (for CI/piped output)
+art-dupl --quiet ./src
+art-dupl -q ./src
+
+# Disable colored output
+art-dupl --no-color ./src
+
+# Or via environment variable
+NO_COLOR=1 art-dupl ./src
+```
+
+### Exit Codes
+
+| Code | Meaning                                             |
+| ---- | --------------------------------------------------- |
+| 0    | Success (no errors, clones may or may not be found) |
+| 1    | General error (analysis failure)                    |
+| 2    | Configuration/validation error                      |
+| 3    | Internal error                                      |
+| 130  | Interrupted (Ctrl+C)                                |
+
 ## CI/CD Integration
 
 ### GitHub Actions Example

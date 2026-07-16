@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`--quiet`/`-q` flag**: Suppresses non-essential status output (progress messages, profiling notices). Clone results are still printed to stdout.
+- **`--no-color` flag**: Explicitly disables colored output. Complements the `NO_COLOR` environment variable.
+- **Typed exit codes**: `ExitCodeForError` maps errors to exit codes: 0=success, 1=general error, 2=config/validation error, 3=internal error, 130=interrupted (SIGINT). Enables CI pipelines to distinguish failure modes.
+- **`SuppressionConfig` struct**: Groups `SuppressTestLow`, `TestThreshold`, and `MinLines` into a single value, eliminating 3-parameter function signatures prone to argument-swap bugs.
+- **86+ new tests**: Integration tests for actionability patterns via `EvaluateActionabilityWithLabel` (error wrapping, cobra command, builder callback, table-driven test with non-testing receiver), exit code tests, and existing unit test coverage backfilled.
 - **`--min-lines` flag**: Suppresses clone groups spanning fewer than N source lines (0 = disabled). Complementary filter to `--threshold`.
 - **`--dump-tokens` debug flag**: Outputs the serialized token stream (filename, position, type, semantic hash, name) without running clone detection. Essential for debugging false positives/negatives.
 - **KeyValueExpr field name encoding**: Struct field names in composite literals (`Point{X:1}` vs `Size{W:1}`) now encoded into the KeyValueExpr node Type via `encodeSemanticType`. Field names are API surface, not local variables. 3 tests added.
@@ -52,6 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`--min-lines` only checked first clone**: `shouldSuppressGroup` was comparing only `group.Clones[0].LineCount()` against the threshold. Fixed by extracting `minCloneLineCount()` which walks ALL clones and returns the smallest. A group is suppressed if ANY clone falls below the threshold.
+- **`dumpTokensOutput` untestable**: Refactored to accept `io.Writer` instead of hardcoding `os.Stdout`, enabling unit tests.
+- **gocyclo on `runCmd`**: Extracted `parseOutputFormat()` and `runStandardAnalysis()` to reduce cyclomatic complexity below threshold.
+- **Lint config gaps**: Added `exhaustruct` and `gochecknoglobals` to `_test.go` exclusions, and `cobra.Command` to `exhaustruct` exclude list (30+ fields, intentional partial initialization).
 - **`containsTRunCall` overmatching**: Function now verifies the receiver Ident matches common `*testing.T` variable names (t, tt, tc, test, etc.) instead of matching any `.Run` selector.
 - **Cobra detection overmatching**: `isCommandLiteral` now verifies the SelectorExpr receiver Ident is "cobra" or "fang", not just any selector named "Command".
 - **`assertionMethodNames` global variable**: Replaced with `isAssertionMethod()` switch function (gochecknoglobals compliance).

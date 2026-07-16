@@ -11,6 +11,15 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
+// SuppressionConfig groups the filter thresholds used to suppress clone groups.
+// Passing it as a single value avoids 3-parameter function signatures that are
+// prone to argument-swap bugs.
+type SuppressionConfig struct {
+	SuppressTestLow bool
+	TestThreshold   int
+	MinLines        int
+}
+
 func printDupls(
 	ctx context.Context,
 	p printer.Printer,
@@ -20,9 +29,7 @@ func printDupls(
 	threshold int,
 	detectionMethod string,
 	semantic bool,
-	suppressTestLow bool,
-	testThreshold int,
-	minLines int,
+	suppression SuppressionConfig,
 ) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
@@ -38,7 +45,7 @@ func printDupls(
 			threshold, sortBy.String(), detectionMethod, err)
 	}
 
-	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic, suppressTestLow, testThreshold, minLines)
+	err = printCloneGroups(p, fread, groups, keys, sortBy, semantic, suppression)
 	if err != nil {
 		return fmt.Errorf("print clone groups (fread: %v, sortBy: %s): %w", fread, sortBy.String(), err)
 	}
@@ -97,9 +104,7 @@ func printCloneGroups(
 	keys []string,
 	sortBy config.SortCriteria,
 	semantic bool,
-	suppressTestLow bool,
-	testThreshold int,
-	minLines int,
+	suppression SuppressionConfig,
 ) error {
 	for _, k := range keys {
 		uniq := syntax.Unique(groups[k])
@@ -129,7 +134,7 @@ func printCloneGroups(
 		}
 		group.TokenCount = group.TotalTokenCount()
 
-		if shouldSuppressGroup(group, suppressTestLow, testThreshold, minLines) {
+		if shouldSuppressGroup(group, suppression) {
 			continue
 		}
 
@@ -176,9 +181,7 @@ func printFooter(p printer.Printer) error {
 // suppress-test-low, test-threshold, and min-lines settings.
 func shouldSuppressGroup(
 	group domain.ProcessedCloneGroup,
-	suppressTestLow bool,
-	testThreshold int,
-	minLines int,
+	suppression SuppressionConfig,
 ) bool {
 	if len(group.Clones) == 0 {
 		return false
@@ -186,15 +189,15 @@ func shouldSuppressGroup(
 
 	cls := group.Clones[0].Classification
 
-	if suppressTestLow && cls.IsTest && cls.Priority == domain.PriorityLow {
+	if suppression.SuppressTestLow && cls.IsTest && cls.Priority == domain.PriorityLow {
 		return true
 	}
 
-	if testThreshold > 0 && cls.IsTest && group.TokenCount < testThreshold {
+	if suppression.TestThreshold > 0 && cls.IsTest && group.TokenCount < suppression.TestThreshold {
 		return true
 	}
 
-	if minLines > 0 && minCloneLineCount(group) < minLines {
+	if suppression.MinLines > 0 && minCloneLineCount(group) < suppression.MinLines {
 		return true
 	}
 

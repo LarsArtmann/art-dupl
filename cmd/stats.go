@@ -143,7 +143,11 @@ func runStats(c *cobra.Command, arguments []string) error {
 	}
 
 	err = printCloneGroups(p, os.ReadFile, groups, keys, config.SortByHash, mergedConfig.DetectionMode.IsSemantic(),
-		mergedConfig.EffectiveSuppressTestLow(), mergedConfig.EffectiveTestThreshold(), mergedConfig.MinLines)
+		SuppressionConfig{
+			SuppressTestLow: mergedConfig.EffectiveSuppressTestLow(),
+			TestThreshold:   mergedConfig.EffectiveTestThreshold(),
+			MinLines:        mergedConfig.MinLines,
+		})
 	if err != nil {
 		return err
 	}

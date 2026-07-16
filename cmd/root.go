@@ -20,6 +20,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.AddCommand(statsCmd)
 	rootCmd.AddCommand(NewBaselineCommand())
 	rootCmd.AddCommand(NewCheckCommand())
+	rootCmd.AddCommand(NewVersionCommand())
 
 	return rootCmd
 }

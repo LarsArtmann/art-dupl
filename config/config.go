@@ -165,6 +165,10 @@ type Config struct {
 	// 0 = disabled (no line-count filtering). Useful for filtering trivial
 	// one-liner clones that pass the token threshold but are too short to matter.
 	MinLines int `json:"minLines,omitempty"`
+
+	// Quiet suppresses non-essential status output (progress messages,
+	// profiling notices). Clone results are still printed.
+	Quiet bool `json:"quiet,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.

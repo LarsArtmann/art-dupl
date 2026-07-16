@@ -65,6 +65,10 @@ func printBuildingStatus(
 	verboseMsg string,
 	textMsg string,
 ) {
+	if cfg.Quiet {
+		return
+	}
+
 	if cfg.Verbose {
 		_, _ = fmt.Fprintln(os.Stderr, verboseMsg)
 	} else if outputFormat == config.OutputFormatText {

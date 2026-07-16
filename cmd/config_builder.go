@@ -120,6 +120,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"clear-cache":          &cfg.ClearCache,
 		"suppress-test-low":    &cfg.SuppressTestLow,
 		"ignore-tests":         &cfg.IgnoreTests,
+		"quiet":                &cfg.Quiet,
 	}
 
 	for flagName, configPtr := range mappings {

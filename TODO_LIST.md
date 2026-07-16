@@ -6,6 +6,42 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
+## ✅ Completed (2026-07-16) — P3 Code Quality, Tests & UX
+
+### Bug Fixes
+
+- [x] **`--min-lines` filtering bug** — fixed to check ALL clones in a group (minimum LineCount), not just `Clones[0]` (ADR-0011)
+- [x] **`dumpTokensOutput` testability** — refactored to accept `io.Writer` (ADR-0012)
+
+### Integration Tests
+
+- [x] **Actionability integration tests** — error wrapping, cobra command, builder callback, table-driven test with non-testing receiver (6 tests via `EvaluateActionabilityWithLabel`)
+- [x] **Exit code tests** — 9 subtests covering nil, context cancel, validation, config, internal, and generic errors
+
+### CLI & UX
+
+- [x] **Typed exit codes** — `ExitCodeForError`: 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted
+- [x] **`--quiet`/`-q` flag** — suppresses non-essential status output (progress messages, profiling notices)
+- [x] **`--no-color` flag** — explicitly disables colored output (complements `NO_COLOR` env var)
+- [x] **Shell completion** — provided by Fang (bash/zsh/fish/powershell via `art-dupl completion <shell>`)
+
+### Code Quality
+
+- [x] **`SuppressionConfig` struct** — bundles `SuppressTestLow`, `TestThreshold`, `MinLines` into single value (eliminates 3-param function signatures)
+- [x] **`parseOutputFormat()` extraction** — reduces `runCmd` gocyclo below threshold
+- [x] **`runStandardAnalysis()` extraction** — separates analysis logic from flag parsing
+- [x] **Lint config fixes** — added `exhaustruct` and `gochecknoglobals` to `_test.go` exclusions, `cobra.Command` to exhaustruct exclude list
+
+### Documentation
+
+- [x] **CHANGELOG.md** — added entries for exit codes, quiet/no-color flags, SuppressionConfig, bug fixes, lint config
+- [x] **HOW_TO_USE.md** — added sections for `--min-lines`, `--dump-tokens`, `--quiet`, `--no-color`, exit codes
+- [x] **ADR-0011** — `--min-lines` minimum across all clones
+- [x] **ADR-0012** — `dumpTokensOutput` io.Writer injection
+- [x] **`docs/ACTIONABILITY_PATTERNS.md`** — comprehensive table of all 15 detected patterns
+
+---
+
 ## ✅ Completed (2026-07-16) — Pareto Roadmap P0-P2 Execution
 
 ### P0: Documentation & Lint Hygiene (10 tasks)

@@ -79,7 +79,7 @@ func TestShouldSuppressGroup_MinLines(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			result := shouldSuppressGroup(tc.group, false, 0, tc.minLines)
+			result := shouldSuppressGroup(tc.group, SuppressionConfig{MinLines: tc.minLines})
 			if result != tc.expected {
 				t.Errorf("shouldSuppressGroup() = %v, want %v", result, tc.expected)
 			}

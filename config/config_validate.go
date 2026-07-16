@@ -39,11 +39,11 @@ func ValidateConfig(cfg *Config) error {
 
 func validateThreshold(threshold int) error {
 	if threshold < 1 {
-		return fmt.Errorf("%w: %d", ErrInvalidThreshold, threshold)
+		return fmt.Errorf("%w: %d (use --threshold/-t with a value of 1 or higher; default is 5)", ErrInvalidThreshold, threshold)
 	}
 
 	if threshold > 1000 {
-		return fmt.Errorf("%w: %d", ErrThresholdTooLarge, threshold)
+		return fmt.Errorf("%w: %d (use a value between 1 and 1000; use --min-lines for line-based filtering instead)", ErrThresholdTooLarge, threshold)
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func validateOutputFormat(format OutputFormat) error {
 func validateSortCriteria(criteria SortCriteria) error {
 	if !criteria.IsValid() {
 		return errors.NewValidationError(
-			fmt.Sprintf("invalid sort criteria: %s", criteria),
+			fmt.Sprintf("invalid sort criteria: %s (valid: size, occurrence, hash, total-tokens; use --sort/-s)", criteria),
 			nil,
 		)
 	}
@@ -86,7 +86,7 @@ func validateSortCriteria(criteria SortCriteria) error {
 func validateDiffMode(mode DiffMode) error {
 	if !mode.IsValid() {
 		return errors.NewValidationError(
-			fmt.Sprintf("invalid diff mode: %s", mode),
+			fmt.Sprintf("invalid diff mode: %s (valid: side-by-side, inline; use --diff)", mode),
 			nil,
 		)
 	}

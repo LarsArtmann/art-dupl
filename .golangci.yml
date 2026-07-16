@@ -143,6 +143,7 @@ linters:
     exhaustruct:
       exclude:
         - os/exec.Cmd
+        - github.com/spf13/cobra.Command
     funlen:
       lines: 80
       statements: 50
@@ -225,6 +226,8 @@ linters:
           - wrapcheck
           - unparam
           - unused
+          - exhaustruct
+          - gochecknoglobals
       - path: bdd/
         linters:
           - funlen

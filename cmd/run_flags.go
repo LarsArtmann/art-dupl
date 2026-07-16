@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -35,46 +36,53 @@ func setDetectionMethods(appConfig *config.Config, detectionMethods string) erro
 	return nil
 }
 
+// parseOutputFormat reads the output-format flags from the cobra command and
+// returns the corresponding config.OutputFormat. Returns config.OutputFormatText
+// when no format flag is set.
+func parseOutputFormat(cmd *cobra.Command) config.OutputFormat {
+	if v, _ := cmd.Flags().GetBool("html"); v {
+		return config.OutputFormatHTML
+	}
+
+	if v, _ := cmd.Flags().GetBool("plumbing"); v {
+		return config.OutputFormatPlumbing
+	}
+
+	if v, _ := cmd.Flags().GetBool("sarif"); v {
+		return config.OutputFormatSARIF
+	}
+
+	if v, _ := cmd.Flags().GetBool("simple-json"); v {
+		return config.OutputFormatSimpleJSON
+	}
+
+	if v, _ := cmd.Flags().GetBool("json"); v {
+		return config.OutputFormatJSON
+	}
+
+	return config.OutputFormatText
+}
+
 // runCmd implements Cobra command execution.
-//
-//nolint:funlen // Command execution requires handling many CLI flags and configuration options
 func runCmd(cmd *cobra.Command, args []string) error {
-	html, _ := cmd.Flags().GetBool("html")
-	jsonFlag, _ := cmd.Flags().GetBool("json")
-	plumbing, _ := cmd.Flags().GetBool("plumbing")
-	sarif, _ := cmd.Flags().GetBool("sarif")
-	simpleJSON, _ := cmd.Flags().GetBool("simple-json")
+	if noColor, _ := cmd.Flags().GetBool("no-color"); noColor {
+		_ = os.Setenv("NO_COLOR", "1")
+	}
+
 	sortBy, _ := cmd.Flags().GetString("sort")
 
-	// Validate sorting criteria
 	_, err := config.ParseSortCriteria(sortBy)
 	if err != nil {
 		return duplerrors.WrapValidation(err, fmt.Sprintf("invalid --sort value %q", sortBy))
 	}
-
-	allFlag, _ := cmd.Flags().GetBool("all")
-	outputDir, _ := cmd.Flags().GetString("output-dir")
 
 	mergedConfig, err := BuildConfigFromFlags(cmd, args)
 	if err != nil {
 		return err
 	}
 
-	// Set output format (specific to run command)
-	switch {
-	case html:
-		mergedConfig.OutputFormat = config.OutputFormatHTML
-	case plumbing:
-		mergedConfig.OutputFormat = config.OutputFormatPlumbing
-	case sarif:
-		mergedConfig.OutputFormat = config.OutputFormatSARIF
-	case simpleJSON:
-		mergedConfig.OutputFormat = config.OutputFormatSimpleJSON
-	case jsonFlag:
-		mergedConfig.OutputFormat = config.OutputFormatJSON
-	}
+	mergedConfig.OutputFormat = parseOutputFormat(cmd)
 
-	// Re-validate after adding output format
 	err = config.ValidateConfig(mergedConfig)
 	if err != nil {
 		return duplerrors.WrapValidation(
@@ -83,13 +91,12 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		)
 	}
 
-	// Get context from Cobra (includes Fang's signal handling)
 	ctx := cmd.Context()
-
-	// Apply timeout before dispatching so it is honored on every code path,
-	// including --all (which previously returned before the timeout was set).
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
+
+	allFlag, _ := cmd.Flags().GetBool("all")
+	outputDir, _ := cmd.Flags().GetString("output-dir")
 
 	if allFlag {
 		return runAllModes(ctx, mergedConfig, sortBy, outputDir)
@@ -99,6 +106,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return dumpTokensOutput(ctx, mergedConfig, os.Stdout)
 	}
 
+	return runStandardAnalysis(ctx, mergedConfig, sortBy)
+}
+
+// runStandardAnalysis runs the default clone-detection pipeline and prints results.
+func runStandardAnalysis(ctx context.Context, mergedConfig *config.Config, sortBy string) error {
 	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
@@ -109,12 +121,10 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		return wrapAnalysisError(err, mergedConfig.Paths)
 	}
 
-	// Check for cancellation after analysis completes
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
 
-	// Build metadata for HTML report
 	metadata := newReportMetadata(mergedConfig, sortBy)
 
 	p := createPrinter(
@@ -123,10 +133,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		mergedConfig.DiffMode,
 		metadata,
 		GetVersion(),
-	)(
-		os.Stdout,
-		os.ReadFile,
-	)
+	)(os.Stdout, os.ReadFile)
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
@@ -136,8 +143,11 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Convert detection methods to comma-separated string
-	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
+	suppression := SuppressionConfig{
+		SuppressTestLow: mergedConfig.EffectiveSuppressTestLow(),
+		TestThreshold:   mergedConfig.EffectiveTestThreshold(),
+		MinLines:        mergedConfig.MinLines,
+	}
 
 	err = printDupls(
 		ctx,
@@ -146,11 +156,9 @@ func runCmd(cmd *cobra.Command, args []string) error {
 		duplChan,
 		config.SortCriteria(sortBy),
 		mergedConfig.Threshold,
-		detectionMethodStr,
+		detectionMethodsToString(mergedConfig.DetectionMethods),
 		mergedConfig.DetectionMode.IsSemantic(),
-		mergedConfig.EffectiveSuppressTestLow(),
-		mergedConfig.EffectiveTestThreshold(),
-		mergedConfig.MinLines,
+		suppression,
 	)
 	if err != nil {
 		return duplerrors.Wrap(

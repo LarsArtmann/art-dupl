@@ -12,8 +12,6 @@ import (
 	"github.com/charmbracelet/fang"
 )
 
-const exitCodeInterrupt = 130
-
 func main() {
 	// Create root command
 	rootCmd := cmd.NewRootCommand()
@@ -98,11 +96,6 @@ func main() {
 
 	err := fang.Execute(context.Background(), rootCmd, options...)
 	if err != nil {
-		// Use exit code 130 for SIGINT cancellation (128 + signal 2)
-		if errors.Is(err, context.Canceled) {
-			os.Exit(exitCodeInterrupt)
-		}
-
-		os.Exit(1)
+		os.Exit(cmd.ExitCodeForError(err))
 	}
 }

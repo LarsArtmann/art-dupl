@@ -43,6 +43,10 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		Bool("structural", false, "match by AST shape only, ignoring all names (loosest matching, most candidates)")
 
+	cmd.Flags().
+		BoolP("quiet", "q", false, "suppress non-essential status output (progress messages, profiling notices)")
+	cmd.Flags().Bool("no-color", false, "disable colored output")
+
 	// File type filter
 	cmd.Flags().
 		String("only", "", "only analyze specific file type: 'go' or 'templ' (default: both)")
