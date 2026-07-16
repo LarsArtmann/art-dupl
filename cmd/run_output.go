@@ -194,9 +194,27 @@ func shouldSuppressGroup(
 		return true
 	}
 
-	if minLines > 0 && group.Clones[0].LineCount() < minLines {
+	if minLines > 0 && minCloneLineCount(group) < minLines {
 		return true
 	}
 
 	return false
+}
+
+// minCloneLineCount returns the smallest LineCount across all clones in a group.
+// Used by min-lines filtering: if ANY clone is shorter than the threshold, the
+// entire group is suppressed.
+func minCloneLineCount(group domain.ProcessedCloneGroup) int {
+	if len(group.Clones) == 0 {
+		return 0
+	}
+
+	result := group.Clones[0].LineCount()
+	for _, c := range group.Clones[1:] {
+		if lc := c.LineCount(); lc < result {
+			result = lc
+		}
+	}
+
+	return result
 }

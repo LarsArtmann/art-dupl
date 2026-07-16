@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -21,7 +21,7 @@ import (
 //	<filename>\t<position>\t<type>\t<name>\t<statement>
 //
 // Sentinels (Type=-1) are printed as "---" to visually separate files.
-func dumpTokensOutput(ctx context.Context, cfg *config.Config) error {
+func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) error {
 	err := validatePaths(cfg.Paths, cfg.FilesFromStdin)
 	if err != nil {
 		return err
@@ -60,8 +60,6 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config) error {
 	} else {
 		schan, statsChan = job.Parse(ctx, filesChan, detectionMode(cfg), cfg.MaxChildrenSerial)
 	}
-
-	w := os.Stdout
 
 	for seq := range schan {
 		for _, node := range seq {

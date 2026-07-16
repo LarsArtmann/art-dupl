@@ -96,7 +96,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if dumpTokens, _ := cmd.Flags().GetBool("dump-tokens"); dumpTokens {
-		return dumpTokensOutput(ctx, mergedConfig)
+		return dumpTokensOutput(ctx, mergedConfig, os.Stdout)
 	}
 
 	duplChan, parseStats, _, err := executeAnalysis(
