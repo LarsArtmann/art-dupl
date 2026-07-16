@@ -297,7 +297,7 @@ func (p *htmlprinter) OutputHTML(threshold int, sortBy config.SortCriteria) erro
 
 	for _, cl := range allClones {
 		err := p.PrintClones(
-			domain.ProcessedCloneGroup{Clones: []domain.ProcessedClone{cl}},
+			domain.NewProcessedCloneGroup("", []domain.ProcessedClone{cl}),
 			sortBy,
 		)
 		if err != nil {

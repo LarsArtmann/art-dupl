@@ -27,6 +27,13 @@ func NewVersionCommand() *cobra.Command {
 		Short: "Print version information",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			short, _ := cmd.Flags().GetBool("short")
+			if short {
+
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), Version)
+				return nil
+			}
+
 			jsonFormat, _ := cmd.Flags().GetBool("json")
 			if jsonFormat {
 				info := VersionInfo{
@@ -43,8 +50,7 @@ func NewVersionCommand() *cobra.Command {
 					return fmt.Errorf("marshal version info: %w", err)
 				}
 
-				//nolint:forbidigo // Version JSON output to stdout
-				fmt.Println(string(data))
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), string(data))
 				return nil
 			}
 
@@ -54,6 +60,7 @@ func NewVersionCommand() *cobra.Command {
 	}
 
 	versionCmd.Flags().Bool("json", false, "output version information as JSON")
+	versionCmd.Flags().BoolP("short", "s", false, "print only the version string")
 
 	return versionCmd
 }

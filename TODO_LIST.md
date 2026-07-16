@@ -6,6 +6,53 @@ Actionable items planned for the next 2-4 weeks.
 
 ---
 
+## ✅ Completed (2026-07-16) — P4 Tests, Code Quality & CLI Polish
+
+### Code Quality Fixes
+
+- [x] **gocyclo on `runCmd`** — Extracted `dispatchAnalysis()` to handle allFlag/dumpTokens/standard routing (complexity 16→<15)
+- [x] **9 recvcheck warnings** — Added `//nolint:recvcheck` to all domain string-enum types (standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver)
+- [x] **ProcessedCloneGroup exhaustruct warning** — Added `NewProcessedCloneGroup` constructor that computes `TokenCount` from clones; updated 3 production call sites
+- [x] **Config validation for `--workers`, `--min-lines`, `--max-cache-entries`** — All reject negative values via `validateNonNegative`
+- [x] **`printSearchStatus` quiet check** — Now returns early when `cfg.Quiet` is set (was still printing checkmark emoji)
+
+### Unit Tests (15 new)
+
+- [x] `printBuildingStatus` quiet behavior (4 tests: quiet/non-quiet × verbose/non-verbose)
+- [x] `version` subcommand text/JSON/short output (3 tests)
+- [x] `parseOutputFormat` for all 6 output formats (6 subtests)
+- [x] `ExitCodeForError` with wrapped internal/validation/cancel errors (3 tests)
+
+### Integration & BDD Tests (11 new)
+
+- [x] Config validation → exit code mapping: bad threshold, bad sort, negative workers, negative min-lines, nil error (5 tests)
+- [x] BDD: version subcommand text/JSON/short output (3 scenarios)
+- [x] BDD: exit code errors for bad threshold and bad sort (2 scenarios)
+- [x] BDD: exit code documentation visible in `--help` (1 scenario)
+
+### CLI Features
+
+- [x] **`version --short`/`-s` flag** — Prints just the version string
+- [x] **Exit codes in `--help`** — Root command Long description now includes exit code table
+- [x] **Version cmd uses `cmd.OutOrStdout()`** — Improved testability over `fmt.Println`
+
+### Documentation
+
+- [x] **ADR-0013** — Typed exit codes design decision
+- [x] **ADR-0014** — SuppressionConfig struct extraction rationale
+- [x] **FEATURES.md** — Added exit codes, quiet/no-color, version --short, line-count filtering
+- [x] **CHANGELOG.md** — Updated with all P4 additions
+
+### End-to-End Verification
+
+- [x] `--quiet` fully suppresses stderr (0 bytes verified)
+- [x] `--no-color` produces no ANSI escape codes
+- [x] `version --short` prints version string
+- [x] `version --json` produces valid JSON with all 7 fields
+- [x] Exit codes visible in `--help` output
+
+---
+
 ## ✅ Completed (2026-07-16) — P3 Code Quality, Tests & UX
 
 ### Bug Fixes

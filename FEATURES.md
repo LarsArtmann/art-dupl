@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-13
+> **Last Updated:** 2026-07-16
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -148,13 +148,16 @@
 
 ## 🖥️ Professional CLI (via Fang)
 
-| Feature                    | Status           | Description                                                 |
-| -------------------------- | ---------------- | ----------------------------------------------------------- |
-| **Styled Help Output**     | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                   |
-| **Shell Completion**       | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option |
-| **Man Page Generation**    | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                       |
-| **Version Information**    | FULLY_FUNCTIONAL | Version, commit, build date                                 |
-| **Configurable Verbosity** | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose)                       |
+| Feature                    | Status           | Description                                                                        |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
+| **Styled Help Output**     | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                          |
+| **Shell Completion**       | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                        |
+| **Man Page Generation**    | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                              |
+| **Version Information**    | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                   |
+| **Configurable Verbosity** | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)            |
+| **Color Control**          | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                            |
+| **Typed Exit Codes**       | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)  |
+| **Line-Count Filtering**   | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones) |
 
 ---
 

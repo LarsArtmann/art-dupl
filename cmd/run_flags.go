@@ -95,6 +95,13 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 
+	return dispatchAnalysis(ctx, cmd, mergedConfig, sortBy)
+}
+
+// dispatchAnalysis routes to the appropriate analysis mode based on CLI flags.
+// Handles --all (batch generation), --dump-tokens (token inspection), and the
+// default standard-analysis path.
+func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *config.Config, sortBy string) error {
 	allFlag, _ := cmd.Flags().GetBool("all")
 	outputDir, _ := cmd.Flags().GetString("output-dir")
 

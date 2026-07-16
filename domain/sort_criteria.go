@@ -12,6 +12,8 @@ import (
 var ErrInvalidSortCriteria = errors.New("invalid sort criteria")
 
 // SortCriteria controls how clone groups are ordered in output.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type SortCriteria string
 
 const (

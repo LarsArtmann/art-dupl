@@ -5,6 +5,8 @@ import (
 )
 
 // HealthScore represents an A-F grade for code health based on duplication metrics.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type HealthScore string
 
 const (

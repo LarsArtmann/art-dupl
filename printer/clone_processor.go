@@ -207,14 +207,5 @@ func NodesToGroup(
 		return domain.ProcessedCloneGroup{}, fmt.Errorf("process clones for hash %s: %w", hash, err)
 	}
 
-	size := 0
-	for _, c := range clones {
-		size += c.TokenCount
-	}
-
-	return domain.ProcessedCloneGroup{
-		Hash:       hash,
-		TokenCount: size,
-		Clones:     clones,
-	}, nil
+	return domain.NewProcessedCloneGroup(hash, clones), nil
 }

@@ -7,6 +7,8 @@ import (
 )
 
 // CloneCategory represents the category of code that was duplicated.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneCategory string
 
 const (
@@ -26,6 +28,8 @@ const (
 )
 
 // ClonePriority represents how important it is to address this clone.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type ClonePriority string
 
 const (
@@ -36,6 +40,8 @@ const (
 )
 
 // CloneActionability indicates whether a clone can realistically be deduplicated.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneActionability string
 
 const (
@@ -48,6 +54,8 @@ const (
 )
 
 // CloneType represents the standard code clone taxonomy (Bellon et al.).
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type CloneType string
 
 const (
@@ -309,6 +317,18 @@ type ProcessedCloneGroup struct {
 	Hash       string
 	TokenCount int
 	Clones     []ProcessedClone
+}
+
+// NewProcessedCloneGroup creates a group with TokenCount computed from clones.
+// This is the canonical constructor — avoids inconsistent TokenCount states.
+func NewProcessedCloneGroup(hash string, clones []ProcessedClone) ProcessedCloneGroup {
+	g := ProcessedCloneGroup{
+		Hash:       hash,
+		Clones:     clones,
+		TokenCount: 0,
+	}
+	g.TokenCount = g.TotalTokenCount()
+	return g
 }
 
 // TotalTokenCount returns the sum of TokenCount across all clones in the group.

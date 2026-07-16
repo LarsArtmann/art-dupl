@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`version --short`/`-s` flag**: Prints just the version string without build info. Useful for scripts.
+- **`version --json` with `cmd.OutOrStdout`**: Version subcommand now uses cobra's output writer for testability.
+- **Exit code documentation in `--help`**: Root command Long description now includes the exit code table (0, 1, 2, 3, 130).
+- **Config validation for `--workers`, `--min-lines`, `--max-cache-entries`**: All three now reject negative values via `validateNonNegative`.
+- **`NewProcessedCloneGroup` constructor**: Domain constructor that computes `TokenCount` from clones automatically, preventing inconsistent state and eliminating exhaustruct warnings.
+- **`dispatchAnalysis` extraction**: Separates allFlag/dumpTokens/standard-analysis routing from `runCmd`, reducing gocyclo below threshold.
+- **20+ new unit/integration/BDD tests**: printBuildingStatus quiet behavior (4), version subcommand text/JSON/short (3), parseOutputFormat (6), wrapped exit codes (3), config validation exit codes (5), BDD version/exit-code/exit-code-help (6).
+- **ADR-0013**: Typed exit codes design decision.
+- **ADR-0014**: SuppressionConfig struct extraction rationale.
 - **`--quiet`/`-q` flag**: Suppresses non-essential status output (progress messages, profiling notices). Clone results are still printed to stdout.
 - **`--no-color` flag**: Explicitly disables colored output. Complements the `NO_COLOR` environment variable.
 - **Typed exit codes**: `ExitCodeForError` maps errors to exit codes: 0=success, 1=general error, 2=config/validation error, 3=internal error, 130=interrupted (SIGINT). Enables CI pipelines to distinguish failure modes.

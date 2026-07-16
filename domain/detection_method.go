@@ -12,6 +12,8 @@ var ErrInvalidDetectionMethod = errors.New("invalid detection method")
 // DetectionMethod represents the algorithm used for duplicate detection.
 // This is the canonical definition — config, sdk, and detection packages
 // reference this type via aliases to prevent drift.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type DetectionMethod string
 
 const (

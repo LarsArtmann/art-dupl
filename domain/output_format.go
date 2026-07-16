@@ -12,6 +12,8 @@ import (
 var ErrInvalidOutputFormat = errors.New("invalid output format")
 
 // OutputFormat controls the presentation format of clone detection results.
+//
+//nolint:recvcheck // standard Go JSON convention: MarshalJSON value receiver, UnmarshalJSON pointer receiver
 type OutputFormat string
 
 const (

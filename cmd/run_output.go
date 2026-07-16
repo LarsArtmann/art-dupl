@@ -128,11 +128,7 @@ func printCloneGroups(
 				"failed to process clones for hash %s", k)
 		}
 
-		group := domain.ProcessedCloneGroup{
-			Hash:   k,
-			Clones: clones,
-		}
-		group.TokenCount = group.TotalTokenCount()
+		group := domain.NewProcessedCloneGroup(k, clones)
 
 		if shouldSuppressGroup(group, suppression) {
 			continue

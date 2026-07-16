@@ -25,6 +25,9 @@ func ValidateConfig(cfg *Config) error {
 		func() error { return validateDetectionMethods(cfg.DetectionMethods) },
 		func() error { return validateCacheFlags(cfg.CacheDir, cfg.ClearCache, cfg.Incremental) },
 		func() error { return validateOnly(cfg.Only) },
+		func() error { return validateNonNegative("workers", cfg.Workers) },
+		func() error { return validateNonNegative("min-lines", cfg.MinLines) },
+		func() error { return validateNonNegative("max-cache-entries", cfg.MaxCacheEntries) },
 	}
 
 	for _, validate := range validations {
@@ -141,6 +144,17 @@ func validateOnly(only FileType) error {
 	if !only.IsValid() {
 		return errors.NewValidationError(
 			fmt.Sprintf("invalid --only value: %q (valid: go, templ)", only),
+			nil,
+		)
+	}
+
+	return nil
+}
+
+func validateNonNegative(name string, value int) error {
+	if value < 0 {
+		return errors.NewValidationError(
+			fmt.Sprintf("%s must be non-negative: %d", name, value),
 			nil,
 		)
 	}

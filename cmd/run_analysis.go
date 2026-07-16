@@ -51,6 +51,10 @@ func (p buildParams) getFilesChan() chan string {
 
 // printSearchStatus outputs the status message after tree building completes.
 func printSearchStatus(cfg *config.Config, outputFormat config.OutputFormat) {
+	if cfg.Quiet {
+		return
+	}
+
 	if cfg.Verbose {
 		_, _ = fmt.Fprintln(os.Stderr, "Searching for clones")
 	} else if outputFormat == config.OutputFormatText {
