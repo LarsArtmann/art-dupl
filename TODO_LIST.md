@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated: 2026-07-16**
+**Last Updated: 2026-07-15**
 
 Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG.md`.
 
@@ -24,14 +24,14 @@ These items are blocked by fundamental design constraints and cannot be resolved
 
 ### Testing
 
-- [ ] **Fix `RunArtDuplWithStdin` to exercise real stdin** — BDD helper (`internal/testutil/bdd_runners.go:109`) converts stdin content to CLI args, never exercising the `feedFromStdin` code path. Now that `feedFromStdin` accepts `io.ReadCloser`, refactor the helper to inject a pipe reader for real stdin coverage.
-- [ ] **Add `feedFromStdin` filter integration test** — Current unit tests pass `nil` filter and `""` file type. Add a test with an active `gogenfilter.Filter` and `FileTypeGo` to verify the filtering pipeline works end-to-end through stdin.
-- [ ] **Add stderr suppression test for `feedFromStdin`** — The `ctx.Err() == nil` guard on `run_crawl.go:83` (suppressing scanner errors from forced close) is untested.
-- [ ] **Add stdin timeout cancellation test** — Verify `context.WithTimeout` expiry unblocks the scanner while reading.
-- [ ] **Progress output for long runs** — Add file-count or spinner progress to stderr when not `--quiet`.
-- [ ] **True exit code integration test** — Run `exec.Command` and check actual process exit code, not just `ExitCodeForError` return value.
-- [ ] **Test `--workers 0` auto-detection** — Verify 0 defaults to NumCPU.
-- [ ] **Test `NewProcessedCloneGroup` constructor** — Direct unit test for the constructor computing `TokenCount`.
+- [x] **Fix `RunArtDuplWithStdin` to exercise real stdin** — Refactored to inject a pipe reader via `os.Stdin` replacement + `--files` flag, exercising `feedFromStdin` end-to-end.
+- [x] **Add `feedFromStdin` filter integration test** — `TestStdinFeed_FiltersGeneratedCode` verifies `gogenfilter.Filter` + `FileTypeGo` end-to-end through stdin.
+- [x] **Add stderr suppression test for `feedFromStdin`** — `TestStdinFeed_StderrSuppressedOnCancel` verifies the `ctx.Err() == nil` guard.
+- [x] **Add stdin timeout cancellation test** — `TestStdinFeed_TimeoutUnblocksScanner` verifies `context.WithTimeout` unblocks the scanner.
+- [x] **Progress output for long runs** — `cmd/progress.go` wraps file channel with periodic count to stderr (every 5s + final count). Suppressed by `--quiet` and `ARTDUPL_NO_PROGRESS=1`.
+- [x] **True exit code integration test** — `TestExitCodes_Process` builds real binary and checks actual process exit codes.
+- [x] **Test `--workers 0` auto-detection** — Fixed `> 1` → `!= 1` routing bug (0 was falling to sequential). Added `TestWorkers_AutoDetection`.
+- [x] **Test `NewProcessedCloneGroup` constructor** — `TestNewProcessedCloneGroup` verifies TokenCount computation, empty clones, and Validate() pass.
 
 ### CLI & UX
 
