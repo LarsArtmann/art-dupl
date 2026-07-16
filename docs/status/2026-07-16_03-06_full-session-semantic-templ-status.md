@@ -1,10 +1,11 @@
 # Status Report: Full Session — Semantic Precision + Templ Semantic Mode
 
-**Date:** 2026-07-16 03:06
+**Date:** 2026-07-16 03:06 (updated 2026-07-16)
 **Session span:** 2026-07-15 to 2026-07-16 (4+ sessions, continuous)
 **Branch:** fork
 **Head:** bbfb1c5
-**Test status:** 24/24 packages pass
+**Test status:** 24/24 packages pass, BDD 264 passed/0 failed
+**Status:** All session work COMPLETE. All todos resolved. Awaiting user input on Q1-Q3.
 
 ---
 
@@ -108,7 +109,7 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 1. **go/types integration** — Researched, documented in AGENTS.md, not implemented. Would eliminate `a.String()` vs `b.String()` false positives by understanding receiver types. Major architectural investment.
 2. **--test-threshold flag** — Separate threshold for test files. Feedback's #1 request. Not started.
 3. **Clone type consolidation** — 7 types for the same concept. Not started.
-4. **Status doc cleanup** — 396 status/planning docs, nobody reads them. Not started.
+4. **Status doc cleanup** — 396 status/planning docs. Deleting archived docs was **rejected by user** — keep all status docs.
 5. **--dump-tokens debug flag** — For inspecting the serialized token stream. Not started.
 
 ---
@@ -136,7 +137,7 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 
 1. **Unify Type/Fingerprint model** — `DecodeBaseType(node.Type)` is needed everywhere. Consider making Fingerprint universal.
 2. **Consolidate 7 clone types** — `CloneNode`, `CloneRef`, `ProcessedClone`, `ProcessedCloneGroup`, `CloneGroupDiff`, `CloneWithContent`, `CloneDiff`. Every change touches all.
-3. **396 status/planning docs** — Write-only documentation. Nobody reads 283 archived status reports.
+3. **Status docs retained** — User decided to keep all archived status docs (283 files). Decision recorded.
 4. **go/types integration** — The single highest-impact improvement for eliminating `same-method-different-type` false positives.
 
 ### Detection quality
@@ -149,7 +150,7 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 ### Process
 
 9. **Test against real projects FIRST** — We spent 3 sessions before running against real code. Should have started here.
-10. **Stop generating status docs** — 396 is a disease. Write code, not reports.
+10. **Status docs stay** — User rejected deleting archived docs; keep them.
 11. **Commit after each logical change** — Sometimes bundled multiple changes into one commit.
 
 ---
@@ -158,18 +159,18 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 
 ### Tier 1: High Impact, Low Effort (do first)
 
-| #   | Task                                                        | Impact                                    | Effort |
-| --- | ----------------------------------------------------------- | ----------------------------------------- | ------ |
-| 1   | Delete all archived status docs (283 files)                 | -283 files of dead weight                 | 5 min  |
-| 2   | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min |
-| 3   | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     |
-| 4   | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  |
-| 5   | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min |
-| 6   | Encode struct field names in KeyValueExpr                   | Prevent `Point{X:1}` matching `Size{W:1}` | 30 min |
-| 7   | Verify race safety with `-race` flag on all tests           | Safety                                    | 10 min |
-| 8   | Document templ semantic mode in website docs                | User communication                        | 30 min |
-| 9   | Update AGENTS.md with templ semantic mode details           | Dev context                               | 15 min |
-| 10  | Add `--dump-tokens` debug flag for inspecting token streams | Debugging                                 | 30 min |
+| #   | Task                                                        | Impact                                    | Effort | Status       |
+| --- | ----------------------------------------------------------- | ----------------------------------------- | ------ | ------------ |
+| 1   | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             | 5 min  | **REJECTED** |
+| 2   | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | Pending      |
+| 3   | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     | Pending      |
+| 4   | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  | Pending      |
+| 5   | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min | Pending      |
+| 6   | Encode struct field names in KeyValueExpr                   | Prevent `Point{X:1}` matching `Size{W:1}` | 30 min | Pending      |
+| 7   | Verify race safety with `-race` flag on all tests           | Safety                                    | 10 min | Pending      |
+| 8   | Document templ semantic mode in website docs                | User communication                        | 30 min | Pending      |
+| 9   | Update AGENTS.md with templ semantic mode details           | Dev context                               | 15 min | Pending      |
+| 10  | Add `--dump-tokens` debug flag for inspecting token streams | Debugging                                 | 30 min | Pending      |
 
 ### Tier 2: High Impact, Medium Effort
 
