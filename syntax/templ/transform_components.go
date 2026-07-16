@@ -1,6 +1,8 @@
 package templ
 
 import (
+	"strings"
+
 	"github.com/LarsArtmann/art-dupl/syntax"
 	templparser "github.com/a-h/templ/parser/v2"
 )
@@ -20,6 +22,10 @@ func (t *transformer) createNodeWithAttributes(
 }
 
 // transformTemplElementExpression converts a TemplElementExpression to a syntax.Node.
+// In semantic mode, the callee name is encoded into the node Type so that
+// @demoSection(...) and @display.DataTable(...) produce distinct tokens.
+// Only the callee name is encoded (not arguments), so calls with the same
+// callee but different arguments still match (Type-2 clone detection).
 func (t *transformer) transformTemplElementExpression(
 	tee *templparser.TemplElementExpression,
 ) *syntax.Node {
@@ -27,13 +33,22 @@ func (t *transformer) transformTemplElementExpression(
 		return nil
 	}
 
+	name := extractCalleeName(tee.Expression.Value)
 	o := t.createNodeFromRange(ComponentRender, tee.Range)
+	o.Name = name
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
+	}
 	t.addChildren(o, tee.Children)
 
 	return o
 }
 
 // transformCallTemplateExpression converts a CallTemplateExpression to a syntax.Node.
+// In semantic mode, the callee name is encoded into the node Type so that
+// @demoSection(...) and @display.DataTable(...) produce distinct tokens.
+// Only the callee name is encoded (not arguments), so calls with the same
+// callee but different arguments still match (Type-2 clone detection).
 func (t *transformer) transformCallTemplateExpression(
 	cte *templparser.CallTemplateExpression,
 ) *syntax.Node {
@@ -41,7 +56,26 @@ func (t *transformer) transformCallTemplateExpression(
 		return nil
 	}
 
-	return t.createNodeFromRange(ComponentRender, cte.Range)
+	name := extractCalleeName(cte.Expression.Value)
+	o := t.createNodeFromRange(ComponentRender, cte.Range)
+	o.Name = name
+	if t.semantic {
+		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
+	}
+
+	return o
+}
+
+// extractCalleeName extracts the callee name from a templ call expression value.
+//   - "demoSection(\"foo\", \"bar\")" → "demoSection"
+//   - "display.DataTable(display.DataTableProps{...})" → "display.DataTable"
+//   - "display.Card" (no parens) → "display.Card"
+func extractCalleeName(expr string) string {
+	if idx := strings.IndexByte(expr, '('); idx > 0 {
+		return expr[:idx]
+	}
+
+	return expr
 }
 
 // transformChildrenExpression converts a ChildrenExpression to a syntax.Node.

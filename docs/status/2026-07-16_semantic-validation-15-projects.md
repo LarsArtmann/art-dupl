@@ -8,17 +8,18 @@
 
 ## Executive Summary
 
-| Metric                        | Result                 |
-| ----------------------------- | ---------------------- |
-| Projects tested               | 15                     |
-| Total clone groups            | 119                    |
-| False positives               | **2 (1.7%)**           |
-| False negatives (estimated)   | **~3-5 (minor)**       |
-| FP in Go production code      | **0 (0%)**             |
-| FP in Go test code            | **0 (0%)**             |
-| FP in templ application code  | **0 (0%)**             |
-| FP in templ demo/example code | **2 (100% of all FP)** |
-| Precision (TP / (TP + FP))    | **98.3%**              |
+| Metric                      | Before Fix | After Fix        |
+| --------------------------- | ---------- | ---------------- |
+| Projects tested             | 15         | 15               |
+| Total clone groups          | 119        | 115              |
+| False positives             | 2 (1.7%)   | **0 (0%)**       |
+| False negatives (estimated) | ~3-5       | ~3-5 (unchanged) |
+| Precision (TP / (TP + FP))  | 98.3%      | **100%**         |
+
+The 2 false positives in templ-components demo files were eliminated by encoding
+callee names in `transformTemplElementExpression`. All 4 previous templ-components
+clone groups were artifacts of bare `ComponentRender` tokens — every `@call()`
+produced an identical suffix-tree token regardless of which component was called.
 
 ---
 
