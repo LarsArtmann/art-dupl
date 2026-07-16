@@ -5,6 +5,8 @@
 **Command:** `art-dupl --semantic --sort total-tokens -t 1`
 **Goal:** Find real, fixable duplication with zero false positives and zero false negatives.
 
+> **🔄 PARTIALLY ADDRESSED (updated 2026-07-16):** This feedback was analyzed and several suggestions were implemented in the **2026-07-16 semantic precision hardening sessions** (commits `930b91a`, `61aeca8`). **Implemented:** (1) Actionability patterns expanded — 15+ patterns now correctly work (the `Fingerprint` bug that broke them was fixed); (2) Literal value normalization — semantic mode now hashes BasicLit KIND not VALUE, detecting Type-2 clones with different literal values; (3) Generic type parameter alpha-normalization. **Not yet implemented:** `--test-threshold` flag (still feedback #1 request), helper-call-site detection (needs call-graph resolution), `--dump-tokens` debug flag, fixability scoring. The threshold floor of 3 was effectively superseded by raising the default to 5. At `-t 5`, the `upd` project produces 0 clone groups (already clean).
+
 ## Session Summary
 
 Ran `art-dupl` at `-t 1` on a small, well-maintained Go project. The report surfaced **16 clone groups**. After manual review, only **2 were genuinely harmful** and worth extracting:

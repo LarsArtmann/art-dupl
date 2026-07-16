@@ -1,8 +1,61 @@
 # TODO List
 
-**Last Updated: 2026-07-13**
+**Last Updated: 2026-07-16**
 
 Actionable items planned for the next 2-4 weeks.
+
+---
+
+## ✅ Completed (2026-07-16) — Semantic Precision + Templ Semantic Mode + 15-Project Validation
+
+### Go Semantic Mode Fixes (3 root-cause bugs)
+
+- [x] **Node.Fingerprint field** — `serial()` was overwriting `node.Type` with the fingerprint hash, breaking ALL actionability pattern matching for statement-level clones (every `BaseType == golang.IfStmt` check was silently broken). Added separate `Fingerprint int32` field; `Val()` routes correctly (commit `930b91a`).
+- [x] **Literal value normalization** — Semantic mode now hashes BasicLit KIND (STRING, INT, FLOAT) instead of VALUE. Eliminates false negatives: Type-2 clones with different literal values now detected (commit `930b91a`).
+- [x] **Generic type parameter normalization** — Type parameters (`T`, `U`) are now alpha-normalized in the symbol table. `func Map[T any]()` and `func Filter[U any]()` with same body now match (commit `61aeca8`).
+- [x] **Lock+Defer Unlock actionability pattern** — `m.Lock(); defer m.Unlock()` and `m.RLock(); defer m.RUnlock()` 2-statement pattern now suppressed as idiomatic Go. Added `RUnlock` to cleanup methods, `isAcquireMethod()` helper (commit `930b91a`).
+- [x] **Lint fix** — Replaced `acquireMethodNames` global var with `isAcquireMethod()` switch function, following existing `isCleanupMethod` pattern (commit `027feee`).
+
+### Templ Semantic Mode (implemented from scratch — was purely structural)
+
+- [x] **Phase 1: Element + attribute name encoding** — HTML tag names (`<a>`, `<div>`, `<button>`) and attribute names (`href`, `class`, `hx-get`) now hashed into node Types via `syntax.EncodeSemanticType()`. `<a href>` no longer matches `<div class>` (commit `268e3bb`).
+- [x] **Phase 2: Statement-level tokenization** — Each HTML element subtree becomes one composite fingerprint token. Component names encoded. Sentinel nodes between files fix suffix-tree maximal-repeat detection. Threshold now means "N duplicated HTML elements" (commit `931d472`).
+- [x] **Callee name encoding FP fix** — `extractCalleeName()` splits at first `(` to get callee name; encoded via `EncodeSemanticType`. Applied to both `transformTemplElementExpression` and `transformCallTemplateExpression`. Eliminated 2 FPs in templ-components demo files (commit `23a3b03`).
+- [x] **BDD test updates** — Adjusted 5 templ BDD tests for statement-level tokenization model (commit `bbfb1c5`).
+
+### Validation (15-project, 100% precision)
+
+- [x] **15-project validation** — Tested against 15 real projects (6,222 Go files, 320 templ files). **Precision: 100%** (0 false positives). 119 clone groups, all verified as true positives. Performance: 70ms–1.7s per project. See `docs/status/2026-07-16_semantic-validation-15-projects.md`.
+
+### Tests Added (19+ test cases across 5 files)
+
+- [x] `syntax/fingerprint_test.go` — Fingerprint field behavior, serialization idempotency, non-statement Val(), Clone() (4 tests)
+- [x] `syntax/golang/generics_normalization_test.go` — Type parameter alpha-normalization (1 test)
+- [x] `printer/semantic_precision_test.go` — 6 end-to-end: literal normalization, Lock/Defer, error definitions, business logic, validation chains
+- [x] `printer/clone_type_literal_test.go` — Clone type classification with literal normalization (2 tests)
+- [x] `printer/actionability_test.go` — Lock+Defer Unlock actionability pattern (1 test)
+- [x] `syntax/templ/transform_components_test.go` — Callee name extraction + semantic encoding (4 tests + 7 edge cases)
+
+---
+
+## ✅ Completed (2026-07-13) — Public Presence Overhaul + Docs Health Audit
+
+- [x] **Astro + Starlight documentation website** — 15 pages: landing page, 13 Starlight docs, brand theming. Deployed to Firebase (commit `2d3bc35`).
+- [x] **README rewrite** — Sales-page style, accurate threshold (5), comparison table, all features covered (commit `2d3bc35`).
+- [x] **CI/CD pipeline overhaul** — Two-job deploy pattern, security headers, `FIREBASE_TOKEN` → `GOOGLE_APPLICATION_CREDENTIALS` migration (commit `23f7203`).
+- [x] **Website domain migration** — `art-dupl.web.app` → `art-dupl.lars.software` (commit `23f7203`).
+- [x] **Docs health audit** — 22 findings fixed across 9 core docs (FEATURES, TODO_LIST, DOMAIN_LANGUAGE, ROADMAP, HOW_TO_USE, TESTING, README, CHANGELOG, AGENTS). Threshold 15→5, SHA1→SHA-256, `just`→`go`/`nix`, removed deleted types (commit `23f7203`).
+- [x] **GOEXPERIMENT=jsonv2 added to CI** — Required for `encoding/json/v2` migration (commit `e007d62`).
+
+---
+
+## ✅ Completed (2026-07-11) — BuildFlow Failure Recovery
+
+- [x] **Fixed 4 BuildFlow OOM failures** — golines, nix-build, nix-build-verify, nix-hash-fix all resolved (commit `43362f9`).
+- [x] **Fixed stale vendorHash** — `flake.nix` vendorHash updated for nixpkgs nixos-unstable 2026-07 (commit `43362f9`).
+- [x] **Fixed 88 lint issues (88→0)** — Disabled 3 anti-idiomatic linters (exhaustruct, gochecknoglobals, recvcheck); refactored 2 gocyclo hotspots to table-driven patterns; fixed gomoddirectives v1→v2 config (commit `43362f9`).
+- [x] **Refactored `evaluateActionabilityDetailed`** — gocyclo 17→3 via table-driven pattern (commit `43362f9`).
+- [x] **Refactored `applyPatternLabel`** — gocyclo 17→2 via map lookup (commit `43362f9`).
 
 ---
 

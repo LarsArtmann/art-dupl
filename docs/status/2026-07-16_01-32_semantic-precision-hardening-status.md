@@ -5,6 +5,8 @@
 **Branch:** fork
 **Head:** bb43810
 
+> **✅ FULLY COMPLETED (updated 2026-07-16):** All 3 root-cause bugs fixed and **committed** (`930b91a` — Fingerprint field + literal normalization, `61aeca8` — generics normalization, `027feee` — lint fix). 15+ new tests added across 4 files. This session was the precursor to the full semantic+templ session (`2026-07-16_03-06`) and the 15-project validation (`2026-07-16_semantic-validation-15-projects.md`) which achieved **100% precision** (0 false positives across 15 projects). The `--test-threshold` flag remains the top pending feedback request.
+
 ---
 
 ## Executive Summary

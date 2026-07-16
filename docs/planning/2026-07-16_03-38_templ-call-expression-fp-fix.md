@@ -4,6 +4,8 @@
 **Branch:** fork
 **Status:** Planning → Execution
 
+> **✅ PLAN FULLY EXECUTED AND COMPLETED (updated 2026-07-16):** This plan was implemented and **committed** (`23a3b03` — "fix: encode callee name in templ component render nodes to eliminate FP"). The `extractCalleeName` helper was added, 4 tests were written, all 24/24 packages passed, and the 15-project re-validation confirmed **100% precision** (0 false positives). The plan's note that `transformCallTemplateExpression` was the wrong target was corrected mid-execution — the actual buggy function was `transformTemplElementExpression` (the parser produces `TemplElementExpression` for `@call()` syntax, not `CallTemplateExpression`). Both functions were fixed defensively. See `docs/status/2026-07-16_04-03_templ-call-expression-fp-fix-status.md` for the full session report.
+
 ---
 
 ## Root Cause

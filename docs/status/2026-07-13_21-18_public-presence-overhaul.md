@@ -4,6 +4,8 @@
 **Session Scope:** Making art-dupl public-ready: README, wiki website, GitHub metadata  
 **Branch:** fork
 
+> **✅ FULLY RESOLVED (updated 2026-07-16):** All work from this session was **committed** (`2d3bc35` — "feat: overhaul public web presence with Astro-powered documentation site"). The "NOTHING IS COMMITTED" critical risk is RESOLVED. The website was deployed, the deploy workflow was later upgraded (`23f7203`), and the domain was migrated to `art-dupl.lars.software`. The Go Report Card badge that BuildFlow flagged was later removed (`3858132`). See `docs/status/2026-07-13_22-14_public-presence-complete-session.md` for the continuation session.
+
 ---
 
 ## Executive Summary

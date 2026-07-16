@@ -7,6 +7,8 @@
 **Test status:** 27/27 packages pass, 4 new tests added
 **Parent session:** `docs/status/2026-07-16_03-06_full-session-semantic-templ-status.md`
 
+> **✅ ALL ISSUES RESOLVED (updated 2026-07-16):** Section b "Partially Done" and Section d "Totally Fucked Up" issues are all resolved. The uncommitted plan file and README.md Go Report Card badge removal were **committed** (`3858132` — "doc: clean up stale Go Report Card badge + add FP fix session status report"). Working tree is now clean. The `transformCallTemplateExpression` fix is kept as defensive code. Q1 (README badge) — badge removed and committed. Q2 (defensive code) — kept, harmless. Q3 (plan file) — committed in `05e3378` and `3858132`.
+
 ---
 
 ## Executive Summary

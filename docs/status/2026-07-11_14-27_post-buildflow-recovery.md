@@ -4,6 +4,8 @@
 **Session goal:** Recover from 4 BuildFlow failures (golines, nix-build, nix-build-verify, nix-hash-fix)  
 **Outcome:** All 4 failures resolved, but uncovered deeper lint config issues that required additional fixes.
 
+> **✅ FULLY RESOLVED (updated 2026-07-16):** All work from this session was **committed** (`43362f9` — "fix: resolve 88 lint issues and stale vendorHash from BuildFlow recovery"). The 4 changed files (`.golangci.yml`, `flake.nix`, `printer/actionability.go`, `printer/clone_classify.go`) are in git history. The "AGENTS.md not updated" follow-up was resolved in a later session (`e007d62` added `GOEXPERIMENT=jsonv2`, `9b1dde1` standardized docs). All `nix flake check` checks pass (7/7 green).
+
 ---
 
 ## Context: What BuildFlow Reported

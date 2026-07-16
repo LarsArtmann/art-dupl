@@ -7,6 +7,8 @@
 **Test status:** 24/24 packages pass, BDD 264 passed/0 failed
 **Status:** All session work COMPLETE. All todos resolved. Awaiting user input on Q1-Q3.
 
+> **✅ FULLY COMPLETED + FOLLOW-UP DONE (updated 2026-07-16):** All work committed. Go semantic fixes: `930b91a` (Fingerprint + literals), `61aeca8` (generics), `027feee` (lint). Templ semantic mode: `268e3bb` (Phase 1), `931d472` (Phase 2), `bbfb1c5` (BDD tests). The **follow-up session** (`docs/status/2026-07-16_04-03_templ-call-expression-fp-fix-status.md`, commit `23a3b03`) then fixed the last 2 FPs in templ-components, achieving **100% precision** across 15 projects. The archived-docs deletion was **rejected by user** — all status docs are kept. The Q1-Q3 questions were superseded by the follow-up session. Remaining: `--test-threshold` flag (#1 feedback request), go/types integration (major investment).
+
 ---
 
 ## Executive Summary

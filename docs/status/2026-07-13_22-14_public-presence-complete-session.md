@@ -4,6 +4,8 @@
 **Session Scope:** Making art-dupl fully public-ready: README rewrite, Astro wiki website, GitHub metadata, DNS/Firebase hosting configuration
 **Branch:** fork
 
+> **✅ FULLY RESOLVED (updated 2026-07-16):** All work from this session was **committed** and the website deployed. Commits: `2d3bc35` (Astro website + README rewrite + GitHub metadata), `23f7203` (CI/CD pipeline overhaul + security headers + domain migration to `art-dupl.lars.software`). The "NOTHING IS COMMITTED" critical risk is RESOLVED. DNS CNAME was added to the domains repo. The `FIREBASE_TOKEN` → `GOOGLE_APPLICATION_CREDENTIALS` migration in the deploy workflow is complete. Manual Firebase console domain setup + Terraform apply still needed for the custom domain SSL cert.
+
 ---
 
 ## Executive Summary

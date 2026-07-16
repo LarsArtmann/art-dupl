@@ -2,6 +2,8 @@
 
 **Session goal:** Run the docs-health skill: audit all core documentation against code, fix drift, enforce cross-file consistency.
 
+> **✅ MOSTLY RESOLVED (updated 2026-07-16):** 22 findings were fixed and **committed** (`23f7203` — "doc: overhaul CI/CD pipeline, update documentation, and migrate website domain"). Section B "Leftovers" was partially addressed in later sessions: `GOEXPERIMENT=jsonv2` was added to AGENTS.md and CI (`e007d62`). The remaining `just` references in CONTRIBUTING.md/MIGRATION_QUICK_START.md and the stale SIMD docs cleanup are still open but are tracked in this report's Section C/F. The CHANGELOG [Unreleased] was updated (and is being further updated now).
+
 ---
 
 ## A) FULLY DONE

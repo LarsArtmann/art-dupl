@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Templ semantic mode**: HTML element tag names (`<a>`, `<div>`, `<button>`), attribute names (`href`, `class`, `hx-get`), and component callee names (`@demoSection(...)`) are now encoded into node Types via `syntax.EncodeSemanticType()`. Templ detection was previously purely structural — every element had the same token. Eliminated 84% of templ false positives on real projects (SwettySwipperWeb: 31→5 groups, DiscordSync: 10→5).
+- **Statement-level tokenization for templ**: Each HTML element subtree is now fingerprinted as a single composite token (same mechanism as Go statements). Threshold now counts duplicated HTML _elements_, not arbitrary AST nodes. Sentinel nodes between files fix suffix-tree maximal-repeat detection.
+- **Literal value normalization in semantic mode**: Semantic mode now hashes BasicLit KIND (STRING, INT, FLOAT) instead of VALUE. This enables Type-2 clone detection where only literal values differ — the most common real-world duplication pattern. Exact mode still hashes verbatim values.
+- **Generic type parameter alpha-normalization**: Type parameters (`T`, `U` in generics) are now declared in the per-function symbol table. `func Map[T any]()` and `func Filter[U any]()` with the same body now match as clones.
+- **Lock+Defer Unlock actionability pattern**: `m.Lock(); defer m.Unlock()` and `m.RLock(); defer m.RUnlock()` 2-statement patterns now suppressed as idiomatic Go boilerplate. Added `isAcquireMethod()` helper and `RUnlock` to cleanup methods.
+- **Node.Fingerprint field**: Separate `Fingerprint int32` field on `syntax.Node` for statement-level composite hashes. `Val()` routes between `Fingerprint` (statements) and `Type` (non-statements). Fits in existing struct padding (still 64B aligned).
 - **`--include-generated` flag**: Unified generated-code inclusion (`sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all`). Replaces the separate `--include-sqlc`, `--include-templ`, `--include-protobuf`, `--include-mockgen`, `--include-stringer`, and `--include-generic` flags.
 - **Three detection modes**: `--semantic` (default), `--exact`, `--structural` replace the former `Semantic`/`Exact` bool flags via a single `Config.DetectionMode` enum (ADR-0007).
 - **Baseline CI gating**: `art-dupl baseline` records accepted clones; `art-dupl check` reports only new clones and exits 1 for CI gates.
@@ -21,16 +27,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **JSON config migration shim**: `Config.UnmarshalJSON` converts legacy `"semantic": false` → `"detectionMode": "exact"`.
 - **`CloneRef` value object**: Shared `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) embedded across `ProcessedClone` and `pkg/artdupl.Clone` to eliminate field-name drift.
 - **Generic sort comparator factory**: `sortGroupsByCriteria[T]` unifies 3 parallel 4-criteria sort implementations.
+- **Astro + Starlight documentation website**: Complete public documentation site deployed to `art-dupl.lars.software` with landing page, 13 Starlight docs pages, brand theming, and Firebase hosting with security headers.
 - **ADRs 0005-0008**: Split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout.
 - **`encoding/json/v2` migration**: All JSON marshaling uses `encoding/json/v2` (requires `GOEXPERIMENT=jsonv2`, set in `flake.nix`).
 
 ### Changed
 
-- **Default threshold raised from 1 to 5**: Filters trivial single-statement duplicates while catching meaningful cloning. Users can lower to 3 for more sensitivity or raise to 10+ for noise reduction.
+- **Default threshold raised from 1 to 5**: Filters trivial single-statement duplicates while catching meaningful cloning. Users can lower to 3 for more sensitivity or raise to 10+ for noise reduction. Validated across 15 real-world projects at 100% precision.
+- **Templ detection now semantic-aware**: Previously purely structural (every HTML element shared the same token). Now distinguishes elements by tag name, attribute names, and component callee names.
 - **Cache keys migrated from SHA-1 to SHA-256**: `CacheVersion` bumped to 2. Old caches are automatically invalidated.
 - **ValueSpec/TypeSpec declarations fingerprinted as single composite tokens**: Each `var`/`const`/`type` declaration is now a single token, preventing partial expression prefix matching in declaration-only files.
 - **Non-destructive AST serialization**: `serial()` shallow-copies each node before writing Type/Owns; the original tree is never mutated (ADR-0006).
 - **`omitzero` instead of `omitempty`** for custom `MarshalJSON` enum types (json/v2 compatibility).
+- **3 anti-idiomatic linters disabled**: `exhaustruct` (50 false positives, incompatible with Go zero-value design), `gochecknoglobals` (27 false positives, flags sync.Pool/lookup maps/test fixtures), `recvcheck` (9 false positives, string enums legitimately mix pointer/value receivers).
+- **Two high-complexity functions refactored**: `evaluateActionabilityDetailed` (gocyclo 17→3, table-driven) and `applyPatternLabel` (gocyclo 17→2, map lookup).
+
+### Fixed
+
+- **Node.Fingerprint corrupting BaseType for statement nodes**: `serial()` was overwriting `node.Type` with the fingerprint hash, making `DecodeBaseType()` return garbage for ALL statement-level matches. Every actionability pattern that checked `BaseType == golang.IfStmt` etc. was silently broken. Fixed by adding separate `Fingerprint` field (commit `930b91a`).
+- **Templ callee identity loss**: `transformTemplElementExpression` created bare `ComponentRender` nodes with no name encoding. Every `@call()` in every templ file produced an identical suffix-tree token, causing false positives in demo files. Fixed by encoding callee name via `extractCalleeName()` (commit `23a3b03`).
 
 ### Removed
 

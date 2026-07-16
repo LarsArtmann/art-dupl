@@ -4,6 +4,8 @@
 **Mode:** `--semantic` (default), threshold 5
 **Total clone groups analyzed:** 119
 
+> **✅ VALIDATION COMPLETE — 100% PRECISION ACHIEVED (updated 2026-07-16):** This report was updated mid-session to reflect both Before and After fix results. The 2 false positives in templ-components were eliminated by encoding callee names in `transformTemplElementExpression` (commit `23a3b03`). Final precision: **100%** (0 FP across 15 projects, 6,222 Go files, 320 templ files). This report is the authoritative validation reference for the semantic mode.
+
 ---
 
 ## Executive Summary

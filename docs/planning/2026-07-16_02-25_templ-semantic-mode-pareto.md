@@ -4,6 +4,14 @@
 **Goal:** Eliminate templ false positives by implementing semantic-aware matching for `.templ` files
 **Root cause:** Every HTML element gets `Type = Element` (same int), every attribute gets `Type = Attribute` (same int). `<a href=...>` produces an identical token stream to `<div class=...>`.
 
+> **✅ PHASES 1 & 2 COMPLETED — PHASE 3 NOT STARTED (updated 2026-07-16):** This Pareto plan was executed successfully.
+>
+> - **Phase 1** (element + attribute name encoding): **DONE** — committed `268e3bb`. Element tag names and attribute names are now hashed into node Types via `syntax.EncodeSemanticType()`.
+> - **Phase 2** (statement-level tokenization): **DONE** — committed `931d472`. HTML element subtrees are fingerprinted as single composite tokens; component names encoded; sentinel nodes between files.
+> - **Phase 3** (expression normalization): **NOT STARTED.** Would normalize `{ id.String() }` vs `{ groupID.String() }` in templ expressions. Low impact at threshold 5 — all real-world FPs already eliminated.
+>
+> **Measured impact:** SwettySwipperWeb 31→5 groups (-84%), DiscordSync 10→5 (-50%). Follow-up FP fix (`23a3b03`) brought precision to **100%** across 15 projects.
+
 ## Problem Analysis
 
 Current templ token stream for `<a href="..." class="...">text</a>`:
