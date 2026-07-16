@@ -4,6 +4,8 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"fmt"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -14,20 +16,6 @@ var errExecutorNil = errors.New(
 
 // errNoStdinPaths is returned when stdin content has no file paths.
 var errNoStdinPaths = errors.New("no file paths provided in stdin content")
-
-// splitLines splits content by newlines, trimming whitespace and removing empty lines.
-func splitLines(content string) []string {
-	var lines []string
-
-	for line := range strings.SplitSeq(content, "\n") {
-		trimmed := strings.TrimSpace(line)
-		if trimmed != "" {
-			lines = append(lines, trimmed)
-		}
-	}
-
-	return lines
-}
 
 // commandError wraps a command error with output context.
 func commandError(msg string, err error, output []byte) error {
@@ -106,9 +94,10 @@ func (s *BDDTestSetup) RunArtDuplAllFormat(outputDir, threshold string) ([]byte,
 	)
 }
 
-// RunArtDuplWithStdin executes art-dupl with stdin input.
-// For in-process execution, stdin content (file paths) is parsed and passed
-// as positional arguments directly, since we can't pipe to os.Stdin.
+// RunArtDuplWithStdin executes art-dupl with real stdin input via pipe injection.
+// It replaces os.Stdin with a pipe containing the provided content and adds the
+// --files flag so the CLI reads paths from stdin through feedFromStdin.
+// This exercises the real stdin code path end-to-end.
 func (s *BDDTestSetup) RunArtDuplWithStdin(
 	stdinContent string,
 	flags map[string]string,
@@ -117,15 +106,32 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 		s.T.Helper()
 	}
 
-	// Parse file paths from stdin content
-	lines := splitLines(stdinContent)
-
-	if len(lines) == 0 {
+	if strings.TrimSpace(stdinContent) == "" {
 		return nil, errNoStdinPaths
 	}
 
-	// Build args from file paths + flags
-	args := appendFlagsToArgs(lines, flags)
+	if _, exists := flags["files"]; !exists {
+		flags["files"] = ""
+	}
+
+	args := BuildArgsFromFlags(nil, flags)
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		return nil, fmt.Errorf("create stdin pipe: %w", err)
+	}
+
+	go func() {
+		defer func() { _ = w.Close() }()
+		_, _ = io.WriteString(w, stdinContent)
+	}()
+
+	origStdin := os.Stdin
+	os.Stdin = r
+	defer func() {
+		os.Stdin = origStdin
+		_ = r.Close()
+	}()
 
 	return s.runExecutor(args...)
 }

@@ -53,7 +53,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 		statsChan chan job.ParseStats
 	)
 
-	if cfg.Workers > 1 {
+	if cfg.Workers != 1 {
 		schan, statsChan = job.ParseParallel(
 			ctx, filesChan, cfg.Workers, detectionMode(cfg), cfg.MaxChildrenSerial,
 		)

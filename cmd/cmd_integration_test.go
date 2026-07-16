@@ -176,6 +176,52 @@ func TestRunCmd_Integration(t *testing.T) {
 	})
 }
 
+func TestWorkers_AutoDetection(t *testing.T) {
+	t.Run("workers 0 uses parallel path without hanging", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		createDuplicateTestFiles(t, tmpDir)
+
+		cmd := NewRootCommand()
+		AddFlags(cmd)
+		cmd.SetArgs([]string{"--workers", "0", flagKeyThreshold, "10", tmpDir})
+
+		buf := &bytes.Buffer{}
+		cmd.SetOut(buf)
+		cmd.SetErr(buf)
+
+		err := cmd.Execute()
+		if err != nil {
+			t.Errorf("workers=0: runCmd() error = %v", err)
+		}
+	})
+
+	t.Run("workers 0 and workers 1 produce same result", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		createDuplicateTestFiles(t, tmpDir)
+
+		cfg0 := config.DefaultConfig()
+		cfg0.Threshold = 10
+		cfg0.Workers = 0
+		cfg0.DetectionMethods = nil
+
+		_, data0, ps0 := buildSuffixTreeWithFile(t, tmpDir, cfg0)
+
+		cfg1 := config.DefaultConfig()
+		cfg1.Threshold = 10
+		cfg1.Workers = 1
+		cfg1.DetectionMethods = nil
+
+		_, data1, ps1 := buildSuffixTreeWithFile(t, tmpDir, cfg1)
+
+		if ps0.FilesCount != ps1.FilesCount {
+			t.Errorf("FilesCount: workers=0 got %d, workers=1 got %d", ps0.FilesCount, ps1.FilesCount)
+		}
+		if len(data0) != len(data1) {
+			t.Errorf("data length: workers=0 got %d, workers=1 got %d", len(data0), len(data1))
+		}
+	})
+}
+
 func TestRunStats_Integration(t *testing.T) {
 	t.Run("basic stats execution", func(t *testing.T) {
 		tmpDir := t.TempDir()

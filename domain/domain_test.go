@@ -226,6 +226,51 @@ func TestProcessedCloneGroup_Validate(t *testing.T) {
 	})
 }
 
+func TestNewProcessedCloneGroup(t *testing.T) {
+	t.Run("computes TokenCount from clones", func(t *testing.T) {
+		clones := []ProcessedClone{
+			{CloneRef: CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 10}, TokenCount: 15},
+			{CloneRef: CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 20}, TokenCount: 25},
+			{CloneRef: CloneRef{Filename: "c.go", LineStart: 3, LineEnd: 8}, TokenCount: 10},
+		}
+
+		g := NewProcessedCloneGroup("hash123", clones)
+
+		if g.Hash != "hash123" {
+			t.Errorf("Hash = %q, want 'hash123'", g.Hash)
+		}
+		if g.TokenCount != 50 {
+			t.Errorf("TokenCount = %d, want 50 (15+25+10)", g.TokenCount)
+		}
+		if len(g.Clones) != 3 {
+			t.Fatalf("len(Clones) = %d, want 3", len(g.Clones))
+		}
+	})
+
+	t.Run("zero TokenCount for empty clones", func(t *testing.T) {
+		g := NewProcessedCloneGroup("empty", nil)
+		if g.TokenCount != 0 {
+			t.Errorf("TokenCount = %d, want 0 for nil clones", g.TokenCount)
+		}
+		if g.Hash != "empty" {
+			t.Errorf("Hash = %q, want 'empty'", g.Hash)
+		}
+	})
+
+	t.Run("result passes Validate", func(t *testing.T) {
+		clones := []ProcessedClone{
+			{CloneRef: CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 10}, TokenCount: 15},
+			{CloneRef: CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 20}, TokenCount: 15},
+		}
+
+		g := NewProcessedCloneGroup("hash", clones)
+
+		if err := g.Validate(); err != nil {
+			t.Errorf("Validate() unexpected error: %v", err)
+		}
+	})
+}
+
 func TestClonePriority_GetPriorityColor(t *testing.T) {
 	tests := []struct {
 		priority ClonePriority

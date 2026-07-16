@@ -115,11 +115,12 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	)
 
 	filesChan := params.getFilesChan()
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
 
 	var schan chan []*syntax.Node
 	var incStatsChan chan job.IncrementalStats
 
-	if params.cfg.Workers > 1 {
+	if params.cfg.Workers != 1 {
 		schan, incStatsChan = incParser.ParseIncrementalParallel(params.ctx, filesChan, params.cfg.Workers)
 	} else {
 		schan, incStatsChan = incParser.ParseIncremental(params.ctx, filesChan)
@@ -149,13 +150,14 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
 func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
 
 	var (
 		schan     chan []*syntax.Node
 		statsChan chan job.ParseStats
 	)
 
-	if params.cfg.Workers > 1 {
+	if params.cfg.Workers != 1 {
 		schan, statsChan = job.ParseParallel(
 			params.ctx,
 			filesChan,

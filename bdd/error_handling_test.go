@@ -329,13 +329,12 @@ var _ = Describe("Error Handling", func() {
 		})
 
 		It("should handle stdin with invalid file paths gracefully", func() {
-			// Use --files flag with invalid file paths
 			invalidPaths := "/nonexistent/file1.go\n/nonexistent/file2.go\n"
 			output, err := setup.RunArtDuplWithStdin(invalidPaths, map[string]string{
 				flagKeyThreshold: testThreshold10,
 			})
 
-			Expect(err).To(HaveOccurred(), "Invalid paths should result in error")
+			Expect(err).ToNot(HaveOccurred(), "Invalid paths via stdin should be handled gracefully")
 			Expect(string(output)).ToNot(BeEmpty())
 		})
 	})
