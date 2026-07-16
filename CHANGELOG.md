@@ -5,7 +5,9 @@ All notable changes to art-dupl will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] — Engineering Sprints (2026-06-15 to 2026-07-16)
+
+All work since the [0.3.0] release. Organized by category.
 
 ### Added
 
@@ -48,6 +50,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Astro + Starlight documentation website**: Complete public documentation site deployed to `art-dupl.lars.software` with landing page, 13 Starlight docs pages, brand theming, and Firebase hosting with security headers.
 - **ADRs 0005-0008**: Split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout.
 - **`encoding/json/v2` migration**: All JSON marshaling uses `encoding/json/v2` (requires `GOEXPERIMENT=jsonv2`, set in `flake.nix`).
+- **Goroutine leak elimination** (7 fixes): Context-aware channel sends in SDK streaming, job/parse pipeline, buildtree, incremental, run_all_modes, run_hash, and detector_pipeline. All bare sends converted to `select { case ch <- v: case <-ctx.Done(): }` pattern.
+- **SDK decoupled from `config/`**: `pkg/artdupl/` has ZERO imports of `config/` and `errors/`. Owns its own `detectorConfig`, error sentinels, and types.
+- **Domain package is a true leaf**: `domain/` no longer imports internal `errors/`. Uses stdlib `errors.New()`.
+- **String interning** (`InternFilename`): Wired into all 4 transformer construction sites to deduplicate filename strings across parsed files.
+- **Fuzz tests**: Added for templ parser (`FuzzParseBytes`, 2M+ execs) and suffix tree.
+- **Architecture enforcement** (`.go-arch-lint.yml`): SDK banned from `config/`, domain banned from `errors/`, detection banned from `config/`.
+- **SDK streaming**: `FindClonesStreamResult` with `StreamResult` type for error propagation in streaming results.
+- **`ClonePriority.Rank()`**: Ordinal comparison method replaces fragile `priorityScore`/`priorityHigher` string comparisons.
+- **`context.Context` to all detectors**: All `MethodDetector` implementations accept context for goroutine leak prevention.
+- **`sendCtx[T]` generic helper**: Centralizes context-aware channel send pattern.
+- **Cache eviction** (`cache.Prune`): LRU-style eviction by modification time, wired via `Config.MaxCacheEntries`.
+- **Dead code removed**: `ParseClonePriority`/`ParseCloneCategory`/`ParseCloneActionability`, `ErrInvalidLineNumber`, 5 dead error constructors, `EnumValidationError` type, `domain.Filepath`/`LineNumber` branded types, dead `config.DetectionConfig`.
+- **Field name alignment**: `StartLine`→`LineStart`, `EndLine`→`LineEnd` unified across `ProcessedClone`, `JSONClone`, SDK `Clone`, and `LineRangeMixin`.
+- **Printer split**: `actionability.go` (624L) split into 4 category files. `hash_simd.go`→`hash_seq.go` (no SIMD code). Empty `golang.go` merged into `doc.go`.
 
 ### Changed
 
