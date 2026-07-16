@@ -1,6 +1,5 @@
 # art-dupl
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/LarsArtmann/art-dupl)](https://goreportcard.com/report/github.com/LarsArtmann/art-dupl)
 [![CI](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/art-dupl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-e8a020.svg)](LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/LarsArtmann/art-dupl.svg)](https://pkg.go.dev/github.com/LarsArtmann/art-dupl)
