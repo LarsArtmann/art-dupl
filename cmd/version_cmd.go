@@ -29,7 +29,6 @@ func NewVersionCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			short, _ := cmd.Flags().GetBool("short")
 			if short {
-
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), Version)
 				return nil
 			}

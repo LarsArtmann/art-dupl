@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,6 +32,62 @@ const (
 	NodeModulesDirInPath = string(filepath.Separator) + NodeModulesDirPrefix
 )
 
+// feedFromStdin reads newline-delimited file paths from rc, applies filters,
+// and sends matching paths on the returned channel. When ctx is cancelled, the
+// reader is closed to unblock the inherently blocking bufio.Scanner.Scan call.
+// The channel is closed when scanning completes (EOF or cancellation).
+func feedFromStdin(
+	ctx context.Context,
+	rc io.ReadCloser,
+	filter *gogenfilter.Filter,
+	filterStats *FilterStats,
+	includes generatorIncludes,
+	only config.FileType,
+) chan string {
+	fchan := make(chan string)
+
+	go func() {
+		defer close(fchan)
+
+		done := make(chan struct{})
+		go func() {
+			select {
+			case <-ctx.Done():
+				_ = rc.Close()
+			case <-done:
+			}
+		}()
+
+		sc := bufio.NewScanner(rc)
+		for sc.Scan() {
+			f := sc.Text()
+			path := strings.TrimPrefix(f, "./")
+
+			if !shouldIncludeFile(filter, path, filterStats, includes) {
+				continue
+			}
+
+			if !only.Matches(path) {
+				continue
+			}
+
+			select {
+			case fchan <- path:
+			case <-ctx.Done():
+				return
+			}
+		}
+
+		close(done)
+
+		if err := sc.Err(); err != nil && ctx.Err() == nil {
+			fmt.Fprintf(os.Stderr, "reading stdin: %v\n", err)
+		}
+	}()
+
+	return fchan
+}
+
 // crawlSinglePathWithOpts handles crawling of a single path using CrawlOptions.
 func filesFeedWithOptions(
 	ctx context.Context,
@@ -43,38 +100,7 @@ func filesFeedWithOptions(
 	only config.FileType,
 ) chan string {
 	if fromStdin {
-		fchan := make(chan string)
-
-		go func() {
-			sc := bufio.NewScanner(os.Stdin)
-			for sc.Scan() {
-				f := sc.Text()
-				path := strings.TrimPrefix(f, "./")
-
-				if !shouldIncludeFile(filter, path, filterStats, includes) {
-					continue
-				}
-
-				if !only.Matches(path) {
-					continue
-				}
-
-				select {
-				case fchan <- path:
-				case <-ctx.Done():
-					return
-				}
-			}
-
-			err := sc.Err()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "reading stdin: %v\n", err)
-			}
-
-			close(fchan)
-		}()
-
-		return fchan
+		return feedFromStdin(ctx, os.Stdin, filter, filterStats, includes, only)
 	}
 
 	fileCheck := func(name string) bool {
