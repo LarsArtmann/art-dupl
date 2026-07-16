@@ -162,7 +162,7 @@ Threshold 5 is confirmed correct across all 7 tested projects. Threshold 3 adds 
 | #   | Task                                                        | Impact                                    | Effort | Status       |
 | --- | ----------------------------------------------------------- | ----------------------------------------- | ------ | ------------ |
 | 1   | ~~Delete all archived status docs (283 files)~~             | ~~-283 files of dead weight~~             | 5 min  | **REJECTED** |
-| 2   | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | Pending      |
+| 2   | Run against 10+ external projects and document FP/FN rates  | Validate real quality                     | 30 min | **DONE**     |
 | 3   | Add `--test-threshold` flag                                 | Feedback #1 request                       | 1h     | Pending      |
 | 4   | Fix pre-existing `assertionMethodNames` global lint         | Lint hygiene                              | 5 min  | Pending      |
 | 5   | Fix `isErrorWrappingBody` per-call map allocation           | Perf                                      | 10 min | Pending      |
