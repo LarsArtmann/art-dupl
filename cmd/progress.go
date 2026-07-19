@@ -31,6 +31,7 @@ func progressFilesChan(
 		defer close(out)
 
 		count := 0
+
 		ticker := time.NewTicker(progressInterval)
 		defer ticker.Stop()
 
@@ -41,9 +42,12 @@ func progressFilesChan(
 					if count > 0 {
 						fmt.Fprintf(os.Stderr, "    %d files discovered\n", count)
 					}
+
 					return
 				}
+
 				count++
+
 				select {
 				case out <- path:
 				case <-ctx.Done():
@@ -66,8 +70,10 @@ func shouldShowProgress(cfg *config.Config, outputFormat config.OutputFormat) bo
 	if cfg.Quiet {
 		return false
 	}
+
 	if os.Getenv("ARTDUPL_NO_PROGRESS") == "1" {
 		return false
 	}
+
 	return outputFormat == config.OutputFormatText || cfg.Verbose
 }

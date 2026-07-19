@@ -50,6 +50,7 @@ func ReadConfigB(path string) ([]byte, error) {
 	return content, nil
 }
 `
+
 		matches := findSemanticDupl(t, code, 3)
 		if len(matches) == 0 {
 			t.Error("Expected clone match for Type-2 clone with different literal values")
@@ -73,10 +74,12 @@ func ProcessB(m *sync.Mutex) {
 	defer m.Unlock()
 }
 `
+
 		seqs := findSemanticCloneNodes(t, code, 2)
 		if len(seqs) == 0 {
 			t.Skip("no matches found")
 		}
+
 		result := EvaluateActionability(seqs)
 		if result != domain.NonActionable {
 			t.Errorf("Lock+Defer Unlock should be non-actionable, got %s", result)
@@ -100,10 +103,12 @@ func ReadB(m *sync.RWMutex) {
 	defer m.RUnlock()
 }
 `
+
 		seqs := findSemanticCloneNodes(t, code, 2)
 		if len(seqs) == 0 {
 			t.Skip("no matches found")
 		}
+
 		result := EvaluateActionability(seqs)
 		if result != domain.NonActionable {
 			t.Errorf("RLock+Defer RUnlock should be non-actionable, got %s", result)
@@ -123,6 +128,7 @@ var (
 	ErrConflict     = errors.New("state conflict occurred")
 )
 `
+
 		matches := findSemanticDupl(t, code, 2)
 		if len(matches) > 0 {
 			t.Errorf("Error definitions with different names should NOT match, got %d", len(matches))
@@ -177,6 +183,7 @@ func CountLines(text string) (map[string]int, error) {
 	return result, nil
 }
 `
+
 		matches := findSemanticDupl(t, code, 3)
 		if len(matches) == 0 {
 			t.Error("Expected clone match for real business logic with renamed vars + different literals")
@@ -234,6 +241,7 @@ func (v *ProductValidator) ValidateProduct(title, sku string, price int) error {
 	return nil
 }
 `
+
 		matches := findSemanticDupl(t, code, 5)
 		if len(matches) == 0 {
 			t.Error("Expected clone match for validation chain with different field names and literals")
@@ -245,6 +253,7 @@ func findSemanticDupl(t *testing.T, code string, threshold int) []syntax.Match {
 	t.Helper()
 
 	tmpDir := t.TempDir()
+
 	tmpFile := filepath.Join(tmpDir, "test.go")
 	if err := os.WriteFile(tmpFile, []byte(code), 0o644); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
@@ -268,6 +277,7 @@ func findSemanticDupl(t *testing.T, code string, threshold int) []syntax.Match {
 	}
 
 	ctx := context.Background()
+
 	var matches []syntax.Match
 
 	for m := range tree.FindDuplOver(ctx, threshold) {

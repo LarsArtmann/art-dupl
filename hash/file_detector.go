@@ -75,6 +75,7 @@ func filterDuplicateGroups(groups map[string][]FileHash, threshold int) []FileDu
 func FindFileDuplicates(ctx context.Context, files []string, threshold int) []FileDuplicate {
 	fd := NewFileDetector()
 	groups := fd.groupByHash(ctx, files)
+
 	return filterDuplicateGroups(groups, threshold)
 }
 

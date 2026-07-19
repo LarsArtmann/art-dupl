@@ -49,13 +49,16 @@ func FilterSlice[U any](items []U, fn func(U) bool) []U {
 		var tIdents, uIdents []*syntax.Node
 
 		var walk func(n *syntax.Node)
+
 		walk = func(n *syntax.Node) {
 			if n.Name == "T" {
 				tIdents = append(tIdents, n)
 			}
+
 			if n.Name == "U" {
 				uIdents = append(uIdents, n)
 			}
+
 			for _, c := range n.Children {
 				walk(c)
 			}
@@ -88,6 +91,7 @@ func FilterSlice[U any](items []U, fn func(U) bool) []U {
 				t.Errorf("Expected Name 'T', got %q", n.Name)
 			}
 		}
+
 		for _, n := range uIdents {
 			if n.Name != "U" {
 				t.Errorf("Expected Name 'U', got %q", n.Name)

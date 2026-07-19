@@ -29,6 +29,7 @@ func TestExitCodes_ConfigValidation(t *testing.T) {
 		}
 
 		wrapped := duplerrors.WrapValidation(err, "config validation failed")
+
 		code := ExitCodeForError(wrapped)
 		if code != ExitConfigError {
 			t.Errorf("threshold=-1: exit code = %d, want %d", code, ExitConfigError)

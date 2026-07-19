@@ -131,8 +131,11 @@ func gamma() {
 
 	fchan := make(chan string, len(files))
 	fchan <- setup.GetFilePath("alpha.go")
+
 	fchan <- setup.GetFilePath("beta.go")
+
 	fchan <- setup.GetFilePath("gamma.go")
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncrementalParallel(ctx, fchan, 4)
@@ -186,6 +189,7 @@ func duplicated() {
 	for _, name := range filenames {
 		fchan <- setup.GetFilePath(name)
 	}
+
 	close(fchan)
 
 	// Workers > files to maximize concurrent collision on the shared hash.
@@ -215,9 +219,11 @@ func duplicated() {
 
 	for _, name := range filenames {
 		full := filepath.Join(setup.TmpDir, name)
+
 		count, ok := seen[full]
 		if !ok {
 			t.Errorf("expected filename %q missing from output", full)
+
 			continue
 		}
 
@@ -276,8 +282,11 @@ func (t Thing) String() string {
 	makeChan := func() chan string {
 		ch := make(chan string, len(files))
 		ch <- setup.GetFilePath("a.go")
+
 		ch <- setup.GetFilePath("b.go")
+
 		ch <- setup.GetFilePath("c.go")
+
 		close(ch)
 
 		return ch
@@ -334,7 +343,9 @@ func two() { println("two") }`,
 	run := func() (chan []*syntax.Node, chan IncrementalStats) {
 		fchan := make(chan string, len(files))
 		fchan <- setup.GetFilePath("one.go")
+
 		fchan <- setup.GetFilePath("two.go")
+
 		close(fchan)
 
 		return parser.ParseIncrementalParallel(ctx, fchan, 4)
@@ -385,6 +396,7 @@ func TestIncrementalParallelContextCancellation(t *testing.T) {
 
 	go func() {
 		defer close(done)
+
 		for range schan {
 		}
 	}()
@@ -519,6 +531,7 @@ func fb() { println("b"); y := 2; _ = y }`
 	for i := range numFiles {
 		fchan <- setup.GetFilePath(filenames[i])
 	}
+
 	close(fchan)
 
 	schan, statsChan := parser.ParseIncrementalParallel(ctx, fchan, workers)

@@ -216,6 +216,7 @@ func TestWorkers_AutoDetection(t *testing.T) {
 		if ps0.FilesCount != ps1.FilesCount {
 			t.Errorf("FilesCount: workers=0 got %d, workers=1 got %d", ps0.FilesCount, ps1.FilesCount)
 		}
+
 		if len(data0) != len(data1) {
 			t.Errorf("data length: workers=0 got %d, workers=1 got %d", len(data0), len(data1))
 		}

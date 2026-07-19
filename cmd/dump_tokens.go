@@ -65,6 +65,7 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 		for _, node := range seq {
 			if node.Type == -1 {
 				_, _ = fmt.Fprintln(w, "---")
+
 				continue
 			}
 

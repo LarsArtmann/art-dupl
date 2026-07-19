@@ -103,6 +103,7 @@ func hasCommandReceiver(sel *domain.CloneNode) bool {
 			}
 		}
 	}
+
 	return false
 }
 

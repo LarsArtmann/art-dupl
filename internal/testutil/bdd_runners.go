@@ -123,10 +123,12 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 
 	go func() {
 		defer func() { _ = w.Close() }()
+
 		_, _ = io.WriteString(w, stdinContent)
 	}()
 
 	origStdin := os.Stdin
+
 	os.Stdin = r
 	defer func() {
 		os.Stdin = origStdin

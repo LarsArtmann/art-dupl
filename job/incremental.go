@@ -304,7 +304,6 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 
 		return nodes, nil
 	})
-
 	if err != nil {
 		return ip.handleFileError(file, err, "parse")
 	}

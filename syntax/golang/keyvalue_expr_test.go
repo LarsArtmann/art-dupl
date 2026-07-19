@@ -91,6 +91,7 @@ func parseAndSerializeT(t *testing.T, src string, mode DetectionMode) []*syntax.
 	t.Helper()
 
 	tmpDir := t.TempDir()
+
 	tmpFile := filepath.Join(tmpDir, "test.go")
 	if err := os.WriteFile(tmpFile, []byte(src), 0o644); err != nil {
 		t.Fatalf("Failed to write test file: %v", err)
@@ -100,6 +101,7 @@ func parseAndSerializeT(t *testing.T, src string, mode DetectionMode) []*syntax.
 	if err != nil {
 		t.Fatalf("ParseWithConfig failed: %v", err)
 	}
+
 	if node == nil {
 		t.Fatal("ParseWithConfig returned nil node")
 	}
@@ -111,10 +113,12 @@ func tokensEqualKV(a, b []*syntax.Node) bool {
 	if len(a) != len(b) {
 		return false
 	}
+
 	for i := range a {
 		if a[i].Type != b[i].Type {
 			return false
 		}
 	}
+
 	return true
 }

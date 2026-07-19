@@ -14,6 +14,7 @@ func buildTestBinary(t *testing.T) string {
 	binaryPath := filepath.Join(t.TempDir(), "art-dupl-test")
 
 	buildCmd := exec.CommandContext(t.Context(), "go", "build", "-o", binaryPath, "./art-dupl")
+
 	buildCmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
 
 	output, err := buildCmd.CombinedOutput()
@@ -29,6 +30,7 @@ func runBinaryExitCode(t *testing.T, binaryPath string, args ...string) int {
 	t.Helper()
 
 	cmd := exec.CommandContext(t.Context(), binaryPath, args...)
+
 	cmd.Env = append(os.Environ(), "GOEXPERIMENT=jsonv2")
 
 	_ = cmd.Run()

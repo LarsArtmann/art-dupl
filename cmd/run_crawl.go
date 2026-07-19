@@ -50,6 +50,7 @@ func feedFromStdin(
 		defer close(fchan)
 
 		done := make(chan struct{})
+
 		go func() {
 			select {
 			case <-ctx.Done():

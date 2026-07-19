@@ -96,6 +96,7 @@ func hasTestingReceiver(sel *domain.CloneNode) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

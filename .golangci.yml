@@ -16,11 +16,13 @@ output:
   formats: {}
 linters:
   enable:
+    - arangolint
     - asasalint
     - asciicheck
     - bidichk
     - bodyclose
     - canonicalheader
+    - clickhouselint
     - containedctx
     - contextcheck
     - copyloopvar
@@ -56,6 +58,7 @@ linters:
     - godoclint
     - godot
     - godox
+    - goheader
     - gomoddirectives
     - gomodguard_v2
     - goprintffuncname
@@ -76,12 +79,15 @@ linters:
     - makezero
     - mirror
     - misspell
+    - mnd
+    - modernize
     - musttag
     - nakedret
     - nestif
     - nilerr
     - nilnesserr
     - nilnil
+    - nlreturn
     - noctx
     - nolintlint
     - nonamedreturns
@@ -90,6 +96,7 @@ linters:
     - perfsprint
     - prealloc
     - predeclared
+    - promlinter
     - protogetter
     - reassign
     - recvcheck
@@ -100,6 +107,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -111,9 +119,11 @@ linters:
     - unused
     - usestdlibvars
     - usetesting
+    - varnamelen
     - wastedassign
     - whitespace
     - wrapcheck
+    - wsl_v5
     - zerologlint
   settings:
     cyclop:
@@ -191,6 +201,21 @@ linters:
       disable:
         - go-require
       enable-all: true
+    varnamelen:
+      ignore-map-index-ok: true
+      ignore-names:
+        - err
+        - ok
+        - tt
+        - fn
+        - t
+        - i
+        - m
+        - g
+        - a
+        - b
+        - v
+      ignore-type-assert-ok: true
     wrapcheck:
       ignore-package-globs:
         - github.com/LarsArtmann/art-dupl/pkg/enum

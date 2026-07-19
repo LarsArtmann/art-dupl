@@ -15,7 +15,6 @@ func TestClassifyCloneType_RenamedFunctions(t *testing.T) {
 	//
 	//   func a(x int) int { return x + 1 }
 	//   func b(y int) int { return y + 1 }
-
 	makeFunc := func(funcName, paramName string) []*syntax.Node {
 		// FuncDecl root
 		funcDecl := &syntax.Node{
@@ -65,6 +64,7 @@ func TestClassifyCloneType_IdenticalNames(t *testing.T) {
 			Name: "x",
 		}
 		funcDecl.Children = []*syntax.Node{param}
+
 		return []*syntax.Node{funcDecl}
 	}
 
@@ -94,6 +94,7 @@ func TestClassifyCloneType_DoesNotMutateNodes(t *testing.T) {
 			Statement: true,
 			Children:  []*syntax.Node{inner},
 		}
+
 		return []*syntax.Node{stmt}
 	}
 

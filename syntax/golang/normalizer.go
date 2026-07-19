@@ -132,6 +132,7 @@ func (n *normalizer) declareBodyLocals(body *ast.BlockStmt) {
 			// Declare closure parameters and results, then continue
 			// descending into the body to collect closure-local variables.
 			declareFieldListNames(n, d.Type.Params)
+
 			if d.Type.Results != nil {
 				declareFieldListNames(n, d.Type.Results)
 			}

@@ -45,6 +45,7 @@ func BuildTree(
 			for _, node := range seq {
 				if err := t.Update(node); err != nil {
 					logger.Default.Error("suffix tree update failed", "err", err)
+
 					done <- err
 
 					return

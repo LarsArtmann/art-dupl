@@ -239,9 +239,11 @@ func TestNewProcessedCloneGroup(t *testing.T) {
 		if g.Hash != "hash123" {
 			t.Errorf("Hash = %q, want 'hash123'", g.Hash)
 		}
+
 		if g.TokenCount != 50 {
 			t.Errorf("TokenCount = %d, want 50 (15+25+10)", g.TokenCount)
 		}
+
 		if len(g.Clones) != 3 {
 			t.Fatalf("len(Clones) = %d, want 3", len(g.Clones))
 		}
@@ -252,6 +254,7 @@ func TestNewProcessedCloneGroup(t *testing.T) {
 		if g.TokenCount != 0 {
 			t.Errorf("TokenCount = %d, want 0 for nil clones", g.TokenCount)
 		}
+
 		if g.Hash != "empty" {
 			t.Errorf("Hash = %q, want 'empty'", g.Hash)
 		}

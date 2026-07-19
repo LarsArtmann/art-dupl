@@ -113,6 +113,7 @@ func (d *detector) processCloneGroups(
 
 	for _, hash := range hashes {
 		frags := groups[hash]
+
 		uniq := syntax.Unique(frags)
 		if len(uniq) > 1 {
 			group := d.convertToCloneGroup(hash, uniq, d.opts.DetectionMethods[0])

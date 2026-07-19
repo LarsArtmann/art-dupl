@@ -328,6 +328,7 @@ func NewProcessedCloneGroup(hash string, clones []ProcessedClone) ProcessedClone
 		TokenCount: 0,
 	}
 	g.TokenCount = g.TotalTokenCount()
+
 	return g
 }
 

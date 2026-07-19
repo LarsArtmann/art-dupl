@@ -52,6 +52,7 @@ func BenchmarkSemanticVsExactVsStructural(b *testing.B) {
 	}
 
 	tmpDir := b.TempDir()
+
 	tmpFile := filepath.Join(tmpDir, "bench.go")
 	if err := os.WriteFile(tmpFile, []byte(benchmarkSrc), 0o644); err != nil {
 		b.Fatalf("Failed to write benchmark file: %v", err)
@@ -66,6 +67,7 @@ func BenchmarkSemanticVsExactVsStructural(b *testing.B) {
 				if err != nil {
 					b.Fatalf("ParseWithConfig failed: %v", err)
 				}
+
 				if node == nil {
 					b.Fatal("ParseWithConfig returned nil")
 				}

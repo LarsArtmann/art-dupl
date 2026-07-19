@@ -32,6 +32,7 @@ func TestIsLoggingMethod(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isLoggingMethod(tc.input)
 			if result != tc.expected {
 				t.Errorf("isLoggingMethod(%q) = %v, want %v", tc.input, result, tc.expected)
@@ -62,6 +63,7 @@ func TestIsAssertionMethod(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isAssertionMethod(tc.input)
 			if result != tc.expected {
 				t.Errorf("isAssertionMethod(%q) = %v, want %v", tc.input, result, tc.expected)
@@ -90,6 +92,7 @@ func TestIsWrappingCallName(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isWrappingCallName(tc.input)
 			if result != tc.expected {
 				t.Errorf("isWrappingCallName(%q) = %v, want %v", tc.input, result, tc.expected)
@@ -122,6 +125,7 @@ func TestIsTestingVarName(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isTestingVarName(tc.input)
 			if result != tc.expected {
 				t.Errorf("isTestingVarName(%q) = %v, want %v", tc.input, result, tc.expected)

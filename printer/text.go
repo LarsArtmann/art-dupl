@@ -186,6 +186,7 @@ func (p *TextPrinter) OutputText(threshold int, sortBy config.SortCriteria) erro
 			if len(g) == 0 {
 				return ""
 			}
+
 			return g[0].Filename
 		},
 	})

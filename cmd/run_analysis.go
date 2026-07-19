@@ -117,8 +117,10 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
 	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
 
-	var schan chan []*syntax.Node
-	var incStatsChan chan job.IncrementalStats
+	var (
+		schan        chan []*syntax.Node
+		incStatsChan chan job.IncrementalStats
+	)
 
 	if params.cfg.Workers != 1 {
 		schan, incStatsChan = incParser.ParseIncrementalParallel(params.ctx, filesChan, params.cfg.Workers)
@@ -142,6 +144,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
 		logger.Default.Error("suffix tree terminator update failed", "err", err)
 	}
+
 	printSearchStatus(params.cfg, params.outputFormat)
 
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
@@ -179,6 +182,7 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
 		logger.Default.Error("suffix tree terminator update failed", "err", err)
 	}
+
 	printSearchStatus(params.cfg, params.outputFormat)
 
 	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}

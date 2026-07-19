@@ -32,6 +32,7 @@ var _ = Describe("Exit Codes and Version Subcommand", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				var info map[string]string
+
 				err = json.Unmarshal(result.Stdout, &info)
 				Expect(err).ToNot(HaveOccurred())
 

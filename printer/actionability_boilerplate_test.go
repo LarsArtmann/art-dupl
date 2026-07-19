@@ -92,6 +92,7 @@ func TestIsAssignWithErrorCheck(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isAssignWithErrorCheck(tt.seqs)
 			if result != tt.expected {
 				t.Errorf("isAssignWithErrorCheck() = %v, want %v", result, tt.expected)
@@ -148,6 +149,7 @@ func TestIsSingleCallExpression(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isSingleCallExpression(tt.seqs)
 			if result != tt.expected {
 				t.Errorf("isSingleCallExpression() = %v, want %v", result, tt.expected)

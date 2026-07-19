@@ -49,6 +49,7 @@ func TestExitCodeForError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := ExitCodeForError(tt.err)
 			if got != tt.want {
 				t.Errorf("ExitCodeForError() = %d, want %d", got, tt.want)

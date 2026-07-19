@@ -155,6 +155,7 @@ func (fc *FileCache) Get(contentHash string) ([]*syntax.Node, bool) {
 
 		nodes = deserialized
 		hit = true
+
 		atomic.AddInt64(&fc.metadata.HitCount, 1)
 	})
 

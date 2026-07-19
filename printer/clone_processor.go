@@ -31,6 +31,7 @@ func toCloneNodeSeqs(dups [][]*syntax.Node) [][]*domain.CloneNode {
 			result[i][j] = syntaxToCloneNode(n)
 		}
 	}
+
 	return result
 }
 
@@ -49,6 +50,7 @@ func syntaxToCloneNode(n *syntax.Node) *domain.CloneNode {
 			cn.Children[i] = syntaxToCloneNode(c)
 		}
 	}
+
 	return cn
 }
 
@@ -182,6 +184,7 @@ func collectNamesPreOrder(nodes []*syntax.Node) []string {
 	var names []string
 
 	var walk func(n *syntax.Node)
+
 	walk = func(n *syntax.Node) {
 		names = append(names, n.Name)
 		for _, child := range n.Children {

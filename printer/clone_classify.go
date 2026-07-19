@@ -255,10 +255,13 @@ func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domai
 	if !ok {
 		return cls
 	}
+
 	if cfg.setCategory {
 		cls.Category = cfg.category
 	}
+
 	cls.Suggestion = cfg.suggestion
 	cls.Priority = cfg.priority
+
 	return cls
 }

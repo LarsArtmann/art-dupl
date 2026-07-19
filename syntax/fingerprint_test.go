@@ -103,6 +103,7 @@ func TestSerializeIdempotency(t *testing.T) {
 		if stream1[i].Type != stream2[i].Type {
 			t.Errorf("Type mismatch at %d: %d vs %d", i, stream1[i].Type, stream2[i].Type)
 		}
+
 		if stream1[i].Fingerprint != stream2[i].Fingerprint {
 			t.Errorf("Fingerprint mismatch at %d: %d vs %d", i,
 				stream1[i].Fingerprint, stream2[i].Fingerprint)

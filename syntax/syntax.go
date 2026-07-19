@@ -128,6 +128,7 @@ func (n *Node) Val() suffixtree.TokenValue {
 	if n.Statement {
 		return suffixtree.TokenValue(n.Fingerprint)
 	}
+
 	return suffixtree.TokenValue(n.Type)
 }
 

@@ -22,6 +22,7 @@ func TestDumpTokensOutput(t *testing.T) {
 	cfg.Threshold = 5
 
 	buf := &bytes.Buffer{}
+
 	err := dumpTokensOutput(t.Context(), cfg, buf)
 	if err != nil {
 		t.Fatalf("dumpTokensOutput() error = %v", err)
@@ -47,6 +48,7 @@ func TestDumpTokensOutput(t *testing.T) {
 		fields := strings.Split(line, "\t")
 		if len(fields) < 3 {
 			t.Errorf("token line has fewer than 3 tab-separated fields: %q", line)
+
 			continue
 		}
 
@@ -71,6 +73,7 @@ func TestDumpTokensOutput_EmptyDir(t *testing.T) {
 	cfg.Paths = []string{tmpDir}
 
 	buf := &bytes.Buffer{}
+
 	err := dumpTokensOutput(t.Context(), cfg, buf)
 	if err != nil {
 		t.Fatalf("dumpTokensOutput() on empty dir error = %v", err)

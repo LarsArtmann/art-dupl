@@ -246,6 +246,7 @@ func (t *transformer) trans(
 		} else {
 			o.Type = KeyValueExpr
 		}
+
 		t.addKeyValue(o, n.Key, n.Value)
 
 	case *ast.LabeledStmt:

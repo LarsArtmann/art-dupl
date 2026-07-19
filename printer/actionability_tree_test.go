@@ -78,6 +78,7 @@ func TestHasCommandReceiver(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := hasCommandReceiver(tc.sel)
 			if result != tc.expected {
 				t.Errorf("hasCommandReceiver() = %v, want %v", result, tc.expected)
@@ -128,6 +129,7 @@ func TestHasTestingReceiver(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := hasTestingReceiver(tc.sel)
 			if result != tc.expected {
 				t.Errorf("hasTestingReceiver() = %v, want %v", result, tc.expected)
@@ -214,6 +216,7 @@ func TestIsChainOfCallsWithDifferentReceivers(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isChainOfCallsWithDifferentReceivers(tc.seq)
 			if result != tc.expected {
 				t.Errorf("isChainOfCallsWithDifferentReceivers() = %v, want %v", result, tc.expected)
@@ -346,6 +349,7 @@ func TestIsReturnOrWrappedReturn_TwoStmt(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := isReturnOrWrappedReturn(tc.block)
 			if result != tc.expected {
 				t.Errorf("isReturnOrWrappedReturn() = %v, want %v", result, tc.expected)

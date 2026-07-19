@@ -92,6 +92,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	ctx := cmd.Context()
+
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
 	defer cancel()
 

@@ -38,6 +38,7 @@ func buildMatch(data []*Node, m suffixtree.Match, firstSeq []*Node, indexes []in
 
 	lastIndex := indexes[len(indexes)-1]
 	lastNode := firstSeq[lastIndex]
+
 	endIdx := lastIndex + int(lastNode.Owns)
 	if lastNode.Statement || lastNode.Owns == 0 {
 		endIdx = lastIndex + 1

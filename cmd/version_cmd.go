@@ -30,6 +30,7 @@ func NewVersionCommand() *cobra.Command {
 			short, _ := cmd.Flags().GetBool("short")
 			if short {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), Version)
+
 				return nil
 			}
 
@@ -44,16 +45,19 @@ func NewVersionCommand() *cobra.Command {
 					Platform:  runtime.GOOS,
 					Arch:      runtime.GOARCH,
 				}
+
 				data, err := json.Marshal(info, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 				if err != nil {
 					return fmt.Errorf("marshal version info: %w", err)
 				}
 
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), string(data))
+
 				return nil
 			}
 
 			PrintVersion()
+
 			return nil
 		},
 	}

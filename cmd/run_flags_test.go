@@ -146,7 +146,9 @@ func TestParseOutputFormat(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			cmd := newCmdWithOutputFlags(tt.flags)
+
 			got := parseOutputFormat(cmd)
 			if got != tt.want {
 				t.Errorf("parseOutputFormat() = %s, want %s", got, tt.want)
@@ -159,6 +161,7 @@ func TestExitCodeForError_WrappedInternal(t *testing.T) {
 	t.Parallel()
 
 	wrapped := fmt.Errorf("outer: %w", duplerrors.NewInternalError("inner boom", nil))
+
 	got := ExitCodeForError(wrapped)
 	if got != ExitInternalError {
 		t.Errorf("wrapped internal: got %d, want %d", got, ExitInternalError)
@@ -170,6 +173,7 @@ func TestExitCodeForError_WrappedValidation(t *testing.T) {
 
 	orig := duplerrors.NewValidationError("bad threshold", nil)
 	wrapped := errors.Join(orig, errors.New("extra context"))
+
 	got := ExitCodeForError(wrapped)
 	if got != ExitConfigError {
 		t.Errorf("errors.Join wrapped validation: got %d, want %d", got, ExitConfigError)
@@ -181,6 +185,7 @@ func TestExitCodeForError_NestedWrappedCancel(t *testing.T) {
 
 	inner := fmt.Errorf("level2: %w", context.Canceled)
 	outer := fmt.Errorf("level1: %w", inner)
+
 	got := ExitCodeForError(outer)
 	if got != ExitInterrupted {
 		t.Errorf("nested wrapped cancel: got %d, want %d", got, ExitInterrupted)

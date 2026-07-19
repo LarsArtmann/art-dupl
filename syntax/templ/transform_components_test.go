@@ -43,6 +43,7 @@ templ ComponentA() {
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode() error = %v", err)
 	}
+
 	if node == nil {
 		t.Fatal("ParseBytesWithMode() returned nil node")
 	}
@@ -56,6 +57,7 @@ templ ComponentA() {
 		if n.Name != "demoSection" {
 			t.Errorf("expected callee name 'demoSection', got %q", n.Name)
 		}
+
 		if syntax.DecodeBaseType(n.Type) != int32(ComponentRender) {
 			t.Errorf("expected base type ComponentRender (%d), got %d", ComponentRender, syntax.DecodeBaseType(n.Type))
 		}
@@ -80,6 +82,7 @@ templ A() {
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
 	}
+
 	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(templB), true)
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
@@ -115,6 +118,7 @@ templ A() {
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
 	}
+
 	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(templB), true)
 	if err != nil {
 		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
@@ -136,13 +140,16 @@ func findComponentRenderNodes(root *syntax.Node) []*syntax.Node {
 	var result []*syntax.Node
 
 	var walk func(*syntax.Node)
+
 	walk = func(n *syntax.Node) {
 		if n == nil {
 			return
 		}
+
 		if syntax.DecodeBaseType(n.Type) == int32(ComponentRender) && n.Name != "" {
 			result = append(result, n)
 		}
+
 		for _, child := range n.Children {
 			walk(child)
 		}

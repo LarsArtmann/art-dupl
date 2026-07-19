@@ -35,10 +35,12 @@ func (t *transformer) transformTemplElementExpression(
 
 	name := extractCalleeName(tee.Expression.Value)
 	o := t.createNodeFromRange(ComponentRender, tee.Range)
+
 	o.Name = name
 	if t.semantic {
 		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
 	}
+
 	t.addChildren(o, tee.Children)
 
 	return o
@@ -58,6 +60,7 @@ func (t *transformer) transformCallTemplateExpression(
 
 	name := extractCalleeName(cte.Expression.Value)
 	o := t.createNodeFromRange(ComponentRender, cte.Range)
+
 	o.Name = name
 	if t.semantic {
 		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
@@ -130,6 +133,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 	}
 
 	o := t.createNodeWithAttributes(Element, re.Range, re.Attributes)
+
 	o.Name = re.Name
 	if t.semantic {
 		o.Type = syntax.EncodeSemanticType(Element, re.Name, true)
