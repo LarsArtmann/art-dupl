@@ -13,13 +13,15 @@ func compareByNameThenPos(nameI, nameJ string, posI, posJ int) bool {
 	return nameI < nameJ
 }
 
+var cloneGroupMetrics = GroupMetrics[CloneGroup]{
+	Size:    func(g CloneGroup) int { return g.Size },
+	Count:   func(g CloneGroup) int { return len(g.Clones) },
+	SortKey: func(g CloneGroup) string { return g.Hash },
+}
+
 // SortCloneGroups sorts CloneGroup arrays by specified criteria.
 func SortCloneGroups(groups []CloneGroup, sortBy config.SortCriteria) {
-	sortGroupsByCriteria(groups, sortBy, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, sortBy, cloneGroupMetrics)
 }
 
 // ExtractSortCriteria extracts the sort criteria from variadic sortBy parameter.

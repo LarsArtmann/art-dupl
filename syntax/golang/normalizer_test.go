@@ -28,6 +28,24 @@ func parseFuncBody(t *testing.T, src string) *ast.FuncDecl {
 	return nil
 }
 
+func collectFuncLocals(t *testing.T, src string) *normalizer {
+	t.Helper()
+	fd := parseFuncBody(t, src)
+	n := newNormalizer(true)
+	n.beginFunction()
+	n.collectFunctionLocals(fd)
+
+	return n
+}
+
+func assertCanonicalized(t *testing.T, n *normalizer, name string) {
+	t.Helper()
+
+	if got := n.resolve(name); got == name {
+		t.Errorf("%s should be canonicalized, still got %s", name, got)
+	}
+}
+
 func TestNormalizer_DisabledIsPassthrough(t *testing.T) {
 	t.Parallel()
 
@@ -62,16 +80,8 @@ func sumScores(records []int) int {
 	return sum
 }`
 
-	fdA := parseFuncBody(t, srcA)
-	fdB := parseFuncBody(t, srcB)
-
-	nA := newNormalizer(true)
-	nA.beginFunction()
-	nA.collectFunctionLocals(fdA)
-
-	nB := newNormalizer(true)
-	nB.beginFunction()
-	nB.collectFunctionLocals(fdB)
+	nA := collectFuncLocals(t, srcA)
+	nB := collectFuncLocals(t, srcB)
 
 	// Corresponding variables must map to the same canonical name.
 	pairs := []struct{ aName, bName string }{
@@ -107,11 +117,7 @@ func f(a int, b string) {
 	_ = a + len(b)
 }`
 
-	fd := parseFuncBody(t, src)
-
-	n := newNormalizer(true)
-	n.beginFunction()
-	n.collectFunctionLocals(fd)
+	n := collectFuncLocals(t, src)
 
 	// First-declared param = v0, second = v1, first local = v2, etc.
 	expected := []struct {
@@ -140,11 +146,7 @@ func f() {
 	_ = keep
 }`
 
-	fd := parseFuncBody(t, src)
-
-	n := newNormalizer(true)
-	n.beginFunction()
-	n.collectFunctionLocals(fd)
+	n := collectFuncLocals(t, src)
 
 	// Blank identifier must not be declared.
 	if got := n.resolve("_"); got != "_" {
@@ -185,20 +187,11 @@ func f(v interface{}) {
 	}
 }`
 
-	fd := parseFuncBody(t, src)
-
-	n := newNormalizer(true)
-	n.beginFunction()
-	n.collectFunctionLocals(fd)
+	n := collectFuncLocals(t, src)
 
 	// Both the param and the type-switch guard should be declared.
-	if got := n.resolve("v"); got == "v" {
-		t.Error("param v should be canonicalized")
-	}
-
-	if got := n.resolve("t"); got == "t" {
-		t.Error("type-switch guard t should be canonicalized")
-	}
+	assertCanonicalized(t, n, "v")
+	assertCanonicalized(t, n, "t")
 }
 
 func TestNormalizer_DescendsIntoFuncLit(t *testing.T) {
@@ -212,21 +205,13 @@ func f() {
 	_ = cb
 }`
 
-	fd := parseFuncBody(t, src)
-
-	n := newNormalizer(true)
-	n.beginFunction()
-	n.collectFunctionLocals(fd)
+	n := collectFuncLocals(t, src)
 
 	// closureVar is inside a FuncLit — with flat-table normalization, its
 	// params and locals ARE declared in the same table. This enables Type 2
 	// detection for closures with renamed variables.
-	if got := n.resolve("closureVar"); got == "closureVar" {
-		t.Error("func-lit param closureVar should be canonicalized")
-	}
+	assertCanonicalized(t, n, "closureVar")
 
 	// cb is a local of the outer function — it should be canonicalized.
-	if got := n.resolve("cb"); got == "cb" {
-		t.Error("outer local cb should be canonicalized")
-	}
+	assertCanonicalized(t, n, "cb")
 }

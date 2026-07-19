@@ -78,22 +78,7 @@ templ A() {
 }
 `
 
-	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(templA), true)
-	if err != nil {
-		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
-	}
-
-	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(templB), true)
-	if err != nil {
-		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
-	}
-
-	nodesA := findComponentRenderNodes(nodeA)
-	nodesB := findComponentRenderNodes(nodeB)
-
-	if len(nodesA) == 0 || len(nodesB) == 0 {
-		t.Fatal("expected ComponentRender nodes in both trees")
-	}
+	nodesA, nodesB := parseTwoComponentRenderers(t, templA, templB)
 
 	if nodesA[0].Type == nodesB[0].Type {
 		t.Error("expected different Types for @demoSection and @display.DataTable, got identical Types")
@@ -114,22 +99,7 @@ templ A() {
 }
 `
 
-	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(templA), true)
-	if err != nil {
-		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
-	}
-
-	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(templB), true)
-	if err != nil {
-		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
-	}
-
-	nodesA := findComponentRenderNodes(nodeA)
-	nodesB := findComponentRenderNodes(nodeB)
-
-	if len(nodesA) == 0 || len(nodesB) == 0 {
-		t.Fatal("expected ComponentRender nodes in both trees")
-	}
+	nodesA, nodesB := parseTwoComponentRenderers(t, templA, templB)
 
 	if nodesA[0].Type != nodesB[0].Type {
 		t.Error("expected same Types for @demoSection with different args (Type-2 detection), got different Types")
@@ -157,4 +127,27 @@ func findComponentRenderNodes(root *syntax.Node) []*syntax.Node {
 	walk(root)
 
 	return result
+}
+
+func parseTwoComponentRenderers(t *testing.T, srcA, srcB string) (nodesA, nodesB []*syntax.Node) {
+	t.Helper()
+
+	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(srcA), true)
+	if err != nil {
+		t.Fatalf("ParseBytesWithMode(a) error = %v", err)
+	}
+
+	nodeB, _, err := ParseBytesWithMode("b.templ", []byte(srcB), true)
+	if err != nil {
+		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
+	}
+
+	nodesA = findComponentRenderNodes(nodeA)
+	nodesB = findComponentRenderNodes(nodeB)
+
+	if len(nodesA) == 0 || len(nodesB) == 0 {
+		t.Fatal("expected ComponentRender nodes in both trees")
+	}
+
+	return nodesA, nodesB
 }

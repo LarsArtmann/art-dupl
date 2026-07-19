@@ -16,11 +16,7 @@ func TestSortGroupsByCriteria_Size(t *testing.T) {
 		{Hash: "c", Size: 3, Clones: []JSONClone{{}}},
 	}
 
-	sortGroupsByCriteria(groups, config.SortBySize, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortBySize, cloneGroupMetrics)
 
 	if groups[0].Hash != "a" || groups[1].Hash != "b" || groups[2].Hash != "c" {
 		t.Errorf("expected descending size order [a(10), b(5), c(3)], got %s, %s, %s",
@@ -37,11 +33,7 @@ func TestSortGroupsByCriteria_Occurrence(t *testing.T) {
 		{Hash: "z", Size: 1, Clones: []JSONClone{{}}},
 	}
 
-	sortGroupsByCriteria(groups, config.SortByOccurrence, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortByOccurrence, cloneGroupMetrics)
 
 	if groups[0].Hash != "y" || groups[1].Hash != "x" || groups[2].Hash != "z" {
 		t.Errorf("expected descending occurrence [y(5), x(2), z(1)], got %s, %s, %s",
@@ -58,11 +50,7 @@ func TestSortGroupsByCriteria_Hash(t *testing.T) {
 		{Hash: "bravo", Size: 1},
 	}
 
-	sortGroupsByCriteria(groups, config.SortByHash, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortByHash, cloneGroupMetrics)
 
 	if groups[0].Hash != "alpha" || groups[1].Hash != "bravo" || groups[2].Hash != "charlie" {
 		t.Errorf("expected ascending hash [alpha, bravo, charlie], got %s, %s, %s",
@@ -80,11 +68,7 @@ func TestSortGroupsByCriteria_TotalTokens(t *testing.T) {
 		{Hash: "hi", Size: 3, Clones: make([]JSONClone, 10)}, // 3*10=30
 	}
 
-	sortGroupsByCriteria(groups, config.SortByTotalTokens, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortByTotalTokens, cloneGroupMetrics)
 
 	if groups[0].Hash != "hi" || groups[1].Hash != "mid" || groups[2].Hash != "low" {
 		t.Errorf("expected descending total tokens [hi(30), mid(20), low(10)], got %s, %s, %s",
@@ -97,11 +81,7 @@ func TestSortGroupsByCriteria_EmptyInput(t *testing.T) {
 
 	groups := []CloneGroup{}
 
-	sortGroupsByCriteria(groups, config.SortBySize, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortBySize, cloneGroupMetrics)
 
 	if len(groups) != 0 {
 		t.Errorf("expected empty slice to remain empty, got %d items", len(groups))
@@ -119,11 +99,7 @@ func TestSortGroupsByCriteria_SortByHashEmptyKeys(t *testing.T) {
 		{Hash: "", Size: 10},
 	}
 
-	sortGroupsByCriteria(groups, config.SortByHash, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortByHash, cloneGroupMetrics)
 
 	// "real" should come before empty keys (empty key returns false, so it sorts last)
 	realIdx := -1
@@ -173,11 +149,7 @@ func TestSortGroupsByCriteria_DefaultToSize(t *testing.T) {
 		{Hash: "a", Size: 10},
 	}
 
-	sortGroupsByCriteria(groups, config.SortCriteria("__unknown__"), GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortCriteria("__unknown__"), cloneGroupMetrics)
 
 	if groups[0].Hash != "a" {
 		t.Errorf("expected default-to-size sorting, got first=%s", groups[0].Hash)
@@ -194,11 +166,7 @@ func TestSortGroupsByCriteria_EqualValues(t *testing.T) {
 		{Hash: "a", Size: 5},
 	}
 
-	sortGroupsByCriteria(groups, config.SortBySize, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortBySize, cloneGroupMetrics)
 
 	// All size=5, order is unspecified but should not panic
 	for _, g := range groups {
@@ -215,11 +183,7 @@ func TestSortGroupsByCriteria_SingleElement(t *testing.T) {
 		{Hash: "only", Size: 42},
 	}
 
-	sortGroupsByCriteria(groups, config.SortBySize, GroupMetrics[CloneGroup]{
-		Size:    func(g CloneGroup) int { return g.Size },
-		Count:   func(g CloneGroup) int { return len(g.Clones) },
-		SortKey: func(g CloneGroup) string { return g.Hash },
-	})
+	sortGroupsByCriteria(groups, config.SortBySize, cloneGroupMetrics)
 
 	if len(groups) != 1 || groups[0].Hash != "only" {
 		t.Errorf("single element should be unchanged, got %v", groups)

@@ -16,45 +16,15 @@ func TestIsAssignWithErrorCheck(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "assign + error check if",
-			seqs: [][]*domain.CloneNode{{
-				{BaseType: golang.AssignStmt},
-				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
-					{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
-						{BaseType: golang.Ident, Name: "nil"},
-					}},
-					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
-						{BaseType: golang.ReturnStmt},
-					}},
-				}},
-			}},
+			name:     "assign + error check if",
+			seqs:     [][]*domain.CloneNode{assignWithErrorCheckSeq()},
 			expected: true,
 		},
 		{
 			name: "two error check sequences",
 			seqs: [][]*domain.CloneNode{
-				{
-					{BaseType: golang.AssignStmt},
-					{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
-						{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
-							{BaseType: golang.Ident, Name: "nil"},
-						}},
-						{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
-							{BaseType: golang.ReturnStmt},
-						}},
-					}},
-				},
-				{
-					{BaseType: golang.AssignStmt},
-					{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
-						{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
-							{BaseType: golang.Ident, Name: "nil"},
-						}},
-						{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
-							{BaseType: golang.ReturnStmt},
-						}},
-					}},
-				},
+				assignWithErrorCheckSeq(),
+				assignWithErrorCheckSeq(),
 			},
 			expected: true,
 		},
@@ -155,5 +125,19 @@ func TestIsSingleCallExpression(t *testing.T) {
 				t.Errorf("isSingleCallExpression() = %v, want %v", result, tt.expected)
 			}
 		})
+	}
+}
+
+func assignWithErrorCheckSeq() []*domain.CloneNode {
+	return []*domain.CloneNode{
+		{BaseType: golang.AssignStmt},
+		{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+			{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: "nil"},
+			}},
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.ReturnStmt},
+			}},
+		}},
 	}
 }
