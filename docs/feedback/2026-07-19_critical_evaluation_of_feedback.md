@@ -65,17 +65,18 @@ After critical evaluation, the **actually missing** features are:
 
 ### Tier 1: High-impact, low-risk
 
-1. **Text output: one-line code preview per group** (both reports mention)
+1. **Text output: one-line code preview per group** (both reports mention) — ✅ DONE
    - Add first non-empty source line of the first clone as preview
    - Helps triage without opening files
    - Trivial implementation
 
-2. **Skill doc: recommend `-t 25` for test-heavy libraries** (Report 3)
+2. **Skill doc: recommend `-t 25` for test-heavy libraries** (Report 3) — ✅ DONE
    - One-line addition to `deduplicate-code/SKILL.md`
 
-3. **Clarify `--filter-generated` help text** (Report 2 confusion)
+3. **Clarify `--filter-generated` help text** (Report 2 confusion) — ⚠ OBSOLETE
    - Currently says "Enable filtering" which implies opt-in
    - Change to "Filtering is default; this flag is obsolete" or similar
+   - **2026-07-19:** No longer applicable. `--filter-generated` was replaced by `--include-generated` (default filtering is ON; the new flag opts INTO specific generated categories). See `cmd/root.go` help output.
 
 ### Tier 2: Medium-impact, medium-effort
 

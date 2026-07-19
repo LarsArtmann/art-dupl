@@ -54,7 +54,7 @@ For meaningful refactoring opportunities, focus on larger code blocks:
 
 ```bash
 # Generate comprehensive HTML report
-./art-dupl -html -t 30 > dupl_report.html
+./art-dupl --html -t 30 > dupl_report.html
 
 # Open in browser
 open dupl_report.html  # macOS
@@ -65,10 +65,10 @@ xdg-open dupl_report.html  # Linux
 
 ```bash
 # JSON output with statistics
-./art-dupl -json -t 20 > dupl_report.json
+./art-dupl --json -t 20 > dupl_report.json
 
 # Pretty-print JSON
-./art-dupl -json -t 20 | jq '.' > dupl_report_pretty.json
+./art-dupl --json -t 20 | jq '.' > dupl_report_pretty.json
 ```
 
 ### 3. Analyzing Specific Code
@@ -87,10 +87,10 @@ xdg-open dupl_report.html  # Linux
 
 ```bash
 # Analyze test files only
-find . -name '*_test.go' | ./art-dupl -files -t 20
+find . -name '*_test.go' | ./art-dupl --files -t 20
 
 # Analyze generated files separately
-find . -name '*_gen.go' | ./art-dupl -files -t 50
+find . -name '*_gen.go' | ./art-dupl --files -t 50
 ```
 
 ## Smart Filtering
@@ -195,7 +195,7 @@ jobs:
 
       - name: Run art-dupl analysis
         run: |
-          art-dupl -json -t 30 > dupl_report.json
+          art-dupl --json -t 30 > dupl_report.json
           TOTAL_CLONES=$(jq '.summary.total_clones' dupl_report.json)
           echo "Found $TOTAL_CLONES code clones"
 
@@ -213,12 +213,12 @@ jobs:
 # .git/hooks/pre-commit
 
 echo "Running duplication check..."
-art-dupl -json -t 25 > /tmp/dupl_check.json
+art-dupl --json -t 25 > /tmp/dupl_check.json
 CLONES=$(jq '.summary.total_clones' /tmp/dupl_check.json)
 
 if [ "$CLONES" -gt 10 ]; then
   echo "⚠️  Found $CLONES code clones. Consider refactoring before committing."
-  echo "Run 'art-dupl -html -t 25 > report.html' to see details."
+  echo "Run 'art-dupl --html -t 25 > report.html' to see details."
   exit 1
 fi
 ```
@@ -243,24 +243,24 @@ Create `dupl.json` for team consistency:
 
 ```bash
 # Use configuration
-./art-dupl -config dupl.json
+./art-dupl --config dupl.json
 
 # Override specific settings
-./art-dupl -config dupl.json -t 50 -html
+./art-dupl --config dupl.json -t 50 --html
 ```
 
 ### 2. Progressive Refactoring Workflow
 
 ```bash
 # Step 1: Get baseline
-./art-dupl -json -t 15 > baseline.json
+./art-dupl --json -t 15 > baseline.json
 echo "Baseline: $(jq '.summary.total_clones' baseline.json) clones"
 
 # Step 2: Focus on largest duplicates first
-./art-dupl -t 100 -html > large_clones.html
+./art-dupl -t 100 --html > large_clones.html
 
 # Step 3: After refactoring, measure improvement
-./art-dupl -json -t 15 > after_refactor.json
+./art-dupl --json -t 15 > after_refactor.json
 echo "After: $(jq '.summary.total_clones' after_refactor.json) clones"
 
 # Step 4: Compare
@@ -278,9 +278,9 @@ REPORT_DIR="reports/$DATE"
 mkdir -p "$REPORT_DIR"
 
 # Generate different views
-./art-dupl -json -t 15 > "$REPORT_DIR/all_clones.json"
-./art-dupl -json -t 50 > "$REPORT_DIR/large_clones.json"
-./art-dupl -html -t 30 > "$REPORT_DIR/detailed_report.html"
+./art-dupl --json -t 15 > "$REPORT_DIR/all_clones.json"
+./art-dupl --json -t 50 > "$REPORT_DIR/large_clones.json"
+./art-dupl --html -t 30 > "$REPORT_DIR/detailed_report.html"
 
 # Extract metrics
 ALL_CLONES=$(jq '.summary.total_clones' "$REPORT_DIR/all_clones.json")
@@ -453,7 +453,7 @@ GitHub Actions and pre-commit hook templates are included in `templates/github-a
 # in JSON, SARIF, and --rich-text output.
 
 # Or ignore certain patterns
-./art-dupl -config dupl.json  # with ignoreFiles patterns
+./art-dupl --config dupl.json  # with ignoreFiles patterns
 ```
 
 #### Performance Issues
@@ -491,13 +491,13 @@ cat dupl.json | jq '.'
 
 ```bash
 # Top 10 files with most clones
-./art-dupl -json | jq -r '.clones[] | .instances[] | "\(.file)"' | sort | uniq -c | sort -nr | head -10
+./art-dupl --json | jq -r '.clone_groups[] | .files[] | .filename' | sort | uniq -c | sort -nr | head -10
 
 # Average clone size
-./art-dupl -json | jq '[.clones[] | .instances[0].lines] | add / length'
+./art-dupl --json | jq '[.clone_groups[] | .files[0] | (.line_end - .line_start + 1)] | add / length'
 
 # Clones by package
-./art-dupl -json | jq -r '.clones[] | .instances[0].file | split("/")[0:2] | join("/")' | sort | uniq -c
+./art-dupl --json | jq -r '.clone_groups[] | .files[0].filename | split("/")[0:2] | join("/")' | sort | uniq -c
 ```
 
 ### with grep for Context
