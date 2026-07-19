@@ -33,17 +33,7 @@ func (t *transformer) transformTemplElementExpression(
 		return nil
 	}
 
-	name := extractCalleeName(tee.Expression.Value)
-	o := t.createNodeFromRange(ComponentRender, tee.Range)
-
-	o.Name = name
-	if t.semantic {
-		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
-	}
-
-	t.addChildren(o, tee.Children)
-
-	return o
+	return t.buildComponentRender(tee.Expression.Value, tee.Range, tee.Children)
 }
 
 // transformCallTemplateExpression converts a CallTemplateExpression to a syntax.Node.
@@ -58,15 +48,30 @@ func (t *transformer) transformCallTemplateExpression(
 		return nil
 	}
 
-	name := extractCalleeName(cte.Expression.Value)
-	o := t.createNodeFromRange(ComponentRender, cte.Range)
+	return t.buildComponentRender(cte.Expression.Value, cte.Range, nil)
+}
 
-	o.Name = name
+// buildComponentRender constructs a ComponentRender node from a callee
+// expression value, its source range, and optional children. The callee name
+// is extracted and (in semantic mode) encoded into the node Type so that
+// distinct callees produce distinct tokens, while identical callees with
+// different arguments still match (Type-2 clone detection).
+func (t *transformer) buildComponentRender(
+	exprValue string,
+	rng templparser.Range,
+	children []templparser.Node,
+) *syntax.Node {
+	name := extractCalleeName(exprValue)
+	node := t.createNodeFromRange(ComponentRender, rng)
+
+	node.Name = name
 	if t.semantic {
-		o.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
+		node.Type = syntax.EncodeSemanticType(ComponentRender, name, true)
 	}
 
-	return o
+	t.addChildren(node, children)
+
+	return node
 }
 
 // extractCalleeName extracts the callee name from a templ call expression value.
@@ -132,14 +137,7 @@ func (t *transformer) transformRawElement(re *templparser.RawElement) *syntax.No
 		return nil
 	}
 
-	o := t.createNodeWithAttributes(Element, re.Range, re.Attributes)
-
-	o.Name = re.Name
-	if t.semantic {
-		o.Type = syntax.EncodeSemanticType(Element, re.Name, true)
-	}
-
-	return o
+	return t.buildElementNode(re.Name, re.Range, re.Attributes, nil)
 }
 
 // transformFallthrough converts a Fallthrough to a syntax.Node.

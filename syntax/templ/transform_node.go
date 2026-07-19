@@ -63,16 +63,29 @@ func (t *transformer) transformElement(el *templparser.Element) *syntax.Node {
 		return nil
 	}
 
-	o := t.createNodeWithAttributes(Element, el.Range, el.Attributes)
+	return t.buildElementNode(el.Name, el.Range, el.Attributes, el.Children)
+}
 
-	o.Name = el.Name
+// buildElementNode constructs an Element node with attributes and (optionally)
+// children. The element name is encoded into the node Type in semantic mode so
+// that distinct tag names produce distinct tokens, while elements with the same
+// name but different children still match (Type-2 clone detection).
+func (t *transformer) buildElementNode(
+	name string,
+	rng templparser.Range,
+	attrs []templparser.Attribute,
+	children []templparser.Node,
+) *syntax.Node {
+	node := t.createNodeWithAttributes(Element, rng, attrs)
+
+	node.Name = name
 	if t.semantic {
-		o.Type = syntax.EncodeSemanticType(Element, el.Name, true)
+		node.Type = syntax.EncodeSemanticType(Element, name, true)
 	}
 
-	t.addChildren(o, el.Children)
+	t.addChildren(node, children)
 
-	return o
+	return node
 }
 
 // transformAttribute converts an Attribute to a syntax.Node.

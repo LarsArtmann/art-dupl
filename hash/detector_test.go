@@ -110,46 +110,57 @@ func TestFindFileDuplicates_MultipleGroups(t *testing.T) {
 
 // --- FileDetector.FindDuplOver via node pipeline ---
 
-func TestFileDetector_FindDuplOver_BasicDuplicate(t *testing.T) {
+func TestFileDetector_FindDuplOver(t *testing.T) {
 	t.Parallel()
 
-	dir := t.TempDir()
-
-	content := []byte("package main\n\nfunc main() { println(\"hello, world!\") }\n")
-
-	f1 := filepath.Join(dir, "dup1.go")
-	f2 := filepath.Join(dir, "dup2.go")
-	writeDuplicateFiles(t, f1, f2, content)
-
-	nodes := newSyntheticNodePair(f1, f2, len(content))
-
-	fd := NewFileDetector()
-	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1))
-
-	testutil.AssertCountf(t, len(matches), 1, "expected 1 match, got %d")
-
-	if len(matches[0].Frags) != 2 {
-		t.Errorf("expected 2 fragments, got %d", len(matches[0].Frags))
+	tests := []struct {
+		name      string
+		content   string
+		fileNames [2]string
+		threshold int
+		wantCount int
+	}{
+		{
+			name:      "BasicDuplicate",
+			content:   "package main\n\nfunc main() { println(\"hello, world!\") }\n",
+			fileNames: [2]string{"dup1.go", "dup2.go"},
+			threshold: 1,
+			wantCount: 1,
+		},
+		{
+			name:      "SkipsBelowThreshold",
+			content:   "package main\n",
+			fileNames: [2]string{"small1.go", "small2.go"},
+			threshold: 1000,
+			wantCount: 0,
+		},
+		{
+			name:      "Delegation",
+			content:   "package main\n\nfunc main() { println(\"delegation test!\") }\n",
+			fileNames: [2]string{"d1.go", "d2.go"},
+			threshold: 1,
+			wantCount: 1,
+		},
 	}
-}
 
-func TestFileDetector_FindDuplOver_SkipsBelowThreshold(t *testing.T) {
-	t.Parallel()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	dir := t.TempDir()
+			dir := t.TempDir()
 
-	content := []byte("package main\n")
+			f1 := filepath.Join(dir, tt.fileNames[0])
+			f2 := filepath.Join(dir, tt.fileNames[1])
+			writeDuplicateFiles(t, f1, f2, []byte(tt.content))
 
-	f1 := filepath.Join(dir, "small1.go")
-	f2 := filepath.Join(dir, "small2.go")
-	writeDuplicateFiles(t, f1, f2, content)
+			nodes := newSyntheticNodePair(f1, f2, len(tt.content))
 
-	nodes := newSyntheticNodePair(f1, f2, len(content))
+			fd := NewFileDetector()
+			matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, tt.threshold))
 
-	fd := NewFileDetector()
-	matches := collectMatches(fd.FindDuplOver(context.Background(), nodes, 1000))
-
-	testutil.AssertCountf(t, len(matches), 0, "expected 0 matches (below threshold), got %d")
+			testutil.AssertCountf(t, len(matches), tt.wantCount, "expected %d match, got %%d", tt.wantCount)
+		})
+	}
 }
 
 func TestFileDetector_FindDuplOver_EmptyNodes(t *testing.T) {
@@ -385,25 +396,6 @@ func TestNewFileDetector(t *testing.T) {
 	if hd == nil {
 		t.Fatal("expected non-nil FileDetector")
 	}
-}
-
-func TestFileDetector_FindDuplOver(t *testing.T) {
-	t.Parallel()
-
-	dir := t.TempDir()
-
-	content := []byte("package main\n\nfunc main() { println(\"delegation test!\") }\n")
-
-	f1 := filepath.Join(dir, "d1.go")
-	f2 := filepath.Join(dir, "d2.go")
-	writeDuplicateFiles(t, f1, f2, content)
-
-	nodes := newSyntheticNodePair(f1, f2, len(content))
-
-	hd := NewFileDetector()
-	matches := collectMatches(hd.FindDuplOver(context.Background(), nodes, 1))
-
-	testutil.AssertCountf(t, len(matches), 1, "expected 1 match via FileDetector, got %d")
 }
 
 // --- helper ---
