@@ -65,36 +65,15 @@ func validateMaxChildrenSerial(maxChildren int) error {
 }
 
 func validateOutputFormat(format OutputFormat) error {
-	if !format.IsValid() {
-		return errors.NewValidationError(
-			fmt.Sprintf("invalid output format: %s (valid: text, html, json, plumbing)", format),
-			nil,
-		)
-	}
-
-	return nil
+	return validateEnumValue(format, "output format", "text, html, json, plumbing")
 }
 
 func validateSortCriteria(criteria SortCriteria) error {
-	if !criteria.IsValid() {
-		return errors.NewValidationError(
-			fmt.Sprintf("invalid sort criteria: %s (valid: size, occurrence, hash, total-tokens; use --sort/-s)", criteria),
-			nil,
-		)
-	}
-
-	return nil
+	return validateEnumValue(criteria, "sort criteria", "size, occurrence, hash, total-tokens; use --sort/-s")
 }
 
 func validateDiffMode(mode DiffMode) error {
-	if !mode.IsValid() {
-		return errors.NewValidationError(
-			fmt.Sprintf("invalid diff mode: %s (valid: side-by-side, inline; use --diff)", mode),
-			nil,
-		)
-	}
-
-	return nil
+	return validateEnumValue(mode, "diff mode", "side-by-side, inline; use --diff")
 }
 
 func validateTestThreshold(testThreshold int) error {
@@ -149,6 +128,23 @@ func validateOnly(only FileType) error {
 	}
 
 	return nil
+}
+
+// validateEnumValue checks an enum-typed value via IsValid and returns a
+// uniform ValidationError on failure. Used for OutputFormat, SortCriteria,
+// DiffMode, and any future single-value enum validators.
+func validateEnumValue[T interface {
+	IsValid() bool
+	fmt.Stringer
+}](value T, label, validValues string) error {
+	if value.IsValid() {
+		return nil
+	}
+
+	return errors.NewValidationError(
+		fmt.Sprintf("invalid %s: %s (valid: %s)", label, value, validValues),
+		nil,
+	)
 }
 
 func validateNonNegative(name string, value int) error {

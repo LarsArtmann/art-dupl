@@ -25,8 +25,7 @@ func (p *plumbing) PrintClones(
 	group domain.ProcessedCloneGroup,
 	sortBy ...config.SortCriteria,
 ) error {
-	clones := group.Clones
-	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
+	clones := SortGroupClones(group, sortBy...)
 	sort.Sort(byNameAndLineProcessed(clones))
 
 	return writeCloneLines(p.w, clones, "%s:%d-%d\n")

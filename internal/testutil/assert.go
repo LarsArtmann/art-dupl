@@ -31,11 +31,7 @@ func assertLen[T any](failFunc func(string, ...any), got []T, want int, what str
 // AssertCount asserts that the count of items matches the expected value.
 // The what parameter describes what is being counted (e.g., "Clones", "results").
 func AssertCount(t *testing.T, got, want int, what string) {
-	t.Helper()
-
-	if got != want {
-		t.Errorf("%s: expected %d, got %d", what, want, got)
-	}
+	assertEqualMsg(t, got, want, "%s: expected %d, got %d", what)
 }
 
 // AssertCountf asserts that the count of items matches the expected value with a formatted message.
@@ -49,20 +45,12 @@ func AssertCountf(t *testing.T, got, want int, format string, args ...any) {
 
 // AssertNotNil asserts that a value is not nil.
 func AssertNotNil(t *testing.T, got any, what string) {
-	t.Helper()
-
-	if got == nil {
-		t.Errorf("%s: expected non-nil, got nil", what)
-	}
+	failIfNil(t, got, "%s: expected non-nil, got nil", what)
 }
 
 // AssertNil asserts that a value is nil.
 func AssertNil(t *testing.T, got any, what string) {
-	t.Helper()
-
-	if got != nil {
-		t.Errorf("%s: expected nil, got %v", what, got)
-	}
+	failIfNotNil(t, got, "%s: expected nil, got %v", what, got)
 }
 
 // AssertEqualFn asserts that got equals want using a custom comparison function.
@@ -95,10 +83,27 @@ func ExpectFalse(t *testing.T, cond bool, what string) {
 
 // AssertError asserts that an error occurred.
 func AssertError(t *testing.T, err error, what string) {
+	failIfNil(t, err, "%s: expected error, got nil", what)
+}
+
+// failIfNil is the shared body of AssertNotNil and AssertError: fail the test
+// when v is nil, otherwise pass. Each caller supplies its own message format.
+func failIfNil(t *testing.T, v any, format string, args ...any) {
 	t.Helper()
 
-	if err == nil {
-		t.Errorf("%s: expected error, got nil", what)
+	if v == nil {
+		t.Errorf(format, args...)
+	}
+}
+
+// failIfNotNil is the shared body of AssertNil and AssertNoError: fail the
+// test when v is non-nil, otherwise pass. Each caller supplies its own
+// message format.
+func failIfNotNil(t *testing.T, v any, format string, args ...any) {
+	t.Helper()
+
+	if v != nil {
+		t.Errorf(format, args...)
 	}
 }
 
@@ -131,11 +136,7 @@ func AssertErrorIsFatal(t *testing.T, err, target error, what string) {
 
 // AssertNoError asserts that no error occurred.
 func AssertNoError(t *testing.T, err error, what string) {
-	t.Helper()
-
-	if err != nil {
-		t.Errorf("%s: unexpected error: %v", what, err)
-	}
+	failIfNotNil(t, err, "%s: unexpected error: %v", what, err)
 }
 
 // AssertStringContains asserts that a string contains a substring.
@@ -245,21 +246,23 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 // The fieldName is used in the error message (e.g., "Threshold").
 // The actual parameter should be the field value, and expected is the expected value.
 func AssertConfigField[T comparable](t *testing.T, fieldName string, actual, expected T) {
-	t.Helper()
-
-	if actual != expected {
-		t.Errorf("Expected %s %v, got %v", fieldName, expected, actual)
-	}
+	assertEqualMsg(t, actual, expected, "Expected %s %v, got %v", fieldName)
 }
 
 // AssertConfigFieldFunc asserts that a config field matches the expected value using a custom message.
 // The msg parameter is prepended to the error message.
 // The actual parameter should be the field value, and expected is the expected value.
 func AssertConfigFieldFunc[T comparable](t *testing.T, msg string, actual, expected T) {
+	assertEqualMsg(t, actual, expected, "%s: expected %v, got %v", msg)
+}
+
+// assertEqualMsg fails the test when actual != expected and reports the
+// failure with the given format + args.
+func assertEqualMsg[T comparable](t *testing.T, actual, expected T, format string, args ...any) {
 	t.Helper()
 
 	if actual != expected {
-		t.Errorf("%s: expected %v, got %v", msg, expected, actual)
+		t.Errorf(format, append(args, expected, actual)...)
 	}
 }
 
@@ -279,9 +282,5 @@ func AssertExpectedGot[T any](t *testing.T, got T, wantDescription string, wantV
 // The fieldName is used in the error message as a description.
 // This helper eliminates AST clone patterns from inline field assertions.
 func AssertFieldValue[T comparable](t *testing.T, got, want T, fieldName string) {
-	t.Helper()
-
-	if got != want {
-		t.Errorf("Expected %s %v, got %v", fieldName, want, got)
-	}
+	assertEqualMsg(t, got, want, "Expected %s %v, got %v", fieldName)
 }

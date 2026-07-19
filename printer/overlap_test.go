@@ -42,6 +42,7 @@ func TestEliminateOverlaps_NestedCloneSuppressed(t *testing.T) {
 func TestEliminateOverlaps_NonOverlappingKept(t *testing.T) {
 	t.Parallel()
 
+	// art-dupl: accepted — Pos/End values ARE the test; each node literal exercises a distinct overlap scenario. A helper would take more params than duplicated lines.
 	// Two clones in the same file at different positions — both should be kept
 	fragA := []*syntax.Node{
 		{Type: 1, Pos: 0, End: 50, Filename: overlapTestFile, Owns: 5},

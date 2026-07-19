@@ -112,8 +112,7 @@ func (p *htmlprinter) PrintClones(
 ) error {
 	p.iota++
 
-	clones := group.Clones
-	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
+	clones := SortGroupClones(group, sortBy...)
 
 	p.dupMutex.Lock()
 	p.dupls = append(p.dupls, clones)

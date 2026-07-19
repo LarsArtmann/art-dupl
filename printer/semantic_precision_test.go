@@ -60,6 +60,7 @@ func ReadConfigB(path string) ([]byte, error) {
 	t.Run("lock_defer_unlock_suppressed", func(t *testing.T) {
 		t.Parallel()
 
+		// art-dupl: accepted — ProcessA/ProcessB bodies are intentionally identical; this raw source IS the test data for lock-suppression.
 		code := `package test
 
 import "sync"

@@ -189,3 +189,68 @@ func TestSortGroupsByCriteria_SingleElement(t *testing.T) {
 		t.Errorf("single element should be unchanged, got %v", groups)
 	}
 }
+
+// TestSortCloneGroups_PublicAPI covers the public SortCloneGroups wrapper —
+// the production entry point that uses the shared cloneGroupMetrics var.
+// The tests above target sortGroupsByCriteria directly; this one verifies
+// the wrapper delegates correctly for every supported criterion.
+func TestSortCloneGroups_PublicAPI(t *testing.T) {
+	t.Parallel()
+
+	mkGroups := func() []CloneGroup {
+		return []CloneGroup{
+			{Hash: "aaa", Size: 10, Clones: make([]JSONClone, 2)}, // size 10, count 2, tokens 20
+			{Hash: "zzz", Size: 5, Clones: make([]JSONClone, 6)},  // size 5,  count 6, tokens 30
+			{Hash: "mmm", Size: 50, Clones: make([]JSONClone, 1)}, // size 50, count 1, tokens 50
+		}
+	}
+
+	t.Run("SortBySize descending", func(t *testing.T) {
+		t.Parallel()
+
+		groups := mkGroups()
+		SortCloneGroups(groups, config.SortBySize)
+
+		if groups[0].Size != 50 || groups[2].Size != 5 {
+			t.Errorf("expected descending sizes [50,10,5], got [%d,%d,%d]",
+				groups[0].Size, groups[1].Size, groups[2].Size)
+		}
+	})
+
+	t.Run("SortByOccurrence descending", func(t *testing.T) {
+		t.Parallel()
+
+		groups := mkGroups()
+		SortCloneGroups(groups, config.SortByOccurrence)
+
+		if groups[0].Size != 5 || groups[2].Size != 50 {
+			t.Errorf("expected descending counts [6,2,1], got sizes [%d,%d,%d]",
+				groups[0].Size, groups[1].Size, groups[2].Size)
+		}
+	})
+
+	t.Run("SortByHash ascending", func(t *testing.T) {
+		t.Parallel()
+
+		groups := mkGroups()
+		SortCloneGroups(groups, config.SortByHash)
+
+		if groups[0].Hash != "aaa" || groups[2].Hash != "zzz" {
+			t.Errorf("expected ascending hashes [aaa,mmm,zzz], got [%s,%s,%s]",
+				groups[0].Hash, groups[1].Hash, groups[2].Hash)
+		}
+	})
+
+	t.Run("SortByTotalTokens descending", func(t *testing.T) {
+		t.Parallel()
+
+		groups := mkGroups()
+		SortCloneGroups(groups, config.SortByTotalTokens)
+
+		// tokens: 50 (size50*1), 30 (size5*6), 20 (size10*2)
+		if groups[0].Size != 50 || groups[1].Size != 5 || groups[2].Size != 10 {
+			t.Errorf("expected token-descending [50,30,20] → sizes [50,5,10], got sizes [%d,%d,%d]",
+				groups[0].Size, groups[1].Size, groups[2].Size)
+		}
+	})
+}

@@ -125,19 +125,7 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 
 // Wrapf wraps an error with formatted context using the specified error type.
 func Wrapf(err error, errorType ErrorType, format string, args ...any) error {
-	if err == nil {
-		return nil
-	}
-
-	if IsDuplError(err) {
-		return err
-	}
-
-	return &DuplError{ //nolint:exhaustruct // File/Line optional for wrapped errors
-		Type:    errorType,
-		Message: fmt.Sprintf(format, args...),
-		Cause:   err,
-	}
+	return Wrap(err, errorType, fmt.Sprintf(format, args...))
 }
 
 // WrapIO wraps an error as an IOError with file context.

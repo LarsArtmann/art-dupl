@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 )
+
+// maxPreviewRunes limits the code preview shown after each clone location
+// in text output so wide lines do not break the scannable file:line format.
+const maxPreviewRunes = 60
 
 type TextPrinter struct {
 	ReadFile
@@ -47,8 +52,7 @@ func (p *TextPrinter) PrintClones(
 ) error {
 	p.cnt++
 
-	clones := group.Clones
-	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
+	clones := SortGroupClones(group, sortBy...)
 
 	groupCloneSize := totalFragmentSize(clones)
 
@@ -133,7 +137,69 @@ func (p *TextPrinter) PrintFooter() error {
 }
 
 func (p *TextPrinter) printCloneList(clones []domain.ProcessedClone) error {
-	return writeCloneLines(p.w, clones, "  %s:%d-%d\n")
+	for _, cl := range clones {
+		preview := p.previewFirstLine(cl)
+		if _, err := fmt.Fprintf(p.w, "  %s:%d-%d%s\n", cl.Filename, cl.LineStart, cl.LineEnd, preview); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// previewFirstLine returns a one-line source preview prefixed with "  | " for
+// inline display in text output, or an empty string when no source is
+// available. It prefers the clone's Fragment (already populated by the
+// pipeline) and falls back to reading the file via ReadFile when Fragment is
+// empty. Long lines are truncated to maxPreviewRunes.
+func (p *TextPrinter) previewFirstLine(cl domain.ProcessedClone) string {
+	line := firstNonEmptyLine(cl.Fragment)
+	if line == "" {
+		line = p.previewFromFile(cl)
+	}
+
+	if line == "" {
+		return ""
+	}
+
+	runes := []rune(line)
+	if len(runes) > maxPreviewRunes {
+		line = string(runes[:maxPreviewRunes-1]) + "…"
+	}
+
+	return "  | " + line
+}
+
+// firstNonEmptyLine returns the trimmed first non-whitespace line of s, or
+// "" if every line is empty.
+func firstNonEmptyLine(s string) string {
+	for line := range strings.SplitSeq(s, "\n") {
+		if trimmed := strings.TrimSpace(line); trimmed != "" {
+			return trimmed
+		}
+	}
+
+	return ""
+}
+
+// previewFromFile reads the clone's source file and returns the trimmed line
+// at LineStart, or "" on any error (missing file, nil reader, out-of-range).
+func (p *TextPrinter) previewFromFile(cl domain.ProcessedClone) string {
+	if p.ReadFile == nil {
+		return ""
+	}
+
+	data, err := p.ReadFile(cl.Filename)
+	if err != nil {
+		return ""
+	}
+
+	lines := strings.Split(string(data), "\n")
+	if cl.LineStart < 1 || cl.LineStart > len(lines) {
+		return ""
+	}
+
+	return strings.TrimSpace(lines[cl.LineStart-1])
 }
 
 func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassification) error {

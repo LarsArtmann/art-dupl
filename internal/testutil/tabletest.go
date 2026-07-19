@@ -146,9 +146,5 @@ func AssertIntFormatted(t *testing.T, got, want int, format string) {
 // AssertString asserts that got equals want.
 // This helper eliminates AST clone patterns from inline string assertions.
 func AssertString(t *testing.T, got, want, description string) {
-	t.Helper()
-
-	if got != want {
-		t.Errorf("Expected %s %q, got %q", description, want, got)
-	}
+	assertEqualMsg(t, got, want, "Expected %s %q, got %q", description)
 }

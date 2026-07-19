@@ -53,6 +53,7 @@ var _ = Describe("Exit Codes and Version Subcommand", func() {
 		})
 	})
 
+	// art-dupl: accepted — each It block exercises a distinct exit-code path; the structural similarity is Ginkgo BDD style, not duplication.
 	Describe("Exit Codes for Invalid Config", func() {
 		Context("when threshold is negative", func() {
 			It("should return an error", func() {

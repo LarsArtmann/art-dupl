@@ -94,8 +94,7 @@ func (t *transformer) transformAttribute(attr templparser.Attribute) *syntax.Nod
 		return nil
 	}
 
-	o := syntax.NewNode()
-	o.Filename = t.filename
+	o := t.newFileNode()
 
 	switch a := attr.(type) {
 	case *templparser.ConstantAttribute:

@@ -162,23 +162,28 @@ func (d *detector) buildResult(cloneGroups []*CloneGroup, fileCount, linesAnalyz
 }
 
 func sdkVersion() string {
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
+	return buildInfoValue("dev", func(info *debug.BuildInfo) string {
+		if info.Main.Version != "" && info.Main.Version != "(devel)" {
+			return info.Main.Version
+		}
+
 		return "dev"
-	}
-
-	if info.Main.Version != "" && info.Main.Version != "(devel)" {
-		return info.Main.Version
-	}
-
-	return "dev"
+	})
 }
 
 func goVersion() string {
+	return buildInfoValue("go", func(info *debug.BuildInfo) string {
+		return info.GoVersion
+	})
+}
+
+// buildInfoValue returns fallback when debug.ReadBuildInfo fails, otherwise
+// returns fn(info). Centralizes the "read build info or fall back" idiom.
+func buildInfoValue(fallback string, fn func(*debug.BuildInfo) string) string {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
-		return "go"
+		return fallback
 	}
 
-	return info.GoVersion
+	return fn(info)
 }

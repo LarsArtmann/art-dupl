@@ -29,7 +29,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Elt))
 
 	case *ast.AssignStmt:
-		o.Type = encodeSemanticType(AssignStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(AssignStmt, n.Tok.String(), t.config.Mode.HashesIdentifiers())
 		for _, e := range n.Rhs {
 			o.AddChildren(t.trans(e))
 		}
@@ -39,14 +39,14 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BasicLit:
-		if t.config.Mode.normalizesLiterals() {
+		if t.config.Mode.NormalizesLiterals() {
 			o.Type = encodeSemanticType(BasicLit, n.Kind.String(), true)
 		} else {
-			o.Type = encodeSemanticType(BasicLit, n.Value, t.config.Mode.hashesIdentifiers())
+			o.Type = encodeSemanticType(BasicLit, n.Value, t.config.Mode.HashesIdentifiers())
 		}
 
 	case *ast.BinaryExpr:
-		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(BinaryExpr, n.Op.String(), t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.X), t.trans(n.Y))
 
 	case *ast.BlockStmt:
@@ -59,7 +59,7 @@ func (t *transformer) trans(
 		}
 
 	case *ast.BranchStmt:
-		o.Type = encodeSemanticType(BranchStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(BranchStmt, n.Tok.String(), t.config.Mode.HashesIdentifiers())
 		t.addWithNilCheck(o, n.Label)
 
 	case *ast.CallExpr:
@@ -79,7 +79,7 @@ func (t *transformer) trans(
 		t.addBodyStatements(o, n.Body)
 
 	case *ast.ChanType:
-		o.Type = encodeSemanticType(ChanType, chanDirString(n.Dir), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(ChanType, chanDirString(n.Dir), t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.Value))
 
 	case *ast.CommClause:
@@ -116,7 +116,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.Field:
-		if t.config.Mode.hashesIdentifiers() && t.inInterface {
+		if t.config.Mode.HashesIdentifiers() && t.inInterface {
 			o.Type = encodeSemanticType(Field, "~interface~", true)
 		} else {
 			o.Type = Field
@@ -163,7 +163,7 @@ func (t *transformer) trans(
 		funcName := n.Name.Name
 		o.Type = encodeSemanticTypeMulti(
 			FuncDecl,
-			t.config.Mode.hashesIdentifiers(),
+			t.config.Mode.HashesIdentifiers(),
 			receiverType,
 			funcName,
 		)
@@ -176,7 +176,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Type), t.trans(n.Body))
 
 	case *ast.FuncType:
-		if t.config.Mode.hashesIdentifiers() && t.inInterface {
+		if t.config.Mode.HashesIdentifiers() && t.inInterface {
 			o.Type = encodeSemanticType(FuncType, "~interface~", true)
 		} else {
 			o.Type = FuncType
@@ -187,7 +187,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Results)
 
 	case *ast.GenDecl:
-		o.Type = encodeSemanticType(GenDecl, n.Tok.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(GenDecl, n.Tok.String(), t.config.Mode.HashesIdentifiers())
 		for _, spec := range n.Specs {
 			child := t.trans(spec)
 			child.Statement = true
@@ -204,11 +204,11 @@ func (t *transformer) trans(
 		// o.Name keeps the original identifier so clone-type classification
 		// can still distinguish Type 1 (same names) from Type 2 (renamed).
 		nameForHash := n.Name
-		if t.config.Mode.normalizesLocals() {
+		if t.config.Mode.NormalizesLocals() {
 			nameForHash = t.norm.resolve(n.Name)
 		}
 
-		o.Type = encodeSemanticType(Ident, nameForHash, t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(Ident, nameForHash, t.config.Mode.HashesIdentifiers())
 
 	case *ast.IfStmt:
 		o.Type = IfStmt
@@ -218,7 +218,7 @@ func (t *transformer) trans(
 		t.addWithNilCheck(o, n.Else)
 
 	case *ast.IncDecStmt:
-		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(IncDecStmt, n.Tok.String(), t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.IndexExpr:
@@ -242,7 +242,7 @@ func (t *transformer) trans(
 
 	case *ast.KeyValueExpr:
 		if keyIdent, ok := n.Key.(*ast.Ident); ok {
-			o.Type = encodeSemanticType(KeyValueExpr, keyIdent.Name, t.config.Mode.hashesIdentifiers())
+			o.Type = encodeSemanticType(KeyValueExpr, keyIdent.Name, t.config.Mode.HashesIdentifiers())
 		} else {
 			o.Type = KeyValueExpr
 		}
@@ -279,7 +279,7 @@ func (t *transformer) trans(
 
 	case *ast.SelectorExpr:
 		o.Name = n.Sel.Name
-		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(SelectorExpr, n.Sel.Name, t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.X), t.trans(n.Sel))
 
 	case *ast.SendStmt:
@@ -314,7 +314,7 @@ func (t *transformer) trans(
 
 	case *ast.TypeSpec:
 		o.Name = n.Name.Name
-		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(TypeSpec, n.Name.Name, t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.Name))
 		t.addWithNilCheck(o, n.TypeParams)
 		o.AddChildren(t.trans(n.Type))
@@ -325,7 +325,7 @@ func (t *transformer) trans(
 		o.AddChildren(t.trans(n.Assign), t.trans(n.Body))
 
 	case *ast.UnaryExpr:
-		o.Type = encodeSemanticType(UnaryExpr, n.Op.String(), t.config.Mode.hashesIdentifiers())
+		o.Type = encodeSemanticType(UnaryExpr, n.Op.String(), t.config.Mode.HashesIdentifiers())
 		o.AddChildren(t.trans(n.X))
 
 	case *ast.ValueSpec:

@@ -1,41 +1,19 @@
 package config
 
-import (
-	"errors"
+import "github.com/LarsArtmann/art-dupl/domain"
 
-	"github.com/LarsArtmann/art-dupl/pkg/enum"
-)
-
-// ErrInvalidDetectionMode is returned when parsing an invalid detection mode.
-var ErrInvalidDetectionMode = errors.New("invalid detection mode")
-
-// DetectionMode controls how identifier names participate in clone matching.
-type DetectionMode string
+// DetectionMode is an alias for domain.DetectionMode. It exists so callers
+// that import config continue to write config.DetectionModeSemantic /
+// config.IsValid etc. without an additional import.
+//
+//nolint:recvcheck // methods are inherited from the domain alias.
+type DetectionMode = domain.DetectionMode
 
 const (
-	DetectionModeSemantic   DetectionMode = "semantic"
-	DetectionModeExact      DetectionMode = "exact"
-	DetectionModeStructural DetectionMode = "structural"
+	DetectionModeSemantic   = domain.DetectionModeSemantic
+	DetectionModeExact      = domain.DetectionModeExact
+	DetectionModeStructural = domain.DetectionModeStructural
 )
 
-func (d DetectionMode) String() string { return string(d) }
-
-func (d DetectionMode) IsValid() bool {
-	return d == DetectionModeSemantic || d == DetectionModeExact || d == DetectionModeStructural
-}
-
-// IsSemantic reports whether this mode includes identifier/operator hashes
-// in the AST token encoding (i.e. Semantic or Exact, not Structural).
-func (d DetectionMode) IsSemantic() bool {
-	return d == DetectionModeSemantic || d == DetectionModeExact
-}
-
-// MarshalJSON returns the string representation.
-func (d DetectionMode) MarshalJSON() ([]byte, error) {
-	return enum.MarshalJSON(d, DetectionMode.IsValid, ErrInvalidDetectionMode)
-}
-
-// UnmarshalJSON parses the string representation.
-func (d *DetectionMode) UnmarshalJSON(data []byte) error {
-	return enum.UnmarshalJSONInto(d, data, DetectionMode.IsValid, ErrInvalidDetectionMode)
-}
+// ErrInvalidDetectionMode aliases the domain-level sentinel.
+var ErrInvalidDetectionMode = domain.ErrInvalidDetectionMode

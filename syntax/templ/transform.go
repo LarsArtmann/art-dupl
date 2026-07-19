@@ -26,6 +26,26 @@ func (t *transformer) createNodeFromRange(nodeType int, r templparser.Range) *sy
 	)
 }
 
+// wrapChildren creates a node for nodeType at the given range, appends the
+// transformed children, and returns it. Use this whenever a transformer
+// produces nothing but a span + a child slice.
+func (t *transformer) wrapChildren(nodeType int, r templparser.Range, children []templparser.Node) *syntax.Node {
+	o := t.createNodeFromRange(nodeType, r)
+	t.addChildren(o, children)
+
+	return o
+}
+
+// newFileNode builds a node with the transformer filename preset, ready for
+// the caller to fill in Type/Pos/End/etc. Used by every transformer that
+// starts with "create a node and stamp the filename".
+func (t *transformer) newFileNode() *syntax.Node {
+	o := syntax.NewNode()
+	o.Filename = t.filename
+
+	return o
+}
+
 // addChildren processes a slice of nodes and adds them as children to the parent.
 // Each child is marked as Statement=true so serial() fingerprints the entire
 // element subtree into one composite token, matching how Go statements work.
@@ -41,16 +61,13 @@ func (t *transformer) addChildren(parent *syntax.Node, nodes []templparser.Node)
 
 // transformTemplateFile converts a templ TemplateFile to a unified syntax.Node.
 func (t *transformer) transformTemplateFile(tf *templparser.TemplateFile) *syntax.Node {
+	root := t.newFileNode()
+
 	if tf == nil {
 		return nil
 	}
 
-	// Create root node with correct byte positions.
-	// Use contentLen (actual byte length) for End, matching how the Go parser
-	// uses ast.File.End() — not the node count.
-	root := syntax.NewNode()
 	root.Type = File
-	root.Filename = t.filename
 	root.Pos = 0
 	root.End = int32(t.contentLen) // #nosec G115 -- File sizes bounded by int32 in practice
 

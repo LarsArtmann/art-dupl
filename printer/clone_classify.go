@@ -126,11 +126,7 @@ func functionPriority(tokens, lines int) ClonePriority {
 }
 
 func typePriority(tokens int) ClonePriority {
-	if tokens > 10 {
-		return domain.PriorityHigh
-	}
-
-	return domain.PriorityMedium
+	return controlFlowPriority(tokens)
 }
 
 func controlFlowPriority(tokens int) ClonePriority {

@@ -57,6 +57,16 @@ func sortGroupsByCriteria[T any](groups []T, sortBy config.SortCriteria, m Group
 	slices.SortFunc(groups, makeGroupComparator(sortBy, m))
 }
 
+// SortGroupClones returns a sorted copy of the clones in group: it pulls
+// group.Clones, sorts it according to the variadic sortBy, and returns the
+// result so callers don't have to repeat the local-variable + sort dance.
+func SortGroupClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) []domain.ProcessedClone {
+	clones := group.Clones
+	SortProcessedClonesByCriteria(clones, ExtractSortCriteria(sortBy...))
+
+	return clones
+}
+
 // SortProcessedClonesByCriteria sorts individual clones within a group.
 // Size/TotalTokens sort by TokenCount (descending). Occurrence/Hash are
 // group-level properties identical for every clone, so they are no-ops here;

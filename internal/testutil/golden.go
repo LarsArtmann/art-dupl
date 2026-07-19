@@ -20,8 +20,7 @@ func RequireGolden(tb testing.TB, output []byte) {
 
 // RequireGoldenString is like RequireGolden but takes a string.
 func RequireGoldenString(tb testing.TB, output string) {
-	tb.Helper()
-	golden.RequireEqual(tb, output)
+	RequireGolden(tb, []byte(output))
 }
 
 // ginkgoTB extracts a testing.TB from Ginkgo's test context.

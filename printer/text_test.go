@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -243,6 +244,99 @@ func TestTotalFragmentSize(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPreviewFirstLine(t *testing.T) {
+	t.Parallel()
+
+	longLine := strings.Repeat("a", maxPreviewRunes+20)
+
+	tests := []struct {
+		name     string
+		clone    domain.ProcessedClone
+		readFile ReadFile
+		want     string
+	}{
+		{
+			name:     "fragment single line",
+			clone:    domain.ProcessedClone{CloneRef: domain.CloneRef{Fragment: "func foo() {"}},
+			readFile: nil,
+			want:     "  | func foo() {",
+		},
+		{
+			name: "fragment multiline uses first non-empty",
+			clone: domain.ProcessedClone{
+				CloneRef: domain.CloneRef{Fragment: "\n\n\tfunc bar() int {\n\t\treturn 1\n\t}"},
+			},
+			readFile: nil,
+			want:     "  | func bar() int {",
+		},
+		{
+			name: "fragment empty falls back to ReadFile line",
+			clone: domain.ProcessedClone{CloneRef: domain.CloneRef{
+				Filename: "src.go", LineStart: 2, Fragment: "",
+			}},
+			readFile: mockReadFile("package main\nfunc baz() {}\nvar x = 1"),
+			want:     "  | func baz() {}",
+		},
+		{
+			name: "fragment empty and ReadFile error yields no preview",
+			clone: domain.ProcessedClone{CloneRef: domain.CloneRef{
+				Filename: "missing.go", LineStart: 1, Fragment: "",
+			}},
+			readFile: errorReadFile("not found"),
+			want:     "",
+		},
+		{
+			name: "fragment empty and nil ReadFile yields no preview",
+			clone: domain.ProcessedClone{CloneRef: domain.CloneRef{
+				Filename: "x.go", LineStart: 1, Fragment: "",
+			}},
+			readFile: nil,
+			want:     "",
+		},
+		{
+			name:     "long fragment line truncated to maxPreviewRunes",
+			clone:    domain.ProcessedClone{CloneRef: domain.CloneRef{Fragment: longLine}},
+			readFile: nil,
+			want:     "  | " + strings.Repeat("a", maxPreviewRunes-1) + "…",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tp := &TextPrinter{ReadFile: tc.readFile}
+			got := tp.previewFirstLine(tc.clone)
+
+			if got != tc.want {
+				t.Errorf("previewFirstLine() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestPrintCloneListIncludesPreview(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	tp := &TextPrinter{w: &buf, ReadFile: nil}
+
+	clones := []domain.ProcessedClone{
+		{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 10, LineEnd: 20, Fragment: "func hello() {"}},
+		{CloneRef: domain.CloneRef{Filename: "b.go", LineStart: 5, LineEnd: 15, Fragment: ""}},
+	}
+
+	if err := tp.printCloneList(clones); err != nil {
+		t.Fatalf("printCloneList error: %v", err)
+	}
+
+	output := buf.String()
+
+	testutil.AssertStringContains(t, output, "a.go:10-20  | func hello() {", "preview should appear after location")
+	testutil.AssertStringContains(t, output, "b.go:5-15\n", "no preview when fragment empty and no reader")
 }
 
 func TestProcessClones(t *testing.T) {
