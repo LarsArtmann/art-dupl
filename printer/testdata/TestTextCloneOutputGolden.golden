@@ -1,0 +1,5 @@
+found 2 clones:
+  alpha.go:10-15  | result := x + y
+  beta.go:20-25  | sum := a + b
+
+Found total 1 clone groups.

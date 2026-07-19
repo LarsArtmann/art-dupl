@@ -40,8 +40,8 @@ func TestFindFileDuplicates_DifferentFiles(t *testing.T) {
 	f1 := filepath.Join(dir, "a.go")
 	f2 := filepath.Join(dir, "b.go")
 
-	writeTestFile(t, f1, []byte("package a\n"))
-	writeTestFile(t, f2, []byte("package b\n"))
+	testutil.WriteFile(t, f1, []byte("package a\n"))
+	testutil.WriteFile(t, f2, []byte("package b\n"))
 
 	dups := FindFileDuplicates(context.Background(), []string{f1, f2}, 1)
 	testutil.AssertCountf(t, len(dups), 0, "expected 0 duplicates for different files, got %d")
@@ -69,7 +69,7 @@ func TestFindFileDuplicates_SkipsNonexistentFiles(t *testing.T) {
 	content := []byte("package main\nfunc main() {}\n")
 
 	good := filepath.Join(dir, "exists.go")
-	writeTestFile(t, good, content)
+	testutil.WriteFile(t, good, content)
 
 	bad := filepath.Join(dir, "nope.go")
 
@@ -208,7 +208,7 @@ func TestFileDetector_FindDuplOver_DeduplicatesSameFile(t *testing.T) {
 	content := []byte("package main\n\nfunc main() { println(\"dedup test content\") }\n")
 
 	f1 := filepath.Join(dir, "same.go")
-	writeTestFile(t, f1, content)
+	testutil.WriteFile(t, f1, content)
 
 	nodes := []*syntax.Node{
 		syntax.NewSyntheticFileNode(f1, len(content)),
@@ -323,7 +323,7 @@ func TestHashFile_ValidFile(t *testing.T) {
 	f := filepath.Join(dir, "valid.go")
 	content := []byte("package main\n\nfunc main() {}\n")
 
-	writeTestFile(t, f, content)
+	testutil.WriteFile(t, f, content)
 
 	fd := NewFileDetector()
 
@@ -410,18 +410,9 @@ func collectMatches(ch <-chan syntax.Match) []syntax.Match {
 	return matches
 }
 
-func writeTestFile(t *testing.T, path string, fileContent []byte) {
-	t.Helper()
-
-	if err := os.WriteFile(path, fileContent, 0o644); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func writeDuplicateFiles(t *testing.T, f1, f2 string, content []byte) {
-	t.Helper()
-	writeTestFile(t, f1, content)
-	writeTestFile(t, f2, content)
+	testutil.WriteFile(t, f1, content)
+	testutil.WriteFile(t, f2, content)
 }
 
 func newSyntheticNodePair(f1, f2 string, contentLen int) []*syntax.Node {

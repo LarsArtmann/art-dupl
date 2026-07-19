@@ -190,7 +190,7 @@ func TestSortGroupsByCriteria_SingleElement(t *testing.T) {
 	}
 }
 
-// TestSortCloneGroups_PublicAPI covers the public SortCloneGroups wrapper —
+// TestSortCloneGroups_PublicAPI covers the public SortCloneGroups wrapper:
 // the production entry point that uses the shared cloneGroupMetrics var.
 // The tests above target sortGroupsByCriteria directly; this one verifies
 // the wrapper delegates correctly for every supported criterion.

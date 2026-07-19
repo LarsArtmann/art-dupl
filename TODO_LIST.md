@@ -1,8 +1,19 @@
 # TODO List
 
-**Last Updated: 2026-07-15**
+**Last Updated:** 2026-07-19
 
 Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG.md`.
+
+---
+
+## ✅ Recently Completed (Tier 1 Feedback Sprint — 2026-07-19)
+
+From `docs/feedback/2026-07-19_critical_evaluation_of_feedback.md`:
+
+- [x] **Text output: one-line code preview per group** — `printer/text.go` `previewFirstLine()` adds `| <first source line>` after each clone in text and `--rich-text` modes. Plumbing unchanged. 7 unit tests in `printer/text_test.go`.
+- [x] **Skill doc: recommend `-t 25` for test-heavy libraries** — `deduplicate-code/SKILL.md` now has a "Test-heavy libraries" note with `-t 25` and `--exclude-pattern '*_test.go'` guidance.
+- [x] **SortCloneGroups direct test coverage** — `printer/sort_unified_test.go::TestSortCloneGroups_PublicAPI` (4 subtests) covers the public wrapper that delegates to the shared `cloneGroupMetrics` var.
+- [x] **Acceptance comments on deliberate test fixtures** — 3 test files (`bdd/exit_codes_test.go`, `printer/overlap_test.go`, `printer/semantic_precision_test.go`) now carry `// art-dupl: accepted: <rationale>` markers so future dedup runs surface them as intentional.
 
 ---
 

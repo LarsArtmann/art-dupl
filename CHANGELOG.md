@@ -5,12 +5,16 @@ All notable changes to art-dupl will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — Engineering Sprints (2026-06-15 to 2026-07-16)
+## [Unreleased] — Engineering Sprints (2026-06-15 to 2026-07-19)
 
 All work since the [0.3.0] release. Organized by category.
 
 ### Added
 
+- **Text output code preview**: Text and `--rich-text` modes now print a one-line source preview after each clone location (`file:line-line  | <first source line>`). Lets you triage clones without opening files. Preview is truncated to 60 runes; `--plumbing` output is unchanged (still machine-readable). Implemented in `printer/text.go::previewFirstLine`, prefers `Fragment`, falls back to `ReadFile` at `LineStart`.
+- **`SortCloneGroups` direct test coverage**: `TestSortCloneGroups_PublicAPI` (4 subtests) covers the public wrapper that delegates to the shared `cloneGroupMetrics` var. Previously only tested via the private `sortGroupsByCriteria`.
+- **`// art-dupl: accepted: <rationale>` markers**: 3 test files (`bdd/exit_codes_test.go`, `printer/overlap_test.go`, `printer/semantic_precision_test.go`) now document deliberate structural similarities so future dedup runs surface them as intentional rather than re-reporting.
+- **`-t 25` guidance in `deduplicate-code` skill**: Skill doc now recommends `-t 25` for test-heavy libraries and `--exclude-pattern '*_test.go'` for production-only sweeps, reducing test-scaffolding noise in dedup reports.
 - **`version --short`/`-s` flag**: Prints just the version string without build info. Useful for scripts.
 - **`version --json` with `cmd.OutOrStdout`**: Version subcommand now uses cobra's output writer for testability.
 - **Exit code documentation in `--help`**: Root command Long description now includes the exit code table (0, 1, 2, 3, 130).

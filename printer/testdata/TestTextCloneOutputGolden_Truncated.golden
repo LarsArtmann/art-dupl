@@ -1,0 +1,4 @@
+found 1 clones:
+  wide.go:1-2  | result := computeSomethingVeryLong(this, is, a, really, lon…
+
+Found total 1 clone groups.

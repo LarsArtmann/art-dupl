@@ -1,6 +1,6 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-16
+> **Last Updated:** 2026-07-19
 > **Version:** Analysis of fork branch
 
 ## Overview
@@ -28,15 +28,15 @@
 
 ### Output Formats
 
-| Feature                | Status           | Description                                                            |
-| ---------------------- | ---------------- | ---------------------------------------------------------------------- |
-| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, diff hints |
-| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization      |
-| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary         |
-| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count      |
-| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD             |
-| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results   |
-| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting          |
+| Feature                | Status           | Description                                                                                     |
+| ---------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| **Text Output**        | FULLY_FUNCTIONAL | Human-readable clone listing with file paths, line numbers, one-line source preview, diff hints |
+| **HTML Output**        | FULLY_FUNCTIONAL | Dark theme, syntax highlighting, VSCode links, diff visualization                               |
+| **JSON Output**        | FULLY_FUNCTIONAL | Structured data with version, timestamp, clone_groups, summary                                  |
+| **Simple-JSON Output** | FULLY_FUNCTIONAL | Simpler JSON format with score=impact, instances with token_count                               |
+| **Plumbing Output**    | FULLY_FUNCTIONAL | Machine-readable `file:startLine-endLine` format for CI/CD                                      |
+| **SARIF Output**       | FULLY_FUNCTIONAL | SARIF 2.1.0 for GitHub Advanced Security, clones reported as results                            |
+| **CSV Output**         | FULLY_FUNCTIONAL | Stats CSV uses `encoding/csv` for proper escaping and quoting                                   |
 
 ### Batch & Report Generation
 

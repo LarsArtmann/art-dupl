@@ -10,7 +10,7 @@ import (
 var ErrInvalidDetectionMode = errors.New("invalid detection mode")
 
 // DetectionMode controls how identifier names participate in clone matching.
-// This is the canonical definition — config and syntax/golang reference this
+// This is the canonical definition: config and syntax/golang reference this
 // type via aliases to prevent drift.
 //
 // Three modes form a spectrum from strictest (fewest matches) to loosest
@@ -22,7 +22,7 @@ var ErrInvalidDetectionMode = errors.New("invalid detection mode")
 //   - Semantic: local identifiers are alpha-normalized (canonicalized to v0,
 //     v1, …) before hashing. Two clones match when they have the same
 //     structure even if every variable was renamed. This detects Type 2
-//     (parameterized) clones — the most common real-world duplication.
+//     (parameterized) clones, the most common real-world duplication.
 //   - Structural: identifier names are ignored entirely. Two clones match on
 //     AST shape alone. Loosest matching; produces the most candidates.
 //
