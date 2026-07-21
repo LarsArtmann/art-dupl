@@ -22,18 +22,21 @@ jobs:
         with:
           go-version: stable
 
-      - uses: extractions/setup-just@v2
+      - name: Generate templ sources
+        run: |
+          go install github.com/a-h/templ/cmd/templ@v0.3.1020
+          templ generate
 
       - name: Check dependencies
         run: |
           go mod download
           go mod tidy
-          git diff --exit-code go.mod
+          git diff --exit-code go.mod go.sum
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v1.64
+          version: v2.12.2
 
   test:
     name: Test
@@ -43,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: [oldstable, stable]
+        go-version: [stable]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
@@ -52,16 +55,21 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: extractions/setup-just@v2
+      - name: Generate templ sources
+        run: |
+          go install github.com/a-h/templ/cmd/templ@v0.3.1020
+          templ generate
 
       - name: Test
-        run: just test
+        run: go test ./...
 
       - name: Race Test
-        run: just test-race
+        env:
+          CGO_ENABLED: "1"
+        run: go test -race ./...
 
       - name: Build
-        run: just build
+        run: go build ./...
 
   coverage:
     name: Coverage
@@ -74,6 +82,11 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
+
+      - name: Generate templ sources
+        run: |
+          go install github.com/a-h/templ/cmd/templ@v0.3.1020
+          templ generate
 
       - name: Generate Coverage
         run: |
@@ -93,10 +106,8 @@ jobs:
 
       - uses: DeterminateSystems/nix-installer-action@v17
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v9
-
       - name: Check flake
-        run: nix flake check --all-systems
+        run: nix flake check
 
       - name: Build
         run: nix build
@@ -114,10 +125,13 @@ jobs:
         with:
           go-version: stable
 
-      - uses: extractions/setup-just@v2
+      - name: Generate templ sources
+        run: |
+          go install github.com/a-h/templ/cmd/templ@v0.3.1020
+          templ generate
 
       - name: Build art-dupl
-        run: just build
+        run: go build -o dist/art-dupl ./cmd/art-dupl
 
       - name: Run Self-Analysis
         run: ./dist/art-dupl stats -t 50 .

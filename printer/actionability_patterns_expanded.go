@@ -7,6 +7,9 @@ import (
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
+// calleeErrorf is the AST callee name for error-formatting methods (fmt.Errorf, log.Errorf, etc.).
+const calleeErrorf = "Errorf"
+
 // isAssertionMethod reports whether a method name belongs to a test assertion
 // framework (Ginkgo/testify/testify). These indicate non-actionable test
 // boilerplate when they appear in chains of 3+.
@@ -175,7 +178,7 @@ func hasErrorWrappingCall(block *domain.CloneNode) bool {
 // error-wrapping function (errors.Wrap, fmt.Errorf, etc.).
 func isWrappingCallName(name string) bool {
 	switch name {
-	case "Errorf", "Wrap", "Errorw", "Wrapf", "Wrapr":
+	case calleeErrorf, "Wrap", "Errorw", "Wrapf", "Wrapr":
 		return true
 	default:
 		return false

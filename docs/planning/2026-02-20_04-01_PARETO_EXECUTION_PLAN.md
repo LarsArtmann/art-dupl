@@ -55,7 +55,7 @@
 | 2.2 | Add --workers CLI flag with auto-detection                    | 15min | HIGH   | cmd/flags.go: Add flag, default to runtime.GOMAXPROCS(0), min 1, max 32                            |
 | 2.3 | Modernize HTML template with dark theme + syntax highlighting | 45min | HIGH   | printer/html.go: Add CSS variables, syntax highlighting classes, responsive layout                 |
 | 2.4 | Add VSCode integration links to HTML output                   | 15min | MEDIUM | printer/html.go: vscode://file/ links for one-click navigation                                     |
-| 2.5 | Extract unique() function to shared testutils                 | 30min | MEDIUM | testutils/unique.go: Refactor to generic unique[T comparable]() function, update all callers       |
+| 2.5 | Extract unique() function to shared testutils                 | 30min | MEDIUM | testutils/unique.go: Refactor to generic unique[T comparable](<>) function, update all callers     |
 | 2.6 | Add HTML template statistics dashboard                        | 30min | MEDIUM | printer/html.go: Add summary stats at top of report                                                |
 
 **Total Phase 2:** 6 tasks, ~180 minutes
@@ -218,7 +218,7 @@ flowchart TB
 | 2.3.4 | Add dark/light mode toggle                        | 2     | 2.3    |
 | 2.4.1 | Generate vscode://file/ links in HTML             | 2     | 2.4    |
 | 2.4.2 | Test link functionality                           | 2     | 2.4    |
-| 2.5.1 | Design generic unique[T]() function signature     | 2     | 2.5    |
+| 2.5.1 | Design generic unique[T](<>) function signature   | 2     | 2.5    |
 | 2.5.2 | Implement unique() in testutils                   | 2     | 2.5    |
 | 2.5.3 | Update bdd_test.go to use shared unique()         | 2     | 2.5    |
 | 2.5.4 | Update other test files to use shared unique()    | 2     | 2.5    |

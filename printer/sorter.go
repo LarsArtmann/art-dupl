@@ -13,7 +13,7 @@ func compareByNameThenPos(nameI, nameJ string, posI, posJ int) bool {
 	return nameI < nameJ
 }
 
-var cloneGroupMetrics = GroupMetrics[CloneGroup]{
+var cloneGroupMetrics = GroupMetrics[CloneGroup]{ //nolint:gochecknoglobals // shared metric extractors for sort comparator
 	Size:    func(g CloneGroup) int { return g.Size },
 	Count:   func(g CloneGroup) int { return len(g.Clones) },
 	SortKey: func(g CloneGroup) string { return g.Hash },

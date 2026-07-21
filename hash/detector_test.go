@@ -411,6 +411,8 @@ func collectMatches(ch <-chan syntax.Match) []syntax.Match {
 }
 
 func writeDuplicateFiles(t *testing.T, f1, f2 string, content []byte) {
+	t.Helper()
+
 	testutil.WriteFile(t, f1, content)
 	testutil.WriteFile(t, f2, content)
 }

@@ -115,22 +115,7 @@ func runStats(c *cobra.Command, arguments []string) error {
 
 	p := printer.NewStats(writer, os.ReadFile, mergedConfig.Threshold)
 
-	// Configure stats printer
-	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
-
-	if sp, ok := p.(printer.StatsPrinter); ok {
-		sp.ApplyStatsConfig(printer.StatsConfig{
-			Format:              format,
-			FilesCount:          parseStats.FilesCount,
-			DetectionMethods:    detectionMethodStr,
-			SemanticDetection:   mergedConfig.DetectionMode.IsSemantic(),
-			Timestamp:           time.Now().UTC().Format(time.RFC3339),
-			AnalysisDuration:    duration,
-			TotalEstimatedLines: parseStats.LinesCount,
-		})
-
-		applyFilterStats(sp, filterStats)
-	}
+	configureStatsPrinter(p, format, mergedConfig, parseStats, filterStats, duration)
 
 	// Build groups from matches and print
 	groups := printer.BuildCloneGroups(duplChan)
@@ -158,6 +143,35 @@ func runStats(c *cobra.Command, arguments []string) error {
 	}
 
 	return nil
+}
+
+// configureStatsPrinter applies stats configuration and filter stats to the printer.
+func configureStatsPrinter(
+	p printer.Printer,
+	format config.OutputFormat,
+	mergedConfig *config.Config,
+	parseStats job.ParseStats,
+	filterStats *FilterStats,
+	duration time.Duration,
+) {
+	detectionMethodStr := detectionMethodsToString(mergedConfig.DetectionMethods)
+
+	sp, ok := p.(printer.StatsPrinter)
+	if !ok {
+		return
+	}
+
+	sp.ApplyStatsConfig(printer.StatsConfig{
+		Format:              format,
+		FilesCount:          parseStats.FilesCount,
+		DetectionMethods:    detectionMethodStr,
+		SemanticDetection:   mergedConfig.DetectionMode.IsSemantic(),
+		Timestamp:           time.Now().UTC().Format(time.RFC3339),
+		AnalysisDuration:    duration,
+		TotalEstimatedLines: parseStats.LinesCount,
+	})
+
+	applyFilterStats(sp, filterStats)
 }
 
 // parseDuration parses a duration string using time package.

@@ -40,7 +40,6 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
@@ -107,7 +106,6 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
-    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -165,6 +163,37 @@ linters:
     goconst:
       min-len: 5
       min-occurrences: 5
+    mnd:
+      ignored-numbers:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "8"
+        - "10"
+        - "12"
+        - "15"
+        - "16"
+        - "20"
+        - "30"
+        - "50"
+        - "60"
+        - "70"
+        - "90"
+        - "100"
+        - "1000"
+        - "1024"
+        - "40_000"
+        - "1000000"
+        - "3.0"
+        - "10.0"
+        - "10000.0"
+        - "0xFF"
+        - "0xFFFFFF"
+        - "0x00FFFFFF"
+        - "0o750"
     gocritic:
       disabled-checks:
         - ifElseChain
@@ -197,12 +226,19 @@ linters:
           name: var-naming
         - disabled: true
           name: unused-parameter
+    tagliatelle:
+      case:
+        use-field-name: true
+        rules:
+          json: snake
+          yaml: snake
     testifylint:
       disable:
         - go-require
       enable-all: true
     varnamelen:
       ignore-map-index-ok: true
+      ignore-type-assert-ok: true
       ignore-names:
         - err
         - ok
@@ -215,7 +251,63 @@ linters:
         - a
         - b
         - v
-      ignore-type-assert-ok: true
+        - n
+        - p
+        - c
+        - r
+        - w
+        - s
+        - f
+        - d
+        - o
+        - j
+        - q
+        - k
+        - h
+        - e
+        - x
+        - y
+        - z
+        - l
+        - u
+        - tc
+        - ch
+        - fc
+        - cl
+        - hp
+        - sp
+        - tp
+        - wg
+        - fd
+        - md
+        - jp
+        - fp
+        - bf
+        - tr
+        - tf
+        - sb
+        - pg
+        - se
+        - sc
+        - rv
+        - rc
+        - pl
+        - f1
+        - f2
+        - s1
+        - s2
+        - p1
+        - p2
+        - nB
+        - ip
+        - cn
+        - dp
+        - fr
+        - kb
+        - KB
+        - MB
+        - ie
+        - ka
     wrapcheck:
       ignore-package-globs:
         - github.com/LarsArtmann/art-dupl/pkg/enum
@@ -253,6 +345,9 @@ linters:
           - unused
           - exhaustruct
           - gochecknoglobals
+          - mnd
+          - varnamelen
+          - goconst
       - path: bdd/
         linters:
           - funlen
@@ -270,6 +365,9 @@ linters:
           - nestif
           - wrapcheck
           - depguard
+          - gochecknoglobals
+          - mnd
+          - varnamelen
       - path: examples/
         linters:
           - revive

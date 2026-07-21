@@ -193,7 +193,7 @@ func walkForTestScaffoldingSignals(node *domain.CloneNode, hasFileIO *bool, asse
 					"ConsistOf", "HaveCap", "HaveKey", "HaveValue", "OccurOnlyOnce",
 					"HaveOccurred", "ShouldNot":
 					(*assertionNames)["assertion"] = true
-				case "Fatalf", "Errorf", "Skipf", "Logf", "FailNow":
+				case "Fatalf", calleeErrorf, "Skipf", "Logf", "FailNow":
 					(*assertionNames)["testing-t"] = true
 				}
 			}

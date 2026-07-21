@@ -129,7 +129,7 @@ func findComponentRenderNodes(root *syntax.Node) []*syntax.Node {
 	return result
 }
 
-func parseTwoComponentRenderers(t *testing.T, srcA, srcB string) (nodesA, nodesB []*syntax.Node) {
+func parseTwoComponentRenderers(t *testing.T, srcA, srcB string) ([]*syntax.Node, []*syntax.Node) {
 	t.Helper()
 
 	nodeA, _, err := ParseBytesWithMode("a.templ", []byte(srcA), true)
@@ -142,8 +142,8 @@ func parseTwoComponentRenderers(t *testing.T, srcA, srcB string) (nodesA, nodesB
 		t.Fatalf("ParseBytesWithMode(b) error = %v", err)
 	}
 
-	nodesA = findComponentRenderNodes(nodeA)
-	nodesB = findComponentRenderNodes(nodeB)
+	nodesA := findComponentRenderNodes(nodeA)
+	nodesB := findComponentRenderNodes(nodeB)
 
 	if len(nodesA) == 0 || len(nodesB) == 0 {
 		t.Fatal("expected ComponentRender nodes in both trees")

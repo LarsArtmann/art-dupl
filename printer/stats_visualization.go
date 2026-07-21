@@ -96,7 +96,7 @@ func printTopFiles(w io.Writer, fileDuplication map[string]int, topN int) {
 }
 
 // categoryOrder defines a stable display order for clone categories.
-var categoryOrder = []string{
+var categoryOrder = []string{ //nolint:gochecknoglobals // stable display order
 	"function", "method", "handler", "test",
 	"struct", "interface",
 	"loop", "conditional",
@@ -110,7 +110,7 @@ func printCategoryDistribution(w io.Writer, distribution map[string]int) {
 }
 
 // priorityOrder defines a stable display order for priority levels.
-var priorityOrder = []string{"critical", "high", "medium", "low"}
+var priorityOrder = []string{"critical", "high", "medium", "low"} //nolint:gochecknoglobals // stable display order
 
 // printPriorityDistribution prints the priority breakdown with percentages.
 func printPriorityDistribution(w io.Writer, distribution map[string]int) {
@@ -118,7 +118,12 @@ func printPriorityDistribution(w io.Writer, distribution map[string]int) {
 }
 
 // severityOrder defines the display order for severity levels.
-var severityOrder = []string{healthSmall, healthMedium, healthLarge, healthHuge}
+var severityOrder = []string{ //nolint:gochecknoglobals // stable display order
+	healthSmall,
+	healthMedium,
+	healthLarge,
+	healthHuge,
+}
 
 // printSeverityDistribution prints the severity breakdown with visualization.
 func printSeverityDistribution(w io.Writer, distribution map[string]int) {

@@ -7,8 +7,8 @@ import "sync"
 // each *Node stores a copy. Interning reduces this to one pointer per
 // unique filename, cutting memory significantly.
 var (
-	filenameMu   sync.RWMutex
-	filenamePool = make(map[string]string)
+	filenameMu   sync.RWMutex              //nolint:gochecknoglobals // guards filenamePool
+	filenamePool = make(map[string]string) //nolint:gochecknoglobals // canonical filename interning map
 )
 
 // InternFilename returns a canonicalized, deduplicated copy of the filename.

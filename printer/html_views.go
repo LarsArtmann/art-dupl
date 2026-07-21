@@ -325,7 +325,11 @@ func diffStatPrefix(cssClass string) string {
 	}
 }
 
-var diffStatTypes = []string{cssClassAdded, cssClassRemoved, cssClassModified}
+var diffStatTypes = []string{ //nolint:gochecknoglobals // static CSS class list
+	cssClassAdded,
+	cssClassRemoved,
+	cssClassModified,
+}
 
 func diffStatValue(cssClass string, stats DiffAggregateStats) int {
 	switch cssClass {

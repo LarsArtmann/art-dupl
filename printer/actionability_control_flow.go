@@ -206,7 +206,7 @@ func isLogOrPrintStmt(node *domain.CloneNode) bool {
 func isLoggingMethod(name string) bool {
 	switch name {
 	case "Print", "Printf", "Println",
-		"Error", "Errorf", "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
+		"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
 		"Fatal", "Fatalf", "Panic", "Panicf":
 		return true
 	default:

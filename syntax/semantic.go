@@ -1,6 +1,3 @@
-// Package syntax provides shared semantic encoding helpers used by both
-// syntax/golang and syntax/templ to fold identifier/element names into
-// the int32 Type field.
 package syntax
 
 // FNV-1a constants for identifier hashing.

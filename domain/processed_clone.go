@@ -79,7 +79,7 @@ type priorityData struct {
 	emoji string
 }
 
-var priorityDisplay = map[ClonePriority]priorityData{
+var priorityDisplay = map[ClonePriority]priorityData{ //nolint:gochecknoglobals // static display lookup table
 	PriorityCritical: {color: "var(--error)", emoji: "\U0001f534"},
 	PriorityHigh:     {color: "var(--warning)", emoji: "\U0001f7e0"},
 	PriorityMedium:   {color: "var(--accent)", emoji: "\U0001f7e1"},
@@ -132,7 +132,7 @@ func (p ClonePriority) GetPriorityEmoji() string {
 	return "\u26aa"
 }
 
-var categoryEmojis = map[CloneCategory]string{
+var categoryEmojis = map[CloneCategory]string{ //nolint:gochecknoglobals // static category lookup table
 	CategoryFunction:        "\u26a1",
 	CategoryMethod:          "\U0001f527",
 	CategoryTest:            "\U0001f9ea",

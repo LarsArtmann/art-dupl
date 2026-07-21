@@ -20,6 +20,8 @@ func RequireGolden(tb testing.TB, output []byte) {
 
 // RequireGoldenString is like RequireGolden but takes a string.
 func RequireGoldenString(tb testing.TB, output string) {
+	tb.Helper()
+
 	RequireGolden(tb, []byte(output))
 }
 

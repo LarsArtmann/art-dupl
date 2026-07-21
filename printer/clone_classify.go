@@ -190,7 +190,7 @@ type patternLabelConfig struct {
 	priority    domain.ClonePriority
 }
 
-var patternLabelConfigs = map[PatternLabel]patternLabelConfig{
+var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gochecknoglobals // static pattern label lookup
 	PatternTestData: {
 		category:    domain.CategoryTestFixture,
 		setCategory: true,

@@ -54,7 +54,7 @@ const (
 )
 
 // nodeTypeNames maps AST node type constants to their string names.
-var nodeTypeNames = map[int32]string{
+var nodeTypeNames = map[int32]string{ //nolint:gochecknoglobals // static AST node type name lookup
 	BadNode:        "BadNode",
 	File:           "File",
 	ArrayType:      "ArrayType",
