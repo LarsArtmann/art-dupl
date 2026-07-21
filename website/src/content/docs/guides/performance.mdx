@@ -44,12 +44,12 @@ When `--workers > 1` and `--incremental` is enabled, art-dupl uses:
 art-dupl --timeout 10m     # Timeout after 10 minutes
 ```
 
-Default timeout is 30 minutes. All pipeline goroutines respect context cancellation.
+By default, no timeout is applied. When set, all pipeline goroutines respect context cancellation.
 
 ## Profiling
 
 ```bash
-art-dupl --profile cpu.prof    # Hidden flag — CPU profile
+art-dupl --profile    # Hidden flag — CPU and memory profiles
 ```
 
 Produces pprof-compatible CPU and memory profiles. Useful for diagnosing performance issues on large codebases.

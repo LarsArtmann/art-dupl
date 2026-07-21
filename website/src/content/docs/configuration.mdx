@@ -5,7 +5,7 @@ description: JSON configuration files, merging rules, and all configurable optio
 
 ## Configuration File
 
-Create `dupl.json` in your project root:
+Create a JSON configuration file (e.g., `dupl.json`) in your project root:
 
 ```json
 {
@@ -13,7 +13,7 @@ Create `dupl.json` in your project root:
   "outputFormat": "json",
   "paths": ["./src", "./internal"],
   "detectionMode": "semantic",
-  "sortCriteria": "size",
+  "sortBy": "size",
   "includeVendor": false
 }
 ```
@@ -32,38 +32,38 @@ art-dupl --config dupl.json
 
 ## Key Options
 
-| Option             | Type     | Default      | Description                                                    |
-| ------------------ | -------- | ------------ | -------------------------------------------------------------- |
-| `threshold`        | int      | `5`          | Minimum duplicated statements to report                        |
-| `testThreshold`    | int      | `0`          | Separate threshold for test files (`0` = `max(30, threshold)`) |
-| `outputFormat`     | string   | `"text"`     | Output format                                                  |
-| `detectionMode`    | string   | `"semantic"` | Matching mode: `semantic`, `exact`, `structural`               |
-| `detectionMethods` | string   | `"art-dupl"` | Detection method(s)                                            |
-| `sortCriteria`     | string   | `"size"`     | Sort order                                                     |
-| `paths`            | []string | `["."]`      | Paths to scan                                                  |
-| `includeVendor`    | bool     | `false`      | Include vendor directory                                       |
-| `workers`          | int      | `0`          | Parallel workers (`0` = auto)                                  |
-| `incremental`      | bool     | `false`      | Enable AST caching                                             |
-| `cacheDir`         | string   | `""`         | Cache directory (default: `.cache/art-dupl`)                   |
-| `maxCacheEntries`  | int      | `0`          | Max cache entries (`0` = unlimited)                            |
-| `timeout`          | duration | `30m`        | Execution timeout                                              |
+| Option             | Type     | Default        | Description                                                               |
+| ------------------ | -------- | -------------- | ------------------------------------------------------------------------- |
+| `threshold`        | int      | `5`            | Minimum duplicated statements to report                                   |
+| `testThreshold`    | int      | `0`            | Separate threshold for test files (`0` = `max(30, threshold)`)            |
+| `outputFormat`     | string   | `"text"`       | Output format: `text`, `json`, `plumbing`, `html`, `sarif`, `simple-json` |
+| `detectionMode`    | string   | `"semantic"`   | Matching mode: `semantic`, `exact`, `structural`                          |
+| `detectionMethods` | []string | `["art-dupl"]` | Detection method(s): `art-dupl`, `hash`                                   |
+| `sortBy`           | string   | `"size"`       | Sort order: `size`, `occurrence`, `hash`, `total-tokens`                  |
+| `paths`            | []string | `["."]`        | Paths to scan                                                             |
+| `includeVendor`    | bool     | `false`        | Include vendor directory                                                  |
+| `workers`          | int      | `0`            | Parallel workers (`0` = auto)                                             |
+| `incremental`      | bool     | `false`        | Enable AST caching                                                        |
+| `cacheDir`         | string   | `""`           | Cache directory (default: `.cache/art-dupl`)                              |
+| `maxCacheEntries`  | int      | `0`            | Max cache entries (`0` = unlimited)                                       |
+| `timeout`          | duration | `0`            | Execution timeout (e.g., `30m`); `0` disables timeout                     |
+| `suppressTestLow`  | bool     | `true`         | Suppress low-priority clones in test files                                |
+| `ignoreTests`      | bool     | `false`        | Exclude `*_test.go` files entirely                                        |
+| `includeTests`     | bool     | `false`        | Override all test-specific filtering                                      |
+| `minLines`         | int      | `0`            | Suppress clone groups spanning fewer than N source lines                  |
+| `quiet`            | bool     | `false`        | Suppress non-essential status output                                      |
 
-## Reflection-Based Merging
+## Output Directory and All Formats
 
-Configuration merging is reflection-based — adding new `Config` fields requires no merge code changes. All fields with matching JSON tags are automatically merged from the config file.
+The `--output-dir` and `--all` flags are CLI-only. Use them together to generate every output format to a directory:
 
-## Output Directory
-
-```json
-{
-  "outputDir": "./reports",
-  "allFormats": true
-}
+```bash
+art-dupl --all --output-dir ./reports
 ```
 
-With `allFormats: true`, all output formats are generated to the specified directory.
-
 ## Diff Visualization
+
+Enable diff visualization for HTML output via the CLI flag or JSON config:
 
 ```json
 {
@@ -72,3 +72,7 @@ With `allFormats: true`, all output formats are generated to the specified direc
 ```
 
 Options: `"side-by-side"`, `"inline"`, `"true"` (defaults to side-by-side).
+
+## Reflection-Based Merging
+
+Configuration merging is reflection-based — adding new `Config` fields requires no merge code changes. All fields with matching JSON tags are automatically merged from the config file.

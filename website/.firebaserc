@@ -1,5 +1,14 @@
 {
   "projects": {
-    "default": "art-dupl"
+    "default": "lars-software"
+  },
+  "targets": {
+    "lars-software": {
+      "hosting": {
+        "art-dupl": [
+          "art-dupl"
+        ]
+      }
+    }
   }
 }

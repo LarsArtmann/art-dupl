@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "target": "art-dupl",
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/src/**"],
     "cleanUrls": true,

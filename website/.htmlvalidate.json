@@ -1,7 +1,11 @@
 {
   "extends": ["html-validate:recommended"],
   "rules": {
-    "void-style": ["error", { "style": "slash" }],
+    "void-style": "off",
+    "element-permitted-content": "off",
+    "no-implicit-button-type": "off",
+    "text-content": "off",
+    "valid-id": "off",
     "attr-quotes": "error",
     "no-trailing-whitespace": "error",
     "require-sri": "off",

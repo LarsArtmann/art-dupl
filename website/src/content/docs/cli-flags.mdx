@@ -5,55 +5,68 @@ description: Complete reference for all art-dupl command-line flags.
 
 ## Core Flags
 
-| Flag                  | Short | Default    | Description                                        |
-| --------------------- | ----- | ---------- | -------------------------------------------------- |
-| `--threshold`         | `-t`  | `5`        | Minimum duplicated statements to report            |
-| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s)                                |
-| `--sort`              | `-s`  | `size`     | Sort: `size`, `occurrence`, `hash`, `total-tokens` |
-| `--semantic`          |       | `true`     | Match by structure AND identifier names (default)  |
-| `--exact`             |       |            | Verbatim name matching (Type 1 only)               |
-| `--structural`        |       |            | AST shape only (loosest)                           |
-| `--config`            | `-c`  |            | Path to JSON config file                           |
-| `--verbose`           | `-v`  |            | Verbose logging (repeat for more)                  |
-| `--version`           |       |            | Show version                                       |
+| Flag                  | Short | Default    | Description                                                   |
+| --------------------- | ----- | ---------- | ------------------------------------------------------------- |
+| `--threshold`         | `-t`  | `5`        | Minimum duplicated statements to report                       |
+| `--detection-methods` | `-m`  | `art-dupl` | Detection method(s): `art-dupl`, `hash`                       |
+| `--sort`              | `-s`  | `size`     | Sort: `size`, `occurrence`, `hash`, `total-tokens`            |
+| `--semantic`          |       | `true`     | Match by structure AND alpha-normalized identifiers (default) |
+| `--exact`             |       | `false`    | Verbatim name matching (Type 1 only)                          |
+| `--structural`        |       | `false`    | AST shape only (loosest matching)                             |
+| `--config`            | `-c`  |            | Path to JSON config file                                      |
+| `--verbose`           | `-v`  | `false`    | Verbose logging (repeat for more)                             |
+| `--quiet`             | `-q`  | `false`    | Suppress non-essential status output                          |
+| `--no-color`          |       | `false`    | Disable colored output                                        |
+| `--version`           |       |            | Show version                                                  |
+| `--files`             | `-f`  | `false`    | Read file paths from stdin, one per line                      |
 
 ## Output Flags
 
-| Flag            | Short | Description                                             |
-| --------------- | ----- | ------------------------------------------------------- |
-| `--html`        |       | HTML report with syntax highlighting                    |
-| `--json`        | `-j`  | Structured JSON with statistics                         |
-| `--simple-json` |       | Lightweight JSON with impact scores                     |
-| `--sarif`       |       | SARIF 2.1.0 format                                      |
-| `--plumbing`    | `-p`  | Machine-readable `file:startLine-endLine`               |
-| `--rich-text`   |       | Enhanced text with priority badges                      |
-| `--all`         | `-a`  | Generate all formats                                    |
-| `--output-dir`  | `-o`  | Output directory (with `--all`)                         |
-| `--diff`        |       | Diff visualization: `side-by-side`, `inline`, or `true` |
+| Flag            | Short | Default            | Description                                             |
+| --------------- | ----- | ------------------ | ------------------------------------------------------- |
+| `--html`        |       | `false`            | HTML report with syntax highlighting                    |
+| `--json`        | `-j`  | `false`            | Structured JSON with statistics                         |
+| `--simple-json` |       | `false`            | Lightweight JSON with impact scores                     |
+| `--sarif`       |       | `false`            | SARIF 2.1.0 format                                      |
+| `--plumbing`    | `-p`  | `false`            | Machine-readable `file:startLine-endLine`               |
+| `--rich-text`   |       | `false`            | Enhanced text with priority badges                      |
+| `--all`         | `-a`  | `false`            | Generate all formats                                    |
+| `--output-dir`  | `-o`  | `reports/art-dupl` | Output directory (used with `--all`)                    |
+| `--diff`        |       |                    | Diff visualization: `side-by-side`, `inline`, or `true` |
 
 ## Filtering Flags
 
-| Flag                     | Default | Description                                                                                |
-| ------------------------ | ------- | ------------------------------------------------------------------------------------------ |
-| `--vendor`               | `false` | Include vendor directory                                                                   |
-| `--include-node-modules` | `false` | Include node_modules (hash detection)                                                      |
-| `--include-generated`    | `[]`    | Generated categories: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` |
-| `--include-pattern`      | `[]`    | Glob patterns to include                                                                   |
-| `--exclude-pattern`      | `[]`    | Glob patterns to exclude                                                                   |
-| `--only`                 | `""`    | Restrict to `go` or `templ`                                                                |
-| `--files`                | `-f`    | Read file paths from stdin                                                                 |
-| `--test-threshold`       | `0`     | Separate threshold for test files                                                          |
+| Flag                     | Short | Default | Description                                                                                |
+| ------------------------ | ----- | ------- | ------------------------------------------------------------------------------------------ |
+| `--vendor`               |       | `false` | Include vendor directory                                                                   |
+| `--include-node-modules` |       | `false` | Include `node_modules` (hash detection only)                                               |
+| `--include-generated`    |       | `[]`    | Generated categories: `sqlc`, `templ`, `protobuf`, `mockgen`, `stringer`, `generic`, `all` |
+| `--include-pattern`      |       | `[]`    | Glob patterns to include                                                                   |
+| `--exclude-pattern`      |       | `[]`    | Glob patterns to exclude                                                                   |
+| `--only`                 |       |         | Restrict to `go` or `templ`                                                                |
+| `--ignore-tests`         |       | `false` | Exclude `*_test.go` files entirely                                                         |
+| `--include-tests`        |       | `false` | Override all test-specific filtering and analyze tests normally                            |
+| `--test-threshold`       |       | `0`     | Separate threshold for test files (`0` = `max(30, threshold)`)                             |
+| `--suppress-test-low`    |       | `true`  | Suppress low-priority clones in test files                                                 |
+| `--min-lines`            |       | `0`     | Suppress clone groups spanning fewer than N source lines (`0` = disabled)                  |
 
 ## Performance Flags
 
-| Flag                  | Default | Description                                  |
-| --------------------- | ------- | -------------------------------------------- |
-| `--workers`           | `0`     | Concurrent workers (`0` = auto-detect)       |
-| `--incremental`       | `false` | Enable AST caching                           |
-| `--cache-dir`         | `""`    | Cache directory (default: `.cache/art-dupl`) |
-| `--clear-cache`       | `false` | Clear cache before running                   |
-| `--max-cache-entries` | `0`     | Max cache entries (`0` = unlimited)          |
-| `--timeout`           | `30m`   | Execution timeout                            |
+| Flag                  | Short | Default | Description                                             |
+| --------------------- | ----- | ------- | ------------------------------------------------------- |
+| `--workers`           |       | `0`     | Concurrent workers (`0` = auto-detect)                  |
+| `--incremental`       |       | `false` | Enable AST caching                                      |
+| `--cache-dir`         |       | `""`    | Cache directory (default: `.cache/art-dupl`)            |
+| `--clear-cache`       |       | `false` | Clear cache before running                              |
+| `--max-cache-entries` |       | `0`     | Max cached AST files to keep (`0` = unlimited)          |
+| `--timeout`           |       | `30m`   | Execution timeout (hidden in `--help`)                  |
+| `--profile`           |       | `false` | Emit pprof CPU and memory profiles (hidden in `--help`) |
+
+## Debugging Flags
+
+| Flag            | Short | Default | Description                           |
+| --------------- | ----- | ------- | ------------------------------------- |
+| `--dump-tokens` |       | `false` | Dump serialized token stream and exit |
 
 ## Stats Subcommand
 
@@ -86,6 +99,6 @@ Reports only clones NOT in the baseline. Exits 1 if new clones found.
 
 ```bash
 art-dupl completion [bash|zsh|fish|powershell]  # Shell completion
-art-dupl --version                                # Version info
-art-dupl --help                                   # Help
+art-dupl --version                              # Version info
+art-dupl --help                                 # Help
 ```
