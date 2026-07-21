@@ -215,3 +215,24 @@ func assertIncludeGeneratedConfig(t *testing.T, got *config.Config, want config.
 		t.Errorf("IncludeGeneric = %v, want %v", got.IncludeGeneric, want.IncludeGeneric)
 	}
 }
+
+func TestMaxCacheEntriesFlag(t *testing.T) {
+	cmd := &cobra.Command{Use: "test"}
+	AddFlags(cmd)
+
+	args := []string{"--max-cache-entries", "5000"}
+	cmd.SetArgs(args)
+
+	if err := cmd.ParseFlags(args); err != nil {
+		t.Fatalf("ParseFlags error: %v", err)
+	}
+
+	cfg, err := buildCLIConfig(cmd, nil)
+	if err != nil {
+		t.Fatalf("buildCLIConfig error: %v", err)
+	}
+
+	if cfg.MaxCacheEntries != 5000 {
+		t.Errorf("MaxCacheEntries = %v, want 5000", cfg.MaxCacheEntries)
+	}
+}

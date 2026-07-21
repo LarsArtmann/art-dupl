@@ -85,6 +85,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		String("cache-dir", "", "cache directory for AST caching (requires --incremental, default: .cache/art-dupl)")
 	rootCmd.Flags().
 		Bool("clear-cache", false, "clear cache before running (requires --incremental)")
+	rootCmd.Flags().
+		Int("max-cache-entries", 0, "maximum number of cached AST files to keep on disk (0 = unlimited, requires --incremental)")
 
 	// Root-only: concurrent processing flag
 	rootCmd.Flags().

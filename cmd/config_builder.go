@@ -162,6 +162,11 @@ func applyChangedIntFlags(cmd *cobra.Command, cfg *config.Config) {
 		val, _ := cmd.Flags().GetInt("min-lines")
 		cfg.MinLines = val
 	}
+
+	if cmd.Flags().Changed("max-cache-entries") {
+		val, _ := cmd.Flags().GetInt("max-cache-entries")
+		cfg.MaxCacheEntries = val
+	}
 }
 
 // applyChangedStringFlags sets string config fields only when explicitly provided.
