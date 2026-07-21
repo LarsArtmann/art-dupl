@@ -40,6 +40,7 @@ linters:
     - errname
     - errorlint
     - exhaustive
+    - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
@@ -106,6 +107,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -163,6 +165,28 @@ linters:
     goconst:
       min-len: 5
       min-occurrences: 5
+    gocritic:
+      disabled-checks:
+        - ifElseChain
+    gocyclo:
+      min-complexity: 15
+    gomoddirectives:
+      replace-allow-list:
+        - github.com/LarsArtmann/gogenfilter/v3
+      replace-local: true
+    ireturn:
+      allow:
+        - anon
+        - error
+        - empty
+        - stdlib
+        - generic
+        - Printer
+        - Hasher
+        - Detector
+        - Token
+    makezero:
+      always: false
     mnd:
       ignored-numbers:
         - "0"
@@ -194,28 +218,6 @@ linters:
         - "0xFFFFFF"
         - "0x00FFFFFF"
         - "0o750"
-    gocritic:
-      disabled-checks:
-        - ifElseChain
-    gocyclo:
-      min-complexity: 15
-    gomoddirectives:
-      replace-allow-list:
-        - github.com/LarsArtmann/gogenfilter/v3
-      replace-local: true
-    ireturn:
-      allow:
-        - anon
-        - error
-        - empty
-        - stdlib
-        - generic
-        - Printer
-        - Hasher
-        - Detector
-        - Token
-    makezero:
-      always: false
     revive:
       rules:
         - disabled: true
@@ -228,17 +230,16 @@ linters:
           name: unused-parameter
     tagliatelle:
       case:
-        use-field-name: true
         rules:
           json: snake
           yaml: snake
+        use-field-name: true
     testifylint:
       disable:
         - go-require
       enable-all: true
     varnamelen:
       ignore-map-index-ok: true
-      ignore-type-assert-ok: true
       ignore-names:
         - err
         - ok
@@ -251,7 +252,7 @@ linters:
         - a
         - b
         - v
-        - n
+        - "n"
         - p
         - c
         - r
@@ -266,7 +267,7 @@ linters:
         - h
         - e
         - x
-        - y
+        - "y"
         - z
         - l
         - u
@@ -308,6 +309,7 @@ linters:
         - MB
         - ie
         - ka
+      ignore-type-assert-ok: true
     wrapcheck:
       ignore-package-globs:
         - github.com/LarsArtmann/art-dupl/pkg/enum
