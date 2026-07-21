@@ -5,3 +5,7 @@ docs/status/*.md linguist-documentation
 reports/** linguist-generated
 # Exclude from language statistics
 vendor/** linguist-vendored
+# Enforce consistent line endings across all platforms
+* text=auto eol=lf
+# Binary files should not be diffed or merged
+*.woff2 binary
