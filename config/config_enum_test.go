@@ -196,8 +196,16 @@ func TestLoadConfig_InvalidJSON(t *testing.T) {
 func TestSaveConfig_DirectoryCreationFails(t *testing.T) {
 	t.Parallel()
 
+	dir := t.TempDir()
+	// Create a regular file, then try to save config "inside" it.
+	// MkdirAll fails on all platforms when a path component is a file, not a directory.
+	blocker := filepath.Join(dir, "not_a_dir")
+	if err := os.WriteFile(blocker, []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
 	cfg := &Config{Threshold: 50}
-	badPath := "/proc/fake/subdir/config.json"
+	badPath := filepath.Join(blocker, "subdir", "config.json")
 
 	err := SaveConfig(cfg, badPath)
 	if err == nil {
