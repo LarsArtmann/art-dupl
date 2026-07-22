@@ -148,10 +148,6 @@ linters:
             - golang.org/x/sync
     dupl:
       threshold: 100
-    exhaustruct:
-      exclude:
-        - os/exec.Cmd
-        - github.com/spf13/cobra.Command
     funlen:
       lines: 80
       statements: 50
@@ -226,12 +222,6 @@ linters:
           name: var-naming
         - disabled: true
           name: unused-parameter
-    tagliatelle:
-      case:
-        rules:
-          json: snake
-          yaml: snake
-        use-field-name: true
     testifylint:
       disable:
         - go-require
