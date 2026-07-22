@@ -2,13 +2,14 @@ package testutil
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"sync"
 )
 
 // captureMu serializes stdout/stderr replacement so that concurrent captures
 // (e.g. parallel tests) don't clobber each other's global file descriptors.
+//
+//nolint:gochecknoglobals // mutex must be package-level to serialize captures
 var captureMu sync.Mutex
 
 // CaptureStdoutStderr runs fn with os.Stdout and os.Stderr temporarily replaced
@@ -23,16 +24,17 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 	oldStdout := os.Stdout
 	oldStderr := os.Stderr
 
-	stdoutR, stdoutW, err := os.Pipe()
-	if err != nil {
-		return nil, nil, err
+	stdoutR, stdoutW, pipeErr := os.Pipe()
+	if pipeErr != nil {
+		return nil, nil, pipeErr
 	}
 
-	stderrR, stderrW, err := os.Pipe()
-	if err != nil {
-		stdoutR.Close()
-		stdoutW.Close()
-		return nil, nil, err
+	stderrR, stderrW, pipeErr := os.Pipe()
+	if pipeErr != nil {
+		_ = stdoutR.Close()
+		_ = stdoutW.Close()
+
+		return nil, nil, pipeErr
 	}
 
 	os.Stdout = stdoutW
@@ -54,8 +56,8 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 	os.Stdout = oldStdout
 	os.Stderr = oldStderr
 
-	stdoutW.Close()
-	stderrW.Close()
+	_ = stdoutW.Close()
+	_ = stderrW.Close()
 
 	<-stdoutDone
 	<-stderrDone
@@ -64,8 +66,7 @@ func CaptureStdoutStderr(fn func() error) (stdout, stderr []byte, err error) {
 }
 
 // CaptureCombinedOutput is like CaptureStdoutStderr but returns stdout and
-// stderr concatenated (stderr first, then stdout — matching the historical
-// behaviour of the fd-duplication capture in stats_integration_test.go).
+// stderr concatenated into a single byte slice (stdout first, then stderr).
 func CaptureCombinedOutput(fn func() error) ([]byte, error) {
 	stdout, stderr, err := CaptureStdoutStderr(fn)
 
@@ -75,6 +76,3 @@ func CaptureCombinedOutput(fn func() error) ([]byte, error) {
 
 	return combined, err
 }
-
-// Ensure unused import is referenced.
-var _ = io.Discard

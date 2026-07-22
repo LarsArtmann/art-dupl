@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"bytes"
-	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -70,42 +67,7 @@ func executeTestCommand(t *testing.T, args []string) ([]byte, error) {
 	AddFlags(rootCmd)
 	rootCmd.SetArgs(resolved[1:])
 
-	// Capture output via fd duplication (subcommands write to os.Stdout directly)
-	savedStdout, _ := syscall.Dup(1)
-	savedStderr, _ := syscall.Dup(2)
-
-	stdoutR, stdoutW, _ := os.Pipe()
-	stderrR, stderrW, _ := os.Pipe()
-
-	syscall.Dup2(int(stdoutW.Fd()), 1) //nolint:errcheck
-	syscall.Dup2(int(stderrW.Fd()), 2) //nolint:errcheck
-
-	var (
-		stdoutBuf bytes.Buffer
-		stderrBuf bytes.Buffer
-	)
-
-	stdoutDone := make(chan struct{})
-	testutil.CopyToBuffer(&stdoutBuf, stdoutR, stdoutDone)
-
-	stderrDone := make(chan struct{})
-	testutil.CopyToBuffer(&stderrBuf, stderrR, stderrDone)
-
-	execErr := rootCmd.Execute()
-
-	syscall.Dup2(savedStdout, 1) //nolint:errcheck
-	syscall.Dup2(savedStderr, 2) //nolint:errcheck
-
-	syscall.Close(savedStdout) //nolint:errcheck
-	syscall.Close(savedStderr) //nolint:errcheck
-
-	stdoutW.Close() //nolint:errcheck
-	stderrW.Close() //nolint:errcheck
-
-	<-stdoutDone
-	<-stderrDone
-
-	output := append(stdoutBuf.Bytes(), stderrBuf.Bytes()...)
+	output, execErr := testutil.CaptureCombinedOutput(rootCmd.Execute)
 
 	return output, execErr
 }
