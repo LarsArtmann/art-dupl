@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
@@ -295,6 +296,10 @@ func TestHashFile_NonexistentFile(t *testing.T) {
 
 func TestHashFile_UnreadableFile(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		t.Skip("Unix file permissions (0o000) are not enforced on Windows")
+	}
 
 	dir := t.TempDir()
 
