@@ -41,17 +41,7 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 
 ### Code Hygiene
 
-- [ ] **Fix `bdd/type_aware_test.go:14`**: `undefined: CreateBDDTestSetup` — LSP typecheck error, pre-existing.
-- [ ] **Fix `cmd/progress_test.go` lint warnings**: 7 warnings (errcheck, wsl_v5) from previous session — `os.Setenv`/`os.Unsetenv` should use `t.Setenv`, missing whitespace.
-- [ ] **Fix `cmd/accept_directive.go:97`**: mnd magic number 64.
-- [ ] **Fix `cmd/accept_directive_test.go:40`**: gci formatting issue.
-- [ ] **Remove 10 dead `//nolint:exhaustruct` directives**: Across 7 files (`internal/utils/file.go`, `internal/testutil/bdd.go`, `errors/types.go`, `job/incremental.go`, `job/profiler.go`, `pkg/artdupl/types.go`, `pkg/logger/logger.go`) — exhaustruct linter is disabled.
-- [ ] **Resolve SDK DefaultOptions threshold split-brain**: SDK defaults to 15, CLI defaults to 5 (`config.DefaultThreshold`). Align or document rationale.
-- [ ] **Fix SDK TypeAware fallback test**: `TestDetector_TypeAware_FallsBackOnInvalidGo` asserts nothing (`_ = result; _ = err`).
-- [ ] **Fix progress test parallelism**: `TestProgressFilesChanForwarding` manipulates `os.Stderr` without parallel guard while sibling tests call `t.Parallel()`.
-- [ ] **Annotate stale status report**: `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` describes removed stub flags as "partially done" — mark as SUPERSEDED.
-- [ ] **Add CLI integration test for `--include-generated generic`**: End-to-end test verifying non-suffix templ file is excluded from clone detection output.
-- [ ] **Add `FilterResult.Source` field**: Distinguish gogenfilter vs defense-in-depth catches in stats output.
+_All Code Hygiene items completed — see `CHANGELOG.md`._
 
 ---
 

@@ -42,7 +42,7 @@ func progressFilesChan(
 			case path, ok := <-ch:
 				if !ok {
 					if count > 0 {
-						fmt.Fprintf(progressOut, "    %d files discovered\n", count)
+						_, _ = fmt.Fprintf(progressOut, "    %d files discovered\n", count)
 					}
 
 					return
@@ -57,7 +57,7 @@ func progressFilesChan(
 				}
 			case <-ticker.C:
 				if count > 0 {
-					fmt.Fprintf(progressOut, "    %d files so far...\n", count)
+					_, _ = fmt.Fprintf(progressOut, "    %d files so far...\n", count)
 				}
 			case <-ctx.Done():
 				return
