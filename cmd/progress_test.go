@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	"os"
+	"io"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -84,15 +84,11 @@ func TestShouldShowProgressEnvVar(t *testing.T) {
 }
 
 func TestProgressFilesChanForwarding(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	cfg := &config.Config{}
 	format := config.OutputFormatText
-
-	oldStderr := os.Stderr
-	r, w, _ := os.Pipe()
-	os.Stderr = w
-
-	t.Cleanup(func() { os.Stderr = oldStderr })
 
 	input := make(chan string, 3)
 
@@ -104,25 +100,12 @@ func TestProgressFilesChanForwarding(t *testing.T) {
 
 	close(input)
 
-	output := progressFilesChan(ctx, input, cfg, format)
+	output := progressFilesChan(ctx, input, cfg, format, io.Discard)
 
 	var results []string
 	for f := range output {
 		results = append(results, f)
 	}
-
-	_ = w.Close()
-
-	// drain pipe to avoid goroutine leak
-	go func() {
-		buf := make([]byte, 1024)
-
-		for {
-			if _, err := r.Read(buf); err != nil {
-				return
-			}
-		}
-	}()
 
 	if len(results) != 3 {
 		t.Errorf("expected 3 files forwarded, got %d", len(results))
@@ -144,7 +127,7 @@ func TestProgressFilesChanSuppressed(t *testing.T) {
 
 	close(input)
 
-	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText)
+	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText, io.Discard)
 
 	// When suppressed, progressFilesChan returns the input channel directly
 	if output != input {
@@ -168,7 +151,7 @@ func TestProgressFilesChanEmpty(t *testing.T) {
 
 	close(input)
 
-	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText)
+	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText, io.Discard)
 
 	count := 0
 	for range output {

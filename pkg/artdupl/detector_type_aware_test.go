@@ -103,10 +103,16 @@ func broken() {
 
 	result, err := detector.FindClones(t.Context(), []string{file})
 
-	_ = result
-	_ = err
-	// Either success (syntax-only fallback) or ErrNoDuplicatesFound is acceptable.
-	// The key assertion is that it does NOT crash.
+	// Type-aware fallback: broken type info must NOT cause a fatal error.
+	// A single file yields no duplicates, so ErrNoDuplicatesFound or a nil-error
+	// result with zero clone groups is the expected graceful-degradation outcome.
+	if err != nil && !errors.Is(err, ErrNoDuplicatesFound) {
+		t.Fatalf("FindClones should fall back to syntax-only on invalid Go, got: %v", err)
+	}
+
+	if err == nil && result == nil {
+		t.Fatal("Result should not be nil when err is nil")
+	}
 }
 
 func TestDetector_TypeAware_DisabledByDefault(t *testing.T) {

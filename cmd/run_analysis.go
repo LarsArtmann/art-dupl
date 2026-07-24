@@ -122,7 +122,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 	)
 
 	filesChan := params.getFilesChan()
-	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, os.Stderr)
 
 	var (
 		schan        chan []*syntax.Node
@@ -160,7 +160,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
 func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
-	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
+	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat, os.Stderr)
 
 	var typeInfos golang.TypeAwareData
 	if params.cfg.TypeAware {

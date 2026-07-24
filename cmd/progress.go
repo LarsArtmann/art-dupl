@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -20,6 +21,7 @@ func progressFilesChan(
 	ch chan string,
 	cfg *config.Config,
 	outputFormat config.OutputFormat,
+	progressOut io.Writer,
 ) chan string {
 	if !shouldShowProgress(cfg, outputFormat) {
 		return ch
@@ -40,7 +42,7 @@ func progressFilesChan(
 			case path, ok := <-ch:
 				if !ok {
 					if count > 0 {
-						fmt.Fprintf(os.Stderr, "    %d files discovered\n", count)
+						fmt.Fprintf(progressOut, "    %d files discovered\n", count)
 					}
 
 					return
@@ -55,7 +57,7 @@ func progressFilesChan(
 				}
 			case <-ticker.C:
 				if count > 0 {
-					fmt.Fprintf(os.Stderr, "    %d files so far...\n", count)
+					fmt.Fprintf(progressOut, "    %d files so far...\n", count)
 				}
 			case <-ctx.Done():
 				return

@@ -56,7 +56,7 @@ func executeHashOnlyAnalysis(
 		gitignore,
 	)
 
-	filesChan = progressFilesChan(ctx, filesChan, cfg, outputFormat)
+	filesChan = progressFilesChan(ctx, filesChan, cfg, outputFormat, os.Stderr)
 
 	files, err := collectFilesFromChannel(ctx, filesChan)
 	if err != nil {
