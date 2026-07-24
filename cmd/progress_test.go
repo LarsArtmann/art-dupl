@@ -89,15 +89,19 @@ func TestProgressFilesChanForwarding(t *testing.T) {
 	format := config.OutputFormatText
 
 	oldStderr := os.Stderr
-	t.Cleanup(func() { os.Stderr = oldStderr })
-
 	r, w, _ := os.Pipe()
 	os.Stderr = w
 
+	t.Cleanup(func() { os.Stderr = oldStderr })
+
 	input := make(chan string, 3)
+
 	input <- "file1.go"
+
 	input <- "file2.go"
+
 	input <- "file3.go"
+
 	close(input)
 
 	output := progressFilesChan(ctx, input, cfg, format)
@@ -135,7 +139,9 @@ func TestProgressFilesChanSuppressed(t *testing.T) {
 
 	input := make(chan string, 2)
 	input <- "a.go"
+
 	input <- "b.go"
+
 	close(input)
 
 	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText)
@@ -159,6 +165,7 @@ func TestProgressFilesChanEmpty(t *testing.T) {
 	cfg := &config.Config{Quiet: true}
 
 	input := make(chan string)
+
 	close(input)
 
 	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText)

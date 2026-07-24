@@ -124,9 +124,9 @@ func (d *detector) loadTypeAwareDataIfEnabled(files []string) golang.TypeAwareDa
 	typeData, err := golang.LoadTypeAwareData(goFiles)
 	if err != nil {
 		d.logger.Warn("Type-aware mode failed, falling back to syntax-only", "err", err)
+
 		return golang.TypeAwareData{}
 	}
-
 
 	return typeData
 }
