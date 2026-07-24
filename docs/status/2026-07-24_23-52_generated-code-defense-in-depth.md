@@ -9,21 +9,25 @@
 ## a) FULLY DONE
 
 ### Implementation
+
 - **`filterExcludedGenerated()` function** (`cmd/util.go`): Content-based defense-in-depth check. When `--include-generated generic` (or `all`) disables `FilterGeneric`, the filename-gated category filters (`FilterTempl`/`FilterSQLC`/`FilterProtobuf`) only match files with expected suffixes (`_templ.go`, `_sqlc.go`, `*.pb.go`). This function catches generated files that lack the expected suffix by checking content markers directly.
 - **`generatorIncludes.Generic` field**: New field tracks whether `--include-generated generic` or `all` is active. Without this, the content-reading path in `shouldIncludeFile` would not activate when only `Generic` is set.
 - **Wired into `shouldIncludeFile`**: Runs after gogenfilter's verdict, only when file passed and content is already loaded. No extra I/O. Stats recorded with correct `FilterReason`.
 - **Respects explicit includes**: If user runs `--include-generated templ`, the templ marker check is skipped (`!includes.Templ` is false). Correct override behavior.
 
 ### Tests
+
 - **`TestFilterExcludedGenerated`** (8 sub-tests): Unit tests for all marker categories (templ, sqlc, protobuf) — included vs. not-included, regular content, empty content.
 - **`TestShouldIncludeFile_TemplContentDefenseInDepth`** (5 sub-tests): Integration tests with real files on disk. Tests the actual gap scenario: templ content in a file WITHOUT `_templ.go` suffix, with `FilterGeneric` disabled. Also tests suffix files and regular files.
 - **`newTestFilter` helper**: Extracted to reduce filter construction duplication in tests.
 - **Updated existing tests**: `TestGeneratorIncludesAny` and `TestGeneratorIncludesAllowsContent` updated for new `Generic` field.
 
 ### Documentation
+
 - **AGENTS.md**: Updated the "Generated code filtered by default" bullet to document the content-based defense-in-depth mechanism, the `Generic` field, and `filterExcludedGenerated`. Fixed stale reference `allowsFile` → `allowsContent`.
 
 ### Quality Gates
+
 - `go build ./...` — clean
 - `go test ./...` — 26/26 packages pass
 - `golangci-lint run --timeout 5m ./...` — 0 issues
@@ -34,9 +38,11 @@
 ## b) PARTIALLY DONE
 
 ### CHANGELOG.md
+
 - NOT updated with this fix. The `[Unreleased]` section from the previous session exists but does not mention the defense-in-depth content check.
 
 ### Commit hygiene
+
 - Auto-committer committed `cmd/util.go` and `cmd/filter_includes_test.go` in 2 commits (`0200cc90`, `13d0e4d0`). `AGENTS.md` remains uncommitted (modified, not staged).
 - Commit messages are **inaccurate**: describe "filter inclusion logic", "artwork files", "filter parsing and validation" — none of which match the actual content (templ/sqlc/protobuf content-based defense-in-depth).
 
@@ -54,7 +60,9 @@
 ## d) TOTALLY FUCKED UP
 
 ### Auto-committer commit messages (recurring problem)
+
 Commits `0200cc90` and `13d0e4d0` have **fabricated, inaccurate commit messages**:
+
 - Claims "tests covering various filter scenarios (include/exclude patterns)" — actually tests content-based generated code defense-in-depth
 - Claims "artwork files" — this is a Go code clone detection tool, not an artwork project
 - Claims "filter parsing and validation" — no parsing or validation was added
@@ -63,6 +71,7 @@ Commits `0200cc90` and `13d0e4d0` have **fabricated, inaccurate commit messages*
 This is the **same problem flagged in the previous session's status report** (`docs/status/2026-07-24_23-34_post-sprint-cleanup-and-hardening.md`). The auto-committer is actively corrupting git history with hallucinated descriptions.
 
 ### AGENTS.md left uncommitted
+
 The documentation update is sitting in the working tree, uncommitted. The code it documents is already committed. This means the committed code has no documentation in the same history.
 
 ---
@@ -94,6 +103,7 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 ## f) Up to 50 Things We Should Get Done Next
 
 ### High priority (correctness & hygiene)
+
 1. **Commit `AGENTS.md`** — it's sitting uncommitted in the working tree
 2. **Fix or disable the auto-committer** — it's producing fabricated commit messages
 3. **Update `CHANGELOG.md`** with the defense-in-depth content check entry
@@ -105,6 +115,7 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 9. **Fix LSP diagnostic in `cmd/accept_directive_test.go:40`** — gci formatting, pre-existing
 
 ### Medium priority (robustness)
+
 10. **Add CLI integration test** for `--include-generated generic` with non-suffix templ file
 11. **Unify `allowsContent` and `filterExcludedGenerated`** into a single content categorization function
 12. **Consider refactoring `generatorIncludes`** from 6 booleans to a set/map pattern
@@ -116,6 +127,7 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 18. **Fix progress test parallelism issue** (`os.Stderr` manipulation without parallel guard)
 
 ### Low priority (polish)
+
 19. **Document the filtering architecture** in a dedicated `docs/FILTERING.md` or ADR
 20. **Add `--list-filters` flag** to show active filter configuration
 21. **Consider `.artduplignore`** as an alternative to `.gitignore` for art-dupl-specific exclusions
@@ -140,6 +152,7 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 40. **Review error handling in content read path** — currently returns `true` (include) on read error, which is fail-open
 
 ### Documentation
+
 41. **Update `HOW_TO_USE.md`** with `--include-generated` behavior details
 42. **Add ADR for the defense-in-depth filtering architecture**
 43. **Update `FEATURES.md`** if generated-code filtering isn't already documented there
@@ -147,6 +160,7 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 45. **Consolidate filtering documentation** — currently spread across AGENTS.md, HOW_TO_USE.md, and inline comments
 
 ### Technical debt
+
 46. **Pay down the `shouldIncludeFile` complexity** — extract filter override logic
 47. **Consider a `FileFilter` interface** that composes gogenfilter + content checks
 48. **Review the `FilterStats` API** — `Record` takes `FilterResult` but defense-in-depth constructs a synthetic one
@@ -158,10 +172,13 @@ The documentation update is sitting in the working tree, uncommitted. The code i
 ## g) Questions (cannot figure out myself)
 
 ### 1. Should the auto-committer be disabled entirely?
+
 It has produced inaccurate commit messages in two consecutive sessions. The messages describe work that wasn't done ("artwork files", "filter parsing") and miss the actual changes (defense-in-depth content check). The alternative is manual commits, which risks leaving work uncommitted. I cannot determine whether the auto-committer is a Crush hook, a git hook, or an external tool, nor whether its configuration can be improved.
 
 ### 2. Is the defense-in-depth check the right architectural location, or should this be pushed upstream into gogenfilter?
+
 The gap exists because gogenfilter's `FilterTempl`/`FilterSQLC`/`FilterProtobuf` are filename-gated (require `_templ.go`/`_sqlc.go`/`*.pb.go` suffix) while `FilterGeneric` (content-based "Code generated by") is the real catch-all. When `FilterGeneric` is disabled, the filename-gated filters are insufficient. The "right" fix is in gogenfilter: make the category filters content-based even without the suffix, OR make `FilterDetailed` always run a content-based generic check as a fallback. But that changes the library's contract. Should I open an issue/PR against gogenfilter, or keep the workaround in art-dupl?
 
 ### 3. Should `--include-generated generic` even exist as a separate option?
+
 Currently `generic` means "disable the generic catch-all filter." But the whole point of the generic filter is to catch generated files that don't match any specific category. Disabling it without enabling all specific categories creates the gap that `filterExcludedGenerated` now patches. An alternative design: `--include-generated generic` would implicitly enable ALL categories (sqlc, templ, protobuf, mockgen, stringer), making it equivalent to `all`. Or: remove `generic` as a user-facing option entirely and only allow specific categories + `all`. I cannot determine the original design intent.

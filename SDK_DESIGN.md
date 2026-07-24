@@ -23,7 +23,7 @@ All types are in `pkg/artdupl/types.go`.
 
 | Type         | Purpose                                                                       |
 | ------------ | ----------------------------------------------------------------------------- |
-| `Options`    | Configuration: threshold, methods, workers, timeout, type-aware, callbacks   |
+| `Options`    | Configuration: threshold, methods, workers, timeout, type-aware, callbacks    |
 | `Result`     | Complete output: clone groups + summary + metadata                            |
 | `CloneGroup` | Hash, clones, size, line count, detection method                              |
 | `Clone`      | Embeds `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) + positions |

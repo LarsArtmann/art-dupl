@@ -10,15 +10,15 @@
 
 ### This Session's Work (7 items)
 
-| Task | What was done |
-| --- | --- |
-| **Remove exhaustruct/tagliatelle from lint config** | Removed from `.golangci.yml` enable list AND settings section. Eliminated 101 of 108 lint warnings. CI guard script (`scripts/check-disabled-linters.sh`) now passes. |
-| **Remove 5 stub flags (M26-M30)** | Removed `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report` from `cmd/flags.go`, `config/config.go`, `cmd/config_builder.go`. Verified zero orphaned references remain. A flag that does nothing is worse than no flag. |
-| **Fix all lint warnings** | Fixed errcheck (gitignore.go `f.Close()`), mnd (magic number constants), gocyclo/nestif (extracted `loadTypeAwareDataIfEnabled`), usetesting (`t.Setenv` replacing `os.Setenv`), wsl_v5 (whitespace), nlreturn, gci formatting, varnamelen. Final count: **0 issues**. |
-| **Complete M24: SDK TypeAware** | Added `pkg/artdupl/detector_type_aware_test.go` with 3 tests (clone detection, graceful fallback, default-disabled). Updated `SDK_DESIGN.md` to document TypeAware support. |
-| **Update project documentation** | `TODO_LIST.md` (completed items removed), `CHANGELOG.md` ([Unreleased] populated), `FEATURES.md` (CI Integration section + category count), `AGENTS.md` (lint config description fixed, new features documented). |
-| **Run `nix flake check`** | All 9 checks passed: treefmt, format, build, test, race, lint, fmt, disabled-linters, bench. |
-| **Run `go test -race` on changed packages** | `cmd/` and `pkg/artdupl/` both pass with race detector (CGO_ENABLED=1). |
+| Task                                                | What was done                                                                                                                                                                                                                                                          |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Remove exhaustruct/tagliatelle from lint config** | Removed from `.golangci.yml` enable list AND settings section. Eliminated 101 of 108 lint warnings. CI guard script (`scripts/check-disabled-linters.sh`) now passes.                                                                                                  |
+| **Remove 5 stub flags (M26-M30)**                   | Removed `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report` from `cmd/flags.go`, `config/config.go`, `cmd/config_builder.go`. Verified zero orphaned references remain. A flag that does nothing is worse than no flag.             |
+| **Fix all lint warnings**                           | Fixed errcheck (gitignore.go `f.Close()`), mnd (magic number constants), gocyclo/nestif (extracted `loadTypeAwareDataIfEnabled`), usetesting (`t.Setenv` replacing `os.Setenv`), wsl_v5 (whitespace), nlreturn, gci formatting, varnamelen. Final count: **0 issues**. |
+| **Complete M24: SDK TypeAware**                     | Added `pkg/artdupl/detector_type_aware_test.go` with 3 tests (clone detection, graceful fallback, default-disabled). Updated `SDK_DESIGN.md` to document TypeAware support.                                                                                            |
+| **Update project documentation**                    | `TODO_LIST.md` (completed items removed), `CHANGELOG.md` ([Unreleased] populated), `FEATURES.md` (CI Integration section + category count), `AGENTS.md` (lint config description fixed, new features documented).                                                      |
+| **Run `nix flake check`**                           | All 9 checks passed: treefmt, format, build, test, race, lint, fmt, disabled-linters, bench.                                                                                                                                                                           |
+| **Run `go test -race` on changed packages**         | `cmd/` and `pkg/artdupl/` both pass with race detector (CGO_ENABLED=1).                                                                                                                                                                                                |
 
 ### Previous Session's Work (18 items, verified intact)
 
@@ -36,13 +36,13 @@ Nothing is partially done. The 5 stub-flag tasks (M26-M30) were either going to 
 
 These features were deferred. Their stub flags were removed to avoid creating false expectations. They remain in `TODO_LIST.md` as genuine future work.
 
-| Task | Status | Why deferred |
-| --- | --- | --- |
-| **M26: YAML config file support** | Not started | Requires `yaml.v3` dependency, parsing logic, format detection. 90min effort. |
-| **M27: `--diff-report <baseline>` mode** | Not started | Requires baseline loading, diff comparison, new output format. 90min effort. |
-| **M28: `--explain` flag** | Not started | Requires explanation generator wired into printer pipeline. 60min effort. |
-| **M29: HTML report improvements** | Not started | Requires file-writing logic, TTY detection, stable IDs. 60min effort. |
-| **M30: `--recommend-threshold`** | Not started | Requires heuristic algorithm based on codebase analysis. 45min effort. |
+| Task                                     | Status      | Why deferred                                                                  |
+| ---------------------------------------- | ----------- | ----------------------------------------------------------------------------- |
+| **M26: YAML config file support**        | Not started | Requires `yaml.v3` dependency, parsing logic, format detection. 90min effort. |
+| **M27: `--diff-report <baseline>` mode** | Not started | Requires baseline loading, diff comparison, new output format. 90min effort.  |
+| **M28: `--explain` flag**                | Not started | Requires explanation generator wired into printer pipeline. 60min effort.     |
+| **M29: HTML report improvements**        | Not started | Requires file-writing logic, TTY detection, stable IDs. 60min effort.         |
+| **M30: `--recommend-threshold`**         | Not started | Requires heuristic algorithm based on codebase analysis. 45min effort.        |
 
 ---
 
@@ -81,6 +81,7 @@ pkg/logger/logger.go:53
 ### D3: Previous Status Report Is Now Stale
 
 **What happened:** `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` still describes:
+
 - M26-M30 as "partially done" (stub flags existed) - they're now **removed**
 - Lint state as "UNKNOWN" - it's now **0 issues**
 - `nix flake check` as "UNKNOWN" - it now **passes**
@@ -121,6 +122,7 @@ _ = err
 ### D6: Auto-Committer Created Inaccurate Commit Messages
 
 **What happened:** The auto-committer created 3 commits while I was working:
+
 - `cfce7f2d refactor(config,detector): overhaul configuration system and add gitignore support`
 - `a20acf91 feat(detector): add type-aware detector implementation with comprehensive test coverage`
 - `09313989 docs(art-dupl): update project documentation files`
@@ -234,6 +236,7 @@ _ = err
 ### Q1: SDK DefaultOptions threshold (15 vs 5)
 
 The SDK `DefaultOptions()` sets `Threshold: 15` while the CLI default is `config.DefaultThreshold = 5`. This is a 3x difference. Should I:
+
 - **(A)** Change SDK default to 5 (match CLI)?
 - **(B)** Change CLI default to 15 (match SDK)?
 - **(C)** Keep the mismatch and document the rationale (e.g., SDK users want less noise)?
@@ -243,6 +246,7 @@ I cannot determine this myself because it's a product decision about the intende
 ### Q2: Gitignore library vs manual parser
 
 The manual gitignore parser in `cmd/gitignore.go` handles common patterns but misses `**`, character classes, and nested `.gitignore` files. Should I:
+
 - **(A)** Replace it with `github.com/sabhiram/go-gitignore` (adds a dependency, but battle-tested)?
 - **(B)** Keep the manual parser and add the missing features incrementally?
 - **(C)** Keep the manual parser as-is (good enough for v1)?
@@ -252,6 +256,7 @@ This is a build-vs-buy decision that depends on your tolerance for external depe
 ### Q3: Should the old status report be annotated or deleted?
 
 `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` is now stale (describes stub flags as "partially done", lint as "UNKNOWN", etc.). Should I:
+
 - **(A)** Add a "SUPERSEDED" annotation at the top pointing to this report?
 - **(B)** Leave it as-is (the timestamp makes it clearly historical)?
 - **(C)** Delete it (it contains no enduring information)?
