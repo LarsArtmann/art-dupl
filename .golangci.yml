@@ -40,6 +40,7 @@ linters:
     - errname
     - errorlint
     - exhaustive
+    - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
@@ -106,6 +107,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage

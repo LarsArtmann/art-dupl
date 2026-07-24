@@ -21,24 +21,24 @@ The clone type consolidation task from `TODO_LIST.md` is **DONE in the codebase*
 
 The following changes are **live in the codebase** (committed by the concurrent session, verified identical to this session's edits):
 
-| Change | Files | Status |
-|--------|-------|--------|
-| `printer.JSONClone` now embeds `domain.CloneRef` instead of 4 duplicate fields | `printer/json.go` | Done |
-| `printer.CloneOccurrenceView` now embeds `domain.CloneRef` instead of 4 duplicate fields | `printer/html_views.go` | Done |
-| `printer.CloneWithContent` now embeds `domain.CloneRef` instead of `CloneWithContentMixin` | `printer/diff.go` | Done |
-| `printer.FileInfo` now embeds `domain.CloneRef` instead of `CloneWithContentMixin` | `printer/file_processor.go` | Done |
-| `printer.simpleJSONClone` now embeds `domain.CloneRef` instead of `LineRangeMixin` | `printer/json.go` | Done |
-| **`printer.CloneWithContentMixin` type eliminated** | `printer/diff.go` | Done |
-| **`printer.LineRangeMixin` type eliminated** | `printer/json.go` | Done |
-| `toJSONClone()` shared conversion helper created | `printer/json.go` | Done |
-| `simpleCloneGroup` field names aligned (`Instances`→`Clones`, `Score`→`Size`) | `printer/json.go` | Done |
-| `sarif.go` stale comment updated (`LineRangeMixin`→`CloneRef`) | `printer/sarif.go` | Done |
-| All test files updated for new struct literal syntax | `printer/json_test.go`, `printer/html_test.go` | Done |
-| `TODO_LIST.md` marked as done | `TODO_LIST.md` | Done |
-| `AGENTS.md` updated with consolidation notes | `AGENTS.md` | Done |
-| Build passes | `go build ./...` | Verified |
-| All tests pass | `go test ./...` (26 packages) | Verified |
-| No new lint errors | `golangci-lint` | Verified |
+| Change                                                                                     | Files                                          | Status   |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------- | -------- |
+| `printer.JSONClone` now embeds `domain.CloneRef` instead of 4 duplicate fields             | `printer/json.go`                              | Done     |
+| `printer.CloneOccurrenceView` now embeds `domain.CloneRef` instead of 4 duplicate fields   | `printer/html_views.go`                        | Done     |
+| `printer.CloneWithContent` now embeds `domain.CloneRef` instead of `CloneWithContentMixin` | `printer/diff.go`                              | Done     |
+| `printer.FileInfo` now embeds `domain.CloneRef` instead of `CloneWithContentMixin`         | `printer/file_processor.go`                    | Done     |
+| `printer.simpleJSONClone` now embeds `domain.CloneRef` instead of `LineRangeMixin`         | `printer/json.go`                              | Done     |
+| **`printer.CloneWithContentMixin` type eliminated**                                        | `printer/diff.go`                              | Done     |
+| **`printer.LineRangeMixin` type eliminated**                                               | `printer/json.go`                              | Done     |
+| `toJSONClone()` shared conversion helper created                                           | `printer/json.go`                              | Done     |
+| `simpleCloneGroup` field names aligned (`Instances`→`Clones`, `Score`→`Size`)              | `printer/json.go`                              | Done     |
+| `sarif.go` stale comment updated (`LineRangeMixin`→`CloneRef`)                             | `printer/sarif.go`                             | Done     |
+| All test files updated for new struct literal syntax                                       | `printer/json_test.go`, `printer/html_test.go` | Done     |
+| `TODO_LIST.md` marked as done                                                              | `TODO_LIST.md`                                 | Done     |
+| `AGENTS.md` updated with consolidation notes                                               | `AGENTS.md`                                    | Done     |
+| Build passes                                                                               | `go build ./...`                               | Verified |
+| All tests pass                                                                             | `go test ./...` (26 packages)                  | Verified |
+| No new lint errors                                                                         | `golangci-lint`                                | Verified |
 
 ### Concurrent Work (NOT by this session)
 
@@ -51,6 +51,7 @@ A concurrent session committed 12 commits during this session's window, includin
 ### SPLIT-BRAIN.html Documentation
 
 The `docs/research/SPLIT-BRAIN.html` document is **stale**. It still describes:
+
 - SB-1: "Five Parallel Clone Instance Types" — **RESOLVED** (CloneRef embedded everywhere)
 - SB-5: "Fragment `[]byte` vs `string`" — **RESOLVED** (Fragment is `string` in CloneRef)
 - SB-6: "Conversion Code Sprawl" — **PARTIALLY RESOLVED** (`toJSONClone` centralizes one path; `convertToCloneGroup` in SDK still independent)
@@ -65,13 +66,13 @@ The document should either be updated with resolution annotations or moved to an
 
 These items from the original analysis were NOT addressed by this session or the concurrent session:
 
-| ID | Issue | Status |
-|----|-------|--------|
-| SB-2 | Clone group types field naming (`CloneGroup.Files` was renamed to `Clones` in printer, but `simpleCloneGroup` JSON tag is still `"instances"`) | JSON tags preserved for backward compat — intentional |
-| SB-3 | Triple `DetectionMethod` definition | Already resolved via aliasing in prior sessions |
-| SB-4 | Parallel error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`) | Not addressed — medium risk |
-| SB-7 | Logger interface implicit vs explicit | Already resolved via `Logger = logger.Logger` alias |
-| SB-8 | Timeout `int` vs `time.Duration` | Already resolved (`config.Config.Timeout` is now `time.Duration`) |
+| ID   | Issue                                                                                                                                          | Status                                                            |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| SB-2 | Clone group types field naming (`CloneGroup.Files` was renamed to `Clones` in printer, but `simpleCloneGroup` JSON tag is still `"instances"`) | JSON tags preserved for backward compat — intentional             |
+| SB-3 | Triple `DetectionMethod` definition                                                                                                            | Already resolved via aliasing in prior sessions                   |
+| SB-4 | Parallel error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`)                                                   | Not addressed — medium risk                                       |
+| SB-7 | Logger interface implicit vs explicit                                                                                                          | Already resolved via `Logger = logger.Logger` alias               |
+| SB-8 | Timeout `int` vs `time.Duration`                                                                                                               | Already resolved (`config.Config.Timeout` is now `time.Duration`) |
 
 ### SDK Conversion Path Still Independent
 
@@ -85,14 +86,15 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 
 **This is the big one.** A concurrent session/agent was actively committing to the same branch (`fork`) during this session. Timeline:
 
-| Time | Event |
-|------|-------|
-| ~19:21 | Concurrent session starts committing (type-aware detection) |
-| ~19:41 | Concurrent session commits `e505886e` — identical clone type consolidation |
-| ~19:41-19:48 | This session makes the same edits independently |
-| ~19:48 | Concurrent session commits `9a2b6062` — sweeps remaining uncommitted changes |
+| Time         | Event                                                                        |
+| ------------ | ---------------------------------------------------------------------------- |
+| ~19:21       | Concurrent session starts committing (type-aware detection)                  |
+| ~19:41       | Concurrent session commits `e505886e` — identical clone type consolidation   |
+| ~19:41-19:48 | This session makes the same edits independently                              |
+| ~19:48       | Concurrent session commits `9a2b6062` — sweeps remaining uncommitted changes |
 
 **What went wrong:**
+
 1. **No git status check at session start** — the conversation's git status was a stale snapshot from session start (`32fa6f01`), but 5+ commits had already been made by the concurrent session
 2. **No periodic git log monitoring** — I should have checked for new commits during the work
 3. **My edits were real but redundant** — I saw genuine compilation errors, fixed them, tests passed — but the same changes were already committed
@@ -130,6 +132,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 ## f) Up to 50 Things to Get Done Next
 
 ### High Priority
+
 1. Update `docs/research/SPLIT-BRAIN.html` with resolution annotations (SB-1, SB-5 resolved)
 2. Verify concurrent session's type-aware detection work doesn't break existing detection modes
 3. Run full BDD test suite to verify no behavioral regressions from concurrent changes
@@ -138,6 +141,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 6. Resolve SB-4: Unify error sentinels (`config.ErrInvalidThreshold` vs `pkg/artdupl.ErrInvalidThreshold`)
 
 ### Medium Priority
+
 7. Add `//nolint:exhaustruct` to CloneRef construction sites in `file_processor.go` (missing Fragment)
 8. Create `domain.NewCloneRef()` constructor with validation
 9. Add compile-time interface assertion for CloneRef embedding
@@ -149,6 +153,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 15. Document the `simpleCloneGroup` JSON tag preservation decision
 
 ### Lower Priority
+
 16. Consider whether `CloneGroupDiff` should use CloneRef internally
 17. Review `printer.CloneDiff` embedding chain (`CloneWithContent` → `CloneRef` + `Content`)
 18. Check if `FileInfo` needs `Fragment` populated (currently empty — only Content + Node)
@@ -161,6 +166,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 25. Review HTML report rendering with embedded CloneRef
 
 ### Documentation
+
 26. Update `FEATURES.md` if clone type consolidation is a user-visible change
 27. Update `HOW_TO_USE.md` if JSON output format changed
 28. Archive or annotate old status reports that reference "7 parallel Clone types"
@@ -169,6 +175,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 31. Review and update all `docs/status/` files that reference CloneWithContentMixin or LineRangeMixin
 
 ### Cleanup
+
 32. Remove stale references to `CloneWithContentMixin` in archived docs
 33. Remove stale references to `LineRangeMixin` in archived docs
 34. Review `docs/planning/` files for outdated clone type references
@@ -178,6 +185,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 38. Review import graph for any package that still references old patterns
 
 ### Testing
+
 39. Add test that verifies CloneRef JSON marshaling is consistent across all embedders
 40. Add test that verifies `toJSONClone` preserves all classification fields
 41. Add test for `CloneOccurrenceView` JSON output
@@ -188,6 +196,7 @@ The `pkg/artdupl/detector_conversion.go::convertFragmentToClone` still independe
 46. Add fuzz test for CloneRef construction edge cases
 
 ### Future Architecture
+
 47. Consider whether `pkg/artdupl.CloneGroup` should embed a domain group type
 48. Design shared conversion layer for `[][]*syntax.Node` → domain types
 49. Consider generic `Clone[T]` type parameterization for format-specific extensions
@@ -213,15 +222,15 @@ The SPLIT-BRAIN analysis document is now substantially stale — SB-1, SB-5, SB-
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Files edited | ~10 (all overlapped with concurrent commits) |
-| Types eliminated | 2 (`CloneWithContentMixin`, `LineRangeMixin`) |
-| Types consolidated | 5 (now embed `CloneRef`) |
-| Lines of duplicate field declarations removed | ~25 |
-| Compilation errors encountered and fixed | 30+ |
-| Tests run | Full suite (26 packages, all pass) |
-| Commits by this session | 0 (concurrent session committed everything) |
-| Commits by concurrent session | 12 |
-| Time spent | ~30 minutes |
-| Wasted effort due to collision | ~100% (duplicated by concurrent session) |
+| Metric                                        | Value                                         |
+| --------------------------------------------- | --------------------------------------------- |
+| Files edited                                  | ~10 (all overlapped with concurrent commits)  |
+| Types eliminated                              | 2 (`CloneWithContentMixin`, `LineRangeMixin`) |
+| Types consolidated                            | 5 (now embed `CloneRef`)                      |
+| Lines of duplicate field declarations removed | ~25                                           |
+| Compilation errors encountered and fixed      | 30+                                           |
+| Tests run                                     | Full suite (26 packages, all pass)            |
+| Commits by this session                       | 0 (concurrent session committed everything)   |
+| Commits by concurrent session                 | 12                                            |
+| Time spent                                    | ~30 minutes                                   |
+| Wasted effort due to collision                | ~100% (duplicated by concurrent session)      |
