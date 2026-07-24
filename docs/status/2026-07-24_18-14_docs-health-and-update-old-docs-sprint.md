@@ -32,20 +32,21 @@
 
 All fixes verified against actual code (`grep`, `view`, counts computed from source):
 
-| Claim | Was | Fixed To | Verified By |
-|-------|-----|----------|-------------|
-| Go node types | 45 | 49 | `grep -c 'case \*ast\.' syntax/golang/transform.go` |
-| Clone categories | 14 | 13 | `grep 'Category.*=' domain/processed_clone.go` |
-| Refactoring suggestions | 20 | 24 | Counted suggestion strings in `printer/clone_classify.go` |
-| CLI flags | 35+ | 45+ | `grep -oP '"[a-z][-a-z]*"' cmd/flags.go \| sort -u \| wc -l` = 58 names |
-| SDK validation sentinels | 20+ | 12 | `grep -c 'Err.*=.*errors.New' domain/analysis_errors.go` |
-| Actionability patterns | 15 (wrong names: included "pure-defer") | 15 (correct names from `PatternLabel` constants) | `grep 'PatternLabel =' printer/actionability.go` |
+| Claim                    | Was                                     | Fixed To                                         | Verified By                                                             |
+| ------------------------ | --------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| Go node types            | 45                                      | 49                                               | `grep -c 'case \*ast\.' syntax/golang/transform.go`                     |
+| Clone categories         | 14                                      | 13                                               | `grep 'Category.*=' domain/processed_clone.go`                          |
+| Refactoring suggestions  | 20                                      | 24                                               | Counted suggestion strings in `printer/clone_classify.go`               |
+| CLI flags                | 35+                                     | 45+                                              | `grep -oP '"[a-z][-a-z]*"' cmd/flags.go \| sort -u \| wc -l` = 58 names |
+| SDK validation sentinels | 20+                                     | 12                                               | `grep -c 'Err.*=.*errors.New' domain/analysis_errors.go`                |
+| Actionability patterns   | 15 (wrong names: included "pure-defer") | 15 (correct names from `PatternLabel` constants) | `grep 'PatternLabel =' printer/actionability.go`                        |
 
 Also added missing features: `--test-threshold`, `--suppress-test-low`, `--dump-tokens`, `--rich-text`.
 
 ### 5. Extended CHANGELOG.md — added 15+ entries
 
 Added to `[Unreleased]` section:
+
 - CI workflow rewrite (justfile removal, templ generate, golangci-lint v2, Windows fixes)
 - `CaptureStdoutStderr`/`CaptureCombinedOutput` cross-platform test utilities
 - Stats/hash/config integration tests
@@ -61,19 +62,19 @@ Added to `[Unreleased]` section:
 
 Non-destructive inline blockquotes, never top-of-file banners:
 
-| File | Annotation |
-|------|-----------|
-| `2026-07-21_14-39_ci-fix-sprint.md` | "NOT COMMITTED" → committed (`c1078795`) and pushed |
-| `2026-07-22_11-21_ci-fix-sprint.md` | "NOT pushed" → pushed to `origin/fork` |
-| `2026-07-01_01-34_post-execution-sprint.md` | "Top 25" backlog superseded by same-day sessions |
-| `2026-07-01_04-59_post-dto-decoupling.md` | "not started" items completed ~2h later |
-| `2026-07-03_03-25_post-deep-review.md` | Section D stale issues resolved, file counts updated |
-| `2026-07-09_15-10_semantic-noise-fixes.md` | json/v2 blocker resolved |
-| `2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md` | Lint items resolved by 07-11/07-16 sessions |
-| `2026-07-16_05-30_pareto-p0-p2-execution-status.md` | "Missing Tests CRITICAL" resolved |
-| `2026-07-16_05-49_missing-test-coverage-bugfix.md` | P3 items resolved by P3/P4 sessions |
-| `2026-07-16_06-35_p3-code-quality-tests-ux.md` | Superseded by P4 session (`06:57`) |
-| `feedback/new/2026-07-19_cyberdom_t25...md` | "No JSON output" claim corrected (stale binary) |
+| File                                                     | Annotation                                           |
+| -------------------------------------------------------- | ---------------------------------------------------- |
+| `2026-07-21_14-39_ci-fix-sprint.md`                      | "NOT COMMITTED" → committed (`c1078795`) and pushed  |
+| `2026-07-22_11-21_ci-fix-sprint.md`                      | "NOT pushed" → pushed to `origin/fork`               |
+| `2026-07-01_01-34_post-execution-sprint.md`              | "Top 25" backlog superseded by same-day sessions     |
+| `2026-07-01_04-59_post-dto-decoupling.md`                | "not started" items completed ~2h later              |
+| `2026-07-03_03-25_post-deep-review.md`                   | Section D stale issues resolved, file counts updated |
+| `2026-07-09_15-10_semantic-noise-fixes.md`               | json/v2 blocker resolved                             |
+| `2026-07-09_15-51_semantic-noise-and-jsonv2-complete.md` | Lint items resolved by 07-11/07-16 sessions          |
+| `2026-07-16_05-30_pareto-p0-p2-execution-status.md`      | "Missing Tests CRITICAL" resolved                    |
+| `2026-07-16_05-49_missing-test-coverage-bugfix.md`       | P3 items resolved by P3/P4 sessions                  |
+| `2026-07-16_06-35_p3-code-quality-tests-ux.md`           | Superseded by P4 session (`06:57`)                   |
+| `feedback/new/2026-07-19_cyberdom_t25...md`              | "No JSON output" claim corrected (stale binary)      |
 
 ### 7. Cross-file consistency verified
 
@@ -117,6 +118,7 @@ The "SDK Stream Errors — Resolved" entry is in the Known Limitations table but
 ### 4. Non-core docs not verified
 
 The docs-health skill says to check all living docs. I focused on the 4 core docs (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) but did not verify:
+
 - `HOW_TO_USE.md` — command accuracy (flag names, examples)
 - `USAGE.md` — may duplicate HOW_TO_USE
 - `SDK_DESIGN.md` — known stale type names (`StartLine` vs `LineStart`)
@@ -144,6 +146,7 @@ The docs-health skill says to check all living docs. I focused on the 4 core doc
 The `.golangci.yml` at conversation start had an unstaged modification (` M .golangci.yml`) that re-added `exhaustruct` and `tagliatelle` to the `linters.enable` list. This modification was pre-existing (not mine). The auto-commit hook committed it as part of commit `a271fe77`.
 
 **This directly contradicts AGENTS.md**, which explicitly states:
+
 > `exhaustruct` and `tagliatelle` are DISABLED globally (exhaustruct: impractical for Go zero-value initialization; tagliatelle: codebase has mixed camelCase/snake_case JSON conventions).
 
 The `2026-07-22` CI fix sprint report explicitly documented removing these linters, but the `.golangci.yml` modification re-added them. **I committed this regression without noticing it because I only ran `go build` + `go test`, not `nix flake check` or `golangci-lint run`.**
@@ -188,34 +191,34 @@ For a file that should have received a 2-line annotation (like the other 10 file
 
 ## f) Up to 50 Things to Do Next
 
-| #   | Priority     | Task |
-|-----|-------------|------|
+| #   | Priority     | Task                                                                                                                              |
+| --- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **CRITICAL** | Fix `.golangci.yml`: remove `exhaustruct` and `tagliatelle` from `linters.enable` (revert the regression committed in `a271fe77`) |
-| 2   | **CRITICAL** | Run `nix flake check` and verify ALL checks pass (not just `go build` + `go test`) |
-| 3   | **CRITICAL** | Run `golangci-lint run --timeout 5m ./...` and verify 0 issues |
-| 4   | HIGH         | Remove "SDK Stream Errors — Resolved" from FEATURES.md Known Limitations table |
-| 5   | HIGH         | Verify `HOW_TO_USE.md` flag names and examples match actual CLI (`--` vs `-`, all examples runnable) |
-| 6   | HIGH         | Verify `TESTING.md` mentions `GOEXPERIMENT=jsonv2` prerequisite |
-| 7   | HIGH         | Check `CONTRIBUTING.md` for stale `just` command references (justfile was removed) |
-| 8   | HIGH         | Decide `SDK_DESIGN.md` fate: rewrite type names (`StartLine` → `LineStart`) or delete |
-| 9   | HIGH         | Check `USAGE.md` for overlap with `HOW_TO_USE.md` — consolidate or differentiate |
-| 10  | HIGH         | Verify AGENTS.md "6 error types" claim against current `errors/types.go` |
-| 11  | HIGH         | Annotate `2026-07-16_17-32_buildflow-revert-recovery-and-cleanup.md` (open questions about squashing commits) |
-| 12  | HIGH         | Annotate `2026-07-19_04-50_docs-health-and-update-old-docs-self-critique.md` (open questions about SDK_DESIGN.md) |
-| 13  | HIGH         | Annotate or archive the 2 planning HTML files (`2026-07-01` Pareto plans) |
-| 14  | MEDIUM       | Verify `docs/DOMAIN_LANGUAGE.md` for type drift (field names, enum values) |
-| 15  | MEDIUM       | Add `nix flake check` as a mandatory pre-commit check (prevent this regression class) |
-| 16  | MEDIUM       | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date |
-| 17  | MEDIUM       | Verify FEATURES.md "7 output formats" claim — is CSV stats-only or a full format? |
-| 18  | MEDIUM       | Run `git diff` on ALL pre-existing uncommitted files before any auto-commit |
-| 19  | MEDIUM       | Add a CI step that diffs `.golangci.yml` enable list against AGENTS.md documentation |
-| 20  | MEDIUM       | Replace em-dashes in TODO_LIST.md/ROADMAP.md with semicolons/parentheses (rule compliance) |
-| 21  | LOW          | Check `docs/planning/2026-07-16_04-29_comprehensive-pareto-roadmap.md` — still the master backlog? |
-| 22  | LOW          | Verify the "100% precision across 15 projects" claim in FEATURES.md Overview is backed by a test |
-| 23  | LOW          | Consider adding `docs/status/archive/` for reports older than 30 days |
-| 24  | LOW          | Document the `CaptureStdoutStderr` pattern in AGENTS.md as canonical test capture method |
-| 25  | LOW          | Add `--help` text audit (every flag description accurate and includes valid values) |
-| 26  | LOW          | Consider an `.artdupl-baseline.json` update to account for new code from this session |
+| 2   | **CRITICAL** | Run `nix flake check` and verify ALL checks pass (not just `go build` + `go test`)                                                |
+| 3   | **CRITICAL** | Run `golangci-lint run --timeout 5m ./...` and verify 0 issues                                                                    |
+| 4   | HIGH         | Remove "SDK Stream Errors — Resolved" from FEATURES.md Known Limitations table                                                    |
+| 5   | HIGH         | Verify `HOW_TO_USE.md` flag names and examples match actual CLI (`--` vs `-`, all examples runnable)                              |
+| 6   | HIGH         | Verify `TESTING.md` mentions `GOEXPERIMENT=jsonv2` prerequisite                                                                   |
+| 7   | HIGH         | Check `CONTRIBUTING.md` for stale `just` command references (justfile was removed)                                                |
+| 8   | HIGH         | Decide `SDK_DESIGN.md` fate: rewrite type names (`StartLine` → `LineStart`) or delete                                             |
+| 9   | HIGH         | Check `USAGE.md` for overlap with `HOW_TO_USE.md` — consolidate or differentiate                                                  |
+| 10  | HIGH         | Verify AGENTS.md "6 error types" claim against current `errors/types.go`                                                          |
+| 11  | HIGH         | Annotate `2026-07-16_17-32_buildflow-revert-recovery-and-cleanup.md` (open questions about squashing commits)                     |
+| 12  | HIGH         | Annotate `2026-07-19_04-50_docs-health-and-update-old-docs-self-critique.md` (open questions about SDK_DESIGN.md)                 |
+| 13  | HIGH         | Annotate or archive the 2 planning HTML files (`2026-07-01` Pareto plans)                                                         |
+| 14  | MEDIUM       | Verify `docs/DOMAIN_LANGUAGE.md` for type drift (field names, enum values)                                                        |
+| 15  | MEDIUM       | Add `nix flake check` as a mandatory pre-commit check (prevent this regression class)                                             |
+| 16  | MEDIUM       | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date                                                      |
+| 17  | MEDIUM       | Verify FEATURES.md "7 output formats" claim — is CSV stats-only or a full format?                                                 |
+| 18  | MEDIUM       | Run `git diff` on ALL pre-existing uncommitted files before any auto-commit                                                       |
+| 19  | MEDIUM       | Add a CI step that diffs `.golangci.yml` enable list against AGENTS.md documentation                                              |
+| 20  | MEDIUM       | Replace em-dashes in TODO_LIST.md/ROADMAP.md with semicolons/parentheses (rule compliance)                                        |
+| 21  | LOW          | Check `docs/planning/2026-07-16_04-29_comprehensive-pareto-roadmap.md` — still the master backlog?                                |
+| 22  | LOW          | Verify the "100% precision across 15 projects" claim in FEATURES.md Overview is backed by a test                                  |
+| 23  | LOW          | Consider adding `docs/status/archive/` for reports older than 30 days                                                             |
+| 24  | LOW          | Document the `CaptureStdoutStderr` pattern in AGENTS.md as canonical test capture method                                          |
+| 25  | LOW          | Add `--help` text audit (every flag description accurate and includes valid values)                                               |
+| 26  | LOW          | Consider an `.artdupl-baseline.json` update to account for new code from this session                                             |
 
 ---
 
@@ -237,21 +240,21 @@ The `[Unreleased]` section covers 2026-06-15 to 2026-07-22 with ~120 entries acr
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Files read (2026-07-*) | 40 |
-| Living docs rebuilt | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG) |
-| Historical files annotated | 11 |
-| Historical files left untouched (with banners) | 25 |
-| Historical files left untouched (without banners) | ~4 |
-| Factual claims verified against code | 15+ |
-| Factual inaccuracies fixed | 6 |
-| CHANGELOG entries added | 15+ |
-| Quality gate commands run | 2 of 4 (`go build`, `go test`; **missed** `nix flake check`, `golangci-lint`) |
-| Build status | PASS |
-| Test status | PASS (26/26 packages) |
-| `nix flake check` status | **FAIL** (100 lint issues: exhaustruct + tagliatelle re-enabled) |
-| Pre-existing regressions committed | 1 (`.golangci.yml` lint config regression) |
+| Metric                                            | Value                                                                         |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Files read (2026-07-*)                            | 40                                                                            |
+| Living docs rebuilt                               | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG)                                   |
+| Historical files annotated                        | 11                                                                            |
+| Historical files left untouched (with banners)    | 25                                                                            |
+| Historical files left untouched (without banners) | ~4                                                                            |
+| Factual claims verified against code              | 15+                                                                           |
+| Factual inaccuracies fixed                        | 6                                                                             |
+| CHANGELOG entries added                           | 15+                                                                           |
+| Quality gate commands run                         | 2 of 4 (`go build`, `go test`; **missed** `nix flake check`, `golangci-lint`) |
+| Build status                                      | PASS                                                                          |
+| Test status                                       | PASS (26/26 packages)                                                         |
+| `nix flake check` status                          | **FAIL** (100 lint issues: exhaustruct + tagliatelle re-enabled)              |
+| Pre-existing regressions committed                | 1 (`.golangci.yml` lint config regression)                                    |
 
 ---
 

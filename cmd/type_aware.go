@@ -58,6 +58,7 @@ func loadTypeAwareData(
 	typeData, err := golang.LoadTypeAwareData(goFiles)
 	if err != nil {
 		logger.Default.Error("type-aware mode failed, falling back to syntax-only", "err", err)
+
 		typeData = nil
 	}
 

@@ -5,6 +5,7 @@ import (
 	"go/token"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -276,6 +277,7 @@ func collectIdentHashes(root *syntax.Node) []int32 {
 	var hashes []int32
 
 	var walk func(n *syntax.Node)
+
 	walk = func(n *syntax.Node) {
 		if n == nil {
 			return
@@ -299,6 +301,7 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 	var result int32
 
 	var walk func(n *syntax.Node) bool
+
 	walk = func(n *syntax.Node) bool {
 		if n == nil {
 			return false
@@ -310,13 +313,7 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 			return true
 		}
 
-		for _, c := range n.Children {
-			if walk(c) {
-				return true
-			}
-		}
-
-		return false
+		return slices.ContainsFunc(n.Children, walk)
 	}
 
 	walk(root)

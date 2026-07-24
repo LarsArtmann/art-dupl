@@ -79,7 +79,8 @@ func LoadTypeAwareData(files []string) (TypeAwareData, error) {
 
 	result := make(TypeAwareData, len(absFiles))
 
-	for _, pkg := range pkgs {		if pkg.TypesInfo == nil {
+	for _, pkg := range pkgs {
+		if pkg.TypesInfo == nil {
 			continue
 		}
 

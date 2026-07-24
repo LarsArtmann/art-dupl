@@ -176,7 +176,13 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 			typeInfos,
 		)
 	} else {
-		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg), params.cfg.MaxChildrenSerial, typeInfos)
+		schan, statsChan = job.Parse(
+			params.ctx,
+			filesChan,
+			detectionMode(params.cfg),
+			params.cfg.MaxChildrenSerial,
+			typeInfos,
+		)
 	}
 
 	tree, data, done := job.BuildTree(params.ctx, schan)
