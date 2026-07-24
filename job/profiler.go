@@ -48,7 +48,7 @@ func Profile() ProfileResult {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
-	return ProfileResult{ //nolint:exhaustruct // Duration/Timestamp computed later by ProfileDiff
+	return ProfileResult{ // Duration/Timestamp computed later by ProfileDiff
 		TotalAllocMB: float64(m.TotalAlloc) / 1024 / 1024,
 		SysMB:        float64(m.Sys) / 1024 / 1024,
 		NumGC:        m.NumGC,

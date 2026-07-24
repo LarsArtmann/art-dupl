@@ -188,7 +188,7 @@ type Logger = logger.Logger
 
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
-	return &Options{ //nolint:exhaustruct
+	return &Options{
 		Threshold:         15,
 		DetectionMethods:  []DetectionMethod{MethodArtDupl},
 		MaxFileSize:       10 * 1024 * 1024, // 10MB

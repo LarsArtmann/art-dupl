@@ -50,7 +50,7 @@ func NewLogger(cfg *Config) *charmLogger {
 
 	logger := log.NewWithOptions(
 		cfg.Output,
-		log.Options{ //nolint:exhaustruct // third-party struct; rely on library defaults for unset fields
+		log.Options{ // third-party struct; rely on library defaults for unset fields
 			Level:           level,
 			ReportTimestamp: true,
 			ReportCaller:    cfg.ReportCaller,
