@@ -20,51 +20,51 @@ All 26 packages pass tests, including with `-race`.
 
 ### Core Implementation
 
-| Component | Status | Details |
-|---|---|---|
-| `syntax/golang/typeinfo.go` | **NEW, COMPLETE** | `LoadTypeAwareData()`, `PreloadedAST`, `TypeAwareData`, `identTypeString()`. 130 LOC. |
-| `syntax/golang/parse.go` | **COMPLETE** | `parsePreloaded()` path uses go/packages AST. `transformer.typeInfo` field added. |
-| `syntax/golang/transform.go` | **COMPLETE** | `Ident` case appends type string to canonical name before hashing (`v0\x00time.Time` vs `v0\x00*big.Int`). |
-| `syntax/golang/normalizer.go` | **COMPLETE** | New `isLocal()` method for type-aware transformer gate. |
-| `syntax/golang/parse_config.go` | **COMPLETE** | `ParseConfig.Preloaded *PreloadedAST` field. |
-| `job/parse.go` | **COMPLETE** | `TypeAwareData` threaded through `Parse`, `ParseParallel`, `startWorkers`, `parseFileWithConfig`. |
-| `job/file_parser.go` | **COMPLETE** | `ParseFileByExtensionWithConfig` takes `*PreloadedAST` parameter. |
-| `cmd/type_aware.go` | **NEW, COMPLETE** | `loadTypeAwareData()` drains file channel, batch-loads type data, replays files. 73 LOC. |
-| `cmd/run_analysis.go` | **COMPLETE** | `buildSuffixTreeStandard` calls `loadTypeAwareData` when `cfg.TypeAware` is set. |
-| `cmd/flags.go` | **COMPLETE** | `--type-aware` CLI flag registered. |
-| `cmd/config_builder.go` | **COMPLETE** | `"type-aware"` → `cfg.TypeAware` mapping in `applyChangedBoolFlags`. |
-| `config/config.go` | **COMPLETE** | `TypeAware bool` field on Config struct + DefaultConfig. |
-| `cmd/dump_tokens.go` | **COMPLETE** | Updated to pass `nil` for new parameter. |
-| `pkg/artdupl/detector_pipeline.go` | **COMPLETE** | Updated to pass `nil` for new parameter. |
-| `job/incremental.go` | **COMPLETE** | Updated to pass `nil` for `PreloadedAST` (incremental doesn't support type-aware yet). |
+| Component                          | Status            | Details                                                                                                    |
+| ---------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `syntax/golang/typeinfo.go`        | **NEW, COMPLETE** | `LoadTypeAwareData()`, `PreloadedAST`, `TypeAwareData`, `identTypeString()`. 130 LOC.                      |
+| `syntax/golang/parse.go`           | **COMPLETE**      | `parsePreloaded()` path uses go/packages AST. `transformer.typeInfo` field added.                          |
+| `syntax/golang/transform.go`       | **COMPLETE**      | `Ident` case appends type string to canonical name before hashing (`v0\x00time.Time` vs `v0\x00*big.Int`). |
+| `syntax/golang/normalizer.go`      | **COMPLETE**      | New `isLocal()` method for type-aware transformer gate.                                                    |
+| `syntax/golang/parse_config.go`    | **COMPLETE**      | `ParseConfig.Preloaded *PreloadedAST` field.                                                               |
+| `job/parse.go`                     | **COMPLETE**      | `TypeAwareData` threaded through `Parse`, `ParseParallel`, `startWorkers`, `parseFileWithConfig`.          |
+| `job/file_parser.go`               | **COMPLETE**      | `ParseFileByExtensionWithConfig` takes `*PreloadedAST` parameter.                                          |
+| `cmd/type_aware.go`                | **NEW, COMPLETE** | `loadTypeAwareData()` drains file channel, batch-loads type data, replays files. 73 LOC.                   |
+| `cmd/run_analysis.go`              | **COMPLETE**      | `buildSuffixTreeStandard` calls `loadTypeAwareData` when `cfg.TypeAware` is set.                           |
+| `cmd/flags.go`                     | **COMPLETE**      | `--type-aware` CLI flag registered.                                                                        |
+| `cmd/config_builder.go`            | **COMPLETE**      | `"type-aware"` → `cfg.TypeAware` mapping in `applyChangedBoolFlags`.                                       |
+| `config/config.go`                 | **COMPLETE**      | `TypeAware bool` field on Config struct + DefaultConfig.                                                   |
+| `cmd/dump_tokens.go`               | **COMPLETE**      | Updated to pass `nil` for new parameter.                                                                   |
+| `pkg/artdupl/detector_pipeline.go` | **COMPLETE**      | Updated to pass `nil` for new parameter.                                                                   |
+| `job/incremental.go`               | **COMPLETE**      | Updated to pass `nil` for `PreloadedAST` (incremental doesn't support type-aware yet).                     |
 
 ### Tests
 
-| Test | Status | What it verifies |
-|---|---|---|
-| `TestTypeAware_DifferentReceiverTypesProduceDifferentHashes` | **PASS** | `time.Time` receiver vs `*big.Int` receiver produce different hashes |
-| `TestTypeAware_SameReceiverTypesProduceSameHashes` | **PASS** | Two `time.Time` receivers still match (legitimate Type-2 clone preserved) |
-| `TestTypeAware_NilTypeInfoActsAsStandardSemantic` | **PASS** | Nil typeInfo = standard semantic mode (backward compatible) |
-| `TestLoadTypeAwareData_EmptyInputReturnsEmpty` | **PASS** | Graceful handling of empty input |
-| `TestTypeAwareData_LookupPreloadedReturnsNilForUnknown` | **PASS** | Unknown paths return nil safely |
-| `TestNormalizer_IsLocal` | **PASS** | `isLocal()` correctly identifies declared locals vs non-locals |
+| Test                                                         | Status   | What it verifies                                                          |
+| ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------- |
+| `TestTypeAware_DifferentReceiverTypesProduceDifferentHashes` | **PASS** | `time.Time` receiver vs `*big.Int` receiver produce different hashes      |
+| `TestTypeAware_SameReceiverTypesProduceSameHashes`           | **PASS** | Two `time.Time` receivers still match (legitimate Type-2 clone preserved) |
+| `TestTypeAware_NilTypeInfoActsAsStandardSemantic`            | **PASS** | Nil typeInfo = standard semantic mode (backward compatible)               |
+| `TestLoadTypeAwareData_EmptyInputReturnsEmpty`               | **PASS** | Graceful handling of empty input                                          |
+| `TestTypeAwareData_LookupPreloadedReturnsNilForUnknown`      | **PASS** | Unknown paths return nil safely                                           |
+| `TestNormalizer_IsLocal`                                     | **PASS** | `isLocal()` correctly identifies declared locals vs non-locals            |
 
 ### End-to-End Verification
 
-| Scenario | Without `--type-aware` | With `--type-aware` |
-|---|---|---|
-| `time.Time.String()` vs `*big.Int.String()` (threshold 2) | **1 false positive** | **0** (suppressed) |
-| Same-type renamed clones (`time.Time` in both, threshold 3) | **1 correct match** | **1 correct match** (preserved) |
+| Scenario                                                    | Without `--type-aware` | With `--type-aware`             |
+| ----------------------------------------------------------- | ---------------------- | ------------------------------- |
+| `time.Time.String()` vs `*big.Int.String()` (threshold 2)   | **1 false positive**   | **0** (suppressed)              |
+| Same-type renamed clones (`time.Time` in both, threshold 3) | **1 correct match**    | **1 correct match** (preserved) |
 
 ### Documentation Updated
 
-| File | Change |
-|---|---|
-| `AGENTS.md` | Replaced "NOT YET IMPLEMENTED" limitation with full implementation description |
-| `TODO_LIST.md` | Marked go/types integration as `[x]` done |
-| `FEATURES.md` | Added Type-Aware Mode row (PARTIALLY_DONE status) |
-| `.golangci.yml` | Added `golang.org/x/tools` to depguard allow list |
-| `go.mod` | Promoted `golang.org/x/tools` from indirect to direct dependency |
+| File            | Change                                                                         |
+| --------------- | ------------------------------------------------------------------------------ |
+| `AGENTS.md`     | Replaced "NOT YET IMPLEMENTED" limitation with full implementation description |
+| `TODO_LIST.md`  | Marked go/types integration as `[x]` done                                      |
+| `FEATURES.md`   | Added Type-Aware Mode row (PARTIALLY_DONE status)                              |
+| `.golangci.yml` | Added `golang.org/x/tools` to depguard allow list                              |
+| `go.mod`        | Promoted `golang.org/x/tools` from indirect to direct dependency               |
 
 ### Build Verification
 

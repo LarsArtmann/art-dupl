@@ -31,7 +31,7 @@ Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG
 
 ### Architecture
 
-- [ ] **Clone type consolidation** — 7+ parallel Clone types (`printer.CloneGroup`, `printer.JSONClone`, `pkg/artdupl.Clone`, `pkg/artdupl.CloneGroup`, `domain.ProcessedClone(Group)`, `printer.CloneOccurrenceView`, `printer.CloneGroupView`). `CloneRef` mitigated field drift but type explosion remains. See `docs/research/SPLIT-BRAIN.html`.
+- [x] **Clone type consolidation** — ~~7+ parallel Clone types~~ RESOLVED: `domain.CloneRef` is now embedded in ALL clone-bearing types (`JSONClone`, `CloneOccurrenceView`, `CloneWithContent`, `FileInfo`, `simpleJSONClone`). Eliminated `CloneWithContentMixin` and `LineRangeMixin` (strict subsets of CloneRef). Added `toJSONClone()` shared conversion helper. Remaining parallel types (`CloneGroup`, `CloneGroupView`, `pkg/artdupl.CloneGroup`) are legitimately different DTOs. See `docs/research/SPLIT-BRAIN.html`.
 - [ ] **Split `printer/` into sub-packages** — ~29 source files / ~3500+ lines. Blocked by circular dep: core `printer.go` references `StatsPrinter`. Clean split requires moving `Printer`/`ReadFile`/`StatsPrinter` interfaces to a separate base package.
 - [ ] **"unknown" category → AST node type fallback** — Replace vague `unknown` category with concrete AST type (`func-decl`, `block-stmt`, `composite-lit`, etc.). Feedback: 3 of 4 sessions flagged `unknown` as unhelpful.
 

@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/a-h/templ"
-
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/a-h/templ"
 )
 
 type CloneOccurrenceView struct {
@@ -55,7 +54,7 @@ type SummaryView struct {
 
 func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 	return CloneOccurrenceView{
-		CloneRef:  cl.CloneRef,
+		CloneRef:   cl.CloneRef,
 		VSCodeLink: templ.SafeURL(fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)),
 	}
 }
