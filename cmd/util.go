@@ -110,6 +110,17 @@ func shouldIncludeFile(
 		return true
 	}
 
+	if !result.Filtered {
+		if reason, filtered := filterExcludedGenerated(content, includes); filtered {
+			stats.Record(gogenfilter.FilterResult{
+				Filtered: true,
+				Reason:   reason,
+				Path:     path,
+			})
+			return false
+		}
+	}
+
 	stats.Record(result)
 
 	return !result.Filtered
@@ -129,14 +140,21 @@ func shouldIncludeFileStandard(f *gogenfilter.Filter, path string, stats *Filter
 }
 
 // generatorIncludes records which generated-code categories the user explicitly
-// asked to include via --include-* flags, so shouldIncludeFile can bypass the
-// generic catch-all (FilterGeneric) for files belonging to an included category.
+// asked to include via --include-generated flags, so shouldIncludeFile can bypass
+// the generic catch-all (FilterGeneric) for files belonging to an included category.
+//
+// The Generic field tracks whether --include-generated generic (or all) is active.
+// When Generic is true, FilterGeneric is disabled, creating a gap: filename-gated
+// category filters (FilterSQLC, FilterTempl, FilterProtobuf) only match files with
+// the expected suffix (_sqlc.go, _templ.go, *.pb.go). A generated file without the
+// suffix would slip through. The filterExcludedGenerated content check closes this gap.
 type generatorIncludes struct {
 	SQLC     bool
 	Templ    bool
 	Protobuf bool
 	Mockgen  bool
 	Stringer bool
+	Generic  bool
 }
 
 // newGeneratorIncludes builds the policy from a config.
@@ -147,11 +165,12 @@ func newGeneratorIncludes(cfg *config.Config) generatorIncludes {
 		Protobuf: cfg.IncludeProtobuf,
 		Mockgen:  cfg.IncludeMockgen,
 		Stringer: cfg.IncludeStringer,
+		Generic:  cfg.IncludeGeneric,
 	}
 }
 
 func (g generatorIncludes) any() bool {
-	return g.SQLC || g.Templ || g.Protobuf || g.Mockgen || g.Stringer
+	return g.SQLC || g.Templ || g.Protobuf || g.Mockgen || g.Stringer || g.Generic
 }
 
 // allowsContent reports whether the file content indicates generation by a
@@ -176,5 +195,31 @@ func (g generatorIncludes) allowsContent(content []byte) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// filterExcludedGenerated is a content-based defense-in-depth check for files
+// that bypass gogenfilter's filename-gated category filters. When FilterGeneric
+// is disabled (--include-generated generic), only filename-based detection
+// remains for templ, sqlc, and protobuf (all require specific suffixes:
+// _templ.go, _sqlc.go, *.pb.go). A generated file without the expected suffix
+// would slip through. This function catches such files by checking content
+// directly.
+//
+// Returns the matching FilterReason and true when the file should be filtered.
+// Returns empty string and false when the file should pass (either no marker
+// found, or the category is explicitly included).
+func filterExcludedGenerated(content []byte, includes generatorIncludes) (gogenfilter.FilterReason, bool) {
+	c := string(content)
+
+	switch {
+	case !includes.Templ && strings.Contains(c, templMarker):
+		return gogenfilter.ReasonTempl, true
+	case !includes.SQLC && strings.Contains(c, sqlcMarker):
+		return gogenfilter.ReasonSQLC, true
+	case !includes.Protobuf && strings.Contains(c, protobufMarker):
+		return gogenfilter.ReasonProtobuf, true
+	default:
+		return "", false
 	}
 }
