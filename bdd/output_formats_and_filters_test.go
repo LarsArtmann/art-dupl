@@ -1,7 +1,7 @@
 package bdd
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
