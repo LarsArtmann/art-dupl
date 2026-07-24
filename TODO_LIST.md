@@ -20,7 +20,7 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 ### Code Quality
 
 - [ ] **JSON tag convention unification**: Split-brain: `domain`/`pkg/artdupl` use `snake_case`, `baseline`/`cache`/`cmd/version` use `camelCase`. `tagliatelle` linter disabled to hide this. Needs a project-wide decision (ADR candidate) + migration.
-- [ ] **SDK_DESIGN.md disposition**: Type names are wrong (`StartLine` vs `LineStart`, field drift). Either rewrite to match current `pkg/artdupl/types.go` or delete it.
+- [ ] **SDK_DESIGN.md disposition**: Design doc is partially stale (struct shapes don't match actual `pkg/artdupl/types.go` implementation). Either rewrite to match current types or delete it.
 - [ ] **ADR-0015: Type-aware detection design**: No ADR exists for the type-aware feature. Should document the go/types integration, encoding approach, and graceful-degradation fallback.
 
 ### Testing
@@ -47,7 +47,6 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 - [ ] **HTML report improvements**: `--out=<path>` flag for file output, TTY auto-detection, stable `id` attributes on clone groups for deep-linking.
 - [ ] **`--recommend-threshold`**: Auto-suggest threshold based on codebase size and test-to-production ratio.
 - [ ] **Deprecation warning for `--semantic`**: Semantic is the default now; flag is redundant but harmless. Add a gentle deprecation notice.
-- [ ] **HOW_TO_USE.md `--type-aware` documentation**: User-facing docs don't mention `--type-aware` flag or its tradeoffs.
 - [ ] **SDK `Options.TypeAware` field**: Wire type-aware into `pkg/artdupl` SDK pipeline so SDK users can use it.
 - [ ] **GitHub Release for v0.4.0**: Tag is pushed but no GitHub Release exists. Only v0.1.0 has releases. Create via `gh release create v0.4.0 --notes-from-tag`.
 - [ ] **RELEASE.md checklist**: Documented release process: build, test, race test, lint, `nix flake check`, CHANGELOG footer, compare links, tag sign verification, push, GitHub Release. Prevents ad-hoc releases from skipping gates.

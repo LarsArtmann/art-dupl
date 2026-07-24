@@ -69,7 +69,7 @@
 
 | Feature                  | Status           | Description                                                  |
 | ------------------------ | ---------------- | ------------------------------------------------------------ |
-| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first) — default   |
+| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first; default)   |
 | **Occurrence Sorting**   | FULLY_FUNCTIONAL | Sort clone groups by number of files (most widespread first) |
 | **Hash Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical)               |
 | **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort clone groups by total token count (highest total first) |
@@ -99,7 +99,7 @@
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output       |
 | **Extractability Score**      | FULLY_FUNCTIONAL | `lines_saved` + `extractable` fields in JSON for refactoring prioritization |
 | **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.) |
-| **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups — only the largest match is reported         |
+| **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported         |
 | **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides           |
 
 ---
@@ -143,7 +143,7 @@
 | **Parallel Incremental**  | FULLY_FUNCTIONAL | `ParseIncrementalParallel` worker pool + `singleflight.Group` dedup for byte-identical files (commit `94b5205`)                                     |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
-| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 — no hand-written SIMD                                                     |
+| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 (no hand-written SIMD                                                     |
 
 ---
 

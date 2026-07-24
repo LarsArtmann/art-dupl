@@ -393,7 +393,7 @@ means "report clones with at least 5 duplicated statements."
 | Threshold | Use Case                                    |
 | --------- | ------------------------------------------- |
 | 3         | Maximum sensitivity (may include noise)     |
-| **5**     | **Default** — best precision/recall balance |
+| **5**     | **Default** (best precision/recall balance |
 | 10        | Focus on substantial duplication            |
 | 15-30     | Large codebases, reduce noise               |
 | 30+       | Only major copy-paste blocks                |
@@ -439,7 +439,7 @@ art-dupl baseline . -t 15
 # Writes .art-dupl-baseline.json with all current clone-group hashes.
 # Commit this file: git add .art-dupl-baseline.json
 
-# Step 2: Run check in CI — reports ONLY new clones not in the baseline
+# Step 2: Run check in CI; reports ONLY new clones not in the baseline
 art-dupl check . -t 15
 # Exit code 0: no new clones (all current clones are in the baseline)
 # Exit code 1: new clones detected (CI gate fails)
@@ -532,4 +532,4 @@ cat dupl.json | jq '.'
 ./art-dupl -t 20 | grep -B1 -A1 "database/sql"
 ```
 
-This guide should help you effectively integrate art-dupl into your development workflow. Remember that the goal is maintainable code, not zero duplication—some duplication may be acceptable for clarity or performance reasons.
+This guide should help you effectively integrate art-dupl into your development workflow. Remember that the goal is maintainable code, not zero duplication; some duplication may be acceptable for clarity or performance reasons.

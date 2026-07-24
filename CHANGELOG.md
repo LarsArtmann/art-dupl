@@ -11,7 +11,7 @@ _Nothing yet._
 
 ## [0.4.0] - 2026-07-24
 
-**Engineering sprints (2026-06-15 to 2026-07-24)** — headlined by type-aware duplicate detection, templ semantic mode, and baseline CI gating.
+**Engineering sprints (2026-06-15 to 2026-07-24)**, headlined by type-aware duplicate detection, templ semantic mode, and baseline CI gating.
 
 ### Added
 
@@ -38,9 +38,9 @@ _Nothing yet._
 - **`--dump-tokens` debug flag**: Outputs the serialized token stream (filename, position, type, semantic hash, name) without running clone detection. Essential for debugging false positives/negatives.
 - **KeyValueExpr field name encoding**: Struct field names in composite literals (`Point{X:1}` vs `Size{W:1}`) now encoded into the KeyValueExpr node Type via `encodeSemanticType`. Field names are API surface, not local variables. 3 tests added.
 - **Error wrapping detection for 2-stmt bodies**: `isReturnOrWrappedReturn` now handles `log.Print(err); return err` pattern via `isLogOrPrintStmt` + `isLoggingMethod`.
-- **Templ semantic mode**: HTML element tag names (`<a>`, `<div>`, `<button>`), attribute names (`href`, `class`, `hx-get`), and component callee names (`@demoSection(...)`) are now encoded into node Types via `syntax.EncodeSemanticType()`. Templ detection was previously purely structural — every element had the same token. Eliminated 84% of templ false positives on real projects (SwettySwipperWeb: 31→5 groups, DiscordSync: 10→5).
+- **Templ semantic mode**: HTML element tag names (`<a>`, `<div>`, `<button>`), attribute names (`href`, `class`, `hx-get`), and component callee names (`@demoSection(...)`) are now encoded into node Types via `syntax.EncodeSemanticType()`. Templ detection was previously purely structural; every element had the same token. Eliminated 84% of templ false positives on real projects (SwettySwipperWeb: 31→5 groups, DiscordSync: 10→5).
 - **Statement-level tokenization for templ**: Each HTML element subtree is now fingerprinted as a single composite token (same mechanism as Go statements). Threshold now counts duplicated HTML _elements_, not arbitrary AST nodes. Sentinel nodes between files fix suffix-tree maximal-repeat detection.
-- **Literal value normalization in semantic mode**: Semantic mode now hashes BasicLit KIND (STRING, INT, FLOAT) instead of VALUE. This enables Type-2 clone detection where only literal values differ — the most common real-world duplication pattern. Exact mode still hashes verbatim values.
+- **Literal value normalization in semantic mode**: Semantic mode now hashes BasicLit KIND (STRING, INT, FLOAT) instead of VALUE. This enables Type-2 clone detection where only literal values differ, the most common real-world duplication pattern. Exact mode still hashes verbatim values.
 - **Generic type parameter alpha-normalization**: Type parameters (`T`, `U` in generics) are now declared in the per-function symbol table. `func Map[T any]()` and `func Filter[U any]()` with the same body now match as clones.
 - **Lock+Defer Unlock actionability pattern**: `m.Lock(); defer m.Unlock()` and `m.RLock(); defer m.RUnlock()` 2-statement patterns now suppressed as idiomatic Go boilerplate. Added `isAcquireMethod()` helper and `RUnlock` to cleanup methods.
 - **Node.Fingerprint field**: Separate `Fingerprint int32` field on `syntax.Node` for statement-level composite hashes. `Val()` routes between `Fingerprint` (statements) and `Type` (non-statements). Fits in existing struct padding (still 64B aligned).
@@ -119,7 +119,7 @@ _Nothing yet._
 
 ### Removed
 
-- **Idiom category deleted**: The `domain.CategoryIdiom` classification was fundamentally broken — the two-layer classification architecture (per-clone `ClassifyClone` then group-level `EvaluateActionabilityWithLabel`) created a contradictory state where clones were labeled "idiom — typically not actionable" but had `Actionability=Actionable` (overwritten by the group evaluator). The 14 AST-based actionability patterns already handle genuinely non-actionable clones with precision. Small clones are now classified by their actual AST type (function, struct, unknown, etc.) and the actionability patterns determine whether they're worth fixing.
+- **Idiom category deleted**: The `domain.CategoryIdiom` classification was fundamentally broken: the two-layer classification architecture (per-clone `ClassifyClone` then group-level `EvaluateActionabilityWithLabel`) created a contradictory state where clones were labeled "idiom, typically not actionable" but had `Actionability=Actionable` (overwritten by the group evaluator). The 14 AST-based actionability patterns already handle genuinely non-actionable clones with precision. Small clones are now classified by their actual AST type (function, struct, unknown, etc.) and the actionability patterns determine whether they're worth fixing.
 - **`--since` flag removed**: Was a dead stub that was accepted and stored but never read by any analysis code. Git-diff file selection is not implemented; only content-hash caching via `--incremental` works.
 
 ### Deprecated
@@ -163,7 +163,7 @@ _Nothing yet._
 
 ### Removed
 
-- **`internal/simd/` dead code**: 163 lines with 2 stale TODOs — never shipped
+- **`internal/simd/` dead code**: 163 lines with 2 stale TODOs, never shipped
 
 ## [0.2.0] - 2026-05-21
 

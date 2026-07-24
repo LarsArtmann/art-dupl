@@ -1,6 +1,6 @@
 # Domain Language
 
-A **Unified Language** for art-dupl — shared across Developer, Contributor, and AI.
+A **Unified Language** for art-dupl, shared across Developer, Contributor, and AI.
 Inspired by Domain-Driven Design (DDD) Ubiquitous Language.
 
 Every term below should mean the **same thing** to everyone who reads it.
@@ -14,6 +14,8 @@ Every term below should mean the **same thing** to everyone who reads it.
 | Token             | A single AST node serialized into an integer type for matching                         | Suffix tree / hash input                                               |
 | Threshold         | Minimum number of consecutive duplicated statements to consider a Clone (default: 5)   | CLI `--threshold` flag                                                 |
 | Semantic Mode     | Matching by AST structure + identifier/operator names (default ON)                     | Detection method selection                                             |
+| Exact Mode        | Matching by identifier names verbatim, no alpha-normalization (Type 1 only)             | `--exact` flag                                                         |
+| Type-Aware Mode   | Semantic mode enhanced with go/types static type encoding per local variable            | `--type-aware` flag                                                    |
 | Structural Mode   | Matching by AST shape only, ignoring identifier/operator names                         | `--structural` flag                                                    |
 | Detection Method  | Algorithm used to find Clones: suffix tree, hash, or both                              | `--detection-methods` / `-m` flag                                      |
 | Suffix Tree       | Ukkonen's algorithm on serialized AST tokens, finds repeated substrings                | Core algorithm                                                         |
@@ -23,7 +25,7 @@ Every term below should mean the **same thing** to everyone who reads it.
 | Priority          | How important a clone is to address: critical, high, medium, low                       | `domain.ClonePriority`                                                 |
 | Actionability     | Whether a clone can realistically be deduplicated                                      | `domain.CloneActionability`                                            |
 | Health Score      | A-F grade for codebase duplication health                                              | `domain.HealthScore`                                                   |
-| Severity          | Impact level of a clone — collapsed into `ClonePriority` (low, medium, high, critical) | `domain.ClonePriority`                                                 |
+| Severity          | Impact level of a clone, collapsed into `ClonePriority` (low, medium, high, critical) | `domain.ClonePriority`                                                 |
 | Non-Actionable    | Clone that follows idiomatic Go patterns, not worth deduplicating                      | Interface impls, test scaffolding                                      |
 | Smart Filtering   | Automatic exclusion of generated code (sqlc, templ, protobuf, etc.)                    | File selection pipeline                                                |
 | Output Format     | Presentation mode: text, HTML, JSON, CSV, plumbing, SARIF, simple-json                 | `--html` / `--json` / `--plumbing` / `--sarif` / `--simple-json` flags |
@@ -43,7 +45,7 @@ Objects with identity and lifecycle.
 
 | Term        | Definition                                                      | Context                  |
 | ----------- | --------------------------------------------------------------- | ------------------------ |
-| AST         | Abstract Syntax Tree — parsed representation of Go/Templ source | Suffix tree / hash input |
+| AST         | Abstract Syntax Tree (parsed representation of Go/Templ source | Suffix tree / hash input |
 | Suffix Tree | Data structure built from serialized ASTs for clone search      | Core algorithm           |
 | Clone Group | A cluster of duplicate fragments sharing a pattern              | Primary detection output |
 
@@ -100,7 +102,7 @@ Subsystems with distinct vocabulary.
 
 > **How to use this file:**
 >
-> - Keep terms concise — one clear sentence per definition
+> - Keep terms concise: one clear sentence per definition
 > - Update when new domain concepts emerge
 > - Use these terms consistently in code, docs, and conversations
 > - When in doubt about a word's meaning, check here first
