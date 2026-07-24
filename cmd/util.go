@@ -117,6 +117,7 @@ func shouldIncludeFile(
 				Reason:   reason,
 				Path:     path,
 			})
+
 			return false
 		}
 	}

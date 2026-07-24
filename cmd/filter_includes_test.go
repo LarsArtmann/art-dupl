@@ -155,44 +155,60 @@ func TestFilterExcludedGenerated(t *testing.T) {
 		wantReason   gogenfilter.FilterReason
 	}{
 		{
-			"templ content, not included",
-			templContent, generatorIncludes{Generic: true},
-			true, gogenfilter.ReasonTempl,
+			name:         "templ content, not included",
+			content:      templContent,
+			includes:     generatorIncludes{Generic: true},
+			wantFiltered: true,
+			wantReason:   gogenfilter.ReasonTempl,
 		},
 		{
-			"templ content, explicitly included",
-			templContent, generatorIncludes{Generic: true, Templ: true},
-			false, "",
+			name:         "templ content, explicitly included",
+			content:      templContent,
+			includes:     generatorIncludes{Generic: true, Templ: true},
+			wantFiltered: false,
+			wantReason:   "",
 		},
 		{
-			"sqlc content, not included",
-			sqlcContent, generatorIncludes{Generic: true},
-			true, gogenfilter.ReasonSQLC,
+			name:         "sqlc content, not included",
+			content:      sqlcContent,
+			includes:     generatorIncludes{Generic: true},
+			wantFiltered: true,
+			wantReason:   gogenfilter.ReasonSQLC,
 		},
 		{
-			"sqlc content, explicitly included",
-			sqlcContent, generatorIncludes{Generic: true, SQLC: true},
-			false, "",
+			name:         "sqlc content, explicitly included",
+			content:      sqlcContent,
+			includes:     generatorIncludes{Generic: true, SQLC: true},
+			wantFiltered: false,
+			wantReason:   "",
 		},
 		{
-			"protobuf content, not included",
-			protobufContent, generatorIncludes{Generic: true},
-			true, gogenfilter.ReasonProtobuf,
+			name:         "protobuf content, not included",
+			content:      protobufContent,
+			includes:     generatorIncludes{Generic: true},
+			wantFiltered: true,
+			wantReason:   gogenfilter.ReasonProtobuf,
 		},
 		{
-			"protobuf content, explicitly included",
-			protobufContent, generatorIncludes{Generic: true, Protobuf: true},
-			false, "",
+			name:         "protobuf content, explicitly included",
+			content:      protobufContent,
+			includes:     generatorIncludes{Generic: true, Protobuf: true},
+			wantFiltered: false,
+			wantReason:   "",
 		},
 		{
-			"regular content, not filtered",
-			regularContent, generatorIncludes{Generic: true},
-			false, "",
+			name:         "regular content, not filtered",
+			content:      regularContent,
+			includes:     generatorIncludes{Generic: true},
+			wantFiltered: false,
+			wantReason:   "",
 		},
 		{
-			"empty content",
-			[]byte{}, generatorIncludes{Generic: true},
-			false, "",
+			name:         "empty content",
+			content:      []byte{},
+			includes:     generatorIncludes{Generic: true},
+			wantFiltered: false,
+			wantReason:   "",
 		},
 	}
 
@@ -202,6 +218,7 @@ func TestFilterExcludedGenerated(t *testing.T) {
 			if filtered != tt.wantFiltered {
 				t.Errorf("filterExcludedGenerated() filtered = %v, want %v", filtered, tt.wantFiltered)
 			}
+
 			if filtered && reason != tt.wantReason {
 				t.Errorf("filterExcludedGenerated() reason = %v, want %v", reason, tt.wantReason)
 			}
@@ -237,19 +254,84 @@ func (c *Component) Render(ctx context.Context) error { return nil }`
 
 	regularCode := "package main\nfunc main() {}\n"
 	regularPath := filepath.Join(dir, "main.go")
+
 	if err := os.WriteFile(regularPath, []byte(regularCode), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
-	// Filter with FilterTempl active but FilterGeneric DISABLED (simulating
-	// --include-generated generic). The gap: a templ file without _templ.go
-	// suffix bypasses FilterTempl and FilterGeneric is off.
-	cfg, err := gogenfilter.WithFilterOptions(
-		gogenfilter.FilterTempl,
-		gogenfilter.FilterProtobuf,
-		gogenfilter.FilterMockgen,
-		gogenfilter.FilterStringer,
-	)
+	// fTemplFiltered: FilterTempl active, FilterGeneric disabled (simulates
+	// --include-generated generic without templ). This is the gap scenario:
+	// a templ file without _templ.go suffix bypasses FilterTempl.
+	fTemplFiltered := newTestFilter(t, gogenfilter.FilterTempl, gogenfilter.FilterProtobuf,
+		gogenfilter.FilterMockgen, gogenfilter.FilterStringer)
+
+	// fTemplAllowed: FilterTempl NOT active (simulates --include-generated templ).
+	// No FilterGeneric either (--include-generated generic is also on).
+	fTemplAllowed := newTestFilter(t, gogenfilter.FilterProtobuf,
+		gogenfilter.FilterMockgen, gogenfilter.FilterStringer)
+
+	tests := []struct {
+		name     string
+		path     string
+		filter   *gogenfilter.Filter
+		includes generatorIncludes
+		expected bool
+	}{
+		// Gap scenario: templ content without _templ.go suffix, FilterGeneric disabled.
+		// Without the content check, this would pass. The check catches it.
+		{
+			name:     "templ content without suffix, generic included but not templ",
+			path:     templNoSuffixPath,
+			filter:   fTemplFiltered,
+			includes: generatorIncludes{Generic: true},
+			expected: false,
+		},
+		{
+			name:     "templ content without suffix, templ explicitly included",
+			path:     templNoSuffixPath,
+			filter:   fTemplAllowed,
+			includes: generatorIncludes{Generic: true, Templ: true},
+			expected: true,
+		},
+		// Standard _templ.go suffix — FilterTempl catches it regardless.
+		{
+			name:     "templ content with suffix, caught by FilterTempl",
+			path:     templSuffixPath,
+			filter:   fTemplFiltered,
+			includes: generatorIncludes{Generic: true},
+			expected: false,
+		},
+		{
+			name:     "templ content with suffix, templ included (FilterTempl off)",
+			path:     templSuffixPath,
+			filter:   fTemplAllowed,
+			includes: generatorIncludes{Generic: true, Templ: true},
+			expected: true,
+		},
+		// Regular files always pass.
+		{
+			name:     "regular file, not filtered",
+			path:     regularPath,
+			filter:   fTemplFiltered,
+			includes: generatorIncludes{Generic: true},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := shouldIncludeFile(tt.filter, tt.path, nil, tt.includes)
+			if got != tt.expected {
+				t.Errorf("shouldIncludeFile() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+func newTestFilter(t *testing.T, opts ...gogenfilter.FilterOption) *gogenfilter.Filter {
+	t.Helper()
+
+	cfg, err := gogenfilter.WithFilterOptions(opts...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -259,47 +341,5 @@ func (c *Component) Render(ctx context.Context) error { return nil }`
 		t.Fatal(err)
 	}
 
-	tests := []struct {
-		name     string
-		path     string
-		includes generatorIncludes
-		expected bool
-	}{
-		// Without the content-based check, templNoSuffixPath would pass (bug).
-		// The check catches it via the "Code generated by templ" marker.
-		{
-			"templ content without suffix, generic included but not templ",
-			templNoSuffixPath, generatorIncludes{Generic: true},
-			false,
-		},
-		{
-			"templ content without suffix, templ explicitly included",
-			templNoSuffixPath, generatorIncludes{Generic: true, Templ: true},
-			true,
-		},
-		{
-			"templ content with suffix, still caught by FilterTempl",
-			templSuffixPath, generatorIncludes{Generic: true},
-			false,
-		},
-		{
-			"templ content with suffix, templ explicitly included",
-			templSuffixPath, generatorIncludes{Generic: true, Templ: true},
-			true,
-		},
-		{
-			"regular file, not filtered",
-			regularPath, generatorIncludes{Generic: true},
-			true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := shouldIncludeFile(f, tt.path, nil, tt.includes)
-			if got != tt.expected {
-				t.Errorf("shouldIncludeFile() = %v, want %v", got, tt.expected)
-			}
-		})
-	}
+	return f
 }
