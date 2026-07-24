@@ -5,6 +5,7 @@ import (
 	"encoding/json/v2"
 	"testing"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -81,10 +82,12 @@ func foo() {
 			Size: 100,
 			Clones: []JSONClone{
 				{
-					Filename:  testFilename,
-					LineStart: 1,
-					LineEnd:   5,
-					Fragment:  "test fragment",
+					CloneRef: domain.CloneRef{
+						Filename:  testFilename,
+						LineStart: 1,
+						LineEnd:   5,
+						Fragment:  "test fragment",
+					},
 				},
 			},
 		},
@@ -244,8 +247,8 @@ func TestJSONPrinter_OutputSimpleJSON(t *testing.T) {
 			Hash: "abc",
 			Size: 10,
 			Clones: []JSONClone{
-				{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"},
-				{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"},
+				{CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5, Fragment: "code"}},
+				{CloneRef: domain.CloneRef{Filename: "b.go", LineStart: 2, LineEnd: 6, Fragment: "code"}},
 			},
 		},
 	}

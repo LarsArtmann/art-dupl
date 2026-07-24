@@ -110,7 +110,7 @@ type SARIFArtifactLocation struct {
 
 // SARIFRegion represents a region within a file.
 // Field names follow the SARIF 2.1.0 spec (region.startLine / region.endLine);
-// they intentionally differ from LineRangeMixin's line_start/line_end tags.
+// they intentionally differ from CloneRef's line_start/line_end tags.
 type SARIFRegion struct {
 	StartLine int `json:"startLine"`
 	EndLine   int `json:"endLine,omitempty"`

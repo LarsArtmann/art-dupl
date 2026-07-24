@@ -30,10 +30,8 @@ type CloneGroup struct {
 }
 
 type JSONClone struct {
-	Filename      string                    `json:"filename"`
-	LineStart     int                       `json:"line_start"`
-	LineEnd       int                       `json:"line_end"`
-	Fragment      string                    `json:"fragment"`
+	domain.CloneRef
+
 	Category      domain.CloneCategory      `json:"category,omitzero"`
 	Priority      domain.ClonePriority      `json:"priority,omitzero"`
 	Actionability domain.CloneActionability `json:"actionability,omitzero"`
@@ -49,22 +47,30 @@ type Summary struct {
 	ImpactScore      int     `json:"impact_score,omitempty"`
 }
 
-type simpleJSONClone struct {
-	LineRangeMixin
+// toJSONClone converts a domain.ProcessedClone to a JSONClone DTO.
+// This is the single conversion point — all JSON output paths use it.
+func toJSONClone(cl domain.ProcessedClone) JSONClone {
+	return JSONClone{
+		CloneRef:      cl.CloneRef,
+		Category:      cl.Classification.Category,
+		Priority:      cl.Classification.Priority,
+		Actionability: cl.Classification.Actionability,
+		CloneType:     cl.Classification.CloneType,
+		LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
+		Extractable:   cl.Classification.Extractability.CanExtract,
+	}
+}
 
-	Filename   string `json:"filename"`
-	TokenCount int    `json:"token_count"`
+type simpleJSONClone struct {
+	domain.CloneRef
+
+	TokenCount int `json:"token_count"`
 }
 
 type simpleCloneGroup struct {
-	Hash      string            `json:"hash"`
-	Score     int               `json:"score"`
-	Instances []simpleJSONClone `json:"instances"`
-}
-
-type LineRangeMixin struct {
-	LineStart int `json:"line_start"`
-	LineEnd   int `json:"line_end,omitempty"`
+	Hash   string            `json:"hash"`
+	Size   int               `json:"score"`
+	Clones []simpleJSONClone `json:"instances"`
 }
 
 type simpleJSONOutput []simpleCloneGroup
@@ -113,18 +119,7 @@ func (p *JSONPrinter) PrintClones(
 
 	jsonClones := make([]JSONClone, 0, len(clones))
 	for _, cl := range clones {
-		jsonClones = append(jsonClones, JSONClone{
-			Filename:      cl.Filename,
-			LineStart:     cl.LineStart,
-			LineEnd:       cl.LineEnd,
-			Fragment:      cl.Fragment,
-			Category:      cl.Classification.Category,
-			Priority:      cl.Classification.Priority,
-			Actionability: cl.Classification.Actionability,
-			CloneType:     cl.Classification.CloneType,
-			LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
-			Extractable:   cl.Classification.Extractability.CanExtract,
-		})
+		jsonClones = append(jsonClones, toJSONClone(cl))
 	}
 
 	sort.Slice(jsonClones, func(i, j int) bool {
@@ -201,19 +196,15 @@ func (p *JSONPrinter) OutputSimpleJSON() error {
 		simpleInstances := make([]simpleJSONClone, 0, len(group.Clones))
 		for _, file := range group.Clones {
 			simpleInstances = append(simpleInstances, simpleJSONClone{
-				LineRangeMixin: LineRangeMixin{
-					LineStart: file.LineStart,
-					LineEnd:   file.LineEnd,
-				},
-				Filename:   file.Filename,
+				CloneRef:   file.CloneRef,
 				TokenCount: group.Size,
 			})
 		}
 
 		simpleOutput = append(simpleOutput, simpleCloneGroup{
-			Hash:      group.Hash,
-			Score:     impactScore,
-			Instances: simpleInstances,
+			Hash:   group.Hash,
+			Size:   impactScore,
+			Clones: simpleInstances,
 		})
 	}
 

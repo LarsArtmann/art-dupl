@@ -11,11 +11,9 @@ import (
 )
 
 type CloneOccurrenceView struct {
+	domain.CloneRef
+
 	VSCodeLink templ.SafeURL
-	Filename   string
-	LineStart  int
-	LineEnd    int
-	Fragment   string
 }
 
 type CloneGroupView struct {
@@ -56,11 +54,8 @@ type SummaryView struct {
 
 func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 	return CloneOccurrenceView{
+		CloneRef:  cl.CloneRef,
 		VSCodeLink: templ.SafeURL(fmt.Sprintf("vscode://file/%s:%d", cl.Filename, cl.LineStart)),
-		Filename:   cl.Filename,
-		LineStart:  cl.LineStart,
-		LineEnd:    cl.LineEnd,
-		Fragment:   cl.Fragment,
 	}
 }
 

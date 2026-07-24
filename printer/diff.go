@@ -250,16 +250,9 @@ type CloneGroupDiff struct {
 	TotalModified int
 }
 
-// CloneWithContentMixin provides common location fields for clone structures.
-type CloneWithContentMixin struct {
-	Filename  string
-	LineStart int
-	LineEnd   int
-}
-
 // CloneWithContent represents a clone with its file content.
 type CloneWithContent struct {
-	CloneWithContentMixin
+	domain.CloneRef
 
 	Content []byte
 }
@@ -281,10 +274,11 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 
 	result := CloneGroupDiff{
 		Base: &CloneWithContent{
-			CloneWithContentMixin: CloneWithContentMixin{
+			CloneRef: domain.CloneRef{
 				Filename:  base.Filename,
 				LineStart: base.LineStart,
 				LineEnd:   base.LineEnd,
+				Fragment:  base.Fragment,
 			},
 			Content: []byte(base.Fragment),
 		},
@@ -304,10 +298,11 @@ func ComputeCloneGroupDiff(clones []domain.ProcessedClone) CloneGroupDiff {
 
 		result.Others = append(result.Others, CloneDiff{
 			CloneWithContent: CloneWithContent{
-				CloneWithContentMixin: CloneWithContentMixin{
+				CloneRef: domain.CloneRef{
 					Filename:  clones[idx].Filename,
 					LineStart: clones[idx].LineStart,
 					LineEnd:   clones[idx].LineEnd,
+					Fragment:  clones[idx].Fragment,
 				},
 				Content: []byte(clones[idx].Fragment),
 			},

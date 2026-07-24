@@ -3,6 +3,7 @@ package printer
 import (
 	"fmt"
 
+	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/pkg/position"
 	"github.com/LarsArtmann/art-dupl/syntax"
@@ -10,7 +11,7 @@ import (
 
 // FileInfo represents processed file information.
 type FileInfo struct {
-	CloneWithContentMixin
+	domain.CloneRef
 
 	Content []byte
 	Node    *syntax.Node
@@ -37,7 +38,7 @@ func ProcessFileContent(fread ReadFile, node *syntax.Node) (*FileInfo, error) {
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(node.Pos), int(node.End))
 
 	return &FileInfo{
-		CloneWithContentMixin: CloneWithContentMixin{
+		CloneRef: domain.CloneRef{
 			Filename:  node.Filename,
 			LineStart: lineStart,
 			LineEnd:   lineEnd,
@@ -75,7 +76,7 @@ func ProcessNodeRange(fread ReadFile, startNode, endNode *syntax.Node) (*FileInf
 	lineStart, lineEnd := position.ByteRangeToLines(file, int(startNode.Pos), int(endNode.End))
 
 	return &FileInfo{
-		CloneWithContentMixin: CloneWithContentMixin{
+		CloneRef: domain.CloneRef{
 			Filename:  startNode.Filename,
 			LineStart: lineStart,
 			LineEnd:   lineEnd,
