@@ -86,7 +86,7 @@
 | **DetectionMode Enum**        | FULLY_FUNCTIONAL | Single `Config.DetectionMode` enum replaces former bool flags (ADR-0007)                                                                                                                                                                 |
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                                                                                                                                                                    |
 | **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                                                                                                                                                         |
-| **Type-Aware Mode**           | PARTIALLY_DONE   | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). 10-100x slower. Not compatible with `--incremental` |
+| **Type-Aware Mode**           | FULLY_FUNCTIONAL | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). 10-100x slower. Not compatible with `--incremental`. Follow-up items in TODO_LIST |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
@@ -163,6 +163,7 @@
 | **Test Suppression**       | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
 | **Token Dump**             | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
 | **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
+| **Type-Aware Mode**         | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
 
 ---
 
