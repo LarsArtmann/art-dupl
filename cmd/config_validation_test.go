@@ -127,10 +127,12 @@ func TestWarnTypeAwareIncremental(t *testing.T) {
 
 			warnTypeAwareIncremental(cmd)
 
-			w.Close()
+			_ = w.Close()
+
 			os.Stderr = oldStderr
 
 			var buf bytes.Buffer
+
 			_, _ = io.Copy(&buf, r)
 			output := buf.String()
 

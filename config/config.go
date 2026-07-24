@@ -184,6 +184,26 @@ type Config struct {
 	// IncludeIgnored disables .gitignore honoring during file enumeration.
 	// When true, gitignored files are included in the analysis.
 	IncludeIgnored bool `json:"includeIgnored,omitempty"`
+
+	// HTMLOutputFile specifies a file path for HTML output. When empty, HTML
+	// goes to stdout. When set, output is written to the file instead.
+	HTMLOutputFile string `json:"htmlOutputFile,omitempty"`
+
+	// Explain adds an explanation to each reported clone group: which detection
+	// method found it, what pattern matched, and why it is actionable.
+	Explain bool `json:"explain,omitempty"`
+
+	// RecommendThreshold analyzes the codebase and recommends a threshold.
+	// When true, the tool prints the recommendation and exits without running detection.
+	RecommendThreshold bool `json:"recommendThreshold,omitempty"`
+
+	// ConfigFormat controls config file parsing: "auto" (detect by extension),
+	// "json", or "yaml".
+	ConfigFormat string `json:"configFormat,omitempty"`
+
+	// DiffReport specifies a baseline file to compare current results against.
+	// Shows new, suppressed, and resolved clones.
+	DiffReport string `json:"diffReport,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.

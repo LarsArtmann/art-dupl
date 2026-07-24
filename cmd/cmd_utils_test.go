@@ -488,7 +488,17 @@ func TestCrawlPathsAllFiles(t *testing.T) {
 		}
 
 		fileList := collectStrings(
-			crawlPathsAllFiles(context.Background(), []string{tempDir}, f, nil, generatorIncludes{}, true, true, "", nil),
+			crawlPathsAllFiles(
+				context.Background(),
+				[]string{tempDir},
+				f,
+				nil,
+				generatorIncludes{},
+				true,
+				true,
+				"",
+				nil,
+			),
 		)
 
 		// Should find all 3 fileList

@@ -1,10 +1,9 @@
 package bdd
 
 import (
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
 // dupCode has 7+ separate top-level statements to exceed threshold 5.

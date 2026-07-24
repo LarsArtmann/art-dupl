@@ -5,6 +5,7 @@
 ## Context
 
 The codebase has two JSON tag conventions:
+
 - `snake_case` in `domain/` and `pkg/artdupl/` (public SDK types)
 - `camelCase` in `baseline/`, `cache/`, and `cmd/version` (internal types)
 

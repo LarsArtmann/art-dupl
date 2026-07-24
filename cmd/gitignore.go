@@ -137,9 +137,9 @@ func matchGitignorePattern(pat gitignorePattern, relPath string) bool {
 	}
 
 	// Unanchored patterns match at any level
-	parts := strings.Split(cleanPath, "/")
+	parts := strings.SplitSeq(cleanPath, "/")
 
-	for _, part := range parts {
+	for part := range parts {
 		if matchGlob(pattern, part) {
 			return true
 		}
@@ -152,6 +152,7 @@ func matchGitignorePattern(pat gitignorePattern, relPath string) bool {
 // matchGlob is filepath.Match but always using forward slashes.
 func matchGlob(pattern, name string) bool {
 	matched, err := filepath.Match(pattern, name)
+
 	return err == nil && matched
 }
 

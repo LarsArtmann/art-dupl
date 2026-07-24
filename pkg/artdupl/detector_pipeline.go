@@ -3,6 +3,7 @@ package artdupl
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 type pipelineResult struct {
@@ -57,7 +59,28 @@ func (d *detector) buildAnalysisPipeline(
 		}
 	}()
 
-	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode(), d.cfg.MaxChildrenSerial, nil)
+	// Load type-aware data if enabled (SDK has all files upfront, unlike CLI)
+	var typeData golang.TypeAwareData
+
+	if d.cfg.TypeAware {
+		goFiles := make([]string, 0, len(files))
+		for _, f := range files {
+			if filepath.Ext(f) == ".go" {
+				goFiles = append(goFiles, f)
+			}
+		}
+
+		if len(goFiles) > 0 {
+			td, err := golang.LoadTypeAwareData(goFiles)
+			if err != nil {
+				d.logger.Warn("Type-aware mode failed, falling back to syntax-only", "err", err)
+			} else {
+				typeData = td
+			}
+		}
+	}
+
+	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode(), d.cfg.MaxChildrenSerial, typeData)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
 
 	select {

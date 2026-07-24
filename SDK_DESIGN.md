@@ -21,14 +21,14 @@ type Detector interface {
 
 All types are in `pkg/artdupl/types.go`.
 
-| Type | Purpose |
-|---|---|
-| `Options` | Configuration: threshold, methods, workers, timeout, callbacks |
-| `Result` | Complete output: clone groups + summary + metadata |
-| `CloneGroup` | Hash, clones, size, line count, detection method |
-| `Clone` | Embeds `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) + positions |
-| `Summary` | Stats: total files, clones, groups, analysis time |
-| `Metadata` | Version, timestamp, config hash, toolchain |
+| Type         | Purpose                                                                       |
+| ------------ | ----------------------------------------------------------------------------- |
+| `Options`    | Configuration: threshold, methods, workers, timeout, callbacks                |
+| `Result`     | Complete output: clone groups + summary + metadata                            |
+| `CloneGroup` | Hash, clones, size, line count, detection method                              |
+| `Clone`      | Embeds `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) + positions |
+| `Summary`    | Stats: total files, clones, groups, analysis time                             |
+| `Metadata`   | Version, timestamp, config hash, toolchain                                    |
 
 ## Usage
 

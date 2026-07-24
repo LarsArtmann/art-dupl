@@ -146,6 +146,7 @@ type Options struct {
 	Threshold        int               `json:"threshold"`         // Minimum size to consider as clone
 	DetectionMethods []DetectionMethod `json:"detection_methods"` // Methods to use for detection
 	Verbose          bool              `json:"verbose"`           // Enable verbose detection logging
+	TypeAware        bool              `json:"type_aware"`        // Enable go/types-based detection (10-100x slower)
 
 	// File processing — the SDK takes explicit file lists, so callers
 	// filter vendor/test directories themselves before calling FindClones.

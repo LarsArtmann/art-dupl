@@ -41,11 +41,11 @@ bit layout:
 
 ### Encoding rules
 
-| Detection mode     | Identifier hash        | Operator/token encoded? |
-| ------------------ | ---------------------- | ----------------------- |
+| Detection mode     | Identifier hash       | Operator/token encoded? |
+| ------------------ | --------------------- | ----------------------- |
 | Semantic (default) | Yes, alpha-normalized | Yes                     |
 | Exact              | Yes, verbatim name    | Yes                     |
-| Structural         | No (all zeroed)        | No                      |
+| Structural         | No (all zeroed)       | No                      |
 
 ### Consumer contract
 

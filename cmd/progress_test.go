@@ -56,7 +56,9 @@ func TestShouldShowProgress(t *testing.T) {
 
 			if tt.envVar != "" {
 				oldVal := os.Getenv("ARTDUPL_NO_PROGRESS")
+
 				t.Setenv("ARTDUPL_NO_PROGRESS", tt.envVar)
+
 				defer func() {
 					if oldVal != "" {
 						os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
@@ -81,7 +83,9 @@ func TestShouldShowProgressEnvVar(t *testing.T) {
 		t.Parallel()
 
 		oldVal := os.Getenv("ARTDUPL_NO_PROGRESS")
+
 		os.Setenv("ARTDUPL_NO_PROGRESS", "1")
+
 		defer func() {
 			if oldVal != "" {
 				os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
@@ -100,7 +104,9 @@ func TestShouldShowProgressEnvVar(t *testing.T) {
 		t.Parallel()
 
 		oldVal := os.Getenv("ARTDUPL_NO_PROGRESS")
+
 		os.Unsetenv("ARTDUPL_NO_PROGRESS")
+
 		defer func() {
 			if oldVal != "" {
 				os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
@@ -126,8 +132,11 @@ func TestProgressFilesChanForwarding(t *testing.T) {
 
 	input := make(chan string, 3)
 	input <- "file1.go"
+
 	input <- "file2.go"
+
 	input <- "file3.go"
+
 	close(input)
 
 	output := progressFilesChan(ctx, input, cfg, format)
@@ -138,6 +147,7 @@ func TestProgressFilesChanForwarding(t *testing.T) {
 	}
 
 	w.Close()
+
 	os.Stderr = oldStderr
 	// drain pipe to avoid goroutine leak
 	go func() {
@@ -164,7 +174,9 @@ func TestProgressFilesChanSuppressed(t *testing.T) {
 
 	input := make(chan string, 2)
 	input <- "a.go"
+
 	input <- "b.go"
+
 	close(input)
 
 	output := progressFilesChan(ctx, input, cfg, config.OutputFormatText)
@@ -176,6 +188,7 @@ func TestProgressFilesChanSuppressed(t *testing.T) {
 		for range output {
 			count++
 		}
+
 		if count != 2 {
 			t.Errorf("expected 2 files, got %d", count)
 		}

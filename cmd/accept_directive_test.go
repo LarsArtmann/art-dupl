@@ -37,9 +37,9 @@ func bar() {
 	}
 
 	tests := []struct {
-		name     string
-		group    domain.ProcessedCloneGroup
-		want     bool
+		name  string
+		group domain.ProcessedCloneGroup
+		want  bool
 	}{
 		{
 			name: "directive within clone range suppresses group",

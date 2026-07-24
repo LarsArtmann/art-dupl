@@ -38,6 +38,7 @@ type detectorConfig struct {
 	Threshold         int
 	DetectionMethods  []DetectionMethod
 	Semantic          bool
+	TypeAware         bool
 	MaxChildrenSerial int
 }
 
@@ -59,5 +60,6 @@ func convertOptionsToConfig(opts *Options) *detectorConfig {
 		Threshold:        opts.Threshold,
 		DetectionMethods: opts.DetectionMethods,
 		Semantic:         true,
+		TypeAware:        opts.TypeAware,
 	}
 }
