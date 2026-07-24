@@ -79,6 +79,7 @@ func testFilesFeedWithExtension(t *testing.T, tmpDir, ext string, expectedCount 
 		false,
 		false,
 		config.FileType(ext),
+		nil,
 	)
 
 	found := make([]string, 0, expectedCount)
@@ -307,7 +308,7 @@ func TestPrintVersion(t *testing.T) {
 
 func TestCrawlPaths(t *testing.T) {
 	t.Run("empty paths", func(t *testing.T) {
-		result := crawlPaths(context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false)
+		result := crawlPaths(context.Background(), []string{}, nil, nil, generatorIncludes{}, false, false, nil)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -332,7 +333,7 @@ func TestCrawlPaths(t *testing.T) {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 
-		result := crawlPaths(context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false)
+		result := crawlPaths(context.Background(), []string{tmpFile}, nil, nil, generatorIncludes{}, false, false, nil)
 		if result == nil {
 			t.Fatal("crawlPaths() returned nil")
 		}
@@ -360,6 +361,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			false,
 			false,
 			"",
+			nil,
 		)
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
@@ -386,6 +388,7 @@ func TestFilesFeedWithOptions(t *testing.T) {
 			false,
 			false,
 			"",
+			nil,
 		)
 		if ch == nil {
 			t.Fatal("filesFeedWithOptions() returned nil")
@@ -435,6 +438,7 @@ func TestFilesFeedWithOptions_OnlyFilter(t *testing.T) {
 			false,
 			false,
 			"",
+			nil,
 		)
 
 		found := make([]string, 0, 4)
