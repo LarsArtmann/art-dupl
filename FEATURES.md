@@ -143,7 +143,7 @@
 | **Parallel Incremental**  | FULLY_FUNCTIONAL | `ParseIncrementalParallel` worker pool + `singleflight.Group` dedup for byte-identical files (commit `94b5205`)                                     |
 | **Execution Timeout**     | FULLY_FUNCTIONAL | `--timeout` with context cancellation (default 30m)                                                                                                 |
 | **Performance Profiling** | EXPERIMENTAL     | Hidden `--profile` flag; pprof CPU/mem profile capture                                                                                              |
-| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3 (no hand-written SIMD                                                     |
+| **SIMD Optimizations**    | N/A              | `syntax/hash_seq.go` (renamed from `hash_simd.go`) uses sync.Pool + xxh3, no hand-written SIMD                                                      |
 
 ---
 

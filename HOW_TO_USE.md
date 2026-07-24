@@ -393,7 +393,7 @@ means "report clones with at least 5 duplicated statements."
 | Threshold | Use Case                                    |
 | --------- | ------------------------------------------- |
 | 3         | Maximum sensitivity (may include noise)     |
-| **5**     | **Default** (best precision/recall balance |
+| **5**     | **Default**, best precision/recall balance |
 | 10        | Focus on substantial duplication            |
 | 15-30     | Large codebases, reduce noise               |
 | 30+       | Only major copy-paste blocks                |
