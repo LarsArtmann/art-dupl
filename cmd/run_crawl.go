@@ -99,6 +99,7 @@ func filesFeedWithOptions(
 	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
+	gitignore *GitignoreMatcher,
 ) chan string {
 	if fromStdin {
 		return feedFromStdin(ctx, os.Stdin, filter, filterStats, includes, only)
@@ -116,6 +117,7 @@ func filesFeedWithOptions(
 		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
+		gitignore,
 	)
 }
 
@@ -127,11 +129,13 @@ func crawlPaths(
 	filterStats *FilterStats,
 	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
+	gitignore *GitignoreMatcher,
 ) chan string {
 	return crawlPathsWithFileCheck(
 		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, isSourceFile,
+		gitignore,
 	)
 }
 
@@ -148,6 +152,7 @@ func crawlPathsAllFiles(
 	includes generatorIncludes,
 	includeVendor, includeNodeModules bool,
 	only config.FileType,
+	gitignore *GitignoreMatcher,
 ) chan string {
 	var fileCheck fileCheckFunc
 	if only != config.FileTypeAll {
@@ -160,6 +165,7 @@ func crawlPathsAllFiles(
 		ctx,
 		paths, filter, filterStats, includes,
 		includeVendor, includeNodeModules, fileCheck,
+		gitignore,
 	)
 }
 
@@ -176,6 +182,7 @@ type CrawlOptions struct {
 	IncludeVendor   bool
 	IncludeNodeMods bool
 	FileCheck       fileCheckFunc
+	Gitignore       *GitignoreMatcher
 	FChan           chan string
 }
 
@@ -188,6 +195,7 @@ func crawlPathsWithFileCheck(
 	includeVendor bool,
 	includeNodeModules bool,
 	fileCheck fileCheckFunc,
+	gitignore *GitignoreMatcher,
 ) chan string {
 	fchan := make(chan string)
 
@@ -205,6 +213,7 @@ func crawlPathsWithFileCheck(
 				IncludeVendor:   includeVendor,
 				IncludeNodeMods: includeNodeModules,
 				FileCheck:       fileCheck,
+				Gitignore:       gitignore,
 				FChan:           fchan,
 			}, path)
 		}
@@ -225,6 +234,10 @@ func crawlSinglePathWithOpts(opts CrawlOptions, path string) {
 	}
 
 	if !info.IsDir() {
+		if opts.Gitignore != nil && opts.Gitignore.IsIgnored(path) {
+			return
+		}
+
 		if shouldIncludeFile(opts.Filter, path, opts.FilterStats, opts.Includes) &&
 			passesFileCheck(info.Name(), opts.FileCheck) {
 			opts.sendFile(path)
@@ -269,6 +282,10 @@ func handleWalkEntry(opts CrawlOptions, path string, info os.FileInfo) error {
 	}
 
 	if info.Name() == DSStoreFile {
+		return nil
+	}
+
+	if opts.Gitignore != nil && opts.Gitignore.IsIgnored(path) {
 		return nil
 	}
 

@@ -124,6 +124,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"quiet":                &cfg.Quiet,
 		"type-aware":           &cfg.TypeAware,
 		"no-accept-directives": &cfg.NoAcceptDirectives,
+		"include-ignored":      &cfg.IncludeIgnored,
 	}
 
 	for flagName, configPtr := range mappings {

@@ -39,6 +39,11 @@ func executeHashOnlyAnalysis(
 		)
 	}
 
+	var gitignore *GitignoreMatcher
+	if !cfg.IncludeIgnored {
+		gitignore = LoadGitignore(paths)
+	}
+
 	filesChan := crawlPathsAllFiles(
 		ctx,
 		paths,
@@ -48,6 +53,7 @@ func executeHashOnlyAnalysis(
 		cfg.IncludeVendor,
 		cfg.IncludeNodeModules,
 		cfg.Only,
+		gitignore,
 	)
 
 	files, err := collectFilesFromChannel(ctx, filesChan)

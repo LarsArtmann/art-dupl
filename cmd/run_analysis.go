@@ -37,6 +37,11 @@ type buildParams struct {
 
 // getFilesChan creates a channel of file paths based on the build parameters.
 func (p buildParams) getFilesChan() chan string {
+	var gitignore *GitignoreMatcher
+	if !p.cfg.IncludeIgnored {
+		gitignore = LoadGitignore(p.paths)
+	}
+
 	return filesFeedWithOptions(
 		p.ctx,
 		p.paths,
@@ -47,6 +52,7 @@ func (p buildParams) getFilesChan() chan string {
 		p.cfg.IncludeVendor,
 		p.cfg.IncludeNodeModules,
 		p.cfg.Only,
+		gitignore,
 	)
 }
 

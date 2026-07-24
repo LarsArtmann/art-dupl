@@ -180,6 +180,10 @@ type Config struct {
 	// NoAcceptDirectives disables //art-dupl:accept inline directive processing.
 	// When true, all clone groups are reported regardless of accept directives.
 	NoAcceptDirectives bool `json:"noAcceptDirectives,omitempty"`
+
+	// IncludeIgnored disables .gitignore honoring during file enumeration.
+	// When true, gitignored files are included in the analysis.
+	IncludeIgnored bool `json:"includeIgnored,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
