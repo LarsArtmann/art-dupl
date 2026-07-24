@@ -86,6 +86,7 @@
 | **DetectionMode Enum**        | FULLY_FUNCTIONAL | Single `Config.DetectionMode` enum replaces former bool flags (ADR-0007)                           |
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                              |
 | **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                   |
+| **Type-Aware Mode**           | PARTIALLY_DONE   | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). 10-100x slower. Not compatible with `--incremental` |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
 
