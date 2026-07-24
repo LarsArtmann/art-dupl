@@ -126,6 +126,8 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"type-aware":           &cfg.TypeAware,
 		"no-accept-directives": &cfg.NoAcceptDirectives,
 		"include-ignored":      &cfg.IncludeIgnored,
+		"explain":              &cfg.Explain,
+		"recommend-threshold":  &cfg.RecommendThreshold,
 	}
 
 	for flagName, configPtr := range mappings {
@@ -184,6 +186,21 @@ func applyChangedStringFlags(cmd *cobra.Command, cfg *config.Config) {
 	if cmd.Flags().Changed("cache-dir") {
 		val, _ := cmd.Flags().GetString("cache-dir")
 		cfg.CacheDir = val
+	}
+
+	if cmd.Flags().Changed("html-out") {
+		val, _ := cmd.Flags().GetString("html-out")
+		cfg.HTMLOutputFile = val
+	}
+
+	if cmd.Flags().Changed("config-format") {
+		val, _ := cmd.Flags().GetString("config-format")
+		cfg.ConfigFormat = val
+	}
+
+	if cmd.Flags().Changed("diff-report") {
+		val, _ := cmd.Flags().GetString("diff-report")
+		cfg.DiffReport = val
 	}
 }
 

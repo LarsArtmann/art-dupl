@@ -61,9 +61,9 @@ func TestShouldShowProgress(t *testing.T) {
 
 				defer func() {
 					if oldVal != "" {
-						os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
+						_ = os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
 					} else {
-						os.Unsetenv("ARTDUPL_NO_PROGRESS")
+						_ = os.Unsetenv("ARTDUPL_NO_PROGRESS")
 					}
 				}()
 			}
@@ -84,13 +84,13 @@ func TestShouldShowProgressEnvVar(t *testing.T) {
 
 		oldVal := os.Getenv("ARTDUPL_NO_PROGRESS")
 
-		os.Setenv("ARTDUPL_NO_PROGRESS", "1")
+		_ = os.Setenv("ARTDUPL_NO_PROGRESS", "1")
 
 		defer func() {
 			if oldVal != "" {
-				os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
+				_ = os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
 			} else {
-				os.Unsetenv("ARTDUPL_NO_PROGRESS")
+				_ = os.Unsetenv("ARTDUPL_NO_PROGRESS")
 			}
 		}()
 
@@ -105,11 +105,11 @@ func TestShouldShowProgressEnvVar(t *testing.T) {
 
 		oldVal := os.Getenv("ARTDUPL_NO_PROGRESS")
 
-		os.Unsetenv("ARTDUPL_NO_PROGRESS")
+		_ = os.Unsetenv("ARTDUPL_NO_PROGRESS")
 
 		defer func() {
 			if oldVal != "" {
-				os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
+				_ = os.Setenv("ARTDUPL_NO_PROGRESS", oldVal)
 			}
 		}()
 
@@ -146,7 +146,7 @@ func TestProgressFilesChanForwarding(t *testing.T) {
 		results = append(results, f)
 	}
 
-	w.Close()
+	_ = w.Close()
 
 	os.Stderr = oldStderr
 	// drain pipe to avoid goroutine leak
