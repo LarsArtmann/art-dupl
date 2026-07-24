@@ -111,11 +111,13 @@ func TestClientImplementsInterfaces(t *testing.T) {
 
 This is the idiomatic Go compile-time interface check. It must exist in each package to verify the local `Client` type. Flagging it as duplication suggests extracting a shared helper — which is impossible (the whole point is per-package compile-time verification).
 
-### 5. No JSON or machine-readable output
+### 5. ~~No JSON or machine-readable output~~ RESOLVED
 
-For triage at scale (the `-t 15` run showed 103 groups; `-t 5` would show far more), I wanted to pipe output through `jq` to filter by category, group by file, count occurrences per package, etc. The text mode is human-formatted; the HTML is presentation-formatted. Neither is structured.
+> **Update (2026-07-19, same day):** `--json` flag already exists and works (verified in the `go-auto-upgrade` feedback session: `art-dupl --json` was the triage workhorse). The claim below was based on a stale `version dev` binary. The `--simple-json` variant provides a simpler schema with `score=impact`.
 
-A `--format json` flag emitting `[{group_id, category, priority, occurrences: [{file, line, snippet}], tokens, suggestion}]` would unlock scripted triage and CI integration.
+~~For triage at scale (the `-t 15` run showed 103 groups; `-t 5` would show far more), I wanted to pipe output through `jq` to filter by category, group by file, count occurrences per package, etc. The text mode is human-formatted; the HTML is presentation-formatted. Neither is structured.~~
+
+~~A `--format json` flag emitting `[{group_id, category, priority, occurrences: [{file, line, snippet}], tokens, suggestion}]` would unlock scripted triage and CI integration.~~
 
 ### 6. The "unknown" category is uninformative
 

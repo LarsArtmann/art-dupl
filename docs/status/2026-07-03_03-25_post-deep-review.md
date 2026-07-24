@@ -2,6 +2,8 @@
 
 ## Executive Summary
 
+> **Update (2026-07-24):** Section D "TOTALLY FUCKED UP" items are resolved: the FEATURES.md SHA-1→SHA-256 reference was fixed, the TODO_LIST stale CloneRef entry was removed, and the jscpd BuildFlow issue was resolved by removing jscpd. The "7 parallel Clone types" design debt is tracked in TODO_LIST.md (MEDIUM Priority). File counts have grown: 158 non-test `.go` files, 132 test files.
+
 art-dupl is a **production-ready** Go code clone detection tool. All 26 packages build clean, 27 test packages pass (including race detector), and golangci-lint reports 0 issues. The codebase has 150 non-test `.go` files, 112 test files, and 1 `.templ` file.
 
 ---

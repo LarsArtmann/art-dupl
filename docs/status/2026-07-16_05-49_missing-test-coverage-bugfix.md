@@ -4,6 +4,8 @@
 **Session Goal:** Write the 10 missing tests identified in the P0-P2 self-critique, fix the `--min-lines` bug, verify everything green.
 **Branch:** `fork` (uncommitted — all changes are in working tree)
 
+> **Resolution (2026-07-16, later sessions):** The "P3 — CLI & UX" items (exit codes, `--quiet`, `--no-color`, version JSON, config validation, shell completion) and "P3 — Code Quality" items (gocyclo, exhaustruct, recvcheck, SuppressionConfig, ADRs) were all resolved by the P3 (`06:35`) and P4 (`06:57`) sessions later that same day. The P4/P5 architecture items (go/types, clone type consolidation, LSP mode) remain open — see TODO_LIST.md.
+
 ---
 
 ## a) FULLY DONE

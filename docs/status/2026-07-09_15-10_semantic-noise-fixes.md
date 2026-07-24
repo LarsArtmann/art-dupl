@@ -2,6 +2,8 @@
 
 ## Session Goal
 
+> **Resolution (2026-07-11):** The json/v2 migration blocker described in section D was resolved — `GOEXPERIMENT=jsonv2` added to `flake.nix` devShell, all packages build and pass. The threshold floor, actionability patterns, and ValueSpec-as-Statement work shipped in this session. Feedback doc `2026-07-09-semantic-noise-declaration-files.md` was marked IMPLEMENTED.
+
 Fix false-positive clone detection noise in semantic mode, as reported in `/home/lars/forks/upd/art-dupl.html` — `errors.New("different strings")` were reported as duplicates.
 
 ---

@@ -2,6 +2,8 @@
 
 ## Session Summary
 
+> **Resolution (2026-07-16):** All "Critical" items (commit, nix flake check, nix build) were resolved. The `exhaustruct`/`gochecknoglobals`/`recvcheck` lint warnings were resolved by the 07-11 BuildFlow recovery session (disabled as anti-idiomatic with documented rationale). The `--min-lines` flag was added (P2 at 05:30 on 07-16). ADRs for threshold change (ADR-0009) and json/v2 (ADR-0010) were created. Items still open: `--explain`, `--no-boilerplate-filter`, `--aggressive`/`--sensitive` presets — see TODO_LIST.md.
+
 Two major work streams completed in this session:
 
 1. **Semantic mode noise elimination** — Fixed false-positive clone detection for declaration-only files
