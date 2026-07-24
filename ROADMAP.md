@@ -1,30 +1,48 @@
 # Roadmap
 
-**No timeline** — Aspirational items for future consideration.
+**No timeline** — Aspirational items for future consideration. Items graduate to `TODO_LIST.md` when they become actionable.
 
 ---
+
+## Type-Aware Detection
+
+- [ ] **go/types integration (`--type-aware`)** — The single highest-impact improvement. Would eliminate the "same-method-name-different-receiver-type" class of false positives (e.g., `time.Time.String()` vs `*big.Int.String()`). Requires `golang.org/x/tools/go/packages` (10-100x slower than parsing alone). Researched but not started.
+- [ ] **Interface-aware suppression** — Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`.
 
 ## Language Support
 
-- [ ] Add TypeScript/JavaScript support
-- [ ] Add Python support
+- [ ] **TypeScript/JavaScript support** — Would require a TS AST parser (Babel, swc, or tree-sitter). The detection pipeline (suffix tree, hash, actionability) is language-agnostic; only the AST-to-Node transformer needs per-language implementation.
+- [ ] **Python support** — Same architecture as TypeScript: a Python AST-to-Node transformer. The `syntax/` package is designed for multi-language extension.
 
 ## IDE & Tooling
 
-- [ ] Implement watch mode for continuous monitoring and incremental detection
-- [x] ~~Create GitHub Actions workflow templates~~ — DONE: `templates/github-actions-duplicate-check.yml`
-- [x] ~~Create pre-commit hooks~~ — DONE: `templates/pre-commit-hook.yaml`
+- [ ] **LSP server mode** — Run art-dupl as a Language Server, surfacing clones as diagnostics in VS Code / GoLand. Would enable real-time clone detection during development.
+- [ ] **Watch mode** — Continuous monitoring with incremental detection. Re-run only on changed files. Would pair with `--incremental` caching.
+- [x] ~~GitHub Actions workflow templates~~ — DONE: `templates/github-actions-duplicate-check.yml`
+- [x] ~~Pre-commit hooks~~ — DONE: `templates/pre-commit-hook.yaml`
 
-## Quality & Documentation
+## Architecture
 
-- [x] ~~Create Architecture Decision Records (ADRs) for major design decisions~~ — DONE: 14 ADRs in `docs/adr/` (0001-0014: map-based transitions, semantic default, reflection config merge, actionability patterns, split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout, default threshold change, JSON v2 migration, min-lines minimum, dump-tokens iowriter, exit codes, suppression config)
-- [ ] Continue adding ADRs for future major design decisions
+- [ ] **Clone type consolidation** — Reduce 7+ parallel Clone types to 2-3 with shared interfaces or a single `domain.Clone` with format-specific views. Currently mitigated by `CloneRef` value object embedding.
+- [ ] **Plugin architecture for detection methods** — Allow third-party detectors beyond suffix-tree and hash. The `detection.MethodDetector` interface supports this but is not documented as a public extension point.
+- [ ] **WASM target** — Compile art-dupl to WebAssembly for in-browser clone detection. Would enable a web UI dashboard.
+- [ ] **Parallel suffix tree construction** — Current Ukkonen's algorithm is single-threaded. Parallel construction could improve throughput on large codebases (10000+ files).
 
-## Performance
+## Quality & Intelligence
 
-- [x] ~~Create performance baseline benchmarks~~ — DONE: `syntax/syntax_bench_test.go`
-- [x] ~~Create regression test suite for performance~~ — DONE: `syntax/perf_regression_test.go` + `checks.bench` in `flake.nix`
+- [ ] **ML-based actionability classification** — Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 15 current patterns miss.
+- [ ] **Diff mode (`--diff-report`)** — Compare current results against a baseline to show only new/suppressed/resolved clones. Enables the extract-verify-improve CI loop.
+- [ ] **Fixability score** — Replace binary Actionable/NonActionable with a score reflecting extraction cost (params needed, lines saved, complexity). Feedback: httputil session suggested "would-take-more-params-than-lines" heuristic.
+- [ ] **Nested-scope shadowing in alpha-normalization** — Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
+
+## Documentation & Adoption
+
+- [x] ~~Architecture Decision Records (ADRs)~~ — DONE: 14 ADRs in `docs/adr/` (0001-0014)
+- [x] ~~Astro + Starlight documentation website~~ — DONE: deployed to `art-dupl.lars.software`
+- [ ] **SARIF output validation** — Validate emitted SARIF JSON against GitHub's official schema validator library in CI.
+- [ ] **Performance optimization guide** — Document `--workers`, `--incremental`, `--cache-dir` tuning for different codebase sizes.
+- [ ] **awesome-go submission** — Submit to awesome-go list once stable v1.0 is tagged.
 
 ---
 
-_These items are aspirational and have no committed timeline. They represent potential future directions based on user needs and project evolution._
+_These items are aspirational and have no committed timeline. They represent potential future directions based on user needs, feedback sessions, and project evolution._
