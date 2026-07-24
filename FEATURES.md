@@ -74,6 +74,16 @@
 | **Hash Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical)               |
 | **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort clone groups by total token count (highest total first) |
 
+### CI Integration
+
+| Feature                         | Status           | Description                                                                                           |
+| ------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------- |
+| **`//art-dupl:accept` directive** | FULLY_FUNCTIONAL | Suppress accepted clone groups via inline comments in source code. Optional hash for precision matching. Override with `--no-accept-directives`. |
+| **`.gitignore` honoring**       | FULLY_FUNCTIONAL | Files matching `.gitignore` patterns excluded by default. Override with `--include-ignored`.           |
+| **Baseline CI gating**          | FULLY_FUNCTIONAL | `art-dupl baseline` + `art-dupl check` for recording and comparing clone states across runs           |
+| **Typed exit codes**            | FULLY_FUNCTIONAL | 0=success, 1=error, 2=config/validation, 3=internal, 130=interrupted                                  |
+| **Type-aware validation**       | FULLY_FUNCTIONAL | `--type-aware` errors with `--structural`/`--exact`, warns with `--incremental`                       |
+
 ---
 
 ## 🔍 Semantic Detection

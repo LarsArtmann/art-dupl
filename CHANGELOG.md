@@ -7,7 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_Nothing yet._
+### Added
+
+- **`//art-dupl:accept` inline directive**: Suppress accepted clone groups by adding `//art-dupl:accept` comments directly in source code. Supports optional hash for precision matching (`//art-dupl:accept <hash>`). Lazy file scanning with RWMutex + double-checked locking. Override with `--no-accept-directives`. Eliminates baseline file management for CI workflows.
+- **`.gitignore` honoring**: Files matching `.gitignore` patterns are now excluded by default during file enumeration. Walks up the directory tree to find all `.gitignore` files. Supports globs, directory-only, anchored, and negation patterns. Override with `--include-ignored`.
+- **Type-aware validation**: `--type-aware` now errors when combined with `--structural` or `--exact` (meaningless combinations). Warns to stderr when combined with `--incremental` (silently falls back to syntax-only).
+- **`--semantic` deprecation notice**: Prints a gentle warning when `--semantic` flag is explicitly used (it's the default and redundant).
+- **New clone categories**: `BlockStmt` -> `block`, `CallExpr` -> `call`, `ReturnStmt` -> `return`, `DeferStmt`/`GoStmt` -> `defer`. Reduces `unknown` category fallback.
+- **Progress output in hash-only mode**: `progressFilesChan` now wired into `executeHashOnlyAnalysis` in `cmd/run_hash.go`.
+- **SDK `Options.TypeAware` field**: SDK users can now enable go/types-based detection. Falls back gracefully to syntax-only on type checking failure.
+- **`RELEASE.md` checklist**: 7-step release process with quality gate reminders.
+- **CI guard for disabled linters**: `scripts/check-disabled-linters.sh` + Nix check that fails if `exhaustruct` or `tagliatelle` appear in `.golangci.yml`.
+- **ADR-0015**: Type-aware detection design documentation.
+- **ADR-0016**: JSON tag convention decision (keep split: snake_case for public types, camelCase for internal).
+- **SDK_DESIGN.md rewrite**: Matches actual `pkg/artdupl/types.go` implementation.
+- **Progress unit tests** (`cmd/progress_test.go`): 8 tests covering `shouldShowProgress`, env var suppression, channel forwarding, suppressed mode.
+- **Accept directive tests** (`cmd/accept_directive_test.go`): 7 tests for line range matching, hash precision, caching, nil safety.
+- **Gitignore tests** (`cmd/gitignore_test.go`): 6 tests for exclusion, directory patterns, negation, nil safety.
+- **BDD type-aware tests** (`bdd/type_aware_test.go`): 7 Ginkgo specs for type-aware validation, accept directive, deprecation warning.
+- **SDK TypeAware tests** (`pkg/artdupl/detector_type_aware_test.go`): 3 tests for type-aware clone detection, graceful fallback, and default options.
+
+### Changed
+
+- **Lint config cleanup**: `exhaustruct` and `tagliatelle` removed from `.golangci.yml` enable list. Both are impractical for this codebase (exhaustruct: Go zero-value initialization; tagliatelle: intentional snake_case/camelCase split per ADR-0016).
+- **Detector pipeline refactor**: Extracted `loadTypeAwareDataIfEnabled` helper from `buildAnalysisPipeline` to reduce cyclomatic complexity.
+- **Em-dash cleanup**: 52 em-dashes replaced with commas across AGENTS.md and 7 ADR docs (0002-0008).
+- **Stale planning docs annotated**: `docs/planning/2026-07-01_*` HTML files marked as SUPERSEDED.
+
+### Removed
+
+- **Stub flags**: Removed 5 CLI flags that were added without implementation: `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report`. These created false expectations by accepting input but doing nothing. See TODO_LIST.md for future implementation plans.
 
 ## [0.4.0] - 2026-07-24
 
