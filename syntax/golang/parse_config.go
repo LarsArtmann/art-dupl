@@ -15,6 +15,12 @@ type ParseConfig struct {
 	// SemanticMode: Clones matched by structure AND identifier semantics (default).
 	// StructuralMode: Clones matched by AST structure only.
 	Mode DetectionMode
+
+	// Preloaded, when non-nil, supplies a pre-parsed AST and type-checking
+	// results. The transformer uses this AST instead of re-parsing and encodes
+	// variable types into identifier hashes to reduce false positives where
+	// different types share a method name (e.g. time.Time.String vs *big.Int.String).
+	Preloaded *PreloadedAST
 }
 
 // DefaultParseConfig returns a ParseConfig with sensible defaults.

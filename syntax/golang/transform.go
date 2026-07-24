@@ -206,6 +206,16 @@ func (t *transformer) trans(
 		nameForHash := n.Name
 		if t.config.Mode.NormalizesLocals() {
 			nameForHash = t.norm.resolve(n.Name)
+
+			// Type-aware encoding: append the variable's type to the hash so
+			// that different-typed locals with the same canonical name (v0)
+			// produce different hashes. This prevents false positives like
+			// time.Time.String matching *big.Int.String.
+			if t.typeInfo != nil && t.norm.isLocal(n.Name) {
+				if typeStr := identTypeString(t.typeInfo, n); typeStr != "" {
+					nameForHash += "\x00" + typeStr
+				}
+			}
 		}
 
 		o.Type = encodeSemanticType(Ident, nameForHash, t.config.Mode.HashesIdentifiers())

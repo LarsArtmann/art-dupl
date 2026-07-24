@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"go/types"
 
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -36,6 +37,10 @@ func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, i
 		return nil, 0, fmt.Errorf("parse %s: %w", filename, err)
 	}
 
+	if cfg.Preloaded != nil {
+		return parsePreloaded(filename, cfg)
+	}
+
 	fset := token.NewFileSet()
 
 	file, err := parser.ParseFile(fset, filename, nil, 0)
@@ -54,12 +59,30 @@ func ParseWithLineCountConfig(filename string, cfg ParseConfig) (*syntax.Node, i
 	return t.trans(file), lineCount, nil
 }
 
+// parsePreloaded transforms a pre-loaded AST with type-checking results.
+// The AST comes from go/packages so the *types.Info maps use the same node pointers.
+func parsePreloaded(filename string, cfg ParseConfig) (*syntax.Node, int, error) {
+	pre := cfg.Preloaded
+
+	t := &transformer{
+		fileset:  pre.Fset,
+		filename: syntax.InternFilename(filename),
+		config:   cfg,
+		norm:     newNormalizer(cfg.Mode.NormalizesLocals()),
+		typeInfo: pre.TypeInfo,
+	}
+	lineCount := pre.Fset.File(pre.File.Pos()).LineCount()
+
+	return t.trans(pre.File), lineCount, nil
+}
+
 type transformer struct {
 	fileset     *token.FileSet
 	filename    string
 	config      ParseConfig
 	inInterface bool
 	norm        *normalizer
+	typeInfo    *types.Info
 }
 
 // addWithNilCheck adds a child to o if not nil and valid.
