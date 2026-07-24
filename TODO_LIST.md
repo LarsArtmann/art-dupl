@@ -62,6 +62,10 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 - [ ] **Check CONTRIBUTING.md for stale `just` references**: justfile was removed; docs may still reference it.
 - [ ] **Verify TESTING.md mentions `GOEXPERIMENT=jsonv2`**: Required environment variable, may not be documented in testing guide.
 - [ ] **Annotate stale planning HTML files**: `docs/planning/2026-07-01_*` HTML plans are superseded by later sessions. Annotate or archive.
+- [ ] **Clean em-dashes in AGENTS.md**: 24 em-dashes remain in Critical Conventions section. Needs careful per-line review to choose correct replacement (comma, semicolon, parenthesis).
+- [ ] **Clean em-dashes in ADR docs**: `docs/adr/0002` through `0008` contain em-dashes. Bulk-replaceable but needs verification pass.
+- [ ] **Remove orphaned exhaustruct exclusion rules**: `.golangci.yml` lines 340 and 345 still reference `exhaustruct` in exclusion rules for a globally-disabled linter.
+- [ ] **CI guard against auto-committer re-adding disabled linters**: The auto-committer has re-added `exhaustruct`/`tagliatelle` to `.golangci.yml` 4 times. Need a diff check or pre-commit hook.
 
 ---
 
