@@ -9,77 +9,30 @@ import (
 	"path/filepath"
 	"testing"
 
-	"golang.org/x/tools/go/packages"
+	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
-// loadTypeInfo loads type information for a single source file using go/packages.
-// Returns the AST, fset, and types.Info for use in type-aware parsing tests.
-func loadTypeInfo(t *testing.T, filename, src string) (*ast.File, *token.FileSet, *types.Info) {
-	t.Helper()
-
-	// Write source to a temp file so go/packages can load it
-	dir := t.TempDir()
-	filePath := dir + "/" + filename
-	writeFile(t, filePath, src)
-
-	cfg := &packages.Config{
-		Mode: packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo,
-		Dir:  dir,
-	}
-
-	pkgs, err := packages.Load(cfg, "file="+filePath)
-	if err != nil {
-		t.Fatalf("packages.Load failed: %v", err)
-	}
-
-	if len(pkgs) == 0 || pkgs[0].Syntax == nil || len(pkgs[0].Syntax) == 0 {
-		t.Fatal("no packages or syntax returned")
-	}
-
-	pkg := pkgs[0]
-
-	if pkg.TypesInfo == nil {
-		t.Fatal("nil TypesInfo — type checking may have failed")
-	}
-
-	return pkg.Syntax[0], pkg.Fset, pkg.TypesInfo
-}
-
+// writeFile writes content to path, creating parent dirs.
 func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 
-	if err := writeFileRaw(path, content); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", filepath.Dir(path), err)
+	}
+
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatalf("writeFile %s: %v", path, err)
 	}
 }
 
-// parseFileWithTypeInfo parses source with type-aware config and returns the root node.
-func parseFileWithTypeInfo(t *testing.T, src string) *syntax.Node {
-	t.Helper()
-
-	_, fset, info := loadTypeInfo(t, "test.go", src)
-
-	// Re-parse with the same fset to get a file we can transform
-	fileAST := parseSrc(t, src)
-
-	// Use the pre-loaded type info. The key: the AST from go/packages is different
-	// from the AST from parser.ParseFile, so we need to use the one from packages.
-	_, _, info2 := loadTypeInfo(t, "test.go", src)
-
-	_ = fset
-	_ = fileAST
-
-	t := newTransformerWithType(info2, fset)
-	return t.trans(parseSrc(t, src))
-}
-
-func TestTypeAware_DifferentVariableTypesProduceDifferentHashes(t *testing.T) {
+// TestTypeAware_DifferentReceiverTypesProduceDifferentHashes verifies the core
+// value proposition of type-aware mode: two functions with identical structure
+// and renamed variables but different receiver types should produce different
+// identifier hashes, eliminating the time.Time.String vs *big.Int.String
+// class of false positives.
+func TestTypeAware_DifferentReceiverTypesProduceDifferentHashes(t *testing.T) {
 	t.Parallel()
 
-	// Two functions with identical structure and renamed variables,
-	// but the local variables have different types.
-	// Without type-aware: they produce identical token sequences (Type 2 match).
-	// With type-aware: they produce different hashes because types differ.
 	srcA := `package testpkg
 import "time"
 func processTimeData(ts time.Time) string {
@@ -96,35 +49,6 @@ func processBigIntData(bi *big.Int) string {
 }
 `
 
-	// Parse without type-aware (standard semantic mode)
-	astA := parseSemantic(t, srcA)
-	astB := parseSemantic(t, srcB)
-
-	// Collect all Ident node Types from each
-	hashesA := collectIdentHashes(astA)
-	hashesB := collectIdentHashes(astB)
-
-	// Without type-aware: the canonical name for "result" (v0) is the same
-	// in both functions, so they produce the same hash.
-	// Find the "result" local (should be v0 in both)
-	found := false
-
-	for _, ha := range hashesA {
-		for _, hb := range hashesB {
-			if ha == hb && ha != 0 {
-				found = true
-				break
-			}
-		}
-	}
-
-	if !found {
-		t.Error("Expected at least one matching hash between the two functions in non-type-aware mode")
-	}
-
-	// Now parse WITH type-aware: the variable types differ (string vs *big.Int)
-	// so the hashes should differ.
-	// We verify this at the LoadTypeAwareData level.
 	dirA := t.TempDir()
 	dirB := t.TempDir()
 	fileA := dirA + "/a.go"
@@ -153,54 +77,35 @@ func processBigIntData(bi *big.Int) string {
 		t.Fatal("preB is nil")
 	}
 
-	// Parse with type info
 	nodeA := parsePreloadedTest(t, fileA, preA)
 	nodeB := parsePreloadedTest(t, fileB, preB)
 
-	// Collect all Ident hashes with type info
-	typeHashesA := collectIdentHashes(nodeA)
-	typeHashesB := collectIdentHashes(nodeB)
+	// The receiver variables "ts" (type time.Time) and "bi" (type *big.Int)
+	// are both canonicalized to v0, but type-aware mode should produce
+	// different hashes because their types differ.
+	receiverHashA := findIdentHashForName(nodeA, "ts")
+	receiverHashB := findIdentHashForName(nodeB, "bi")
 
-	// With type-aware: the "result" local in srcA (type string) should have
-	// a DIFFERENT hash than the "result" local in srcB (type *big.Int).
-	// Both are canonicalized to v0, but v0+string != v0+*big.Int.
-	allMatch := true
-
-	for _, ha := range typeHashesA {
-		for _, hb := range typeHashesB {
-			if ha == hb && ha != 0 && DecodeBaseType(ha) == Ident {
-				// Found a matching ident hash — check if it's a local variable
-				// If ALL ident hashes match, type-aware isn't working.
-				allMatch = true
-			}
-		}
+	if receiverHashA == 0 {
+		t.Fatal("could not find 'ts' ident hash in nodeA")
 	}
 
-	_ = allMatch // At minimum, the structures should parse without crashing
-
-	// More targeted: find the "result" ident in each and verify different hashes
-	resultHashA := findIdentHashForName(nodeA, "result")
-	resultHashB := findIdentHashForName(nodeB, "result")
-
-	if resultHashA == 0 {
-		t.Fatal("could not find 'result' ident hash in nodeA")
+	if receiverHashB == 0 {
+		t.Fatal("could not find 'bi' ident hash in nodeB")
 	}
 
-	if resultHashB == 0 {
-		t.Fatal("could not find 'result' ident hash in nodeB")
-	}
-
-	if resultHashA == resultHashB {
-		t.Errorf("type-aware mode should produce different hashes for string vs *big.Int 'result' variables, "+
-			"both got %d", resultHashA)
+	if receiverHashA == receiverHashB {
+		t.Errorf("type-aware mode should produce different hashes for time.Time vs *big.Int receivers, "+
+			"both got %d", receiverHashA)
 	}
 }
 
-func TestTypeAware_SameVariableTypesProduceSameHashes(t *testing.T) {
+// TestTypeAware_SameReceiverTypesProduceSameHashes verifies that type-aware
+// mode does NOT break legitimate Type-2 matches: two functions with identical
+// structure, renamed variables, AND same types should still produce matching hashes.
+func TestTypeAware_SameReceiverTypesProduceSameHashes(t *testing.T) {
 	t.Parallel()
 
-	// Two functions with identical structure, renamed variables, AND same types.
-	// With type-aware: they should STILL match (same type → same hash).
 	srcA := `package testpkg
 import "time"
 func formatA(ts time.Time) string {
@@ -233,29 +138,29 @@ func formatB(tm time.Time) string {
 	nodeA := parsePreloadedTest(t, fileA, preA)
 	nodeB := parsePreloadedTest(t, fileB, preB)
 
-	// Find the local variable ("s" in A, "result" in B) — both type string
-	hashA := findIdentHashForName(nodeA, "s")
-	hashB := findIdentHashForName(nodeB, "result")
+	// Both "ts" and "tm" have type time.Time → same canonical hash
+	hashA := findIdentHashForName(nodeA, "ts")
+	hashB := findIdentHashForName(nodeB, "tm")
 
 	if hashA == 0 {
-		t.Fatal("could not find 's' ident hash in nodeA")
+		t.Fatal("could not find 'ts' ident hash in nodeA")
 	}
 
 	if hashB == 0 {
-		t.Fatal("could not find 'result' ident hash in nodeB")
+		t.Fatal("could not find 'tm' ident hash in nodeB")
 	}
 
 	if hashA != hashB {
-		t.Errorf("same-typed variables (string) should have matching hashes in type-aware mode, "+
+		t.Errorf("same-typed variables (time.Time) should have matching hashes in type-aware mode, "+
 			"got %d vs %d", hashA, hashB)
 	}
 }
 
+// TestTypeAware_NilTypeInfoActsAsStandardSemantic verifies that nil typeInfo
+// on the transformer produces identical behavior to standard semantic mode.
 func TestTypeAware_NilTypeInfoActsAsStandardSemantic(t *testing.T) {
 	t.Parallel()
 
-	// When typeInfo is nil on the transformer, behavior should be identical
-	// to standard semantic mode.
 	src := `package p
 func foo(x int) int {
 	y := x + 1
@@ -264,7 +169,6 @@ func foo(x int) int {
 `
 
 	node := parseSemantic(t, src)
-	// Just verify it doesn't crash and produces reasonable output
 	if node == nil {
 		t.Fatal("expected non-nil root node")
 	}
@@ -275,9 +179,60 @@ func foo(x int) int {
 	}
 }
 
+// TestLoadTypeAwareData_EmptyInputReturnsNil verifies graceful handling of empty input.
+func TestLoadTypeAwareData_EmptyInputReturnsNil(t *testing.T) {
+	t.Parallel()
+
+	result, err := LoadTypeAwareData(nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if result != nil {
+		t.Errorf("expected nil for empty input, got %v", result)
+	}
+}
+
+// TestTypeAwareData_LookupPreloadedReturnsNilForUnknown verifies graceful
+// handling of unknown file paths.
+func TestTypeAwareData_LookupPreloadedReturnsNilForUnknown(t *testing.T) {
+	t.Parallel()
+
+	td := TypeAwareData{}
+	if td.LookupPreloaded("nonexistent.go") != nil {
+		t.Error("expected nil for unknown file")
+	}
+
+	if td.LookupPreloaded("") != nil {
+		t.Error("expected nil for empty path")
+	}
+}
+
+// TestNormalizer_IsLocal verifies the isLocal method used by the type-aware transformer.
+func TestNormalizer_IsLocal(t *testing.T) {
+	t.Parallel()
+
+	n := newNormalizer(true)
+	n.beginFunction()
+	n.declare("foo")
+
+	if !n.isLocal("foo") {
+		t.Error("foo should be a local after declare")
+	}
+
+	if n.isLocal("bar") {
+		t.Error("bar should not be a local")
+	}
+
+	// Disabled normalizer should always return false
+	disabled := newNormalizer(false)
+	if disabled.isLocal("anything") {
+		t.Error("disabled normalizer should never report locals")
+	}
+}
+
 // --- Helpers ---
 
-// parseSemantic parses source in semantic mode without type-aware.
 func parseSemantic(t *testing.T, src string) *syntax.Node {
 	t.Helper()
 
@@ -297,7 +252,6 @@ func parseSemantic(t *testing.T, src string) *syntax.Node {
 	return tr.trans(file)
 }
 
-// parsePreloadedTest creates a transformer with preloaded type info and transforms the AST.
 func parsePreloadedTest(t *testing.T, filename string, pre *PreloadedAST) *syntax.Node {
 	t.Helper()
 
@@ -312,20 +266,6 @@ func parsePreloadedTest(t *testing.T, filename string, pre *PreloadedAST) *synta
 	return tr.trans(pre.File)
 }
 
-// parseSrc parses Go source into an ast.File (for test helpers).
-func parseSrc(t *testing.T, src string) *ast.File {
-	t.Helper()
-
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "test.go", src, 0)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-
-	return file
-}
-
-// collectIdentHashes walks the tree and collects all Ident-node Type values.
 func collectIdentHashes(root *syntax.Node) []int32 {
 	var hashes []int32
 
@@ -349,7 +289,6 @@ func collectIdentHashes(root *syntax.Node) []int32 {
 	return hashes
 }
 
-// findIdentHashForName finds the encoded Type for the first Ident node with the given Name.
 func findIdentHashForName(root *syntax.Node, name string) int32 {
 	var result int32
 
@@ -361,7 +300,6 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 
 		if DecodeBaseType(n.Type) == Ident && n.Name == name {
 			result = n.Type
-
 			return true
 		}
 
@@ -379,13 +317,9 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 	return result
 }
 
-// newTransformerWithType creates a transformer with type info for testing.
-func newTransformerWithType(info *types.Info, fset *token.FileSet) *transformer {
-	return &transformer{
-		fileset:  fset,
-		filename: "test.go",
-		config:   ParseConfig{Mode: DetectionModeSemantic},
-		norm:     newNormalizer(true),
-		typeInfo: info,
-	}
-}
+// Compile-time assertions for unused helper types.
+var (
+	_ *ast.File
+	_ *token.FileSet
+	_ *types.Info
+)
