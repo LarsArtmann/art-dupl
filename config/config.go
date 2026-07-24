@@ -169,6 +169,13 @@ type Config struct {
 	// Quiet suppresses non-essential status output (progress messages,
 	// profiling notices). Clone results are still printed.
 	Quiet bool `json:"quiet,omitempty"`
+
+	// TypeAware enables go/types-based detection: encodes each local variable's
+	// static type into the identifier hash so that different-typed variables with
+	// the same name produce different hashes. Eliminates false positives like
+	// time.Time.String matching *big.Int.String. Requires go/packages type
+	// checking (10-100x slower). Only effective with semantic detection mode.
+	TypeAware bool `json:"typeAware,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
@@ -215,6 +222,7 @@ func DefaultConfig() *Config {
 		TestThreshold:      0,
 		IgnoreTests:        false,
 		MinLines:           0,
+		TypeAware:          false,
 	}
 }
 

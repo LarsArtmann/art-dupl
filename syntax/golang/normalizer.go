@@ -75,6 +75,18 @@ func (n *normalizer) resolve(realName string) string {
 	return realName
 }
 
+// isLocal reports whether the given name is a declared local binding in the
+// current function scope. Used by the type-aware transformer to decide whether
+// to look up and encode the identifier's type.
+func (n *normalizer) isLocal(name string) bool {
+	if !n.enabled {
+		return false
+	}
+
+	_, ok := n.locals[name]
+	return ok
+}
+
 // collectFunctionLocals walks a FuncDecl in source order and declares every
 // local binding: receiver, type parameters (generics), parameters, results,
 // and body-local variables. This pre-pass populates the symbol table before

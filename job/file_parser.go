@@ -10,10 +10,12 @@ import (
 
 // ParseFileByExtensionWithConfig parses a file based on its extension with the
 // given detection mode. The mode controls how identifier names participate in
-// matching (Exact/Semantic/Structural).
+// matching (Exact/Semantic/Structural). preloaded, when non-nil, supplies a
+// pre-parsed AST with type-checking results for type-aware detection.
 func ParseFileByExtensionWithConfig(
 	file string,
 	mode golang.DetectionMode,
+	preloaded *golang.PreloadedAST,
 ) (*syntax.Node, int, error) {
 	var (
 		ast   *syntax.Node
@@ -28,8 +30,7 @@ func ParseFileByExtensionWithConfig(
 			mode == golang.DetectionModeSemantic,
 		)
 	default:
-		// Default to Go parser for .go files and any other files that reach here
-		cfg := golang.ParseConfig{Mode: mode}
+		cfg := golang.ParseConfig{Mode: mode, Preloaded: preloaded}
 		ast, lines, err = golang.ParseWithLineCountConfig(file, cfg)
 	}
 

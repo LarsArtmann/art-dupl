@@ -13,6 +13,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/pkg/logger"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
+	"github.com/LarsArtmann/art-dupl/syntax/golang"
 	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
@@ -155,6 +156,11 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 	filesChan := params.getFilesChan()
 	filesChan = progressFilesChan(params.ctx, filesChan, params.cfg, params.outputFormat)
 
+	var typeInfos golang.TypeAwareData
+	if params.cfg.TypeAware {
+		typeInfos, filesChan = loadTypeAwareData(params.ctx, filesChan)
+	}
+
 	var (
 		schan     chan []*syntax.Node
 		statsChan chan job.ParseStats
@@ -167,9 +173,10 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 			params.cfg.Workers,
 			detectionMode(params.cfg),
 			params.cfg.MaxChildrenSerial,
+			typeInfos,
 		)
 	} else {
-		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg), params.cfg.MaxChildrenSerial)
+		schan, statsChan = job.Parse(params.ctx, filesChan, detectionMode(params.cfg), params.cfg.MaxChildrenSerial, typeInfos)
 	}
 
 	tree, data, done := job.BuildTree(params.ctx, schan)

@@ -43,6 +43,11 @@ func addSharedFlags(cmd *cobra.Command) {
 	cmd.Flags().
 		Bool("structural", false, "match by AST shape only, ignoring all names (loosest matching, most candidates)")
 
+	cmd.Flags().Bool("type-aware", false,
+		"enable go/types-based detection: encodes each variable's static type into the hash "+
+			"so same-name methods on different types (e.g. time.Time.String vs *big.Int.String) "+
+			"do not match. Requires full type checking (10-100x slower). Only effective with --semantic (default)")
+
 	cmd.Flags().
 		BoolP("quiet", "q", false, "suppress non-essential status output (progress messages, profiling notices)")
 	cmd.Flags().Bool("no-color", false, "disable colored output")

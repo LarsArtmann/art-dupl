@@ -52,7 +52,7 @@ func function3() {
 
 	close(fchan)
 
-	schan, statsChan := ParseParallel(ctx, fchan, 2, golang.DetectionModeSemantic, 0)
+	schan, statsChan := ParseParallel(ctx, fchan, 2, golang.DetectionModeSemantic, 0, nil)
 
 	count := 0
 
@@ -86,7 +86,7 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 0, golang.DetectionModeSemantic, 0)
+	schan, _ := ParseParallel(ctx, fchan, 0, golang.DetectionModeSemantic, 0, nil)
 
 	waitForParsedNodes(t, schan, "ParseParallel timed out")
 }
@@ -94,7 +94,7 @@ func TestParseParallelWithDefaultWorkers(t *testing.T) {
 func TestParseParallelContextCancellation(t *testing.T) {
 	cancel, fchan := cancelledContextAndChannel(t.Context())
 
-	schan, _ := ParseParallel(t.Context(), fchan, 2, golang.DetectionModeSemantic, 0)
+	schan, _ := ParseParallel(t.Context(), fchan, 2, golang.DetectionModeSemantic, 0, nil)
 
 	// Should complete without deadlock
 	for range schan {
@@ -111,7 +111,7 @@ func TestParseParallelErrorHandling(t *testing.T) {
 
 	close(fchan)
 
-	schan, _ := ParseParallel(ctx, fchan, 1, golang.DetectionModeSemantic, 0)
+	schan, _ := ParseParallel(ctx, fchan, 1, golang.DetectionModeSemantic, 0, nil)
 
 	waitForChannelOrTimeout(
 		t,
@@ -172,7 +172,7 @@ func TestParseFileByExtensionWithConfig_GoFile(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	ast, lines, err := ParseFileByExtensionWithConfig(setup.GetFilePath("test.go"), golang.DetectionModeSemantic)
+	ast, lines, err := ParseFileByExtensionWithConfig(setup.GetFilePath("test.go"), golang.DetectionModeSemantic, nil)
 	if err != nil {
 		t.Fatalf("ParseFileByExtensionWithConfig failed: %v", err)
 	}
@@ -187,7 +187,7 @@ func TestParseFileByExtensionWithConfig_GoFile(t *testing.T) {
 }
 
 func TestParseFileByExtensionWithConfig_NonexistentFile(t *testing.T) {
-	_, _, err := ParseFileByExtensionWithConfig("nonexistent.go", golang.DetectionModeSemantic)
+	_, _, err := ParseFileByExtensionWithConfig("nonexistent.go", golang.DetectionModeSemantic, nil)
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
 	}
@@ -207,7 +207,7 @@ func TestParseStatsFromSequential(t *testing.T) {
 
 	close(fchan)
 
-	schan, statsChan := Parse(ctx, fchan, golang.DetectionModeSemantic, 0)
+	schan, statsChan := Parse(ctx, fchan, golang.DetectionModeSemantic, 0, nil)
 
 	// Drain the sequences channel
 	for range schan {

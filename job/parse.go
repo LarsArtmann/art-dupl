@@ -24,12 +24,14 @@ type parseResult struct {
 
 // Parse parses files sequentially (legacy behavior).
 // mode controls how identifier names participate in matching.
+// typeInfos, when non-nil, supplies pre-loaded type-checking results for type-aware detection.
 // maxChildren caps the number of children serialized per node (prevents stack overflow).
 func Parse(
 	ctx context.Context,
 	fchan chan string,
 	mode golang.DetectionMode,
 	maxChildren int,
+	typeInfos golang.TypeAwareData,
 ) (chan []*syntax.Node, chan ParseStats) {
 	// parse AST
 	achan := make(chan *syntax.Node)
@@ -60,7 +62,7 @@ func Parse(
 
 			// Dispatch to appropriate parser based on file extension
 
-			ast, lines, err = ParseFileByExtensionWithConfig(file, mode)
+			ast, lines, err = ParseFileByExtensionWithConfig(file, mode, typeInfos.LookupPreloaded(file))
 			if err != nil {
 				logger.Default.Error("failed to parse file", "file", file, "err", err)
 
@@ -95,6 +97,7 @@ func Parse(
 // ParseParallel parses files concurrently using a worker pool.
 // Workers defaults to runtime.GOMAXPROCS(0) if <= 0.
 // mode controls how identifier names participate in matching.
+// typeInfos, when non-nil, supplies pre-loaded type-checking results for type-aware detection.
 // maxChildren caps the number of children serialized per node (prevents stack overflow).
 func ParseParallel(
 	ctx context.Context,
@@ -102,6 +105,7 @@ func ParseParallel(
 	workers int,
 	mode golang.DetectionMode,
 	maxChildren int,
+	typeInfos golang.TypeAwareData,
 ) (chan []*syntax.Node, chan ParseStats) {
 	workers = normalizeWorkerCount(workers)
 
@@ -113,7 +117,7 @@ func ParseParallel(
 
 	fileQueue := make(chan string, workers*2)
 
-	startWorkers(ctx, &wg, fileQueue, resultChan, workers, mode)
+	startWorkers(ctx, &wg, fileQueue, resultChan, workers, mode, typeInfos)
 
 	// Feed files to workers
 	go feedFiles(ctx, fchan, fileQueue)
@@ -153,6 +157,7 @@ func startWorkers(
 	resultChan chan<- parseResult,
 	workers int,
 	mode golang.DetectionMode,
+	typeInfos golang.TypeAwareData,
 ) {
 	for range workers {
 		wg.Go(func() {
@@ -163,7 +168,7 @@ func startWorkers(
 				default:
 				}
 
-				result := parseFileWithConfig(file, mode)
+				result := parseFileWithConfig(file, mode, typeInfos.LookupPreloaded(file))
 
 				select {
 				case resultChan <- result:
@@ -175,9 +180,9 @@ func startWorkers(
 	}
 }
 
-// parseFileWithConfig parses a single file with the given detection mode.
-func parseFileWithConfig(file string, mode golang.DetectionMode) parseResult {
-	ast, lines, err := ParseFileByExtensionWithConfig(file, mode)
+// parseFileWithConfig parses a single file with the given detection mode and optional preloaded type info.
+func parseFileWithConfig(file string, mode golang.DetectionMode, preloaded *golang.PreloadedAST) parseResult {
+	ast, lines, err := ParseFileByExtensionWithConfig(file, mode, preloaded)
 
 	return parseResult{ast: ast, lines: lines, err: err}
 }

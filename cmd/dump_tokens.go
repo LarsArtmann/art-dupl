@@ -55,10 +55,10 @@ func dumpTokensOutput(ctx context.Context, cfg *config.Config, w io.Writer) erro
 
 	if cfg.Workers != 1 {
 		schan, statsChan = job.ParseParallel(
-			ctx, filesChan, cfg.Workers, detectionMode(cfg), cfg.MaxChildrenSerial,
+			ctx, filesChan, cfg.Workers, detectionMode(cfg), cfg.MaxChildrenSerial, nil,
 		)
 	} else {
-		schan, statsChan = job.Parse(ctx, filesChan, detectionMode(cfg), cfg.MaxChildrenSerial)
+		schan, statsChan = job.Parse(ctx, filesChan, detectionMode(cfg), cfg.MaxChildrenSerial, nil)
 	}
 
 	for seq := range schan {

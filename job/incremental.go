@@ -278,7 +278,7 @@ func (ip *IncrementalParser) parseFile(file string) ([]*syntax.Node, int, bool) 
 			return cachedNodes, nil
 		}
 
-		ast, _, parseErr := ParseFileByExtensionWithConfig(file, ip.mode)
+		ast, _, parseErr := ParseFileByExtensionWithConfig(file, ip.mode, nil)
 		if parseErr != nil {
 			return nil, fmt.Errorf("parse file: %w", parseErr)
 		}
