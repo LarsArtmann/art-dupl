@@ -1,206 +1,74 @@
-# dupl SDK Design Document
+# art-dupl SDK Design
 
-## Current State Analysis
+The public SDK lives in `pkg/artdupl/`. This document records the key design decisions.
 
-### ✅ Strengths
-
-- Core algorithms (suffixtree, syntax, detection) are well-decoupled from CLI
-- Clean interfaces exist: `Printer`, `Token`, `Config`
-- MIT license allows flexible usage
-- Configuration system is robust with validation
-- File processing pipeline is modular and reusable
-
-### ❌ Limitations
-
-- `lib.Run()` is too simplistic - only returns `[]printer.Issue`
-- No unified high-level SDK interface
-- Advanced features (multi-detection, hash detection) not exposed in lib
-- No error handling customization
-- No progress reporting or cancellation support
-- No way to access raw matches or intermediate results
-
-## Proposed SDK Design
-
-### 1. Primary SDK Interface
+## Interface
 
 ```go
-package artdupl
-
-// Detector is the main interface for code duplication detection
 type Detector interface {
-    // FindClones performs duplication analysis
     FindClones(ctx context.Context, files []string) (*Result, error)
-
-    // FindClonesStream provides streaming results for large projects
-    FindClonesStream(ctx context.Context, files []string) (<-chan *CloneGroup, error)
-}
-
-// Result contains all detected duplicates with metadata
-type Result struct {
-    CloneGroups  []*CloneGroup `json:"clone_groups"`
-    Summary      *Summary      `json:"summary"`
-    Metadata     *Metadata     `json:"metadata"`
-}
-
-// CloneGroup represents a group of identical code fragments
-type CloneGroup struct {
-    Hash       string    `json:"hash"`
-    Clones     []*Clone  `json:"clones"`
-    Size       int       `json:"size"`
-    LineCount  int       `json:"line_count"`
-    Method     DetectionMethod `json:"detection_method"`
-}
-
-// Clone represents a single occurrence of duplicated code
-type Clone struct {
-    Filename   string `json:"filename"`
-    LineStart  int    `json:"line_start"`
-    LineEnd    int    `json:"line_end"`
-    Fragment   string `json:"fragment,omitempty"`
-    Size       int    `json:"size"`
-}
-
-// Summary provides statistics about the analysis
-type Summary struct {
-    TotalFiles    int `json:"total_files"`
-    TotalClones    int `json:"total_clones"`
-    TotalGroups    int `json:"total_groups"`
-    AnalysisTime   time.Duration `json:"analysis_time_ms"`
+    FindClonesStreamResult(ctx context.Context, files []string) (<-chan StreamResult, error)
+    Close() error
 }
 ```
 
-### 2. Configuration Options
+- `FindClones` returns complete results (blocks until done).
+- `FindClonesStreamResult` emits `StreamResult` values on a channel. A final
+  `StreamResult` with `Err != nil` signals pipeline failure.
+- `Close` releases resources.
+
+## Types
+
+All types are in `pkg/artdupl/types.go`.
+
+| Type | Purpose |
+|---|---|
+| `Options` | Configuration: threshold, methods, workers, timeout, callbacks |
+| `Result` | Complete output: clone groups + summary + metadata |
+| `CloneGroup` | Hash, clones, size, line count, detection method |
+| `Clone` | Embeds `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) + positions |
+| `Summary` | Stats: total files, clones, groups, analysis time |
+| `Metadata` | Version, timestamp, config hash, toolchain |
+
+## Usage
 
 ```go
-// Configures the detector behavior
-type Options struct {
-    // Detection settings
-    Threshold         int               `json:"threshold"`
-    DetectionMethods  []DetectionMethod `json:"detection_methods"`
+detector, err := artdupl.New(artdupl.DefaultOptions())
+if err != nil { return err }
+defer detector.Close()
 
-    // File processing
-    IncludeVendor    bool              `json:"include_vendor"`
-    IgnoreFiles      []string          `json:"ignore_files"`
-    MaxFileSize      int64             `json:"max_file_size"`
+result, err := detector.FindClones(ctx, []string{"./src"})
+if err != nil { return err }
 
-    // Performance
-    MaxWorkers       int               `json:"max_workers"`
-    Timeout          time.Duration     `json:"timeout"`
-
-    // Output customization
-    IncludeFragments bool              `json:"include_fragments"`
-
-    // Callbacks for progress
-    ProgressCallback func(progress *Progress) error
-
-    // Custom file reader (for testing/virtual files)
-    FileReader      FileReaderFunc
-}
-
-// Progress reports analysis progress
-type Progress struct {
-    Stage       string  `json:"stage"`
-    Completed   int     `json:"completed"`
-    Total       int     `json:"total"`
-    Percentage  float64 `json:"percentage"`
-    Message     string  `json:"message"`
+for _, group := range result.CloneGroups {
+    fmt.Printf("Clone group %s: %d occurrences\n", group.Hash, len(group.Clones))
 }
 ```
 
-### 3. Implementation Strategy
+## Design Decisions
 
-#### Phase 1: Core SDK Interface
+1. **Zero imports of `config/` and `errors/`**: The SDK is independent. It
+   aliases `domain` types (`DetectionMethod`, `FileReaderFunc`) and `pkg/logger.Logger`
+   rather than importing the full config or errors packages.
 
-- Create `pkg/artdupl/` package with clean API
-- Implement Detector interface using existing components
-- Expose all detection methods (art-dupl, hash)
-- Add proper error handling and context support
+2. **`CloneRef` embedding**: `Clone` embeds `domain.CloneRef` so all
+   clone-bearing types share the same location fields (`Filename`, `LineStart`,
+   `LineEnd`, `Fragment`) without field-name drift.
 
-#### Phase 2: Advanced Features
+3. **Streaming via channels**: `FindClonesStreamResult` returns a channel of
+   `StreamResult{Group, Err}` values. This allows incremental processing of
+   large codebases without buffering all results.
 
-- Streaming API for large projects
-- Progress reporting and cancellation
-- Custom file readers (in-memory, virtual files)
-- Configurable output formats
+4. **`DefaultOptions()`**: Provides sensible defaults (threshold 15, 4 workers,
+   30min timeout). Callers override individual fields.
 
-#### Phase 3: Integration Features
+5. **Type aliases over redefinition**: `DetectionMethod`, `FileReaderFunc`, and
+   `Logger` are aliases (`type X = Y`), not new types. This ensures the SDK is
+   compatible with domain-level code without requiring conversion functions.
 
-- Plugin system for custom detection methods
-- Export/import functionality
-- Caching and incremental analysis
-- Language extensibility
+## Architecture Constraints
 
-## Usage Examples
-
-### Basic Usage
-
-```go
-import "github.com/LarsArtmann/art-dupl/pkg/artdupl"
-
-detector := artdupl.NewDetector(&artdupl.Options{
-    Threshold: 15,
-    DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodArtDupl},
-})
-
-result, err := detector.FindClones(context.Background(), []string{"./src"})
-if err != nil {
-    log.Fatal(err)
-}
-
-fmt.Printf("Found %d clone groups\n", len(result.CloneGroups))
-```
-
-### Advanced Usage with Streaming
-
-```go
-detector := artdupl.NewDetector(&artdupl.Options{
-    Threshold: 20,
-    IncludeFragments: true,
-    ProgressCallback: func(p *artdupl.Progress) error {
-        fmt.Printf("Progress: %.1f%% - %s\n", p.Percentage, p.Message)
-        return nil
-    },
-})
-
-cloneChan, err := detector.FindClonesStream(ctx, []string{"./src"})
-if err != nil {
-    log.Fatal(err)
-}
-
-for group := range cloneChan {
-    fmt.Printf("Found clone group: %s with %d clones\n", group.Hash, len(group.Clones))
-}
-```
-
-### Integration with CI/CD
-
-```go
-detector := artdupl.NewDetector(&artdupl.Options{
-    Threshold: 30,
-    DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodHash},
-})
-
-result, err := detector.FindClones(context.Background(), []string{"./src"})
-if err != nil {
-    return err
-}
-
-// Fail build if too many duplicates
-if result.Summary.TotalClones > 100 {
-    return fmt.Errorf("too many code duplicates: %d", result.Summary.TotalClones)
-}
-
-// Export JSON for reporting
-data, _ := json.Marshal(result)
-os.WriteFile("duplicates.json", data, 0644)
-```
-
-## Migration Path
-
-1. **Create SDK package** alongside existing CLI code
-2. **Gradually migrate lib.Run** to use new SDK implementation
-3. **Maintain backward compatibility** during transition
-4. **Mark old lib as deprecated** with migration guide
-5. **Document best practices** for different use cases
-
-This design provides a clean, powerful API while leveraging the excellent existing architecture.
+- The `detection` package uses `[]domain.DetectionMethod` (typed, not `[]string`).
+- Arch-lint (`.go-arch-lint.yml`) enforces zero imports of `config/` and `errors/`
+  from `pkg/artdupl/`.
+- The SDK does NOT support `--type-aware` mode yet (see TODO_LIST.md M24).

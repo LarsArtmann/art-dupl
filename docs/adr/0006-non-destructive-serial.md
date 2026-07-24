@@ -48,7 +48,7 @@ func serial(n *Node, stream *[]*Node, maxChildren int) int {
 ## Consequences
 
 - `fingerprintSubtree()` reads original Type values from the source node, not
-  the copy — this is correct by design.
+  the copy, this is correct by design.
 - Cache-miss path additionally deep-clones before storing, providing full
   isolation between cached and returned slices.
 - `classifyCloneType` in `printer/` was independently fixed (T1) to avoid

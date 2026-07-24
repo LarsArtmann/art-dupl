@@ -8,7 +8,7 @@ Accepted
 
 The detection mode was represented as two boolean fields in Config:
 `Semantic bool` (default true) and `Exact bool`. The `--structural` CLI flag
-had no corresponding config field — it was lossy, folded into `Semantic = false`.
+had no corresponding config field, it was lossy, folded into `Semantic = false`.
 This created a class of "silent-drop" bugs where invalid combinations could
 slip through, and the config layer couldn't distinguish "user didn't set
 semantic" from "user passed --structural".

@@ -12,8 +12,8 @@ different constructs (e.g., `+` vs `==`, `break` vs `continue`, `var` vs
 `const`), this `Type` field must encode both the AST node kind AND any
 distinguishing operator/token.
 
-A naive encoding — storing the Go AST `token.Token` or `ast.ChanDir` directly
-in a separate field — would require suffix-tree consumers to inspect multiple
+A naive encoding, storing the Go AST `token.Token` or `ast.ChanDir` directly
+in a separate field, would require suffix-tree consumers to inspect multiple
 fields and would complicate the comparison/hashing logic. The suffix tree
 needs a single 32-bit integer per node for its transition map.
 
@@ -43,15 +43,15 @@ bit layout:
 
 | Detection mode     | Identifier hash        | Operator/token encoded? |
 | ------------------ | ---------------------- | ----------------------- |
-| Semantic (default) | Yes — alpha-normalized | Yes                     |
-| Exact              | Yes — verbatim name    | Yes                     |
+| Semantic (default) | Yes, alpha-normalized | Yes                     |
+| Exact              | Yes, verbatim name    | Yes                     |
 | Structural         | No (all zeroed)        | No                      |
 
 ### Consumer contract
 
 Code that compares or decodes `node.Type` must use
 `golang.DecodeBaseType(node.Type)` to extract the low 8 bits. **Never compare
-raw `node.Type` against `golang.*` constants** — the high bits contain the
+raw `node.Type` against `golang.*` constants**, the high bits contain the
 identifier hash and will not match.
 
 ### `hashSeq` alignment

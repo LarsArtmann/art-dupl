@@ -56,7 +56,7 @@ func mergeConfig(cfg *Config, fileCfg *Config) {
 ### Negative
 
 - Reflection is slower than direct field access, but config merge runs once at startup (negligible)
-- Less obvious what happens at a glance — developers need to understand the reflection pattern
+- Less obvious what happens at a glance, developers need to understand the reflection pattern
 - Edge cases with non-comparable types require special handling
 
 ### Mitigation

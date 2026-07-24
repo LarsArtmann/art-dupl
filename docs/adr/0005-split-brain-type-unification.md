@@ -19,8 +19,8 @@ Key issues documented in `docs/research/SPLIT-BRAIN.html`:
 3. **Triple DetectionMethod definition** with different naming conventions and different levels of type safety (typed enum, typed enum, untyped string)
 4. **Parallel error sentinels** with identical messages but different pointer identities (`errors.Is()` fails cross-package)
 5. **Fragment type schizophrenia** (`[]byte` in domain vs `string` in printer/SDK)
-6. **Logger interface implicit** — no compile-time assertion of conformance
-7. **Timeout representation mismatch** — `int` (seconds) in config vs `time.Duration` in SDK
+6. **Logger interface implicit**, no compile-time assertion of conformance
+7. **Timeout representation mismatch**, `int` (seconds) in config vs `time.Duration` in SDK
 
 ## Decision
 
@@ -32,7 +32,7 @@ Resolve all split-brain issues by establishing `domain` as the single source of 
 
 2. **CloneLocation fields added to domain**: `StartPos`/`EndPos` added to `domain.ProcessedClone`; `LineEnd` added to `printer.CloneOccurrenceView`. All clone types now carry the same location fields.
 
-3. **DetectionMethod unified**: Canonical type defined in `domain/detection_method.go`. `config.DetectionMethod`, `pkg/artdupl.DetectionMethod`, and `detection` constants are now type aliases to `domain.DetectionMethod`. `detection.Config.Methods` upgraded from `[]string` to `[]domain.DetectionMethod`. The manual contract test (`detection/method_contract_test.go`) was deleted — the compiler replaces it.
+3. **DetectionMethod unified**: Canonical type defined in `domain/detection_method.go`. `config.DetectionMethod`, `pkg/artdupl.DetectionMethod`, and `detection` constants are now type aliases to `domain.DetectionMethod`. `detection.Config.Methods` upgraded from `[]string` to `[]domain.DetectionMethod`. The manual contract test (`detection/method_contract_test.go`) was deleted, the compiler replaces it.
 
 4. **Error sentinels aligned**: `ErrInvalidThreshold` and `ErrThresholdTooLarge` now defined once in `domain`. `config` and `pkg/artdupl` re-export them, so `errors.Is()` works across all packages.
 
@@ -44,8 +44,8 @@ Resolve all split-brain issues by establishing `domain` as the single source of 
 
 ## Consequences
 
-- All type aliases (`type DetectionMethod = domain.DetectionMethod`) make the types identical — methods defined on `domain.DetectionMethod` are automatically available everywhere.
+- All type aliases (`type DetectionMethod = domain.DetectionMethod`) make the types identical, methods defined on `domain.DetectionMethod` are automatically available everywhere.
 - The SDK (`pkg/artdupl`) now imports `domain` and `pkg/logger`, which the `.go-arch-lint.yml` already permitted.
 - `config.DetectionMethodHash`/`DetectionMethodArtDupl` remain as constant aliases for backward compatibility with existing config code.
-- No external API breakage — JSON output is unchanged (tags preserved).
+- No external API breakage, JSON output is unchanged (tags preserved).
 - The split-brain report (`docs/research/SPLIT-BRAIN.html`) serves as the historical record of what was wrong and why it was fixed.
