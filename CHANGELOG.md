@@ -5,7 +5,7 @@ All notable changes to art-dupl will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — Engineering Sprints (2026-06-15 to 2026-07-19)
+## [Unreleased] — Engineering Sprints (2026-06-15 to 2026-07-22)
 
 All work since the [0.3.0] release. Organized by category.
 
@@ -68,6 +68,11 @@ All work since the [0.3.0] release. Organized by category.
 - **Dead code removed**: `ParseClonePriority`/`ParseCloneCategory`/`ParseCloneActionability`, `ErrInvalidLineNumber`, 5 dead error constructors, `EnumValidationError` type, `domain.Filepath`/`LineNumber` branded types, dead `config.DetectionConfig`.
 - **Field name alignment**: `StartLine`→`LineStart`, `EndLine`→`LineEnd` unified across `ProcessedClone`, `JSONClone`, SDK `Clone`, and `LineRangeMixin`.
 - **Printer split**: `actionability.go` (624L) split into 4 category files. `hash_simd.go`→`hash_seq.go` (no SIMD code). Empty `golang.go` merged into `doc.go`.
+- **`CaptureStdoutStderr` / `CaptureCombinedOutput` test utilities** (`internal/testutil/capture.go`): Cross-platform stdout/stderr capture using `os.Pipe()` replacement (replaces Unix-only `syscall.Dup`/`syscall.Dup2` fd-duplication). Works on Windows, macOS, Linux.
+- **Stats integration tests**: `cmd/stats_integration_test.go` exercises the `stats` subcommand end-to-end with real output capture.
+- **Hash detector comprehensive unit tests**: `hash/detector_test.go` covers XXH3 streaming, content-addressed dedup, and filter logic.
+- **Config enum type tests**: `config/enum_test.go` validates `SortCriteria`, `OutputFormat`, `DiffMode` marshaling, parsing, and validation.
+- **`--max-cache-entries` CLI flag exposure**: Previously wired through config but missing the CLI flag registration (commit `bc872ca6`).
 
 ### Changed
 
@@ -83,6 +88,9 @@ All work since the [0.3.0] release. Organized by category.
 - **`isReturnOrWrappedReturn` extended**: Now handles 2-statement error handling bodies (`log.Print(err); return err`) in addition to single-statement returns.
 - **HOW_TO_USE.md threshold table updated**: Recommendations now reflect default=5 (was project-size-based with 10-50 range).
 - **11 stale docs removed**: SIMD (4 files), STATICPOOL, EXECUTION_PLAN, IMPROVEMENT_PLAN, MODERNIZATION_FINAL_REPORT, code-quality-improvements, enum-consolidation-plan, phase0-validation-safety-report.
+- **CI workflow rewritten** (`.github/workflows/ci.yml`): Removed deprecated `justfile` commands, added `templ generate` to every Go job, bumped `golangci-lint-action` to v2.12.2, dropped incompatible `oldstable` from Go matrix, replaced `just test-race` with `CGO_ENABLED=1 go test -race ./...`, removed FlakeHub-gated `magic-nix-cache-action`.
+- **gogenfilter fetcher SSH → HTTPS**: `git+ssh://` → `github:LarsArtmann/...` in `flake.nix` (repo is public, CI has no SSH key).
+- **Lint config overhaul**: 569 → 0 issues. `exhaustruct` disabled (67 false positives, incompatible with Go zero-value init). `tagliatelle` disabled (66 issues from JSON tag split-brain). `varnamelen` configured with 50+ idiomatic Go short names. `mnd` configured with common-value ignore list. 40 real code fixes: 11 `thelper`, 3 `goprintffuncname`, 14 `gochecknoglobals` (documented rationale), 1 `funlen` extraction, 1 `godoclint`, 1 `nonamedreturns`, lint auto-fixes.
 
 ### Fixed
 

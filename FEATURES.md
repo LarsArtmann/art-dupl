@@ -1,11 +1,11 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-19
+> **Last Updated:** 2026-07-24
 > **Version:** Analysis of fork branch
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), and 7 output formats.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 15 actionability patterns. Validated at 100% precision across 15 real-world projects (6,222 Go files, 320 templ files, 0 false positives).
 
 ---
 
@@ -15,8 +15,8 @@
 
 | Language  | Extension | Status           | Notes                                        |
 | --------- | --------- | ---------------- | -------------------------------------------- |
-| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 45 node types             |
-| **Templ** | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, 28 node types, ON by default |
+| **Go**    | `.go`     | FULLY_FUNCTIONAL | Full AST analysis, 49 node types             |
+| **Templ** | `.templ`  | FULLY_FUNCTIONAL | Pure Go parser, semantic mode, ON by default |
 
 ### Detection Methods
 
@@ -58,9 +58,9 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                             |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                 |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                           |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 15 non-actionable patterns (signature-only, interface-impl, RAII defer, error-propagation, test-data, table-driven, test-scaffolding, data-dominated, describe-table, builder-callback, assertion-chain, cobra-boilerplate, error-wrapping, assign+error-check, single-CallExpr, pure-defer) |
-| **Clone Classification**    | FULLY_FUNCTIONAL | 14 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                                                                                                                             |
-| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 20 suggestion constants mapped from category + actionability pattern (`printer/clone_classify.go`)                                                                                                                                                                                                                  |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 15 non-actionable patterns (signature-only, interface-implementation, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression) |
+| **Clone Classification**    | FULLY_FUNCTIONAL | 13 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                                                                                                                             |
+| **Refactoring Suggestions** | FULLY_FUNCTIONAL | 24 suggestion mappings from category + actionability pattern (`printer/clone_classify.go`)                                                                                                                                                                                                                          |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                          |
 | **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                                                                                                                          |
 | **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                                                                                                                                |
@@ -158,6 +158,10 @@
 | **Color Control**          | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                            |
 | **Typed Exit Codes**       | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)  |
 | **Line-Count Filtering**   | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones) |
+| **Test Threshold**         | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files               |
+| **Test Suppression**       | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
+| **Token Dump**             | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
+| **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
 
 ---
 
@@ -165,7 +169,7 @@
 
 | Feature                      | Status           | Description                                                |
 | ---------------------------- | ---------------- | ---------------------------------------------------------- |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | 35+ flags for full control                                 |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 45+ flags for full control                                 |
 | **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct          |
 | **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults    |
 | **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5) |
@@ -182,7 +186,7 @@
 | **Options Builder**    | FULLY_FUNCTIONAL | Full configuration via `Options` struct                     |
 | **Progress Callbacks** | FULLY_FUNCTIONAL | Stage, completed, total, percentage, current file           |
 | **Result Type**        | FULLY_FUNCTIONAL | CloneGroups, Summary, Metadata                              |
-| **Validation**         | FULLY_FUNCTIONAL | 20+ sentinel errors, `ValidateOptions()`, `Clone.IsValid()` |
+| **Validation**         | FULLY_FUNCTIONAL | 12 domain sentinel errors, `ValidateOptions()`, `Clone.IsValid()` |
 | **Custom FileReader**  | FULLY_FUNCTIONAL | Injectable file reader for testing/custom sources           |
 
 ---
