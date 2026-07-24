@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/a-h/templ"
+
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
 type CloneOccurrenceView struct {
