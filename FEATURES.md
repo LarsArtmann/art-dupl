@@ -69,7 +69,7 @@
 
 | Feature                  | Status           | Description                                                  |
 | ------------------------ | ---------------- | ------------------------------------------------------------ |
-| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first; default)   |
+| **Size Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by token count (largest first; default)    |
 | **Occurrence Sorting**   | FULLY_FUNCTIONAL | Sort clone groups by number of files (most widespread first) |
 | **Hash Sorting**         | FULLY_FUNCTIONAL | Sort clone groups by hash value (alphabetical)               |
 | **Total Tokens Sorting** | FULLY_FUNCTIONAL | Sort clone groups by total token count (highest total first) |
@@ -78,14 +78,14 @@
 
 ## 🔍 Semantic Detection
 
-| Feature                       | Status           | Description                                                                                                                                                                                                                              |
-| ----------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Semantic Mode**             | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers (including closures); detects Type 2 (renamed) clones (default)                                                                                                                                       |
-| **Exact Mode**                | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)                                                                                                                                                                   |
-| **Structural-Only Mode**      | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                                                                                                                                                                              |
-| **DetectionMode Enum**        | FULLY_FUNCTIONAL | Single `Config.DetectionMode` enum replaces former bool flags (ADR-0007)                                                                                                                                                                 |
-| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                                                                                                                                                                    |
-| **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                                                                                                                                                         |
+| Feature                       | Status           | Description                                                                                                                                                                                                                                                            |
+| ----------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Semantic Mode**             | FULLY_FUNCTIONAL | Alpha-normalizes local identifiers (including closures); detects Type 2 (renamed) clones (default)                                                                                                                                                                     |
+| **Exact Mode**                | FULLY_FUNCTIONAL | `--exact` matches identifier names verbatim (copy-paste / Type 1 only)                                                                                                                                                                                                 |
+| **Structural-Only Mode**      | FULLY_FUNCTIONAL | `--structural` ignores all names; matches by AST shape only                                                                                                                                                                                                            |
+| **DetectionMode Enum**        | FULLY_FUNCTIONAL | Single `Config.DetectionMode` enum replaces former bool flags (ADR-0007)                                                                                                                                                                                               |
+| **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output                                                                                                                                                                                                  |
+| **Mutual Exclusion**          | FULLY_FUNCTIONAL | `--semantic` / `--exact` / `--structural` are mutually exclusive                                                                                                                                                                                                       |
 | **Type-Aware Mode**           | FULLY_FUNCTIONAL | `--type-aware` uses `go/types` to encode variable types into hashes, eliminating same-method-different-receiver-type false positives (e.g. `time.Time.String` vs `*big.Int.String`). 10-100x slower. Not compatible with `--incremental`. Follow-up items in TODO_LIST |
 
 **Note:** Default is semantic mode (alpha-normalized). Use `--exact` for verbatim name matching or `--structural` for shape-only analysis.
@@ -99,7 +99,7 @@
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output       |
 | **Extractability Score**      | FULLY_FUNCTIONAL | `lines_saved` + `extractable` fields in JSON for refactoring prioritization |
 | **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.) |
-| **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported         |
+| **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported          |
 | **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides           |
 
 ---
@@ -163,7 +163,7 @@
 | **Test Suppression**       | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
 | **Token Dump**             | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
 | **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
-| **Type-Aware Mode**         | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
+| **Type-Aware Mode**        | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
 
 ---
 
@@ -209,19 +209,19 @@
 
 ## 🏗️ Architecture Components
 
-| Component        | Status           | Description                                                 |
-| ---------------- | ---------------- | ----------------------------------------------------------- |
-| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions            |
-| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization             |
-| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental             |
-| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML |
-| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                               |
-| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                         |
-| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                  |
-| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing         |
-| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels  |
-| **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping  |
-| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc     |
+| Component        | Status           | Description                                                             |
+| ---------------- | ---------------- | ----------------------------------------------------------------------- |
+| **suffixtree/**  | FULLY_FUNCTIONAL | Core Ukkonen's suffix tree, O(1) map transitions                        |
+| **syntax/**      | FULLY_FUNCTIONAL | AST handling, Go + Templ parsers, serialization                         |
+| **job/**         | FULLY_FUNCTIONAL | Parsing pipeline, parallel workers, incremental                         |
+| **printer/**     | FULLY_FUNCTIONAL | 7 output formats, sorting, classification, templ-based HTML             |
+| **hash/**        | FULLY_FUNCTIONAL | XXH3 streaming hash detection                                           |
+| **config/**      | FULLY_FUNCTIONAL | Multi-source config with validation                                     |
+| **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                              |
+| **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing                     |
+| **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels              |
+| **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping |
+| **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc                 |
 
 ---
 
@@ -240,7 +240,7 @@
 | **Go and Templ Only**       | High   | Only `.go` and `.templ` files supported                                              |
 | **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
 | **No GitHub Releases**      | Medium | Only v0.1.0 has a GitHub Release. v0.2.0-v0.4.0 have git tags but no release assets. |
-| **Race Test Not in CI**     | Medium | `go test -race` is in `nix flake check` but not in the GitHub Actions `ci.yml`.     |
+| **Race Test Not in CI**     | Medium | `go test -race` is in `nix flake check` but not in the GitHub Actions `ci.yml`.      |
 
 ---
 

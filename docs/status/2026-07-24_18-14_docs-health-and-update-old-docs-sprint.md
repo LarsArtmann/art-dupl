@@ -245,21 +245,21 @@ The `[Unreleased]` section covers 2026-06-15 to 2026-07-22 with ~120 entries acr
 
 ## Session Metrics
 
-| Metric                                            | Value                                                                         |
-| ------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Files read (2026-07-*)                            | 40                                                                            |
-| Living docs rebuilt                               | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG)                                   |
-| Historical files annotated                        | 11                                                                            |
-| Historical files left untouched (with banners)    | 25                                                                            |
-| Historical files left untouched (without banners) | ~4                                                                            |
-| Factual claims verified against code              | 15+                                                                           |
-| Factual inaccuracies fixed                        | 6                                                                             |
-| CHANGELOG entries added                           | 15+                                                                           |
-| Quality gate commands run                         | 2 of 4 (`go build`, `go test`; **missed** `nix flake check`, `golangci-lint`) |
-| Build status                                      | PASS                                                                          |
-| Test status                                       | PASS (26/26 packages)                                                         |
+| Metric                                            | Value                                                                                  |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Files read (2026-07-*)                            | 40                                                                                     |
+| Living docs rebuilt                               | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG)                                            |
+| Historical files annotated                        | 11                                                                                     |
+| Historical files left untouched (with banners)    | 25                                                                                     |
+| Historical files left untouched (without banners) | ~4                                                                                     |
+| Factual claims verified against code              | 15+                                                                                    |
+| Factual inaccuracies fixed                        | 6                                                                                      |
+| CHANGELOG entries added                           | 15+                                                                                    |
+| Quality gate commands run                         | 2 of 4 (`go build`, `go test`; **missed** `nix flake check`, `golangci-lint`)          |
+| Build status                                      | PASS                                                                                   |
+| Test status                                       | PASS (26/26 packages)                                                                  |
 | `nix flake check` status                          | ~~**FAIL** (100 lint issues: exhaustruct + tagliatelle re-enabled)~~ FIXED: `7df8fccd` |
-| Pre-existing regressions committed                | 1 (`.golangci.yml` lint config regression)                                    |
+| Pre-existing regressions committed                | 1 (`.golangci.yml` lint config regression)                                             |
 
 ---
 

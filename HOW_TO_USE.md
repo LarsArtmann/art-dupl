@@ -309,6 +309,7 @@ art-dupl --type-aware -t 30 ./src
 ```
 
 **Tradeoffs:**
+
 - 10-100x slower than syntax-only analysis (full type checking via `go/packages`)
 - Not compatible with `--incremental` (type data cannot be cached incrementally)
 - Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
@@ -390,13 +391,13 @@ The default threshold is **5**, tuned on real-world Go codebases to balance prec
 With statement-level tokenization, each Go statement is one token, so `-t 5`
 means "report clones with at least 5 duplicated statements."
 
-| Threshold | Use Case                                    |
-| --------- | ------------------------------------------- |
-| 3         | Maximum sensitivity (may include noise)     |
+| Threshold | Use Case                                   |
+| --------- | ------------------------------------------ |
+| 3         | Maximum sensitivity (may include noise)    |
 | **5**     | **Default**, best precision/recall balance |
-| 10        | Focus on substantial duplication            |
-| 15-30     | Large codebases, reduce noise               |
-| 30+       | Only major copy-paste blocks                |
+| 10        | Focus on substantial duplication           |
+| 15-30     | Large codebases, reduce noise              |
+| 30+       | Only major copy-paste blocks               |
 
 ### 2. Common Ignore Patterns
 

@@ -17,14 +17,14 @@ Read all 6 `2026-07-2*` status files, annotated 3 stale snapshots, rebuilt 4 liv
 
 ### 1. Read and classified all 6 `2026-07-2*` status files
 
-| File | Classification | Action |
-| ---- | -------------- | ------ |
-| `2026-07-21_14-39_ci-fix-sprint.md` | SKIP | Already has resolution annotation (2026-07-22) |
-| `2026-07-22_11-21_ci-fix-sprint.md` | SKIP | Already has resolution annotation (2026-07-24) |
-| `2026-07-24_18-14_docs-health-and-update-old-docs-sprint.md` | ANNOTATE | Inline-corrected CRITICAL lint failure claim, added resolution blockquote |
-| `2026-07-24_19-31_type-aware-detection-implementation.md` | ANNOTATE | Added resolution note (shipped in v0.4.0) |
-| `2026-07-24_19-48_clone-type-consolidation-status.md` | LEAVE ALONE | Self-documenting (outcome is "done by concurrent session", no stale claims) |
-| `2026-07-24_20-01_v0.4.0-release-postmortem.md` | ANNOTATE | Corrected "tag not pushed" (it IS on remote), marked CHANGELOG fixes done |
+| File                                                         | Classification | Action                                                                      |
+| ------------------------------------------------------------ | -------------- | --------------------------------------------------------------------------- |
+| `2026-07-21_14-39_ci-fix-sprint.md`                          | SKIP           | Already has resolution annotation (2026-07-22)                              |
+| `2026-07-22_11-21_ci-fix-sprint.md`                          | SKIP           | Already has resolution annotation (2026-07-24)                              |
+| `2026-07-24_18-14_docs-health-and-update-old-docs-sprint.md` | ANNOTATE       | Inline-corrected CRITICAL lint failure claim, added resolution blockquote   |
+| `2026-07-24_19-31_type-aware-detection-implementation.md`    | ANNOTATE       | Added resolution note (shipped in v0.4.0)                                   |
+| `2026-07-24_19-48_clone-type-consolidation-status.md`        | LEAVE ALONE    | Self-documenting (outcome is "done by concurrent session", no stale claims) |
+| `2026-07-24_20-01_v0.4.0-release-postmortem.md`              | ANNOTATE       | Corrected "tag not pushed" (it IS on remote), marked CHANGELOG fixes done   |
 
 ### 2. Rebuilt TODO_LIST.md — trophy case eliminated
 
@@ -42,12 +42,12 @@ Read all 6 `2026-07-2*` status files, annotated 3 stale snapshots, rebuilt 4 liv
 
 ### 4. Fixed FEATURES.md — 4 corrections
 
-| Claim | Was | Fixed To | Verified By |
-| ----- | --- | -------- | ----------- |
-| Type-Aware Mode status | `PARTIALLY_DONE` | `FULLY_FUNCTIONAL` | Feature shipped in v0.4.0 (`4d377e4c`) |
-| errors/ description | "6 error types" | "7 error categories (ErrorType), single DuplError struct" | `grep 'ErrorType = ' errors/types.go` = 7 consts |
+| Claim                                | Was                  | Fixed To                                                            | Verified By                                                  |
+| ------------------------------------ | -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Type-Aware Mode status               | `PARTIALLY_DONE`     | `FULLY_FUNCTIONAL`                                                  | Feature shipped in v0.4.0 (`4d377e4c`)                       |
+| errors/ description                  | "6 error types"      | "7 error categories (ErrorType), single DuplError struct"           | `grep 'ErrorType = ' errors/types.go` = 7 consts             |
 | Known Limitations: SDK Stream Errors | Listed as "Resolved" | Removed; replaced with "No GitHub Releases" + "Race Test Not in CI" | `gh release list` shows only v0.1.0; `ci.yml` has no `-race` |
-| Type-Aware in CLI table | Missing | Added `--type-aware` row | `grep 'type-aware' cmd/flags.go` exists |
+| Type-Aware in CLI table              | Missing              | Added `--type-aware` row                                            | `grep 'type-aware' cmd/flags.go` exists                      |
 
 ### 5. Fixed CHANGELOG.md — 3 corrections
 
@@ -63,11 +63,11 @@ Read all 6 `2026-07-2*` status files, annotated 3 stale snapshots, rebuilt 4 liv
 
 ### 7. Quality gate passed (full)
 
-| Check | Command | Result |
-| ----- | ------- | ------ |
-| Build | `go build ./...` | PASS |
-| Tests | `go test ./...` | 26/26 packages PASS |
-| Lint | `golangci-lint run --timeout 5m ./...` | 0 issues |
+| Check | Command                                | Result              |
+| ----- | -------------------------------------- | ------------------- |
+| Build | `go build ./...`                       | PASS                |
+| Tests | `go test ./...`                        | 26/26 packages PASS |
+| Lint  | `golangci-lint run --timeout 5m ./...` | 0 issues            |
 
 ### 8. Cross-file consistency verified (minimum checks)
 
@@ -127,13 +127,13 @@ Additionally, AGENTS.md says "stack traces" but `DuplError` no longer captures `
 
 The `2026-07-24_18-14` report (the FIRST docs-health session) explicitly listed these as "NOT STARTED" and I repeated the skip:
 
-| Doc | Known Issue | Status |
-| --- | ----------- | ------ |
-| `HOW_TO_USE.md` | No `--type-aware` mention (verified: `grep` = 0 matches) | NOT FIXED |
-| `SDK_DESIGN.md` | Stale type names (`StartLine` vs `LineStart`, verified: 1 match) | NOT FIXED |
-| `docs/DOMAIN_LANGUAGE.md` | Has `CloneRef` mention but may lack type-aware terms | NOT VERIFIED |
-| `TESTING.md` | Has `GOEXPERIMENT=jsonv2` (verified: 1 match) | OK |
-| `CONTRIBUTING.md` | File not found | N/A |
+| Doc                       | Known Issue                                                      | Status       |
+| ------------------------- | ---------------------------------------------------------------- | ------------ |
+| `HOW_TO_USE.md`           | No `--type-aware` mention (verified: `grep` = 0 matches)         | NOT FIXED    |
+| `SDK_DESIGN.md`           | Stale type names (`StartLine` vs `LineStart`, verified: 1 match) | NOT FIXED    |
+| `docs/DOMAIN_LANGUAGE.md` | Has `CloneRef` mention but may lack type-aware terms             | NOT VERIFIED |
+| `TESTING.md`              | Has `GOEXPERIMENT=jsonv2` (verified: 1 match)                    | OK           |
+| `CONTRIBUTING.md`         | File not found                                                   | N/A          |
 
 ### 3. Em-dashes NOT cleaned
 
@@ -141,11 +141,11 @@ The `2026-07-24_18-14` report (section D #3) flagged that TODO_LIST.md and ROADM
 
 I rebuilt both files from scratch and **used em-dashes again**:
 
-| File | Em-dash count |
-| --- | ------------- |
-| TODO_LIST.md | 35 |
-| ROADMAP.md | 19 |
-| FEATURES.md | 3 (pre-existing, not mine) |
+| File         | Em-dash count              |
+| ------------ | -------------------------- |
+| TODO_LIST.md | 35                         |
+| ROADMAP.md   | 19                         |
+| FEATURES.md  | 3 (pre-existing, not mine) |
 | CHANGELOG.md | 5 (pre-existing, not mine) |
 
 The global AGENTS.md says "source code" but the spirit of the rule is clear writing. The existing project docs DO use em-dashes, so this is ambiguous, but the prior session flagged it and I should have at least been consistent with whichever direction was chosen.
@@ -187,6 +187,7 @@ I ran `go build`, `go test`, and `golangci-lint run` — but NOT `nix flake chec
 ### 4. Did not verify all internal doc claims against code
 
 The docs-health skill says "Verify each claim. Many documented TODOs are already done." I verified some claims (error count, node types, patterns) but trusted others from the prior session's report without re-verifying:
+
 - "100% precision across 15 projects" — not verified (no test backs this)
 - "45+ CLI flags" — not recounted
 - "24 refactoring suggestions" — not recounted
@@ -218,38 +219,38 @@ The docs-health skill says "Verify each claim. Many documented TODOs are already
 
 ## f) Up to 50 Things to Get Done Next
 
-| #   | Priority     | Task                                                                                                          |
-| --- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| 1   | **CRITICAL** | Fix AGENTS.md line 48: "6 typed error types" to "7 error categories" (drift introduced this session)         |
-| 2   | **CRITICAL** | Run `nix flake check` — the full quality gate (not just go build + go test + golangci-lint)                   |
-| 3   | HIGH         | Clean em-dashes from TODO_LIST.md (35) and ROADMAP.md (19) — use semicolons/parentheses instead              |
-| 4   | HIGH         | Add `--type-aware` documentation to HOW_TO_USE.md (currently 0 mentions)                                      |
-| 5   | HIGH         | Decide SDK_DESIGN.md fate: rewrite stale type names or delete (TODO_LIST item, stale `StartLine` verified)   |
-| 6   | HIGH         | Verify all internal markdown links resolve: `grep -roE '\]\([^)]+\)' *.md docs/`                              |
-| 7   | HIGH         | Update AGENTS.md: remove "stack traces" claim (DuplError no longer captures debug.Stack)                      |
-| 8   | HIGH         | Create GitHub Release for v0.4.0: `gh release create v0.4.0 --notes-from-tag` (only v0.1.0 has releases)     |
-| 9   | HIGH         | Write RELEASE.md checklist (race test, nix flake check, CHANGELOG footer, compare links, tag verification)   |
-| 10   | HIGH         | Run `go test -race ./...` to verify v0.4.0 (flagged as never-run in release postmortem)                      |
-| 11   | MEDIUM       | Clean orphaned `.golangci.yml` config blocks for exhaustruct (lines 152, 340)                                 |
-| 12   | MEDIUM       | Verify FEATURES.md "7 output formats" claim (CSV is stats-only — is it a full format?)                        |
-| 13   | MEDIUM       | Verify FEATURES.md "100% precision across 15 projects" claim has a backing test                               |
-| 14   | MEDIUM       | Recount CLI flags (`"45+ flags"`) against current `cmd/flags.go`                                              |
-| 15   | MEDIUM       | Recount refactoring suggestions (`"24"`) against current `printer/clone_classify.go`                         |
-| 16   | MEDIUM       | Add CI check that diffs `.golangci.yml` enable list against AGENTS.md documented intent                       |
-| 17   | MEDIUM       | Update `docs/DOMAIN_LANGUAGE.md` with type-aware detection terms                                              |
-| 18   | MEDIUM       | Annotate or archive stale planning HTML files (`docs/planning/2026-07-01_*`)                                  |
-| 19   | MEDIUM       | Add ADR-0015 for type-aware detection design (no ADR exists for this feature)                                 |
-| 20   | MEDIUM       | Wire `TypeAware bool` into `pkg/artdupl.Options` so SDK users can use type-aware mode                         |
-| 21   | MEDIUM       | Add validation: `--type-aware` + `--structural` should error or warn                                          |
-| 22   | MEDIUM       | Add validation: `--type-aware` + `--incremental` should warn about fallback                                   |
-| 23   | MEDIUM       | Add BDD test for type-aware mode in `bdd/`                                                                     |
-| 24   | LOW          | Investigate the Unknown Author auto-committer process (has committed 3+ regressions)                          |
-| 25   | LOW          | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date                                  |
-| 26   | LOW          | Add `--type-aware` to FEATURES.md Quick Reference bash examples                                               |
-| 27   | LOW          | Consider committing `*_templ.go` generated files to reduce CI fragility                                       |
-| 28   | LOW          | Check if `docs/status/archive/` directory should be created for reports older than 30 days                    |
-| 29   | LOW          | Verify FEATURES.md Architecture Components descriptions match actual package structure                        |
-| 30   | LOW          | Add `GOPRIVATE=github.com/LarsArtmann/*` to Go jobs in CI                                                     |
+| #   | Priority     | Task                                                                                                       |
+| --- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| 1   | **CRITICAL** | Fix AGENTS.md line 48: "6 typed error types" to "7 error categories" (drift introduced this session)       |
+| 2   | **CRITICAL** | Run `nix flake check` — the full quality gate (not just go build + go test + golangci-lint)                |
+| 3   | HIGH         | Clean em-dashes from TODO_LIST.md (35) and ROADMAP.md (19) — use semicolons/parentheses instead            |
+| 4   | HIGH         | Add `--type-aware` documentation to HOW_TO_USE.md (currently 0 mentions)                                   |
+| 5   | HIGH         | Decide SDK_DESIGN.md fate: rewrite stale type names or delete (TODO_LIST item, stale `StartLine` verified) |
+| 6   | HIGH         | Verify all internal markdown links resolve: `grep -roE '\]\([^)]+\)' *.md docs/`                           |
+| 7   | HIGH         | Update AGENTS.md: remove "stack traces" claim (DuplError no longer captures debug.Stack)                   |
+| 8   | HIGH         | Create GitHub Release for v0.4.0: `gh release create v0.4.0 --notes-from-tag` (only v0.1.0 has releases)   |
+| 9   | HIGH         | Write RELEASE.md checklist (race test, nix flake check, CHANGELOG footer, compare links, tag verification) |
+| 10  | HIGH         | Run `go test -race ./...` to verify v0.4.0 (flagged as never-run in release postmortem)                    |
+| 11  | MEDIUM       | Clean orphaned `.golangci.yml` config blocks for exhaustruct (lines 152, 340)                              |
+| 12  | MEDIUM       | Verify FEATURES.md "7 output formats" claim (CSV is stats-only — is it a full format?)                     |
+| 13  | MEDIUM       | Verify FEATURES.md "100% precision across 15 projects" claim has a backing test                            |
+| 14  | MEDIUM       | Recount CLI flags (`"45+ flags"`) against current `cmd/flags.go`                                           |
+| 15  | MEDIUM       | Recount refactoring suggestions (`"24"`) against current `printer/clone_classify.go`                       |
+| 16  | MEDIUM       | Add CI check that diffs `.golangci.yml` enable list against AGENTS.md documented intent                    |
+| 17  | MEDIUM       | Update `docs/DOMAIN_LANGUAGE.md` with type-aware detection terms                                           |
+| 18  | MEDIUM       | Annotate or archive stale planning HTML files (`docs/planning/2026-07-01_*`)                               |
+| 19  | MEDIUM       | Add ADR-0015 for type-aware detection design (no ADR exists for this feature)                              |
+| 20  | MEDIUM       | Wire `TypeAware bool` into `pkg/artdupl.Options` so SDK users can use type-aware mode                      |
+| 21  | MEDIUM       | Add validation: `--type-aware` + `--structural` should error or warn                                       |
+| 22  | MEDIUM       | Add validation: `--type-aware` + `--incremental` should warn about fallback                                |
+| 23  | MEDIUM       | Add BDD test for type-aware mode in `bdd/`                                                                 |
+| 24  | LOW          | Investigate the Unknown Author auto-committer process (has committed 3+ regressions)                       |
+| 25  | LOW          | Consider splitting CHANGELOG `[Unreleased]` into sub-sections by sprint date                               |
+| 26  | LOW          | Add `--type-aware` to FEATURES.md Quick Reference bash examples                                            |
+| 27  | LOW          | Consider committing `*_templ.go` generated files to reduce CI fragility                                    |
+| 28  | LOW          | Check if `docs/status/archive/` directory should be created for reports older than 30 days                 |
+| 29  | LOW          | Verify FEATURES.md Architecture Components descriptions match actual package structure                     |
+| 30  | LOW          | Add `GOPRIVATE=github.com/LarsArtmann/*` to Go jobs in CI                                                  |
 
 ---
 
@@ -271,25 +272,25 @@ The prior docs-health session listed this as a LOW priority item ("Verify the '1
 
 ## Session Metrics
 
-| Metric                                      | Value                                                                    |
-| ------------------------------------------- | ------------------------------------------------------------------------ |
-| Status files read (`2026-07-2*`)            | 6                                                                        |
-| Status files annotated                      | 3                                                                        |
-| Status files skipped (already annotated)    | 2                                                                        |
-| Status files left alone (self-documenting)  | 1                                                                        |
-| Living docs rebuilt                         | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG)                             |
-| Factual corrections in FEATURES.md          | 4                                                                        |
-| CHANGELOG entries added                     | 2 (type-aware detection, clone consolidation)                           |
-| CHANGELOG structural fixes                  | 2 (compare links, stale footer)                                         |
-| Lint regressions fixed                      | 1 (exhaustruct/tagliatelle re-added by auto-committer `6c297383`)       |
-| Quality gate commands run                   | 3 of 4 (go build, go test, golangci-lint; **missed** `nix flake check`) |
-| Build status                                | PASS                                                                     |
-| Test status                                 | PASS (26/26 packages)                                                    |
-| Lint status                                 | 0 issues                                                                |
-| Cross-file consistency checks run           | 8 of 9                                                                   |
-| Non-core docs verified                      | 2 of 5 (TESTING.md OK, CONTRIBUTING.md N/A; skipped 3)                  |
-| Drift introduced                            | 1 (AGENTS.md "6 error types" not updated to 7)                          |
-| Em-dashes introduced                        | 54 (TODO_LIST: 35, ROADMAP: 19)                                         |
+| Metric                                     | Value                                                                   |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| Status files read (`2026-07-2*`)           | 6                                                                       |
+| Status files annotated                     | 3                                                                       |
+| Status files skipped (already annotated)   | 2                                                                       |
+| Status files left alone (self-documenting) | 1                                                                       |
+| Living docs rebuilt                        | 4 (TODO_LIST, ROADMAP, FEATURES, CHANGELOG)                             |
+| Factual corrections in FEATURES.md         | 4                                                                       |
+| CHANGELOG entries added                    | 2 (type-aware detection, clone consolidation)                           |
+| CHANGELOG structural fixes                 | 2 (compare links, stale footer)                                         |
+| Lint regressions fixed                     | 1 (exhaustruct/tagliatelle re-added by auto-committer `6c297383`)       |
+| Quality gate commands run                  | 3 of 4 (go build, go test, golangci-lint; **missed** `nix flake check`) |
+| Build status                               | PASS                                                                    |
+| Test status                                | PASS (26/26 packages)                                                   |
+| Lint status                                | 0 issues                                                                |
+| Cross-file consistency checks run          | 8 of 9                                                                  |
+| Non-core docs verified                     | 2 of 5 (TESTING.md OK, CONTRIBUTING.md N/A; skipped 3)                  |
+| Drift introduced                           | 1 (AGENTS.md "6 error types" not updated to 7)                          |
+| Em-dashes introduced                       | 54 (TODO_LIST: 35, ROADMAP: 19)                                         |
 
 ---
 
