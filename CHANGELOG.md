@@ -15,6 +15,7 @@ _Nothing yet._
 
 ### Added
 
+- **`--type-aware` detection mode**: Uses `golang.org/x/tools/go/packages` to run full Go type checking, then encodes each local variable's static type into the identifier hash. Eliminates the `same-method-name-different-receiver-type` class of false positives (e.g., `a.String()` where `a` is `time.Time` vs `*big.Int`). Opt-in via `--type-aware` flag (10-100x slower than parsing alone). Falls back gracefully if type checking fails. NOT compatible with `--incremental` (silently falls back to syntax-only). See `syntax/golang/typeinfo.go` and `cmd/type_aware.go`.
 - **Text output code preview**: Text and `--rich-text` modes now print a one-line source preview after each clone location (`file:line-line  | <first source line>`). Lets you triage clones without opening files. Preview is truncated to 60 runes; `--plumbing` output is unchanged (still machine-readable). Implemented in `printer/text.go::previewFirstLine`, prefers `Fragment`, falls back to `ReadFile` at `LineStart`.
 - **`SortCloneGroups` direct test coverage**: `TestSortCloneGroups_PublicAPI` (4 subtests) covers the public wrapper that delegates to the shared `cloneGroupMetrics` var. Previously only tested via the private `sortGroupsByCriteria`.
 - **`// art-dupl: accepted: <rationale>` markers**: 3 test files (`bdd/exit_codes_test.go`, `printer/overlap_test.go`, `printer/semantic_precision_test.go`) now document deliberate structural similarities so future dedup runs surface them as intentional rather than re-reporting.
@@ -54,6 +55,7 @@ _Nothing yet._
 - **Performance regression tests**: `TestPerfRegressionSerialize` + `TestPerfRegressionHashSeq` with threshold gating in `flake.nix` `checks.bench`.
 - **JSON config migration shim**: `Config.UnmarshalJSON` converts legacy `"semantic": false` → `"detectionMode": "exact"`.
 - **`CloneRef` value object**: Shared `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) embedded across `ProcessedClone` and `pkg/artdupl.Clone` to eliminate field-name drift.
+- **Clone type consolidation**: `domain.CloneRef` now embedded in ALL clone-bearing types (`JSONClone`, `CloneOccurrenceView`, `CloneWithContent`, `FileInfo`, `simpleJSONClone`). Eliminated `CloneWithContentMixin` and `LineRangeMixin` (strict subsets of CloneRef). Added `toJSONClone()` shared conversion helper. Field names unified across printer and SDK DTOs.
 - **Generic sort comparator factory**: `sortGroupsByCriteria[T]` unifies 3 parallel 4-criteria sort implementations.
 - **Astro + Starlight documentation website**: Complete public documentation site deployed to `art-dupl.lars.software` with landing page, 13 Starlight docs pages, brand theming, and Firebase hosting with security headers.
 - **ADRs 0005-0008**: Split-brain type unification, non-destructive serial, detection mode enum, semantic encoding layout.
@@ -225,4 +227,9 @@ _Nothing yet._
 
 ---
 
-_Last updated: 2026-07-16_
+[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/LarsArtmann/art-dupl/releases/tag/v0.1.0
+[0.0.1]: https://github.com/LarsArtmann/art-dupl/releases/tag/v0.0.1

@@ -220,7 +220,7 @@
 | **detection/**   | FULLY_FUNCTIONAL | Multi-detector coordination via goroutines                  |
 | **cache/**       | FULLY_FUNCTIONAL | File-based AST caching with SHA-256 content hashing         |
 | **domain/**      | FULLY_FUNCTIONAL | Value objects: ProcessedClone, enums, validation sentinels  |
-| **errors/**      | FULLY_FUNCTIONAL | 6 error types, typed wrapping, stack traces                 |
+| **errors/**      | FULLY_FUNCTIONAL | 7 error categories (ErrorType), single DuplError struct, typed wrapping  |
 | **pkg/artdupl/** | FULLY_FUNCTIONAL | Public SDK with Detector interface, comprehensive godoc     |
 
 ---
@@ -235,11 +235,12 @@
 
 ## 🚫 Known Limitations
 
-| Limitation                  | Impact   | Description                                                                                           |
-| --------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| **Go & Templ Only**         | High     | Only `.go` and `.templ` files supported                                                               |
-| **No Git-Diff Incremental** | Low      | Only content-hash caching (`--incremental`); git-diff file selection not implemented                  |
-| **SDK Stream Errors**       | Resolved | `FindClonesStream` removed; `FindClonesStreamResult` propagates errors via `StreamResult{Group, Err}` |
+| Limitation                  | Impact | Description                                                                          |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| **Go and Templ Only**       | High   | Only `.go` and `.templ` files supported                                              |
+| **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
+| **No GitHub Releases**      | Medium | Only v0.1.0 has a GitHub Release. v0.2.0-v0.4.0 have git tags but no release assets. |
+| **Race Test Not in CI**     | Medium | `go test -race` is in `nix flake check` but not in the GitHub Actions `ci.yml`.     |
 
 ---
 
