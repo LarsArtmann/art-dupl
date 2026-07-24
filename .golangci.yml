@@ -148,6 +148,7 @@ linters:
             - github.com/spf13/pflag
             - github.com/zeebo/xxh3
             - golang.org/x/sync
+            - golang.org/x/tools
     dupl:
       threshold: 100
     exhaustruct:

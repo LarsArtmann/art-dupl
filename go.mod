@@ -88,6 +88,7 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/sync v0.22.0
+	golang.org/x/tools v0.48.0
 )
 
 require (
@@ -134,7 +135,6 @@ require (
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
-	golang.org/x/tools v0.48.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

@@ -84,6 +84,7 @@ func (n *normalizer) isLocal(name string) bool {
 	}
 
 	_, ok := n.locals[name]
+
 	return ok
 }
 

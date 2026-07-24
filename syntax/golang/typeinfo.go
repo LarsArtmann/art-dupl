@@ -45,7 +45,7 @@ func (td TypeAwareData) LookupPreloaded(file string) *PreloadedAST {
 // full Go type checker with import resolution. Only call when --type-aware is enabled.
 func LoadTypeAwareData(files []string) (TypeAwareData, error) {
 	if len(files) == 0 {
-		return nil, nil
+		return TypeAwareData{}, nil
 	}
 
 	absFiles := make([]string, 0, len(files))
@@ -79,8 +79,7 @@ func LoadTypeAwareData(files []string) (TypeAwareData, error) {
 
 	result := make(TypeAwareData, len(absFiles))
 
-	for _, pkg := range pkgs {
-		if pkg.TypesInfo == nil {
+	for _, pkg := range pkgs {		if pkg.TypesInfo == nil {
 			continue
 		}
 
@@ -90,6 +89,7 @@ func LoadTypeAwareData(files []string) (TypeAwareData, error) {
 			}
 
 			filename := pkg.Fset.File(syntaxFile.Pos()).Name()
+
 			absName, err := filepath.Abs(filename)
 			if err != nil {
 				absName = filename

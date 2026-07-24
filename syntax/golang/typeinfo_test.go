@@ -1,10 +1,8 @@
 package golang
 
 import (
-	"go/ast"
 	"go/parser"
 	"go/token"
-	"go/types"
 	"os"
 	"path/filepath"
 	"testing"
@@ -51,8 +49,10 @@ func processBigIntData(bi *big.Int) string {
 
 	dirA := t.TempDir()
 	dirB := t.TempDir()
+
 	fileA := dirA + "/a.go"
 	fileB := dirB + "/b.go"
+
 	writeFile(t, fileA, srcA)
 	writeFile(t, fileB, srcB)
 
@@ -124,8 +124,10 @@ func formatB(tm time.Time) string {
 
 	dirA := t.TempDir()
 	dirB := t.TempDir()
+
 	fileA := dirA + "/a.go"
 	fileB := dirB + "/b.go"
+
 	writeFile(t, fileA, srcA)
 	writeFile(t, fileB, srcB)
 
@@ -179,8 +181,8 @@ func foo(x int) int {
 	}
 }
 
-// TestLoadTypeAwareData_EmptyInputReturnsNil verifies graceful handling of empty input.
-func TestLoadTypeAwareData_EmptyInputReturnsNil(t *testing.T) {
+// TestLoadTypeAwareData_EmptyInputReturnsEmpty verifies graceful handling of empty input.
+func TestLoadTypeAwareData_EmptyInputReturnsEmpty(t *testing.T) {
 	t.Parallel()
 
 	result, err := LoadTypeAwareData(nil)
@@ -188,8 +190,8 @@ func TestLoadTypeAwareData_EmptyInputReturnsNil(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if result != nil {
-		t.Errorf("expected nil for empty input, got %v", result)
+	if len(result) != 0 {
+		t.Errorf("expected empty map for nil input, got %d entries", len(result))
 	}
 }
 
@@ -199,6 +201,7 @@ func TestTypeAwareData_LookupPreloadedReturnsNilForUnknown(t *testing.T) {
 	t.Parallel()
 
 	td := TypeAwareData{}
+
 	if td.LookupPreloaded("nonexistent.go") != nil {
 		t.Error("expected nil for unknown file")
 	}
@@ -213,6 +216,7 @@ func TestNormalizer_IsLocal(t *testing.T) {
 	t.Parallel()
 
 	n := newNormalizer(true)
+
 	n.beginFunction()
 	n.declare("foo")
 
@@ -226,6 +230,7 @@ func TestNormalizer_IsLocal(t *testing.T) {
 
 	// Disabled normalizer should always return false
 	disabled := newNormalizer(false)
+
 	if disabled.isLocal("anything") {
 		t.Error("disabled normalizer should never report locals")
 	}
@@ -237,6 +242,7 @@ func parseSemantic(t *testing.T, src string) *syntax.Node {
 	t.Helper()
 
 	fset := token.NewFileSet()
+
 	file, err := parser.ParseFile(fset, "test.go", src, 0)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -300,6 +306,7 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 
 		if DecodeBaseType(n.Type) == Ident && n.Name == name {
 			result = n.Type
+
 			return true
 		}
 
@@ -316,10 +323,3 @@ func findIdentHashForName(root *syntax.Node, name string) int32 {
 
 	return result
 }
-
-// Compile-time assertions for unused helper types.
-var (
-	_ *ast.File
-	_ *token.FileSet
-	_ *types.Info
-)
