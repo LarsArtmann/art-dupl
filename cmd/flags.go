@@ -118,6 +118,8 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("dump-tokens", false, "dump the serialized token stream for debugging (skip clone detection)")
 	rootCmd.Flags().
 		Int("min-lines", 0, "suppress clone groups spanning fewer than N source lines (0 = disabled)")
+	rootCmd.Flags().
+		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*

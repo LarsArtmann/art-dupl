@@ -152,9 +152,10 @@ func runStandardAnalysis(ctx context.Context, mergedConfig *config.Config, sortB
 	}
 
 	suppression := SuppressionConfig{
-		SuppressTestLow: mergedConfig.EffectiveSuppressTestLow(),
-		TestThreshold:   mergedConfig.EffectiveTestThreshold(),
-		MinLines:        mergedConfig.MinLines,
+		SuppressTestLow:  mergedConfig.EffectiveSuppressTestLow(),
+		TestThreshold:    mergedConfig.EffectiveTestThreshold(),
+		MinLines:         mergedConfig.MinLines,
+		AcceptDirectives: newAcceptSet(mergedConfig),
 	}
 
 	err = printDupls(

@@ -15,9 +15,10 @@ import (
 // Passing it as a single value avoids 3-parameter function signatures that are
 // prone to argument-swap bugs.
 type SuppressionConfig struct {
-	SuppressTestLow bool
-	TestThreshold   int
-	MinLines        int
+	SuppressTestLow  bool
+	TestThreshold    int
+	MinLines         int
+	AcceptDirectives *AcceptedSet
 }
 
 func printDupls(
@@ -181,6 +182,10 @@ func shouldSuppressGroup(
 ) bool {
 	if len(group.Clones) == 0 {
 		return false
+	}
+
+	if suppression.AcceptDirectives != nil && suppression.AcceptDirectives.IsAccepted(group) {
+		return true
 	}
 
 	cls := group.Clones[0].Classification

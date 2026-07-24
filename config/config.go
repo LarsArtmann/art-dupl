@@ -176,6 +176,10 @@ type Config struct {
 	// time.Time.String matching *big.Int.String. Requires go/packages type
 	// checking (10-100x slower). Only effective with semantic detection mode.
 	TypeAware bool `json:"typeAware,omitempty"`
+
+	// NoAcceptDirectives disables //art-dupl:accept inline directive processing.
+	// When true, all clone groups are reported regardless of accept directives.
+	NoAcceptDirectives bool `json:"noAcceptDirectives,omitempty"`
 }
 
 // DefaultThreshold is the default minimum number of duplicated statements to report.
