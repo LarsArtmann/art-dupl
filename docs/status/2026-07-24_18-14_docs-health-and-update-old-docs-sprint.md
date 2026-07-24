@@ -5,6 +5,11 @@
 **Branch:** `fork`
 **Working tree:** Clean (auto-commit committed all changes)
 
+> **Resolution (2026-07-24, commit `7df8fccd`):** The CRITICAL lint regression
+> (section D #1, exhaustruct/tagliatelle re-enabled, 100 lint issues) is FIXED.
+> Both linters were removed from `.golangci.yml` `enable:` list. `nix flake check`
+> and `golangci-lint` now pass. The v0.4.0 tag was cut at this same commit.
+
 ---
 
 ## a) FULLY DONE ✅
@@ -139,9 +144,9 @@ The docs-health skill says to check all living docs. I focused on the 4 core doc
 
 ## d) TOTALLY FUCKED UP 💥
 
-### 1. CRITICAL: `nix flake check` FAILS — exhaustruct/tagliatelle re-enabled
+### 1. ~~CRITICAL: `nix flake check` FAILS — exhaustruct/tagliatelle re-enabled~~ DONE: `7df8fccd`;
 
-**100 lint issues: 50 exhaustruct + 50 tagliatelle.**
+~~**100 lint issues: 50 exhaustruct + 50 tagliatelle.**~~ Fixed later this day in commit `7df8fccd`.
 
 The `.golangci.yml` at conversation start had an unstaged modification (` M .golangci.yml`) that re-added `exhaustruct` and `tagliatelle` to the `linters.enable` list. This modification was pre-existing (not mine). The auto-commit hook committed it as part of commit `a271fe77`.
 
@@ -253,7 +258,7 @@ The `[Unreleased]` section covers 2026-06-15 to 2026-07-22 with ~120 entries acr
 | Quality gate commands run                         | 2 of 4 (`go build`, `go test`; **missed** `nix flake check`, `golangci-lint`) |
 | Build status                                      | PASS                                                                          |
 | Test status                                       | PASS (26/26 packages)                                                         |
-| `nix flake check` status                          | **FAIL** (100 lint issues: exhaustruct + tagliatelle re-enabled)              |
+| `nix flake check` status                          | ~~**FAIL** (100 lint issues: exhaustruct + tagliatelle re-enabled)~~ FIXED: `7df8fccd` |
 | Pre-existing regressions committed                | 1 (`.golangci.yml` lint config regression)                                    |
 
 ---

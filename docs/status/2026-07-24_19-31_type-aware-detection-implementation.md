@@ -14,6 +14,10 @@ Implemented `--type-aware` detection mode end-to-end. This was the #1 item on th
 
 All 26 packages pass tests, including with `-race`.
 
+> **Resolution (2026-07-24):** This feature shipped in v0.4.0 (tag `7df8fccd`,
+> commit `4d377e4c`). The "partially done" and "not started" items below remain
+> open as of v0.4.0.
+
 ---
 
 ## A) FULLY DONE
