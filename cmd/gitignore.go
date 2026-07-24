@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+const maxScannerBufferSize = 64 * 1024 // 64 KiB max line size for .gitignore parsing
+
+const scannerInitBufSize = 4096 // 4 KiB initial buffer for scanner
+
 // GitignoreMatcher matches file paths against .gitignore patterns collected
 // from the directory tree. It supports the most common gitignore syntax:
 // simple names, globs (* and ?), directory-only (trailing /), anchored paths
@@ -162,12 +166,12 @@ func parseGitignoreFile(path string) []gitignorePattern {
 	if err != nil {
 		return nil
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var patterns []gitignorePattern
 
 	scanner := bufio.NewScanner(f)
-	scanner.Buffer(make([]byte, 0, 4096), 65536)
+	scanner.Buffer(make([]byte, 0, 4096), maxScannerBufferSize)
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())

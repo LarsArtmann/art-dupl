@@ -60,25 +60,7 @@ func (d *detector) buildAnalysisPipeline(
 	}()
 
 	// Load type-aware data if enabled (SDK has all files upfront, unlike CLI)
-	var typeData golang.TypeAwareData
-
-	if d.cfg.TypeAware {
-		goFiles := make([]string, 0, len(files))
-		for _, f := range files {
-			if filepath.Ext(f) == ".go" {
-				goFiles = append(goFiles, f)
-			}
-		}
-
-		if len(goFiles) > 0 {
-			td, err := golang.LoadTypeAwareData(goFiles)
-			if err != nil {
-				d.logger.Warn("Type-aware mode failed, falling back to syntax-only", "err", err)
-			} else {
-				typeData = td
-			}
-		}
-	}
+	typeData := d.loadTypeAwareDataIfEnabled(files)
 
 	syntaxChan, fileCountChan := job.Parse(ctx, fileChan, d.cfg.toDetectionMode(), d.cfg.MaxChildrenSerial, typeData)
 	tree, data, done := job.BuildTree(ctx, syntaxChan)
@@ -118,6 +100,35 @@ func (d *detector) buildAnalysisPipeline(
 		tree:      tree,
 		fileCount: fileCount,
 	}, nil
+}
+
+// loadTypeAwareDataIfEnabled loads go/types information for all .go files when
+// type-aware mode is active. Falls back to syntax-only on error.
+func (d *detector) loadTypeAwareDataIfEnabled(files []string) golang.TypeAwareData {
+	if !d.cfg.TypeAware {
+		return golang.TypeAwareData{}
+	}
+
+	goFiles := make([]string, 0, len(files))
+
+	for _, f := range files {
+		if filepath.Ext(f) == ".go" {
+			goFiles = append(goFiles, f)
+		}
+	}
+
+	if len(goFiles) == 0 {
+		return golang.TypeAwareData{}
+	}
+
+	typeData, err := golang.LoadTypeAwareData(goFiles)
+	if err != nil {
+		d.logger.Warn("Type-aware mode failed, falling back to syntax-only", "err", err)
+		return golang.TypeAwareData{}
+	}
+
+
+	return typeData
 }
 
 // processCloneGroups iterates over clone groups and processes each one.
