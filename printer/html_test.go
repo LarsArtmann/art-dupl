@@ -954,8 +954,8 @@ func newDiffHTMLPrinter() (*htmlprinter, *bytes.Buffer) {
 
 func newCloneWithContent(filename string, lineStart int, content string) *CloneWithContent {
 	return &CloneWithContent{
-		CloneWithContentMixin: CloneWithContentMixin{Filename: filename, LineStart: lineStart},
-		Content:               []byte(content),
+		CloneRef: domain.CloneRef{Filename: filename, LineStart: lineStart},
+		Content:  []byte(content),
 	}
 }
 
