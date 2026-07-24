@@ -70,6 +70,16 @@ func nodeTypeToCategory(nodeType int32) CloneCategory {
 		return domain.CategoryAssignment
 	case golang.GenDecl:
 		return domain.CategoryExpression
+	case golang.BlockStmt:
+		return domain.CategoryBlock
+	case golang.CallExpr:
+		return domain.CategoryCall
+	case golang.ReturnStmt:
+		return domain.CategoryReturn
+	case golang.DeferStmt, golang.GoStmt:
+		return domain.CategoryDefer
+	case golang.DeclStmt, golang.BinaryExpr:
+		return domain.CategoryExpression
 	default:
 		return domain.CategoryUnknown
 	}
@@ -106,6 +116,10 @@ func calculateProductionPriority(category CloneCategory, tokens, lines int) Clon
 		domain.CategoryTestFixture,
 		domain.CategoryAssignment,
 		domain.CategoryExpression,
+		domain.CategoryBlock,
+		domain.CategoryCall,
+		domain.CategoryReturn,
+		domain.CategoryDefer,
 		domain.CategoryUnknown:
 		return otherPriority(tokens)
 	default:

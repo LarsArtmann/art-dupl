@@ -130,12 +130,12 @@ func TestClassifyClone(t *testing.T) {
 			wantSuggestion: suggestReviewExtract,
 		},
 		{
-			name:           "call expression - unmapped node type",
+			name:           "call expression - mapped to call category",
 			filename:       "caller.go",
 			nodeType:       golang.CallExpr,
 			tokens:         5,
 			lines:          5,
-			wantCategory:   domain.CategoryUnknown, // CallExpr not in nodeTypeToCategory switch
+			wantCategory:   domain.CategoryCall,
 			wantIsTest:     false,
 			wantPriority:   domain.PriorityLow, // tokens <= 8
 			wantSuggestion: suggestReviewExtract,

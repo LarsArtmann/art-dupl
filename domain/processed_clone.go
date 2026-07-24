@@ -24,6 +24,10 @@ const (
 	CategoryTestFixture     CloneCategory = "test-fixture"
 	CategoryAssignment      CloneCategory = "assignment"
 	CategoryExpression      CloneCategory = "expression"
+	CategoryBlock           CloneCategory = "block"
+	CategoryCall            CloneCategory = "call"
+	CategoryReturn          CloneCategory = "return"
+	CategoryDefer           CloneCategory = "defer"
 	CategoryUnknown         CloneCategory = "unknown"
 )
 
@@ -145,6 +149,10 @@ var categoryEmojis = map[CloneCategory]string{ //nolint:gochecknoglobals // stat
 	CategoryConditional:     "\U0001f500",
 	CategoryAssignment:      "\U0001f4dd",
 	CategoryExpression:      "\U0001f4ca",
+	CategoryBlock:           "\U0001f4d1",
+	CategoryCall:            "\U0001f4de",
+	CategoryReturn:          "\U0001f519",
+	CategoryDefer:           "\u23f1",
 	CategoryUnknown:         "\U0001f4c4",
 }
 
@@ -154,7 +162,8 @@ func (c CloneCategory) IsValid() bool {
 	case CategoryFunction, CategoryMethod, CategoryTest, CategoryStruct,
 		CategoryInterface, CategoryHandler, CategoryLoop, CategoryConditional,
 		CategoryTestBoilerplate, CategoryTestFixture, CategoryAssignment,
-		CategoryExpression, CategoryUnknown:
+		CategoryExpression, CategoryBlock, CategoryCall, CategoryReturn,
+		CategoryDefer, CategoryUnknown:
 		return true
 	default:
 		return false
