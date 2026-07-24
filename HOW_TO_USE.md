@@ -294,6 +294,25 @@ echo "Large clones (50+ tokens): $LARGE_CLONES"
 echo "Duplication ratio: $(echo "scale=2; $ALL_CLONES / $FILES_ANALYZED" | bc) per file"
 ```
 
+### 4. Type-Aware Detection
+
+Type-aware mode uses `go/types` to encode each local variable's static type into its hash.
+This eliminates false positives where the same method name has different receiver types
+(e.g., `time.Time.String()` vs `*big.Int.String()`):
+
+```bash
+# Enable type-aware mode (requires semantic mode, which is the default)
+art-dupl --type-aware -t 15 ./src
+
+# Combine with threshold for maximum precision
+art-dupl --type-aware -t 30 ./src
+```
+
+**Tradeoffs:**
+- 10-100x slower than syntax-only analysis (full type checking via `go/packages`)
+- Not compatible with `--incremental` (type data cannot be cached incrementally)
+- Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
+
 ## Output Interpretation
 
 ### Understanding Text Output
@@ -367,7 +386,7 @@ The HTML report provides:
 
 ### 1. Setting Thresholds
 
-The default threshold is **5** (validated at 100% precision across 15 projects).
+The default threshold is **5**, tuned on real-world Go codebases to balance precision and recall.
 With statement-level tokenization, each Go statement is one token, so `-t 5`
 means "report clones with at least 5 duplicated statements."
 
@@ -441,13 +460,16 @@ GitHub Actions and pre-commit hook templates are included in `templates/github-a
 #### Too Many False Positives
 
 ```bash
-# Three detection modes control how identifier names participate in matching:
+# Four detection modes control how identifier names participate in matching:
 # --semantic (default): alpha-normalizes local variables, detects Type 2 (renamed) clones
 # --exact: matches identifier names verbatim (copy-paste / Type 1 only)
 # --structural: ignores all names, matches by AST shape (loosest, most results)
+# --type-aware: uses go/types to encode variable types into hashes, eliminating false
+#   positives where same method names have different receiver types
 ./art-dupl -t 40            # semantic mode (default)
 ./art-dupl --exact -t 40    # exact name matching
 ./art-dupl --structural -t 40  # shape-only matching
+./art-dupl --type-aware -t 40  # type-aware (slower, more precise)
 
 # Clones are labeled type-1 (exact), type-2 (renamed), or type-3 (near-miss)
 # in JSON, SARIF, and --rich-text output.

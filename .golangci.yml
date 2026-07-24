@@ -149,9 +149,6 @@ linters:
             - golang.org/x/tools
     dupl:
       threshold: 100
-    exhaustruct:
-      exclude:
-        - os/exec.Cmd
     funlen:
       lines: 80
       statements: 50

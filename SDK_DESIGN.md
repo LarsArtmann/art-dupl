@@ -54,8 +54,8 @@ type CloneGroup struct {
 // Clone represents a single occurrence of duplicated code
 type Clone struct {
     Filename   string `json:"filename"`
-    StartLine  int    `json:"start_line"`
-    EndLine    int    `json:"end_line"`
+    LineStart  int    `json:"line_start"`
+    LineEnd    int    `json:"line_end"`
     Fragment   string `json:"fragment,omitempty"`
     Size       int    `json:"size"`
 }

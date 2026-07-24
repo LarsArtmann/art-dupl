@@ -45,7 +45,7 @@ job/        Orchestrates parse → serialize → build tree (threads golang.Dete
 printer/    Output formatting (text, HTML, JSON, plumbing, SARIF, stats)
 domain/     Value objects (ProcessedClone, enums, Extractability, validation sentinels)
 baseline/   Baseline recording + CI check file format (Load/Save/Add/Has)
-errors/     6 typed error types, stack traces, JSON marshaling
+errors/     7 error categories (ErrorType), single DuplError struct, typed wrapping
 cache/      File-based AST caching with SHA-256 content hashing + LRU eviction
 pkg/artdupl/ Public SDK (Detector interface) — independent types, no config aliases
 pkg/enum/   Shared enum helpers (MarshalJSON, UnmarshalJSON, Parse)
