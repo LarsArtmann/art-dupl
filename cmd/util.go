@@ -112,11 +112,11 @@ func shouldIncludeFile(
 
 	if !result.Filtered {
 		if reason, filtered := filterExcludedGenerated(content, includes); filtered {
-			stats.Record(gogenfilter.FilterResult{
+			stats.RecordWithSource(gogenfilter.FilterResult{
 				Filtered: true,
 				Reason:   reason,
 				Path:     path,
-			})
+			}, FilterSourceDefenseInDepth)
 
 			return false
 		}

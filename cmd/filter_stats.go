@@ -7,6 +7,20 @@ import (
 	"github.com/LarsArtmann/gogenfilter/v3"
 )
 
+// FilterSource identifies which filtering mechanism caught a generated file.
+type FilterSource string
+
+const (
+	// FilterSourceGogenfilter: caught by gogenfilter's standard filename-gated
+	// or content-based checks.
+	FilterSourceGogenfilter FilterSource = "gogenfilter"
+
+	// FilterSourceDefenseInDepth: caught by the content-based defense-in-depth
+	// check (filterExcludedGenerated) that catches generated files lacking the
+	// expected filename suffix (_templ.go, _sqlc.go, *.pb.go).
+	FilterSourceDefenseInDepth FilterSource = "defense-in-depth"
+)
+
 // FilterStats holds aggregated filter statistics.
 // Replaces the removed gogenfilter.FilterStats type — stats aggregation
 // is now the caller's responsibility per gogenfilter's API redesign.
@@ -14,6 +28,7 @@ type FilterStats struct {
 	mu       sync.Mutex
 	total    int
 	byReason map[string]int
+	bySource map[string]int
 	reasons  []gogenfilter.FilterReason
 }
 
@@ -21,6 +36,7 @@ type FilterStats struct {
 func NewFilterStats(reasons []gogenfilter.FilterReason) *FilterStats {
 	return &FilterStats{
 		byReason: make(map[string]int),
+		bySource: make(map[string]int),
 		reasons:  reasons,
 	}
 }
@@ -38,8 +54,14 @@ func (s *FilterStats) withReadLock(zeroValue int, fn func() int) int {
 	return fn()
 }
 
-// Record records a filter result.
+// Record records a filter result from gogenfilter.
 func (s *FilterStats) Record(result gogenfilter.FilterResult) {
+	s.RecordWithSource(result, FilterSourceGogenfilter)
+}
+
+// RecordWithSource records a filter result with its source (gogenfilter or
+// defense-in-depth), allowing stats output to distinguish how each file was caught.
+func (s *FilterStats) RecordWithSource(result gogenfilter.FilterResult, source FilterSource) {
 	if s == nil {
 		return
 	}
@@ -50,6 +72,7 @@ func (s *FilterStats) Record(result gogenfilter.FilterResult) {
 	if result.Filtered {
 		s.total++
 		s.byReason[string(result.Reason)]++
+		s.bySource[string(source)]++
 	}
 }
 
@@ -74,6 +97,22 @@ func (s *FilterStats) Breakdown() map[string]int {
 
 	result := make(map[string]int, len(s.byReason))
 	maps.Copy(result, s.byReason)
+
+	return result
+}
+
+// SourceBreakdown returns a copy of the per-source breakdown, distinguishing
+// files caught by gogenfilter vs the defense-in-depth content check.
+func (s *FilterStats) SourceBreakdown() map[string]int {
+	if s == nil {
+		return nil
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	result := make(map[string]int, len(s.bySource))
+	maps.Copy(result, s.bySource)
 
 	return result
 }

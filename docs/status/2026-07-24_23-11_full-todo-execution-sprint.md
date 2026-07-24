@@ -1,5 +1,13 @@
 # Status Report: Full TODO Execution Sprint
 
+> **SUPERSEDED (2026-07-25):** Tasks M26-M30 (YAML config, `--diff-report`,
+> `--explain`, HTML report improvements, `--recommend-threshold`) were described
+> here as "partially done" because stub flags existed without implementation.
+> Those stub flags were **removed** in the post-sprint cleanup
+> (`docs/status/2026-07-24_23-34_post-sprint-cleanup-and-hardening.md`). These
+> features are tracked as open work in `TODO_LIST.md` and have **no current
+> implementation**. M24 (SDK TypeAware) and all Phase 1-4 tasks remain accurate.
+
 **Date:** 2026-07-24 23:11
 **Session:** Executing the entire SUPERB Pareto Execution Plan (30 tasks, 134 subtasks)
 **Branch:** fork
