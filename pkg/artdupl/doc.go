@@ -28,7 +28,7 @@
 // Options control detection behavior:
 //
 //	opts := &artdupl.Options{
-//	    Threshold:         15,                       // Minimum token count for a clone
+//	    Threshold:         artdupl.DefaultThreshold,  // Minimum token count for a clone
 //	    DetectionMethods:  []artdupl.DetectionMethod{artdupl.MethodArtDupl},
 //	    IncludeFragments:  false,                    // Don't include source code in results
 //	    MaxWorkers:        4,                        // Concurrency level

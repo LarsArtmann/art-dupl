@@ -76,7 +76,7 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 		{
 			name: "nil detection methods",
 			opts: &Options{
-				Threshold:        15,
+				Threshold:        DefaultThreshold,
 				DetectionMethods: nil,
 			},
 			wantErr: ErrNoDetectionMethods,
@@ -89,7 +89,7 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 		{
 			name: "zero max workers",
 			opts: &Options{
-				Threshold:        15,
+				Threshold:        DefaultThreshold,
 				DetectionMethods: []DetectionMethod{MethodArtDupl},
 				MaxWorkers:       0,
 			},
@@ -98,7 +98,7 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 		{
 			name: "negative max workers",
 			opts: &Options{
-				Threshold:        15,
+				Threshold:        DefaultThreshold,
 				DetectionMethods: []DetectionMethod{MethodArtDupl},
 				MaxWorkers:       -1,
 			},
@@ -107,7 +107,7 @@ func TestValidateOptions_AllErrors(t *testing.T) {
 		{
 			name: "negative timeout",
 			opts: &Options{
-				Threshold:        15,
+				Threshold:        DefaultThreshold,
 				DetectionMethods: []DetectionMethod{MethodArtDupl},
 				MaxWorkers:       1,
 				Timeout:          -1 * time.Second,
@@ -137,7 +137,7 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 		{
 			name: "multiple detection methods",
 			opts: &Options{
-				Threshold:        15,
+				Threshold:        DefaultThreshold,
 				DetectionMethods: []DetectionMethod{MethodArtDupl, MethodHash},
 				MaxWorkers:       1,
 			},
@@ -158,7 +158,7 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 		{
 			name: "zero max file size (unlimited)",
 			opts: func() *Options {
-				o := validOpts(15)
+				o := validOpts(DefaultThreshold)
 				o.MaxFileSize = 0
 
 				return o
@@ -167,7 +167,7 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 		{
 			name: "zero timeout (no timeout)",
 			opts: func() *Options {
-				o := validOpts(15)
+				o := validOpts(DefaultThreshold)
 				o.Timeout = 0
 
 				return o
@@ -188,7 +188,7 @@ func TestValidateOptions_ValidCases(t *testing.T) {
 // TestValidateOptions_InvalidDetectionMethod tests validation with invalid detection method.
 func TestValidateOptions_InvalidDetectionMethod(t *testing.T) {
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{"invalid-method"},
 		MaxWorkers:       4,
 	}
