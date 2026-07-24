@@ -10,51 +10,51 @@
 
 ### Phase 1: Quick Wins (7/7)
 
-| Task | What was done |
-|------|--------------|
-| **M04** `--type-aware` + `--structural` validation | Added validation errors in `validateMutualExclusion` in `cmd/config_builder.go`. Rejects `--type-aware + --structural` and `--type-aware + --exact` combinations with clear error messages explaining why. 5 unit tests in `cmd/config_validation_test.go`. |
-| **M05** `--type-aware` + `--incremental` warning | Added `warnTypeAwareIncremental` function. Prints warning to stderr when both flags are set. 3 unit tests. |
-| **M06** GitHub Release for v0.4.0 | Created via `gh release create v0.4.0 --title "art-dupl v0.4.0" --notes-from-tag`. Release is live at https://github.com/LarsArtmann/art-dupl/releases/tag/v0.4.0. |
-| **M09** Remove orphaned exhaustruct exclusion rules | Removed `exhaustruct` from the `_test\.go` exclusion rule list in `.golangci.yml`. Verified zero references to `exhaustruct` or `tagliatelle` remain in the file. |
-| **M11** Verify TESTING.md GOEXPERIMENT | TESTING.md already documents `export GOEXPERIMENT=jsonv2` at line 109. No change needed. |
-| **M12** Check CONTRIBUTING.md for stale `just` refs | CONTRIBUTING.md has zero references to `just` or `justfile`. Already uses `nix` commands exclusively. No change needed. |
-| **M13** Run `go test -race ./...` | Full suite passes with race detector. All 26 packages green. Zero data races found. |
+| Task                                                | What was done                                                                                                                                                                                                                                               |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M04** `--type-aware` + `--structural` validation  | Added validation errors in `validateMutualExclusion` in `cmd/config_builder.go`. Rejects `--type-aware + --structural` and `--type-aware + --exact` combinations with clear error messages explaining why. 5 unit tests in `cmd/config_validation_test.go`. |
+| **M05** `--type-aware` + `--incremental` warning    | Added `warnTypeAwareIncremental` function. Prints warning to stderr when both flags are set. 3 unit tests.                                                                                                                                                  |
+| **M06** GitHub Release for v0.4.0                   | Created via `gh release create v0.4.0 --title "art-dupl v0.4.0" --notes-from-tag`. Release is live at https://github.com/LarsArtmann/art-dupl/releases/tag/v0.4.0.                                                                                          |
+| **M09** Remove orphaned exhaustruct exclusion rules | Removed `exhaustruct` from the `_test\.go` exclusion rule list in `.golangci.yml`. Verified zero references to `exhaustruct` or `tagliatelle` remain in the file.                                                                                           |
+| **M11** Verify TESTING.md GOEXPERIMENT              | TESTING.md already documents `export GOEXPERIMENT=jsonv2` at line 109. No change needed.                                                                                                                                                                    |
+| **M12** Check CONTRIBUTING.md for stale `just` refs | CONTRIBUTING.md has zero references to `just` or `justfile`. Already uses `nix` commands exclusively. No change needed.                                                                                                                                     |
+| **M13** Run `go test -race ./...`                   | Full suite passes with race detector. All 26 packages green. Zero data races found.                                                                                                                                                                         |
 
 ### Phase 2: Process and Prevention (3/3)
 
-| Task | What was done |
-|------|--------------|
-| **M07** RELEASE.md checklist | Created `RELEASE.md` with 7-step release process: pre-release verification (templ, build, test, race, lint, nix flake check), CHANGELOG update, version bump, tag+sign, build+verify binary, push+release, post-release. Includes quality gate reminders referencing v0.4.0 postmortem. |
-| **M08** CI guard for disabled linters | Created `scripts/check-disabled-linters.sh` that greps for `exhaustruct` and `tagliatelle` in `.golangci.yml`. Added `disabled-linters` check to `flake.nix` perSystem.checks that runs the same grep in Nix. Script tested and passes on current config. |
-| **M10** Verify HOW_TO_USE.md flag examples | Audited all 40+ command examples. Every flag name exists in `cmd/flags.go`. All long flags use `--` prefix. All short flags use `-` prefix. Zero broken commands found. |
+| Task                                       | What was done                                                                                                                                                                                                                                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M07** RELEASE.md checklist               | Created `RELEASE.md` with 7-step release process: pre-release verification (templ, build, test, race, lint, nix flake check), CHANGELOG update, version bump, tag+sign, build+verify binary, push+release, post-release. Includes quality gate reminders referencing v0.4.0 postmortem. |
+| **M08** CI guard for disabled linters      | Created `scripts/check-disabled-linters.sh` that greps for `exhaustruct` and `tagliatelle` in `.golangci.yml`. Added `disabled-linters` check to `flake.nix` perSystem.checks that runs the same grep in Nix. Script tested and passes on current config.                               |
+| **M10** Verify HOW_TO_USE.md flag examples | Audited all 40+ command examples. Every flag name exists in `cmd/flags.go`. All long flags use `--` prefix. All short flags use `-` prefix. Zero broken commands found.                                                                                                                 |
 
 ### Phase 3: Core Features (3/3) - The 1% That Delivers 51%
 
-| Task | What was done |
-|------|--------------|
-| **M01** `//art-dupl:accept` inline directive | **The #1 feature request.** Created `cmd/accept_directive.go` with `AcceptedSet` type: lazily scans files for `//art-dupl:accept` directives, caches results per file (thread-safe via RWMutex with double-checked locking). Supports optional hash: `//art-dupl:accept <hash>` for precision matching. Directive must be within the clone's line range (LineStart to LineEnd). Added `--no-accept-directives` CLI flag to disable. Wired into `SuppressionConfig.AcceptDirectives` field. 7 unit tests + 2 BDD tests. Documented in HOW_TO_USE.md with examples. ~200 LOC. |
-| **M02** `.gitignore` honoring | Created `cmd/gitignore.go` with `GitignoreMatcher` type: loads `.gitignore` files by walking up the directory tree from each analyzed path. Supports: simple names, globs (`*`, `?`), directory-only (trailing `/`), anchored patterns (leading `/`), and negation (`!`). Added `--include-ignored` CLI flag as escape hatch. Threaded `*GitignoreMatcher` through `CrawlOptions`, `crawlPathsWithFileCheck`, `handleWalkEntry`, `crawlSinglePathWithOpts`, `filesFeedWithOptions`, `crawlPaths`, `crawlPathsAllFiles`. Updated all callers including 7 test call sites. 6 unit tests. |
-| **M03** Generated `_templ.go` auto-exclusion | Already handled by existing `FilterTempl` via gogenfilter. The `.gitignore` honoring (M02) provides defense-in-depth: gitignored `_templ.go` files are now excluded by both the generated-code filter AND the gitignore matcher. |
+| Task                                         | What was done                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M01** `//art-dupl:accept` inline directive | **The #1 feature request.** Created `cmd/accept_directive.go` with `AcceptedSet` type: lazily scans files for `//art-dupl:accept` directives, caches results per file (thread-safe via RWMutex with double-checked locking). Supports optional hash: `//art-dupl:accept <hash>` for precision matching. Directive must be within the clone's line range (LineStart to LineEnd). Added `--no-accept-directives` CLI flag to disable. Wired into `SuppressionConfig.AcceptDirectives` field. 7 unit tests + 2 BDD tests. Documented in HOW_TO_USE.md with examples. ~200 LOC.            |
+| **M02** `.gitignore` honoring                | Created `cmd/gitignore.go` with `GitignoreMatcher` type: loads `.gitignore` files by walking up the directory tree from each analyzed path. Supports: simple names, globs (`*`, `?`), directory-only (trailing `/`), anchored patterns (leading `/`), and negation (`!`). Added `--include-ignored` CLI flag as escape hatch. Threaded `*GitignoreMatcher` through `CrawlOptions`, `crawlPathsWithFileCheck`, `handleWalkEntry`, `crawlSinglePathWithOpts`, `filesFeedWithOptions`, `crawlPaths`, `crawlPathsAllFiles`. Updated all callers including 7 test call sites. 6 unit tests. |
+| **M03** Generated `_templ.go` auto-exclusion | Already handled by existing `FilterTempl` via gogenfilter. The `.gitignore` honoring (M02) provides defense-in-depth: gitignored `_templ.go` files are now excluded by both the generated-code filter AND the gitignore matcher.                                                                                                                                                                                                                                                                                                                                                       |
 
 ### Phase 4: Quality Hardening (6/6)
 
-| Task | What was done |
-|------|--------------|
-| **M14** BDD test for type-aware mode | Created `bdd/type_aware_test.go` with 7 Ginkgo specs: type-aware+structural errors, type-aware+exact errors, type-aware+incremental warning, type-aware alone succeeds, --semantic deprecation notice, //art-dupl:accept suppresses groups, --no-accept-directives shows all. All pass. |
-| **M15** Clean em-dashes in AGENTS.md | Replaced 26 em-dashes with commas using Python (not sed, per session lesson). Verified zero remaining. |
-| **M16** Clean em-dashes in ADR docs | Replaced 26 em-dashes across `docs/adr/0002` through `docs/adr/0008` (7 files). Total: 52 em-dashes cleaned across AGENTS.md + ADRs. |
-| **M17** SDK_DESIGN.md disposition | Rewrote from scratch to match actual `pkg/artdupl/types.go` implementation. Documents the real interface (`Detector`, `FindClones`, `FindClonesStreamResult`), actual types (`CloneRef` embedding, `StreamResult`), and 5 design decisions. 80 lines, was 206 lines of stale proposals. |
-| **M18** ADR-0015: Type-aware detection | Created `docs/adr/0015-type-aware-detection.md` documenting context, decision, pipeline, encoding approach (`canonicalName + "\x00" + typeString`), tradeoffs (10-100x slower, not compatible with incremental), and fallback behavior. |
-| **M19** Annotate stale planning HTML | Added `<!-- SUPERSEDED -->` annotation to both `2026-07-01_00-20_comprehensive-execution-plan.html` and `2026-07-01_02-30_PARETO-EXECUTION-PLAN.html` pointing to the current plan. |
+| Task                                   | What was done                                                                                                                                                                                                                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M14** BDD test for type-aware mode   | Created `bdd/type_aware_test.go` with 7 Ginkgo specs: type-aware+structural errors, type-aware+exact errors, type-aware+incremental warning, type-aware alone succeeds, --semantic deprecation notice, //art-dupl:accept suppresses groups, --no-accept-directives shows all. All pass. |
+| **M15** Clean em-dashes in AGENTS.md   | Replaced 26 em-dashes with commas using Python (not sed, per session lesson). Verified zero remaining.                                                                                                                                                                                  |
+| **M16** Clean em-dashes in ADR docs    | Replaced 26 em-dashes across `docs/adr/0002` through `docs/adr/0008` (7 files). Total: 52 em-dashes cleaned across AGENTS.md + ADRs.                                                                                                                                                    |
+| **M17** SDK_DESIGN.md disposition      | Rewrote from scratch to match actual `pkg/artdupl/types.go` implementation. Documents the real interface (`Detector`, `FindClones`, `FindClonesStreamResult`), actual types (`CloneRef` embedding, `StreamResult`), and 5 design decisions. 80 lines, was 206 lines of stale proposals. |
+| **M18** ADR-0015: Type-aware detection | Created `docs/adr/0015-type-aware-detection.md` documenting context, decision, pipeline, encoding approach (`canonicalName + "\x00" + typeString`), tradeoffs (10-100x slower, not compatible with incremental), and fallback behavior.                                                 |
+| **M19** Annotate stale planning HTML   | Added `<!-- SUPERSEDED -->` annotation to both `2026-07-01_00-20_comprehensive-execution-plan.html` and `2026-07-01_02-30_PARETO-EXECUTION-PLAN.html` pointing to the current plan.                                                                                                     |
 
 ### Phase 5: Medium-Impact Features (5/5 done + M22)
 
-| Task | What was done |
-|------|--------------|
-| **M20** Unit tests for `cmd/progress.go` | Created `cmd/progress_test.go` with 8 tests: `shouldShowProgress` table-driven (5 cases), env var ARTDUPL_NO_PROGRESS suppression, env var unset shows progress, channel forwarding (3 files pass through), suppressed mode (quiet), empty channel. |
-| **M21** Progress output in hash-only mode | Wired `progressFilesChan` into `executeHashOnlyAnalysis` in `cmd/run_hash.go`. Progress now shows for hash-based detection too, not just suffix-tree mode. |
-| **M22** JSON tag convention unification | Created ADR-0016 documenting the decision to KEEP the split: `snake_case` for public types (`domain/`, `pkg/artdupl/`), `camelCase` for internal types (`baseline/`, `cache/`, `cmd/version`). Rationale: backward compatibility for baseline file format, low value of migration, risk vs reward. `tagliatelle` stays disabled intentionally. |
-| **M23** Deprecation warning for `--semantic` | Added `warnSemanticDeprecation` function in `cmd/config_builder.go`. Prints notice when `--semantic` flag is explicitly used: "default detection mode; this flag is redundant and may be removed in a future version." BDD test verifies. |
+| Task                                            | What was done                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M20** Unit tests for `cmd/progress.go`        | Created `cmd/progress_test.go` with 8 tests: `shouldShowProgress` table-driven (5 cases), env var ARTDUPL_NO_PROGRESS suppression, env var unset shows progress, channel forwarding (3 files pass through), suppressed mode (quiet), empty channel.                                                                                                                                          |
+| **M21** Progress output in hash-only mode       | Wired `progressFilesChan` into `executeHashOnlyAnalysis` in `cmd/run_hash.go`. Progress now shows for hash-based detection too, not just suffix-tree mode.                                                                                                                                                                                                                                   |
+| **M22** JSON tag convention unification         | Created ADR-0016 documenting the decision to KEEP the split: `snake_case` for public types (`domain/`, `pkg/artdupl/`), `camelCase` for internal types (`baseline/`, `cache/`, `cmd/version`). Rationale: backward compatibility for baseline file format, low value of migration, risk vs reward. `tagliatelle` stays disabled intentionally.                                               |
+| **M23** Deprecation warning for `--semantic`    | Added `warnSemanticDeprecation` function in `cmd/config_builder.go`. Prints notice when `--semantic` flag is explicitly used: "default detection mode; this flag is redundant and may be removed in a future version." BDD test verifies.                                                                                                                                                    |
 | **M25** "unknown" category to AST type fallback | Added 4 new clone categories: `CategoryBlock`, `CategoryCall`, `CategoryReturn`, `CategoryDefer`. Updated `nodeTypeToCategory` in `printer/clone_classify.go` to map `BlockStmt`, `CallExpr`, `ReturnStmt`, `DeferStmt`, `GoStmt`, `DeclStmt`, `BinaryExpr` to specific categories instead of falling through to `unknown`. Added emojis and updated `IsValid()`. Updated test expectations. |
 
 ---
@@ -63,18 +63,18 @@
 
 ### Phase 5-6: Feature Expansion
 
-| Task | Status | What exists | What is missing |
-|------|--------|------------|-----------------|
-| **M24** SDK `Options.TypeAware` | **80% done** | `TypeAware bool` field added to `Options`. Wired through `detectorConfig.TypeAware`. Pipeline loads type data via `golang.LoadTypeAwareData` in `buildAnalysisPipeline`. Falls back gracefully on error. | No dedicated SDK unit test for TypeAware=true path. SDK_DESIGN.md says "not supported yet" (needs update). |
-| **M26** YAML config file support | **30% done** | `--config-format` flag added (auto/json/yaml). `ConfigFormat` field added to Config struct. | No YAML parsing logic. No `yaml.v3` dependency added. Config loader does not check ConfigFormat. No tests. No docs. |
-| **M27** `--diff-report` mode | **20% done** | `--diff-report <path>` flag added. `DiffReport` field added to Config struct. | No diff comparison logic. No baseline loading integration. No output format for new/resolved/suppressed clones. No tests. No docs. |
-| **M28** `--explain` flag | **25% done** | `--explain` flag added. `Explain` field added to Config struct. Wired into config builder. | No explanation generator. Printer pipeline does not check Explain flag. No output format designed. No tests. No docs. |
-| **M29** HTML report improvements | **30% done** | `--html-out <path>` flag added. `HTMLOutputFile` field added to Config struct. Wired into config builder. | No file-writing logic in HTML printer. No TTY auto-detection. No stable `id` attributes on clone group divs. No tests. No docs. |
+| Task                             | Status       | What exists                                                                                                                                                                                              | What is missing                                                                                                                    |
+| -------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **M24** SDK `Options.TypeAware`  | **80% done** | `TypeAware bool` field added to `Options`. Wired through `detectorConfig.TypeAware`. Pipeline loads type data via `golang.LoadTypeAwareData` in `buildAnalysisPipeline`. Falls back gracefully on error. | No dedicated SDK unit test for TypeAware=true path. SDK_DESIGN.md says "not supported yet" (needs update).                         |
+| **M26** YAML config file support | **30% done** | `--config-format` flag added (auto/json/yaml). `ConfigFormat` field added to Config struct.                                                                                                              | No YAML parsing logic. No `yaml.v3` dependency added. Config loader does not check ConfigFormat. No tests. No docs.                |
+| **M27** `--diff-report` mode     | **20% done** | `--diff-report <path>` flag added. `DiffReport` field added to Config struct.                                                                                                                            | No diff comparison logic. No baseline loading integration. No output format for new/resolved/suppressed clones. No tests. No docs. |
+| **M28** `--explain` flag         | **25% done** | `--explain` flag added. `Explain` field added to Config struct. Wired into config builder.                                                                                                               | No explanation generator. Printer pipeline does not check Explain flag. No output format designed. No tests. No docs.              |
+| **M29** HTML report improvements | **30% done** | `--html-out <path>` flag added. `HTMLOutputFile` field added to Config struct. Wired into config builder.                                                                                                | No file-writing logic in HTML printer. No TTY auto-detection. No stable `id` attributes on clone group divs. No tests. No docs.    |
 
 ### M30: `--recommend-threshold`
 
-| Status | Details |
-|--------|---------|
+| Status       | Details                                                                                                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **25% done** | `--recommend-threshold` flag added. `RecommendThreshold` field added to Config struct. Wired into config builder. No heuristic algorithm. No analysis logic. No output format. No tests. No docs. |
 
 ---
@@ -97,9 +97,9 @@ All 30 tasks from the plan have been at least started (flag + config field added
 
 ### D2: Em-dash Cleanup via Python Script
 
-**What happened:** I used `python3` to bulk-replace em-dashes with commas in AGENTS.md and ADR docs. The replacement was ` — ` to `, ` globally.
+**What happened:** I used `python3` to bulk-replace em-dashes with commas in AGENTS.md and ADR docs. The replacement was `—` to `, ` globally.
 
-**Problem:** Not all em-dashes were in ` — ` context. Some were at line starts, some in mid-sentence without spaces. The Python script handled the common case but I did NOT verify each replacement line for grammatical correctness.
+**Problem:** Not all em-dashes were in `—` context. Some were at line starts, some in mid-sentence without spaces. The Python script handled the common case but I did NOT verify each replacement line for grammatical correctness.
 
 **Impact:** Some replacements may read awkwardly (e.g., "Nix Flake, Private Dependency Pattern" instead of "Nix Flake: Private Dependency Pattern"). The replacements are not wrong, but they could be better. I should have used per-line review as the plan specified (F055: "Read each em-dash line, choose replacement").
 
@@ -120,6 +120,7 @@ All 30 tasks from the plan have been at least started (flag + config field added
 ### D5: Lint Warnings Not Addressed
 
 **What happened:** Multiple lint warnings accumulated during the session:
+
 - `mnd` magic number warning in `accept_directive.go` (scannerInitBufSize as 65536)
 - `gci` formatting warning in `accept_directive_test.go`
 - `wsl_v5` whitespace warnings in `progress_test.go`
@@ -242,6 +243,7 @@ All 30 tasks from the plan have been at least started (flag + config field added
 ### Q1: Should the stub flags (M26-M30) be removed or fully implemented?
 
 The `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, and `--diff-report` flags are defined and wired into config but have NO feature logic behind them. Should I:
+
 - **(a)** Remove them entirely (revert the flag additions) so we only ship working features?
 - **(b)** Keep them as hidden flags (mark as hidden/deprecated until implemented)?
 - **(c)** Fully implement all 5 features before committing?
@@ -251,6 +253,7 @@ I cannot decide this because it depends on your release strategy: do you want to
 ### Q2: Should I commit now, or wait until the lint/nix issues are fixed?
 
 I have not committed any work from this session. All changes are in the working tree. The build passes, all tests pass, but `golangci-lint` and `nix flake check` have NOT been run on the final state. Should I:
+
 - **(a)** Commit now (risk: lint/nix issues in committed code)
 - **(b)** Fix lint first, then commit (risk: more time spent, auto-committer might fire)
 - **(c)** Commit now, fix lint in a follow-up commit
@@ -263,18 +266,18 @@ Adding `github.com/go-git/go-git/v5` or `github.com/denormal/go-gitignore` would
 
 ## Summary Statistics
 
-| Metric | Count |
-|--------|-------|
-| Total tasks in plan | 30 |
-| Fully done | 21 |
-| Partially done | 6 (M24, M26, M27, M28, M29, M30) |
-| Not started | 0 |
-| Test packages passing | 26/26 |
-| Build status | PASS |
-| Race detector | PASS (run on all packages) |
-| Lint status | UNKNOWN (not run after final changes) |
-| Nix flake check | UNKNOWN (not run after adding disabled-linters check) |
-| Commits made | 0 |
-| New files created | 12 |
-| Files modified | 25+ |
-| Estimated LOC added | ~1500 |
+| Metric                | Count                                                 |
+| --------------------- | ----------------------------------------------------- |
+| Total tasks in plan   | 30                                                    |
+| Fully done            | 21                                                    |
+| Partially done        | 6 (M24, M26, M27, M28, M29, M30)                      |
+| Not started           | 0                                                     |
+| Test packages passing | 26/26                                                 |
+| Build status          | PASS                                                  |
+| Race detector         | PASS (run on all packages)                            |
+| Lint status           | UNKNOWN (not run after final changes)                 |
+| Nix flake check       | UNKNOWN (not run after adding disabled-linters check) |
+| Commits made          | 0                                                     |
+| New files created     | 12                                                    |
+| Files modified        | 25+                                                   |
+| Estimated LOC added   | ~1500                                                 |
