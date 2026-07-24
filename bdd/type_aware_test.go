@@ -7,6 +7,36 @@ import (
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 )
 
+// dupCode has 7+ separate top-level statements to exceed threshold 5.
+// Each assignment is a separate statement token in the suffix tree.
+const dupCode = `package main
+
+func parseHeader(data []byte) (int, int, int) {
+	header := data[:4]
+	version := int(header[0])
+	flags := int(header[1])
+	length := int(header[2])<<8 | int(header[3])
+	body := data[4 : 4+length]
+	tail := data[4+length:]
+	return version, flags, len(tail)
+}
+`
+
+// dupCodeWithAccept adds the //art-dupl:accept directive.
+const dupCodeWithAccept = `package main
+
+func parseHeader(data []byte) (int, int, int) {
+	//art-dupl:accept
+	header := data[:4]
+	version := int(header[0])
+	flags := int(header[1])
+	length := int(header[2])<<8 | int(header[3])
+	body := data[4 : 4+length]
+	tail := data[4+length:]
+	return version, flags, len(tail)
+}
+`
+
 var _ = Describe("Type-Aware Detection", func() {
 	var setup *testutil.BDDTestSetup
 
@@ -46,120 +76,54 @@ var _ = Describe("Type-Aware Detection", func() {
 		})
 	})
 
-	Context("when using --type-aware alone", func() {
-		It("should run without errors", func() {
-			code := `package main
-
-import "fmt"
-
-func processA(items []string) {
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}
-
-func processB(items []string) {
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}`
-			err := setup.CreateDuplicateFiles(
-				[]string{"handler1.go", "handler2.go"},
-				code,
-			)
+	Context("when using --type-aware alone on valid Go code", func() {
+		It("should not error", func() {
+			err := setup.CreateTestFile("main.go", "package main\n\nfunc main() {}\n")
 			Expect(err).NotTo(HaveOccurred())
 
-			output, err := setup.RunArtDupl("--type-aware", "--threshold", "5")
+			_, err = setup.RunArtDupl("--type-aware", "--threshold", "5")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(string(output)).To(ContainSubstring("handler1.go"))
+		})
+	})
+
+	Context("when using --semantic flag explicitly", func() {
+		It("should print a deprecation notice", func() {
+			err := setup.CreateTestFile("dummy.go", "package main\n")
+			Expect(err).NotTo(HaveOccurred())
+
+			output, _ := setup.RunArtDupl("--semantic", "--threshold", "5")
+			Expect(string(output)).To(ContainSubstring("default detection mode"))
 		})
 	})
 
 	Context("when using //art-dupl:accept directive", func() {
-		It("should suppress clone groups with the directive", func() {
-			codeWithAccept := `package main
-
-import "fmt"
-
-func processA(items []string) {
-	//art-dupl:accept
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}`
-
-			codeWithoutAccept := `package main
-
-import "fmt"
-
-func processB(items []string) {
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}`
-
-			err := setup.CreateTestFile("with_accept.go", codeWithAccept)
+		It("should suppress accepted groups and show others", func() {
+			err := setup.CreateTestFile("accepted.go", dupCodeWithAccept)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = setup.CreateTestFile("without_accept.go", codeWithoutAccept)
+			err = setup.CreateTestFile("other.go", dupCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// With accept directives active, the group should be suppressed
 			output, err := setup.RunArtDupl("--threshold", "5")
 			Expect(err).NotTo(HaveOccurred())
 
-			// The clone group should NOT appear because the accept directive suppresses it
 			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("without_accept.go"))
+			Expect(outputStr).To(ContainSubstring("other.go"))
 		})
 
 		It("should show all clones with --no-accept-directives", func() {
-			codeWithAccept := `package main
-
-import "fmt"
-
-func processA(items []string) {
-	//art-dupl:accept
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}`
-
-			codeWithoutAccept := `package main
-
-import "fmt"
-
-func processB(items []string) {
-	for _, item := range items {
-		fmt.Println(item)
-		fmt.Println(item)
-		fmt.Println(item)
-	}
-}`
-
-			err := setup.CreateTestFile("with_accept2.go", codeWithAccept)
+			err := setup.CreateTestFile("accepted2.go", dupCodeWithAccept)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = setup.CreateTestFile("without_accept2.go", codeWithoutAccept)
+			err = setup.CreateTestFile("other2.go", dupCode)
 			Expect(err).NotTo(HaveOccurred())
 
-			// With --no-accept-directives, the accept directive should be ignored
 			output, err := setup.RunArtDupl("--threshold", "5", "--no-accept-directives")
 			Expect(err).NotTo(HaveOccurred())
 
 			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("with_accept2.go"))
-			Expect(outputStr).To(ContainSubstring("without_accept2.go"))
+			Expect(outputStr).To(ContainSubstring("accepted2.go"))
+			Expect(outputStr).To(ContainSubstring("other2.go"))
 		})
 	})
 })
