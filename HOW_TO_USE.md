@@ -314,6 +314,54 @@ art-dupl --type-aware -t 30 ./src
 - Not compatible with `--incremental` (type data cannot be cached incrementally)
 - Falls back gracefully to syntax-only if type checking fails (missing dependencies, etc.)
 
+## Accepting Clone Groups
+
+When you review a clone group and decide it is intentional (not harmful duplication),
+you can suppress it permanently by adding an inline directive in the source code:
+
+```go
+func processOrder(o *Order) error {
+	//art-dupl:accept
+	if o == nil {
+		return errors.New("nil order")
+	}
+	if o.ID == 0 {
+		return errors.New("missing ID")
+	}
+	return nil
+}
+```
+
+The `//art-dupl:accept` directive suppresses the entire clone group containing
+the line where the directive appears. Place the directive inside the clone's
+line range (between `LineStart` and `LineEnd`).
+
+### Hash-Specific Acceptance
+
+For precision, include the group hash from the clone report:
+
+```go
+	//art-dupl:accept a1b2c3d4e5f6
+```
+
+This only suppresses the group with hash `a1b2c3d4e5f6`. Other clone groups
+overlapping the same lines are still reported.
+
+### Disabling Accept Directives
+
+To see all clone groups regardless of accept directives (useful for auditing):
+
+```bash
+art-dupl --no-accept-directives ./src
+```
+
+### How It Works
+
+- Directives are scanned lazily: only files containing clones are read.
+- Each file is scanned at most once per run (cached).
+- The directive must be on a line within the clone's reported line range.
+- Both `//` and `/* */` comment styles work if the line starts with `//art-dupl:accept`.
+
 ## Output Interpretation
 
 ### Understanding Text Output

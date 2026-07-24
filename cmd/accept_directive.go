@@ -3,9 +3,11 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"os"
 	"strings"
 	"sync"
 
+	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
@@ -37,6 +39,17 @@ func NewAcceptedSet(readFile func(string) ([]byte, error)) *AcceptedSet {
 		scanned:  make(map[string][]AcceptedDirective),
 		readFile: readFile,
 	}
+}
+
+// newAcceptSet returns an AcceptedSet from config, or nil when disabled.
+// Returns nil so that shouldSuppressGroup skips the accept-directive check
+// entirely (nil-safe via AcceptedSet.IsAccepted).
+func newAcceptSet(cfg *config.Config) *AcceptedSet {
+	if cfg.NoAcceptDirectives {
+		return nil
+	}
+
+	return NewAcceptedSet(os.ReadFile)
 }
 
 // IsAccepted checks if any clone in the group has an accept directive within
