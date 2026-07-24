@@ -104,6 +104,12 @@ All work since the [0.3.0] release. Organized by category.
 - **`isWrappingCall` per-call map allocation**: Replaced with `isWrappingCallName()` switch function (performance).
 - **Node.Fingerprint corrupting BaseType for statement nodes**: `serial()` was overwriting `node.Type` with the fingerprint hash, making `DecodeBaseType()` return garbage for ALL statement-level matches. Every actionability pattern that checked `BaseType == golang.IfStmt` etc. was silently broken. Fixed by adding separate `Fingerprint` field (commit `930b91a`).
 - **Templ callee identity loss**: `transformTemplElementExpression` created bare `ComponentRender` nodes with no name encoding. Every `@call()` in every templ file produced an identical suffix-tree token, causing false positives in demo files. Fixed by encoding callee name via `extractCalleeName()` (commit `23a3b03`).
+- **Windows test failures (`syscall.Dup`/`syscall.Dup2`)**: `bdd/execute.go` and `cmd/stats_integration_test.go` used Unix-only fd-duplication for output capture. Replaced with cross-platform `os.Pipe()` capture helper (`CaptureStdoutStderr`/`CaptureCombinedOutput`). All tests now pass on Windows.
+- **Windows permission test (`TestHashFile_UnreadableFile`)**: Set file permission `0o000` expected `os.Open` to fail, but Windows doesn't enforce Unix permissions. Added `runtime.GOOS == "windows"` skip with clear message.
+- **Windows config test (`TestSaveConfig_DirectoryCreationFails`)**: Used `/proc/fake/subdir/config.json` (Linux-only). Replaced with platform-agnostic approach: create regular file, then `MkdirAll` under it.
+- **`--workers 0` routing bug**: Gate was `> 1` (parallel) instead of `!= 1`. `0` (auto-detect) silently fell through to sequential instead of parallel. Fixed to `!= 1` routing (commit `5cd5b9b9`).
+- **HOW_TO_USE.md broken CLI commands**: 21 commands used single-dash (`-threshold`) instead of double-dash (`--threshold`). Fixed all to Fang/Cobra standard (commit `7175df46`).
+- **Website deployment failure**: Firebase `FIREBASE_TOKEN` deprecated; migrated to `GOOGLE_APPLICATION_CREDENTIALS`. Added HTML validation, `astro check`, and security headers (commit `be132a1c`).
 
 ### Removed
 

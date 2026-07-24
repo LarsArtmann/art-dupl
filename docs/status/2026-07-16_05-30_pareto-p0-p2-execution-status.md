@@ -11,6 +11,8 @@
 
 ## What This Session Did
 
+> **Resolution (2026-07-16, later sessions):** The "Missing Tests (CRITICAL)" section below was fully addressed by the `05:49` session (86 tests backfilled) and the `06:35`/`06:57` P3/P4 sessions. The open question "should `--min-lines` check ALL clones?" was resolved — yes, fixed via `minCloneLineCount()` bug fix at `05:49`. The website QA items overlap with the public-presence reports (both have resolution banners).
+
 Executed 38 tasks from the comprehensive Pareto roadmap (`docs/planning/2026-07-16_04-29_comprehensive-pareto-roadmap.md`), covering P0 (quick fixes), P1 (detection features), P2 (polish), and P3 (cleanup).
 
 ---

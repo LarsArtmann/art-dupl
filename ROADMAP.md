@@ -6,8 +6,7 @@
 
 ## Type-Aware Detection
 
-- [ ] **go/types integration (`--type-aware`)** — The single highest-impact improvement. Would eliminate the "same-method-name-different-receiver-type" class of false positives (e.g., `time.Time.String()` vs `*big.Int.String()`). Requires `golang.org/x/tools/go/packages` (10-100x slower than parsing alone). Researched but not started.
-- [ ] **Interface-aware suppression** — Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`.
+- [ ] **Interface-aware suppression** — Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`. _(The `--type-aware` opt-in mode itself is tracked in TODO_LIST as HIGH priority.)_
 
 ## Language Support
 
@@ -23,17 +22,19 @@
 
 ## Architecture
 
-- [ ] **Clone type consolidation** — Reduce 7+ parallel Clone types to 2-3 with shared interfaces or a single `domain.Clone` with format-specific views. Currently mitigated by `CloneRef` value object embedding.
 - [ ] **Plugin architecture for detection methods** — Allow third-party detectors beyond suffix-tree and hash. The `detection.MethodDetector` interface supports this but is not documented as a public extension point.
 - [ ] **WASM target** — Compile art-dupl to WebAssembly for in-browser clone detection. Would enable a web UI dashboard.
 - [ ] **Parallel suffix tree construction** — Current Ukkonen's algorithm is single-threaded. Parallel construction could improve throughput on large codebases (10000+ files).
 
+_(Clone type consolidation and printer/ package split are tracked in TODO_LIST as actionable work.)_
+
 ## Quality & Intelligence
 
 - [ ] **ML-based actionability classification** — Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 15 current patterns miss.
-- [ ] **Diff mode (`--diff-report`)** — Compare current results against a baseline to show only new/suppressed/resolved clones. Enables the extract-verify-improve CI loop.
 - [ ] **Fixability score** — Replace binary Actionable/NonActionable with a score reflecting extraction cost (params needed, lines saved, complexity). Feedback: httputil session suggested "would-take-more-params-than-lines" heuristic.
 - [ ] **Nested-scope shadowing in alpha-normalization** — Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
+
+_(`--diff-report` baseline mode is tracked in TODO_LIST as actionable work.)_
 
 ## Documentation & Adoption
 

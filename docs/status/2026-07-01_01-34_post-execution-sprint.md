@@ -9,6 +9,8 @@
 
 ## Executive Summary
 
+> **Resolution (2026-07-01, later sessions):** The "Top 25 Things to Do Next" list at the bottom of this report is almost entirely superseded. T22 (ProcessedClone DTO) completed hours later (`04:59` report). T23/T28/T18/T41/T36/JSON config migration/cache warning/SARIF enrichment all completed in the `07:06` sprint. T29 (parallel incremental + singleflight) completed in this report's own appendix. Items still genuinely open: T25 (printer split), T24 (branded NodeType), T32 (watch mode), T38/T39 (TypeScript/Python).
+
 Executed a comprehensive Pareto-planned sprint covering **26 tasks across 7 tiers**,
 touching **36 files** with **+823 / -519 lines** (net +304). All 26 test packages pass.
 BuildFlow green (31/31 checks). The engine is now **correct** (no more Type-2

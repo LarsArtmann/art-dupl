@@ -9,6 +9,8 @@
 
 ## Executive Summary
 
+> **Resolution (2026-07-01, later session):** All "Top 25" items listed as "not started" below (T23 CloneRef, T28 sort factory, T18 hash pipeline, T41 context, T36 perf regression, ADR-0008, JSON config migration, cache warning, SARIF enrichment, HTML collapse-all) were completed ~2 hours later in the `2026-07-01_07-06_full-todo-sprint.md` session. T25 (printer split) and T24 (branded NodeType) remain deferred — see TODO_LIST.md "Deferred" section.
+
 Executed Tier 2 (D2, D3, G1) + Path A (T22 ProcessedClone DTO) from the
 Pareto plan. **17 files changed**, **+600 / -200 lines (net)**. The printer
 package's actionability layer is now **fully decoupled from `syntax.Node`** —
