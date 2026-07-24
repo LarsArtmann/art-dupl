@@ -29,7 +29,7 @@ type DuplError struct {
 
 // newError creates a new error with the specified type.
 func newError(errorType ErrorType, msg string, cause error) *DuplError {
-	return &DuplError{ //nolint:exhaustruct // File/Line optional, set by specific constructors
+	return &DuplError{ // File/Line optional, set by specific constructors
 		Type:    errorType,
 		Message: msg,
 		Cause:   cause,
@@ -116,7 +116,7 @@ func Wrap(err error, errorType ErrorType, msg string) error {
 		return err
 	}
 
-	return &DuplError{ //nolint:exhaustruct // File/Line optional for wrapped errors
+	return &DuplError{ // File/Line optional for wrapped errors
 		Type:    errorType,
 		Message: msg,
 		Cause:   err,

@@ -15,7 +15,7 @@ type FileProcessor struct {
 
 // NewFileProcessor creates a new file processor with optional base directory.
 func NewFileProcessor(baseDir ...string) *FileProcessor {
-	fp := &FileProcessor{} //nolint:exhaustruct // baseDir set below
+	fp := &FileProcessor{} // baseDir set below
 	if len(baseDir) > 0 && baseDir[0] != "" {
 		fp.baseDir = baseDir[0]
 	}

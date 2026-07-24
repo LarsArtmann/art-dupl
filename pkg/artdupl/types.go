@@ -21,6 +21,12 @@ const (
 
 	// MethodHash uses rolling hash on file content.
 	MethodHash = domain.MethodHash
+
+	// DefaultThreshold is the default minimum number of duplicated statements to report.
+	// Mirrors config.DefaultThreshold (the SDK cannot import config/ due to arch-lint).
+	// A threshold of 5 filters trivial patterns (single-call noise, error-check
+	// boilerplate) while catching meaningful duplication.
+	DefaultThreshold = 5
 )
 
 // Detector is the main interface for code duplication detection.
@@ -189,7 +195,7 @@ type Logger = logger.Logger
 // DefaultOptions returns a configuration with sensible defaults.
 func DefaultOptions() *Options {
 	return &Options{
-		Threshold:         15,
+		Threshold:         DefaultThreshold,
 		DetectionMethods:  []DetectionMethod{MethodArtDupl},
 		MaxFileSize:       10 * 1024 * 1024, // 10MB
 		MaxWorkers:        4,

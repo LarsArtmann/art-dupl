@@ -50,7 +50,7 @@ func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
 
 	tmpDir := t.TempDir()
 
-	return &BDDTestSetup{ //nolint:exhaustruct // Executor/ExecutorResult are set later by test setup
+	return &BDDTestSetup{ // Executor/ExecutorResult are set later by test setup
 		T:             t,
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
@@ -68,7 +68,7 @@ func NewBDDTestSetupForGinkgo() (*BDDTestSetup, error) {
 		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
-	return &BDDTestSetup{ //nolint:exhaustruct // T/Executor/ExecutorResult are set later by Ginkgo test setup
+	return &BDDTestSetup{ // T/Executor/ExecutorResult are set later by Ginkgo test setup
 		TmpDir:        tmpDir,
 		FileProcessor: utils.NewFileProcessor(tmpDir),
 	}, nil

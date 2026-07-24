@@ -59,8 +59,9 @@ for _, group := range result.CloneGroups {
    `StreamResult{Group, Err}` values. This allows incremental processing of
    large codebases without buffering all results.
 
-4. **`DefaultOptions()`**: Provides sensible defaults (threshold 15, 4 workers,
-   30min timeout). Callers override individual fields.
+4. **`DefaultOptions()`**: Provides sensible defaults (threshold 5, matching
+   `config.DefaultThreshold`; 4 workers, 30min timeout). Callers override
+   individual fields.
 
 5. **Type aliases over redefinition**: `DetectionMethod`, `FileReaderFunc`, and
    `Logger` are aliases (`type X = Y`), not new types. This ensures the SDK is

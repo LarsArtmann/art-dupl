@@ -22,7 +22,7 @@ func validOpts(threshold int) *Options {
 func TestDefaultOptions_Values(t *testing.T) {
 	opts := DefaultOptions()
 
-	testutil.AssertFieldValue(t, opts.Threshold, 15, "Threshold")
+	testutil.AssertFieldValue(t, opts.Threshold, DefaultThreshold, "Threshold")
 
 	if len(opts.DetectionMethods) != 1 {
 		t.Errorf("Default should have 1 detection method, got %d", len(opts.DetectionMethods))

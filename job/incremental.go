@@ -89,7 +89,7 @@ func (ip *IncrementalParser) ParseIncremental(
 	statsChan := make(chan IncrementalStats, 1)
 
 	go func() {
-		stats := IncrementalStats{} //nolint:exhaustruct // zero-value counters, mutated incrementally
+		stats := IncrementalStats{} // zero-value counters, mutated incrementally
 
 		for file := range fchan {
 			select {
@@ -220,7 +220,7 @@ func collectIncrementalResults(
 	schan chan<- []*syntax.Node,
 	statsChan chan<- IncrementalStats,
 ) {
-	stats := IncrementalStats{} //nolint:exhaustruct // zero-value counters, mutated incrementally
+	stats := IncrementalStats{} // zero-value counters, mutated incrementally
 
 	for result := range resultChan {
 		stats.FilesCount++
