@@ -334,7 +334,6 @@ linters:
           - wrapcheck
           - unparam
           - unused
-          - exhaustruct
           - gochecknoglobals
           - mnd
           - varnamelen

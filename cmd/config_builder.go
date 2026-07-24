@@ -21,6 +21,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 	}
 
 	warnStructural(cmd)
+	warnTypeAwareIncremental(cmd)
 
 	appConfig, err := buildCLIConfig(cmd, args)
 	if err != nil {
@@ -205,10 +206,13 @@ func configFile(cmd *cobra.Command) string {
 
 // validateMutualExclusion checks that the detection-mode flags are not
 // combined incompatibly. --semantic, --exact, and --structural select one mode.
+// --type-aware is only effective with --semantic (default) and silently wasted
+// with --structural or --exact, so those combinations are rejected up front.
 func validateMutualExclusion(cmd *cobra.Command) error {
 	semanticSet := cmd.Flags().Changed("semantic")
 	structuralSet := cmd.Flags().Changed("structural")
 	exactSet := cmd.Flags().Changed("exact")
+	typeAwareSet := cmd.Flags().Changed("type-aware")
 
 	if semanticSet && structuralSet {
 		return duplerrors.NewValidationError(
@@ -224,6 +228,22 @@ func validateMutualExclusion(cmd *cobra.Command) error {
 		)
 	}
 
+	if typeAwareSet && structuralSet {
+		return duplerrors.NewValidationError(
+			"--type-aware is only effective with --semantic (default); --structural ignores all "+
+				"identifiers so type information would be silently discarded",
+			nil,
+		)
+	}
+
+	if typeAwareSet && exactSet {
+		return duplerrors.NewValidationError(
+			"--type-aware is only effective with --semantic (default); --exact hashes identifiers "+
+				"verbatim without canonicalization, so type information would be silently discarded",
+			nil,
+		)
+	}
+
 	return nil
 }
 
@@ -233,6 +253,19 @@ func warnStructural(cmd *cobra.Command) {
 		fmt.Fprintf(
 			os.Stderr,
 			"Note: --structural flag disables semantic detection. This may increase false positives from similar-looking but semantically different code.\n",
+		)
+	}
+}
+
+// warnTypeAwareIncremental prints a warning when both --type-aware and
+// --incremental are set. The incremental parser does not support preloaded type
+// data, so type-aware mode is silently ignored in incremental mode.
+func warnTypeAwareIncremental(cmd *cobra.Command) {
+	if cmd.Flags().Changed("type-aware") && cmd.Flags().Changed("incremental") {
+		fmt.Fprintf(
+			os.Stderr,
+			"Warning: --type-aware is not compatible with --incremental. "+
+				"Type-aware mode will be ignored; falling back to syntax-only detection.\n",
 		)
 	}
 }
