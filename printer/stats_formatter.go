@@ -28,11 +28,12 @@ type jsonStatsOutput struct {
 		SemanticDetection bool   `json:"semanticDetection"`
 	} `json:"configuration"`
 	Overview struct {
-		FilesScanned    int            `json:"filesScanned"`
-		FilesFiltered   int            `json:"filesFiltered,omitempty"`
-		FilterBreakdown map[string]int `json:"filterBreakdown,omitempty"`
-		CloneGroups     int            `json:"cloneGroups"`
-		TotalClones     int            `json:"totalClones"`
+		FilesScanned          int            `json:"filesScanned"`
+		FilesFiltered         int            `json:"filesFiltered,omitempty"`
+		FilterBreakdown       map[string]int `json:"filterBreakdown,omitempty"`
+		FilterSourceBreakdown map[string]int `json:"filterSourceBreakdown,omitempty"`
+		CloneGroups           int            `json:"cloneGroups"`
+		TotalClones           int            `json:"totalClones"`
 	} `json:"overview"`
 	DuplicateCode struct {
 		TotalLines       int     `json:"totalDuplicateLines"`
@@ -212,6 +213,16 @@ func (p *stats) printFilterBreakdown() {
 			_, _ = fmt.Fprintf(p.w, "  %s %s: %s\n",
 				p.metric.Render("•"),
 				p.base.Render(reason),
+				p.base.Render(fmt.Sprintf("%d files", count)))
+		}
+	}
+
+	if len(p.statsData.FilterSourceBreakdown) > 0 {
+		_, _ = fmt.Fprintf(p.w, "\n%s\n", p.section.Render("Filter Source:"))
+		for source, count := range p.statsData.FilterSourceBreakdown {
+			_, _ = fmt.Fprintf(p.w, "  %s %s: %s\n",
+				p.metric.Render("•"),
+				p.base.Render(source),
 				p.base.Render(fmt.Sprintf("%d files", count)))
 		}
 	}
@@ -402,6 +413,9 @@ func (p *stats) fillJSONOverview(jsonData *jsonStatsOutput) {
 		jsonData.Overview.FilesFiltered = p.statsData.FilesFiltered
 		if len(p.statsData.FilterBreakdown) > 0 {
 			jsonData.Overview.FilterBreakdown = p.statsData.FilterBreakdown
+		}
+		if len(p.statsData.FilterSourceBreakdown) > 0 {
+			jsonData.Overview.FilterSourceBreakdown = p.statsData.FilterSourceBreakdown
 		}
 	}
 }

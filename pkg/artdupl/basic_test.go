@@ -15,7 +15,7 @@ const testFilename = "test.go"
 // newTestConfig creates a detectorConfig for testing.
 func newTestConfig() *detectorConfig {
 	return &detectorConfig{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		Semantic:         true,
 	}

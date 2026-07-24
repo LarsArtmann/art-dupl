@@ -36,8 +36,9 @@ type StatsConfig struct {
 	Timestamp           string
 	AnalysisDuration    time.Duration
 	TotalEstimatedLines int
-	FilesFiltered       int
-	FilterBreakdown     map[string]int
+	FilesFiltered         int
+	FilterBreakdown       map[string]int
+	FilterSourceBreakdown map[string]int
 }
 
 // StatsPrinter extends Printer interface with stats configuration.
@@ -45,5 +46,6 @@ type StatsPrinter interface {
 	Printer
 	ApplyStatsConfig(config StatsConfig)
 	SetFilterStats(filesFiltered int, breakdown map[string]int)
+	SetFilterSourceStats(sourceBreakdown map[string]int)
 	GetStatsView() *StatsView
 }

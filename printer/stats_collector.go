@@ -19,6 +19,10 @@ func (p *stats) ApplyStatsConfig(config StatsConfig) {
 	if config.FilesFiltered > 0 || len(config.FilterBreakdown) > 0 {
 		p.SetFilterStats(config.FilesFiltered, config.FilterBreakdown)
 	}
+
+	if len(config.FilterSourceBreakdown) > 0 {
+		p.SetFilterSourceStats(config.FilterSourceBreakdown)
+	}
 }
 
 // SetFilesCount sets the total number of files scanned.
@@ -31,6 +35,12 @@ func (p *stats) SetFilesCount(count int) {
 func (p *stats) SetFilterStats(filesFiltered int, breakdown map[string]int) {
 	p.statsData.FilesFiltered = filesFiltered
 	p.statsData.FilterBreakdown = breakdown
+}
+
+// SetFilterSourceStats sets the per-source breakdown of filtered files,
+// distinguishing gogenfilter catches from defense-in-depth content checks.
+func (p *stats) SetFilterSourceStats(sourceBreakdown map[string]int) {
+	p.statsData.FilterSourceBreakdown = sourceBreakdown
 }
 
 // SetAnalysisDuration sets the analysis duration.

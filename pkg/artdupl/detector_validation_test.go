@@ -289,7 +289,7 @@ func TestProgressCallback(t *testing.T) {
 	progressHandler := captureProgress(&receivedProgress)
 
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		ProgressCallback: progressHandler,
 		MaxWorkers:       4,
@@ -326,7 +326,7 @@ func TestOptions_WithFileReader(t *testing.T) {
 	}
 
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		FileReader:       testReader,
 		MaxWorkers:       4,
@@ -347,7 +347,7 @@ func TestOptions_WithLogger(t *testing.T) {
 	log := &logger.NoOpLogger{}
 
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		Logger:           log,
 		MaxWorkers:       4,

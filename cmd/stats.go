@@ -60,6 +60,11 @@ func applyFilterStats(sp printer.StatsPrinter, filterStats *FilterStats) {
 	}
 
 	sp.SetFilterStats(totalFiltered, breakdown)
+
+	sourceBreakdown := filterStats.SourceBreakdown()
+	if len(sourceBreakdown) > 0 {
+		sp.SetFilterSourceStats(sourceBreakdown)
+	}
 }
 
 // runStats implements the stats command.

@@ -13,7 +13,7 @@ import (
 // invalidMaxFileSizeOptions creates Options with invalid MaxFileSize for testing.
 func invalidMaxFileSizeOptions() *Options {
 	return &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		MaxFileSize:      -1,
 	}
@@ -40,7 +40,7 @@ func newTestOptionsWithThreshold(threshold int) *Options {
 // newTestOptionsWithNoDetectionMethods creates Options with empty detection methods.
 func newTestOptionsWithNoDetectionMethods() *Options {
 	return &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{},
 	}
 }
@@ -75,7 +75,7 @@ func TestNewDetector_NilOptions(t *testing.T) {
 // TestNewDetector_ValidOptions tests detector creation with valid options.
 func TestNewDetector_ValidOptions(t *testing.T) {
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		MaxFileSize:      10 * 1024 * 1024,
 		MaxWorkers:       4,
@@ -122,7 +122,7 @@ func TestNewDetector_InvalidThreshold(t *testing.T) {
 // TestNewDetector_NoDetectionMethods tests detector creation without detection methods.
 func TestNewDetector_NoDetectionMethods(t *testing.T) {
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{},
 	}
 
@@ -135,7 +135,7 @@ func TestNewDetector_NoDetectionMethods(t *testing.T) {
 // TestNewDetector_InvalidMaxWorkers tests detector creation with invalid max workers.
 func TestNewDetector_InvalidMaxWorkers(t *testing.T) {
 	opts := &Options{
-		Threshold:        15,
+		Threshold:        DefaultThreshold,
 		DetectionMethods: []DetectionMethod{MethodArtDupl},
 		MaxWorkers:       0,
 	}
