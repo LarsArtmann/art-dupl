@@ -22,6 +22,7 @@ func BuildConfigFromFlags(cmd *cobra.Command, args []string) (*config.Config, er
 
 	warnStructural(cmd)
 	warnTypeAwareIncremental(cmd)
+	warnSemanticDeprecation(cmd)
 
 	appConfig, err := buildCLIConfig(cmd, args)
 	if err != nil {
@@ -268,6 +269,18 @@ func warnTypeAwareIncremental(cmd *cobra.Command) {
 			os.Stderr,
 			"Warning: --type-aware is not compatible with --incremental. "+
 				"Type-aware mode will be ignored; falling back to syntax-only detection.\n",
+		)
+	}
+}
+
+// warnSemanticDeprecation prints a gentle notice when --semantic is explicitly
+// used. Semantic is the default mode, so the flag is redundant.
+func warnSemanticDeprecation(cmd *cobra.Command) {
+	if cmd.Flags().Changed("semantic") {
+		fmt.Fprintf(
+			os.Stderr,
+			"Note: --semantic is the default detection mode; this flag is redundant "+
+				"and may be removed in a future version.\n",
 		)
 	}
 }
