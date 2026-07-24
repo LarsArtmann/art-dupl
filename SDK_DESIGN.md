@@ -23,7 +23,7 @@ All types are in `pkg/artdupl/types.go`.
 
 | Type         | Purpose                                                                       |
 | ------------ | ----------------------------------------------------------------------------- |
-| `Options`    | Configuration: threshold, methods, workers, timeout, callbacks                |
+| `Options`    | Configuration: threshold, methods, workers, timeout, type-aware, callbacks   |
 | `Result`     | Complete output: clone groups + summary + metadata                            |
 | `CloneGroup` | Hash, clones, size, line count, detection method                              |
 | `Clone`      | Embeds `domain.CloneRef` (Filename, LineStart, LineEnd, Fragment) + positions |
@@ -71,4 +71,8 @@ for _, group := range result.CloneGroups {
 - The `detection` package uses `[]domain.DetectionMethod` (typed, not `[]string`).
 - Arch-lint (`.go-arch-lint.yml`) enforces zero imports of `config/` and `errors/`
   from `pkg/artdupl/`.
-- The SDK does NOT support `--type-aware` mode yet (see TODO_LIST.md M24).
+- The SDK supports `Options.TypeAware = true` for go/types-based detection.
+  This encodes each variable's static type into the hash, eliminating false
+  positives where same-name methods on different types (e.g., `time.Time.String`
+  vs `*big.Int.String`) match. Falls back to syntax-only if type checking fails.
+  10-100x slower than syntax-only mode.
