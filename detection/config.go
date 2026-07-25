@@ -16,6 +16,6 @@ type Config struct {
 // Detection method name constants — aliases for domain.DetectionMethod
 // to prevent drift across packages.
 const (
-	MethodArtDupl = domain.MethodArtDupl
+	MethodArtDupl = domain.MethodArtDupl //art-dupl:accept architectural alias: detection and SDK independently re-export domain constants (arch-lint boundary)
 	MethodHash    = domain.MethodHash //art-dupl:accept architectural alias: detection and SDK independently re-export domain constants (arch-lint boundary)
 )

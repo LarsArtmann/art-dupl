@@ -13,11 +13,13 @@ import (
 
 // DetectionMethod is an alias for domain.DetectionMethod, the canonical
 // definition shared across config, SDK, and detection packages.
+//
+//art-dupl:accept architectural alias: SDK cannot import config (arch-lint), re-exports domain types independently (ADR-0005)
 type DetectionMethod = domain.DetectionMethod
 
 const (
 	// MethodArtDupl uses suffix tree algorithm on AST tokens.
-	MethodArtDupl = domain.MethodArtDupl
+	MethodArtDupl = domain.MethodArtDupl //art-dupl:accept architectural alias: SDK re-exports domain constant (ADR-0005)
 
 	// MethodHash uses rolling hash on file content.
 	MethodHash = domain.MethodHash
@@ -26,7 +28,7 @@ const (
 	// Mirrors config.DefaultThreshold (the SDK cannot import config/ due to arch-lint).
 	// A threshold of 5 filters trivial patterns (single-call noise, error-check
 	// boilerplate) while catching meaningful duplication.
-	DefaultThreshold = 5
+	DefaultThreshold = 5 //art-dupl:accept mirrors config.DefaultThreshold; SDK cannot import config (ADR-0005)
 )
 
 // Detector is the main interface for code duplication detection.
@@ -102,7 +104,7 @@ type Summary struct {
 // MarshalJSON emits AnalysisTime as milliseconds (matching the JSON contract)
 // rather than the default time.Duration serialization (nanoseconds).
 func (s Summary) MarshalJSON() ([]byte, error) {
-	type alias Summary
+	type alias Summary //art-dupl:accept standard Go recursion-break idiom for custom JSON marshaling
 
 	data, err := json.Marshal(struct {
 		alias
@@ -121,7 +123,7 @@ func (s Summary) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON reads AnalysisTime from milliseconds back into time.Duration.
 func (s *Summary) UnmarshalJSON(data []byte) error {
-	type alias Summary
+	type alias Summary //art-dupl:accept standard Go recursion-break idiom for custom JSON marshaling
 
 	aux := struct {
 		alias
