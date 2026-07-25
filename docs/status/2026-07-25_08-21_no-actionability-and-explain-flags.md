@@ -279,3 +279,27 @@ Currently both flags are root-only. `stats` doesn't show individual clones, so i
 ### 3. Why does the auto-git daemon keep re-adding `exhaustruct` + `tagliatelle` to `.golangci.yml`?
 
 This has happened 3 times across 2 sessions. The daemon reformats the file (2-space → 4-space indentation) AND re-adds both linters to the enable list AND restores the `exhaustruct:` config block. Is there a formatter hook or template that's seeding the file? Should I add `.golangci.yml` to a daemon exclude list? I cannot diagnose the daemon's configuration from here.
+
+---
+
+## H) RESOLUTIONS (later session, 2026-07-25)
+
+The three open questions above are now resolved:
+
+### Q1 — `NonActionablePattern` typing: **keep `string` in domain**
+
+**Decision:** `string` stays. The pattern taxonomy (`PatternLabel` + 18 constants) is an output/heuristic concern owned by `printer/`. Moving it to `domain/` would invert the dependency in the wrong direction — domain would own an output-labeling vocabulary that only `printer/` produces and consumes. The `string` values are stable serialization identifiers; the field is populated by `printer/clone_processor.go` and consumed by `printer/text.go` (`writeExplanation`) and `printer/json.go` (`toJSONClone`). The type-safety loss is acceptable because no domain logic ever switches on this value. (TODO item #43 — ADR for PatternLabel location — can record this decision.)
+
+### Q2 — Subcommand scope: **keep root-only**
+
+**Decision:** Both flags stay root-only (main analysis only). Rationale:
+- `--explain` is inherently a text-output feature (`writeExplanation` writes human-readable lines). `stats`/`baseline`/`check` have different output semantics (tables, grades, diffs) where per-group explanation doesn't map.
+- `--no-actionability` controls the `if semantic && !suppression.NoActionability` gate in `run_output.go`. `stats` reports aggregate counts (no individual clone output), so the flag has no effect there. The one valid use case — recording a baseline *with* boilerplate clones — is real but niche; it can be added later by populating `NoActionability` in the `baseline record` `SuppressionConfig` site if demand emerges. Not worth the surface-area cost now.
+
+### Q3 — Auto-git daemon re-adding forbidden linters: **root cause found**
+
+**Root cause:** The auto-git daemon (`Unknown Author <unknown@example.com>`) runs a `golangci-lint` config migration/normalize command that re-enables **all** available linters and re-indents the file. Verified via `git show 4b33fc05 -- .golangci.yml`: that single commit re-added `- exhaustruct`, `- tagliatelle`, and the `exhaustruct:` exclusion block in one diff. The daemon commits directly to git **without** running the CI guard (`scripts/check-disabled-linters.sh`), which is why the guard doesn't stop it.
+
+**Why the guard still matters:** `nix build .#checks.x86_64-linux.disabled-linters` catches the regression and would fail CI on the daemon's commit. The guard is correct; the daemon's commit path is the gap.
+
+**Mitigation applied this session:** Removed the 3 references again (4th reversion). This remains a recurring operational issue — the durable fix requires either (a) a daemon-side exclude list for `.golangci.yml`, or (b) a pre-receive/CI gate that rejects commits touching `.golangci.yml` with forbidden linters. Neither is actionable from the codebase alone.
