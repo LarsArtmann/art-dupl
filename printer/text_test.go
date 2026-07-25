@@ -661,3 +661,117 @@ func (fw *firstWriteFailsWriter) Write(p []byte) (int, error) {
 
 	return fw.w.Write(p)
 }
+
+func TestTextPrinter_writeExplanation(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		cls        domain.CloneClassification
+		cloneCount int
+		want       []string
+		notWant    []string
+	}{
+		{
+			name: "actionable clone",
+			cls: domain.CloneClassification{
+				CloneType:     domain.CloneType2,
+				Actionability: domain.Actionable,
+				Category:      domain.CategoryFunction,
+				Tokens:        42,
+				Lines:         8,
+			},
+			cloneCount: 3,
+			want:       []string{"type-2", "actionable", "function", "42 tokens, 8 lines"},
+			notWant:    []string{"non-actionable", "extractable"},
+		},
+		{
+			name: "non-actionable with pattern",
+			cls: domain.CloneClassification{
+				CloneType:            domain.CloneType2,
+				Actionability:        domain.NonActionable,
+				NonActionablePattern: "guard-clause",
+				Category:             domain.CategoryFunction,
+				Tokens:               5,
+				Lines:                2,
+			},
+			cloneCount: 4,
+			want:       []string{"non-actionable (guard-clause)"},
+			notWant:    []string{"extractable"},
+		},
+		{
+			name: "non-actionable without pattern defaults to boilerplate",
+			cls: domain.CloneClassification{
+				CloneType:     domain.CloneType1,
+				Actionability: domain.NonActionable,
+				Category:      domain.CategoryBlock,
+				Tokens:        3,
+				Lines:         1,
+			},
+			cloneCount: 2,
+			want:       []string{"non-actionable (boilerplate)"},
+		},
+		{
+			name: "extractable shows savings",
+			cls: domain.CloneClassification{
+				CloneType:      domain.CloneType2,
+				Actionability:  domain.Actionable,
+				Category:       domain.CategoryFunction,
+				Tokens:         10,
+				Lines:          5,
+				Extractability: domain.Extractability{CanExtract: true, EstimatedLinesSaved: 12},
+			},
+			cloneCount: 3,
+			want:       []string{"extractable: ~12 lines saved across 3 sites"},
+		},
+		{
+			name: "suggestion on actionable clone uses fix label",
+			cls: domain.CloneClassification{
+				CloneType:     domain.CloneType2,
+				Actionability: domain.Actionable,
+				Category:      domain.CategoryFunction,
+				Suggestion:    "extract to a helper",
+			},
+			want: []string{"  fix: extract to a helper"},
+		},
+		{
+			name: "suggestion on non-actionable clone uses why label",
+			cls: domain.CloneClassification{
+				CloneType:            domain.CloneType2,
+				Actionability:        domain.NonActionable,
+				NonActionablePattern: "signature-only",
+				Category:             domain.CategoryFunction,
+				Suggestion:           "required method signature",
+			},
+			want: []string{"  why: required method signature"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+
+			tp := &TextPrinter{w: &buf, ReadFile: mockReadFile("")}
+
+			if err := tp.writeExplanation(tt.cls, tt.cloneCount); err != nil {
+				t.Fatalf("writeExplanation: %v", err)
+			}
+
+			got := buf.String()
+
+			for _, s := range tt.want {
+				if !strings.Contains(got, s) {
+					t.Errorf("output missing %q\noutput:\n%s", s, got)
+				}
+			}
+
+			for _, s := range tt.notWant {
+				if strings.Contains(got, s) {
+					t.Errorf("output unexpectedly contains %q\noutput:\n%s", s, got)
+				}
+			}
+		})
+	}
+}

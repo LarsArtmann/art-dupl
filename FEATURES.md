@@ -109,6 +109,9 @@
 | **Clone Type Classification** | FULLY_FUNCTIONAL | Labels each clone type-1/2/3 in JSON, SARIF, and `--rich-text` output       |
 | **Extractability Score**      | FULLY_FUNCTIONAL | `lines_saved` + `extractable` fields in JSON for refactoring prioritization |
 | **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.) |
+| **Actionability Override**    | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate |
+| **Explain Mode**              | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability) |
+| **Pattern in JSON**           | FULLY_FUNCTIONAL | `non_actionable_pattern` field in JSON output identifies which boilerplate pattern matched |
 | **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported          |
 | **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides           |
 
@@ -173,6 +176,8 @@
 | **Test Suppression**       | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
 | **Token Dump**             | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
 | **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
+| **Explain Mode**           | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)  |
+| **Actionability Toggle**   | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate        |
 | **Type-Aware Mode**        | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
 
 ---

@@ -150,6 +150,63 @@ func TestJSONPrinter_EmptyOutput(t *testing.T) {
 	}
 }
 
+func TestToJSONClone_NonActionablePattern(t *testing.T) {
+	t.Parallel()
+
+	cl := domain.ProcessedClone{
+		CloneRef: domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5},
+		Classification: domain.CloneClassification{
+			NonActionablePattern: "guard-clause",
+			Actionability:        domain.NonActionable,
+			CloneType:            domain.CloneType2,
+		},
+	}
+
+	got := toJSONClone(cl)
+
+	if got.NonActionablePattern != "guard-clause" {
+		t.Errorf("NonActionablePattern = %q, want %q", got.NonActionablePattern, "guard-clause")
+	}
+}
+
+func TestJSONPrinter_NonActionablePatternSerialized(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	jp := NewJSON(&buf, mockReadFile("")).(*JSONPrinter)
+	jp.cloneGroups = []CloneGroup{
+		{
+			Hash: "h",
+			Size: 10,
+			Clones: []JSONClone{
+				{
+					CloneRef:             domain.CloneRef{Filename: "a.go", LineStart: 1, LineEnd: 5},
+					NonActionablePattern: "guard-clause",
+					Actionability:        domain.NonActionable,
+				},
+			},
+		},
+	}
+	jp.totalClones = 1
+	jp.filesCount = 1
+
+	if err := jp.OutputJSON(5, "size", ""); err != nil {
+		t.Fatalf("OutputJSON: %v", err)
+	}
+
+	var output JSONOutput
+
+	if err := json.Unmarshal(buf.Bytes(), &output); err != nil {
+		t.Fatalf("parse output: %v", err)
+	}
+
+	got := output.CloneGroups[0].Clones[0].NonActionablePattern
+	if got != "guard-clause" {
+		t.Errorf("NonActionablePattern = %q, want %q", got, "guard-clause")
+	}
+}
+
 func createMockNodes(t *testing.T) []*syntax.Node {
 	t.Helper()
 	// Create a simple mock node structure
