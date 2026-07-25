@@ -3,6 +3,7 @@ package bdd
 import (
 	"encoding/json/v2"
 	"fmt"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	. "github.com/onsi/ginkgo/v2"
@@ -144,5 +145,57 @@ func logError(err error) {
 			Expect(file).To(HaveKey("priority"))
 			Expect(file).To(HaveKey("actionability"))
 		})
+	})
+})
+
+var _ = Describe("--no-actionability flag", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+
+		err := setup.CreateTestFiles(map[string]string{
+			"guard1.go": `package main
+
+func processA(enabled bool) {
+	if !enabled {
+		return
+	}
+}
+`,
+			"guard2.go": `package main
+
+func processB(active bool) {
+	if !active {
+		return
+	}
+}
+`,
+		})
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("should show non-actionable guard-clause clones when flag is set", func() {
+		outputNoFilter, err := setup.RunArtDupl("--quiet", "--semantic", "--no-actionability", "--threshold", "1")
+		if err != nil {
+			fmt.Printf("Command failed with output: %s\n", string(outputNoFilter))
+		}
+
+		Expect(err).ToNot(HaveOccurred())
+		Expect(string(outputNoFilter)).To(ContainSubstring("guard1.go"),
+			"--no-actionability should show the guard-clause clone")
+	})
+
+	It("should show at least as many clones as default semantic mode", func() {
+		outputDefault, err := setup.RunArtDupl("--quiet", "--semantic", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		outputNoFilter, err := setup.RunArtDupl("--quiet", "--semantic", "--no-actionability", "--threshold", "1")
+		Expect(err).ToNot(HaveOccurred())
+
+		defaultCount := strings.Count(string(outputDefault), "guard1.go")
+		noFilterCount := strings.Count(string(outputNoFilter), "guard1.go")
+		Expect(noFilterCount).To(BeNumerically(">=", defaultCount),
+			"--no-actionability should show at least as many clones as default")
 	})
 })
