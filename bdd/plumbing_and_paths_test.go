@@ -44,8 +44,7 @@ var _ = Describe("Plumbing Output Format", func() {
 
 	Context("When using plumbing output", func() {
 		It("should produce machine-readable output", func() {
-			duplicateCode := "package main
-" + testutil.DuplicateFuncSource("common")
+			duplicateCode := "package main\n" + testutil.DuplicateFuncSource("common")
 
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -169,8 +168,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 			err := setup.CreateSubdirectories("pkg1", "pkg2", "pkg3")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := "package main
-" + testutil.DuplicateFuncSource("common")
+			duplicateCode := "package main\n" + testutil.DuplicateFuncSource("common")
 
 			// Create duplicates in different directories
 			err = setup.CreateFileWithContent("pkg1/file1.go", duplicateCode)

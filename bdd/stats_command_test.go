@@ -318,8 +318,7 @@ func processData() {
 		})
 
 		It("should calculate health score correctly", func() {
-			duplicateCode := "package main
-" + testutil.DuplicateFuncSource("duplicate")
+			duplicateCode := "package main\n" + testutil.DuplicateFuncSource("duplicate")
 
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
