@@ -36,15 +36,36 @@ func isAssignWithErrorCheck(nodeSeqs [][]*domain.CloneNode) bool {
 }
 
 // isSingleCallExpression reports whether every clone is exactly one CallExpr
-// node. Single function calls with different arguments are not actionable
-// duplication — they are just using the same API with different data.
-// Examples: errors.New("foo"), fmt.Println("bar"), http.Get(url).
+// node, either as a bare CallExpr (non-statement match) or as an ExprStmt
+// wrapping a single CallExpr (statement-level match). Single function calls
+// with different arguments are not actionable duplication — they are just
+// using the same API with different data.
+// Examples: errors.New("foo"), fmt.Println("bar"), http.Get(url), t.Parallel().
 func isSingleCallExpression(nodeSeqs [][]*domain.CloneNode) bool {
 	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
 		if len(seq) != 1 {
 			return false
 		}
 
-		return seq[0].BaseType == golang.CallExpr
+		return isLoneCallExpr(seq[0])
 	})
+}
+
+// isLoneCallExpr reports whether a single CloneNode is a bare CallExpr or an
+// ExprStmt wrapping exactly one CallExpr. In Go's AST, a standalone function
+// call as a statement (e.g. t.Parallel()) is wrapped in an ExprStmt. When
+// statement-level tokenization is active, the matched node has BaseType
+// ExprStmt, not CallExpr, so we must look inside the ExprStmt to find the call.
+func isLoneCallExpr(n *domain.CloneNode) bool {
+	if n.BaseType == golang.CallExpr {
+		return true
+	}
+
+	if n.BaseType == golang.ExprStmt &&
+		len(n.Children) == 1 &&
+		n.Children[0].BaseType == golang.CallExpr {
+		return true
+	}
+
+	return false
 }

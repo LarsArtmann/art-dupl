@@ -87,6 +87,48 @@ func TestIsSingleCallExpression(t *testing.T) {
 			expected: true,
 		},
 		{
+			name: "ExprStmt wrapping CallExpr (statement-level t.Parallel())",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr, Children: []*domain.CloneNode{
+						{BaseType: golang.Ident, Name: "t"},
+					}},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "multiple ExprStmt(CallExpr) clones across files",
+			seqs: [][]*domain.CloneNode{
+				{{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+				}}},
+				{{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+				}}},
+			},
+			expected: true,
+		},
+		{
+			name: "ExprStmt wrapping non-CallExpr (not lone call)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "ExprStmt with multiple children (not lone call)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ExprStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.CallExpr},
+					{BaseType: golang.CallExpr},
+				}},
+			}},
+			expected: false,
+		},
+		{
 			name: "two single CallExpr clones",
 			seqs: [][]*domain.CloneNode{
 				{{BaseType: golang.CallExpr}},
