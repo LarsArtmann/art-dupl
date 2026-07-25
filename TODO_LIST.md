@@ -1,6 +1,6 @@
 # TODO List
 
-**Last Updated:** 2026-07-25
+**Last Updated:** 2026-07-26
 
 Actionable items planned for the next 2-4 weeks. Completed work is in `CHANGELOG.md`.
 Items here are OPEN work only; no completed, rejected, or resolved items.
@@ -21,10 +21,9 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 
 - [ ] **Push defense-in-depth into gogenfilter**: `filterExcludedGenerated` in `cmd/util.go` patches a gap where filename-gated category filters miss files without expected suffixes (`_templ.go`, `_sqlc.go`, `*.pb.go`). The proper fix is making gogenfilter's category filters content-based as a fallback, or making `FilterDetailed` always run a generic content check. Track: upstream issue/PR against `github.com/LarsArtmann/gogenfilter`.
 - [ ] **Refactor `generatorIncludes` struct**: 6 boolean fields (SQLC, Templ, Protobuf, Mockgen, Stringer, Generic) with shotgun surgery on every new category. Consider a `map[string]struct{}` or bitfield.
-- [ ] **Unify `allowsContent` and `filterExcludedGenerated`**: Both switch on the same content markers with opposite polarity. Extract a single `categorizeContent` function.
-- [ ] **Lazy content reading**: `shouldIncludeFile` reads content upfront for every file when includes are active, even if filename-based filter would catch it. Read only when filename check doesn't match.
-- [ ] **Use `bytes.Contains` instead of `string(content)`**: Avoid heap allocation in `filterExcludedGenerated` and `allowsContent` for large files.
-- [ ] **Early-exit optimization**: If file content doesn't contain "Code generated", skip all marker checks in `filterExcludedGenerated`.
+- [x] **Unify `allowsContent` and `filterExcludedGenerated`**: Both switched on the same content markers with opposite polarity. Extracted a single `matchedGeneratedCategory` helper (now the one source of truth for templ/sqlc/protobuf marker matching) plus a `categoryIncluded` reason→field mapping.
+- [ ] **Lazy content reading**: `shouldIncludeFile` reads content upfront for every file when includes are active, even if filename-based filter would catch it. Read only when filename check doesn't match. (Note: the marker-matching path itself now early-exits on files lacking the `"Code generated"` header via `bytes.Contains`, avoiding the `string(content)` copy for regular files.)
+- [x] **Use `bytes.Contains` instead of `string(content)`** + **Early-exit optimization**: Done together inside `matchedGeneratedCategory` and `allowsContent`. The common case (non-generated files) now returns after a single `bytes.Contains(content, []byte("Code generated"))` with no `string(content)` allocation; escape analysis confirms the constant-needle `[]byte` conversions stay on the stack.
 
 ### CLI and UX
 
@@ -41,7 +40,7 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 
 ### Code Hygiene
 
-- [ ] **`SetFilterSourceStats` unit test**: The `FilterStats.SourceBreakdown()` path (distinguishing `FilterSourceGogenfilter` vs `FilterSourceDefenseInDepth`) has no dedicated unit test. No regression protection if the source tracking logic changes.
+- [x] **`SetFilterSourceStats` unit test**: Added `cmd/filter_stats_test.go` with dedicated coverage for `SourceBreakdown()`, `RecordWithSource` source attribution, defensive-copy guarantees, and nil-receiver safety (the latter uncovered and fixed a real nil-panic bug in `Breakdown`/`SourceBreakdown` where `s.byReason`/`s.bySource` were evaluated as args before the nil-checked `copyMapUnderLock` ran — refactored to a closure pattern matching `withReadLock`).
 - [ ] **`--no-actionability` flag**: The principled fix for test-fixture false positives (currently worked around with "big enough fixtures" via `testutil.DuplicateFuncSource`). A flag to disable actionability filtering would let users see all clones including boilerplate, and would fix the BDD fixture fragility at the root.
 
 ---

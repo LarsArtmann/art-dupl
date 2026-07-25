@@ -23,33 +23,33 @@ Used 3 parallel sub-agents to produce structured summaries (topic, done, open, n
 
 Each annotation placed as a blockquote immediately after the opening metadata (never between title and body). Each cites specific commit hashes, what shipped, and what remains open. No generic banners.
 
-| File | Decision | What the annotation says |
-|------|----------|--------------------------|
-| `2026-07-24_19-48_clone-type-consolidation-status.md` | ANNOTATE | Shipped in v0.4.0 (`e505886e`). Known limitations documented. |
-| `2026-07-24_21-56_docs-health-update-old-docs-sprint-2.md` | ANNOTATE | All follow-ups addressed in Sprint 3+. Lint guard now prevents regression. |
-| `2026-07-24_22-15_self-critique-sprint-3.html` | ANNOTATE | Used `callout-solution` CSS class (CSP-safe, no inline styles). All 8 items resolved. |
-| `2026-07-24_23-34_post-sprint-cleanup-and-hardening.md` | ANNOTATE | All immediate follow-ups resolved. Dead nolint directives removed. |
-| `2026-07-24_23-52_generated-code-defense-in-depth.md` | ANNOTATE | Feature shipped. CHANGELOG updated. BDD tests added. |
-| `2026-07-25_00-30_code-hygiene-sprint-self-review.md` | ANNOTATE | Partial items resolved in gap-closure session. |
-| `2026-07-25_02-49_code-hygiene-gap-closure.md` | ANNOTATE | 3 new gaps caught and fixed within same session. |
-| `2026-07-25_04-08_actionability-exprstmt-gap-fix.md` | ANNOTATE | Fix shipped. System expanded to 18 patterns. |
-| `2026-07-25_04-31_smart-actionability-guard-clauses-terminal-statements.md` | ANNOTATE | Shipped. Patterns registered as priorities 5 and 8. |
-| `2026-07-25_05-11_bdd-fixture-actionability-fix-postmortem.md` | ANNOTATE | Tests green. Consolidated into `testutil.DuplicateFuncSource`. |
-| `2026-07-25_05-19_buildflow-failure-diagnosis-and-concurrent-agent-revert.md` | ANNOTATE | Lint regression fixed (again). CI guard is durable fix. |
-| `2026-07-25_06-28_accept-directive-fix-and-test-helper-delegate-status.md` | ANNOTATE | Feature shipped. Pattern #18. Docs updated in docs-health session. |
-| `docs/planning/2026-07-24_22-31_SUPERB-pareto-execution-plan.md` | ANNOTATE | 21/30 tasks shipped. 5 stubs removed. Remaining in TODO_LIST. |
-| `docs/planning/2026-07-25_05-14_SUPERB-accept-directive-ux-fix-and-test-helper-pattern.md` | ANNOTATE | EXECUTED. Root cause was Bug 2 (hash-vs-description), not Bug 1. |
+| File                                                                                       | Decision | What the annotation says                                                              |
+| ------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------- |
+| `2026-07-24_19-48_clone-type-consolidation-status.md`                                      | ANNOTATE | Shipped in v0.4.0 (`e505886e`). Known limitations documented.                         |
+| `2026-07-24_21-56_docs-health-update-old-docs-sprint-2.md`                                 | ANNOTATE | All follow-ups addressed in Sprint 3+. Lint guard now prevents regression.            |
+| `2026-07-24_22-15_self-critique-sprint-3.html`                                             | ANNOTATE | Used `callout-solution` CSS class (CSP-safe, no inline styles). All 8 items resolved. |
+| `2026-07-24_23-34_post-sprint-cleanup-and-hardening.md`                                    | ANNOTATE | All immediate follow-ups resolved. Dead nolint directives removed.                    |
+| `2026-07-24_23-52_generated-code-defense-in-depth.md`                                      | ANNOTATE | Feature shipped. CHANGELOG updated. BDD tests added.                                  |
+| `2026-07-25_00-30_code-hygiene-sprint-self-review.md`                                      | ANNOTATE | Partial items resolved in gap-closure session.                                        |
+| `2026-07-25_02-49_code-hygiene-gap-closure.md`                                             | ANNOTATE | 3 new gaps caught and fixed within same session.                                      |
+| `2026-07-25_04-08_actionability-exprstmt-gap-fix.md`                                       | ANNOTATE | Fix shipped. System expanded to 18 patterns.                                          |
+| `2026-07-25_04-31_smart-actionability-guard-clauses-terminal-statements.md`                | ANNOTATE | Shipped. Patterns registered as priorities 5 and 8.                                   |
+| `2026-07-25_05-11_bdd-fixture-actionability-fix-postmortem.md`                             | ANNOTATE | Tests green. Consolidated into `testutil.DuplicateFuncSource`.                        |
+| `2026-07-25_05-19_buildflow-failure-diagnosis-and-concurrent-agent-revert.md`              | ANNOTATE | Lint regression fixed (again). CI guard is durable fix.                               |
+| `2026-07-25_06-28_accept-directive-fix-and-test-helper-delegate-status.md`                 | ANNOTATE | Feature shipped. Pattern #18. Docs updated in docs-health session.                    |
+| `docs/planning/2026-07-24_22-31_SUPERB-pareto-execution-plan.md`                           | ANNOTATE | 21/30 tasks shipped. 5 stubs removed. Remaining in TODO_LIST.                         |
+| `docs/planning/2026-07-25_05-14_SUPERB-accept-directive-ux-fix-and-test-helper-pattern.md` | ANNOTATE | EXECUTED. Root cause was Bug 2 (hash-vs-description), not Bug 1.                      |
 
 **6 files skipped** (already had resolution blockquotes from prior sessions: the two CI-fix-sprint files, the docs-health sprint 1, the type-aware implementation, the v0.4.0 postmortem, the full-todo-execution sprint).
 
 ### 3. Updated 4 living docs with factual corrections
 
-| Doc | Corrections |
-|-----|-------------|
-| **FEATURES.md** | Actionability patterns 15 to 18 (added guard-clause, single-simple-statement, test-helper-delegate). Clone categories 13 to 17 (listed all). GitHub releases updated (v0.4.0 release exists; was "only v0.1.0"). Date updated. Suggestion mappings "24" replaced with accurate description (actual: 7 case branches). Stale "Race Test Not in CI" limitation removed (ci.yml HAS a Race Test step). |
-| **CHANGELOG.md** | `[Unreleased]`: added defense-in-depth generated code filtering, 3 new actionability patterns (15 to 18), BDD fixture consolidation, accept-directive UX fix (2 bugs). |
-| **TODO_LIST.md** | Added 2 genuinely open items: `SetFilterSourceStats` unit test (no regression protection), `--no-actionability` flag (principled fix for test-fixture fragility). |
-| **ROADMAP.md** | Pattern count 15 to 18. |
+| Doc              | Corrections                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **FEATURES.md**  | Actionability patterns 15 to 18 (added guard-clause, single-simple-statement, test-helper-delegate). Clone categories 13 to 17 (listed all). GitHub releases updated (v0.4.0 release exists; was "only v0.1.0"). Date updated. Suggestion mappings "24" replaced with accurate description (actual: 7 case branches). Stale "Race Test Not in CI" limitation removed (ci.yml HAS a Race Test step). |
+| **CHANGELOG.md** | `[Unreleased]`: added defense-in-depth generated code filtering, 3 new actionability patterns (15 to 18), BDD fixture consolidation, accept-directive UX fix (2 bugs).                                                                                                                                                                                                                              |
+| **TODO_LIST.md** | Added 2 genuinely open items: `SetFilterSourceStats` unit test (no regression protection), `--no-actionability` flag (principled fix for test-fixture fragility).                                                                                                                                                                                                                                   |
+| **ROADMAP.md**   | Pattern count 15 to 18.                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### 4. Fixed recurring lint config regression (6th time)
 
@@ -114,6 +114,7 @@ Unverified tuning claim in FEATURES.md Overview. A prior session (Sprint 3 HTML)
 ### D1: Missed 2 stale FEATURES.md facts on first pass
 
 I updated actionability patterns (15 to 18), categories (13 to 17), GitHub releases, and date in the first pass. But I missed:
+
 - **"24 suggestion mappings"** (actual: 7 case branches in `getSuggestion`)
 - **"Race Test Not in CI"** (ci.yml HAS a Race Test step with `CGO_ENABLED=1`)
 
@@ -157,98 +158,98 @@ The `DefaultThreshold == config.DefaultThreshold` drift-detection idea (from the
 
 ### Immediate Fixes (from this session's gaps)
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 1 | Verify AGENTS.md actionability pattern count (18) against `actionability.go` | Critical | 2min |
-| 2 | Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md | High | 10min |
-| 3 | Run internal markdown link check (`grep -roE '\]\([^)]+\)' *.md docs/`) | High | 5min |
-| 4 | Update HOW_TO_USE.md accept-directive section with UX fix details | Medium | 15min |
+| #   | Task                                                                         | Priority | Effort |
+| --- | ---------------------------------------------------------------------------- | -------- | ------ |
+| 1   | Verify AGENTS.md actionability pattern count (18) against `actionability.go` | Critical | 2min   |
+| 2   | Verify or remove "6,000+ Go files, 320+ templ files" claim in FEATURES.md    | High     | 10min  |
+| 3   | Run internal markdown link check (`grep -roE '\]\([^)]+\)' *.md docs/`)      | High     | 5min   |
+| 4   | Update HOW_TO_USE.md accept-directive section with UX fix details            | Medium   | 15min  |
 
 ### Documentation Quality
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 5 | Verify TESTING.md claims against actual test infrastructure | Medium | 15min |
-| 6 | Verify CONTRIBUTING.md commands run without error | Medium | 10min |
-| 7 | Verify DOMAIN_LANGUAGE.md glossary terms against code | Medium | 15min |
-| 8 | Verify SDK_DESIGN.md against `pkg/artdupl/types.go` | Medium | 15min |
-| 9 | Add drift-detection test: assert doc counts match code constants | Medium | 30min |
-| 10 | Replace all hardcoded counts in FEATURES.md with descriptions or commands | Low | 20min |
-| 11 | Decide: split CHANGELOG `[Unreleased]` into a versioned release? | Low | 5min |
+| #   | Task                                                                      | Priority | Effort |
+| --- | ------------------------------------------------------------------------- | -------- | ------ |
+| 5   | Verify TESTING.md claims against actual test infrastructure               | Medium   | 15min  |
+| 6   | Verify CONTRIBUTING.md commands run without error                         | Medium   | 10min  |
+| 7   | Verify DOMAIN_LANGUAGE.md glossary terms against code                     | Medium   | 15min  |
+| 8   | Verify SDK_DESIGN.md against `pkg/artdupl/types.go`                       | Medium   | 15min  |
+| 9   | Add drift-detection test: assert doc counts match code constants          | Medium   | 30min  |
+| 10  | Replace all hardcoded counts in FEATURES.md with descriptions or commands | Low      | 20min  |
+| 11  | Decide: split CHANGELOG `[Unreleased]` into a versioned release?          | Low      | 5min   |
 
 ### Actionability System
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 12 | `--no-actionability` flag: principled fix for test-fixture false positives | High | 45min |
-| 13 | `SetFilterSourceStats` unit test: regression protection for source tracking | High | 20min |
-| 14 | BDD integration test for `guard-clause` and `single-simple-statement` patterns | Medium | 30min |
-| 15 | `--debug-actionability` flag: show which pattern matched each clone group | Medium | 45min |
-| 16 | Pattern audit: verify all 18 patterns have test coverage | Medium | 30min |
-| 17 | Templ support verification: do actionability patterns work on templ ASTs? | Medium | 30min |
+| #   | Task                                                                           | Priority | Effort |
+| --- | ------------------------------------------------------------------------------ | -------- | ------ |
+| 12  | `--no-actionability` flag: principled fix for test-fixture false positives     | High     | 45min  |
+| 13  | `SetFilterSourceStats` unit test: regression protection for source tracking    | High     | 20min  |
+| 14  | BDD integration test for `guard-clause` and `single-simple-statement` patterns | Medium   | 30min  |
+| 15  | `--debug-actionability` flag: show which pattern matched each clone group      | Medium   | 45min  |
+| 16  | Pattern audit: verify all 18 patterns have test coverage                       | Medium   | 30min  |
+| 17  | Templ support verification: do actionability patterns work on templ ASTs?      | Medium   | 30min  |
 
 ### Filtering and Generated Code
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 18 | Push defense-in-depth into gogenfilter upstream | Medium | 60min |
-| 19 | Refactor `generatorIncludes` struct: 6 booleans to map or bitfield | Low | 30min |
-| 20 | Unify `allowsContent` and `filterExcludedGenerated` | Low | 20min |
-| 21 | Lazy content reading: skip when filename check suffices | Low | 20min |
-| 22 | `bytes.Contains` instead of `string(content)` in filter checks | Low | 10min |
+| #   | Task                                                               | Priority | Effort |
+| --- | ------------------------------------------------------------------ | -------- | ------ |
+| 18  | Push defense-in-depth into gogenfilter upstream                    | Medium   | 60min  |
+| 19  | Refactor `generatorIncludes` struct: 6 booleans to map or bitfield | Low      | 30min  |
+| 20  | Unify `allowsContent` and `filterExcludedGenerated`                | Low      | 20min  |
+| 21  | Lazy content reading: skip when filename check suffices            | Low      | 20min  |
+| 22  | `bytes.Contains` instead of `string(content)` in filter checks     | Low      | 10min  |
 
 ### CI and Infrastructure
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 23 | Investigate auto-committer: can it be configured or disabled? | Critical | 30min |
-| 24 | Pre-commit hook for `check-disabled-linters.sh` (catch before push) | High | 15min |
-| 25 | CI step to verify `.golangci.yml` has no disabled linters in enable list | High | 15min |
-| 26 | GitHub Release for v0.2.0 and v0.3.0 (tags exist, no release assets) | Low | 10min |
-| 27 | SARIF output validation against GitHub schema validator in CI | Low | 30min |
+| #   | Task                                                                     | Priority | Effort |
+| --- | ------------------------------------------------------------------------ | -------- | ------ |
+| 23  | Investigate auto-committer: can it be configured or disabled?            | Critical | 30min  |
+| 24  | Pre-commit hook for `check-disabled-linters.sh` (catch before push)      | High     | 15min  |
+| 25  | CI step to verify `.golangci.yml` has no disabled linters in enable list | High     | 15min  |
+| 26  | GitHub Release for v0.2.0 and v0.3.0 (tags exist, no release assets)     | Low      | 10min  |
+| 27  | SARIF output validation against GitHub schema validator in CI            | Low      | 30min  |
 
 ### CLI and UX
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 28 | YAML config file support (`.artdupl.yml`) | Medium | 60min |
-| 29 | `--diff-report <baseline>` mode | Medium | 90min |
-| 30 | `--explain` flag (why was this clone reported?) | Medium | 60min |
-| 31 | HTML report: file output flag, TTY auto-detection, stable `id` attributes | Low | 45min |
-| 32 | `--recommend-threshold`: auto-suggest based on codebase size | Low | 45min |
+| #   | Task                                                                      | Priority | Effort |
+| --- | ------------------------------------------------------------------------- | -------- | ------ |
+| 28  | YAML config file support (`.artdupl.yml`)                                 | Medium   | 60min  |
+| 29  | `--diff-report <baseline>` mode                                           | Medium   | 90min  |
+| 30  | `--explain` flag (why was this clone reported?)                           | Medium   | 60min  |
+| 31  | HTML report: file output flag, TTY auto-detection, stable `id` attributes | Low      | 45min  |
+| 32  | `--recommend-threshold`: auto-suggest based on codebase size              | Low      | 45min  |
 
 ### Detection and Architecture
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 33 | Split `printer/` into sub-packages (~29 files, ~3500+ lines) | Medium | 120min |
-| 34 | Templ Phase 3: expression normalization | Low | 60min |
-| 35 | Interface-method-aware suppression at all thresholds | Low | 60min |
-| 36 | Incremental type checking for `--type-aware` mode | Low | 90min |
-| 37 | Caching for type-checking results (`go/types` cache) | Low | 60min |
+| #   | Task                                                         | Priority | Effort |
+| --- | ------------------------------------------------------------ | -------- | ------ |
+| 33  | Split `printer/` into sub-packages (~29 files, ~3500+ lines) | Medium   | 120min |
+| 34  | Templ Phase 3: expression normalization                      | Low      | 60min  |
+| 35  | Interface-method-aware suppression at all thresholds         | Low      | 60min  |
+| 36  | Incremental type checking for `--type-aware` mode            | Low      | 90min  |
+| 37  | Caching for type-checking results (`go/types` cache)         | Low      | 60min  |
 
 ### Code Quality
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 38 | SDK/CLI drift-detection test (`DefaultThreshold` consistency) | Medium | 20min |
-| 39 | Profile `filterExcludedGenerated` content-read path | Low | 20min |
-| 40 | Consolidate marker constants (`templMarker`, `sqlcMarker`, etc.) | Low | 15min |
-| 41 | Property-based test for filter logic | Low | 45min |
-| 42 | `--filter-stats` flag: show per-category filter counts | Low | 30min |
+| #   | Task                                                             | Priority | Effort |
+| --- | ---------------------------------------------------------------- | -------- | ------ |
+| 38  | SDK/CLI drift-detection test (`DefaultThreshold` consistency)    | Medium   | 20min  |
+| 39  | Profile `filterExcludedGenerated` content-read path              | Low      | 20min  |
+| 40  | Consolidate marker constants (`templMarker`, `sqlcMarker`, etc.) | Low      | 15min  |
+| 41  | Property-based test for filter logic                             | Low      | 45min  |
+| 42  | `--filter-stats` flag: show per-category filter counts           | Low      | 30min  |
 
 ### Process
 
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 43 | Status report budget: max 5 unresolved reports before mandatory cleanup | Low | 5min |
-| 44 | RELEASE.md: add "verify doc counts" step to release checklist | Low | 10min |
-| 45 | ADR for FilterSource tracking design | Low | 20min |
-| 46 | Document accept-directive limitations in FILTERING.md (if it exists) | Low | 15min |
-| 47 | Audit godoc examples (`pkg/artdupl/doc.go`) for stale thresholds | Medium | 10min |
-| 48 | LSP diagnostics: 27 `gopls stdversion` warnings (json/v2 requires go1.27) | Low | 10min |
-| 49 | `examples/examples_sdk_demo.go`: verify threshold uses `DefaultThreshold` | Medium | 5min |
-| 50 | Performance benchmark for `--type-aware` mode (10-100x slower claim) | Low | 30min |
+| #   | Task                                                                      | Priority | Effort |
+| --- | ------------------------------------------------------------------------- | -------- | ------ |
+| 43  | Status report budget: max 5 unresolved reports before mandatory cleanup   | Low      | 5min   |
+| 44  | RELEASE.md: add "verify doc counts" step to release checklist             | Low      | 10min  |
+| 45  | ADR for FilterSource tracking design                                      | Low      | 20min  |
+| 46  | Document accept-directive limitations in FILTERING.md (if it exists)      | Low      | 15min  |
+| 47  | Audit godoc examples (`pkg/artdupl/doc.go`) for stale thresholds          | Medium   | 10min  |
+| 48  | LSP diagnostics: 27 `gopls stdversion` warnings (json/v2 requires go1.27) | Low      | 10min  |
+| 49  | `examples/examples_sdk_demo.go`: verify threshold uses `DefaultThreshold` | Medium   | 5min   |
+| 50  | Performance benchmark for `--type-aware` mode (10-100x slower claim)      | Low      | 30min  |
 
 ---
 
