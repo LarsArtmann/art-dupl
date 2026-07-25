@@ -199,3 +199,60 @@ func processB(active bool) {
 			"--no-actionability should show at least as many clones as default")
 	})
 })
+
+var _ = Describe("--explain flag", func() {
+	var setup *testutil.BDDTestSetup
+
+	BeforeEach(func() {
+		setup = CreateBDDTestSetup()
+
+		err := setup.CreateTestFiles(map[string]string{
+			"dup1.go": `package main
+
+import "fmt"
+
+func logError(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func formatError(err error) string {
+	return fmt.Sprintf("error: %v", err)
+}
+`,
+			"dup2.go": `package main
+
+import "fmt"
+
+func logWarning(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func formatWarning(err error) string {
+	return fmt.Sprintf("error: %v", err)
+}
+`,
+		})
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("should include explanation lines with clone type and actionability", func() {
+		output, err := setup.RunArtDupl("--quiet", "--no-actionability", "--explain", "--threshold", "1")
+		if err != nil {
+			fmt.Printf("Command failed with output: %s\n", string(output))
+		}
+
+		Expect(err).ToNot(HaveOccurred())
+
+		outputStr := string(output)
+		Expect(outputStr).To(ContainSubstring("explain:"),
+			"--explain should produce explanation lines")
+		Expect(outputStr).To(ContainSubstring("type-"),
+			"explanation should include clone type")
+		Expect(outputStr).To(ContainSubstring("actionable"),
+			"explanation should include actionability verdict")
+	})
+})
