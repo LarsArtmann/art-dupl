@@ -4,6 +4,14 @@
 **Session:** Cleaning up the previous sprint's work (lint, stub flags, docs, SDK test)
 **Branch:** fork
 
+> **Resolution (2026-07-25):** All immediate follow-up items were resolved in subsequent
+> sessions. The 10 dead `//nolint:exhaustruct` directives were removed (code-hygiene
+> sprint). The SDK `DefaultThreshold` split-brain was fixed (`DefaultThreshold = 5`).
+> The 5 deferred stub-flag features (M26-M30: YAML config, `--diff-report`, `--explain`,
+> HTML improvements, `--recommend-threshold`) were removed as stubs and tracked as
+> genuine TODO_LIST items. The `exhaustruct`/`tagliatelle` lint regression was fixed
+> repeatedly and is now guarded by `scripts/check-disabled-linters.sh`.
+
 ---
 
 ## A) FULLY DONE (25/30 tasks from SUPERB Pareto Plan)

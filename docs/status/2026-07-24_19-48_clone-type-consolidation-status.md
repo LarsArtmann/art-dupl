@@ -5,6 +5,11 @@
 > **Branch:** `fork`
 > **Outcome:** Work was completed — but concurrently duplicated by another session
 
+> **Resolution (2026-07-25):** Shipped in v0.4.0 (`e505886e`). `domain.CloneRef` is
+> embedded in all clone-bearing types; `CloneWithContentMixin` and `LineRangeMixin`
+> eliminated. The open SPLIT-BRAIN.html staleness and SDK conversion-path independence
+> are documented as known limitations in `AGENTS.md`. No further action needed.
+
 ---
 
 ## Executive Summary

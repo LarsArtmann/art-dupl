@@ -4,6 +4,12 @@
 **Session:** Executing all 11 Code Hygiene items from TODO_LIST.md
 **Branch:** fork
 
+> **Resolution (2026-07-25):** The 2 partial items (Task 10: `examples_sdk_demo.go`
+> threshold, Task 11: `SourceBreakdown` dead code) were resolved in the gap-closure
+> session (`2026-07-25_02-49`). `SourceBreakdown()` is now wired into stats output via
+> `SetFilterSourceStats`. All `Threshold: 15` instances replaced with `DefaultThreshold`.
+> The remaining open item (`SetFilterSourceStats` unit test) is tracked in TODO_LIST.
+
 ---
 
 ## A) FULLY DONE (9/11 tasks)

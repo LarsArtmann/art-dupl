@@ -3,7 +3,7 @@
 **Date:** 2026-07-25 05:14
 **Branch:** fork
 **Commit:** 120552d2
-**Status:** Planning — awaiting approval
+**Status:** ~~Planning — awaiting approval~~ EXECUTED (2026-07-25): commits `95547e7f`, `c30f683d`, `a057928e`. See `docs/status/2026-07-25_06-28_accept-directive-fix-and-test-helper-delegate-status.md`. Root cause was Bug 2 (hash-vs-description collision), not Bug 1 (line-range) as this plan assumed.
 
 ---
 

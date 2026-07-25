@@ -8,6 +8,13 @@ linter-config drift, but a **concurrent auto-committing agent** reverted my conf
 4 minutes later. `nix flake check` is **STILL BROKEN**. My earlier "all green" summary
 was a **false victory** — I failed to notice HEAD had moved past my commit.
 
+> **Update 2026-07-25:** The Go side was already green (`42c5835d`). The lint-config
+> regression (`exhaustruct`/`tagliatelle` re-added by concurrent commit `55cba9d3`) was
+> fixed again in this docs-health session and the `scripts/check-disabled-linters.sh`
+> CI guard (wired into `nix flake check`) now catches re-additions. The auto-committer
+> has re-added these linters across commits `a271fe77`, `6c297383`, `cbb329a7`, and
+> `55cba9d3` — each time manually removed. The CI guard is the durable fix.
+
 ---
 
 ## a) FULLY DONE ✅

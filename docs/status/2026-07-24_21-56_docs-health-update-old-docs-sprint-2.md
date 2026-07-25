@@ -11,6 +11,14 @@
 
 Read all 6 `2026-07-2*` status files, annotated 3 stale snapshots, rebuilt 4 living docs, fixed a recurring lint config regression, and ran the full quality gate (build + test + lint all green). But I skipped several non-core docs, introduced a factual drift in AGENTS.md, and used em-dashes throughout despite the project rule against them.
 
+> **Resolution (2026-07-25):** All open follow-ups from this report were addressed in
+> subsequent sessions. AGENTS.md line 48 drift fixed (Sprint 3). Em-dashes cleaned across
+> TODO_LIST, ROADMAP, CHANGELOG, HOW_TO_USE, FEATURES, DOMAIN_LANGUAGE (Sprint 3, 69
+> removed). HOW_TO_USE `--type-aware` section added. SDK_DESIGN.md rewritten. The
+> `exhaustruct`/`tagliatelle` lint regression was fixed repeatedly across commits
+> `7df8fccd`, `ebc5fa58`, and the `scripts/check-disabled-linters.sh` CI guard now
+> prevents re-addition. This report's work is superseded by later docs-health passes.
+
 ---
 
 ## a) FULLY DONE
