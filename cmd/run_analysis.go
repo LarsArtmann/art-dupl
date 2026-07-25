@@ -162,6 +162,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 
 	return finalizeTreeBuild(params, schan, func() job.ParseStats {
 		incStats := <-incStatsChan
+
 		return job.ParseStats{
 			ParseStatsMixin: job.ParseStatsMixin{
 				FilesCount: incStats.FilesCount,
