@@ -150,13 +150,15 @@ func process(data string) error {
 	Context("When sorting by occurrence", func() {
 		It("should display most widespread clones first", func() {
 			// Create code that appears in many files
-			// Pattern 1: Function with string parameter and no return value
+			// Pattern 1: Multi-statement function (actionable duplication)
 			widespreadCode := `package main
 
 import "fmt"
 
 func commonFunction(message string) {
+	fmt.Println("start")
 	fmt.Println(message)
+	fmt.Println("end")
 }`
 
 			// Pattern 2: Function with two parameters and error return value
