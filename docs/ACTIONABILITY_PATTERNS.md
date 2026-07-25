@@ -15,6 +15,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Assign+error-check | `assign-error-check`       | 2-stmt: `err := f(); if err != nil { return }`                          | Most common Go boilerplate               |
 | Single call        | `single-call-expression`   | Lone CallExpr or ExprStmt(CallExpr) (different data, same API)          | `t.Parallel()`, `errors.New("foo")`      |
 | Single simple stmt | `single-simple-statement`  | Lone terminal statement (return, assignment, var declaration, etc.)     | `return nil`, `x := 0`, `var buf []byte` |
+| Test helper delegate | `test-helper-delegate`   | 2-stmt body: `t.Helper()` + single delegate call (irreducible Go test boilerplate) | `t.Helper()` + `failIfNilf(t, got, ...)` |
 | Guard clause       | `guard-clause`             | IfStmt with return-only body and no else (boolean/value guard)          | `if !enabled { return }`                 |
 | Error wrapping     | `error-wrapping`           | `if err != nil { return fmt.Errorf(...) }`                              | Error wrapping idiom                     |
 | Assertion chain    | `assertion-chain`          | 3+ test assertion calls (Expect/Assert/Require)                         | `Expect(x).To(Equal(y))`                 |
@@ -28,7 +29,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 17 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 18 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -45,15 +46,16 @@ Patterns are checked in this order (first match wins):
 6. Assign+error-check
 7. Single call expression
 8. Single simple statement
-9. Error wrapping
-10. Assertion chain
-11. Cobra boilerplate
-12. Test data pair
-13. Table-driven test
-14. Test scaffolding
-15. Data-dominated
-16. Describe table
-17. Builder callback
+9. Test helper delegate
+10. Error wrapping
+11. Assertion chain
+12. Cobra boilerplate
+13. Test data pair
+14. Table-driven test
+15. Test scaffolding
+16. Data-dominated
+17. Describe table
+18. Builder callback
 
 ## Key Design Decisions
 
