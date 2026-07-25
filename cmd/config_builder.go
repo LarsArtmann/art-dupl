@@ -124,6 +124,7 @@ func applyChangedBoolFlags(cmd *cobra.Command, cfg *config.Config) {
 		"ignore-tests":         &cfg.IgnoreTests,
 		"quiet":                &cfg.Quiet,
 		"type-aware":           &cfg.TypeAware,
+		"no-actionability":     &cfg.NoActionability,
 		"no-accept-directives": &cfg.NoAcceptDirectives,
 		"include-ignored":      &cfg.IncludeIgnored,
 	}

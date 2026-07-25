@@ -156,6 +156,7 @@ func runStandardAnalysis(ctx context.Context, mergedConfig *config.Config, sortB
 		TestThreshold:    mergedConfig.EffectiveTestThreshold(),
 		MinLines:         mergedConfig.MinLines,
 		AcceptDirectives: newAcceptSet(mergedConfig),
+		NoActionability:  mergedConfig.NoActionability,
 	}
 
 	err = printDupls(

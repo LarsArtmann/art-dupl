@@ -19,6 +19,7 @@ type SuppressionConfig struct {
 	TestThreshold    int
 	MinLines         int
 	AcceptDirectives *AcceptedSet
+	NoActionability  bool
 }
 
 func printDupls(
@@ -113,7 +114,7 @@ func printCloneGroups(
 			continue
 		}
 
-		if semantic {
+		if semantic && !suppression.NoActionability {
 			if printer.EvaluateActionability(printer.ToCloneNodeSeqs(uniq)) == domain.NonActionable {
 				continue
 			}

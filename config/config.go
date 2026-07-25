@@ -177,6 +177,10 @@ type Config struct {
 	// checking (10-100x slower). Only effective with semantic detection mode.
 	TypeAware bool `json:"typeAware,omitempty"`
 
+	// NoActionability disables actionability filtering.
+	// When true, all clone groups are reported including boilerplate/non-actionable ones.
+	NoActionability bool `json:"noActionability,omitempty"`
+
 	// NoAcceptDirectives disables //art-dupl:accept inline directive processing.
 	// When true, all clone groups are reported regardless of accept directives.
 	NoAcceptDirectives bool `json:"noAcceptDirectives,omitempty"`
