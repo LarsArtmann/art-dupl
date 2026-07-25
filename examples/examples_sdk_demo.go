@@ -110,6 +110,7 @@ func basicExample() {
 
 func progressExample() {
 	opts := artdupl.DefaultOptions()
+	//art-dupl:accept self-contained example: each demo must be independently readable
 	opts.Threshold = 10
 	opts.ProgressCallback = func(progress *artdupl.Progress) error {
 		fmt.Printf("  [%s] %.1f%% - %s\n", progress.Stage, progress.Percentage, progress.Message)
