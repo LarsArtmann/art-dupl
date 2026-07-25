@@ -11,9 +11,7 @@ import (
 // CreateSubdirectories creates multiple directories in test temporary directory.
 // Each directory name is a relative path that will be created under the temp directory.
 func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	for _, path := range paths {
 		fullPath := filepath.Join(s.TmpDir, path)
@@ -30,9 +28,7 @@ func (s *BDDTestSetup) CreateSubdirectories(paths ...string) error {
 // CreateFileWithContent creates a file with specific content at a given subpath.
 // The subpath is relative to the test temporary directory.
 func (s *BDDTestSetup) CreateFileWithContent(subpath, content string) error {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	fullPath := filepath.Join(s.TmpDir, subpath)
 	dir := filepath.Dir(fullPath)
@@ -84,9 +80,7 @@ func (s *BDDTestSetup) CreateNamedDuplicateFilesAndRun(
 	content string,
 	args ...string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	err := s.CreateDuplicateFiles(filenames, content)
 	if err != nil {
@@ -103,9 +97,7 @@ func (s *BDDTestSetup) RunWithConfigFile(
 	configFileName, configContent, code string,
 	fileNames []string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	configPath := filepath.Join(s.TmpDir, configFileName)
 
@@ -171,9 +163,7 @@ func vendorFunc() {
 // This is a convenience helper for testing vendor directory filtering behavior.
 // Returns an error if directory creation or file writing fails.
 func (s *BDDTestSetup) CreateVendorDuplicateFiles(vendorPath, code string) error {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	// Create the vendor directory structure
 	err := s.CreateSubdirectories(vendorPath)
@@ -206,9 +196,7 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(
 	content string,
 	args ...string,
 ) []byte {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	output, err := s.CreateNamedDuplicateFilesAndRun(filenames, content, args...)
 	if err != nil {
@@ -232,9 +220,7 @@ func (s *BDDTestSetup) CreateAndRunDuplExpectSuccess(
 
 // TestEmptyDirectory verifies art-dupl handles empty directory gracefully.
 func TestEmptyDirectory(setup *BDDTestSetup, threshold int) []byte {
-	if setup.T != nil {
-		setup.T.Helper()
-	}
+	setup.helper()
 
 	// Run on empty temp directory
 	args := []string{"--threshold", strconv.Itoa(threshold)}
@@ -273,9 +259,7 @@ func (s *BDDTestSetup) RunVendorTest(
 	subcommand string,
 	extraArgs ...string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	// Create vendor directory with duplicate files
 	code := "package main\n" + DuplicateFuncSource("vendorTestFunc")
@@ -321,9 +305,7 @@ func (s *BDDTestSetup) RunVendorTestWithOptions(
 	subcommand string,
 	extraArgs ...string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	// Create vendor directory with duplicate files
 	err := s.CreateVendorDuplicateFiles(vendorPath, code)

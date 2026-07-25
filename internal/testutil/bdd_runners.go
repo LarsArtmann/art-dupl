@@ -22,6 +22,12 @@ func commandError(msg string, err error, output []byte) error {
 	return fmt.Errorf("%s: %w\nOutput: %s", msg, err, string(output))
 }
 
+// helper marks the calling function as a test helper when a *testing.T is bound.
+// No-op when T is nil (Ginkgo panics-on-error mode).
+func (s *BDDTestSetup) helper() {
+	s.helper()
+}
+
 // runExecutor executes the in-process command and returns combined stdout+stderr.
 func (s *BDDTestSetup) runExecutor(args ...string) ([]byte, error) {
 	if s.Executor == nil {
@@ -54,9 +60,7 @@ func (s *BDDTestSetup) RunArtDupl(args ...string) ([]byte, error) {
 
 // RunArtDuplOnDir executes art-dupl on a specific directory with given arguments.
 func (s *BDDTestSetup) RunArtDuplOnDir(dir string, args ...string) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	allArgs := append([]string{dir}, args...)
 
@@ -73,9 +77,7 @@ func (s *BDDTestSetup) RunArtDuplOnDirWithFlags(
 	dir string,
 	flags map[string]string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	args := BuildArgsFromFlags([]string{dir}, flags)
 
@@ -102,9 +104,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 	stdinContent string,
 	flags map[string]string,
 ) ([]byte, error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	if strings.TrimSpace(stdinContent) == "" {
 		return nil, errNoStdinPaths
@@ -142,9 +142,7 @@ func (s *BDDTestSetup) RunArtDuplWithStdin(
 // Only appends TmpDir if no path-like argument is found (i.e., no non-flag arg besides subcommand names).
 // It tracks flag-value pairs (e.g., --threshold 5) so numeric values aren't mistaken for paths.
 func (s *BDDTestSetup) prepareSubcommandArgs(args ...string) []string {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	subcommands := map[string]bool{
 		"stats": true, "version": true, "completion": true, "man": true,
@@ -235,9 +233,7 @@ func (s *BDDTestSetup) RunStatsSubcommandWithJSON(threshold string) (map[string]
 
 // runCommandAndVerify executes a command function and verifies it completes successfully.
 func (s *BDDTestSetup) runCommandAndVerify(execute func() ([]byte, error)) string {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	output, err := execute()
 	if err != nil {
@@ -269,9 +265,7 @@ func (s *BDDTestSetup) RunArtDuplWithFlagsAndVerify(flags map[string]string) str
 //
 //nolint:nonamedreturns // Multiple return values for stdout/stderr
 func (s *BDDTestSetup) RunArtDuplAndCapture(args ...string) (stdout, stderr []byte, err error) {
-	if s.T != nil {
-		s.T.Helper()
-	}
+	s.helper()
 
 	if s.ExecutorResult != nil {
 		result, execErr := s.ExecutorResult(args...)
