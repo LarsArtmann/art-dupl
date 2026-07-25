@@ -293,8 +293,9 @@ The three open questions above are now resolved:
 ### Q2 — Subcommand scope: **keep root-only**
 
 **Decision:** Both flags stay root-only (main analysis only). Rationale:
+
 - `--explain` is inherently a text-output feature (`writeExplanation` writes human-readable lines). `stats`/`baseline`/`check` have different output semantics (tables, grades, diffs) where per-group explanation doesn't map.
-- `--no-actionability` controls the `if semantic && !suppression.NoActionability` gate in `run_output.go`. `stats` reports aggregate counts (no individual clone output), so the flag has no effect there. The one valid use case — recording a baseline *with* boilerplate clones — is real but niche; it can be added later by populating `NoActionability` in the `baseline record` `SuppressionConfig` site if demand emerges. Not worth the surface-area cost now.
+- `--no-actionability` controls the `if semantic && !suppression.NoActionability` gate in `run_output.go`. `stats` reports aggregate counts (no individual clone output), so the flag has no effect there. The one valid use case — recording a baseline _with_ boilerplate clones — is real but niche; it can be added later by populating `NoActionability` in the `baseline record` `SuppressionConfig` site if demand emerges. Not worth the surface-area cost now.
 
 ### Q3 — Auto-git daemon re-adding forbidden linters: **root cause found**
 

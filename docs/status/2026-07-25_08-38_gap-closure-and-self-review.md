@@ -19,6 +19,7 @@
 ### A2. JSON gap CLOSED — `NonActionablePattern` now serialized
 
 **Files changed:**
+
 - `printer/json.go:32-41` — added `NonActionablePattern string` field to `JSONClone` struct with tag `json:"non_actionable_pattern,omitempty"`.
 - `printer/json.go:52-62` — mapped the field in `toJSONClone()` (the single conversion point).
 - Deliberately left `simpleJSONClone` unchanged — it is intentionally minimal (CloneRef + token_count only) and should NOT carry classification metadata.
@@ -28,10 +29,12 @@
 ### A3. Unit tests added — JSON field + `writeExplanation` branches
 
 **`printer/json_test.go`:**
+
 - `TestToJSONClone_NonActionablePattern` — verifies the mapping function populates the field.
 - `TestJSONPrinter_NonActionablePatternSerialized` — end-to-end: `OutputJSON` -> `json.Unmarshal` -> assert field value.
 
 **`printer/text_test.go`:**
+
 - `TestTextPrinter_writeExplanation` — 6 subtests covering ALL branches:
   1. actionable clone (checks `notWant: non-actionable, extractable`)
   2. non-actionable WITH pattern (`non-actionable (guard-clause)`)
@@ -56,14 +59,14 @@ Documented in `AGENTS.md:111` and appended **Section H (Resolutions)** to this r
 
 ### A6. Full verification suite — ALL GREEN
 
-| Check | Command | Result |
-|-------|---------|--------|
-| Build | `GOEXPERIMENT=jsonv2 go build ./...` | PASS |
-| Tests | `go test ./... -count=1` | PASS (all 26 packages) |
-| Race | `CGO_ENABLED=1 go test -race ./printer/... ./domain/... ./cmd/...` | PASS |
-| Lint | `nix build .#checks.x86_64-linux.lint` | PASS (0 issues) |
-| Disabled-linters guard | `nix build .#checks.x86_64-linux.disabled-linters` | PASS |
-| BDD flags | `go test ./bdd/... --ginkgo.focus="no-actionability|explain flag"` | PASS |
+| Check                  | Command                                                            | Result                 |
+| ---------------------- | ------------------------------------------------------------------ | ---------------------- |
+| Build                  | `GOEXPERIMENT=jsonv2 go build ./...`                               | PASS                   |
+| Tests                  | `go test ./... -count=1`                                           | PASS (all 26 packages) |
+| Race                   | `CGO_ENABLED=1 go test -race ./printer/... ./domain/... ./cmd/...` | PASS                   |
+| Lint                   | `nix build .#checks.x86_64-linux.lint`                             | PASS (0 issues)        |
+| Disabled-linters guard | `nix build .#checks.x86_64-linux.disabled-linters`                 | PASS                   |
+| BDD flags              | `go test ./bdd/... --ginkgo.focus="no-actionability                | explain flag"`         | PASS |
 
 ---
 
@@ -75,7 +78,7 @@ I only executed the handoff's "Exact Next Steps" (6 items). The prior session's 
 
 ### B2. AGENTS.md "Lint config" note is now slightly stale
 
-The AGENTS.md says: *"`exhaustruct` and `tagliatelle` are NOT in the `.golangci.yml` enable list... A CI guard prevents them from being re-added."* This is technically true, but the guard only runs in `nix flake check`, NOT on the daemon's commit path. The note should warn that the daemon re-adds them periodically and that `nix build .#disabled-linters` is the authoritative check (not a naive `golangci-lint run` which would just use whatever's in the file).
+The AGENTS.md says: _"`exhaustruct` and `tagliatelle` are NOT in the `.golangci.yml` enable list... A CI guard prevents them from being re-added."_ This is technically true, but the guard only runs in `nix flake check`, NOT on the daemon's commit path. The note should warn that the daemon re-adds them periodically and that `nix build .#disabled-linters` is the authoritative check (not a naive `golangci-lint run` which would just use whatever's in the file).
 
 ---
 
@@ -131,6 +134,7 @@ SARIF is a first-class output format and I left it without the pattern metadata.
 Grouped by theme, rough priority order within each group.
 
 ### F1. High-impact features (Pareto Tier 1)
+
 1. `--diff-report baseline` mode — diff current run vs baseline, report only NEW clones (2h)
 2. HTML report: add `--explain` content as a tooltip/column on clone groups
 3. HTML report: show `non_actionable_pattern` badge on suppressed clones
@@ -140,6 +144,7 @@ Grouped by theme, rough priority order within each group.
 7. SARIF: emit clone type as a rule property
 
 ### F2. Testing & verification
+
 8. BDD test: `--explain --json` end-to-end asserts `non_actionable_pattern` on a real clone
 9. Golden file tests for text printer (`printer/text_golden_test.go` expand) — catch formatting regressions
 10. Golden file tests for `--explain` output specifically
@@ -151,6 +156,7 @@ Grouped by theme, rough priority order within each group.
 16. Test that `simpleJSONClone` does NOT have `non_actionable_pattern` (negative guard against drift)
 
 ### F3. Infrastructure & daemon defense
+
 17. **Pre-receive hook / CI gate rejecting `.golangci.yml` commits containing forbidden linters** (durable daemon fix)
 18. Daemon-side exclude list for `.golangci.yml` (requires daemon config access)
 19. Pre-commit hook running `golangci-lint fmt` (TODO #39)
@@ -163,6 +169,7 @@ Grouped by theme, rough priority order within each group.
 26. Watch mode (`--watch`) re-run on file change (TODO #47)
 
 ### F4. Code quality / refactors
+
 27. Split `printer/` into sub-packages (TODO #26-30) — blocked by circular dep on `StatsPrinter`
 28. Move `Printer`/`ReadFile`/`StatsPrinter` to `printer/base/`
 29. Extract HTML printer to `printer/html/`
@@ -175,6 +182,7 @@ Grouped by theme, rough priority order within each group.
 36. Populate `NoActionability` in `baseline record` `SuppressionConfig` site (the one valid Q2 use case I deferred)
 
 ### F5. Documentation
+
 37. Update AGENTS.md "Lint config" note to warn about the daemon reversion cycle + that `nix build .#disabled-linters` is authoritative
 38. HOW_TO_USE.md: add `--explain --json` example showing the `non_actionable_pattern` field
 39. `docs/ACTIONABILITY_PATTERNS.md`: cross-reference the JSON field name
@@ -182,6 +190,7 @@ Grouped by theme, rough priority order within each group.
 41. ROADMAP.md: reflect closed gaps + reprioritize
 
 ### F6. Detection & UX
+
 42. Type-aware detection: cache `go/packages` results between runs (TODO #23)
 43. Structural mode: option to ignore comments (TODO #24)
 44. Generics instantiation detection: `Foo[int]` vs `Foo[string]` (TODO #25)
