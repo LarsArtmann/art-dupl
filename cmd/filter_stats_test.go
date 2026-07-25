@@ -124,7 +124,7 @@ func TestSourceBreakdown(t *testing.T) {
 	}, FilterSourceDefenseInDepth)
 
 	want := map[string]int{
-		string(FilterSourceGogenfilter):     2,
+		string(FilterSourceGogenfilter):    2,
 		string(FilterSourceDefenseInDepth): 3,
 	}
 	if got := s.SourceBreakdown(); !reflect.DeepEqual(got, want) {
