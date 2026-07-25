@@ -1,0 +1,57 @@
+direction: right
+
+post_self_review: "Post Self-Review Plan\n2026-07-25" {
+  shape: document
+  style.fill: "#0d1117"
+  style.font-color: "#f4f4f0"
+
+  tier1: "TIER 1 — 1% effort → 51% impact\nDo First (unblocked, high ROI)" {
+    shape: package
+    style.fill: "#1a2e1a"
+    style.stroke: "#7ee787"
+    style.font-color: "#f4f4f0"
+
+    no_action: "--no-actionability flag\nFixes BDD test fragility at root\n30min | LOW effort | HIGH impact"
+    explain: "--explain flag\nMajor triage UX win\n2h | MED effort | HIGH impact"
+    diff_report: "--diff-report baseline mode\nEnables CI verify loop\n2h | MED effort | HIGH impact"
+  }
+
+  tier2: "TIER 2 — 4% effort → 64% impact\nDo Next" {
+    shape: package
+    style.fill: "#2e2a1a"
+    style.stroke: "#f4d35e"
+    style.font-color: "#f4f4f0"
+
+    html_report: "HTML report improvements\nFile output, TTY detect, stable IDs\n1h | LOW effort | MED impact"
+    yaml_config: "YAML config (.artdupl.yml)\nUse go-faster/yaml (NOT yaml.v3)\n2h | MED effort | MED impact\nBlocked: enum MarshalJSON hooks"
+    gen_includes: "Refactor generatorIncludes\nLOW value post-matchedGeneratedCategory\n1h | MED effort | LOW impact"
+  }
+
+  tier3: "TIER 3 — 20% effort → 80% impact\nDo Later" {
+    shape: package
+    style.fill: "#1a2e3d"
+    style.stroke: "#6eb5ff"
+    style.font-color: "#f4f4f0"
+
+    interface_suppress: "Interface-method-aware suppression\nDetect signatures matching interfaces\n3h | HIGH effort | MED impact"
+    recommend_threshold: "--recommend-threshold\nAuto-suggest based on codebase size\n2h | MED effort | LOW-MED impact"
+    templ_phase3: "Templ Phase 3: expression normalization\nLow impact at threshold 5\n2h | MED effort | LOW impact"
+  }
+
+  blocked: "BLOCKED — Upstream or Architectural" {
+    shape: package
+    style.fill: "#3d1a1a"
+    style.stroke: "#ff6b6b"
+    style.font-color: "#f4f4f0"
+
+    printer_split: "Split printer/ sub-packages\nCircular dep on StatsPrinter"
+    lazy_read: "Lazy content reading\nNeeds gogenfilter API change"
+    push_did: "Push defense-in-depth to gogenfilter\nUpstream PR needed"
+    node_type: "Branded NodeType int32\nTouches gob cache format"
+    facade: "Hide syntax/golang behind facade\nImport cycle"
+  }
+}
+
+tier1 -> tier2: "then"
+tier2 -> tier3: "then"
+tier1 -> blocked: "not blocked"
