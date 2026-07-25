@@ -318,7 +318,8 @@ func processData() {
 		})
 
 		It("should calculate health score correctly", func() {
-			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "duplicate")
+			duplicateCode := "package main
+" + testutil.DuplicateFuncSource("duplicate")
 
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -510,7 +511,7 @@ func small() { println(1) }`
 
 	Context("When using --only flag with stats", func() {
 		It("should only count Go files with --only go", func() {
-			goCode := "package main\n" + dupFuncSource("duplicate")
+			goCode := "package main\n" + testutil.DuplicateFuncSource("duplicate")
 			templCode := `package main
 templ page() { <div>Hello</div> }`
 

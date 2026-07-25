@@ -1,7 +1,6 @@
 package bdd
 
 import (
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -12,8 +11,8 @@ import (
 
 // testCodeSamples contains code samples used in plumbing tests.
 var (
-	duplicateTestCode = "package main\n" + dupFuncSource("duplicate")
-	commonTestCode    = "package main\n" + dupFuncSource("common")
+	duplicateTestCode = "package main\n" + testutil.DuplicateFuncSource("duplicate")
+	commonTestCode    = "package main\n" + testutil.DuplicateFuncSource("common")
 )
 
 // BDD Test Suite for Plumbing Output and Multiple Paths
@@ -45,7 +44,8 @@ var _ = Describe("Plumbing Output Format", func() {
 
 	Context("When using plumbing output", func() {
 		It("should produce machine-readable output", func() {
-			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
+			duplicateCode := "package main
+" + testutil.DuplicateFuncSource("common")
 
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -169,7 +169,8 @@ var _ = Describe("Multiple Path Arguments", func() {
 			err := setup.CreateSubdirectories("pkg1", "pkg2", "pkg3")
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := fmt.Sprintf(testutil.CommonDuplicateCodeTemplate, "common")
+			duplicateCode := "package main
+" + testutil.DuplicateFuncSource("common")
 
 			// Create duplicates in different directories
 			err = setup.CreateFileWithContent("pkg1/file1.go", duplicateCode)
@@ -261,7 +262,7 @@ var _ = Describe("Multiple Path Arguments", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			duplicateCode := commonTestCode
-			testCode := "package main\n" + dupFuncSource("testCommon")
+			testCode := "package main\n" + testutil.DuplicateFuncSource("testCommon")
 
 			// Create regular files
 			err = setup.CreateFileWithContent("pkg1/file.go", duplicateCode)
@@ -305,7 +306,7 @@ var _ = Describe("Path Edge Cases", func() {
 			err := setup.CreateSubdirectories(subDir)
 			Expect(err).NotTo(HaveOccurred())
 
-			duplicateCode := "package main\n" + dupFuncSource(funcName)
+			duplicateCode := "package main\n" + testutil.DuplicateFuncSource(funcName)
 
 			err = setup.CreateFileWithContent(filepath.Join(subDir, goldenFile1), duplicateCode)
 			Expect(err).NotTo(HaveOccurred())
@@ -328,7 +329,7 @@ var _ = Describe("Path Edge Cases", func() {
 
 		// Helper function for testing duplicate detection in root directory
 		testRootDuplicates := func(runPath string) {
-			duplicateCode := "package main\n" + dupFuncSource("root")
+			duplicateCode := "package main\n" + testutil.DuplicateFuncSource("root")
 
 			err := setup.CreateDuplicateFiles([]string{goldenFile1, goldenFile2}, duplicateCode)
 			Expect(err).NotTo(HaveOccurred())

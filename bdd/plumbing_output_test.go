@@ -568,7 +568,7 @@ var _ = Describe("Plumbing Output Advanced Parsing", func() {
 
 	Context("When parsing plumbing output programmatically", func() {
 		It("should produce parseable entries for multiple clones", func() {
-			code := "package main\n" + dupFuncSource("parseableClone")
+			code := "package main\n" + testutil.DuplicateFuncSource("parseableClone")
 
 			err := setup.CreateDuplicateFiles([]string{"parse1.go", "parse2.go"}, code)
 			Expect(err).NotTo(HaveOccurred())
