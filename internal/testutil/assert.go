@@ -238,16 +238,12 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 	t.Helper()
 
 	data, err := json.Marshal(obj)
-	if err != nil {
-		t.Fatalf("json.Marshal() error = %v", err)
-	}
+	AssertFatalNoError(t, err, "json.Marshal()")
 
 	var result T
 
 	err = json.Unmarshal(data, &result)
-	if err != nil {
-		t.Fatalf("json.Unmarshal() error = %v", err)
-	}
+	AssertFatalNoError(t, err, "json.Unmarshal()")
 
 	return result
 }

@@ -100,14 +100,14 @@ func hasTestingReceiver(sel *domain.CloneNode) bool {
 	return false
 }
 
+// testingVarNames are common *testing.T variable names.
+var testingVarNames = []string{ //nolint:gochecknoglobals // static name set
+	"t", "tt", "tc", "test", "ts", "tb", "testing", "t0",
+}
+
 // isTestingVarName reports whether a name is a common *testing.T variable name.
 func isTestingVarName(name string) bool {
-	switch name {
-	case "t", "tt", "tc", "test", "ts", "tb", "testing", "t0":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(testingVarNames, name)
 }
 
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.

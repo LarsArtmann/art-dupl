@@ -7,6 +7,7 @@ package templ
 
 // Node type constants for templ syntax.
 // Meaningful types capture structure without content.
+//art-dupl:accept parallel iota enum: independent from syntax/golang/nodetypes.go (different AST domains)
 const (
 	BadNode = iota
 
@@ -49,5 +50,6 @@ const (
 	ComponentImport
 
 	// File represents the file root.
+	//art-dupl:accept parallel iota enum: name overlaps with golang.File but different domain
 	File
 )

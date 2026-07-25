@@ -94,6 +94,7 @@ func runCmd(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
 
 	ctx, cancel := utils.ApplyTimeout(ctx, mergedConfig.Timeout)
+	//art-dupl:accept standard context cleanup idiom
 	defer cancel()
 
 	return dispatchAnalysis(ctx, cmd, mergedConfig, sortBy)

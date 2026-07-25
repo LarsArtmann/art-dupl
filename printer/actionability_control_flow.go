@@ -1,12 +1,20 @@
 package printer
 
 import (
+	"slices"
+
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // RAII cleanup method names that indicate non-actionable patterns.
 const cleanupMethodName = "Unlock"
+
+// acquireMethodNames are method names that pair with defer cleanup calls in
+// the Lock + Defer Unlock idiom.
+var acquireMethodNames = []string{ //nolint:gochecknoglobals // static name set
+	"Lock", "RLock", "Acquire", "Reserve", "Obtain", "Claim", "Take", "Begin",
+}
 
 // isPureDeferPattern reports whether every clone is a DeferStmt
 // wrapping a RAII-style call (Unlock, Close, etc.).
@@ -64,12 +72,7 @@ func isCleanupMethod(name string) bool {
 // isAcquireMethod reports whether a method name is a known acquire operation.
 // These pair with defer cleanup calls in the Lock + Defer Unlock idiom.
 func isAcquireMethod(name string) bool {
-	switch name {
-	case "Lock", "RLock", "Acquire", "Reserve", "Obtain", "Claim", "Take", "Begin":
-		return true
-	default:
-		return false
-	}
+	return slices.Contains(acquireMethodNames, name)
 }
 
 // isAcquireCall reports whether a statement is a call to a known acquire
