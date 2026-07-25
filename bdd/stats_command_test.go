@@ -510,8 +510,7 @@ func small() { println(1) }`
 
 	Context("When using --only flag with stats", func() {
 		It("should only count Go files with --only go", func() {
-			goCode := `package main
-func duplicate() { println(1) }`
+			goCode := "package main\n" + dupFuncSource("duplicate")
 			templCode := `package main
 templ page() { <div>Hello</div> }`
 
