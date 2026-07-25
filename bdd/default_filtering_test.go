@@ -328,7 +328,7 @@ func Component() templ.Component { return nil }
 })
 
 // testCodeSamples contains code samples used in filtering tests.
-const (
+var (
 	testRegularCode = "package main\n" + dupFuncSource("process")
 	testTemplCode   = `package main
 import "github.com/a-h/templ"
