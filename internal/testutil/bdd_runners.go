@@ -25,7 +25,9 @@ func commandError(msg string, err error, output []byte) error {
 // helper marks the calling function as a test helper when a *testing.T is bound.
 // No-op when T is nil (Ginkgo panics-on-error mode).
 func (s *BDDTestSetup) helper() {
-	s.helper()
+	if s.T != nil {
+		s.T.Helper()
+	}
 }
 
 // runExecutor executes the in-process command and returns combined stdout+stderr.
