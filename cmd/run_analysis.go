@@ -87,18 +87,29 @@ func printBuildingStatus(
 	}
 }
 
-// awaitTreeBuild runs job.BuildTree and blocks until the build completes.
-// Returns the tree, the parsed node data, and any build error so callers can
-// short-circuit on failure without duplicating the BuildTree + done-channel
-// handshake.
-func awaitTreeBuild(
-	ctx context.Context,
+// finalizeTreeBuild consumes the parsed node stream into a suffix tree, reads
+// the parse statistics via readStats, applies the terminator node, prints the
+// search status, and returns the assembled result. readStats is invoked only
+// after BuildTree has drained schan, so the parser's stats channel is ready.
+func finalizeTreeBuild(
+	params buildParams,
 	schan chan []*syntax.Node,
-) (*suffixtree.STree, []*syntax.Node, error) {
-	tree, data, done := job.BuildTree(ctx, schan)
-	err := <-done
+	readStats func() job.ParseStats,
+) treeBuildResult {
+	tree, data, done := job.BuildTree(params.ctx, schan)
+	if err := <-done; err != nil {
+		return treeBuildResult{tree: tree, data: *data}
+	}
 
-	return tree, *data, err
+	parseStats := readStats()
+
+	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
+		logger.Default.Error("suffix tree terminator update failed", "err", err)
+	}
+
+	printSearchStatus(params.cfg, params.outputFormat)
+
+	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
 }
 
 // buildSuffixTree builds a suffix tree from provided paths.
@@ -149,26 +160,15 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		schan, incStatsChan = incParser.ParseIncremental(params.ctx, filesChan)
 	}
 
-	tree, data, err := awaitTreeBuild(params.ctx, schan)
-	if err != nil {
-		return treeBuildResult{tree: tree, data: data}
-	}
-
-	incStats := <-incStatsChan
-	parseStats := job.ParseStats{
-		ParseStatsMixin: job.ParseStatsMixin{
-			FilesCount: incStats.FilesCount,
-			LinesCount: incStats.LinesCount,
-		},
-	}
-
-	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
-		logger.Default.Error("suffix tree terminator update failed", "err", err)
-	}
-
-	printSearchStatus(params.cfg, params.outputFormat)
-
-	return treeBuildResult{tree: tree, data: data, parseStats: parseStats}
+	return finalizeTreeBuild(params, schan, func() job.ParseStats {
+		incStats := <-incStatsChan
+		return job.ParseStats{
+			ParseStatsMixin: job.ParseStatsMixin{
+				FilesCount: incStats.FilesCount,
+				LinesCount: incStats.LinesCount,
+			},
+		}
+	})
 }
 
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
@@ -205,20 +205,9 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 		)
 	}
 
-	tree, data, err := awaitTreeBuild(params.ctx, schan)
-	if err != nil {
-		return treeBuildResult{tree: tree, data: data}
-	}
-
-	parseStats := <-statsChan
-
-	if err := tree.Update(&syntax.Node{Type: -1}); err != nil {
-		logger.Default.Error("suffix tree terminator update failed", "err", err)
-	}
-
-	printSearchStatus(params.cfg, params.outputFormat)
-
-	return treeBuildResult{tree: tree, data: data, parseStats: parseStats}
+	return finalizeTreeBuild(params, schan, func() job.ParseStats {
+		return <-statsChan
+	})
 }
 
 // validatePaths checks that at least one given path exists on the filesystem.
