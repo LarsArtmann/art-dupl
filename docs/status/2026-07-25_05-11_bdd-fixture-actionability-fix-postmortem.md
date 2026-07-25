@@ -35,13 +35,13 @@
 1. **Investigated the flake.** A standalone `go test -race -count=1 ./bdd/` run returned **exit 1** mid-session, then immediately passed on re-run. I dismissed it as "transient" without investigating. Race-detector flakes are signals, not noise. **Not investigated at all.**
 2. **Investigated the concurrent `buildflow` process.** An automation committed my work 5 times during my session (commits `13d4ef23`, `42c5835d`, etc., all "Unknown Author"). The branch jumped 45→50 commits ahead of origin mid-session. I noticed it and worked around it but never determined what triggers buildflow, whether it's safe, or whether its auto-commits could corrupt history.
 3. **Documented the lesson anywhere durable.** No update to `AGENTS.md`, `TESTING.md`, or the existing pre-existing-failures status doc. The actionability/fixture interaction is exactly "enduring context hard to discover from code" — and I left it undiscovered for the next session.
-4. **Removed the `dupFuncSource` / `CommonDuplicateCodeTemplate` split-brain** (see §d).
+4. ~~**Removed the `dupFuncSource` / `CommonDuplicateCodeTemplate` split-brain** (see §d).~~ DONE: 84199352; both helpers replaced by a single `testutil.DuplicateFuncSource(name)` (body-only, composable with any package/generated-comment header). `dupFuncSource` and `CommonDuplicateCodeTemplate` both deleted; ~28 call sites migrated. Verified `go test -race ./...` (24 packages green).
 
 ---
 
 ## d) TOTALLY FUCKED UP
 
-1. **I created a duplicate abstraction.** `internal/testutil/bdd_helpers.go` ALREADY defines `CommonDuplicateCodeTemplate` (a substantial for-loop fixture with a `%s` name placeholder) used by passing tests. Instead of reusing it, I invented `dupFuncSource(name)` — a _second_ way to make a multi-statement fixture. There are now **two parallel mechanisms** for the same need. Classic split-brain. I should have either reused `CommonDuplicateCodeTemplate` or consolidated both into one helper.
+1. **I created a duplicate abstraction.** `internal/testutil/bdd_helpers.go` ALREADY defines `CommonDuplicateCodeTemplate` (a substantial for-loop fixture with a `%s` name placeholder) used by passing tests. Instead of reusing it, I invented `dupFuncSource(name)` — a _second_ way to make a multi-statement fixture. There are now **two parallel mechanisms** for the same need. Classic split-brain. I should have either reused `CommonDuplicateCodeTemplate` or consolidated both into one helper. **Resolved in `84199352`:** both deleted; one canonical `testutil.DuplicateFuncSource(name)` now exists (body-only form — strictly more flexible than the full-file const, composable with any header including generated-code comments).
 2. **I lost control of my own commits.** The concurrent `buildflow` process swept my edits into its own commits with its own (wrong, generic) messages. My work is now attributed to "Unknown Author" under messages like "test(bdd): enhance filtering tests" that don't describe the _actionability-fixture_ fix. The history is muddied. I should have either committed immediately after each edit, or stopped and asked the user what `buildflow` is before proceeding.
 3. **I left 2 files uncommitted** (`plumbing_output_test.go`, `stats_command_test.go`) while 5 siblings got auto-committed — inconsistent working-tree state for the next session.
 4. **I didn't think hard enough before editing.** I jumped to "make fixtures bigger" without first asking: _should the actionability filter be suppressing legitimate test clones at all?_ The filter is doing its job correctly on real code, but for a _test harness_ the right escape hatch might be a `--no-actionability` / `--strict` flag (already a documented TODO in `docs/status/2026-07-25_04-31_*.md`, item #38). Bigger fixtures are a workaround; the flag is the fix. I picked the workaround.
@@ -52,7 +52,7 @@
 ## e) WHAT WE SHOULD IMPROVE
 
 1. **Add a `--no-actionability` / `--include-boilerplate` flag** (already TODO #38 in the guard-clauses status doc). This is the _principled_ fix: BDD tests for filtering/plumbing/paths shouldn't depend on whether their fixtures happen to be "actionable enough." A flag lets tests assert clone-detection mechanics independently of the actionability opinion layer.
-2. **Consolidate fixture helpers.** One mechanism, not two. Either extend `CommonDuplicateCodeTemplate` or make `dupFuncSource` the single source and delete the other.
+2. ~~**Consolidate fixture helpers.** One mechanism, not two. Either extend `CommonDuplicateCodeTemplate` or make `dupFuncSource` the single source and delete the other.~~ DONE: 84199352; canonical helper is `testutil.DuplicateFuncSource(name)` (body-only); both prior helpers deleted.
 3. **Add an AGENTS.md note** under the actionability section: _"Test fixtures with single-statement bodies (e.g. `func f() { println(1) }`) are suppressed by the actionability filter. BDD clones must use ≥3-statement bodies, or run with the future `--no-actionability` flag."_
 4. **Characterize the BDD race flake.** Run `go test -race -count=20 ./bdd/` to see if the exit-1-then-pass recurs. If it does, there's a real data race in the BDD setup or the detection pipeline.
 5. **Understand and document `buildflow`.** What triggers it? Can it auto-commit while a human is editing? Should it be disabled during interactive sessions? This is a process-safety gap.
@@ -74,8 +74,8 @@
 5. Implement `--no-actionability` flag (TODO #38) wired into `cmd/run_output.go:116`.
 6. Add `Config.DisableActionability bool` + reflection-merge (no merge code needed).
 7. Refactor BDD fixtures to use the flag instead of "big enough" bodies.
-8. Consolidate `dupFuncSource` + `CommonDuplicateCodeTemplate` into one helper.
-9. Delete `dupFuncSource` once the flag lands (or keep as the single helper).
+8. ~~Consolidate `dupFuncSource` + `CommonDuplicateCodeTemplate` into one helper.~~ DONE: 84199352;
+9. ~~Delete `dupFuncSource` once the flag lands (or keep as the single helper).~~ DONE: 84199352; both deleted, replaced by `testutil.DuplicateFuncSource`. (Independent of the `--no-actionability` flag, which remains open.)
 
 ### Documentation
 
