@@ -9,8 +9,9 @@ import "github.com/LarsArtmann/art-dupl/domain"
 //art-dupl:accept architectural alias: syntax/golang cannot import config (layering), so it re-exports domain types independently (ADR-0005)
 type DetectionMode = domain.DetectionMode
 
+//art-dupl:accept architectural alias: constants re-exported for package-local use (ADR-0005)
 const (
-	DetectionModeExact      = domain.DetectionModeExact      //art-dupl:accept architectural alias (ADR-0005)
-	DetectionModeSemantic   = domain.DetectionModeSemantic   //art-dupl:accept architectural alias (ADR-0005)
-	DetectionModeStructural = domain.DetectionModeStructural //art-dupl:accept architectural alias (ADR-0005)
+	DetectionModeExact      = domain.DetectionModeExact
+	DetectionModeSemantic   = domain.DetectionModeSemantic
+	DetectionModeStructural = domain.DetectionModeStructural
 )
