@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SDK `DefaultThreshold` constant**: `pkg/artdupl.DefaultThreshold = 5` mirrors `config.DefaultThreshold`. The SDK cannot import `config/` due to arch-lint, so the value is duplicated with a comment pointing to the source.
 - **Filter source tracking**: `FilterStats` now distinguishes `FilterSourceGogenfilter` (standard filename-gated checks) from `FilterSourceDefenseInDepth` (content-based catch for generated files lacking expected suffixes). `SourceBreakdown()` exposed via `SetFilterSourceStats` on `StatsPrinter`, rendered in text and JSON stats output.
 - **Defense-in-depth BDD tests** (`bdd/filter_features_test.go`): 2 Ginkgo specs verifying that non-suffix generated files (e.g., `gen_template.go` without `_templ.go`) are excluded by content check, and included when the templ category is explicitly enabled.
+- **Defense-in-depth generated code filtering**: `filterExcludedGenerated()` in `cmd/util.go` adds a content-based header check that catches generated files lacking expected filename suffixes (e.g., `gen_template.go` without `_templ.go`). Closes the gap where filename-gated category filters (`FilterTempl`/`FilterSQLC`/`FilterProtobuf`) miss suffixless generated files. Activated when `--include-generated generic` disables the generic catch-all.
+- **Three new actionability patterns**: `guard-clause` (lone IfStmt with return-only body, no else: `if !enabled { return }`), `single-simple-statement` (lone terminal statement: `return nil`, `x := 0`, `break`, `i++`), and `test-helper-delegate` (2-stmt body: `t.Helper()` + single delegate call, irreducible Go test boilerplate). Total patterns: 15 to 18.
 
 ### Changed
 
@@ -40,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`//nolint:exhaustruct` cleanup**: Removed 11 `//nolint:exhaustruct` directives across 7 files now that the linter is permanently disabled.
 - **SDK threshold consistency**: All SDK test fixtures and documentation now use `DefaultThreshold` instead of hardcoded `15`. Updated `doc.go`, `SDK_DESIGN.md`, and 17 test fixtures across `detector_validation_test.go`, `detector_test.go`, and `basic_test.go`.
 - **Type-aware fallback test hardened**: `TestDetector_TypeAwareFallback` now uses real assertions instead of discarding results (`_ = result; _ = err`). Verifies graceful fallback returns no error or `ErrNoDuplicatesFound`, and result is non-nil when error is nil.
+- **BDD fixture consolidation**: `testutil.DuplicateFuncSource(name)` is now the single canonical helper for BDD test fixtures, replacing scattered duplicate template constants across multiple test files.
+
+### Fixed
+
+- **Accept-directive UX**: Two bugs fixed: (1) directives placed above `LineStart` were not scanned (now scans up to 5 lines above, matching linter conventions); (2) multi-word text after `//art-dupl:accept` was treated as a hash and never matched (now: single-token text = hash match, multi-word text = bare accept with human-readable description).
 
 ### Removed
 

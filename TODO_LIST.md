@@ -41,7 +41,8 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 
 ### Code Hygiene
 
-_All Code Hygiene items completed — see `CHANGELOG.md`._
+- [ ] **`SetFilterSourceStats` unit test**: The `FilterStats.SourceBreakdown()` path (distinguishing `FilterSourceGogenfilter` vs `FilterSourceDefenseInDepth`) has no dedicated unit test. No regression protection if the source tracking logic changes.
+- [ ] **`--no-actionability` flag**: The principled fix for test-fixture false positives (currently worked around with "big enough fixtures" via `testutil.DuplicateFuncSource`). A flag to disable actionability filtering would let users see all clones including boilerplate, and would fix the BDD fixture fragility at the root.
 
 ---
 

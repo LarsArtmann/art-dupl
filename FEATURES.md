@@ -1,11 +1,11 @@
 # art-dupl Feature Documentation
 
-> **Last Updated:** 2026-07-24
+> **Last Updated:** 2026-07-25
 > **Version:** Analysis of fork branch
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 15 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 18 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -58,8 +58,8 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                           |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                               |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                         |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 15 non-actionable patterns (signature-only, interface-implementation, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression) |
-| **Clone Classification**    | FULLY_FUNCTIONAL | 13 categories (function, method, test, struct, etc.), 4 priority levels                                                                                                                                                                                                                                                           |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 18 non-actionable patterns (signature-only, interface-implementation, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, test-helper-delegate) |
+| **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                            |
 | **Refactoring Suggestions** | FULLY_FUNCTIONAL | 24 suggestion mappings from category + actionability pattern (`printer/clone_classify.go`)                                                                                                                                                                                                                                        |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                        |
 | **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                                                                                                                                        |
@@ -249,7 +249,7 @@
 | --------------------------- | ------ | ------------------------------------------------------------------------------------ |
 | **Go and Templ Only**       | High   | Only `.go` and `.templ` files supported                                              |
 | **No Git-Diff Incremental** | Low    | Only content-hash caching (`--incremental`); git-diff file selection not implemented |
-| **No GitHub Releases**      | Medium | Only v0.1.0 has a GitHub Release. v0.2.0-v0.4.0 have git tags but no release assets. |
+| **No GitHub Releases**      | Low    | v0.1.0 and v0.4.0 have GitHub Releases. v0.2.0 and v0.3.0 have git tags but no release assets. |
 | **Race Test Not in CI**     | Medium | `go test -race` is in `nix flake check` but not in the GitHub Actions `ci.yml`.      |
 
 ---

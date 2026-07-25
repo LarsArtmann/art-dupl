@@ -25,7 +25,7 @@
 ## Quality and Intelligence
 
 - [ ] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`. (Type-aware mode itself is implemented; this is the next layer.)
-- [ ] **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 15 current patterns miss.
+- [ ] **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 18 current patterns miss.
 - [ ] **Fixability score**: Replace binary Actionable/NonActionable with a score reflecting extraction cost (params needed, lines saved, complexity). Feedback: httputil session suggested "would-take-more-params-than-lines" heuristic.
 - [ ] **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
 - [ ] **Type narrowing for interface-typed variables**: If a local has an interface type, two variables with the same interface type match even if their concrete types differ. Could add concrete-type awareness via flow analysis.
