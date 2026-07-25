@@ -150,10 +150,15 @@ func vendorFunc() {
 	}
 }`
 
-// SimpleVendorTestCode is a minimal code sample for vendor directory filtering tests.
-// Use when a smaller code sample is sufficient (threshold of 3-5 tokens).
+// SimpleVendorTestCode is a multi-statement code sample for vendor directory filtering tests.
+// It must be substantial enough to survive the actionability filter (single-statement
+// bodies are suppressed as boilerplate), otherwise vendor-include assertions see no clones.
 const SimpleVendorTestCode = `package main
-func vendorFunc() { println(1) }`
+func vendorFunc() {
+	x := 1
+	y := x + 2
+	println(y)
+}`
 
 // CreateVendorDuplicateFiles creates duplicate files in a vendor directory with the given vendor path and code content.
 // This is a convenience helper for testing vendor directory filtering behavior.

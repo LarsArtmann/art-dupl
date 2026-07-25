@@ -15,6 +15,7 @@ Following the ExprStmt(CallExpr) gap fix, the user asked for smarter error repor
 2. **`isGuardClause`** — filters lone guard-clause IfStmts (`if !enabled { return }`)
 
 **Impact:**
+
 - gogenfilter `-t 1`: 65 → **0** false positives (100% elimination)
 - art-dupl self `-t 1`: 129 → **28** groups (78% reduction), all 28 genuinely actionable
 - art-dupl self `-t 5` (default): **0** — unchanged, zero false-negative regression
@@ -70,7 +71,7 @@ Following the ExprStmt(CallExpr) gap fix, the user asked for smarter error repor
    - `t.Helper()` (8 occurrences) — test boilerplate, arguably `single-call-expression` should catch it but the ExprStmt wrapping is slightly different
    - Single-line `if s.T != nil {` (14 occurrences) — these are 3-statement guard-like patterns but contain a method call in the body, not pure returns
    - Type alias declarations across SDK boundary (`DetectionMode = domain.DetectionMode`) — intentional duplication by design, not actionable
-   These are BORDERLINE cases where reasonable engineers could disagree.
+     These are BORDERLINE cases where reasonable engineers could disagree.
 
 2. **Pattern audit partially completed** — I verified that `actionability_control_flow.go` handles `ExprStmt` correctly (lines 79, 188), but did NOT exhaustively verify every BaseType comparison in every pattern file for the ExprStmt-wrapping gap. Only `isSingleCallExpression` was known-fixed; other patterns may have similar blind spots.
 
@@ -219,26 +220,26 @@ Nothing. The fix is correct, well-tested, documented, and verified end-to-end wi
 
 ## Files Changed This Session
 
-| File | Change |
-|------|--------|
-| `printer/actionability_boilerplate.go` | Added `isSingleSimpleStatement`, `isTerminalStatement`, `subtreeContainsTypeSpec` |
-| `printer/actionability_control_flow.go` | Added `isGuardClause`, `isGuardClauseBody`, `isReturnOnlyBody` |
-| `printer/actionability.go` | Registered 2 new patterns, added `PatternSingleSimpleStmt`, `PatternGuardClause` labels |
-| `printer/clone_classify.go` | Added pattern label configs for 2 new patterns |
-| `printer/actionability_boilerplate_test.go` | 16 new test cases (`TestIsSingleSimpleStatement`, `TestSubtreeContainsTypeSpec`) |
-| `printer/actionability_patterns_test.go` | 10 new test cases (`TestIsGuardClause`) + helpers |
-| `docs/ACTIONABILITY_PATTERNS.md` | Updated table (17 patterns), priority order, descriptions |
-| `AGENTS.md` | Rewrote actionability patterns section |
+| File                                        | Change                                                                                  |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `printer/actionability_boilerplate.go`      | Added `isSingleSimpleStatement`, `isTerminalStatement`, `subtreeContainsTypeSpec`       |
+| `printer/actionability_control_flow.go`     | Added `isGuardClause`, `isGuardClauseBody`, `isReturnOnlyBody`                          |
+| `printer/actionability.go`                  | Registered 2 new patterns, added `PatternSingleSimpleStmt`, `PatternGuardClause` labels |
+| `printer/clone_classify.go`                 | Added pattern label configs for 2 new patterns                                          |
+| `printer/actionability_boilerplate_test.go` | 16 new test cases (`TestIsSingleSimpleStatement`, `TestSubtreeContainsTypeSpec`)        |
+| `printer/actionability_patterns_test.go`    | 10 new test cases (`TestIsGuardClause`) + helpers                                       |
+| `docs/ACTIONABILITY_PATTERNS.md`            | Updated table (17 patterns), priority order, descriptions                               |
+| `AGENTS.md`                                 | Rewrote actionability patterns section                                                  |
 
 ## Verification Results
 
-| Check | Result |
-|-------|--------|
-| `go build ./...` | PASS |
-| `go vet ./printer/` | PASS |
-| `go test ./printer/` | PASS (all tests) |
-| `go test ./...` (non-BDD) | PASS (23 packages) |
+| Check                      | Result                                      |
+| -------------------------- | ------------------------------------------- |
+| `go build ./...`           | PASS                                        |
+| `go vet ./printer/`        | PASS                                        |
+| `go test ./printer/`       | PASS (all tests)                            |
+| `go test ./...` (non-BDD)  | PASS (23 packages)                          |
 | `golangci-lint ./printer/` | PASS (zero findings in new production code) |
-| gogenfilter `-t 1` | **0 false positives** (was 65 → 13 → 0) |
-| art-dupl self `-t 1` | **28 groups** (was 129), all actionable |
-| art-dupl self `-t 5` | **0 groups** — no false-negative regression |
+| gogenfilter `-t 1`         | **0 false positives** (was 65 → 13 → 0)     |
+| art-dupl self `-t 1`       | **28 groups** (was 129), all actionable     |
+| art-dupl self `-t 5`       | **0 groups** — no false-negative regression |
