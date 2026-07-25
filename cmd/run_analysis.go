@@ -87,6 +87,20 @@ func printBuildingStatus(
 	}
 }
 
+// awaitTreeBuild runs job.BuildTree and blocks until the build completes.
+// Returns the tree, the parsed node data, and any build error so callers can
+// short-circuit on failure without duplicating the BuildTree + done-channel
+// handshake.
+func awaitTreeBuild(
+	ctx context.Context,
+	schan chan []*syntax.Node,
+) (*suffixtree.STree, []*syntax.Node, error) {
+	tree, data, done := job.BuildTree(ctx, schan)
+	err := <-done
+
+	return tree, *data, err
+}
+
 // buildSuffixTree builds a suffix tree from provided paths.
 func buildSuffixTree(params buildParams) treeBuildResult {
 	printBuildingStatus(
@@ -135,9 +149,9 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 		schan, incStatsChan = incParser.ParseIncremental(params.ctx, filesChan)
 	}
 
-	tree, data, done := job.BuildTree(params.ctx, schan)
-	if err := <-done; err != nil {
-		return treeBuildResult{tree: tree, data: *data}
+	tree, data, err := awaitTreeBuild(params.ctx, schan)
+	if err != nil {
+		return treeBuildResult{tree: tree, data: data}
 	}
 
 	incStats := <-incStatsChan
@@ -154,7 +168,7 @@ func buildSuffixTreeIncremental(params buildParams) treeBuildResult {
 
 	printSearchStatus(params.cfg, params.outputFormat)
 
-	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
+	return treeBuildResult{tree: tree, data: data, parseStats: parseStats}
 }
 
 // buildSuffixTreeStandard builds a suffix tree using standard parsing without cache.
@@ -191,9 +205,9 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 		)
 	}
 
-	tree, data, done := job.BuildTree(params.ctx, schan)
-	if err := <-done; err != nil {
-		return treeBuildResult{tree: tree, data: *data}
+	tree, data, err := awaitTreeBuild(params.ctx, schan)
+	if err != nil {
+		return treeBuildResult{tree: tree, data: data}
 	}
 
 	parseStats := <-statsChan
@@ -204,7 +218,7 @@ func buildSuffixTreeStandard(params buildParams) treeBuildResult {
 
 	printSearchStatus(params.cfg, params.outputFormat)
 
-	return treeBuildResult{tree: tree, data: *data, parseStats: parseStats}
+	return treeBuildResult{tree: tree, data: data, parseStats: parseStats}
 }
 
 // validatePaths checks that at least one given path exists on the filesystem.
