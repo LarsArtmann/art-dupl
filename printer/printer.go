@@ -20,6 +20,12 @@ type RichTextSetter interface {
 	SetRichText(enabled bool)
 }
 
+// ExplainSetter enables explanation output that describes why each clone
+// group was reported (clone type, actionability, category, extractability).
+type ExplainSetter interface {
+	SetExplain(enabled bool)
+}
+
 type Printer interface {
 	PrintHeader() error
 	PrintClones(group domain.ProcessedCloneGroup, sortBy ...config.SortCriteria) error

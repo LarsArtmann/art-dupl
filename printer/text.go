@@ -25,6 +25,7 @@ type TextPrinter struct {
 	currentHash   string
 	isFileDupe    bool
 	richText      bool
+	explain       bool
 	diffHintFiles []string
 }
 
@@ -38,6 +39,10 @@ func (p *TextPrinter) SetFileDuplicate(isDupe bool) {
 
 func (p *TextPrinter) SetRichText(enabled bool) {
 	p.richText = enabled
+}
+
+func (p *TextPrinter) SetExplain(enabled bool) {
+	p.explain = enabled
 }
 
 func NewText(w io.Writer, fread ReadFile) Printer {
@@ -60,6 +65,12 @@ func (p *TextPrinter) PrintClones(
 
 	if err := p.writeGroupHeader(isFileDupe, clones); err != nil {
 		return duplerrors.Wrap(err, duplerrors.InternalError, "write group header")
+	}
+
+	if p.explain && len(clones) > 0 {
+		if err := p.writeExplanation(clones[0].Classification, len(clones)); err != nil {
+			return duplerrors.Wrap(err, duplerrors.InternalError, "write explanation")
+		}
 	}
 
 	p.cloneGroups = append(p.cloneGroups, clones)
@@ -226,6 +237,46 @@ func (p *TextPrinter) writeRichGroupHeader(count int, cls domain.CloneClassifica
 			"write rich group header (count=%d, category=%q, priority=%q)",
 			count, cls.Category, cls.Priority,
 		)
+	}
+
+	return nil
+}
+
+func (p *TextPrinter) writeExplanation(cls domain.CloneClassification, cloneCount int) error {
+	parts := []string{string(cls.CloneType)}
+
+	if cls.Actionability == domain.NonActionable {
+		reason := cls.NonActionablePattern
+		if reason == "" {
+			reason = "boilerplate"
+		}
+
+		parts = append(parts, "non-actionable ("+reason+")")
+	} else {
+		parts = append(parts, "actionable")
+	}
+
+	parts = append(parts, string(cls.Category))
+	parts = append(parts, fmt.Sprintf("%d tokens, %d lines", cls.Tokens, cls.Lines))
+
+	if cls.Extractability.CanExtract {
+		parts = append(parts, fmt.Sprintf("extractable: ~%d lines saved across %d sites",
+			cls.Extractability.EstimatedLinesSaved, cloneCount))
+	}
+
+	if _, err := fmt.Fprintf(p.w, "  explain: %s\n", strings.Join(parts, " | ")); err != nil {
+		return fmt.Errorf("write explanation line: %w", err)
+	}
+
+	if cls.Suggestion != "" {
+		label := "fix"
+		if cls.Actionability == domain.NonActionable {
+			label = "why"
+		}
+
+		if _, err := fmt.Fprintf(p.w, "  %s: %s\n", label, cls.Suggestion); err != nil {
+			return fmt.Errorf("write suggestion line: %w", err)
+		}
 	}
 
 	return nil

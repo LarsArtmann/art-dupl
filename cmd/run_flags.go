@@ -151,6 +151,12 @@ func runStandardAnalysis(ctx context.Context, mergedConfig *config.Config, sortB
 		}
 	}
 
+	if mergedConfig.Explain {
+		if es, ok := p.(printer.ExplainSetter); ok {
+			es.SetExplain(true)
+		}
+	}
+
 	suppression := SuppressionConfig{
 		SuppressTestLow:  mergedConfig.EffectiveSuppressTestLow(),
 		TestThreshold:    mergedConfig.EffectiveTestThreshold(),

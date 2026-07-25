@@ -181,6 +181,10 @@ type Config struct {
 	// When true, all clone groups are reported including boilerplate/non-actionable ones.
 	NoActionability bool `json:"noActionability,omitempty"`
 
+	// Explain enables explanation output for each clone group (clone type,
+	// actionability, category, extractability, suggestion).
+	Explain bool `json:"explain,omitempty"`
+
 	// NoAcceptDirectives disables //art-dupl:accept inline directive processing.
 	// When true, all clone groups are reported regardless of accept directives.
 	NoAcceptDirectives bool `json:"noAcceptDirectives,omitempty"`

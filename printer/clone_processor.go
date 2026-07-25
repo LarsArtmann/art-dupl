@@ -123,6 +123,9 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 		clones[i].Classification = applyPatternLabel(
 			clones[i].Classification, label,
 		)
+		if label != PatternNone {
+			clones[i].Classification.NonActionablePattern = string(label)
+		}
 	}
 
 	return clones, nil

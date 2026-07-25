@@ -121,6 +121,8 @@ func AddFlags(rootCmd *cobra.Command) {
 	rootCmd.Flags().
 		Bool("no-actionability", false, "show all clones including non-actionable boilerplate (disable actionability filtering)")
 	rootCmd.Flags().
+		Bool("explain", false, "explain why each clone group was reported (type, actionability, category, extractability)")
+	rootCmd.Flags().
 		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
