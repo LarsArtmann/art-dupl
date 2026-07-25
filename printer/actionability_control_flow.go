@@ -213,3 +213,93 @@ func isLoggingMethod(name string) bool {
 		return false
 	}
 }
+
+// isGuardClause reports whether every clone is a single IfStmt used as a guard
+// clause: a condition check followed by an immediate return, with no else
+// branch and a body containing only return statements (max 2).
+//
+// Guard clauses are the most common control-flow idiom in Go after error
+// checks. Examples:
+//
+//	if !enabled { return }
+//	if ctx.Err() != nil { return ctx.Err() }
+//	if len(items) == 0 { return nil, ErrEmpty }
+//
+// They are not actionable duplication — extracting a guard clause into a helper
+// would require passing in the return type, obscuring the control flow.
+//
+// Error-specific guards (if err != nil { return err }) are caught earlier by
+// isPureErrorPropagation. This pattern catches the remaining boolean/nil/value
+// guards.
+func isGuardClause(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 1 {
+			return false
+		}
+
+		root := seq[0]
+		if root.BaseType != golang.IfStmt {
+			return false
+		}
+
+		return isGuardClauseBody(root)
+	})
+}
+
+// isGuardClauseBody checks if an IfStmt has the guard-clause shape:
+//   - A BlockStmt body containing only ReturnStmt(s), max 2
+//   - No else branch (no IfStmt or extra BlockStmt sibling)
+func isGuardClauseBody(node *domain.CloneNode) bool {
+	var (
+		hasBody bool
+		hasElse bool
+	)
+
+	for _, child := range node.Children {
+		switch child.BaseType {
+		case golang.BlockStmt:
+			if !isReturnOnlyBody(child) {
+				return false
+			}
+
+			hasBody = true
+
+		case golang.IfStmt:
+			// else-if branch → not a simple guard
+			return false
+
+		case golang.BinaryExpr, golang.UnaryExpr, golang.CallExpr,
+			golang.Ident, golang.SelectorExpr, golang.BasicLit,
+			golang.ParenExpr, golang.IndexExpr:
+			// Condition expression nodes — expected, skip
+
+		default:
+			// Any other child type (AssignStmt, DeclStmt, etc.) suggests
+			// this is an init-statement or complex if, not a simple guard.
+			if child.BaseType == golang.AssignStmt || child.BaseType == golang.DeclStmt {
+				// Init statement (if x := f(); x != nil) — still could be a guard
+				continue
+			}
+
+			hasElse = true
+		}
+	}
+
+	return hasBody && !hasElse
+}
+
+// isReturnOnlyBody checks if a BlockStmt body contains only ReturnStmt(s),
+// with at most 2 statements.
+func isReturnOnlyBody(block *domain.CloneNode) bool {
+	if len(block.Children) == 0 || len(block.Children) > 2 {
+		return false
+	}
+
+	for _, stmt := range block.Children {
+		if stmt.BaseType != golang.ReturnStmt {
+			return false
+		}
+	}
+
+	return true
+}

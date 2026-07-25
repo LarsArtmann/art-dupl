@@ -254,6 +254,14 @@ var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gocheckn
 		suggestion: "single function call with different arguments",
 		priority:   domain.PriorityLow,
 	},
+	PatternSingleSimpleStmt: {
+		suggestion: "single terminal statement (return, assignment, var declaration)",
+		priority:   domain.PriorityLow,
+	},
+	PatternGuardClause: {
+		suggestion: "guard clause (if cond { return }) — boilerplate control flow",
+		priority:   domain.PriorityLow,
+	},
 }
 
 // applyPatternLabel adjusts clone classification based on the AST-detected

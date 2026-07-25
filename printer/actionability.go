@@ -59,6 +59,8 @@ const (
 	PatternBuilderCallback  PatternLabel = "builder-callback"
 	PatternAssignErrorCheck PatternLabel = "assign-error-check"
 	PatternSingleCallExpr   PatternLabel = "single-call-expression"
+	PatternSingleSimpleStmt PatternLabel = "single-simple-statement"
+	PatternGuardClause      PatternLabel = "guard-clause"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -81,8 +83,10 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 		{isInterfaceImplementation, PatternInterfaceImpl},
 		{isPureDeferPattern, PatternRAIIDefer},
 		{isPureErrorPropagation, PatternErrorPropagation},
+		{isGuardClause, PatternGuardClause},
 		{isAssignWithErrorCheck, PatternAssignErrorCheck},
 		{isSingleCallExpression, PatternSingleCallExpr},
+		{isSingleSimpleStatement, PatternSingleSimpleStmt},
 		{isErrorWrappingReturn, PatternErrorWrapping},
 		{isAssertionChain, PatternAssertionChain},
 		{isCobraCommandBoilerplate, PatternCobraBoilerplate},
