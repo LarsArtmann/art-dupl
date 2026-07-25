@@ -40,7 +40,6 @@ linters:
         - errname
         - errorlint
         - exhaustive
-        - exhaustruct
         - exptostd
         - fatcontext
         - forbidigo
@@ -107,7 +106,6 @@ linters:
         - sqlclosecheck
         - staticcheck
         - tagalign
-        - tagliatelle
         - testableexamples
         - testifylint
         - testpackage
@@ -151,9 +149,6 @@ linters:
                         - golang.org/x/tools
         dupl:
             threshold: 100
-        exhaustruct:
-            exclude:
-                - os/exec.Cmd
         funlen:
             lines: 80
             statements: 50
