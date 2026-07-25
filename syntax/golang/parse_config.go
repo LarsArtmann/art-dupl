@@ -1,12 +1,14 @@
 package golang
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-// ErrInvalidDetectionMode is returned when an invalid DetectionMode is used.
-var ErrInvalidDetectionMode = errors.New("invalid detection mode")
+// ErrInvalidDetectionMode aliases the domain-level sentinel so that
+// errors.Is matches consistently across packages.
+var ErrInvalidDetectionMode = domain.ErrInvalidDetectionMode
 
 // ParseConfig holds configuration for the Go source code parser.
 // It controls how AST nodes are transformed and matched.
