@@ -61,6 +61,7 @@ const (
 	PatternSingleCallExpr   PatternLabel = "single-call-expression"
 	PatternSingleSimpleStmt PatternLabel = "single-simple-statement"
 	PatternGuardClause      PatternLabel = "guard-clause"
+	PatternTestHelperDelegate PatternLabel = "test-helper-delegate"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
@@ -87,6 +88,7 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 		{isAssignWithErrorCheck, PatternAssignErrorCheck},
 		{isSingleCallExpression, PatternSingleCallExpr},
 		{isSingleSimpleStatement, PatternSingleSimpleStmt},
+		{isTestHelperDelegate, PatternTestHelperDelegate},
 		{isErrorWrappingReturn, PatternErrorWrapping},
 		{isAssertionChain, PatternAssertionChain},
 		{isCobraCommandBoilerplate, PatternCobraBoilerplate},

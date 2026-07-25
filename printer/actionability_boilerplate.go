@@ -120,3 +120,58 @@ func subtreeContainsTypeSpec(n *domain.CloneNode) bool {
 
 	return slices.ContainsFunc(n.Children, subtreeContainsTypeSpec)
 }
+
+// isTestHelperDelegate reports whether every clone is a 2-statement test helper
+// body: t.Helper() as the first statement, followed by a single delegate call
+// to a shared assertion function. This is irreducible Go boilerplate:
+//
+//	t.Helper()                    // marks the CALLING function, cannot be factored out
+//	failIfNilf(t, got, "...", x)  // shared logic already extracted
+//
+// t.Helper() cannot be moved into the delegate because it marks the caller as
+// the helper — moving it would mark the delegate instead. The shared assertion
+// logic is already extracted. These are the last remaining duplication: the
+// t.Helper() call itself, which is structurally identical across all helpers.
+//
+// The heuristic is intentionally narrow: exactly 2 statements, first is a
+// .Helper() method call, second is any call expression. Longer bodies with
+// real logic are NOT matched (they may contain actionable duplication).
+func isTestHelperDelegate(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 2 {
+			return false
+		}
+
+		return isHelperCallStmt(seq[0]) && isLoneCallExpr(seq[1])
+	})
+}
+
+// isHelperCallStmt reports whether a node is an ExprStmt wrapping a CallExpr
+// whose function is a SelectorExpr with method name "Helper". This matches
+// t.Helper(), b.Helper(), tb.Helper() — the standard testing.T/TB/B idiom.
+func isHelperCallStmt(n *domain.CloneNode) bool {
+	if n.BaseType != golang.ExprStmt {
+		return false
+	}
+
+	call := firstChild(n, golang.CallExpr)
+	if call == nil {
+		return false
+	}
+
+	sel := firstChild(call, golang.SelectorExpr)
+
+	return sel != nil && sel.Name == "Helper"
+}
+
+// firstChild returns the first direct child of n with the given BaseType,
+// or nil if none matches.
+func firstChild(n *domain.CloneNode, typ int32) *domain.CloneNode {
+	for _, c := range n.Children {
+		if c.BaseType == typ {
+			return c
+		}
+	}
+
+	return nil
+}

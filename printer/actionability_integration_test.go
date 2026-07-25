@@ -174,9 +174,131 @@ func TestEvaluateActionabilityWithLabel_SingleCallExprStatement(t *testing.T) {
 	}
 }
 
+// TestEvaluateActionabilityWithLabel_TestHelperDelegate verifies that a
+// 2-statement t.Helper() + delegate body is classified as non-actionable.
+// This is the irreducible Go test-helper idiom:
+//
+//	func AssertNotNil(t *testing.T, got any, what string) {
+//	    t.Helper()
+//	    failIfNilf(t, got, "expected non-nil")
+//	}
+func TestEvaluateActionabilityWithLabel_TestHelperDelegate(t *testing.T) {
+	t.Parallel()
+
+	helperCall := mustExprStmtCallExpr("t", "Helper")
+	delegateCall := mustExprStmtBareCall("failIfNilf")
+
+	seq := []*domain.CloneNode{helperCall, delegateCall}
+
+	label, action := EvaluateActionabilityWithLabel([][]*domain.CloneNode{
+		seq,
+		seq,
+	})
+	if action != domain.NonActionable {
+		t.Errorf("action = %q, want %q", action, domain.NonActionable)
+	}
+
+	if label != PatternTestHelperDelegate {
+		t.Errorf("label = %q, want %q", label, PatternTestHelperDelegate)
+	}
+}
+
+// TestEvaluateActionabilityWithLabel_TestHelperDelegate_SelectorDelegate
+// verifies that t.Helper() + a method-call delegate (e.g. t.Errorf(...))
+// is also classified as non-actionable test-helper-delegate.
+func TestEvaluateActionabilityWithLabel_TestHelperDelegate_SelectorDelegate(t *testing.T) {
+	t.Parallel()
+
+	helperCall := mustExprStmtCallExpr("t", "Helper")
+	delegateCall := mustExprStmtCallExpr("assert", "Equal") // selector-based delegate
+
+	seq := []*domain.CloneNode{helperCall, delegateCall}
+
+	label, action := EvaluateActionabilityWithLabel([][]*domain.CloneNode{
+		seq,
+		seq,
+	})
+	if action != domain.NonActionable {
+		t.Errorf("action = %q, want %q", action, domain.NonActionable)
+	}
+
+	if label != PatternTestHelperDelegate {
+		t.Errorf("label = %q, want %q", label, PatternTestHelperDelegate)
+	}
+}
+
+// TestEvaluateActionabilityWithLabel_TestHelperDelegate_ThreeStmts verifies
+// that a 3-statement body does NOT trigger the pattern — longer bodies may
+// contain real actionable duplication beyond the t.Helper() boilerplate.
+func TestEvaluateActionabilityWithLabel_TestHelperDelegate_ThreeStmts(t *testing.T) {
+	t.Parallel()
+
+	helperCall := mustExprStmtCallExpr("t", "Helper")
+	delegateCall := mustExprStmtBareCall("failIfNilf")
+	extraCall := mustExprStmtBareCall("doMore")
+
+	seq := []*domain.CloneNode{helperCall, delegateCall, extraCall}
+
+	label, action := EvaluateActionabilityWithLabel([][]*domain.CloneNode{
+		seq,
+		seq,
+	})
+	if action != domain.Actionable {
+		t.Errorf("action = %q, want %q (3 statements should be actionable)", action, domain.Actionable)
+	}
+
+	if label == PatternTestHelperDelegate {
+		t.Errorf("label = %q, should NOT be test-helper-delegate", label)
+	}
+}
+
+// TestEvaluateActionabilityWithLabel_TestHelperDelegate_NonHelperFirstStmt
+// verifies that a 2-statement body where the first call is NOT .Helper()
+// does NOT trigger the pattern.
+func TestEvaluateActionabilityWithLabel_TestHelperDelegate_NonHelperFirstStmt(t *testing.T) {
+	t.Parallel()
+
+	firstCall := mustExprStmtCallExpr("t", "Parallel") // not .Helper()
+	delegateCall := mustExprStmtBareCall("doSomething")
+
+	seq := []*domain.CloneNode{firstCall, delegateCall}
+
+	label, action := EvaluateActionabilityWithLabel([][]*domain.CloneNode{
+		seq,
+		seq,
+	})
+	if action != domain.Actionable {
+		t.Errorf("action = %q, want %q (non-Helper first stmt should be actionable)", action, domain.Actionable)
+	}
+
+	if label == PatternTestHelperDelegate {
+		t.Errorf("label = %q, should NOT be test-helper-delegate", label)
+	}
+}
+
 // --- Helper builders for integration tests ---
 
-// mustIfErrWrapReturn constructs an IfStmt representing:
+// mustExprStmtBareCall constructs an ExprStmt wrapping a CallExpr whose
+// function is a bare Ident (not a SelectorExpr). This represents a
+// same-package function call used as a statement:
+//
+//	failIfNilf(t, got, "expected non-nil")
+//	assertEqualMsgf(t, got, want, format)
+func mustExprStmtBareCall(funcName string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.ExprStmt,
+		Children: []*domain.CloneNode{
+			{
+				BaseType: golang.CallExpr,
+				Children: []*domain.CloneNode{
+					{BaseType: golang.Ident, Name: funcName},
+				},
+			},
+		},
+	}
+}
+
+// mustExprStmtCallExpr constructs an ExprStmt wrapping a CallExpr, representing
 //
 //	if err != nil {
 //	    return fmt.Errorf("...")
