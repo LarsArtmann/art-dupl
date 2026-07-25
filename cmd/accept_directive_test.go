@@ -52,7 +52,7 @@ func bar() {
 			want: true,
 		},
 		{
-			name: "directive outside clone range does not suppress",
+			name: "directive 6 lines above LineStart does not suppress (beyond scan window)",
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
@@ -62,14 +62,14 @@ func bar() {
 			want: false,
 		},
 		{
-			name: "directive on boundary line (LineStart) suppresses",
+			name: "directive one line above LineStart suppresses (above-range scan)",
 			group: domain.ProcessedCloneGroup{
 				Hash: "abc123",
 				Clones: []domain.ProcessedClone{
 					{CloneRef: domain.CloneRef{Filename: fileWithDirective, LineStart: 7, LineEnd: 12}},
 				},
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "directive on boundary line (LineEnd) suppresses",
@@ -172,6 +172,39 @@ func foo() {
 
 	if set.IsAccepted(nonMatchingGroup) {
 		t.Error("directive with hash should NOT accept group with different hash")
+	}
+}
+
+func TestAcceptedSetDescriptionText(t *testing.T) {
+	t.Parallel()
+
+	fileContent := `package example
+
+func foo() {
+	//art-dupl:accept idiomatic boilerplate that cannot be eliminated
+	fmt.Println("hello")
+	fmt.Println("world")
+}
+`
+
+	readFile := func(name string) ([]byte, error) {
+		return []byte(fileContent), nil
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	// A directive with multi-word descriptive text should be treated as a
+	// bare accept (no hash), matching ANY group on those lines. The
+	// description is for humans, not for precision matching.
+	anyGroup := domain.ProcessedCloneGroup{
+		Hash: "any-hash-value",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 7}},
+		},
+	}
+
+	if !set.IsAccepted(anyGroup) {
+		t.Error("directive with multi-word description should accept any group (description is not a hash)")
 	}
 }
 

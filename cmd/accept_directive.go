@@ -13,6 +13,13 @@ import (
 
 const acceptDirectivePrefix = "//art-dupl:accept"
 
+// acceptDirectiveScanAbove is the number of lines above clone.LineStart to
+// also check for directives. Users naturally place directives on the line
+// above the code they want to accept, matching every other linter convention
+// (golangci-lint, eslint, revive). The window is capped to avoid accepting
+// unrelated groups that happen to be nearby.
+const acceptDirectiveScanAbove = 5
+
 const (
 	scannerInitBufSize = 65536   // 64 KB
 	scannerMaxBufSize  = 1048576 // 1 MB
@@ -52,10 +59,13 @@ func newAcceptSet(cfg *config.Config) *AcceptedSet {
 	return NewAcceptedSet(os.ReadFile)
 }
 
-// IsAccepted checks if any clone in the group has an accept directive within
-// its line range. A directive on line N accepts clones where LineStart <= N <=
-// LineEnd. When the directive includes a hash (//art-dupl:accept <hash>), it
-// only matches groups with that exact hash.
+// IsAccepted checks if any clone in the group has an accept directive
+// within its line range or up to acceptDirectiveScanAbove lines above
+// LineStart. A directive on line N accepts clones where
+// (LineStart - acceptDirectiveScanAbove) <= N <= LineEnd. This matches user
+// expectations: directives placed on the line above the clone (like every
+// other linter) are honored. When the directive includes a hash
+// (//art-dupl:accept <hash>), it only matches groups with that exact hash.
 func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 	if a == nil {
 		return false
@@ -64,8 +74,13 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 	for _, clone := range group.Clones {
 		directives := a.getDirectives(clone.Filename)
 
+		scanFrom := clone.LineStart - acceptDirectiveScanAbove
+		if scanFrom < 1 {
+			scanFrom = 1
+		}
+
 		for _, d := range directives {
-			if d.Line < clone.LineStart || d.Line > clone.LineEnd {
+			if d.Line < scanFrom || d.Line > clone.LineEnd {
 				continue
 			}
 
@@ -129,7 +144,13 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		rest := strings.TrimPrefix(text, acceptDirectivePrefix)
 		rest = strings.TrimSpace(rest)
 
-		if rest != "" {
+		// Only treat the text after the prefix as a hash if it is a single
+		// token (no spaces). This distinguishes precision-hash directives
+		// (//art-dupl:accept a1b2c3d4) from human-readable descriptions
+		// (//art-dupl:accept idiomatic test helper boilerplate). Without this,
+		// any text after the prefix is stored as the hash and never matches a
+		// real group hash, silently disabling the directive.
+		if rest != "" && !strings.ContainsAny(rest, " \t") {
 			d.Hash = rest
 		}
 
