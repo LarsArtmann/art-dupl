@@ -8,17 +8,17 @@
 
 ## A) FULLY DONE (9/11 tasks)
 
-| # | Task | What was done |
-|---|------|---------------|
-| 1 | `bdd/type_aware_test.go:14` undefined `CreateBDDTestSetup` | Stale LSP error — package builds clean. Verified with `go build ./bdd/...`. No code change needed. |
-| 2 | `cmd/progress_test.go` lint warnings (errcheck, wsl_v5) | Resolved by root-cause fix: re-removing `exhaustruct`/`tagliatelle` from `.golangci.yml`. |
-| 3 | `cmd/accept_directive.go:97` mnd magic number 64 | Resolved by root-cause fix (same as #2). The `64` was in a named constant `scannerInitBufSize`, never an issue. |
-| 4 | `cmd/accept_directive_test.go:40` gci formatting | Resolved by root-cause fix (same as #2). |
-| 5 | Remove 10 dead `//nolint:exhaustruct` directives | Removed all 10 across 7 files: `pkg/artdupl/types.go`, `pkg/logger/logger.go`, `job/profiler.go`, `job/incremental.go` (2), `internal/utils/file.go`, `internal/testutil/bdd.go` (2), `errors/types.go` (2). Explanatory comments preserved (just removed `//nolint:exhaustruct` prefix). |
-| 6 | SDK DefaultOptions threshold split-brain (15 vs 5) | Added `DefaultThreshold = 5` constant in `pkg/artdupl/types.go` mirroring `config.DefaultThreshold`. Updated `DefaultOptions()` to use it. Updated `TestDefaultOptions_Values` assertion. Updated `SDK_DESIGN.md` documentation. |
-| 7 | SDK TypeAware fallback test asserts nothing | Replaced `_ = result; _ = err` with real assertions: error must be nil or `ErrNoDuplicatesFound`, result must be non-nil when err is nil. |
-| 8 | Progress test parallelism (`os.Stderr` manipulation) | Refactored `progressFilesChan` to accept `io.Writer` parameter. Production callers pass `os.Stderr`. Tests pass `io.Discard`. No more global `os.Stderr` swap. Test now calls `t.Parallel()`. |
-| 9 | Annotate stale status report as SUPERSEDED | Added SUPERSEDED blockquote at top of `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` explaining M26-M30 stub flags were removed. |
+| #   | Task                                                       | What was done                                                                                                                                                                                                                                                                             |
+| --- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `bdd/type_aware_test.go:14` undefined `CreateBDDTestSetup` | Stale LSP error — package builds clean. Verified with `go build ./bdd/...`. No code change needed.                                                                                                                                                                                        |
+| 2   | `cmd/progress_test.go` lint warnings (errcheck, wsl_v5)    | Resolved by root-cause fix: re-removing `exhaustruct`/`tagliatelle` from `.golangci.yml`.                                                                                                                                                                                                 |
+| 3   | `cmd/accept_directive.go:97` mnd magic number 64           | Resolved by root-cause fix (same as #2). The `64` was in a named constant `scannerInitBufSize`, never an issue.                                                                                                                                                                           |
+| 4   | `cmd/accept_directive_test.go:40` gci formatting           | Resolved by root-cause fix (same as #2).                                                                                                                                                                                                                                                  |
+| 5   | Remove 10 dead `//nolint:exhaustruct` directives           | Removed all 10 across 7 files: `pkg/artdupl/types.go`, `pkg/logger/logger.go`, `job/profiler.go`, `job/incremental.go` (2), `internal/utils/file.go`, `internal/testutil/bdd.go` (2), `errors/types.go` (2). Explanatory comments preserved (just removed `//nolint:exhaustruct` prefix). |
+| 6   | SDK DefaultOptions threshold split-brain (15 vs 5)         | Added `DefaultThreshold = 5` constant in `pkg/artdupl/types.go` mirroring `config.DefaultThreshold`. Updated `DefaultOptions()` to use it. Updated `TestDefaultOptions_Values` assertion. Updated `SDK_DESIGN.md` documentation.                                                          |
+| 7   | SDK TypeAware fallback test asserts nothing                | Replaced `_ = result; _ = err` with real assertions: error must be nil or `ErrNoDuplicatesFound`, result must be non-nil when err is nil.                                                                                                                                                 |
+| 8   | Progress test parallelism (`os.Stderr` manipulation)       | Refactored `progressFilesChan` to accept `io.Writer` parameter. Production callers pass `os.Stderr`. Tests pass `io.Discard`. No more global `os.Stderr` swap. Test now calls `t.Parallel()`.                                                                                             |
+| 9   | Annotate stale status report as SUPERSEDED                 | Added SUPERSEDED blockquote at top of `docs/status/2026-07-24_23-11_full-todo-execution-sprint.md` explaining M26-M30 stub flags were removed.                                                                                                                                            |
 
 ### Root-Cause Fix (unblocked tasks 1-4)
 
@@ -31,6 +31,7 @@
 ### Task 11: `FilterResult.Source` field — INFRASTRUCTURE BUILT, OUTPUT NOT WIRED
 
 **What was done:**
+
 - Added `FilterSource` type with two values: `FilterSourceGogenfilter` and `FilterSourceDefenseInDepth` in `cmd/filter_stats.go`
 - Added `bySource` map to `FilterStats` struct
 - Added `RecordWithSource(result, source)` method
@@ -40,6 +41,7 @@
 - 2 unit tests: `TestFilterStatsSourceBreakdown` and `TestShouldIncludeFile_TracksDefenseInDepthSource`
 
 **What was NOT done:**
+
 - `SourceBreakdown()` is **dead code** — nothing calls it
 - `applyFilterStats` in `cmd/stats.go:38-63` only passes `totalFiltered` and per-reason `breakdown` to `sp.SetFilterStats()`
 - The `printer.StatsPrinter` interface (`SetFilterStats(totalFiltered int, breakdown map[string]int)`) has no parameter for source breakdown
@@ -59,6 +61,7 @@ N/A — all 11 items were addressed (10 fully, 1 partially).
 ### D1: Left stale `Threshold: 15` in doc.go
 
 `pkg/artdupl/doc.go:31` still shows:
+
 ```go
 //	opts := &artdupl.Options{
 //	    Threshold:         15,                       // Minimum token count for a clone
@@ -168,6 +171,7 @@ AGENTS.md says `nix flake check` is the reproducible CI (includes `templ generat
 ### Q1: Should `SourceBreakdown()` be wired into the existing `SetFilterStats(totalFiltered int, breakdown map[string]int)` interface, or should it be a separate method?
 
 `SetFilterStats` is part of the `printer.StatsPrinter` interface, which is implemented by multiple printer types. Changing its signature is a breaking interface change. Options:
+
 - **(A)** Extend the signature: `SetFilterStats(totalFiltered int, breakdown, sourceBreakdown map[string]int)` — breaks all implementations
 - **(B)** Add a new method: `SetFilterSourceStats(sourceBreakdown map[string]int)` — optional, implementations can no-op
 - **(C)** Merge source into the existing breakdown map with prefixed keys: `"gogenfilter:templ": 5` — hacky but zero interface change
@@ -177,6 +181,7 @@ This is a product/API decision I cannot make.
 ### Q2: Should the SDK `DefaultThreshold` constant have a drift-detection test, and if so, where does it live?
 
 The SDK (`pkg/artdupl`) cannot import `config/` (arch-lint enforced). A test asserting `DefaultThreshold == config.DefaultThreshold` cannot live in `pkg/artdupl/`. It could live in:
+
 - A top-level integration test package (e.g., `test/integration/`)
 - The `bdd/` package (imports both)
 - Nowhere (accept the duplication risk)

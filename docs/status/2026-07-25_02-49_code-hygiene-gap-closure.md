@@ -14,19 +14,21 @@ This session addressed 6 gaps from the previous session's self-review. All code 
 
 ## A) FULLY DONE (and verified)
 
-| # | Gap from previous report | What was done | Verification |
-|---|--------------------------|---------------|--------------|
-| 1 | `doc.go:31` stale `Threshold: 15` | Changed to `artdupl.DefaultThreshold` in godoc example | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results |
-| 2 | 8 hardcoded `Threshold: 15` in test fixtures | Replaced ALL occurrences across 3 files: `detector_validation_test.go` (11), `detector_test.go` (5), `basic_test.go` (1) | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results |
-| 3 | `SourceBreakdown()` dead code | Fully wired into stats output: new `SetFilterSourceStats` method on `StatsPrinter` interface, new `FilterSourceBreakdown` field in `StatsView` + `StatsConfig`, rendered in both text ("Filter Source:" section) and JSON (`filterSourceBreakdown` key) output | Build passes, `nix flake check` passes, existing tests pass |
-| 4 | CHANGELOG.md not updated | Added entries for `DefaultThreshold` constant, filter source tracking, progress `io.Writer` injection, `//nolint:exhaustruct` cleanup, threshold consistency, type-aware fallback test hardening | Reviewed against actual changes |
-| 5 | Race detector never run | `CGO_ENABLED=1 go test -race ./...` — all 27 packages pass with zero data races | Full output captured in session |
-| 6 | `nix flake check` never run | All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.) | Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line |
+| #   | Gap from previous report                     | What was done                                                                                                                                                                                                                                                  | Verification                                                      |
+| --- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 1   | `doc.go:31` stale `Threshold: 15`            | Changed to `artdupl.DefaultThreshold` in godoc example                                                                                                                                                                                                         | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results             |
+| 2   | 8 hardcoded `Threshold: 15` in test fixtures | Replaced ALL occurrences across 3 files: `detector_validation_test.go` (11), `detector_test.go` (5), `basic_test.go` (1)                                                                                                                                       | `rg "Threshold:\s+15" pkg/artdupl/` returns 0 results             |
+| 3   | `SourceBreakdown()` dead code                | Fully wired into stats output: new `SetFilterSourceStats` method on `StatsPrinter` interface, new `FilterSourceBreakdown` field in `StatsView` + `StatsConfig`, rendered in both text ("Filter Source:" section) and JSON (`filterSourceBreakdown` key) output | Build passes, `nix flake check` passes, existing tests pass       |
+| 4   | CHANGELOG.md not updated                     | Added entries for `DefaultThreshold` constant, filter source tracking, progress `io.Writer` injection, `//nolint:exhaustruct` cleanup, threshold consistency, type-aware fallback test hardening                                                               | Reviewed against actual changes                                   |
+| 5   | Race detector never run                      | `CGO_ENABLED=1 go test -race ./...` — all 27 packages pass with zero data races                                                                                                                                                                                | Full output captured in session                                   |
+| 6   | `nix flake check` never run                  | All 9 checks pass (fmt, lint, test, race, bench, disabled-linters, build, etc.)                                                                                                                                                                                | Required 2 fixes: gofmt on struct alignment + `wsl_v5` blank line |
 
 ### Previous session Q1 answered
+
 Chose option **(B)** — separate `SetFilterSourceStats` method. Non-breaking, implementations can no-op. This was the correct choice given only one implementation exists.
 
 ### Previous session Q3 answered
+
 Finished Task 11 — wired source breakdown to output. The infrastructure is no longer dead code.
 
 ---
@@ -45,10 +47,13 @@ The new interface method and its rendering in text/JSON output are completely un
 ## C) NOT STARTED
 
 ### C1: Drift-detection test for SDK/CLI constant sync
+
 Previous report Q2 asked where a test asserting `DefaultThreshold == config.DefaultThreshold` should live. Still unanswered. The SDK cannot import `config/` (arch-lint). No test exists in `bdd/` or any integration package.
 
 ### C2: AGENTS.md not updated for new interface method
+
 `AGENTS.md` documents the `StatsPrinter` interface and filter stats flow, but was NOT updated to document:
+
 - `SetFilterSourceStats` method on `StatsPrinter` interface
 - `FilterSourceBreakdown` field on `StatsView` / `StatsConfig`
 - New "Filter Source:" text output section
@@ -168,6 +173,7 @@ Missing blank line between consecutive `if` blocks inside `fillJSONOverview`. My
 ### Q1: Where should the drift-detection test for `DefaultThreshold == config.DefaultThreshold` live?
 
 The SDK (`pkg/artdupl`) cannot import `config/` (arch-lint enforced). The test needs to import both. Options:
+
 - `bdd/` package (already imports both, but is BDD-style, not a natural fit for a 3-line assertion)
 - A new `test/integration/` package (adds new test infrastructure)
 - `cmd/` package (already imports both, but is the wrong layer for SDK config assertions)

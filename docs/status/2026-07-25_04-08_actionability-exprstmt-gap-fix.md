@@ -181,22 +181,22 @@ Nothing. The fix is correct, minimal, well-tested, and verified end-to-end. No r
 
 ## Files Changed This Session
 
-| File | Change |
-|------|--------|
-| `printer/actionability_boilerplate.go` | Fixed `isSingleCallExpression`, added `isLoneCallExpr` helper |
-| `printer/actionability_boilerplate_test.go` | 4 new test cases for ExprStmt(CallExpr) variants |
-| `printer/actionability_integration_test.go` | New integration test + `mustExprStmtCallExpr` helper |
-| `bdd/sorting_test.go` | Updated widespreadCode from single-call to multi-statement body |
+| File                                        | Change                                                          |
+| ------------------------------------------- | --------------------------------------------------------------- |
+| `printer/actionability_boilerplate.go`      | Fixed `isSingleCallExpression`, added `isLoneCallExpr` helper   |
+| `printer/actionability_boilerplate_test.go` | 4 new test cases for ExprStmt(CallExpr) variants                |
+| `printer/actionability_integration_test.go` | New integration test + `mustExprStmtCallExpr` helper            |
+| `bdd/sorting_test.go`                       | Updated widespreadCode from single-call to multi-statement body |
 
 ## Verification Results
 
-| Check | Result |
-|-------|--------|
-| `go build ./...` | PASS |
-| `go vet ./printer/` | PASS (clean) |
-| `go test ./printer/` | PASS (all tests) |
-| `go test ./...` (non-BDD) | PASS (26 packages) |
-| BDD tests | 22 failures (all pre-existing, -1 from sorting test fix) |
-| gogenfilter `t.Parallel()` count | 0 (was 65) |
-| `golangci-lint` | NOT RUN |
-| `nix flake check` | NOT RUN |
+| Check                            | Result                                                   |
+| -------------------------------- | -------------------------------------------------------- |
+| `go build ./...`                 | PASS                                                     |
+| `go vet ./printer/`              | PASS (clean)                                             |
+| `go test ./printer/`             | PASS (all tests)                                         |
+| `go test ./...` (non-BDD)        | PASS (26 packages)                                       |
+| BDD tests                        | 22 failures (all pre-existing, -1 from sorting test fix) |
+| gogenfilter `t.Parallel()` count | 0 (was 65)                                               |
+| `golangci-lint`                  | NOT RUN                                                  |
+| `nix flake check`                | NOT RUN                                                  |

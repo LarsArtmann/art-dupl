@@ -198,8 +198,15 @@ func TestIsSingleSimpleStatement(t *testing.T) {
 			expected: true,
 		},
 		{
-			name:     "single ReturnStmt with expression",
-			seqs:     [][]*domain.CloneNode{{{BaseType: golang.ReturnStmt, Children: []*domain.CloneNode{{BaseType: golang.Ident, Name: "nil"}}}}},
+			name: "single ReturnStmt with expression",
+			seqs: [][]*domain.CloneNode{{
+				{
+					BaseType: golang.ReturnStmt,
+					Children: []*domain.CloneNode{
+						{BaseType: golang.Ident, Name: "nil"},
+					},
+				},
+			}},
 			expected: true,
 		},
 		{

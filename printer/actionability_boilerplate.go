@@ -1,6 +1,8 @@
 package printer
 
 import (
+	"slices"
+
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
@@ -116,11 +118,5 @@ func subtreeContainsTypeSpec(n *domain.CloneNode) bool {
 		return true
 	}
 
-	for _, child := range n.Children {
-		if subtreeContainsTypeSpec(child) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(n.Children, subtreeContainsTypeSpec)
 }

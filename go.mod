@@ -78,12 +78,12 @@ go 1.26.5
 require (
 	charm.land/lipgloss/v2 v2.0.5
 	charm.land/log/v2 v2.0.0
-	github.com/LarsArtmann/gogenfilter/v3 v3.3.0
+	github.com/LarsArtmann/gogenfilter/v3 v3.3.1
 	github.com/a-h/templ v0.3.1020
 	github.com/charmbracelet/fang v1.0.0
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260720091843-3eef36eaaa28
 	github.com/onsi/ginkgo/v2 v2.32.0
-	github.com/onsi/gomega v1.42.0
+	github.com/onsi/gomega v1.42.1
 	github.com/sergi/go-diff v1.4.0
 	github.com/spf13/cobra v1.10.2
 	github.com/zeebo/xxh3 v1.1.0

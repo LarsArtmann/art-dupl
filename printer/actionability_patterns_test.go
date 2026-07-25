@@ -728,7 +728,7 @@ func TestIsGuardClause(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "if cond { return; return; return } — too many returns (3+)",
+			name: "if cond { 3+ returns } — too many",
 			seqs: [][]*domain.CloneNode{{
 				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
 					{BaseType: golang.BinaryExpr},
