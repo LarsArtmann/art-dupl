@@ -74,10 +74,7 @@ func (a *AcceptedSet) IsAccepted(group domain.ProcessedCloneGroup) bool {
 	for _, clone := range group.Clones {
 		directives := a.getDirectives(clone.Filename)
 
-		scanFrom := clone.LineStart - acceptDirectiveScanAbove
-		if scanFrom < 1 {
-			scanFrom = 1
-		}
+		scanFrom := max(1, clone.LineStart-acceptDirectiveScanAbove)
 
 		for _, d := range directives {
 			if d.Line < scanFrom || d.Line > clone.LineEnd {
