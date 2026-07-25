@@ -307,17 +307,21 @@ func diffLineTypeClass(lineType DiffLineType) string {
 	}
 }
 
+// diffStatMeta holds display metadata for each diff CSS class.
+type diffStatMeta struct {
+	prefix string
+	label  string
+	value  func(DiffAggregateStats) int
+}
+
+var diffStatTable = map[string]diffStatMeta{ //nolint:gochecknoglobals // static lookup table
+	cssClassAdded:    {"+", "Added", func(s DiffAggregateStats) int { return s.TotalAdded }},
+	cssClassRemoved:  {"-", "Removed", func(s DiffAggregateStats) int { return s.TotalRemoved }},
+	cssClassModified: {"~", "Modified", func(s DiffAggregateStats) int { return s.TotalModified }},
+}
+
 func diffStatPrefix(cssClass string) string {
-	switch cssClass {
-	case cssClassAdded:
-		return "+"
-	case cssClassRemoved:
-		return "-"
-	case cssClassModified:
-		return "~"
-	default:
-		return ""
-	}
+	return diffStatTable[cssClass].prefix
 }
 
 var diffStatTypes = []string{ //nolint:gochecknoglobals // static CSS class list
@@ -327,29 +331,15 @@ var diffStatTypes = []string{ //nolint:gochecknoglobals // static CSS class list
 }
 
 func diffStatValue(cssClass string, stats DiffAggregateStats) int {
-	switch cssClass {
-	case cssClassAdded:
-		return stats.TotalAdded
-	case cssClassRemoved:
-		return stats.TotalRemoved
-	case cssClassModified:
-		return stats.TotalModified
-	default:
-		return 0
+	if m, ok := diffStatTable[cssClass]; ok {
+		return m.value(stats)
 	}
+
+	return 0
 }
 
 func diffStatLabel(cssClass string) string {
-	switch cssClass {
-	case cssClassAdded:
-		return "Added"
-	case cssClassRemoved:
-		return "Removed"
-	case cssClassModified:
-		return "Modified"
-	default:
-		return ""
-	}
+	return diffStatTable[cssClass].label
 }
 
 func diffLineContent(line DiffLine, index int, oppositeLines []DiffLine, isBasePanel bool) string {
