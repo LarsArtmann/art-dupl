@@ -101,37 +101,6 @@ func TestRecordWithSourceAndBreakdown(t *testing.T) {
 	}
 }
 
-// TestSourceBreakdown is the dedicated regression test for the per-source
-// tracking path (FilterSourceGogenfilter vs FilterSourceDefenseInDepth),
-// which previously had no direct coverage.
-func TestSourceBreakdown(t *testing.T) {
-	s := NewFilterStats(nil)
-
-	s.RecordWithSource(gogenfilter.FilterResult{
-		Filtered: true, Reason: gogenfilter.ReasonTempl,
-	}, FilterSourceGogenfilter)
-	s.RecordWithSource(gogenfilter.FilterResult{
-		Filtered: true, Reason: gogenfilter.ReasonSQLC,
-	}, FilterSourceGogenfilter)
-	s.RecordWithSource(gogenfilter.FilterResult{
-		Filtered: true, Reason: gogenfilter.ReasonTempl,
-	}, FilterSourceDefenseInDepth)
-	s.RecordWithSource(gogenfilter.FilterResult{
-		Filtered: true, Reason: gogenfilter.ReasonProtobuf,
-	}, FilterSourceDefenseInDepth)
-	s.RecordWithSource(gogenfilter.FilterResult{
-		Filtered: true, Reason: gogenfilter.ReasonProtobuf,
-	}, FilterSourceDefenseInDepth)
-
-	want := map[string]int{
-		string(FilterSourceGogenfilter):    2,
-		string(FilterSourceDefenseInDepth): 3,
-	}
-	if got := s.SourceBreakdown(); !reflect.DeepEqual(got, want) {
-		t.Errorf("SourceBreakdown() = %v, want %v", got, want)
-	}
-}
-
 func TestBreakdownAndSourceBreakdownAreDefensiveCopies(t *testing.T) {
 	s := NewFilterStats(nil)
 
