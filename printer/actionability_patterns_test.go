@@ -655,3 +655,133 @@ func mustThreeDistinctAssertions(filename string) *domain.CloneNode {
 		},
 	}
 }
+
+func TestIsGuardClause(t *testing.T) {
+	runBoolTests(t, isGuardClause, []boolTestCase{
+		{
+			name: "if cond { return }",
+			seqs: [][]*domain.CloneNode{{
+				mustGuardClauseIf(golang.UnaryExpr, mustReturnNil()),
+			}},
+			expected: true,
+		},
+		{
+			name: "if cond { return value }",
+			seqs: [][]*domain.CloneNode{{
+				mustGuardClauseIf(golang.BinaryExpr, &domain.CloneNode{
+					BaseType: golang.ReturnStmt,
+					Children: []*domain.CloneNode{{BaseType: golang.Ident, Name: "err"}},
+				}),
+			}},
+			expected: true,
+		},
+		{
+			name: "if cond { return a, b } (2 returns)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+						{BaseType: golang.ReturnStmt},
+					}},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "if cond { log(); return } — not guard (non-return in body)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ExprStmt},
+						{BaseType: golang.ReturnStmt},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "if cond { } else { return } — has else",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+					}},
+					{BaseType: golang.BlockStmt},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "if cond { return } else if { return } — else-if chain",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+					}},
+					{BaseType: golang.IfStmt},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "if cond { return; return; return } — too many returns (3+)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{
+						{BaseType: golang.ReturnStmt},
+						{BaseType: golang.ReturnStmt},
+						{BaseType: golang.ReturnStmt},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "if cond { } — empty body",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.BinaryExpr},
+					{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "not an IfStmt (ReturnStmt)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ReturnStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "two statements (not single)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt},
+				{BaseType: golang.IfStmt},
+			}},
+			expected: false,
+		},
+		{name: "empty (vacuous true)", seqs: [][]*domain.CloneNode{}, expected: true},
+	})
+}
+
+func mustGuardClauseIf(_ int32, ret *domain.CloneNode) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.IfStmt,
+		Children: []*domain.CloneNode{
+			{BaseType: golang.BinaryExpr, Children: []*domain.CloneNode{
+				{BaseType: golang.Ident, Name: "nil"},
+			}},
+			{BaseType: golang.BlockStmt, Children: []*domain.CloneNode{ret}},
+		},
+	}
+}
+
+func mustReturnNil() *domain.CloneNode {
+	return &domain.CloneNode{BaseType: golang.ReturnStmt}
+}
