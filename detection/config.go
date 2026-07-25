@@ -17,6 +17,5 @@ type Config struct {
 // to prevent drift across packages.
 const (
 	MethodArtDupl = domain.MethodArtDupl
-	//art-dupl:accept architectural alias: detection and SDK independently re-export domain constants (arch-lint boundary)
-	MethodHash = domain.MethodHash
+	MethodHash    = domain.MethodHash //art-dupl:accept architectural alias: detection and SDK independently re-export domain constants (arch-lint boundary)
 )
