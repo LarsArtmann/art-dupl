@@ -183,3 +183,163 @@ func assignWithErrorCheckSeq() []*domain.CloneNode {
 		}},
 	}
 }
+
+func TestIsSingleSimpleStatement(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		seqs     [][]*domain.CloneNode
+		expected bool
+	}{
+		{
+			name:     "single ReturnStmt",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.ReturnStmt}}},
+			expected: true,
+		},
+		{
+			name:     "single ReturnStmt with expression",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.ReturnStmt, Children: []*domain.CloneNode{{BaseType: golang.Ident, Name: "nil"}}}}},
+			expected: true,
+		},
+		{
+			name:     "single AssignStmt",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.AssignStmt}}},
+			expected: true,
+		},
+		{
+			name:     "single IncDecStmt",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.IncDecStmt}}},
+			expected: true,
+		},
+		{
+			name:     "single BranchStmt (break)",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.BranchStmt}}},
+			expected: true,
+		},
+		{
+			name:     "single SendStmt",
+			seqs:     [][]*domain.CloneNode{{{BaseType: golang.SendStmt}}},
+			expected: true,
+		},
+		{
+			name: "DeclStmt wrapping ValueSpec (var x int)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.DeclStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.GenDecl, Children: []*domain.CloneNode{
+						{BaseType: golang.ValueSpec},
+					}},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "DeclStmt wrapping TypeSpec (type Foo struct{}) — NOT filtered",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.DeclStmt, Children: []*domain.CloneNode{
+					{BaseType: golang.GenDecl, Children: []*domain.CloneNode{
+						{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+							{BaseType: golang.StructType},
+						}},
+					}},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "single IfStmt — not a terminal statement",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.IfStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "single ForStmt — not a terminal statement",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ForStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "single CallExpr — not handled here (isSingleCallExpression)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.CallExpr},
+			}},
+			expected: false,
+		},
+		{
+			name: "two statements — not single",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ReturnStmt},
+				{BaseType: golang.ReturnStmt},
+			}},
+			expected: false,
+		},
+		{
+			name:     "empty (vacuous true, guarded by caller)",
+			seqs:     [][]*domain.CloneNode{},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := isSingleSimpleStatement(tt.seqs)
+			if result != tt.expected {
+				t.Errorf("isSingleSimpleStatement() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestSubtreeContainsTypeSpec(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		node     *domain.CloneNode
+		expected bool
+	}{
+		{
+			name:     "direct TypeSpec",
+			node:     &domain.CloneNode{BaseType: golang.TypeSpec},
+			expected: true,
+		},
+		{
+			name: "TypeSpec nested in GenDecl",
+			node: &domain.CloneNode{BaseType: golang.DeclStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.GenDecl, Children: []*domain.CloneNode{
+					{BaseType: golang.TypeSpec},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "no TypeSpec (ValueSpec only)",
+			node: &domain.CloneNode{BaseType: golang.DeclStmt, Children: []*domain.CloneNode{
+				{BaseType: golang.GenDecl, Children: []*domain.CloneNode{
+					{BaseType: golang.ValueSpec},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name:     "bare ReturnStmt",
+			node:     &domain.CloneNode{BaseType: golang.ReturnStmt},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := subtreeContainsTypeSpec(tt.node)
+			if result != tt.expected {
+				t.Errorf("subtreeContainsTypeSpec() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}
