@@ -146,6 +146,7 @@ func (f *FileDetector) hashFile(filename string) (FileHash, bool) {
 		return FileHash{}, f.fileError(filename, err, "skipping file that cannot be opened")
 	}
 
+	//art-dupl:accept standard defer-close idiom (different types: os.File vs io.Closer)
 	defer func() { _ = file.Close() }()
 
 	fi, err := file.Stat()

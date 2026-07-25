@@ -98,6 +98,7 @@ func WriteTestFileWithPerm(t *testing.T, filename, content string, perm os.FileM
 	t.Helper()
 
 	err := os.WriteFile(filename, []byte(content), perm)
+	//art-dupl:accept standard test error handling (different messages, different functions)
 	if err != nil {
 		t.Fatalf("Failed to write test file %s: %v", filename, err)
 	}

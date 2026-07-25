@@ -145,6 +145,7 @@ templ fileAnchor(url templ.SafeURL, filename string, lineStart int) {
 // Centralizes the { filename }:{ strconv.Itoa(line) } pattern shared by
 // fileAnchor and the diff selector's option dropdown.
 templ fileLineText(filename string, line int) {
+	//art-dupl:accept two expressions on one templ line ("filename:line"), not duplication
 	{ filename }:{ strconv.Itoa(line) }
 }
 

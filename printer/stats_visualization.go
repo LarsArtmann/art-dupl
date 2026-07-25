@@ -28,6 +28,7 @@ func rangeStart(r string) int {
 // printSizeDistribution prints the size distribution with ASCII bar visualization.
 func printSizeDistribution(w io.Writer, distribution map[string]int) {
 	ranges := make([]string, 0, len(distribution))
+	//art-dupl:accept idiomatic range loop; false-positive match with test code (different domain)
 	for r := range distribution {
 		ranges = append(ranges, r)
 	}
