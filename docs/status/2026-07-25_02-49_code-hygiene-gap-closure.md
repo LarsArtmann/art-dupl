@@ -10,6 +10,12 @@
 
 This session addressed 6 gaps from the previous session's self-review. All code compiles, lints clean, passes tests with `-race`, and `nix flake check` passes. However, a SECOND self-review reveals 3 new gaps that were introduced or missed during this session.
 
+> **Resolution (2026-07-25):** The 3 new gaps (D1 stale `Threshold: 15` in `doc.go`,
+> D2 careless `replace_all` edit, D3/D4 gofmt + `wsl_v5` violations) were all caught and
+> fixed within this same session (see section D). The remaining open items
+> (`SetFilterSourceStats` unit test, SDK/CLI drift-detection test) are tracked in
+> TODO_LIST. AGENTS.md was updated in a subsequent session for the new interface method.
+
 ---
 
 ## A) FULLY DONE (and verified)

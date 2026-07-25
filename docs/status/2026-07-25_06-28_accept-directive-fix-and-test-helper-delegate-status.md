@@ -5,6 +5,12 @@
 **Task:** Execute `docs/planning/2026-07-25_05-14_SUPERB-accept-directive-ux-fix-and-test-helper-pattern.md`
 **Outcome:** Functionally complete. Git history is a disaster.
 
+> **Resolution (2026-07-25):** Feature shipped. Commits `95547e7f`, `c30f683d`, `a057928e`
+> (HEAD of `fork`). `test-helper-delegate` is pattern #18 in the actionability system.
+> CHANGELOG `[Unreleased]`, FEATURES.md, and AGENTS.md updated in the subsequent
+> docs-health session. Accept-directive docs (`HOW_TO_USE.md`) remain a known gap.
+> Verified: `art-dupl --semantic -t 2` reports 0 groups on the art-dupl codebase.
+
 ---
 
 ## a) FULLY DONE

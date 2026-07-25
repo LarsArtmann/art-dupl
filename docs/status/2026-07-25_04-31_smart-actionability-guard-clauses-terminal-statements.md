@@ -18,6 +18,11 @@ Following the ExprStmt(CallExpr) gap fix, the user asked for smarter error repor
 
 - gogenfilter `-t 1`: 65 → **0** false positives (100% elimination)
 - art-dupl self `-t 1`: 129 → **28** groups (78% reduction), all 28 genuinely actionable
+
+> **Resolution (2026-07-25):** Shipped. The `guard-clause` and `single-simple-statement`
+> patterns are registered as priorities 5 and 8 in `printer/actionability.go`. Total
+> patterns reached 18 after `test-helper-delegate` was added in the subsequent
+> accept-directive session. Docs (`AGENTS.md`, `ACTIONABILITY_PATTERNS.md`) updated.
 - art-dupl self `-t 5` (default): **0** — unchanged, zero false-negative regression
 
 ---

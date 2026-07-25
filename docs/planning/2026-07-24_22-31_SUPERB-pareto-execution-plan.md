@@ -4,6 +4,13 @@
 **Scope:** All 29 TODO_LIST.md items + 3 DEFERRED + 5 actionable ROADMAP items = 37 total tasks
 **Branch:** fork
 
+> **Status (2026-07-25):** PARTIALLY EXECUTED. 21 of 30 medium-granularity tasks (M01-M25)
+> shipped in the full-todo-execution-sprint (`2026-07-24_23-11`). The 5 stub-flag tasks
+> (M26-M30: YAML config, `--diff-report`, `--explain`, HTML improvements,
+> `--recommend-threshold`) were removed as non-functional stubs and re-added to TODO_LIST
+> as genuine future work. See CHANGELOG `[Unreleased]` for what shipped. Remaining open
+> items are tracked in the current TODO_LIST.md.
+
 ---
 
 ## 1. Pareto Breakdown

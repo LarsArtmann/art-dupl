@@ -13,6 +13,11 @@ The user reported that `art-dupl --semantic --sort total-tokens -t 1` on `/home/
 
 **Fix:** Added `isLoneCallExpr()` helper that checks both bare `CallExpr` and `ExprStmt` wrapping a single `CallExpr` child. Verified: 0 `t.Parallel()` hits on gogenfilter after fix.
 
+> **Resolution (2026-07-25):** Fix shipped (`d29381c7`, `dc39f5e7`, `80e8a13a`). Docs
+> updated in the subsequent guard-clause/terminal-statement session (`AGENTS.md`,
+> `ACTIONABILITY_PATTERNS.md`). The actionability system was further expanded to 18
+> patterns (added `guard-clause`, `single-simple-statement`, `test-helper-delegate`).
+
 ---
 
 ## a) FULLY DONE

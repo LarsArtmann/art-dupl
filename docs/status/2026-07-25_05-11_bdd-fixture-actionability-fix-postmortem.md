@@ -4,6 +4,13 @@
 **Session goal:** Fix the 22 failing BDD specs reported by `buildflow -s test-race`.
 **Outcome:** Tests green, but the _process_ was messy and several things were forgotten or done poorly.
 
+> **Resolution (2026-07-25):** Tests green across all 24 packages. The `dupFuncSource`
+> helper and `CommonDuplicateCodeTemplate` were consolidated into a single canonical
+> `testutil.DuplicateFuncSource(name)` (`84199352`), eliminating the maintenance burden.
+> The principled fix (`--no-actionability` flag to disable actionability filtering) is
+> tracked in TODO_LIST. The workaround (3-statement fixtures that survive the filter) is
+> stable and documented in TESTING.md.
+
 ---
 
 ## a) FULLY DONE
