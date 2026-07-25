@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Gitignore tests** (`cmd/gitignore_test.go`): 6 tests for exclusion, directory patterns, negation, nil safety.
 - **BDD type-aware tests** (`bdd/type_aware_test.go`): 7 Ginkgo specs for type-aware validation, accept directive, deprecation warning.
 - **SDK TypeAware tests** (`pkg/artdupl/detector_type_aware_test.go`): 3 tests for type-aware clone detection, graceful fallback, and default options.
+- **SDK `DefaultThreshold` constant**: `pkg/artdupl.DefaultThreshold = 5` mirrors `config.DefaultThreshold`. The SDK cannot import `config/` due to arch-lint, so the value is duplicated with a comment pointing to the source.
+- **Filter source tracking**: `FilterStats` now distinguishes `FilterSourceGogenfilter` (standard filename-gated checks) from `FilterSourceDefenseInDepth` (content-based catch for generated files lacking expected suffixes). `SourceBreakdown()` exposed via `SetFilterSourceStats` on `StatsPrinter`, rendered in text and JSON stats output.
+- **Defense-in-depth BDD tests** (`bdd/filter_features_test.go`): 2 Ginkgo specs verifying that non-suffix generated files (e.g., `gen_template.go` without `_templ.go`) are excluded by content check, and included when the templ category is explicitly enabled.
 
 ### Changed
 
@@ -33,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Detector pipeline refactor**: Extracted `loadTypeAwareDataIfEnabled` helper from `buildAnalysisPipeline` to reduce cyclomatic complexity.
 - **Em-dash cleanup**: 52 em-dashes replaced with commas across AGENTS.md and 7 ADR docs (0002-0008).
 - **Stale planning docs annotated**: `docs/planning/2026-07-01_*` HTML files marked as SUPERSEDED.
+- **Progress output injectable**: `progressFilesChan` now takes an `io.Writer` parameter instead of using global `os.Stderr` directly. Production callers pass `os.Stderr`; tests pass `io.Discard`. Eliminates brittle `os.Stderr` pipe swapping in tests.
+- **`//nolint:exhaustruct` cleanup**: Removed 11 `//nolint:exhaustruct` directives across 7 files now that the linter is permanently disabled.
+- **SDK threshold consistency**: All SDK test fixtures and documentation now use `DefaultThreshold` instead of hardcoded `15`. Updated `doc.go`, `SDK_DESIGN.md`, and 17 test fixtures across `detector_validation_test.go`, `detector_test.go`, and `basic_test.go`.
+- **Type-aware fallback test hardened**: `TestDetector_TypeAwareFallback` now uses real assertions instead of discarding results (`_ = result; _ = err`). Verifies graceful fallback returns no error or `ErrNoDuplicatesFound`, and result is non-nil when error is nil.
 
 ### Removed
 

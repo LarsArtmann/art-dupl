@@ -82,9 +82,9 @@ type StatsView struct {
 	TopClones []TopCloneGroup `json:"top_clones,omitempty"` // Highest priority actionable clones
 
 	// Filter metrics (NEW)
-	FilesFiltered         int            `json:"files_filtered,omitempty"`               // Total files filtered out
-	FilterBreakdown       map[string]int `json:"filter_breakdown,omitempty"`             // Reason -> count (e.g., "templ" -> 12)
-	FilterSourceBreakdown map[string]int `json:"filter_source_breakdown,omitempty"`      // Source -> count (gogenfilter vs defense-in-depth)
+	FilesFiltered         int            `json:"files_filtered,omitempty"`          // Total files filtered out
+	FilterBreakdown       map[string]int `json:"filter_breakdown,omitempty"`        // Reason -> count (e.g., "templ" -> 12)
+	FilterSourceBreakdown map[string]int `json:"filter_source_breakdown,omitempty"` // Source -> count (gogenfilter vs defense-in-depth)
 
 	// Detection mode
 	DetectionMode     string `json:"detection_mode,omitempty"`             // "semantic" or "structural"
