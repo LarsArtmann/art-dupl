@@ -32,7 +32,6 @@ func assertLen[T any](failFunc func(string, ...any), got []T, want int, what str
 // The what parameter describes what is being counted (e.g., "Clones", "results").
 func AssertCount(t *testing.T, got, want int, what string) {
 	t.Helper()
-	//art-dupl:accept idiomatic test helper: t.Helper() is irreducible Go boilerplate
 
 	assertEqualMsgf(t, got, want, "%s: expected %d, got %d", what)
 }
@@ -49,7 +48,6 @@ func AssertCountf(t *testing.T, got, want int, format string, args ...any) {
 // AssertNotNil asserts that a value is not nil.
 func AssertNotNil(t *testing.T, got any, what string) {
 	t.Helper()
-	//art-dupl:accept idiomatic test helper: t.Helper() is irreducible Go boilerplate
 
 	failIfNilf(t, got, "%s: expected non-nil, got nil", what)
 }
@@ -57,7 +55,6 @@ func AssertNotNil(t *testing.T, got any, what string) {
 // AssertNil asserts that a value is nil.
 func AssertNil(t *testing.T, got any, what string) {
 	t.Helper()
-	//art-dupl:accept idiomatic test helper: t.Helper() is irreducible Go boilerplate
 
 	failIfNotNilf(t, got, "%s: expected nil, got %v", what, got)
 }
@@ -260,7 +257,6 @@ func AssertJSONRoundTrip[T any](t *testing.T, obj T) T {
 // The actual parameter should be the field value, and expected is the expected value.
 func AssertConfigField[T comparable](t *testing.T, fieldName string, actual, expected T) {
 	t.Helper()
-	//art-dupl:accept idiomatic test helper: t.Helper() is irreducible Go boilerplate
 
 	assertEqualMsgf(t, actual, expected, "Expected %s %v, got %v", fieldName)
 }

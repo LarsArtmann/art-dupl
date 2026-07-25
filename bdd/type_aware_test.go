@@ -96,7 +96,7 @@ var _ = Describe("Type-Aware Detection", func() {
 	})
 
 	Context("when using //art-dupl:accept directive", func() {
-		It("should suppress accepted groups and show others", func() {
+		It("should suppress accepted groups entirely", func() {
 			err := setup.CreateTestFile("accepted.go", dupCodeWithAccept)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -107,7 +107,11 @@ var _ = Describe("Type-Aware Detection", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			outputStr := string(output)
-			Expect(outputStr).To(ContainSubstring("other.go"))
+			// The accept directive suppresses the entire clone group —
+			// both the accepted clone and its duplicate partner disappear.
+			Expect(outputStr).To(ContainSubstring("Found total 0 clone groups"))
+			Expect(outputStr).NotTo(ContainSubstring("accepted.go"))
+			Expect(outputStr).NotTo(ContainSubstring("other.go"))
 		})
 
 		It("should show all clones with --no-accept-directives", func() {
