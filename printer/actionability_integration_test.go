@@ -151,6 +151,29 @@ func TestEvaluateActionabilityWithLabel_TableDrivenTest_NonTestingReceiver(t *te
 	}
 }
 
+// TestEvaluateActionabilityWithLabel_SingleCallExprStatement verifies that
+// a lone function call used as a statement (ExprStmt wrapping CallExpr) is
+// classified as non-actionable. This is the real-world shape produced by
+// statement-level tokenization: t.Parallel(), fmt.Println("x"), etc. appear
+// as ExprStmt(CallExpr), not bare CallExpr.
+func TestEvaluateActionabilityWithLabel_SingleCallExprStatement(t *testing.T) {
+	t.Parallel()
+
+	clone := mustExprStmtCallExpr("t", "Parallel")
+
+	label, action := EvaluateActionabilityWithLabel([][]*domain.CloneNode{
+		{clone},
+		{clone},
+	})
+	if action != domain.NonActionable {
+		t.Errorf("action = %q, want %q", action, domain.NonActionable)
+	}
+
+	if label != PatternSingleCallExpr {
+		t.Errorf("label = %q, want %q", label, PatternSingleCallExpr)
+	}
+}
+
 // --- Helper builders for integration tests ---
 
 // mustIfErrWrapReturn constructs an IfStmt representing:
@@ -263,6 +286,34 @@ func mustRangeStmtWithNonTestingTRun(filename string) *domain.CloneNode {
 									},
 								},
 							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+// mustExprStmtCallExpr constructs an ExprStmt wrapping a CallExpr, representing
+// a standalone function call used as a statement. This is the real-world shape
+// produced by statement-level tokenization for code like:
+//
+//	t.Parallel()
+//	fmt.Println("hello")
+//	log.Fatal(err)
+func mustExprStmtCallExpr(receiver, method string) *domain.CloneNode {
+	return &domain.CloneNode{
+		BaseType: golang.ExprStmt,
+		Children: []*domain.CloneNode{
+			{
+				BaseType: golang.CallExpr,
+				Children: []*domain.CloneNode{
+					{
+						BaseType: golang.SelectorExpr,
+						Name:     method,
+						Children: []*domain.CloneNode{
+							{BaseType: golang.Ident, Name: receiver},
+							{BaseType: golang.Ident, Name: method},
 						},
 					},
 				},
