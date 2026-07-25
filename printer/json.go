@@ -32,12 +32,13 @@ type CloneGroup struct {
 type JSONClone struct {
 	domain.CloneRef
 
-	Category      domain.CloneCategory      `json:"category,omitzero"`
-	Priority      domain.ClonePriority      `json:"priority,omitzero"`
-	Actionability domain.CloneActionability `json:"actionability,omitzero"`
-	CloneType     domain.CloneType          `json:"clone_type,omitzero"`
-	LinesSaved    int                       `json:"lines_saved,omitempty"`
-	Extractable   bool                      `json:"extractable,omitempty"`
+	Category             domain.CloneCategory      `json:"category,omitzero"`
+	Priority             domain.ClonePriority      `json:"priority,omitzero"`
+	Actionability        domain.CloneActionability `json:"actionability,omitzero"`
+	NonActionablePattern string                    `json:"non_actionable_pattern,omitempty"`
+	CloneType            domain.CloneType          `json:"clone_type,omitzero"`
+	LinesSaved           int                       `json:"lines_saved,omitempty"`
+	Extractable          bool                      `json:"extractable,omitempty"`
 }
 
 type Summary struct {
@@ -51,13 +52,14 @@ type Summary struct {
 // This is the single conversion point — all JSON output paths use it.
 func toJSONClone(cl domain.ProcessedClone) JSONClone {
 	return JSONClone{
-		CloneRef:      cl.CloneRef,
-		Category:      cl.Classification.Category,
-		Priority:      cl.Classification.Priority,
-		Actionability: cl.Classification.Actionability,
-		CloneType:     cl.Classification.CloneType,
-		LinesSaved:    cl.Classification.Extractability.EstimatedLinesSaved,
-		Extractable:   cl.Classification.Extractability.CanExtract,
+		CloneRef:             cl.CloneRef,
+		Category:             cl.Classification.Category,
+		Priority:             cl.Classification.Priority,
+		Actionability:        cl.Classification.Actionability,
+		NonActionablePattern: cl.Classification.NonActionablePattern,
+		CloneType:            cl.Classification.CloneType,
+		LinesSaved:           cl.Classification.Extractability.EstimatedLinesSaved,
+		Extractable:          cl.Classification.Extractability.CanExtract,
 	}
 }
 
