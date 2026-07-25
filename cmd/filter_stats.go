@@ -86,33 +86,35 @@ func (s *FilterStats) FilteredBy(reason string) int {
 	return s.withReadLock(0, func() int { return s.byReason[reason] })
 }
 
-// copyMapUnderLock returns a defensive copy of src, guarded by s.mu.
-// src is read by reference; it is assigned once at construction and never
-// reassigned, so passing it outside the lock is safe — only the contents are
-// copied under the lock. Returns nil when s is nil.
-func (s *FilterStats) copyMapUnderLock(src map[string]int) map[string]int {
+// copyMapUnderLock runs src under s.mu and returns a defensive copy of the
+// map it yields. The map field is accessed via the closure so it is only read
+// after the nil check (evaluating s.byReason/s.bySource directly as an argument
+// would panic on a nil receiver). Returns zeroValue when s is nil.
+func (s *FilterStats) copyMapUnderLock(zeroValue map[string]int, src func() map[string]int) map[string]int {
 	if s == nil {
-		return nil
+		return zeroValue
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	result := make(map[string]int, len(src))
-	maps.Copy(result, src)
+	original := src()
+
+	result := make(map[string]int, len(original))
+	maps.Copy(result, original)
 
 	return result
 }
 
 // Breakdown returns a copy of the per-reason breakdown.
 func (s *FilterStats) Breakdown() map[string]int {
-	return s.copyMapUnderLock(s.byReason)
+	return s.copyMapUnderLock(nil, func() map[string]int { return s.byReason })
 }
 
 // SourceBreakdown returns a copy of the per-source breakdown, distinguishing
 // files caught by gogenfilter vs the defense-in-depth content check.
 func (s *FilterStats) SourceBreakdown() map[string]int {
-	return s.copyMapUnderLock(s.bySource)
+	return s.copyMapUnderLock(nil, func() map[string]int { return s.bySource })
 }
 
 // Reasons returns the filter reasons this tracker was configured with.
