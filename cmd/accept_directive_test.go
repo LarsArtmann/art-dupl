@@ -208,6 +208,78 @@ func foo() {
 	}
 }
 
+func TestAcceptedSetInlineDirective(t *testing.T) {
+	t.Parallel()
+
+	// Regression test: a directive on the SAME line as code (trailing comment,
+	// matching golangci-lint convention) must be recognized, not silently
+	// dropped. Before the fix, scanFile used HasPrefix-after-TrimSpace which
+	// only matched standalone comment lines.
+	fileContent := `package example
+
+func foo() {
+	fmt.Println("hello") //art-dupl:accept inline trailing directive
+	fmt.Println("world")
+	fmt.Println("again")
+}
+`
+
+	readFile := func(name string) ([]byte, error) {
+		return []byte(fileContent), nil
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	group := domain.ProcessedCloneGroup{
+		Hash: "abc123",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 7}},
+		},
+	}
+
+	if !set.IsAccepted(group) {
+		t.Error("inline trailing directive (code //art-dupl:accept) must suppress the group")
+	}
+}
+
+func TestAcceptedSetInlineDirectiveWithHash(t *testing.T) {
+	t.Parallel()
+
+	// Inline directive WITH a hash token must still do precision matching.
+	fileContent := "package example\n\n" +
+		"func foo() {\n" +
+		"\tfmt.Println(\"hello\") //art-dupl:accept deadbeef\n" +
+		"}\n"
+
+	readFile := func(name string) ([]byte, error) {
+		return []byte(fileContent), nil
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	matching := domain.ProcessedCloneGroup{
+		Hash: "deadbeef",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 3, LineEnd: 5}},
+		},
+	}
+
+	nonMatching := domain.ProcessedCloneGroup{
+		Hash: "cafef00d",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 3, LineEnd: 5}},
+		},
+	}
+
+	if !set.IsAccepted(matching) {
+		t.Error("inline directive with matching hash must accept the group")
+	}
+
+	if set.IsAccepted(nonMatching) {
+		t.Error("inline directive with non-matching hash must NOT accept the group")
+	}
+}
+
 func TestAcceptedSetCaching(t *testing.T) {
 	readCount := 0
 
