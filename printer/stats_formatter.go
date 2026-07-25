@@ -414,6 +414,7 @@ func (p *stats) fillJSONOverview(jsonData *jsonStatsOutput) {
 		if len(p.statsData.FilterBreakdown) > 0 {
 			jsonData.Overview.FilterBreakdown = p.statsData.FilterBreakdown
 		}
+
 		if len(p.statsData.FilterSourceBreakdown) > 0 {
 			jsonData.Overview.FilterSourceBreakdown = p.statsData.FilterSourceBreakdown
 		}
