@@ -355,6 +355,32 @@ To see all clone groups regardless of accept directives (useful for auditing):
 art-dupl --no-accept-directives ./src
 ```
 
+### Showing Non-Actionable Clones
+
+By default, art-dupl suppresses clones that match known boilerplate patterns (guard clauses, error propagation, RAII defers, etc.). To see ALL clones including boilerplate:
+
+```bash
+art-dupl --no-actionability ./src
+```
+
+### Explaining Clone Reports
+
+To understand WHY each clone group was reported, use `--explain`:
+
+```bash
+art-dupl --explain ./src
+```
+
+This adds an explanation line after each clone group header showing the clone type, actionability verdict (and the specific boilerplate pattern if non-actionable), category, token/line counts, and extractability estimate:
+
+```
+found 3 clones:
+  explain: type-2 | actionable | function | 25 tokens, 5 lines | extractable: ~15 lines saved across 3 sites
+  fix: Extract to shared helper
+  file1.go:10-20  | func process(data string) error {
+  file2.go:15-25  | func handle(input string) error {
+```
+
 ### How It Works
 
 - Directives are scanned lazily: only files containing clones are read.

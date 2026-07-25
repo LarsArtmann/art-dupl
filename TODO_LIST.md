@@ -29,7 +29,7 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 
 - [ ] **YAML config file support**: `.artdupl.yml` parser alongside existing JSON support.
 - [ ] **`--diff-report <baseline>` mode**: Show only new/suppressed/resolved clones vs baseline. Enables the extract-verify-improve loop without manual JSON diffing.
-- [ ] **`--explain` flag**: Explain WHY a clone was reported (which detection method, what pattern matched, why it's actionable). Aids triage.
+- [x] **`--explain` flag**: Implemented in `printer/text.go::writeExplanation`. Adds an explanation line after each clone group header showing clone type, actionability (+ pattern label via new `NonActionablePattern` field on `CloneClassification`), category, token/line counts, and extractability estimate. The `ExplainSetter` interface is wired in `cmd/run_flags.go`. BDD test in `bdd/actionability_test.go`.
 - [ ] **HTML report improvements**: File output flag, TTY auto-detection, stable `id` attributes on clone groups for deep-linking.
 - [ ] **`--recommend-threshold`**: Auto-suggest threshold based on codebase size and test-to-production ratio.
 
@@ -41,7 +41,7 @@ Items here are OPEN work only; no completed, rejected, or resolved items.
 ### Code Hygiene
 
 - [x] **`SetFilterSourceStats` unit test**: Added `cmd/filter_stats_test.go` with dedicated coverage for `SourceBreakdown()`, `RecordWithSource` source attribution, defensive-copy guarantees, and nil-receiver safety (the latter uncovered and fixed a real nil-panic bug in `Breakdown`/`SourceBreakdown` where `s.byReason`/`s.bySource` were evaluated as args before the nil-checked `copyMapUnderLock` ran — refactored to a closure pattern matching `withReadLock`).
-- [ ] **`--no-actionability` flag**: The principled fix for test-fixture false positives (currently worked around with "big enough fixtures" via `testutil.DuplicateFuncSource`). A flag to disable actionability filtering would let users see all clones including boilerplate, and would fix the BDD fixture fragility at the root.
+- [x] **`--no-actionability` flag**: Implemented. Gates actionability filtering via `if semantic && !suppression.NoActionability` in `cmd/run_output.go`. `SuppressionConfig.NoActionability` wired from `config.Config.NoActionability`. BDD tests in `bdd/actionability_test.go` verify guard-clause clones appear with the flag.
 
 ---
 
