@@ -47,7 +47,7 @@ func isRAIIDeferCall(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
 		if child.BaseType == golang.CallExpr {
 			for _, arg := range child.Children {
-				if arg.BaseType == golang.SelectorExpr && isCleanupMethod(arg.Name) {
+				if arg.BaseType == golang.SelectorExpr && slices.Contains(cleanupMethodNames, arg.Name) {
 					return true
 				}
 			}
@@ -63,11 +63,6 @@ var cleanupMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	cleanupMethodName, "RUnlock",
 	"Close", "Done", "Cancel", "Release", "Finish", "Disconnect", "Free",
 	"Stop", "Shutdown", "Cleanup", "Reset", "Put", "Drop", "Abort", "Teardown",
-}
-
-// isCleanupMethod reports whether a method name is a known RAII cleanup.
-func isCleanupMethod(name string) bool {
-	return slices.Contains(cleanupMethodNames, name)
 }
 
 // isAcquireCall reports whether a statement is a call to a known acquire
@@ -190,7 +185,7 @@ func isLogOrPrintStmt(node *domain.CloneNode) bool {
 	for _, child := range node.Children {
 		if child.BaseType == golang.CallExpr {
 			for _, callChild := range child.Children {
-				if callChild.BaseType == golang.SelectorExpr && isLoggingMethod(callChild.Name) {
+				if callChild.BaseType == golang.SelectorExpr && slices.Contains(loggingMethodNames, callChild.Name) {
 					return true
 				}
 			}
@@ -205,11 +200,6 @@ var loggingMethodNames = []string{ //nolint:gochecknoglobals // static name set
 	"Print", "Printf", "Println",
 	"Error", calleeErrorf, "Warn", "Warnf", "Info", "Infof", "Debug", "Debugf",
 	"Fatal", "Fatalf", "Panic", "Panicf",
-}
-
-// isLoggingMethod reports whether a method name is a known logging/print function.
-func isLoggingMethod(name string) bool {
-	return slices.Contains(loggingMethodNames, name)
 }
 
 // isGuardClause reports whether every clone is a single IfStmt used as a guard

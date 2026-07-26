@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"os"
+
+	"encoding/json/jsontext"
 
 	"github.com/LarsArtmann/art-dupl/baseline"
 	"github.com/LarsArtmann/art-dupl/config"
@@ -115,7 +117,7 @@ func collectCurrentGroups(
 
 func outputDiffJSON(report printer.DiffReport) error {
 	//nolint:musttag // DiffReport has json tags; inner types are domain's responsibility
-	data, err := json.MarshalIndent(report, "", "  ")
+	data, err := json.Marshal(report, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return fmt.Errorf("marshal diff report: %w", err)
 	}

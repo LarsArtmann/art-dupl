@@ -6,27 +6,27 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## Detected Patterns
 
-| Pattern              | Label                      | Description                                                                        | Example                                  |
-| -------------------- | -------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
-| Signature-only       | `signature-only`           | FuncDecl without a body (interface stub, forwarding method)                        | `func (s *Svc) Name() string`            |
+| Pattern              | Label                      | Description                                                                        | Example                                     |
+| -------------------- | -------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------- |
+| Signature-only       | `signature-only`           | FuncDecl without a body (interface stub, forwarding method)                        | `func (s *Svc) Name() string`               |
 | Single declaration   | `single-declaration`       | Lone package-level ValueSpec/TypeSpec-alias (re-export, const alias, iota starter) | `type Mode = domain.Mode`, `BadNode = iota` |
-| Interface impl       | `interface-implementation` | 3+ FuncType fragments from different files (satisfies common interface)            | Multiple files implementing `io.Reader`  |
-| RAII defer           | `raii-defer`               | DeferStmt wrapping cleanup (Unlock, Close, etc.)                                   | `defer m.Unlock()`                       |
-| Error propagation    | `error-propagation`        | `if err != nil { return err }`                                                     | Pure error forwarding                    |
-| Assign+error-check   | `assign-error-check`       | 2-stmt: `err := f(); if err != nil { return }`                                     | Most common Go boilerplate               |
-| Single call          | `single-call-expression`   | Lone CallExpr or ExprStmt(CallExpr) (different data, same API)                     | `t.Parallel()`, `errors.New("foo")`      |
-| Single simple stmt   | `single-simple-statement`  | Lone terminal statement (return, assignment, var declaration, etc.)                | `return nil`, `x := 0`, `var buf []byte` |
-| Test helper delegate | `test-helper-delegate`     | 2-stmt body: `t.Helper()` + single delegate call (irreducible Go test boilerplate) | `t.Helper()` + `failIfNilf(t, got, ...)` |
-| Guard clause         | `guard-clause`             | IfStmt with return-only body and no else (boolean/value guard)                     | `if !enabled { return }`                 |
-| Error wrapping       | `error-wrapping`           | `if err != nil { return fmt.Errorf(...) }`                                         | Error wrapping idiom                     |
-| Assertion chain      | `assertion-chain`          | 3+ test assertion calls (Expect/Assert/Require)                                    | `Expect(x).To(Equal(y))`                 |
-| Cobra boilerplate    | `cobra-boilerplate`        | `cobra.Command{}` or `fang.Command{}` struct literals                              | CLI framework setup                      |
-| Test data pair       | `testdata-pair`            | All clones from `testdata/` directories                                            | Golden/input file pairs                  |
-| Table-driven test    | `table-driven-test`        | RangeStmt with `t.Run()` in `_test.go`                                             | Standard Go test pattern                 |
-| Test scaffolding     | `test-scaffolding`         | TempDir + WriteFile + assertions in `_test.go`                                     | Test setup/teardown                      |
-| Data-dominated       | `data-dominated`           | 60%+ BasicLit/KeyValueExpr nodes                                                   | Config fixtures, struct init             |
-| Describe table       | `describe-table`           | Ginkgo `DescribeTable`/`Entry` patterns                                            | Ginkgo parametrized tests                |
-| Builder callback     | `builder-callback`         | 3+ chained calls on 2+ different receivers                                         | Builder/fluent API pattern               |
+| Interface impl       | `interface-implementation` | 3+ FuncType fragments from different files (satisfies common interface)            | Multiple files implementing `io.Reader`     |
+| RAII defer           | `raii-defer`               | DeferStmt wrapping cleanup (Unlock, Close, etc.)                                   | `defer m.Unlock()`                          |
+| Error propagation    | `error-propagation`        | `if err != nil { return err }`                                                     | Pure error forwarding                       |
+| Assign+error-check   | `assign-error-check`       | 2-stmt: `err := f(); if err != nil { return }`                                     | Most common Go boilerplate                  |
+| Single call          | `single-call-expression`   | Lone CallExpr or ExprStmt(CallExpr) (different data, same API)                     | `t.Parallel()`, `errors.New("foo")`         |
+| Single simple stmt   | `single-simple-statement`  | Lone terminal statement (return, assignment, var declaration, etc.)                | `return nil`, `x := 0`, `var buf []byte`    |
+| Test helper delegate | `test-helper-delegate`     | 2-stmt body: `t.Helper()` + single delegate call (irreducible Go test boilerplate) | `t.Helper()` + `failIfNilf(t, got, ...)`    |
+| Guard clause         | `guard-clause`             | IfStmt with return-only body and no else (boolean/value guard)                     | `if !enabled { return }`                    |
+| Error wrapping       | `error-wrapping`           | `if err != nil { return fmt.Errorf(...) }`                                         | Error wrapping idiom                        |
+| Assertion chain      | `assertion-chain`          | 3+ test assertion calls (Expect/Assert/Require)                                    | `Expect(x).To(Equal(y))`                    |
+| Cobra boilerplate    | `cobra-boilerplate`        | `cobra.Command{}` or `fang.Command{}` struct literals                              | CLI framework setup                         |
+| Test data pair       | `testdata-pair`            | All clones from `testdata/` directories                                            | Golden/input file pairs                     |
+| Table-driven test    | `table-driven-test`        | RangeStmt with `t.Run()` in `_test.go`                                             | Standard Go test pattern                    |
+| Test scaffolding     | `test-scaffolding`         | TempDir + WriteFile + assertions in `_test.go`                                     | Test setup/teardown                         |
+| Data-dominated       | `data-dominated`           | 60%+ BasicLit/KeyValueExpr nodes                                                   | Config fixtures, struct init                |
+| Describe table       | `describe-table`           | Ginkgo `DescribeTable`/`Entry` patterns                                            | Ginkgo parametrized tests                   |
+| Builder callback     | `builder-callback`         | 3+ chained calls on 2+ different receivers                                         | Builder/fluent API pattern                  |
 
 ## How It Works
 
@@ -49,12 +49,12 @@ Patterns are checked in this order (first match wins):
 8. Single simple statement
 9. Single declaration
 10. Test helper delegate
-10. Error wrapping
-11. Assertion chain
-12. Cobra boilerplate
-13. Test data pair
-14. Table-driven test
-15. Test scaffolding
+11. Error wrapping
+12. Assertion chain
+13. Cobra boilerplate
+14. Test data pair
+15. Table-driven test
+16. Test scaffolding
 17. Data-dominated
 18. Describe table
 19. Builder callback

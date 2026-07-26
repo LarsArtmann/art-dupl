@@ -28,7 +28,6 @@ linters:
     - copyloopvar
     - cyclop
     - decorder
-    - depguard
     - dogsled
     - dupl
     - dupword
@@ -40,6 +39,7 @@ linters:
     - errname
     - errorlint
     - exhaustive
+    - exhaustruct
     - exptostd
     - fatcontext
     - forbidigo
@@ -106,6 +106,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
+    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
@@ -123,32 +124,16 @@ linters:
     - wrapcheck
     - wsl_v5
     - zerologlint
+  disable:
+    - depguard
   settings:
     cyclop:
       max-complexity: 15
-    depguard:
-      rules:
-        main:
-          allow:
-            - $gostd
-            - github.com/LarsArtmann/art-dupl
-            - charm.land/lipgloss/v2
-            - charm.land/log/v2
-            - github.com/LarsArtmann/gogenfilter
-            - github.com/a-h/templ
-            - github.com/aymanbagabas/go-udiff
-            - github.com/charmbracelet/fang
-            - github.com/charmbracelet/x/exp/golden
-            - github.com/onsi/ginkgo/v2
-            - github.com/onsi/gomega
-            - github.com/sergi/go-diff
-            - github.com/spf13/cobra
-            - github.com/spf13/pflag
-            - github.com/zeebo/xxh3
-            - golang.org/x/sync
-            - golang.org/x/tools
     dupl:
       threshold: 100
+    exhaustruct:
+      exclude:
+        - os/exec.Cmd
     funlen:
       lines: 80
       statements: 50

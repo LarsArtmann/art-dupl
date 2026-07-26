@@ -12,6 +12,7 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
 ## a) FULLY DONE ✅
 
 ### Fix 1: Accept-directive scanner now recognizes gofmt-style comments
+
 **Files:** `cmd/accept_directive.go`, `cmd/accept_directive_test.go`
 
 - **Root cause:** The scanner matched the exact substring `//art-dupl:accept`
@@ -26,11 +27,12 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
   trailing-inline (`code(); //art-dupl:accept`) forms.
 - **Regression test added:** `TestAcceptedSetGofmtStyleDirective` — verifies
   standalone + inline gofmt-style directives suppress groups.
-- **History note:** This bug was *repeatedly discovered, documented across 4+
-  status reports, and worked around* (by forcing standalone no-space form)
+- **History note:** This bug was _repeatedly discovered, documented across 4+
+  status reports, and worked around_ (by forcing standalone no-space form)
   rather than fixed at the root. This session finally fixed the root.
 
 ### Fix 2: `single-declaration` actionability pattern
+
 **Files:** `printer/actionability.go`, `printer/actionability_boilerplate.go`,
 `printer/actionability_boilerplate_test.go`
 
@@ -55,6 +57,7 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
 - Pattern count: **18 → 19**. Priority list, docs, and AGENTS.md updated.
 
 ### Documentation updates
+
 - `docs/ACTIONABILITY_PATTERNS.md` — new row in pattern table, count 18→19,
   priority list updated.
 - `AGENTS.md` — actionability patterns section (18→19, documented
@@ -66,6 +69,7 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
   `/* */` claim, documented gofmt + inline forms).
 
 ### Verification
+
 - `go build ./...` ✅
 - `go vet ./cmd/... ./printer/...` ✅
 - `go test -count=1 ./...` ✅ (all packages, fresh)
@@ -80,6 +84,7 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
 ## b) PARTIALLY DONE 🟡
 
 ### Testing depth
+
 - **Unit tests: solid** (9 cases for new pattern, 1 regression for scanner).
 - **Integration test: MISSING.** No end-to-end BDD spec added to
   `bdd/type_aware_test.go` (which already has accept-directive Ginkgo specs)
@@ -92,6 +97,7 @@ false-positive clone groups, all architectural aliases / iota enums / re-exports
   but I didn't visually confirm it for THIS pattern.
 
 ### Pre-existing diagnostics
+
 - `printer/actionability_switch_test.go:129` had a stale `isTestingVarName`
   error in gopls output at session start; it resolved as stale cache. I did
   NOT investigate whether it's a real latent issue. (CHANGELOG mentions an
@@ -135,6 +141,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
 ## e) WHAT WE SHOULD IMPROVE 🔧
 
 ### Process / craft
+
 1. **Run `nix flake check`, not just `go` tooling.** This is in AGENTS.md and
    I skipped it. The excuse "go test passed" is not equivalent — the flake
    includes `templ generate` and reproducible CI gates.
@@ -153,6 +160,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
    the suppressed-set before vs. after.
 
 ### Design judgment calls worth revisiting
+
 6. **`subtreeHasCompositeType` is conservative.** It keeps ALL composite types
    visible (struct, interface, func, array, map, chan). This is correct for
    correctness but may under-suppress: e.g., `type MyErr error` (named-type
@@ -166,12 +174,13 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
    the literal `art-dupl:accept` — zero regex overhead, same semantics. The
    regex is clearer to read but heavier. Tradeoff not measured.
 8. **Pattern priority placement.** I put `single-declaration` at priority 9,
-  AFTER `single-simple-statement`. Since ValueSpec/TypeSpec are never
-  DeclStmt children in the matched sequence, the order doesn't actually
-  matter — but I didn't explicitly prove this. A comment explaining the
-  non-overlap would help.
+   AFTER `single-simple-statement`. Since ValueSpec/TypeSpec are never
+   DeclStmt children in the matched sequence, the order doesn't actually
+   matter — but I didn't explicitly prove this. A comment explaining the
+   non-overlap would help.
 
 ### Documentation hygiene
+
 9. **Old status reports still describe the scanner bug as "known limitation."**
    Multiple `docs/status/2026-07-2X_*.md` files say "worked around, not
    fixed." Now it IS fixed. They're stale. The `update-old-docs` skill exists
@@ -186,6 +195,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
 ## f) NEXT — UP TO 50 THINGS 📋
 
 ### Critical / high-impact
+
 1. **Run `nix flake check`** against this session's changes. Non-negotiable.
 2. **Add BDD spec:** `when // art-dupl:accept uses gofmt style (space)` →
    group suppressed (in `bdd/type_aware_test.go`).
@@ -197,6 +207,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
    skip-spaces matcher. If >2x slower on a 10k-line corpus, switch.
 
 ### Pattern hardening
+
 6. **Consider `type X func(...)` aliases** for suppression (currently kept
    visible because FuncType is composite). Decide: is a duplicated
    function-type alias actionable? Probably not.
@@ -210,6 +221,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     is still detected (regression guard for `subtreeHasCompositeType`).
 
 ### Scanner robustness
+
 11. **Fuzz test the scanner:** random Go source containing the directive in
     various positions should never crash and always find the right line.
 12. **String-literal false positive:** `s := "//art-dupl:accept"` would be
@@ -223,6 +235,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     space) — verify behavior is sane (should be hash `abc123`).
 
 ### Docs / memory
+
 16. **Invoke `update-old-docs` skill** to annotate the 4+ status reports that
     describe the scanner bug as a worked-around limitation.
 17. **Update FEATURES.md** accept-directive row to note gofmt-style support.
@@ -235,6 +248,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     one I fixed).
 
 ### Verification infrastructure
+
 21. **Add a golden test** that locks in "0 clone groups at -t 1 on repo
     source" so future regressions are caught. (Brittle, but valuable.)
 22. **Add `--explain` output to a golden file** for at least one suppressed
@@ -247,6 +261,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     (Pre-existing, unrelated, but noisy.)
 
 ### Out-of-scope-but-related (parking lot)
+
 26. **Range directives** (`//art-dupl:accept-line 10-15`) for multi-line
     accepts. Long-requested.
 27. **Structured reason tags** (`//art-dupl:accept[idiom]` vs
@@ -269,6 +284,7 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
     notes possible drift).
 
 ### Polish
+
 36. **Comment the non-overlap** between `single-simple-statement` and
     `single-declaration` in the priority list.
 37. **Add a godoc example** to `isSingleDeclaration` showing the 3 canonical
@@ -325,19 +341,19 @@ I should have used `|| true` or `; echo done` to make the pipeline robust.
 
 ## Session Metrics
 
-| Metric              | Value |
-| ------------------- | ----- |
-| Files changed       | 7     |
-| LOC added (approx)  | ~170  |
-| LOC removed         | ~15   |
-| Tests added         | 10 (9 pattern + 1 scanner regression) |
-| Root causes fixed   | 2     |
-| False positives killed | 7 → 0 |
-| Real positives lost | 0 (verified) |
-| Docs updated        | 4 (ACTIONABILITY_PATTERNS, AGENTS, CHANGELOG, HOW_TO_USE) |
-| `nix flake check` run | ❌ no |
-| BDD specs added | ❌ no |
-| `--explain` verified | ❌ no |
+| Metric                 | Value                                                     |
+| ---------------------- | --------------------------------------------------------- |
+| Files changed          | 7                                                         |
+| LOC added (approx)     | ~170                                                      |
+| LOC removed            | ~15                                                       |
+| Tests added            | 10 (9 pattern + 1 scanner regression)                     |
+| Root causes fixed      | 2                                                         |
+| False positives killed | 7 → 0                                                     |
+| Real positives lost    | 0 (verified)                                              |
+| Docs updated           | 4 (ACTIONABILITY_PATTERNS, AGENTS, CHANGELOG, HOW_TO_USE) |
+| `nix flake check` run  | ❌ no                                                     |
+| BDD specs added        | ❌ no                                                     |
+| `--explain` verified   | ❌ no                                                     |
 
 **Bottom line:** The user's command now reports 0 clone groups. Two real bugs
 fixed at the root. Solid unit tests, weak integration coverage. Skipped the

@@ -9,11 +9,11 @@
 
 ## Results
 
-| Group | Locations | Report category | Actual category | Decision |
-| --- | --- | --- | --- | --- |
-| Read lock plus timestamp | `nom/activity_snapshot.go:84`, `nom/state_accessors.go:97` | `unknown`, low | Go synchronization idiom | Accept |
-| String-builder opener | `markup/xml.go:114`, `plantuml/plantuml.go:50` | `expression`, low | Standard-library usage | Accept |
-| Functional-option declarations | `markdown/cqrs.go:10`, `tree/cqrs.go:12` | `unknown`, low | Module-local public API contract | Accept |
+| Group                          | Locations                                                  | Report category   | Actual category                  | Decision |
+| ------------------------------ | ---------------------------------------------------------- | ----------------- | -------------------------------- | -------- |
+| Read lock plus timestamp       | `nom/activity_snapshot.go:84`, `nom/state_accessors.go:97` | `unknown`, low    | Go synchronization idiom         | Accept   |
+| String-builder opener          | `markup/xml.go:114`, `plantuml/plantuml.go:50`             | `expression`, low | Standard-library usage           | Accept   |
+| Functional-option declarations | `markdown/cqrs.go:10`, `tree/cqrs.go:12`                   | `unknown`, low    | Module-local public API contract | Accept   |
 
 No source files were modified. Each possible extraction was evaluated against readability, concurrency transparency, type safety, and module boundaries.
 
@@ -237,10 +237,10 @@ The tool and companion workflow should explicitly distinguish:
 
 For this session:
 
-| Threshold | Groups | Assessment |
-| --- | ---: | --- |
-| 4 | 0 | Clean report |
-| 3 | 3 | All intentional minimum idioms/contracts |
+| Threshold | Groups | Assessment                               |
+| --------- | -----: | ---------------------------------------- |
+| 4         |      0 | Clean report                             |
+| 3         |      3 | All intentional minimum idioms/contracts |
 
 ## Acceptance criteria for a fix
 
