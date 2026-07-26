@@ -3,6 +3,7 @@ package printer
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/LarsArtmann/art-dupl/baseline"
 	"github.com/LarsArtmann/art-dupl/domain"

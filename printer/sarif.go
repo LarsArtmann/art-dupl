@@ -201,6 +201,15 @@ func (p *sarifPrinter) PrintClones(
 		msg := fmt.Sprintf("Duplicate code: %d tokens in %d instances",
 			size, len(group.Clones))
 
+		properties := map[string]string{
+			"clone_type": string(cl.Classification.CloneType),
+			"category":   string(cl.Classification.Category),
+		}
+
+		if cl.Classification.NonActionablePattern != "" {
+			properties["non_actionable_pattern"] = cl.Classification.NonActionablePattern
+		}
+
 		result := SARIFResult{
 			RuleID: "art-dupl/duplicate-code",
 			Level:  level,
@@ -224,9 +233,7 @@ func (p *sarifPrinter) PrintClones(
 				ContentFingerprint: hash,
 				PartialFingerprint: hash[:min(8, len(hash))],
 			},
-			Properties: map[string]string{
-				"clone_type": string(cl.Classification.CloneType),
-			},
+			Properties: properties,
 		}
 
 		p.results = append(p.results, result)
