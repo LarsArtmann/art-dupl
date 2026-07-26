@@ -2,11 +2,10 @@ package cmd
 
 import (
 	"context"
+	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"fmt"
 	"os"
-
-	"encoding/json/jsontext"
 
 	"github.com/LarsArtmann/art-dupl/baseline"
 	"github.com/LarsArtmann/art-dupl/config"
