@@ -43,8 +43,3 @@ func processTestNodes(
 
 	return group
 }
-
-// printTestClones calls PrintClones with the standard test node processing pipeline.
-func printTestClones(p Printer, fread ReadFile, dups [][]*syntax.Node) error {
-	return p.PrintClones(processTestNodes(fread, "test", dups))
-}

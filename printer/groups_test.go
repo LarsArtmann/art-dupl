@@ -11,8 +11,6 @@ import (
 const (
 	healthSmall  = "small"
 	healthMedium = "medium"
-	healthLarge  = "large"
-	healthHuge   = "huge"
 )
 
 func TestGetCloneSize(t *testing.T) {
