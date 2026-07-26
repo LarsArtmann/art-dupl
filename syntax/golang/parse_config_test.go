@@ -23,7 +23,9 @@ func TestErrInvalidDetectionModeAlias(t *testing.T) {
 	}
 
 	if !errors.Is(domain.ErrInvalidDetectionMode, ErrInvalidDetectionMode) {
-		t.Error("domain.ErrInvalidDetectionMode must be errors.Is-equal to syntax/golang.ErrInvalidDetectionMode (symmetry)")
+		t.Error(
+			"domain.ErrInvalidDetectionMode must be errors.Is-equal to syntax/golang.ErrInvalidDetectionMode (symmetry)",
+		)
 	}
 
 	// A wrapped instance must also match the sentinel via errors.Is.

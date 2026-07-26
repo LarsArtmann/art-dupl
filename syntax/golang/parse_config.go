@@ -9,7 +9,7 @@ import (
 // ErrInvalidDetectionMode aliases the domain-level sentinel so that
 // errors.Is matches consistently across packages.
 //
-//art-dupl:accept architectural alias: syntax/golang cannot import config, re-exports domain sentinel (ADR-0005)
+// art-dupl:accept architectural alias: syntax/golang cannot import config, re-exports domain sentinel (ADR-0005)
 var ErrInvalidDetectionMode = domain.ErrInvalidDetectionMode
 
 // ParseConfig holds configuration for the Go source code parser.

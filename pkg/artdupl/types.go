@@ -14,7 +14,7 @@ import (
 // DetectionMethod is an alias for domain.DetectionMethod, the canonical
 // definition shared across config, SDK, and detection packages.
 //
-//art-dupl:accept architectural alias: SDK cannot import config (arch-lint), re-exports domain types independently (ADR-0005)
+// art-dupl:accept architectural alias: SDK cannot import config (arch-lint), re-exports domain types independently (ADR-0005)
 type DetectionMethod = domain.DetectionMethod
 
 const (

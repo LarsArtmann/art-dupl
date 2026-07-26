@@ -132,14 +132,14 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		lineNum++
 
 		text := strings.TrimSpace(scanner.Text())
-		idx := strings.Index(text, acceptDirectivePrefix)
-		if idx < 0 {
+		_, after, ok := strings.Cut(text, acceptDirectivePrefix)
+		if !ok {
 			continue
 		}
 
 		d := AcceptedDirective{Line: lineNum}
 
-		rest := strings.TrimSpace(text[idx+len(acceptDirectivePrefix):])
+		rest := strings.TrimSpace(after)
 
 		// Only treat the text after the prefix as a hash if it is a single
 		// token (no spaces). This distinguishes precision-hash directives

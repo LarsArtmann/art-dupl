@@ -231,13 +231,13 @@ Create `dupl.json` for team consistency:
 
 ```json
 {
-  "threshold": 30,
-  "outputFormat": "json",
-  "paths": ["./cmd", "./internal"],
-  "includeVendor": false,
-  "ignoreFiles": ["*_test.go", "*_mock.go", "*_gen.go"],
-  "verbose": true,
-  "outputFile": "reports/art-dupl.json"
+	"threshold": 30,
+	"outputFormat": "json",
+	"paths": ["./cmd", "./internal"],
+	"includeVendor": false,
+	"ignoreFiles": ["*_test.go", "*_mock.go", "*_gen.go"],
+	"verbose": true,
+	"outputFile": "reports/art-dupl.json"
 }
 ```
 
@@ -405,29 +405,29 @@ internal/handlers/user.go:89-117
 
 ```json
 {
-  "version": "1.0",
-  "timestamp": "2025-12-14T09:19:06.351297Z",
-  "threshold": 15,
-  "files_analyzed": 2,
-  "clone_groups": [
-    {
-      "hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
-      "size": 4,
-      "files": [
-        {
-          "filename": "./cli.go",
-          "line_start": 80,
-          "line_end": 88,
-          "fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
-        }
-      ]
-    }
-  ],
-  "summary": {
-    "total_clone_groups": 8,
-    "total_clones": 19,
-    "complexity_score": 2.11
-  }
+	"version": "1.0",
+	"timestamp": "2025-12-14T09:19:06.351297Z",
+	"threshold": 15,
+	"files_analyzed": 2,
+	"clone_groups": [
+		{
+			"hash": "5e8f50b6f5a834485490605819523fd92711f92ba855f603bc2375925bc4753a",
+			"size": 4,
+			"files": [
+				{
+					"filename": "./cli.go",
+					"line_start": 80,
+					"line_end": 88,
+					"fragment": "if err != nil {\n\tif _, err := fmt.Fprintf(..."
+				}
+			]
+		}
+	],
+	"summary": {
+		"total_clone_groups": 8,
+		"total_clones": 19,
+		"complexity_score": 2.11
+	}
 }
 ```
 
@@ -477,15 +477,15 @@ means "report clones with at least 5 duplicated statements."
 
 ```json
 {
-  "ignoreFiles": [
-    "*_test.go", // Test files often repeat setup code
-    "*_mock.go", // Generated mocks
-    "*_gen.go", // Generated code
-    "vendor/*", // Dependencies
-    "*.pb.go", // Protocol buffers
-    "*.mock.go", // Mock implementations
-    "testdata/*" // Test data
-  ]
+	"ignoreFiles": [
+		"*_test.go", // Test files often repeat setup code
+		"*_mock.go", // Generated mocks
+		"*_gen.go", // Generated code
+		"vendor/*", // Dependencies
+		"*.pb.go", // Protocol buffers
+		"*.mock.go", // Mock implementations
+		"testdata/*" // Test data
+	]
 }
 ```
 

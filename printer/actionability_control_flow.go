@@ -69,12 +69,6 @@ func isCleanupMethod(name string) bool {
 	}
 }
 
-// isAcquireMethod reports whether a method name is a known acquire operation.
-// These pair with defer cleanup calls in the Lock + Defer Unlock idiom.
-func isAcquireMethod(name string) bool {
-	return slices.Contains(acquireMethodNames, name)
-}
-
 // isAcquireCall reports whether a statement is a call to a known acquire
 // method (Lock, RLock, Acquire, etc.). This identifies the first half of the
 // Lock + Defer Unlock idiom.
@@ -87,7 +81,7 @@ func isAcquireCall(node *domain.CloneNode) bool {
 		if child.BaseType == golang.CallExpr {
 			for _, callChild := range child.Children {
 				if callChild.BaseType == golang.SelectorExpr &&
-					isAcquireMethod(callChild.Name) {
+					slices.Contains(acquireMethodNames, callChild.Name) {
 					return true
 				}
 			}

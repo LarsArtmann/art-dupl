@@ -4009,22 +4009,22 @@ Add visualization of clone group relationships and sorting results using graphs 
 <!-- Interactive HTML with D3.js -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-  </head>
-  <body>
-    <div id="graph"></div>
-    <script>
-      // Clone groups as nodes
-      // Sorting order as node size/color
-      // File overlaps as edges
-      d3.forceSimulation(nodes, links)
-        .force("charge", -300)
-        .force("link", 100)
-        .on("tick", ticked)
-        .on("end", ended);
-    </script>
-  </body>
+	<head>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+	</head>
+	<body>
+		<div id="graph"></div>
+		<script>
+			// Clone groups as nodes
+			// Sorting order as node size/color
+			// File overlaps as edges
+			d3.forceSimulation(nodes, links)
+				.force("charge", -300)
+				.force("link", 100)
+				.on("tick", ticked)
+				.on("end", ended);
+		</script>
+	</body>
 </html>
 ```
 

@@ -89,13 +89,13 @@
 
 ```json
 {
-  "threshold": 20,
-  "includeVendor": false,
-  "outputFormat": "json",
-  "verbose": true,
-  "paths": ["./src", "./lib"],
-  "ignoreFiles": ["*_test.go"],
-  "maxChildrenSerial": 15000
+	"threshold": 20,
+	"includeVendor": false,
+	"outputFormat": "json",
+	"verbose": true,
+	"paths": ["./src", "./lib"],
+	"ignoreFiles": ["*_test.go"],
+	"maxChildrenSerial": 15000
 }
 ```
 

@@ -172,10 +172,10 @@ JSON Config → CLI Flags → Merged Config → MultiDetector → Detection Meth
 
 ```json
 {
-  "threshold": 15,
-  "detectionMethods": ["hash", "art-dupl"],
-  "outputFormat": "json",
-  "verbose": true
+	"threshold": 15,
+	"detectionMethods": ["hash", "art-dupl"],
+	"outputFormat": "json",
+	"verbose": true
 }
 ```
 

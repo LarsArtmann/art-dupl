@@ -46,38 +46,38 @@ cmd.Flags().StringP("format", "o", "text", "output format: text, json, csv (defa
 
 ```json
 {
-  "configuration": {
-    "threshold": 50,
-    "detectionMethods": "art-dupl"
-  },
-  "overview": {
-    "filesScanned": 124,
-    "cloneGroups": 1,
-    "totalClones": 2
-  },
-  "duplicateCode": {
-    "totalDuplicateLines": 16,
-    "estimatedTotalLines": 12400,
-    "totalDuplicateTokens": 2,
-    "averageCloneSize": 8,
-    "complexityScore": 2,
-    "impactScore": 4,
-    "duplicationRatio": 0.12903225806451613
-  },
-  "metrics": {
-    "healthScore": "B",
-    "analysisTime": "54.392458ms",
-    "timestamp": "2026-01-31T05:20:07Z"
-  },
-  "sizeDistribution": {
-    "6-10 lines": 2
-  },
-  "topFiles": [
-    {
-      "filename": "domain/domain_types.go",
-      "duplicateLines": 16
-    }
-  ]
+	"configuration": {
+		"threshold": 50,
+		"detectionMethods": "art-dupl"
+	},
+	"overview": {
+		"filesScanned": 124,
+		"cloneGroups": 1,
+		"totalClones": 2
+	},
+	"duplicateCode": {
+		"totalDuplicateLines": 16,
+		"estimatedTotalLines": 12400,
+		"totalDuplicateTokens": 2,
+		"averageCloneSize": 8,
+		"complexityScore": 2,
+		"impactScore": 4,
+		"duplicationRatio": 0.12903225806451613
+	},
+	"metrics": {
+		"healthScore": "B",
+		"analysisTime": "54.392458ms",
+		"timestamp": "2026-01-31T05:20:07Z"
+	},
+	"sizeDistribution": {
+		"6-10 lines": 2
+	},
+	"topFiles": [
+		{
+			"filename": "domain/domain_types.go",
+			"duplicateLines": 16
+		}
+	]
 }
 ```
 

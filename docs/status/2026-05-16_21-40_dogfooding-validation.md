@@ -57,12 +57,12 @@ correct behavior.
 
 ```json
 {
-  "filename": "storage/sqlite_transactional_store.go",
-  "line_start": 1,
-  "line_end": 87,
-  "category": "unknown",
-  "priority": "low",
-  "actionability": "actionable"
+	"filename": "storage/sqlite_transactional_store.go",
+	"line_start": 1,
+	"line_end": 87,
+	"category": "unknown",
+	"priority": "low",
+	"actionability": "actionable"
 }
 ```
 

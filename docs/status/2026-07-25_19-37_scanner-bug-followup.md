@@ -9,45 +9,54 @@
 
 ## Headline Result
 
-| Metric | Start of session | End of session |
-|--------|------------------|----------------|
-| Known latent bugs from prior session | 2 | **0** |
-| Scanner recognizes inline directives | No | **Yes** |
-| `errors.Is` aliasing regression test | Missing | **Present** |
-| `go test ./...` | — | **PASS** (all 24 packages) |
-| Dedup self-report at `-t 1` | 0 clones | **0 clones** (unchanged) |
-| Things I committed myself | 0 | **0** (daemon committed everything — see §d) |
+| Metric                               | Start of session | End of session                               |
+| ------------------------------------ | ---------------- | -------------------------------------------- |
+| Known latent bugs from prior session | 2                | **0**                                        |
+| Scanner recognizes inline directives | No               | **Yes**                                      |
+| `errors.Is` aliasing regression test | Missing          | **Present**                                  |
+| `go test ./...`                      | —                | **PASS** (all 24 packages)                   |
+| Dedup self-report at `-t 1`          | 0 clones         | **0 clones** (unchanged)                     |
+| Things I committed myself            | 0                | **0** (daemon committed everything — see §d) |
 
 ---
 
 ## a) FULLY DONE
 
 ### 1. Fixed the accept-directive scanner bug (correctness)
+
 **File:** `cmd/accept_directive.go`
 **Before:** `strings.HasPrefix(text, prefix)` after `TrimSpace` — only matched lines that START with the directive (standalone comments). Inline trailing directives (`code(); //art-dupl:accept`) were **silently dropped**.
 **After:** `strings.Index(text, prefix)` — recognizes the directive anywhere on the line, matching golangci-lint/revive convention.
-**Why it mattered:** The tool's own docs said "directive can be on any line" but the scanner didn't honor it. A user placing an inline directive (natural Go habit) would get zero suppression with no warning. Last session I *found* this bug and *worked around it*; this session I *fixed the root cause*.
+**Why it mattered:** The tool's own docs said "directive can be on any line" but the scanner didn't honor it. A user placing an inline directive (natural Go habit) would get zero suppression with no warning. Last session I _found_ this bug and _worked around it_; this session I _fixed the root cause_.
 
 ### 2. Added 2 regression tests for inline directives
+
 **File:** `cmd/accept_directive_test.go`
+
 - `TestAcceptedSetInlineDirective` — verifies a trailing `//art-dupl:accept` suppresses the group.
 - `TestAcceptedSetInlineDirectiveWithHash` — verifies inline + hash-token does precision matching.
-These tests would have caught bug #1 if they'd existed before. They now lock the contract.
+  These tests would have caught bug #1 if they'd existed before. They now lock the contract.
 
 ### 3. Added error-sentinel aliasing regression test
+
 **File:** `syntax/golang/parse_config_test.go` (new)
+
 - `TestErrInvalidDetectionModeAlias` — verifies `syntax/golang.ErrInvalidDetectionMode` is `errors.Is`-equal to `domain.ErrInvalidDetectionMode` (both directions), and that a wrapped instance matches.
-**Why it mattered:** Last session I fixed the aliasing (they were two distinct `errors.New` pointers — `errors.Is` across packages silently returned `false`) but added **no test**. This session: test added, invariant locked.
+  **Why it mattered:** Last session I fixed the aliasing (they were two distinct `errors.New` pointers — `errors.Is` across packages silently returned `false`) but added **no test**. This session: test added, invariant locked.
 
 ### 4. Updated AGENTS.md
+
 **File:** `AGENTS.md` line 118
+
 - Documented that the scanner recognizes **both standalone and inline trailing** directives.
 - Closed the doc/code split-brain I created last session (docs claimed "any line", code didn't honor it, I'd updated docs but not code).
 
 ### 5. Process improvement: tested after EVERY change
+
 Last session I batched 6 refactors and tested once at the end → recursion bug lived 20 min. This session: `go test` ran after steps 1, 2, 3, 4, 5 individually. No batched-test anti-pattern.
 
 ### 6. Wrote brutal self-review doc
+
 **File:** `docs/reviews/2026-07-25_17-35_brutal-self-review.md`
 Answered all 11 self-review questions honestly, including the "did I lie" question (I understated: called the scanner bug a "limitation" when it was a correctness bug).
 
@@ -57,7 +66,7 @@ Answered all 11 self-review questions honestly, including the "did I lie" questi
 
 1. **Type-model investigation of `FilterStats` stringly-typed maps.** I researched `byReason`/`bySource` (`map[string]int`), found both key types (`FilterReason`, `FilterSource`) are `string` aliases stringified at a single typed insertion site. **Deliberately decided to skip typing them** — the printer's public contract is `map[string]int`, so typing internal maps adds a conversion layer without catching any real bug. Documented the reasoning in the review. **Honest ROI: low.** This is "partially done" because I did the analysis but didn't change code — by choice, not by running out of time.
 
-2. **Audit of existing `//art-dupl:accept` directives.** I grepped all 19 directives in the repo, confirmed all are standalone (none were silently dead from the scanner bug). But I did NOT audit whether any *inline* directives had been attempted in the past and silently lost — there's no git history search for that.
+2. **Audit of existing `//art-dupl:accept` directives.** I grepped all 19 directives in the repo, confirmed all are standalone (none were silently dead from the scanner bug). But I did NOT audit whether any _inline_ directives had been attempted in the past and silently lost — there's no git history search for that.
 
 ---
 
@@ -82,10 +91,11 @@ Answered all 11 self-review questions honestly, including the "did I lie" questi
 ### The daemon committed my work — I wrote no commit messages
 
 I made 3 code changes + 1 doc change + 1 review doc this session. I did **not** commit any of them myself. The auto-commit daemon swept them into 2 commits with generic messages:
+
 - `766c2e1b feat(cmd): enhance accept directive parsing and handling`
 - `13fc8b4b ork): add self-review documentation and parse_config tests` ← **the message is literally truncated/corrupt** (`ork)` instead of `work)`)
 
-**Root cause:** I treated the daemon as the commit mechanism instead of writing my own logical commits. Result: the git history for a *bug fix + regression test* is described as "enhance... parsing and handling" — which tells a future reader nothing about the bug that was fixed or why.
+**Root cause:** I treated the daemon as the commit mechanism instead of writing my own logical commits. Result: the git history for a _bug fix + regression test_ is described as "enhance... parsing and handling" — which tells a future reader nothing about the bug that was fixed or why.
 
 **Lesson:** When the daemon is running, commit immediately after each logical unit, with a proper message, BEFORE the daemon sweeps. The daemon's generic messages destroy the "why" of a change.
 
@@ -103,7 +113,7 @@ I made 3 code changes + 1 doc change + 1 review doc this session. I did **not** 
 
 ### Codebase (noticed this session)
 
-4. **The scanner fix is a behavior change** — users who (unknowingly) had inline directives that were being *ignored* will now see them *honored*. This could change their reports. Should be in a CHANGELOG. It isn't.
+4. **The scanner fix is a behavior change** — users who (unknowingly) had inline directives that were being _ignored_ will now see them _honored_. This could change their reports. Should be in a CHANGELOG. It isn't.
 
 5. **`AcceptedDirective` struct has `exhaustruct` warnings** in its literal construction (`{Line: lineNum}` missing `Hash`). Pre-existing, surfaced by the LSP. Not blocking but noisy.
 
@@ -117,7 +127,7 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 
 1. **[THIS SESSION GAP]** Write a CHANGELOG entry for the inline-directive scanner fix (behavior change).
 2. **[THIS SESSION GAP]** Run `golangci-lint run` on the changed files to confirm green.
-3. **[THIS SESSION GAP]** Audit git history for any past *inline* `//art-dupl:accept` attempts that were silently dropped (can't fix what we can't see).
+3. **[THIS SESSION GAP]** Audit git history for any past _inline_ `//art-dupl:accept` attempts that were silently dropped (can't fix what we can't see).
 4. **[BLOCKING, asked user]** Repo-wide audit for duplicated `errors.New("...")` sentinels with identical messages (the `ErrInvalidDetectionMode` class of bug).
 5. **[BLOCKING, asked user]** Decide CI surface (Nix/GitHub/both) for the self-test gate.
 6. **[BLOCKING, asked user]** Convert the 3 remaining `switch name` predicates now, or defer?
@@ -155,15 +165,15 @@ Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in 
 
 ## Files touched this session
 
-| File | Change | Committed by |
-|------|--------|--------------|
-| `cmd/accept_directive.go` | `HasPrefix` → `Index` (inline directive support) | daemon `766c2e1b` |
-| `cmd/accept_directive_test.go` | + 2 regression tests (inline, inline+hash) | daemon `766c2e1b` |
-| `syntax/golang/parse_config_test.go` | NEW: aliasing invariant test | daemon `13fc8b4b` |
-| `AGENTS.md` | Documented inline-directive support | daemon `13fc8b4b` |
-| `docs/reviews/2026-07-25_17-35_brutal-self-review.md` | NEW: self-review | daemon `13fc8b4b` |
-| `docs/status/2026-07-25_19-37_scanner-bug-followup.md` | THIS REPORT | pending |
+| File                                                   | Change                                           | Committed by      |
+| ------------------------------------------------------ | ------------------------------------------------ | ----------------- |
+| `cmd/accept_directive.go`                              | `HasPrefix` → `Index` (inline directive support) | daemon `766c2e1b` |
+| `cmd/accept_directive_test.go`                         | + 2 regression tests (inline, inline+hash)       | daemon `766c2e1b` |
+| `syntax/golang/parse_config_test.go`                   | NEW: aliasing invariant test                     | daemon `13fc8b4b` |
+| `AGENTS.md`                                            | Documented inline-directive support              | daemon `13fc8b4b` |
+| `docs/reviews/2026-07-25_17-35_brutal-self-review.md`  | NEW: self-review                                 | daemon `13fc8b4b` |
+| `docs/status/2026-07-25_19-37_scanner-bug-followup.md` | THIS REPORT                                      | pending           |
 
 ---
 
-*Report scoped to this session only. No project-wide research performed. Honest by construction.*
+_Report scoped to this session only. No project-wide research performed. Honest by construction._

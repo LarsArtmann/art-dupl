@@ -125,29 +125,29 @@ func (p *JSONPrinter) PrintHeader() error {
 
 ```json
 {
-  "version": "1.0",
-  "timestamp": "2025-12-14T03:18:52.739351Z",
-  "threshold": 5,
-  "files_analyzed": 8,
-  "clone_groups": [
-    {
-      "hash": "04d542c8fc586219e50657b2c3970514dfcd7b631cb8907ab35ae50743f447da",
-      "size": 4,
-      "files": [
-        {
-          "filename": "printer/json_test.go",
-          "line_start": 143,
-          "line_end": 143,
-          "fragment": "\t   output.Summary.TotalCloneGroups"
-        }
-      ]
-    }
-  ],
-  "summary": {
-    "total_clone_groups": 68,
-    "total_clones": 273,
-    "complexity_score": 3.9285714285714284
-  }
+	"version": "1.0",
+	"timestamp": "2025-12-14T03:18:52.739351Z",
+	"threshold": 5,
+	"files_analyzed": 8,
+	"clone_groups": [
+		{
+			"hash": "04d542c8fc586219e50657b2c3970514dfcd7b631cb8907ab35ae50743f447da",
+			"size": 4,
+			"files": [
+				{
+					"filename": "printer/json_test.go",
+					"line_start": 143,
+					"line_end": 143,
+					"fragment": "\t   output.Summary.TotalCloneGroups"
+				}
+			]
+		}
+	],
+	"summary": {
+		"total_clone_groups": 68,
+		"total_clones": 273,
+		"complexity_score": 3.9285714285714284
+	}
 }
 ```
 
@@ -275,10 +275,10 @@ _(Text representation of working functionality)_
 
 ```json
 {
-  "files_analyzed": 0, // ❌ BROKEN
-  "hash": "hash1", // ❌ PLACEHOLDER
-  "size": 1234, // ❌ CHARACTER COUNT
-  "line_end": 1234 // ❌ INCORRECT
+	"files_analyzed": 0, // ❌ BROKEN
+	"hash": "hash1", // ❌ PLACEHOLDER
+	"size": 1234, // ❌ CHARACTER COUNT
+	"line_end": 1234 // ❌ INCORRECT
 }
 ```
 
@@ -286,10 +286,10 @@ _(Text representation of working functionality)_
 
 ```json
 {
-  "files_analyzed": 8, // ✅ ACCURATE
-  "hash": "04d542c8fc5...", // ✅ SHA256
-  "size": 4, // ✅ TOKEN COUNT
-  "line_end": 143 // ✅ PRECISE
+	"files_analyzed": 8, // ✅ ACCURATE
+	"hash": "04d542c8fc5...", // ✅ SHA256
+	"size": 4, // ✅ TOKEN COUNT
+	"line_end": 143 // ✅ PRECISE
 }
 ```
 

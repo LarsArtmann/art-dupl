@@ -182,17 +182,17 @@ For CI integration and scripted triage. Schema:
 
 ```json
 [
-  {
-    "id": "stable-hash-of-fingerprint",
-    "category": "method",
-    "priority": "low",
-    "tokens": 2,
-    "occurrences": [
-      { "file": "ai/claude/client.go", "start_line": 50, "end_line": 55, "snippet": "..." }
-    ],
-    "suggestion": "Consider strategy pattern or early returns",
-    "is_test_code": false
-  }
+	{
+		"id": "stable-hash-of-fingerprint",
+		"category": "method",
+		"priority": "low",
+		"tokens": 2,
+		"occurrences": [
+			{ "file": "ai/claude/client.go", "start_line": 50, "end_line": 55, "snippet": "..." }
+		],
+		"suggestion": "Consider strategy pattern or early returns",
+		"is_test_code": false
+	}
 ]
 ```
 

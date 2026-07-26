@@ -93,18 +93,18 @@ Output:
 
 ```json
 [
-  {
-    "hash": "abc123...",
-    "score": 150,
-    "instances": [
-      {
-        "filename": "file.go",
-        "start_line": 45,
-        "end_line": 78,
-        "token_count": 50
-      }
-    ]
-  }
+	{
+		"hash": "abc123...",
+		"score": 150,
+		"instances": [
+			{
+				"filename": "file.go",
+				"start_line": 45,
+				"end_line": 78,
+				"token_count": 50
+			}
+		]
+	}
 ]
 ```
 

@@ -895,9 +895,9 @@
 3. **Editor Configuration:**
    ```json
    {
-     "go.useLanguageServer": true,
-     "go.lintTool": "golangci-lint",
-     "go.lintOnSave": "package"
+   	"go.useLanguageServer": true,
+   	"go.lintTool": "golangci-lint",
+   	"go.lintOnSave": "package"
    }
    ```
 

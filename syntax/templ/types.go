@@ -7,7 +7,7 @@ package templ
 
 // Node type constants for templ syntax.
 // Meaningful types capture structure without content.
-//art-dupl:accept parallel iota enum: independent from syntax/golang/nodetypes.go (different AST domains)
+// art-dupl:accept parallel iota enum: independent from syntax/golang/nodetypes.go (different AST domains)
 const (
 	BadNode = iota
 

@@ -380,18 +380,18 @@ Files Changed (this session):
 
 ```html
 <div class="clone-group" data-category="function" data-priority="medium" data-test="false">
-  <div class="clone-header">
-    <h3>Clone Group #1</h3>
-    <div class="badge-group">
-      <span class="badge-category">⚡ function</span>
-      <span class="badge-priority medium">🟡 medium</span>
-      <span class="badge">2 occurrences · 2 tokens</span>
-    </div>
-  </div>
-  <div class="clone-body">
-    <div class="suggestion">💡 Extract to shared utility function</div>
-    <!-- Code occurrences -->
-  </div>
+	<div class="clone-header">
+		<h3>Clone Group #1</h3>
+		<div class="badge-group">
+			<span class="badge-category">⚡ function</span>
+			<span class="badge-priority medium">🟡 medium</span>
+			<span class="badge">2 occurrences · 2 tokens</span>
+		</div>
+	</div>
+	<div class="clone-body">
+		<div class="suggestion">💡 Extract to shared utility function</div>
+		<!-- Code occurrences -->
+	</div>
 </div>
 ```
 

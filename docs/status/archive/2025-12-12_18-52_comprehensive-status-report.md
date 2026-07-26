@@ -137,14 +137,14 @@
 
 ```json
 {
-  "threshold": 15,
-  "includeVendor": false,
-  "outputFormat": "text",
-  "verbose": false,
-  "paths": ["."],
-  "ignoreFiles": ["*_test.go"],
-  "maxChildrenSerial": 10000,
-  "outputFile": ""
+	"threshold": 15,
+	"includeVendor": false,
+	"outputFormat": "text",
+	"verbose": false,
+	"paths": ["."],
+	"ignoreFiles": ["*_test.go"],
+	"maxChildrenSerial": 10000,
+	"outputFile": ""
 }
 ```
 

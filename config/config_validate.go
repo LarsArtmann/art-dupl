@@ -42,11 +42,19 @@ func ValidateConfig(cfg *Config) error {
 
 func validateThreshold(threshold int) error {
 	if threshold < 1 {
-		return fmt.Errorf("%w: %d (use --threshold/-t with a value of 1 or higher; default is 5)", ErrInvalidThreshold, threshold)
+		return fmt.Errorf(
+			"%w: %d (use --threshold/-t with a value of 1 or higher; default is 5)",
+			ErrInvalidThreshold,
+			threshold,
+		)
 	}
 
 	if threshold > 1000 {
-		return fmt.Errorf("%w: %d (use a value between 1 and 1000; use --min-lines for line-based filtering instead)", ErrThresholdTooLarge, threshold)
+		return fmt.Errorf(
+			"%w: %d (use a value between 1 and 1000; use --min-lines for line-based filtering instead)",
+			ErrThresholdTooLarge,
+			threshold,
+		)
 	}
 
 	return nil

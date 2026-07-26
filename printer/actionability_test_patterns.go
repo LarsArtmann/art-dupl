@@ -92,7 +92,7 @@ func containsTRunCall(node *domain.CloneNode) bool {
 // a name commonly used for *testing.T parameters.
 func hasTestingReceiver(sel *domain.CloneNode) bool {
 	for _, child := range sel.Children {
-		if child.BaseType == golang.Ident && isTestingVarName(child.Name) {
+		if child.BaseType == golang.Ident && slices.Contains(testingVarNames, child.Name) {
 			return true
 		}
 	}
@@ -103,11 +103,6 @@ func hasTestingReceiver(sel *domain.CloneNode) bool {
 // testingVarNames are common *testing.T variable names.
 var testingVarNames = []string{ //nolint:gochecknoglobals // static name set
 	"t", "tt", "tc", "test", "ts", "tb", "testing", "t0",
-}
-
-// isTestingVarName reports whether a name is a common *testing.T variable name.
-func isTestingVarName(name string) bool {
-	return slices.Contains(testingVarNames, name)
 }
 
 // allFromTestFile checks if all nodes in a sequence come from _test.go files.

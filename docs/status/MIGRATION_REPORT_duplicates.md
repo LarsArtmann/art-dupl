@@ -69,18 +69,18 @@ func (li *LineIndex) Line(offset int) int {
 
 ```json
 [
-  {
-    "hash": "abc123...",
-    "score": 150,
-    "instances": [
-      {
-        "filename": "internal/service/user.go",
-        "start_line": 45,
-        "end_line": 78,
-        "token_count": 50
-      }
-    ]
-  }
+	{
+		"hash": "abc123...",
+		"score": 150,
+		"instances": [
+			{
+				"filename": "internal/service/user.go",
+				"start_line": 45,
+				"end_line": 78,
+				"token_count": 50
+			}
+		]
+	}
 ]
 ```
 
@@ -326,7 +326,7 @@ Simple JSON format can be specified in config file:
 
 ```json
 {
-  "outputFormat": "simple-json"
+	"outputFormat": "simple-json"
 }
 ```
 
