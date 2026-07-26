@@ -122,6 +122,10 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 		return nil
 	}
 
+	if recommend, _ := cmd.Flags().GetBool("recommend-threshold"); recommend {
+		return runRecommendThreshold(ctx, mergedConfig)
+	}
+
 	if diffReportPath, _ := cmd.Flags().GetString("diff-report"); diffReportPath != "" {
 		useJSON, _ := cmd.Flags().GetBool("json")
 
