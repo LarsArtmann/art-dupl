@@ -32,6 +32,8 @@ func TestAliasedSentinelsAreIdentical(t *testing.T) {
 		{"config.ErrInvalidSortCriteria", domain.ErrInvalidSortCriteria, config.ErrInvalidSortCriteria},
 		{"pkg/artdupl.ErrInvalidThreshold", domain.ErrInvalidThreshold, artdupl.ErrInvalidThreshold},
 		{"pkg/artdupl.ErrThresholdTooLarge", domain.ErrThresholdTooLarge, artdupl.ErrThresholdTooLarge},
+		{"pkg/artdupl.ErrCloneLineEndBeforeStart", domain.ErrLineEndBeforeStart, artdupl.ErrCloneLineEndBeforeStart},
+		{"pkg/artdupl.ErrUnsupportedMethod", domain.ErrInvalidDetectionMethod, artdupl.ErrUnsupportedMethod},
 		{"syntax/golang.ErrInvalidDetectionMode", domain.ErrInvalidDetectionMode, syntaxgolang.ErrInvalidDetectionMode},
 	}
 
@@ -55,35 +57,98 @@ func TestAliasedSentinelsAreIdentical(t *testing.T) {
 	}
 }
 
-// TestNoDuplicateMessageStrings verifies that no two independent
-// errors.New() calls share a message string. Duplicate messages with
-// different pointers cause silent errors.Is failures across packages.
-func TestNoDuplicateMessageStrings(t *testing.T) {
+// TestNoDuplicateErrorNewMessages scans ALL production .go files in the repo
+// for errors.New("literal") calls and fails if any two share the same message
+// string. Duplicate messages with different pointers cause silent errors.Is
+// failures across package boundaries — this was the root cause of the original
+// ErrInvalidDetectionMode bug.
+//
+// This test is self-maintaining: it requires no hardcoded list. New sentinels
+// are automatically discovered via AST parsing.
+func TestNoDuplicateErrorNewMessages(t *testing.T) {
 	t.Parallel()
 
-	allSentinels := []struct {
-		msg     string
-		varName string
-	}{
-		{"threshold must be >= 1", "domain.ErrInvalidThreshold"},
-		{"threshold too large (max 1000)", "domain.ErrThresholdTooLarge"},
-		{"invalid detection method", "domain.ErrInvalidDetectionMethod"},
-		{"invalid detection mode", "domain.ErrInvalidDetectionMode"},
-		{"invalid diff mode", "domain.ErrInvalidDiffMode"},
-		{"invalid output format", "domain.ErrInvalidOutputFormat"},
-		{"invalid sort criteria", "domain.ErrInvalidSortCriteria"},
-	}
+	messages := map[string]string{} // message -> first location (file:line)
 
-	seen := make(map[string]string)
+	rootDir := "../" // repo root relative to domain/
 
-	for _, s := range allSentinels {
-		if prev, exists := seen[s.msg]; exists {
-			t.Errorf(
-				"duplicate sentinel message %q in both %s and %s",
-				s.msg, prev, s.varName,
-			)
+	walkErr := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil // skip unreadable paths
 		}
 
-		seen[s.msg] = s.varName
+		if d.IsDir() {
+			switch d.Name() {
+			case "vendor", ".git", "node_modules", "tmp":
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if !strings.HasSuffix(path, ".go") {
+			return nil
+		}
+
+		// Skip test files — they may contain ad-hoc errors.New for assertions
+		if strings.HasSuffix(path, "_test.go") || strings.Contains(path, "/bdd/") {
+			return nil
+		}
+
+		fset := token.NewFileSet()
+		file, parseErr := parser.ParseFile(fset, path, nil, 0)
+		if parseErr != nil {
+			return nil // skip unparseable files
+		}
+
+		ast.Inspect(file, func(n ast.Node) bool {
+			call, ok := n.(*ast.CallExpr)
+			if !ok {
+				return true
+			}
+
+			sel, ok := call.Fun.(*ast.SelectorExpr)
+			if !ok || sel.Sel.Name != "New" {
+				return true
+			}
+
+			ident, ok := sel.X.(*ast.Ident)
+			if !ok || ident.Name != "errors" {
+				return true
+			}
+
+			if len(call.Args) == 0 {
+				return true
+			}
+
+			lit, ok := call.Args[0].(*ast.BasicLit)
+			if !ok || lit.Kind != token.STRING {
+				return true
+			}
+
+			msg, unquoteErr := strconv.Unquote(lit.Value)
+			if unquoteErr != nil {
+				return true
+			}
+
+			pos := fset.Position(call.Pos())
+			location := fmt.Sprintf("%s:%d", pos.Filename, pos.Line)
+
+			if prev, exists := messages[msg]; exists {
+				t.Errorf("duplicate errors.New(%q):\n  first:  %s\n  second: %s\n"+
+					"Two errors.New with the same message create distinct pointers — errors.Is will silently fail across packages. "+
+					"Consolidate to a single definition in domain/ and alias it.",
+					msg, prev, location)
+			}
+
+			messages[msg] = location
+
+			return true
+		})
+
+		return nil
+	})
+
+	if walkErr != nil {
+		t.Fatalf("filepath.WalkDir failed: %v", walkErr)
 	}
 }

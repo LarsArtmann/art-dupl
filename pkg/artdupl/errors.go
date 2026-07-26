@@ -36,7 +36,8 @@ var (
 	ErrInvalidTimeout = errors.New("timeout must be >= 0")
 
 	// ErrUnsupportedMethod is returned when detection method is not supported.
-	ErrUnsupportedMethod = errors.New("unsupported detection method")
+	// Aliased to domain.ErrInvalidDetectionMethod so errors.Is works across SDK/domain boundaries.
+	ErrUnsupportedMethod = domain.ErrInvalidDetectionMethod
 
 	// ErrNoFilesProvided is returned when no files are provided for analysis.
 	ErrNoFilesProvided = errors.New("no files provided for analysis")
@@ -57,7 +58,8 @@ var (
 	ErrNoDuplicatesFound = errors.New("no duplicates found")
 
 	// ErrCloneLineEndBeforeStart is returned when end line is before start line.
-	ErrCloneLineEndBeforeStart = errors.New("clone end line is before start line")
+	// Aliased to domain.ErrLineEndBeforeStart so errors.Is works across SDK/domain boundaries.
+	ErrCloneLineEndBeforeStart = domain.ErrLineEndBeforeStart
 
 	// ErrCloneZeroLength is returned when clone has zero length.
 	ErrCloneZeroLength = errors.New("clone has zero length (start >= end)")
