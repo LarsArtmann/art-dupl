@@ -20,7 +20,6 @@ import (
 func runDiffReport(
 	ctx context.Context,
 	mergedConfig *config.Config,
-	sortBy string,
 	baselinePath string,
 	useJSON bool,
 ) error {
@@ -93,16 +92,23 @@ func runDiffReport(
 		return outputDiffJSON(report)
 	}
 
-	return printer.PrintDiffText(os.Stdout, report)
+	if err := printer.PrintDiffText(os.Stdout, report); err != nil {
+		return fmt.Errorf("write diff report: %w", err)
+	}
+
+	return nil
 }
 
 func outputDiffJSON(report printer.DiffReport) error {
+	//nolint:musttag // DiffReport has json tags; inner types are domain's responsibility
 	data, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal diff report: %w", err)
 	}
 
-	_, err = os.Stdout.Write(data)
+	if _, err := os.Stdout.Write(data); err != nil {
+		return fmt.Errorf("write diff report: %w", err)
+	}
 
-	return err
+	return nil
 }

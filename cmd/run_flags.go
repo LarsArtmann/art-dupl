@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/LarsArtmann/art-dupl/config"
@@ -118,7 +119,7 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 	if diffReportPath, _ := cmd.Flags().GetString("diff-report"); diffReportPath != "" {
 		useJSON, _ := cmd.Flags().GetBool("json")
 
-		return runDiffReport(ctx, mergedConfig, sortBy, diffReportPath, useJSON)
+		return runDiffReport(ctx, mergedConfig, diffReportPath, useJSON)
 	}
 
 	return runStandardAnalysis(ctx, cmd, mergedConfig, sortBy)
@@ -142,19 +143,13 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 
 	metadata := newReportMetadata(mergedConfig, sortBy)
 
-	out := os.Stdout
+	out, cleanup, err := openHTMLOutput(cmd)
+	if err != nil {
+		return err
+	}
 
-	htmlOut, _ := cmd.Flags().GetString("html-out")
-
-	if htmlOut != "" {
-		f, err := os.Create(htmlOut)
-		if err != nil {
-			return duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+htmlOut)
-		}
-
-		defer func() { _ = f.Close() }()
-
-		out = f
+	if cleanup != nil {
+		defer cleanup()
 	}
 
 	p := createPrinter(
@@ -211,6 +206,22 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 	}
 
 	return nil
+}
+
+// openHTMLOutput returns the output writer for the printer. When --html-out is
+// set, it creates the file and returns a cleanup function to close it.
+func openHTMLOutput(cmd *cobra.Command) (io.Writer, func(), error) {
+	htmlOut, _ := cmd.Flags().GetString("html-out")
+	if htmlOut == "" {
+		return os.Stdout, nil, nil
+	}
+
+	f, err := os.Create(htmlOut) //nolint:gosec // user-provided path is intentional
+	if err != nil {
+		return nil, nil, duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+htmlOut)
+	}
+
+	return f, func() { _ = f.Close() }, nil
 }
 
 // setJSONPrinterFilesCount sets the files count on a JSON printer if the printer is a JSON printer.
