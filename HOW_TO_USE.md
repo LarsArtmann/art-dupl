@@ -125,6 +125,20 @@ art-dupl --include-pattern "vendor/*" ./src
 art-dupl --exclude-pattern "*_test.go" ./src
 ```
 
+### .gitignore Honoring
+
+art-dupl excludes files matching `.gitignore` patterns by default. It walks up
+the directory tree to find all `.gitignore` files and supports globs, directory-only
+patterns (trailing `/`), anchored patterns (leading `/`), and negation (`!`):
+
+```bash
+# .gitignore patterns are honored automatically
+art-dupl ./src
+
+# Override: analyze files even if .gitignore excludes them
+art-dupl --include-ignored ./src
+```
+
 ### Line-Count Filtering
 
 Use `--min-lines` to suppress clone groups that span fewer than N source lines.

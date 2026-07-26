@@ -1,7 +1,7 @@
 # art-dupl Feature Documentation
 
 > **Last Updated:** 2026-07-26
-> **Version:** Analysis of fork branch
+> **Version:** v0.5.1
 
 ## Overview
 

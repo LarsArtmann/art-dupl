@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -170,5 +171,45 @@ func TestGitignoreExcludesTemplGenerated(t *testing.T) {
 
 	if matcher.IsIgnored(mainFile) {
 		t.Error("expected main.go to NOT be ignored")
+	}
+}
+
+func TestParseGitignoreFileScannerError(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+
+	// A valid pattern, then a line exceeding the 64 KiB scanner buffer.
+	validPattern := "*.tmp\n"
+	longLine := strings.Repeat("a", maxScannerBufferSize+1)
+
+	content := validPattern + longLine + "\n"
+	path := filepath.Join(tmpDir, ".gitignore")
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	pats, err := parseGitignoreFile(path)
+	if err == nil {
+		t.Fatal("expected error for oversized .gitignore line, got nil")
+	}
+
+	// Patterns parsed before the error should still be returned.
+	if len(pats) != 1 || pats[0].raw != "*.tmp" {
+		t.Fatalf("expected 1 valid pattern before error, got %d: %v", len(pats), pats)
+	}
+}
+
+func TestParseGitignoreFileOpenError(t *testing.T) {
+	t.Parallel()
+
+	// Non-existent path should return an error from os.Open.
+	pats, err := parseGitignoreFile(filepath.Join(t.TempDir(), "does-not-exist"))
+	if err == nil {
+		t.Fatal("expected error for non-existent file, got nil")
+	}
+
+	if pats != nil {
+		t.Fatalf("expected nil patterns on error, got %v", pats)
 	}
 }
