@@ -94,6 +94,7 @@ func (s *FilterStats) Breakdown() map[string]int {
 	return withLock(s, nil, func() map[string]int {
 		result := make(map[string]int, len(s.byReason))
 		maps.Copy(result, s.byReason)
+
 		return result
 	})
 }
@@ -104,6 +105,7 @@ func (s *FilterStats) SourceBreakdown() map[string]int {
 	return withLock(s, nil, func() map[string]int {
 		result := make(map[string]int, len(s.bySource))
 		maps.Copy(result, s.bySource)
+
 		return result
 	})
 }

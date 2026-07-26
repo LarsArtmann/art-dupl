@@ -140,6 +140,7 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		lineNum++
 
 		text := strings.TrimSpace(scanner.Text())
+
 		loc := acceptDirectiveRe.FindStringIndex(text)
 		if loc == nil {
 			continue

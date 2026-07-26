@@ -9,6 +9,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 | Pattern              | Label                      | Description                                                                        | Example                                  |
 | -------------------- | -------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
 | Signature-only       | `signature-only`           | FuncDecl without a body (interface stub, forwarding method)                        | `func (s *Svc) Name() string`            |
+| Single declaration   | `single-declaration`       | Lone package-level ValueSpec/TypeSpec-alias (re-export, const alias, iota starter) | `type Mode = domain.Mode`, `BadNode = iota` |
 | Interface impl       | `interface-implementation` | 3+ FuncType fragments from different files (satisfies common interface)            | Multiple files implementing `io.Reader`  |
 | RAII defer           | `raii-defer`               | DeferStmt wrapping cleanup (Unlock, Close, etc.)                                   | `defer m.Unlock()`                       |
 | Error propagation    | `error-propagation`        | `if err != nil { return err }`                                                     | Pure error forwarding                    |
@@ -29,7 +30,7 @@ These patterns represent Go idioms that cannot be eliminated without breaking se
 
 ## How It Works
 
-1. `EvaluateActionabilityWithLabel` runs 18 pattern checks in priority order.
+1. `EvaluateActionabilityWithLabel` runs 19 pattern checks in priority order.
 2. The first matching pattern wins (returns its `PatternLabel`).
 3. If no pattern matches, the group is **Actionable**.
 4. Only `semantic` detection mode runs actionability checks. `exact` and `structural` skip them.
@@ -46,16 +47,17 @@ Patterns are checked in this order (first match wins):
 6. Assign+error-check
 7. Single call expression
 8. Single simple statement
-9. Test helper delegate
+9. Single declaration
+10. Test helper delegate
 10. Error wrapping
 11. Assertion chain
 12. Cobra boilerplate
 13. Test data pair
 14. Table-driven test
 15. Test scaffolding
-16. Data-dominated
-17. Describe table
-18. Builder callback
+17. Data-dominated
+18. Describe table
+19. Builder callback
 
 ## Key Design Decisions
 
