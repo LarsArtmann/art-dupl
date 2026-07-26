@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import "github.com/LarsArtmann/art-dupl/domain"
 

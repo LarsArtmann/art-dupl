@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import (
 	"encoding/csv"
@@ -64,7 +64,7 @@ type jsonStatsOutput struct {
 		Production int `json:"production,omitempty"`
 		Test       int `json:"test,omitempty"`
 	} `json:"testVsProduction"`
-	TopClones []TopCloneGroup `json:"topClones,omitempty"`
+	TopClones []printer.TopCloneGroup `json:"topClones,omitempty"`
 	TopFiles  []jsonTopFile   `json:"topFiles"`
 }
 

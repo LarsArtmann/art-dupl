@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import (
 	"fmt"

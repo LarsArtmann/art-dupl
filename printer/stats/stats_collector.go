@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import (
 	"time"
@@ -7,7 +7,7 @@ import (
 )
 
 // ApplyStatsConfig applies all statistics configuration in one call.
-func (p *stats) ApplyStatsConfig(config StatsConfig) {
+func (p *stats) ApplyStatsConfig(config printer.StatsConfig) {
 	p.SetFormat(config.Format)
 	p.SetFilesCount(config.FilesCount)
 	p.SetDetectionMethods(config.DetectionMethods)
@@ -87,6 +87,6 @@ func (p *stats) SetFormat(format config.OutputFormat) {
 }
 
 // GetStatsView returns the collected statistics data.
-func (p *stats) GetStatsView() *StatsView {
+func (p *stats) GetStatsView() *printer.StatsView {
 	return p.statsData
 }

@@ -29,12 +29,6 @@ const (
 	suggestBuilderCallback   = "Builder/callback chain — intentional fluent API design"
 )
 
-type (
-	CloneCategory       = domain.CloneCategory
-	ClonePriority       = domain.ClonePriority
-	CloneClassification = domain.CloneClassification
-)
-
 func ClassifyClone(input domain.ClassificationInput) domain.CloneClassification {
 	category := nodeTypeToCategory(input.NodeType)
 	isTest := strings.HasSuffix(input.Filename, "_test.go")

@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import (
 	"fmt"
@@ -8,21 +8,21 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/LarsArtmann/art-dupl/config"
 	"github.com/LarsArtmann/art-dupl/domain"
-)
+	"github.com/LarsArtmann/art-dupl/printer")
 
 // stats provides aggregated statistics about code duplication.
 type stats struct {
-	ReadFile
+	printer.ReadFile
 	StyleMixin
 
 	w         io.Writer
 	threshold int
 	format    config.OutputFormat
-	statsData *StatsView
+	statsData *printer.StatsView
 }
 
 // NewStats creates a new stats printer.
-func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
+func NewStats(writer io.Writer, fileReader printer.ReadFile, minTokens int) printer.Printer {
 	// Initialize styles
 	styles := initStyles()
 
@@ -30,7 +30,7 @@ func NewStats(writer io.Writer, fileReader ReadFile, minTokens int) Printer {
 		w:         writer,
 		ReadFile:  fileReader,
 		threshold: minTokens,
-		statsData: &StatsView{
+		statsData: &printer.StatsView{
 			FileDuplication:   make(map[string]int),
 			SizeDistribution:  make(map[string]int),
 			TokenDistribution: make(map[string]int),

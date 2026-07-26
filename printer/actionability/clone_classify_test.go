@@ -14,9 +14,9 @@ func TestClassifyClone(t *testing.T) {
 		nodeType       int32
 		tokens         int
 		lines          int
-		wantCategory   CloneCategory
+		wantCategory   domain.CloneCategory
 		wantIsTest     bool
-		wantPriority   ClonePriority
+		wantPriority   domain.ClonePriority
 		wantSuggestion string
 	}{
 		{
@@ -231,7 +231,7 @@ func TestClassifyClone(t *testing.T) {
 
 func TestCloneCategoryEmoji(t *testing.T) {
 	tests := []struct {
-		category CloneCategory
+		category domain.CloneCategory
 		want     string
 	}{
 		{domain.CategoryFunction, "⚡"},
@@ -259,8 +259,8 @@ func TestCloneCategoryEmoji(t *testing.T) {
 func testClonePriority(
 	t *testing.T,
 	name string,
-	getValue func(ClonePriority) string,
-	expected map[ClonePriority]string,
+	getValue func(domain.ClonePriority) string,
+	expected map[domain.ClonePriority]string,
 ) {
 	t.Helper()
 
@@ -276,13 +276,13 @@ func testClonePriority(
 func TestClonePriorityAccessors(t *testing.T) {
 	tests := []struct {
 		name     string
-		getValue func(ClonePriority) string
-		expected map[ClonePriority]string
+		getValue func(domain.ClonePriority) string
+		expected map[domain.ClonePriority]string
 	}{
 		{
 			name:     "GetPriorityEmoji",
-			getValue: func(p ClonePriority) string { return p.GetPriorityEmoji() },
-			expected: map[ClonePriority]string{
+			getValue: func(p domain.ClonePriority) string { return p.GetPriorityEmoji() },
+			expected: map[domain.ClonePriority]string{
 				domain.PriorityCritical: "🔴",
 				domain.PriorityHigh:     "🟠",
 				domain.PriorityMedium:   "🟡",
@@ -291,8 +291,8 @@ func TestClonePriorityAccessors(t *testing.T) {
 		},
 		{
 			name:     "GetPriorityColor",
-			getValue: func(p ClonePriority) string { return p.GetPriorityColor() },
-			expected: map[ClonePriority]string{
+			getValue: func(p domain.ClonePriority) string { return p.GetPriorityColor() },
+			expected: map[domain.ClonePriority]string{
 				domain.PriorityCritical: "var(--error)",
 				domain.PriorityHigh:     "var(--warning)",
 				domain.PriorityMedium:   "var(--accent)",
