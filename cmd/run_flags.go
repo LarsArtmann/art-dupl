@@ -181,12 +181,12 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 	}
 
 	suppression := SuppressionConfig{
-		SuppressTestLow:   mergedConfig.EffectiveSuppressTestLow(),
-		TestThreshold:     mergedConfig.EffectiveTestThreshold(),
-		MinLines:          mergedConfig.MinLines,
-		AcceptDirectives:  newAcceptSet(mergedConfig),
-		NoActionability:   mergedConfig.NoActionability,
-		DisabledPatterns:  buildDisabledPatternSet(mergedConfig.DisabledPatterns),
+		SuppressTestLow:  mergedConfig.EffectiveSuppressTestLow(),
+		TestThreshold:    mergedConfig.EffectiveTestThreshold(),
+		MinLines:         mergedConfig.MinLines,
+		AcceptDirectives: newAcceptSet(mergedConfig),
+		NoActionability:  mergedConfig.NoActionability,
+		DisabledPatterns: buildDisabledPatternSet(mergedConfig.DisabledPatterns),
 	}
 
 	err = printDupls(

@@ -15,12 +15,12 @@ import (
 // Passing it as a single value avoids 3-parameter function signatures that are
 // prone to argument-swap bugs.
 type SuppressionConfig struct {
-	SuppressTestLow   bool
-	TestThreshold     int
-	MinLines          int
-	AcceptDirectives  *AcceptedSet
-	NoActionability   bool
-	DisabledPatterns  map[printer.PatternLabel]bool
+	SuppressTestLow  bool
+	TestThreshold    int
+	MinLines         int
+	AcceptDirectives *AcceptedSet
+	NoActionability  bool
+	DisabledPatterns map[printer.PatternLabel]bool
 }
 
 func printDupls(

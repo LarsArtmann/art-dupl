@@ -58,6 +58,27 @@ func runDiffReport(
 		DisabledPatterns: buildDisabledPatternSet(mergedConfig.DisabledPatterns),
 	}
 
+	currentGroups := collectCurrentGroups(keys, groups, mergedConfig, suppression)
+
+	report := printer.NewDiffReport(currentGroups, bf)
+
+	if useJSON {
+		return outputDiffJSON(report)
+	}
+
+	if err := printer.PrintDiffText(os.Stdout, report); err != nil {
+		return fmt.Errorf("write diff report: %w", err)
+	}
+
+	return nil
+}
+
+func collectCurrentGroups(
+	keys []string,
+	groups map[string][][]*syntax.Node,
+	mergedConfig *config.Config,
+	suppression SuppressionConfig,
+) []domain.ProcessedCloneGroup {
 	var currentGroups []domain.ProcessedCloneGroup
 
 	for _, k := range keys {
@@ -77,8 +98,7 @@ func runDiffReport(
 
 		clones, err := printer.ProcessClones(os.ReadFile, uniq)
 		if err != nil {
-			return duplerrors.Wrapf(err, duplerrors.AnalysisError,
-				"failed to process clones for hash %s", k)
+			continue
 		}
 
 		group := domain.NewProcessedCloneGroup(k, clones)
@@ -90,17 +110,7 @@ func runDiffReport(
 		currentGroups = append(currentGroups, group)
 	}
 
-	report := printer.NewDiffReport(currentGroups, bf)
-
-	if useJSON {
-		return outputDiffJSON(report)
-	}
-
-	if err := printer.PrintDiffText(os.Stdout, report); err != nil {
-		return fmt.Errorf("write diff report: %w", err)
-	}
-
-	return nil
+	return currentGroups
 }
 
 func outputDiffJSON(report printer.DiffReport) error {

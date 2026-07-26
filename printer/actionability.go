@@ -50,7 +50,9 @@ func AllActionabilityPatterns() []PatternLabel {
 // ListActionabilityPatterns writes all pattern labels to the writer, one per line.
 func ListActionabilityPatterns(w io.Writer) {
 	for _, label := range AllActionabilityPatterns() {
-		fmt.Fprintln(w, label)
+		if _, err := fmt.Fprintln(w, label); err != nil {
+			return
+		}
 	}
 }
 

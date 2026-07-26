@@ -100,6 +100,10 @@ func buildCLIConfig(cmd *cobra.Command, args []string) (*config.Config, error) {
 		return nil, err
 	}
 
+	if cmd.Flags().Changed("disable-pattern") {
+		cfg.DisabledPatterns, _ = cmd.Flags().GetStringSlice("disable-pattern")
+	}
+
 	return cfg, nil
 }
 
