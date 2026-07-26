@@ -77,12 +77,12 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 	t.Parallel()
 
 	messages := map[string]string{} // message -> first location (file:line)
-
-	rootDir := "../" // repo root relative to domain/
+	rootDir := "../"                // repo root relative to domain/
 
 	walkErr := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		//nolint:nilerr // walk callback: nil means "continue walking", not "success"
 		if err != nil {
-			return nil // skip unreadable paths
+			return nil
 		}
 
 		if d.IsDir() {
@@ -94,70 +94,86 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 			return nil
 		}
 
-		if !strings.HasSuffix(path, ".go") {
+		if !strings.HasSuffix(path, ".go") ||
+			strings.HasSuffix(path, "_test.go") ||
+			strings.Contains(path, "/bdd/") {
 			return nil
 		}
 
-		// Skip test files — they may contain ad-hoc errors.New for assertions
-		if strings.HasSuffix(path, "_test.go") || strings.Contains(path, "/bdd/") {
-			return nil
-		}
-
-		fset := token.NewFileSet()
-
-		file, parseErr := parser.ParseFile(fset, path, nil, 0)
-		if parseErr != nil {
-			return nil // skip unparseable files
-		}
-
-		ast.Inspect(file, func(n ast.Node) bool {
-			call, ok := n.(*ast.CallExpr)
-			if !ok {
-				return true
-			}
-
-			sel, ok := call.Fun.(*ast.SelectorExpr)
-			if !ok || sel.Sel.Name != "New" {
-				return true
-			}
-
-			ident, ok := sel.X.(*ast.Ident)
-			if !ok || ident.Name != "errors" {
-				return true
-			}
-
-			if len(call.Args) == 0 {
-				return true
-			}
-
-			lit, ok := call.Args[0].(*ast.BasicLit)
-			if !ok || lit.Kind != token.STRING {
-				return true
-			}
-
-			msg, unquoteErr := strconv.Unquote(lit.Value)
-			if unquoteErr != nil {
-				return true
-			}
-
-			pos := fset.Position(call.Pos())
-			location := fmt.Sprintf("%s:%d", pos.Filename, pos.Line)
-
-			if prev, exists := messages[msg]; exists {
-				t.Errorf("duplicate errors.New(%q):\n  first:  %s\n  second: %s\n"+
-					"Two errors.New with the same message create distinct pointers — errors.Is will silently fail across packages. "+
-					"Consolidate to a single definition in domain/ and alias it.",
-					msg, prev, location)
-			}
-
-			messages[msg] = location
-
-			return true
-		})
+		scanForDuplicateErrorNew(t, path, messages)
 
 		return nil
 	})
+
 	if walkErr != nil {
 		t.Fatalf("filepath.WalkDir failed: %v", walkErr)
 	}
+}
+
+// scanForDuplicateErrorNew parses a single Go file and records any
+// errors.New("literal") calls, flagging duplicates via t.Errorf.
+func scanForDuplicateErrorNew(t *testing.T, path string, messages map[string]string) {
+	t.Helper()
+
+	fset := token.NewFileSet()
+
+	file, err := parser.ParseFile(fset, path, nil, 0)
+	if err != nil {
+		return // skip unparseable files
+	}
+
+	ast.Inspect(file, func(n ast.Node) bool {
+		return inspectErrorsNewCall(t, n, fset, messages)
+	})
+}
+
+// inspectErrorsNewCall checks if an AST node is an errors.New("literal") call
+// and records/flags duplicate messages. Returns true to continue traversal.
+func inspectErrorsNewCall(
+	t *testing.T, n ast.Node, fset *token.FileSet, messages map[string]string,
+) bool {
+	t.Helper()
+
+	call, ok := n.(*ast.CallExpr)
+	if !ok {
+		return true
+	}
+
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok || sel.Sel.Name != "New" {
+		return true
+	}
+
+	ident, ok := sel.X.(*ast.Ident)
+	if !ok || ident.Name != "errors" {
+		return true
+	}
+
+	if len(call.Args) == 0 {
+		return true
+	}
+
+	lit, ok := call.Args[0].(*ast.BasicLit)
+	if !ok || lit.Kind != token.STRING {
+		return true
+	}
+
+	msg, err := strconv.Unquote(lit.Value)
+	if err != nil {
+		return true
+	}
+
+	pos := fset.Position(call.Pos())
+	location := fmt.Sprintf("%s:%d", pos.Filename, pos.Line)
+
+	if prev, exists := messages[msg]; exists {
+		t.Errorf("duplicate errors.New(%q):\n  first:  %s\n  second: %s\n"+
+			"Two errors.New with the same message create distinct pointers — errors.Is will silently fail across packages. "+
+			"Consolidate to a single definition in domain/ and alias it.",
+			msg, prev, location)
+	}
+
+	messages[msg] = location
+
+	return true
 }
