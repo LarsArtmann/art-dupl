@@ -132,6 +132,12 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	rootCmd.Flags().
 		String("html-out", "", "write HTML report to a file instead of stdout (use with --html)")
+
+	rootCmd.Flags().
+		StringSlice("disable-pattern", nil, "suppress a specific actionability pattern by label (repeatable, use --list-patterns for labels)")
+
+	rootCmd.Flags().
+		Bool("list-patterns", false, "list all actionability pattern labels and exit")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*

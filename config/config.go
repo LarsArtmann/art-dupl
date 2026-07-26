@@ -181,6 +181,11 @@ type Config struct {
 	// When true, all clone groups are reported including boilerplate/non-actionable ones.
 	NoActionability bool `json:"noActionability,omitempty"`
 
+	// DisabledPatterns suppresses specific actionability patterns by label.
+	// When a pattern label is in this list, clones matching that pattern are
+	// reported instead of suppressed. Use --list-patterns to see all labels.
+	DisabledPatterns []string `json:"disabledPatterns,omitempty"`
+
 	// Explain enables explanation output for each clone group (clone type,
 	// actionability, category, extractability, suggestion).
 	Explain bool `json:"explain,omitempty"`
