@@ -228,6 +228,19 @@
                   touch $out
                 '';
 
+            sarif-validate = config.packages.default.overrideAttrs (old: {
+              name = "${old.pname}-sarif-validate";
+              doCheck = true;
+              checkPhase = ''
+                runHook preCheck
+                go test -run='TestSARIF' -v ./printer/...
+                runHook postCheck
+              '';
+              installPhase = ''
+                touch $out
+              '';
+            });
+
             bench = config.packages.default.overrideAttrs (old: {
               name = "${old.pname}-bench";
               doCheck = true;
