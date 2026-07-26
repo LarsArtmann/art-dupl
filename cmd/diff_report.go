@@ -59,7 +59,10 @@ func runDiffReport(
 		DisabledPatterns: buildDisabledPatternSet(mergedConfig.DisabledPatterns),
 	}
 
-	currentGroups := collectCurrentGroups(keys, groups, mergedConfig, suppression)
+	currentGroups, err := collectCurrentGroups(keys, groups, mergedConfig, suppression)
+	if err != nil {
+		return fmt.Errorf("collecting clone groups: %w", err)
+	}
 
 	report := printer.NewDiffReport(currentGroups, bf)
 
@@ -79,7 +82,7 @@ func collectCurrentGroups(
 	groups map[string][][]*syntax.Node,
 	mergedConfig *config.Config,
 	suppression SuppressionConfig,
-) []domain.ProcessedCloneGroup {
+) ([]domain.ProcessedCloneGroup, error) {
 	var currentGroups []domain.ProcessedCloneGroup
 
 	for _, k := range keys {
@@ -99,7 +102,7 @@ func collectCurrentGroups(
 
 		clones, err := printer.ProcessClones(os.ReadFile, uniq)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("processing clones for group %s: %w", k, err)
 		}
 
 		group := domain.NewProcessedCloneGroup(k, clones)
@@ -111,7 +114,7 @@ func collectCurrentGroups(
 		currentGroups = append(currentGroups, group)
 	}
 
-	return currentGroups
+	return currentGroups, nil
 }
 
 func outputDiffJSON(report printer.DiffReport) error {

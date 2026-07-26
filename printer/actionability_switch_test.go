@@ -36,9 +36,9 @@ func TestIsLoggingMethod(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := isLoggingMethod(tc.input)
+			result := slices.Contains(loggingMethodNames, tc.input)
 			if result != tc.expected {
-				t.Errorf("isLoggingMethod(%q) = %v, want %v", tc.input, result, tc.expected)
+				t.Errorf("slices.Contains(loggingMethodNames, %q) = %v, want %v", tc.input, result, tc.expected)
 			}
 		})
 	}
