@@ -46,7 +46,7 @@ func BenchmarkMatchedGeneratedCategory_GeneratedFile(b *testing.B) {
 // regular file without the header should return false without any string
 // conversion.
 func BenchmarkAllowsContent_RegularFile(b *testing.B) {
-	includes := generatorIncludes{SQLC: true, Templ: true}
+	includes := generatorIncludes{gogenfilter.ReasonSQLC: true, gogenfilter.ReasonTempl: true}
 
 	b.ReportAllocs()
 	b.ResetTimer()

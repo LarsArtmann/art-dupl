@@ -21,9 +21,18 @@ func TestGeneratorIncludesAny(t *testing.T) {
 		{"mockgen only", generatorIncludes{gogenfilter.ReasonMockgen: true}, true},
 		{"stringer only", generatorIncludes{gogenfilter.ReasonStringer: true}, true},
 		{"generic only", generatorIncludes{gogenfilter.ReasonGeneric: true}, true},
-		{"all set", generatorIncludes{
-			gogenfilter.ReasonSQLC: true, gogenfilter.ReasonTempl: true, gogenfilter.ReasonProtobuf: true, gogenfilter.ReasonMockgen: true, gogenfilter.ReasonStringer: true, gogenfilter.ReasonGeneric: true,
-		}, true},
+		{
+			"all set",
+			generatorIncludes{
+				gogenfilter.ReasonSQLC:     true,
+				gogenfilter.ReasonTempl:    true,
+				gogenfilter.ReasonProtobuf: true,
+				gogenfilter.ReasonMockgen:  true,
+				gogenfilter.ReasonStringer: true,
+				gogenfilter.ReasonGeneric:  true,
+			},
+			true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -53,17 +62,47 @@ package x
 	}{
 		{"sqlc flag + sqlc content", generatorIncludes{gogenfilter.ReasonSQLC: true}, sqlcContent, true},
 		{"templ flag + templ content", generatorIncludes{gogenfilter.ReasonTempl: true}, templContent, true},
-		{"protobuf flag + protobuf content", generatorIncludes{gogenfilter.ReasonProtobuf: true}, protobufContent, true},
+		{
+			"protobuf flag + protobuf content",
+			generatorIncludes{gogenfilter.ReasonProtobuf: true},
+			protobufContent,
+			true,
+		},
 		{"mockgen flag + mockgen content", generatorIncludes{gogenfilter.ReasonMockgen: true}, mockgenContent, true},
-		{"stringer flag + stringer content", generatorIncludes{gogenfilter.ReasonStringer: true}, stringerContent, true},
+		{
+			"stringer flag + stringer content",
+			generatorIncludes{gogenfilter.ReasonStringer: true},
+			stringerContent,
+			true,
+		},
 		{"sqlc flag + regular content", generatorIncludes{gogenfilter.ReasonSQLC: true}, regularContent, false},
 		{"no flags + sqlc content", generatorIncludes{}, sqlcContent, false},
-		{"sqlc flag + templ content (wrong category)", generatorIncludes{gogenfilter.ReasonSQLC: true}, templContent, false},
-		{"templ flag + sqlc content (wrong category)", generatorIncludes{gogenfilter.ReasonTempl: true}, sqlcContent, false},
+		{
+			"sqlc flag + templ content (wrong category)",
+			generatorIncludes{gogenfilter.ReasonSQLC: true},
+			templContent,
+			false,
+		},
+		{
+			"templ flag + sqlc content (wrong category)",
+			generatorIncludes{gogenfilter.ReasonTempl: true},
+			sqlcContent,
+			false,
+		},
 		{"empty content", generatorIncludes{gogenfilter.ReasonSQLC: true}, []byte{}, false},
-		{"all flags + sqlc content", generatorIncludes{
-			gogenfilter.ReasonSQLC: true, gogenfilter.ReasonTempl: true, gogenfilter.ReasonProtobuf: true, gogenfilter.ReasonMockgen: true, gogenfilter.ReasonStringer: true, gogenfilter.ReasonGeneric: true,
-		}, sqlcContent, true},
+		{
+			"all flags + sqlc content",
+			generatorIncludes{
+				gogenfilter.ReasonSQLC:     true,
+				gogenfilter.ReasonTempl:    true,
+				gogenfilter.ReasonProtobuf: true,
+				gogenfilter.ReasonMockgen:  true,
+				gogenfilter.ReasonStringer: true,
+				gogenfilter.ReasonGeneric:  true,
+			},
+			sqlcContent,
+			true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -164,7 +203,7 @@ func TestFilterExcludedGenerated(t *testing.T) {
 		{
 			name:         "templ content, explicitly included",
 			content:      templContent,
-			includes:     generatorIncludes{Generic: true, Templ: true},
+			includes:     generatorIncludes{gogenfilter.ReasonGeneric: true, gogenfilter.ReasonTempl: true},
 			wantFiltered: false,
 			wantReason:   "",
 		},
@@ -178,7 +217,7 @@ func TestFilterExcludedGenerated(t *testing.T) {
 		{
 			name:         "sqlc content, explicitly included",
 			content:      sqlcContent,
-			includes:     generatorIncludes{Generic: true, SQLC: true},
+			includes:     generatorIncludes{gogenfilter.ReasonGeneric: true, gogenfilter.ReasonSQLC: true},
 			wantFiltered: false,
 			wantReason:   "",
 		},
@@ -192,7 +231,7 @@ func TestFilterExcludedGenerated(t *testing.T) {
 		{
 			name:         "protobuf content, explicitly included",
 			content:      protobufContent,
-			includes:     generatorIncludes{Generic: true, Protobuf: true},
+			includes:     generatorIncludes{gogenfilter.ReasonGeneric: true, gogenfilter.ReasonProtobuf: true},
 			wantFiltered: false,
 			wantReason:   "",
 		},
@@ -290,7 +329,7 @@ func (c *Component) Render(ctx context.Context) error { return nil }`
 			name:     "templ content without suffix, templ explicitly included",
 			path:     templNoSuffixPath,
 			filter:   fTemplAllowed,
-			includes: generatorIncludes{Generic: true, Templ: true},
+			includes: generatorIncludes{gogenfilter.ReasonGeneric: true, gogenfilter.ReasonTempl: true},
 			expected: true,
 		},
 		// Standard _templ.go suffix — FilterTempl catches it regardless.
@@ -305,7 +344,7 @@ func (c *Component) Render(ctx context.Context) error { return nil }`
 			name:     "templ content with suffix, templ included (FilterTempl off)",
 			path:     templSuffixPath,
 			filter:   fTemplAllowed,
-			includes: generatorIncludes{Generic: true, Templ: true},
+			includes: generatorIncludes{gogenfilter.ReasonGeneric: true, gogenfilter.ReasonTempl: true},
 			expected: true,
 		},
 		// Regular files always pass.
