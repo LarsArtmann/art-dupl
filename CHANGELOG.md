@@ -35,6 +35,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`--no-actionability` flag**: Disables actionability filtering entirely, showing ALL clone groups including boilerplate (guard clauses, error propagation, RAII defers). Gates via `if semantic && !suppression.NoActionability` in `cmd/run_output.go`. BDD tested in `bdd/actionability_test.go`.
 - **`--explain` flag**: Adds a per-group explanation line after each clone group header showing clone type, actionability verdict (+ specific boilerplate pattern label), category, token/line counts, extractability estimate, and suggestion. Implemented in `printer/text.go::writeExplanation` via the `ExplainSetter` interface (text-only by design; machine-readable formats get the structured `non_actionable_pattern` field instead).
 - **`non_actionable_pattern` JSON field**: `printer.JSONClone` now serializes the matched actionability pattern identifier (e.g. `guard-clause`, `raii-defer`) so programmatic consumers (CI pipelines, SARIF tooling) can see WHY a clone was suppressed. Mapped in `toJSONClone()`. `simpleJSONClone` is intentionally minimal and omits it.
+- **`--diff-report <baseline>` mode**: Shows only new, suppressed, and resolved clone groups vs a baseline file. Enables the extract-verify-improve loop without manual JSON diffing. Supports text and JSON output (`--diff-report <path> --json`).
+- **`--disable-pattern <label>` flag**: Selectively re-enables clone groups that match a specific actionability boilerplate pattern. Accepts repeatable labels (e.g., `--disable-pattern guard-clause --disable-pattern raii-defer`). Combine with `--list-patterns` to discover available labels.
+- **`--list-patterns` flag**: Prints all 20 registered actionability pattern labels in priority order, then exits. No analysis is run. Useful for discovering valid `--disable-pattern` arguments.
+- **`--recommend-threshold` flag**: Heuristic that scans the codebase and recommends a threshold based on file count and test-to-production ratio. Prints the suggested value with rationale.
+- **`--html-out <file>` flag**: Writes the HTML report directly to a file instead of stdout, eliminating shell redirection. Automatically opens the report in the default browser unless `--quiet` is set.
+- **HTML deep-linking**: Clone groups in the HTML report now have stable `id="group-<hash>"` attributes, enabling direct deep links and anchor navigation.
+- **YAML config file support**: `--config` now auto-detects `.yaml`/`.yml` files alongside JSON. Internally bridges YAML → JSON to reuse all existing `json` tags and custom `MarshalJSON`/`UnmarshalJSON` hooks.
+- **`interface-method` actionability pattern**: Pattern #20 detects FuncDecl bodies matching common interface method names (Get, Set, Read, Write, Close, etc.) with ≤4 statements. These are often irreducible interface implementations that cannot be deduplicated further. Total patterns: 19 to 20.
+- **Templ expression normalization**: `syntax/templ/normalize.go` canonicalizes identifier names in templ expression contexts (`{ expr.Method() }`) during semantic mode, reducing false positives from variable renames in template expressions.
+- **SARIF actionability metadata**: SARIF results now include `non_actionable_pattern` and `category` in the `Properties` map, closing the parity gap with JSON output for GitHub Advanced Security consumers.
+- **`version` subcommand**: `art-dupl version [--json|--short]` prints structured version info (version, commit, date). Version vars injected via ldflags in `flake.nix`.
+- **`--quiet`/`--no-color` flags**: `-q`/`--quiet` suppresses progress and status output. `--no-color` sets `NO_COLOR=1` for lipgloss. Both shared across all subcommands.
+- **CI self-test Nix check**: `self-test` check builds art-dupl and runs `art-dupl -t 1 --plumbing .`, asserting the tool's own zero-duplication invariant.
+- **SARIF validation Nix check**: `sarif-validate` check runs `TestSARIF*` tests to ensure SARIF output remains valid.
+- **GitHub lint-config-guard workflow**: `.github/workflows/lint-config-guard.yml` triggers on `.golangci.yml` changes and rejects commits that re-add `exhaustruct` or `tagliatelle`.
+- **Performance tuning guide**: `docs/PERFORMANCE.md` with tables for workers, incremental, threshold, modes, and output formats.
+- **Cross-package alias tests**: `domain/cross_package_alias_test.go` verifies bidirectional `errors.Is` + pointer identity for all 10 aliased sentinels across config/pkg/artdupl/syntax-golang packages.
+- **BDD diff report tests**: `bdd/diff_report_test.go` with 3 Ginkgo specs: new clones detected, resolved clones reported, JSON output structure.
 
 ### Changed
 
@@ -50,6 +68,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Filter marker unification**: `matchedGeneratedCategory` (`cmd/util.go`) is now the single source of truth for templ/sqlc/protobuf marker matching. Both the include path (`allowsContent`) and the defense-in-depth path (`filterExcludedGenerated`) delegate to it, eliminating two parallel switches with opposite polarity.
 - **`bytes.Contains` fast-path**: The common case (non-generated files) now returns after a single `bytes.Contains(content, []byte("Code generated"))` with no `string(content)` allocation; escape analysis confirms the constant-needle `[]byte` conversions stay on the stack.
 - **Dedup-to-zero refactors** (art-dupl self-report driven to 0 groups at `-t 1`): `helper()` method extracted in `internal/testutil` (collapsed 14 `if s.T != nil { s.T.Helper() }` sites), generic `withLock[T]` helper in `cmd/filter_stats.go` (replaced `withReadLock` + `copyMapUnderLock`), `diffStatTable` map consolidation in `printer/html_views.go` (3 near-identical switches → one table), and `isAcquireMethod`/`isTestingVarName` converted to `slices.Contains` over package-level name sets.
+- **`generatorIncludes` refactor**: Converted from a struct with 6 boolean fields to `map[gogenfilter.FilterReason]bool`, enabling O(1) lookup and 1-line category addition. All `generatorIncludes{SQLC: true}` struct literals updated to map syntax.
+- **Remaining switch-case predicates converted**: `isCleanupMethod`, `isLoggingMethod`, `isAssertionMethod`, `isWrappingCallName` in `printer/actionability*.go` converted to `slices.Contains` over package-level name sets, completing the pattern established by `isAcquireMethod`/`isTestingVarName`.
+- **Actionability pattern table extraction**: Pattern checks centralized into a package-level `actionabilityPatternTable` variable, enabling `AllActionabilityPatterns()`, `ListActionabilityPatterns()`, and `EvaluateActionabilityWithDisabled()` from a single source of truth.
+- **Examples threshold fix**: `examples/examples_sdk_demo.go` now uses `artdupl.DefaultThreshold` instead of hardcoded `15`, completing the SDK threshold consistency sweep.
 
 ### Fixed
 
@@ -58,10 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Accept-directive gofmt-style comments**: The scanner now matches `//\s*art-dupl:accept` (regex), tolerating the space between `//` and `art-dupl` that gofmt enforces for comment lines. Previously `// art-dupl:accept` (the idiomatic Go form) was silently ignored, leaving every directive written in gofmt-canonical style dead. This affected ~6 directives in this repo's own source.
 - **`ErrInvalidDetectionMode` aliasing**: `syntax/golang.ErrInvalidDetectionMode` and `domain.ErrInvalidDetectionMode` were two distinct `errors.New(...)` pointers, so `errors.Is` across packages silently returned `false`. Re-aliased `syntax/golang` to `domain.ErrInvalidDetectionMode`; regression test `TestErrInvalidDetectionModeAlias` locks the cross-package equality.
 - **Orphaned `isTestingVarName` test**: `printer/actionability_switch_test.go` referenced `isTestingVarName` after it was converted to `slices.Contains(testingVarNames, ...)` during the dedup sprint, breaking `go test ./printer/...`. Fixed to call `slices.Contains` directly.
-
-### Removed
-
-- **Stub flags**: Removed 5 CLI flags that were added without implementation: `--explain`, `--html-out`, `--recommend-threshold`, `--config-format`, `--diff-report`. These created false expectations by accepting input but doing nothing. See TODO_LIST.md for future implementation plans.
+- **Orphaned `isLoggingMethod` test**: Same class of bug — `printer/actionability_switch_test.go` referenced `isLoggingMethod` after conversion to inline `slices.Contains(loggingMethodNames, ...)`. Fixed to call `slices.Contains` directly.
+- **`collectCurrentGroups` error swallowing**: `cmd/diff_report.go` silently swallowed `ProcessClones` errors with `continue` (introduced to satisfy funlen linter). This was a data correctness bug — file read errors during diff report generation were silently dropped. Fixed to return the error, propagating it to the caller.
 
 ## [0.4.0] - 2026-07-24
 
