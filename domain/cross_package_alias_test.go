@@ -2,6 +2,14 @@ package domain_test
 
 import (
 	"errors"
+	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"io/fs"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/config"

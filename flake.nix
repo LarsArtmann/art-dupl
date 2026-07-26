@@ -196,12 +196,7 @@
 
             disabled-linters = pkgs.runCommand "art-dupl-disabled-linters" { } ''
               cd ${pkgs.lib.cleanSource ./.}
-              if grep -qE 'exhaustruct|tagliatelle' .golangci.yml; then
-                echo "FAIL: disabled linters (exhaustruct, tagliatelle) found in .golangci.yml" >&2
-                grep -nE 'exhaustruct|tagliatelle' .golangci.yml >&2
-                exit 1
-              fi
-              echo "OK: no disabled linters in .golangci.yml"
+              bash scripts/check-disabled-linters.sh .golangci.yml
               touch $out
             '';
 
