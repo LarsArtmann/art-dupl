@@ -404,6 +404,7 @@ art-dupl --diff-report .art-dupl-baseline.json --json . -t 15
 ```
 
 The diff report shows three sections:
+
 - **New**: clone groups not in the baseline (potential regressions)
 - **Suppressed**: groups in the baseline that were filtered this run (actionability changes, threshold changes)
 - **Resolved**: groups in the baseline that no longer appear (successful refactoring)

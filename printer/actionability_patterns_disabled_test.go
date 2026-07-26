@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -21,11 +22,6 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 	t.Parallel()
 
 	patterns := AllActionabilityPatterns()
-
-	seen := make(map[PatternLabel]bool, len(patterns))
-	for _, p := range patterns {
-		seen[p] = true
-	}
 
 	required := []PatternLabel{
 		PatternSignatureOnly,
@@ -51,7 +47,7 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 	}
 
 	for _, label := range required {
-		if !seen[label] {
+		if !slices.Contains(patterns, label) {
 			t.Errorf("AllActionabilityPatterns() missing pattern %q", label)
 		}
 	}

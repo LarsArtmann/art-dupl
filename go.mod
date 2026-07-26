@@ -73,7 +73,7 @@
 // LICENSE: MIT
 module github.com/LarsArtmann/art-dupl
 
-go 1.26.4
+go 1.26.5
 
 require (
 	charm.land/lipgloss/v2 v2.0.5

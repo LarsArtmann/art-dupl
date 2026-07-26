@@ -50,20 +50,20 @@
 
 ### Statistics Subcommand
 
-| Feature                     | Status           | Description                                                                                                                                                                                                                                                                                                                                                                                    |
-| --------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                                                                                                                                                                                                                                                                                                                                         |
-| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                                                                                                                                                                                                                                                                                                                                                    |
-| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                                                                                                                                                                                                                                                                                                                                             |
-| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                                                                                        |
-| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                                                                                            |
-| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                                                                                      |
+| Feature                     | Status           | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Text Stats**              | FULLY_FUNCTIONAL | Colored summary via lipgloss (default)                                                                                                                                                                                                                                                                                                                                                                                               |
+| **JSON Stats**              | FULLY_FUNCTIONAL | Structured statistics for CI/CD integration                                                                                                                                                                                                                                                                                                                                                                                          |
+| **CSV Stats**               | FULLY_FUNCTIONAL | Spreadsheet-compatible format using `encoding/csv`                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                                                                                                                              |
+| **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 20 non-actionable patterns (signature-only, interface-implementation, interface-method, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, single-declaration, test-helper-delegate) |
-| **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                                                                                                                          |
-| **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                                                                                                                                                                                                                |
-| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                                                                                     |
-| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                                                                                                                                                                                                     |
-| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                                                                                                                                                                                                           |
+| **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                                                                                                                                                                |
+| **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                                                                                                                                                                                                                                                      |
+| **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                                                                                                                           |
+| **Stats Visualizations**    | FULLY_FUNCTIONAL | ASCII bar charts for size/token distribution in text stats                                                                                                                                                                                                                                                                                                                                                                           |
+| **Filter Breakdown**        | FULLY_FUNCTIONAL | Reports files filtered by each category (sqlc, templ, etc.) in stats                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Sorting Options
 
@@ -121,14 +121,14 @@
 
 ## 🚀 CI Integration
 
-| Feature                | Status           | Description                                                                |
-| ---------------------- | ---------------- | -------------------------------------------------------------------------- |
-| **Baseline Recording** | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json` |
-| **CI Check Mode**      | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates             |
-| **Diff Report**        | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clone groups      |
-| **GitHub Actions**     | FULLY_FUNCTIONAL | `templates/github-actions-duplicate-check.yml` template included           |
-| **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `templates/pre-commit-hook.yaml` for pre-commit framework integration      |
-| **CI Self-Test**       | FULLY_FUNCTIONAL | Nix `self-test` check enforces art-dupl's own zero-duplication invariant   |
+| Feature                | Status           | Description                                                                 |
+| ---------------------- | ---------------- | --------------------------------------------------------------------------- |
+| **Baseline Recording** | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json`  |
+| **CI Check Mode**      | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates              |
+| **Diff Report**        | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clone groups       |
+| **GitHub Actions**     | FULLY_FUNCTIONAL | `templates/github-actions-duplicate-check.yml` template included            |
+| **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `templates/pre-commit-hook.yaml` for pre-commit framework integration       |
+| **CI Self-Test**       | FULLY_FUNCTIONAL | Nix `self-test` check enforces art-dupl's own zero-duplication invariant    |
 | **Lint Config Guard**  | FULLY_FUNCTIONAL | Nix check + GitHub workflow reject `exhaustruct`/`tagliatelle` re-additions |
 
 ---
@@ -167,46 +167,46 @@
 
 ## 🖥️ Professional CLI (via Fang)
 
-| Feature                    | Status           | Description                                                                        |
-| -------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
-| **Styled Help Output**     | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                          |
-| **Shell Completion**       | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                        |
-| **Man Page Generation**    | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                              |
-| **Version Information**    | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                   |
-| **Configurable Verbosity** | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)            |
-| **Color Control**          | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                            |
-| **Typed Exit Codes**       | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)  |
-| **Line-Count Filtering**   | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones) |
-| **Test Threshold**         | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files               |
-| **Test Suppression**       | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
-| **Token Dump**             | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
-| **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
-| **Explain Mode**           | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)  |
-| **Actionability Toggle**   | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate        |
-| **Disable Pattern**        | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern              |
-| **List Patterns**          | FULLY_FUNCTIONAL | `--list-patterns` prints all 20 pattern labels                                     |
-| **Threshold Recommendation**| FULLY_FUNCTIONAL| `--recommend-threshold` suggests a threshold based on codebase size                |
-| **Diff Report**            | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                    |
-| **HTML to File**           | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                      |
-| **Quiet Mode**             | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                               |
-| **Color Control**          | FULLY_FUNCTIONAL | `--no-color` disables colored output                                               |
-| **Type-Aware Mode**        | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
-| **Version Subcommand**     | FULLY_FUNCTIONAL | `art-dupl version [--json|--short]` prints structured version info                 |
+| Feature                      | Status           | Description                                                                        |
+| ---------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
+| **Styled Help Output**       | FULLY_FUNCTIONAL | Rich, themed help text via Fang framework                                          |
+| **Shell Completion**         | FULLY_FUNCTIONAL | bash, zsh, fish, PowerShell with `--no-descriptions` option                        |
+| **Man Page Generation**      | FULLY_FUNCTIONAL | `art-dupl man` generates manual pages                                              |
+| **Version Information**      | FULLY_FUNCTIONAL | Version, commit, build date; `version --json`, `version --short`                   |
+| **Configurable Verbosity**   | FULLY_FUNCTIONAL | `-v` (verbose), `-vv` (extra verbose), `--quiet`/`-q` (suppress status)            |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` flag, `NO_COLOR` env var (lipgloss native)                            |
+| **Typed Exit Codes**         | FULLY_FUNCTIONAL | 0=success, 1=general, 2=config/validation, 3=internal, 130=interrupted (ADR-0013)  |
+| **Line-Count Filtering**     | FULLY_FUNCTIONAL | `--min-lines` suppresses clone groups with fewer lines (minimum across all clones) |
+| **Test Threshold**           | FULLY_FUNCTIONAL | `--test-threshold` sets a separate (higher) threshold for test files               |
+| **Test Suppression**         | FULLY_FUNCTIONAL | `--suppress-test-low` suppresses low-priority clones in test files                 |
+| **Token Dump**               | FULLY_FUNCTIONAL | `--dump-tokens` outputs serialized token stream for debugging false positives      |
+| **Rich Text Output**         | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
+| **Explain Mode**             | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)  |
+| **Actionability Toggle**     | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate        |
+| **Disable Pattern**          | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern              |
+| **List Patterns**            | FULLY_FUNCTIONAL | `--list-patterns` prints all 20 pattern labels                                     |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size                |
+| **Diff Report**              | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                    |
+| **HTML to File**             | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                      |
+| **Quiet Mode**               | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                               |
+| **Color Control**            | FULLY_FUNCTIONAL | `--no-color` disables colored output                                               |
+| **Type-Aware Mode**          | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
+| **Version Subcommand**       | FULLY_FUNCTIONAL | `art-dupl version [--json                                                          | --short]` prints structured version info |
 
 ---
 
 ## 🔧 Configuration
 
-| Feature                      | Status           | Description                                                |
-| ---------------------------- | ---------------- | ---------------------------------------------------------- |
-| **Command-Line Flags**       | FULLY_FUNCTIONAL | 45+ flags for full control                                 |
-| **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct          |
-| **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults    |
-| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5) |
+| Feature                      | Status           | Description                                                         |
+| ---------------------------- | ---------------- | ------------------------------------------------------------------- |
+| **Command-Line Flags**       | FULLY_FUNCTIONAL | 45+ flags for full control                                          |
+| **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct                   |
+| **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults             |
+| **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5)          |
 | **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size |
-| **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                     |
-| **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin               |
-| **YAML Config Files**        | FULLY_FUNCTIONAL | `--config` auto-detects `.yaml`/`.yml` alongside JSON      |
+| **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                              |
+| **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin                        |
+| **YAML Config Files**        | FULLY_FUNCTIONAL | `--config` auto-detects `.yaml`/`.yml` alongside JSON               |
 
 ---
 
