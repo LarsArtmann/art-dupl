@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Printer package split**: `printer/` god-package split into cohesive sub-packages. `printer/actionability/` (pattern suppression + clone classification, leaf package importing only domain+syntax). `printer/stats/` (statistics collection + formatting, imports printer root for interfaces). Root `printer/` retains interfaces (`Printer`, `StatsPrinter`), core processing, and format printers. Behavior-preserving refactor enforced by `.go-arch-lint.yml`.
 - **Lint config cleanup**: `exhaustruct` and `tagliatelle` removed from `.golangci.yml` enable list. Both are impractical for this codebase (exhaustruct: Go zero-value initialization; tagliatelle: intentional snake_case/camelCase split per ADR-0016).
 - **Detector pipeline refactor**: Extracted `loadTypeAwareDataIfEnabled` helper from `buildAnalysisPipeline` to reduce cyclomatic complexity.
 - **Em-dash cleanup**: 52 em-dashes replaced with commas across AGENTS.md and 7 ADR docs (0002-0008).

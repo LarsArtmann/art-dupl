@@ -44,6 +44,14 @@ components:
   hash:
     in: hash/**
 
+  # Clone actionability pattern detection (sub-package of printer)
+  actionability:
+    in: printer/actionability/**
+
+  # Statistics collection and formatting (sub-package of printer)
+  stats:
+    in: printer/stats/**
+
   # Output formatting
   printer:
     in: printer/**
@@ -94,6 +102,8 @@ deps:
       - config
       - detection
       - printer
+      - actionability
+      - stats
       - job
       - hash
       - suffixtree
@@ -140,6 +150,22 @@ deps:
       - errors
       - pkg-utils
 
+  actionability:
+    mayDependOn:
+      - domain
+      - syntax
+      - syntax-golang
+      - errors
+      - pkg-utils
+
+  stats:
+    mayDependOn:
+      - domain
+      - config
+      - errors
+      - pkg-utils
+      - printer
+
   printer:
     mayDependOn:
       - syntax
@@ -148,6 +174,7 @@ deps:
       - errors
       - pkg-utils
       - domain
+      - actionability
 
   sdk:
     mayDependOn:
