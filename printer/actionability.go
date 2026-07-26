@@ -18,6 +18,7 @@ type patternEntry struct {
 var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // static table
 	{isSignatureOnlyMatch, PatternSignatureOnly},
 	{isInterfaceImplementation, PatternInterfaceImpl},
+	{isInterfaceMethodBody, PatternInterfaceMethod},
 	{isPureDeferPattern, PatternRAIIDefer},
 	{isPureErrorPropagation, PatternErrorPropagation},
 	{isGuardClause, PatternGuardClause},
@@ -139,6 +140,7 @@ const (
 	PatternSingleDeclaration  PatternLabel = "single-declaration"
 	PatternGuardClause        PatternLabel = "guard-clause"
 	PatternTestHelperDelegate PatternLabel = "test-helper-delegate"
+	PatternInterfaceMethod    PatternLabel = "interface-method"
 )
 
 // EvaluateActionabilityWithLabel returns both the actionability and the
