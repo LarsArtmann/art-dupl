@@ -350,3 +350,100 @@ func TestSubtreeContainsTypeSpec(t *testing.T) {
 		})
 	}
 }
+
+func TestIsSingleDeclaration(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		seqs     [][]*domain.CloneNode
+		expected bool
+	}{
+		{
+			name: "ValueSpec const re-export (Foo = pkg.Foo)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.SelectorExpr},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "ValueSpec with BasicLit value (const N = 42)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.BasicLit},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "TypeSpec alias referencing named type (type Mode = domain.Mode)",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident},
+					{BaseType: golang.SelectorExpr},
+				}},
+			}},
+			expected: true,
+		},
+		{
+			name: "TypeSpec struct definition — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident},
+					{BaseType: golang.StructType},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "TypeSpec interface definition — NOT suppressed",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.TypeSpec, Children: []*domain.CloneNode{
+					{BaseType: golang.Ident},
+					{BaseType: golang.InterfaceType},
+				}},
+			}},
+			expected: false,
+		},
+		{
+			name: "single AssignStmt — not a declaration node",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.AssignStmt},
+			}},
+			expected: false,
+		},
+		{
+			name: "two ValueSpecs — not single",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.ValueSpec},
+				{BaseType: golang.ValueSpec},
+			}},
+			expected: false,
+		},
+		{
+			name: "bare GenDecl — not the spec itself",
+			seqs: [][]*domain.CloneNode{{
+				{BaseType: golang.GenDecl},
+			}},
+			expected: false,
+		},
+		{
+			name:     "empty (vacuous true, guarded by caller)",
+			seqs:     [][]*domain.CloneNode{},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := isSingleDeclaration(tt.seqs)
+			if result != tt.expected {
+				t.Errorf("isSingleDeclaration() = %v, want %v", result, tt.expected)
+			}
+		})
+	}
+}

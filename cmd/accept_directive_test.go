@@ -368,3 +368,50 @@ func foo() {
 type osPathError struct{ name string }
 
 func (e *osPathError) Error() string { return "file not found: " + e.name }
+
+func TestAcceptedSetGofmtStyleDirective(t *testing.T) {
+	t.Parallel()
+
+	// Regression test: gofmt enforces a space between "//" and the comment
+	// text, so idiomatic Go writes "// art-dupl:accept" (with a space). The
+	// old scanner matched the exact substring "//art-dupl:accept" (no space)
+	// and silently dropped every gofmt-canonical directive. The scanner now
+	// tolerates optional whitespace between "//" and "art-dupl".
+	fileContent := `package example
+
+// art-dupl:accept gofmt-canonical standalone directive with a description
+const Foo = pkg.Foo
+
+func bar() {
+	fmt.Println("x") // art-dupl:accept inline directive also tolerates the space
+}
+`
+
+	readFile := func(name string) ([]byte, error) {
+		return []byte(fileContent), nil
+	}
+
+	set := NewAcceptedSet(readFile)
+
+	standalone := domain.ProcessedCloneGroup{
+		Hash: "abc123",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 4, LineEnd: 4}},
+		},
+	}
+
+	inline := domain.ProcessedCloneGroup{
+		Hash: "def456",
+		Clones: []domain.ProcessedClone{
+			{CloneRef: domain.CloneRef{Filename: "test.go", LineStart: 7, LineEnd: 7}},
+		},
+	}
+
+	if !set.IsAccepted(standalone) {
+		t.Error("gofmt-canonical standalone directive (// art-dupl:accept) must suppress the group")
+	}
+
+	if !set.IsAccepted(inline) {
+		t.Error("gofmt-canonical inline directive (code; // art-dupl:accept) must suppress the group")
+	}
+}

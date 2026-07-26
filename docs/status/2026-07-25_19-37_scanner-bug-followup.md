@@ -5,6 +5,8 @@
 **Scope:** This session ONLY — the follow-up self-review + bug-fix pass after the dedup-to-zero run.
 **Prior session context:** Reduced art-dupl self-report from 21 clone groups → 0, but left 2 latent bugs unfixed and 1 doc/code split-brain.
 
+> **Resolution (2026-07-26):** The open items below were triaged by a docs-health pass. Item #1 (CHANGELOG entry for the inline-scanner fix) is DONE — logged in `CHANGELOG.md` `[Unreleased]` Fixed. The repo-wide `errors.New` sentinel audit (#4), the CI self-test gate (#5/#10), and the remaining `switch name` predicate conversions (#6/#9) were routed into `TODO_LIST.md`. The orphaned `isTestingVarName` test breakage (caught later) was fixed (`slices.Contains`).
+
 ---
 
 ## Headline Result
@@ -125,7 +127,7 @@ I made 3 code changes + 1 doc change + 1 review doc this session. I did **not** 
 
 Ranked by impact/effort. Items marked **[THIS SESSION GAP]** are gaps I left in this session specifically.
 
-1. **[THIS SESSION GAP]** Write a CHANGELOG entry for the inline-directive scanner fix (behavior change).
+1. ~~**[THIS SESSION GAP]** Write a CHANGELOG entry for the inline-directive scanner fix (behavior change).~~ DONE: logged in `CHANGELOG.md` `[Unreleased]` Fixed (2026-07-26 docs-health pass).
 2. **[THIS SESSION GAP]** Run `golangci-lint run` on the changed files to confirm green.
 3. **[THIS SESSION GAP]** Audit git history for any past _inline_ `//art-dupl:accept` attempts that were silently dropped (can't fix what we can't see).
 4. **[BLOCKING, asked user]** Repo-wide audit for duplicated `errors.New("...")` sentinels with identical messages (the `ErrInvalidDetectionMode` class of bug).
