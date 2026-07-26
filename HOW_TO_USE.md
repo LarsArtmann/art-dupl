@@ -388,6 +388,107 @@ found 3 clones:
 - The directive must be on a line within the clone's reported line range.
 - The directive is recognized in any `//` comment: standalone lines, trailing inline comments (`code(); //art-dupl:accept`), and the gofmt-canonical form with a space (`// art-dupl:accept`). Block comments (`/* */`) are not scanned.
 
+## Diff Reports
+
+Track clone evolution over time by comparing current results against a baseline:
+
+```bash
+# Step 1: Record a baseline
+art-dupl baseline . -t 15
+
+# Step 2: After code changes, see what's new/suppressed/resolved
+art-dupl --diff-report .art-dupl-baseline.json . -t 15
+
+# JSON output for automation
+art-dupl --diff-report .art-dupl-baseline.json --json . -t 15
+```
+
+The diff report shows three sections:
+- **New**: clone groups not in the baseline (potential regressions)
+- **Suppressed**: groups in the baseline that were filtered this run (actionability changes, threshold changes)
+- **Resolved**: groups in the baseline that no longer appear (successful refactoring)
+
+## Threshold Recommendation
+
+Not sure what threshold to use? Let art-dupl suggest one:
+
+```bash
+# Get a threshold recommendation based on codebase size
+art-dupl --recommend-threshold ./src
+
+# Output:
+# Analyzing 523 Go files...
+# Test ratio: 0.42 (220 test files / 523 total)
+# Recommended threshold: 10
+# Rationale: Large codebase with moderate test ratio. Threshold 10 balances noise reduction with sensitivity.
+```
+
+The heuristic considers file count and test-to-production ratio. Use the suggestion as a starting point and adjust based on your domain.
+
+## Controlling Actionability Patterns
+
+art-dupl suppresses 20 known boilerplate patterns by default. You can selectively re-enable specific patterns:
+
+```bash
+# List all available pattern labels
+art-dupl --list-patterns
+# Output:
+# signature-only
+# interface-implementation
+# interface-method
+# raii-defer
+# ... (20 total)
+
+# Re-enable guard-clause clones (show them even though they match the pattern)
+art-dupl --disable-pattern guard-clause ./src
+
+# Disable multiple patterns
+art-dupl --disable-pattern guard-clause --disable-pattern raii-defer ./src
+
+# Disable ALL actionability filtering
+art-dupl --no-actionability ./src
+```
+
+## YAML Configuration
+
+In addition to JSON, art-dupl now supports YAML config files:
+
+```yaml
+# .artdupl.yml
+threshold: 15
+outputFormat: json
+paths:
+  - ./cmd
+  - ./internal
+includeVendor: false
+verbose: true
+```
+
+```bash
+# Auto-detected by extension
+art-dupl --config .artdupl.yml ./src
+
+# Works the same as JSON config
+art-dupl --config dupl.json ./src
+```
+
+YAML config uses the same field names and tags as JSON. Internally it bridges to JSON to reuse all existing serialization hooks.
+
+## HTML Report to File
+
+Write the HTML report directly to a file (no shell redirection needed):
+
+```bash
+# Write and auto-open in browser
+art-dupl --html-out report.html ./src
+
+# Write without opening (for CI/headless)
+art-dupl --html-out report.html --quiet ./src
+
+# Clone groups have stable IDs for deep-linking
+# Open report.html#group-a1b2c3d4 to jump directly to a group
+```
+
 ## Output Interpretation
 
 ### Understanding Text Output

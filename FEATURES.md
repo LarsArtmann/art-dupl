@@ -5,7 +5,7 @@
 
 ## Overview
 
-**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 18 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
+**art-dupl** is a Go tool for finding code clones using suffix tree algorithms and hash-based detection. It analyzes abstract syntax trees (ASTs) to find structural code clones while ignoring literal values. Supports multi-method detection, professional CLI (Fang/Cobra), 7 output formats, and 20 actionability patterns. Tuned on real-world Go projects (6,000+ Go files, 320+ templ files) to minimize false positives at the default threshold.
 
 ---
 
@@ -58,7 +58,7 @@
 | **Health Grade**            | FULLY_FUNCTIONAL | A-F health grade (`domain.HealthScore`) with validation                                                                                                                                                                                                                                                                                                                                        |
 | **Clone Metrics**           | FULLY_FUNCTIONAL | Total clones, groups, files affected, duplication %                                                                                                                                                                                                                                                                                                                                            |
 | **Spread Analysis**         | FULLY_FUNCTIONAL | Complexity scores, severity distributions                                                                                                                                                                                                                                                                                                                                                      |
-| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 18 non-actionable patterns (signature-only, interface-implementation, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, test-helper-delegate) |
+| **Actionability Class.**    | FULLY_FUNCTIONAL | AST-based detection of 20 non-actionable patterns (signature-only, interface-implementation, interface-method, RAII defer, error-propagation, error-wrapping, assertion-chain, cobra-boilerplate, testdata-pair, table-driven-test, test-scaffolding, data-dominated, describe-table, builder-callback, assign-error-check, single-call-expression, guard-clause, single-simple-statement, single-declaration, test-helper-delegate) |
 | **Clone Classification**    | FULLY_FUNCTIONAL | 17 categories (function, method, test, struct, interface, handler, loop, conditional, test-boilerplate, test-fixture, assignment, expression, block, call, return, defer, unknown), 4 priority levels                                                                                                                                                                                          |
 | **Refactoring Suggestions** | FULLY_FUNCTIONAL | Category + actionability pattern based suggestions (`printer/clone_classify.go::getSuggestion`)                                                                                                                                                                                                                                                                                                |
 | **Stats Recommendations**   | FULLY_FUNCTIONAL | Grade-specific (A-F) actionable next steps in stats output                                                                                                                                                                                                                                                                                                                                     |
@@ -110,8 +110,10 @@
 | **Extractability Score**      | FULLY_FUNCTIONAL | `lines_saved` + `extractable` fields in JSON for refactoring prioritization                          |
 | **Actionability Verdict**     | FULLY_FUNCTIONAL | Labels clones actionable vs non-actionable (test boilerplate, idioms, etc.)                          |
 | **Actionability Override**    | FULLY_FUNCTIONAL | `--no-actionability` disables filtering, showing ALL clones including boilerplate                    |
+| **Disable Specific Pattern**  | FULLY_FUNCTIONAL | `--disable-pattern <label>` selectively re-enables a single boilerplate pattern                      |
+| **List Patterns**             | FULLY_FUNCTIONAL | `--list-patterns` prints all 20 pattern labels in priority order                                     |
 | **Explain Mode**              | FULLY_FUNCTIONAL | `--explain` prints why each clone group was reported (type, actionability, category, extractability) |
-| **Pattern in JSON**           | FULLY_FUNCTIONAL | `non_actionable_pattern` field in JSON output identifies which boilerplate pattern matched           |
+| **Pattern in JSON**           | FULLY_FUNCTIONAL | `non_actionable_pattern` field in JSON/SARIF output identifies which boilerplate pattern matched     |
 | **Overlap Elimination**       | FULLY_FUNCTIONAL | Suppresses nested clone groups; only the largest match is reported                                   |
 | **Test Noise Suppression**    | FULLY_FUNCTIONAL | `--ignore-tests` excludes test files; `--include-tests` overrides                                    |
 
@@ -123,8 +125,11 @@
 | ---------------------- | ---------------- | -------------------------------------------------------------------------- |
 | **Baseline Recording** | FULLY_FUNCTIONAL | `art-dupl baseline` snapshots accepted clones to `.art-dupl-baseline.json` |
 | **CI Check Mode**      | FULLY_FUNCTIONAL | `art-dupl check` reports only new clones; exits 1 for CI gates             |
+| **Diff Report**        | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clone groups      |
 | **GitHub Actions**     | FULLY_FUNCTIONAL | `templates/github-actions-duplicate-check.yml` template included           |
 | **Pre-Commit Hook**    | FULLY_FUNCTIONAL | `templates/pre-commit-hook.yaml` for pre-commit framework integration      |
+| **CI Self-Test**       | FULLY_FUNCTIONAL | Nix `self-test` check enforces art-dupl's own zero-duplication invariant   |
+| **Lint Config Guard**  | FULLY_FUNCTIONAL | Nix check + GitHub workflow reject `exhaustruct`/`tagliatelle` re-additions |
 
 ---
 
@@ -178,7 +183,15 @@
 | **Rich Text Output**       | FULLY_FUNCTIONAL | `--rich-text` adds priority/category/actionability badges to text output           |
 | **Explain Mode**           | FULLY_FUNCTIONAL | `--explain` prints a per-group rationale (type, actionability, category, savings)  |
 | **Actionability Toggle**   | FULLY_FUNCTIONAL | `--no-actionability` shows all clones, including non-actionable boilerplate        |
+| **Disable Pattern**        | FULLY_FUNCTIONAL | `--disable-pattern <label>` re-enables a specific boilerplate pattern              |
+| **List Patterns**          | FULLY_FUNCTIONAL | `--list-patterns` prints all 20 pattern labels                                     |
+| **Threshold Recommendation**| FULLY_FUNCTIONAL| `--recommend-threshold` suggests a threshold based on codebase size                |
+| **Diff Report**            | FULLY_FUNCTIONAL | `--diff-report <baseline>` shows new/suppressed/resolved clones                    |
+| **HTML to File**           | FULLY_FUNCTIONAL | `--html-out <file>` writes HTML report to file with auto-open                      |
+| **Quiet Mode**             | FULLY_FUNCTIONAL | `--quiet`/`-q` suppresses progress and status output                               |
+| **Color Control**          | FULLY_FUNCTIONAL | `--no-color` disables colored output                                               |
 | **Type-Aware Mode**        | FULLY_FUNCTIONAL | `--type-aware` encodes variable types into hashes via `go/types` (see Semantic)    |
+| **Version Subcommand**     | FULLY_FUNCTIONAL | `art-dupl version [--json|--short]` prints structured version info                 |
 
 ---
 
@@ -190,8 +203,10 @@
 | **JSON Configuration Files** | FULLY_FUNCTIONAL | `--config` / `-c` flag, JSON-tagged Config struct          |
 | **Configuration Merging**    | FULLY_FUNCTIONAL | CLI flags override file config, file overrides defaults    |
 | **Threshold Control**        | FULLY_FUNCTIONAL | Adjustable minimum duplicated statement count (default: 5) |
+| **Threshold Recommendation** | FULLY_FUNCTIONAL | `--recommend-threshold` suggests a threshold based on codebase size |
 | **Vendor Directory Control** | FULLY_FUNCTIONAL | `--vendor` to include vendor directory                     |
 | **File Input from Stdin**    | FULLY_FUNCTIONAL | `--files` / `-f` reads file paths from stdin               |
+| **YAML Config Files**        | FULLY_FUNCTIONAL | `--config` auto-detects `.yaml`/`.yml` alongside JSON      |
 
 ---
 
@@ -273,10 +288,37 @@ art-dupl -m "hash,art-dupl"    # Both methods
 ```bash
 art-dupl                       # Text (default)
 art-dupl --html                # HTML report
+art-dupl --html-out report.html  # HTML report to file (auto-opens)
 art-dupl --json                # JSON with statistics
 art-dupl --plumbing            # Machine-readable
 art-dupl --sarif               # SARIF 2.1.0
 art-dupl --all -o ./reports    # All formats to directory
+```
+
+### Diff Reports
+
+```bash
+# Record baseline, then see what changed
+art-dupl baseline . -t 15
+art-dupl --diff-report .art-dupl-baseline.json . -t 15
+art-dupl --diff-report .art-dupl-baseline.json --json . -t 15
+```
+
+### Threshold Recommendation
+
+```bash
+# Get a suggested threshold based on codebase size
+art-dupl --recommend-threshold ./src
+```
+
+### Pattern Control
+
+```bash
+# List all 20 actionability pattern labels
+art-dupl --list-patterns
+
+# Re-enable a specific boilerplate pattern
+art-dupl --disable-pattern guard-clause ./src
 ```
 
 ### Filtering
