@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -11,7 +12,14 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 )
 
-const acceptDirectivePrefix = "//art-dupl:accept"
+// acceptDirectiveRe locates the //art-dupl:accept marker anywhere on a line,
+// tolerating optional whitespace between "//" and "art-dupl". This recognizes
+// the compact form (//art-dupl:accept), the gofmt-canonical form
+// (// art-dupl:accept — gofmt enforces a space after "//" for comment lines),
+// and trailing inline directives (code(); //art-dupl:accept). Without the
+// whitespace tolerance, every standalone directive written in idiomatic Go
+// style would be silently ignored.
+var acceptDirectiveRe = regexp.MustCompile(`//\s*art-dupl:accept`)
 
 // acceptDirectiveScanAbove is the number of lines above clone.LineStart to
 // also check for directives. Users naturally place directives on the line
@@ -132,14 +140,14 @@ func (a *AcceptedSet) scanFile(filename string) []AcceptedDirective {
 		lineNum++
 
 		text := strings.TrimSpace(scanner.Text())
-		_, after, ok := strings.Cut(text, acceptDirectivePrefix)
-		if !ok {
+		loc := acceptDirectiveRe.FindStringIndex(text)
+		if loc == nil {
 			continue
 		}
 
 		d := AcceptedDirective{Line: lineNum}
 
-		rest := strings.TrimSpace(after)
+		rest := strings.TrimSpace(text[loc[1]:])
 
 		// Only treat the text after the prefix as a hash if it is a single
 		// token (no spaces). This distinguishes precision-hash directives

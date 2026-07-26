@@ -46,10 +46,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SDK threshold consistency**: All SDK test fixtures and documentation now use `DefaultThreshold` instead of hardcoded `15`. Updated `doc.go`, `SDK_DESIGN.md`, and 17 test fixtures across `detector_validation_test.go`, `detector_test.go`, and `basic_test.go`.
 - **Type-aware fallback test hardened**: `TestDetector_TypeAwareFallback` now uses real assertions instead of discarding results (`_ = result; _ = err`). Verifies graceful fallback returns no error or `ErrNoDuplicatesFound`, and result is non-nil when error is nil.
 - **BDD fixture consolidation**: `testutil.DuplicateFuncSource(name)` is now the single canonical helper for BDD test fixtures, replacing scattered duplicate template constants across multiple test files.
+- **Filter marker unification**: `matchedGeneratedCategory` (`cmd/util.go`) is now the single source of truth for templ/sqlc/protobuf marker matching. Both the include path (`allowsContent`) and the defense-in-depth path (`filterExcludedGenerated`) delegate to it, eliminating two parallel switches with opposite polarity.
+- **`bytes.Contains` fast-path**: The common case (non-generated files) now returns after a single `bytes.Contains(content, []byte("Code generated"))` with no `string(content)` allocation; escape analysis confirms the constant-needle `[]byte` conversions stay on the stack.
+- **Dedup-to-zero refactors** (art-dupl self-report driven to 0 groups at `-t 1`): `helper()` method extracted in `internal/testutil` (collapsed 14 `if s.T != nil { s.T.Helper() }` sites), generic `withLock[T]` helper in `cmd/filter_stats.go` (replaced `withReadLock` + `copyMapUnderLock`), `diffStatTable` map consolidation in `printer/html_views.go` (3 near-identical switches → one table), and `isAcquireMethod`/`isTestingVarName` converted to `slices.Contains` over package-level name sets.
 
 ### Fixed
 
 - **Accept-directive UX**: Two bugs fixed: (1) directives placed above `LineStart` were not scanned (now scans up to 5 lines above, matching linter conventions); (2) multi-word text after `//art-dupl:accept` was treated as a hash and never matched (now: single-token text = hash match, multi-word text = bare accept with human-readable description).
+- **Accept-directive inline scanner**: `cmd/accept_directive.go` now uses `strings.Index` instead of `strings.HasPrefix`, recognizing `//art-dupl:accept` anywhere on the line (standalone comment OR trailing inline comment like `code(); //art-dupl:accept`), matching golangci-lint/revive convention. Previously inline trailing directives were silently dropped — a correctness bug contradicting the tool's own documentation.
+- **`ErrInvalidDetectionMode` aliasing**: `syntax/golang.ErrInvalidDetectionMode` and `domain.ErrInvalidDetectionMode` were two distinct `errors.New(...)` pointers, so `errors.Is` across packages silently returned `false`. Re-aliased `syntax/golang` to `domain.ErrInvalidDetectionMode`; regression test `TestErrInvalidDetectionModeAlias` locks the cross-package equality.
+- **Orphaned `isTestingVarName` test**: `printer/actionability_switch_test.go` referenced `isTestingVarName` after it was converted to `slices.Contains(testingVarNames, ...)` during the dedup sprint, breaking `go test ./printer/...`. Fixed to call `slices.Contains` directly.
 
 ### Removed
 

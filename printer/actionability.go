@@ -60,6 +60,7 @@ const (
 	PatternAssignErrorCheck   PatternLabel = "assign-error-check"
 	PatternSingleCallExpr     PatternLabel = "single-call-expression"
 	PatternSingleSimpleStmt   PatternLabel = "single-simple-statement"
+	PatternSingleDeclaration  PatternLabel = "single-declaration"
 	PatternGuardClause        PatternLabel = "guard-clause"
 	PatternTestHelperDelegate PatternLabel = "test-helper-delegate"
 )
@@ -88,6 +89,7 @@ func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel
 		{isAssignWithErrorCheck, PatternAssignErrorCheck},
 		{isSingleCallExpression, PatternSingleCallExpr},
 		{isSingleSimpleStatement, PatternSingleSimpleStmt},
+		{isSingleDeclaration, PatternSingleDeclaration},
 		{isTestHelperDelegate, PatternTestHelperDelegate},
 		{isErrorWrappingReturn, PatternErrorWrapping},
 		{isAssertionChain, PatternAssertionChain},

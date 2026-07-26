@@ -24,7 +24,8 @@
 
 ## Quality and Intelligence
 
-- [ ] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`. (Type-aware mode itself is implemented; this is the next layer.)
+- [ ] **Interface-aware suppression**: Detect method signatures that implement an interface contract and suppress them as structural duplication, not actionable cloning. Needs call-graph analysis or `go/types`. (Type-aware mode itself is implemented; this is the deep next layer. The lighter, AST-pattern-only improvement is tracked in TODO_LIST.)
+- [ ] **Configurable actionability patterns**: Let users enable/disable specific boilerplate patterns via flag (e.g. `--disable-pattern guard-clause`) or list them (`--list-patterns`). Currently all 18 patterns are always active; some teams may want stricter/looser suppression.
 - [ ] **ML-based actionability classification**: Train a model on labeled clone data to predict whether a clone is actionable, replacing the rule-based actionability patterns. Would handle edge cases the 18 current patterns miss.
 - [ ] **Fixability score**: Replace binary Actionable/NonActionable with a score reflecting extraction cost (params needed, lines saved, complexity). Feedback: httputil session suggested "would-take-more-params-than-lines" heuristic.
 - [ ] **Nested-scope shadowing in alpha-normalization**: Current symbol table is flat (no nested-scope shadowing). Proper lexical scoping would improve Type-2 clone accuracy in deeply nested code.
@@ -34,6 +35,7 @@
 
 - [ ] **Incremental type checking**: Only re-check changed packages in type-aware mode. Currently type-aware mode loads all files for `go/packages`.
 - [ ] **Caching for type-checking results**: Similar to the AST cache, cache `go/types` results keyed by content hash and detection mode.
+- [ ] **Type-aware + incremental integration**: `--type-aware` combined with `--incremental` currently warns and silently falls back to syntax-only. Caching `go/packages` results alongside the AST cache would unify the two modes.
 
 ## Documentation and Adoption
 

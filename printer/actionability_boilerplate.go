@@ -121,6 +121,63 @@ func subtreeContainsTypeSpec(n *domain.CloneNode) bool {
 	return slices.ContainsFunc(n.Children, subtreeContainsTypeSpec)
 }
 
+// isSingleDeclaration reports whether every clone is exactly one package-level
+// declaration node (a ValueSpec or a TypeSpec) fingerprinted as a single
+// statement token by the statement-level tokenizer. These are individual
+// const/var/type declarations — the atomic units of Go's package-level syntax.
+//
+// A single declaration can never be meaningfully extracted into a reusable
+// unit. The common shapes are all idiomatic Go that exists to expose a symbol
+// under a local name:
+//
+//	const Foo = pkg.Foo          // re-export
+//	type Mode = domain.Mode      // type alias
+//	BadNode = iota               // first value of an iota enum
+//
+// Type DEFINITIONS (type Foo struct{...}, type Bar interface{...}) are NOT
+// suppressed here: a duplicated composite type body can represent real
+// actionable cloning. Only references to named types (aliases and the
+// type-from-named form type X Y) are suppressed, detected by the absence of
+// any composite type body in the subtree (see subtreeHasCompositeType).
+func isSingleDeclaration(nodeSeqs [][]*domain.CloneNode) bool {
+	return everySequenceMatch(nodeSeqs, func(seq []*domain.CloneNode) bool {
+		if len(seq) != 1 {
+			return false
+		}
+
+		return isAtomicDeclaration(seq[0])
+	})
+}
+
+// isAtomicDeclaration classifies a single CloneNode as an atomic package-level
+// declaration that cannot represent actionable duplication.
+func isAtomicDeclaration(n *domain.CloneNode) bool {
+	switch n.BaseType {
+	case golang.ValueSpec:
+		return true
+
+	case golang.TypeSpec:
+		return !subtreeHasCompositeType(n)
+
+	default:
+		return false
+	}
+}
+
+// subtreeHasCompositeType reports whether any node in the subtree is a
+// composite type DEFINITION (struct, interface, func, array, map, chan).
+// Presence of such a node means the TypeSpec carries real structure that may
+// represent actionable duplication, so isAtomicDeclaration must NOT suppress it.
+func subtreeHasCompositeType(n *domain.CloneNode) bool {
+	switch n.BaseType {
+	case golang.StructType, golang.InterfaceType, golang.FuncType,
+		golang.ArrayType, golang.MapType, golang.ChanType:
+		return true
+	}
+
+	return slices.ContainsFunc(n.Children, subtreeHasCompositeType)
+}
+
 // isTestHelperDelegate reports whether every clone is a 2-statement test helper
 // body: t.Helper() as the first statement, followed by a single delegate call
 // to a shared assertion function. This is irreducible Go boilerplate:
