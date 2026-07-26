@@ -1,9 +1,58 @@
 package printer
 
 import (
+	"fmt"
+	"io"
+
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
+
+// actionabilityPatternTable defines the priority-ordered list of patterns
+// checked by evaluateActionabilityDetailed. First match wins.
+type patternEntry struct {
+	check   func([][]*domain.CloneNode) bool
+	pattern PatternLabel
+}
+
+var actionabilityPatternTable = []patternEntry{ //nolint:gochecknoglobals // static table
+	{isSignatureOnlyMatch, PatternSignatureOnly},
+	{isInterfaceImplementation, PatternInterfaceImpl},
+	{isPureDeferPattern, PatternRAIIDefer},
+	{isPureErrorPropagation, PatternErrorPropagation},
+	{isGuardClause, PatternGuardClause},
+	{isAssignWithErrorCheck, PatternAssignErrorCheck},
+	{isSingleCallExpression, PatternSingleCallExpr},
+	{isSingleSimpleStatement, PatternSingleSimpleStmt},
+	{isSingleDeclaration, PatternSingleDeclaration},
+	{isTestHelperDelegate, PatternTestHelperDelegate},
+	{isErrorWrappingReturn, PatternErrorWrapping},
+	{isAssertionChain, PatternAssertionChain},
+	{isCobraCommandBoilerplate, PatternCobraBoilerplate},
+	{isTestDataFilePair, PatternTestData},
+	{isTableDrivenTestBody, PatternTableDrivenTest},
+	{isTestScaffolding, PatternTestScaffolding},
+	{isDataDominated, PatternDataDominated},
+	{isDescribeTablePattern, PatternDescribeTable},
+	{isBuilderCallbackPattern, PatternBuilderCallback},
+}
+
+// AllActionabilityPatterns returns all registered pattern labels in priority order.
+func AllActionabilityPatterns() []PatternLabel {
+	labels := make([]PatternLabel, 0, len(actionabilityPatternTable))
+	for _, entry := range actionabilityPatternTable {
+		labels = append(labels, entry.pattern)
+	}
+
+	return labels
+}
+
+// ListActionabilityPatterns writes all pattern labels to the writer, one per line.
+func ListActionabilityPatterns(w io.Writer) {
+	for _, label := range AllActionabilityPatterns() {
+		fmt.Fprintln(w, label)
+	}
+}
 
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
@@ -34,6 +83,17 @@ func everySequenceMatch(
 // boilerplate pattern. If any clone differs, the group is actionable.
 func EvaluateActionability(nodeSeqs [][]*domain.CloneNode) domain.CloneActionability {
 	_, a := evaluateActionabilityDetailed(nodeSeqs)
+
+	return a
+}
+
+// EvaluateActionabilityWithDisabled is like EvaluateActionability but skips
+// patterns whose labels are in the disabled set.
+func EvaluateActionabilityWithDisabled(
+	nodeSeqs [][]*domain.CloneNode,
+	disabled map[PatternLabel]bool,
+) domain.CloneActionability {
+	_, a := evaluateActionabilityWithDisabled(nodeSeqs, disabled)
 
 	return a
 }
@@ -73,36 +133,24 @@ func EvaluateActionabilityWithLabel(nodeSeqs [][]*domain.CloneNode) (PatternLabe
 }
 
 func evaluateActionabilityDetailed(nodeSeqs [][]*domain.CloneNode) (PatternLabel, domain.CloneActionability) {
+	return evaluateActionabilityWithDisabled(nodeSeqs, nil)
+}
+
+// evaluateActionabilityWithDisabled checks actionability patterns in priority
+// order, skipping any pattern whose label is in the disabled set.
+func evaluateActionabilityWithDisabled(
+	nodeSeqs [][]*domain.CloneNode,
+	disabled map[PatternLabel]bool,
+) (PatternLabel, domain.CloneActionability) {
 	if len(nodeSeqs) == 0 {
 		return PatternNone, domain.Actionable
 	}
 
-	nonActionablePatterns := []struct {
-		check   func([][]*domain.CloneNode) bool
-		pattern PatternLabel
-	}{
-		{isSignatureOnlyMatch, PatternSignatureOnly},
-		{isInterfaceImplementation, PatternInterfaceImpl},
-		{isPureDeferPattern, PatternRAIIDefer},
-		{isPureErrorPropagation, PatternErrorPropagation},
-		{isGuardClause, PatternGuardClause},
-		{isAssignWithErrorCheck, PatternAssignErrorCheck},
-		{isSingleCallExpression, PatternSingleCallExpr},
-		{isSingleSimpleStatement, PatternSingleSimpleStmt},
-		{isSingleDeclaration, PatternSingleDeclaration},
-		{isTestHelperDelegate, PatternTestHelperDelegate},
-		{isErrorWrappingReturn, PatternErrorWrapping},
-		{isAssertionChain, PatternAssertionChain},
-		{isCobraCommandBoilerplate, PatternCobraBoilerplate},
-		{isTestDataFilePair, PatternTestData},
-		{isTableDrivenTestBody, PatternTableDrivenTest},
-		{isTestScaffolding, PatternTestScaffolding},
-		{isDataDominated, PatternDataDominated},
-		{isDescribeTablePattern, PatternDescribeTable},
-		{isBuilderCallbackPattern, PatternBuilderCallback},
-	}
+	for _, p := range actionabilityPatternTable {
+		if disabled != nil && disabled[p.pattern] {
+			continue
+		}
 
-	for _, p := range nonActionablePatterns {
 		if p.check(nodeSeqs) {
 			return p.pattern, domain.NonActionable
 		}

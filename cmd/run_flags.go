@@ -116,6 +116,12 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 		return dumpTokensOutput(ctx, mergedConfig, os.Stdout)
 	}
 
+	if listPatterns, _ := cmd.Flags().GetBool("list-patterns"); listPatterns {
+		printer.ListActionabilityPatterns(os.Stdout)
+
+		return nil
+	}
+
 	if diffReportPath, _ := cmd.Flags().GetString("diff-report"); diffReportPath != "" {
 		useJSON, _ := cmd.Flags().GetBool("json")
 
@@ -175,11 +181,12 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 	}
 
 	suppression := SuppressionConfig{
-		SuppressTestLow:  mergedConfig.EffectiveSuppressTestLow(),
-		TestThreshold:    mergedConfig.EffectiveTestThreshold(),
-		MinLines:         mergedConfig.MinLines,
-		AcceptDirectives: newAcceptSet(mergedConfig),
-		NoActionability:  mergedConfig.NoActionability,
+		SuppressTestLow:   mergedConfig.EffectiveSuppressTestLow(),
+		TestThreshold:     mergedConfig.EffectiveTestThreshold(),
+		MinLines:          mergedConfig.MinLines,
+		AcceptDirectives:  newAcceptSet(mergedConfig),
+		NoActionability:   mergedConfig.NoActionability,
+		DisabledPatterns:  buildDisabledPatternSet(mergedConfig.DisabledPatterns),
 	}
 
 	err = printDupls(
@@ -206,6 +213,21 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 	}
 
 	return nil
+}
+
+// buildDisabledPatternSet converts a list of pattern label strings to a set
+// for O(1) lookup during actionability evaluation.
+func buildDisabledPatternSet(labels []string) map[printer.PatternLabel]bool {
+	if len(labels) == 0 {
+		return nil
+	}
+
+	set := make(map[printer.PatternLabel]bool, len(labels))
+	for _, label := range labels {
+		set[printer.PatternLabel(label)] = true
+	}
+
+	return set
 }
 
 // openHTMLOutput returns the output writer for the printer. When --html-out is

@@ -55,6 +55,7 @@ func runDiffReport(
 		MinLines:         mergedConfig.MinLines,
 		AcceptDirectives: newAcceptSet(mergedConfig),
 		NoActionability:  mergedConfig.NoActionability,
+		DisabledPatterns: buildDisabledPatternSet(mergedConfig.DisabledPatterns),
 	}
 
 	var currentGroups []domain.ProcessedCloneGroup
@@ -66,7 +67,10 @@ func runDiffReport(
 		}
 
 		if mergedConfig.DetectionMode.IsSemantic() && !suppression.NoActionability {
-			if printer.EvaluateActionability(printer.ToCloneNodeSeqs(uniq)) == domain.NonActionable {
+			result := printer.EvaluateActionabilityWithDisabled(
+				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
+			)
+			if result == domain.NonActionable {
 				continue
 			}
 		}

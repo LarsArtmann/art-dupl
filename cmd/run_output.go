@@ -15,11 +15,12 @@ import (
 // Passing it as a single value avoids 3-parameter function signatures that are
 // prone to argument-swap bugs.
 type SuppressionConfig struct {
-	SuppressTestLow  bool
-	TestThreshold    int
-	MinLines         int
-	AcceptDirectives *AcceptedSet
-	NoActionability  bool
+	SuppressTestLow   bool
+	TestThreshold     int
+	MinLines          int
+	AcceptDirectives  *AcceptedSet
+	NoActionability   bool
+	DisabledPatterns  map[printer.PatternLabel]bool
 }
 
 func printDupls(
@@ -115,7 +116,10 @@ func printCloneGroups(
 		}
 
 		if semantic && !suppression.NoActionability {
-			if printer.EvaluateActionability(printer.ToCloneNodeSeqs(uniq)) == domain.NonActionable {
+			result := printer.EvaluateActionabilityWithDisabled(
+				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
+			)
+			if result == domain.NonActionable {
 				continue
 			}
 		}
