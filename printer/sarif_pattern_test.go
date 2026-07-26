@@ -53,6 +53,7 @@ func TestSARIFOutput_NonActionablePattern(t *testing.T) {
 	}
 
 	result := output.Runs[0].Results[0]
+
 	pattern, ok := result.Properties["non_actionable_pattern"]
 	if !ok {
 		t.Error("SARIF result missing 'non_actionable_pattern' property")

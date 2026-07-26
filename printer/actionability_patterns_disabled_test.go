@@ -21,6 +21,7 @@ func TestAllActionabilityPatterns_ContainsLabels(t *testing.T) {
 	t.Parallel()
 
 	patterns := AllActionabilityPatterns()
+
 	seen := make(map[PatternLabel]bool, len(patterns))
 	for _, p := range patterns {
 		seen[p] = true
@@ -97,6 +98,7 @@ func TestEvaluateActionabilityWithDisabled(t *testing.T) {
 		t.Parallel()
 
 		disabled := map[PatternLabel]bool{PatternGuardClause: true}
+
 		result := EvaluateActionabilityWithDisabled(seqs, disabled)
 		if result != domain.Actionable {
 			t.Errorf("expected Actionable after disabling guard-clause, got %q", result)
@@ -107,6 +109,7 @@ func TestEvaluateActionabilityWithDisabled(t *testing.T) {
 		t.Parallel()
 
 		disabled := map[PatternLabel]bool{PatternRAIIDefer: true}
+
 		result := EvaluateActionabilityWithDisabled(seqs, disabled)
 		if result != domain.NonActionable {
 			t.Errorf("expected NonActionable (guard-clause not disabled), got %q", result)

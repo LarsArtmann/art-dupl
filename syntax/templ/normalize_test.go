@@ -44,7 +44,9 @@ func TestNormalizeExprValue(t *testing.T) {
 			t.Parallel()
 
 			symbols := make(map[string]string)
+
 			result := normalizeExprValue(tc.expr, symbols)
+
 			if result != tc.expected {
 				t.Errorf("normalizeExprValue(%q) = %q, want %q", tc.expr, result, tc.expected)
 			}
