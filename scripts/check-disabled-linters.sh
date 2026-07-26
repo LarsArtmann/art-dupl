@@ -23,11 +23,13 @@ DISABLED_LINTERS="exhaustruct tagliatelle"
 FAILED=0
 
 for linter in $DISABLED_LINTERS; do
-    # Check if the linter appears anywhere in the config file
-    if grep -q "$linter" "$CONFIG"; then
-        echo "FAIL: '$linter' found in $CONFIG" >&2
+    # Check for the linter as an enabled entry ("- lintername") or as a settings key ("lintername:")
+    # Comments mentioning the name are allowed for documentation purposes.
+    if grep -qE "^[[:space:]]*-[[:space:]]+${linter}\b|^[[:space:]]*${linter}:" "$CONFIG"; then
+        echo "FAIL: '${linter}' is enabled or configured in $CONFIG" >&2
         echo "  This linter has been intentionally disabled." >&2
-        echo "  Remove it from both the enable list and exclusion rules." >&2
+        echo "  Remove it from both the enable list and any settings blocks." >&2
+        echo "  (Comments mentioning it are fine — only enable/settings entries trigger this guard.)" >&2
         FAILED=1
     fi
 done

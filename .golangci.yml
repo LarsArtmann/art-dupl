@@ -39,7 +39,8 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exhaustruct
+    # exhaustruct and tagliatelle are INTENTIONALLY DISABLED — see scripts/check-disabled-linters.sh
+    # DO NOT re-enable: exhaustruct is impractical for Go zero-value init; tagliatelle conflicts with mixed JSON conventions (ADR-0016)
     - exptostd
     - fatcontext
     - forbidigo
@@ -106,7 +107,7 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
-    - tagliatelle
+    # tagliatelle intentionally disabled — see comment above and scripts/check-disabled-linters.sh
     - testableexamples
     - testifylint
     - testpackage
@@ -131,9 +132,7 @@ linters:
       max-complexity: 15
     dupl:
       threshold: 100
-    exhaustruct:
-      exclude:
-        - os/exec.Cmd
+    # NOTE: exhaustruct settings block intentionally removed — linter is disabled (see enable list comment)
     funlen:
       lines: 80
       statements: 50
