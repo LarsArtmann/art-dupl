@@ -142,13 +142,28 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 
 	metadata := newReportMetadata(mergedConfig, sortBy)
 
+	out := os.Stdout
+
+	htmlOut, _ := cmd.Flags().GetString("html-out")
+
+	if htmlOut != "" {
+		f, err := os.Create(htmlOut)
+		if err != nil {
+			return duplerrors.Wrap(err, duplerrors.IOError, "creating HTML output file "+htmlOut)
+		}
+
+		defer func() { _ = f.Close() }()
+
+		out = f
+	}
+
 	p := createPrinter(
 		mergedConfig.OutputFormat,
 		mergedConfig.Threshold,
 		mergedConfig.DiffMode,
 		metadata,
 		GetVersion(),
-	)(os.Stdout, os.ReadFile)
+	)(out, os.ReadFile)
 
 	setJSONPrinterFilesCount(p, parseStats.FilesCount)
 
