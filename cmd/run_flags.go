@@ -115,6 +115,12 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 		return dumpTokensOutput(ctx, mergedConfig, os.Stdout)
 	}
 
+	if diffReportPath, _ := cmd.Flags().GetString("diff-report"); diffReportPath != "" {
+		useJSON, _ := cmd.Flags().GetBool("json")
+
+		return runDiffReport(ctx, mergedConfig, sortBy, diffReportPath, useJSON)
+	}
+
 	return runStandardAnalysis(ctx, mergedConfig, sortBy)
 }
 

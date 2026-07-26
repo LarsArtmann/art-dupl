@@ -126,6 +126,9 @@ func AddFlags(rootCmd *cobra.Command) {
 		Bool("no-accept-directives", false, "ignore //art-dupl:accept directives in source code (show all clones)")
 	rootCmd.Flags().
 		Bool("include-ignored", false, "include gitignored files in analysis (default: honor .gitignore)")
+
+	rootCmd.Flags().
+		String("diff-report", "", "compare current scan against a baseline file and show new/suppressed/resolved clones")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*
