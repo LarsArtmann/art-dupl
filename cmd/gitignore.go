@@ -56,6 +56,7 @@ func LoadGitignore(paths []string) *GitignoreMatcher {
 			if _, err := os.Stat(gitignorePath); err == nil {
 				if !seen[dir] {
 					seen[dir] = true
+
 					if pats, err := parseGitignoreFile(gitignorePath); err != nil {
 						fmt.Fprintf(os.Stderr, "warning: %v\n", err)
 					} else if len(pats) > 0 {
@@ -167,7 +168,7 @@ func matchGlob(pattern, name string) bool {
 func parseGitignoreFile(path string) ([]gitignorePattern, error) {
 	f, err := os.Open(filepath.Clean(path))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open gitignore %s: %w", path, err)
 	}
 	defer func() { _ = f.Close() }()
 

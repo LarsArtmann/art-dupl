@@ -184,6 +184,7 @@ func TestParseGitignoreFileScannerError(t *testing.T) {
 	longLine := strings.Repeat("a", maxScannerBufferSize+1)
 
 	content := validPattern + longLine + "\n"
+
 	path := filepath.Join(tmpDir, ".gitignore")
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
