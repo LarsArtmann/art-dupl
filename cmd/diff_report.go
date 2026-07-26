@@ -118,7 +118,6 @@ func collectCurrentGroups(
 }
 
 func outputDiffJSON(report printer.DiffReport) error {
-	//nolint:musttag // DiffReport has json tags; inner types are domain's responsibility
 	data, err := json.Marshal(report, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return fmt.Errorf("marshal diff report: %w", err)
