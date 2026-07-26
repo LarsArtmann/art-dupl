@@ -242,4 +242,34 @@ These severity bucket labels ("small", "medium", "large", "huge") are now duplic
 
 The printer package decoupling sprint executed Phases 1-3 successfully. Two clean leaf packages were extracted (`printer/actionability/` at 1,670 LOC, `printer/stats/` at 1,303 LOC), reducing the root `printer/` from ~6,600 → ~3,830 LOC. All 11 `nix flake checks` passed. The boundaries are enforced by `.go-arch-lint.yml`.
 
-**However**: The daemon re-added the disabled linters to `.golangci.yml` at the end of the session (working tree is dirty), several test helpers were duplicated rather than shared, the plan doc status wasn't updated, and the git history is messy (13 daemon commits). These are all fixable but need immediate attention.
+**However**: The daemon re-added the disabled linters to `.golangci.yml` at the end of the session (working tree was dirty), several test helpers were duplicated rather than shared, the plan doc status wasn't updated, and the git history is messy (13 daemon commits). These are all fixable but need immediate attention.
+
+---
+
+## Appendix — Post-Report Resolution (2026-07-26 ~17:30)
+
+> Non-destructive addendum. The body above is the session-end snapshot; this section records what was fixed afterward and corrects two inaccurate claims.
+
+### Resolved
+
+- **`.golangci.yml` fixed (#1 blocking issue)**: `exhaustruct` + `tagliatelle` removed from the enable list and the `exhaustruct:` settings block deleted. `scripts/check-disabled-linters.sh` passes. The daemon committed this cleanly and did **not** re-add them on this cycle.
+- **Plan doc updated**: `docs/planning/2026-07-26_16-31_PRINTER-PACKAGE-DECOUPLING.md` `Status:` now reads `DONE — executed 2026-07-26`; all 8 success-criteria boxes checked (each verified against the actual tree: actionability imports only `domain`+`syntax/golang`; printer root = 3,830 prod LOC; arch-lint components present).
+- **Dead code removed**: unused `printTestClones` in `printer/common_test.go` (gopls `unusedfunc`, zero call sites in root) and unused `healthLarge`/`healthHuge` constants in `printer/groups_test.go`.
+
+### Corrections to the body above
+
+1. **"All 11 `nix flake checks` passed" is inaccurate.** `flake.nix` defines **10** checks (`format`, `build`, `test`, `race`, `lint`, `fmt`, `disabled-linters`, `self-test`, `sarif-validate`, `bench`). There is **no `arch-lint` check** — go-arch-lint is not wired into CI. The count of 11 double-counted `fmt`/`treefmt` (they are one check: `format`).
+2. **"The boundaries are enforced by `.go-arch-lint.yml`" is only half-true.** The config defines the boundaries correctly, but nothing in CI runs `go-arch-lint`. Enforcement is currently manual only.
+
+### Verified: boundary enforcement works (negative test)
+
+Temporarily adding `import "github.com/LarsArtmann/art-dupl/printer"` to `printer/actionability/clone_classify.go` caused `go-arch-lint check` to report `Component actionability shouldn't depend on .../printer` and exit 1. The leaf constraint is real and catches violations; it just isn't run automatically. Tracked in `TODO_LIST.md` (CI and Infrastructure) — adding the CI check is blocked by 13 pre-existing violations unrelated to the printer split.
+
+### Decision: test-helper duplication accepted as low-harm debt
+
+`mockReadFile`, `testFileContent`, `processTestNodes` are duplicated between `printer/` (root) and `printer/stats/` (2x, below the project's 3x extraction threshold). Extraction to a shared `printer/internal/testutil` was **assessed and declined**: 7 of 9 root test files already import the top-level `internal/testutil`, so a same-named package forces alias collisions; the helpers are trivial, stable stubs whose drift is caught immediately by golden tests. Revisit if Phase 4 (format-printer extraction) multiplies the copies.
+
+### Open questions — status
+
+- **Q1 (squash 13 daemon commits)**: OPEN — branch `fork` is pushed (`up to date` / now ahead); rewriting is a user decision.
+- **Q2/Q3 (move `StatsView`/health constants to `domain`)**: DECLINED — current structure is correct; the stats→root import is the intended direction (stats implements a root interface). Not worth the churn for a non-problem.

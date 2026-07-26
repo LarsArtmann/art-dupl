@@ -33,6 +33,7 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 ### CI and Infrastructure
 
 - [ ] **Local pre-commit git hook**: The auto-commit daemon re-adds `exhaustruct`/`tagliatelle` periodically. The GitHub workflow (`.github/workflows/lint-config-guard.yml`) only runs on push/PR, not on local daemon commits. A `.git/hooks/pre-commit` hook or a `.pre-commit-config.yaml` would stop the regression at commit time locally. The `disabled-linters` Nix check catches it in `nix flake check`, but the daemon bypasses CI.
+- [ ] **Wire `go-arch-lint` into `nix flake check`**: `.go-arch-lint.yml` defines the `actionability`/`stats` printer sub-package boundaries (verified enforceable via negative test), but **no Nix check actually runs `go-arch-lint`** — the boundaries are config-only, not CI-enforced. Standalone `go-arch-lint check` exits 1 due to **13 pre-existing violations** unrelated to the printer split (missing `baseline` component; undeclared deps: `cli-commands`→`baseline`/`testutil`/`syntax-golang`, `sdk`→`syntax-golang`, `printer`→`baseline`, `syntax-golang`→`domain`). Adding the CI check requires either fixing these config gaps (mostly legitimate couplings to add to `mayDependOn`) or refactoring the one smell (`cmd/run_all_modes.go` prod file imports `internal/testutil`).
 
 ---
 
