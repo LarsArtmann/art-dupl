@@ -93,7 +93,8 @@ func PrintDiffText(w io.Writer, report DiffReport) error {
 				shortHash = shortHash[:12]
 			}
 
-			if _, err := fmt.Fprintf(w,
+			if _, err := fmt.Fprintf(
+				w,
 				"  [%s] %d clones, %d tokens\n",
 				shortHash, len(group.Clones), group.TokenCount,
 			); err != nil {
@@ -101,7 +102,8 @@ func PrintDiffText(w io.Writer, report DiffReport) error {
 			}
 
 			for _, clone := range group.Clones {
-				if _, err := fmt.Fprintf(w,
+				if _, err := fmt.Fprintf(
+					w,
 					"    %s:%d-%d\n",
 					clone.Filename, clone.LineStart, clone.LineEnd,
 				); err != nil {
@@ -122,7 +124,8 @@ func PrintDiffText(w io.Writer, report DiffReport) error {
 				shortHash = shortHash[:12]
 			}
 
-			if _, err := fmt.Fprintf(w,
+			if _, err := fmt.Fprintf(
+				w,
 				"  [%s] %d tokens, was in: %v\n",
 				shortHash, rc.Tokens, rc.Files,
 			); err != nil {
