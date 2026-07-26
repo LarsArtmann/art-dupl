@@ -102,6 +102,7 @@ func writeDiffSummary(w io.Writer, report DiffReport) error {
 }
 
 func writeNewClonesSection(w io.Writer, groups []domain.ProcessedCloneGroup) error {
+	//art-dupl:accept shared guard-clause + section-header boilerplate with writeResolvedSection
 	if len(groups) == 0 {
 		return nil
 	}
@@ -111,7 +112,8 @@ func writeNewClonesSection(w io.Writer, groups []domain.ProcessedCloneGroup) err
 	}
 
 	for _, group := range groups {
-		if err := writeHashEntry(w, group.Hash,
+		if err := writeHashEntry(
+			w, group.Hash,
 			"  [%s] %d clones, %d tokens\n",
 			len(group.Clones), group.TokenCount,
 		); err != nil {
@@ -141,7 +143,8 @@ func writeResolvedSection(w io.Writer, resolved []ResolvedClone) error {
 	}
 
 	for _, rc := range resolved {
-		if err := writeHashEntry(w, rc.Hash,
+		if err := writeHashEntry(
+			w, rc.Hash,
 			"  [%s] %d tokens, was in: %v\n",
 			rc.Tokens, rc.Files,
 		); err != nil {
