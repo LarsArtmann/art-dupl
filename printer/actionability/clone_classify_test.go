@@ -305,4 +305,3 @@ func TestClonePriorityAccessors(t *testing.T) {
 		testClonePriority(t, tt.name, tt.getValue, tt.expected)
 	}
 }
-

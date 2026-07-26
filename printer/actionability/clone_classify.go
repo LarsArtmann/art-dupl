@@ -186,8 +186,14 @@ func getSuggestion(category domain.CloneCategory, isTest bool, tokens int) strin
 	case domain.CategoryConditional:
 		return suggestStrategy
 	case domain.CategoryTest,
+		domain.CategoryTestBoilerplate,
+		domain.CategoryTestFixture,
 		domain.CategoryAssignment,
 		domain.CategoryExpression,
+		domain.CategoryBlock,
+		domain.CategoryCall,
+		domain.CategoryReturn,
+		domain.CategoryDefer,
 		domain.CategoryUnknown:
 		return suggestReviewExtract
 	default:
