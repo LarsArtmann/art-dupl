@@ -9,18 +9,30 @@ import (
 	"github.com/LarsArtmann/art-dupl/config"
 )
 
+// Threshold recommendation boundaries based on codebase size.
+const (
+	smallCodebaseFiles  = 100  // <100 files → threshold 3
+	mediumCodebaseFiles = 1000 // 100-1000 → threshold 5
+	largeCodebaseFiles  = 5000 // 1000-5000 → threshold 7
+
+	smallCodebaseThreshold  = 3
+	mediumCodebaseThreshold = 5
+	largeCodebaseThreshold  = 7
+	hugeCodebaseThreshold   = 10
+)
+
 // RecommendThreshold suggests a threshold based on codebase size.
-// Heuristic: <100 files → 3, 100–1000 → 5, 1000–5000 → 7, >5000 → 10.
+// Heuristic: <100 files -> 3, 100-1000 -> 5, 1000-5000 -> 7, >5000 -> 10.
 func RecommendThreshold(fileCount int) int {
 	switch {
-	case fileCount < 100:
-		return 3
-	case fileCount < 1000:
-		return 5
-	case fileCount < 5000:
-		return 7
+	case fileCount < smallCodebaseFiles:
+		return smallCodebaseThreshold
+	case fileCount < mediumCodebaseFiles:
+		return mediumCodebaseThreshold
+	case fileCount < largeCodebaseFiles:
+		return largeCodebaseThreshold
 	default:
-		return 10
+		return hugeCodebaseThreshold
 	}
 }
 
@@ -43,9 +55,9 @@ func runRecommendThreshold(ctx context.Context, cfg *config.Config) error {
 			continue
 		}
 
-		err = filepath.WalkDir(path, func(p string, d os.DirEntry, err error) error {
+		_ = filepath.WalkDir(path, func(p string, d os.DirEntry, err error) error {
 			if err != nil {
-				return nil
+				return nil //nolint:nilerr // skip unreadable entries, don't abort the walk
 			}
 
 			if ctx.Err() != nil {
@@ -58,33 +70,32 @@ func runRecommendThreshold(ctx context.Context, cfg *config.Config) error {
 
 			return nil
 		})
-		if err != nil && ctx.Err() == nil {
-			continue
+
+		if ctx.Err() != nil {
+			return ctx.Err()
 		}
 	}
 
 	recommended := RecommendThreshold(fileCount)
 
-	fmt.Fprintf(os.Stdout,
-		"Codebase: %d Go files\n", fileCount)
-	fmt.Fprintf(os.Stdout,
-		"Recommended threshold: %d\n", recommended)
-	fmt.Fprintf(os.Stdout,
-		"  art-dupl -t %d .\n", recommended)
+	output := fmt.Sprintf(
+		"Codebase: %d Go files\nRecommended threshold: %d\n  art-dupl -t %d .\n",
+		fileCount, recommended, recommended,
+	)
 
-	if fileCount < 100 {
-		fmt.Fprintln(os.Stdout,
-			"  (small codebase: lower threshold catches more clones)")
-	} else if fileCount >= 5000 {
-		fmt.Fprintln(os.Stdout,
-			"  (large codebase: higher threshold reduces noise)")
+	if fileCount < smallCodebaseFiles {
+		output += "  (small codebase: lower threshold catches more clones)\n"
+	} else if fileCount >= largeCodebaseFiles {
+		output += "  (large codebase: higher threshold reduces noise)\n"
+	}
+
+	if _, err := os.Stdout.WriteString(output); err != nil {
+		return fmt.Errorf("write threshold recommendation: %w", err)
 	}
 
 	return nil
 }
 
 func isGoFile(path string) bool {
-	ext := filepath.Ext(path)
-
-	return ext == ".go"
+	return filepath.Ext(path) == ".go"
 }
