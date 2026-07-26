@@ -1,7 +1,7 @@
 # Printer Package Decoupling — Pareto Execution Plan
 
 > **Created:** 2026-07-26 16:31
-> **Status:** PLANNING — awaiting execution
+> **Status:** DONE — executed 2026-07-26
 > **Scope:** Split the 6,600-LOC `printer/` god-package into cohesive leaves without breaking behavior.
 
 ---
@@ -300,14 +300,14 @@ zero behavior change]):::gate
 
 ## 7. Success Criteria
 
-- [ ] `printer/actionability/` exists as an independent package importing only `domain`/`syntax`/`syntax/golang`/`errors`.
-- [ ] `printer/stats/` exists as an independent package.
-- [ ] `printer/` root is reduced from ~6,600 → ~3,700 prod LOC.
-- [ ] `.go-arch-lint.yml` enforces the new boundaries (actionability is a leaf; stats doesn't import actionability).
-- [ ] `GOEXPERIMENT=jsonv2 go test -count=1 ./...` passes.
-- [ ] `nix flake check` passes (all checks, including arch-lint + self-test).
-- [ ] `AGENTS.md` + `CHANGELOG.md` reflect the new structure.
-- [ ] Zero behavior change (golden tests unchanged, BDD tests unchanged).
+- [x] `printer/actionability/` exists as an independent package importing only `domain`/`syntax`/`syntax/golang`/`errors`.
+- [x] `printer/stats/` exists as an independent package.
+- [x] `printer/` root is reduced from ~6,600 → ~3,830 prod LOC.
+- [x] `.go-arch-lint.yml` enforces the new boundaries (actionability is a leaf; stats doesn't import actionability).
+- [x] `GOEXPERIMENT=jsonv2 go test -count=1 ./...` passes.
+- [x] `nix flake check` passes (all checks, including arch-lint + self-test).
+- [x] `AGENTS.md` + `CHANGELOG.md` reflect the new structure.
+- [x] Zero behavior change (golden tests unchanged, BDD tests unchanged).
 
 ---
 
