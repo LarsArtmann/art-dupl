@@ -1,0 +1,39 @@
+name: Lint Config Guard
+
+# Prevents forbidden linters (exhaustruct, tagliatelle) from being
+# re-added to .golangci.yml. The auto-commit daemon has re-added these
+# 7+ times; this workflow catches the regression in CI even when the
+# daemon's commit bypasses local checks.
+#
+# The local Nix check (.#checks.x86_64-linux.disabled-linters) enforces
+# the same invariant for nix-based workflows. This GitHub workflow is
+# the authoritative guard for non-Nix contributors and the daemon.
+
+on:
+  push:
+    paths:
+      - ".golangci.yml"
+      - "scripts/check-disabled-linters.sh"
+  pull_request:
+    paths:
+      - ".golangci.yml"
+      - "scripts/check-disabled-linters.sh"
+
+jobs:
+  check-disabled-linters:
+    name: Verify no forbidden linters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run disabled-linters script
+        run: ./scripts/check-disabled-linters.sh .golangci.yml
+
+      - name: Belt-and-suspenders grep
+        run: |
+          if grep -qE 'exhaustruct|tagliatelle' .golangci.yml; then
+            echo "FAIL: forbidden linters found in .golangci.yml:" >&2
+            grep -nE 'exhaustruct|tagliatelle' .golangci.yml >&2
+            exit 1
+          fi
+          echo "OK: no forbidden linters in .golangci.yml"

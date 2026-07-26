@@ -205,23 +205,28 @@
               touch $out
             '';
 
-            self-test = pkgs.runCommand "art-dupl-self-test"
-              {
-                nativeBuildInputs = [ config.packages.default pkgs.templ goPkg ];
-                GOEXPERIMENT = "jsonv2";
-              }
-              ''
-                cp -r --no-preserve=mode ${pkgs.lib.cleanSource ./.}/* .
-                templ generate
-                output=$(art-dupl -t 1 --plumbing . 2>/dev/null) || true
-                if [ -n "$output" ]; then
-                  echo "FAIL: art-dupl detected duplication in its own source at threshold 1:" >&2
-                  echo "$output" >&2
-                  exit 1
-                fi
-                echo "OK: art-dupl self-scan emits 0 lines at threshold 1"
-                touch $out
-              '';
+            self-test =
+              pkgs.runCommand "art-dupl-self-test"
+                {
+                  nativeBuildInputs = [
+                    config.packages.default
+                    pkgs.templ
+                    goPkg
+                  ];
+                  GOEXPERIMENT = "jsonv2";
+                }
+                ''
+                  cp -r --no-preserve=mode ${pkgs.lib.cleanSource ./.}/* .
+                  templ generate
+                  output=$(art-dupl -t 1 --plumbing . 2>/dev/null) || true
+                  if [ -n "$output" ]; then
+                    echo "FAIL: art-dupl detected duplication in its own source at threshold 1:" >&2
+                    echo "$output" >&2
+                    exit 1
+                  fi
+                  echo "OK: art-dupl self-scan emits 0 lines at threshold 1"
+                  touch $out
+                '';
 
             bench = config.packages.default.overrideAttrs (old: {
               name = "${old.pname}-bench";
