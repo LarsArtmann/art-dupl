@@ -90,6 +90,7 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 			case "vendor", ".git", "node_modules", "tmp":
 				return filepath.SkipDir
 			}
+
 			return nil
 		}
 
@@ -103,6 +104,7 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 		}
 
 		fset := token.NewFileSet()
+
 		file, parseErr := parser.ParseFile(fset, path, nil, 0)
 		if parseErr != nil {
 			return nil // skip unparseable files
@@ -155,7 +157,6 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 
 		return nil
 	})
-
 	if walkErr != nil {
 		t.Fatalf("filepath.WalkDir failed: %v", walkErr)
 	}
