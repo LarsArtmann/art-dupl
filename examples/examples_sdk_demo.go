@@ -179,7 +179,7 @@ func streamingExample() {
 func configExample() {
 	// Create detector with custom configuration
 	opts := &artdupl.Options{
-		Threshold:        15,
+		Threshold:        artdupl.DefaultThreshold,
 		DetectionMethods: []artdupl.DetectionMethod{artdupl.MethodArtDupl},
 		IncludeFragments: true,
 		MaxFileSize:      1024 * 1024, // 1MB
