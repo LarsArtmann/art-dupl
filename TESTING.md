@@ -114,3 +114,13 @@ go test ./cmd/... ./bdd/...                 # Integration tests only
 golangci-lint run --timeout 5m ./...        # Lint
 nix flake check                             # Full CI (format + lint + test)
 ```
+
+## Self-Test Gate
+
+The `self-test` Nix check enforces the **zero-duplication invariant**: art-dupl must detect zero clones in its own source at threshold 1.
+
+```bash
+nix build .#checks.x86_64-linux.self-test
+```
+
+This builds art-dupl, runs `art-dupl -t 1 --plumbing .` on the full source tree, and fails if any output is produced. The invariant means: **art-dupl must never ship with duplication that it itself can detect**. If this check fails, either fix the duplication or lower the detection sensitivity (but prefer fixing the duplication).
