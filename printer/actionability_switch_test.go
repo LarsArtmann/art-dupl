@@ -1,6 +1,9 @@
 package printer
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 func TestIsLoggingMethod(t *testing.T) {
 	t.Parallel()
@@ -126,9 +129,9 @@ func TestIsTestingVarName(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := isTestingVarName(tc.input)
+			result := slices.Contains(testingVarNames, tc.input)
 			if result != tc.expected {
-				t.Errorf("isTestingVarName(%q) = %v, want %v", tc.input, result, tc.expected)
+				t.Errorf("slices.Contains(testingVarNames, %q) = %v, want %v", tc.input, result, tc.expected)
 			}
 		})
 	}
