@@ -66,73 +66,16 @@ func (d DiffReport) HasChanges() bool {
 
 // PrintDiffText writes a human-readable diff summary to the writer.
 func PrintDiffText(w io.Writer, report DiffReport) error {
-	if _, err := fmt.Fprintf(w, "Clone Diff Report\n"); err != nil {
+	if err := writeDiffSummary(w, report); err != nil {
 		return err
 	}
 
-	if _, err := fmt.Fprintf(w, "  New clones:      %d\n", len(report.New)); err != nil {
+	if err := writeNewClonesSection(w, report.New); err != nil {
 		return err
 	}
 
-	if _, err := fmt.Fprintf(w,
-		"  Suppressed:      %d (previously accepted)\n", len(report.Suppressed)); err != nil {
+	if err := writeResolvedSection(w, report.Resolved); err != nil {
 		return err
-	}
-
-	if _, err := fmt.Fprintf(w, "  Resolved:        %d\n", len(report.Resolved)); err != nil {
-		return err
-	}
-
-	if len(report.New) > 0 {
-		if _, err := fmt.Fprintln(w, "\n--- New Clones ---"); err != nil {
-			return err
-		}
-
-		for _, group := range report.New {
-			shortHash := group.Hash
-			if len(shortHash) > 12 {
-				shortHash = shortHash[:12]
-			}
-
-			if _, err := fmt.Fprintf(
-				w,
-				"  [%s] %d clones, %d tokens\n",
-				shortHash, len(group.Clones), group.TokenCount,
-			); err != nil {
-				return err
-			}
-
-			for _, clone := range group.Clones {
-				if _, err := fmt.Fprintf(
-					w,
-					"    %s:%d-%d\n",
-					clone.Filename, clone.LineStart, clone.LineEnd,
-				); err != nil {
-					return err
-				}
-			}
-		}
-	}
-
-	if len(report.Resolved) > 0 {
-		if _, err := fmt.Fprintln(w, "\n--- Resolved Clones ---"); err != nil {
-			return err
-		}
-
-		for _, rc := range report.Resolved {
-			shortHash := rc.Hash
-			if len(shortHash) > 12 {
-				shortHash = shortHash[:12]
-			}
-
-			if _, err := fmt.Fprintf(
-				w,
-				"  [%s] %d tokens, was in: %v\n",
-				shortHash, rc.Tokens, rc.Files,
-			); err != nil {
-				return err
-			}
-		}
 	}
 
 	if !report.HasChanges() {
@@ -143,4 +86,80 @@ func PrintDiffText(w io.Writer, report DiffReport) error {
 	}
 
 	return nil
+}
+
+func writeDiffSummary(w io.Writer, report DiffReport) error {
+	lines := []string{
+		"Clone Diff Report",
+		fmt.Sprintf("  New clones:      %d", len(report.New)),
+		fmt.Sprintf("  Suppressed:      %d (previously accepted)", len(report.Suppressed)),
+		fmt.Sprintf("  Resolved:        %d", len(report.Resolved)),
+	}
+
+	_, err := fmt.Fprintln(w, strings.Join(lines, "\n"))
+
+	return err
+}
+
+func writeNewClonesSection(w io.Writer, groups []domain.ProcessedCloneGroup) error {
+	if len(groups) == 0 {
+		return nil
+	}
+
+	if _, err := fmt.Fprintln(w, "\n--- New Clones ---"); err != nil {
+		return err
+	}
+
+	for _, group := range groups {
+		shortHash := truncHash(group.Hash)
+
+		if _, err := fmt.Fprintf(
+			w, "  [%s] %d clones, %d tokens\n",
+			shortHash, len(group.Clones), group.TokenCount,
+		); err != nil {
+			return err
+		}
+
+		for _, clone := range group.Clones {
+			if _, err := fmt.Fprintf(
+				w, "    %s:%d-%d\n",
+				clone.Filename, clone.LineStart, clone.LineEnd,
+			); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func writeResolvedSection(w io.Writer, resolved []ResolvedClone) error {
+	if len(resolved) == 0 {
+		return nil
+	}
+
+	if _, err := fmt.Fprintln(w, "\n--- Resolved Clones ---"); err != nil {
+		return err
+	}
+
+	for _, rc := range resolved {
+		shortHash := truncHash(rc.Hash)
+
+		if _, err := fmt.Fprintf(
+			w, "  [%s] %d tokens, was in: %v\n",
+			shortHash, rc.Tokens, rc.Files,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func truncHash(hash string) string {
+	if len(hash) > 12 {
+		return hash[:12]
+	}
+
+	return hash
 }
