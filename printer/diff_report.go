@@ -111,11 +111,9 @@ func writeNewClonesSection(w io.Writer, groups []domain.ProcessedCloneGroup) err
 	}
 
 	for _, group := range groups {
-		shortHash := truncHash(group.Hash)
-
-		if _, err := fmt.Fprintf(
-			w, "  [%s] %d clones, %d tokens\n",
-			shortHash, len(group.Clones), group.TokenCount,
+		if err := writeHashEntry(w, group.Hash,
+			"  [%s] %d clones, %d tokens\n",
+			len(group.Clones), group.TokenCount,
 		); err != nil {
 			return err
 		}
@@ -143,14 +141,23 @@ func writeResolvedSection(w io.Writer, resolved []ResolvedClone) error {
 	}
 
 	for _, rc := range resolved {
-		shortHash := truncHash(rc.Hash)
-
-		if _, err := fmt.Fprintf(
-			w, "  [%s] %d tokens, was in: %v\n",
-			shortHash, rc.Tokens, rc.Files,
+		if err := writeHashEntry(w, rc.Hash,
+			"  [%s] %d tokens, was in: %v\n",
+			rc.Tokens, rc.Files,
 		); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func writeHashEntry(w io.Writer, hash string, format string, args ...any) error {
+	short := truncHash(hash)
+	all := append([]any{short}, args...)
+
+	if _, err := fmt.Fprintf(w, format, all...); err != nil {
+		return fmt.Errorf("write hash entry: %w", err)
 	}
 
 	return nil
