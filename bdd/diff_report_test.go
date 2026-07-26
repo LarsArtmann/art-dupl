@@ -39,7 +39,7 @@ func processValue(x int) int {
 				Expect(err).NotTo(HaveOccurred())
 
 				By("recording the baseline")
-				_, err = setup.RunArtDupl("baseline", ".", "-t", "1")
+				_, err = setup.Executor("baseline", setup.TmpDir, "-t", "1", "--baseline-path", filepath.Join(setup.TmpDir, ".art-dupl-baseline.json"))
 				Expect(err).NotTo(HaveOccurred())
 
 				By("adding new duplicate files")
@@ -97,7 +97,7 @@ func removeFunc(x int) int {
 				Expect(err).NotTo(HaveOccurred())
 
 				By("recording the baseline")
-				_, err = setup.RunArtDupl("baseline", ".", "-t", "1")
+				_, err = setup.Executor("baseline", setup.TmpDir, "-t", "1", "--baseline-path", filepath.Join(setup.TmpDir, ".art-dupl-baseline.json"))
 				Expect(err).NotTo(HaveOccurred())
 
 				By("removing the second set of files")
@@ -130,7 +130,7 @@ func baseMethod(x int) int {
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				_, err = setup.RunArtDupl("baseline", ".", "-t", "1")
+				_, err = setup.Executor("baseline", setup.TmpDir, "-t", "1", "--baseline-path", filepath.Join(setup.TmpDir, ".art-dupl-baseline.json"))
 				Expect(err).NotTo(HaveOccurred())
 
 				By("adding a new clone")

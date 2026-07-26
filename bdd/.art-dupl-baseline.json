@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "threshold": 1,
+  "recordedAt": "2026-07-26T05:28:43.286132176Z",
+  "entries": [
+    {
+      "hash": "87b8e8b805ff9e8f",
+      "files": [
+        "/tmp/art-dupl-bdd-2478423689/original2.go",
+        "/tmp/art-dupl-bdd-2478423689/original1.go"
+      ],
+      "tokens": 8
+    }
+  ]
+}
