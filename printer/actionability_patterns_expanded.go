@@ -37,8 +37,9 @@ func isAssertionDominatedSeq(seq []*domain.CloneNode) bool {
 	assertionCount := 0
 
 	for _, node := range seq {
-		if node.BaseType == golang.CallExpr {
-			if hasAssertionTarget(node) {
+		callNode := unwrapExprStmt(node)
+		if callNode.BaseType == golang.CallExpr {
+			if hasAssertionTarget(callNode) {
 				assertionCount++
 			}
 		}

@@ -80,15 +80,16 @@ func containsCallTo(seq []*domain.CloneNode, names ...string) bool {
 	}
 
 	for _, node := range seq {
-		if node.BaseType != golang.CallExpr {
+		callNode := unwrapExprStmt(node)
+		if callNode.BaseType != golang.CallExpr {
 			continue
 		}
 
-		if node.Name != "" && nameSet[node.Name] {
+		if callNode.Name != "" && nameSet[callNode.Name] {
 			return true
 		}
 
-		for _, child := range node.Children {
+		for _, child := range callNode.Children {
 			if child.Name != "" && nameSet[child.Name] {
 				return true
 			}

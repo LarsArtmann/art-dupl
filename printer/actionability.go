@@ -74,6 +74,20 @@ func everySequenceMatch(
 	return true
 }
 
+// unwrapExprStmt returns the inner CallExpr if n is an ExprStmt wrapping
+// exactly one CallExpr. Otherwise returns n unchanged. This handles the Go
+// AST convention where standalone function calls as statements are wrapped
+// in ExprStmt nodes. Patterns that match CallExpr nodes must unwrap first
+// to avoid missing statement-position calls.
+func unwrapExprStmt(n *domain.CloneNode) *domain.CloneNode {
+	if n.BaseType == golang.ExprStmt && len(n.Children) == 1 &&
+		n.Children[0].BaseType == golang.CallExpr {
+		return n.Children[0]
+	}
+
+	return n
+}
+
 // EvaluateActionability analyzes a clone group and determines whether it
 // represents actionable duplication or idiomatic boilerplate noise.
 //
