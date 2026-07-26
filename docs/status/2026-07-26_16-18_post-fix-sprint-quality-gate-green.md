@@ -75,6 +75,7 @@ The previous session committed 17 tasks (T01-T17) but left the quality gate RED 
 ### Templ expression normalization
 
 The `normalizeExprValue` function exists and is wired into `transform_components.go:67`, but:
+
 - The LSP reports the functions as "unused" (stale diagnostic — they ARE used)
 - The normalization only covers lowercase-initial identifiers before dots (`user.Name` → `v0.Name`)
 - It does NOT cover standalone identifiers in function call arguments (`Component(user, group)` where only `user` and `group` differ)
@@ -83,18 +84,21 @@ The `normalizeExprValue` function exists and is wired into `transform_components
 ### SARIF `non_actionable_pattern`
 
 The field is added to the `Properties` map and unit-tested, but:
+
 - No BDD/integration test verifies it end-to-end through the CLI (`art-dupl --sarif` on real code → SARIF file → parse → assert field exists)
 - The field is only populated when `cl.Classification.NonActionablePattern != ""`, but there's no test verifying that the classification pipeline actually SETS this field for real boilerplate clones
 
 ### `--disable-pattern` flag
 
 The flag works at the evaluation level (`EvaluateActionabilityWithDisabled`), but:
+
 - No integration test verifies the CLI flag end-to-end (run `art-dupl --disable-pattern guard-clause` → verify previously-suppressed clones now appear)
 - No validation of label names at startup — a typo like `--disable-pattern guard-clouse` silently does nothing
 
 ### `--recommend-threshold` flag
 
 The heuristic function is tested, but:
+
 - The CLI handler (`runRecommendThreshold`) is not tested (it walks the filesystem)
 - The output format is not tested
 

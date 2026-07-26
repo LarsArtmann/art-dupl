@@ -15,7 +15,7 @@ This file is OPEN work only — no completed, rejected, or resolved items.
 
 ### Code Quality
 
-- [ ] **Split `printer/` into sub-packages**: ~29 source files / ~3500+ lines. Blocked by circular dep: core `printer.go` references `StatsPrinter`. Clean split requires moving `Printer`/`ReadFile`/`StatsPrinter` interfaces to a separate base package.
+- [ ] **Extract format printers into sub-packages (Phase 4)**: text/json/html/sarif/plumbing → `printer/text/`, `printer/json/`, etc. Deferred from the Phase 1-3 printer decoupling sprint. Higher churn (every format touches `clone_processor`/`sorter`/`toJSONClone`). Evaluate only if root `printer/` still feels large after the `actionability/` and `stats/` extractions or when adding new output formats. See `docs/planning/2026-07-26_16-31_PRINTER-PACKAGE-DECOUPLING.md`.
 
 ---
 
