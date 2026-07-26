@@ -10,12 +10,10 @@ import (
 )
 
 // ResolvedClone represents a clone group that existed in the baseline
-// but is no longer detected in the current scan.
-type ResolvedClone struct {
-	Hash   string   `json:"hash"`
-	Files  []string `json:"files"`
-	Tokens int      `json:"tokens"`
-}
+// but is no longer detected in the current scan. It is a type alias for
+// baseline.Entry so the diff report and the baseline format share a single
+// shape, eliminating the duplicated struct definition.
+type ResolvedClone = baseline.Entry
 
 // DiffReport partitions clone groups relative to a baseline file.
 type DiffReport struct {
@@ -48,11 +46,7 @@ func NewDiffReport(
 
 	for _, entry := range bf.Entries {
 		if !currentHashes[entry.Hash] {
-			report.Resolved = append(report.Resolved, ResolvedClone{
-				Hash:   entry.Hash,
-				Files:  entry.Files,
-				Tokens: entry.Tokens,
-			})
+			report.Resolved = append(report.Resolved, entry)
 		}
 	}
 
