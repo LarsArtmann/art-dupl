@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,7 +56,9 @@ func LoadGitignore(paths []string) *GitignoreMatcher {
 			if _, err := os.Stat(gitignorePath); err == nil {
 				if !seen[dir] {
 					seen[dir] = true
-					if pats := parseGitignoreFile(gitignorePath); len(pats) > 0 {
+					if pats, err := parseGitignoreFile(gitignorePath); err != nil {
+						fmt.Fprintf(os.Stderr, "warning: %v\n", err)
+					} else if len(pats) > 0 {
 						rules = append(rules, gitignoreRule{baseDir: dir, patterns: pats})
 					}
 				}
@@ -161,10 +164,10 @@ func matchGlob(pattern, name string) bool {
 }
 
 // parseGitignoreFile reads a .gitignore file and returns its patterns.
-func parseGitignoreFile(path string) []gitignorePattern {
+func parseGitignoreFile(path string) ([]gitignorePattern, error) {
 	f, err := os.Open(filepath.Clean(path))
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer func() { _ = f.Close() }()
 
@@ -203,5 +206,9 @@ func parseGitignoreFile(path string) []gitignorePattern {
 		patterns = append(patterns, pat)
 	}
 
-	return patterns
+	if err := scanner.Err(); err != nil {
+		return patterns, fmt.Errorf("parse gitignore %s: %w", path, err)
+	}
+
+	return patterns, nil
 }
