@@ -69,7 +69,7 @@ templ suggestionBlock(data CloneGroupView) {
 }
 
 templ cloneGroupFull(data CloneGroupView) {
-	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+	<div class="clone-group" id={ "group-" + data.Hash } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		@cloneHeader(data)
 		<div class="clone-body">
 			@suggestionBlock(data)
@@ -81,7 +81,7 @@ templ cloneGroupFull(data CloneGroupView) {
 }
 
 templ cloneGroupDiffFull(data CloneGroupView, diffData DiffView) {
-	<div class="clone-group" data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
+	<div class="clone-group" id={ "group-" + data.Hash } data-category={ string(data.Category) } data-priority={ string(data.Priority) } data-test={ strconv.FormatBool(data.HasTest) }>
 		@cloneHeader(data)
 		<div class="clone-body">
 			@suggestionBlock(data)

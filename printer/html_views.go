@@ -18,6 +18,7 @@ type CloneOccurrenceView struct {
 
 type CloneGroupView struct {
 	GroupNum    int
+	Hash        string
 	Category    CloneCategory
 	Priority    ClonePriority
 	HasTest     bool
@@ -61,6 +62,7 @@ func toCloneOccurrenceView(cl domain.ProcessedClone) CloneOccurrenceView {
 
 func toCloneGroupView(
 	groupNum int,
+	hash string,
 	clones []domain.ProcessedClone,
 ) CloneGroupView {
 	occurrences := len(clones)
@@ -117,6 +119,7 @@ func toCloneGroupView(
 
 	return CloneGroupView{
 		GroupNum:    groupNum,
+		Hash:        hash,
 		Category:    primaryCategory,
 		Priority:    highestPriority,
 		HasTest:     hasTest,

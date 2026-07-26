@@ -133,7 +133,7 @@ func (p *htmlprinter) PrintClones(
 	}
 
 	sort.Sort(byNameAndLineProcessed(clones))
-	viewData := toCloneGroupView(p.iota, clones)
+	viewData := toCloneGroupView(p.iota, group.Hash, clones)
 
 	ctx := context.Background()
 

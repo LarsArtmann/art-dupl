@@ -129,6 +129,9 @@ func AddFlags(rootCmd *cobra.Command) {
 
 	rootCmd.Flags().
 		String("diff-report", "", "compare current scan against a baseline file and show new/suppressed/resolved clones")
+
+	rootCmd.Flags().
+		String("html-out", "", "write HTML report to a file instead of stdout (use with --html)")
 }
 
 // addDeprecatedIncludeGeneratedFlags registers the old per-generator --include-*

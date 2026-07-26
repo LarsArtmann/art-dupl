@@ -121,11 +121,11 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 		return runDiffReport(ctx, mergedConfig, sortBy, diffReportPath, useJSON)
 	}
 
-	return runStandardAnalysis(ctx, mergedConfig, sortBy)
+	return runStandardAnalysis(ctx, cmd, mergedConfig, sortBy)
 }
 
 // runStandardAnalysis runs the default clone-detection pipeline and prints results.
-func runStandardAnalysis(ctx context.Context, mergedConfig *config.Config, sortBy string) error {
+func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *config.Config, sortBy string) error {
 	duplChan, parseStats, _, err := executeAnalysis(
 		ctx,
 		mergedConfig,
