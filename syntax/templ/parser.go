@@ -53,7 +53,7 @@ func ParseBytesWithMode(filename string, content []byte, semantic bool) (*syntax
 		filename:   syntax.InternFilename(filename),
 		contentLen: len(content),
 		semantic:   semantic,
-		symbols:     make(map[string]string),
+		symbols:    make(map[string]string),
 	}
 
 	node := t.transformTemplateFile(tf)

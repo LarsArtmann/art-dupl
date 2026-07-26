@@ -3,13 +3,10 @@ package templ
 import (
 	"fmt"
 	"regexp"
-	"strings"
 )
 
 // identifierBeforeDot matches a lowercase-initial identifier followed by a dot,
 // indicating field/method access on a local variable (e.g., `user.Name`).
-// Package qualifiers like `fmt.Sprintf` also match, but this is acceptable
-// because the normalization is consistent within a single template.
 var identifierBeforeDot = regexp.MustCompile(`\b([a-z][a-zA-Z0-9]*)\.`)
 
 // normalizeExprValue canonicalizes local variable identifiers in a templ
@@ -43,10 +40,8 @@ func normalizeExprValue(expr string, symbols map[string]string) string {
 	})
 }
 
-// reservedGoWords are Go keywords/builtins that should not be normalized
-// even if they appear before a dot (e.g., `len(x)` doesn't have a dot,
-// but `copy(dst, src)` could theoretically match).
-var reservedGoWords = map[string]bool{
+// reservedGoWords are Go builtins that should not be normalized.
+var reservedGoWords = map[string]bool{ //nolint:gochecknoglobals // static lookup table
 	"len": true, "cap": true, "copy": true, "new": true, "make": true,
 	"append": true, "delete": true, "panic": true, "print": true,
 	"println": true, "complex": true, "real": true, "imag": true,
@@ -55,14 +50,4 @@ var reservedGoWords = map[string]bool{
 
 func isReservedWord(name string) bool {
 	return reservedGoWords[name]
-}
-
-// extractCalleeNameNormalized extracts the callee name and normalizes the
-// expression arguments for semantic comparison. Returns the callee name
-// (unchanged) and the normalized full expression.
-func extractCalleeNameNormalized(expr string, symbols map[string]string) (callee, normalized string) {
-	normalized = normalizeExprValue(strings.TrimSpace(expr), symbols)
-	callee = extractCalleeName(normalized)
-
-	return callee, normalized
 }
