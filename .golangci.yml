@@ -39,7 +39,6 @@ linters:
         - errname
         - errorlint
         - exhaustive
-        - exhaustruct
         - exptostd
         - fatcontext
         - forbidigo
@@ -106,7 +105,6 @@ linters:
         - sqlclosecheck
         - staticcheck
         - tagalign
-        - tagliatelle
         - testableexamples
         - testifylint
         - testpackage
@@ -131,9 +129,6 @@ linters:
             max-complexity: 15
         dupl:
             threshold: 100
-        exhaustruct:
-            exclude:
-                - os/exec.Cmd
         funlen:
             lines: 80
             statements: 50
