@@ -104,7 +104,6 @@ func TestNoDuplicateErrorNewMessages(t *testing.T) {
 
 		return nil
 	})
-
 	if walkErr != nil {
 		t.Fatalf("filepath.WalkDir failed: %v", walkErr)
 	}

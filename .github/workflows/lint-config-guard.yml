@@ -5,9 +5,10 @@ name: Lint Config Guard
 # 7+ times; this workflow catches the regression in CI even when the
 # daemon's commit bypasses local checks.
 #
-# The local Nix check (.#checks.x86_64-linux.disabled-linters) enforces
-# the same invariant for nix-based workflows. This GitHub workflow is
-# the authoritative guard for non-Nix contributors and the daemon.
+# The local Nix check (.#checks.x86_64-linux.disabled-linters) and this
+# workflow both call scripts/check-disabled-linters.sh — single source
+# of truth. The script uses a smart regex that checks for YAML entries
+# ("- lintername" or "lintername:") only, allowing explanatory comments.
 
 on:
   push:
@@ -28,12 +29,3 @@ jobs:
 
       - name: Run disabled-linters script
         run: ./scripts/check-disabled-linters.sh .golangci.yml
-
-      - name: Belt-and-suspenders grep
-        run: |
-          if grep -qE 'exhaustruct|tagliatelle' .golangci.yml; then
-            echo "FAIL: forbidden linters found in .golangci.yml:" >&2
-            grep -nE 'exhaustruct|tagliatelle' .golangci.yml >&2
-            exit 1
-          fi
-          echo "OK: no forbidden linters in .golangci.yml"
