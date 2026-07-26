@@ -1,4 +1,4 @@
-package printer
+package actionability
 
 import (
 	"github.com/LarsArtmann/art-dupl/domain"

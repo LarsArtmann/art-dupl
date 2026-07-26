@@ -5,12 +5,19 @@ import (
 	"fmt"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
 )
 
 // ErrZeroLengthDuplicate indicates a duplicate group with no nodes was encountered.
 var ErrZeroLengthDuplicate = errors.New("zero length duplicate found")
+
+type (
+	CloneCategory       = domain.CloneCategory
+	ClonePriority       = domain.ClonePriority
+	CloneClassification = domain.CloneClassification
+)
 
 // ToCloneNodeSeqs converts raw syntax.Node sequences into domain.CloneNode
 // sequences. This is the exported bridge that decouples the actionability
@@ -98,7 +105,7 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 			EndPos:     nend.End,
 			TokenCount: tokens,
 			FileSize:   len(fileInfo.Content),
-			Classification: ClassifyClone(domain.ClassificationInput{
+			Classification: actionability.ClassifyClone(domain.ClassificationInput{
 				Filename: fileInfo.Filename,
 				NodeType: golang.DecodeBaseType(nstart.Type),
 				Tokens:   tokens,
@@ -110,21 +117,21 @@ func ProcessClones(fread ReadFile, dups [][]*syntax.Node) ([]domain.ProcessedClo
 	// Populate group-level Actionability and CloneType after all per-instance
 	// classifications are computed. Both are group properties: every instance
 	// in a clone group shares the same actionability verdict and clone type.
-	label, actionability := EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
+	label, verdict := actionability.EvaluateActionabilityWithLabel(toCloneNodeSeqs(dups))
 	cloneType := classifyCloneType(dups)
 
 	for i := range clones {
-		clones[i].Classification.Actionability = actionability
+		clones[i].Classification.Actionability = verdict
 		clones[i].Classification.CloneType = cloneType
 		clones[i].Classification.Extractability = domain.AssessExtractability(
 			clones[i].LineCount(), len(clones),
 			clones[i].Classification.Category.IsCompleteUnit(),
 		)
-		clones[i].Classification = applyPatternLabel(
+		clones[i].Classification = actionability.ApplyPatternLabel(
 			clones[i].Classification, label,
 		)
 
-		if label != PatternNone {
+		if label != actionability.PatternNone {
 			clones[i].Classification.NonActionablePattern = string(label)
 		}
 	}

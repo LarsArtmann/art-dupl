@@ -1,4 +1,4 @@
-package printer
+package actionability
 
 import (
 	"testing"

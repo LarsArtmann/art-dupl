@@ -12,6 +12,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -92,7 +93,7 @@ func collectCurrentGroups(
 		}
 
 		if mergedConfig.DetectionMode.IsSemantic() && !suppression.NoActionability {
-			result := printer.EvaluateActionabilityWithDisabled(
+			result := actionability.EvaluateActionabilityWithDisabled(
 				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
 			)
 			if result == domain.NonActionable {

@@ -10,6 +10,7 @@ import (
 	duplerrors "github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/internal/utils"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/spf13/cobra"
 )
 
@@ -117,7 +118,7 @@ func dispatchAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *con
 	}
 
 	if listPatterns, _ := cmd.Flags().GetBool("list-patterns"); listPatterns {
-		printer.ListActionabilityPatterns(os.Stdout)
+		actionability.ListActionabilityPatterns(os.Stdout)
 
 		return nil
 	}
@@ -221,14 +222,14 @@ func runStandardAnalysis(ctx context.Context, cmd *cobra.Command, mergedConfig *
 
 // buildDisabledPatternSet converts a list of pattern label strings to a set
 // for O(1) lookup during actionability evaluation.
-func buildDisabledPatternSet(labels []string) map[printer.PatternLabel]bool {
+func buildDisabledPatternSet(labels []string) map[actionability.PatternLabel]bool {
 	if len(labels) == 0 {
 		return nil
 	}
 
-	set := make(map[printer.PatternLabel]bool, len(labels))
+	set := make(map[actionability.PatternLabel]bool, len(labels))
 	for _, label := range labels {
-		set[printer.PatternLabel(label)] = true
+		set[actionability.PatternLabel(label)] = true
 	}
 
 	return set

@@ -1,4 +1,4 @@
-package printer
+package actionability
 
 import (
 	"strings"
@@ -29,19 +29,13 @@ const (
 	suggestBuilderCallback   = "Builder/callback chain — intentional fluent API design"
 )
 
-type (
-	CloneCategory       = domain.CloneCategory
-	ClonePriority       = domain.ClonePriority
-	CloneClassification = domain.CloneClassification
-)
-
-func ClassifyClone(input domain.ClassificationInput) CloneClassification {
+func ClassifyClone(input domain.ClassificationInput) domain.CloneClassification {
 	category := nodeTypeToCategory(input.NodeType)
 	isTest := strings.HasSuffix(input.Filename, "_test.go")
 	priority := calculatePriority(category, isTest, input.Tokens, input.Lines)
 	suggestion := getSuggestion(category, isTest, input.Tokens)
 
-	return CloneClassification{
+	return domain.CloneClassification{
 		Category:      category,
 		IsTest:        isTest,
 		Priority:      priority,
@@ -52,7 +46,7 @@ func ClassifyClone(input domain.ClassificationInput) CloneClassification {
 	}
 }
 
-func nodeTypeToCategory(nodeType int32) CloneCategory {
+func nodeTypeToCategory(nodeType int32) domain.CloneCategory {
 	switch nodeType {
 	case golang.FuncDecl:
 		return domain.CategoryFunction
@@ -85,7 +79,7 @@ func nodeTypeToCategory(nodeType int32) CloneCategory {
 	}
 }
 
-func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) ClonePriority {
+func calculatePriority(category domain.CloneCategory, isTest bool, tokens, lines int) domain.ClonePriority {
 	if isTest {
 		return calculateTestPriority(tokens, lines)
 	}
@@ -93,7 +87,7 @@ func calculatePriority(category CloneCategory, isTest bool, tokens, lines int) C
 	return calculateProductionPriority(category, tokens, lines)
 }
 
-func calculateTestPriority(tokens, lines int) ClonePriority {
+func calculateTestPriority(tokens, lines int) domain.ClonePriority {
 	if tokens > 30 || lines > 30 {
 		return domain.PriorityMedium
 	}
@@ -101,7 +95,7 @@ func calculateTestPriority(tokens, lines int) ClonePriority {
 	return domain.PriorityLow
 }
 
-func calculateProductionPriority(category CloneCategory, tokens, lines int) ClonePriority {
+func calculateProductionPriority(category domain.CloneCategory, tokens, lines int) domain.ClonePriority {
 	switch category {
 	case domain.CategoryFunction, domain.CategoryMethod:
 		return functionPriority(tokens, lines)
@@ -127,7 +121,7 @@ func calculateProductionPriority(category CloneCategory, tokens, lines int) Clon
 	}
 }
 
-func functionPriority(tokens, lines int) ClonePriority {
+func functionPriority(tokens, lines int) domain.ClonePriority {
 	if tokens > 15 || lines > 20 {
 		return domain.PriorityCritical
 	}
@@ -139,11 +133,11 @@ func functionPriority(tokens, lines int) ClonePriority {
 	return domain.PriorityMedium
 }
 
-func typePriority(tokens int) ClonePriority {
+func typePriority(tokens int) domain.ClonePriority {
 	return controlFlowPriority(tokens)
 }
 
-func controlFlowPriority(tokens int) ClonePriority {
+func controlFlowPriority(tokens int) domain.ClonePriority {
 	if tokens > 10 {
 		return domain.PriorityHigh
 	}
@@ -151,7 +145,7 @@ func controlFlowPriority(tokens int) ClonePriority {
 	return domain.PriorityMedium
 }
 
-func otherPriority(tokens int) ClonePriority {
+func otherPriority(tokens int) domain.ClonePriority {
 	if tokens > 15 {
 		return domain.PriorityHigh
 	}
@@ -163,7 +157,7 @@ func otherPriority(tokens int) ClonePriority {
 	return domain.PriorityLow
 }
 
-func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
+func getSuggestion(category domain.CloneCategory, isTest bool, tokens int) string {
 	if isTest {
 		if tokens > 15 {
 			return suggestTestHelper
@@ -195,7 +189,7 @@ func getSuggestion(category CloneCategory, isTest bool, tokens int) string {
 	}
 }
 
-// patternLabelConfig defines how applyPatternLabel adjusts a clone's
+// patternLabelConfig defines how ApplyPatternLabel adjusts a clone's
 // classification when a non-actionable pattern is detected.
 type patternLabelConfig struct {
 	category    domain.CloneCategory
@@ -264,11 +258,11 @@ var patternLabelConfigs = map[PatternLabel]patternLabelConfig{ //nolint:gocheckn
 	},
 }
 
-// applyPatternLabel adjusts clone classification based on the AST-detected
+// ApplyPatternLabel adjusts clone classification based on the AST-detected
 // non-actionable pattern. This upgrades the category and suggestion to
 // reflect the specific reason the clone is non-actionable, rather than
 // relying solely on the first node's type.
-func applyPatternLabel(cls domain.CloneClassification, label PatternLabel) domain.CloneClassification {
+func ApplyPatternLabel(cls domain.CloneClassification, label PatternLabel) domain.CloneClassification {
 	cfg, ok := patternLabelConfigs[label]
 	if !ok {
 		return cls
