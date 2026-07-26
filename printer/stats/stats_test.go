@@ -1,4 +1,4 @@
-package printer
+package stats
 
 import (
 	"bytes"
@@ -90,7 +90,7 @@ func makeDupNodePair(filename string, pos, end int32) []*syntax.Node {
 }
 
 // printFooterAndGetData is a helper function to call PrintFooter and return stats data.
-func printFooterAndGetData(t *testing.T, statsPrinter *stats) *StatsView {
+func printFooterAndGetData(t *testing.T, statsPrinter *stats) *printer.StatsView {
 	t.Helper()
 
 	err := statsPrinter.PrintFooter()
@@ -109,14 +109,14 @@ func TestStatsViewAggregation(t *testing.T) {
 		duplicates [][][]*syntax.Node
 		filesCount int
 		threshold  int
-		checkStats func(t *testing.T, stats *StatsView)
+		checkStats func(t *testing.T, stats *printer.StatsView)
 	}{
 		{
 			name:       "empty clones",
 			duplicates: [][][]*syntax.Node{},
 			filesCount: 0,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsView) {
+			checkStats: func(t *testing.T, stats *printer.StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 0, "TotalCloneGroups")
@@ -139,7 +139,7 @@ func TestStatsViewAggregation(t *testing.T) {
 			},
 			filesCount: 2,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsView) {
+			checkStats: func(t *testing.T, stats *printer.StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 1, "TotalCloneGroups")
@@ -173,7 +173,7 @@ func TestStatsViewAggregation(t *testing.T) {
 			},
 			filesCount: 2,
 			threshold:  15,
-			checkStats: func(t *testing.T, stats *StatsView) {
+			checkStats: func(t *testing.T, stats *printer.StatsView) {
 				t.Helper()
 
 				testutil.AssertEqual(t, stats.TotalCloneGroups, 2, "TotalCloneGroups")

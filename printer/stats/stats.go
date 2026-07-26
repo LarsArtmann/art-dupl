@@ -126,7 +126,7 @@ func (p *stats) trackTopClone(group domain.ProcessedCloneGroup, lines int) {
 		return
 	}
 
-	top := TopCloneGroup{
+	top := printer.TopCloneGroup{
 		Priority:       cls.Priority,
 		Category:       cls.Category,
 		Lines:          lines,
@@ -144,7 +144,7 @@ func (p *stats) trackTopClone(group domain.ProcessedCloneGroup, lines int) {
 	}
 }
 
-func sortTopClones(clones []TopCloneGroup) []TopCloneGroup {
+func sortTopClones(clones []printer.TopCloneGroup) []printer.TopCloneGroup {
 	sort.Slice(clones, func(i, j int) bool {
 		scoreI := priorityScore(clones[i].Priority) * clones[i].Lines
 		scoreJ := priorityScore(clones[j].Priority) * clones[j].Lines
