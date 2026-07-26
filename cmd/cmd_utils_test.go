@@ -255,8 +255,8 @@ func TestCollectMatches(t *testing.T) {
 		ch := make(chan syntax.Match)
 		close(ch)
 
-		result := collectMatches(ch)
-		testutil.AssertCount(t, len(result), 0, "collectMatches()")
+		result := testutil.CollectMatches(ch)
+		testutil.AssertCount(t, len(result), 0, "CollectMatches()")
 	})
 
 	t.Run("single match", func(t *testing.T) {
@@ -268,8 +268,8 @@ func TestCollectMatches(t *testing.T) {
 
 		close(ch)
 
-		result := collectMatches(ch)
-		testutil.AssertCount(t, len(result), 1, "collectMatches()")
+		result := testutil.CollectMatches(ch)
+		testutil.AssertCount(t, len(result), 1, "CollectMatches()")
 	})
 
 	t.Run("multiple matches", func(t *testing.T) {
@@ -283,8 +283,8 @@ func TestCollectMatches(t *testing.T) {
 
 		close(ch)
 
-		result := collectMatches(ch)
-		testutil.AssertCount(t, len(result), 3, "collectMatches()")
+		result := testutil.CollectMatches(ch)
+		testutil.AssertCount(t, len(result), 3, "CollectMatches()")
 	})
 }
 

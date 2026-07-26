@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/config"
+	"github.com/LarsArtmann/art-dupl/internal/testutil"
 	"github.com/LarsArtmann/art-dupl/job"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
@@ -62,7 +63,7 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	}
 
 	// Convert channel to slice for reuse
-	matches := collectMatches(duplChan)
+	matches := testutil.CollectMatches(duplChan)
 
 	// Generate all output formats
 	formats := config.AllOutputFormats()
@@ -103,16 +104,6 @@ func runAllModes(ctx context.Context, cfg *config.Config, sortBy, outputDir stri
 	fmt.Fprintf(os.Stderr, "\n✨ All formats generated successfully!\n")
 
 	return nil
-}
-
-// collectMatches collects all matches from a channel into a slice.
-func collectMatches(matchChan <-chan syntax.Match) []syntax.Match {
-	var matches []syntax.Match
-	for match := range matchChan {
-		matches = append(matches, match)
-	}
-
-	return matches
 }
 
 // writeFormatFile writes a single output format to a file.

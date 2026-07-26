@@ -41,22 +41,6 @@ type BDDTestSetup struct {
 	ExecutorResult func(args ...string) (*CommandResult, error)
 }
 
-// NewBDDTestSetup creates a new BDD test setup with temporary directory.
-// The caller is responsible for cleaning up using Cleanup() or manually.
-//
-// Note: The Executor field must be set before calling Run* methods.
-func NewBDDTestSetup(t *testing.T) *BDDTestSetup {
-	t.Helper()
-
-	tmpDir := t.TempDir()
-
-	return &BDDTestSetup{ // Executor/ExecutorResult are set later by test setup
-		T:             t,
-		TmpDir:        tmpDir,
-		FileProcessor: utils.NewFileProcessor(tmpDir),
-	}
-}
-
 // NewBDDTestSetupForGinkgo creates a new BDD test setup without requiring *testing.T.
 // Designed for use with Ginkgo's BeforeEach/AfterEach pattern.
 // The caller must call Cleanup() in an AfterEach block.
