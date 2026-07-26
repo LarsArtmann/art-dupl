@@ -386,7 +386,7 @@ found 3 clones:
 - Directives are scanned lazily: only files containing clones are read.
 - Each file is scanned at most once per run (cached).
 - The directive must be on a line within the clone's reported line range.
-- Both `//` and `/* */` comment styles work if the line starts with `//art-dupl:accept`.
+- The directive is recognized in any `//` comment: standalone lines, trailing inline comments (`code(); //art-dupl:accept`), and the gofmt-canonical form with a space (`// art-dupl:accept`). Block comments (`/* */`) are not scanned.
 
 ## Output Interpretation
 
