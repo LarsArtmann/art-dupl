@@ -59,7 +59,7 @@ func BenchmarkAllowsContent_RegularFile(b *testing.B) {
 // BenchmarkFilterExcludedGenerated_RegularFile measures the defense-in-depth
 // path on a regular file.
 func BenchmarkFilterExcludedGenerated_RegularFile(b *testing.B) {
-	includes := generatorIncludes{Generic: true}
+	includes := generatorIncludes{gogenfilter.ReasonGeneric: true}
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -72,7 +72,7 @@ func BenchmarkFilterExcludedGenerated_RegularFile(b *testing.B) {
 // BenchmarkFilterExcludedGenerated_GeneratedFile measures the defense-in-depth
 // path on a generated file (the match case).
 func BenchmarkFilterExcludedGenerated_GeneratedFile(b *testing.B) {
-	includes := generatorIncludes{Generic: true}
+	includes := generatorIncludes{gogenfilter.ReasonGeneric: true}
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -84,7 +84,7 @@ func BenchmarkFilterExcludedGenerated_GeneratedFile(b *testing.B) {
 
 // BenchmarkCategoryIncluded measures the reason→bool lookup.
 func BenchmarkCategoryIncluded(b *testing.B) {
-	includes := generatorIncludes{Templ: true}
+	includes := generatorIncludes{gogenfilter.ReasonTempl: true}
 
 	b.ReportAllocs()
 	b.ResetTimer()

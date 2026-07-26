@@ -157,29 +157,32 @@ func shouldIncludeFileStandard(f *gogenfilter.Filter, path string, stats *Filter
 // category filters (FilterSQLC, FilterTempl, FilterProtobuf) only match files with
 // the expected suffix (_sqlc.go, _templ.go, *.pb.go). A generated file without the
 // suffix would slip through. The filterExcludedGenerated content check closes this gap.
-type generatorIncludes struct {
-	SQLC     bool
-	Templ    bool
-	Protobuf bool
-	Mockgen  bool
-	Stringer bool
-	Generic  bool
-}
+// generatorIncludes records which generated-code categories the user explicitly
+// asked to include via --include-generated. Keyed by gogenfilter.FilterReason
+// so that categoryIncluded is a direct map lookup (no switch needed).
+// Adding a new category is now a 1-line change to newGeneratorIncludes.
+type generatorIncludes map[gogenfilter.FilterReason]bool
 
 // newGeneratorIncludes builds the policy from a config.
 func newGeneratorIncludes(cfg *config.Config) generatorIncludes {
 	return generatorIncludes{
-		SQLC:     cfg.IncludeSQLC,
-		Templ:    cfg.IncludeTempl,
-		Protobuf: cfg.IncludeProtobuf,
-		Mockgen:  cfg.IncludeMockgen,
-		Stringer: cfg.IncludeStringer,
-		Generic:  cfg.IncludeGeneric,
+		gogenfilter.ReasonSQLC:     cfg.IncludeSQLC,
+		gogenfilter.ReasonTempl:    cfg.IncludeTempl,
+		gogenfilter.ReasonProtobuf: cfg.IncludeProtobuf,
+		gogenfilter.ReasonMockgen:  cfg.IncludeMockgen,
+		gogenfilter.ReasonStringer: cfg.IncludeStringer,
+		gogenfilter.ReasonGeneric:  cfg.IncludeGeneric,
 	}
 }
 
 func (g generatorIncludes) any() bool {
-	return g.SQLC || g.Templ || g.Protobuf || g.Mockgen || g.Stringer || g.Generic
+	for _, v := range g {
+		if v {
+			return true
+		}
+	}
+
+	return false
 }
 
 // matchedGeneratedCategory reports which filename-gated generation category
@@ -210,18 +213,9 @@ func matchedGeneratedCategory(content []byte) (gogenfilter.FilterReason, bool) {
 }
 
 // categoryIncluded reports whether the user explicitly asked to include the
-// given filename-gated category via a --include-generated flag.
+// given category via a --include-generated flag. Direct map lookup — no switch.
 func (g generatorIncludes) categoryIncluded(reason gogenfilter.FilterReason) bool {
-	switch reason { //nolint:exhaustive // only filename-gated categories are relevant; default covers the rest
-	case gogenfilter.ReasonTempl:
-		return g.Templ
-	case gogenfilter.ReasonSQLC:
-		return g.SQLC
-	case gogenfilter.ReasonProtobuf:
-		return g.Protobuf
-	default:
-		return false
-	}
+	return g[reason]
 }
 
 // allowsContent reports whether the file content indicates generation by a
@@ -246,8 +240,8 @@ func (g generatorIncludes) allowsContent(content []byte) bool {
 	// they are not part of matchedGeneratedCategory's filename-gated scope.
 	c := string(content)
 
-	return (g.Mockgen && gogenfilter.IsMockgenGenerated("", c)) ||
-		(g.Stringer && gogenfilter.IsStringerGenerated("", c))
+	return (g[gogenfilter.ReasonMockgen] && gogenfilter.IsMockgenGenerated("", c)) ||
+		(g[gogenfilter.ReasonStringer] && gogenfilter.IsStringerGenerated("", c))
 }
 
 // filterExcludedGenerated is a content-based defense-in-depth check for files
