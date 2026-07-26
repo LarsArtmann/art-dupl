@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+_Nothing yet._
+
+## [0.5.0] - 2026-07-26
+
+**Fork stabilization sprint (2026-07-24 to 2026-07-26)**, headlined by inline `//art-dupl:accept` directives, diff-report baseline comparison, selective actionability pattern control, and `.gitignore` honoring.
+
+### Added
+
 - **`//art-dupl:accept` inline directive**: Suppress accepted clone groups by adding `//art-dupl:accept` comments directly in source code. Supports optional hash for precision matching (`//art-dupl:accept <hash>`). Lazy file scanning with RWMutex + double-checked locking. Override with `--no-accept-directives`. Eliminates baseline file management for CI workflows.
 - **`single-declaration` actionability pattern**: Lone package-level `ValueSpec`/`TypeSpec`-alias nodes (const re-export `Foo = pkg.Foo`, type alias `type Mode = domain.Mode`, iota enum starter `BadNode = iota`) are now classified non-actionable boilerplate. Composite type definitions (`type Foo struct{...}`, `type Bar interface{...}`) are intentionally kept visible via `subtreeHasCompositeType`. Eliminates the low-threshold re-export false positives without hiding real type-definition duplication.
 - **`.gitignore` honoring**: Files matching `.gitignore` patterns are now excluded by default during file enumeration. Walks up the directory tree to find all `.gitignore` files. Supports globs, directory-only, anchored, and negation patterns. Override with `--include-ignored`.
@@ -302,7 +310,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/LarsArtmann/art-dupl/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/LarsArtmann/art-dupl/compare/v0.1.0...v0.2.0
