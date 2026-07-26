@@ -1,13 +1,16 @@
 package config
 
 import (
+	"encoding/json/v2"
 	"os"
 	"path/filepath"
 
 	"github.com/LarsArtmann/art-dupl/errors"
+	yaml "github.com/go-faster/yaml"
 )
 
-// LoadConfig loads configuration from file.
+// LoadConfig loads configuration from file. Auto-detects format by extension:
+// .yml/.yaml → YAML, everything else → JSON.
 func LoadConfig(filename string) (*Config, error) {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -22,13 +25,45 @@ func LoadConfig(filename string) (*Config, error) {
 
 	config := DefaultConfig()
 	if len(data) > 0 {
-		err = errors.SafeUnmarshal(data, config, "config file: "+filename)
-		if err != nil {
-			return nil, errors.NewConfigError("failed to parse config file: "+filename, err)
+		if isYAMLFile(filename) {
+			if err := loadYAMLIntoConfig(data, config, filename); err != nil {
+				return nil, err
+			}
+		} else {
+			err = errors.SafeUnmarshal(data, config, "config file: "+filename)
+			if err != nil {
+				return nil, errors.NewConfigError("failed to parse config file: "+filename, err)
+			}
 		}
 	}
 
 	return config, nil
+}
+
+func isYAMLFile(filename string) bool {
+	ext := filepath.Ext(filename)
+
+	return ext == ".yaml" || ext == ".yml"
+}
+
+// loadYAMLIntoConfig bridges YAML through JSON to reuse all existing json tags
+// and custom MarshalJSON/UnmarshalJSON hooks on Config and its enum fields.
+func loadYAMLIntoConfig(data []byte, config *Config, filename string) error {
+	var raw map[string]any
+	if err := yaml.Unmarshal(data, &raw); err != nil {
+		return errors.NewConfigError("failed to parse YAML config file: "+filename, err)
+	}
+
+	jsonData, err := json.Marshal(raw)
+	if err != nil {
+		return errors.NewConfigError("failed to convert YAML to JSON: "+filename, err)
+	}
+
+	if err := errors.SafeUnmarshal(jsonData, config, "YAML config file: "+filename); err != nil {
+		return errors.NewConfigError("failed to parse YAML config file: "+filename, err)
+	}
+
+	return nil
 }
 
 // LoadOptionalConfig loads configuration from file if filename is not empty.
