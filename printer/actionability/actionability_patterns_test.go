@@ -355,7 +355,7 @@ func TestApplyPatternLabel(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			result := applyPatternLabel(tc.input, tc.label)
+			result := ApplyPatternLabel(tc.input, tc.label)
 			if result.Category != tc.wantCategory {
 				t.Errorf("category = %q, want %q", result.Category, tc.wantCategory)
 			}

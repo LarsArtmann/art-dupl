@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/LarsArtmann/art-dupl/domain"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/suffixtree"
 	"github.com/LarsArtmann/art-dupl/syntax"
 	"github.com/LarsArtmann/art-dupl/syntax/golang"
@@ -81,7 +82,7 @@ func ProcessB(m *sync.Mutex) {
 			t.Skip("no matches found")
 		}
 
-		result := EvaluateActionability(seqs)
+		result := actionability.EvaluateActionability(seqs)
 		if result != domain.NonActionable {
 			t.Errorf("Lock+Defer Unlock should be non-actionable, got %s", result)
 		}
@@ -110,7 +111,7 @@ func ReadB(m *sync.RWMutex) {
 			t.Skip("no matches found")
 		}
 
-		result := EvaluateActionability(seqs)
+		result := actionability.EvaluateActionability(seqs)
 		if result != domain.NonActionable {
 			t.Errorf("RLock+Defer RUnlock should be non-actionable, got %s", result)
 		}

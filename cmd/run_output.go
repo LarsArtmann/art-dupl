@@ -8,6 +8,7 @@ import (
 	"github.com/LarsArtmann/art-dupl/domain"
 	"github.com/LarsArtmann/art-dupl/errors"
 	"github.com/LarsArtmann/art-dupl/printer"
+	"github.com/LarsArtmann/art-dupl/printer/actionability"
 	"github.com/LarsArtmann/art-dupl/syntax"
 )
 
@@ -20,7 +21,7 @@ type SuppressionConfig struct {
 	MinLines         int
 	AcceptDirectives *AcceptedSet
 	NoActionability  bool
-	DisabledPatterns map[printer.PatternLabel]bool
+	DisabledPatterns map[actionability.PatternLabel]bool
 }
 
 func printDupls(
@@ -116,7 +117,7 @@ func printCloneGroups(
 		}
 
 		if semantic && !suppression.NoActionability {
-			result := printer.EvaluateActionabilityWithDisabled(
+			result := actionability.EvaluateActionabilityWithDisabled(
 				printer.ToCloneNodeSeqs(uniq), suppression.DisabledPatterns,
 			)
 			if result == domain.NonActionable {
