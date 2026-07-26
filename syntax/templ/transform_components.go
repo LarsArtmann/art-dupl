@@ -62,6 +62,12 @@ func (t *transformer) buildComponentRender(
 	children []templparser.Node,
 ) *syntax.Node {
 	name := extractCalleeName(exprValue)
+
+	if t.semantic {
+		normalized := normalizeExprValue(exprValue, t.symbols)
+		name = extractCalleeName(normalized)
+	}
+
 	node := t.createNodeFromRange(ComponentRender, rng)
 
 	node.Name = name
